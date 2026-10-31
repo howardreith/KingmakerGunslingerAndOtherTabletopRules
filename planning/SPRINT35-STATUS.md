@@ -1672,3 +1672,18 @@ Sprint 35 checkpoint; historical records are not current instructions.
   registered in 9.2 seconds. The complete unfiltered suite, exact-reference
   candidate, package/reproducibility and native qualification remain deferred
   to the single selected Sprint boundary.
+- The first v0.0.173 Sprint-boundary attempt at `4c142213` stopped in the
+  complete 2,776-test suite with 30 failures and therefore produced no release
+  candidate. One narrow diagnostic separated five stale integration contracts
+  from missing sparse-worktree inputs: Barbed/Bone lawful-evil fixture alignment,
+  the historical pre-Sprint35 public route surface, the two measured-rig proxy
+  disclosures, deferred exact-owner Impale cleanup, and the private Wall unit
+  versus the 128 creature roots. The assigned-lab 2.1.7b IL/res inputs were
+  copied byte-for-byte (SHA-256 `2AA7DC0BF64D791FE5DD75F9C7A2C3224B3BFBC0B21AB233FD81E461EE5FE50B`
+  and `071B40EC0BF55A075F4891DDBB39B73898ADD29ECB39CCB8102E88E3E4FBAC80`),
+  and all 168 tracked expanded-summoning icon source/edit inputs were
+  materialized without source changes. The causal 65-test group then passed 63
+  and exposed only one omitted edit directory plus the exact Wall symbol; after
+  those corrections, the icon-manifest and identity tests each pass. No
+  gameplay was changed. The original full failure remains the candidate-boundary
+  record; a changed test-source commit requires one new complete boundary run.
