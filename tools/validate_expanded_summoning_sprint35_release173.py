@@ -19,7 +19,11 @@ INFORMATIONAL = VERSION + "-expanded-summoning-barbed-bone-devils"
 OLD_INFORMATIONAL = "0.0.172-expanded-summoning-bearded-devil-kyton"
 ASSEMBLY = "src/KingmakerGunslinger/Properties/AssemblyInfo.cs"
 OBSERVER = "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.InfernalEarly35.cs"
-OBSERVER_SHA256 = "0840aca62ce12e33700276b2b6b1a89f5c8108626bbf6e9815bce7d0ba385171"
+BARBED_OBSERVER = "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.InfernalBarbedCombat35.cs"
+OBSERVERS = {
+    OBSERVER: "0840aca62ce12e33700276b2b6b1a89f5c8108626bbf6e9815bce7d0ba385171",
+    BARBED_OBSERVER: "da3fb790e956a182afb0f18a80d1af1770cc9fcf4d4c4c501463f05fefb56b1c",
+}
 ROOTS = ("src/KingmakerGunslinger", "assets", "assets-source", "blueprints")
 RECORD_KEY = "expandedSummoningSprint35Release173"
 RECORD = dict(releaseVersion=VERSION, releaseInformationalVersion=INFORMATIONAL,
@@ -30,11 +34,11 @@ RECORD = dict(releaseVersion=VERSION, releaseInformationalVersion=INFORMATIONAL,
               ownerPublicationAuthority="Sprint35 Barbed Devil and Bone Devil Fresh Codex Mission, with approved bounded movement-only Wall of Ice adaptation and explicit unsupported-SLA omissions")
 
 def check_product(changed, untracked):
-    if set(changed) - {ASSEMBLY, OBSERVER} or untracked:
+    if set(changed) - ({ASSEMBLY} | set(OBSERVERS)) or untracked:
         raise AssertionError("Product/project/assets/identities differ from reviewed source")
 
-def check_observer(data):
-    if hashlib.sha256(data).hexdigest() != OBSERVER_SHA256:
+def check_observer(path, data):
+    if path not in OBSERVERS or hashlib.sha256(data).hexdigest() != OBSERVERS[path]:
         raise AssertionError("Exact reviewed native observer correction differs")
 
 def check_metadata(old_info, info, old_props, props, old_assembly, assembly):
@@ -82,7 +86,8 @@ def validate(root):
     changed=subprocess.check_output(["git","diff","--name-only","--no-renames",PRODUCT,"--",*ROOTS],cwd=root).decode().splitlines()
     untracked=subprocess.check_output(["git","ls-files","--others","--exclude-standard","--",*ROOTS],cwd=root).decode().splitlines()
     check_product(changed,untracked)
-    check_observer((root/OBSERVER).read_bytes())
+    for path in OBSERVERS:
+        check_observer(path,(root/path).read_bytes())
     check_metadata(json.loads(blob(PRODUCT,"Info.json")),common.document(root,"Info.json"),blob(PRODUCT,"Directory.Build.props"),(root/"Directory.Build.props").read_text(encoding="utf-8-sig"),blob(PRODUCT,ASSEMBLY),(root/ASSEMBLY).read_text(encoding="utf-8-sig"))
     path="blueprints/blueprints.json"
     check_ledger(json.loads(blob(RELEASED,path)),json.loads(blob(PRODUCT,path)),common.document(root,path))

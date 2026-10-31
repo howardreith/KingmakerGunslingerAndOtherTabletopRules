@@ -42,10 +42,12 @@ class Release173Tests(unittest.TestCase):
     def test_version_file_admitted_only_under_metadata_check(self): release.check_product([release.ASSEMBLY],[])
 
     def test_exact_observer_correction_admitted_and_mutation_refused(self):
-        release.check_product([release.OBSERVER],[])
-        data=(ROOT/release.OBSERVER).read_bytes()
-        release.check_observer(data)
-        with self.assertRaises(AssertionError): release.check_observer(data+b"changed")
+        release.check_product(list(release.OBSERVERS),[])
+        for path in release.OBSERVERS:
+            with self.subTest(path=path):
+                data=(ROOT/path).read_bytes()
+                release.check_observer(path,data)
+                with self.assertRaises(AssertionError): release.check_observer(path,data+b"changed")
 
     def test_product_project_asset_and_ledger_changes_refused(self):
         for path in ["src/KingmakerGunslinger/Summoning/InfernalWall35.cs","src/KingmakerGunslinger/KingmakerGunslinger.csproj","assets/sprint35-infernal-reach/barbed-devil-mesh.json","assets-source/changed.txt","blueprints/blueprints.json"]:

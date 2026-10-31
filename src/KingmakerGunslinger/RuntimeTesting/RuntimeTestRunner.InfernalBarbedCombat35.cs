@@ -178,6 +178,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in InfernalEarlyContact35(fixture,
                     attacker, sibling, trace, check, "independent-second", 3,
                     true)) yield return frame;
+                foreach (int frame in InfernalSwitch34(attacker,
+                    attackProfile.Glaive)) yield return frame;
+                foreach (int frame in InfernalEarlyContact35(fixture,
+                    attacker, owner, trace, check, "reach-glaive", 8,
+                    false)) yield return frame;
                 // Retain the already-settled second Barbed for the ray cell.
                 // The grapple owner below must be allowed to keep its proved
                 // live hold until normal owned-actor disposal; a test teardown
