@@ -1704,3 +1704,49 @@ Sprint 35 checkpoint; historical records are not current instructions.
   adds an mtime-change/byte-identity regression, now passing 14/14 with the
   release validator. Product gameplay, assets and identities are unchanged; a
   new coherent source-bound candidate is required before native qualification.
+- Candidate `d9f3f10a4385797733a9e412f2ebfde7bb6954aa` passed the complete
+  2,776/2,776 domain suite, exact-reference compilation, strict package
+  validation and a byte-identical independent reproducibility build. Its source
+  fingerprint is `2ad7e1c2740dc592e988d0d1d9040419c612b46a537b02c26f5bd766a33ca774`,
+  ZIP SHA-256 `aa06d5748e7e3dfee94e6c855877c633eb1c379a834f8114f598bc17677fd096`,
+  DLL SHA-256 `c3cf27abf25bb5b2ca7b59f6cb05fd389d9f3528069067546a9f19ef74ba1f66`
+  and MVID `b709fce0-4da2-4a86-9bda-099937a02637`. The exact reproducibility proof
+  SHA-256 is `5032C5095DFE565E5CDA8E5D2B2F6A11D44C82E498CBC81DB793B1DA005279B5`.
+  Capacity-only package failures and successful duplicate output were copied
+  and per-file hash-verified on E: before removal; the final successful
+  reproducibility archive contains 848 files / 313,522,463 bytes under manifest
+  SHA-256 `0185146875E9331144508E335B537631780CD53B8F33D96C8681A0C0585B6D2D`.
+- Final-byte guarded early run `20261031T1807298030845Z-50ac7b2c62c741978ce615316f916408`
+  passed hidden/public bootstrap, both original body attachments, Wall section
+  viability and Bone sting-tail contact. Its raw result SHA-256 is
+  `ECE417AE085FAAD6DBC500619F24F9769A9CCAFCF08C8E3EFC8353A29C51546B`.
+  Barbed SLA run `20261031T1817022985610Z-62762c7b40b44ced8935b6f801f9f252`
+  passed the owned Unholy Blight command/effect/resource/lifetime/cleanup rows;
+  raw SHA-256 `AFDB86A44E9A361568FC96D51A99A138FBC5077AAB0579484187EF76E2C757C6`.
+  Barbed combat run `20261031T1823414730605Z-1c9f91a70dcf48aa95343921170c14c7`
+  passed independent nonrecursive retaliation, claw fear, size/immunity/real
+  grapple gates, high-CMD release, one successful-maintain Impale, two native
+  Scorching Ray attack/damage events and cleanup. The real Barbazu glaive
+  (`804dc1aecc9f43b9bcad0c48547c8b28`) reported raw weapon reach 6 feet and
+  attack range 10 feet, hit, and produced zero Barbed Defense reactions or
+  recursive attacks; raw SHA-256
+  `78E98E006EAC84A94E70F9D0F014029D55E772F817000D88C719B481542D45EA`.
+  Every transaction restored the 136-file live tree exactly to intake SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+- Bone run `20261031T1830485503278Z-470e6ff3feba44f5b919873fd7660a68`
+  retains raw **FAIL** SHA-256
+  `B5332EAC8CA1557137BD1FAD07D1A90391397EEA2140E8276AE97D9A23288A91`.
+  Fourteen preceding rows passed. The sole mechanics row reported the same
+  victim-owned poison Buff after exact source destruction, original serialized
+  source identity retained, live source unresolved, DC20 retained, exactly one
+  source-less repeat save, the native difficulty-scaled stat event and unchanged
+  already-inflicted 4 Strength damage, while the source-owned aura retired.
+  The observer alone rejected Newtonsoft's typed-null string token because it
+  required `JTokenType.Null`, although the immutable row serialized
+  `owner: null`. The bounded correction requires the owner property and a null
+  string value; production poison/aura behavior is unchanged. Focused production
+  compilation and 9/9 Sprint35 tests, the exact release validator and all 25
+  publisher refusal checks pass. The corrected Bone observer SHA-256 is
+  `C59C8160539506EAD301486C90DB3E2DFC313D5F79B7F1DDE0065D2CDFDC2063`.
+  Because the observer is compiled into the module, a new coherent candidate
+  and fresh mandatory final-byte qualification are required.

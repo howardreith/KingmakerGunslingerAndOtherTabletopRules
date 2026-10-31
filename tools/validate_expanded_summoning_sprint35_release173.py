@@ -20,9 +20,11 @@ OLD_INFORMATIONAL = "0.0.172-expanded-summoning-bearded-devil-kyton"
 ASSEMBLY = "src/KingmakerGunslinger/Properties/AssemblyInfo.cs"
 OBSERVER = "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.InfernalEarly35.cs"
 BARBED_OBSERVER = "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.InfernalBarbedCombat35.cs"
+BONE_OBSERVER = "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.InfernalBone35.cs"
 OBSERVERS = {
     OBSERVER: "0840aca62ce12e33700276b2b6b1a89f5c8108626bbf6e9815bce7d0ba385171",
     BARBED_OBSERVER: "da3fb790e956a182afb0f18a80d1af1770cc9fcf4d4c4c501463f05fefb56b1c",
+    BONE_OBSERVER: "c59c8160539506ead301486c90db3e2dfc313d5f79b7f1dde0065d2cdfdc2063",
 }
 ROOTS = ("src/KingmakerGunslinger", "assets", "assets-source", "blueprints")
 RECORD_KEY = "expandedSummoningSprint35Release173"
