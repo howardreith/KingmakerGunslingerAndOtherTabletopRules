@@ -6,6 +6,7 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Root;
+using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums.Damage;
@@ -574,6 +575,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             JArray residualDamageRows = new JArray();
             bool wallAliveAfterPhysical = false;
             int damageAfterPhysical = -1;
+            RuleDealDamage fireRule = null;
+            EnergyDamage firePacket = null;
             AreaEffectEntityData residualArea = null;
             AreaEffectEntityData fogArea = null;
             UnitEntityData attacker = owned.FirstOrDefault(value =>
@@ -593,8 +596,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 attacker.Commands.InterruptAll(true);
                 attacker.Commands.RemoveFinishedAndUpdateQueue();
                 PlaceExpandedSummoningUnit(attacker, attackPoint);
-                attacker.Memory.Add(section);
-                yield return 0;
+                foreach (UnitEntityData actor in new[] { attacker, section })
+                {
+                    actor.Wake(0f);
+                    if (!Game.Instance.State.AwakeUnits.Contains(actor))
+                        Game.Instance.State.AwakeUnits.Add(actor);
+                    actor.SightCache.ClearIfNeeded();
+                }
+                attacker.Memory.Add(section).Visible = true;
+                section.Memory.Add(attacker).Visible = true;
+                attacker.JoinCombat();
+                section.JoinCombat();
+                Game.Instance.Player.UpdateIsInCombat();
+                new UnitCombatJoinController().Tick();
+                new UnitCombatPrepareController().Tick();
+                for (int frame = 0; frame < 3; frame++) yield return 0;
                 int physicalStart = trace.Rows.Count;
                 breachAttack = new UnitAttack(section) {
                     IsSingleAttack = true,
@@ -620,13 +636,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Vector3 witnessPoint = ObstacleAnalyzer.GetNearestNode(
                     section.Position - section.OrientationDirection * 1.2f)
                     .clampedPosition;
-                PlaceExpandedSummoningUnit(fixture.Caster, witnessPoint);
+                UnitEntityData fireSource = fixture.Hostile;
+                PlaceExpandedSummoningUnit(fireSource, witnessPoint);
                 int fireStart = trace.Rows.Count;
-                var fire = new EnergyDamage(new DiceFormula(0,
-                    DiceType.Zero), DamageEnergyType.Fire);
-                fire.AddBonus(1000);
-                Rulebook.Trigger(new RuleDealDamage(attacker, section,
-                    new DamageBundle(fire)));
+                firePacket = new EnergyDamage(new DiceFormula(100,
+                    DiceType.One), DamageEnergyType.Fire);
+                fireRule = Rulebook.Trigger(new RuleDealDamage(fireSource,
+                    section, new DamageBundle(firePacket)));
                 var residualBlueprint = fixture.Blueprints.OfType<
                     BlueprintAbilityAreaEffect>().Single(value => value.name ==
                         "KMG_Summoning_Infernal_BoneDevil_WallResidualArea");
@@ -658,20 +674,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 fireDamageRows = new JArray(trace.Rows.Skip(fireStart)
                     .Where(eventRow => (string)eventRow["event"] ==
                             "damage" &&
-                        (string)eventRow["owner"] == attacker.UniqueId &&
+                        (string)eventRow["owner"] == fireSource.UniqueId &&
                         (string)eventRow["target"] == section.UniqueId));
                 residualDamageRows = new JArray(trace.Rows.Skip(fireStart)
                     .Where(eventRow => (string)eventRow["event"] ==
                             "damage" &&
                         (string)eventRow["owner"] == bone.UniqueId &&
                         (string)eventRow["target"] ==
-                            fixture.Caster.UniqueId &&
+                            fireSource.UniqueId &&
                         (string)eventRow["ability"] ==
                             wallBlueprint.AssetGuid));
             }
 
             var formationAttempts = new JArray();
             bool formationDisrupted = false;
+            bone.Commands.InterruptAll(true);
+            bone.Commands.RemoveFinishedAndUpdateQueue();
+            foreach (int frame in InfernalBoneWaitGame35(6.2, 15))
+                yield return frame;
             int oldReflex = fixture.Caster.Stats.SaveReflex.BaseValue;
             try
             {
@@ -873,6 +893,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["wallAliveAfterPhysical"] = wallAliveAfterPhysical,
                 ["damageAfterPhysical"] = damageAfterPhysical,
                 ["fireDamageRows"] = fireDamageRows,
+                ["fireSource"] = fireRule?.Initiator?.UniqueId,
+                ["fireRuleDamage"] = fireRule?.Damage,
+                ["firePacketImmune"] = firePacket?.Immune,
+                ["firePacketFinal"] = fireRule == null || firePacket == null ||
+                    fireRule.ResultDamage == null ? (int?)null :
+                    fireRule.ResultDamage.SingleOrDefault(value =>
+                        ReferenceEquals(value.Source, firePacket)).FinalValue,
                 ["residualArea"] = residualArea?.UniqueId,
                 ["residualTimeLeft"] = residualArea == null ? 0d :
                     Sprint29AreaDuration(residualArea),
