@@ -971,3 +971,42 @@ Sprint 35 checkpoint; historical records are not current instructions.
   Retained test output remains available for guarded preflight. The next action
   is one new exact Bone candidate from the coherent source, not a rerun of
   `869d1e64`.
+- Exact development candidate
+  `738196b68a19b4f529c63a26ac8b53a73d0dd321` passed development admission,
+  selected 9/9 Sprint 35/correction tests, exact-reference compilation, strict
+  packaging and package validation: source state
+  `c47dbe7a99bd7a4a5563a837d1039e128481151f7abdc042ab90f1ef59fd9428`;
+  ZIP `c85521922efc89390b141fd0c3f0355b86cf25a1ec5b08dde4267b00aec8170d`;
+  DLL `a79348a6d5675b03c3c6f37b6f00d855ae23e00ca74745dd2d7295a449beab9c`;
+  MVID `275b5454-7cda-4e5a-83bd-cacfaf1853e7`. Its 1,270-file exact build
+  (435,047,760 bytes) is preserved on E: under manifest
+  `F4FDB6F80E8D180D446EE54393B04CE13EF0A6BBA64BA79F5278DA888F779117`.
+  An earlier attempt exhausted C: during package asset copy and produced no
+  package or receipt; that 1,273-file envelope is preserved under manifest
+  `B5A2121F04C4490077BB9CFCAEDE6D076E69207DEDEF2DA0991995DAD0F988BE`.
+  The successful retry followed byte verification and removal only of exact C:
+  duplicates already present in the named E: archives; runtime evidence and
+  backups were not removed.
+- Guarded run
+  `20261031T0411208849757Z-e8e55c3f8fed4dd69cf259ca7e6d36d2`
+  passed native appearance, private hostility, Bone mapping, fear-aura
+  isolation, the other-limb poison negative, wounding-sting poison, and the
+  corrected two-save cadence/cure row. A real standard Invisibility command
+  then applied the owned effect, but a real enemy bite that hit for 13 damage
+  did not remove it; the command completed successfully and the observer timed
+  out on the still-active buff. Installed 2.1.7b IL confirms that native
+  `BuffInvisibility` is the offensive-action subscriber and carries mutable
+  `Fact`/event-listener backing state. The bounded production fix creates only
+  that component fresh for the owned buff while retaining deep clones of the
+  donor's other components; rules, abilities, resources and identities are
+  unchanged. The focused production compile passed in 53.5 seconds and all
+  eight directly selected Sprint 35 tests passed in 9.1 seconds. The wrapper
+  restored the live tree to exact intake SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+  no game process remains and no save was staged. Candidate, raw FAIL,
+  deployment, both backups and restoration are preserved as 303 verified
+  files (62,556,899 bytes) on E: under manifest
+  `875E5DCDB399EEF1524EDFB304D8BB0C4FC7E72D596E55CD97102A3165863996`.
+  The unchanged candidate will not be relaunched. One new source-bound package
+  and only the affected Bone group are next; Wall of Ice remains stopped on the
+  explicit bounded GridGraph gameplay decision.
