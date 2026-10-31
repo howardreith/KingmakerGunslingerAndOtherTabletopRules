@@ -726,3 +726,36 @@ Sprint 35 checkpoint; historical records are not current instructions.
   disposal correction require a new source-bound candidate. Production
   compilation passed in 26.2 seconds and the selected Sprint 35/correction
   group passed 8/8 in 4.8 seconds after that bounded observer change.
+- Exact candidate `8fee8c8324cc80ef1fba5776bcc45f13732d0f7d`
+  passed development admission, selected 8/8 tests, exact-reference
+  compilation, strict 440-file packaging and package validation: source state
+  `fd9963e7dcc67888a9ab558c468a5179a41be028ffb6efe1238e6adaeee73ced`;
+  ZIP `d7441e87c2098f225a6d95abecee24a8ea54622a8e102b01ee7635bf270bc63d`;
+  DLL `fcf78d44ac19b8e449ef042be6b17604c97d12e3b5ee660a1688eb4b3a43b020`;
+  MVID `4d94fca4-f30c-4608-b1c1-86400bff1aeb`. Its 162-file exact
+  build (86,510,861 bytes) is preserved on `E:` under manifest
+  `A0C2521EC8220E8212FAF0E4214001DD72DCEC0B24E5AC4C0557F90F59F92CDE`.
+  Guarded run `20261031T0014239226386Z-c4b3570eecf24049ab95e300130a9d35`
+  established the real reciprocal hold, then demonstrated that native
+  maneuver immunity is not a failed maintain verdict in Kingmaker 2.1.7b:
+  the owner-to-target event recorded roll/CMB/CMD zero yet native and project
+  success, while no Impale occurred and the hold nevertheless released. The
+  new release diagnostics proved every operand clear within two frames
+  (initiator, target part, establishing limb, both buffs and reciprocal held
+  target), but the observer correctly retained FAIL because that invalidation
+  route is not the required failed grapple check. The smallest correction
+  replaces only that fixture precondition with temporary high target CMD.
+  This keeps the actual natural d20 and native CMB/CMD event; any non-20 is a
+  genuine product failure, after which the CMD is restored before exact-owner
+  cleanup, reacquisition and later successful Impale. A target-owned escape
+  cannot substitute for the selected high-CMD proof. No production code or
+  balance changes. The live tree restored to exact intake SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+  no Kingmaker process remains and no save was staged. Candidate, snapshots,
+  deployment, raw FAIL and restoration are preserved as 309 verified files
+  (130,229,320 bytes) on `E:` under manifest
+  `53A99ABF88E241A40096550B6A2400294BFAC373B21877A4CCBD097ED32ACBFC`.
+  These unchanged bytes will not be relaunched; the observer-only high-CMD
+  proof requires a new source-bound candidate. Production compilation passed
+  in 26.0 seconds and the selected Sprint 35/correction group passed 8/8 in
+  5.0 seconds after that observer-only change.

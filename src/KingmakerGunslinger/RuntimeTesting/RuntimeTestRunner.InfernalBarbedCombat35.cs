@@ -437,12 +437,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             int maintainEscapeManeuverStart =
                                 escapes.Maneuvers.Count;
                             bool cleanupProbe = attempt == 0;
+                            int maintainCmdBefore =
+                                target.Stats.AdditionalCMD.BaseValue;
                             if (cleanupProbe)
-                            {
-                                target.Descriptor.State.AddCondition(
-                                    UnitCondition.ImmuneToCombatManeuvers);
-                                maneuverImmunityAdded = true;
-                            }
+                                target.Stats.AdditionalCMD.BaseValue = 1000;
                             DateTime deadline = DateTime.UtcNow.AddSeconds(25);
                             JObject[] impales = Array.Empty<JObject>();
                             while (DateTime.UtcNow < deadline &&
@@ -455,11 +453,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     maintainEventStart, owner, target).ToArray();
                             }
                             if (cleanupProbe)
-                            {
-                                target.Descriptor.State.RemoveCondition(
-                                    UnitCondition.ImmuneToCombatManeuvers);
-                                maneuverImmunityAdded = false;
-                            }
+                                target.Stats.AdditionalCMD.BaseValue =
+                                    maintainCmdBefore;
                             var maintainManeuvers = maneuvers.Rules.Skip(
                                 maintainManeuverStart).ToArray();
                             var maintainEscapeSkills = escapes.Skills.Skip(
@@ -502,10 +497,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                             attemptRow["maintainTargetEscapeManeuvers"] =
                                 InfernalBarbedManeuverRows35(
                                     maintainEscapeManeuvers);
-                            attemptRow["maintainCleanupProbe"] = cleanupProbe;
-                            attemptRow["maintainManeuverImmunityRemoved"] =
-                                !target.Descriptor.State.HasCondition(
-                                    UnitCondition.ImmuneToCombatManeuvers);
+                            attemptRow["maintainHighCmdProbe"] = cleanupProbe;
+                            attemptRow["maintainProbeCmdBase"] = cleanupProbe ?
+                                1000 : maintainCmdBefore;
+                            attemptRow["maintainCmdRestored"] =
+                                target.Stats.AdditionalCMD.BaseValue ==
+                                    maintainCmdBefore;
                             attemptRow["impaleDamage"] = new JArray(impales);
                             attemptRow["replayedAttacks"] =
                                 new JArray(replayedAttacks);
@@ -569,14 +566,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 check((targetEscape ?
                                         "barbed-target-escape-before-maintain-" :
                                         cleanupProbe ?
-                                        "barbed-maintain-immunity-refusal-" :
+                                        "barbed-maintain-high-cmd-refusal-" :
                                         "barbed-maintain-natural-refusal-") +
-                                    (attempt + 1), ownerRefusal || targetEscape,
+                                    (attempt + 1), cleanupProbe ?
+                                        ownerRefusal :
+                                        ownerRefusal || targetEscape,
                                     (JObject)attemptRow.DeepClone(),
                                     targetEscape ?
                                         "A real target-owned native break-free event releases the hold before maintain, without impale, and permits only the next bounded reacquisition." :
                                     cleanupProbe ?
-                                        "A lawful temporary maneuver-immunity precondition makes one real later grapple check fail, then is removed; the exact Barbed hold releases without Impale and the next bounded ordinary claw may reacquire." :
+                                        "A lawful temporary high-CMD fixture precondition retains the natural d20 and makes one real later grapple check fail on any non-20, then is restored; the exact Barbed hold releases without Impale and the next bounded ordinary claw may reacquire." :
                                         "A genuine failed later grapple check releases the hold without impale and permits only the next bounded reacquisition.");
                             }
                         }
