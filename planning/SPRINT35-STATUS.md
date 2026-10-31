@@ -1687,3 +1687,20 @@ Sprint 35 checkpoint; historical records are not current instructions.
   those corrections, the icon-manifest and identity tests each pass. No
   gameplay was changed. The original full failure remains the candidate-boundary
   record; a changed test-source commit requires one new complete boundary run.
+- Candidate `8aeaf9ed82941b68ffbab4a3397f7e3d102169a8` then passed the
+  complete 2,776/2,776 domain suite, exact-reference compilation, strict
+  packaging and validation. Its source fingerprint is
+  `340e8960f1add815ee6e2b7bd302af4952bd6b124ddd9f684da51617317b1730`,
+  ZIP SHA-256 `F5666897FC36DB3C1ED4EF96548E2E6E3D67F69C10561FB3611FA5C6A6F41193`,
+  DLL SHA-256 `C20706AA8341A9CE78DCE582B4EDEBA37D250D39CD0F784136E801BA2F60756C`
+  and MVID `e31c572a-8653-48cf-99fc-f507edc31ffa`. No deployment occurred.
+  Exact reproducibility exposed one host-tooling defect before native dispatch:
+  all 162 extracted second-build files and DLL bytes matched, but the compile
+  ZIP inherited the newly compiled DLL's filesystem timestamp (13:50:58Z versus
+  14:09:32Z). Two earlier preflight refusals identified byte-restored test and
+  primary-scratch prerequisites; a later package attempt exhausted C: and is
+  retained with its partial staging on E:. The minimal repair makes the compile
+  archive use the repository's existing fixed ZIP time/platform metadata and
+  adds an mtime-change/byte-identity regression, now passing 14/14 with the
+  release validator. Product gameplay, assets and identities are unchanged; a
+  new coherent source-bound candidate is required before native qualification.

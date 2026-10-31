@@ -1,10 +1,13 @@
 """Focused positive/refusal cases for the Sprint35 exact qualified-product release seam."""
 import copy
 import json
+import os
 from pathlib import Path
 import unittest
 import tempfile
 from unittest.mock import patch
+import zipfile
+import build_mod_from_private_references as exact_builder
 import expanded_summoning_manifest as manifest
 import validate_expanded_summoning_sprint35_release173 as release
 
@@ -76,5 +79,20 @@ class Release173Tests(unittest.TestCase):
         for key,change in (("barbed-devil",{"monster":9}),("bone-devil",{"monster":8}),("bone-devil",{"ally":7}),("barbed-devil",{"templated":True})):
             altered=[dict(c,**change) if c["key"]==key else c for c in creatures]
             with self.subTest(key=key,change=change),self.assertRaises(AssertionError): release.check_census(altered,set(),baseline)
+
+    def test_compile_candidate_archive_ignores_filesystem_mtime(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output=Path(directory);package=output/"KingmakerGunslinger";package.mkdir()
+            dll=package/"KingmakerGunslinger.dll";dll.write_bytes(b"same deterministic assembly bytes")
+            info=package/"Info.json";info.write_text('{"Id":"KingmakerGunslinger"}\n',encoding="utf-8")
+            first=output/"first.zip";second=output/"second.zip"
+            os.utime(dll,(1_700_000_000,1_700_000_000));os.utime(info,(1_700_000_001,1_700_000_001))
+            exact_builder.write_deterministic_archive(first,package,output)
+            os.utime(dll,(1_800_000_000,1_800_000_000));os.utime(info,(1_800_000_001,1_800_000_001))
+            exact_builder.write_deterministic_archive(second,package,output)
+            self.assertEqual(first.read_bytes(),second.read_bytes())
+            with zipfile.ZipFile(first) as archive:
+                self.assertTrue(archive.infolist())
+                self.assertTrue(all(entry.date_time==exact_builder.FIXED_ZIP_TIME and entry.create_system==0 for entry in archive.infolist()))
 
 if __name__=='__main__':unittest.main()
