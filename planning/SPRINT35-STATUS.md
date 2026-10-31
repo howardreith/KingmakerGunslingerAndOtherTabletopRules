@@ -1094,3 +1094,28 @@ Sprint 35 checkpoint; historical records are not current instructions.
   reproducible `bin`, `obj`, `deploy-staging`, `tests`, and old development
   candidate trees. Source, native evidence, saves and unique artifacts were
   not removed.
+- Diagnostic commit `d2b5b8eeef107c0c64a39dbf1c87e5cc9ceef76d`
+  passed development admission and the intended 9/9 focused domain selection.
+  Its exact compiler produced compile-candidate ZIP SHA-256
+  `74FA3247C446A3D690D331910F5683FE2448B57347937768417D4919D654E549`,
+  but the outer package copy stopped at the armored-dinosaur assets with
+  `There is not enough space on the disk`; no final development package or
+  receipt exists, so the guarded runtime path cannot admit that partial
+  attempt. Its 1,050-file, 350,104,357-byte envelope is preserved on `E:` under
+  manifest SHA-256
+  `96397525E9CA62AC898DE3CD05D7406409C85D577080A1076017DE3B249462A0`
+  before removal of only the verified C: `bin`, `obj`, `tests`, `staging`, and
+  incomplete development-candidate copies. To create measured headroom without
+  touching Sprint 34 or any frozen/local-runtime artifact, only the closed
+  `s24r155` worktree's reproducible `bin`, `obj`, `tests`, `staging`, and
+  `deploy-staging` copies were separately preserved on `E:` (1,111 files,
+  247,994,518 bytes; manifest SHA-256
+  `B9E783EA079FB858CC9FEE8041361A6B9C960D127F6CB95576600CDDAE9D94AE`)
+  and then removed from C:. Source, its local-runtime archive, packages and
+  evidence remain untouched. This raised measured C: headroom to 960,954,368
+  bytes. Because `Build-Local.ps1` has no supported partial-package/receipt
+  resume and the first run produced no admissible candidate, one unchanged
+  source-bound completion is required under the larger envelope. Expected
+  result: identical compiler identity plus a validated package/receipt, which
+  closes only the changed-observer admission needed for the narrow Bone event
+  dispatch diagnosis; it does not broaden mechanic qualification.
