@@ -229,11 +229,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 };
                 receipt["contactOriginalGroup"] = oldGroup;
 
-                foreach (int frame in InfernalEarlyTail35(fixture, bone,
-                    reach, trace, check)) yield return frame;
-
                 foreach (int frame in InfernalEarlyWall35(fixture, bone,
                     owned, trace, check)) yield return frame;
+
+                foreach (int frame in InfernalEarlyTail35(fixture, bone,
+                    reach, trace, check)) yield return frame;
             }
             finally
             {
@@ -578,6 +578,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             AreaEffectEntityData fogArea = null;
             UnitEntityData attacker = owned.FirstOrDefault(value =>
                 value != null && !value.Destroyed &&
+                value.IsInGame && value.IsInState &&
+                !value.Descriptor.State.IsDead &&
+                value.Descriptor.State.CanAct &&
                 InfernalMartialProfile34.For(value)?.Glaive != null);
             if (section != null && attacker != null)
             {
@@ -587,8 +590,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Vector3 attackPoint = ObstacleAnalyzer.GetNearestNode(
                     section.Position + section.OrientationDirection * 2.5f)
                     .clampedPosition;
+                attacker.Commands.InterruptAll(true);
+                attacker.Commands.RemoveFinishedAndUpdateQueue();
                 PlaceExpandedSummoningUnit(attacker, attackPoint);
                 attacker.Memory.Add(section);
+                yield return 0;
                 int physicalStart = trace.Rows.Count;
                 breachAttack = new UnitAttack(section) {
                     IsSingleAttack = true,
@@ -617,9 +623,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PlaceExpandedSummoningUnit(fixture.Caster, witnessPoint);
                 int fireStart = trace.Rows.Count;
                 var fire = new EnergyDamage(new DiceFormula(0,
-                    DiceType.Zero), DamageEnergyType.Fire) {
-                        PreRolledValue = 1000
-                    };
+                    DiceType.Zero), DamageEnergyType.Fire);
+                fire.AddBonus(1000);
                 Rulebook.Trigger(new RuleDealDamage(attacker, section,
                     new DamageBundle(fire)));
                 var residualBlueprint = fixture.Blueprints.OfType<
@@ -855,6 +860,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["formationGeometry"] =
                     "one grounded ten-foot plane perpendicular to caster-to-point",
                 ["breachAttacker"] = attacker?.UniqueId,
+                ["breachAttackerAlive"] = attacker != null &&
+                    !attacker.Destroyed && attacker.IsInState &&
+                    !attacker.Descriptor.State.IsDead,
+                ["breachAttackerCanAct"] = attacker?.Descriptor.State.CanAct,
+                ["breachAttackerIsEnemy"] = attacker != null &&
+                    section != null && attacker.IsEnemy(section),
                 ["breachAttack"] = breachAttack == null ? null :
                     Sprint27AiCommand(breachAttack),
                 ["breachAttackRolls"] = breachAttackRolls,
