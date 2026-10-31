@@ -1750,3 +1750,68 @@ Sprint 35 checkpoint; historical records are not current instructions.
   `C59C8160539506EAD301486C90DB3E2DFC313D5F79B7F1DDE0065D2CDFDC2063`.
   Because the observer is compiled into the module, a new coherent candidate
   and fresh mandatory final-byte qualification are required.
+
+### Final `f785c303` proof, persistence diagnosis and bounded observer correction
+
+- Candidate `f785c3035662c7baeae5e0c5f82e85973e03e489` passed the complete
+  2,776/2,776 suite, exact-reference build, strict package validation and an
+  independent byte-identical rebuild. Source fingerprint
+  `c2887e734f84a3f5eb1744e7f26cf6e55da27b81b9f4ab0e9605d33ad129651c`;
+  ZIP `83b8432b04257615d79c66489ac162e4860ffbcdf50db86aaa7a0162fb953b53`;
+  DLL `3c1bd7a69b65b6b7fe0f6f2e9de83f6db2a7201a5b8a3f615eb000ae7efd6bc1`;
+  MVID `e50d50e9-9ada-446f-8f6a-28699fa1735a`. The initial reproducibility
+  packaging stopped only for C: capacity; its preserved failure and the resumed
+  successful build remain separately attributed. The final reproducibility
+  record SHA-256 is
+  `64D2C5E8BF14C442E08456158BFE76E5367D26A89F6AB58996EEC7B2BDDB735C`;
+  the verified successful E: archive manifest is
+  `0A32717CF383DB56D4A0B7C72E795F15751B2BEEEDCF0D97B084B96F442C41F6`.
+- Final-byte native groups passed: early Wall/bootstrap/body/tail
+  `20261031T1935352924893Z-0a7d61cc571942c18a8bd58b2defaf8f`
+  (`FD5652080A837E30201ADF8D345DBE2CF2E5B3D4C1D29B1D89DE8311C360F771`),
+  Barbed SLA `20261031T1942328036808Z-9642fe13043e437f88d7f7a4ead98eed`
+  (`52200D6F0F5789CB4AE423ECD74DB6E71AE5C666FAC1BE83AAF01583933B2E4C`),
+  bounded-retry Barbed combat
+  `20261031T1955599337554Z-731a4bd5db0f4d34a81d4687f4ea7248`
+  (`F9419FC1B973B3353E0E161CD950A026E2CE8420841356E1FF74DCBE0CEBE504`),
+  corrected Bone `20261031T2003119169625Z-47dcd89853e74c3fa7689595853ec656`
+  (`F6BF13EC42A90B7B0DEA00F4596A9D2C6FCC680CBCA25D8233B3018F6D60240F`),
+  and all five public routes
+  `20261031T2011229339963Z-66eecd2a460e4f51b8ae8d2c853a49fd`
+  (`ABF1B0D4778612F12B37E46081D793349E00D296A16C548CE4FEBAA24ACD2E69`).
+  A preceding Barbed-combat run remains raw FAIL because the exact DC20 claw
+  fear save rolled a natural 20; the bounded retry forced no roll. Every run
+  restored the 136-file live tree exactly to intake.
+- Mixed-ON prepare passed in fresh process
+  `20261031T2039163367673Z-33a442c7aee5490d9ecd9c56815e2b58`, raw SHA-256
+  `21D96DCA57CA8EC1476AB660767907F2FCD6428CF7BD2F6723EA8B31BB132722`:
+  both owners, spent resources, DC20 poison and 22-claim Wall state serialized.
+  Earlier profile-entry capacity and 900-second observer-parameter refusals
+  remain preserved; both stopped without gameplay evidence and exact profile
+  restoration was verified before retrying at the supported 600 seconds.
+- Mixed-ON cleanup run
+  `20261031T2052253103108Z-df61df9e6b934091b8743ea1e5154ad8` retains raw
+  **FAIL** SHA-256
+  `3C4799C4620FEF3890F6A009F976D803FCF209F252E1CD8D48E0AF8DA466EC7E`.
+  Hydration, source cleanup, two-unit removal and all four project resources
+  passed. Only native-destruction admission failed: the observer classified
+  exact surviving textures `KMG_barbed-devil_Albedo` and
+  `KMG_bone-devil_Albedo` as `UNRESOLVED`, despite stable 1/1/1 counts and their
+  sole renderer `_MainTex` references. The save correctly disarmed after the
+  mandatory observer failure. Transaction
+  `sprint35-stack-20261031T204803Z-b6e71553a4e9` is `Restored` with no lock,
+  backup, quarantine or game process. Its 884-file / 219,055,645-byte package
+  and snapshot are hash-verified on E: under manifest SHA-256
+  `A1C10A4FC4D2BA3AFFC94C331E845D81B5139865A458EE25DD95EBB957DCB5D9`;
+  only the redundant C: payloads were removed and the receipt remains.
+- The smallest correction adds the exact Sprint 35 asset-cache getters to
+  `RosterImmutableCaches`, parallel to Sprint 34. It does not use names,
+  sharing or survival as authority; unrelated survivors remain unresolved and
+  fail closed. Exact corrected observer SHA-256 is
+  `9F9F656BC9A56EB9D11E2054745763C7EF155A1CE706121E0C198EC2187945ED`.
+  Focused production compilation passed in 48.9 seconds; all 9 selected Sprint
+  35 tests passed, as did the exact release validator and 25 existing publisher
+  refusals. The release contract permits the exact `f785c303` behavior/public
+  proofs only for five unaffected rows and only when this observer is the sole
+  compiled-source difference. Both persistence envelopes and highest-risk
+  integration remain fresh on the corrected final candidate.

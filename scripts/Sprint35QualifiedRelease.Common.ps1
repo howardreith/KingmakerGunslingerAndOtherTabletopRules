@@ -39,6 +39,44 @@ print(json.dumps(dict(scopeExact=exact,creatures=sorted(scope),routes=routes,reg
     return $surface
 }
 
+function Get-KmgSprint35EvidenceCandidate($Ledger,$Candidate,$Row,$Source) {
+    $exact=$Source.source -ceq $Candidate.commit -and
+        $Source.packageSha256 -ceq $Candidate.packageSha256 -and
+        $Source.dllSha256 -ceq $Candidate.dllSha256 -and
+        $Source.dllMvid -ceq $Candidate.dllMvid
+    if($exact){return $Candidate}
+    if(-not $Ledger.PSObject.Properties['observerOnlyReuse']){
+        throw 'Fresh proof is bound to other bytes.'
+    }
+    $reuse=$Ledger.observerOnlyReuse
+    $prior=[pscustomobject]@{
+        commit='f785c3035662c7baeae5e0c5f82e85973e03e489'
+        packageSha256='83b8432b04257615d79c66489ac162e4860ffbcdf50db86aaa7a0162fb953b53'
+        dllSha256='3c1bd7a69b65b6b7fe0f6f2e9de83f6db2a7201a5b8a3f615eb000ae7efd6bc1'
+        dllMvid='e50d50e9-9ada-446f-8f6a-28699fa1735a'
+        sourceStateSha256='c2887e734f84a3f5eb1744e7f26cf6e55da27b81b9f4ab0e9605d33ad129651c'
+    }
+    $allowed=@('early-wall-bootstrap','barbed-behavior','barbed-combat',
+        'bone-behavior','public-routes-presentation')
+    if($reuse.reason -cne 'EXACT_RESOURCE_CACHE_OBSERVER_CLASSIFICATION_ONLY' -or
+       $reuse.compiledObserver -cne 'src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningResourceReceipts.cs' -or
+       (@($reuse.allowedRows|Sort-Object -CaseSensitive) -join ',') -cne
+            (@($allowed|Sort-Object -CaseSensitive) -join ',') -or
+       $allowed -cnotcontains $Row.id){throw 'Unsupported Sprint35 observer-only evidence reuse.'}
+    foreach($key in @('commit','packageSha256','dllSha256','dllMvid','sourceStateSha256')){
+        if([string]$reuse.prior.$key -cne [string]$prior.$key){throw 'Observer-only prior tuple differs.'}
+    }
+    foreach($key in @('source','packageSha256','dllSha256','dllMvid')){
+        $priorKey=if($key -ceq 'source'){'commit'}else{$key}
+        if([string]$Source.$key -cne [string]$prior.$priorKey){throw 'Reused evidence differs from the exact prior tuple.'}
+    }
+    $root=Split-Path -Parent $PSScriptRoot
+    $changed=@(& git -C $root diff --name-only --no-renames $prior.commit $Candidate.commit -- src/KingmakerGunslinger)
+    if($LASTEXITCODE -ne 0 -or $changed.Count -ne 1 -or
+       $changed[0] -cne $reuse.compiledObserver){throw 'Candidate has a compiled change outside the exact observer correction.'}
+    return $prior
+}
+
 function Assert-KmgSprint35Qualification($Ledger,$Candidate) {
     if($Ledger.schemaVersion -ne 1 -or $Ledger.mission -cne 'Sprint35InfernalReach' -or
        $Ledger.status -cne 'QUALIFIED' -or -not $Ledger.releaseEligible -or $Ledger.sprint36Started -or
@@ -68,13 +106,13 @@ function Assert-KmgSprint35Qualification($Ledger,$Candidate) {
     foreach($row in $Ledger.coverage){
         if($row.result -cne 'PASS' -or @($row.proofs).Count -eq 0 -or @($row.evidenceSources).Count -eq 0){throw 'Fresh coverage proof absent.'}
         foreach($source in $row.evidenceSources){
-            foreach($key in @('packageSha256','dllSha256','dllMvid')){if($source.$key -cne $Candidate.$key){throw 'Fresh proof is bound to other bytes.'}}
-            if($source.source -cne $Candidate.commit){throw 'Fresh source differs.'}
+            [void](Get-KmgSprint35EvidenceCandidate $Ledger $Candidate $row $source)
         }
     }
     foreach($row in $Ledger.coverage|Where-Object {$_.id -cnotin @('complete-source-build-package-gate','exact-reproducibility')}) {
         foreach($source in $row.evidenceSources) {
-            Assert-KmgSprints3031FreshExecution $source $Candidate $row
+            $evidenceCandidate=Get-KmgSprint35EvidenceCandidate $Ledger $Candidate $row $source
+            Assert-KmgSprints3031FreshExecution $source $evidenceCandidate $row
             $native=Read-KmgSprints3031Proof $source.nativeProof
             if($native.gitCommit -cne $Candidate.commit -or $native.runId -cne $source.runId -or $native.status -cne 'PASS' -or
                @($native.assertions|Where-Object status -cne 'PASS').Count -or @($source.requiredAssertions).Count -eq 0){throw 'Fresh native proof incomplete.'}
