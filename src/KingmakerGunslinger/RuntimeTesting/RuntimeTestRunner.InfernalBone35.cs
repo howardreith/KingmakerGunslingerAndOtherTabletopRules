@@ -252,18 +252,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     allyFrightenedAtExposure == null ? null :
                     InfernalSavedEffect34(allyFrightenedAtExposure);
 
-                Vector3 far;
-                string lane, direction;
-                Vector3 center = Sprint24AiCombatLane(fixture.Caster, bone,
-                    target, 6f, out far, out lane, out direction);
-                Vector3 axis = (far - center).normalized;
-                Vector3 side = Vector3.Cross(axis, Vector3.up).normalized;
-                if (side.sqrMagnitude < .5f) side = Vector3.right;
-                PlaceExpandedSummoningUnit(ally, far + axis * 10f);
+                // The first aura has now proved its actual native membership
+                // at this source position. Keep the established source fixed
+                // and move the next disposable recipient into that same area;
+                // a fixture teleport of an already-attached area owner is not
+                // itself evidence that the native area moved with it. Begin
+                // tracing before placement because area entry may be handled
+                // synchronously by the placement consumer.
+                PlaceExpandedSummoningUnit(ally, oldAllyPosition);
                 target.Stats.SaveWill.BaseValue = -100;
-                PlaceExpandedSummoningUnit(target, center);
-                PlaceExpandedSummoningUnit(bone, center + side * 1.7f);
                 int hostileFearStart = trace.Rows.Count;
+                Vector3 hostileFearAxis = target.Position - bone.Position;
+                hostileFearAxis.y = 0f;
+                if (hostileFearAxis.sqrMagnitude < .01f)
+                    hostileFearAxis = Vector3.right;
+                hostileFearAxis.Normalize();
+                PlaceExpandedSummoningUnit(target,
+                    bone.Position + hostileFearAxis * 1f);
                 DateTime ownerFearDeadline = DateTime.UtcNow.AddSeconds(12);
                 while (DateTime.UtcNow < ownerFearDeadline &&
                     !InfernalBoneSaveRows35(trace, hostileFearStart, bone,
@@ -289,8 +294,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PlaceExpandedSummoningUnit(sibling, bone.Position);
                 foreach (int frame in Outsider30NativeAppearance(sibling,
                     sibling.Blueprint.name)) yield return frame;
-                PlaceExpandedSummoningUnit(sibling,
-                    center - side * 1.7f);
                 DateTime siblingFearDeadline = DateTime.UtcNow.AddSeconds(12);
                 while (DateTime.UtcNow < siblingFearDeadline &&
                     !InfernalBoneSaveRows35(trace, hostileFearStart,
@@ -320,8 +323,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     PlaceExpandedSummoningUnit(third, bone.Position);
                     foreach (int frame in Outsider30NativeAppearance(third,
                         third.Blueprint.name)) yield return frame;
-                    Vector3 thirdPosition = center + axis * 1.7f;
-                    PlaceExpandedSummoningUnit(third, thirdPosition);
                     DateTime thirdDeadline = DateTime.UtcNow.AddSeconds(12);
                     while (DateTime.UtcNow < thirdDeadline &&
                         !InfernalBoneSaveRows35(trace, hostileFearStart,
@@ -416,11 +417,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     retiredFearSources.All(value => Sprint29OwnedAreas(value,
                         fearArea).Length == 0), 5)) yield return frame;
 
-                // The aura row parks the summoner far from the hostile so it
-                // cannot become an unintended second recipient. Restore that
-                // disposable party anchor before the shared native combat
-                // lane survey; the survey deliberately admits only a real
-                // walkable party anchor.
+                // Reassert the original disposable party anchor before the
+                // shared native combat lane survey; the survey deliberately
+                // admits only a real walkable party anchor.
                 PlaceExpandedSummoningUnit(ally, oldAllyPosition);
                 ally.Orientation = oldAllyOrientation;
                 bone.Stats.AdditionalAttackBonus.BaseValue = 100;

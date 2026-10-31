@@ -1294,3 +1294,44 @@ Sprint 35 checkpoint; historical records are not current instructions.
   relaunched. The outer wrapper restored the live 136-file installation exactly
   to intake SHA-256
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+- Source-bound candidate `6de8e4e2b6f3d77aa5875f8cf54a215aab06fb28`
+  completed development admission with source state
+  `4632babf2aa9dd769dc60b5052716caf70d5920002af04ae7050ce5e3ef13657`,
+  ZIP `0debe989c2813bcc13cd619f9415e68e723eaf190f38f51fb3909c32918c99e8`,
+  DLL `1c7ff009ca78f36e29878f6554961b13f8b7d1dea85aff465b99de491a041049`
+  and MVID `ecb00cd9-d674-4a24-be70-19e83d947ee4`; selected tests passed
+  9/9 and strict package validation passed. Its 162-file / 86,713,971-byte
+  exact-build scratch is preserved on E: under manifest SHA-256
+  `704BC9406FC33241AF6374DDA927D64E2F3A2D5FFDD1DAD8EF38FD772F8B4224`.
+- Guarded run `20261031T0746048989268Z-8a8d4b58a5424eb590bd7e2d2032cb0d`
+  under evidence directory
+  `20261031T0746048510164Z-disposable-expanded-summoning-sprint32-native-review`
+  stopped at the earlier aura row, before reaching the corrected poison row.
+  The allied summoner entered the first Bone's actual five-foot area, failed a
+  natural DC19 save and immediately received exact-source memory/frightened.
+  The observer then fixture-teleported that already-established source into a
+  new lane. No hostile exposure from that first area followed in the bounded
+  12-second observation, while the second Bone was settled at the first
+  source's already-proven position and did naturally expose the hostile. This
+  is an ineligible first-source area-membership setup, not a failed save or
+  production aura defect. The smallest correction keeps the first source at
+  its proven position, restores the allied recipient, begins tracing before
+  placement, and moves the hostile into that same established area. Sibling
+  sources likewise settle at the proven point. Later attack/poison work still
+  obtains its separate native combat lane. No production mechanic or roll is
+  changed. Focused validation compiled production in 47.3 seconds and passed
+  8/8 Sprint 35 tests in 2.6 seconds. The unchanged `6de8e4e2` FAIL will not be
+  relaunched. The wrapper restored the live 136-file installation exactly to
+  intake SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+- Headroom handling remains byte-preserving. The five reproducible focused
+  output trees (`bin`, `obj`, `tests`, `staging`, `deploy-staging`) were copied
+  and per-file hash-verified on E: before their C: copies were removed: 1,351
+  files / 435,499,400 bytes, manifest SHA-256
+  `E5D7CFECADE8EB7A49661C6EB1A8E07BC44E9D59329289A3F204966F6EE62149`.
+  The four closed Bone development-candidate directories through `c075b41a`
+  were likewise preserved as 24 files / 270,903,855 bytes under manifest
+  `08D0CBC34EE0ED15B8E375F43D1CE0ADD320B2E171B9B7D76A8B1A62E0C7FC3A`
+  before only those C: copies were removed. Their ZIPs, checksums, receipts and
+  logs remain available at the recorded E: archive; raw native evidence and
+  runtime backups were never in either removal set.
