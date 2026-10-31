@@ -79,6 +79,13 @@ namespace KingmakerGunslinger.Summoning
                 finalDamage);
         }
 
+        internal static bool ShouldBreakBoneInvisibility(bool exactOwner,
+            bool factActive, bool ownerInGame, bool targetInGame, bool enemy)
+        {
+            return exactOwner && factActive && ownerInGame && targetInGame &&
+                enemy;
+        }
+
         internal static int AbilityModifier(int score)
         { return (int)Math.Floor((score - 10) / 2.0); }
 
@@ -145,6 +152,12 @@ namespace KingmakerGunslinger.Summoning
                 QualifiesForBarbedDefense(true, true, true, 10, 5) ||
                 !QualifiesForBarbedDefense(true, true, false, 10, 5) ||
                 QualifiesForClawFear(true, true, 0) ||
+                !ShouldBreakBoneInvisibility(true, true, true, true, true) ||
+                ShouldBreakBoneInvisibility(false, true, true, true, true) ||
+                ShouldBreakBoneInvisibility(true, false, true, true, true) ||
+                ShouldBreakBoneInvisibility(true, true, false, true, true) ||
+                ShouldBreakBoneInvisibility(true, true, true, false, true) ||
+                ShouldBreakBoneInvisibility(true, true, true, true, false) ||
                 SpellLikeCasterLevel != 12 ||
                 UnholyBlightSpellLevel != 4 ||
                 UnholyBlightRadiusFeet != 20 || UnholyBlightUses != 1 ||

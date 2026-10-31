@@ -603,17 +603,21 @@ namespace KingmakerGunslinger.Blueprints
             var buff = Require<BlueprintBuff>(symbols, symbol);
             CopyFields(native, buff);
             buff.name = InternalName(symbol);
-            // BuffInvisibility is a native event subscriber. Do not clone its
-            // mutable Fact/listening backing state from the donor component;
-            // a fresh native instance must subscribe for this owned buff.
-            // The donor's other immutable component graphs remain deep clones.
+            // Preserve the complete serialized native configuration, including
+            // its stealth bonus. The installed attack command does not raise
+            // the native offensive-action event, so append one private,
+            // exact-owner attack-roll fallback without changing that native
+            // spell/ability consumer.
+            var attackBreak = ScriptableObject.CreateInstance<
+                BoneOrdinaryInvisibility35>();
+            attackBreak.OwningBlueprint = Require<BlueprintUnit>(symbols,
+                InfernalRules35.BoneUnitSymbol);
             buff.ComponentsArray = (native.ComponentsArray ??
-                Array.Empty<BlueprintComponent>()).Select(component =>
-                    component is BuffInvisibility ?
-                        (BlueprintComponent)ScriptableObject.CreateInstance<
-                            BuffInvisibility>() :
-                        ExpandedSummoningAbilityBuilder.DeepCloneComponent(
-                            component))
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent)
+                .Concat(new BlueprintComponent[] {
+                    attackBreak
+                })
                 .ToArray();
             var behavior = buff.ComponentsArray.OfType<BuffInvisibility>()
                 .Single();

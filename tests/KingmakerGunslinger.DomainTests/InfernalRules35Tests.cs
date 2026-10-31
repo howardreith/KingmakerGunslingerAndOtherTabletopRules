@@ -232,6 +232,24 @@ namespace KingmakerGunslinger.DomainTests
                 "Bone's ordinary invisibility effect is a private buff.");
             Assertions.Equal(1, identities.Count(value => value.Symbol ==
                 effect.Symbol), "The appended Bone effect identity is unique.");
+            Assertions.True(InfernalRules35.ShouldBreakBoneInvisibility(
+                true, true, true, true, true),
+                "The exact active owner breaks ordinary invisibility on its hostile attack.");
+            Assertions.False(InfernalRules35.ShouldBreakBoneInvisibility(
+                false, true, true, true, true),
+                "A foreign owner cannot consume Bone's private effect.");
+            Assertions.False(InfernalRules35.ShouldBreakBoneInvisibility(
+                true, false, true, true, true),
+                "An inactive effect cannot be consumed twice.");
+            Assertions.False(InfernalRules35.ShouldBreakBoneInvisibility(
+                true, true, false, true, true),
+                "An owner outside the active game cannot consume saved state.");
+            Assertions.False(InfernalRules35.ShouldBreakBoneInvisibility(
+                true, true, true, false, true),
+                "A target outside the active game is not a live attack recipient.");
+            Assertions.False(InfernalRules35.ShouldBreakBoneInvisibility(
+                true, true, true, true, false),
+                "A non-hostile target does not become an offensive-action surrogate.");
         }
 
         internal static void PrivateWallUnitHasBoundedShellDonor()
