@@ -1815,3 +1815,14 @@ Sprint 35 checkpoint; historical records are not current instructions.
   proofs only for five unaffected rows and only when this observer is the sole
   compiled-source difference. Both persistence envelopes and highest-risk
   integration remain fresh on the corrected final candidate.
+- The first corrected candidate-boundary dispatch stopped in repository
+  validation before the complete domain suite or product compilation. The
+  retained historical S30-31 synthetic budget fixture parsed a `Z` timestamp
+  as local `DateTime` and added its unattended interval across the 2026-11-01
+  daylight-saving transition, producing a diagnostic 660 charged minutes
+  instead of its authored 600. A non-mutating breakpoint identified the exact
+  seventh-counted fixture; no real budget, product, package, deployment or save
+  changed. The bounded host-test repair uses `DateTimeOffset` and converts back
+  to UTC for all five fixture arithmetic sites. The affected offline test now
+  passes both publisher behavior (31) and isolated budget admission; no product
+  source or release rule changed. A new committed source boundary is required.
