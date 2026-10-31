@@ -1,6 +1,6 @@
 # Sprint 35 status — Barbed Devil and Bone Devil
 
-Last updated: 2026-10-30. Active product branch:
+Last updated: 2026-10-31. Active product branch:
 `codex/expanded-summoning-sprint35-barbed-bone-devils` at reviewed master
 `aee691127b9ade4bbfde55247d54652acf85957c`.
 
@@ -1010,3 +1010,42 @@ Sprint 35 checkpoint; historical records are not current instructions.
   The unchanged candidate will not be relaunched. One new source-bound package
   and only the affected Bone group are next; Wall of Ice remains stopped on the
   explicit bounded GridGraph gameplay decision.
+- Product commit `004cb6fa835a8d24636f054dff1a2289e5bedcd6` contains the
+  fresh native `BuffInvisibility` subscriber fix, is pushed normally on the
+  exact Sprint 35 product branch, and has a clean worktree. Its Focused gate
+  passed production compilation in 53.5 seconds and the direct Sprint 35
+  selection 8/8; the subsequent development admission selected the intended
+  Sprint 35 plus correction-ledger group and passed 9/9. Exact-reference
+  compilation produced a compile candidate, but packaging stopped at the
+  first asset copy with `There is not enough space on the disk`; it produced
+  no final development ZIP or receipt and is not a native-test candidate. The
+  584-file incomplete envelope (256,948,907 bytes) is preserved copy-only on
+  `E:` under manifest
+  `855725C4A8BEB59F0B5BFEC6487335B5BED8D4CCE52AC8F1BBEFD0F14403AC`.
+  Only that incomplete commit directory and its reproducible `bin`, `obj`, and
+  staging scratch were removed from C: after hash verification. The unchanged
+  package attempt will not be repeated under the same storage conditions.
+- Three retained but reproducible C: trees that would provide the smallest
+  measured packaging headroom are now also preserved copy-only on `E:` before
+  any deletion decision: `artifacts/deploy-staging`, development candidate
+  `738196b68a19`, and `artifacts/tests`. Their combined 500-file archive
+  (193,865,872 bytes) is verified by manifest
+  `142F1FF58A11BB2F587ABDAAC447BB04B03544B742DF3992EC9245FFA476FD12`.
+  Nothing in those retained trees has been deleted; explicit storage approval
+  is pending. The laptop remains at exact intake SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`,
+  with no game process, lease, transaction, or staged save.
+- The mission-selected independent read-only review has so far found the
+  Sprint 35 lifetime split coherent. The source-owned aura and active commands
+  retire with the exact summon; poison, Strength damage, frightened duration,
+  and source-specific fear memory do not carry the Sprint 34 source-removal
+  component. The real Bone observer already records an allied summoner inside
+  the five-foot area and therefore proves the aura is not enemy-only despite
+  its harmful-area metadata. Original model instances remain per-view private,
+  and disabled-module registration does not load their resources. Package
+  validators pin all four new model exports. The same review confirms that no
+  Sprint 35 mixed ON/OFF persistence scenarios or Sprint 35 qualified-release
+  selector exist yet; both remain mandatory final-candidate work. The push
+  wrapper already contains only the two exact authorized Sprint 35 branches,
+  so it needs no allowlist edit. No persistence or publisher expansion will be
+  frozen around the known-incomplete Wall candidate.
