@@ -120,6 +120,35 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(InfernalRules35.AppendedCatalogIdentityCount,
                 sprint35Identities,
                 "The current-surface aggregate derives both units, five routes, and private dependencies.");
+            const string persistence =
+                ExpandedSummoningRosterPersistencePolicy
+                    .InfernalReachTwoScope;
+            Assertions.True(ExpandedSummoningRosterPersistencePolicy
+                .ExactSelectedKeys(persistence, new[] {
+                    "bone-devil", "barbed-devil" }),
+                "The mixed persistence scope owns exactly both Sprint 35 sources.");
+            Assertions.True(ExpandedSummoningRosterPersistencePolicy
+                .InfernalReachTwoKeys.All(key => {
+                    var route = ExpandedSummoningRosterPersistencePolicy
+                        .SelectCreatureVariant(persistence, key);
+                    return route.Creature.Key == key &&
+                        route.Family == SummonFamily.Monster &&
+                        route.Multiplicity == SummonMultiplicity.One &&
+                        ExpandedSummoningRosterPersistencePolicy
+                            .CasterAlignmentFor(route) == 12;
+                }), "Persistence selects each exact one-creature lawful-evil route.");
+            Assertions.True(ExpandedSummoningRosterPersistencePolicy
+                .ObserveLoad(RuntimeTestScenarioCatalog
+                    .WorkingSaveExpandedSummoningPrepare, persistence) &&
+                ExpandedSummoningRosterPersistencePolicy.ObserveLoad(
+                    RuntimeTestScenarioCatalog
+                        .WorkingSaveExpandedSummoningVerifyCleanup,
+                    persistence) &&
+                ExpandedSummoningRosterPersistencePolicy.ObserveLoad(
+                    RuntimeTestScenarioCatalog
+                        .WorkingSaveExpandedSummoningVerifyAbsent,
+                    persistence),
+                "All three fresh-process persistence stages are admitted.");
             SummonVisibilityCatalog.Validate();
             SummonChoicePresentationPolicy.Validate();
         }

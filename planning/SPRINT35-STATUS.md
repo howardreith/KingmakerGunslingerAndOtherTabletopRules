@@ -1642,3 +1642,19 @@ Sprint 35 checkpoint; historical records are not current instructions.
   10/10 of 2,776 tests in 9.3 seconds after the frozen-catalog guard was
   correctly changed from two hidden keys to zero plus the exact public route
   sets. No mechanics, dependency identity, old route or menu order changed.
+- The existing targeted Working-save fixture now admits one exact
+  `infernal-reach-ii` scope containing only Barbed and Bone. Its prepare leg
+  spends Barbed's 1/day Unholy Blight and all three Bone quickened-invisibility
+  uses, applies the exact DC20 finite Strength poison to a private recipient,
+  and forms a real Wall section through Bone's production command. Cold ON
+  requires the poison/configuration, zero resources, serialized section and
+  recreated GridGraph claims; cold OFF requires the same independently timed
+  poison and spent resources but no wall, body allocations, tail object or
+  navigation claim. Source cleanup requires the wall to retire while the
+  poison retains its serialized source ID with no live caster; fixture cleanup
+  then removes only its owned state and saves fresh absence. The six-process
+  ON/OFF orchestration is unchanged. Production compiled and the selected
+  Sprint 35/correction group passed 10/10; the compiled request parser admitted
+  the exact scope and passed 33 admission/refusal cases without creating
+  evidence, deployment, game or save state. Native persistence remains pending
+  on the frozen candidate.
