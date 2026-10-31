@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "provenance": "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, Phase 2 original creature/action paintings, and Sprint 24 original theropod paintings; no copied game or third-party pixels.",
   "generator": "tools/New-ExpandedSummoningIcons.ps1",
-  "count": 140,
+  "count": 142,
   "icons": [
     {
       "key": "air-mephit",
@@ -3937,12 +3937,12 @@
       "format": "RGBA PNG",
       "scope": "kmg-catalog",
       "blueprintSymbols": [
-        "KMG.Summoning.Unit.BeardedDevil",
         "KMG.Summoning.Ability.SM.Tier5.BeardedDevil.One",
         "KMG.Summoning.Ability.SM.Tier6.BeardedDevil.OneD3",
         "KMG.Summoning.Ability.SM.Tier7.BeardedDevil.OneD4PlusOne",
         "KMG.Summoning.Ability.SM.Tier8.BeardedDevil.OneD4PlusOne",
-        "KMG.Summoning.Ability.SM.Tier9.BeardedDevil.OneD4PlusOne"
+        "KMG.Summoning.Ability.SM.Tier9.BeardedDevil.OneD4PlusOne",
+        "KMG.Summoning.Unit.BeardedDevil"
       ]
     },
     {
@@ -3957,12 +3957,47 @@
       "format": "RGBA PNG",
       "scope": "kmg-catalog",
       "blueprintSymbols": [
-        "KMG.Summoning.Unit.KytonChainDevil",
         "KMG.Summoning.Ability.SM.Tier5.KytonChainDevil.One",
         "KMG.Summoning.Ability.SM.Tier6.KytonChainDevil.OneD3",
         "KMG.Summoning.Ability.SM.Tier7.KytonChainDevil.OneD4PlusOne",
         "KMG.Summoning.Ability.SM.Tier8.KytonChainDevil.OneD4PlusOne",
-        "KMG.Summoning.Ability.SM.Tier9.KytonChainDevil.OneD4PlusOne"
+        "KMG.Summoning.Ability.SM.Tier9.KytonChainDevil.OneD4PlusOne",
+        "KMG.Summoning.Unit.KytonChainDevil"
+      ]
+    },
+    {
+      "key": "barbed-devil",
+      "displayName": "Barbed Devil (Hamatula)",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/barbed-devil.png",
+      "productionFile": "assets/game/icons/expanded-summoning/barbed-devil.png",
+      "sourceSha256": "bb6c3f090b56fcfcf6be961697d092ff9984bc4d554f2fd007b949da46bf9386",
+      "outputSha256": "15ef2ae55a1037359f63fcf9d9086bd5399d81a3ae0bbe0061bda891be89da34",
+      "width": 128,
+      "height": 128,
+      "format": "RGBA PNG",
+      "scope": "kmg-catalog",
+      "blueprintSymbols": [
+        "KMG.Summoning.Ability.SM.Tier8.BarbedDevil.One",
+        "KMG.Summoning.Ability.SM.Tier9.BarbedDevil.OneD3",
+        "KMG.Summoning.Unit.BarbedDevil"
+      ]
+    },
+    {
+      "key": "bone-devil",
+      "displayName": "Bone Devil (Osyluth)",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/bone-devil.png",
+      "productionFile": "assets/game/icons/expanded-summoning/bone-devil.png",
+      "sourceSha256": "b0df2dac7e6b76b81bf5f28dff9cfd0c7103b4d7e6326c2c7789c6310d3ad14c",
+      "outputSha256": "d542bd9c5ffc52615c786cccafb5b3169ab3b2298599c6a895803e223c01d612",
+      "width": 128,
+      "height": 128,
+      "format": "RGBA PNG",
+      "scope": "kmg-catalog",
+      "blueprintSymbols": [
+        "KMG.Summoning.Ability.SM.Tier7.BoneDevil.One",
+        "KMG.Summoning.Ability.SM.Tier8.BoneDevil.OneD3",
+        "KMG.Summoning.Ability.SM.Tier9.BoneDevil.OneD4PlusOne",
+        "KMG.Summoning.Unit.BoneDevil"
       ]
     }
   ]

@@ -191,8 +191,20 @@ try {
                 Reject { & $completionPath -RunId $runId -Confirm:$false } '*Kingmaker is running*' ($case + '-foreign-game-or-reused-game-PID-rejected')
                 $global:kmgLeaseTest.running=$false; $global:kmgLeaseTest.interrupt=$false
                 Check ((Fixture-Snapshot $testRoot) -ceq $before) ($case + '-rejections-preserve-files')
+                if ($case -eq 'timeout') {
+                    # Reproduce the exact outer-restoration ordering: after the
+                    # owned game exits, the old wrapper removed this run's
+                    # shared lock but retained its RecoveryRequired journal.
+                    Remove-Item -LiteralPath $lockPath -Force
+                    $missingLockBefore=Fixture-Snapshot $testRoot
+                    & $completionPath -RunId $runId -WhatIf -Confirm:$false
+                    Check ((Fixture-Snapshot $testRoot) -ceq $missingLockBefore -and
+                        -not (Test-Path -LiteralPath $lockPath))
+                        'timeout-missing-lock-recovery-WhatIf-is-mutation-free'
+                }
+                $completionWhatIfBefore=Fixture-Snapshot $testRoot
                 & $completionPath -RunId $runId -WhatIf -Confirm:$false
-                Check ((Fixture-Snapshot $testRoot) -ceq $before) ($case + '-completion-WhatIf-mutation-free')
+                Check ((Fixture-Snapshot $testRoot) -ceq $completionWhatIfBefore) ($case + '-completion-WhatIf-mutation-free')
                 if ($case -eq 'leave-open') {
                     $ownedLock=[IO.File]::ReadAllBytes($lockPath)
                     [IO.File]::WriteAllText($lockPath,'foreign-owner')
@@ -242,6 +254,10 @@ try {
                 $completed=Read-KmgCompatibilityJson $statePath
                 Check ($race.rejected -and $completed.status -ceq 'Completed' -and -not $completed.recoveryRequired -and
                     -not (Test-Path -LiteralPath $lockPath)) ($case + '-normal-exit-guarded-completion-with-PID-reuse-and-competing-recovery')
+                if ($case -eq 'timeout') {
+                    Check ($completed.reason -ceq 'Guarded generic completion after original owner and game exit. No settings, profile, deployment or native outcome was changed.')
+                        'timeout-missing-lock-is-atomically-reclaimed-for-exact-recovery'
+                }
                 if ($null -ne $state.runtime.outcome) { Check ((Get-KmgCompatibilitySha256 $state.runtime.outcome.path) -ceq $state.runtime.outcome.sha256) 'completion-does-not-rewrite-native-PASS' }
             }
         }

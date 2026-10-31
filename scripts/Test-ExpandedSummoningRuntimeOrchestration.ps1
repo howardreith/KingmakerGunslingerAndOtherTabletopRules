@@ -35,6 +35,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 . (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
+. (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
 
 $script:Passed = 0
 function Assert-True {
@@ -339,10 +340,46 @@ foreach ($contract in @(
     '[int]$ObserverStartupTimeoutSeconds = 180',
     '[int]$CompletionTimeoutSeconds = 180',
     'ObserverStartupTimeoutSeconds = $ObserverStartupTimeoutSeconds',
-    'CompletionTimeoutSeconds = $CompletionTimeoutSeconds')) {
+    'CompletionTimeoutSeconds = $CompletionTimeoutSeconds',
+    '[string]$DevelopmentPurpose',
+    '-DevelopmentPurpose $DevelopmentPurpose',
+    '$arguments.DevelopmentPurpose = $DevelopmentPurpose',
+    '$arguments.ReuseInstalledArtifact = $true')) {
     Assert-True ($wrapperSource.Contains($contract)) `
         "runtime restoration wrapper must preserve stage-timeout contract: $contract"
 }
+Assert-True (Test-KmgSprint32ReviewPhaseScope `
+    -Scenario 'disposable-expanded-summoning-sprint32-native-review' `
+    -Parameters @{ reviewPhase = 'sprint35-infernal-early' }) `
+    'the actual request preflight admits the exact declared Sprint 35 early phase'
+Assert-True (-not (Test-KmgSprint32ReviewPhaseScope `
+    -Scenario 'disposable-expanded-summoning-sprint32-native-review' `
+    -Parameters @{ reviewPhase = 'sprint35-infernal-early-extra' })) `
+    'the Sprint 35 request preflight refuses a broader suffix'
+Assert-True (Test-KmgSprint32ReviewPhaseScope `
+    -Scenario 'disposable-expanded-summoning-sprint32-native-review' `
+    -Parameters @{ reviewPhase = 'sprint35-infernal-barbed' }) `
+    'the actual request preflight admits the exact grouped Barbed phase'
+Assert-True (-not (Test-KmgSprint32ReviewPhaseScope `
+    -Scenario 'disposable-expanded-summoning-sprint32-native-review' `
+    -Parameters @{ reviewPhase = 'sprint35-infernal-barbed-extra' })) `
+    'the Sprint 35 request preflight refuses a broader Barbed suffix'
+Assert-True (Test-KmgSprint32ReviewPhaseScope `
+    -Scenario 'disposable-expanded-summoning-sprint32-native-review' `
+    -Parameters @{ reviewPhase = 'sprint35-infernal-barbed-combat' }) `
+    'the actual request preflight admits the exact Barbed combat phase'
+Assert-True (-not (Test-KmgSprint32ReviewPhaseScope `
+    -Scenario 'disposable-expanded-summoning-sprint32-native-review' `
+    -Parameters @{ reviewPhase = 'sprint35-infernal-barbed-combat-extra' })) `
+    'the Sprint 35 request preflight refuses a broader Barbed combat suffix'
+Assert-True (Test-KmgSprint32ReviewPhaseScope `
+    -Scenario 'disposable-expanded-summoning-sprint32-native-review' `
+    -Parameters @{ reviewPhase = 'sprint35-infernal-bone' }) `
+    'the actual request preflight admits the exact Bone behavior phase'
+Assert-True (-not (Test-KmgSprint32ReviewPhaseScope `
+    -Scenario 'disposable-expanded-summoning-sprint32-native-review' `
+    -Parameters @{ reviewPhase = 'sprint35-infernal-bone-extra' })) `
+    'the Sprint 35 request preflight refuses a broader Bone suffix'
 
 # ----------------------------------------------- evidence-name array shape
 # The defect this exists for: `$x = if (...) { @(...) } else { @() }`

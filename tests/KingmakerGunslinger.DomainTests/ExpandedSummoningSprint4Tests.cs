@@ -244,8 +244,21 @@ namespace KingmakerGunslinger.DomainTests
                 components.IndexOf("class SummonHoldComponent", StringComparison.Ordinal),
                 components.IndexOf("class SummonMultiHoldComponent", StringComparison.Ordinal) -
                     components.IndexOf("class SummonHoldComponent", StringComparison.Ordinal));
-            Assertions.False(sharedHold.Contains("Remove<UnitPartGrappleInitiator>()"),
-                "The shared hold buff never removes its own initiator part (re-entrant removal).");
+            string synchronousRelease = sharedHold.Substring(0,
+                sharedHold.IndexOf("private static void ScheduleReleasedImpaleOwnerCleanup",
+                    StringComparison.Ordinal));
+            Assertions.False(synchronousRelease.Contains(
+                    "Remove<UnitPartGrappleInitiator>()"),
+                "The shared hold callback never removes its own initiator part synchronously (re-entrant removal).");
+            Assertions.Equal(1, sharedHold.Split(new[] {
+                    "owner.Remove<UnitPartGrappleInitiator>();" },
+                    StringSplitOptions.None).Length - 1,
+                "Only the exact Barbed/Impale deferred cleanup may remove an initiator part.");
+            Assertions.True(sharedHold.Contains("Game.Instance.ScheduleAction") &&
+                    sharedHold.Contains("ShouldClearReleasedImpaleHold") &&
+                    sharedHold.Contains("stillExact") &&
+                    sharedHold.Contains("nowReciprocal"),
+                "Barbed cleanup stays deferred and exact-owner/target/nonreciprocal guarded.");
             string builder = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "Blueprints",
                 "ExpandedSummoningSpecialBuilder.cs"));

@@ -121,7 +121,9 @@ namespace KingmakerGunslinger.Summoning
                 "satyr|6114adae73a1338498412b3c63c946f8|1",
                 "lillend-azata|86dc43534645e234eb35431131e3b669|1",
                 "bearded-devil|a8cbd4cdb0feaf64eab1452257c3c971|0",
-                "kyton-chain-devil|a8cbd4cdb0feaf64eab1452257c3c971|0"
+                "kyton-chain-devil|a8cbd4cdb0feaf64eab1452257c3c971|0",
+                "barbed-devil|a8cbd4cdb0feaf64eab1452257c3c971|0",
+                "bone-devil|a8cbd4cdb0feaf64eab1452257c3c971|0"
             });
         }
 

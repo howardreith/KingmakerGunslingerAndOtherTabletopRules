@@ -18,6 +18,7 @@ import zipfile
 from pathlib import Path
 
 MSBUILD_NS = {"m": "http://schemas.microsoft.com/developer/msbuild/2003"}
+FIXED_ZIP_TIME = (2026, 1, 1, 0, 0, 0)
 
 
 def sha256(path: Path) -> str:
@@ -63,6 +64,30 @@ def locate_bundle_root(path: Path) -> Path:
         if (candidate / "Managed" / "Assembly-CSharp.dll").is_file():
             return candidate
     raise FileNotFoundError("Could not find Managed/Assembly-CSharp.dll in the private bundle directory.")
+
+
+def write_deterministic_archive(zip_path: Path, package_root: Path, output: Path) -> None:
+    """Write the compile candidate without inheriting compiler file mtimes."""
+    files = sorted((path for path in package_root.rglob("*") if path.is_file()), key=lambda path: path.as_posix())
+    with zipfile.ZipFile(
+        zip_path,
+        "w",
+        compression=zipfile.ZIP_DEFLATED,
+        compresslevel=9,
+        strict_timestamps=True,
+    ) as archive:
+        for file in files:
+            relative = file.relative_to(output).as_posix()
+            info = zipfile.ZipInfo(relative, FIXED_ZIP_TIME)
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.create_system = 0
+            info.external_attr = 0
+            archive.writestr(
+                info,
+                file.read_bytes(),
+                compress_type=zipfile.ZIP_DEFLATED,
+                compresslevel=9,
+            )
 
 
 def main() -> int:
@@ -157,10 +182,7 @@ def main() -> int:
         shutil.copy2(icon, icon_dir / icon.name)
 
     zip_path = output / f'{info["Id"]}-{info["Version"]}-compile-candidate.zip'
-    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
-        for file in sorted(package_root.rglob("*")):
-            if file.is_file():
-                archive.write(file, file.relative_to(output).as_posix())
+    write_deterministic_archive(zip_path, package_root, output)
 
     report = {
         "schemaVersion": 1,

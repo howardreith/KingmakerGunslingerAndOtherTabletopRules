@@ -35,12 +35,25 @@ namespace KingmakerGunslinger.DomainTests
                     StringComparison.Ordinal)).ToArray();
             Assertions.Equal(ExpandedSummoningIdentityCatalog.FoundationIdentityCount,
                 first.Count, "Foundation identity count changed.");
-            Assertions.Equal(ExpandedSummoningIdentityCatalog.UnitCount,
+            Assertions.Equal(ExpandedSummoningIdentityCatalog.UnitCount + 1,
                 first.Count(value => value.PlannedType == "BlueprintUnit"),
-                "Unit identity count changed.");
+                "Creature and private support unit identity counts changed.");
+            Assertions.Equal(1, first.Count(value =>
+                    value.Symbol == "KMG.Summoning.Infernal.BoneDevil.WallSectionUnit" &&
+                    value.PlannedType == "BlueprintUnit"),
+                "The one extra BlueprintUnit is the private Wall section, not a summon creature.");
+            int sprint35Routes = first.Count(value =>
+                value.PlannedType == "BlueprintAbility" &&
+                value.Symbol.StartsWith("KMG.Summoning.Ability.SM.",
+                    StringComparison.Ordinal) &&
+                (value.Symbol.Contains(".BarbedDevil.") ||
+                 value.Symbol.Contains(".BoneDevil.")));
+            Assertions.Equal(5, sprint35Routes,
+                "Sprint35 owns exactly its five public route abilities.");
             Assertions.Equal(1760 + TheropodRulesPolicy.AppendedAbilityIdentityCount +
                     GiantBodyRulesPolicy.AppendedTotalAbilityIdentityCount + 9 +
-                    ExpandedSummoningSprints30And31Tests.RegisteredAbilityIdentityCount,
+                    ExpandedSummoningSprints30And31Tests.RegisteredAbilityIdentityCount +
+                    sprint35Routes,
                 released.Count(value => value.PlannedType == "BlueprintAbility"),
                 "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(

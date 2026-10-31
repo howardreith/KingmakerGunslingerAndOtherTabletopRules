@@ -405,7 +405,8 @@ def make_record(entry: dict) -> dict:
             "clippingOrientationConcerns": "outside this cleanup; preserve qualified creature donor contract",
             "mappingScope": "summoning-only exclusion",
         })
-        if symbol.startswith("KMG.Summoning.Infernal."):
+        if (symbol.startswith("KMG.Summoning.Infernal.BeardedDevil.") or
+                symbol.startswith("KMG.Summoning.Infernal.KytonChainDevil.")):
             species, attack = symbol.split(".")[-2:]
             common.update({
                 "displayedName": ("Bearded Devil" if species == "BeardedDevil" else "Kyton") + " " + attack.lower(),
@@ -423,6 +424,35 @@ def make_record(entry: dict) -> dict:
                 "sourceLicenseProvenance": "assets-source/original-models/sprint34-infernal-outsiders/SOURCE.md; original geometry, no redistributed native meshes or clips",
                 "currentManyToOneVisualGroup": "ExpandedSummoning.Infernal." + species,
                 "clippingOrientationConcerns": "simple beard/chain motion, seams and minor clipping remain cosmetic backlog; final native presentation required",
+            })
+        elif (symbol.startswith("KMG.Summoning.Infernal.BarbedDevil.") or
+              symbol.startswith("KMG.Summoning.Infernal.BoneDevil.")):
+            species, attack = symbol.split(".")[-2:]
+            bone = species == "BoneDevil"
+            common.update({
+                "displayedName": ("Bone Devil" if bone else "Barbed Devil") + " " + attack.lower(),
+                "familyOrFirearmKind": "Sprint 35 outsider attack",
+                "weaponType": symbol + "Type",
+                "currentItemLevelVisual": "private native mechanics clone; body-owned original attack geometry",
+                "currentTypeLevelVisual": "private donor type; printed dice, role, and reach configured by Infernal35 builder",
+                "effectiveEquippedPrefab": ("original segmented tail driven to native sting contact" if attack == "Sting" else
+                    "original skeletal-insectile body attack geometry" if bone else
+                    "original spined body and claw geometry"),
+                "sourceFbx": "original procedural creature mesh; no redistributed native geometry",
+                "sourceBlend": "private generator scene; not packaged",
+                "deterministicGenerator": "assets-source/original-models/sprint35-infernal-reach/generate_infernal_reach.py",
+                "animationDonorStyle": ("measured Lizardfolk Free Hands rig; exact owned sting event deforms only the private tail region" if attack == "Sting" else
+                    "measured Lizardfolk Free Hands native attack clips"),
+                "gripHandednessContract": {
+                    "BarbedDevil": {"Claw": "two primary Medium claws; ordinary native full attack"},
+                    "BoneDevil": {"Bite": "Large primary bite; 10-foot natural reach",
+                                  "Claw": "two Large primary claws; 10-foot natural reach",
+                                  "Sting": "one Large primary sting; 10-foot natural reach; injury poison"},
+                }[species][attack],
+                "currentMaterial": "project-authored albedo on one private clone of the native donor material",
+                "sourceLicenseProvenance": "assets-source/original-models/sprint35-infernal-reach/SOURCE.md; original geometry, no redistributed native meshes or clips",
+                "currentManyToOneVisualGroup": "ExpandedSummoning.Infernal." + species,
+                "clippingOrientationConcerns": "coarse textures, simple wing struts, seams and nonessential choreography remain cosmetic backlog; native presentation proof required",
             })
         elif symbol.startswith("KMG.Summoning.FeyCelestial."):
             species, attack = symbol.split(".")[-2:]
