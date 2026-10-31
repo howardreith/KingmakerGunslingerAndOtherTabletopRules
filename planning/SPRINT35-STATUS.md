@@ -1496,3 +1496,28 @@ Sprint 35 checkpoint; historical records are not current instructions.
   guarded runs restored the 136-file live tree exactly to intake
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
   no save interaction occurred and no Kingmaker process remains.
+- Wall-scoped candidate `400bf48daf4b4ce3eb5f9f60e8ac5428ff7a0bb3`
+  completed development admission and strict packaging with source state
+  `20aef7fd622445087a256cecbdafea8bb558121846bef71ddc4c9e0dd5a7e129`,
+  ZIP `a08486c1b2d80ed19274e7131338189222e0cdd9851f708c3e1ea74405f21a6c`,
+  DLL `673580dd69adcabb668964950F46DF8DD2F82FAD61321D74B4EB0EF5AA0441FD`
+  and MVID `34fabee1-1533-4971-97da-70ddd645d7fe`. Its exact build and reproducible
+  outputs are preserved on E: as 1,014 files / 347,039,031 bytes under manifest
+  SHA-256 `1427DB10501A85B074523687D0BFC034FC2FC688486337583D3EC414EA4FAACA`.
+- Guarded run `20261031T1046434335583Z-3ce1155614764c65b704040bb4d75cf9`
+  retained raw FAIL SHA-256
+  `85A2006453ECF8FD28BE67D1922F10E9C8CA3FDA1C3AA53150FE158EAC1444CA`.
+  It proved the changed cast reaches native success, creates one correctly
+  oriented visible 36-HP section with two donor renderers suppressed, claims
+  and changes 22 actual GridGraph nodes, and changes the real movement route;
+  line of sight remained unchanged and is still unclaimed. The physical witness
+  was the Bearded Devil just used as Bone's full-attack target and its attack
+  command retired before start. The fixture's direct fire packet used a zero
+  dice formula plus `PreRolledValue`; the installed damage consumer reported an
+  unhalved fire packet with zero bonus and zero damage. The section therefore
+  never breached, so residual/fog, formation retry and restoration could not
+  occur. The correction moves Wall before the tail/full-attack observation,
+  admits only a live acting witness, settles it for one frame, and initializes
+  the explicit zero-dice fire packet with native `AddBonus(1000)`. Production
+  Wall rules are unchanged. The wrapper restored the exact intake and no save
+  interaction or Kingmaker process remains.
