@@ -577,8 +577,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             int damageAfterPhysical = -1;
             RuleDealDamage fireRule = null;
             EnergyDamage firePacket = null;
+            UnitEntityData fireSource = null;
             AreaEffectEntityData residualArea = null;
             AreaEffectEntityData fogArea = null;
+            int sectionAppearanceWaitFrames = 0;
+            double sectionAppearanceWaitGameSeconds = 0d;
+            bool sectionAppearanceBuffWasPresent = false;
+            bool sectionAppearanceBuffAbsent = false;
+            bool sectionUntargetable = true;
+            bool sectionAttackable = false;
+            bool physicalGreenNpcGuard = false;
+            bool fireGreenNpcGuard = false;
             UnitEntityData attacker = owned.FirstOrDefault(value =>
                 value != null && !value.Destroyed &&
                 value.IsInGame && value.IsInState &&
@@ -590,6 +599,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var summoned = section.Buffs.GetBuff(BlueprintRoot.Instance
                     .SystemMechanics.SummonedUnitBuff);
                 hadSummonBuff = summoned != null;
+                var appearanceBlueprint = BlueprintRoot.Instance
+                    .SystemMechanics.SummonedUnitAppearBuff;
+                sectionAppearanceBuffWasPresent = section.Buffs.GetBuff(
+                    appearanceBlueprint) != null;
+                double appearanceStart = Game.Instance.TimeController.GameTime
+                    .TotalSeconds;
+                deadline = DateTime.UtcNow.AddSeconds(10);
+                while (DateTime.UtcNow < deadline && !section.Destroyed &&
+                    !section.Descriptor.State.IsDead &&
+                    (section.Buffs.GetBuff(appearanceBlueprint) != null ||
+                     (bool)section.Descriptor.State.IsUntargetable))
+                {
+                    Game.Instance.IsPaused = false;
+                    sectionAppearanceWaitFrames++;
+                    yield return 0;
+                }
+                sectionAppearanceWaitGameSeconds = Game.Instance
+                    .TimeController.GameTime.TotalSeconds - appearanceStart;
+                sectionAppearanceBuffAbsent = section.Buffs.GetBuff(
+                    appearanceBlueprint) == null;
+                sectionUntargetable =
+                    (bool)section.Descriptor.State.IsUntargetable;
+                sectionAttackable = sectionAppearanceBuffAbsent &&
+                    !sectionUntargetable && !section.Destroyed &&
+                    !section.Descriptor.State.IsDead;
                 Vector3 attackPoint = ObstacleAnalyzer.GetNearestNode(
                     section.Position + section.OrientationDirection * 2.5f)
                     .clampedPosition;
@@ -611,6 +645,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new UnitCombatJoinController().Tick();
                 new UnitCombatPrepareController().Tick();
                 for (int frame = 0; frame < 3; frame++) yield return 0;
+                physicalGreenNpcGuard = Kingmaker.Designers.GameHelper
+                    .IsAttackingGreenNPC(attacker, section);
                 int physicalStart = trace.Rows.Count;
                 breachAttack = new UnitAttack(section) {
                     IsSingleAttack = true,
@@ -636,8 +672,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Vector3 witnessPoint = ObstacleAnalyzer.GetNearestNode(
                     section.Position - section.OrientationDirection * 1.2f)
                     .clampedPosition;
-                UnitEntityData fireSource = fixture.Hostile;
+                fireSource = fixture.Hostile;
                 PlaceExpandedSummoningUnit(fireSource, witnessPoint);
+                fireGreenNpcGuard = Kingmaker.Designers.GameHelper
+                    .IsAttackingGreenNPC(fireSource, section);
                 int fireStart = trace.Rows.Count;
                 firePacket = new EnergyDamage(new DiceFormula(100,
                     DiceType.One), DamageEnergyType.Fire);
@@ -886,6 +924,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["breachAttackerCanAct"] = attacker?.Descriptor.State.CanAct,
                 ["breachAttackerIsEnemy"] = attacker != null &&
                     section != null && attacker.IsEnemy(section),
+                ["breachAttackerCanAttack"] = attacker != null &&
+                    section != null && attacker.CanAttack(section),
+                ["breachAttackerPlayerFaction"] =
+                    attacker?.IsPlayerFaction,
+                ["sectionPlayerFaction"] = section?.IsPlayerFaction,
+                ["sectionAppearanceBuffWasPresent"] =
+                    sectionAppearanceBuffWasPresent,
+                ["sectionAppearanceWaitFrames"] =
+                    sectionAppearanceWaitFrames,
+                ["sectionAppearanceWaitGameSeconds"] =
+                    sectionAppearanceWaitGameSeconds,
+                ["sectionAppearanceBuffAbsent"] =
+                    sectionAppearanceBuffAbsent,
+                ["sectionUntargetable"] = sectionUntargetable,
+                ["sectionAttackable"] = sectionAttackable,
+                ["physicalGreenNpcGuard"] = physicalGreenNpcGuard,
                 ["breachAttack"] = breachAttack == null ? null :
                     Sprint27AiCommand(breachAttack),
                 ["breachAttackRolls"] = breachAttackRolls,
@@ -894,6 +948,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["damageAfterPhysical"] = damageAfterPhysical,
                 ["fireDamageRows"] = fireDamageRows,
                 ["fireSource"] = fireRule?.Initiator?.UniqueId,
+                ["fireSourcePlayerFaction"] = fireSource?.IsPlayerFaction,
+                ["fireSourceCanAttack"] = fireSource != null &&
+                    section != null && fireSource.CanAttack(section),
+                ["fireGreenNpcGuard"] = fireGreenNpcGuard,
                 ["fireRuleDamage"] = fireRule?.Damage,
                 ["firePacketImmune"] = firePacket?.Immune,
                 ["firePacketFinal"] = fireRule == null || firePacket == null ||
@@ -938,7 +996,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cutRegistered && gridApplyQueued && gridApplyCompleted &&
                 gridFailure == null && gridGraphIndex == graphIndex &&
                 gridNodesClaimed > 0 && gridNodesChanged > 0 &&
-                breachAttack != null &&
+                sectionAttackable && !physicalGreenNpcGuard &&
+                !fireGreenNpcGuard && breachAttack != null &&
                 breachAttack.Result == UnitCommand.ResultType.Success &&
                 automaticPhysicalHit && physicalWasObjectHalf &&
                 wallAliveAfterPhysical && damageAfterPhysical > 0 &&

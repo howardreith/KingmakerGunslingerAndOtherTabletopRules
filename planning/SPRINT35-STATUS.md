@@ -1557,3 +1557,36 @@ Sprint 35 checkpoint; historical records are not current instructions.
   `6191F724B2BECE8557CAE5874531AAC75FFB1EC2919E839F70408D515FB3BB13`.
   The live 136-file tree restored to exact intake, no save was touched, and no
   Kingmaker process remains. A changed source-bound candidate is required.
+- Observer candidate `2ce9230af7ec312b35b7380dee164f59b5733fe6`
+  completed source-bound development admission and strict packaging with source
+  state `a3f32ce663df99db51a740298755083aa738f4b9a312e0789f919d7522357632`,
+  ZIP `53c2f57f61d44b5137a7d06492c98165422a169197f5bac6b3e89ae6d521000e`,
+  DLL `7c1012dc8d68ce10c2a339ca7f52cedd7cc87da7ed435ce1e3ffe14f0a704807`
+  and MVID `762b63bf-ca9d-4f40-a8e1-a50057c4cdbe`; its selected group passed
+  10/10 of 2,776 tests. The exact build/bin/staging set is preserved on E: as
+  1,007 files under manifest SHA-256
+  `1E2D0EFD9182B3175AB857A9161617DD2EAE7B176A0F2156B3953BE02DB67BCF`.
+- Guarded run `20261031T1213586726270Z-d1157c1f467b49268983c4967c7927c9`
+  under evidence directory
+  `20261031T1213584342608Z-disposable-expanded-summoning-sprint32-native-review`
+  retained FAIL. Hidden bootstrap, profiles and bodies passed; the actual cast
+  again produced the visible oriented 36-HP section, changed 22 GridGraph nodes
+  and changed the real route. Both the real weapon command and independent
+  100d1 fire rule stopped before an attack roll or calculated damage
+  (`ResultDamage` was null). Installed `RuleDealDamage.OnTrigger` IL shows this
+  exact early return precedes `RulePrepareDamage` and is limited to native
+  untargetable/green-NPC admission (the bundle was nonempty). The observer had
+  not waited for the section's native summoned-appearance gate. Because the
+  undamaged section remained at the same point, legal-placement correctly made
+  all later formation attempts unavailable; no production formation verdict is
+  implied. The next observer waits bounded native frames until the exact
+  appearance buff is absent and `IsUntargetable` is false, and records both
+  actors' faction/`CanAttack`/green-NPC predicates before the unchanged real
+  weapon and fire consumers. Expected consequence: native damage calculation,
+  breach cold/steam, GridGraph release, and the now-unoccupied formation retry
+  become observable in the same run. Production Wall code remains unchanged.
+  Focused validation compiled production in 46.9 seconds and passed the selected
+  10/10 Sprint 35/correction tests in 2.7 seconds.
+  The wrapper restored the 136-file live tree exactly to
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+  no save was touched and no Kingmaker process remains.
