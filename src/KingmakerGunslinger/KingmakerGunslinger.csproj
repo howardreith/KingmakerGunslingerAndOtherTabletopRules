@@ -53,6 +53,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEarly35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBarbed35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBarbedCombat35.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBone35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBodies34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalMechanics34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCombat34.cs" />
