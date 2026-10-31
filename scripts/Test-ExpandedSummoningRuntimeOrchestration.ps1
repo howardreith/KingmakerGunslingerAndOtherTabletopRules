@@ -372,6 +372,14 @@ Assert-True (-not (Test-KmgSprint32ReviewPhaseScope `
     -Scenario 'disposable-expanded-summoning-sprint32-native-review' `
     -Parameters @{ reviewPhase = 'sprint35-infernal-barbed-combat-extra' })) `
     'the Sprint 35 request preflight refuses a broader Barbed combat suffix'
+Assert-True (Test-KmgSprint32ReviewPhaseScope `
+    -Scenario 'disposable-expanded-summoning-sprint32-native-review' `
+    -Parameters @{ reviewPhase = 'sprint35-infernal-bone' }) `
+    'the actual request preflight admits the exact Bone behavior phase'
+Assert-True (-not (Test-KmgSprint32ReviewPhaseScope `
+    -Scenario 'disposable-expanded-summoning-sprint32-native-review' `
+    -Parameters @{ reviewPhase = 'sprint35-infernal-bone-extra' })) `
+    'the Sprint 35 request preflight refuses a broader Bone suffix'
 
 # ----------------------------------------------- evidence-name array shape
 # The defect this exists for: `$x = if (...) { @(...) } else { @() }`
