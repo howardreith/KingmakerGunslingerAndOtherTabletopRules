@@ -872,3 +872,45 @@ Sprint 35 checkpoint; historical records are not current instructions.
   and all 30 corruption/positive tests pass; the independent summoning
   manifest again derives 2,638 foundation rows and 4,021 adapters. A fresh
   commit is required before the single reusable development package is built.
+- Exact candidate `6042822cfa46573fc74e7f87fc0c226f808047de`
+  passed development admission, the selected 9/9 Sprint 35/correction tests,
+  exact-reference compilation, strict packaging and package validation:
+  source state
+  `7e61ca8fcbcca800a7adcc8583c0a27729c48eba1ab07cabcf8b9fee7f5c8d97`;
+  ZIP `47ce8c74c39c7c602e9b31b13f3222cf8a1ed8fa6c71b1d1031f1531cdaee86f`;
+  DLL `336f246c2cbeb2bc51eb4c09025301b1cb6044c5901c0aa9ef8e77f9033f6a2c`;
+  MVID `667daddc-cb11-46eb-bd2d-a45b4101f123`. Its 1,236-file exact build
+  (518,756,208 bytes) is preserved on `E:` under manifest
+  `93FC963B33E6F432AE5502F8E4750F8B0379236A449D7E446ECD2D14DAAAC579`.
+  The first native preflight refused before deployment because the archived
+  workspace test output was absent; its vacuous restoration record is
+  `20261031T0238183780336Z-disposable-expanded-summoning-sprint32-native-review.json`.
+  Restoring the exact 54 test files from the archive satisfied that supported
+  preflight without changing source or candidate bytes.
+- Guarded run
+  `20261031T0239099154616Z-dd16a6ed79f14544bcbd97860cfa2c92`
+  then proved the Bone-only owned invisibility mapping, ordinary
+  attack-breaking flag and reciprocal private hostility before an observer
+  precondition failed. The second aura source had no invisibility command or
+  owned invisibility buff in the complete event trace, but it was summoned at
+  the caster position after that caster had deliberately been parked beyond
+  the presented combat lane. Its healthy native state (`CanAct`/`CanMove` and
+  no appearance buff) remained hidden by `EntityFader`, so the shared visible
+  appearance helper timed out before the behavior rows. This is not evidence
+  against the invisibility correction or the model. The observer-only repair
+  moves each disposable extra aura source beside the already-visible first
+  Bone before waiting for its native fade, then moves it to the intended aura
+  position; it never writes renderer or fader state. The wrapper restored the
+  live tree to exact intake SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+  no game process remains and no save was staged. Candidate, raw FAIL,
+  deployment, both backups and restoration are preserved as 303 verified
+  files (62,384,155 bytes) on `E:` under manifest
+  `DED36EED3A736DF471E18481999C1C48D8C5198590D5C2E6FA73C88F0BEC9759`;
+  every C: original remains. The unchanged candidate will not be relaunched.
+  The first focused invocation was denied only while writing generated
+  `artifacts/` in the sandbox and produced no verdict; the approved identical
+  invocation passed production compilation in 25.9 seconds and all 9 selected
+  Sprint 35/correction tests in 4.8 seconds. A new source-bound package and one
+  affected Bone rerun are next. Wall of Ice remains stopped on the explicit
+  bounded GridGraph gameplay decision.
