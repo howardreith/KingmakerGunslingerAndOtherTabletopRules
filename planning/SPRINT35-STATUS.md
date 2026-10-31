@@ -1521,3 +1521,39 @@ Sprint 35 checkpoint; historical records are not current instructions.
   the explicit zero-dice fire packet with native `AddBonus(1000)`. Production
   Wall rules are unchanged. The wrapper restored the exact intake and no save
   interaction or Kingmaker process remains.
+- Observer candidate `32aec478e14b50311cb44f22ef599d11edcfe442`
+  completed source-bound development admission and strict packaging with source
+  state `a96cf4b27625ef5bfcd3e6e336fc9a6c35b36df3d81551b9e8e84e31f8e7753e`,
+  ZIP `6f6a0d48887e00231c35ee65fbac8c61df81325335f2bf69e89f60a4585636b4`,
+  DLL `abc35f474482b87e01bb7a1f4c35f8fad391fbe70d4dce912b0a968c863e679a`,
+  and MVID `7fd06f43-4f48-4601-95f9-7dee7c66e0c4`; its selected group passed
+  10/10 of 2,776 tests. Two unchanged attempts stopped first before receipt
+  creation and then during strict validation because C: lacked the measured
+  package/extraction envelope. Their exact owned outputs and all older Sprint
+  35 development candidates were hash-verified on E: before C: scratch removal.
+  The successful exact-build/bin/staging set is preserved as 1,007 files /
+  332,511,538 bytes under manifest SHA-256
+  `78D0F178F0E25A5912BC64AA45A133D93909EC1938F81906037D2CB7095E5766`.
+- Guarded run `20261031T1138284216733Z-e31293970ac1436f8ad95f9fa377b385`
+  under evidence directory
+  `20261031T1138283611589Z-disposable-expanded-summoning-sprint32-native-review`
+  retained raw FAIL SHA-256
+  `BA077DC4260D069B8C4D4A090460111EDBAF49BF2110BB8D62A9DF63C2111573`.
+  The real cast again succeeded, the visible oriented 36-HP section claimed and
+  changed 22 GridGraph nodes, and the route changed. The Bearded witness was
+  alive, acting, enemy, in range, and `CanStart`, but the native action
+  controller interrupted its attack before start because the observer had not
+  entered the attacker and inert section into a real combat lane. The explicit
+  fire packet was unhalved and carried bonus 1,000, but the retasked summon
+  source resolved zero damage; no breach meant no residual, formation retry, or
+  restoration verdict. The bounded observer repair now reuses the qualified
+  wake/combat/controller setup, uses the independent fixture hostile and
+  deterministic positive native fire dice, records raw result/immunity/final
+  values, and waits out Bone's standard-action cooldown before formation.
+  Production Wall code remains unchanged. Focused production compilation and
+  the selected 10/10 group pass. Early evidence SHA-256 is
+  `DFF9B26D60557EA24F89DC9AF4642A8800304CE9A49DE6CA0B3E799E2DC91B3B`;
+  restoration SHA-256 is
+  `6191F724B2BECE8557CAE5874531AAC75FFB1EC2919E839F70408D515FB3BB13`.
+  The live 136-file tree restored to exact intake, no save was touched, and no
+  Kingmaker process remains. A changed source-bound candidate is required.
