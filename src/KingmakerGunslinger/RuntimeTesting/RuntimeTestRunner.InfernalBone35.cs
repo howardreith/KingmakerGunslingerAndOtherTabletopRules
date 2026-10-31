@@ -185,6 +185,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Vector3 allyFearOffset = ally.Position - bone.Position;
                 allyFearOffset.y = 0f;
                 float allyFearDistance = allyFearOffset.magnitude;
+                Vector3 allyFearPosition = ally.Position;
+                Vector3 sourceFearPosition = bone.Position;
                 DateTime allyFearDeadline = DateTime.UtcNow.AddSeconds(12);
                 while (DateTime.UtcNow < allyFearDeadline &&
                     !InfernalBoneSaveRows35(trace, allyFearStart, bone,
@@ -317,10 +319,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["ally"] = ally.UniqueId,
                     ["allyFaction"] = ally.Faction?.name,
                     ["sourceFaction"] = bone.Faction?.name,
-                    ["allyPosition"] = new JArray(ally.Position.x,
-                        ally.Position.y, ally.Position.z),
-                    ["sourcePosition"] = new JArray(bone.Position.x,
-                        bone.Position.y, bone.Position.z),
+                    ["allyPosition"] = new JArray(allyFearPosition.x,
+                        allyFearPosition.y, allyFearPosition.z),
+                    ["sourcePosition"] = new JArray(sourceFearPosition.x,
+                        sourceFearPosition.y, sourceFearPosition.z),
                     ["allySourceDistanceMeters"] = allyFearDistance,
                     ["allySaves"] = new JArray(allyFear),
                     ["allyMemory"] = InfernalBoneBuff35(ally, memory,
@@ -348,6 +350,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     retiredFearSources.All(value => Sprint29OwnedAreas(value,
                         fearArea).Length == 0), 5)) yield return frame;
 
+                // The aura row parks the summoner far from the hostile so it
+                // cannot become an unintended second recipient. Restore that
+                // disposable party anchor before the shared native combat
+                // lane survey; the survey deliberately admits only a real
+                // walkable party anchor.
+                PlaceExpandedSummoningUnit(ally, oldAllyPosition);
+                ally.Orientation = oldAllyOrientation;
                 bone.Stats.AdditionalAttackBonus.BaseValue = 100;
                 bone.Stats.HitPoints.BaseValue = 100000;
                 target.Stats.AC.BaseValue = -100;
