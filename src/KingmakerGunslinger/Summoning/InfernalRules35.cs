@@ -21,6 +21,8 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Utility;
@@ -382,6 +384,8 @@ namespace KingmakerGunslinger.Summoning
         public bool TargetEnemy = true;
         public bool AvoidFriendlyArea;
         public int AreaRadiusFeet;
+        public bool WallPlacement;
+        public BlueprintUnit WallSection;
 
         public override bool IsAvailable(DecisionContext context)
         {
@@ -410,6 +414,18 @@ namespace KingmakerGunslinger.Summoning
         {
             var owner = context?.Unit;
             var target = context?.Target?.Unit;
+            if (WallPlacement)
+            {
+                InfernalWallPlacement35 placement;
+                var granted = owner == null || Ability == null ? null :
+                    owner.Descriptor.Abilities.GetAbility(Ability);
+                var data = granted == null ? null : new AbilityData(granted);
+                return owner != null && target != null &&
+                    InfernalWallPlacementRuntime35.TryPlanAi(owner, target,
+                        WallSection, out placement) && data != null &&
+                    data.IsAvailable && data.CanTarget(
+                        new TargetWrapper(placement.Center));
+            }
             if (owner == null || TargetSelf && target != null &&
                     !ReferenceEquals(owner, target) || TargetEnemy &&
                     (target == null || !owner.IsEnemy(target))) return false;
@@ -429,6 +445,24 @@ namespace KingmakerGunslinger.Summoning
                         radius + unit.Corpulence)) return false;
             }
             return base.IsTargetValid(context);
+        }
+
+        public override UnitCommand CreateCommand(DecisionContext context,
+            UnitEntityData target)
+        {
+            if (!WallPlacement) return base.CreateCommand(context, target);
+            UnitEntityData owner = context?.Unit;
+            InfernalWallPlacement35 placement;
+            var granted = owner == null || Ability == null ? null :
+                owner.Descriptor.Abilities.GetAbility(Ability);
+            var data = granted == null ? null : new AbilityData(granted);
+            if (data == null || !data.IsAvailable ||
+                !InfernalWallPlacementRuntime35.TryPlanAi(owner, target,
+                    WallSection, out placement) ||
+                !data.CanTarget(new TargetWrapper(placement.Center)))
+                return null;
+            return new UnitUseAbility(data,
+                new TargetWrapper(placement.Center));
         }
     }
 }

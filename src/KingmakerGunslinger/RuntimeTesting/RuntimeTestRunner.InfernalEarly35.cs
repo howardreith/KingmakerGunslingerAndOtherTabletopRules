@@ -7,8 +7,14 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.EntitySystem.Stats;
+using Kingmaker.Enums.Damage;
+using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
+using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.Mechanics;
@@ -229,7 +235,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     reach, trace, check)) yield return frame;
 
                 foreach (int frame in InfernalEarlyWall35(fixture, bone,
-                    owned, check)) yield return frame;
+                    owned, trace, check)) yield return frame;
             }
             finally
             {
@@ -423,6 +429,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> InfernalEarlyWall35(
             ExpandedSummoningCorrectionFixture fixture,
             UnitEntityData bone, List<UnitEntityData> owned,
+            InfernalEvents34 trace,
             Action<string, bool, JObject, string> check)
         {
             Vector3 start, midpoint, destination, casterPoint;
@@ -504,6 +511,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 section.View.GetComponent<InfernalWallNavmesh35>();
             var cut = binding?.Cut;
             bool bindingPresent = binding != null;
+            bool wallVisualPresent = binding?.WallVisual != null;
+            bool wallVisualEnabled = wallVisualPresent &&
+                binding.WallVisual.GetComponent<Renderer>()?.enabled == true;
+            int hiddenDonorRenderers = bindingPresent ?
+                binding.HiddenDonorRendererCount : 0;
+            Vector3 laneDirection = (destination - start).normalized;
+            Vector3 sectionAlong = section == null ? Vector3.zero :
+                Vector3.Cross(Vector3.up,
+                    section.OrientationDirection).normalized;
+            float sectionLaneAlignment = section == null ? 0f :
+                Math.Abs(Vector3.Dot(sectionAlong, laneDirection));
             bool cutExactOwner = bindingPresent &&
                 ReferenceEquals(binding.Owner, section);
             bool cutPresent = cut != null;
@@ -551,20 +569,178 @@ namespace KingmakerGunslinger.RuntimeTesting
                 AstarPath.active.graphs[graphIndex]?.GetType().FullName;
 
             bool hadSummonBuff = false;
-            if (section != null)
+            UnitAttack breachAttack = null;
+            JArray breachAttackRolls = new JArray();
+            JArray physicalDamageRows = new JArray();
+            JArray fireDamageRows = new JArray();
+            JArray residualDamageRows = new JArray();
+            bool wallAliveAfterPhysical = false;
+            int damageAfterPhysical = -1;
+            AreaEffectEntityData residualArea = null;
+            AreaEffectEntityData fogArea = null;
+            UnitEntityData attacker = owned.FirstOrDefault(value =>
+                value != null && !value.Destroyed &&
+                InfernalMartialProfile34.For(value)?.Glaive != null);
+            if (section != null && attacker != null)
             {
                 var summoned = section.Buffs.GetBuff(BlueprintRoot.Instance
                     .SystemMechanics.SummonedUnitBuff);
                 hadSummonBuff = summoned != null;
-                if (summoned != null) summoned.Remove();
+                Vector3 attackPoint = ObstacleAnalyzer.GetNearestNode(
+                    section.Position + section.OrientationDirection * 2.5f)
+                    .clampedPosition;
+                PlaceExpandedSummoningUnit(attacker, attackPoint);
+                attacker.Memory.Add(section);
+                int physicalStart = trace.Rows.Count;
+                breachAttack = new UnitAttack(section) {
+                    IsSingleAttack = true,
+                    ForceFullAttack = false
+                };
+                attacker.Commands.Run(breachAttack);
+                foreach (int frame in WaitInfernalCommand34(breachAttack,
+                    () => true, 25)) yield return frame;
+                breachAttackRolls = new JArray(trace.Rows.Skip(physicalStart)
+                    .Where(eventRow => (string)eventRow["event"] ==
+                            "attack-roll" &&
+                        (string)eventRow["owner"] == attacker.UniqueId &&
+                        (string)eventRow["target"] == section.UniqueId));
+                physicalDamageRows = new JArray(trace.Rows.Skip(physicalStart)
+                    .Where(eventRow => (string)eventRow["event"] ==
+                            "damage" &&
+                        (string)eventRow["owner"] == attacker.UniqueId &&
+                        (string)eventRow["target"] == section.UniqueId));
+                wallAliveAfterPhysical = !section.Destroyed &&
+                    !section.Descriptor.State.IsDead;
+                damageAfterPhysical = section.Damage;
+
+                Vector3 witnessPoint = ObstacleAnalyzer.GetNearestNode(
+                    section.Position - section.OrientationDirection * 1.2f)
+                    .clampedPosition;
+                PlaceExpandedSummoningUnit(fixture.Caster, witnessPoint);
+                int fireStart = trace.Rows.Count;
+                var fire = new EnergyDamage(new DiceFormula(0,
+                    DiceType.Zero), DamageEnergyType.Fire) {
+                        PreRolledValue = 1000
+                    };
+                Rulebook.Trigger(new RuleDealDamage(attacker, section,
+                    new DamageBundle(fire)));
+                var residualBlueprint = fixture.Blueprints.OfType<
+                    BlueprintAbilityAreaEffect>().Single(value => value.name ==
+                        "KMG_Summoning_Infernal_BoneDevil_WallResidualArea");
+                var fogBlueprint = fixture.Blueprints.OfType<
+                    BlueprintAbilityAreaEffect>().Single(value =>
+                        value.AssetGuid ==
+                            "e09010a73354a794293ebc7b33c2d130");
                 deadline = DateTime.UtcNow.AddSeconds(15);
-                while (DateTime.UtcNow < deadline && !section.Destroyed &&
-                    section.IsInGame)
+                while (DateTime.UtcNow < deadline &&
+                    (residualArea == null || fogArea == null ||
+                     InfernalWallNavmesh35.ActiveGridClaimCount != 0))
                 {
                     Game.Instance.IsPaused = false;
                     yield return 0;
+                    residualArea = Game.Instance.State.AreaEffects.All
+                        .FirstOrDefault(value =>
+                            ReferenceEquals(value.Blueprint,
+                                residualBlueprint) &&
+                            ReferenceEquals(value.Context?.MaybeCaster,
+                                bone));
+                    fogArea = Game.Instance.State.AreaEffects.All
+                        .FirstOrDefault(value =>
+                            ReferenceEquals(value.Blueprint, fogBlueprint) &&
+                            ReferenceEquals(value.Context?.MaybeCaster,
+                                bone) &&
+                            ReferenceEquals(value.Context?.SourceAbility,
+                                wallBlueprint));
+                }
+                fireDamageRows = new JArray(trace.Rows.Skip(fireStart)
+                    .Where(eventRow => (string)eventRow["event"] ==
+                            "damage" &&
+                        (string)eventRow["owner"] == attacker.UniqueId &&
+                        (string)eventRow["target"] == section.UniqueId));
+                residualDamageRows = new JArray(trace.Rows.Skip(fireStart)
+                    .Where(eventRow => (string)eventRow["event"] ==
+                            "damage" &&
+                        (string)eventRow["owner"] == bone.UniqueId &&
+                        (string)eventRow["target"] ==
+                            fixture.Caster.UniqueId &&
+                        (string)eventRow["ability"] ==
+                            wallBlueprint.AssetGuid));
+            }
+
+            var formationAttempts = new JArray();
+            bool formationDisrupted = false;
+            int oldReflex = fixture.Caster.Stats.SaveReflex.BaseValue;
+            try
+            {
+                fixture.Caster.Stats.SaveReflex.BaseValue = 100;
+                Vector3 adjacent = ObstacleAnalyzer.GetNearestNode(midpoint +
+                    (casterPoint - midpoint).normalized * 1.2f)
+                    .clampedPosition;
+                PlaceExpandedSummoningUnit(fixture.Caster, adjacent);
+                for (int attempt = 0; attempt < 4 &&
+                    !formationDisrupted; attempt++)
+                {
+                    int formationStart = trace.Rows.Count;
+                    var existing = new HashSet<string>(Game.Instance.State
+                        .Units.Where(value => ReferenceEquals(value.Blueprint,
+                            sectionBlueprint)).Select(value => value.UniqueId));
+                    bool available = data.IsAvailable &&
+                        data.CanTarget(new TargetWrapper(midpoint));
+                    var formationCommand = new UnitUseAbility(data,
+                        new TargetWrapper(midpoint));
+                    bone.Commands.Run(formationCommand);
+                    foreach (int frame in WaitInfernalCommand34(
+                        formationCommand, () => true, 25)) yield return frame;
+                    for (int frame = 0; frame < 30; frame++) yield return 0;
+                    UnitEntityData formed = Game.Instance.State.Units
+                        .FirstOrDefault(value =>
+                            ReferenceEquals(value.Blueprint,
+                                sectionBlueprint) &&
+                            !existing.Contains(value.UniqueId));
+                    var srRows = new JArray(trace.Rows.Skip(formationStart)
+                        .Where(eventRow => (string)eventRow["event"] ==
+                                "spell-resistance" &&
+                            (string)eventRow["target"] ==
+                                fixture.Caster.UniqueId &&
+                            (string)eventRow["contextAbility"] ==
+                                wallBlueprint.AssetGuid));
+                    var saveRows = new JArray(trace.Rows.Skip(formationStart)
+                        .Where(eventRow => (string)eventRow["event"] ==
+                                "save" &&
+                            (string)eventRow["target"] ==
+                                fixture.Caster.UniqueId &&
+                            (string)eventRow["type"] ==
+                                SavingThrowType.Reflex.ToString()));
+                    formationDisrupted = available &&
+                        formationCommand.Result ==
+                            UnitCommand.ResultType.Success &&
+                        srRows.Count == 1 && saveRows.Count == 1 &&
+                        (bool?)saveRows[0]["passed"] == true &&
+                        formed == null;
+                    formationAttempts.Add(new JObject {
+                        ["attempt"] = attempt,
+                        ["available"] = available,
+                        ["command"] = Sprint27AiCommand(formationCommand),
+                        ["spellResistance"] = srRows,
+                        ["saves"] = saveRows,
+                        ["formedSection"] = formed?.UniqueId
+                    });
+                    if (formed == null) continue;
+                    owned.Add(formed);
+                    Buff cleanup = formed.Buffs.GetBuff(BlueprintRoot.Instance
+                        .SystemMechanics.SummonedUnitBuff);
+                    if (cleanup != null) cleanup.Remove();
+                    deadline = DateTime.UtcNow.AddSeconds(10);
+                    while (DateTime.UtcNow < deadline &&
+                        InfernalWallNavmesh35.ActiveGridClaimCount != 0)
+                    { Game.Instance.IsPaused = false; yield return 0; }
                 }
             }
+            finally
+            {
+                fixture.Caster.Stats.SaveReflex.BaseValue = oldReflex;
+            }
+            PlaceExpandedSummoningUnit(fixture.Caster, start);
             var after = InfernalEarlyPath35(fixture.Caster, destination);
             var restorationSamples = new JArray();
             bool restored = InfernalEarlyWallRestored35(before, after);
@@ -614,8 +790,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["sectionHitPoints"] = section?.Stats.HitPoints.ModifiedValue,
                 ["summonedLifetimeBuff"] = hadSummonBuff,
                 ["sectionRetired"] = section != null &&
-                    (section.Destroyed || !section.IsInGame),
+                    (section.Destroyed || !section.IsInGame ||
+                     section.Descriptor.State.IsDead),
                 ["navmeshCutBinding"] = bindingPresent,
+                ["wallVisualPresent"] = wallVisualPresent,
+                ["wallVisualEnabled"] = wallVisualEnabled,
+                ["hiddenDonorRenderers"] = hiddenDonorRenderers,
+                ["sectionOrientation"] = section?.Orientation,
+                ["sectionForward"] = section == null ? null :
+                    Vec(section.OrientationDirection),
+                ["sectionLaneAlignment"] = sectionLaneAlignment,
                 ["navmeshCutExactOwner"] = cutExactOwner,
                 ["navmeshCutPresent"] = cutPresent,
                 ["navmeshCutType"] = cutType,
@@ -670,22 +854,63 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["lineOfSightObstacleWithWall"] = losWith,
                 ["lineOfSightObstacleAfter"] = losAfter,
                 ["lineOfSightChanged"] = losWith != losBefore,
-                ["formationGeometry"] = "single-target-point-section",
-                ["wallBreachResidualImplemented"] = false
+                ["formationGeometry"] =
+                    "one grounded ten-foot plane perpendicular to caster-to-point",
+                ["breachAttacker"] = attacker?.UniqueId,
+                ["breachAttack"] = breachAttack == null ? null :
+                    Sprint27AiCommand(breachAttack),
+                ["breachAttackRolls"] = breachAttackRolls,
+                ["physicalDamageRows"] = physicalDamageRows,
+                ["wallAliveAfterPhysical"] = wallAliveAfterPhysical,
+                ["damageAfterPhysical"] = damageAfterPhysical,
+                ["fireDamageRows"] = fireDamageRows,
+                ["residualArea"] = residualArea?.UniqueId,
+                ["residualTimeLeft"] = residualArea == null ? 0d :
+                    Sprint29AreaDuration(residualArea),
+                ["fogArea"] = fogArea?.UniqueId,
+                ["fogTimeLeft"] = fogArea == null ? 0d :
+                    Sprint29AreaDuration(fogArea),
+                ["residualDamageRows"] = residualDamageRows,
+                ["formationAttempts"] = formationAttempts,
+                ["formationDisrupted"] = formationDisrupted,
+                ["wallBreachResidualImplemented"] = true
             };
+            bool automaticPhysicalHit = breachAttackRolls.OfType<JObject>()
+                .Any(value => (bool?)value["hit"] == true &&
+                    (bool?)value["autoHit"] == true);
+            bool physicalWasObjectHalf = physicalDamageRows.OfType<JObject>()
+                .SelectMany(value => value["packets"] ?? new JArray())
+                .OfType<JObject>().Any(value =>
+                    (bool?)value["half"] == true);
+            bool fireWasFull = fireDamageRows.OfType<JObject>()
+                .SelectMany(value => value["packets"] ?? new JArray())
+                .OfType<JObject>().Any(value =>
+                    (string)value["energy"] ==
+                        DamageEnergyType.Fire.ToString() &&
+                    (bool?)value["half"] == false);
+            bool residualDamagedCrosser = residualDamageRows.OfType<JObject>()
+                .Any(value => (int?)value["actual"] > 0);
             check("wall-section-viability", !formationHasInvalidOuterSave &&
                 targetable &&
                 command.Result == UnitCommand.ResultType.Success &&
                 section != null && sectionOffset <= .75f &&
-                hadSummonBuff && bindingPresent && cutPresent &&
+                hadSummonBuff && bindingPresent && wallVisualPresent &&
+                wallVisualEnabled && hiddenDonorRenderers > 0 &&
+                sectionLaneAlignment >= .9f && cutPresent &&
                 cutExactOwner && cutType ==
                     Pathfinding.NavmeshCut.MeshType.Rectangle.ToString() &&
                 cutRegistered && gridApplyQueued && gridApplyCompleted &&
                 gridFailure == null && gridGraphIndex == graphIndex &&
                 gridNodesClaimed > 0 && gridNodesChanged > 0 &&
+                breachAttack != null &&
+                breachAttack.Result == UnitCommand.ResultType.Success &&
+                automaticPhysicalHit && physicalWasObjectHalf &&
+                wallAliveAfterPhysical && damageAfterPhysical > 0 &&
+                fireWasFull && residualArea != null && fogArea != null &&
+                residualDamagedCrosser && formationDisrupted &&
                 obstruction && restored && gridNodeStateRestored &&
                 gridClaimsAfterRelease == 0, row,
-                "A real hidden cast places one temporary attackable section on a measured lane, changes native navmesh pathing, retires through native lifetime ownership, and restores navigation; targeting/LoS is recorded separately.");
+                "A real hidden cast forms one oriented visible section, disrupts legal formation through native SR/save ordering, auto-hits and object-halves a native weapon attack, takes full fire, transitions to owned breach cold/steam, and restores exact navigation; targeting/LoS remains separately disclosed.");
         }
 
         private static bool InfernalEarlyWallObstructs35(JObject before,
@@ -721,7 +946,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (anchor.node == null || !anchor.node.Walkable) return false;
             UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
                 value != null && value.IsInGame).ToArray();
-            const float laneLength = 6f;
+            // Four metres on each side keeps the path witness outside the
+            // printed five-foot formation-save band while the section still
+            // materially changes this otherwise direct route.
+            const float laneLength = 8f;
             for (int dx = -15; dx <= 15; dx += 3)
             for (int dz = -15; dz <= 15; dz += 3)
             for (int index = 0; index < CompassOffsets.Length; index++)

@@ -17,8 +17,10 @@ namespace KingmakerGunslinger.Summoning
     /// </summary>
     public sealed class InfernalWallNavmesh35 : MonoBehaviour
     {
-        internal const float SectionLengthMeters = 3.05f;
-        internal const float SectionThicknessMeters = .75f;
+        internal const float SectionLengthMeters =
+            InfernalRules35.WallOfIceSectionLengthMeters;
+        internal const float SectionThicknessMeters =
+            InfernalRules35.WallOfIceSectionThicknessMeters;
         internal const float SectionHeightMeters = 3.05f;
 
         private sealed class NodeClaim
@@ -43,6 +45,11 @@ namespace KingmakerGunslinger.Summoning
         private TileHandlerHelper _tileHandler;
         private AstarPath _astar;
         private GridGraph _grid;
+        private int _gridGeneration;
+        private GameObject _wallVisual;
+        private Material _wallMaterial;
+        private readonly Dictionary<Renderer, bool> _hiddenRenderers =
+            new Dictionary<Renderer, bool>();
         private readonly List<GraphNode> _claimedNodes =
             new List<GraphNode>();
         private readonly Dictionary<GraphNode, bool> _nodeOriginals =
@@ -51,6 +58,9 @@ namespace KingmakerGunslinger.Summoning
 
         internal NavmeshCut Cut { get { return _cut; } }
         internal UnitEntityData Owner { get { return _owner; } }
+        internal GameObject WallVisual { get { return _wallVisual; } }
+        internal int HiddenDonorRendererCount
+        { get { return _hiddenRenderers.Count; } }
         internal string UpdateRoute { get; private set; }
         internal int RecastApplyRequests { get; private set; }
         internal int GridGraphIndex { get; private set; } = -1;
@@ -87,6 +97,7 @@ namespace KingmakerGunslinger.Summoning
                     "Wall section donor unexpectedly already owns a navmesh cut.");
             _view = view;
             _owner = view.EntityData as UnitEntityData;
+            CreateWallVisual();
             _cut = view.gameObject.AddComponent<NavmeshCut>();
             _cut.type = NavmeshCut.MeshType.Rectangle;
             _cut.rectangleSize = new Vector2(SectionLengthMeters,
@@ -108,11 +119,45 @@ namespace KingmakerGunslinger.Summoning
                 UpdateRoute = "existing-native-tile-handler";
             }
             else UpdateRoute = "native-consumer-pending";
-            QueueGridBlock();
+            QueueGridBlock(false);
         }
 
-        private void QueueGridBlock()
+        private void CreateWallVisual()
         {
+            foreach (Renderer renderer in _view.GetComponentsInChildren<
+                Renderer>(true))
+            {
+                if (renderer == null) continue;
+                _hiddenRenderers[renderer] = renderer.enabled;
+                renderer.enabled = false;
+            }
+            _wallVisual = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            _wallVisual.name = "KMG_S35_WallOfIceSection";
+            _wallVisual.transform.SetParent(_view.transform, false);
+            _wallVisual.transform.localPosition = Vector3.up *
+                (SectionHeightMeters * .5f);
+            _wallVisual.transform.localRotation = Quaternion.identity;
+            _wallVisual.transform.localScale = new Vector3(
+                SectionLengthMeters, SectionHeightMeters,
+                SectionThicknessMeters * .5f);
+            Collider collider = _wallVisual.GetComponent<Collider>();
+            if (collider != null) UnityEngine.Object.DestroyImmediate(collider);
+            Renderer wallRenderer = _wallVisual.GetComponent<Renderer>();
+            Shader shader = Shader.Find("Standard") ??
+                Shader.Find("Legacy Shaders/Diffuse");
+            if (wallRenderer == null || shader == null)
+                throw new InvalidOperationException(
+                    "Wall section requires a supported opaque shader.");
+            _wallMaterial = new Material(shader) {
+                name = "KMG_S35_WallOfIceMaterial",
+                color = new Color(.48f, .78f, .95f, 1f)
+            };
+            wallRenderer.sharedMaterial = _wallMaterial;
+        }
+
+        private void QueueGridBlock(bool replacing)
+        {
+            int generation = ++_gridGeneration;
             _astar = AstarPath.active;
             if (_astar == null || _astar.graphs == null)
                 throw new InvalidOperationException(
@@ -150,7 +195,7 @@ namespace KingmakerGunslinger.Summoning
             GridApplyQueued = true;
             _astar.AddWorkItem(new AstarPath.AstarWorkItem(force =>
             {
-                if (_released) return true;
+                if (_released || generation != _gridGeneration) return true;
                 List<GraphNode> candidates = null;
                 bool changed = false;
                 try
@@ -158,6 +203,15 @@ namespace KingmakerGunslinger.Summoning
                     if (!ReferenceEquals(AstarPath.active, _astar))
                         throw new InvalidOperationException(
                             "Active path graph changed before wall admission.");
+                    if (replacing)
+                    {
+                        changed = ReleaseClaims(true);
+                        _nodeOriginals.Clear();
+                        GridNodesConsidered = 0;
+                        GridNodesClaimed = 0;
+                        GridNodesChanged = 0;
+                        GridApplyCompleted = false;
+                    }
                     candidates = _grid.GetNodesInArea(bounds);
                     if (candidates == null)
                         throw new InvalidOperationException(
@@ -216,6 +270,25 @@ namespace KingmakerGunslinger.Summoning
                 }
                 return true;
             }));
+        }
+
+        internal void Reorient(float orientationDegrees)
+        {
+            if (_released || _view == null || _owner == null ||
+                float.IsNaN(orientationDegrees) ||
+                float.IsInfinity(orientationDegrees)) return;
+            _owner.Orientation = orientationDegrees;
+            _owner.DesiredOrientation = orientationDegrees;
+            _view.transform.rotation = Quaternion.Euler(0f,
+                orientationDegrees, 0f);
+            if (_cut != null) _cut.ForceUpdate();
+            if (_tileHandler != null && _tileHandler.isActiveAndEnabled)
+            {
+                _tileHandler.ForceUpdate();
+                RecastApplyRequests++;
+            }
+            GridApplyQueued = false;
+            QueueGridBlock(true);
         }
 
         private bool ReleaseClaims(bool restoreWalkability)
@@ -280,8 +353,17 @@ namespace KingmakerGunslinger.Summoning
                     RecastApplyRequests > 0)
                     _tileHandler.ForceUpdate();
             }
+            if (_wallVisual != null)
+                UnityEngine.Object.DestroyImmediate(_wallVisual);
+            if (_wallMaterial != null)
+                UnityEngine.Object.DestroyImmediate(_wallMaterial);
+            foreach (var pair in _hiddenRenderers)
+                if (pair.Key != null) pair.Key.enabled = pair.Value;
+            _hiddenRenderers.Clear();
             QueueGridRestore();
             _cut = null;
+            _wallVisual = null;
+            _wallMaterial = null;
             _tileHandler = null;
             _owner = null;
             _view = null;
@@ -293,7 +375,11 @@ namespace KingmakerGunslinger.Summoning
             ModContext context;
             if (!ModContext.TryGet(out context) ||
                 context.FeatureModules?.Active?.ExpandedSummoning != true)
+            {
+                UnitEntityData retiring = _owner;
                 Release();
+                InfernalWallSection35.Retire(retiring);
+            }
         }
 
         private void OnDestroy() { Release(); }
@@ -305,11 +391,16 @@ namespace KingmakerGunslinger.Summoning
         private static void Postfix(UnitEntityView __instance)
         {
             ModContext context;
-            if (!InfernalWallNavmesh35.IsExactIdentity(__instance) ||
-                !ModContext.TryGet(out context) ||
+            if (!InfernalWallNavmesh35.IsExactIdentity(__instance)) return;
+            if (!ModContext.TryGet(out context) ||
                 context.FeatureModules?.Active == null ||
-                !context.FeatureModules.Active.ExpandedSummoning ||
-                __instance.GetComponent<InfernalWallNavmesh35>() != null)
+                !context.FeatureModules.Active.ExpandedSummoning)
+            {
+                InfernalWallSection35.Retire(__instance.EntityData as
+                    UnitEntityData);
+                return;
+            }
+            if (__instance.GetComponent<InfernalWallNavmesh35>() != null)
                 return;
             var owned = __instance.gameObject
                 .AddComponent<InfernalWallNavmesh35>();

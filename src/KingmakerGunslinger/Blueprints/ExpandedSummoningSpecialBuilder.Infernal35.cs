@@ -57,6 +57,8 @@ namespace KingmakerGunslinger.Blueprints
             "2ac7637daeb2aa143a3bae860095b63e";
         private const string ImprovedCriticalClaw35 =
             "76a335b7d69691c4e8376f9379338778";
+        private const string NativeObscuringMistArea35 =
+            "e09010a73354a794293ebc7b33c2d130";
 
         private static void ConfigureInfernal35(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> symbols)
@@ -563,6 +565,23 @@ namespace KingmakerGunslinger.Blueprints
                 new BlueprintComponent[] { quickCost }).ToArray();
             parts.Add(AddResource(quickResource));
             var wall = ConfigureWallAbility35(symbols);
+            var wallSection = Require<BlueprintUnit>(symbols,
+                p + "WallSectionUnit");
+            var wallResidual = Require<BlueprintAbilityAreaEffect>(symbols,
+                p + "WallResidualArea");
+            var wallFog = BlueprintLibraryLookup.RequireExact<
+                BlueprintAbilityAreaEffect>(library,
+                    NativeObscuringMistArea35,
+                    "native Obscuring Mist area/effect carrier");
+            var wallLifetime = ScriptableObject.CreateInstance<
+                InfernalWallSourceLifetime35>();
+            wallLifetime.OwningBlueprint = unit;
+            wallLifetime.WallSection = wallSection;
+            wallLifetime.WallAbility = wall;
+            wallLifetime.ResidualArea = wallResidual;
+            wallLifetime.FogArea = wallFog;
+            wallLifetime.name = "$KMG_S35_BoneWallSourceLifetime";
+            parts.Add(wallLifetime);
             var parameters = ScriptableObject.CreateInstance<
                 Sprint29GiantSpellLikeParameters>();
             parameters.OwningBlueprint = unit;
@@ -587,9 +606,14 @@ namespace KingmakerGunslinger.Blueprints
                 p + "InvisibilityAi", unit, invisibility, true, false, 2);
             var quickAi = ConfigureInfernalAi35(symbols,
                 p + "QuickenedInvisibilityAi", unit, quick, true, false, 6);
+            var wallAi = ConfigureInfernalAi35(symbols, p + "WallAi", unit,
+                wall, false, true, 5);
+            wallAi.WallPlacement = true;
+            wallAi.WallSection = wallSection;
             invisAi.ActiveBuff = invisibilityBuff;
             quickAi.ActiveBuff = invisibilityBuff;
-            unit.Brain = InfernalBrain35(library, symbols, p, quickAi, invisAi);
+            unit.Brain = InfernalBrain35(library, symbols, p, quickAi,
+                wallAi, invisAi);
         }
 
         private static BlueprintBuff ConfigureBoneInvisibilityBuff35(
@@ -805,7 +829,7 @@ namespace KingmakerGunslinger.Blueprints
             ability.Parent = null;
             ability.ActionType = UnitCommand.CommandType.Standard;
             ability.SetIsFullRoundAction(false);
-            ability.Range = AbilityRange.Long;
+            ability.Range = AbilityRange.Medium;
             ability.CanTargetEnemies = false;
             ability.CanTargetFriends = false;
             ability.CanTargetSelf = false;
@@ -816,22 +840,18 @@ namespace KingmakerGunslinger.Blueprints
             ability.EffectOnAlly = AbilityEffectOnUnit.Harmful;
             ability.MaterialComponent = new BlueprintAbility.MaterialComponentData();
             ability.ResourceAssetIds = Array.Empty<string>();
-            var spawn = ScriptableObject.CreateInstance<
-                ContextActionSpawnMonster>();
-            spawn.Blueprint = Require<BlueprintUnit>(symbols,
+            var owner = Require<BlueprintUnit>(symbols,
+                "KMG.Summoning.Unit.BoneDevil");
+            var section = Require<BlueprintUnit>(symbols,
                 Bone35Prefix + "WallSectionUnit");
-            spawn.CountValue = new ContextDiceValue {
-                DiceType = DiceType.Zero, DiceCountValue = Simple(0),
-                BonusValue = Simple(1) };
-            spawn.LevelValue = Simple(0);
-            spawn.DurationValue = new ContextDurationValue {
-                Rate = DurationRate.Minutes, DiceType = DiceType.Zero,
-                DiceCountValue = Simple(0), BonusValue = Simple(12) };
-            spawn.SummonPool = null;
-            spawn.DoNotLinkToCaster = false;
-            spawn.IsDirectlyControllable = false;
-            spawn.AfterSpawn = new ActionList {
-                Actions = Array.Empty<GameAction>() };
+            var placement = ScriptableObject.CreateInstance<
+                InfernalWallTarget35>();
+            placement.OwningBlueprint = owner;
+            placement.WallSection = section;
+            var form = ScriptableObject.CreateInstance<
+                ContextActionFormInfernalWall35>();
+            form.OwningBlueprint = owner;
+            form.WallSection = section;
             var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
             // Installed 2.1.7b AbilityEffectRunAction.Apply returns before
             // running Actions when a save is configured for a point target:
@@ -841,25 +861,36 @@ namespace KingmakerGunslinger.Blueprints
             // that future unit-specific rule as an outer point-target save.
             run.SavingThrowType = SavingThrowType.Unknown;
             run.Actions = new ActionList {
-                Actions = new GameAction[] { spawn } };
+                Actions = new GameAction[] { form } };
             var parameters = ScriptableObject.CreateInstance<
                 ContextCalculateAbilityParams>();
             parameters.StatType = StatType.Charisma;
             parameters.ReplaceCasterLevel = true;
             parameters.CasterLevel = Simple(12);
             parameters.ReplaceSpellLevel = true;
-            parameters.SpellLevel = Simple(4);
+            parameters.SpellLevel = Simple(
+                InfernalRules35.WallOfIceSpellLevel);
+            var school = ScriptableObject.CreateInstance<SpellComponent>();
+            school.School = SpellSchool.Evocation;
             var cold = ScriptableObject.CreateInstance<
                 SpellDescriptorComponent>();
             cold.Descriptor = SpellDescriptor.Cold;
             ability.ComponentsArray = new BlueprintComponent[] {
-                run, parameters, cold };
+                placement, run, parameters, school, cold };
+            ability.Animation =
+                UnitAnimationActionCastSpell.CastAnimationStyle.Omni;
+            ability.Hidden = false;
+            ability.ActionBarAutoFillIgnored = false;
             BlueprintUnitFactAccess.Resolve().Configure(ability,
                 LocalizationService.Create(symbol + ".Name",
-                    "Wall of Ice (Section Viability Candidate)"),
+                    "Wall of Ice"),
                 LocalizationService.Create(symbol + ".Description",
-                    "Hidden Sprint 35 feasibility candidate: forms one temporary attackable section for native obstruction/removal measurement. It is not a published substitute for the complete Wall of Ice."),
+                    "At will as a standard action, form one grounded 10-foot planar ice section at medium range for 12 minutes. Occupied or obstructed placement is illegal. Adjacent creatures may resist the spell and attempt a Reflex save to disrupt formation. The section has 36 hit points, is hit automatically, takes normal object half damage except from fire, blocks movement, and creates a 1d6+12 cold breach for the remaining duration when destroyed. Fire destruction also creates obscuring steam for 10 minutes. This bounded planar form has no hemisphere, Strength-break command, or line-of-effect blocking."),
                 ExpandedSummoningProjectIcons.Require("bone-devil"));
+            ability.LocalizedDuration = LocalizationService.Create(
+                symbol + ".Duration", "12 minutes");
+            ability.LocalizedSavingThrow = LocalizationService.Create(
+                symbol + ".Save", "Reflex negates formation; see text");
             return ability;
         }
 
@@ -876,7 +907,7 @@ namespace KingmakerGunslinger.Blueprints
                 p + "WallSectionUnitType.Name", "Wall of Ice Section");
             type.Description = LocalizationService.Create(
                 p + "WallSectionUnitType.Description",
-                "A private temporary section used to prove native movement obstruction and restored navigation.");
+                "One grounded, attackable section of a Bone Devil's Wall of Ice.");
             type.Image = ExpandedSummoningProjectIcons.Require("bone-devil");
             type.KnowledgeStat = StatType.SkillKnowledgeArcana;
             type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
@@ -885,7 +916,8 @@ namespace KingmakerGunslinger.Blueprints
             var racial = ScriptableObject.CreateInstance<
                 SummonGiantRacialProfile>();
             racial.OwningBlueprint = unit;
-            racial.BaseRacialHitPoints = 36;
+            racial.BaseRacialHitPoints =
+                InfernalRules35.WallOfIceSectionHitPoints;
             racial.BaseFortitude = 0;
             racial.BaseReflex = 0;
             racial.BaseWill = 0;
@@ -904,17 +936,32 @@ namespace KingmakerGunslinger.Blueprints
                 Array.Empty<BlueprintItemWeapon>());
             var immobile = ScriptableObject.CreateInstance<AddCondition>();
             immobile.Condition = UnitCondition.CantAct;
+            var sectionRules = ScriptableObject.CreateInstance<
+                InfernalWallSection35>();
+            sectionRules.OwningBlueprint = unit;
+            sectionRules.SourceBlueprint = Require<BlueprintUnit>(symbols,
+                "KMG.Summoning.Unit.BoneDevil");
+            sectionRules.WallAbility = Require<BlueprintAbility>(symbols,
+                p + "WallOfIce");
+            sectionRules.ResidualArea = Require<BlueprintAbilityAreaEffect>(
+                symbols, p + "WallResidualArea");
+            sectionRules.FogArea = BlueprintLibraryLookup.RequireExact<
+                BlueprintAbilityAreaEffect>(library,
+                    NativeObscuringMistArea35,
+                    "native Obscuring Mist area/effect carrier");
+            sectionRules.name = "$KMG_S35_WallSectionRules";
             var traits = Require<BlueprintFeature>(symbols,
                 p + "WallSectionTraits");
             traits.name = InternalName(p + "WallSectionTraits");
             traits.HideInUI = true;
             traits.IsClassFeature = false;
-            traits.ComponentsArray = new BlueprintComponent[] { immobile };
+            traits.ComponentsArray = new BlueprintComponent[] {
+                immobile, sectionRules };
             BlueprintUnitFactAccess.Resolve().Configure(traits,
                 LocalizationService.Create(p + "WallSectionTraits.Name",
                     "Ice Section"),
                 LocalizationService.Create(p + "WallSectionTraits.Description",
-                    "Stationary, 36 hit points, and linked to the casting Bone Devil's temporary summon duration."), null);
+                    "Stationary, 36 hit points, automatically hit, and linked to the casting Bone Devil's temporary spell duration."), null);
             unit.AddFacts = new BlueprintUnitFact[] { traits };
             var brainDonor = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
                 library, DumbBrainGuid, "inert wall section brain donor");
@@ -938,7 +985,13 @@ namespace KingmakerGunslinger.Blueprints
             residual.IgnoreSleepingUnits = false;
             residual.SpellResistance = true;
             residual.Fx = new Kingmaker.ResourceLinks.PrefabLink();
-            residual.ComponentsArray = Array.Empty<BlueprintComponent>();
+            var residualCold = ScriptableObject.CreateInstance<
+                InfernalWallResidual35>();
+            residualCold.SourceBlueprint = Require<BlueprintUnit>(symbols,
+                "KMG.Summoning.Unit.BoneDevil");
+            residualCold.name = "$KMG_S35_WallResidualCold";
+            residual.ComponentsArray = new BlueprintComponent[] {
+                residualCold };
         }
     }
 }

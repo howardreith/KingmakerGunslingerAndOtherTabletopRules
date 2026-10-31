@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Summoning\InfernalRules35.cs" />
     <Compile Include="Summoning\InfernalRules35Policy.cs" />
+    <Compile Include="Summoning\InfernalWallRules35.cs" />
     <Compile Include="Summoning\InfernalVisualPolicy35.cs" />
     <Compile Include="Summoning\BoneDevilTailVisual35.cs" />
     <Compile Include="Summoning\InfernalWallNavmesh35.cs" />
