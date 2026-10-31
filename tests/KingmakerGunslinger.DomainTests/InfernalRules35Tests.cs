@@ -56,6 +56,17 @@ namespace KingmakerGunslinger.DomainTests
                     .DisposableExpandedSummoningSprint32NativeReview, 1,
                     "sprint35-infernal-bone-extra"),
                 "A broader Bone observer suffix was admitted.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy
+                .SaveFreeParameterScope(RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint32NativeReview, 1,
+                    ExpandedSummoningNativeProfilePolicy
+                        .Sprint35InfernalPublicPhase),
+                "The grouped Sprint 35 public-route observer is admitted.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy
+                .SaveFreeParameterScope(RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint32NativeReview, 1,
+                    "sprint35-infernal-public-extra"),
+                "A broader public observer suffix was admitted.");
             var barbed = ExpandedSummoningCatalog.All.Single(value =>
                 value.Key == "barbed-devil");
             var bone = ExpandedSummoningCatalog.All.Single(value =>
@@ -86,9 +97,9 @@ namespace KingmakerGunslinger.DomainTests
                     SummonMultiplicity.OneD3,
                     SummonMultiplicity.OneD4PlusOne }),
                 "Bone quantities are one, 1d3, then 1d4+1.");
-            Assertions.True(barbedRoutes.Concat(boneRoutes).All(value =>
-                !SummonVisibilityCatalog.IsPublished(value)),
-                "All five executable routes remain suppressed for early proof.");
+            Assertions.True(barbedRoutes.Concat(boneRoutes).All(
+                SummonVisibilityCatalog.IsPublished),
+                "All five qualified executable routes are public together.");
             var routeSymbols = barbedRoutes.Concat(boneRoutes).Select(
                 ExpandedSummoningIdentityCatalog.AbilitySymbol).ToArray();
             var identities = ExpandedSummoningIdentityCatalog.Build();

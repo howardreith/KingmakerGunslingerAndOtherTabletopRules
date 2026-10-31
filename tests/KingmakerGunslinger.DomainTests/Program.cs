@@ -1143,7 +1143,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint34-beard-command-owner", InfernalRules34Tests.BeardRejectsStaleCommandsAndSiblingHits),
             Case("expanded-summoning.sprint34-live-ability-modifiers", InfernalRules34Tests.PrintedAbilityModifiersStayLive),
             Case("expanded-summoning.sprint34-mixed-persistence", InfernalRules34Tests.MixedPersistenceOwnsOnlyTheTwoSelectedCreatures),
-            Case("expanded-summoning.sprint35-hidden-routes", InfernalRules35Tests.HiddenRoutesHaveExactScopeAndQuantity),
+            Case("expanded-summoning.sprint35-public-routes", InfernalRules35Tests.HiddenRoutesHaveExactScopeAndQuantity),
             Case("expanded-summoning.sprint35-contact-predicates", InfernalRules35Tests.ContactPredicatesStayDistinct),
             Case("expanded-summoning.sprint35-live-modifiers", InfernalRules35Tests.LiveModifiersDerivePrintedContracts),
             Case("expanded-summoning.sprint35-unholy-blight", InfernalRules35Tests.UnholyBlightKeepsAlignmentAndSaveFractions),

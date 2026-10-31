@@ -122,13 +122,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         new JArray(unexpectedRegistrations),
                     ["wrongTypes"] = new JArray(wrongTypes)
                 };
-                check("hidden-bootstrap", routes.Length == 5 &&
-                    routes.All(value => !SummonVisibilityCatalog.IsPublished(value)) &&
+                check("public-bootstrap", routes.Length == 5 &&
+                    routes.All(SummonVisibilityCatalog.IsPublished) &&
                     registrations.Length == expectedRegistrations.Length &&
                     missingRegistrations.Length == 0 &&
                     unexpectedRegistrations.Length == 0 &&
                     wrongTypes.Length == 0, bootstrap,
-                    "Both dependency-complete roots resolve while exactly five routes remain unpublished.");
+                    "Both dependency-complete roots resolve while exactly five qualified routes are public.");
 
                 receipt["nativeSpellCensus"] = InfernalNativeSpellCensus35(
                     fixture.Blueprints);
