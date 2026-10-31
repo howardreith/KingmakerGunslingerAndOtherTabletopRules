@@ -4,8 +4,20 @@ namespace KingmakerGunslinger.Summoning
 {
     internal static class InfernalRules35
     {
+        internal const string BarbedUnitSymbol =
+            "KMG.Summoning.Unit.BarbedDevil";
         internal const string BoneUnitSymbol =
             "KMG.Summoning.Unit.BoneDevil";
+        internal const string BarbedPrivateIdentityPrefix =
+            "KMG.Summoning.Infernal.BarbedDevil.";
+        internal const string BonePrivateIdentityPrefix =
+            "KMG.Summoning.Infernal.BoneDevil.";
+        internal const int AppendedCreatureIdentityCount = 2;
+        internal const int AppendedRootIdentityCount = 5;
+        internal const int AppendedPrivateIdentityCount = 47;
+        internal const int AppendedCatalogIdentityCount =
+            AppendedCreatureIdentityCount + AppendedRootIdentityCount +
+            AppendedPrivateIdentityCount;
         internal const string WallSectionUnitSymbol =
             "KMG.Summoning.Infernal.BoneDevil.WallSectionUnit";
         internal const string WallSectionUnitGuid =
@@ -117,7 +129,8 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (FearDc(BarbedHitDice, 4, BarbedFearRacialDcBonus) != 20 ||
+            if (AppendedCatalogIdentityCount != 54 ||
+                FearDc(BarbedHitDice, 4, BarbedFearRacialDcBonus) != 20 ||
                 BarbedBaseCriticalThreatMinimum != 20 ||
                 BarbedEffectiveCriticalThreatMinimum != 19 ||
                 FearDc(BoneHitDice, 4, BoneFearRacialDcBonus) != 19 ||

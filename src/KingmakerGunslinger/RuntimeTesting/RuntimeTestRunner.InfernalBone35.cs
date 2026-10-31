@@ -578,11 +578,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 JObject[] cureSaves = InfernalBoneSaveRows35(trace,
                     cureStart, bone, target, 20).ToArray();
+                JObject[] cureSequence = laterSaves.Concat(cureSaves)
+                    .ToArray();
                 bool cured = InfernalBoneBuff35(target, poison, bone) ==
                         null &&
-                    cureSaves.Length >= 2 &&
-                    (bool?)cureSaves[cureSaves.Length - 1]["passed"] == true &&
-                    (bool?)cureSaves[cureSaves.Length - 2]["passed"] == true;
+                    cureSequence.Length >= 2 &&
+                    (bool?)cureSequence[cureSequence.Length - 1]["passed"] ==
+                        true &&
+                    (bool?)cureSequence[cureSequence.Length - 2]["passed"] ==
+                        true;
                 check("bone-poison-cadence-cure", laterExposure && cured,
                     new JObject {
                         ["laterElapsedGameSeconds"] = Game.Instance
@@ -596,6 +600,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["nativeDifficultyDamageScale"] = statDamageScale,
                         ["highFortBase"] = 100,
                         ["cureSaves"] = new JArray(cureSaves),
+                        ["cureSequence"] = new JArray(cureSequence),
                         ["presentAfterCure"] = InfernalBoneBuff35(target,
                             poison, bone) != null,
                         ["forcedRolls"] = 0

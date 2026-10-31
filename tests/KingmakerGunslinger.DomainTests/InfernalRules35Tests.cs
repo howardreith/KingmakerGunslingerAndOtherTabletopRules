@@ -89,6 +89,26 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(barbedRoutes.Concat(boneRoutes).All(value =>
                 !SummonVisibilityCatalog.IsPublished(value)),
                 "All five executable routes remain suppressed for early proof.");
+            var routeSymbols = barbedRoutes.Concat(boneRoutes).Select(
+                ExpandedSummoningIdentityCatalog.AbilitySymbol).ToArray();
+            var identities = ExpandedSummoningIdentityCatalog.Build();
+            int privateIdentities = identities.Count(value =>
+                value.Symbol.StartsWith(
+                    InfernalRules35.BarbedPrivateIdentityPrefix,
+                    StringComparison.Ordinal) ||
+                value.Symbol.StartsWith(
+                    InfernalRules35.BonePrivateIdentityPrefix,
+                    StringComparison.Ordinal));
+            int sprint35Identities = privateIdentities + identities.Count(
+                value => value.Symbol == InfernalRules35.BarbedUnitSymbol ||
+                    value.Symbol == InfernalRules35.BoneUnitSymbol) +
+                identities.Count(value => routeSymbols.Contains(value.Symbol));
+            Assertions.Equal(InfernalRules35.AppendedPrivateIdentityCount,
+                privateIdentities,
+                "Sprint 35 owns exactly its dependency-complete private graph.");
+            Assertions.Equal(InfernalRules35.AppendedCatalogIdentityCount,
+                sprint35Identities,
+                "The current-surface aggregate derives both units, five routes, and private dependencies.");
             SummonVisibilityCatalog.Validate();
             SummonChoicePresentationPolicy.Validate();
         }

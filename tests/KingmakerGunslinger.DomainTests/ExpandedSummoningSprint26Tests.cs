@@ -20,7 +20,14 @@ namespace KingmakerGunslinger.DomainTests
         internal const int Sprints30And31PrivateIdentityCount = 112;
         internal const int Sprints30And31FoundationIdentityCount = 5 + 23 + Sprints30And31PrivateIdentityCount;
         internal const int Sprint32PrivateIdentityCount = 95;
-        internal const int AppendedCatalogIdentityCount = Sprint26MagicalBeastRules.AppendedCatalogIdentityCount + ExpandedSummoningSprint27Tests.AppendedCatalogIdentityCount + GiantHumanoidRulesPolicy.AppendedCatalogIdentityCount + Sprint29FoundationIdentityCount + Sprints30And31FoundationIdentityCount + 2 + 10 + Sprint32PrivateIdentityCount + 2 + 10 + 22;
+        internal const int AppendedCatalogIdentityCount =
+            Sprint26MagicalBeastRules.AppendedCatalogIdentityCount +
+            ExpandedSummoningSprint27Tests.AppendedCatalogIdentityCount +
+            GiantHumanoidRulesPolicy.AppendedCatalogIdentityCount +
+            Sprint29FoundationIdentityCount +
+            Sprints30And31FoundationIdentityCount + 2 + 10 +
+            Sprint32PrivateIdentityCount + 2 + 10 + 22 +
+            InfernalRules35.AppendedCatalogIdentityCount;
         internal static int RegisteredCreatureCount => ExpandedSummoningCatalog.All.Count;
         internal static int RegisteredMonsterCreatureCount => ExpandedSummoningCatalog.All.Count(value => value.MonsterTier.HasValue);
         internal static int RegisteredNatureAllyCreatureCount => ExpandedSummoningCatalog.All.Count(value => value.NaturesAllyTier.HasValue);
