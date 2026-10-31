@@ -141,7 +141,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             public void OnEventDidTrigger(RuleDealStatDamage evt)
             {
                 var row = Row("stat-damage", evt.Initiator, evt.Target);
-                row["stat"] = evt.Stat?.Type.ToString(); row["damage"] = evt.Damage; row["dice"] = evt.Dices.ToString();
+                row["stat"] = evt.Stat?.Type.ToString(); row["damage"] = evt.Damage;
+                row["dice"] = evt.Dices.ToString(); row["bonus"] = evt.Bonus;
                 row["fact"] = evt.Reason?.Fact?.Blueprint?.AssetGuid; row["source"] = evt.Reason?.Caster?.UniqueId;
             }
             public void OnEventAboutToTrigger(RuleSavingThrow evt) { }
