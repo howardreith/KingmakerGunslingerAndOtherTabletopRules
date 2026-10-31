@@ -691,7 +691,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 deadline = DateTime.UtcNow.AddSeconds(15);
                 while (DateTime.UtcNow < deadline &&
                     (residualArea == null || fogArea == null ||
-                     InfernalWallNavmesh35.ActiveGridClaimCount != 0))
+                     InfernalWallNavmesh35.ActiveGridClaimCount != 0 ||
+                     !trace.Rows.Skip(fireStart).Any(eventRow =>
+                         (string)eventRow["event"] == "damage" &&
+                         (string)eventRow["owner"] == bone.UniqueId &&
+                         (string)eventRow["target"] ==
+                             fireSource.UniqueId &&
+                         (string)eventRow["ability"] ==
+                             wallBlueprint.AssetGuid)))
                 {
                     Game.Instance.IsPaused = false;
                     yield return 0;
@@ -771,7 +778,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (string)eventRow["target"] ==
                                 fixture.Caster.UniqueId &&
                             (string)eventRow["type"] ==
-                                SavingThrowType.Reflex.ToString()));
+                                StatType.SaveReflex.ToString()));
                     formationDisrupted = available &&
                         formationCommand.Result ==
                             UnitCommand.ResultType.Success &&

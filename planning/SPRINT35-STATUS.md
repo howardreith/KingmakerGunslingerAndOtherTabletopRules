@@ -1590,3 +1590,44 @@ Sprint 35 checkpoint; historical records are not current instructions.
   The wrapper restored the 136-file live tree exactly to
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
   no save was touched and no Kingmaker process remains.
+- Targetability candidate `8e14c69079fa5c1388a7e4697c73a4df73357e71`
+  completed source-bound admission and strict packaging with source state
+  `322fe1b674d492c176f45d260ceb99c623fc62a745ee5ec9de5f79f666247f28`,
+  ZIP `df2beb5b5e2dde710fe0db93e0ca86c21c18d792ff0935d6354e1fde86c10866`,
+  DLL `08f0664544459a50cb104e084cb7a3f850a7384701564038ddbfa7f76c97a0f5`
+  and MVID `859679b5-45ce-40eb-94cd-4bc8ca2c5ffc`; selected tests passed
+  10/10 of 2,776. Its exact build/bin/staging set is preserved on E: as
+  1,007 files under manifest SHA-256
+  `B3581EE4E9304B87577231B0DFFA71A6F1DCF5C3CB3582262CE52D982B788D2A`.
+- Guarded run `20261031T1250109528231Z-be0cb7d758594a26ba18906a60c3a460`
+  under evidence directory
+  `20261031T1250109049711Z-disposable-expanded-summoning-sprint32-native-review`
+  retains its original aggregate **FAIL** and runtime-result SHA-256
+  `03ED6280228A4B1427DA84120498E7CC83E7339D79BC7B5B1FF7CD8CA92FB7E0`.
+  The changed precondition was proven: the native appearance buff was present,
+  cleared after 43 frames / 1.431 game seconds, and the section was then
+  targetable; both hostile sources could attack it and neither green-NPC guard
+  applied. The real Glaive command started/acted/finished Success, auto-hit with
+  d20 0, and dealt 7 damage from a native 1d10+12 packet marked half. The
+  independent 100d1 fire rule then dealt 80 full damage (packet final 100),
+  spawned the owned residual-cold and steam areas, released all 22 GridGraph
+  claims, restored every captured node and restored the exact four-point /
+  8.101601839 m route. Movement changed while the wall lived; line of sight did
+  not and remains unclaimed.
+- A bounded reader-only re-evaluation of immutable early evidence SHA-256
+  `46430868EF1919E98A3D43F770BD086E3F679FA601A8508AA0F35140B3CDD00C`
+  is **PASS** for Wall viability, without changing the original verdict. The raw
+  trace contains the exact missing observations: the breach area's first entry
+  performed one native SR check and dealt 16 cold damage from Bone to the fire
+  witness, and each legal retry performed a native SR check followed by a
+  successful DC18 `SaveReflex`; no section formed. The compiled observer sampled
+  residual damage one frame before that event and compared the recorded
+  `StatType` text to `SavingThrowType.Reflex`, so its arrays were empty despite
+  the immutable rows. The observer now waits for that exact damage row and
+  matches `StatType.SaveReflex`; no gameplay rule, roll or state is supplied.
+  These corrected observations will run fresh at the later frozen public
+  candidate boundary; no immediate repeat of already complete native facts is
+  selected. Restoration SHA-256 is
+  `AD9DD9F017C640EC153C36866CA81BBD5463401BC11AFF9967BEE1CA01C4BCE4`;
+  the live 136-file tree restored exactly to intake, no save was touched, and
+  no Kingmaker process remains.
