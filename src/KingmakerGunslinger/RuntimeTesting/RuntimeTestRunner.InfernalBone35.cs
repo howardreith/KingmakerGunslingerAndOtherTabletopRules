@@ -874,24 +874,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (string)value["fact"] == poison.AssetGuid &&
                         (string)value["stat"] ==
                             StatType.Strength.ToString()).ToArray();
-                bool poisonSurvives = bone.Destroyed &&
-                    afterSourceLoss != null && savedDc == 20 &&
-                    afterSourceLoss.Context.Params.DC == savedDc &&
-                    afterSourceLoss.Context.MaybeCaster == null &&
-                    retainedSource == bone.UniqueId &&
-                    sourceLossSaves.Length == 1 &&
-                    sourceLossSaves[0]["owner"].Type == JTokenType.Null &&
-                    ((bool?)sourceLossSaves[0]["passed"] == true ?
-                        sourceLossStat.Length == 0 &&
+                bool sourceDestroyed = bone.Destroyed;
+                bool sameBuffInstance = ReferenceEquals(afterSourceLoss,
+                    survivingPoison);
+                bool dcRetained = afterSourceLoss?.Context?.Params != null &&
+                    savedDc == 20 &&
+                    afterSourceLoss.Context.Params.DC == savedDc;
+                bool liveSourceDetached = afterSourceLoss?.Context != null &&
+                    afterSourceLoss.Context.MaybeCaster == null;
+                bool sourceIdentityRetained = string.Equals(retainedSource,
+                    bone.UniqueId, StringComparison.Ordinal);
+                bool oneDetachedRepeatSave = sourceLossSaves.Length == 1 &&
+                    sourceLossSaves[0]["owner"].Type == JTokenType.Null;
+                bool repeatPassed = oneDetachedRepeatSave &&
+                    (bool?)sourceLossSaves[0]["passed"] == true;
+                bool nativeStatEvent = sourceLossStat.Length == 1 &&
+                    InfernalBoneNativeStatDamage35(sourceLossStat[0],
+                        statDamageScale);
+                bool strengthDeltaMatches = nativeStatEvent &&
+                    target.Stats.Strength.Damage - strengthBeforeSourceLoss ==
+                        (int)sourceLossStat[0]["damage"];
+                bool repeatOutcomeMatches = oneDetachedRepeatSave &&
+                    (repeatPassed ? sourceLossStat.Length == 0 &&
                         target.Stats.Strength.Damage ==
                             strengthBeforeSourceLoss :
-                        sourceLossStat.Length == 1 &&
-                        InfernalBoneNativeStatDamage35(sourceLossStat[0],
-                            statDamageScale) &&
-                        target.Stats.Strength.Damage -
-                            strengthBeforeSourceLoss ==
-                            (int)sourceLossStat[0]["damage"]) &&
-                    Sprint29OwnedAreas(bone, fearArea).Length == 0;
+                        nativeStatEvent && strengthDeltaMatches);
+                int ownedAuraAreas = Sprint29OwnedAreas(bone, fearArea).Length;
+                bool poisonSurvives = sourceDestroyed && sameBuffInstance &&
+                    dcRetained && liveSourceDetached &&
+                    sourceIdentityRetained && oneDetachedRepeatSave &&
+                    repeatOutcomeMatches && ownedAuraAreas == 0;
                 check("bone-poison-source-independence", poisonSurvives,
                     new JObject {
                         ["owner"] = bone.UniqueId,
@@ -904,8 +916,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["dcBefore"] = savedDc,
                         ["after"] = afterSourceLoss == null ? null :
                             InfernalBonePoison35(afterSourceLoss),
-                        ["sameBuffInstance"] = ReferenceEquals(
-                            afterSourceLoss, survivingPoison),
+                        ["sameBuffInstance"] = sameBuffInstance,
                         ["resolvedSourceAfter"] = afterSourceLoss?.Context?
                             .MaybeCaster?.UniqueId,
                         ["retainedSourceReference"] = retainedSource,
@@ -917,8 +928,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["nativeDifficultyDamageScale"] = statDamageScale,
                         ["elapsedGameSeconds"] = Game.Instance.TimeController
                             .GameTime.TotalSeconds - sourceLossBegan,
-                        ["ownedAuraAreas"] = Sprint29OwnedAreas(bone,
-                            fearArea).Length,
+                        ["ownedAuraAreas"] = ownedAuraAreas,
+                        ["subpredicates"] = new JObject {
+                            ["sourceDestroyed"] = sourceDestroyed,
+                            ["sameBuffInstance"] = sameBuffInstance,
+                            ["dcRetained"] = dcRetained,
+                            ["liveSourceDetached"] = liveSourceDetached,
+                            ["sourceIdentityRetained"] =
+                                sourceIdentityRetained,
+                            ["oneDetachedRepeatSave"] =
+                                oneDetachedRepeatSave,
+                            ["repeatPassed"] = repeatPassed,
+                            ["nativeStatEvent"] = nativeStatEvent,
+                            ["strengthDeltaMatches"] =
+                                strengthDeltaMatches,
+                            ["repeatOutcomeMatches"] =
+                                repeatOutcomeMatches,
+                            ["ownedAuraRetired"] = ownedAuraAreas == 0
+                        },
                         ["forcedRolls"] = 0
                     }, "Destroying the exact Bone source ends its active aura but does not erase or retarget the already-inflicted victim-owned poison or Strength damage; the same buff retains its original serialized source identity and its next native exposure retains DC20 even though the live source no longer resolves.");
 

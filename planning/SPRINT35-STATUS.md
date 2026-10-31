@@ -1335,3 +1335,42 @@ Sprint 35 checkpoint; historical records are not current instructions.
   before only those C: copies were removed. Their ZIPs, checksums, receipts and
   logs remain available at the recorded E: archive; raw native evidence and
   runtime backups were never in either removal set.
+- Stabilized-fear candidate `5190828793764dd00a344731fbe2b1999e6841c9`
+  completed the supported development boundary with source state
+  `2c65cedba88a7824ff7d4c72b9169d80cd09f24ad54d1dfd1574ad08a6cb6757`,
+  ZIP `35ee2d00663e8496cdef9dc8bb822ddc0efc2f59127e866ea3efd3ede4db6706`,
+  DLL `991f6596c44e4e8739abcd7d2b7390b606ee0f47a63f58dd3e1c14e5e6195bda`
+  and MVID `4932b28a-539c-418e-b34a-3030f87003a3`. Development admission,
+  strict packaging and the selected Sprint 35/correction group passed 9/9.
+  Its exact-build scratch was copied and verified by relative path, length and
+  SHA-256 before only that C: scratch tree was removed: 162 files /
+  86,713,715 bytes, archive manifest SHA-256
+  `DBCEF8FDA666D8AE0CB5A61643F0B5F067F06600C538C900ADA6CABDC1E1B45D`.
+- Guarded run `20261031T0805455466497Z-19d0a504f1944ee9ae17045d4e156b0e`
+  reached and passed the previously failing Bone fear row, including the first
+  source's allied and hostile DC19 exposures and source-specific memory. It
+  also passed private hostility, mapping, four-limb native lane, non-sting
+  poison negative, sting poison, cadence/two-save cure, standard invisibility,
+  and all three quickened uses/resource exhaustion. The original scenario and
+  poison-source-independence verdicts remain **FAIL**; immutable
+  `runtime-result.json` SHA-256 is
+  `9672F55285FC9CD18298B19B07FD21CDD4E5581165F7DBA181076248505500B9`.
+- A bounded reader-only re-evaluation of that immutable poison row is **PASS**
+  for the source-lifetime requirement, without changing either original
+  verdict. The row contains every required observation: the exact source is
+  destroyed; the same Buff instance remains at DC20; its live caster resolves
+  null while its serialized caster ID remains the destroyed Bone's ID; exactly
+  one source-less DC20 repeat save occurs; the failed save produces exactly one
+  exact-poison Strength event (`1` pre-scale, native `0.8` scale, truncated
+  damage `0`); victim damage therefore remains `5` as the event reports; and
+  the source-owned aura count is zero. The aggregate observer nevertheless
+  emitted false. Because this is the third distinct Bone observer/setup stop,
+  no unchanged or immediate diagnostic relaunch is selected. The observer now
+  snapshots each conjunct once and emits named subpredicates so a later frozen-
+  candidate run cannot repeat an opaque verdict; production mechanics are
+  unchanged. Focused validation compiled production in 46.8 seconds and passed
+  the selected 9/9 Sprint 35/correction tests in 3.0 seconds; package and native
+  checks are deferred to the later frozen candidate. The orchestrator restored
+  the live 136-file tree exactly to
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+  no save interaction occurred.
