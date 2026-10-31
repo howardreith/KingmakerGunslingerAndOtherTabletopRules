@@ -171,6 +171,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     yield return frame;
                 yield break;
             }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint35InfernalPublicPhase)
+            {
+                ReviewInfernalPublic35(fixture);
+                yield break;
+            }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32ShadowDrainPhase)
             {
                 CreateSprint32TurnHostile(fixture);
