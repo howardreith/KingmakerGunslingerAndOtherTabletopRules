@@ -525,9 +525,16 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create(p + "FearCarrier.Description",
                     "Creatures entering within 5 feet save against this bone devil's fear aura (Will DC 19)."),
                 ExpandedSummoningProjectIcons.Require("bone-devil"));
+            var invisibilityBuff = ConfigureBoneInvisibilityBuff35(library,
+                symbols);
+            var nativeInvisibilityBuff = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(library, NativeInvisibilityBuff35,
+                    "native ordinary invisibility effect donor");
             var invisibility = ConfigureOwnedSpell35(library, symbols,
                 p + "Invisibility", NativeInvisibility35, "Invisibility",
                 2, UnitCommand.CommandType.Standard);
+            RequireRetargetedInvisibility35(invisibility,
+                nativeInvisibilityBuff, invisibilityBuff);
             invisibility.Range = AbilityRange.Personal;
             invisibility.CanTargetEnemies = false;
             invisibility.CanTargetFriends = false;
@@ -535,6 +542,8 @@ namespace KingmakerGunslinger.Blueprints
             var quick = ConfigureOwnedSpell35(library, symbols,
                 p + "QuickenedInvisibility", NativeInvisibility35,
                 "Quickened Invisibility", 2, UnitCommand.CommandType.Swift);
+            RequireRetargetedInvisibility35(quick, nativeInvisibilityBuff,
+                invisibilityBuff);
             quick.Range = AbilityRange.Personal;
             quick.CanTargetEnemies = false;
             quick.CanTargetFriends = false;
@@ -578,12 +587,77 @@ namespace KingmakerGunslinger.Blueprints
                 p + "InvisibilityAi", unit, invisibility, true, false, 2);
             var quickAi = ConfigureInfernalAi35(symbols,
                 p + "QuickenedInvisibilityAi", unit, quick, true, false, 6);
-            var invisibilityBuff = BlueprintLibraryLookup.RequireExact<
-                BlueprintBuff>(library, NativeInvisibilityBuff35,
-                    "native ordinary attack-breaking invisibility effect");
             invisAi.ActiveBuff = invisibilityBuff;
             quickAi.ActiveBuff = invisibilityBuff;
             unit.Brain = InfernalBrain35(library, symbols, p, quickAi, invisAi);
+        }
+
+        private static BlueprintBuff ConfigureBoneInvisibilityBuff35(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> symbols)
+        {
+            string symbol = Bone35Prefix + "InvisibilityBuff";
+            var native = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                library, NativeInvisibilityBuff35,
+                "native ordinary invisibility effect donor");
+            var buff = Require<BlueprintBuff>(symbols, symbol);
+            CopyFields(native, buff);
+            buff.name = InternalName(symbol);
+            buff.ComponentsArray = (native.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent)
+                .ToArray();
+            var behavior = buff.ComponentsArray.OfType<BuffInvisibility>()
+                .Single();
+            behavior.NotDispellAfterOffensiveAction = false;
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create(symbol + ".Name", "Invisibility"),
+                LocalizationService.Create(symbol + ".Description",
+                    "This ordinary invisibility ends when the bone devil makes an offensive action."),
+                native.Icon);
+            return buff;
+        }
+
+        private static void RequireRetargetedInvisibility35(
+            BlueprintAbility ability, BlueprintBuff native,
+            BlueprintBuff owned)
+        {
+            int count = 0;
+            var seen = new HashSet<object>();
+            foreach (BlueprintComponent component in ability.ComponentsArray ??
+                Array.Empty<BlueprintComponent>())
+                RetargetInvisibility35(component, native, owned, seen,
+                    ref count);
+            if (count != 1) throw new InvalidOperationException(
+                "Bone invisibility requires exactly one native apply-buff action; found " +
+                count + ".");
+        }
+
+        private static void RetargetInvisibility35(object value,
+            BlueprintBuff native, BlueprintBuff owned, ISet<object> seen,
+            ref int count)
+        {
+            if (value == null || value is string ||
+                value.GetType().IsValueType ||
+                value is BlueprintScriptableObject || !seen.Add(value))
+                return;
+            var apply = value as ContextActionApplyBuff;
+            if (apply != null && ReferenceEquals(apply.Buff, native))
+            {
+                apply.Buff = owned;
+                count++;
+            }
+            foreach (var field in Fields(value.GetType()))
+            {
+                object child = field.GetValue(value);
+                var sequence = child as System.Collections.IEnumerable;
+                if (sequence != null && !(child is string))
+                    foreach (object item in sequence)
+                        RetargetInvisibility35(item, native, owned, seen,
+                            ref count);
+                else RetargetInvisibility35(child, native, owned, seen,
+                    ref count);
+            }
         }
 
         private static void ConfigureBonePoison35(

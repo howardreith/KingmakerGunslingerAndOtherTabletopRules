@@ -200,6 +200,20 @@ namespace KingmakerGunslinger.DomainTests
                 "Negative final damage is invalid input.");
         }
 
+        internal static void BoneInvisibilityOwnsItsAppendedEffectIdentity()
+        {
+            var identities = ExpandedSummoningIdentityCatalog.Build();
+            var effect = identities.Last();
+            Assertions.Equal(
+                "KMG.Summoning.Infernal.BoneDevil.InvisibilityBuff",
+                effect.Symbol,
+                "The native-qualified attack-breaking correction appends one identity without moving released entries.");
+            Assertions.Equal("BlueprintBuff", effect.PlannedType,
+                "Bone's ordinary invisibility effect is a private buff.");
+            Assertions.Equal(1, identities.Count(value => value.Symbol ==
+                effect.Symbol), "The appended Bone effect identity is unique.");
+        }
+
         internal static void PrivateWallUnitHasBoundedShellDonor()
         {
             Assertions.Equal(InfernalRules35.BoneUnitSymbol,
