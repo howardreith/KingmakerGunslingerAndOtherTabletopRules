@@ -858,3 +858,17 @@ Sprint 35 checkpoint; historical records are not current instructions.
   refused build produced a package, DLL candidate or deployment. A new exact
   candidate and only the affected Bone native group are next; Wall of Ice
   still requires the explicit bounded GridGraph gameplay decision above.
+- The first development build from `d344d6b5c048d32fa087c29b55ad84cbbf4ba310`
+  passed the exact append-only development validator (`7,659` total identities,
+  `74` appended after v0.0.172), then stopped in repository validation because
+  the canonical icon catalog still pinned the pre-append ledger hash. It
+  produced no package or deployable DLL candidate; the partial validation
+  directory remains in its immutable commit/purpose location. The correction
+  changes no image, consumer, art count or approval: it updates only the
+  catalog's exact registry SHA-256 to
+  `70bf21168b253683d351c0d83fff54ed6ef1a7c12cbe51a65614ed9ea4ce1534`
+  and its already-present Sprint 35 authorization from 73/46 to the actual
+  74 appended identities/47 private dependencies. Read-only icon validation
+  and all 30 corruption/positive tests pass; the independent summoning
+  manifest again derives 2,638 foundation rows and 4,021 adapters. A fresh
+  commit is required before the single reusable development package is built.
