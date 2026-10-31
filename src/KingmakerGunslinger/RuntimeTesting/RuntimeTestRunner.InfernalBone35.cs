@@ -850,17 +850,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .TotalSeconds;
                 foreach (int frame in InfernalBoneWaitGame35(6.2, 15))
                     yield return frame;
-                Buff afterSourceLoss = InfernalBoneBuff35(target, poison,
-                    bone);
-                JObject[] sourceLossSaves = InfernalBoneSaveRows35(trace,
-                    laterStart, bone, target, 20).ToArray();
-                JObject[] sourceLossStat = InfernalBoneStatRows35(trace,
-                    laterStart, bone, target).ToArray();
+                // MaybeCaster resolves through the live unit pool, so it is
+                // expected to become null after the exact source is destroyed.
+                // The victim-owned poison still retains the original serialized
+                // UnitReference and continues as the same Buff instance. Inspect
+                // that identity directly instead of treating a missing live
+                // entity as a missing effect or filtering out the native
+                // source-less repeat save.
+                Buff afterSourceLoss = target.Buffs.Enumerable
+                    .FirstOrDefault(value => ReferenceEquals(value,
+                        survivingPoison) && ReferenceEquals(value.Blueprint,
+                        poison));
+                string retainedSource = afterSourceLoss?.Context == null ?
+                    null : CircleOriginalCasterId(afterSourceLoss.Context);
+                JObject[] sourceLossSaves = trace.Rows.Skip(laterStart)
+                    .OfType<JObject>().Where(value =>
+                        (string)value["event"] == "save" &&
+                        (string)value["target"] == target.UniqueId &&
+                        (int?)value["dc"] == 20).ToArray();
+                JObject[] sourceLossStat = trace.Rows.Skip(laterStart)
+                    .OfType<JObject>().Where(value =>
+                        (string)value["event"] == "stat-damage" &&
+                        (string)value["target"] == target.UniqueId &&
+                        (string)value["fact"] == poison.AssetGuid &&
+                        (string)value["stat"] ==
+                            StatType.Strength.ToString()).ToArray();
                 bool poisonSurvives = bone.Destroyed &&
                     afterSourceLoss != null && savedDc == 20 &&
                     afterSourceLoss.Context.Params.DC == savedDc &&
-                    ReferenceEquals(afterSourceLoss.Context.MaybeCaster,
-                        bone) && sourceLossSaves.Length == 1 &&
+                    afterSourceLoss.Context.MaybeCaster == null &&
+                    retainedSource == bone.UniqueId &&
+                    sourceLossSaves.Length == 1 &&
+                    sourceLossSaves[0]["owner"].Type == JTokenType.Null &&
                     ((bool?)sourceLossSaves[0]["passed"] == true ?
                         sourceLossStat.Length == 0 &&
                         target.Stats.Strength.Damage ==
@@ -884,6 +905,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["dcBefore"] = savedDc,
                         ["after"] = afterSourceLoss == null ? null :
                             InfernalBonePoison35(afterSourceLoss),
+                        ["sameBuffInstance"] = ReferenceEquals(
+                            afterSourceLoss, survivingPoison),
+                        ["resolvedSourceAfter"] = afterSourceLoss?.Context?
+                            .MaybeCaster?.UniqueId,
+                        ["retainedSourceReference"] = retainedSource,
                         ["laterSaves"] = new JArray(sourceLossSaves),
                         ["laterStatDamage"] = new JArray(sourceLossStat),
                         ["strengthDamageBefore"] =
@@ -895,7 +921,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["ownedAuraAreas"] = Sprint29OwnedAreas(bone,
                             fearArea).Length,
                         ["forcedRolls"] = 0
-                    }, "Destroying the exact Bone source ends its active aura but does not erase or retarget already-inflicted victim-owned poison or Strength damage; the next native exposure retains DC20.");
+                    }, "Destroying the exact Bone source ends its active aura but does not erase or retarget the already-inflicted victim-owned poison or Strength damage; the same buff retains its original serialized source identity and its next native exposure retains DC20 even though the live source no longer resolves.");
 
                 InfernalBoneRemoveEffects35(target, new[] { bone }, poison);
                 InfernalBoneRemoveEffects35(target, fearOwners,
@@ -1130,11 +1156,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 blueprints == null) return;
             UnitEntityData[] exactSources = sources.Where(value =>
                 value != null).Distinct().ToArray();
+            string[] exactSourceIds = exactSources.Select(value =>
+                value.UniqueId).ToArray();
             BlueprintBuff[] exactBlueprints = blueprints.Where(value =>
                 value != null).Distinct().ToArray();
             foreach (Buff buff in victim.Buffs.Enumerable.Where(value =>
                 exactBlueprints.Contains(value.Blueprint) &&
-                exactSources.Contains(value.Context?.MaybeCaster)).ToArray())
+                (exactSources.Contains(value.Context?.MaybeCaster) ||
+                 (value.Context != null && exactSourceIds.Contains(
+                     CircleOriginalCasterId(value.Context))))).ToArray())
                 buff.Remove();
         }
 

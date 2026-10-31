@@ -1250,3 +1250,47 @@ Sprint 35 checkpoint; historical records are not current instructions.
   Unity fact. One changed-observer Bone run is required; the unchanged
   `f503f871` FAIL will not be relaunched. The live installation again restored
   exactly to the same 136-file intake SHA-256 above.
+- Changed-observer candidate `c075b41a01cd4a10ef8f7127b6dc765bfb66bcaa`
+  completed development admission with source state
+  `bab9a4bf4b781ba7a5204ecad7063f0f3ee9108816c7985b539901e9ac759804`,
+  ZIP `acbcc20cab1b92b09cd898276306d2c246c92a97fd8c127962ecd5b8792e49c6`,
+  DLL `43a23e39218d6f2973dab209c8a5b1c251b430045ac70f56025acd2c8da6fe06`
+  and MVID `12ffa9bf-6f5c-4b0b-b9c5-3b855fddfa32`; selected tests passed
+  9/9 and strict package validation passed. Its exact-build scratch is
+  preserved on E: as 162 files / 86,709,784 bytes under manifest SHA-256
+  `5D24471660A279377720BFB5E1E1D4F9AF3678FB56529D151421AD1649D14494`.
+  The first archive copy used a literal wildcard and therefore copied zero
+  files; verification stopped before source removal. The confirmed-empty
+  target was removed and the corrected copy was fully hash-verified before
+  only the reproducible C: exact-build directory was removed.
+- Guarded run `20261031T0718039668633Z-70f7868af8784bb9ac4c7f379d4c2d3a`
+  under evidence directory
+  `20261031T0718039262813Z-disposable-expanded-summoning-sprint32-native-review`
+  proves both targeted corrections. The allied fear result was captured at
+  exposure with exact source memory/frightened, and the later check may expire
+  lawfully. Standard Invisibility and all three quickened casts again broke on
+  real hostile bites; quickened resources reached 3 -> 2 -> 1 -> 0, native
+  `AbilityData.IsAvailable` and the exact-owner AI action were both false at
+  zero. Every earlier attack-plan, sting-only poison, cadence and cure row also
+  passed.
+- The run's remaining FAIL is an observer filter defect, not a production
+  poison-lifetime failure. After destroying the exact Bone source, raw trace at
+  game second 43303.373 records the next DC20 Fortitude save on the same victim
+  (`owner=null`, natural 19, failed under the fixture modifier) and a subsequent
+  Strength-damage event whose fact is the exact private poison. Its pre-scale
+  roll was 1 and the installed 0.8 hostile damage scale truncated actual damage
+  to zero. The old lookup required `Context.MaybeCaster` to resolve the destroyed
+  source and therefore reported the surviving buff and both source-less native
+  events as absent. The corrected observer requires exact Buff-instance
+  continuity, DC20, and the original caster ID retained by the existing
+  serialized `MechanicsContext.m_CasterReference`; it separately records the
+  expected null live resolver and native event attribution. Fixture cleanup now
+  also matches that retained source ID. No gameplay code or balance changed.
+  The first focused compile caught and retained one local value-type access
+  error (`UnitReference` cannot use `?.`); direct access fixed it. The final
+  focused gate compiled production in 46.8 seconds and passed 8/8 Sprint 35
+  tests in 2.7 seconds. Full/package/native claims remain deferred. One changed-
+  observer Bone run is required; the unchanged `c075b41a` FAIL will not be
+  relaunched. The outer wrapper restored the live 136-file installation exactly
+  to intake SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
