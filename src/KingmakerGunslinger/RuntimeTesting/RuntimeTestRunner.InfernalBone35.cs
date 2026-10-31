@@ -170,6 +170,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 check("bone-mapping", mapped, mapping,
                     "The hidden Large Bone root owns bite, two claws and sting as one four-attack routine, the finite Strength poison, a five-foot source aura, and distinct standard/three-use quickened ordinary invisibility graphs.");
 
+                // A Large summon is placed at a safe native separation from
+                // its summoner; that separation is not evidence that the
+                // summoner is inside a five-foot aura. Put this disposable
+                // ally at one measured in-radius point before asking the
+                // native area membership consumer to expose it.
+                Vector3 allyFearAxis = ally.Position - bone.Position;
+                allyFearAxis.y = 0f;
+                if (allyFearAxis.sqrMagnitude < .01f)
+                    allyFearAxis = Vector3.right;
+                allyFearAxis.Normalize();
+                PlaceExpandedSummoningUnit(ally,
+                    bone.Position + allyFearAxis * 1f);
+                Vector3 allyFearOffset = ally.Position - bone.Position;
+                allyFearOffset.y = 0f;
+                float allyFearDistance = allyFearOffset.magnitude;
                 DateTime allyFearDeadline = DateTime.UtcNow.AddSeconds(12);
                 while (DateTime.UtcNow < allyFearDeadline &&
                     !InfernalBoneSaveRows35(trace, allyFearStart, bone,
@@ -302,6 +317,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["ally"] = ally.UniqueId,
                     ["allyFaction"] = ally.Faction?.name,
                     ["sourceFaction"] = bone.Faction?.name,
+                    ["allyPosition"] = new JArray(ally.Position.x,
+                        ally.Position.y, ally.Position.z),
+                    ["sourcePosition"] = new JArray(bone.Position.x,
+                        bone.Position.y, bone.Position.z),
+                    ["allySourceDistanceMeters"] = allyFearDistance,
                     ["allySaves"] = new JArray(allyFear),
                     ["allyMemory"] = InfernalBoneBuff35(ally, memory,
                         bone) == null ? null : InfernalSavedEffect34(
