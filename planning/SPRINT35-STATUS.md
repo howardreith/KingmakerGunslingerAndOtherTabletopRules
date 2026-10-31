@@ -1428,3 +1428,30 @@ Sprint 35 checkpoint; historical records are not current instructions.
   selected 9/9 Sprint 35/correction tests in 5.5 seconds. The observer DLL
   changed, so the late raw FAIL is retained and a new source-bound early run is
   required; the unchanged Wall production implementation is not yet proven.
+- Corrected hidden candidate `12cc945620f2bc69846ad3c3153e434fa7a0de85`
+  completed admission with source state
+  `d8be5bf3036d4ef56233f437cfb2a247701157453aa4cb839c12c55b06c94f88`,
+  ZIP `febfee434a2a5e4c2629ba7855b18f5959cf794ec10ca4c285e5003544f7831f`,
+  DLL `8f073cb560d35da28facea8051d4f9726ad17ee2085cb0f0425d9f1ed01918fa`
+  and MVID `47bd27dd-93d0-439d-81b2-5d2eafc4b9f8`; its 162-file /
+  86,760,550-byte exact build is preserved on E: under manifest SHA-256
+  `51D39F6BA8B6708FE0DABBFA26DAA7C17DBC69DF34D649A227CB0AEA23C0992C`.
+- Guarded early run `20261031T0934466325823Z-6025f197cc1c4588baad34f4d3173e2b`
+  under evidence directory
+  `20261031T0934465734697Z-disposable-expanded-summoning-sprint32-native-review`
+  passed all seven selected cells. The catalog-derived bootstrap found exactly
+  47 expected/actual registrations with no missing, unexpected or wrong-type
+  values, while all five routes remained hidden. The actual unit path used
+  GridGraph 1; the Wall work item considered 32 nodes and claimed/changed 14.
+  The route changed from two points / 6.0080795 m to six points / 7.1193864 m.
+  Section retirement restored every captured walkability value, the original
+  two-point route, and zero active claims. Line of sight did not change and is
+  not claimed. Runtime-result SHA-256 is
+  `6C4ACBEFE7793CEE7684D9A8F7FCCDAA6210EE499B9F836F28448A7159B4DAEB`;
+  focused receipt SHA-256 is
+  `146B06C0E295555AD85F19F2896CE6FF918CD204F1CB5ECE377655B421B61362`.
+  The fixture and native empty world restored, no save interaction occurred,
+  the live tree restored exactly to
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`,
+  and no Kingmaker process remains. Feasibility is closed; formation geometry,
+  Reflex/SR disruption, breach/residual cold, AI and persistence remain open.
