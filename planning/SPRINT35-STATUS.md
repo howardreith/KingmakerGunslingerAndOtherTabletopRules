@@ -687,3 +687,42 @@ Sprint 35 checkpoint; historical records are not current instructions.
   part-null checks corrected that observer-only syntax. Production compilation
   then passed in 25.5 seconds and the selected Sprint 35/correction group passed
   8/8 in 5.1 seconds, including the four exact-owner cleanup admission cases.
+- Exact candidate `7efbea90d19e625b4b120298ed21615ab9b4ace2`
+  passed development admission, selected 8/8 tests, exact-reference
+  compilation, strict 440-file packaging and package validation: source state
+  `7a2c375d6af6f683ac7a6d80f7d63507b7147c9c5988e28e952adb00de2e2d33`;
+  ZIP `d3f1dc4cdc7633587d65c24a1d18df128bd509f7dcd777e4556304f9e438104e`;
+  DLL `9704a6c95c514ed0c625626c3a2eec962d550b412a39f5afde23d4741957cda8`;
+  MVID `219773e5-e505-4b2c-bb12-a1861c0b8c70`. Its 162-file exact
+  build (86,500,642 bytes) is preserved on `E:` under manifest
+  `C9565A0A3EF92BAA59BE310178C91BF67D0CCC2711DFCC7DC4A823AAE800F4FB`.
+  Guarded run `20261030T2358491460573Z-92ed8a8c6b0b4d67bf4d17807578e454`
+  passed every Barbed behavior row reached: real hold establishment; one later
+  natural roll of 3 producing exactly one successful grapple check and one
+  direct `3d8+9` Impale with no replayed claw/fear/default grapple damage; and
+  the isolated real Scorching Ray command making two native ranged-touch hits
+  and two separately attributed `4d8` damage events (17 and 18 damage) while
+  the independent original hold remained live. The sole FAIL was final
+  observer teardown: both owned actors were already destroyed and outside game
+  state, owned areas were zero and every hostile fixture modifier was restored,
+  but the observer required every owner-side native part/buff object on the
+  already destroyed `UnitEntityData` to be null. The aggregate did not record
+  whether the still-live hostile was free. The bounded observer correction
+  records the disposed owner's residual objects but gates success on the live
+  target having no exact owner grapple part, no source-attributed grappled buff
+  and no reciprocal hold. The next run also uses the already-supported native
+  maneuver-immunity condition only for the first later maintain check, then
+  removes it immediately; this lawful fixture precondition guarantees the new
+  exact-owner scheduled release is observed before an ordinary bounded
+  reacquisition and successful Impale, without seeding a roll or changing
+  production balance. Prior natural-1 raw verdict remains preserved. The live
+  tree restored to exact intake SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+  no Kingmaker process remains and no save was staged. Candidate, snapshots,
+  deployment, raw FAIL and restoration are preserved as 309 verified files
+  (130,275,352 bytes) on `E:` under manifest
+  `4B9BA5DC5F714127DFE8F1781644D659458881AADEE050D5565BC0398BDA6BD6`.
+  These unchanged bytes will not be relaunched; the observer-only proof and
+  disposal correction require a new source-bound candidate. Production
+  compilation passed in 26.2 seconds and the selected Sprint 35/correction
+  group passed 8/8 in 4.8 seconds after that bounded observer change.

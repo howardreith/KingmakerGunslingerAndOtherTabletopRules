@@ -436,6 +436,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             int maintainEscapeCmbStart = escapes.Cmb.Count;
                             int maintainEscapeManeuverStart =
                                 escapes.Maneuvers.Count;
+                            bool cleanupProbe = attempt == 0;
+                            if (cleanupProbe)
+                            {
+                                target.Descriptor.State.AddCondition(
+                                    UnitCondition.ImmuneToCombatManeuvers);
+                                maneuverImmunityAdded = true;
+                            }
                             DateTime deadline = DateTime.UtcNow.AddSeconds(25);
                             JObject[] impales = Array.Empty<JObject>();
                             while (DateTime.UtcNow < deadline &&
@@ -446,6 +453,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 yield return 0;
                                 impales = InfernalBarbedImpaleRows35(trace,
                                     maintainEventStart, owner, target).ToArray();
+                            }
+                            if (cleanupProbe)
+                            {
+                                target.Descriptor.State.RemoveCondition(
+                                    UnitCondition.ImmuneToCombatManeuvers);
+                                maneuverImmunityAdded = false;
                             }
                             var maintainManeuvers = maneuvers.Rules.Skip(
                                 maintainManeuverStart).ToArray();
@@ -463,6 +476,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 .Where(value => (int?)value["dc"] == 20)
                                 .ToArray();
                             bool maintained = impales.Length == 1 &&
+                                !cleanupProbe &&
                                 maintainManeuvers.Length == 1 &&
                                 SummonManeuverChecks.Succeeded(
                                     maintainManeuvers[0]) &&
@@ -488,6 +502,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             attemptRow["maintainTargetEscapeManeuvers"] =
                                 InfernalBarbedManeuverRows35(
                                     maintainEscapeManeuvers);
+                            attemptRow["maintainCleanupProbe"] = cleanupProbe;
+                            attemptRow["maintainManeuverImmunityRemoved"] =
+                                !target.Descriptor.State.HasCondition(
+                                    UnitCondition.ImmuneToCombatManeuvers);
                             attemptRow["impaleDamage"] = new JArray(impales);
                             attemptRow["replayedAttacks"] =
                                 new JArray(replayedAttacks);
@@ -550,11 +568,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         grab);
                                 check((targetEscape ?
                                         "barbed-target-escape-before-maintain-" :
+                                        cleanupProbe ?
+                                        "barbed-maintain-immunity-refusal-" :
                                         "barbed-maintain-natural-refusal-") +
                                     (attempt + 1), ownerRefusal || targetEscape,
                                     (JObject)attemptRow.DeepClone(),
                                     targetEscape ?
                                         "A real target-owned native break-free event releases the hold before maintain, without impale, and permits only the next bounded reacquisition." :
+                                    cleanupProbe ?
+                                        "A lawful temporary maneuver-immunity precondition makes one real later grapple check fail, then is removed; the exact Barbed hold releases without Impale and the next bounded ordinary claw may reacquire." :
                                         "A genuine failed later grapple check releases the hold without impale and permits only the next bounded reacquisition.");
                             }
                         }
@@ -691,7 +713,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !Game.Instance.State.AreaEffects.All.Any(value =>
                         cleanupActors.Any(actor => ReferenceEquals(
                             value?.Context?.MaybeCaster, actor))) &&
-                    InfernalBarbedHoldClear35(owner, target, grab) &&
+                    InfernalBarbedTargetReleased35(owner, target, grab) &&
                     target.Stats.AC.BaseValue == oldAc &&
                     target.Stats.SaveWill.BaseValue == oldWill &&
                     target.Stats.HitPoints.BaseValue == oldHitPoints &&
@@ -713,8 +735,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .Count(value => cleanupActors.Any(actor =>
                                 ReferenceEquals(value?.Context?.MaybeCaster,
                                     actor))),
-                        ["ownerHoldCleared"] =
-                            InfernalBarbedHoldClear35(owner, target, grab),
+                        ["targetHoldReleased"] =
+                            InfernalBarbedTargetReleased35(owner, target, grab),
+                        ["disposedOwnerHoldState"] =
+                            InfernalBarbedHoldState35(owner, target, grab),
                         ["hostileAcRestored"] = target.Stats.AC.BaseValue ==
                             oldAc,
                         ["hostileWillRestored"] = target.Stats.SaveWill
@@ -734,7 +758,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["hostileDamageRestored"] = target.Damage ==
                             oldDamage,
                         ["cleanupFrames"] = cleanupFrames
-                    }, "The grouped Barbed transaction removes every owned actor, area, command, hold, fear effect and fixture-only modifier before exit.");
+                    }, "The grouped Barbed transaction destroys every owned actor, removes every live target-side hold and area, and restores every fixture-only modifier; inaccessible native part objects on an already destroyed actor are recorded but are not treated as live gameplay state.");
             }
             finally
             {
@@ -928,6 +952,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SummonGrappleLinks.EstablishingWeapon(owner, target) == null &&
                 owner.Buffs.GetBuff(grab.HoldBuff) == null &&
                 target.Buffs.GetBuff(grab.GrappledBuff) == null;
+        }
+
+        private static bool InfernalBarbedTargetReleased35(
+            UnitEntityData owner, UnitEntityData target,
+            SummonGrabComponent grab)
+        {
+            if (owner == null || target == null || grab == null) return false;
+            UnitPartGrappleTarget held = target.Get<UnitPartGrappleTarget>();
+            bool exactPart = held != null &&
+                ReferenceEquals(held.Initiator.Value, owner);
+            bool exactBuff = grab.GrappledBuff != null &&
+                target.Buffs.Enumerable.Any(value =>
+                    ReferenceEquals(value.Blueprint, grab.GrappledBuff) &&
+                    ReferenceEquals(value.Context?.MaybeCaster, owner));
+            return !exactPart && !exactBuff &&
+                SummonHoldComponent.HeldTarget(owner) == null;
         }
 
         private static JObject InfernalBarbedHoldState35(UnitEntityData owner,
