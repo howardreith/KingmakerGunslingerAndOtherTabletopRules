@@ -254,6 +254,42 @@ namespace KingmakerGunslinger.Summoning
     }
 
     /// <summary>
+    /// Kingmaker's ordinary invisibility remains the primary consumer for
+    /// offensive spell/ability dispatch. Installed 2.1.7b does not raise that
+    /// dispatch for a real UnitAttack in the measured first-area contract, so
+    /// this exact-owner fallback ends only Bone Devil's private effect when its
+    /// own hostile attack roll completes. Misses still count as attacks.
+    /// </summary>
+    [Serializable]
+    public sealed class BoneOrdinaryInvisibility35 :
+        RuleInitiatorLogicComponent<RuleAttackRoll>
+    {
+        public BlueprintUnit OwningBlueprint;
+
+        private void Break(UnitEntityData target, bool exactActor)
+        {
+            UnitEntityData owner = Owner?.Unit;
+            bool exactOwner = exactActor && owner?.Blueprint != null &&
+                OwningBlueprint != null && ReferenceEquals(owner.Blueprint,
+                    OwningBlueprint);
+            if (!InfernalRules35.ShouldBreakBoneInvisibility(exactOwner,
+                    Fact?.Active == true, owner?.IsInGame == true,
+                    target?.IsInGame == true,
+                    owner != null && target != null && owner.IsEnemy(target)))
+                return;
+            Owner.Buffs.RemoveFact(Fact);
+        }
+
+        public override void OnEventAboutToTrigger(RuleAttackRoll evt) { }
+
+        public override void OnEventDidTrigger(RuleAttackRoll evt)
+        {
+            Break(evt?.Target, evt != null &&
+                ReferenceEquals(evt.Initiator, Owner?.Unit));
+        }
+    }
+
+    /// <summary>
     /// PF1 Unholy Blight resolution for one creature selected by the
     /// ability's native 20-foot burst. The ability framework owns range,
     /// action cost, resource debit, and per-target spell resistance. This

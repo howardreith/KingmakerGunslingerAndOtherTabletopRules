@@ -1186,3 +1186,18 @@ Sprint 35 checkpoint; historical records are not current instructions.
   compatibility lock remains, and the live 136-file installation is still
   exact intake SHA-256
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+- The conclusive Bone trace makes the correction smaller than an engine or
+  controller patch. Bone's private ordinary-Invisibility buff now retains the
+  complete deep-cloned native `BuffInvisibility` (including its serialized
+  stealth bonus) for ordinary offensive spell/ability dispatch and appends one
+  exact-owner `RuleAttackRoll` fallback. A live hostile attack attempt, hit or
+  miss, removes only that active private fact; foreign owners, inactive facts,
+  actors outside the active game and non-hostile targets are rejected. The
+  fallback does not raise or synthesize an offensive-action event. Focused
+  validation compiled production in 46.9 seconds and passed the exact Sprint 35
+  selection 8/8 in 9.2 seconds; full, package and native claims remain deferred.
+  The next native rerun is justified only by this causal production change:
+  the same real Bone bite should now consume the effect through the measured
+  attack-roll boundary while the previously passing fear, attack-plan, poison,
+  cadence and resource rows remain unchanged. Only that affected Bone group is
+  selected; Wall of Ice remains stopped on the explicit gameplay decision.
