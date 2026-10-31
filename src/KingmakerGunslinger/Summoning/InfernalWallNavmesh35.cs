@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Harmony12;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.View;
@@ -19,16 +21,52 @@ namespace KingmakerGunslinger.Summoning
         internal const float SectionThicknessMeters = .75f;
         internal const float SectionHeightMeters = 3.05f;
 
+        private sealed class NodeClaim
+        {
+            internal AstarPath Path;
+            internal GridGraph Grid;
+            internal bool OriginalWalkable;
+            internal readonly HashSet<InfernalWallNavmesh35> Owners =
+                new HashSet<InfernalWallNavmesh35>();
+        }
+
+        // This is derived coordination, never saved gameplay truth. The
+        // serialized section units recreate their view components and claims
+        // after load. Reference counts only prevent overlapping live sections
+        // from restoring a node still owned by another section.
+        private static readonly Dictionary<GraphNode, NodeClaim> Claims =
+            new Dictionary<GraphNode, NodeClaim>();
+
         private UnitEntityView _view;
         private UnitEntityData _owner;
         private NavmeshCut _cut;
         private TileHandlerHelper _tileHandler;
+        private AstarPath _astar;
+        private GridGraph _grid;
+        private readonly List<GraphNode> _claimedNodes =
+            new List<GraphNode>();
+        private readonly Dictionary<GraphNode, bool> _nodeOriginals =
+            new Dictionary<GraphNode, bool>();
         private bool _released;
 
         internal NavmeshCut Cut { get { return _cut; } }
         internal UnitEntityData Owner { get { return _owner; } }
         internal string UpdateRoute { get; private set; }
         internal int RecastApplyRequests { get; private set; }
+        internal int GridGraphIndex { get; private set; } = -1;
+        internal int GridNodesConsidered { get; private set; }
+        internal int GridNodesClaimed { get; private set; }
+        internal int GridNodesChanged { get; private set; }
+        internal int GridNodesRestored { get; private set; }
+        internal bool GridApplyQueued { get; private set; }
+        internal bool GridApplyCompleted { get; private set; }
+        internal bool GridRestoreQueued { get; private set; }
+        internal bool GridRestoreCompleted { get; private set; }
+        internal string GridFailure { get; private set; }
+        internal static int ActiveGridClaimCount { get { return Claims.Count; } }
+
+        internal KeyValuePair<GraphNode, bool>[] GridNodeSnapshot()
+        { return _nodeOriginals.ToArray(); }
 
         internal static bool IsExactIdentity(UnitEntityView view)
         {
@@ -70,6 +108,163 @@ namespace KingmakerGunslinger.Summoning
                 UpdateRoute = "existing-native-tile-handler";
             }
             else UpdateRoute = "native-consumer-pending";
+            QueueGridBlock();
+        }
+
+        private void QueueGridBlock()
+        {
+            _astar = AstarPath.active;
+            if (_astar == null || _astar.graphs == null)
+                throw new InvalidOperationException(
+                    "Wall section requires the active native path graph.");
+            float best = float.PositiveInfinity;
+            for (int index = 0; index < _astar.graphs.Length; index++)
+            {
+                var grid = _astar.graphs[index] as GridGraph;
+                if (grid == null || grid.nodes == null) continue;
+                NNInfo nearest = grid.GetNearest(_view.transform.position,
+                    NNConstraint.None);
+                if (nearest.node == null) continue;
+                float distance = Vector3.Distance(nearest.clampedPosition,
+                    _view.transform.position);
+                if (distance >= best) continue;
+                best = distance;
+                _grid = grid;
+                GridGraphIndex = index;
+            }
+            if (_grid == null || best > Math.Max(1.5f, _grid.nodeSize * 2f))
+                throw new InvalidOperationException(
+                    "Wall section has no nearby native GridGraph.");
+
+            Bounds bounds = _cut.GetBounds();
+            bounds.Expand(new Vector3(_grid.nodeSize * 2f, 2f,
+                _grid.nodeSize * 2f));
+            Vector3 center = _view.transform.TransformPoint(_cut.center);
+            Vector3 alongAxis = _view.transform.right.normalized;
+            Vector3 acrossAxis = _view.transform.forward.normalized;
+            float halfLength = _view.transform.TransformVector(
+                Vector3.right * (SectionLengthMeters * .5f)).magnitude;
+            float halfThickness = _view.transform.TransformVector(
+                Vector3.forward * (SectionThicknessMeters * .5f)).magnitude;
+            float nodeSize = _grid.nodeSize;
+            GridApplyQueued = true;
+            _astar.AddWorkItem(new AstarPath.AstarWorkItem(force =>
+            {
+                if (_released) return true;
+                List<GraphNode> candidates = null;
+                bool changed = false;
+                try
+                {
+                    if (!ReferenceEquals(AstarPath.active, _astar))
+                        throw new InvalidOperationException(
+                            "Active path graph changed before wall admission.");
+                    candidates = _grid.GetNodesInArea(bounds);
+                    if (candidates == null)
+                        throw new InvalidOperationException(
+                            "GridGraph returned no wall footprint collection.");
+                    GridNodesConsidered = candidates.Count;
+                    foreach (GraphNode node in candidates)
+                    {
+                        if (node == null || node.GraphIndex !=
+                                (uint)GridGraphIndex) continue;
+                        Vector3 delta = (Vector3)node.position - center;
+                        if (!InfernalRules35.WallNodeIntersects(
+                                Vector3.Dot(delta, alongAxis),
+                                Vector3.Dot(delta, acrossAxis), halfLength,
+                                halfThickness, nodeSize)) continue;
+                        NodeClaim claim;
+                        if (!Claims.TryGetValue(node, out claim))
+                        {
+                            claim = new NodeClaim {
+                                Path = _astar, Grid = _grid,
+                                OriginalWalkable = node.Walkable };
+                            Claims.Add(node, claim);
+                        }
+                        else if (!ReferenceEquals(claim.Path, _astar) ||
+                            !ReferenceEquals(claim.Grid, _grid))
+                            throw new InvalidOperationException(
+                                "A wall node belongs to a different graph claim.");
+                        if (!claim.Owners.Add(this)) continue;
+                        _claimedNodes.Add(node);
+                        _nodeOriginals[node] = claim.OriginalWalkable;
+                        GridNodesClaimed++;
+                        if (node.Walkable)
+                        {
+                            node.Walkable = false;
+                            GridNodesChanged++;
+                            changed = true;
+                        }
+                    }
+                    if (GridNodesClaimed == 0)
+                        throw new InvalidOperationException(
+                            "Wall footprint did not claim a grid node.");
+                    if (changed) _astar.QueueWorkItemFloodFill();
+                    GridApplyCompleted = true;
+                    UpdateRoute = UpdateRoute + "+wall-grid-work-item";
+                }
+                catch (Exception error)
+                {
+                    GridFailure = error.GetType().Name + ": " + error.Message;
+                    if (ReleaseClaims(true))
+                        _astar.QueueWorkItemFloodFill();
+                    Debug.LogException(error);
+                }
+                finally
+                {
+                    if (candidates != null)
+                        Pathfinding.Util.ListPool<GraphNode>.Release(candidates);
+                }
+                return true;
+            }));
+        }
+
+        private bool ReleaseClaims(bool restoreWalkability)
+        {
+            bool changed = false;
+            foreach (GraphNode node in _claimedNodes.ToArray())
+            {
+                NodeClaim claim;
+                if (!Claims.TryGetValue(node, out claim) ||
+                    !claim.Owners.Remove(this)) continue;
+                if (claim.Owners.Count != 0) continue;
+                if (restoreWalkability && node.Walkable !=
+                    claim.OriginalWalkable)
+                {
+                    node.Walkable = claim.OriginalWalkable;
+                    GridNodesRestored++;
+                    changed = true;
+                }
+                Claims.Remove(node);
+            }
+            _claimedNodes.Clear();
+            return changed;
+        }
+
+        private void QueueGridRestore()
+        {
+            if (GridRestoreQueued) return;
+            GridRestoreQueued = true;
+            if (_astar == null || !ReferenceEquals(AstarPath.active, _astar))
+            {
+                ReleaseClaims(false);
+                GridRestoreCompleted = true;
+                return;
+            }
+            _astar.AddWorkItem(new AstarPath.AstarWorkItem(force =>
+            {
+                try
+                {
+                    if (ReleaseClaims(true))
+                        _astar.QueueWorkItemFloodFill();
+                    GridRestoreCompleted = true;
+                }
+                catch (Exception error)
+                {
+                    GridFailure = error.GetType().Name + ": " + error.Message;
+                    Debug.LogException(error);
+                }
+                return true;
+            }));
         }
 
         internal void Release()
@@ -85,10 +280,20 @@ namespace KingmakerGunslinger.Summoning
                     RecastApplyRequests > 0)
                     _tileHandler.ForceUpdate();
             }
+            QueueGridRestore();
             _cut = null;
             _tileHandler = null;
             _owner = null;
             _view = null;
+        }
+
+        private void Update()
+        {
+            if (_released) return;
+            ModContext context;
+            if (!ModContext.TryGet(out context) ||
+                context.FeatureModules?.Active?.ExpandedSummoning != true)
+                Release();
         }
 
         private void OnDestroy() { Release(); }
