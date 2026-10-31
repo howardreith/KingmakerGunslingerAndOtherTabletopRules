@@ -142,6 +142,32 @@ namespace KingmakerGunslinger.Summoning
                 StringComparison.Ordinal) ? BoneUnitSymbol : null;
         }
 
+        internal static bool WallNodeIntersects(float alongMeters,
+            float acrossMeters, float halfLengthMeters,
+            float halfThicknessMeters, float nodeSizeMeters)
+        {
+            if (halfLengthMeters <= 0 || halfThicknessMeters <= 0 ||
+                nodeSizeMeters <= 0 || float.IsNaN(alongMeters) ||
+                float.IsNaN(acrossMeters) ||
+                float.IsNaN(halfLengthMeters) ||
+                float.IsNaN(halfThicknessMeters) ||
+                float.IsNaN(nodeSizeMeters) ||
+                float.IsInfinity(alongMeters) ||
+                float.IsInfinity(acrossMeters) ||
+                float.IsInfinity(halfLengthMeters) ||
+                float.IsInfinity(halfThicknessMeters) ||
+                float.IsInfinity(nodeSizeMeters))
+                throw new ArgumentOutOfRangeException("Wall footprint");
+            // A square grid cell can project by at most half its diagonal on
+            // either arbitrarily rotated wall axis. Include intersecting cells,
+            // not only cells whose centres happen to lie inside the thin wall.
+            float cellProjection = nodeSizeMeters * .70710678f;
+            return Math.Abs(alongMeters) <=
+                    halfLengthMeters + cellProjection &&
+                Math.Abs(acrossMeters) <=
+                    halfThicknessMeters + cellProjection;
+        }
+
         internal static void Validate()
         {
             if (AppendedCatalogIdentityCount != 54 ||
@@ -157,6 +183,9 @@ namespace KingmakerGunslinger.Summoning
                 ShouldClearReleasedImpaleHold(true, true, true) ||
                 PrivateUnitDonorSymbol(WallSectionUnitSymbol) !=
                     BoneUnitSymbol ||
+                !WallNodeIntersects(1.52f, 0f, 1.525f, .375f, .5f) ||
+                !WallNodeIntersects(0f, .6f, 1.525f, .375f, .5f) ||
+                WallNodeIntersects(2f, 0f, 1.525f, .375f, .5f) ||
                 QualifiesForBarbedDefense(true, true, true, 10, 5) ||
                 !QualifiesForBarbedDefense(true, true, false, 10, 5) ||
                 QualifiesForClawFear(true, true, 0) ||

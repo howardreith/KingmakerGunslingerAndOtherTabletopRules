@@ -281,6 +281,28 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Throws<ArgumentNullException>(() =>
                 InfernalRules35.PrivateUnitDonorSymbol(null),
                 "A null private-unit identity is invalid input.");
+            Assertions.True(InfernalRules35.WallNodeIntersects(0, 0,
+                    1.525f, .375f, .5f),
+                "The section centre owns its grid cell.");
+            Assertions.True(InfernalRules35.WallNodeIntersects(1.75f, 0,
+                    1.525f, .375f, .5f),
+                "A cell whose square intersects a rotated wall end is claimed.");
+            Assertions.True(InfernalRules35.WallNodeIntersects(0, .6f,
+                    1.525f, .375f, .5f),
+                "A cell intersecting the thin wall face is claimed.");
+            Assertions.False(InfernalRules35.WallNodeIntersects(2f, 0,
+                    1.525f, .375f, .5f),
+                "A separated cell beyond the wall end stays unchanged.");
+            Assertions.False(InfernalRules35.WallNodeIntersects(0, .8f,
+                    1.525f, .375f, .5f),
+                "A separated cell beyond the wall face stays unchanged.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                InfernalRules35.WallNodeIntersects(0, 0, 1, 0, .5f),
+                "A nonphysical wall footprint is rejected.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                InfernalRules35.WallNodeIntersects(0, 0, float.NaN, .5f,
+                    .5f),
+                "A non-finite wall footprint is rejected.");
         }
 
         internal static void OwnedBodiesDecodeAndTailIsIsolated()

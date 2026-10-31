@@ -476,6 +476,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 binding.UpdateRoute : null;
             int productionRecastApplyRequests = bindingPresent ?
                 binding.RecastApplyRequests : 0;
+            int gridGraphIndex = bindingPresent ?
+                binding.GridGraphIndex : -1;
+            int gridNodesConsidered = bindingPresent ?
+                binding.GridNodesConsidered : 0;
+            int gridNodesClaimed = bindingPresent ?
+                binding.GridNodesClaimed : 0;
+            int gridNodesChanged = bindingPresent ?
+                binding.GridNodesChanged : 0;
+            bool gridApplyQueued = bindingPresent &&
+                binding.GridApplyQueued;
+            bool gridApplyCompleted = bindingPresent &&
+                binding.GridApplyCompleted;
+            string gridFailure = bindingPresent ?
+                binding.GridFailure : null;
+            KeyValuePair<Pathfinding.GraphNode, bool>[] gridSnapshot =
+                bindingPresent ? binding.GridNodeSnapshot() :
+                    new KeyValuePair<Pathfinding.GraphNode, bool>[0];
+            int gridClaimsBeforeRelease =
+                InfernalWallNavmesh35.ActiveGridClaimCount;
             Bounds? cutBounds = cutPresent ? (Bounds?)cut.GetBounds() : null;
             bool cutRegistered = cutPresent &&
                 Pathfinding.NavmeshCut.GetAll().Contains(cut);
@@ -507,10 +526,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             var after = InfernalEarlyPath35(fixture.Caster, destination);
             var restorationSamples = new JArray();
             bool restored = InfernalEarlyWallRestored35(before, after);
+            bool gridNodeStateRestored = gridSnapshot.Length > 0 &&
+                gridSnapshot.All(value => value.Key != null &&
+                    value.Key.Walkable == value.Value);
             deadline = DateTime.UtcNow.AddSeconds(15);
             nextSampleFrame = Time.frameCount;
             while (section != null && DateTime.UtcNow < deadline &&
-                !restored)
+                (!restored || !gridNodeStateRestored))
             {
                 Game.Instance.IsPaused = false;
                 yield return 0;
@@ -518,12 +540,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 nextSampleFrame = Time.frameCount + 10;
                 after = InfernalEarlyPath35(fixture.Caster, destination);
                 restored = InfernalEarlyWallRestored35(before, after);
+                gridNodeStateRestored = gridSnapshot.Length > 0 &&
+                    gridSnapshot.All(value => value.Key != null &&
+                        value.Key.Walkable == value.Value);
                 if (restorationSamples.Count < 16)
                     restorationSamples.Add(new JObject {
                         ["frame"] = Time.frameCount,
                         ["path"] = after
                     });
             }
+            int gridClaimsAfterRelease =
+                InfernalWallNavmesh35.ActiveGridClaimCount;
             bool losAfter = Kingmaker.Visual.FogOfWar.LineOfSightGeometry
                 .Instance.HasObstacle(start, destination, 0);
             var row = new JObject {
@@ -564,6 +591,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["productionUpdateRoute"] = productionUpdateRoute,
                 ["productionRecastApplyRequests"] =
                     productionRecastApplyRequests,
+                ["gridGraphIndex"] = gridGraphIndex,
+                ["gridNodesConsidered"] = gridNodesConsidered,
+                ["gridNodesClaimed"] = gridNodesClaimed,
+                ["gridNodesChanged"] = gridNodesChanged,
+                ["gridApplyQueued"] = gridApplyQueued,
+                ["gridApplyCompleted"] = gridApplyCompleted,
+                ["gridFailure"] = gridFailure,
+                ["gridOriginalWalkability"] = new JArray(gridSnapshot
+                    .Select(value => value.Value)),
+                ["gridClaimsBeforeRelease"] = gridClaimsBeforeRelease,
+                ["gridClaimsAfterRelease"] = gridClaimsAfterRelease,
+                ["gridNodeStateRestored"] = gridNodeStateRestored,
                 ["pathGraphIndex"] = graphIndex,
                 ["pathGraphType"] = graphType,
                 ["activeGraphs"] = new JArray(AstarPath.active.graphs
@@ -599,8 +638,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 hadSummonBuff && bindingPresent && cutPresent &&
                 cutExactOwner && cutType ==
                     Pathfinding.NavmeshCut.MeshType.Rectangle.ToString() &&
-                cutRegistered &&
-                obstruction && restored, row,
+                cutRegistered && gridApplyQueued && gridApplyCompleted &&
+                gridFailure == null && gridGraphIndex == graphIndex &&
+                gridNodesClaimed > 0 && gridNodesChanged > 0 &&
+                obstruction && restored && gridNodeStateRestored &&
+                gridClaimsAfterRelease == 0, row,
                 "A real hidden cast places one temporary attackable section on a measured lane, changes native navmesh pathing, retires through native lifetime ownership, and restores navigation; targeting/LoS is recorded separately.");
         }
 
