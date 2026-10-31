@@ -885,7 +885,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool sourceIdentityRetained = string.Equals(retainedSource,
                     bone.UniqueId, StringComparison.Ordinal);
                 bool oneDetachedRepeatSave = sourceLossSaves.Length == 1 &&
-                    sourceLossSaves[0]["owner"].Type == JTokenType.Null;
+                    sourceLossSaves[0].Property("owner") != null &&
+                    (string)sourceLossSaves[0]["owner"] == null;
                 bool repeatPassed = oneDetachedRepeatSave &&
                     (bool?)sourceLossSaves[0]["passed"] == true;
                 bool nativeStatEvent = sourceLossStat.Length == 1 &&
