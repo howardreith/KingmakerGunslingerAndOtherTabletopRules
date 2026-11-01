@@ -291,19 +291,28 @@ namespace KingmakerGunslinger.RuntimeTesting
             var prior = new HashSet<string>(Game.Instance.State.Units.All
                 .Where(unit => ReferenceEquals(unit.Blueprint,
                     sectionBlueprint)).Select(unit => unit.UniqueId));
-            bone.Commands.Run(command);
-            DateTime deadline = DateTime.UtcNow.AddSeconds(30);
             UnitEntityData section = null;
-            while (DateTime.UtcNow < deadline &&
-                (!command.IsFinished || section == null))
+            SetExpandedSummoningBrainActive(bone, true);
+            try
             {
-                Game.Instance.IsPaused = false;
-                yield return 0;
-                section = Game.Instance.State.Units.All.FirstOrDefault(unit =>
-                    ReferenceEquals(unit.Blueprint, sectionBlueprint) &&
-                    !prior.Contains(unit.UniqueId));
+                bone.Commands.Run(command);
+                DateTime deadline = DateTime.UtcNow.AddSeconds(30);
+                while (DateTime.UtcNow < deadline &&
+                    (!command.IsFinished || section == null))
+                {
+                    Game.Instance.IsPaused = false;
+                    yield return 0;
+                    section = Game.Instance.State.Units.All.FirstOrDefault(
+                        unit => ReferenceEquals(unit.Blueprint,
+                            sectionBlueprint) &&
+                            !prior.Contains(unit.UniqueId));
+                }
             }
-            Game.Instance.IsPaused = true;
+            finally
+            {
+                Game.Instance.IsPaused = true;
+                SetExpandedSummoningBrainActive(bone, false);
+            }
             if (command.Result != UnitCommand.ResultType.Success ||
                 section == null)
                 throw new InvalidOperationException(
