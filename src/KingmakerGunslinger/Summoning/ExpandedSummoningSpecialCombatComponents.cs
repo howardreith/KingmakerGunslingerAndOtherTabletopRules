@@ -830,6 +830,11 @@ namespace KingmakerGunslinger.Summoning
         // this creature has two claws that hold two different foes, so the
         // limb has to come from the hold rather than from the body.
         public BlueprintUnit CrabProfileOwner;
+        // Sprint 35's Barbed Devil uses the same exact-owner, target-owned
+        // maintain lifecycle, but Impale replaces the ordinary establishing-
+        // claw damage on an eligible later successful grapple check. It is
+        // deliberately not Constrict and never fires on the initial grab.
+        public BlueprintUnit ImpaleProfileOwner;
         /// <summary>
         /// Set for a crocodilian. A death roll is a maintain-time rider like
         /// constrict, but it is not a second attack. These fields retain the
@@ -850,6 +855,8 @@ namespace KingmakerGunslinger.Summoning
 
         internal bool HasDeathRoll { get { return DeathRollDiceCount > 0; } }
 
+        internal bool HasImpale { get { return ImpaleProfileOwner != null; } }
+
         internal bool MultiLink { get { return MaxHeldTargets > 1; } }
 
         public override void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
@@ -862,9 +869,11 @@ namespace KingmakerGunslinger.Summoning
         }
 
         /// <summary>
-        /// The owner's live grab component - the instance on its buff, which
-        /// knows its owner and its fact; the blueprint's own instance only as
-        /// a last resort for configuration reads.
+        /// The owner's grab component - first the established buff path (live
+        /// instance, with its prior blueprint fallback), then a hydrated
+        /// active feature component that knows its owner and fact. Sprint 35's
+        /// Barbed Devil is the first grab profile intentionally carried by a
+        /// BlueprintFeature.
         /// </summary>
         internal static SummonGrabComponent Find(UnitEntityData owner)
         {
@@ -879,6 +888,14 @@ namespace KingmakerGunslinger.Summoning
                 SummonGrabComponent grab = buff.Blueprint.ComponentsArray
                     .OfType<SummonGrabComponent>().FirstOrDefault();
                 if (grab != null) return grab;
+            }
+            foreach (var feature in owner.Descriptor.Progression.Features
+                .Enumerable)
+            {
+                if (feature == null || !feature.IsTurnedOn) continue;
+                SummonGrabComponent live = feature.SelectComponents<
+                    SummonGrabComponent>().FirstOrDefault();
+                if (live != null) return live;
             }
             return null;
         }
@@ -1139,6 +1156,36 @@ namespace KingmakerGunslinger.Summoning
                 "d" + (int)DeathRollDiceType + "+" + DeathRollBonus +
                 ";proneBefore=" + proneBefore + ";proneAfter=" + proneAfter +
                 ";heldKept=" + CrocodilianRulesPolicy.KeepsGrappleAfterDeathRoll;
+        }
+
+        /// <summary>
+        /// Barbed Devil Impale is a grapple-check rider, not an attack and not
+        /// claw damage. One direct physical rule prevents the result from
+        /// being observed as a new melee strike by fear, grab or retaliation
+        /// consumers. Its printed +9 is one-and-a-half times the live +6
+        /// Strength modifier; penalties remain signed at one times.
+        /// </summary>
+        internal string DealImpale(UnitEntityData owner,
+            UnitEntityData target, MechanicsContext context)
+        {
+            if (owner == null || target == null || ImpaleProfileOwner == null ||
+                !ReferenceEquals(owner.Blueprint, ImpaleProfileOwner) ||
+                !ReferenceEquals(SummonHoldComponent.HeldTarget(owner), target) ||
+                target.Destroyed || target.Descriptor.State.IsDead)
+                return "refused:no-exact-held-barbed-devil";
+            int strength = owner.Descriptor.Stats.Strength.Bonus;
+            int bonus = strength > 0 ? strength + strength / 2 : strength;
+            var damage = new PhysicalDamage(new DiceFormula(3, DiceType.D8),
+                PhysicalDamageForm.Piercing);
+            damage.AddBonus(bonus);
+            var rule = new RuleDealDamage(owner, target, damage);
+            if (context != null) context.TriggerRule(rule);
+            else Rulebook.Trigger(rule);
+            bool died = target.Destroyed || target.Descriptor.State.IsDead;
+            if (died) SummonHoldComponent.ReleaseLink(owner, target, this, true);
+            return "3d8+" + bonus + ";liveStrengthModifier=" + strength +
+                ";dealt=" + rule.Damage + ";targetDied=" + died +
+                ";heldKept=" + !died;
         }
 
         /// <summary>
@@ -1630,9 +1677,11 @@ namespace KingmakerGunslinger.Summoning
                 ReferenceEquals(owner.Blueprint, grab.SalamanderProfileOwner);
             bool lillend = grab != null && grab.LillendProfileOwner != null &&
                 ReferenceEquals(owner.Blueprint, grab.LillendProfileOwner);
+            bool impale = grab != null && grab.ImpaleProfileOwner != null &&
+                ReferenceEquals(owner.Blueprint, grab.ImpaleProfileOwner);
             bool liveConstrict = snake || salamander || lillend;
             string constrictKind = lillend ? "lillend" : salamander ? "salamander" : "snake";
-            bool guardedRider = crocodilian || liveConstrict;
+            bool guardedRider = crocodilian || liveConstrict || impale;
             bool targetOwned = !guardedRider ||
                 ReferenceEquals(HeldTarget(owner), target);
             if (!targetOwned) return "refused:no-exact-held-target";
@@ -1641,12 +1690,15 @@ namespace KingmakerGunslinger.Summoning
                     target.Destroyed, target.Descriptor.State.IsDead))
             {
                 ReleaseLink(owner, target, grab, true);
-                return liveConstrict ? "released:invalid-" + constrictKind + "-owner-or-target" :
+                return impale ? "released:invalid-barbed-devil-owner-or-target" :
+                    liveConstrict ? "released:invalid-" + constrictKind + "-owner-or-target" :
                     "released:invalid-crocodilian-owner-or-target";
             }
             int roundsHeld = RoundsHeld(heldState);
             if (liveConstrict && roundsHeld <= 0)
                 return constrictKind + "-maintain:waiting-for-later-round";
+            if (impale && roundsHeld <= 0)
+                return "impale-maintain:waiting-for-later-round";
             // Capture the choice entirely from pre-roll state. Claim the
             // round before the maneuver, so re-entry or replay cannot roll
             // another check (and release a hold on that second result).
@@ -1661,7 +1713,8 @@ namespace KingmakerGunslinger.Summoning
             if (guardedRider && roundsHeld > 0 &&
                     !CrocodilianRulesPolicy.TryClaimMaintainRound(roundsHeld,
                         ref lastRiderRound))
-                return (liveConstrict ? constrictKind + "-maintain:" : "crocodilian-maintain:") +
+                return (impale ? "impale-maintain:" :
+                    liveConstrict ? constrictKind + "-maintain:" : "crocodilian-maintain:") +
                     "already-resolved-this-round;round=" +
                     roundsHeld;
             var maneuver = new RuleCombatManeuver(owner, target, CombatManeuver.Grapple);
@@ -1686,6 +1739,8 @@ namespace KingmakerGunslinger.Summoning
                 return "death-roll:" +
                     grab.DealDeathRoll(owner, target, context);
             }
+            if (impale)
+                return "impale:" + grab.DealImpale(owner, target, context);
             ItemEntityWeapon weapon = SummonGrappleLinks.EstablishingWeapon(owner, target);
             bool substituted = weapon == null;
             if (substituted)
@@ -1809,12 +1864,15 @@ namespace KingmakerGunslinger.Summoning
         /// <summary>
         /// Ends one link. Single: removes the target's native part (which
         /// removes its grappled buff and condition); the summon's own
-        /// initiator part is left to the game's grapple controller, which
-        /// drops it once the target is no longer grappled, and to the
+        /// initiator part is normally left to the game's grapple controller,
+        /// which drops it once the target is no longer grappled, and to the
         /// summon's own disposal - removing it here would re-enter this
-        /// buff's removal. Multi: removes the target's held-state buff for
-        /// this holder and, when it was the last link, the holder's own
-        /// MultiHold buff.
+        /// buff's removal. The exact Barbed/Impale owner is the measured
+        /// exception: Kingmaker retains its initiator part and hold buff after
+        /// a failed maintain check, so a main-loop callback removes only that
+        /// now-nonreciprocal pair after this buff callback returns. Multi:
+        /// removes the target's held-state buff for this holder and, when it
+        /// was the last link, the holder's own MultiHold buff.
         /// </summary>
         internal static void ReleaseLink(UnitEntityData owner, UnitEntityData target,
             SummonGrabComponent grab, bool dropHoldWhenLast)
@@ -1824,6 +1882,7 @@ namespace KingmakerGunslinger.Summoning
             if (grab == null || !grab.MultiLink)
             {
                 Release(owner, target);
+                ScheduleReleasedImpaleOwnerCleanup(owner, target, grab);
                 return;
             }
             Buff state = HeldState(owner, target, grab);
@@ -1834,6 +1893,49 @@ namespace KingmakerGunslinger.Summoning
                 Buff hold = owner.Descriptor.Buffs.GetBuff(grab.HoldBuff);
                 if (hold != null) owner.Descriptor.Buffs.RemoveFact(hold);
             }
+        }
+
+        private static void ScheduleReleasedImpaleOwnerCleanup(
+            UnitEntityData owner, UnitEntityData target,
+            SummonGrabComponent grab)
+        {
+            UnitPartGrappleInitiator initiator = owner == null ? null :
+                owner.Get<UnitPartGrappleInitiator>();
+            UnitPartGrappleTarget held = target == null ? null :
+                target.Get<UnitPartGrappleTarget>();
+            bool exactOwner = owner?.Blueprint != null &&
+                grab?.ImpaleProfileOwner != null &&
+                ReferenceEquals(owner.Blueprint, grab.ImpaleProfileOwner);
+            bool exactTarget = initiator != null &&
+                ReferenceEquals(initiator.Target.Value, target);
+            bool reciprocal = held != null &&
+                ReferenceEquals(held.Initiator.Value, owner);
+            if (!InfernalRules35.ShouldClearReleasedImpaleHold(exactOwner,
+                    exactTarget, reciprocal) || Game.Instance == null) return;
+
+            Game.Instance.ScheduleAction(() =>
+            {
+                if (owner == null || owner.Descriptor == null || target == null)
+                    return;
+                UnitPartGrappleInitiator current =
+                    owner.Get<UnitPartGrappleInitiator>();
+                UnitPartGrappleTarget targetPart =
+                    target.Get<UnitPartGrappleTarget>();
+                bool stillExact = current != null &&
+                    ReferenceEquals(current.Target.Value, target);
+                bool nowReciprocal = targetPart != null &&
+                    ReferenceEquals(targetPart.Initiator.Value, owner);
+                if (!InfernalRules35.ShouldClearReleasedImpaleHold(
+                        ReferenceEquals(owner.Blueprint,
+                            grab.ImpaleProfileOwner), stillExact,
+                        nowReciprocal)) return;
+
+                owner.Remove<UnitPartGrappleInitiator>();
+                Buff hold = grab.HoldBuff == null ? null :
+                    owner.Descriptor.Buffs.GetBuff(grab.HoldBuff);
+                if (hold != null) owner.Descriptor.Buffs.RemoveFact(hold);
+                SummonGrappleLinks.Release(owner, target);
+            });
         }
 
         internal static void Release(UnitEntityData owner, UnitEntityData target)

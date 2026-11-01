@@ -21,6 +21,35 @@ function Write-LfText([string]$Path, [string]$Text) {
     [System.IO.File]::WriteAllText($Path, $body, (New-Object System.Text.UTF8Encoding $false))
 }
 
+function Write-LfJsonIndent2([string]$Path, [object]$Value, [int]$Depth) {
+    # The checked-in authoring manifest uses the same stable two-space JSON
+    # format as the Python identity ledger. Windows PowerShell's formatter
+    # otherwise rewrites every protected row with alignment whitespace when a
+    # sparse worktree appends one icon. Python is already a repository build
+    # prerequisite; use it only as the deterministic JSON formatter here.
+    $temporary = Join-Path ([IO.Path]::GetTempPath()) `
+        ('kmg-icon-json-' + [Guid]::NewGuid().ToString('N') + '.json')
+    try {
+        Write-LfText $temporary ($Value | ConvertTo-Json -Depth $Depth -Compress)
+        $program = @'
+import json, sys
+with open(sys.argv[1], 'r', encoding='utf-8') as source:
+    value = json.load(source)
+with open(sys.argv[2], 'w', encoding='utf-8', newline='\n') as target:
+    target.write(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+'@
+        & python -B -c $program $temporary $Path
+        if ($LASTEXITCODE -ne 0) {
+            throw "Stable icon JSON formatting failed: $Path."
+        }
+    }
+    finally {
+        if (Test-Path -LiteralPath $temporary) {
+            Remove-Item -LiteralPath $temporary -Force
+        }
+    }
+}
+
 function Get-Sha256([string]$Path) {
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
 }
@@ -109,6 +138,22 @@ if (@($OnlyKeys | Sort-Object -Unique).Count -ne $OnlyKeys.Count -or
     throw 'OnlyKeys must name distinct manifest concepts.'
 }
 $blueprints = (Get-Content -LiteralPath $blueprintPath -Raw | ConvertFrom-Json).entries
+$existingProvenanceRows = @{}
+$existingRuntimeRows = @{}
+if ($OnlyKeys.Count -gt 0 -and
+    (Test-Path -LiteralPath $provenancePath) -and
+    (Test-Path -LiteralPath $runtimePath)) {
+    $existingProvenance = Get-Content -LiteralPath $provenancePath -Raw |
+        ConvertFrom-Json
+    $existingRuntime = Get-Content -LiteralPath $runtimePath -Raw |
+        ConvertFrom-Json
+    foreach ($row in @($existingProvenance.icons)) {
+        $existingProvenanceRows[[string]$row.key] = $row
+    }
+    foreach ($row in @($existingRuntime.icons)) {
+        $existingRuntimeRows[[string]$row.key] = $row
+    }
+}
 $catalogKeys = @('redcap','axiomite','soul-eater','bogeyman','movanic-deva','frost-giant','thanadaemon')
 $preservedKeys = @('mite','manticore','nereid','hamadryad')
 # Selected revisions. Originals stay in sources/ byte for byte; EDIT.md owns
@@ -137,6 +182,24 @@ foreach ($icon in $icons) {
     $outputRelative = "assets/game/icons/expanded-summoning/$key.png"
     $source = Join-Path $root ($sourceRelative.Replace('/', '\'))
     $output = Join-Path $root ($outputRelative.Replace('/', '\'))
+    # A sparse release worktree intentionally omits the 300+ MiB protected
+    # source archive. A selected append may reuse an unchanged manifest row
+    # only when its existing runtime export still matches that row exactly.
+    # Full exports and VerifyOnly retain the strict all-source requirement.
+    if ($OnlyKeys.Count -gt 0 -and $OnlyKeys -cnotcontains $key -and
+        -not (Test-Path -LiteralPath $source)) {
+        $oldProvenance = $existingProvenanceRows[$key]
+        $oldRuntime = $existingRuntimeRows[$key]
+        if ($null -eq $oldProvenance -or $null -eq $oldRuntime -or
+            -not (Test-Path -LiteralPath $output) -or
+            (Get-Sha256 $output) -cne [string]$oldRuntime.sha256) {
+            throw "Sparse selected export cannot verify unchanged icon: $key."
+        }
+        Assert-MeaningfulImage $output 128 128
+        $provenanceRows += $oldProvenance
+        $runtimeRows += $oldRuntime
+        continue
+    }
     if (-not (Test-Path -LiteralPath $source)) { throw "Missing source icon: $key." }
     Assert-MeaningfulImage $source 1254 1254
     $originalRelative = $null
@@ -193,7 +256,7 @@ foreach ($icon in $icons) {
     }
 }
 
-$duplicateHashes = @($runtimeRows | Group-Object { $_['sha256'] } | Where-Object Count -gt 1)
+$duplicateHashes = @($runtimeRows | Group-Object { $_.sha256 } | Where-Object Count -gt 1)
 if ($duplicateHashes.Count -ne 0) { throw 'Unrelated icon concepts have duplicate production hashes.' }
 $actualOutputs = @(Get-ChildItem -LiteralPath $outputRoot -File -Filter '*.png' | ForEach-Object BaseName | Sort-Object)
 $expectedOutputs = @($icons.key | Sort-Object)
@@ -212,7 +275,7 @@ if (-not $VerifyOnly) {
     # LF, because .gitattributes declares both manifests LF and the icon
     # catalog pins the authoring one. Set-Content would write CRLF and the
     # pin would then only ever match this machine.
-    Write-LfText $provenancePath ($provenance | ConvertTo-Json -Depth 12)
+    Write-LfJsonIndent2 $provenancePath $provenance 12
     Write-LfText $runtimePath ($runtime | ConvertTo-Json -Depth 8)
 } else {
     if (-not (Test-Path $provenancePath) -or -not (Test-Path $runtimePath)) { throw 'Icon manifests are missing.' }

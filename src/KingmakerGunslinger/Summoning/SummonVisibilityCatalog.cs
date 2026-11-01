@@ -105,11 +105,15 @@ namespace KingmakerGunslinger.Summoning
         // symbol reference could make the offline and native surfaces disagree.
         // Validate below retains the exact three SNA-only Brachiosaurus roots.
         // Sprint34 exposes ten routes after hidden native mechanics qualification.
-        // This source state is not a release or completed acceptance claim.
+        // Sprint35 publication removes only the Barbed Devil and Bone Devil
+        // keys after their hidden native qualification. All five Monster
+        // routes and every dependency were allocated while hidden, so no
+        // identity, route or menu ordering moves at publication.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(new string[0], StringComparer.Ordinal);
+            new HashSet<string>(new string[0],
+                StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 1170;
+        internal const int RegisteredLogicalPlacementCount = 1175;
         internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
@@ -146,6 +150,18 @@ namespace KingmakerGunslinger.Summoning
                 value.Creature.Key == "hill-giant" ||
                 value.Creature.Key == "stone-giant" ||
                 value.Creature.Key == "fire-giant").ToArray();
+            SummonVariantSpec[] sprint35 = all.Where(value =>
+                value.Creature.Key == "barbed-devil" ||
+                value.Creature.Key == "bone-devil").ToArray();
+            bool sprint35Routes = sprint35.Length == 5 &&
+                sprint35.All(value => value.Family == SummonFamily.Monster &&
+                    !value.Creature.MonsterTemplated && IsPublished(value)) &&
+                sprint35.Where(value => value.Creature.Key == "barbed-devil")
+                    .Select(value => value.ParentTier).OrderBy(value => value)
+                    .SequenceEqual(new[] { 8, 9 }) &&
+                sprint35.Where(value => value.Creature.Key == "bone-devil")
+                    .Select(value => value.ParentTier).OrderBy(value => value)
+                    .SequenceEqual(new[] { 7, 8, 9 });
             bool giantRoutes = new[] { "hill-giant", "stone-giant" }
                 .All(key => giants.Where(value => value.Creature.Key == key)
                     .Select(value => value.ParentTier).OrderBy(value => value)
@@ -159,7 +175,7 @@ namespace KingmakerGunslinger.Summoning
                 suppressed.Length != SuppressedLogicalPlacementCount ||
                 all.Count(IsPublished) != PublishedLogicalPlacementCount ||
                 SuppressedCreatureKeys.Count != 0 ||
-                !sprint29Routes || !giantRoutes ||
+                !sprint29Routes || !giantRoutes || !sprint35Routes ||
                 !giants.All(IsPublished) ||
                 !giants.Select(value => value.Creature.Key).Distinct()
                     .OrderBy(value => value).SequenceEqual(
