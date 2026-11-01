@@ -22,11 +22,13 @@ OBSERVER = "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.InfernalEar
 BARBED_OBSERVER = "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.InfernalBarbedCombat35.cs"
 BONE_OBSERVER = "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.InfernalBone35.cs"
 RESOURCE_OBSERVER = "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningResourceReceipts.cs"
+PERSISTENCE_OBSERVER = "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.InfernalPersistence35.cs"
 OBSERVERS = {
     OBSERVER: "0840aca62ce12e33700276b2b6b1a89f5c8108626bbf6e9815bce7d0ba385171",
     BARBED_OBSERVER: "da3fb790e956a182afb0f18a80d1af1770cc9fcf4d4c4c501463f05fefb56b1c",
     BONE_OBSERVER: "c59c8160539506ead301486c90db3e2dfc313d5f79b7f1dde0065d2cdfdc2063",
     RESOURCE_OBSERVER: "9f9f656bc9a56eb9d11e2054745763c7ef155a1ce706121e0c198ec2187945ed",
+    PERSISTENCE_OBSERVER: "be3abcd2064e669291e9f0938038a86b3837e3417dd7f6748b2d8e5dce7e20ef",
 }
 ROOTS = ("src/KingmakerGunslinger", "assets", "assets-source", "blueprints")
 RECORD_KEY = "expandedSummoningSprint35Release173"

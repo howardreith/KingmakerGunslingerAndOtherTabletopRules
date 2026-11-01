@@ -58,8 +58,12 @@ function Get-KmgSprint35EvidenceCandidate($Ledger,$Candidate,$Row,$Source) {
     }
     $allowed=@('early-wall-bootstrap','barbed-behavior','barbed-combat',
         'bone-behavior','public-routes-presentation')
-    if($reuse.reason -cne 'EXACT_RESOURCE_CACHE_OBSERVER_CLASSIFICATION_ONLY' -or
-       $reuse.compiledObserver -cne 'src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningResourceReceipts.cs' -or
+    $compiledObservers=@(
+        'src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningResourceReceipts.cs',
+        'src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.InfernalPersistence35.cs')
+    if($reuse.reason -cne 'EXACT_ISOLATED_OBSERVER_CORRECTIONS_ONLY' -or
+       (@($reuse.compiledObservers|Sort-Object -CaseSensitive) -join ',') -cne
+            (@($compiledObservers|Sort-Object -CaseSensitive) -join ',') -or
        (@($reuse.allowedRows|Sort-Object -CaseSensitive) -join ',') -cne
             (@($allowed|Sort-Object -CaseSensitive) -join ',') -or
        $allowed -cnotcontains $Row.id){throw 'Unsupported Sprint35 observer-only evidence reuse.'}
@@ -71,9 +75,11 @@ function Get-KmgSprint35EvidenceCandidate($Ledger,$Candidate,$Row,$Source) {
         if([string]$Source.$key -cne [string]$prior.$priorKey){throw 'Reused evidence differs from the exact prior tuple.'}
     }
     $root=Split-Path -Parent $PSScriptRoot
-    $changed=@(& git -C $root diff --name-only --no-renames $prior.commit $Candidate.commit -- src/KingmakerGunslinger)
-    if($LASTEXITCODE -ne 0 -or $changed.Count -ne 1 -or
-       $changed[0] -cne $reuse.compiledObserver){throw 'Candidate has a compiled change outside the exact observer correction.'}
+    $changed=@(& git -C $root diff --name-only --no-renames $prior.commit $Candidate.commit -- src/KingmakerGunslinger | Sort-Object -CaseSensitive)
+    if($LASTEXITCODE -ne 0 -or ($changed -join ',') -cne
+       (@($compiledObservers|Sort-Object -CaseSensitive) -join ',')){
+        throw 'Candidate has a compiled change outside the exact observer corrections.'
+    }
     return $prior
 }
 
