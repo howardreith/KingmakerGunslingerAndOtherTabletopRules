@@ -248,6 +248,19 @@ namespace KingmakerGunslinger.DomainTests
                 "Poison immunity separately blocks held nausea.");
         }
 
+        internal static void HezrouDeclinesGrabOnlyDuringPrivateCleave()
+        {
+            Assertions.True(InfernalRules36Policy.DeclineGrabDuringCleave(
+                true, true),
+                "The exact Hezrou may decline optional Grab on a private Cleave attack so the chain can continue.");
+            Assertions.False(InfernalRules36Policy.DeclineGrabDuringCleave(
+                true, false),
+                "The same Hezrou retains Grab on ordinary attacks.");
+            Assertions.False(InfernalRules36Policy.DeclineGrabDuringCleave(
+                false, true),
+                "Other Grab owners do not inherit the Hezrou's Cleave choice.");
+        }
+
         internal static void AlignmentBurstsKeepSaveAndSusceptibilityDistinct()
         {
             Assertions.Equal(40,

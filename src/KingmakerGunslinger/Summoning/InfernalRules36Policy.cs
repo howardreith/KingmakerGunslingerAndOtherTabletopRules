@@ -34,6 +34,10 @@ namespace KingmakerGunslinger.Summoning
             bool exactSource, bool heldBySource, bool poisonImmune)
         { return available && exactSource && heldBySource && !poisonImmune; }
 
+        internal static bool DeclineGrabDuringCleave(bool exactOwner,
+            bool privateCleaveAttack)
+        { return exactOwner && privateCleaveAttack; }
+
         internal static bool UsefulDispelEffect(bool active, bool visible,
             bool fromSpell, bool notDispellable, bool hasContext)
         { return active && visible && fromSpell && !notDispellable && hasContext; }
@@ -66,6 +70,9 @@ namespace KingmakerGunslinger.Summoning
                 CanExposeStench(true, true, false, true) ||
                 !CanTestHeldNausea(true, true, true, false) ||
                 CanTestHeldNausea(true, true, false, false) ||
+                !DeclineGrabDuringCleave(true, true) ||
+                DeclineGrabDuringCleave(true, false) ||
+                DeclineGrabDuringCleave(false, true) ||
                 !UsefulDispelEffect(true, true, true, false, true) ||
                 UsefulDispelEffect(true, true, false, false, true) ||
                 UsefulDispelEffect(true, false, true, false, true) ||

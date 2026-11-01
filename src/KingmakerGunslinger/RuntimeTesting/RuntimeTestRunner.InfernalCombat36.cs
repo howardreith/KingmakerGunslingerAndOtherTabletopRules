@@ -185,15 +185,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new RuleCalculateWeaponStats(babau, secondClaw, null));
             var naturalBite = Rulebook.Trigger(
                 new RuleCalculateWeaponStats(babau, bite, null));
+            int strengthBonus = babau.Descriptor.Stats.Strength.Bonus;
             bool naturalStrength =
                 !babau.Body.PrimaryHand.MaybeWeapon.IsSecondary &&
                 !secondClaw.IsSecondary && !bite.IsSecondary &&
-                Math.Abs(naturalPrimary.DamageBonusStatMultiplier - 1f) <
-                    .001f &&
-                Math.Abs(naturalSecond.DamageBonusStatMultiplier - 1f) <
-                    .001f &&
-                Math.Abs(naturalBite.DamageBonusStatMultiplier - 1f) <
-                    .001f;
+                InfernalDamageBonus36(naturalPrimary) == strengthBonus &&
+                InfernalDamageBonus36(naturalSecond) == strengthBonus &&
+                InfernalDamageBonus36(naturalBite) == strengthBonus;
             check("babau-natural-strength", naturalStrength,
                 new JObject {
                     ["owner"] = babau.UniqueId,
@@ -224,10 +222,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool armedStrength =
                 !babau.Body.PrimaryHand.MaybeWeapon.IsSecondary &&
                 bite.IsSecondary &&
-                Math.Abs(spearStats.DamageBonusStatMultiplier - 1.5f) <
-                    .001f &&
-                Math.Abs(armedBite.DamageBonusStatMultiplier - .5f) <
-                    .001f;
+                InfernalDamageBonus36(spearStats) ==
+                    (int)(strengthBonus * 1.5f) &&
+                InfernalDamageBonus36(armedBite) ==
+                    (int)(strengthBonus * .5f);
             check("babau-armed-strength", armedStrength,
                 new JObject {
                     ["owner"] = babau.UniqueId,
@@ -332,6 +330,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["bonus"] = value.Bonus
                     }))
             };
+        }
+
+        private static int? InfernalDamageBonus36(
+            RuleCalculateWeaponStats stats)
+        {
+            return stats?.DamageDescription != null &&
+                stats.DamageDescription.Count == 1 ?
+                (int?)stats.DamageDescription[0].Bonus : null;
         }
 
         private IEnumerable<int> InfernalBabauSneak36(

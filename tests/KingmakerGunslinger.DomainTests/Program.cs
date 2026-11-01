@@ -1159,6 +1159,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint36-protective-slime-contact", InfernalRules36Tests.ProtectiveSlimeOnlyQualifiesNaturalContact),
             Case("expanded-summoning.sprint36-useful-dispel", InfernalRules36Tests.DispelNeedsARealUsefulEffect),
             Case("expanded-summoning.sprint36-distinct-sickness", InfernalRules36Tests.StenchAndHeldNauseaKeepSeparateState),
+            Case("expanded-summoning.sprint36-cleave-grab-choice", InfernalRules36Tests.HezrouDeclinesGrabOnlyDuringPrivateCleave),
             Case("expanded-summoning.sprint36-alignment-bursts", InfernalRules36Tests.AlignmentBurstsKeepSaveAndSusceptibilityDistinct),
             Case("expanded-summoning.sprint18-twenty-six-roots", PrimateRulesTests.TwentySixRootsFollowFromTheCatalogTiers),
             Case("expanded-summoning.sprint18-registered-and-published", PrimateRulesTests.BothApesAreRegisteredAndPublished),
