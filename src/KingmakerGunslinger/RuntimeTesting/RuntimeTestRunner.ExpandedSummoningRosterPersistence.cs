@@ -891,12 +891,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 unit.View?.GetComponent<BoneDevilTailVisual35>() != null)
                         : unit.View?.GetComponent<BoneDevilTailVisual35>() == null;
                 }
-                if (Sprint36PersistenceScope) {
+                // Module OFF is already proven by the explicit loader refusal
+                // and zero owned resources above. The native donor may retain a
+                // renderer with this shared name, so only require the private
+                // Sprint 36 mesh while the module is enabled.
+                if (Sprint36PersistenceScope && moduleOn) {
                     var skin = unit.View?.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                         .SingleOrDefault(value => value.name == TheropodVisualPolicy.BodyRendererName);
-                    theropodBodyExact &= moduleOn
-                        ? skin?.sharedMesh?.name == "KMG_" + receipt.Key + "_Original"
-                        : skin == null;
+                    theropodBodyExact &= skin?.sharedMesh?.name ==
+                        "KMG_" + receipt.Key + "_Original";
                 }
                 visual &= theropodBodyExact;
                 UnityEngine.Object[] giantOwned = unit.View == null ?
