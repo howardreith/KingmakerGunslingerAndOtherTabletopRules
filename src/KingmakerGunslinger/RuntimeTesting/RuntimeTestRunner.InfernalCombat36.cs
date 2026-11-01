@@ -642,44 +642,96 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData target, UnitEntityData ally,
             Action<string, bool, JObject, string> check, string label)
         {
-            var observed = new Astral31SmiteEvents(hezrou, ability,
-                condition, outsider, new[] { target, ally });
-            EventBus.Subscribe(observed);
-            try
+            const int maximumAttempts = 3;
+            var attempts = new JArray();
+            bool passed = false;
+            for (int attempt = 1; attempt <= maximumAttempts && !passed;
+                attempt++)
             {
-                UnitUseAbility command = null;
-                var costs = new JArray();
-                using (var economy = new FirearmReviewCosts(hezrou, costs))
+                int cooldownFrames = 0;
+                if (attempt > 1)
                 {
-                    foreach (int frame in Sprint26Cast(hezrou, ability,
-                        new TargetWrapper(target.Position),
-                        value => command = value)) yield return frame;
-                    RuleSavingThrow targetSave = observed.Save(target);
-                    RuleSavingThrow allySave = observed.Save(ally);
-                    RuleDealDamage targetHit = observed.Damage(target);
-                    RuleDealDamage allyHit = observed.Damage(ally);
-                    Buff targetCondition = target.Buffs.Enumerable
-                        .SingleOrDefault(value => ReferenceEquals(
-                            value.Blueprint, condition) && ReferenceEquals(
-                            value.Context?.MaybeCaster, hezrou));
-                    Buff allyCondition = ally.Buffs.Enumerable
-                        .SingleOrDefault(value => ReferenceEquals(
-                            value.Blueprint, condition) && ReferenceEquals(
-                            value.Context?.MaybeCaster, hezrou));
-                    AbilityData availability = new AbilityData(
-                        hezrou.Descriptor.Abilities.GetAbility(ability));
-                    bool exact = command != null && command.IsFinished &&
-                        command.Result == UnitCommand.ResultType.Success &&
-                        targetSave != null && !targetSave.IsPassed &&
-                        allySave != null && !allySave.IsPassed &&
-                        targetHit != null && targetHit.Damage > 0 &&
-                        allyHit != null && allyHit.Damage > 0 &&
-                        targetCondition != null && allyCondition == null &&
-                        availability.IsAvailable &&
-                        economy.Count(command) == 1 &&
-                        economy.Exact(command, false);
-                    check("hezrou-" + label + "-collateral", exact,
-                        new JObject {
+                    foreach (Buff buff in new[] { target, ally }
+                        .SelectMany(unit => unit.Buffs.Enumerable).Where(
+                            value => ReferenceEquals(value.Blueprint,
+                                condition) && ReferenceEquals(
+                                value.Context?.MaybeCaster, hezrou))
+                        .ToArray()) buff.Remove();
+                    target.Damage = 0;
+                    ally.Damage = 0;
+                    DateTime cooldownDeadline = DateTime.UtcNow.AddSeconds(10);
+                    while (hezrou.CombatState.Cooldown.StandardAction > 0f &&
+                        cooldownFrames < 1200 &&
+                        DateTime.UtcNow < cooldownDeadline)
+                    {
+                        cooldownFrames++;
+                        Game.Instance.IsPaused = false;
+                        yield return 0;
+                    }
+                }
+
+                var observed = new Astral31SmiteEvents(hezrou, ability,
+                    condition, outsider, new[] { target, ally });
+                EventBus.Subscribe(observed);
+                bool naturalRetry = false;
+                try
+                {
+                    UnitUseAbility command = null;
+                    var costs = new JArray();
+                    using (var economy = new FirearmReviewCosts(hezrou,
+                        costs))
+                    {
+                        foreach (int frame in Sprint26Cast(hezrou, ability,
+                            new TargetWrapper(target.Position),
+                            value => command = value)) yield return frame;
+                        RuleSavingThrow targetSave = observed.Save(target);
+                        RuleSavingThrow allySave = observed.Save(ally);
+                        RuleDealDamage targetHit = observed.Damage(target);
+                        RuleDealDamage allyHit = observed.Damage(ally);
+                        Buff targetCondition = target.Buffs.Enumerable
+                            .SingleOrDefault(value => ReferenceEquals(
+                                value.Blueprint, condition) &&
+                                ReferenceEquals(value.Context?.MaybeCaster,
+                                    hezrou));
+                        Buff allyCondition = ally.Buffs.Enumerable
+                            .SingleOrDefault(value => ReferenceEquals(
+                                value.Blueprint, condition) &&
+                                ReferenceEquals(value.Context?.MaybeCaster,
+                                    hezrou));
+                        AbilityData availability = new AbilityData(
+                            hezrou.Descriptor.Abilities.GetAbility(ability));
+                        bool commandExact = command != null &&
+                            command.IsFinished && command.Result ==
+                                UnitCommand.ResultType.Success &&
+                            command.ExecutionProcess != null &&
+                            command.ExecutionProcess.IsEnded &&
+                            economy.Count(command) == 1 &&
+                            economy.Exact(command, false);
+                        passed = commandExact && targetSave != null &&
+                            !targetSave.IsPassed && allySave != null &&
+                            !allySave.IsPassed && targetHit != null &&
+                            targetHit.Damage > 0 && allyHit != null &&
+                            allyHit.Damage > 0 && targetCondition != null &&
+                            allyCondition == null && availability.IsAvailable;
+                        bool targetNatural20 = targetSave != null &&
+                            targetSave.IsPassed && targetSave.D20.Value == 20;
+                        bool allyNatural20 = allySave != null &&
+                            allySave.IsPassed && allySave.D20.Value == 20;
+                        bool nonRngCoherent = targetSave != null &&
+                            targetSave.DifficultyClass == 18 &&
+                            allySave != null &&
+                            allySave.DifficultyClass == 18 &&
+                            targetHit != null && targetHit.Damage > 0 &&
+                            allyHit != null && allyHit.Damage > 0 &&
+                            allyCondition == null && availability.IsAvailable &&
+                            (targetSave.IsPassed ?
+                                targetNatural20 && targetCondition == null :
+                                targetCondition != null) &&
+                            (!allySave.IsPassed || allyNatural20);
+                        naturalRetry = commandExact && nonRngCoherent &&
+                            (targetNatural20 || allyNatural20);
+                        attempts.Add(new JObject {
+                            ["attempt"] = attempt,
                             ["owner"] = hezrou.UniqueId,
                             ["command"] = command == null ? null :
                                 Sprint27AiCommand(command),
@@ -691,13 +743,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["allyCondition"] = allyCondition == null ?
                                 null : InfernalSavedEffect34(allyCondition),
                             ["availableAfter"] = availability.IsAvailable,
+                            ["cooldownWaitFrames"] = cooldownFrames,
+                            ["nonRngCoherent"] = nonRngCoherent,
+                            ["nativeNaturalRetry"] = naturalRetry,
+                            ["passed"] = passed,
                             ["costs"] = costs,
                             ["aiCommands"] = 0
-                        }, "The real at-will " + label +
-                        " burst resolves separate saves and alignment-sensitive damage against both enemy and ally; AI safety does not rewrite the player ability enemy-only.");
+                        });
+                    }
                 }
+                finally { EventBus.Unsubscribe(observed); }
+                if (!passed && !naturalRetry) break;
             }
-            finally { EventBus.Unsubscribe(observed); }
+            check("hezrou-" + label + "-collateral", passed,
+                new JObject {
+                    ["owner"] = hezrou.UniqueId,
+                    ["attempts"] = attempts,
+                    ["maximumAttempts"] = maximumAttempts,
+                    ["selectedAttempt"] = passed ? (int?)attempts.Count :
+                        null,
+                    ["forcedRolls"] = 0,
+                    ["aiCommands"] = 0
+                }, "The real at-will " + label +
+                " burst resolves separate saves and alignment-sensitive damage against both enemy and ally within at most three natural attempts; AI safety does not rewrite the player ability enemy-only.");
         }
 
         private IEnumerable<int> InfernalHezrouFallback36(
