@@ -50,7 +50,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             UnitEntityData babau = null;
             UnitEntityData hostileBabau = null;
-            UnitEntityData slimeNaturalAttacker = null;
             UnitEntityData hezrou = null;
             UnitEntityData bone = null;
             UnitEntityData target = fixture.Hostile;
@@ -85,8 +84,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 babau = CastExpandedSummoningOwnTier(fixture, "babau");
                 hostileBabau = CastExpandedSummoningOwnTier(fixture,
                     "babau");
-                slimeNaturalAttacker = CastExpandedSummoningOwnTier(
-                    fixture, "wolf");
                 // Stench may evaluate as soon as the Hezrou enters the
                 // spatial grid. Establish the legal failed-save precondition
                 // before spawning its source, not after an earlier successful
@@ -95,7 +92,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 hezrou = CastExpandedSummoningOwnTier(fixture, "hezrou");
                 owned.Add(babau);
                 owned.Add(hostileBabau);
-                owned.Add(slimeNaturalAttacker);
                 owned.Add(hezrou);
                 foreach (UnitEntityData actor in owned)
                 {
@@ -120,8 +116,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // maneuver observer.  Mutating the owned faction blueprint
                 // alone does not refresh an existing group's relationship
                 // cache and produced a false non-hostile precondition.
-                UnitEntityData[] attackers = { hostileBabau,
-                    slimeNaturalAttacker };
+                // The fixture's request-owned hostile already has a real
+                // native empty-hand weapon and no demon acid resistance. Use
+                // that isolated disposable actor for the unarmed positive;
+                // introducing an unrelated summon would add an unnecessary
+                // body/appearance precondition to this mechanics observer.
+                UnitEntityData[] attackers = { hostileBabau, target };
                 foreach (UnitEntityData attacker in attackers)
                 {
                     attacker.GroupId = attacker.UniqueId;
@@ -140,16 +140,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     attacker.IsEnemy(babau) && babau.IsEnemy(attacker));
                 check("private-hostility", hostile, new JObject {
                     ["attacker"] = hostileBabau.UniqueId,
-                    ["naturalAttacker"] = slimeNaturalAttacker.UniqueId,
+                    ["naturalAttacker"] = target.UniqueId,
                     ["defender"] = babau.UniqueId,
                     ["attackerFaction"] = hostileBabau.Faction.name,
                     ["defenderFaction"] = babau.Faction.name,
                     ["attackerIsEnemy"] = hostileBabau.IsEnemy(babau),
                     ["defenderIsEnemy"] = babau.IsEnemy(hostileBabau),
                     ["naturalAttackerIsEnemy"] =
-                        slimeNaturalAttacker.IsEnemy(babau),
+                        target.IsEnemy(babau),
                     ["defenderIsNaturalAttackerEnemy"] =
-                        babau.IsEnemy(slimeNaturalAttacker),
+                        babau.IsEnemy(target),
                     ["originalAttackFactions"] = new JArray(
                         (oldAttackFactions ?? Array.Empty<BlueprintFaction>())
                             .Select(value => value.name)),
@@ -160,15 +160,14 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 int babauAc = babau.Stats.AC.BaseValue;
                 int attackerReflex = hostileBabau.Stats.SaveReflex.BaseValue;
-                int naturalReflex = slimeNaturalAttacker.Stats.SaveReflex
-                    .BaseValue;
+                int naturalReflex = target.Stats.SaveReflex.BaseValue;
                 babau.Stats.AC.BaseValue = -100;
                 hostileBabau.Stats.SaveReflex.BaseValue = -100;
-                slimeNaturalAttacker.Stats.SaveReflex.BaseValue = -100;
+                target.Stats.SaveReflex.BaseValue = -100;
                 try
                 {
                     foreach (int frame in InfernalCoreSlime36(fixture,
-                        hostileBabau, slimeNaturalAttacker, babau, trace,
+                        hostileBabau, target, babau, trace,
                         check))
                         yield return frame;
                 }
@@ -177,8 +176,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     babau.Stats.AC.BaseValue = babauAc;
                     hostileBabau.Stats.SaveReflex.BaseValue =
                         attackerReflex;
-                    slimeNaturalAttacker.Stats.SaveReflex.BaseValue =
-                        naturalReflex;
+                    target.Stats.SaveReflex.BaseValue = naturalReflex;
                 }
 
                 bone = CastExpandedSummoningOwnTier(fixture, "bone-devil");
