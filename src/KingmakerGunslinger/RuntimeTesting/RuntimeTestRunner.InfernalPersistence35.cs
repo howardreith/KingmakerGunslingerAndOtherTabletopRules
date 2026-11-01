@@ -331,6 +331,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Stat == StatType.Strength;
             bool resourceExact = (int?)resources["barbedUnholy"] == 0 &&
                 (int?)resources["boneQuickenedInvisibility"] == 0;
+            bool wallRetiredFromGameplay = wall == null || wall.Destroyed ||
+                !wall.IsInState ||
+                (OwnsInfernalState35(wall, caster, sources) &&
+                 wall.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics
+                     .SummonedUnitBuff) == null &&
+                 wall.View?.GetComponent<InfernalWallNavmesh35>() == null);
             bool wallExact = enabled
                 ? wall != null && OwnsInfernalState35(wall, caster,
                     sources) &&
@@ -338,7 +344,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     wall.View.GetComponent<InfernalWallNavmesh35>()
                         .GridNodesClaimed > 0 &&
                     InfernalWallNavmesh35.ActiveGridClaimCount > 0
-                : wall == null &&
+                : wallRetiredFromGameplay &&
                     InfernalWallNavmesh35.ActiveGridClaimCount == 0;
             bool exact = poisons.Length == 1 && poisonExact &&
                 resourceExact && wallExact;
@@ -352,6 +358,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["poison"] = InfernalBonePoison35(poison),
                     ["resources"] = resources,
                     ["wall"] = InfernalSavedWall35(wall),
+                    ["wallRetiredFromGameplay"] =
+                        wallRetiredFromGameplay,
                     ["poisonSourceId"] = poison == null ? null :
                         CircleOriginalCasterId(poison.Context),
                     ["effectOnlyPoisonPrecondition"] = true,

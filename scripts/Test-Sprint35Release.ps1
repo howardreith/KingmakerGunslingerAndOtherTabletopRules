@@ -74,8 +74,10 @@ Pass {Assert-KmgSprint35Qualification $ledger $candidate}
 function ObserverReuseLedger([string]$rowId) {
     $copy=CopyLedger
     $copy|Add-Member observerOnlyReuse ([pscustomobject]@{
-        reason='EXACT_RESOURCE_CACHE_OBSERVER_CLASSIFICATION_ONLY'
-        compiledObserver='src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningResourceReceipts.cs'
+        reason='EXACT_ISOLATED_OBSERVER_CORRECTIONS_ONLY'
+        compiledObservers=@(
+            'src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningResourceReceipts.cs',
+            'src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.InfernalPersistence35.cs')
         allowedRows=@('early-wall-bootstrap','barbed-behavior','barbed-combat','bone-behavior','public-routes-presentation')
         prior=[pscustomobject]@{
             commit='f785c3035662c7baeae5e0c5f82e85973e03e489'
@@ -96,6 +98,7 @@ function ObserverReuseLedger([string]$rowId) {
 }
 Pass {$l=ObserverReuseLedger 'early-wall-bootstrap';Assert-KmgSprint35Qualification $l $candidate}
 Refuse {$l=ObserverReuseLedger 'early-wall-bootstrap';$l.observerOnlyReuse.prior.dllMvid='wrong';Assert-KmgSprint35Qualification $l $candidate}
+Refuse {$l=ObserverReuseLedger 'early-wall-bootstrap';$l.observerOnlyReuse.compiledObservers=@($l.observerOnlyReuse.compiledObservers[0]);Assert-KmgSprint35Qualification $l $candidate}
 Refuse {$l=ObserverReuseLedger 'highest-risk-integration';Assert-KmgSprint35Qualification $l $candidate}
 Refuse {$l=ObserverReuseLedger 'early-wall-bootstrap';$l.PSObject.Properties.Remove('observerOnlyReuse');Assert-KmgSprint35Qualification $l $candidate}
 Pass {Assert-KmgClosureProofFiles -Ledger $ledger -Sprint35InfernalReach -Candidate $candidate}
