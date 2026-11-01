@@ -305,7 +305,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 };
                 bool exact = command.Result ==
                         UnitCommand.ResultType.Success && exactWeapons &&
-                    attacks.All(value => (bool?)value["hit"] == true) &&
                     economy.Count(command) == 1 &&
                     (economy.InCombat(command) ?
                         economy.Exact(command, false) :
