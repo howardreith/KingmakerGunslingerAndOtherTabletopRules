@@ -373,6 +373,7 @@ namespace KingmakerGunslinger.Blueprints
             grab.GrabAdditionalLimbCount = 2;
             grab.MaxTargetSizeDelta = 0;
             grab.MaxHeldTargets = 3;
+            grab.DeclineGrabDuringCleaveOwner = unit;
             grab.HoldBuff = Require<BlueprintBuff>(symbols,
                 GrappleMultiHoldSymbol);
             grab.GrappledBuff = Require<BlueprintBuff>(symbols,

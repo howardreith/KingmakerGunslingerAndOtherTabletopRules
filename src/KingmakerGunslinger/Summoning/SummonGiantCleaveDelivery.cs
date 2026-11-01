@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Items.Slots;
@@ -36,6 +37,13 @@ namespace KingmakerGunslinger.Summoning
 
     public sealed class SummonGiantCleaveDelivery : AbilityCustomCleave
     {
+        private sealed class CleaveAttackMarker { }
+
+        private static readonly ConditionalWeakTable<RuleAttackWithWeapon,
+            CleaveAttackMarker> CleaveAttacks =
+                new ConditionalWeakTable<RuleAttackWithWeapon,
+                    CleaveAttackMarker>();
+
         private const float AdjacentMeters = 5f * 0.3048f;
         private const float GeometryTolerance = 0.02f;
         public AbilityEffectRunAction MissPenalty;
@@ -83,6 +91,7 @@ namespace KingmakerGunslinger.Summoning
                 used.Add(next);
                 var attack = new RuleAttackWithWeapon(caster, next,
                     hand.Weapon, 0) { IsFirstAttack = used.Count == 1 };
+                CleaveAttacks.Add(attack, new CleaveAttackMarker());
                 context.TriggerRule(attack);
                 if (attack.AttackRoll == null || !attack.AttackRoll.IsHit)
                 {
@@ -103,6 +112,13 @@ namespace KingmakerGunslinger.Summoning
                     new TargetWrapper(next));
                 previous = next;
             }
+        }
+
+        internal static bool IsCleaveAttack(RuleAttackWithWeapon attack)
+        {
+            CleaveAttackMarker marker;
+            return attack != null && CleaveAttacks.TryGetValue(attack,
+                out marker);
         }
 
         private static bool Adjacent(UnitEntityData previous,
