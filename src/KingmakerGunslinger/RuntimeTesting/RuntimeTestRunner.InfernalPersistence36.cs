@@ -134,13 +134,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             HezrouHeldNausea36 heldLogic = hezrou.Descriptor.Progression
                 .Features.Enumerable.SelectMany(value =>
                     value.SelectComponents<HezrouHeldNausea36>()).Single();
-            heldLogic.OnNewRound();
             BlueprintBuff nauseaBlueprint = InfernalHeldNausea36();
-            Buff nausea = InfernalCoreSourceBuff36(target,
-                nauseaBlueprint, hezrou);
+            Buff nausea = null;
+            int nauseaAttempts = 0;
+            while ((nausea == null || nausea.IsDisposed || !nausea.Active) &&
+                nauseaAttempts < 3)
+            {
+                nauseaAttempts++;
+                heldLogic.OnNewRound();
+                nausea = InfernalCoreSourceBuff36(target,
+                    nauseaBlueprint, hezrou);
+            }
             if (nausea == null || nausea.IsDisposed || !nausea.Active)
                 throw new InvalidOperationException(
-                    "Sprint36 held nausea precondition refused.");
+                    "Sprint36 held nausea precondition remained unobserved " +
+                    "after three bounded native saves.");
 
             BlueprintAbilityResource blasphemy =
                 InfernalBlasphemyResource36();
@@ -157,6 +165,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["holder"] = SummonHeldComponent.HolderOf(target,
                     grab.GrappledBuff)?.UniqueId,
                 ["grabAttempts"] = attempts,
+                ["nauseaAttempts"] = nauseaAttempts,
                 ["blasphemy"] = hezrou.Descriptor.Resources
                     .GetResourceAmount(blasphemy),
                 ["nausea"] = InfernalSavedEffect34(nausea)
