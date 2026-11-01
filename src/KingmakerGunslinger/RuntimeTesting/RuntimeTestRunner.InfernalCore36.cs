@@ -586,10 +586,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             var granted = babau.Descriptor.Abilities.GetAbility(dispel);
             var playerData = granted == null ? null : new AbilityData(granted);
+            bool mediumTarget = dispel.Range == AbilityRange.Medium &&
+                playerData != null && playerData.CanTarget(
+                    new TargetWrapper(target));
             bool exact = invisibilityCommand != null &&
                 invisibilityCommand.Result == UnitCommand.ResultType.Success &&
                 useful && aiBefore && removed && playerData != null &&
-                playerData.IsAvailable && failedAttemptsThrottled &&
+                playerData.IsAvailable && mediumTarget &&
+                failedAttemptsThrottled &&
                 resourceFree;
             check("useful-native-dispel", exact, new JObject {
                 ["babau"] = babau.UniqueId,
@@ -602,6 +606,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["aiAvailableBefore"] = aiBefore,
                 ["attempts"] = attempts,
                 ["removed"] = removed,
+                ["abilityRange"] = dispel.Range.ToString(),
+                ["playerCanTargetAtLane"] = mediumTarget,
                 ["atWillPlayerAbilityAvailable"] = playerData?.IsAvailable,
                 ["resourceCostComponentPresent"] = !resourceFree,
                 ["failedAttemptCount"] = failedAttemptCount,
