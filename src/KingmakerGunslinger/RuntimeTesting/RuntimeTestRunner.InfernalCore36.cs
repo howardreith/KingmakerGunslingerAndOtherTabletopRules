@@ -50,6 +50,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             UnitEntityData babau = null;
             UnitEntityData hostileBabau = null;
+            UnitEntityData slimeNaturalAttacker = null;
             UnitEntityData hezrou = null;
             UnitEntityData bone = null;
             UnitEntityData target = fixture.Hostile;
@@ -84,6 +85,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 babau = CastExpandedSummoningOwnTier(fixture, "babau");
                 hostileBabau = CastExpandedSummoningOwnTier(fixture,
                     "babau");
+                slimeNaturalAttacker = CastExpandedSummoningOwnTier(
+                    fixture, "wolf");
                 // Stench may evaluate as soon as the Hezrou enters the
                 // spatial grid. Establish the legal failed-save precondition
                 // before spawning its source, not after an earlier successful
@@ -92,6 +95,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 hezrou = CastExpandedSummoningOwnTier(fixture, "hezrou");
                 owned.Add(babau);
                 owned.Add(hostileBabau);
+                owned.Add(slimeNaturalAttacker);
                 owned.Add(hezrou);
                 foreach (UnitEntityData actor in owned)
                 {
@@ -116,25 +120,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // maneuver observer.  Mutating the owned faction blueprint
                 // alone does not refresh an existing group's relationship
                 // cache and produced a false non-hostile precondition.
-                hostileBabau.GroupId = hostileBabau.UniqueId;
-                var hostileGroup = hostileBabau.Group;
-                if (hostileGroup.IsPlayerParty || hostileGroup.Count != 1 ||
-                    !ReferenceEquals(hostileGroup[0], hostileBabau))
-                    throw new InvalidOperationException(
-                        "Sprint36 hostile Babau does not own a private group.");
-                hostileBabau.Descriptor.SwitchFactions(targetFaction, true);
-                hostileBabau.AttackFactions.Match(new[] { babau.Faction });
-                hostileGroup.ResetFactionSet();
-                hostileGroup.UpdateAttackFactionsCache();
-                bool hostile = hostileBabau.IsEnemy(babau) &&
-                    babau.IsEnemy(hostileBabau);
+                UnitEntityData[] attackers = { hostileBabau,
+                    slimeNaturalAttacker };
+                foreach (UnitEntityData attacker in attackers)
+                {
+                    attacker.GroupId = attacker.UniqueId;
+                    var hostileGroup = attacker.Group;
+                    if (hostileGroup.IsPlayerParty ||
+                        hostileGroup.Count != 1 ||
+                        !ReferenceEquals(hostileGroup[0], attacker))
+                        throw new InvalidOperationException(
+                            "Sprint36 Slime attacker does not own a private group.");
+                    attacker.Descriptor.SwitchFactions(targetFaction, true);
+                    attacker.AttackFactions.Match(new[] { babau.Faction });
+                    hostileGroup.ResetFactionSet();
+                    hostileGroup.UpdateAttackFactionsCache();
+                }
+                bool hostile = attackers.All(attacker =>
+                    attacker.IsEnemy(babau) && babau.IsEnemy(attacker));
                 check("private-hostility", hostile, new JObject {
                     ["attacker"] = hostileBabau.UniqueId,
+                    ["naturalAttacker"] = slimeNaturalAttacker.UniqueId,
                     ["defender"] = babau.UniqueId,
                     ["attackerFaction"] = hostileBabau.Faction.name,
                     ["defenderFaction"] = babau.Faction.name,
                     ["attackerIsEnemy"] = hostileBabau.IsEnemy(babau),
                     ["defenderIsEnemy"] = babau.IsEnemy(hostileBabau),
+                    ["naturalAttackerIsEnemy"] =
+                        slimeNaturalAttacker.IsEnemy(babau),
+                    ["defenderIsNaturalAttackerEnemy"] =
+                        babau.IsEnemy(slimeNaturalAttacker),
                     ["originalAttackFactions"] = new JArray(
                         (oldAttackFactions ?? Array.Empty<BlueprintFaction>())
                             .Select(value => value.name)),
@@ -145,12 +160,16 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 int babauAc = babau.Stats.AC.BaseValue;
                 int attackerReflex = hostileBabau.Stats.SaveReflex.BaseValue;
+                int naturalReflex = slimeNaturalAttacker.Stats.SaveReflex
+                    .BaseValue;
                 babau.Stats.AC.BaseValue = -100;
                 hostileBabau.Stats.SaveReflex.BaseValue = -100;
+                slimeNaturalAttacker.Stats.SaveReflex.BaseValue = -100;
                 try
                 {
                     foreach (int frame in InfernalCoreSlime36(fixture,
-                        hostileBabau, babau, trace, check))
+                        hostileBabau, slimeNaturalAttacker, babau, trace,
+                        check))
                         yield return frame;
                 }
                 finally
@@ -158,6 +177,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     babau.Stats.AC.BaseValue = babauAc;
                     hostileBabau.Stats.SaveReflex.BaseValue =
                         attackerReflex;
+                    slimeNaturalAttacker.Stats.SaveReflex.BaseValue =
+                        naturalReflex;
                 }
 
                 bone = CastExpandedSummoningOwnTier(fixture, "bone-devil");
@@ -357,22 +378,27 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> InfernalCoreSlime36(
             ExpandedSummoningCorrectionFixture fixture,
-            UnitEntityData attacker, UnitEntityData defender,
+            UnitEntityData manufacturedAttacker,
+            UnitEntityData naturalAttacker, UnitEntityData defender,
             InfernalEvents34 trace,
             Action<string, bool, JObject, string> check)
         {
             InfernalMartialProfile36 profile =
-                InfernalMartialProfile36.For(attacker);
-            foreach (int frame in InfernalSwitch34(attacker,
+                InfernalMartialProfile36.For(manufacturedAttacker);
+            foreach (int frame in InfernalSwitch34(manufacturedAttacker,
                 profile.Longspear)) yield return frame;
             foreach (int frame in InfernalCoreSlimeContact36(fixture,
-                attacker, defender, trace, check, "manufactured", 8,
-                false)) yield return frame;
-            foreach (int frame in InfernalSwitch34(attacker, profile.Claw))
-                yield return frame;
+                manufacturedAttacker, defender, trace, check,
+                "manufactured", 8, false)) yield return frame;
+            BlueprintItemWeapon natural = naturalAttacker.Body.PrimaryHand
+                .MaybeWeapon?.Blueprint;
+            if (natural == null || (!natural.IsNatural &&
+                    !natural.IsUnarmed))
+                throw new InvalidOperationException(
+                    "Sprint36 Slime positive control lacks a natural or unarmed weapon.");
             foreach (int frame in InfernalCoreSlimeContact36(fixture,
-                attacker, defender, trace, check, "natural", 3, true))
-                yield return frame;
+                naturalAttacker, defender, trace, check, "natural", 3,
+                true)) yield return frame;
         }
 
         private IEnumerable<int> InfernalCoreSlimeContact36(
