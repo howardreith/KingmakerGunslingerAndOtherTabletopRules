@@ -8,6 +8,7 @@ using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Controllers.Brain;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
+using Kingmaker.Items;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
@@ -314,9 +315,30 @@ namespace KingmakerGunslinger.RuntimeTesting
             string hv = ExpandedSummoningPteranodonViewPatch.DescribeView(
                 hezrou.View);
             var grab = SummonGrabComponent.Find(hezrou);
+            ItemEntityWeapon babauBite = bp?.Bite == null ? null :
+                babau.Body.AdditionalLimbs.Select(value =>
+                    value.MaybeWeapon).SingleOrDefault(value =>
+                    value != null && ReferenceEquals(value.Blueprint,
+                        bp.Bite));
+            ItemEntityWeapon babauClaw = bp?.Claw == null ? null :
+                babau.Body.AdditionalLimbs.Select(value =>
+                    value.MaybeWeapon).SingleOrDefault(value =>
+                    value != null && ReferenceEquals(value.Blueprint,
+                        bp.Claw));
+            ItemEntityWeapon[] hezrouWeapons = new[] {
+                hezrou.Body.PrimaryHand.MaybeWeapon }.Concat(
+                    hezrou.Body.AdditionalLimbs.Select(value =>
+                        value.MaybeWeapon)).Where(value => value != null)
+                    .ToArray();
             bool exact = bp?.Bite != null && bp.Claw != null &&
                 bp.Longspear != null && hp?.Bite != null &&
-                hp.Claw != null && grab != null &&
+                hp.Claw != null && babauBite != null &&
+                babauClaw != null && grab != null &&
+                babau.Body.PrimaryHand.MaybeWeapon.AttackRange.Value == 10 &&
+                babauBite.AttackRange.Value == 5 &&
+                babauClaw.AttackRange.Value == 5 &&
+                hezrouWeapons.Length == 3 && hezrouWeapons.All(value =>
+                    value.AttackRange.Value == 10) &&
                 grab.GrabWithPrimaryHand &&
                 grab.GrabAdditionalLimbCount == 2 &&
                 grab.MaxHeldTargets == 3 && grab.MaxTargetSizeDelta == 0 &&
@@ -336,6 +358,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["hezrouVertices"] = hm?.vertexCount,
                 ["distinctMeshes"] = bm != null && hm != null &&
                     !ReferenceEquals(bm, hm),
+                ["babauReachFeet"] = new JArray(
+                    babau.Body.PrimaryHand.MaybeWeapon.AttackRange.Value,
+                    babauClaw.AttackRange.Value,
+                    babauBite.AttackRange.Value),
+                ["hezrouReachFeet"] = new JArray(hezrouWeapons.Select(
+                    value => value.AttackRange.Value)),
                 ["grabPrimary"] = grab?.GrabWithPrimaryHand,
                 ["grabAdditional"] = grab?.GrabAdditionalLimbCount,
                 ["maxHeld"] = grab?.MaxHeldTargets,
@@ -362,6 +390,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Blueprint?.AssetGuid,
                 ["additional"] = new JArray(unit.Body.AdditionalLimbs
                     .Select(value => value.MaybeWeapon?.Blueprint?.AssetGuid)),
+                ["additionalReachFeet"] = new JArray(
+                    unit.Body.AdditionalLimbs.Select(value =>
+                        value.MaybeWeapon?.AttackRange.Value)),
                 ["bite"] = profile?.Bite?.AssetGuid,
                 ["claw"] = profile?.Claw?.AssetGuid,
                 ["longspear"] = profile?.Longspear?.AssetGuid,
@@ -394,9 +425,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !natural.IsUnarmed))
                 throw new InvalidOperationException(
                     "Sprint36 Slime positive control lacks a natural or unarmed weapon.");
+            int naturalLaneFeet = Math.Max(1,
+                naturalAttacker.Body.PrimaryHand.MaybeWeapon.AttackRange
+                    .Value - 1);
             foreach (int frame in InfernalCoreSlimeContact36(fixture,
-                naturalAttacker, defender, trace, check, "natural", 3,
-                true)) yield return frame;
+                naturalAttacker, defender, trace, check, "natural",
+                naturalLaneFeet, true)) yield return frame;
         }
 
         private IEnumerable<int> InfernalCoreSlimeContact36(
