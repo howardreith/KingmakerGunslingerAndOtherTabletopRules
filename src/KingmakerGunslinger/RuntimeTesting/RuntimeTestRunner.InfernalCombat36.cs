@@ -113,9 +113,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     hezrou.Blueprint.name)) yield return frame;
                 foreach (int frame in InfernalHezrouMelee36(fixture,
                     hezrou, target, trace, check)) yield return frame;
-                foreach (int frame in InfernalHezrouSpells36(fixture,
-                    hezrou, target, ally, trace, check)) yield return frame;
                 foreach (int frame in InfernalHezrouFallback36(fixture,
+                    hezrou, target, ally, trace, check)) yield return frame;
+                foreach (int frame in InfernalHezrouSpells36(fixture,
                     hezrou, target, ally, trace, check)) yield return frame;
             }
             finally
@@ -777,11 +777,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             SummonGrappleLinks.ReleaseAll(hezrou);
             hezrou.Commands.InterruptAll(true);
             hezrou.Commands.RemoveFinishedAndUpdateQueue();
-            // The preceding finite-resource proof intentionally lets native
-            // Blasphemy resolve against this target.  Do not reuse its
-            // long-lived paralysis as an alleged ordinary-attack target.
-            // Reset only this disposable owner's delivered effects, exactly
-            // as the two preceding burst cells do between independent casts.
+            // Run this autonomous proof before the direct SLA cells.  That
+            // keeps its target legally able to act and makes the collateral
+            // refusal cover the still-available Blasphemy as well as both
+            // at-will bursts.  Reset only this disposable owner's earlier
+            // melee/aura effects; never cure another source's contribution.
             Buff[] resetEffects = new[] { target, ally }.SelectMany(unit =>
                 unit.Buffs.Enumerable).Where(value => ReferenceEquals(
                     value.Context?.MaybeCaster, hezrou)).ToArray();
@@ -914,6 +914,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Sprint28SetBrainActivePreservingActions(hezrou, false);
             hezrou.Commands.InterruptAll(true);
             hezrou.Commands.RemoveFinishedAndUpdateQueue();
+            SummonGrappleLinks.ReleaseAll(hezrou);
         }
     }
 }
