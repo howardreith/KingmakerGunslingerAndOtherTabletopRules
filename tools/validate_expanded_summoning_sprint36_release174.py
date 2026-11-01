@@ -11,7 +11,7 @@ from expanded_summoning_manifest import parsed_creatures, suppressed_keys
 import validate_development_candidate as identities
 import expanded_summoning_manifest as manifest
 
-PRODUCT = "cf5f22f789dd3bd2803e3c413de1727ed293e81b"
+PRODUCT = "19b992d6001f0cad2946f1d9ebce6205a011ab57"
 RELEASED = "e58bb50ab6a835cad266ca2abe95efddba911058"
 VERSION = "0.0.174"
 INFORMATIONAL = VERSION + "-expanded-summoning-babau-hezrou"
