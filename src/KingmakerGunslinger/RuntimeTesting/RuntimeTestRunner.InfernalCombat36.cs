@@ -709,6 +709,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             SummonGrappleLinks.ReleaseAll(hezrou);
             hezrou.Commands.InterruptAll(true);
             hezrou.Commands.RemoveFinishedAndUpdateQueue();
+            // The preceding finite-resource proof intentionally lets native
+            // Blasphemy resolve against this target.  Do not reuse its
+            // long-lived paralysis as an alleged ordinary-attack target.
+            // Reset only this disposable owner's delivered effects, exactly
+            // as the two preceding burst cells do between independent casts.
+            Buff[] resetEffects = new[] { target, ally }.SelectMany(unit =>
+                unit.Buffs.Enumerable).Where(value => ReferenceEquals(
+                    value.Context?.MaybeCaster, hezrou)).ToArray();
+            string[] resetEffectNames = resetEffects.Select(value =>
+                value.Blueprint.name).ToArray();
+            foreach (Buff buff in resetEffects) buff.Remove();
             target.Stats.AC.BaseValue = -100;
             target.Stats.HitPoints.BaseValue = 100000;
             InfernalCombatLane34(fixture, hezrou, target, 8);
@@ -740,17 +751,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string[] brainActions = hezrou.Blueprint.Brain.Actions
                     .Select(value => value.GetType().FullName + ":" +
                         value.name).ToArray();
+                var availableActions = new JArray(hezrou.Brain
+                    .AvailableActions.Select(value => new JObject {
+                        ["type"] = value.Blueprint.GetType().FullName,
+                        ["name"] = value.Blueprint.name,
+                        ["baseScore"] = value.BaseScore
+                    }));
                 bool ordinaryFallback = hezrou.Blueprint.Brain.Actions
                     .Any(value => value.GetType().FullName ==
                         "Kingmaker.Controllers.Brain.Blueprints." +
                         "BlueprintAiAttack");
+                bool targetInGroupMemory = hezrou.Group.Memory.Enemies.Any(
+                    value => ReferenceEquals(value.Unit, target));
                 bool nativeReady = hezrou.IsInGame &&
                     hezrou.Descriptor.State.CanAct && hezrou.IsBrainActive &&
                     hezrou.IsInCombat && hezrou.Group != null &&
                     hezrou.Group.IsInCombat &&
                     Game.Instance.AwakeUnitGroups.Contains(hezrou.Group) &&
+                    target.IsInState && !target.Descriptor.State.IsDead &&
+                    target.Descriptor.State.CanAct && hezrou.HasLOS(target) &&
                     hezrou.IsEnemy(target) &&
-                    hezrou.Memory.ContainsVisible(target);
+                    hezrou.Memory.ContainsVisible(target) &&
+                    targetInGroupMemory;
                 DateTime deadline = DateTime.UtcNow.AddSeconds(45);
                 int frames = 0, aiTicks = 0;
                 while (DateTime.UtcNow < deadline)
@@ -804,8 +826,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["brain"] = hezrou.Blueprint.Brain.name,
                         ["brainActions"] = new JArray(brainActions),
                         ["runtimeActions"] = hezrou.Brain.Actions.Count,
-                        ["availableActions"] = hezrou.Brain
-                            .AvailableActions.Count,
+                        ["availableActions"] = availableActions,
+                        ["resetEffects"] = new JArray(resetEffectNames),
+                        ["targetCanAct"] = target.Descriptor.State.CanAct,
+                        ["targetHasLos"] = hezrou.HasLOS(target),
+                        ["targetInGroupMemory"] = targetInGroupMemory,
                         ["ordinaryFallback"] = ordinaryFallback,
                         ["nativeReady"] = nativeReady,
                         ["nextCommandTimeBefore"] = nextCommandBefore,
