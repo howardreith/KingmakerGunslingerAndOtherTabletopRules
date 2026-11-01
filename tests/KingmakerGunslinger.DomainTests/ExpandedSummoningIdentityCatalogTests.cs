@@ -50,10 +50,19 @@ namespace KingmakerGunslinger.DomainTests
                  value.Symbol.Contains(".BoneDevil.")));
             Assertions.Equal(5, sprint35Routes,
                 "Sprint35 owns exactly its five public route abilities.");
+            int sprint36Routes = first.Count(value =>
+                value.PlannedType == "BlueprintAbility" &&
+                value.Symbol.StartsWith("KMG.Summoning.Ability.SM.",
+                    StringComparison.Ordinal) &&
+                (value.Symbol.Contains(".Babau.") ||
+                 value.Symbol.Contains(".Hezrou.")));
+            Assertions.Equal(SummoningCurrentSurface.Sprint36RootIdentityCount,
+                sprint36Routes,
+                "Sprint36 owns exactly its seven public route abilities.");
             Assertions.Equal(1760 + TheropodRulesPolicy.AppendedAbilityIdentityCount +
                     GiantBodyRulesPolicy.AppendedTotalAbilityIdentityCount + 9 +
                     ExpandedSummoningSprints30And31Tests.RegisteredAbilityIdentityCount +
-                    sprint35Routes,
+                    sprint35Routes + sprint36Routes,
                 released.Count(value => value.PlannedType == "BlueprintAbility"),
                 "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(

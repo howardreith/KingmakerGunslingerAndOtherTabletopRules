@@ -263,7 +263,8 @@ namespace KingmakerGunslinger.DomainTests
         internal static void BoneInvisibilityOwnsItsAppendedEffectIdentity()
         {
             var identities = ExpandedSummoningIdentityCatalog.Build();
-            var effect = identities.Last();
+            var effect = identities.Single(value => value.Symbol ==
+                "KMG.Summoning.Infernal.BoneDevil.InvisibilityBuff");
             Assertions.Equal(
                 "KMG.Summoning.Infernal.BoneDevil.InvisibilityBuff",
                 effect.Symbol,

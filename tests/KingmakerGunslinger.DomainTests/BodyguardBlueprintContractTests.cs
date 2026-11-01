@@ -59,7 +59,7 @@ namespace KingmakerGunslinger.DomainTests
                 ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
                     KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length +
                     AlternateSummoningTests.AppendedLedgerIdentities +
-                (ExpandedSummoningSprint25Tests.AppendedLedgerIdentities + SummoningCurrentSurface.AppendedCatalogIdentityCount),
+                (ExpandedSummoningSprint25Tests.AppendedLedgerIdentities + SummoningCurrentSurface.AppendedLedgerIdentityCount),
                 entries.Length,
                 "Current blueprint ledger count changed.");
             Assertions.Equal(1911 + KingmakerGunslinger.Acquisition

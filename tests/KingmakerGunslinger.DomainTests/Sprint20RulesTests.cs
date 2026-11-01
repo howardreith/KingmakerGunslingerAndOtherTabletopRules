@@ -406,7 +406,7 @@ namespace KingmakerGunslinger.DomainTests
                 ExpandedSummoningSprint23Tests.AppendedLedgerIdentities +
                 ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
                 AlternateSummoningTests.AppendedLedgerIdentities +
-                (ExpandedSummoningSprint25Tests.AppendedLedgerIdentities + SummoningCurrentSurface.AppendedCatalogIdentityCount);
+                (ExpandedSummoningSprint25Tests.AppendedLedgerIdentities + SummoningCurrentSurface.AppendedLedgerIdentityCount);
             if (symbols.Count < AppendedLedgerIdentities + later)
                 throw new InvalidOperationException(
                     "The ledger parsed to " + symbols.Count + " symbols.");

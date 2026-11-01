@@ -1161,6 +1161,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'observe-expanded-summoning-sprint36-native-inputs' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     # Sprint 32: bounded installed-consumer metadata; no actors or save input.
     'observe-expanded-summoning-sprint32-native-inputs' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
@@ -2290,7 +2296,7 @@ function Test-KmgSprint32ReviewPhaseScope {
     param([string]$Scenario,[hashtable]$Parameters)
     # The selected C# declaration owns the phase name; no second phase list.
     $catalog = Get-Content -LiteralPath (Join-Path (Split-Path -Parent $PSScriptRoot) 'src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningNativeProfilePolicy.cs') -Raw
-    $phaseMatches = [regex]::Matches($catalog, 'internal const string Sprint(?:32|35)[A-Za-z]+Phase = "([a-z0-9-]+)";')
+    $phaseMatches = [regex]::Matches($catalog, 'internal const string Sprint(?:32|35|36)[A-Za-z]+Phase = "([a-z0-9-]+)";')
     if ($phaseMatches.Count -eq 0) { throw 'Sprint32 phase declarations are missing.' }
     $phases = @($phaseMatches | ForEach-Object { $_.Groups[1].Value })
     return $Scenario -ceq 'disposable-expanded-summoning-sprint32-native-review' -and $null -ne $Parameters -and
@@ -2561,8 +2567,8 @@ function Assert-KmgRuntimeScenarioPreflight {
             'working-save-expanded-summoning-verify-cleanup', 'working-save-expanded-summoning-verify-absent') -and
             $Parameters.ContainsKey('persistenceScope')
         if ($targetedSummonPersistence -and ($Parameters.persistenceScope -isnot [string] -or
-            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon', 'giant-humanoids', 'giant-humanoids-ii', 'outsider-celestial', 'fey-celestial', 'shadow-outsiders', 'infernal-outsiders', 'infernal-reach-ii') -or -not $ExitAfterCompletion)) {
-            throw 'The targeted persistence trio permits only its exact named persistence scopes, including infernal-outsiders or infernal-reach-ii, with automatic exit.'
+            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon', 'giant-humanoids', 'giant-humanoids-ii', 'outsider-celestial', 'fey-celestial', 'shadow-outsiders', 'infernal-outsiders', 'infernal-reach-ii', 'infernal-demons') -or -not $ExitAfterCompletion)) {
+            throw 'The targeted persistence trio permits only its exact named persistence scopes, including infernal-outsiders, infernal-reach-ii, or infernal-demons, with automatic exit.'
         }
         $dispelUi = $Scenario -ceq 'working-save-expanded-summoning-creature-review' -and $Parameters.ContainsKey('reviewCase')
         if ($dispelUi -and (-not $ExitAfterCompletion -or -not (Test-KmgSprints30DispelUiParameters $Parameters -IncludesSaveName))) {

@@ -34,6 +34,8 @@ SUPPRESSED = re.compile(
 # line. A creature that is withheld never appears here: what it is waiting for
 # is decided by the visibility catalog, not by this table.
 QUALIFICATION_NOTES = {
+    "babau": "Sprint36 native profile/body, natural/unarmed Protective Slime, real Dispel, both weapon modes, reach, native sneak, RTWP action and cleanup qualification retained with exact artifact attribution. Owner decision 2026-11-01 explicitly omits the unsupported manufactured-weapon/ammunition Slime branch and Darkness with no substitutes; constant See Invisibility remains. Current evidence: planning/SPRINT36-STATUS.md; owner visual approval not claimed",
+    "hezrou": "Sprint36 native profile/body, ordinary Grab, distinct stench/held nausea, collateral-aware SLAs, melee fallback and RTWP/TB private Cleave qualification retained with exact artifact attribution. Owner decision 2026-11-01 explicitly omits unsupported Gaseous Form with no substitute. Current evidence: planning/SPRINT36-STATUS.md; owner visual approval not claimed",
     "invisible-stalker": "Sprint33 original body, native RTWP/TB Slam and natural-invisibility/Purge observations recorded on original development artifacts; four routes retained. Current qualification/restoration: planning/SPRINT33-STATUS.md; owner visual approval not claimed",
     "shadow-demon": "Sprint33 original winged/clawed body, native motion/attack and private teardown recorded on original development artifact; four routes retained. Current qualification/restoration: planning/SPRINT33-STATUS.md; owner visual approval not claimed",
     "succubus": "Sprint33 preserves usable Nymph presentation and icon; native control/protection/source cleanup and attack fallback observed. Temporary energy drain unresolved; persistence and release pending. Current evidence: planning/SPRINT33-STATUS.md; historical structural labels do not qualify this sprint",
@@ -162,6 +164,8 @@ DONOR_NAMES = {
 }
 
 SPECIAL_NOTES = {
+    "babau": "Two primary claws and bite, or a nontransferable longspear routine with secondary bite; native sneak attack; constant See Invisibility; useful at-will CL7 Dispel; natural/unarmed Protective Slime only. Owner-authorized omissions: manufactured-weapon/ammunition Slime branch and Darkness. No substitute durability, wielder damage or lighting effect.",
+    "hezrou": "Bite and two claws with rider-free Grab; Power Attack and private Cleave/Great Cleave; distinct source-owned stench sickness and held-victim nausea; at-will CL13 Chaos Hammer and Unholy Blight plus one Blasphemy per summoning with ordinary collateral. Owner-authorized omission: Gaseous Form, with no substitute.",
     "lantern-archon": "Dual bounded light rays and archon defenses; optional exact Aura of Menace carrier; planar travel omitted.",
     "salamander": "Spear/tail, heat, and bounded grab/constrict; cold vulnerability omitted.",
     "invisible-stalker": "Attack-safe natural invisibility and twin slams; tracking/scent omitted.",
@@ -1043,6 +1047,37 @@ def planned():
         ("KMG.Summoning.Infernal.BoneDevil.DimensionalAnchorAi", "InfernalSpellAi35"),
         ("KMG.Summoning.Infernal.BoneDevil.WallAi", "InfernalSpellAi35"),
         ("KMG.Summoning.Infernal.BoneDevil.InvisibilityBuff", "BlueprintBuff"),
+        ("KMG.Summoning.Infernal.Babau.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Infernal.Babau.Traits", "BlueprintFeature"),
+        ("KMG.Summoning.Infernal.Babau.Bite", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Infernal.Babau.BiteType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Infernal.Babau.Claw", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Infernal.Babau.ClawType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Infernal.Babau.Longspear", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Infernal.Babau.LongspearType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Infernal.Babau.DispelMagic", "BlueprintAbility"),
+        ("KMG.Summoning.Infernal.Babau.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Infernal.Babau.WeaponModeAi", "BabauWeaponModeAi36"),
+        ("KMG.Summoning.Infernal.Babau.DispelAi", "BabauDispelAi36"),
+        ("KMG.Summoning.Infernal.Hezrou.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Infernal.Hezrou.Traits", "BlueprintFeature"),
+        ("KMG.Summoning.Infernal.Hezrou.Bite", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Infernal.Hezrou.BiteType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Infernal.Hezrou.Claw", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Infernal.Hezrou.ClawType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Infernal.Hezrou.StenchCarrier", "BlueprintBuff"),
+        ("KMG.Summoning.Infernal.Hezrou.StenchArea", "BlueprintAbilityAreaEffect"),
+        ("KMG.Summoning.Infernal.Hezrou.StenchSickened", "BlueprintBuff"),
+        ("KMG.Summoning.Infernal.Hezrou.StenchMemory", "BlueprintBuff"),
+        ("KMG.Summoning.Infernal.Hezrou.HeldNauseated", "BlueprintBuff"),
+        ("KMG.Summoning.Infernal.Hezrou.ChaosHammer", "BlueprintAbility"),
+        ("KMG.Summoning.Infernal.Hezrou.UnholyBlight", "BlueprintAbility"),
+        ("KMG.Summoning.Infernal.Hezrou.Blasphemy", "BlueprintAbility"),
+        ("KMG.Summoning.Infernal.Hezrou.BlasphemyResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Infernal.Hezrou.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Infernal.Hezrou.ChaosAi", "InfernalSpellAi35"),
+        ("KMG.Summoning.Infernal.Hezrou.UnholyAi", "InfernalSpellAi35"),
+        ("KMG.Summoning.Infernal.Hezrou.BlasphemyAi", "InfernalSpellAi35"),
     ))
     expected = sum(identity_count(name) for name in (
         "UnitCount", "LogicalAbilityCount", "TemplateBuffCount", "SpecialIdentityCount",

@@ -185,6 +185,16 @@ namespace KingmakerGunslinger.Blueprints
                         var value = ScriptableObject.CreateInstance<InfernalSpellAi35>();
                         value.name = InternalName(identity.Symbol); return value;
                     });
+                else if (identity.PlannedType == "BabauWeaponModeAi36")
+                    blueprint = registry.Register<BabauWeaponModeAi36>(identity.Symbol, () => {
+                        var value = ScriptableObject.CreateInstance<BabauWeaponModeAi36>();
+                        value.name = InternalName(identity.Symbol); return value;
+                    });
+                else if (identity.PlannedType == "BabauDispelAi36")
+                    blueprint = registry.Register<BabauDispelAi36>(identity.Symbol, () => {
+                        var value = ScriptableObject.CreateInstance<BabauDispelAi36>();
+                        value.name = InternalName(identity.Symbol); return value;
+                    });
                 else if (identity.PlannedType == "BlueprintAiSwitchWeapon")
                     blueprint = registry.Register<BlueprintAiSwitchWeapon>(identity.Symbol, () => {
                         var value = ScriptableObject.CreateInstance<BlueprintAiSwitchWeapon>();

@@ -37,7 +37,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> ReviewSprint28Cleave(
-            ExpandedSummoningCorrectionFixture fixture, bool celestialCloseout = false, bool reuseHostile = false)
+            ExpandedSummoningCorrectionFixture fixture,
+            bool celestialCloseout = false, bool reuseHostile = false,
+            string[] selectedKeys = null, string selectedPrefix = null)
         {
             bool mode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool pause = Game.Instance.IsPaused;
@@ -87,8 +89,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !action.ComponentsArray.Intersect(
                         nativeAction.ComponentsArray).Any() &&
                     privatePenalty;
-                Sprint25Check(IsSprint29Review ? "s29-cleave-graph" :
-                    "s28-cleave-graph", graph, new JObject {
+                string graphPrefix = selectedPrefix ??
+                    (IsSprint29Review ? "s29-" : "s28-");
+                Sprint25Check(graphPrefix + "cleave-graph", graph,
+                    new JObject {
                     ["action"] = action.AssetGuid,
                     ["feature"] = feature.AssetGuid,
                     ["greaterFact"] = delivery.GreaterFeature?.AssetGuid,
@@ -101,15 +105,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!graph) throw new InvalidOperationException(
                     "Giant Cleave graph mismatch.");
                 foreach (bool turnBased in new[] { false, true })
-                foreach (string key in celestialCloseout ?
+                foreach (string key in selectedKeys ?? (celestialCloseout ?
                     new[] { "astral-deva", "trumpet-archon", "hill-giant" } : IsSprint29Review ?
                     new[] { "cloud-giant", "storm-giant", "ettin",
                         "hill-giant", "fire-giant" } :
-                    new[] { "hill-giant", "fire-giant" })
+                    new[] { "hill-giant", "fire-giant" }))
                 {
-                    bool ordinary = celestialCloseout || key == "hill-giant" ||
-                        key == "storm-giant" || key == "ettin";
-                    string prefix = celestialCloseout ? "s3031-" : IsSprint29Review ? "s29-" : "s28-";
+                    bool ordinary = selectedKeys == null &&
+                        (celestialCloseout || key == "hill-giant" ||
+                        key == "storm-giant" || key == "ettin");
+                    string prefix = selectedPrefix ?? (celestialCloseout ?
+                        "s3031-" : IsSprint29Review ? "s29-" : "s28-");
                     var trials = new JArray();
                     bool passed = false;
                     bool missObserved = false;
