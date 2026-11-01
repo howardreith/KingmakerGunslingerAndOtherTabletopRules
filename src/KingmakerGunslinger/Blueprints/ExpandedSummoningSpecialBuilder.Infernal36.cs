@@ -260,6 +260,11 @@ namespace KingmakerGunslinger.Blueprints
                 "Dispel Magic", 3, UnitCommand.CommandType.Standard,
                 InfernalRules36Policy.BabauDispelCasterLevel,
                 "At will at caster level 7, make the native dispel check against one creature's spell effects. The ability remains available to the player; AI selection requires a visible dispellable effect.");
+            // The installed target-Dispel donor retains touch command range.
+            // Babau's printed SLA is Dispel Magic at CL 7, whose creature-
+            // target form is Medium range. Keep the native check/effect graph
+            // but normalize the owned ability's real command surface.
+            dispel.Range = AbilityRange.Medium;
             var parameters = ScriptableObject.CreateInstance<
                 Sprint29GiantSpellLikeParameters>();
             parameters.OwningBlueprint = unit;
