@@ -11,11 +11,11 @@ from expanded_summoning_manifest import parsed_creatures, suppressed_keys
 import validate_development_candidate as identities
 import expanded_summoning_manifest as manifest
 
-PRODUCT = "22c1a88546bc8bd60ea396f0d197e1f1595cb5b8"
+PRODUCT = "cf5f22f789dd3bd2803e3c413de1727ed293e81b"
 RELEASED = "e58bb50ab6a835cad266ca2abe95efddba911058"
 VERSION = "0.0.174"
 INFORMATIONAL = VERSION + "-expanded-summoning-babau-hezrou"
-OLD_INFORMATIONAL = "0.0.173-expanded-summoning-barbed-bone-devils"
+OLD_INFORMATIONAL = INFORMATIONAL
 ASSEMBLY = "src/KingmakerGunslinger/Properties/AssemblyInfo.cs"
 ROOTS = ("src/KingmakerGunslinger", "assets", "assets-source", "blueprints")
 RECORD_KEY = "expandedSummoningSprint36Release174"
