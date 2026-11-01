@@ -61279,6 +61279,582 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.Babau",
+      "guid": "1512476cf6674704b6b0bcc3b67b48d9",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.Hezrou",
+      "guid": "0c97e35a3e8e4d2db937a23775ea13ac",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.Babau.One",
+      "guid": "acf735743c194cb1bb4b160b91bd628d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.Babau.OneD3",
+      "guid": "ad9afa84be414e9eba21cb92d04eec64",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Babau.OneD4PlusOne",
+      "guid": "2739795f265d4793898b4719f1213d7e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Babau.OneD4PlusOne",
+      "guid": "d75985dbef0e4757858fd8fbd6e13f29",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Hezrou.One",
+      "guid": "c71b95f43a8242c7ba5e61712ac589ce",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Babau.OneD4PlusOne",
+      "guid": "e7d25ce7ac3c442c90a36dc3f0abbf2b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Hezrou.OneD3",
+      "guid": "9e9a8a35c97143eda3359c4723cb5b90",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Babau.UnitType",
+      "guid": "b2d9d9a5466d4402bc46b52f2e5c8fe5",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Babau.Traits",
+      "guid": "66b1c1d2034240a5a05b42d90e32d2b7",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Babau.Bite",
+      "guid": "eb97ebcb9cf241a2a930d366173b6295",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Babau.BiteType",
+      "guid": "e807a76b44f74ab1861bd23474407df4",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Babau.Claw",
+      "guid": "56f9470894df4fe7b6e5cf57610191fb",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Babau.ClawType",
+      "guid": "e412dd1fe56a4cc9a5ead5a8bd523706",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Babau.Longspear",
+      "guid": "979ea8542538458184a4ae084c8d7f73",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Babau.LongspearType",
+      "guid": "81a9bb54753c40f08b36e5d1fa056172",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Babau.DispelMagic",
+      "guid": "1ce3473c7b3d4c0aa3ddf1a1defd8af6",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Babau.Brain",
+      "guid": "bfc6cb3065ec42bcaa0404e013486ab3",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Babau.WeaponModeAi",
+      "guid": "df1b01ccc92e4481a83972be2f7f7d6f",
+      "plannedType": "BabauWeaponModeAi36",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Babau.DispelAi",
+      "guid": "399f984a5f9e448289cfe906756a2b03",
+      "plannedType": "BabauDispelAi36",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.UnitType",
+      "guid": "4ca037fae3784c9090f1a6ff3a5d4f96",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.Traits",
+      "guid": "42499dece12442d28b9704e68bd9a8c0",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.Bite",
+      "guid": "26fb64d30ac242bc9200d582b74dd9c0",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.BiteType",
+      "guid": "da9a7793ee894d4892e1e889e14eca3c",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.Claw",
+      "guid": "bb889c692fad42fd87857b71dc75fdbc",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.ClawType",
+      "guid": "18a7ac2d117146f6836670937df9bb04",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.StenchCarrier",
+      "guid": "b3b62f978d5f412583ace347602a9cc0",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.StenchArea",
+      "guid": "8710d39f29db41a7b9a92b8b961d414b",
+      "plannedType": "BlueprintAbilityAreaEffect",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.StenchSickened",
+      "guid": "f72b3e45d1414694bc4f91561a96b37e",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.StenchMemory",
+      "guid": "0998abc7b2a643b68b9bae303397fab6",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.HeldNauseated",
+      "guid": "9997dcfaf5bb4eb893403f95218c819f",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.ChaosHammer",
+      "guid": "4b733b10fcbe41e29b6b69156327a107",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.UnholyBlight",
+      "guid": "da1ff6f4ea754a2eaadcb53cc81a95b2",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.GaseousForm",
+      "guid": "22a72b3f00384e4f8d47a00b8dd9e1df",
+      "plannedType": "BlueprintAbility",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Reserved but deliberately unregistered: Kingmaker 2.1.7b has no native Gaseous Form spell/buff graph, and no owner disposition yet authorizes a substitute transformation system."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.GaseousFormBuff",
+      "guid": "34ba6bb0a5aa4970a71fc7f66bafe6da",
+      "plannedType": "BlueprintBuff",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Reserved but deliberately unregistered with the unresolved Hezrou Gaseous Form branch."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.GaseousFormResource",
+      "guid": "d1cb1483fa67454a8a82858086b353d6",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Reserved but deliberately unregistered with the unresolved Hezrou Gaseous Form branch."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.Blasphemy",
+      "guid": "107212677ae048d9977d195a0c5e9fe3",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.BlasphemyResource",
+      "guid": "edeee08ea81948fd96e2046ac0b63f6f",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.Brain",
+      "guid": "055a5395b37f4ea8a922b68a1b7f24af",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.ChaosAi",
+      "guid": "1980e41cc79d4be28ebfc8e12237e182",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.UnholyAi",
+      "guid": "5179d26d13474174866f744453aff8d1",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.GaseousAi",
+      "guid": "7d978b5dd6e942b685cb760ba9fcea78",
+      "plannedType": "InfernalSpellAi35",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Reserved but deliberately unregistered with the unresolved Hezrou Gaseous Form branch."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.Hezrou.BlasphemyAi",
+      "guid": "bef6a59701cb4843a229009614f4b4bc",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier5.Babau.One",
+      "guid": "4df4919c52405877973e60fd88ba7d08",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier6.Babau.OneD3",
+      "guid": "ecef15e09564569c8857b7d068734720",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier7.Babau.OneD4PlusOne",
+      "guid": "cd9446e6141057a99834a67eae1ef54e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier8.Babau.OneD4PlusOne",
+      "guid": "f8dcb9d435bd5df7b03a78d4abfc9243",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier8.Hezrou.One",
+      "guid": "fda856ecbab35be8bdf51985e3e2871e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier9.Babau.OneD4PlusOne",
+      "guid": "b0385c1e6e605047954e9d00c15de310",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier9.Hezrou.OneD3",
+      "guid": "7dfb434328f65b7eb8f9e6ba66ee2a24",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier5.Babau.One",
+      "guid": "a216615f7a905239af25afc383a57f4c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier6.Babau.OneD3",
+      "guid": "faec360f23b0546e9d80924f2e407ef6",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier7.Babau.OneD4PlusOne",
+      "guid": "259faaa359fa5e6e9999f9ce9bf6ca65",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier8.Babau.OneD4PlusOne",
+      "guid": "c0edc934e943562ab69e0e524600c74f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier8.Hezrou.One",
+      "guid": "fb931d8066cf5ee3ab1f1ea2eca2c856",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier9.Babau.OneD4PlusOne",
+      "guid": "77b4144f48a850e7a330d556838152a2",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier9.Hezrou.OneD3",
+      "guid": "34f4f443df7554798b2175c632f595a0",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier5.Babau.One",
+      "guid": "95a5198d4473542fb4271f717c931845",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier6.Babau.OneD3",
+      "guid": "c0916543eb8a554a8e3b2081c6ae5407",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier7.Babau.OneD4PlusOne",
+      "guid": "b58d0bf85bfe541cb8a179f4e4309564",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier8.Babau.OneD4PlusOne",
+      "guid": "02a10335af4152558018597598efced3",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier8.Hezrou.One",
+      "guid": "c9dbc1f6c81159999b3d3e934059bede",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier9.Babau.OneD4PlusOne",
+      "guid": "8f6fd1135dab501ebd1bf9599a3ed2f1",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier9.Hezrou.OneD3",
+      "guid": "433b1d9efe5d50a8b6d50e98890fbc70",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier5.Babau.One",
+      "guid": "a25a8154924e596fbca79c274887ae6d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier6.Babau.OneD3",
+      "guid": "e9a0f91e1b8759eb864cda98271bf9b7",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier7.Babau.OneD4PlusOne",
+      "guid": "49dca2d4309e5162aa09ccd2dba7616a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier8.Babau.OneD4PlusOne",
+      "guid": "cece8bee7be2580fb9998b0ea683d691",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier8.Hezrou.One",
+      "guid": "0905faecc5b85839b68b9e5e005995a7",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier9.Babau.OneD4PlusOne",
+      "guid": "a489b2de950a566fb589d63e4024b87c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier9.Hezrou.OneD3",
+      "guid": "98f63ec0cb545ea5bdf626c093153c91",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
     }
   ]
 }

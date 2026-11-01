@@ -808,6 +808,20 @@
       "subjectPrompt": "Use case: stylized-concept. Create ONE original square fantasy RPG summon-choice painting for the Pathfinder FIRST EDITION adult Bone Devil (Osyluth), in the checked-in infernal bronze-medallion family. A tall ivory skeletal-insectile devil with an angular skull-like face, gaunt ribbed torso, long clawed arms and legs, two compact pale membranous wings, and one long segmented scorpionlike tail curling visibly beside the body to a large black stinger. The tail and stinger must remain readable at 128px and 48px. Clearly distinct from the spiny red Barbed Devil, green bearded glaive-wielder and pale chain-wrapped humanoid references. Dark antique bronze circular medallion, cold blue-black infernal haze, painterly fantasy realism and focused ivory rim light. One creature only; no beard, chains, weapons, text, numbers, UI overlay, watermark, gore or extra limbs. Keep face, wings and tail tip inside the canvas. Reference paintings guide the established visual family only; copy no pixels.",
       "generator": "built-in-imagegen",
       "compositionBriefSource": "assets-source/original-icons/expanded-summoning/prompts/sprint35-provenance.json"
+    },
+    {
+      "key": "babau",
+      "displayName": "Babau",
+      "subjectPrompt": "Use case: stylized-concept. Create ONE original square fantasy RPG summon-choice painting for the Pathfinder FIRST EDITION adult Babau demon in the approved infernal bronze-medallion family. A lean black-green, long-limbed demonic skirmisher with slick hairless skin coated in translucent amber acidic slime, pointed ears, small backward horns, sharp fangs, two long clawed hands, and ONE clearly recognizable longspear held diagonally beside the body. Agile crouched three-quarter pose, narrow waist and predatory silhouette readable at 128px and 48px. Clearly distinct from the massive spined Barbed Devil, skeletal winged Bone Devil and green bearded devil. Dark antique bronze circular medallion, smoky olive-black abyssal haze, painterly fantasy realism and focused cold rim light. One creature only; exactly two arms and two legs; no wings, beard, chains, extra weapons, text, numbers, UI overlay, watermark, gore or extra figures. Keep face, claws and spearhead inside the canvas. Original project-owned pixels; visual-family guidance only.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/prompts/sprint36-provenance.json"
+    },
+    {
+      "key": "hezrou",
+      "displayName": "Hezrou",
+      "subjectPrompt": "Use case: stylized-concept. Create ONE original square fantasy RPG summon-choice painting for the Pathfinder FIRST EDITION adult Hezrou demon in the approved infernal bronze-medallion family. A huge broad toadlike demon with a low massive frog head, wide fanged mouth, warty olive-brown hide, thick hunched shoulders, swollen belly, two very long muscular arms ending in black claws, and two squat powerful legs. Heavy forward three-quarter stance with face, both claws and unmistakable amphibian silhouette readable at 128px and 48px; a restrained sickly green stench haze surrounds it without hiding the body. Clearly distinct from humanoid devils and the lean spear-carrying Babau. Dark antique bronze circular medallion, murky green-black abyssal background, painterly fantasy realism and warm edge highlights. One creature only; exactly two arms and two legs; no wings, horns, weapons, tail, extra limbs, text, numbers, UI overlay, watermark, gore or extra figures. Keep head and claws inside the canvas. Original project-owned pixels; visual-family guidance only.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/prompts/sprint36-provenance.json"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  142,
+    "count":  144,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -1275,6 +1275,24 @@
                       "key":  "bone-devil",
                       "file":  "bone-devil.png",
                       "sha256":  "d542bd9c5ffc52615c786cccafb5b3169ab3b2298599c6a895803e223c01d612",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "babau",
+                      "file":  "babau.png",
+                      "sha256":  "6575163d9131ed7d2105f012e746ffbb1a82961c61eb494b59979292cd8e854d",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "hezrou",
+                      "file":  "hezrou.png",
+                      "sha256":  "7ad545982cb4428b35b45d4edad3cf2fdbaa94b393ae68c0eadf4018bb6c6891",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Sprint 36 original Babau and Hezrou summon-choice paintings",
+  "generator": "image_gen.imagegen (built-in)",
+  "generatedAtUtc": "2026-11-01",
+  "ownership": "Project-owned original AI-assisted paintings; no game or third-party pixels transferred.",
+  "referencePolicy": "The prompt describes the approved infernal bronze-medallion family. No native game image, mesh, texture, third-party art, or existing source bitmap was supplied to or copied by the generator.",
+  "icons": [
+    {
+      "key": "babau",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/babau.png",
+      "sourceSha256": "66162f93211e11642c0792638a88bc966bb4faa2aecd75aa9ed782d045c75887",
+      "generatorOutput": "C:/Dev/KingmakerBuffPlannerLab/codex-home/generated_images/01a1972e-aa73-7c81-9dae-868ea4242cd8/exec-b7c903d1-4aa9-4a38-a38f-2c94fd4a6f96.png",
+      "generatorOutputSha256": "61389673b8366e42d0684f6ff2c5e74cb307d05024e5ca8aae641225fde1f916",
+      "identity": "lean slime-coated black-green demon with claws and longspear",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING"
+    },
+    {
+      "key": "hezrou",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/hezrou.png",
+      "sourceSha256": "ff8369ed4028bc0b467712ee40c39fe96d52d1e7f6ce22dd4d188ffb2f5a12ea",
+      "generatorOutput": "C:/Dev/KingmakerBuffPlannerLab/codex-home/generated_images/01a1972e-aa73-7c81-9dae-868ea4242cd8/exec-f24991a4-f41d-4da8-a825-a29633946acd.png",
+      "generatorOutputSha256": "83af0758c5ebac6b9f4d7e6d553f28dfcd11f730c05703c1c2d6a514d991f257",
+      "identity": "massive broad olive-brown toad demon with long clawed arms and stench haze",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING"
+    }
+  ]
+}

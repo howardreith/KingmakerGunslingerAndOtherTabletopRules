@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "provenance": "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, Phase 2 original creature/action paintings, and Sprint 24 original theropod paintings; no copied game or third-party pixels.",
   "generator": "tools/New-ExpandedSummoningIcons.ps1",
-  "count": 142,
+  "count": 144,
   "icons": [
     {
       "key": "air-mephit",
@@ -3998,6 +3998,43 @@
         "KMG.Summoning.Ability.SM.Tier8.BoneDevil.OneD3",
         "KMG.Summoning.Ability.SM.Tier9.BoneDevil.OneD4PlusOne",
         "KMG.Summoning.Unit.BoneDevil"
+      ]
+    },
+    {
+      "key": "babau",
+      "displayName": "Babau",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/babau.png",
+      "productionFile": "assets/game/icons/expanded-summoning/babau.png",
+      "sourceSha256": "66162f93211e11642c0792638a88bc966bb4faa2aecd75aa9ed782d045c75887",
+      "outputSha256": "6575163d9131ed7d2105f012e746ffbb1a82961c61eb494b59979292cd8e854d",
+      "width": 128,
+      "height": 128,
+      "format": "RGBA PNG",
+      "scope": "kmg-catalog",
+      "blueprintSymbols": [
+        "KMG.Summoning.Ability.SM.Tier5.Babau.One",
+        "KMG.Summoning.Ability.SM.Tier6.Babau.OneD3",
+        "KMG.Summoning.Ability.SM.Tier7.Babau.OneD4PlusOne",
+        "KMG.Summoning.Ability.SM.Tier8.Babau.OneD4PlusOne",
+        "KMG.Summoning.Ability.SM.Tier9.Babau.OneD4PlusOne",
+        "KMG.Summoning.Unit.Babau"
+      ]
+    },
+    {
+      "key": "hezrou",
+      "displayName": "Hezrou",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/hezrou.png",
+      "productionFile": "assets/game/icons/expanded-summoning/hezrou.png",
+      "sourceSha256": "ff8369ed4028bc0b467712ee40c39fe96d52d1e7f6ce22dd4d188ffb2f5a12ea",
+      "outputSha256": "7ad545982cb4428b35b45d4edad3cf2fdbaa94b393ae68c0eadf4018bb6c6891",
+      "width": 128,
+      "height": 128,
+      "format": "RGBA PNG",
+      "scope": "kmg-catalog",
+      "blueprintSymbols": [
+        "KMG.Summoning.Ability.SM.Tier8.Hezrou.One",
+        "KMG.Summoning.Ability.SM.Tier9.Hezrou.OneD3",
+        "KMG.Summoning.Unit.Hezrou"
       ]
     }
   ]

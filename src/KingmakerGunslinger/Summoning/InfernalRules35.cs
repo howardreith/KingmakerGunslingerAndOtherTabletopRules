@@ -304,9 +304,13 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintUnit SourceUnit;
         public BlueprintUnitFact OutsiderType;
         public BlueprintBuff Sickened;
+        public int CasterLevel;
+        public int SpellLevel;
+        public int DamageDiceCount;
+        public int OutsiderDamageDiceCount;
 
         public override string GetCaption()
-        { return "Resolve Barbed Devil Unholy Blight against one creature"; }
+        { return "Resolve Unholy Blight against one creature"; }
 
         public override void RunAction()
         {
@@ -323,14 +327,11 @@ namespace KingmakerGunslinger.Summoning
             bool evil = alignment.HasComponent(AlignmentComponent.Evil);
             if (evil) return;
             bool goodOutsider = good && target.Descriptor.HasFact(OutsiderType);
-            int dc = InfernalRules35.UnholyBlightWillDc(
-                caster.Stats.Charisma.ModifiedValue);
+            int dc = 10 + SpellLevel + caster.Stats.Charisma.Bonus;
             var resolution = new MechanicsContext(caster, target.Descriptor,
                 Context.SourceAbility, Context, new TargetWrapper(target));
-            resolution.Params.CasterLevel =
-                InfernalRules35.SpellLikeCasterLevel;
-            resolution.Params.SpellLevel =
-                InfernalRules35.UnholyBlightSpellLevel;
+            resolution.Params.CasterLevel = CasterLevel;
+            resolution.Params.SpellLevel = SpellLevel;
             resolution.Params.DC = dc;
             var saving = new RuleSavingThrow(target, SavingThrowType.Will, dc) {
                 Reason = resolution };
@@ -338,7 +339,8 @@ namespace KingmakerGunslinger.Summoning
 
             DiceType die = goodOutsider ? DiceType.D6 : DiceType.D8;
             var roll = new RuleRollDice(caster, new DiceFormula(
-                InfernalRules35.UnholyBlightDiceCount(goodOutsider), die)) {
+                goodOutsider ? OutsiderDamageDiceCount : DamageDiceCount,
+                die)) {
                 Reason = resolution };
             int rolled = resolution.TriggerRule(roll).Result;
             int amount = InfernalRules35.UnholyBlightDamage(rolled, good,
@@ -359,8 +361,8 @@ namespace KingmakerGunslinger.Summoning
             int rounds = resolution.TriggerRule(durationRoll).Result;
             var sickenedContext = AstralVictimEffectContext.Create(caster,
                 target, Sickened, new AbilityParams {
-                    CasterLevel = InfernalRules35.SpellLikeCasterLevel,
-                    SpellLevel = InfernalRules35.UnholyBlightSpellLevel,
+                    CasterLevel = CasterLevel,
+                    SpellLevel = SpellLevel,
                     DC = dc });
             var apply = new RuleApplyBuff(target, Sickened, sickenedContext,
                 TimeSpan.FromSeconds(GameConsts.RoundDuration * rounds),
@@ -378,11 +380,19 @@ namespace KingmakerGunslinger.Summoning
     /// <summary>One small exact-owner AI wrapper for the legal SLA buttons.</summary>
     public sealed class InfernalSpellAi35 : BlueprintAiCastSpell
     {
+        private sealed class SharedState { internal TimeSpan NextSpell; }
+        private static readonly ConditionalWeakTable<UnitEntityData,
+            SharedState> SharedStates = new ConditionalWeakTable<
+                UnitEntityData, SharedState>();
         public BlueprintUnit OwningBlueprint;
         public BlueprintBuff ActiveBuff;
         public bool TargetSelf;
         public bool TargetEnemy = true;
         public bool AvoidFriendlyArea;
+        public bool ChaoticExemptFriendlyArea;
+        public bool RequireAffectedEnemyArea;
+        public int MaximumAffectedHitDice;
+        public int SharedSpellCooldownRounds;
         public int AreaRadiusFeet;
         public bool WallPlacement;
         public BlueprintUnit WallSection;
@@ -403,6 +413,12 @@ namespace KingmakerGunslinger.Summoning
             if (!InfernalRules35.SpellAiCanAct(exactOwner,
                     owner?.IsInCombat == true, hasActiveEffect,
                     granted != null, grantedAvailable)) return false;
+            SharedState state;
+            if (SharedSpellCooldownRounds > 0 &&
+                SharedStates.TryGetValue(owner, out state) &&
+                Game.Instance?.TimeController != null &&
+                Game.Instance.TimeController.GameTime < state.NextSpell)
+                return false;
             return base.IsAvailable(context);
         }
 
@@ -432,17 +448,37 @@ namespace KingmakerGunslinger.Summoning
             if (AvoidFriendlyArea)
             {
                 if (target == null || AreaRadiusFeet <= 0 ||
-                    target.Descriptor.Alignment.Value.HasComponent(
-                        AlignmentComponent.Evil) ||
+                    !TargetSelf && target.Descriptor.Alignment.Value.HasComponent(
+                        ChaoticExemptFriendlyArea ? AlignmentComponent.Chaotic :
+                            AlignmentComponent.Evil) ||
                     Game.Instance?.State?.Units?.All == null) return false;
                 float radius = new Feet(AreaRadiusFeet).Meters;
                 if (Game.Instance.State.Units.All.Any(unit =>
                     unit != null && !unit.Destroyed && unit.IsInState &&
                     !ReferenceEquals(unit, owner) && !owner.IsEnemy(unit) &&
                     !unit.Descriptor.Alignment.Value.HasComponent(
-                        AlignmentComponent.Evil) &&
+                        ChaoticExemptFriendlyArea ? AlignmentComponent.Chaotic :
+                            AlignmentComponent.Evil) &&
                     (unit.Position - target.Position).magnitude <=
                         radius + unit.Corpulence)) return false;
+            }
+            if (RequireAffectedEnemyArea)
+            {
+                if (target == null || AreaRadiusFeet <= 0 ||
+                    Game.Instance?.State?.Units?.All == null) return false;
+                float radius = new Feet(AreaRadiusFeet).Meters;
+                if (!Game.Instance.State.Units.All.Any(unit => unit != null &&
+                        !unit.Destroyed && unit.IsInState &&
+                        !unit.Descriptor.State.IsDead && owner.IsEnemy(unit) &&
+                        !unit.Descriptor.Alignment.Value.HasComponent(
+                            ChaoticExemptFriendlyArea ?
+                                AlignmentComponent.Chaotic :
+                                AlignmentComponent.Evil) &&
+                        (MaximumAffectedHitDice <= 0 ||
+                            unit.Descriptor.Progression.CharacterLevel <=
+                                MaximumAffectedHitDice) &&
+                        (unit.Position - target.Position).magnitude <=
+                            radius + unit.Corpulence)) return false;
             }
             return base.IsTargetValid(context);
         }
@@ -450,19 +486,32 @@ namespace KingmakerGunslinger.Summoning
         public override UnitCommand CreateCommand(DecisionContext context,
             UnitEntityData target)
         {
-            if (!WallPlacement) return base.CreateCommand(context, target);
             UnitEntityData owner = context?.Unit;
-            InfernalWallPlacement35 placement;
-            var granted = owner == null || Ability == null ? null :
-                owner.Descriptor.Abilities.GetAbility(Ability);
-            var data = granted == null ? null : new AbilityData(granted);
-            if (data == null || !data.IsAvailable ||
-                !InfernalWallPlacementRuntime35.TryPlanAi(owner, target,
-                    WallSection, out placement) ||
-                !data.CanTarget(new TargetWrapper(placement.Center)))
-                return null;
-            return new UnitUseAbility(data,
-                new TargetWrapper(placement.Center));
+            UnitCommand command;
+            if (!WallPlacement)
+                command = base.CreateCommand(context, target);
+            else
+            {
+                InfernalWallPlacement35 placement;
+                var granted = owner == null || Ability == null ? null :
+                    owner.Descriptor.Abilities.GetAbility(Ability);
+                var data = granted == null ? null : new AbilityData(granted);
+                if (data == null || !data.IsAvailable ||
+                    !InfernalWallPlacementRuntime35.TryPlanAi(owner, target,
+                        WallSection, out placement) ||
+                    !data.CanTarget(new TargetWrapper(placement.Center)))
+                    return null;
+                command = new UnitUseAbility(data,
+                    new TargetWrapper(placement.Center));
+            }
+            if (owner != null && command != null &&
+                SharedSpellCooldownRounds > 0 &&
+                Game.Instance?.TimeController != null)
+                SharedStates.GetValue(owner, unit => new SharedState())
+                    .NextSpell = Game.Instance.TimeController.GameTime +
+                        TimeSpan.FromSeconds(GameConsts.RoundDuration *
+                            SharedSpellCooldownRounds);
+            return command;
         }
     }
 }
