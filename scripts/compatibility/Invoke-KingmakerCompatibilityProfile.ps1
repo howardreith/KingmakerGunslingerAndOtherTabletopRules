@@ -29,6 +29,7 @@ param(
         'observe-expanded-summoning-sprints30-31-native-inputs',
         'observe-expanded-summoning-sprint32-native-inputs',
         'observe-expanded-summoning-sprint33-native-inputs',
+        'observe-expanded-summoning-sprint36-native-inputs',
         'observe-alternate-summoning-sources',
         'observe-alternate-summoning-blocked-family',
         'disposable-alternate-summoning-contracts',
