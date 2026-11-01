@@ -388,6 +388,17 @@ Assert-True (-not (Test-KmgSprint32ReviewPhaseScope `
     -Scenario 'disposable-expanded-summoning-sprint32-native-review' `
     -Parameters @{ reviewPhase = 'sprint36-infernal-core-extra' })) `
     'the Sprint 36 request preflight refuses a broader suffix'
+foreach ($s36Phase in @('sprint36-infernal-combat',
+        'sprint36-infernal-turns', 'sprint36-infernal-public')) {
+    Assert-True (Test-KmgSprint32ReviewPhaseScope `
+        -Scenario 'disposable-expanded-summoning-sprint32-native-review' `
+        -Parameters @{ reviewPhase = $s36Phase }) `
+        "the actual request preflight admits exact $s36Phase"
+    Assert-True (-not (Test-KmgSprint32ReviewPhaseScope `
+        -Scenario 'disposable-expanded-summoning-sprint32-native-review' `
+        -Parameters @{ reviewPhase = ($s36Phase + '-extra') })) `
+        "the request preflight refuses a broader $s36Phase suffix"
+}
 
 # ----------------------------------------------- evidence-name array shape
 # The defect this exists for: `$x = if (...) { @(...) } else { @() }`

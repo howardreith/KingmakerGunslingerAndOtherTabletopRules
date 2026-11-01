@@ -102,6 +102,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var row = Row("attack", evt.Initiator, evt.Target);
                 row["weapon"] = evt.Weapon?.Blueprint?.AssetGuid; row["itemReference"] = ReferenceId(evt.Weapon);
                 row["hit"] = evt.AttackRoll?.IsHit; row["hpDamage"] = evt.MeleeDamage?.Damage;
+                row["secondary"] = evt.Weapon != null &&
+                    evt.Weapon.IsSecondary;
+                row["sneakUsed"] = evt.AttackRoll?.IsSneakAttackUsed;
+                row["sneakDamage"] = evt.MeleeDamage?.ResultDamage == null ?
+                    0 : evt.MeleeDamage.ResultDamage.Where(value =>
+                        value.Source != null && value.Source.Sneak &&
+                        !value.Source.Immune && value.FinalValue > 0)
+                        .Sum(value => value.FinalValue);
                 row["rangeFeet"] = evt.Weapon?.AttackRange.Value;
                 row["weaponDamage"] = evt.AttackRoll?.WeaponStats == null ? null : new JArray(evt.AttackRoll.WeaponStats.DamageDescription.Select(value =>
                     new JObject { ["dice"] = value.Dice.ToString(), ["bonus"] = value.Bonus }));

@@ -1994,6 +1994,11 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase='sprint36-infernal-core'})) 's36-infernal-core-admitted'
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $false -Parameters @{reviewPhase='sprint36-infernal-core'} } 's36-infernal-core-no-exit-refused'
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase='sprint36-infernal-core-extra'} } 's36-infernal-core-broader-suffix-refused'
+foreach ($phase in @('sprint36-infernal-combat','sprint36-infernal-turns','sprint36-infernal-public')) {
+    Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) ('s36-phase-admitted-' + $phase)
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $false -Parameters @{reviewPhase=$phase} } ('s36-phase-no-exit-refused-' + $phase)
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase=($phase + '-extra')} } ('s36-phase-broader-suffix-refused-' + $phase)
+}
 foreach ($phase in @('satyr-turn','lillend-turn','optional-suggestion','satyr-routes','lillend-routes','support-lifecycle','druid-input','wizard-input','sorcerer-input')) {
     Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) ('s32-turn-admitted-'+$phase)
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $false -Parameters @{reviewPhase=$phase} } ('s32-turn-no-exit-refused-'+$phase)

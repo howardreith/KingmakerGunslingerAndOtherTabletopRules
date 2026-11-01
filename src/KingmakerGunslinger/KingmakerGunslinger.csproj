@@ -62,8 +62,11 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBarbedCombat35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBone35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCore36.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCombat36.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalPublic35.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalPublic36.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalPersistence35.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalPersistence36.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBodies34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalMechanics34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCombat34.cs" />
