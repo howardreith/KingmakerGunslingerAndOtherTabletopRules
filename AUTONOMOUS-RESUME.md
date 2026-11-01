@@ -1,3 +1,23 @@
+# Sprint 36 — v0.0.174 RELEASED / STOP
+
+Stable [v0.0.174](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.174)
+is published and publicly verified from product
+[PR #88](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/88).
+Babau and Hezrou are functional through seven untemplated Summon Monster routes.
+Tested source `fc394d6281f9d70aa81c03d02df01f95a8927454` merged at
+`bbe19b55e985b18823695c6d9fa269f0dcb9407c`; publication promoted the exact
+qualified ZIP without rebuilding. The 2,785/2,785 gate, exact reproducibility,
+mechanics/presentation, six fresh ON/OFF persistence processes, public downloads,
+lineage and exact laptop/Working restoration passed.
+
+The three owner-authorized omissions are manufactured-weapon/ammunition damage
+from Protective Slime, Babau Darkness and Hezrou Gaseous Form, all with no
+substitute. No owner aesthetic approval is claimed; fine visual polish remains
+backlog. Full attribution and release identities are in
+[Sprint 36 status](planning/SPRINT36-STATUS.md) and
+[release evidence](planning/SPRINT36-RELEASE-EVIDENCE.json).
+**Stop before Sprint 37.** Historical text below is not current authority.
+
 # Sprint 35 — v0.0.173 RELEASED / STOP
 
 Stable [v0.0.173](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.173)
