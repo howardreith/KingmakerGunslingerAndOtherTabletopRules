@@ -1,12 +1,27 @@
-# Sprint 34 - in progress
+# Sprint 35 — v0.0.173 RELEASED / STOP
 
-Continue only the authorized Bearded Devil/Kyton mission in
-`C:/Dev/KingmakerGunslingerLab/wt/s34`. The controlling stage, candidate identities,
-finite qualification plan and restoration are in
-[SPRINT34-STATUS](planning/SPRINT34-STATUS.md). Early mechanics passed; body03
-observed native routines and motion, with rendered contact still under review.
-All ten routes remain hidden. No Working persistence envelope or release yet.
-The human installation and protected intake are restored. No Sprint35.
+Stable [v0.0.173](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.173)
+is published and publicly verified from product
+[PR #86](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/86).
+Barbed Devil and Bone Devil are functional through five untemplated Summon
+Monster VII–IX routes. Tested source `e42ae90092dc3f929ffcbda13ebd001281a839dd`
+merged at `40296fd8db4b47109ed0f81e4705c4b37ceab0ab`; publication promoted the
+exact qualified ZIP without rebuilding. The complete source gate, five grouped
+native mechanics/presentation rows, six fresh ON/OFF persistence processes,
+highest-risk integration, reproducibility, public downloads and exact laptop
+restoration passed. The full attribution and bounded adaptations are in
+[Sprint 35 status](planning/SPRINT35-STATUS.md) and
+[release evidence](planning/SPRINT35-RELEASE-EVIDENCE.json).
+
+The final audit retains its original aggregate FAIL and a separate reader PASS:
+all immutable facts were passing, but the first reader used the `Length` of the
+one-element Working/baseline arrays. Two launch-owned Unity session values and
+the sound-bank creation timestamp were restored to intake before the complete
+fact set was recorded. No Sprint 35 game, lease, task, transaction or staging
+remains; fifteen stale pre-intake journals are preserved, not claimed as owned.
+Steam remains running. No owner aesthetic approval is claimed. Fine cosmetic
+polish and the disclosed unsupported SLA/Wall geometry gaps remain backlog.
+**Stop before Sprint 36.** Historical text below is not current authority.
 
 The following closed Sprint33 record is historical; its artifacts, models and
 Succubus drain investigation remain closed.
