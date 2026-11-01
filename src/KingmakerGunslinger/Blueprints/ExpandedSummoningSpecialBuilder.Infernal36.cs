@@ -345,10 +345,10 @@ namespace KingmakerGunslinger.Blueprints
                 30);
             var bite = Sprint29Weapon(library, symbols, p + "Bite",
                 p + "BiteType", NativeBite1d6Guid, Size.Large, 4,
-                DiceType.D4, 9);
+                DiceType.D4, 10);
             var claw = Sprint29Weapon(library, symbols, p + "Claw",
                 p + "ClawType", NativeClaw1d4Guid, Size.Large, 1,
-                DiceType.D8, 9);
+                DiceType.D8, 10);
             unit.Body = NaturalBody(bite, new[] { claw, claw },
                 Array.Empty<BlueprintItemWeapon>());
             var profile = ScriptableObject.CreateInstance<
