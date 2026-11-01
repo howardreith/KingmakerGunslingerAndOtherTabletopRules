@@ -9,7 +9,7 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class InfernalRules36Tests
     {
-        internal static void HiddenRoutesHaveExactScopeAndQuantity()
+        internal static void PublicRoutesHaveExactScopeAndQuantity()
         {
             var babau = ExpandedSummoningCatalog.All.Single(value =>
                 value.Key == "babau");
@@ -47,8 +47,8 @@ namespace KingmakerGunslinger.DomainTests
                     SummonMultiplicity.OneD3 }),
                 "Hezrou quantities are one then 1d3.");
             Assertions.True(babauRoutes.Concat(hezrouRoutes).All(value =>
-                !SummonVisibilityCatalog.IsPublished(value)),
-                "All seven routes remain hidden during development.");
+                SummonVisibilityCatalog.IsPublished(value)),
+                "All seven owner-selected routes are public together.");
 
             var identities = ExpandedSummoningIdentityCatalog.Build();
             string[] routeSymbols = babauRoutes.Concat(hezrouRoutes).Select(
@@ -60,7 +60,7 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningIdentityCatalog.UnitSymbol(babau)) &&
                 identities.Any(value => value.Symbol ==
                     ExpandedSummoningIdentityCatalog.UnitSymbol(hezrou)),
-                "Both exact unit identities are registered while hidden.");
+                "Both exact unit identities remain registered at publication.");
             Assertions.Equal(31, identities.Count(value =>
                     value.Symbol.StartsWith(
                         "KMG.Summoning.Infernal.Babau.",
