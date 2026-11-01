@@ -28,7 +28,7 @@ OBSERVERS = {
     BARBED_OBSERVER: "da3fb790e956a182afb0f18a80d1af1770cc9fcf4d4c4c501463f05fefb56b1c",
     BONE_OBSERVER: "c59c8160539506ead301486c90db3e2dfc313d5f79b7f1dde0065d2cdfdc2063",
     RESOURCE_OBSERVER: "9f9f656bc9a56eb9d11e2054745763c7ef155a1ce706121e0c198ec2187945ed",
-    PERSISTENCE_OBSERVER: "be3abcd2064e669291e9f0938038a86b3837e3417dd7f6748b2d8e5dce7e20ef",
+    PERSISTENCE_OBSERVER: "6969c19a74f9693b8fbfb75e4cdfa1a7e32e603ea6e51de2c068b0b4c7be6b7e",
 }
 ROOTS = ("src/KingmakerGunslinger", "assets", "assets-source", "blueprints")
 RECORD_KEY = "expandedSummoningSprint35Release173"
