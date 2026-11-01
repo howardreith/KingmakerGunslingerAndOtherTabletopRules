@@ -29,6 +29,7 @@ param(
     [switch]$Sprint33ShadowOutsiders,
     [switch]$Sprint34InfernalOutsiders,
     [switch]$Sprint35InfernalReach,
+    [switch]$Sprint36InfernalDemons,
     [switch]$PreflightOnly,
     [string]$ExpectedBaseCommit,
     [string]$ProductPrNumber,
@@ -46,6 +47,9 @@ $ErrorActionPreference = 'Stop'
 if ($Sprints3031 -and -not $PSBoundParameters.ContainsKey('ReleaseNotesPath')) {
     $ReleaseNotesPath='docs\RELEASE-NOTES-0.0.167.md'
 }
+if ($Sprint36InfernalDemons -and -not $PSBoundParameters.ContainsKey('ReleaseNotesPath')) {
+    $ReleaseNotesPath='docs\RELEASE-NOTES-0.0.174.md'
+}
 if ($ReuseQualifiedCandidate) {
     & (Join-Path $PSScriptRoot 'Publish-QualifiedCandidate.ps1') `
         -PackagePath $PackagePath -CandidateRepositoryRoot $CandidateRepositoryRoot `
@@ -53,14 +57,14 @@ if ($ReuseQualifiedCandidate) {
         -MergedReleaseCommit $MergedReleaseCommit -ReleaseNotesPath $ReleaseNotesPath `
         -Publish:$Publish -ConfirmReleaseReady:$ConfirmReleaseReady -Sprint22:$Sprint22 `
         -PreflightOnly:$PreflightOnly -ExpectedBaseCommit $ExpectedBaseCommit `
-        -Sprint23ChargeRounding:$Sprint23ChargeRounding -Sprint25GiantBodies:$Sprint25GiantBodies -Sprint26MagicalBeasts:$Sprint26MagicalBeasts -Sprint27Griffon:$Sprint27Griffon -Sprint28Giants:$Sprint28Giants -Sprint29Giants:$Sprint29Giants -Sprints3031:$Sprints3031 -Sprint33ShadowOutsiders:$Sprint33ShadowOutsiders -Sprint34InfernalOutsiders:$Sprint34InfernalOutsiders -Sprint35InfernalReach:$Sprint35InfernalReach -ProductPrNumber $ProductPrNumber
+        -Sprint23ChargeRounding:$Sprint23ChargeRounding -Sprint25GiantBodies:$Sprint25GiantBodies -Sprint26MagicalBeasts:$Sprint26MagicalBeasts -Sprint27Griffon:$Sprint27Griffon -Sprint28Giants:$Sprint28Giants -Sprint29Giants:$Sprint29Giants -Sprints3031:$Sprints3031 -Sprint33ShadowOutsiders:$Sprint33ShadowOutsiders -Sprint34InfernalOutsiders:$Sprint34InfernalOutsiders -Sprint35InfernalReach:$Sprint35InfernalReach -Sprint36InfernalDemons:$Sprint36InfernalDemons -ProductPrNumber $ProductPrNumber
     return
 }
 if ($PackagePath -or $CandidateRepositoryRoot -or $MergedReleaseCommit -or $PreflightOnly -or $ExpectedBaseCommit) {
     throw 'Qualified-candidate arguments require -ReuseQualifiedCandidate.'
 }
-if ($Sprint22 -or $Sprint23ChargeRounding -or $Sprint25GiantBodies -or $Sprint26MagicalBeasts -or $Sprint27Griffon -or $Sprint28Giants -or $Sprint29Giants -or $Sprints3031 -or $Sprint33ShadowOutsiders -or $Sprint34InfernalOutsiders -or $Sprint35InfernalReach -or
-    (Get-KmgModInfo -RepositoryRoot (Split-Path -Parent $PSScriptRoot)).Version -in @('0.0.151','0.0.153','0.0.158','0.0.159','0.0.160','0.0.161','0.0.162','0.0.163','0.0.167','0.0.171','0.0.172','0.0.173')) {
+if ($Sprint22 -or $Sprint23ChargeRounding -or $Sprint25GiantBodies -or $Sprint26MagicalBeasts -or $Sprint27Griffon -or $Sprint28Giants -or $Sprint29Giants -or $Sprints3031 -or $Sprint33ShadowOutsiders -or $Sprint34InfernalOutsiders -or $Sprint35InfernalReach -or $Sprint36InfernalDemons -or
+    (Get-KmgModInfo -RepositoryRoot (Split-Path -Parent $PSScriptRoot)).Version -in @('0.0.151','0.0.153','0.0.158','0.0.159','0.0.160','0.0.161','0.0.162','0.0.163','0.0.167','0.0.171','0.0.172','0.0.173','0.0.174')) {
     throw 'This release requires -ReuseQualifiedCandidate with its exact tested artifact, selected patch contract and qualification ledger; no reporting rebuild.'
 }
 
