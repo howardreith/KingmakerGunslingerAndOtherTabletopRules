@@ -632,6 +632,7 @@ namespace KingmakerGunslinger.Assets
             ConfigureHoundArchonVisual(context);
             ConfigureShadowOutsiderVisuals(context);
             ConfigureInfernalVisual34s(context);
+            ConfigureInfernalVisual35s(context);
             ConfigureGiantBodyVisuals(context);
             ConfigureGriffonVisual(context);
         }

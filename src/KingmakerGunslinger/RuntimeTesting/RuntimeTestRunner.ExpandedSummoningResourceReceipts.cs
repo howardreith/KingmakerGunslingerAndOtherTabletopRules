@@ -150,6 +150,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PteranodonAssetRuntime.TryGetInfernalVisual34(key, out mesh, out bones, out paint, out status);
                 add(mesh, key + ".Mesh"); add(paint, key + ".Albedo");
             }
+            // Read the two exact S35 process-cache references. As above, these
+            // getters allocate nothing; an unrelated survivor with the same
+            // Unity name remains unresolved and fails cleanup closed.
+            foreach (string key in new[] { InfernalVisualPolicy35.Barbed, InfernalVisualPolicy35.Bone })
+            {
+                PteranodonAssetRuntime.TryGetInfernalVisual35(key, out mesh, out bones, out paint, out status);
+                add(mesh, key + ".Mesh"); add(paint, key + ".Albedo");
+            }
             foreach (string key in ExpandedSummoningCatalog.All.Select(c => c.Key))
             {
                 if (PteranodonAssetRuntime.TryGetUngulateVisual(key, out mesh, out bones, out paint, out status) ||

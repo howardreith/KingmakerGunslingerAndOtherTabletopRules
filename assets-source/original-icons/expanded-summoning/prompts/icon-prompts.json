@@ -794,6 +794,20 @@
       "subjectPrompt": "Use case: stylized-concept. Create ONE original square fantasy RPG summon-choice painting for Pathfinder FIRST EDITION adult Kyton (Chain Devil). Same painted creature-medallion family as the inspected Salamander: dark antique bronze circular medallion, dramatic light, readable large silhouette for 128px and 48px. A lean pale ash-skinned humanoid, bald or with close dark hair, stern eerie humanlike face, subtle old scar lines (no gore), wrapped in thick dark iron chains around torso and arms. FOUR visibly coherent heavy barbed chain lengths curl outward from the figure with distinct gaps and silver-edged links, communicating its four chain attacks; two arms only. Medium humanoid proportions, head through upper legs visible, modest dark cloth at waist. Not a horned devil: no horns, no wings, no beard, no glaive, no orange fire. Cold slate blue shadow background and focused silver-white edge lighting separate pale flesh and dark chains. Center face/body inside antique bronze ring; keep chains and all identifying features inside canvas. No text, numbers, UI overlays, watermark, extra characters or panels. Original project-owned art; references guide painting family only, never copy their pixels.",
       "generator": "built-in-imagegen",
       "compositionBriefSource": "assets-source/original-icons/expanded-summoning/prompts/sprint34-provenance.json"
+    },
+    {
+      "key": "barbed-devil",
+      "displayName": "Barbed Devil (Hamatula)",
+      "subjectPrompt": "Use case: stylized-concept. Create ONE original square fantasy RPG summon-choice painting for the Pathfinder FIRST EDITION adult Barbed Devil (Hamatula), in the checked-in infernal bronze-medallion family. A massive rust-red muscular humanoid devil with a low horned head, heavy jaws, long clawed hands and dense long black-red spines projecting clearly from shoulders, forearms, back and legs. Make the spiny silhouette unmistakable at 128px and 48px and clearly different from the lean green bearded glaive-wielder and pale chain-wrapped humanoid references. Dark antique bronze circular medallion, restrained ember-red infernal haze, painterly fantasy realism and crisp rim light. One creature, two arms and two legs, no beard, chains, glaive, wings, text, numbers, UI overlay, watermark, gore or extra figures. Keep head, claws and all major spine tips inside the canvas. Reference paintings guide the established visual family only; copy no pixels.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/prompts/sprint35-provenance.json"
+    },
+    {
+      "key": "bone-devil",
+      "displayName": "Bone Devil (Osyluth)",
+      "subjectPrompt": "Use case: stylized-concept. Create ONE original square fantasy RPG summon-choice painting for the Pathfinder FIRST EDITION adult Bone Devil (Osyluth), in the checked-in infernal bronze-medallion family. A tall ivory skeletal-insectile devil with an angular skull-like face, gaunt ribbed torso, long clawed arms and legs, two compact pale membranous wings, and one long segmented scorpionlike tail curling visibly beside the body to a large black stinger. The tail and stinger must remain readable at 128px and 48px. Clearly distinct from the spiny red Barbed Devil, green bearded glaive-wielder and pale chain-wrapped humanoid references. Dark antique bronze circular medallion, cold blue-black infernal haze, painterly fantasy realism and focused ivory rim light. One creature only; no beard, chains, weapons, text, numbers, UI overlay, watermark, gore or extra limbs. Keep face, wings and tail tip inside the canvas. Reference paintings guide the established visual family only; copy no pixels.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/prompts/sprint35-provenance.json"
     }
   ]
 }

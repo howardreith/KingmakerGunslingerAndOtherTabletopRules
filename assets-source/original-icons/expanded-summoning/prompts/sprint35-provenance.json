@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Sprint35 original Barbed Devil and Bone Devil summon-choice paintings",
+  "generator": "image_gen.imagegen (built-in)",
+  "generatedAtUtc": "2026-10-30",
+  "ownership": "Project-owned original AI-assisted paintings; no game or third-party pixels transferred.",
+  "referencePolicy": "The checked-in Sprint34 paintings were transferred to the built-in generator as visual-family references. They guided palette, painting language and medallion presentation only; the generated species, silhouettes and pixels are new.",
+  "references": [
+    {
+      "path": "assets-source/original-icons/expanded-summoning/sources/bearded-devil.png",
+      "sha256": "09d29e086b558cbbe015878912f182567ab15f2d80e7ccfcb6445849c7fe45cf",
+      "role": "inspected infernal medallion-family reference; no transferred source pixels"
+    },
+    {
+      "path": "assets-source/original-icons/expanded-summoning/sources/kyton-chain-devil.png",
+      "sha256": "1d71688609a20089589fcb666b50770531c5a28ae8739e1e7ef5eab1531a0d23",
+      "role": "inspected infernal medallion-family reference; no transferred source pixels"
+    }
+  ],
+  "icons": [
+    {
+      "key": "barbed-devil",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/barbed-devil.png",
+      "originalSha256": "bb6c3f090b56fcfcf6be961697d092ff9984bc4d554f2fd007b949da46bf9386",
+      "generatorOutput": "C:/Dev/KingmakerBuffPlannerLab/codex-home/generated_images/01a18d46-7e3b-7961-b4fa-fdbd4bb7fdf0/exec-807efddd-ede9-40bc-800e-6a2a2e47c9c7.png",
+      "identity": "rust-red heavily spined hamatula with claws; no beard, polearm, chains or wings"
+    },
+    {
+      "key": "bone-devil",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/bone-devil.png",
+      "originalSha256": "b0df2dac7e6b76b81bf5f28dff9cfd0c7103b4d7e6326c2c7789c6310d3ad14c",
+      "generatorOutput": "C:/Dev/KingmakerBuffPlannerLab/codex-home/generated_images/01a18d46-7e3b-7961-b4fa-fdbd4bb7fdf0/exec-6a38d54b-8813-4e31-b66d-78834882ca9a.png",
+      "identity": "ivory skeletal-insectile osyluth with wings and a clearly visible segmented stinging tail"
+    }
+  ]
+}

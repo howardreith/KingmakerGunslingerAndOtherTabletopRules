@@ -40,9 +40,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Summoning\InfernalRules35.cs" />
+    <Compile Include="Summoning\InfernalRules35Policy.cs" />
+    <Compile Include="Summoning\InfernalWallRules35.cs" />
+    <Compile Include="Summoning\InfernalVisualPolicy35.cs" />
+    <Compile Include="Summoning\BoneDevilTailVisual35.cs" />
+    <Compile Include="Summoning\InfernalWallNavmesh35.cs" />
+    <Compile Include="Assets\PteranodonAssetRuntime.Infernal35.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Infernal35.cs" />
     <Compile Include="Summoning\InfernalRules34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEvents34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEarly34.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEarly35.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBarbed35.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBarbedCombat35.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBone35.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalPublic35.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalPersistence35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBodies34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalMechanics34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCombat34.cs" />

@@ -26,6 +26,10 @@ param(
     [Parameter(Mandatory = $true)][string[]]$Scenario,
     [Parameter(Mandatory = $true)][string]$ExpectedVersion,
     [string]$PackagePath,
+    # Names the exact development-candidate purpose when PackagePath is not a
+    # release candidate. The wrapper deploys it once, then every scenario uses
+    # the exact returned deployment manifest through the guarded reuse path.
+    [string]$DevelopmentPurpose,
     # Save name for scenarios that require one. AGENTS permits only
     # KMG_AUTOMATION_WORKING for automated runs.
     [string]$SaveName,
@@ -102,6 +106,12 @@ $reuseManifest = $null
 $reusePackage = $null
 $deploymentRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments'
 $repositoryRoot = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
+if (-not [string]::IsNullOrEmpty($DevelopmentPurpose)) {
+    [void](Assert-KmgDevelopmentPurpose $DevelopmentPurpose)
+    if ([string]::IsNullOrWhiteSpace($PackagePath)) {
+        throw 'A development purpose requires one explicit development PackagePath.'
+    }
+}
 
 try {
     if ($ExpandedSummoningDisabled) {
@@ -123,6 +133,21 @@ try {
             restoredBy = 'verified live-tree snapshot'
         }
         Write-Host 'Staged Expanded Summoning OFF for one guarded working-save verify/cleanup; the outer snapshot will restore the exact original setting.'
+    }
+    if (-not [string]::IsNullOrEmpty($DevelopmentPurpose)) {
+        $reusePackage = (Resolve-Path -LiteralPath $PackagePath).Path
+        $deploymentOutput = @(& (Join-Path $PSScriptRoot 'Deploy-Local.ps1') `
+            -PackagePath $reusePackage -DevelopmentPurpose $DevelopmentPurpose `
+            -Confirm:$false -PassThru)
+        if ($deploymentOutput.Count -ne 1 -or
+            $deploymentOutput[0] -isnot [string] -or
+            -not (Test-Path -LiteralPath $deploymentOutput[0] -PathType Leaf)) {
+            throw 'Development deployment did not return exactly one deployment manifest.'
+        }
+        $reuseManifest = (Resolve-Path -LiteralPath $deploymentOutput[0]).Path
+        $record.developmentPurpose = $DevelopmentPurpose
+        $record.developmentDeploymentManifest = $reuseManifest
+        $record.developmentPackage = $reusePackage
     }
     # Each scenario is attempted even if an earlier one fails, so one bad
     # scenario cannot hide the rest of a baseline suite. Restoration still
@@ -179,11 +204,13 @@ try {
             if ($AllowDirtyGit) { $arguments.AllowDirtyGit = $true }
             if ($SaveName) { $arguments.SaveName = $SaveName }
             if ($PackagePath) { $arguments.PackagePath = $PackagePath; $arguments.PassThru = $true }
+            if ($DevelopmentPurpose) { $arguments.DevelopmentPurpose = $DevelopmentPurpose }
             # Only the first scenario needs to build and deploy; the rest run
             # against the artifact it installed. Reuse is refused unless the
             # exact deployment manifest and package are named, so resolve both
             # from what the first run actually produced rather than assuming.
-            if (-not $first -and $reusePackage -and $reuseManifest) {
+            if (($DevelopmentPurpose -or -not $first) -and
+                $reusePackage -and $reuseManifest) {
                 $arguments.ReuseInstalledArtifact = $true
                 $arguments.DeploymentManifestPath = $reuseManifest
                 $arguments.PackagePath = $reusePackage

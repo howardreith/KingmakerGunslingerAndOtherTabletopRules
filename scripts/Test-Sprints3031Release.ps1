@@ -200,12 +200,12 @@ if($b.buildAttemptCount -ne 5 -or $b.actualGameLaunchCount -ne 1){throw 'Fifth b
 
 $p=New-BudgetFixture sixth 5 5 -Amended
 Change-BudgetFixture $p {param($b)
-    $start=[DateTime]::Parse($b.startUtc)
+    $start=[DateTimeOffset]::Parse($b.startUtc).UtcDateTime
     $b | Add-Member h4RayObserverAmendment ([pscustomobject]@{
         authority='Owner repair H4 ray-only observer and finish existing closeout'
         oldMaximumBuildAttempts=5;newMaximumBuildAttempts=6;retainedBuildAttempts=4;retainedGameLaunches=5
         pauseStartUtc=$start.AddMinutes(45).ToString('o');resumeUtc=$start.AddMinutes(50).ToString('o');excludedTicks=[TimeSpan]::FromMinutes(5).Ticks})
-    $b.maximumBuildAttempts=6;$b.deadlineUtc=([DateTime]::Parse($b.deadlineUtc).AddMinutes(5)).ToString('o')
+    $b.maximumBuildAttempts=6;$b.deadlineUtc=([DateTimeOffset]::Parse($b.deadlineUtc).AddMinutes(5).UtcDateTime).ToString('o')
 }
 Invoke-KmgSprints3031Budget $p Build sixth|Out-Null
 Refuse-Budget $p Build 'Candidate build admission ceiling reached.'
@@ -217,7 +217,7 @@ if((Get-FileHash $p).Hash -cne $hash){throw 'Sixth build verification mutated it
 $unattended=Join-Path $temp 'budget-unattended.json'
 Copy-Item -LiteralPath $p -Destination $unattended
 Change-BudgetFixture $unattended {param($b)
-    $start=[DateTime]::Parse($b.startUtc)
+    $start=[DateTimeOffset]::Parse($b.startUtc).UtcDateTime
     $b | Add-Member unattendedCloseoutAmendment ([pscustomobject]@{
         authority='Owner Sprints30-31 unattended functional closeout'
         oldMaximumBuildAttempts=6;newMaximumBuildAttempts=$null
@@ -226,7 +226,7 @@ Change-BudgetFixture $unattended {param($b)
         retainedBuildAttempts=5;retainedGameLaunches=9
         pauseStartUtc=$start.AddMinutes(51).ToString('o');resumeUtc=$start.AddMinutes(53).ToString('o');excludedTicks=[TimeSpan]::FromMinutes(2).Ticks})
     $b.maximumBuildAttempts=$null;$b.maximumGameLaunches=30;$b.actualGameLaunchCount=29
-    $b.deadlineUtc=([DateTime]::Parse($b.deadlineUtc).AddMinutes(182)).ToString('o')
+    $b.deadlineUtc=([DateTimeOffset]::Parse($b.deadlineUtc).AddMinutes(182).UtcDateTime).ToString('o')
 }
 Invoke-KmgSprints3031Budget $unattended Build seventh-counted|Out-Null
 Invoke-KmgSprints3031Budget $unattended Game thirtieth-counted|Out-Null
@@ -276,7 +276,7 @@ $p=New-BudgetFixture pause 2 0 -Amended
 Change-BudgetFixture $p {param($b) $b.budgetIsolationAmendment.excludedTicks++}
 Refuse-Budget $p Check 'Unsupported owner suspension adjustment.'
 $p=New-BudgetFixture deadline
-Change-BudgetFixture $p {param($b) $b.deadlineUtc=([DateTime]::Parse($b.deadlineUtc).AddHours(1)).ToString('o')}
+Change-BudgetFixture $p {param($b) $b.deadlineUtc=([DateTimeOffset]::Parse($b.deadlineUtc).AddHours(1).UtcDateTime).ToString('o')}
 Refuse-Budget $p Check 'Owner deadlines were changed.'
 
 $p=New-BudgetFixture readiness
