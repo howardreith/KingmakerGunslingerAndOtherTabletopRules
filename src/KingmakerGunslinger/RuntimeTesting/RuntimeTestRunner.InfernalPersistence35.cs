@@ -230,6 +230,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "WallSectionUnit");
             AbilityData data = new AbilityData(
                 bone.Descriptor.Abilities.GetAbility(wallBlueprint));
+            DateTime readyDeadline = DateTime.UtcNow.AddSeconds(15);
+            while (DateTime.UtcNow < readyDeadline &&
+                (bone.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics
+                        .SummonedUnitAppearBuff) != null ||
+                 !bone.Descriptor.State.CanAct ||
+                 bone.Commands.Raw.Any(value => value != null &&
+                     !value.IsFinished)))
+            {
+                Game.Instance.IsPaused = false;
+                yield return 0;
+            }
+            Game.Instance.IsPaused = true;
+            int activeCommands = bone.Commands.Raw.Count(value =>
+                value != null && !value.IsFinished);
+            bool appearanceActive = bone.Buffs.GetBuff(BlueprintRoot.Instance
+                .SystemMechanics.SummonedUnitAppearBuff) != null;
+            if (appearanceActive || !bone.Descriptor.State.CanAct ||
+                activeCommands != 0)
+                throw new InvalidOperationException(
+                    "Sprint35 persistence wall owner never became command-ready: " +
+                    "appearance=" + appearanceActive + ";canAct=" +
+                    bone.Descriptor.State.CanAct + ";activeCommands=" +
+                    activeCommands + ".");
             Vector3[] directions = {
                 Vector3.forward, Vector3.right, Vector3.back, Vector3.left,
                 (Vector3.forward + Vector3.right).normalized,
@@ -238,6 +261,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (Vector3.back + Vector3.left).normalized
             };
             TargetWrapper selected = null;
+            UnitUseAbility command = null;
             foreach (float distance in new[] { 5f, 7f, 9f, 11f })
             foreach (Vector3 direction in directions)
             {
@@ -250,16 +274,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     continue;
                 var target = new TargetWrapper(point);
                 if (data.IsAvailable && data.CanTarget(target)) {
-                    selected = target;
-                    break;
+                    var candidate = new UnitUseAbility(data, target);
+                    if (candidate.CanStart) {
+                        selected = target;
+                        command = candidate;
+                        break;
+                    }
                 }
             }
-            if (selected == null) throw new InvalidOperationException(
-                "No legal bounded Sprint35 persistence wall point.");
+            if (selected == null || command == null)
+                throw new InvalidOperationException(
+                    "No command-ready bounded Sprint35 persistence wall point: " +
+                    "available=" + data.IsAvailable + ";canAct=" +
+                    bone.Descriptor.State.CanAct + ";activeCommands=" +
+                    activeCommands + ".");
             var prior = new HashSet<string>(Game.Instance.State.Units.All
                 .Where(unit => ReferenceEquals(unit.Blueprint,
                     sectionBlueprint)).Select(unit => unit.UniqueId));
-            var command = new UnitUseAbility(data, selected);
             bone.Commands.Run(command);
             DateTime deadline = DateTime.UtcNow.AddSeconds(30);
             UnitEntityData section = null;
@@ -277,7 +308,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 section == null)
                 throw new InvalidOperationException(
                     "Native Sprint35 persistence wall command failed: " +
-                    command.Result);
+                    command.Result + ";started=" + command.IsStarted +
+                    ";acted=" + command.IsActed + ";finished=" +
+                    command.IsFinished + ";canStart=" + command.CanStart +
+                    ";queued=" + bone.Commands.Raw.Contains(command) + ".");
             DateTime claimsDeadline = DateTime.UtcNow.AddSeconds(15);
             while (DateTime.UtcNow < claimsDeadline &&
                 (section.View?.GetComponent<InfernalWallNavmesh35>()?
