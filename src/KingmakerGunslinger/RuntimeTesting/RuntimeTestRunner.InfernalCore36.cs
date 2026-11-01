@@ -84,6 +84,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 babau = CastExpandedSummoningOwnTier(fixture, "babau");
                 hostileBabau = CastExpandedSummoningOwnTier(fixture,
                     "babau");
+                // Stench may evaluate as soon as the Hezrou enters the
+                // spatial grid. Establish the legal failed-save precondition
+                // before spawning its source, not after an earlier successful
+                // exposure could have installed 24-hour source memory.
+                ally.Stats.SaveFortitude.BaseValue = -100;
                 hezrou = CastExpandedSummoningOwnTier(fixture, "hezrou");
                 owned.Add(babau);
                 owned.Add(hostileBabau);
@@ -166,7 +171,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     hostileBabau, bone, trace, check))
                     yield return frame;
 
-                ally.Stats.SaveFortitude.BaseValue = -100;
                 PlaceExpandedSummoningUnit(hezrou, ally.Position +
                     Vector3.right * (hezrou.Corpulence + ally.Corpulence +
                         .3f));
@@ -492,7 +496,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Any();
             var attempts = new JArray();
             bool removed = false;
-            bool throttledAfterFailure = false;
+            int failedAttemptCount = 0;
+            bool failedAttemptsThrottled = true;
             for (int attempt = 0; attempt < 8 && !removed; attempt++)
             {
                 UnitCommand command = ai.CreateCommand(decision, target);
@@ -504,8 +509,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 removed = target.Buffs.Enumerable.All(value =>
                     !ReferenceEquals(value, effect));
                 bool immediatelyAvailable = ai.IsAvailable(decision);
-                if (!removed) throttledAfterFailure |=
-                    !immediatelyAvailable;
+                if (!removed)
+                {
+                    failedAttemptCount++;
+                    failedAttemptsThrottled &= !immediatelyAvailable;
+                }
                 attempts.Add(new JObject {
                     ["attempt"] = attempt + 1,
                     ["command"] = Sprint27AiCommand(command),
@@ -523,7 +531,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool exact = invisibilityCommand != null &&
                 invisibilityCommand.Result == UnitCommand.ResultType.Success &&
                 useful && aiBefore && removed && playerData != null &&
-                playerData.IsAvailable && throttledAfterFailure &&
+                playerData.IsAvailable && failedAttemptsThrottled &&
                 resourceFree;
             check("useful-native-dispel", exact, new JObject {
                 ["babau"] = babau.UniqueId,
@@ -538,9 +546,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["removed"] = removed,
                 ["atWillPlayerAbilityAvailable"] = playerData?.IsAvailable,
                 ["resourceCostComponentPresent"] = !resourceFree,
-                ["failedAttemptThrottleObserved"] =
-                    throttledAfterFailure
-            }, "A real visible spell effect makes the exact Babau AI action select native Dispel, real checks eventually remove it, failed attempts are round-throttled, and the player's at-will ability remains available without a summon resource.");
+                ["failedAttemptCount"] = failedAttemptCount,
+                ["failedAttemptThrottleApplicable"] =
+                    failedAttemptCount > 0,
+                ["failedAttemptsThrottled"] = failedAttemptsThrottled
+            }, "A real visible spell effect makes the exact Babau AI action select native Dispel, real checks eventually remove it, any failed attempts are round-throttled, and the player's at-will ability remains available without a summon resource.");
         }
 
         private IEnumerable<int> InfernalCoreConditions36(
