@@ -158,6 +158,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PteranodonAssetRuntime.TryGetInfernalVisual35(key, out mesh, out bones, out paint, out status);
                 add(mesh, key + ".Mesh"); add(paint, key + ".Albedo");
             }
+            // Sprint36 retains its two authored source meshes and albedos in
+            // the same immutable process cache. Read the exact cache objects;
+            // surviving names or stable global counts are not ownership proof.
+            foreach (string key in new[] { InfernalVisualPolicy36.Babau, InfernalVisualPolicy36.Hezrou })
+            {
+                PteranodonAssetRuntime.TryGetInfernalVisual36(key, out mesh, out bones, out paint, out status);
+                add(mesh, key + ".Mesh"); add(paint, key + ".Albedo");
+            }
             foreach (string key in ExpandedSummoningCatalog.All.Select(c => c.Key))
             {
                 if (PteranodonAssetRuntime.TryGetUngulateVisual(key, out mesh, out bones, out paint, out status) ||
