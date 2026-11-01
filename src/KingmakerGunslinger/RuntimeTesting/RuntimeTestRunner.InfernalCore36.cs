@@ -104,11 +104,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         targetFaction))
                     throw new InvalidOperationException(
                         "Sprint36 hostility fixture does not own its faction.");
-                targetFaction.AttackFactions = (oldAttackFactions ??
-                    Array.Empty<BlueprintFaction>()).Concat(new[] {
-                        babau.Faction }).Distinct().ToArray();
+                // A summoned unit initially shares its summoner's combat
+                // group.  Give only this disposable attacker its own group
+                // before switching faction, then refresh the same per-unit
+                // attack-faction cache used by the qualified Infernal34
+                // maneuver observer.  Mutating the owned faction blueprint
+                // alone does not refresh an existing group's relationship
+                // cache and produced a false non-hostile precondition.
+                hostileBabau.GroupId = hostileBabau.UniqueId;
+                var hostileGroup = hostileBabau.Group;
+                if (hostileGroup.IsPlayerParty || hostileGroup.Count != 1 ||
+                    !ReferenceEquals(hostileGroup[0], hostileBabau))
+                    throw new InvalidOperationException(
+                        "Sprint36 hostile Babau does not own a private group.");
                 hostileBabau.Descriptor.SwitchFactions(targetFaction, true);
-                hostileBabau.UpdateGroup();
+                hostileBabau.AttackFactions.Match(new[] { babau.Faction });
+                hostileGroup.ResetFactionSet();
+                hostileGroup.UpdateAttackFactionsCache();
                 bool hostile = hostileBabau.IsEnemy(babau) &&
                     babau.IsEnemy(hostileBabau);
                 check("private-hostility", hostile, new JObject {
@@ -122,7 +134,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (oldAttackFactions ?? Array.Empty<BlueprintFaction>())
                             .Select(value => value.name)),
                     ["activeAttackFactions"] = new JArray(
-                        targetFaction.AttackFactions.Select(value =>
+                        hostileBabau.AttackFactions.Select(value =>
                             value.name))
                 }, "The request-owned faction alone establishes a real two-way enemy relation; no intake or production faction changes.");
 
