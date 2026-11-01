@@ -61,14 +61,42 @@ namespace KingmakerGunslinger.DomainTests
                 identities.Any(value => value.Symbol ==
                     ExpandedSummoningIdentityCatalog.UnitSymbol(hezrou)),
                 "Both exact unit identities remain registered at publication.");
-            Assertions.Equal(31, identities.Count(value =>
+            var privateIdentities = identities.Where(value =>
                     value.Symbol.StartsWith(
                         "KMG.Summoning.Infernal.Babau.",
                         StringComparison.Ordinal) ||
                     value.Symbol.StartsWith(
                         "KMG.Summoning.Infernal.Hezrou.",
-                        StringComparison.Ordinal)),
+                        StringComparison.Ordinal)).ToArray();
+            Assertions.Equal(
+                SummoningCurrentSurface.Sprint36PrivateIdentityCount,
+                privateIdentities.Length,
                 "Only dependency-complete configured private identities are active.");
+            var expectedPrivateTypes = new[] {
+                new { Type = "BlueprintUnitType", Count = 2 },
+                new { Type = "BlueprintFeature", Count = 2 },
+                new { Type = "BlueprintItemWeapon", Count = 5 },
+                new { Type = "BlueprintWeaponType", Count = 5 },
+                new { Type = "BlueprintAbility", Count = 4 },
+                new { Type = "BlueprintBrain", Count = 2 },
+                new { Type = "BlueprintBuff", Count = 4 },
+                new { Type = "BlueprintAbilityAreaEffect", Count = 1 },
+                new { Type = "BlueprintAbilityResource", Count = 1 },
+                new { Type = "BabauWeaponModeAi36", Count = 1 },
+                new { Type = "BabauDispelAi36", Count = 1 },
+                new { Type = "InfernalSpellAi35", Count = 3 }
+            };
+            Assertions.Equal(privateIdentities.Length,
+                expectedPrivateTypes.Sum(value => value.Count),
+                "The Sprint 36 private type inventory is complete.");
+            foreach (var expected in expectedPrivateTypes)
+                Assertions.Equal(expected.Count, privateIdentities.Count(value =>
+                        value.PlannedType == expected.Type),
+                    "Exact Sprint 36 private type count changed for " +
+                    expected.Type + ".");
+            Assertions.Equal(SummoningCurrentSurface.Sprint36CatalogIdentityCount,
+                privateIdentities.Length + routeSymbols.Length + 2,
+                "The two units, seven roots, and private dependency graph are the complete active append.");
         }
 
         internal static void UnsupportedGaseousFormIdentitiesStayInert()

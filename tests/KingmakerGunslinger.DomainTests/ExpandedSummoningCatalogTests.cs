@@ -56,7 +56,8 @@ namespace KingmakerGunslinger.DomainTests
                 .Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly))
                 .Where(value => value.Creature.Key != "satyr" && value.Creature.Key != "lillend-azata" &&
                     value.Creature.Key != "bearded-devil" && value.Creature.Key != "kyton-chain-devil" &&
-                    value.Creature.Key != "barbed-devil" && value.Creature.Key != "bone-devil").ToArray();
+                    value.Creature.Key != "barbed-devil" && value.Creature.Key != "bone-devil" &&
+                    value.Creature.Key != "babau" && value.Creature.Key != "hezrou").ToArray();
             Assertions.Equal(1150, prior.Length, "Accepted public route surface must be preserved.");
             Assertions.True(prior.All(SummonVisibilityCatalog.IsPublished), "Existing routes must remain published.");
             SummonVisibilityCatalog.Validate();
