@@ -540,9 +540,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             Buff effect = target.Buffs.Enumerable.SingleOrDefault(value =>
                 ReferenceEquals(value.Blueprint, invisible) &&
                 ReferenceEquals(value.Context?.MaybeCaster, target));
+            var granted = babau.Descriptor.Abilities.GetAbility(dispel);
+            var playerData = granted == null ? null : new AbilityData(granted);
             var decision = new DecisionContext {
                 Unit = babau,
-                Target = new TargetInfo { Unit = target }
+                Target = new TargetInfo { Unit = target },
+                // BlueprintAiCastSpell.CreateCommand reads the ability chosen
+                // by the native brain scorer from DecisionContext.Ability. A
+                // unit/target-only context follows its invalid-action fallback
+                // and returns UnitMoveTo instead of the real cast command.
+                Ability = playerData
             };
             bool useful = effect != null && effect.IsFromSpell &&
                 !effect.IsNotDispelable && effect.Context != null &&
@@ -584,8 +591,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in InfernalBoneWaitGame35(6.1, 15))
                         yield return frame;
             }
-            var granted = babau.Descriptor.Abilities.GetAbility(dispel);
-            var playerData = granted == null ? null : new AbilityData(granted);
             bool mediumTarget = dispel.Range == AbilityRange.Medium &&
                 playerData != null && playerData.CanTarget(
                     new TargetWrapper(target));
