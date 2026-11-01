@@ -1991,6 +1991,9 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase='sprint35-infernal-bone'})) 's35-bone-admitted'
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $false -Parameters @{reviewPhase='sprint35-infernal-bone'} } 's35-bone-no-exit-refused'
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase='sprint35-infernal-bone-extra'} } 's35-bone-broader-suffix-refused'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase='sprint36-infernal-core'})) 's36-infernal-core-admitted'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $false -Parameters @{reviewPhase='sprint36-infernal-core'} } 's36-infernal-core-no-exit-refused'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase='sprint36-infernal-core-extra'} } 's36-infernal-core-broader-suffix-refused'
 foreach ($phase in @('satyr-turn','lillend-turn','optional-suggestion','satyr-routes','lillend-routes','support-lifecycle','druid-input','wizard-input','sorcerer-input')) {
     Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) ('s32-turn-admitted-'+$phase)
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $false -Parameters @{reviewPhase=$phase} } ('s32-turn-no-exit-refused-'+$phase)

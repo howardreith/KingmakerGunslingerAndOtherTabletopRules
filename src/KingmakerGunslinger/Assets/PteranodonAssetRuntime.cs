@@ -633,6 +633,7 @@ namespace KingmakerGunslinger.Assets
             ConfigureShadowOutsiderVisuals(context);
             ConfigureInfernalVisual34s(context);
             ConfigureInfernalVisual35s(context);
+            ConfigureInfernalVisual36s(context);
             ConfigureGiantBodyVisuals(context);
             ConfigureGriffonVisual(context);
         }

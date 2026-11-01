@@ -123,7 +123,9 @@ namespace KingmakerGunslinger.Summoning
                 "bearded-devil|a8cbd4cdb0feaf64eab1452257c3c971|0",
                 "kyton-chain-devil|a8cbd4cdb0feaf64eab1452257c3c971|0",
                 "barbed-devil|a8cbd4cdb0feaf64eab1452257c3c971|0",
-                "bone-devil|a8cbd4cdb0feaf64eab1452257c3c971|0"
+                "bone-devil|a8cbd4cdb0feaf64eab1452257c3c971|0",
+                "babau|a8cbd4cdb0feaf64eab1452257c3c971|0",
+                "hezrou|a8cbd4cdb0feaf64eab1452257c3c971|0"
             });
         }
 

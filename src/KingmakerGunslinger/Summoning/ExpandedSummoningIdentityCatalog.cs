@@ -20,8 +20,8 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 128;
-        internal const int LogicalAbilityCount = 1175;
+        internal const int UnitCount = 130;
+        internal const int LogicalAbilityCount = 1182;
         internal const int TemplatedPlacementCount = 319;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 655;
+        internal const int SpecialIdentityCount = 686;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -967,6 +967,37 @@ namespace KingmakerGunslinger.Summoning
             // that cloning the spell ability alone did not give this summon
             // an independently enforceable attack-breaking effect.
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.InvisibilityBuff", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Babau.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Babau.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Babau.Bite", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Babau.BiteType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Babau.Claw", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Babau.ClawType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Babau.Longspear", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Babau.LongspearType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Babau.DispelMagic", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Babau.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Babau.WeaponModeAi", "BabauWeaponModeAi36"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Babau.DispelAi", "BabauDispelAi36"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.Bite", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.BiteType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.Claw", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.ClawType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.StenchCarrier", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.StenchArea", "BlueprintAbilityAreaEffect"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.StenchSickened", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.StenchMemory", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.HeldNauseated", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.ChaosHammer", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.UnholyBlight", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.Blasphemy", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.BlasphemyResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.ChaosAi", "InfernalSpellAi35"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.UnholyAi", "InfernalSpellAi35"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.BlasphemyAi", "InfernalSpellAi35"));
             Validate(result);
             return result.AsReadOnly();
         }

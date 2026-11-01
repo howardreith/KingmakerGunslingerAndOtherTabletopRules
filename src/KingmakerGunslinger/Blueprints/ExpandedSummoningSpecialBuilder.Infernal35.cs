@@ -380,6 +380,10 @@ namespace KingmakerGunslinger.Blueprints
             resolve.Sickened = BlueprintLibraryLookup.RequireExact<
                 BlueprintBuff>(library, NativeSickened35,
                     "native sickened condition");
+            resolve.CasterLevel = InfernalRules35.SpellLikeCasterLevel;
+            resolve.SpellLevel = InfernalRules35.UnholyBlightSpellLevel;
+            resolve.DamageDiceCount = 5;
+            resolve.OutsiderDamageDiceCount = 10;
             var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
             run.SavingThrowType = SavingThrowType.Unknown;
             run.Actions = new ActionList {
@@ -759,6 +763,17 @@ namespace KingmakerGunslinger.Blueprints
             string symbol, string nativeGuid, string title, int spellLevel,
             UnitCommand.CommandType action, string description = null)
         {
+            return ConfigureOwnedSpell35(library, symbols, symbol, nativeGuid,
+                title, spellLevel, action, 12, description);
+        }
+
+        private static BlueprintAbility ConfigureOwnedSpell35(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> symbols,
+            string symbol, string nativeGuid, string title, int spellLevel,
+            UnitCommand.CommandType action, int casterLevel,
+            string description)
+        {
             var ability = Require<BlueprintAbility>(symbols, symbol);
             CloneMephitSpell(library, ability, nativeGuid,
                 "native " + title + " spell graph");
@@ -773,7 +788,7 @@ namespace KingmakerGunslinger.Blueprints
                 ContextCalculateAbilityParams>();
             parameters.StatType = StatType.Charisma;
             parameters.ReplaceCasterLevel = true;
-            parameters.CasterLevel = Simple(12);
+            parameters.CasterLevel = Simple(casterLevel);
             parameters.ReplaceSpellLevel = true;
             parameters.SpellLevel = Simple(spellLevel);
             ability.ComponentsArray = ability.ComponentsArray.Concat(
@@ -782,7 +797,8 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create(symbol + ".Name", title),
                 LocalizationService.Create(symbol + ".Description",
                     description ?? title +
-                        " as a spell-like ability at caster level 12."),
+                        " as a spell-like ability at caster level " +
+                        casterLevel + "."),
                 ability.Icon);
             return ability;
         }

@@ -220,6 +220,12 @@ $infernal35Files = @('barbed-devil-mesh.json','barbed-devil-albedo.png','bone-de
 foreach ($file in $infernal35Files) {
     Copy-Item -LiteralPath (Join-Path $outputDirectory ('assets\sprint35-infernal-reach\'+$file)) -Destination $infernal35Destination
 }
+$infernal36Destination = Join-Path $modDirectory 'assets\sprint36-demons'
+New-Item -ItemType Directory -Path $infernal36Destination -Force | Out-Null
+$infernal36Files = @('babau-mesh.json','babau-albedo.png','hezrou-mesh.json','hezrou-albedo.png')
+foreach ($file in $infernal36Files) {
+    Copy-Item -LiteralPath (Join-Path $outputDirectory ('assets\sprint36-demons\'+$file)) -Destination $infernal36Destination
+}
 $shadowOutsiderDestination = Join-Path $modDirectory 'assets\sprint33-shadow-outsiders'
 New-Item -ItemType Directory -Path $shadowOutsiderDestination -Force | Out-Null
 $shadowOutsiderFiles = @('invisible-stalker-mesh.json','invisible-stalker-albedo.png','shadow-demon-mesh.json','shadow-demon-albedo.png')
