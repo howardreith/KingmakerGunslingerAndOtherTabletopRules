@@ -717,27 +717,60 @@ namespace KingmakerGunslinger.RuntimeTesting
             ally.Descriptor.Alignment.Set(Alignment.NeutralGood);
             hezrou.Memory.Add(target).Visible = true;
             target.Memory.Add(hezrou).Visible = true;
+            // Match the already-qualified autonomous-action fixture: update
+            // native visibility/combat caches and make this exact owner's
+            // decision clock due before ticking its real brain. Direct casts
+            // earlier in this grouped observer do not drive those AI-only
+            // caches or clock themselves.
+            new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
+            new UnitCombatJoinController().Tick();
+            new UnitCombatPrepareController().Tick();
             var commands = new HashSet<UnitCommand>();
+            var ambientCandidates = new HashSet<string>(
+                StringComparer.Ordinal);
             int first = trace.Rows.Count;
             var costs = new JArray();
             using (var economy = new FirearmReviewCosts(hezrou, costs))
             {
                 Sprint28SetBrainActivePreservingActions(hezrou, true);
                 hezrou.Brain.RestoreAvailableActions();
+                float nextCommandBefore = hezrou.CombatState.AIData
+                    .NextCommandTime;
+                hezrou.CombatState.AIData.NextCommandTime = Time.time - .01f;
+                string[] brainActions = hezrou.Blueprint.Brain.Actions
+                    .Select(value => value.GetType().FullName + ":" +
+                        value.name).ToArray();
+                bool ordinaryFallback = hezrou.Blueprint.Brain.Actions
+                    .Any(value => value.GetType().FullName ==
+                        "Kingmaker.Controllers.Brain.Blueprints." +
+                        "BlueprintAiAttack");
+                bool nativeReady = hezrou.IsInGame &&
+                    hezrou.Descriptor.State.CanAct && hezrou.IsBrainActive &&
+                    hezrou.IsInCombat && hezrou.Group != null &&
+                    hezrou.Group.IsInCombat &&
+                    Game.Instance.AwakeUnitGroups.Contains(hezrou.Group) &&
+                    hezrou.IsEnemy(target) &&
+                    hezrou.Memory.ContainsVisible(target);
                 DateTime deadline = DateTime.UtcNow.AddSeconds(45);
-                int ticks = 0;
+                int frames = 0, aiTicks = 0;
                 while (DateTime.UtcNow < deadline)
                 {
                     if (!hezrou.Commands.Raw.Any(value => value != null &&
-                            !value.IsFinished) && ticks % 30 == 0)
-                        Sprint24TickExactAi(hezrou).ToArray();
+                            !value.IsFinished) && frames % 60 == 0)
+                    {
+                        foreach (string candidate in
+                            Sprint24TickExactAi(hezrou))
+                            if (candidate != hezrou.UniqueId)
+                                ambientCandidates.Add(candidate);
+                        aiTicks++;
+                    }
                     foreach (UnitCommand command in hezrou.Commands.Raw
                         .Where(value => value != null)) commands.Add(command);
                     UnitAttack attack = commands.OfType<UnitAttack>()
                         .FirstOrDefault(value => value.IsFinished &&
                             value.Result == UnitCommand.ResultType.Success);
                     if (attack != null) break;
-                    ticks++;
+                    frames++;
                     Game.Instance.IsPaused = false;
                     yield return 0;
                 }
@@ -751,7 +784,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Where(row => (string)row["event"] == "attack" &&
                         (string)row["owner"] == hezrou.UniqueId &&
                         (string)row["target"] == target.UniqueId).ToArray();
-                bool exact = fallback != null && attacks.Length > 0 &&
+                bool exact = ordinaryFallback && nativeReady &&
+                    fallback != null && attacks.Length > 0 &&
                     spellCommands.Length == 0 &&
                     economy.Count(fallback) == 1 &&
                     economy.Exact(fallback, false);
@@ -767,7 +801,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["spellCommands"] = spellCommands.Length,
                         ["attacks"] = new JArray(attacks),
                         ["costs"] = costs,
-                        ["aiTicks"] = ticks,
+                        ["brain"] = hezrou.Blueprint.Brain.name,
+                        ["brainActions"] = new JArray(brainActions),
+                        ["runtimeActions"] = hezrou.Brain.Actions.Count,
+                        ["availableActions"] = hezrou.Brain
+                            .AvailableActions.Count,
+                        ["ordinaryFallback"] = ordinaryFallback,
+                        ["nativeReady"] = nativeReady,
+                        ["nextCommandTimeBefore"] = nextCommandBefore,
+                        ["nextCommandTimeArmed"] = hezrou.CombatState.AIData
+                            .NextCommandTime,
+                        ["frames"] = frames,
+                        ["aiTicks"] = aiTicks,
+                        ["ambientCandidatesNeverTicked"] = new JArray(
+                            ambientCandidates),
                         ["fixtureCommands"] = 0
                     }, "With a non-exempt ally inside every burst, the real Hezrou AI refuses collateral casting and completes an effective ordinary melee fallback.");
             }
