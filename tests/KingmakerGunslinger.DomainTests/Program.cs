@@ -1153,7 +1153,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint35-wall-formation-breach", InfernalRules35Tests.WallOfIceKeepsFormationAndBreachRulesDistinct),
             Case("expanded-summoning.sprint35-original-models", InfernalRules35Tests.OwnedBodiesDecodeAndTailIsIsolated),
             Case("expanded-summoning.sprint36-live-dcs", InfernalRules36Tests.PrintedDcsDeriveFromLiveAbilityScores),
-            Case("expanded-summoning.sprint36-hidden-routes", InfernalRules36Tests.HiddenRoutesHaveExactScopeAndQuantity),
+            Case("expanded-summoning.sprint36-public-routes", InfernalRules36Tests.PublicRoutesHaveExactScopeAndQuantity),
             Case("expanded-summoning.sprint36-inert-gaseous-form", InfernalRules36Tests.UnsupportedGaseousFormIdentitiesStayInert),
             Case("expanded-summoning.sprint36-original-models", InfernalRules36Tests.OwnedBodiesDecodeAndRemainDistinct),
             Case("expanded-summoning.sprint36-protective-slime-contact", InfernalRules36Tests.ProtectiveSlimeOnlyQualifiesNaturalContact),
