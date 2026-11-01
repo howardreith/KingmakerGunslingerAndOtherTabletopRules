@@ -156,7 +156,7 @@ namespace KingmakerGunslinger.DomainTests
                 ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
                     KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length +
                     AlternateSummoningTests.AppendedLedgerIdentities +
-                (ExpandedSummoningSprint25Tests.AppendedLedgerIdentities + SummoningCurrentSurface.AppendedCatalogIdentityCount),
+                (ExpandedSummoningSprint25Tests.AppendedLedgerIdentities + SummoningCurrentSurface.AppendedLedgerIdentityCount),
                 all.Length,
                 "Manifest total must include 240 production elemental identities.");
             Assertions.Equal(1911 + KingmakerGunslinger.Acquisition

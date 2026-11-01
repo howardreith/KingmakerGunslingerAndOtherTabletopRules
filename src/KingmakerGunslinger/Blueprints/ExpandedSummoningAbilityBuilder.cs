@@ -193,7 +193,7 @@ namespace KingmakerGunslinger.Blueprints
             // these six scoped creatures only, including the in-place Lantern
             // upgrade; unrelated released graphs are untouched.
             if (variant.Family == SummonFamily.Monster &&
-                (variant.Creature.Key == "lemure" || variant.Creature.Key == "dretch" || variant.Creature.Key == "hound-archon" || variant.Creature.Key == "lantern-archon" || variant.Creature.Key == "trumpet-archon" || variant.Creature.Key == "astral-deva" || variant.Creature.Key == "bearded-devil" || variant.Creature.Key == "kyton-chain-devil" || variant.Creature.Key == "barbed-devil" || variant.Creature.Key == "bone-devil"))
+                (variant.Creature.Key == "lemure" || variant.Creature.Key == "dretch" || variant.Creature.Key == "hound-archon" || variant.Creature.Key == "lantern-archon" || variant.Creature.Key == "trumpet-archon" || variant.Creature.Key == "astral-deva" || variant.Creature.Key == "bearded-devil" || variant.Creature.Key == "kyton-chain-devil" || variant.Creature.Key == "barbed-devil" || variant.Creature.Key == "bone-devil" || variant.Creature.Key == "babau" || variant.Creature.Key == "hezrou"))
             {
                 foreach (var spawn in AlternateSummoningGraph.Objects<ContextActionSpawnMonster>(target.ComponentsArray))
                 {
@@ -212,6 +212,10 @@ namespace KingmakerGunslinger.Blueprints
                 target.ComponentsArray.OfType<SpellDescriptorComponent>().Single()
                     .Descriptor |= SpellDescriptor.Law | SpellDescriptor.Evil;
             if (variant.Creature.Key == "dretch")
+                target.ComponentsArray.OfType<SpellDescriptorComponent>().Single()
+                    .Descriptor |= SpellDescriptor.Chaos | SpellDescriptor.Evil;
+            if (variant.Creature.Key == "babau" ||
+                variant.Creature.Key == "hezrou")
                 target.ComponentsArray.OfType<SpellDescriptorComponent>().Single()
                     .Descriptor |= SpellDescriptor.Chaos | SpellDescriptor.Evil;
             if (variant.Creature.Key == "barbed-devil" ||

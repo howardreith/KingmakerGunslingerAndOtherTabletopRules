@@ -177,6 +177,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ReviewInfernalPublic35(fixture);
                 yield break;
             }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint36InfernalCorePhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewInfernalCore36(fixture))
+                    yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint36InfernalCombatPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewInfernalCombat36(fixture))
+                    yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint36InfernalTurnsPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewSprint28Cleave(fixture, false,
+                    true, new[] { "hezrou" }, "s36-"))
+                    yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint36InfernalPublicPhase)
+            {
+                ReviewInfernalPublic36(fixture);
+                yield break;
+            }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32ShadowDrainPhase)
             {
                 CreateSprint32TurnHostile(fixture);

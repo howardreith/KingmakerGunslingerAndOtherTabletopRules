@@ -835,6 +835,13 @@ namespace KingmakerGunslinger.Summoning
         // claw damage on an eligible later successful grapple check. It is
         // deliberately not Constrict and never fires on the initial grab.
         public BlueprintUnit ImpaleProfileOwner;
+        // Sprint 36's Hezrou may decline the universal optional Grab only on
+        // attacks delivered by the private Cleave/Great Cleave action. If it
+        // grabbed the first target, Kingmaker would mark the shared threat
+        // limb occupied and force every later Cleave attack to miss. The
+        // exact attack-event marker and exact owner opt-in leave ordinary
+        // full attacks and every established grab consumer unchanged.
+        public BlueprintUnit DeclineGrabDuringCleaveOwner;
         /// <summary>
         /// Set for a crocodilian. A death roll is a maintain-time rider like
         /// constrict, but it is not a second attack. These fields retain the
@@ -865,6 +872,12 @@ namespace KingmakerGunslinger.Summoning
         {
             if (evt == null || evt.AttackRoll == null || evt.Weapon == null ||
                 evt.Target == null) return;
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            if (InfernalRules36Policy.DeclineGrabDuringCleave(
+                owner?.Blueprint != null &&
+                ReferenceEquals(owner.Blueprint,
+                    DeclineGrabDuringCleaveOwner),
+                SummonGiantCleaveDelivery.IsCleaveAttack(evt))) return;
             TryGrab(evt.Target, evt.Weapon, evt.AttackRoll.IsHit);
         }
 

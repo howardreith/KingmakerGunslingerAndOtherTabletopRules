@@ -151,6 +151,10 @@ try {
         'assets\sprint35-infernal-reach\barbed-devil-albedo.png',
         'assets\sprint35-infernal-reach\bone-devil-mesh.json',
         'assets\sprint35-infernal-reach\bone-devil-albedo.png',
+        'assets\sprint36-demons\babau-mesh.json',
+        'assets\sprint36-demons\babau-albedo.png',
+        'assets\sprint36-demons\hezrou-mesh.json',
+        'assets\sprint36-demons\hezrou-albedo.png',
         'assets\sprint18-primates\ape-mesh.json',
         'assets\sprint18-primates\ape-albedo.png',
         'assets\sprint18-primates\dire-ape-mesh.json',
@@ -278,6 +282,17 @@ try {
     foreach ($entry in $infernal35Exports.GetEnumerator()) {
         if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint35-infernal-reach\'+$entry.Key))) -cne $entry.Value) {
             throw 'Packaged Sprint 35 original export differs from its exact candidate input.'
+        }
+    }
+    $infernal36Exports = @{
+        'babau-mesh.json'='28ba1364c18d55e6faa3177d6997876d99cc6fdb5a8054eb2e9f27a54e8bc6a5'
+        'babau-albedo.png'='58df38b5aedc7e39d2a4b7f656b928f8dd4e039bb1ea6f1ebf674b11b0e9f291'
+        'hezrou-mesh.json'='3471e456c83613a9d6e4ea591cd226a8083542294c9ccb7c8175a29e244394f6'
+        'hezrou-albedo.png'='3310b12ac022145767d8390a348a7199c6c21a6b5215c70cec24e4ab6e860c0a'
+    }
+    foreach ($entry in $infernal36Exports.GetEnumerator()) {
+        if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint36-demons\'+$entry.Key))) -cne $entry.Value) {
+            throw 'Packaged Sprint 36 original export differs from its exact candidate input.'
         }
     }
     $humanMesh = Join-Path $modDirectory 'assets\sprint17-serpents\salamander-human-mesh.json'

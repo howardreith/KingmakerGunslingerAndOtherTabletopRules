@@ -253,16 +253,17 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void FixtureAlignmentRespectsEveryVariantAndNativeBranch()
         {
-            var evil = new[] { "lemure", "hell-hound", "erinyes-devil", "shadow-demon", "succubus", "salamander", "bebelith", "bearded-devil", "kyton-chain-devil", "barbed-devil", "bone-devil" };
+            var lawfulEvil = new[] { "lemure", "hell-hound", "erinyes-devil", "shadow-demon", "succubus", "salamander", "bebelith", "bearded-devil", "kyton-chain-devil", "barbed-devil", "bone-devil" };
+            var chaoticEvil = new[] { "dretch", "babau", "hezrou" };
             var good = new[] { "astral-deva", "lantern-archon", "bralani-azata", "ghaele-azata", "lillend-azata" };
             foreach (var variant in ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                 .Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly)))
             {
                 int expected = variant.Family == SummonFamily.NaturesAlly ? 17 :
-                    variant.Creature.Key == "dretch" ? 20 :
+                    chaoticEvil.Contains(variant.Creature.Key) ? 20 :
                     variant.Creature.Key == "hound-archon" || variant.Creature.Key == "trumpet-archon" ? 10 :
                     variant.Creature.MonsterTemplated || good.Contains(variant.Creature.Key) ? 3 :
-                    evil.Contains(variant.Creature.Key) ? 12 : 1;
+                    lawfulEvil.Contains(variant.Creature.Key) ? 12 : 1;
                 Assertions.Equal(expected, ExpandedSummoningRosterPersistencePolicy.CasterAlignmentFor(variant),
                     "Independent legal cast alignment for " + variant.StableKey);
             }
