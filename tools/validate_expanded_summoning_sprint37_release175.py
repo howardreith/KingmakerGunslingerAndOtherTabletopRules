@@ -15,7 +15,7 @@ import expanded_summoning_manifest as manifest
 # The head is after the version bump, as Sprint 36's was, so the metadata check
 # degenerates to "product metadata is unchanged from the reviewed head" and
 # OLD_INFORMATIONAL equals INFORMATIONAL.
-PRODUCT = "8f893bdb6842d78546fbd04d19645242240aa01d"
+PRODUCT = "1dec3c22adb4ac6163abcda99e1d85e5c4412d55"
 RELEASED = "b1cf3a3dd97a4df7d4838961bdea97a254a576d8"
 VERSION = "0.0.175"
 INFORMATIONAL = VERSION + "-expanded-summoning-vrock"
@@ -23,6 +23,7 @@ OLD_INFORMATIONAL = INFORMATIONAL
 ASSEMBLY = "src/KingmakerGunslinger/Properties/AssemblyInfo.cs"
 ROOTS = ("src/KingmakerGunslinger", "assets", "assets-source", "blueprints")
 RECORD_KEY = "expandedSummoningSprint37Release175"
+HARNESS = {"scripts/Deploy-Local.ps1": "713cceb319c2850d5f440139ebedc5468501d5b9c458e4d418d944cce98d9353", "scripts/Invoke-ExpandedSummoningRuntimeScenario.ps1": "df662a36a3d8b1f83292767cae51f42beb3d30c5971a9354874633fe301e66f6", "scripts/Invoke-KingmakerRuntimeTest.ps1": "64d4643834519f5c77170c6689bbd71fd05e63ddc9129aafc796105dc9219fee", "scripts/Invoke-Sprint22InstalledStack.ps1": "38fb00b2ef7ea3d1b857623c3e84d1eda80d85b5ddc3070b88535f94a3ff26b3", "scripts/Sprint37QualifiedRelease.Common.ps1": "3976cbe53bc8d9843b63212e245437016cd6c3cd9af8758fb7c2f92c7563e9c7", "scripts/Test-Sprint22InstalledStack.ps1": "e7c6c4a401e6881c02516d184c8d0e377c02df24af75cc491a9c7178fca08f2c", "scripts/Test-Sprint37Release.ps1": "3d93b1df01081d7ad4928ff806c20db5379b683000fa019590cc238261e54275"}
 RECORD = dict(
     releaseVersion=VERSION,
     releaseInformationalVersion=INFORMATIONAL,
@@ -32,7 +33,10 @@ RECORD = dict(
     releasedIdentityChanges=0,
     change="Vrock, three untemplated Monster VII-IX routes, source-owned Stunning Screech and Spores, two once-per-summoning native self-buffs and a distinct original body/icon",
     nativeEvidence="Final exact package requires fresh grouped proof for every mandatory row: no Sprint37 row may be reused, so no development-candidate receipt can qualify this release",
-    ownerPublicationAuthority="Sprint37 Vrock Fresh Codex Mission and its two corrections, with disclosed omissions of telekinesis, Dance of Ruin and greater teleport, the printed holy-water spore counter that has no engine vehicle, and the printed 30-foot land speed that Kingmaker's single movement speed cannot carry alongside the 50-foot fly speed")
+    ownerPublicationAuthority="Sprint37 Vrock Fresh Codex Mission, its two corrections, and the owner decisions of 2026-11-02 approving the implemented Spores with its three working counters while explicitly accepting omission of the printed holy-water interaction, and retaining the conservative automatic Screech policy with manual use preserved through the supported player interface; telekinesis, Dance of Ruin, greater teleport and the printed 30-foot land speed remain disclosed omissions",
+    harnessIdentity=HARNESS,
+    harnessIdentityNote="Tool and fixture identity for the orchestration that produced the native rows, recorded separately from the compiled product identity. These paths lie outside the validator's guarded product roots, so they are pinned here rather than by the product diff. The validator file itself cannot carry its own digest; its provenance is the reviewed product commit.",
+    installedStackFixtureChecks=52)
 
 
 def check_product(changed, untracked):
