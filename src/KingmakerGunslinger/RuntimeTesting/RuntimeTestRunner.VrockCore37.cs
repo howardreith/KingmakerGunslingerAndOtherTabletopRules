@@ -528,6 +528,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             owner.Commands.RemoveFinishedAndUpdateQueue();
             owner.Memory.Add(enemy).Visible = true;
             enemy.Memory.Add(owner).Visible = true;
+            // Unit memory and GROUP memory are different stores, and the AI
+            // reads the group's. The fourth AI run showed the difference
+            // decisively: the one failing cell had targetInGroupMemory false
+            // while the passing cells had it true, and its owner sat through
+            // twenty-three real AI ticks starting no command at all, because
+            // its group had no enemy to act on. The released fixture only
+            // checks this value; after a long phase that has moved units
+            // about, it has to be re-established.
+            if (owner.Group != null) owner.Group.Memory.Add(enemy).Visible =
+                true;
+            if (enemy.Group != null) enemy.Group.Memory.Add(owner).Visible =
+                true;
             new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
             new UnitCombatJoinController().Tick();
             new UnitCombatPrepareController().Tick();
