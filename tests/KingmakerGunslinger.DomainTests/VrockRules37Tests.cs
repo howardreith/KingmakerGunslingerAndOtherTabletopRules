@@ -113,7 +113,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Spores return every three rounds.");
         }
 
-        internal static void ScreechExemptsDemonsAndSporesExemptNobody()
+        internal static void ScreechExemptsDemonsAndSporesHonourTheirCounters()
         {
             Assertions.True(VrockRules37Policy.ScreechReaches(true, false),
                 "A non-demon inside the radius is affected.");
@@ -121,9 +121,11 @@ namespace KingmakerGunslinger.DomainTests
                 "A demon is exempt from the screech, as printed.");
             Assertions.False(VrockRules37Policy.ScreechReaches(false, false),
                 "Only this vrock's own screech resolves through its component.");
-            // The printed spore cloud has no exemption at all, so an ally and
-            // another demon are both eligible; ally safety is an AI selection
-            // rule, not an eligibility rule.
+            // The printed spore cloud has no *subtype* exemption, so an ally
+            // and another demon are both eligible; ally safety is an AI
+            // selection rule, not an eligibility rule. It does have disease
+            // protection as a gate, which the last case below covers and the
+            // native observation distinguishes from the later cures.
             Assertions.True(VrockRules37Policy.SporesReach(
                 true, true, true, false),
                 "Every live adjacent creature takes the spores.");
@@ -139,12 +141,14 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(VrockRules37Policy.SporesReach(
                 true, true, true, true),
                 "A creature already immune to disease is not exposed at all, impact included.");
-            // Adjacency is NOT the melee reach. The area collector's radius
-            // only has to over-collect; the production footprint relation is
-            // what decides exposure, and these are different quantities.
+            // Adjacency is NOT the melee reach. This comparison only says
+            // the collector's broad-phase bound is wider than the reach; it
+            // establishes nothing about the footprint relation itself, which
+            // SpatialRelationIsFootprintNotReach exercises directly and the
+            // native case measures on real units.
             Assertions.True(VrockRules37Policy.SporeCollectionRadiusFeet >
                 VrockRules37Policy.ReachFeet,
-                "The spore collection radius over-collects rather than standing in for adjacency.");
+                "The spore collection radius is a broad-phase bound wider than the reach.");
             Assertions.Equal(30, VrockRules37Policy.ScreechRadiusFeet,
                 "The screech is a 30-foot-radius spread.");
             Assertions.Equal(1, VrockRules37Policy.ScreechStunRounds,
@@ -198,6 +202,80 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(ExpandedSummoningCatalog.All.Any(value =>
                     value.Key == key),
                     "The exemption never names an unregistered creature: " + key);
+        }
+
+        internal static void SpatialRelationIsFootprintNotReach()
+        {
+            // Representative engine corpulences in metres: roughly a Medium
+            // humanoid, a Large creature such as the Vrock, and a Huge one.
+            const float medium = 0.5f;
+            const float large = 1.0f;
+            const float huge = 1.6f;
+            const float tolerance =
+                SummonFootprintGeometryPolicy.AdjacencyToleranceMeters;
+
+            // The edge distance subtracts BOTH footprints, which is the whole
+            // point: one centre distance means different things for different
+            // pairs, so no single radius constant can express this relation.
+            Assertions.Equal(0f, SummonFootprintGeometryPolicy.EdgeDistanceMeters(
+                large + medium, large, medium),
+                "Touching Large and Medium footprints are zero apart.");
+            Assertions.Equal(0f, SummonFootprintGeometryPolicy.EdgeDistanceMeters(
+                huge + huge, huge, huge),
+                "Two touching Huge footprints are also zero apart, at over twice the centre distance.");
+
+            // Just inside and just outside the threshold.
+            Assertions.True(SummonFootprintGeometryPolicy.IsAdjacentDistance(
+                large + medium + tolerance - 0.02f, large, medium),
+                "A creature just inside the one-square threshold is adjacent.");
+            Assertions.False(SummonFootprintGeometryPolicy.IsAdjacentDistance(
+                large + medium + tolerance + 0.02f, large, medium),
+                "A creature just outside the one-square threshold is not adjacent.");
+
+            // Differing footprints at one fixed centre distance: the Huge
+            // target's own footprint reaches into adjacency where the Medium
+            // one does not.
+            const float centres = large + medium + tolerance + 0.4f;
+            Assertions.False(SummonFootprintGeometryPolicy.IsAdjacentDistance(
+                centres, large, medium),
+                "At this separation a Medium target is beyond adjacency.");
+            Assertions.True(SummonFootprintGeometryPolicy.IsAdjacentDistance(
+                centres, large, huge),
+                "At the same separation a Huge target is adjacent.");
+
+            // A target inside the Vrock's ten-foot weapon reach yet outside
+            // adjacency. Reach is measured to the target; adjacency subtracts
+            // both footprints, so these are genuinely different quantities and
+            // the earlier constant comparison proves nothing about either.
+            const float reachMeters = VrockRules37Policy.ReachFeet *
+                SummonFootprintGeometryPolicy.FeetToMeters;
+            const float withinReach = large + reachMeters - 0.1f;
+            Assertions.True(withinReach <= large + reachMeters,
+                "The probe sits inside the Vrock's melee reach.");
+            Assertions.False(SummonFootprintGeometryPolicy.IsAdjacentDistance(
+                withinReach, large, medium),
+                "Being inside melee reach does not make a creature adjacent.");
+
+            // Collector completeness: the broad-phase radius must not drop a
+            // target this relation would call adjacent, for any footprint the
+            // game actually fields.
+            const float radiusMeters = VrockRules37Policy.SporeCollectionRadiusFeet *
+                SummonFootprintGeometryPolicy.FeetToMeters;
+            foreach (float target in new[] { 0.3f, medium, large, huge, 2.5f })
+            {
+                Assertions.True(
+                    SummonFootprintGeometryPolicy.CollectionRadiusAdmitsAdjacent(
+                        radiusMeters, large, target),
+                    "The spore collection radius still admits the furthest adjacent target of this footprint.");
+            }
+
+            // And the bound is a real bound, not a tautology: a radius smaller
+            // than the Vrock's own footprint plus one square would miss an
+            // adjacent creature, which is why the constant is not the reach.
+            Assertions.False(
+                SummonFootprintGeometryPolicy.CollectionRadiusAdmitsAdjacent(
+                    large + tolerance - 0.1f, large, medium),
+                "Too small a collection radius drops an adjacent target.");
         }
 
         internal static void MovementRecordsBothPrintedSpeeds()

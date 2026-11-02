@@ -15,6 +15,8 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Components;
+using Kingmaker.PubSubSystem;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.UnitLogic.Mechanics.Conditions;
@@ -223,15 +225,17 @@ namespace KingmakerGunslinger.Summoning
         protected override string GetConditionCaption()
         { return "adjacent, not already immune to disease"; }
 
+        /// <summary>
+        /// Whether the engine already protects this creature from the vine
+        /// effect. Both native descriptor-immunity paths are asked, because
+        /// the opening damage packet is decided here, before any buff is
+        /// applied, and a creature protected only by
+        /// <c>BuffDescriptorImmunity</c> would otherwise take that packet and
+        /// only then have its vines refused.
+        /// </summary>
         internal static bool IsDiseaseImmune(UnitEntityData target,
             MechanicsContext probe)
-        {
-            if (target == null) return false;
-            var resistance = target.Get<
-                Kingmaker.UnitLogic.Parts.UnitPartSpellResistance>();
-            return resistance != null && probe != null &&
-                resistance.IsImmune(probe);
-        }
+        { return SummonDescriptorImmunity.IsImmune(target, probe); }
 
         protected override bool CheckCondition()
         {
@@ -299,19 +303,90 @@ namespace KingmakerGunslinger.Summoning
                 TimeSpan.FromSeconds(GameConsts.RoundDuration *
                     VrockRules37Policy.SporeVineRounds),
                 (buff, source, duration) => {
-                    Buff added = target.Descriptor.Buffs.AddBuff(buff, source,
+                    // IsNotDispelable is deliberately left alone here.
+                    // Native Remove Disease is a ContextActionDispelMagic with
+                    // BuffType=All and the Disease descriptor, and
+                    // TryDispelBuff rejects an IsNotDispelable buff before it
+                    // ever looks at the descriptor. Setting that flag would
+                    // have made the vines immune to the exact cure the printed
+                    // entry requires. Ordinary Dispel Magic still cannot touch
+                    // them: it runs with BuffType=FromSpell and this blueprint
+                    // never sets IsFromSpell, so an extraordinary growth stays
+                    // outside ordinary dispelling while a real disease cure
+                    // reaches it.
+                    return target.Descriptor.Buffs.AddBuff(buff, source,
                         duration);
-                    // An extraordinary growth is not a spell effect, so the
-                    // native dispel consumer must not treat it as one. The
-                    // printed removals are disease removals, which reach it
-                    // through the vine blueprint's own Disease descriptor and
-                    // the native descriptor-removal action, not through Dispel
-                    // Magic.
-                    if (added != null) added.IsNotDispelable = true;
-                    return added;
                 });
             resolution.TriggerRule(apply);
         }
+    }
+
+    /// <summary>
+    /// Whether growth has been halted since the creature was exposed.
+    ///
+    /// <para>The printed entry says the attack "can also be halted by effects
+    /// that remove or provide immunity to disease", which includes protection
+    /// acquired while the vines are already growing. Neither native component
+    /// does that on its own: <c>BuffDescriptorImmunity</c> only handles
+    /// <c>RuleApplyBuff</c> as it happens, and
+    /// <c>SpellImmunityToSpellDescriptor</c> merely registers an entry in
+    /// <c>UnitPartSpellResistance</c> when it turns on. Neither sweeps facts
+    /// that already exist, so a descriptor on the vine buff is not by itself
+    /// proof of cancellation after the fact.</para>
+    ///
+    /// <para>This is the narrow hook that closes exactly that gap: it is asked
+    /// once per round immediately before the growth damage, by the same
+    /// predicate pair the exposure gate uses, and the halted branch runs the
+    /// native self-removal action. It reaches only this vine instance on this
+    /// creature, and it neither revives expired growth nor invents an
+    /// indefinite immunity.</para>
+    /// </summary>
+    [Serializable]
+    public sealed class VrockSporeGrowthHalted37 : ContextCondition
+    {
+        public BlueprintBuff Vines;
+
+        protected override string GetConditionCaption()
+        { return "disease protection acquired since exposure"; }
+
+        protected override bool CheckCondition()
+        {
+            UnitEntityData owner = Target == null ? null : Target.Unit;
+            if (owner == null || Vines == null) return false;
+            var probe = new MechanicsContext(
+                Context == null ? null : Context.MaybeCaster,
+                owner.Descriptor, Vines, Context, new TargetWrapper(owner));
+            return SummonDescriptorImmunity.IsImmune(owner, probe);
+        }
+    }
+
+    /// <summary>
+    /// The printed bless counter: "The spores can be destroyed by casting
+    /// bless on the affected creatures."
+    ///
+    /// <para>This component rides the vine instance, so it is already scoped
+    /// to one creature and one exposure. <c>IUnitBuffHandler</c> is broadcast
+    /// globally by the native buff collection, so the handler matches the
+    /// exact owner and the exact native bless effect before doing anything,
+    /// and then removes only its own instance. Removal is idempotent and
+    /// touches no other source's effect.</para>
+    /// </summary>
+    [Serializable]
+    public sealed class VrockSporeBlessRemoval37 : BuffLogic, IUnitBuffHandler
+    {
+        public BlueprintBuff BlessEffect;
+
+        public void HandleBuffDidAdded(Buff buff)
+        {
+            var vines = Fact as Buff;
+            if (vines == null || !vines.Active || BlessEffect == null ||
+                buff == null || Owner == null ||
+                !ReferenceEquals(buff.Owner, Owner) ||
+                !ReferenceEquals(buff.Blueprint, BlessEffect)) return;
+            vines.Remove();
+        }
+
+        public void HandleBuffDidRemoved(Buff buff) { }
     }
 
     /// <summary>AI selection only. The real screech keeps all-creature

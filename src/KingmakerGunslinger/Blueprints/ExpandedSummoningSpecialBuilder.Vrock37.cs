@@ -46,6 +46,10 @@ namespace KingmakerGunslinger.Blueprints
             "5ab0d42fb68c9e34abae4921822b9d63";
         private const string NativeMirrorImage37 =
             "3e4ab69ada402d145a5e0ad3ad4b8564";
+        // The native bless effect, named by the extended Sprint 37
+        // library audit run 20261102T1419486445531Z.
+        private const string NativeBlessBuff37 =
+            "87b8c6270ea85c743afc734dfe99afee";
 
         /// <summary>
         /// Sprint 37. One adult, untemplated Vrock reusing the released
@@ -113,7 +117,8 @@ namespace KingmakerGunslinger.Blueprints
 
             BlueprintAbility screech = ConfigureVrockScreech37(library,
                 symbols, unit);
-            BlueprintAbility spores = ConfigureVrockSpores37(symbols, unit);
+            BlueprintAbility spores = ConfigureVrockSpores37(library, symbols,
+                unit);
             BlueprintAbilityResource heroismResource =
                 ConfigureVrockDailyResource37(symbols, p + "HeroismResource",
                     "Heroism", "One Heroism use for this summoned Vrock.");
@@ -399,6 +404,7 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static BlueprintAbility ConfigureVrockSpores37(
+            LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> symbols,
             BlueprintUnit unit)
         {
@@ -412,7 +418,13 @@ namespace KingmakerGunslinger.Blueprints
             var vines = Require<BlueprintBuff>(symbols, p + "SporeVines");
             vines.name = InternalName(p + "SporeVines");
             vines.IsClassFeature = false;
-            vines.Stacking = StackingType.Stack;
+            // Replace, not Stack. The printed entry describes one growth of
+            // vines and never multiplies the per-round damage, so a second
+            // exposure - from this vrock three rounds later or from another
+            // one - refreshes the ten rounds instead of adding a second 1d4
+            // tick. One creature therefore carries one vine effect, which is
+            // also what makes the bless and disease cures unambiguous.
+            vines.Stacking = StackingType.Replace;
             SetBuffFlags(vines, true);
             var growth = ScriptableObject.CreateInstance<
                 ContextActionDealDamage>();
@@ -432,27 +444,76 @@ namespace KingmakerGunslinger.Blueprints
                 Actions = Array.Empty<GameAction>() };
             cadence.Deactivated = new ActionList {
                 Actions = Array.Empty<GameAction>() };
-            cadence.NewRound = new ActionList {
+            // Growth is asked, once per round and immediately before the
+            // damage, whether disease protection has arrived since exposure.
+            // Neither native immunity component sweeps facts that already
+            // exist, so this is the narrow hook that makes "halted" true
+            // after the fact. The halted branch runs the native self-removal
+            // action and deals nothing.
+            var halted = ScriptableObject.CreateInstance<
+                VrockSporeGrowthHalted37>();
+            halted.Vines = vines;
+            var stillGrowing = ScriptableObject.CreateInstance<Conditional>();
+            stillGrowing.Comment =
+                "KMG vrock vines: halt if disease protection arrived";
+            stillGrowing.ConditionsChecker = new ConditionsChecker {
+                Operation = Operation.And,
+                Conditions = new Condition[] { halted } };
+            stillGrowing.IfTrue = new ActionList {
+                Actions = new GameAction[] {
+                    ScriptableObject.CreateInstance<ContextActionRemoveSelf>() } };
+            stillGrowing.IfFalse = new ActionList {
                 Actions = new GameAction[] { growth } };
+            cadence.NewRound = new ActionList {
+                Actions = new GameAction[] { stillGrowing } };
             // The printed ability is halted by effects that remove or
-            // provide immunity to disease. Tagging the vines with the native
-            // Disease descriptor is what makes that true through consumers
-            // that already exist: BuffDescriptorImmunity refuses the
-            // application for an immune creature, and the native
-            // descriptor-removal action a disease cure runs takes it off.
+            // provide immunity to disease, and the native Disease descriptor
+            // is how that reaches consumers which already exist.
+            //
+            // Where the descriptor has to live was traced, not assumed. Every
+            // native consumer reads MechanicsContext.SpellDescriptor:
+            // BuffDescriptorImmunity.OnEventAboutToTrigger passes
+            // RuleApplyBuff.Context, and ContextActionRemoveBuffsByDescriptor
+            // - the action a disease cure runs - reads
+            // buff.MaybeContext.SpellDescriptor. That value is fixed in the
+            // MechanicsContext constructor as
+            // (ParentContext?.SpellDescriptor) | AssociatedBlueprint
+            // .GetComponent<SpellDescriptorComponent>().Descriptor.
+            //
+            // A Buff stores the context it was handed verbatim
+            // (BuffCollection.CreateFact passes it straight to Buff..ctor,
+            // which assigns m_Context; no child context is made), so the
+            // vines' context is the *spores ability's* context. A descriptor
+            // component on the vine blueprint alone is therefore never read
+            // by any of those consumers, and native Remove Disease would not
+            // strip the vines. The component is attached to the ability as
+            // well, which is what the cure and the immunity actually see; it
+            // stays on the vine blueprint too, so a context built for that
+            // blueprint on its own still carries Disease.
+            //
             // Poison is a different descriptor bit and is deliberately not
             // set, so poison immunity alone does nothing here.
             var disease = ScriptableObject.CreateInstance<
                 SpellDescriptorComponent>();
             disease.Descriptor = SpellDescriptor.Disease;
+            var abilityDisease = ScriptableObject.CreateInstance<
+                SpellDescriptorComponent>();
+            abilityDisease.Descriptor = SpellDescriptor.Disease;
+            // The printed bless counter, wired to the exact native bless
+            // effect. Nothing about bless itself changes.
+            var blessed = ScriptableObject.CreateInstance<
+                VrockSporeBlessRemoval37>();
+            blessed.BlessEffect = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(library, NativeBlessBuff37,
+                    "native bless effect for the printed spore counter");
             vines.ComponentsArray = new BlueprintComponent[] {
-                cadence, disease };
+                cadence, disease, blessed };
             vines.ResourceAssetIds = Array.Empty<string>();
             BlueprintUnitFactAccess.Resolve().Configure(vines,
                 LocalizationService.Create(p + "SporeVines.Name",
                     "Vrock Spores"),
                 LocalizationService.Create(p + "SporeVines.Description",
-                    "Thick green vines grow from vrock spores, dealing 1d4 damage each round for 10 rounds. This is an extraordinary growth, not poison, disease or a spell effect: poison immunity and Dispel Magic do not remove it, and ordinary damage resistance still applies."),
+                    "Thick green vines grow from vrock spores, dealing 1d4 damage each round for 10 rounds. Three things end the growth early: casting bless on this creature, any effect that removes disease, and gaining immunity to disease, which stops the vines at the start of the next round. Poison immunity does none of those, and Dispel Magic does not touch an extraordinary growth. Ordinary damage resistance still applies to each 1d4 tick."),
                 ExpandedSummoningProjectIcons.Require("vrock"));
 
             BlueprintBuff cooldown = ConfigureVrockMarker37(symbols,
@@ -547,12 +608,12 @@ namespace KingmakerGunslinger.Blueprints
                 new BlueprintAbility.MaterialComponentData();
             ability.ResourceAssetIds = Array.Empty<string>();
             ability.ComponentsArray = new BlueprintComponent[] { around, run,
-                debit, available };
+                debit, available, abilityDisease };
 
             BlueprintUnitFactAccess.Resolve().Configure(ability,
                 LocalizationService.Create(symbol + ".Name", "Spores"),
                 LocalizationService.Create(symbol + ".Description",
-                    "A free action once every three rounds. Every adjacent creature takes 1d8 damage from the released spores, then 1d4 each round for 10 rounds as thick green vines grow. There is no save and no spell resistance, matching the printed extraordinary ability. Adjacency is measured from the actual footprints and is not the same as this vrock's 10-foot melee reach. A creature that is already immune to disease is not exposed at all, and an effect that removes disease strips the growing vines; poison immunity does neither, and Dispel Magic does not touch an extraordinary growth. Allies are eligible, so the AI only releases spores when no ally is adjacent."),
+                    "A free action once every three rounds. Every adjacent creature takes 1d8 damage from the released spores, then 1d4 each round for 10 rounds as thick green vines grow. There is no save and no spell resistance, matching the printed extraordinary ability. Adjacency is measured from the actual footprints and is not the same as this vrock's 10-foot melee reach. A creature already immune to disease is not exposed at all and takes neither the 1d8 nor the vines. Once the vines are growing, casting bless destroys them, an effect that removes disease strips them, and immunity gained afterwards stops them at the start of the next round. Poison immunity does none of that, and Dispel Magic does not touch an extraordinary growth. Allies are eligible, so the AI only releases spores when no ally is adjacent."),
                 ExpandedSummoningProjectIcons.Require("vrock"));
             return ability;
         }

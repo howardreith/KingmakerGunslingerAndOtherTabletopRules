@@ -1,6 +1,4 @@
-using System;
 using Kingmaker.EntitySystem.Entities;
-using Kingmaker.Utility;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
@@ -31,26 +29,29 @@ namespace KingmakerGunslinger.Summoning
     internal static class SummonFootprintGeometry
     {
         /// <summary>
-        /// One five-foot square of slack beyond the touching footprints, which
-        /// is what "in an adjacent square" means once a square grid is
-        /// approximated by the circular corpulence the engine actually stores.
+        /// One five-foot square of slack beyond the touching footprints. Held
+        /// in <see cref="SummonFootprintGeometryPolicy"/> so the threshold a
+        /// test observes is the threshold production applies.
         /// </summary>
         internal static float AdjacencyToleranceMeters
-        { get { return new Feet(5).Meters + 0.01f; } }
+        { get { return SummonFootprintGeometryPolicy.AdjacencyToleranceMeters; } }
 
         internal static float EdgeDistanceMeters(UnitEntityData left,
             UnitEntityData right)
         {
             if (left == null || right == null) return float.PositiveInfinity;
-            return Vector3.Distance(left.Position, right.Position) -
-                Math.Max(0f, left.Corpulence) - Math.Max(0f, right.Corpulence);
+            return SummonFootprintGeometryPolicy.EdgeDistanceMeters(
+                Vector3.Distance(left.Position, right.Position),
+                left.Corpulence, right.Corpulence);
         }
 
         internal static bool AreAdjacent(UnitEntityData left,
             UnitEntityData right)
         {
             if (left == null || right == null) return false;
-            return EdgeDistanceMeters(left, right) <= AdjacencyToleranceMeters;
+            return SummonFootprintGeometryPolicy.IsAdjacentDistance(
+                Vector3.Distance(left.Position, right.Position),
+                left.Corpulence, right.Corpulence);
         }
     }
 }
