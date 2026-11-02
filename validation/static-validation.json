@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.174-expanded-summoning-babau-hezrou",
+  "milestone": "0.0.175-expanded-summoning-vrock",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.174",
+  "version": "0.0.175",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2754,5 +2754,16 @@
     "change": "Babau and Hezrou, seven untemplated Monster V-IX routes, source-owned combat/control mechanics and distinct original bodies/icons",
     "nativeEvidence": "Final exact package requires fresh grouped public routes, mixed ON/OFF persistence and affected integration; unchanged mechanics evidence remains attributed to its exact development artifacts",
     "ownerPublicationAuthority": "Sprint36 Babau and Hezrou Fresh Codex Mission, with explicit owner-authorized omissions of the manufactured-weapon/ammunition Protective Slime branch, Babau Darkness and Hezrou Gaseous Form"
+  },
+  "expandedSummoningSprint37Release175": {
+    "releaseVersion": "0.0.175",
+    "releaseInformationalVersion": "0.0.175-expanded-summoning-vrock",
+    "baseStableVersion": "0.0.174",
+    "reviewedProductSource": "55c05b495739b3cc7b87936edf3a84d47d25b818",
+    "appendedIdentities": 41,
+    "releasedIdentityChanges": 0,
+    "change": "Vrock, three untemplated Monster VII-IX routes, source-owned Stunning Screech and Spores, two once-per-summoning native self-buffs and a distinct original body/icon",
+    "nativeEvidence": "Final exact package requires fresh grouped proof for every mandatory row: no Sprint37 row may be reused, so no development-candidate receipt can qualify this release",
+    "ownerPublicationAuthority": "Sprint37 Vrock Fresh Codex Mission and its two corrections, with disclosed omissions of telekinesis, Dance of Ruin and greater teleport, the printed holy-water spore counter that has no engine vehicle, and the printed 30-foot land speed that Kingmaker's single movement speed cannot carry alongside the 50-foot fly speed"
   }
 }
