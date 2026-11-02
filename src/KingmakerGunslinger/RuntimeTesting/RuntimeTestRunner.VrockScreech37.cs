@@ -11,6 +11,7 @@ using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
@@ -283,22 +284,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!commandExact) throw new InvalidOperationException(
                     "Sprint37 screech volley did not complete.");
 
-                // Refusal while the marker stands, from the same state.
-                UnitUseAbility second = null;
-                foreach (int frame in Sprint26Cast(vrock, screech,
-                    new TargetWrapper(vrock), value => second = value))
-                    yield return frame;
+                // Refusal while the marker stands, asked of the engine
+                // rather than attempted: the caster checker is what refuses,
+                // so the observation is its own answer plus availability. A
+                // second cast through the throwing helper would report a
+                // refusal and a setup failure identically.
                 var availability = new AbilityData(
                     vrock.Descriptor.Abilities.GetAbility(screech));
+                var checkers = new JArray();
+                bool anyCheckerRefuses = false;
+                foreach (IAbilityCasterChecker checker in
+                    screech.CasterCheckers ??
+                    Array.Empty<IAbilityCasterChecker>())
+                {
+                    bool correct = checker.CorrectCaster(vrock);
+                    anyCheckerRefuses |= !correct;
+                    checkers.Add(new JObject {
+                        ["checker"] = checker.GetType().Name,
+                        ["correctCaster"] = correct
+                    });
+                }
                 check("screech-recharge-refusal",
-                    !availability.IsAvailable &&
-                    vrock.Buffs.GetBuff(recharge) != null &&
-                    (second == null || second.Result !=
-                        UnitCommand.ResultType.Success),
+                    !availability.IsAvailable && anyCheckerRefuses &&
+                    vrock.Buffs.GetBuff(recharge) != null,
                     new JObject {
                         ["owner"] = vrock.UniqueId,
-                        ["secondCommand"] = second == null ? null :
-                            Sprint27AiCommand(second),
+                        ["casterCheckers"] = checkers,
+                        ["anyCheckerRefuses"] = anyCheckerRefuses,
                         ["available"] = availability.IsAvailable,
                         ["marker"] = InfernalSavedEffect34(
                             vrock.Buffs.GetBuff(recharge)),

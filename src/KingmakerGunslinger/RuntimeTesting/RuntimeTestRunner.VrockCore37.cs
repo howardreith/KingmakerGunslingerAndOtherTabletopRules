@@ -307,24 +307,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuleApplyBuff[] applied = observed.Applications
                         .Where(value => ReferenceEquals(value.Initiator,
                             vrock) && value.AppliedBuff != null).ToArray();
-                    // The second attempt must be refused: the resource is
-                    // spent and the released already-active refusal stands.
-                    UnitUseAbility second = null;
-                    foreach (int frame in Sprint26Cast(vrock, pair.Ability,
-                        new TargetWrapper(vrock), value => second = value))
-                        yield return frame;
-                    var after = new AbilityData(
-                        vrock.Descriptor.Abilities.GetAbility(pair.Ability));
+                    // The second use must be refused, observed by asking
+                    // the engine rather than by attempting a cast: the shared
+                    // cast helper throws on an unavailable ability, so using
+                    // it to observe a refusal cannot distinguish the refusal
+                    // this phase wants from a setup failure it does not.
+                    JObject refusal = VrockCastReadiness37(vrock,
+                        pair.Ability, new TargetWrapper(vrock));
+                    // The caster level the printed entry gives is the one the
+                    // resolving effect carries. AbilityData.CalculateParams
+                    // triggers RuleCalculateAbilityParams, which honours only
+                    // ContextSetAbilityParams and otherwise derives the level
+                    // from the unit, so for this ability it reports the hit
+                    // dice. The ContextCalculateAbilityParams this project
+                    // attaches is read by MechanicsContext itself
+                    // (m_ParamsCalculator, set from the AssociatedBlueprint),
+                    // so the context of the applied effect is where the
+                    // replacement actually lands. Both are recorded, and the
+                    // assertion is on the effect's own context.
+                    int[] effectCasterLevels = applied
+                        .Select(value => value.Context == null ? -1 :
+                            value.Context.Params.CasterLevel).ToArray();
                     bool row = command != null && command.IsFinished &&
                         command.Result == UnitCommand.ResultType.Success &&
                         ownBefore == 1 && ownAfter == 0 &&
                         otherBefore == otherAfter &&
-                        parameters.CasterLevel ==
-                            VrockRules37Policy.SpellLikeCasterLevel &&
+                        effectCasterLevels.Length >= 1 &&
+                        effectCasterLevels.All(value => value ==
+                            VrockRules37Policy.SpellLikeCasterLevel) &&
                         applied.Length >= 1 &&
                         applied.All(value => value.Duration.HasValue &&
                             value.Duration.Value.TotalSeconds > 0) &&
-                        !after.IsAvailable;
+                        !(bool)refusal["isAvailable"];
                     coherent &= row;
                     rows.Add(new JObject {
                         ["ability"] = pair.Label,
@@ -335,9 +349,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["ownResourceAfter"] = ownAfter,
                         ["otherResourceBefore"] = otherBefore,
                         ["otherResourceAfter"] = otherAfter,
-                        ["casterLevel"] = parameters.CasterLevel,
+                        ["preCastEstimateCasterLevel"] =
+                            parameters.CasterLevel,
+                        ["effectContextCasterLevels"] =
+                            new JArray(effectCasterLevels),
                         ["expectedCasterLevel"] =
                             VrockRules37Policy.SpellLikeCasterLevel,
+                        ["whyTheyDiffer"] =
+                            "RuleCalculateAbilityParams honours only ContextSetAbilityParams; ContextCalculateAbilityParams is read by MechanicsContext from the AssociatedBlueprint, so it lands on the resolving effect's context.",
                         ["appliedEffects"] = new JArray(applied.Select(
                             value => new JObject {
                                 ["blueprint"] = value.AppliedBuff
@@ -347,9 +366,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["caster"] =
                                     value.Context?.MaybeCaster?.UniqueId
                             })),
-                        ["secondAttempt"] = second == null ? null :
-                            Sprint27AiCommand(second),
-                        ["availableAfter"] = after.IsAvailable,
+                        ["refusalAfterUse"] = refusal,
+                        ["availableAfter"] = refusal["isAvailable"],
                         ["coherent"] = row
                     });
                 }
