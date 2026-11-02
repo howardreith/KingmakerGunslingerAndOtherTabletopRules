@@ -108,8 +108,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     unit.Stats.HitPoints.BaseValue = 100000;
                     controls.Add(Tuple.Create(key, unit,
                         SummonDemonIdentityCatalog.IsDemonKey(key)));
-                    foreach (int frame in Outsider30NativeAppearance(unit,
-                        unit.Blueprint.name)) yield return frame;
+                    // Deliberately no appearance settling for the controls.
+                    // This phase observes the printed exemption by identity
+                    // and by whether a save is rolled; a control's body is a
+                    // released creature qualified in its own sprint, and
+                    // waiting on three donor views to settle added a
+                    // precondition this observation does not depend on - the
+                    // first screech run failed on the Succubus view before any
+                    // screech was cast. Their readiness to be saved against is
+                    // what matters, and that is waited for below.
+                    foreach (int frame in WaitInfernalSupport34(unit))
+                        yield return frame;
                 }
                 // No daemon is registered in this roster, so a daemon control
                 // cannot be observed here. The implementation never treats one
@@ -128,7 +137,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["unit"] = value.Item2.UniqueId,
                                 ["blueprint"] =
                                     value.Item2.Blueprint.AssetGuid,
-                                ["expectedExempt"] = value.Item3
+                                ["expectedExempt"] = value.Item3,
+                                ["inState"] = value.Item2.IsInState,
+                                ["canAct"] =
+                                    value.Item2.Descriptor.State.CanAct,
+                                ["alive"] =
+                                    !value.Item2.Descriptor.State.IsDead,
+                                ["fortitudeBase"] = value.Item2.Stats
+                                    .SaveFortitude.BaseValue
                             })),
                         ["daemonRegistered"] = false,
                         ["excludedOutsiders"] = new JArray(
