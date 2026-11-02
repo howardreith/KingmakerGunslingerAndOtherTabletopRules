@@ -64,6 +64,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEarly35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBarbed35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint36Inputs.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint37Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBarbedCombat35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBone35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCore36.cs" />
