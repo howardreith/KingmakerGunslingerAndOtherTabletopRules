@@ -411,12 +411,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var commands = new JArray();
             try
             {
-                DateTime deadline = DateTime.UtcNow.AddSeconds(30);
-                while (attacks.Count == 0 && DateTime.UtcNow < deadline)
-                {
-                    Game.Instance.IsPaused = false;
-                    yield return 0;
-                }
+                foreach (int frame in VrockDriveBrain37(vrock,
+                    () => attacks.Count > 0, 40, brain)) yield return frame;
                 foreach (UnitCommand command in vrock.Commands.Raw
                     .Where(value => value != null).ToArray())
                     commands.Add(Sprint27AiCommand(command));
@@ -535,6 +531,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
             new UnitCombatJoinController().Tick();
             new UnitCombatPrepareController().Tick();
+            // The sixth observation recorded ownerInCombat true and
+            // enemyInCombat false, with the attack action available and no
+            // command ever issued: the join controller does not enrol an
+            // unprovoked target, and a brain with no opponent in combat has
+            // nothing to attack. Both sides are enrolled explicitly, which is
+            // what the released elemental and bodyguard fixtures also do.
+            if (!owner.CombatState.IsInCombat) owner.CombatState.JoinCombat();
+            if (!enemy.CombatState.IsInCombat) enemy.CombatState.JoinCombat();
+            new UnitCombatJoinController().Tick();
+            new UnitCombatPrepareController().Tick();
             Sprint28SetBrainActivePreservingActions(owner, true);
             owner.Brain.RestoreAvailableActions();
             float before = owner.CombatState.AIData.NextCommandTime;
@@ -563,6 +569,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["baseScore"] = value.BaseScore
                     }))
             };
+        }
+
+        /// <summary>
+        /// Drives real frames until the observation's own condition holds or
+        /// the window closes, keeping the game unpaused and this one owner's
+        /// decision clock due. Nothing is dispatched on the brain's behalf:
+        /// re-arming the clock only lets the brain decide again, it does not
+        /// decide for it.
+        /// </summary>
+        private IEnumerable<int> VrockDriveBrain37(UnitEntityData owner,
+            Func<bool> satisfied, int seconds, JObject record)
+        {
+            DateTime deadline = DateTime.UtcNow.AddSeconds(seconds);
+            DateTime nextArm = DateTime.MinValue;
+            int frames = 0;
+            int rearms = 0;
+            while (!satisfied() && DateTime.UtcNow < deadline)
+            {
+                Game.Instance.IsPaused = false;
+                if (DateTime.UtcNow >= nextArm)
+                {
+                    owner.CombatState.AIData.NextCommandTime =
+                        Time.time - 0.01f;
+                    nextArm = DateTime.UtcNow.AddSeconds(1);
+                    rearms++;
+                }
+                frames++;
+                yield return 0;
+            }
+            record["drivenFrames"] = frames;
+            record["clockRearms"] = rearms;
+            record["windowSeconds"] = seconds;
+            record["satisfied"] = satisfied();
+            record["ownerInCombatAfter"] = owner.IsInCombat;
         }
 
         /// <summary>

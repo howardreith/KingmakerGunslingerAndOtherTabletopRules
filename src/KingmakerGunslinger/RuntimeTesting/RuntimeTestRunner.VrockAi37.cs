@@ -181,12 +181,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var queued = new JArray();
             try
             {
-                DateTime deadline = DateTime.UtcNow.AddSeconds(30);
-                while (chosen.Count == 0 && DateTime.UtcNow < deadline)
-                {
-                    Game.Instance.IsPaused = false;
-                    yield return 0;
-                }
+                foreach (int frame in VrockDriveBrain37(vrock,
+                    () => chosen.Count > 0, 40, brain)) yield return frame;
                 foreach (UnitCommand command in vrock.Commands.Raw
                     .Where(value => value != null).ToArray())
                     queued.Add(Sprint27AiCommand(command));
