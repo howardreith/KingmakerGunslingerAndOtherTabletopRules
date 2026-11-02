@@ -1165,6 +1165,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint37-live-screech-dc", VrockRules37Tests.ScreechDifficultyClassFollowsLiveConstitution),
             Case("expanded-summoning.sprint37-recharge-boundary", VrockRules37Tests.RechargingAbilitiesRefuseWhileTheirMarkerStands),
             Case("expanded-summoning.sprint37-demon-exemption", VrockRules37Tests.ScreechExemptsDemonsAndSporesExemptNobody),
+            Case("expanded-summoning.sprint37-demon-roster", VrockRules37Tests.DemonExemptionResolvesRealIdentities),
             Case("expanded-summoning.sprint37-recorded-speeds", VrockRules37Tests.MovementRecordsBothPrintedSpeeds),
             Case("expanded-summoning.sprint37-printed-defences", VrockRules37Tests.PrintedDefencesDeriveFromTheirBaseValues),
             Case("expanded-summoning.sprint37-original-model", VrockRules37Tests.OwnedBodyDecodesAndIsDistinct),

@@ -9,6 +9,7 @@ using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Controllers.Brain.Blueprints;
 using Kingmaker.Controllers.Brain.Blueprints.Considerations;
 using Kingmaker.ElementsSystem;
+using Kingmaker.Designers.EventConditionActionSystem.Actions;
 using Kingmaker.Enums;
 using Kingmaker.Enums.Damage;
 using Kingmaker.EntitySystem.Stats;
@@ -258,20 +259,22 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         /// <summary>
-        /// The exact enumerated project demon identities the screech exempts.
-        /// Independent of faction, alignment or appearance; see
-        /// <see cref="VrockDemonIdentity37"/> for why the installed library
-        /// leaves no better option.
+        /// The exact registered demon identities the screech exempts, resolved
+        /// from the one authoritative <see cref="SummonDemonIdentityCatalog"/>
+        /// so the real effect and the AI consideration can never disagree.
+        ///
+        /// <para>The first pass listed four creatures by hand and silently
+        /// omitted the released Succubus and Shadow Demon, which are both
+        /// printed demons. Hand-maintained duplicates are what made that
+        /// possible, so there is now one list and this is its only consumer.</para>
         /// </summary>
         private static BlueprintUnit[] VrockDemons37(
             IDictionary<string, BlueprintScriptableObject> symbols)
         {
-            return new[] {
-                Require<BlueprintUnit>(symbols, "KMG.Summoning.Unit.Dretch"),
-                Require<BlueprintUnit>(symbols, "KMG.Summoning.Unit.Babau"),
-                Require<BlueprintUnit>(symbols, "KMG.Summoning.Unit.Hezrou"),
-                Require<BlueprintUnit>(symbols, "KMG.Summoning.Unit.Vrock")
-            };
+            SummonDemonIdentityCatalog.Validate();
+            return SummonDemonIdentityCatalog.UnitSymbols()
+                .Select(symbol => Require<BlueprintUnit>(symbols, symbol))
+                .ToArray();
         }
 
         private static BlueprintBuff ConfigureVrockMarker37(
@@ -386,7 +389,7 @@ namespace KingmakerGunslinger.Blueprints
                 "Stunning Screech");
             facts.Configure(ability, title,
                 LocalizationService.Create(symbol + ".Description",
-                    "Once per hour as a standard action, emit a shrill screech. Every creature except demons within a 30-foot radius must make a Fortitude save or be stunned for 1 round. The live supernatural DC is 10 + half racial Hit Dice + Constitution modifier (DC 21 at the adult profile). Spell resistance does not apply and allies are eligible, so the AI only screeches when no ally stands in the radius. Because Kingmaker 2.1.7b carries no demon subtype fact, the exemption is the exact set of this project's own demons."),
+                    "Once per hour as a standard action, emit a shrill screech. Every creature except demons within a 30-foot radius must make a Fortitude save or be stunned for 1 round. The live supernatural DC is 10 + half racial Hit Dice + Constitution modifier (DC 21 at the adult profile). Spell resistance does not apply and allies are eligible, so the AI only screeches when no ally stands in the radius. Kingmaker 2.1.7b has subtype facts for devils and daemons but none for demons, so the exemption is the exact set of this mod's own demons - Dretch, Shadow Demon, Succubus, Babau, Hezrou and Vrock. A demon belonging to the campaign or to another mod is not recognised and is not exempt."),
                 icon);
             facts.Configure(stunned, title,
                 LocalizationService.Create(p + "Stunned.Description",
@@ -431,7 +434,19 @@ namespace KingmakerGunslinger.Blueprints
                 Actions = Array.Empty<GameAction>() };
             cadence.NewRound = new ActionList {
                 Actions = new GameAction[] { growth } };
-            vines.ComponentsArray = new BlueprintComponent[] { cadence };
+            // The printed ability is halted by effects that remove or
+            // provide immunity to disease. Tagging the vines with the native
+            // Disease descriptor is what makes that true through consumers
+            // that already exist: BuffDescriptorImmunity refuses the
+            // application for an immune creature, and the native
+            // descriptor-removal action a disease cure runs takes it off.
+            // Poison is a different descriptor bit and is deliberately not
+            // set, so poison immunity alone does nothing here.
+            var disease = ScriptableObject.CreateInstance<
+                SpellDescriptorComponent>();
+            disease.Descriptor = SpellDescriptor.Disease;
+            vines.ComponentsArray = new BlueprintComponent[] {
+                cadence, disease };
             vines.ResourceAssetIds = Array.Empty<string>();
             BlueprintUnitFactAccess.Resolve().Configure(vines,
                 LocalizationService.Create(p + "SporeVines.Name",
@@ -447,7 +462,7 @@ namespace KingmakerGunslinger.Blueprints
             var ability = Require<BlueprintAbility>(symbols, symbol);
             var around = ScriptableObject.CreateInstance<AbilityTargetsAround>();
             SetField(around, "m_Radius",
-                new Feet(VrockRules37Policy.SporeRadiusFeet));
+                new Feet(VrockRules37Policy.SporeCollectionRadiusFeet));
             SetField(around, "m_TargetType",
                 Kingmaker.UnitLogic.Abilities.Components.TargetType.Any);
             SetField(around, "m_IncludeDead", false);
@@ -474,10 +489,29 @@ namespace KingmakerGunslinger.Blueprints
             resolve.SourceUnit = unit;
             resolve.Spores = ability;
             resolve.Vines = vines;
+            // One gate in front of both effects. The native area collector
+            // over-collects on purpose, so adjacency and the printed disease
+            // counterplay are decided once, here, and the opening packet can
+            // no longer land on a creature the vines would refuse.
+            var exposed = ScriptableObject.CreateInstance<
+                VrockSporeExposure37>();
+            exposed.SourceUnit = unit;
+            exposed.Spores = ability;
+            exposed.Vines = vines;
+            var gate = ScriptableObject.CreateInstance<Conditional>();
+            gate.Comment =
+                "KMG vrock spores: adjacent and not already disease-immune";
+            gate.ConditionsChecker = new ConditionsChecker {
+                Operation = Operation.And,
+                Conditions = new Condition[] { exposed } };
+            gate.IfTrue = new ActionList {
+                Actions = new GameAction[] { impact, resolve } };
+            gate.IfFalse = new ActionList {
+                Actions = Array.Empty<GameAction>() };
             var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
             run.SavingThrowType = SavingThrowType.Unknown;
             run.Actions = new ActionList {
-                Actions = new GameAction[] { impact, resolve } };
+                Actions = new GameAction[] { gate } };
             var debit = ScriptableObject.CreateInstance<
                 VrockRechargeOnCast37>();
             debit.OwningBlueprint = unit;
@@ -518,7 +552,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().Configure(ability,
                 LocalizationService.Create(symbol + ".Name", "Spores"),
                 LocalizationService.Create(symbol + ".Description",
-                    "A free action once every three rounds. Every creature within 10 feet takes 1d8 damage from the released spores, then 1d4 each round for 10 rounds as thick green vines grow. There is no save and no spell resistance, matching the printed extraordinary ability, and allies are eligible, so the AI only releases spores when no ally is adjacent."),
+                    "A free action once every three rounds. Every adjacent creature takes 1d8 damage from the released spores, then 1d4 each round for 10 rounds as thick green vines grow. There is no save and no spell resistance, matching the printed extraordinary ability. Adjacency is measured from the actual footprints and is not the same as this vrock's 10-foot melee reach. A creature that is already immune to disease is not exposed at all, and an effect that removes disease strips the growing vines; poison immunity does neither, and Dispel Magic does not touch an extraordinary growth. Allies are eligible, so the AI only releases spores when no ally is adjacent."),
                 ExpandedSummoningProjectIcons.Require("vrock"));
             return ability;
         }

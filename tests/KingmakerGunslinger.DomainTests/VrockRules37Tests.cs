@@ -124,21 +124,80 @@ namespace KingmakerGunslinger.DomainTests
             // The printed spore cloud has no exemption at all, so an ally and
             // another demon are both eligible; ally safety is an AI selection
             // rule, not an eligibility rule.
-            Assertions.True(VrockRules37Policy.SporesReach(true, true),
+            Assertions.True(VrockRules37Policy.SporesReach(
+                true, true, true, false),
                 "Every live adjacent creature takes the spores.");
-            Assertions.False(VrockRules37Policy.SporesReach(true, false),
+            Assertions.False(VrockRules37Policy.SporesReach(
+                true, false, true, false),
                 "A destroyed or dead target takes nothing.");
-            Assertions.False(VrockRules37Policy.SporesReach(false, true),
+            Assertions.False(VrockRules37Policy.SporesReach(
+                false, true, true, false),
                 "Only this vrock's own spores resolve through its component.");
-            Assertions.Equal(VrockRules37Policy.ReachFeet,
-                VrockRules37Policy.SporeRadiusFeet,
-                "Adjacency for a Large creature is its own printed ten-foot reach.");
+            Assertions.False(VrockRules37Policy.SporesReach(
+                true, true, false, false),
+                "A creature inside the collection radius but not adjacent is not exposed.");
+            Assertions.False(VrockRules37Policy.SporesReach(
+                true, true, true, true),
+                "A creature already immune to disease is not exposed at all, impact included.");
+            // Adjacency is NOT the melee reach. The area collector's radius
+            // only has to over-collect; the production footprint relation is
+            // what decides exposure, and these are different quantities.
+            Assertions.True(VrockRules37Policy.SporeCollectionRadiusFeet >
+                VrockRules37Policy.ReachFeet,
+                "The spore collection radius over-collects rather than standing in for adjacency.");
             Assertions.Equal(30, VrockRules37Policy.ScreechRadiusFeet,
                 "The screech is a 30-foot-radius spread.");
             Assertions.Equal(1, VrockRules37Policy.ScreechStunRounds,
                 "A failed save stuns for one round.");
             Assertions.Equal(10, VrockRules37Policy.SporeVineRounds,
                 "The vines grow for ten rounds.");
+        }
+
+        internal static void DemonExemptionResolvesRealIdentities()
+        {
+            SummonDemonIdentityCatalog.Validate();
+            var keys = SummonDemonIdentityCatalog.CreatureKeys;
+
+            // Positive controls, including the two released species the first
+            // hand-written four-entry set silently omitted.
+            foreach (string key in new[] { "succubus", "shadow-demon",
+                "dretch", "babau", "hezrou", "vrock" })
+                Assertions.True(SummonDemonIdentityCatalog.IsDemonKey(key),
+                    "A printed demon is in the exemption set: " + key);
+            Assertions.Equal(6, keys.Count,
+                "The exemption covers exactly this project's six printed demons.");
+
+            // Negative controls. The Bebilith is the one that matters most:
+            // it is a chaotic evil extraplanar outsider with no demon subtype,
+            // so an alignment or outsider test would wrongly exempt it.
+            foreach (string key in new[] { "bebelith", "lemure",
+                "erinyes-devil", "bearded-devil", "barbed-devil",
+                "bone-devil", "kyton-chain-devil", "hell-hound",
+                "shadow-mastiff", "xill", "astral-deva", "trumpet-archon",
+                "lillend-azata", "fire-mephit", "hezrou-not-a-key" })
+                Assertions.False(SummonDemonIdentityCatalog.IsDemonKey(key),
+                    "A devil, daemon, kyton, archon, azata, mephit or other non-demon is never exempt: " + key);
+
+            // Every member resolves to a real registered creature and to one
+            // allocated unit identity, so the screech and its AI consideration
+            // are wired from actual blueprints rather than from names.
+            var identities = ExpandedSummoningIdentityCatalog.Build();
+            string[] symbols = SummonDemonIdentityCatalog.UnitSymbols();
+            Assertions.Equal(keys.Count, symbols.Length,
+                "Every demon key resolves to exactly one unit symbol.");
+            foreach (string symbol in symbols)
+                Assertions.True(identities.Any(value =>
+                    value.Symbol == symbol &&
+                    value.PlannedType == "BlueprintUnit"),
+                    "The exemption resolves an allocated unit identity: " + symbol);
+
+            // Membership is independent of the native view donor a project
+            // creature borrows: the Succubus rides a nymph and the Shadow
+            // Demon a tiefling, and neither says anything about its subtype.
+            foreach (string key in keys)
+                Assertions.True(ExpandedSummoningCatalog.All.Any(value =>
+                    value.Key == key),
+                    "The exemption never names an unregistered creature: " + key);
         }
 
         internal static void MovementRecordsBothPrintedSpeeds()
