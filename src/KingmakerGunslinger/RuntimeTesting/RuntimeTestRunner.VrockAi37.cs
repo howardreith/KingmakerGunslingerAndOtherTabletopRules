@@ -509,27 +509,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.IsFromSpell && !value.IsHiddenInUI)
                 .OrderBy(value => value.name, StringComparer.Ordinal)
                 .ToArray();
-            BlueprintBuff harmful = candidates
-                .FirstOrDefault(value => value.Harmful);
-            BlueprintBuff beneficial = candidates
-                .FirstOrDefault(value => !value.Harmful);
-            check("babau-dispel-candidates",
-                harmful != null && beneficial != null, new JObject {
+            // Which limb of HarmfulToOwner is the operative one, observed
+            // rather than assumed. The predicate calls an effect harmful if
+            // the blueprint's own Harmful flag is set OR its caster is an
+            // enemy of its owner. The first attempt looked for a
+            // Harmful-flagged visible spell buff and found none at all among
+            // 187 candidates in this installation, so that flag cannot carry
+            // the distinction here and the caster relationship is what does -
+            // which is exactly the case the Sprint 36 review raised: an enemy
+            // whose only dispellable magic is harmful to it.
+            BlueprintBuff[] flagged = candidates
+                .Where(value => value.Harmful).ToArray();
+            BlueprintBuff carrier = candidates.FirstOrDefault();
+            check("babau-dispel-candidates", carrier != null, new JObject {
                     ["searchedBuffs"] = candidates.Length,
-                    ["harmful"] = harmful?.name,
-                    ["harmfulGuid"] = harmful?.AssetGuid,
-                    ["beneficial"] = beneficial?.name,
-                    ["beneficialGuid"] = beneficial?.AssetGuid,
+                    ["harmfulFlaggedFound"] = flagged.Length,
+                    ["harmfulFlaggedNames"] = new JArray(flagged
+                        .Select(value => value.name).Take(8)),
+                    ["carrier"] = carrier?.name,
+                    ["carrierGuid"] = carrier?.AssetGuid,
+                    ["carrierHarmfulFlag"] = carrier?.Harmful,
                     ["searchScope"] =
-                        "Loaded non-KMG spell buffs of this installation that are visible and dispellable, split by the blueprint's own Harmful flag."
-                }, "Both a harmful and a beneficial visible spell effect exist in this installation to use as controls.");
+                        "Loaded non-KMG spell buffs of this installation that are visible and dispellable.",
+                    ["method"] =
+                        "One carrier effect is used for both controls and only its caster varies, so the observation isolates the caster-relationship limb of HarmfulToOwner instead of relying on a blueprint flag this installation does not set on visible spell buffs."
+                }, "A visible dispellable spell effect exists to carry both controls, and the Harmful-flag population is recorded rather than assumed.");
 
+            // Same effect in all three; only its presence and its caster
+            // vary. Enemy-cast is harmful to its owner and must not be a
+            // dispel target; self-cast is not, and must be.
             var observations = new[] {
                 new { Label = "no-useful-effect", Effect = (BlueprintBuff)null,
                     Caster = (UnitEntityData)null, Expect = false },
-                new { Label = "harmful-only", Effect = harmful,
+                new { Label = "harmful-enemy-cast", Effect = carrier,
                     Caster = ally, Expect = false },
-                new { Label = "beneficial", Effect = beneficial,
+                new { Label = "beneficial-self-cast", Effect = carrier,
                     Caster = target, Expect = true }
             };
             foreach (var observation in observations)
