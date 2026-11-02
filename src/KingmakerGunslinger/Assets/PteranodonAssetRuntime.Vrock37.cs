@@ -115,7 +115,18 @@ namespace KingmakerGunslinger.Assets
                     VrockVisual37.Mesh = null;
                     VrockVisual37.Bones = null;
                     VrockVisual37.Albedo = null;
-                    VrockVisual37.Status = "donor-visual:invalid-mesh-data";
+                    // A file that is absent and a file whose contents are
+                    // wrong are different failures with different fixes, and
+                    // one status for both hid a real one: the first native
+                    // observation of this creature reported
+                    // "invalid-mesh-data" when the two asset files had simply
+                    // never been added to the packaging scripts, so they
+                    // existed in the repository and in no installed mod.
+                    VrockVisual37.Status =
+                        error is FileNotFoundException ||
+                        error is DirectoryNotFoundException
+                            ? "donor-visual:missing-mesh-file"
+                            : "donor-visual:invalid-mesh-data";
                 }
                 context.Logger.Warning(VrockVisualPolicy37.Vrock,
                     "mesh.rejected",
