@@ -11,13 +11,15 @@ from expanded_summoning_manifest import parsed_creatures, suppressed_keys
 import validate_development_candidate as identities
 import expanded_summoning_manifest as manifest
 
-# The Sprint 37 product branch head immediately before the version bump, and
-# the previous release's records merge.
-PRODUCT = "55c05b495739b3cc7b87936edf3a84d47d25b818"
+# The Sprint 37 product branch head and the previous release's records merge.
+# The head is after the version bump, as Sprint 36's was, so the metadata check
+# degenerates to "product metadata is unchanged from the reviewed head" and
+# OLD_INFORMATIONAL equals INFORMATIONAL.
+PRODUCT = "177c87888c80b6e029d8aab0a9b450a20f7f1574"
 RELEASED = "b1cf3a3dd97a4df7d4838961bdea97a254a576d8"
 VERSION = "0.0.175"
 INFORMATIONAL = VERSION + "-expanded-summoning-vrock"
-OLD_INFORMATIONAL = "0.0.174-expanded-summoning-babau-hezrou"
+OLD_INFORMATIONAL = INFORMATIONAL
 ASSEMBLY = "src/KingmakerGunslinger/Properties/AssemblyInfo.cs"
 ROOTS = ("src/KingmakerGunslinger", "assets", "assets-source", "blueprints")
 RECORD_KEY = "expandedSummoningSprint37Release175"
