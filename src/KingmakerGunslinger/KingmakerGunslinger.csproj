@@ -47,12 +47,17 @@
     <Compile Include="Summoning\InfernalVisualPolicy36.cs" />
     <Compile Include="Summoning\InfernalRules36Policy.cs" />
     <Compile Include="Summoning\InfernalRules36.cs" />
+    <Compile Include="Summoning\VrockRules37Policy.cs" />
+    <Compile Include="Summoning\VrockRules37.cs" />
+    <Compile Include="Summoning\VrockVisualPolicy37.cs" />
     <Compile Include="Summoning\BoneDevilTailVisual35.cs" />
     <Compile Include="Summoning\InfernalWallNavmesh35.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.Infernal35.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.Infernal36.cs" />
+    <Compile Include="Assets\PteranodonAssetRuntime.Vrock37.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Infernal35.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Infernal36.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Vrock37.cs" />
     <Compile Include="Summoning\InfernalRules34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEvents34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEarly34.cs" />

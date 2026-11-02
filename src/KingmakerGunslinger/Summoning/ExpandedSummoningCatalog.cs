@@ -48,7 +48,7 @@ namespace KingmakerGunslinger.Summoning
             // unchanged at 95/543, and Elephant's eight existing roots are
             // completed rather than re-registered, so they are already counted
             // in both families above.
-            ValidateFamily(SummonFamily.Monster, 108, 594);
+            ValidateFamily(SummonFamily.Monster, 109, 597);
             ValidateFamily(SummonFamily.NaturesAlly, 105, 588);
         }
 
@@ -160,7 +160,10 @@ namespace KingmakerGunslinger.Summoning
                 C("bone-devil","Bone Devil (Osyluth)",7,false,null,"Original skeletal-insectile devil and tail; measured Lizardfolk rig"),
                 // Sprint 36: two adult, untemplated demon summons.
                 C("babau","Babau",5,false,null,"Original lean slime-coated demon; measured Lizardfolk rig"),
-                C("hezrou","Hezrou",8,false,null,"Original broad toad demon; measured Lizardfolk rig")
+                C("hezrou","Hezrou",8,false,null,"Original broad toad demon; measured Lizardfolk rig"),
+                // Sprint 37: one adult, untemplated area-stun demon at
+                // Summon Monster VII-IX.
+                C("vrock","Vrock",7,false,null,"Original vulture-headed winged demon; measured Lizardfolk rig")
             };
         }
 

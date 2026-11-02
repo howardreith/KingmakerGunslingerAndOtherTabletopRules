@@ -155,7 +155,8 @@ namespace KingmakerGunslinger.Summoning
                 { "KMG_Summoning_Unit_BarbedDevil", InfernalVisualPolicy35.Barbed },
                 { "KMG_Summoning_Unit_BoneDevil", InfernalVisualPolicy35.Bone },
                 { "KMG_Summoning_Unit_Babau", InfernalVisualPolicy36.Babau },
-                { "KMG_Summoning_Unit_Hezrou", InfernalVisualPolicy36.Hezrou }
+                { "KMG_Summoning_Unit_Hezrou", InfernalVisualPolicy36.Hezrou },
+                { VrockVisualPolicy37.BlueprintName, VrockVisualPolicy37.Vrock }
             };
         private static readonly HashSet<string> UngulateKeys =
             new HashSet<string>(StringComparer.Ordinal)
@@ -366,6 +367,10 @@ namespace KingmakerGunslinger.Summoning
                 !InfernalVisualPolicy36.IsExactIdentity(visualKey,
                     __instance.EntityData.Blueprint.AssetGuid, blueprintName,
                     __instance.EntityData.Blueprint.Prefab?.AssetId)) return;
+            if (VrockVisualPolicy37.Handles(visualKey) &&
+                !VrockVisualPolicy37.IsExactIdentity(visualKey,
+                    __instance.EntityData.Blueprint.AssetGuid, blueprintName,
+                    __instance.EntityData.Blueprint.Prefab?.AssetId)) return;
             if (ShadowOutsiderVisualPolicy.Handles(visualKey) &&
                 !ShadowOutsiderVisualPolicy.IsExactIdentity(visualKey, __instance.EntityData.Blueprint.AssetGuid,
                     blueprintName, __instance.EntityData.Blueprint.Prefab == null ? null :
@@ -427,7 +432,14 @@ namespace KingmakerGunslinger.Summoning
             Mesh source;
             string[] boneNames;
             Texture2D albedo;
-            if (InfernalVisualPolicy36.Handles(attachment.VisualKey))
+            if (VrockVisualPolicy37.Handles(attachment.VisualKey))
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetVrockVisual37(
+                    attachment.VisualKey, out source, out boneNames,
+                    out albedo, out status)) return Fallback(status);
+            }
+            else if (InfernalVisualPolicy36.Handles(attachment.VisualKey))
             {
                 string status;
                 if (!PteranodonAssetRuntime.TryGetInfernalVisual36(
@@ -592,7 +604,8 @@ namespace KingmakerGunslinger.Summoning
                 (ShadowOutsiderVisualPolicy.Handles(attachment.VisualKey) ||
                  InfernalVisualPolicy34.Handles(attachment.VisualKey) ||
                  InfernalVisualPolicy35.Handles(attachment.VisualKey) ||
-                 InfernalVisualPolicy36.Handles(attachment.VisualKey)) ||
+                 InfernalVisualPolicy36.Handles(attachment.VisualKey) ||
+                 VrockVisualPolicy37.Handles(attachment.VisualKey)) ||
                 attachment.VisualKey == HoundArchonVisualPolicy.Key)
             {
                 if (!TheropodVisualPolicy.IsExactRendererSet(
@@ -693,7 +706,8 @@ namespace KingmakerGunslinger.Summoning
                                     (ShadowOutsiderVisualPolicy.Handles(attachment.VisualKey) ||
                                      InfernalVisualPolicy34.Handles(attachment.VisualKey) ||
                                      InfernalVisualPolicy35.Handles(attachment.VisualKey) ||
-                                     InfernalVisualPolicy36.Handles(attachment.VisualKey)) ||
+                                     InfernalVisualPolicy36.Handles(attachment.VisualKey) ||
+                                     VrockVisualPolicy37.Handles(attachment.VisualKey)) ||
                                     attachment.VisualKey == HoundArchonVisualPolicy.Key ||
                                     (GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key))
                                     ? "KMG_" + attachment.VisualKey + "_Original"
@@ -752,7 +766,8 @@ namespace KingmakerGunslinger.Summoning
                     (ShadowOutsiderVisualPolicy.Handles(attachment.VisualKey) ||
                      InfernalVisualPolicy34.Handles(attachment.VisualKey) ||
                      InfernalVisualPolicy35.Handles(attachment.VisualKey) ||
-                     InfernalVisualPolicy36.Handles(attachment.VisualKey)) ||
+                     InfernalVisualPolicy36.Handles(attachment.VisualKey) ||
+                     VrockVisualPolicy37.Handles(attachment.VisualKey)) ||
                     attachment.VisualKey == HoundArchonVisualPolicy.Key)
                 {
                     // The same measured two-renderer donor needs the same per-view suppression.
@@ -892,6 +907,7 @@ namespace KingmakerGunslinger.Summoning
                     TheropodVisualPolicy.Handles(attachment.VisualKey) ||
                     InfernalVisualPolicy35.Handles(attachment.VisualKey) ||
                     InfernalVisualPolicy36.Handles(attachment.VisualKey) ||
+                    VrockVisualPolicy37.Handles(attachment.VisualKey) ||
                     (GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key)))
                 {
                     string ownedName = "KMG_" + attachment.VisualKey + "_Original";
@@ -1330,6 +1346,7 @@ namespace KingmakerGunslinger.Summoning
                  !InfernalVisualPolicy34.Handles(attachment.VisualKey) &&
                  !InfernalVisualPolicy35.Handles(attachment.VisualKey) &&
                  !InfernalVisualPolicy36.Handles(attachment.VisualKey) &&
+                 !VrockVisualPolicy37.Handles(attachment.VisualKey) &&
                  attachment.VisualKey != HoundArchonVisualPolicy.Key))
                 return new UnityEngine.Object[0];
             Material[] installed = attachment.Donor == null
@@ -1408,6 +1425,7 @@ namespace KingmakerGunslinger.Summoning
                  !InfernalVisualPolicy34.Handles(attachment.VisualKey) &&
                  !InfernalVisualPolicy35.Handles(attachment.VisualKey) &&
                  !InfernalVisualPolicy36.Handles(attachment.VisualKey) &&
+                 !VrockVisualPolicy37.Handles(attachment.VisualKey) &&
                  attachment.VisualKey != HoundArchonVisualPolicy.Key &&
                  !(GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key))) return;
             string visualName = attachment.VisualKey == "stirge"

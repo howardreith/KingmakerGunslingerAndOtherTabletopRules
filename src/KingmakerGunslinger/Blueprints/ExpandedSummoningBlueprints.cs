@@ -195,6 +195,20 @@ namespace KingmakerGunslinger.Blueprints
                         var value = ScriptableObject.CreateInstance<BabauDispelAi36>();
                         value.name = InternalName(identity.Symbol); return value;
                     });
+                else if (identity.PlannedType == "VrockScreechEligibility37")
+                    blueprint = registry.Register<VrockScreechEligibility37>(identity.Symbol, () =>
+                    {
+                        var consideration = ScriptableObject.CreateInstance<VrockScreechEligibility37>();
+                        consideration.name = InternalName(identity.Symbol);
+                        return consideration;
+                    });
+                else if (identity.PlannedType == "VrockSporeEligibility37")
+                    blueprint = registry.Register<VrockSporeEligibility37>(identity.Symbol, () =>
+                    {
+                        var consideration = ScriptableObject.CreateInstance<VrockSporeEligibility37>();
+                        consideration.name = InternalName(identity.Symbol);
+                        return consideration;
+                    });
                 else if (identity.PlannedType == "BlueprintAiSwitchWeapon")
                     blueprint = registry.Register<BlueprintAiSwitchWeapon>(identity.Symbol, () => {
                         var value = ScriptableObject.CreateInstance<BlueprintAiSwitchWeapon>();
