@@ -254,5 +254,5 @@ if ($activeVersion -eq '0.0.174') {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint36_release174.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint36 release source corruption fixtures failed.' }
 }
-& (Join-Path $PSScriptRoot 'Test-Sprint36Release.ps1')
+& (Join-Path $PSScriptRoot 'Test-ClosedSprint36Release.ps1')
 if ($LASTEXITCODE -ne 0) { throw 'Sprint36 publisher tests failed.' }
