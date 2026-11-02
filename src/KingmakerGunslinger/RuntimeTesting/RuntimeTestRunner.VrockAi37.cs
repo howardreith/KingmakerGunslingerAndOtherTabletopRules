@@ -91,11 +91,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 float screechRadius = new Feet(
                     VrockRules37Policy.ScreechRadiusFeet).Meters;
 
-                // --- safe: an enemy in the spread and the ally well clear ---
-                PlaceExpandedSummoningUnit(target, vrock.Position +
-                    Vector3.right * (screechRadius - 1f));
-                PlaceExpandedSummoningUnit(ally, vrock.Position -
-                    Vector3.right * (screechRadius + 6f));
+                // --- safe: an enemy in the spread and NOTHING friendly in
+                // it. Parking the one fixture ally was not enough: the vrock
+                // is a player summon, so the party and every neutral
+                // bystander are non-enemies too, and the previous run showed
+                // the consideration vetoing the screech for the whole window
+                // with six real AI ticks. This moves only the two disposable
+                // units until the production consideration itself reports
+                // nothing endangered.
+                JObject isolation = VrockIsolate37(vrock, target, 1.0f);
+                JObject safeVeto = VrockScreechVeto37(vrock);
+                check("ai-safe-position-is-safe",
+                    (bool)safeVeto["found"] &&
+                    (int)safeVeto["endangeredCount"] == 0,
+                    new JObject {
+                        ["owner"] = vrock.UniqueId,
+                        ["isolation"] = isolation,
+                        ["screechEligibility"] = safeVeto,
+                        ["targetDistanceMeters"] =
+                            Vector3.Distance(vrock.Position, target.Position)
+                    }, "The safe configuration is demonstrated: the production ally-safety consideration reports no endangered non-enemy inside the spread.");
                 foreach (int frame in VrockAiChoice37(vrock, target,
                     new[] { screech, spores, heroism, mirror },
                     "ai-safe-screech", screech, true, check))
@@ -250,6 +265,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["owner"] = vrock.UniqueId,
                 ["target"] = target.UniqueId,
                 ["brain"] = brain,
+                ["screechEligibility"] = VrockScreechVeto37(vrock),
                 ["targetDistanceMeters"] =
                     Vector3.Distance(vrock.Position, target.Position),
                 ["watched"] = new JArray(watched.Select(value =>
@@ -270,6 +286,106 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["scope"] =
                     "The real brain selected these; nothing was dispatched on its behalf."
             }, "Observed AI selection for '" + id + "'.");
+        }
+
+        /// <summary>
+        /// The production ally-safety consideration's own answer, including
+        /// every non-enemy it counts as endangered.
+        ///
+        /// <para>This is what the second AI observation needed and lacked. The
+        /// vrock is a player summon, so the whole party and every neutral
+        /// bystander are non-enemies: with any of them inside the thirty-foot
+        /// spread the consideration scores zero, and the brain never selects
+        /// the screech however high its base score. That is the ally-safe
+        /// requirement working, not a defect - but a cell that calls a
+        /// position "safe" has to prove nothing is endangered rather than
+        /// assume it, and a veto has to name who caused it.</para>
+        /// </summary>
+        private static JObject VrockScreechVeto37(UnitEntityData vrock)
+        {
+            var actions = vrock.Brain == null ? null :
+                vrock.Brain.AvailableActions;
+            var eligibility = (actions == null
+                    ? Enumerable.Empty<Kingmaker.UnitLogic.AiAction>()
+                    : actions.AsEnumerable())
+                .Select(action => action.Blueprint)
+                .Where(blueprint => blueprint != null)
+                .SelectMany(blueprint => blueprint.ActorConsiderations ??
+                    Array.Empty<Kingmaker.Controllers.Brain.Blueprints
+                        .Considerations.Consideration>())
+                .OfType<VrockScreechEligibility37>().FirstOrDefault();
+            if (eligibility == null)
+                return new JObject { ["found"] = false };
+            UnitEntityData[] endangered = eligibility
+                .EndangeredNonEnemies(vrock).ToArray();
+            return new JObject {
+                ["found"] = true,
+                ["endangeredCount"] = endangered.Length,
+                ["endangered"] = new JArray(endangered.Select(unit =>
+                    new JObject {
+                        ["unit"] = unit.UniqueId,
+                        ["blueprint"] = unit.Blueprint?.name,
+                        ["faction"] = unit.Faction?.name,
+                        ["distanceMeters"] =
+                            Vector3.Distance(vrock.Position, unit.Position),
+                        ["corpulence"] = unit.Corpulence
+                    })),
+                ["why"] = "A player summon's party and every neutral bystander are non-enemies; any inside the spread scores the screech at zero."
+            };
+        }
+
+        /// <summary>
+        /// Moves this observer's own two units away from every non-enemy until
+        /// the production consideration reports nothing endangered, so a
+        /// "safe" configuration is demonstrated rather than asserted. Only the
+        /// disposable summon and the request-owned hostile are moved.
+        /// </summary>
+        private static JObject VrockIsolate37(UnitEntityData vrock,
+            UnitEntityData target, float enemyGapMeters)
+        {
+            float radius = new Feet(
+                VrockRules37Policy.ScreechRadiusFeet).Meters;
+            var attempts = new JArray();
+            for (int step = 1; step <= 6; step++)
+            {
+                Vector3 home = vrock.Position;
+                UnitEntityData[] others = (Game.Instance?.State?.Units?.All ??
+                    Enumerable.Empty<UnitEntityData>())
+                    .Where(unit => unit != null && unit.IsInState &&
+                        !ReferenceEquals(unit, vrock) &&
+                        !ReferenceEquals(unit, target) &&
+                        !vrock.IsEnemy(unit)).ToArray();
+                if (others.Length == 0) break;
+                // Step directly away from the nearest crowd of non-enemies.
+                Vector3 crowd = others
+                    .OrderBy(unit => Vector3.Distance(home, unit.Position))
+                    .Take(8)
+                    .Aggregate(Vector3.zero, (sum, unit) =>
+                        sum + unit.Position) / Math.Min(8, others.Length);
+                Vector3 away = home - crowd;
+                if (away.sqrMagnitude < 0.01f) away = Vector3.right;
+                away = away.normalized;
+                Vector3 destination = home + away * (radius * 1.5f);
+                PlaceExpandedSummoningUnit(vrock, destination);
+                PlaceExpandedSummoningUnit(target, destination +
+                    away * 0f + Vector3.right *
+                        (vrock.Corpulence + target.Corpulence +
+                            enemyGapMeters));
+                float nearest = others
+                    .Select(unit => Vector3.Distance(vrock.Position,
+                        unit.Position) - Math.Max(0f, unit.Corpulence))
+                    .DefaultIfEmpty(float.PositiveInfinity).Min();
+                attempts.Add(new JObject {
+                    ["step"] = step,
+                    ["nearestNonEnemyEdgeMeters"] = nearest,
+                    ["radiusMeters"] = radius
+                });
+                if (nearest > radius) break;
+            }
+            return new JObject {
+                ["movedUnits"] = new JArray(vrock.UniqueId, target.UniqueId),
+                ["attempts"] = attempts
+            };
         }
 
         private IEnumerable<int> VrockAiReset37(UnitEntityData vrock,
