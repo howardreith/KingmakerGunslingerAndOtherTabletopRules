@@ -52,8 +52,26 @@ if (-not (Test-Path -LiteralPath $PolicyPath)) {
 }
 
 $policyFull = [IO.Path]::GetFullPath($PolicyPath)
-$permittedFull = [IO.Path]::GetFullPath($PermittedRoot)
 $labFull = [IO.Path]::GetFullPath($LabRoot).TrimEnd('\')
+# The permitted root only has to be a real directory inside the lab: the
+# fake Git reports it as the worktree toplevel and the wrapper is run from
+# it, which is how the lab-boundary cases are exercised. The historical
+# default names the Sprint 25 worktree, and a worktree is removed when its
+# sprint closes, so fall back to this checkout rather than failing a gate
+# on a vanished sibling. The boundary itself is still asserted: the
+# fallback must sit inside the lab root, and the outside-the-lab refusal
+# cases use their own paths and are unaffected.
+$permittedFull = [IO.Path]::GetFullPath($PermittedRoot)
+if (-not (Test-Path -LiteralPath $permittedFull -PathType Container)) {
+    $permittedFull = [IO.Path]::GetFullPath(
+        (Split-Path -Parent $PSScriptRoot))
+    Write-Host ("Permitted root $PermittedRoot is absent; using this " +
+        "checkout: $permittedFull")
+}
+if (-not $permittedFull.TrimEnd('\').StartsWith($labFull + '\',
+        [StringComparison]::OrdinalIgnoreCase)) {
+    throw "The permitted root must sit inside the lab: $permittedFull"
+}
 $reviewedHash = (Get-FileHash -LiteralPath $policyFull -Algorithm SHA256).Hash.ToLowerInvariant()
 
 $errors = $null
