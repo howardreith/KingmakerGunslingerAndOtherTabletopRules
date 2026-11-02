@@ -41,7 +41,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var checks = new List<RuntimeTestAssertion>();
             var document = new JObject {
                 ["runId"] = _request.RunId,
-                ["scope"] = "Sprint37 fixed Vrock body, demon-identity and spell-graph audit; research only"
+                ["scope"] = "Sprint37 fixed Vrock body, demon-identity, spell-graph and Spores-counterplay audit; research only",
+                ["searchLimits"] = "Name-substring searches over the loaded blueprint library, each capped at twenty matches and eighty subtype candidates. A query returning nothing establishes that nothing matched that name in this captured scope; it does not establish that no differently named asset or engine primitive exists."
             };
             try
             {
@@ -123,8 +124,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // Telekinesis is expected to be absent and is queried anyway,
                 // because an omission should rest on a live check and not only
                 // on the absence of the name in the engine assembly.
+                // The printed Spores entry says the spores "can be
+                // destroyed by casting bless on the affected creatures or
+                // by sprinkling them with holy water" and that the attack
+                // "can also be halted by effects that remove or provide
+                // immunity to disease". The disease half is already wired
+                // through the native Disease descriptor; these queries
+                // establish what the bless and holy-water halves can
+                // actually attach to before any code is written for them.
                 string[] consumers = { "Heroism", "MirrorImage",
-                    "Telekinesis", "Stunned", "Stun", "GreaterTeleport" };
+                    "Telekinesis", "Stunned", "Stun", "GreaterTeleport",
+                    "Bless", "HolyWater", "RemoveDisease", "Disease" };
                 var graphs = new JArray();
                 foreach (string name in consumers)
                 {
@@ -161,6 +171,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                             }).ToArray())
                     });
                 }
+                // The two native components that make a Disease-tagged
+                // buff respect the printed counterplay without any new
+                // code, recorded here by their live presence rather than
+                // assumed from the engine assembly alone.
+                document["diseaseDescriptorConsumers"] = new JArray(
+                    all.Where(value => value.ComponentsArray != null &&
+                        value.ComponentsArray.Any(component =>
+                            component != null &&
+                            (component is Kingmaker.UnitLogic.FactLogic
+                                 .BuffDescriptorImmunity ||
+                             component is Kingmaker.UnitLogic.FactLogic
+                                 .SpellImmunityToSpellDescriptor)))
+                    .OrderBy(value => value.name, StringComparer.Ordinal)
+                    .Take(40).Select(value => new JObject {
+                        ["name"] = value.name,
+                        ["guid"] = value.AssetGuid,
+                        ["type"] = value.GetType().FullName,
+                        ["descriptorComponents"] = new JArray(
+                            value.ComponentsArray
+                            .Where(component => component != null &&
+                                (component is Kingmaker.UnitLogic.FactLogic
+                                     .BuffDescriptorImmunity ||
+                                 component is Kingmaker.UnitLogic.FactLogic
+                                     .SpellImmunityToSpellDescriptor))
+                            .Select(component =>
+                                component.GetType().FullName))
+                    }));
+
                 document["consumers"] = graphs;
 
                 // The printed profile this sprint has to reach, recorded beside
@@ -186,7 +224,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 checks.Add(Assertion("sprint37-native-input-capture",
                     "fixed installed input audit completes",
                     "units=" + unitRows.Count + ";demonCandidates=" +
-                        demonFacts.Length + ";consumerQueries=" + graphs.Count,
+                        demonFacts.Length + ";consumerQueries=" +
+                        graphs.Count + ";diseaseImmunityCarriers=" +
+                        ((JArray)document["diseaseDescriptorConsumers"])
+                            .Count,
                     graphs.Count == consumers.Length,
                     "Absence or an unsuitable native graph remains explicit; this receipt is not gameplay proof."));
             }

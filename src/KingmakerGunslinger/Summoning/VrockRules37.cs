@@ -17,6 +17,7 @@ using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
+using Kingmaker.UnitLogic.Mechanics.Conditions;
 using Kingmaker.Utility;
 using UnityEngine;
 
@@ -194,14 +195,71 @@ namespace KingmakerGunslinger.Summoning
     }
 
     /// <summary>
-    /// One collected creature's spore exposure. The printed extraordinary
-    /// ability has no save and no spell resistance. The immediate packet is a
-    /// native <c>ContextActionDealDamage</c> in the same action list, and this
-    /// component adds only the growing vines: one finite ten-round effect
-    /// whose per-round damage is carried by the native new-round action on its
-    /// own buff, exactly as the released Giant Flytrap engulf does. It is not
-    /// poison, disease or an aura, so no poison descriptor is attached and
-    /// poison immunity does not apply; real damage resistances still do.
+    /// Whether one collected creature is actually exposed to the spores.
+    ///
+    /// <para>This is a native <c>ContextCondition</c> so that the immediate
+    /// packet and the growing vines pass the same gate in the same order. The
+    /// first shape ran an unconditional <c>ContextActionDealDamage</c> beside
+    /// the vine application, which meant a creature the printed text protects
+    /// still took the opening 1d8.</para>
+    ///
+    /// <para>Three gates, each from the printed entry. The exact source, so no
+    /// other creature's effect resolves here. Genuine footprint adjacency,
+    /// which is not the Vrock's ten-foot melee reach — see
+    /// <see cref="SummonFootprintGeometry"/>. And the printed counterplay:
+    /// "This attack can also be halted by effects that remove or provide
+    /// immunity to disease", so a creature already immune to disease is not
+    /// exposed at all. Poison immunity is deliberately not consulted: the
+    /// printed ability is not poison, and the two descriptors are distinct
+    /// bits in the engine's own enumeration.</para>
+    /// </summary>
+    [Serializable]
+    public sealed class VrockSporeExposure37 : ContextCondition
+    {
+        public BlueprintUnit SourceUnit;
+        public BlueprintAbility Spores;
+        public BlueprintBuff Vines;
+
+        protected override string GetConditionCaption()
+        { return "adjacent, not already immune to disease"; }
+
+        internal static bool IsDiseaseImmune(UnitEntityData target,
+            MechanicsContext probe)
+        {
+            if (target == null) return false;
+            var resistance = target.Get<
+                Kingmaker.UnitLogic.Parts.UnitPartSpellResistance>();
+            return resistance != null && probe != null &&
+                resistance.IsImmune(probe);
+        }
+
+        protected override bool CheckCondition()
+        {
+            UnitEntityData caster = Context == null ? null :
+                Context.MaybeCaster;
+            UnitEntityData target = Target == null ? null : Target.Unit;
+            bool exactSource = caster != null && SourceUnit != null &&
+                caster.Blueprint != null &&
+                ReferenceEquals(caster.Blueprint, SourceUnit);
+            if (!exactSource || Vines == null) return false;
+            // The probe carries the vine effect, so it carries the vine's own
+            // Disease descriptor and the native immunity part answers for the
+            // exact thing that is about to be applied.
+            var probe = new MechanicsContext(caster, target == null ? null :
+                target.Descriptor, Vines, Context, new TargetWrapper(target));
+            return VrockRules37Policy.SporesReach(exactSource,
+                VrockDemonIdentity37.IsLiveTarget(target),
+                SummonFootprintGeometry.AreAdjacent(caster, target),
+                IsDiseaseImmune(target, probe));
+        }
+    }
+
+    /// <summary>
+    /// The growing vines on one exposed creature: a finite ten-round effect
+    /// whose per-round damage is the native new-round action on its own buff,
+    /// exactly as the released Giant Flytrap engulf does. The immediate 1d8 is
+    /// a native <c>ContextActionDealDamage</c> beside this action, behind the
+    /// same <see cref="VrockSporeExposure37"/> gate.
     /// </summary>
     [Serializable]
     public sealed class ContextActionVrockSpores37 : ContextAction
@@ -221,10 +279,13 @@ namespace KingmakerGunslinger.Summoning
             bool exactSource = caster != null && SourceUnit != null &&
                 caster.Blueprint != null &&
                 ReferenceEquals(caster.Blueprint, SourceUnit);
+            // The shared VrockSporeExposure37 gate has already decided
+            // adjacency and the printed disease counterplay for this target;
+            // these remain as the component's own ownership guards.
             if (Vines == null || Spores == null || Context == null ||
                 !ReferenceEquals(Context.SourceAbility, Spores) ||
-                !VrockRules37Policy.SporesReach(exactSource,
-                    VrockDemonIdentity37.IsLiveTarget(target))) return;
+                !exactSource ||
+                !VrockDemonIdentity37.IsLiveTarget(target)) return;
             if (ReferenceEquals(Context.Params, AbilityParams.Empty))
                 throw new InvalidOperationException(
                     "Vrock spores require their native owned parameters.");
@@ -241,7 +302,11 @@ namespace KingmakerGunslinger.Summoning
                     Buff added = target.Descriptor.Buffs.AddBuff(buff, source,
                         duration);
                     // An extraordinary growth is not a spell effect, so the
-                    // native dispel consumer must not treat it as one.
+                    // native dispel consumer must not treat it as one. The
+                    // printed removals are disease removals, which reach it
+                    // through the vine blueprint's own Disease descriptor and
+                    // the native descriptor-removal action, not through Dispel
+                    // Magic.
                     if (added != null) added.IsNotDispelable = true;
                     return added;
                 });
@@ -336,20 +401,20 @@ namespace KingmakerGunslinger.Summoning
             Ability granted = actor.Descriptor.Abilities.GetAbility(Spores);
             if (granted == null || !new AbilityData(granted).IsAvailable)
                 return 0f;
-            float radius = new Feet(VrockRules37Policy.SporeRadiusFeet).Meters;
+            // The same footprint relation the real effect applies, so AI
+            // safety and eligibility cannot disagree about who is adjacent.
             if (Game.Instance.State.Units.All.Any(unit =>
                     VrockDemonIdentity37.IsLiveTarget(unit) &&
                     !ReferenceEquals(unit, actor) && !actor.IsEnemy(unit) &&
-                    Vector3.Distance(actor.Position, unit.Position) <=
-                        radius + Math.Max(0f, unit.Corpulence))) return 0f;
+                    SummonFootprintGeometry.AreAdjacent(actor, unit)))
+                return 0f;
             return context.Enemies.Any(info => {
                 UnitEntityData target = info == null ? null : info.Unit;
                 return VrockDemonIdentity37.IsLiveTarget(target) &&
                     actor.IsEnemy(target) &&
                     actor.Memory.ContainsVisible(target) &&
                     actor.HasLOS(target) &&
-                    Vector3.Distance(actor.Position, target.Position) <=
-                        radius + Math.Max(0f, target.Corpulence);
+                    SummonFootprintGeometry.AreAdjacent(actor, target);
             }) ? 1f : 0f;
         }
     }

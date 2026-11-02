@@ -19,7 +19,14 @@ namespace KingmakerGunslinger.Summoning
         internal const int ScreechStunRounds = 1;
         internal const int ScreechRechargeHours = 1;
 
-        internal const int SporeRadiusFeet = 10;
+        // The native collector admits a unit when its centre is within
+        // (radius + that unit's own corpulence) of the caster's eye
+        // position, so no single scalar expresses "adjacent" across
+        // different footprints. This radius deliberately over-collects;
+        // SummonFootprintGeometry.AreAdjacent then applies the real
+        // footprint relation. It is NOT the Vrock's melee reach, which
+        // stays at ReachFeet and is a separate quantity.
+        internal const int SporeCollectionRadiusFeet = 15;
         internal const int SporeCadenceRounds = 3;
         internal const int SporeVineRounds = 10;
         internal const int SporeImpactDiceCount = 1;
@@ -85,12 +92,19 @@ namespace KingmakerGunslinger.Summoning
         { return exactSource && !demon; }
 
         /// <summary>
-        /// Whether the spore cloud reaches one collected creature. The printed
-        /// ability has no save, no spell resistance and no exemption, so only
-        /// the exact source and a live target are required.
+        /// Whether the spore cloud reaches one collected creature. The
+        /// printed ability has no save and no spell resistance, so the
+        /// gates are the exact source, a live target, genuine footprint
+        /// adjacency, and the printed disease counterplay: a creature
+        /// immune to disease is not exposed at all, which covers the
+        /// immediate packet as well as the growing vines.
         /// </summary>
-        internal static bool SporesReach(bool exactSource, bool liveTarget)
-        { return exactSource && liveTarget; }
+        internal static bool SporesReach(bool exactSource,
+            bool liveTarget, bool adjacent, bool diseaseImmune)
+        {
+            return exactSource && liveTarget && adjacent &&
+                !diseaseImmune;
+        }
 
         internal static void Validate()
         {
@@ -102,9 +116,11 @@ namespace KingmakerGunslinger.Summoning
                 !ScreechReaches(true, false) ||
                 ScreechReaches(true, true) ||
                 ScreechReaches(false, false) ||
-                !SporesReach(true, true) ||
-                SporesReach(true, false) ||
-                SporesReach(false, true) ||
+                !SporesReach(true, true, true, false) ||
+                SporesReach(true, false, true, false) ||
+                SporesReach(false, true, true, false) ||
+                SporesReach(true, true, false, false) ||
+                SporesReach(true, true, true, true) ||
                 BaseFortitude + 7 != PrintedFortitude ||
                 BaseReflex + 2 + 2 != PrintedReflex ||
                 BaseWill + 3 != PrintedWill ||
@@ -112,7 +128,8 @@ namespace KingmakerGunslinger.Summoning
                     PrintedPerception ||
                 SkillRanks + 3 + 2 - 4 != PrintedStealth ||
                 ScreechRadiusFeet != 30 || ScreechStunRounds != 1 ||
-                ScreechRechargeHours != 1 || SporeRadiusFeet != ReachFeet ||
+                ScreechRechargeHours != 1 ||
+                SporeCollectionRadiusFeet <= ReachFeet ||
                 SporeCadenceRounds != 3 || SporeVineRounds != 10 ||
                 SporeImpactDiceCount != 1 || SporeVineDiceCount != 1 ||
                 SpellLikeCasterLevel != 12 ||
