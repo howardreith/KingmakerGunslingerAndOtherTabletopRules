@@ -160,10 +160,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     target, spores, vines, cooldown, protection, grantedFacts,
                     check)) yield return frame;
 
-                // --- the spatial relation, measured -------------------------
-                foreach (int frame in VrockSporeGeometry37(fixture, vrock,
-                    target, ally, spores, vines, cooldown, check))
-                    yield return frame;
+                // The spatial relation is deliberately NOT observed here.
+                // Five sequential exposure states, each waiting out the real
+                // three-round cadence, plus eight real cure casts and a
+                // post-exposure round, outlive the summoned vrock: this phase
+                // reported "Ability not granted" at the geometry step because
+                // the unit's own summoned lifetime had ended, not because
+                // anything was wrong with it. Geometry runs in
+                // sprint37-vrock-geometry with its own fresh unit.
             }
             finally
             {
@@ -184,6 +188,82 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owned.ToArray());
                 RuntimeTestResultWriter.WriteAtomic(Path.Combine(
                     _request.EvidenceDirectory, "sprint37-vrock-spores.json"),
+                    receipt.ToString(Formatting.Indented));
+            }
+        }
+
+        /// <summary>
+        /// The spatial relation on its own freshly summoned vrock. Kept apart
+        /// from the protection states because that sequence waits out enough
+        /// real rounds to outlive a summon, and an expired unit reports as a
+        /// missing ability rather than as an expiry.
+        /// </summary>
+        private IEnumerable<int> ReviewVrockGeometry37(
+            ExpandedSummoningCorrectionFixture fixture)
+        {
+            var owned = new List<UnitEntityData>();
+            var cells = new JArray();
+            var receipt = new JObject {
+                ["phase"] = ExpandedSummoningNativeProfilePolicy
+                    .Sprint37VrockGeometryPhase,
+                ["finalQualification"] = false,
+                ["cells"] = cells
+            };
+            UnitEntityData target = fixture.Hostile;
+            UnitEntityData ally = fixture.Caster;
+            int oldTargetHp = target.Stats.HitPoints.BaseValue;
+            int oldTargetDamage = target.Damage;
+            Vector3 oldTargetPosition = target.Position;
+            Vector3 oldAllyPosition = ally.Position;
+            Action<string, bool, JObject, string> check =
+                (id, pass, row, description) => {
+                    row["cell"] = id;
+                    cells.Add(row);
+                    Sprint25Check("sprint37-" + id, pass, row, description);
+                    if (!pass) throw new InvalidOperationException(
+                        "Sprint37 vrock geometry cell failed: " + id);
+                };
+            try
+            {
+                var spores = (BlueprintAbility)ExpandedSummoningBlueprints
+                    .Registered.BySymbol[ExpandedSummoningSpecialBuilder
+                        .Vrock37Prefix + "Spores"];
+                var vines = (BlueprintBuff)ExpandedSummoningBlueprints
+                    .Registered.BySymbol[ExpandedSummoningSpecialBuilder
+                        .Vrock37Prefix + "SporeVines"];
+                var cooldown = (BlueprintBuff)ExpandedSummoningBlueprints
+                    .Registered.BySymbol[ExpandedSummoningSpecialBuilder
+                        .Vrock37Prefix + "SporeCooldown"];
+                target.Stats.HitPoints.BaseValue = 100000;
+                UnitEntityData vrock = CastExpandedSummoningOwnTier(
+                    fixture, "vrock");
+                owned.Add(vrock);
+                Sprint28SetBrainActivePreservingActions(vrock, false);
+                vrock.Commands.InterruptAll(true);
+                vrock.Commands.RemoveFinishedAndUpdateQueue();
+                vrock.Stats.HitPoints.BaseValue = 100000;
+                foreach (int frame in Outsider30NativeAppearance(vrock,
+                    vrock.Blueprint.name)) yield return frame;
+                foreach (int frame in VrockSporeGeometry37(fixture, vrock,
+                    target, ally, spores, vines, cooldown, check))
+                    yield return frame;
+            }
+            finally
+            {
+                foreach (Buff buff in new[] { target, ally }
+                    .SelectMany(unit => unit.Buffs.Enumerable).ToArray())
+                    if (buff.Blueprint != null && buff.Blueprint.name
+                        .StartsWith("KMG_", StringComparison.Ordinal))
+                        buff.Remove();
+                target.Stats.HitPoints.BaseValue = oldTargetHp;
+                target.Damage = oldTargetDamage;
+                PlaceExpandedSummoningUnit(target, oldTargetPosition);
+                PlaceExpandedSummoningUnit(ally, oldAllyPosition);
+                DisposeExpandedSummoningUnits(fixture.Created,
+                    owned.ToArray());
+                RuntimeTestResultWriter.WriteAtomic(Path.Combine(
+                    _request.EvidenceDirectory,
+                    "sprint37-vrock-geometry.json"),
                     receipt.ToString(Formatting.Indented));
             }
         }
@@ -287,6 +367,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool expectImpact, bool expectVines,
             Action<string, bool, JObject, string> check)
         {
+            if (vrock.Descriptor.Abilities.GetAbility(spores) == null)
+                throw new InvalidOperationException(
+                    "The summoned vrock no longer holds its spores: its own " +
+                    "summoned lifetime ended before this observation. " +
+                    "Shorten the phase or summon a fresh unit; this is not a " +
+                    "registration failure.");
             VrockPlaceAdjacent37(vrock, target, 0.3f);
             JObject geometry = VrockGeometryRow37(vrock, target, spores);
             var observed = new Astral31SmiteEvents(vrock, spores, vines, null,
