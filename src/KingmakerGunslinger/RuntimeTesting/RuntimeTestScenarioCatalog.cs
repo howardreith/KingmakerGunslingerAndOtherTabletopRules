@@ -169,8 +169,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         /// <summary>
         /// The one bounded Sprint 37 installed-library audit: whether a
-        /// native Vrock body exists, whether any demon subtype fact exists,
-        /// and the exact installed Heroism and Mirror Image identities.
+        /// native Vrock body exists, what a name search over the loaded
+        /// blueprints returns for subtype features, and the exact installed
+        /// Heroism and Mirror Image identities. A name search establishes its
+        /// own results and not a universal absence.
         /// Research only; it creates no actor and loads no save.
         /// </summary>
         internal const string ObserveExpandedSummoningSprint37Inputs =
