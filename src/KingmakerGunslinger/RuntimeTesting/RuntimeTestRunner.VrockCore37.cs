@@ -545,7 +545,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             owner.Brain.RestoreAvailableActions();
             float before = owner.CombatState.AIData.NextCommandTime;
             owner.CombatState.AIData.NextCommandTime = Time.time - 0.01f;
+            bool targetInGroupMemory = owner.Group != null &&
+                owner.Group.Memory.Enemies.Any(value =>
+                    ReferenceEquals(value.Unit, enemy));
             return new JObject {
+                ["ownerGroupInCombat"] =
+                    owner.Group != null && owner.Group.IsInCombat,
+                ["ownerGroupAwake"] = owner.Group != null &&
+                    Game.Instance.AwakeUnitGroups.Contains(owner.Group),
+                ["targetInGroupMemory"] = targetInGroupMemory,
+                ["ownerBrainActive"] = owner.IsBrainActive,
+                ["targetCanAct"] = enemy.Descriptor.State.CanAct,
                 ["owner"] = owner.UniqueId,
                 ["enemy"] = enemy.UniqueId,
                 ["ownerInCombat"] = owner.IsInCombat,
@@ -581,28 +591,42 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> VrockDriveBrain37(UnitEntityData owner,
             Func<bool> satisfied, int seconds, JObject record)
         {
+            // The seventh observation had the owner in combat, the enemy in
+            // combat, visibility, line of sight, hostility and the attack
+            // action available, drove 1238 frames and re-armed the clock 39
+            // times, and still saw no command. Waiting was the error: the game
+            // does not tick a party summon's brain, so an observer that only
+            // waits watches a brain that is never asked. This drives the
+            // already qualified exact-owner AI tick, which refuses outright if
+            // this owner is not an eligible candidate and reports every other
+            // unit it declined to tick.
+            var ambient = new HashSet<string>(StringComparer.Ordinal);
             DateTime deadline = DateTime.UtcNow.AddSeconds(seconds);
-            DateTime nextArm = DateTime.MinValue;
             int frames = 0;
-            int rearms = 0;
+            int aiTicks = 0;
             while (!satisfied() && DateTime.UtcNow < deadline)
             {
-                Game.Instance.IsPaused = false;
-                if (DateTime.UtcNow >= nextArm)
+                if (frames % 60 == 0 && !owner.Commands.Raw.Any(value =>
+                        value != null && !value.IsFinished))
                 {
                     owner.CombatState.AIData.NextCommandTime =
                         Time.time - 0.01f;
-                    nextArm = DateTime.UtcNow.AddSeconds(1);
-                    rearms++;
+                    foreach (string candidate in Sprint24TickExactAi(owner))
+                        if (candidate != owner.UniqueId)
+                            ambient.Add(candidate);
+                    aiTicks++;
                 }
                 frames++;
+                Game.Instance.IsPaused = false;
                 yield return 0;
             }
             record["drivenFrames"] = frames;
-            record["clockRearms"] = rearms;
+            record["aiTicks"] = aiTicks;
             record["windowSeconds"] = seconds;
             record["satisfied"] = satisfied();
             record["ownerInCombatAfter"] = owner.IsInCombat;
+            record["ambientCandidatesNeverTicked"] = new JArray(ambient);
+            record["fixtureIssuedCommands"] = 0;
         }
 
         /// <summary>
