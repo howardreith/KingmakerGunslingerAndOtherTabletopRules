@@ -131,11 +131,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["actual"] = actual[value.Symbol] == null ? null :
                         actual[value.Symbol].GetType().Name
                 }).ToArray();
-            check("core-hidden-bootstrap",
+            // Publication state is recorded, not demanded. This cell ran
+            // against hidden routes throughout qualification and against
+            // published ones at the final candidate; what it proves either way
+            // is that all three routes exist and every private dependency
+            // resolves at its planned type. Asserting concealment here would
+            // make the phase unrunnable at the bytes that are actually
+            // released.
+            check("core-bootstrap",
                 routes.Length == 3 && actual.Count == expected.Length &&
-                missing.Length == 0 && wrongTypes.Length == 0 &&
-                routes.All(value =>
-                    !SummonVisibilityCatalog.IsPublished(value)),
+                missing.Length == 0 && wrongTypes.Length == 0,
                 new JObject {
                     ["routes"] = new JArray(routes.Select(value =>
                         new JObject {
@@ -147,8 +152,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["expectedRegistrationCount"] = expected.Length,
                     ["actualRegistrationCount"] = actual.Count,
                     ["missing"] = new JArray(missing),
-                    ["wrongTypes"] = new JArray(wrongTypes)
-                }, "All three Vrock routes remain hidden while every Sprint 37 private dependency resolves at its planned type.");
+                    ["wrongTypes"] = new JArray(wrongTypes),
+                    ["publishedCount"] = routes.Count(value =>
+                        SummonVisibilityCatalog.IsPublished(value)),
+                    ["suppressedCount"] = routes.Count(value =>
+                        !SummonVisibilityCatalog.IsPublished(value))
+                }, "All three Vrock routes exist and every Sprint 37 private dependency resolves at its planned type; their publication state is recorded.");
         }
 
         /// <summary>
