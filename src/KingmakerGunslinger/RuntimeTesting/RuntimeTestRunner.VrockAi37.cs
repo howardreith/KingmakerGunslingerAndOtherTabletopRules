@@ -112,6 +112,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new[] { screech, spores, heroism, mirror },
                     "ai-ally-in-spread", screech, false, check))
                     yield return frame;
+                // And with the ally still in the spread but both self-buffs
+                // already spent, the refusal must hold when the screech is
+                // the highest-scoring action left.
+                foreach (int frame in VrockAiReset37(vrock, target, ally,
+                    recharge, cooldown)) yield return frame;
+                PlaceExpandedSummoningUnit(ally, vrock.Position +
+                    Vector3.forward * (screechRadius - 3f));
+                PlaceExpandedSummoningUnit(target, vrock.Position +
+                    Vector3.right * (screechRadius - 1f));
+                foreach (int frame in VrockAiChoice37(vrock, target,
+                    new[] { screech, spores }, "ai-ally-in-spread-no-buffs",
+                    screech, false, check)) yield return frame;
 
                 // --- self-support once both area effects are unavailable ----
                 foreach (int frame in VrockAiReset37(vrock, target, ally,
@@ -162,9 +174,26 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
-        /// Lets the real brain run and records which of the watched abilities
-        /// it chose. <paramref name="expected"/> may be null, which asserts
-        /// only that the chosen command is one of the watched abilities.
+        /// Lets the real brain run for a full window and records every watched
+        /// ability it chose, in order.
+        ///
+        /// <para><b>What this does and does not assert.</b> The first version
+        /// required the brain's very first pick to be one named ability, and
+        /// the observation refuted that: with every action available and an
+        /// enemy inside the spread, the vrock chose Heroism at base score four
+        /// over the screech at seven, because considerations scale base scores
+        /// rather than merely breaking ties. Nothing printed or chartered
+        /// requires a particular opening move, and a demon buffing itself
+        /// before a control effect is not a defect - so that assertion was
+        /// mine, not the brief's.</para>
+        ///
+        /// <para>What the brief does require is ally safety and genuine
+        /// reachability, so this observes those instead: when the screech is
+        /// expected, it must be chosen somewhere inside the window, with other
+        /// finite picks allowed before it; when it is not expected, it must
+        /// never be chosen while the brain is demonstrably still choosing
+        /// other things. A silent brain can no longer pass a refusal
+        /// cell.</para>
         /// </summary>
         private IEnumerable<int> VrockAiChoice37(UnitEntityData vrock,
             UnitEntityData target, BlueprintAbility[] watched, string id,
@@ -183,10 +212,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             // decide from.
             JObject brain = VrockPrepareBrain37(vrock, target);
             var queued = new JArray();
+            Func<BlueprintAbility[]> picks = () => chosen
+                .Select(value => value.Spell?.Blueprint)
+                .Where(value => value != null).Distinct().ToArray();
             try
             {
-                foreach (int frame in VrockDriveBrain37(vrock,
-                    () => chosen.Count > 0, 40, brain)) yield return frame;
+                // A refusal has to be watched for the whole window: stopping
+                // at the first pick would let one unrelated choice stand in
+                // for "never chose the screech".
+                Func<bool> satisfied = expected != null && shouldChoose
+                    ? (Func<bool>)(() => picks().Contains(expected))
+                    : expected == null
+                        ? (Func<bool>)(() => picks().Any())
+                        : (Func<bool>)(() => false);
+                foreach (int frame in VrockDriveBrain37(vrock, satisfied, 40,
+                    brain)) yield return frame;
                 foreach (UnitCommand command in vrock.Commands.Raw
                     .Where(value => value != null).ToArray())
                     queued.Add(Sprint27AiCommand(command));
@@ -198,14 +238,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 vrock.Commands.InterruptAll(true);
                 vrock.Commands.RemoveFinishedAndUpdateQueue();
             }
-            BlueprintAbility[] picked = chosen
-                .Select(value => value.Spell?.Blueprint)
-                .Where(value => value != null).Distinct().ToArray();
+            BlueprintAbility[] picked = picks();
             bool pass = expected == null
                 ? shouldChoose == picked.Any()
                 : shouldChoose
                     ? picked.Contains(expected)
-                    : !picked.Contains(expected);
+                    // A refusal only means something while the brain was
+                    // demonstrably deciding other things.
+                    : !picked.Contains(expected) && picked.Any();
             check(id, pass, new JObject {
                 ["owner"] = vrock.UniqueId,
                 ["target"] = target.UniqueId,
@@ -217,6 +257,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["expected"] = expected?.name,
                 ["shouldChoose"] = shouldChoose,
                 ["chosen"] = new JArray(picked.Select(value => value.name)),
+                ["chosenInOrder"] = new JArray(chosen.Select(value =>
+                    value.Spell?.Blueprint?.name)),
+                ["brainWasDeciding"] = picked.Any(),
+                ["assertion"] = expected == null
+                    ? "some watched ability was chosen"
+                    : shouldChoose
+                        ? "the named ability was chosen somewhere in the window"
+                        : "the named ability was never chosen while others were",
                 ["commands"] = queued,
                 ["forcedCommands"] = 0,
                 ["scope"] =
