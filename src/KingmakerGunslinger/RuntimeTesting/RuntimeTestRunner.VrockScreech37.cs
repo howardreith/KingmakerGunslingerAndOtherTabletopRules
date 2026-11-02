@@ -179,6 +179,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        /// <summary>
+        /// Refuses with the real reason if a summoned observer subject has
+        /// outlived its own duration. The spores phase learned this the
+        /// expensive way: an expired summon reports only "Ability not
+        /// granted", which reads as a registration failure and is not one.
+        /// </summary>
+        private static void VrockRequireLiveSubject37(UnitEntityData unit,
+            BlueprintAbility ability, string step)
+        {
+            if (unit == null || unit.Destroyed || !unit.IsInState)
+                throw new InvalidOperationException(
+                    "The summoned subject no longer exists at step '" + step +
+                    "': its summoned lifetime ended. Split the phase or " +
+                    "summon a fresh unit; this is not a registration failure.");
+            if (unit.Descriptor.Abilities.GetAbility(ability) == null)
+                throw new InvalidOperationException(
+                    "The summoned subject no longer holds " + ability.name +
+                    " at step '" + step + "': its summoned lifetime ended. " +
+                    "This is not a registration failure.");
+        }
+
         private static void VrockQuiesce37(UnitEntityData unit)
         {
             Sprint28SetBrainActivePreservingActions(unit, false);
@@ -218,6 +239,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             List<Tuple<string, UnitEntityData, bool>> controls,
             Action<string, bool, JObject, string> check)
         {
+            VrockRequireLiveSubject37(vrock, screech, "volley");
             var observed = new Astral31SmiteEvents(vrock, screech, stunned,
                 null, inside);
             EventBus.Subscribe(observed);
@@ -359,6 +381,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintBuff recharge, UnitEntityData target,
             Action<string, bool, JObject, string> check)
         {
+            VrockRequireLiveSubject37(vrock, screech, "live-dc");
             int baseline = vrock.Stats.Constitution.BaseValue;
             var rows = new JArray();
             bool coherent = true;
@@ -438,6 +461,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintBuff recharge, UnitEntityData target,
             UnitEntityData ally, Action<string, bool, JObject, string> check)
         {
+            VrockRequireLiveSubject37(vrock, screech, "radius-boundary");
             float radius = new Feet(
                 VrockRules37Policy.ScreechRadiusFeet).Meters;
             foreach (int frame in VrockClearRecharge37(vrock, recharge,
@@ -498,6 +522,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             List<UnitEntityData> owned,
             Action<string, bool, JObject, string> check)
         {
+            VrockRequireLiveSubject37(first, screech, "two-owner-first");
             UnitEntityData second = CastExpandedSummoningOwnTier(fixture,
                 "vrock");
             owned.Add(second);
