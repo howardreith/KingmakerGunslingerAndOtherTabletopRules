@@ -1,0 +1,435 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.Blueprints.Facts;
+using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Controllers.Brain.Blueprints;
+using Kingmaker.Controllers.Brain.Blueprints.Considerations;
+using Kingmaker.ElementsSystem;
+using Kingmaker.Enums;
+using Kingmaker.Enums.Damage;
+using Kingmaker.EntitySystem.Stats;
+using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules.Damage;
+using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
+using Kingmaker.UnitLogic.Abilities.Components.Base;
+using Kingmaker.UnitLogic.Abilities.Components.CasterCheckers;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Components;
+using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Mechanics.Actions;
+using Kingmaker.UnitLogic.Mechanics.Components;
+using Kingmaker.Utility;
+using Kingmaker.Visual.Animation.Kingmaker.Actions;
+using KingmakerGunslinger.Summoning;
+using UnityEngine;
+
+namespace KingmakerGunslinger.Blueprints
+{
+    internal static partial class ExpandedSummoningSpecialBuilder
+    {
+        internal const string Vrock37Prefix = "KMG.Summoning.Demon.Vrock.";
+        private const string NativeStunned37 =
+            "09d39b38bb7c6014394b6daced9bacd3";
+
+        /// <summary>
+        /// Sprint 37. One adult, untemplated Vrock reusing the released
+        /// Sprint 36 demon chassis, the released Trumpet Archon area
+        /// save-or-lose shape and the released Gorgon recharge shape. The
+        /// printed Vrock profile, its five primary natural attacks, its area
+        /// stun and its spores are the scope; greater teleport, nested summon,
+        /// telekinesis and Dance of Ruin are dispositioned in
+        /// planning/SPRINT37-RULES.md.
+        /// </summary>
+        private static void ConfigureVrock37(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> symbols)
+        {
+            VrockRules37Policy.Validate();
+            string p = Vrock37Prefix;
+            var unit = InfernalProfile36(library, symbols, "Vrock", "vrock",
+                p, "Vrock", VrockRules37Policy.VrockHitDice,
+                VrockRules37Policy.HitPoints,
+                VrockRules37Policy.BaseFortitude,
+                VrockRules37Policy.BaseReflex, VrockRules37Policy.BaseWill,
+                VrockRules37Policy.SkillRanks, VrockRules37Policy.SkillRanks,
+                0);
+            // Kingmaker exposes one movement speed, so the effective flying
+            // speed is the unit speed and the printed 30-foot land speed is
+            // omitted rather than summed. See the Airborne fact below.
+            ConfigureUnitCore(unit, "Vrock", "Vrock", Alignment.ChaoticEvil,
+                Size.Large, 21, 15, 25, 14, 16, 16,
+                VrockRules37Policy.EffectiveFlySpeedFeet);
+
+            // Five primary natural attacks from three exact weapon identities,
+            // every limb at the printed full-Strength primary role. The Large
+            // 10-foot attack range matches the released Hezrou contract.
+            var claw = Sprint29Weapon(library, symbols, p + "Claw",
+                p + "ClawType", Claw2d4Guid, Size.Large, 2,
+                DiceType.D6, VrockRules37Policy.ReachFeet);
+            var bite = Sprint29Weapon(library, symbols, p + "Bite",
+                p + "BiteType", NativeBite1d6Guid, Size.Large, 1,
+                DiceType.D8, VrockRules37Policy.ReachFeet);
+            var talon = Sprint29Weapon(library, symbols, p + "Talon",
+                p + "TalonType", NativeClaw1d4Guid, Size.Large, 1,
+                DiceType.D6, VrockRules37Policy.ReachFeet);
+            unit.Body = NaturalBody(bite, new[] { claw, claw, talon, talon },
+                Array.Empty<BlueprintItemWeapon>());
+
+            List<BlueprintComponent> parts = InfernalDefenses36(unit,
+                VrockRules37Policy.NaturalArmor,
+                VrockRules37Policy.SpellResistance, false);
+            var strength = ScriptableObject.CreateInstance<
+                DeinonychusPrimaryTalonStrength>();
+            strength.OwningBlueprint = unit;
+            strength.Talon = bite;
+            var ownership = ScriptableObject.CreateInstance<
+                SummonGiantEquipmentOwnership>();
+            ownership.OwningBlueprint = unit;
+            ownership.GreatWeapon = bite;
+            ownership.Slam = claw;
+            ownership.Rock = talon;
+            var perception = ScriptableObject.CreateInstance<AddStatBonus>();
+            perception.Stat = StatType.SkillPerception;
+            perception.Value = VrockRules37Policy.RacialPerceptionBonus;
+            perception.Descriptor = ModifierDescriptor.Racial;
+            parts.AddRange(new BlueprintComponent[] { strength, ownership,
+                perception });
+
+            BlueprintAbility screech = ConfigureVrockScreech37(library,
+                symbols, unit);
+            BlueprintAbility spores = ConfigureVrockSpores37(symbols, unit);
+            var parameters = ScriptableObject.CreateInstance<
+                VrockRacialParameters37>();
+            parameters.OwningBlueprint = unit;
+            parameters.Abilities = new[] { screech, spores };
+            parts.Add(parameters);
+
+            var traits = Require<BlueprintFeature>(symbols, p + "Traits");
+            BindInfernalTraits35(traits, p, "Vrock",
+                "DR10/good; electricity and poison immunity; acid, cold and fire resistance 10; SR20. Five primary natural attacks — two claws, a bite and two talons — all at 10-foot reach. Stunning Screech is once per hour; spores are a free action every three rounds. Kingmaker exposes one movement speed, so the 50-foot flying speed is used with airborne navigation and the printed 30-foot land speed is omitted. Telekinesis and Dance of Ruin are not represented; greater teleport and nested summoning are excluded for every summon.",
+                parts);
+            unit.AddFacts = InfernalFacts36(library, traits).Concat(
+                new BlueprintUnitFact[] {
+                    Feature(library, AirborneGuid,
+                        "established airborne navigation"),
+                    Require<BlueprintFeature>(symbols, GiantCleaveFeature),
+                    Feature(library, CombatReflexesGuid, "Combat Reflexes"),
+                    Feature(library, ImprovedInitiativeGuid,
+                        "Improved Initiative"),
+                    Feature(library, LightningReflexesGuid,
+                        "Lightning Reflexes"),
+                    Feature(library, PowerAttackGuid, "Power Attack"),
+                    screech, spores }).ToArray();
+
+            var screechAi = Require<BlueprintAiCastSpell>(symbols,
+                p + "ScreechAi");
+            ConfigureMephitAiAction(screechAi, p + "ScreechAi", screech, 0);
+            var screechSafety = Require<VrockScreechEligibility37>(symbols,
+                p + "ScreechEligibility");
+            screechSafety.SourceUnit = unit;
+            screechSafety.Screech = screech;
+            screechSafety.Demons = VrockDemons37(symbols);
+            screechAi.ActorConsiderations = new Consideration[] {
+                screechSafety };
+            // The control bomb outranks the spore cloud, and both yield to the
+            // native attack action when their considerations score zero.
+            screechAi.BaseScore = 7;
+
+            var sporeAi = Require<BlueprintAiCastSpell>(symbols,
+                p + "SporeAi");
+            ConfigureMephitAiAction(sporeAi, p + "SporeAi", spores, 0);
+            var sporeSafety = Require<VrockSporeEligibility37>(symbols,
+                p + "SporeEligibility");
+            sporeSafety.SourceUnit = unit;
+            sporeSafety.Spores = spores;
+            sporeAi.ActorConsiderations = new Consideration[] { sporeSafety };
+            sporeAi.BaseScore = 5;
+
+            unit.Brain = InfernalBrain35(library, symbols, p, screechAi,
+                sporeAi);
+
+            foreach (var pair in symbols.Where(pair =>
+                pair.Value is BlueprintUnitFact &&
+                pair.Key.StartsWith(Vrock37Prefix, StringComparison.Ordinal)))
+            {
+                var fact = (BlueprintUnitFact)pair.Value;
+                if (fact.name != InternalName(pair.Key)) continue;
+                NamePrivateSummonFactComponents(fact, pair.Key, "Sprint37");
+            }
+        }
+
+        /// <summary>
+        /// The exact enumerated project demon identities the screech exempts.
+        /// Independent of faction, alignment or appearance; see
+        /// <see cref="VrockDemonIdentity37"/> for why the installed library
+        /// leaves no better option.
+        /// </summary>
+        private static BlueprintUnit[] VrockDemons37(
+            IDictionary<string, BlueprintScriptableObject> symbols)
+        {
+            return new[] {
+                Require<BlueprintUnit>(symbols, "KMG.Summoning.Unit.Dretch"),
+                Require<BlueprintUnit>(symbols, "KMG.Summoning.Unit.Babau"),
+                Require<BlueprintUnit>(symbols, "KMG.Summoning.Unit.Hezrou"),
+                Require<BlueprintUnit>(symbols, "KMG.Summoning.Unit.Vrock")
+            };
+        }
+
+        private static BlueprintBuff ConfigureVrockMarker37(
+            IDictionary<string, BlueprintScriptableObject> symbols,
+            string symbol, string title, string description)
+        {
+            var marker = Require<BlueprintBuff>(symbols, symbol);
+            marker.name = InternalName(symbol);
+            marker.IsClassFeature = true;
+            marker.Stacking = StackingType.Replace;
+            marker.ComponentsArray = Array.Empty<BlueprintComponent>();
+            SetBuffFlags(marker, false, true);
+            BlueprintUnitFactAccess.Resolve().Configure(marker,
+                LocalizationService.Create(symbol + ".Name", title),
+                LocalizationService.Create(symbol + ".Description",
+                    description), null);
+            return marker;
+        }
+
+        private static BlueprintAbility ConfigureVrockScreech37(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> symbols,
+            BlueprintUnit unit)
+        {
+            string p = Vrock37Prefix;
+            string symbol = p + "Screech";
+            var native = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                library, NativeStunned37, "native Stunned condition");
+            var condition = native.GetComponents<AddCondition>()
+                .Single(value => value.Condition == UnitCondition.Stunned);
+            var stunned = Require<BlueprintBuff>(symbols, p + "Stunned");
+            CopyFields(native, stunned);
+            stunned.name = InternalName(p + "Stunned");
+            stunned.IsClassFeature = false;
+            // Each failed save owns one finite victim effect. Another vrock's
+            // screech neither replaces nor extends this one.
+            stunned.Stacking = StackingType.Stack;
+            SetBuffFlags(stunned, true);
+            var descriptor = ScriptableObject.CreateInstance<
+                SpellDescriptorComponent>();
+            descriptor.Descriptor = SpellDescriptor.Stun;
+            stunned.ComponentsArray = new BlueprintComponent[] {
+                ExpandedSummoningAbilityBuilder.DeepCloneComponent(condition),
+                descriptor };
+            stunned.ResourceAssetIds = Array.Empty<string>();
+
+            BlueprintBuff recharge = ConfigureVrockMarker37(symbols,
+                p + "ScreechRecharge", "Screech Recovering",
+                "This vrock has screeched within the hour. The remaining wait is ordinary saved state: it survives a reload and belongs to this one summoned vrock.");
+
+            var ability = Require<BlueprintAbility>(symbols, symbol);
+            var around = ScriptableObject.CreateInstance<AbilityTargetsAround>();
+            SetField(around, "m_Radius",
+                new Feet(VrockRules37Policy.ScreechRadiusFeet));
+            SetField(around, "m_TargetType",
+                Kingmaker.UnitLogic.Abilities.Components.TargetType.Any);
+            SetField(around, "m_IncludeDead", false);
+            SetField(around, "m_Condition", new ConditionsChecker {
+                Operation = Operation.And,
+                Conditions = Array.Empty<Condition>() });
+            SetField(around, "m_SpreadSpeed", new Feet(0));
+            var resolve = ScriptableObject.CreateInstance<
+                ContextActionVrockScreech37>();
+            resolve.SourceUnit = unit;
+            resolve.Screech = ability;
+            resolve.Stunned = stunned;
+            resolve.Demons = VrockDemons37(symbols);
+            var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            run.SavingThrowType = SavingThrowType.Unknown;
+            run.Actions = new ActionList {
+                Actions = new GameAction[] { resolve } };
+            var debit = ScriptableObject.CreateInstance<
+                VrockRechargeOnCast37>();
+            debit.OwningBlueprint = unit;
+            debit.Ability = ability;
+            debit.Marker = recharge;
+            debit.Hours = VrockRules37Policy.ScreechRechargeHours;
+            debit.Rounds = 0;
+            var available = ScriptableObject.CreateInstance<
+                AbilityCasterHasNoFacts>();
+            available.Facts = new BlueprintUnitFact[] { recharge };
+
+            ability.name = InternalName(symbol);
+            ability.Parent = null;
+            ability.Type = AbilityType.Supernatural;
+            ability.Range = AbilityRange.Personal;
+            ability.CanTargetPoint = false;
+            ability.CanTargetSelf = true;
+            ability.CanTargetFriends = false;
+            ability.CanTargetEnemies = false;
+            ability.SpellResistance = false;
+            ability.NeedEquipWeapons = false;
+            ability.EffectOnEnemy = AbilityEffectOnUnit.Harmful;
+            ability.EffectOnAlly = AbilityEffectOnUnit.Harmful;
+            ability.ActionType = UnitCommand.CommandType.Standard;
+            ability.SetIsFullRoundAction(false);
+            ability.Animation = UnitAnimationActionCastSpell
+                .CastAnimationStyle.Omni;
+            ability.Hidden = false;
+            ability.ActionBarAutoFillIgnored = false;
+            ability.MaterialComponent =
+                new BlueprintAbility.MaterialComponentData();
+            ability.ResourceAssetIds = Array.Empty<string>();
+            ability.ComponentsArray = new BlueprintComponent[] { around, run,
+                debit, available,
+                ExpandedSummoningAbilityBuilder.DeepCloneComponent(
+                    descriptor) };
+
+            var icon = ExpandedSummoningProjectIcons.Require("vrock");
+            var facts = BlueprintUnitFactAccess.Resolve();
+            var title = LocalizationService.Create(symbol + ".Name",
+                "Stunning Screech");
+            facts.Configure(ability, title,
+                LocalizationService.Create(symbol + ".Description",
+                    "Once per hour as a standard action, emit a shrill screech. Every creature except demons within a 30-foot radius must make a Fortitude save or be stunned for 1 round. The live supernatural DC is 10 + half racial Hit Dice + Constitution modifier (DC 21 at the adult profile). Spell resistance does not apply and allies are eligible, so the AI only screeches when no ally stands in the radius. Because Kingmaker 2.1.7b carries no demon subtype fact, the exemption is the exact set of this project's own demons."),
+                icon);
+            facts.Configure(stunned, title,
+                LocalizationService.Create(p + "Stunned.Description",
+                    "Stunned by one vrock screech for its own independently expiring round. Native stun immunity still applies, and another source's stun keeps its own ownership and duration."),
+                native.Icon);
+            return ability;
+        }
+
+        private static BlueprintAbility ConfigureVrockSpores37(
+            IDictionary<string, BlueprintScriptableObject> symbols,
+            BlueprintUnit unit)
+        {
+            string p = Vrock37Prefix;
+            string symbol = p + "Spores";
+
+            // The growing vines: one finite ten-round effect whose per-round
+            // damage is the native new-round action, exactly as the released
+            // Giant Flytrap engulf does. Extraordinary, so it carries no
+            // poison descriptor and is not a spell effect.
+            var vines = Require<BlueprintBuff>(symbols, p + "SporeVines");
+            vines.name = InternalName(p + "SporeVines");
+            vines.IsClassFeature = false;
+            vines.Stacking = StackingType.Stack;
+            SetBuffFlags(vines, true);
+            var growth = ScriptableObject.CreateInstance<
+                ContextActionDealDamage>();
+            growth.DamageType = new DamageTypeDescription {
+                Type = DamageType.Direct };
+            growth.Value = new ContextDiceValue {
+                DiceType = DiceType.D4,
+                DiceCountValue = Simple(
+                    VrockRules37Policy.SporeVineDiceCount),
+                BonusValue = Simple(0) };
+            growth.Duration = new ContextDurationValue {
+                Rate = DurationRate.Rounds, DiceType = DiceType.Zero,
+                DiceCountValue = Simple(0), BonusValue = Simple(0) };
+            var cadence = ScriptableObject.CreateInstance<
+                AddFactContextActions>();
+            cadence.Activated = new ActionList {
+                Actions = Array.Empty<GameAction>() };
+            cadence.Deactivated = new ActionList {
+                Actions = Array.Empty<GameAction>() };
+            cadence.NewRound = new ActionList {
+                Actions = new GameAction[] { growth } };
+            vines.ComponentsArray = new BlueprintComponent[] { cadence };
+            vines.ResourceAssetIds = Array.Empty<string>();
+            BlueprintUnitFactAccess.Resolve().Configure(vines,
+                LocalizationService.Create(p + "SporeVines.Name",
+                    "Vrock Spores"),
+                LocalizationService.Create(p + "SporeVines.Description",
+                    "Thick green vines grow from vrock spores, dealing 1d4 damage each round for 10 rounds. This is an extraordinary growth, not poison, disease or a spell effect: poison immunity and Dispel Magic do not remove it, and ordinary damage resistance still applies."),
+                ExpandedSummoningProjectIcons.Require("vrock"));
+
+            BlueprintBuff cooldown = ConfigureVrockMarker37(symbols,
+                p + "SporeCooldown", "Spores Regrowing",
+                "This vrock releases spores once every three rounds.");
+
+            var ability = Require<BlueprintAbility>(symbols, symbol);
+            var around = ScriptableObject.CreateInstance<AbilityTargetsAround>();
+            SetField(around, "m_Radius",
+                new Feet(VrockRules37Policy.SporeRadiusFeet));
+            SetField(around, "m_TargetType",
+                Kingmaker.UnitLogic.Abilities.Components.TargetType.Any);
+            SetField(around, "m_IncludeDead", false);
+            SetField(around, "m_Condition", new ConditionsChecker {
+                Operation = Operation.And,
+                Conditions = Array.Empty<Condition>() });
+            SetField(around, "m_SpreadSpeed", new Feet(0));
+            var impact = ScriptableObject.CreateInstance<
+                ContextActionDealDamage>();
+            impact.DamageType = new DamageTypeDescription {
+                Type = DamageType.Direct };
+            impact.Value = new ContextDiceValue {
+                DiceType = DiceType.D8,
+                DiceCountValue = Simple(
+                    VrockRules37Policy.SporeImpactDiceCount),
+                BonusValue = Simple(0) };
+            impact.Duration = new ContextDurationValue {
+                Rate = DurationRate.Rounds, DiceType = DiceType.Zero,
+                DiceCountValue = Simple(0), BonusValue = Simple(0) };
+            impact.IsAoE = true;
+            impact.HalfIfSaved = false;
+            var resolve = ScriptableObject.CreateInstance<
+                ContextActionVrockSpores37>();
+            resolve.SourceUnit = unit;
+            resolve.Spores = ability;
+            resolve.Vines = vines;
+            var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            run.SavingThrowType = SavingThrowType.Unknown;
+            run.Actions = new ActionList {
+                Actions = new GameAction[] { impact, resolve } };
+            var debit = ScriptableObject.CreateInstance<
+                VrockRechargeOnCast37>();
+            debit.OwningBlueprint = unit;
+            debit.Ability = ability;
+            debit.Marker = cooldown;
+            debit.Hours = 0;
+            debit.Rounds = VrockRules37Policy.SporeCadenceRounds;
+            var available = ScriptableObject.CreateInstance<
+                AbilityCasterHasNoFacts>();
+            available.Facts = new BlueprintUnitFact[] { cooldown };
+
+            ability.name = InternalName(symbol);
+            ability.Parent = null;
+            ability.Type = AbilityType.Extraordinary;
+            ability.Range = AbilityRange.Personal;
+            ability.CanTargetPoint = false;
+            ability.CanTargetSelf = true;
+            ability.CanTargetFriends = false;
+            ability.CanTargetEnemies = false;
+            ability.SpellResistance = false;
+            ability.NeedEquipWeapons = false;
+            ability.EffectOnEnemy = AbilityEffectOnUnit.Harmful;
+            ability.EffectOnAlly = AbilityEffectOnUnit.Harmful;
+            // The printed ability is a free action, which Kingmaker's command
+            // type enumeration does support exactly.
+            ability.ActionType = UnitCommand.CommandType.Free;
+            ability.SetIsFullRoundAction(false);
+            ability.Animation = UnitAnimationActionCastSpell
+                .CastAnimationStyle.Immediate;
+            ability.Hidden = false;
+            ability.ActionBarAutoFillIgnored = false;
+            ability.MaterialComponent =
+                new BlueprintAbility.MaterialComponentData();
+            ability.ResourceAssetIds = Array.Empty<string>();
+            ability.ComponentsArray = new BlueprintComponent[] { around, run,
+                debit, available };
+
+            BlueprintUnitFactAccess.Resolve().Configure(ability,
+                LocalizationService.Create(symbol + ".Name", "Spores"),
+                LocalizationService.Create(symbol + ".Description",
+                    "A free action once every three rounds. Every creature within 10 feet takes 1d8 damage from the released spores, then 1d4 each round for 10 rounds as thick green vines grow. There is no save and no spell resistance, matching the printed extraordinary ability, and allies are eligible, so the AI only releases spores when no ally is adjacent."),
+                ExpandedSummoningProjectIcons.Require("vrock"));
+            return ability;
+        }
+    }
+}

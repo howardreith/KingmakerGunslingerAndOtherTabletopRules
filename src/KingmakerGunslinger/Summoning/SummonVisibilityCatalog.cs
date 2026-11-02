@@ -113,12 +113,16 @@ namespace KingmakerGunslinger.Summoning
         // their hidden native mechanics/body qualification and the owner's
         // explicit disposition of the three unsupported branches. All seven
         // Monster routes remain in their append-only positions.
+        // Sprint37 registers one further demon and withholds all three of its
+        // roots. Every route, child and dependency is allocated while hidden,
+        // so publication removes only this one suppression key and moves no
+        // identity, route or menu ordering.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(new string[0],
+            new HashSet<string>(new[] { "vrock" },
                 StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 1182;
-        internal const int SuppressedLogicalPlacementCount = 0;
+        internal const int RegisteredLogicalPlacementCount = 1185;
+        internal const int SuppressedLogicalPlacementCount = 3;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 
@@ -178,6 +182,15 @@ namespace KingmakerGunslinger.Summoning
                 sprint36.Where(value => value.Creature.Key == "hezrou")
                     .Select(value => value.ParentTier).OrderBy(value => value)
                     .SequenceEqual(new[] { 8, 9 });
+            SummonVariantSpec[] sprint37 = all.Where(value =>
+                value.Creature.Key == "vrock").ToArray();
+            bool sprint37Routes = sprint37.Length == 3 &&
+                sprint37.All(value => value.Family == SummonFamily.Monster &&
+                    !value.Creature.MonsterTemplated &&
+                    !IsPublished(value)) &&
+                sprint37.Select(value => value.ParentTier)
+                    .OrderBy(value => value)
+                    .SequenceEqual(new[] { 7, 8, 9 });
             bool giantRoutes = new[] { "hill-giant", "stone-giant" }
                 .All(key => giants.Where(value => value.Creature.Key == key)
                     .Select(value => value.ParentTier).OrderBy(value => value)
@@ -190,9 +203,10 @@ namespace KingmakerGunslinger.Summoning
             if (all.Length != RegisteredLogicalPlacementCount ||
                 suppressed.Length != SuppressedLogicalPlacementCount ||
                 all.Count(IsPublished) != PublishedLogicalPlacementCount ||
-                SuppressedCreatureKeys.Count != 0 ||
+                SuppressedCreatureKeys.Count != 1 ||
+                !SuppressedCreatureKeys.SetEquals(new[] { "vrock" }) ||
                 !sprint29Routes || !giantRoutes || !sprint35Routes ||
-                !sprint36Routes ||
+                !sprint36Routes || !sprint37Routes ||
                 !giants.All(IsPublished) ||
                 !giants.Select(value => value.Creature.Key).Distinct()
                     .OrderBy(value => value).SequenceEqual(

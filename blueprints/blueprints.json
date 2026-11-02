@@ -61855,6 +61855,286 @@
       "status": "active",
       "milestone": "Expanded Summoning alternate sources",
       "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.Vrock",
+      "guid": "5f4aa097fc3e4fa4a627ce5d5be6509e",
+      "plannedType": "BlueprintUnit",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Vrock.One",
+      "guid": "0f055b7e0eb449ee8d49395a78eff1b9",
+      "plannedType": "BlueprintAbility",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Vrock.OneD3",
+      "guid": "cd4dfd67a34f4c80b94d3e18203100ed",
+      "plannedType": "BlueprintAbility",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Vrock.OneD4PlusOne",
+      "guid": "9db2a268822147309dc734b8582e78a5",
+      "plannedType": "BlueprintAbility",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Vrock.UnitType",
+      "guid": "ed62d116035e4ae1ab864792ab5b08e3",
+      "plannedType": "BlueprintUnitType",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Vrock.Traits",
+      "guid": "3827231444de4691b2913868d4336934",
+      "plannedType": "BlueprintFeature",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Vrock.Claw",
+      "guid": "ded2d13a407e41088ac0845f257f6560",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Vrock.ClawType",
+      "guid": "553c473e642b4ea78905276cdd7a14e1",
+      "plannedType": "BlueprintWeaponType",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Vrock.Bite",
+      "guid": "3f2836b9353f4b1b9e722b98070feaf4",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Vrock.BiteType",
+      "guid": "3690df4ef25345f0a3f75c9ec56f2de8",
+      "plannedType": "BlueprintWeaponType",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Vrock.Talon",
+      "guid": "77976b057df64b959866ddf0e82a257a",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Vrock.TalonType",
+      "guid": "95108263c6c54e78a6ae5e92df53fd72",
+      "plannedType": "BlueprintWeaponType",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Vrock.Screech",
+      "guid": "3055310c41ff4e76ae191d13f3df48a1",
+      "plannedType": "BlueprintAbility",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Vrock.Stunned",
+      "guid": "dc1ec062c50a4e5a81f331b172127755",
+      "plannedType": "BlueprintBuff",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Vrock.ScreechRecharge",
+      "guid": "135d4eb76f294f52a7e86015ad47f482",
+      "plannedType": "BlueprintBuff",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Vrock.Spores",
+      "guid": "4610620276574258b9fdbd608eed47db",
+      "plannedType": "BlueprintAbility",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Vrock.SporeVines",
+      "guid": "f109bfe5083f42b48830c569c747dee2",
+      "plannedType": "BlueprintBuff",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Vrock.SporeCooldown",
+      "guid": "5c5a123924c949b09bdf5e6a5ea3b3b0",
+      "plannedType": "BlueprintBuff",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Vrock.Brain",
+      "guid": "1aaebae215db4923bbf3eb5a54a7321a",
+      "plannedType": "BlueprintBrain",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Vrock.ScreechAi",
+      "guid": "2376bf980c754091a8ecb5ebb77dbfe3",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Vrock.ScreechEligibility",
+      "guid": "b0bc420e42024136ac08673cb0824bfa",
+      "plannedType": "VrockScreechEligibility37",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Vrock.SporeAi",
+      "guid": "905c6f67ec1546559f2f10b36c7fff2b",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Vrock.SporeEligibility",
+      "guid": "ea3fa4cd96774ec6912cc7a9b8afbe62",
+      "plannedType": "VrockSporeEligibility37",
+      "status": "reserved",
+      "milestone": "Expanded Summoning",
+      "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier7.Vrock.One",
+      "guid": "b10f4b9c7b7759a19dd6856ec56d6a15",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier8.Vrock.OneD3",
+      "guid": "af5658aca73e5137be426489919d924d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier9.Vrock.OneD4PlusOne",
+      "guid": "70bb802cf29153be9e727cb7c8d7d905",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier7.Vrock.One",
+      "guid": "4150d0722db9574b81a25f50a4b8d3d0",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier8.Vrock.OneD3",
+      "guid": "781f59c3d12652eb8a71e0509528bb73",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier9.Vrock.OneD4PlusOne",
+      "guid": "6f917927a6965d6d8952949bb46b7867",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier7.Vrock.One",
+      "guid": "333aedd945085a5da34d9cbcdd63b49c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier8.Vrock.OneD3",
+      "guid": "b125e7c97a905fe0a14e005684a4816f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier9.Vrock.OneD4PlusOne",
+      "guid": "a9379618d55a527095235a563193bc04",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier7.Vrock.One",
+      "guid": "5478f7df9cdd5eaba4b28e357deef236",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier8.Vrock.OneD3",
+      "guid": "d8f07bb2b8b858b08bd168dc37568f3d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier9.Vrock.OneD4PlusOne",
+      "guid": "e72e73dcfc205997a99de5ad3fadb1b5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
     }
   ]
 }
