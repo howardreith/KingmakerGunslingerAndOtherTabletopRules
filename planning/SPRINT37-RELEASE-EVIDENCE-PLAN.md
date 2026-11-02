@@ -102,25 +102,110 @@ Sprint 37's contract as written forbids any reused row. That is stricter than
 the precedent, and it forces every mechanics row onto the single final
 candidate — which in turn requires the mechanics phase, the whole-roster
 integration run, and both three-process ON and OFF envelopes to share one
-build. ON and OFF differ by a wrapper-level switch and cannot share a batch,
-so that shape needs orchestration this mission has not established.
+build. ON and OFF differ only by a wrapper-level switch.
 
-### The decision
+**That last sentence was wrong when it was written, and is retracted.** I
+claimed the shape needed orchestration this mission had not established. It
+did not: `Invoke-Sprint22InstalledStack.ps1` deploys the package it is given
+once per invocation and hands the harness that exact deployment through the
+guarded reuse path, so any number of invocations can bind to one release
+candidate, and the module-off switch is already one of its parameters. The
+obstacle was mine, not the machinery's.
 
-Either:
+### The owner's decisions, 2026-11-02
 
-1. **Keep the strict contract.** Every mandatory row fresh against one final
-   candidate. This needs the multi-batch-one-candidate orchestration to be
-   established first, and costs more guarded transactions.
+Recorded here because this file posed the evidence question and must not be
+left reading as though it were still open. The gameplay decisions and their
+full reasoning live in `SPRINT37-RULES.md`.
 
-2. **Adopt the Sprint 36 shape.** Permit `REUSED_PASS` for the pure mechanics
-   rows only, under the same attribution the Sprint 36 check enforces: a
-   recorded prior source, production dependency paths unchanged by `git diff`
-   since that proof, observer paths refused as dependencies, and each proof
-   bound to its own exact package, DLL and MVID. Public routes, both
-   persistence envelopes, integration, the gate and reproducibility stay
-   fresh against the final candidate.
+**The strict contract stands.** Every mandatory row is supported by fresh
+execution against the final frozen release artifact. No `REUSED_PASS`
+substitution is authorized for this sprint, and the publisher check refuses
+one. Three distinctions the contract depends on:
 
-This is a question about what standard of evidence the release carries, so it
-is the owner's to settle rather than the agent's. Nothing is merged, published
-or tagged, and no guard has been weakened or bypassed to reach this point.
+* Reusing the exact package bytes across many fresh executions is required
+  efficiency, not reuse of a verdict. One build, many launches.
+* One correctly observed execution may support several requirements when its
+  captured facts establish each of them. Launching once per assertion to make
+  a table look fresh is waste, not rigour.
+* The development-candidate receipts remain historical and supporting
+  evidence. They are not final rows and are not rewritten into new-source
+  execution.
+
+**Spores ships with one explicit counterplay omission** — the printed
+holy-water application — with its other three printed counters required to
+pass final-artifact evidence. **Automatic Screech stays conservative**, with
+manual use preserved through the real action bar rather than fixture dispatch.
+
+## Two observer corrections this file records
+
+**The save-or-lose cells needed a bounded natural-twenty retry.** The combined
+mechanics group on candidate `ff52c3ff` failed exactly one cell,
+`screech-two-owner-isolation`, and its receipt showed every ownership fact
+exact: the hour marker on the first vrock, none on the second, the first
+ability unavailable, the second available, and no victim effect attributable
+to the second. The sole shortfall was `victimEffectsFromFirst: 0` — the victim
+had saved. A natural twenty always succeeds, so a cell that requires a failed
+save fails a correct creature at a predictable rate; this was luck, not a
+product finding.
+
+`screech-identity-exemption` had the same construction and worse odds: it
+needs the enemy, the summoner's own ally and the bone devil to all fail one
+Fortitude save, so roughly one run in seven would have failed it, and it had
+been passing on luck. Both cells now carry the bounded retry the released
+Sprint 36 burst observer established — at most three attempts, retried only
+when every deterministic fact was already exact and the sole shortfall was a
+natural twenty, every attempt recorded with its d20 and DC, `forcedRolls: 0`,
+and an explicit retry rule. No roll is seeded and no assertion is relaxed;
+exhausting the attempts still reports the cell failed, with its whole history.
+
+`screech-live-constitution-dc` and `screech-radius-boundary` read the
+difficulty class and whether a save was rolled rather than its result, so
+neither needed changing, and the spores, core, geometry and AI phases involve
+no save at all.
+
+**The pre-build sequencing error recurred.** The rule recorded above —
+the release candidate must be built by the guarded harness inside the run —
+was broken a second time, at commit `8cee019d`. `Assert-KmgReleaseScratch`
+again refused correctly, with the live tree untouched and nothing deployed.
+As with `0b7f159d`, that artifact's bytes are preserved rather than deleted or
+moved; the output directory is keyed by commit, so the harness builds the
+final candidate at the commit that carries this correction, and the earlier
+two artifacts simply stand unused. The remedy is the one already written here,
+applied again, not a new mechanism.
+
+## The finish sequence
+
+1. The complete source, build and package gate, once, by the harness inside
+   the first run — freezing source state, package SHA-256, DLL SHA-256, MVID,
+   manifest, reference identities and the separately recorded tooling identity.
+   A release-candidate label alone is not a passing gate.
+2. The combined mechanics group on that exact package: vrock controls, the
+   three supported Spores counters, the self-buffs, the corrected Babau
+   dispel follow-up, and the combat-mode, AI and action distinctions.
+3. The ON persistence envelope: prepare, a fresh enabled load with verify and
+   cleanup, and a fresh absence check, restoring the original Working bytes
+   and metadata at the envelope boundary.
+4. The OFF persistence envelope: prepare with the module on, load and cleanup
+   with it off, absence with it on again, on the same package through the
+   supported configuration switch.
+5. Final integration and public coverage — all three public Summon Monster
+   routes with their actual quantities, action, slot, duration and cleanup,
+   and the packaged body and icon.
+6. Exact reproducibility through the existing supported path, keeping the
+   primary qualified package rather than duplicating an unchanged gate.
+7. Publication without a release rebuild: publisher refusal and preflight,
+   premerge authority, an ordinary merge, promotion of the exact tested ZIP,
+   and verification of the public downloads, checksums, manifest, DLL, MVID,
+   tag target and ancestry.
+8. Restore and close: full intake, protected saves, the original Working and
+   baseline fixtures, no owned game, lease, task or live staging, and the
+   human installation preserved.
+
+A deployment manifest is authority for its own active transaction. After a
+restoration the next process gets a fresh transaction and deployment receipt
+against the same package; a live-installation authority is never carried
+across restored transactions.
+
+Nothing is merged, published or tagged, and no guard has been weakened or
+bypassed, until every row above genuinely passes.
