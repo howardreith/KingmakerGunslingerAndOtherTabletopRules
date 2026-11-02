@@ -125,6 +125,7 @@ namespace KingmakerGunslinger.Summoning
             P("bearded-devil", "Devil", "Bearded (Barbazu)"), P("kyton-chain-devil", "Kyton (Chain Devil)"),
             P("barbed-devil", "Devil", "Barbed (Hamatula)"), P("bone-devil", "Devil", "Bone (Osyluth)"),
             P("babau", "Demon", "Babau"), P("hezrou", "Demon", "Hezrou"),
+            P("vrock", "Demon", "Vrock"),
             // Released retained-native wrappers use their existing icon keys.
             P("redcap", "Redcap"), P("axiomite", "Axiomite"), P("soul-eater", "Soul Eater"),
             P("bogeyman", "Bogeyman"), P("movanic-deva", "Deva", "Movanic"),

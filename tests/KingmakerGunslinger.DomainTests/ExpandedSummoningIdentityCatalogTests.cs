@@ -14,6 +14,7 @@ namespace KingmakerGunslinger.DomainTests
             // Historical released-type baseline; Sprint 27 checks its own exact manifest separately.
             var released = first.Where(value => value.Symbol != "KMG.Summoning.Unit.Griffon" &&
                 !value.Symbol.StartsWith("KMG.Summoning.Infernal.", StringComparison.Ordinal) &&
+                !value.Symbol.StartsWith("KMG.Summoning.Demon.", StringComparison.Ordinal) &&
                 !value.Symbol.EndsWith(".BeardedDevil", StringComparison.Ordinal) && !value.Symbol.Contains(".BeardedDevil.") &&
                 !value.Symbol.EndsWith(".KytonChainDevil", StringComparison.Ordinal) && !value.Symbol.Contains(".KytonChainDevil.") &&
                 !value.Symbol.StartsWith("KMG.Summoning.FeyCelestial.", StringComparison.Ordinal) &&
@@ -59,10 +60,18 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(SummoningCurrentSurface.Sprint36RootIdentityCount,
                 sprint36Routes,
                 "Sprint36 owns exactly its seven public route abilities.");
+            int sprint37Routes = first.Count(value =>
+                value.PlannedType == "BlueprintAbility" &&
+                value.Symbol.StartsWith("KMG.Summoning.Ability.SM.",
+                    StringComparison.Ordinal) &&
+                value.Symbol.Contains(".Vrock."));
+            Assertions.Equal(SummoningCurrentSurface.Sprint37RootIdentityCount,
+                sprint37Routes,
+                "Sprint37 owns exactly its three public route abilities.");
             Assertions.Equal(1760 + TheropodRulesPolicy.AppendedAbilityIdentityCount +
                     GiantBodyRulesPolicy.AppendedTotalAbilityIdentityCount + 9 +
                     ExpandedSummoningSprints30And31Tests.RegisteredAbilityIdentityCount +
-                    sprint35Routes + sprint36Routes,
+                    sprint35Routes + sprint36Routes + sprint37Routes,
                 released.Count(value => value.PlannedType == "BlueprintAbility"),
                 "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(

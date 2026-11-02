@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Sprint 37 original Vrock summon-choice render",
+  "generator": "Blender 4.5 procedural render (assets-source/original-icons/expanded-summoning/tools/render_creature_icon.py)",
+  "generatedAtUtc": "2026-11-02",
+  "ownership": "Project-owned original procedural geometry and materials; no game, third-party, downloaded, public-domain or generative-model pixels are inputs.",
+  "referencePolicy": "The creature is built from metaballs and mesh primitives with procedural materials, lit and framed by the same script that produced the roster's other procedural renders, so the image is reproducible from the script alone. No native game image, mesh, texture or existing source bitmap was supplied to or read by the renderer.",
+  "capabilityNote": "This session has no image-generation capability, which is the same condition the charter Sprint 3-8 and Phase 2 Sprint 13-14 concepts were authored under. The established procedural renderer is the project's own authorized path for exactly that case; no new or paid backend was introduced.",
+  "reproduce": "blender --background --factory-startup --python tools/render_creature_icon.py -- --creature vrock --out sources/vrock.png --samples 128",
+  "rendererSha256": "ab8c9bd5f006fdfeef432b145b6af0ddf36c4789aacfa19030a25b78362961a6",
+  "icons": [
+    {
+      "key": "vrock",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/vrock.png",
+      "sourceSha256": "d18d759acd244a0786174a5058b3de8983e67558a28b7c446b9ba5e472c975d2",
+      "identity": "upright grey-green feathered demon with two mantled wings, a bare red-grey neck and a hooked pale vulture beak over clawed hands and taloned bird legs",
+      "samples": 128,
+      "resolution": "1254x1254 RGBA",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "visualBacklog": "Rigid wing vanes with drawn quill lines rather than separated primaries; the beak hook reads in profile more than square-on; plumage is a procedural mottle rather than painted feather groups."
+    }
+  ]
+}

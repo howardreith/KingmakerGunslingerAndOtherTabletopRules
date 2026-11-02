@@ -822,6 +822,13 @@
       "subjectPrompt": "Use case: stylized-concept. Create ONE original square fantasy RPG summon-choice painting for the Pathfinder FIRST EDITION adult Hezrou demon in the approved infernal bronze-medallion family. A huge broad toadlike demon with a low massive frog head, wide fanged mouth, warty olive-brown hide, thick hunched shoulders, swollen belly, two very long muscular arms ending in black claws, and two squat powerful legs. Heavy forward three-quarter stance with face, both claws and unmistakable amphibian silhouette readable at 128px and 48px; a restrained sickly green stench haze surrounds it without hiding the body. Clearly distinct from humanoid devils and the lean spear-carrying Babau. Dark antique bronze circular medallion, murky green-black abyssal background, painterly fantasy realism and warm edge highlights. One creature only; exactly two arms and two legs; no wings, horns, weapons, tail, extra limbs, text, numbers, UI overlay, watermark, gore or extra figures. Keep head and claws inside the canvas. Original project-owned pixels; visual-family guidance only.",
       "generator": "built-in-imagegen",
       "compositionBriefSource": "assets-source/original-icons/expanded-summoning/prompts/sprint36-provenance.json"
+    },
+    {
+      "key": "vrock",
+      "displayName": "Vrock",
+      "subjectPrompt": "A vulture-headed winged demon standing square to the viewer, upright and humanoid rather than avian: a deep grey-green feathered chest and shoulders, two mantled wings opened above and behind the shoulders whose scalloped trailing edges reach wider than the creature is tall, a small bald head carried forward on a long bare red-grey neck above a feather ruff, a heavy pale hooked beak angled down with the hook hanging below its tip, two long arms ending in bare clawed hands, and bird legs with bare scaled shins and three forward talons each. Sulphurous warm-ochre radial backdrop against dull grey-green plumage: the only wing-span silhouette in this roster and the only Abyssal warm ground, so it is never the Xill's green-black or the Girallon's dark warm brown. Two wings, two arms and two legs only; no tail, no horns, no weapon. Procedural Blender render: tools/render_creature_icon.py --creature vrock.",
+      "generator": "blender-procedural",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/prompts/sprint37-provenance.json"
     }
   ]
 }
