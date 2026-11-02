@@ -75,6 +75,11 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCombat36.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalPublic35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalPublic36.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.VrockSpores37.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.VrockScreech37.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.VrockCore37.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.VrockAi37.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.VrockPublic37.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalPersistence35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalPersistence36.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBodies34.cs" />

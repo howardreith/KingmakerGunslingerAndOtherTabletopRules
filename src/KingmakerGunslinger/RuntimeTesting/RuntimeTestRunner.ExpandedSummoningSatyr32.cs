@@ -208,6 +208,52 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ReviewInfernalPublic36(fixture);
                 yield break;
             }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint37VrockCorePhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewVrockCore37(fixture))
+                    yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint37VrockSporesPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewVrockSpores37(fixture))
+                    yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint37VrockScreechPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewVrockScreech37(fixture, false))
+                    yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint37VrockPublicPhase)
+            {
+                ReviewVrockPublic37(fixture);
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint37VrockAiPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewVrockAi37(fixture))
+                    yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint37VrockTurnsPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewVrockScreech37(fixture, true))
+                    yield return frame;
+                yield break;
+            }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32ShadowDrainPhase)
             {
                 CreateSprint32TurnHostile(fixture);
