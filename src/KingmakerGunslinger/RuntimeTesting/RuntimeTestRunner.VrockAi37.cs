@@ -174,7 +174,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             var chosen = new List<UnitUseAbility>();
             var watcher = new VrockCommandWatcher37(vrock, watched, chosen);
             EventBus.Subscribe(watcher);
-            Sprint28SetBrainActivePreservingActions(vrock, true);
+            // The AI reads caches it does not maintain, so an observation that
+            // only switches the brain on watches a brain with nothing to
+            // decide from.
+            JObject brain = VrockPrepareBrain37(vrock, target);
             var queued = new JArray();
             try
             {
@@ -206,6 +209,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             check(id, pass, new JObject {
                 ["owner"] = vrock.UniqueId,
                 ["target"] = target.UniqueId,
+                ["brain"] = brain,
                 ["targetDistanceMeters"] =
                     Vector3.Distance(vrock.Position, target.Position),
                 ["watched"] = new JArray(watched.Select(value =>

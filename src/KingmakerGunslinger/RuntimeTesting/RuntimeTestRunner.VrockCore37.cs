@@ -7,6 +7,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Controllers.Brain;
+using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
 using Kingmaker.Items;
@@ -403,7 +404,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             target.Stats.HitPoints.BaseValue = 100000;
             PlaceExpandedSummoningUnit(target, vrock.Position +
                 Vector3.right * (vrock.Corpulence + target.Corpulence + 0.5f));
-            Sprint28SetBrainActivePreservingActions(vrock, true);
+            JObject brain = VrockPrepareBrain37(vrock, target);
             var attacks = new List<RuleAttackWithWeapon>();
             var watcher = new VrockAttackWatcher37(vrock, attacks);
             EventBus.Subscribe(watcher);
@@ -430,6 +431,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             check("core-attack-fallback", attacks.Count > 0, new JObject {
                 ["owner"] = vrock.UniqueId,
                 ["target"] = target.UniqueId,
+                ["brain"] = brain,
                 ["attackRules"] = attacks.Count,
                 ["attackWeapons"] = new JArray(attacks.Select(value =>
                     value.Weapon?.Blueprint?.AssetGuid).Distinct()),
@@ -509,6 +511,58 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["canTarget"] = data.CanTarget(target);
             row["casterLevel"] = data.CalculateParams().CasterLevel;
             return row;
+        }
+
+        /// <summary>
+        /// Brings one disposable owner to the state the engine requires before
+        /// its real brain will decide anything, following the already
+        /// qualified autonomous-action fixture rather than inventing a second
+        /// one: mutual memory visibility, the three native caches the AI reads
+        /// rather than maintains, the owner's restored action list, and a
+        /// decision clock that is actually due.
+        ///
+        /// <para>Direct casts earlier in a grouped phase do not drive any of
+        /// this, which is why simply switching the brain on and waiting
+        /// observes nothing and says nothing about the AI.</para>
+        /// </summary>
+        private static JObject VrockPrepareBrain37(UnitEntityData owner,
+            UnitEntityData enemy)
+        {
+            owner.Commands.InterruptAll(true);
+            owner.Commands.RemoveFinishedAndUpdateQueue();
+            owner.Memory.Add(enemy).Visible = true;
+            enemy.Memory.Add(owner).Visible = true;
+            new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
+            new UnitCombatJoinController().Tick();
+            new UnitCombatPrepareController().Tick();
+            Sprint28SetBrainActivePreservingActions(owner, true);
+            owner.Brain.RestoreAvailableActions();
+            float before = owner.CombatState.AIData.NextCommandTime;
+            owner.CombatState.AIData.NextCommandTime = Time.time - 0.01f;
+            return new JObject {
+                ["owner"] = owner.UniqueId,
+                ["enemy"] = enemy.UniqueId,
+                ["ownerInCombat"] = owner.IsInCombat,
+                ["enemyInCombat"] = enemy.IsInCombat,
+                ["ownerSeesEnemy"] = owner.Memory.ContainsVisible(enemy),
+                ["ownerHasLineOfSight"] = owner.HasLOS(enemy),
+                ["ownerIsEnemyOfTarget"] = owner.IsEnemy(enemy),
+                ["nextCommandTimeBefore"] = before,
+                ["nextCommandTimeNow"] =
+                    owner.CombatState.AIData.NextCommandTime,
+                ["brainActions"] = new JArray(
+                    (owner.Blueprint.Brain?.Actions ??
+                        Array.Empty<Kingmaker.Controllers.Brain.Blueprints
+                            .BlueprintAiAction>())
+                    .Select(value => value.GetType().Name + ":" +
+                        value.name)),
+                ["availableActions"] = new JArray(owner.Brain.AvailableActions
+                    .Select(value => new JObject {
+                        ["type"] = value.Blueprint.GetType().Name,
+                        ["name"] = value.Blueprint.name,
+                        ["baseScore"] = value.BaseScore
+                    }))
+            };
         }
 
         /// <summary>
