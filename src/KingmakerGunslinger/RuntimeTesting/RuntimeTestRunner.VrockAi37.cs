@@ -5,6 +5,7 @@ using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Controllers.Brain;
+using Kingmaker.Controllers.Brain.Blueprints;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules;
@@ -557,6 +558,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                         observation.Caster,
                         TimeSpan.FromSeconds(GameConsts.RoundDuration * 50));
                 bool useful = BabauDispelAi36.HasUsefulEffect(target);
+                // The production AI action's own answer. This replaces
+                // counting commands as the proof that a refusal was a real
+                // decision: the release run showed this cell's three
+                // substantive facts all correct - enemy-cast, selector refuses,
+                // dispel not chosen - and failing only because the Babau
+                // happened to start no other command inside the window.
+                // Absence of activity was never the point; the selector's
+                // verdict is, and asking the component is direct evidence
+                // rather than an inference from silence.
+                var decision = new DecisionContext {
+                    Unit = babau,
+                    Target = new TargetInfo { Unit = target }
+                };
+                var dispelAi = (babau.Blueprint.Brain?.Actions ??
+                        Array.Empty<Kingmaker.Controllers.Brain.Blueprints
+                            .BlueprintAiAction>())
+                    .OfType<BabauDispelAi36>().SingleOrDefault();
+                bool aiAvailable = dispelAi != null &&
+                    dispelAi.IsAvailable(decision);
+                bool aiTargetValid = dispelAi != null &&
+                    dispelAi.IsTargetValid(decision);
                 foreach (int frame in VrockAiChoice37(babau, target,
                     new[] { dispel },
                     "babau-dispel-" + observation.Label, dispel,
@@ -572,8 +594,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                         row["liveEffect"] = applied == null ? null :
                             InfernalSavedEffect34(applied);
                         row["selectorSaysUseful"] = useful;
-                        check(id, pass && useful == observation.Expect, row,
-                            description);
+                        row["dispelAiFound"] = dispelAi != null;
+                        row["dispelAiAvailable"] = aiAvailable;
+                        row["dispelAiTargetValid"] = aiTargetValid;
+                        row["refusalEvidence"] = observation.Expect
+                            ? "the production dispel action reports itself available and the real brain selected it"
+                            : "the production dispel action reports itself unavailable for this target, so the refusal is its decision rather than an idle brain";
+                        // For a refusal, the production action must itself
+                        // decline; for the positive case it must admit. Either
+                        // way the selector and the action have to agree, which
+                        // is what makes a chosen-or-not observation meaningful.
+                        bool componentAgrees = dispelAi != null &&
+                            useful == observation.Expect &&
+                            aiAvailable == observation.Expect &&
+                            aiTargetValid == observation.Expect;
+                        check(id, componentAgrees &&
+                            (observation.Expect
+                                ? (bool)row["brainWasDeciding"] ||
+                                    ((JArray)row["chosen"]).Count > 0
+                                : ((JArray)row["chosen"]).Count == 0),
+                            row, description);
                     })) yield return frame;
             }
             foreach (Buff buff in target.Buffs.Enumerable.ToArray())

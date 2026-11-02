@@ -578,6 +578,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (Sprint34PersistenceScope) InfernalSavedAbsence34(caster, "fresh");
                 if (Sprint35PersistenceScope) InfernalSavedAbsence35(caster, "fresh");
                 if (Sprint36PersistenceScope) InfernalSavedAbsence36(caster, "fresh");
+                if (Sprint37PersistenceScope) VrockSavedAbsence37(caster, "fresh");
                 CompleteRosterPersistence(RuntimeTestStatuses.Pass, ""); yield break;
             }
             var units = existing;
@@ -592,6 +593,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (Sprint34PersistenceScope) InfernalSavedAbsence34(caster, "intake");
                 if (Sprint35PersistenceScope) InfernalSavedAbsence35(caster, "intake");
                 if (Sprint36PersistenceScope) InfernalSavedAbsence36(caster, "intake");
+                if (Sprint37PersistenceScope) VrockSavedAbsence37(caster, "intake");
                 var created = new List<UnitEntityData>();
                 var originalAlignment = caster.Descriptor.Alignment.Value;
                 try
@@ -647,6 +649,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (Sprint34PersistenceScope && verify) ObserveInfernalSaved34(caster, units, "cold");
             if (Sprint35PersistenceScope && verify) ObserveInfernalSaved35(caster, units, "cold");
             if (Sprint36PersistenceScope && verify) ObserveInfernalSaved36(caster, units, "cold");
+            if (Sprint37PersistenceScope && verify) ObserveVrockSaved37(caster, units, "cold");
             bool cleanup2Trio = (string)_request.Parameters["persistenceScope"] == "giant-humanoids-ii" &&
                 _context.FeatureModules.Active.ExpandedSummoning;
             // The general save-readiness contract deliberately allows native
@@ -1052,9 +1055,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (Sprint34PersistenceScope) ObserveInfernalItems34(units, giantPartyItems, giantPartyCounts);
             if (Sprint35PersistenceScope) ObserveInfernalItems35(units, giantPartyItems, giantPartyCounts);
             if (Sprint36PersistenceScope) ObserveInfernalItems36(units, giantPartyItems, giantPartyCounts);
+            if (Sprint37PersistenceScope) ObserveVrockItems37(units);
             if (Sprint34PersistenceScope && prepare) foreach (int step in PrepareInfernalSaved34(caster, units)) yield return step;
             if (Sprint35PersistenceScope && prepare) foreach (int step in PrepareInfernalSaved35(caster, units)) yield return step;
             if (Sprint36PersistenceScope && prepare) foreach (int step in PrepareInfernalSaved36(caster, units)) yield return step;
+            if (Sprint37PersistenceScope && prepare) {
+                foreach (int step in PrepareVrockSaved37(caster, units)) yield return step;
+                ObserveVrockSaved37(caster, units, "prepared");
+            }
             if (verify && !Sprint32PersistenceScope) foreach (var step in DestroyRosterPersistence(units, "cleanup")) yield return step;
             if (Sprint32PersistenceScope && verify) Sprint32PersistenceAbsence(caster, "cleanup");
             if (Sprint33PersistenceScope && verify) foreach (int step in CleanupControl33(caster)) yield return step;
