@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 705;
+        internal const int SpecialIdentityCount = 711;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -1022,6 +1022,12 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.ScreechEligibility", "VrockScreechEligibility37"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.SporeAi", "BlueprintAiCastSpell"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.SporeEligibility", "VrockSporeEligibility37"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.Heroism", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.HeroismResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.HeroismAi", "InfernalSpellAi35"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.MirrorImage", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.MirrorImageResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.MirrorImageAi", "InfernalSpellAi35"));
             Validate(result);
             return result.AsReadOnly();
         }

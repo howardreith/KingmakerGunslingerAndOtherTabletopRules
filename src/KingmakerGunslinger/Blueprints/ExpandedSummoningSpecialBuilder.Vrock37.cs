@@ -38,6 +38,13 @@ namespace KingmakerGunslinger.Blueprints
         internal const string Vrock37Prefix = "KMG.Summoning.Demon.Vrock.";
         private const string NativeStunned37 =
             "09d39b38bb7c6014394b6daced9bacd3";
+        // Named by the Sprint 37 installed-library audit rather than
+        // guessed: run 20261102T0730259540236Z recorded both as the only
+        // exact-name BlueprintAbility matches in the live library.
+        private const string NativeHeroism37 =
+            "5ab0d42fb68c9e34abae4921822b9d63";
+        private const string NativeMirrorImage37 =
+            "3e4ab69ada402d145a5e0ad3ad4b8564";
 
         /// <summary>
         /// Sprint 37. One adult, untemplated Vrock reusing the released
@@ -106,11 +113,30 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintAbility screech = ConfigureVrockScreech37(library,
                 symbols, unit);
             BlueprintAbility spores = ConfigureVrockSpores37(symbols, unit);
+            BlueprintAbilityResource heroismResource =
+                ConfigureVrockDailyResource37(symbols, p + "HeroismResource",
+                    "Heroism", "One Heroism use for this summoned Vrock.");
+            BlueprintAbility heroism = ConfigureVrockDailySpell37(library,
+                symbols, p + "Heroism", NativeHeroism37, "Heroism", 3,
+                heroismResource,
+                "Once per summoning at caster level 12. The installed native spell owns its own targeting, duration and morale bonus; this vrock simply has one use of it.");
+            BlueprintAbilityResource mirrorResource =
+                ConfigureVrockDailyResource37(symbols,
+                    p + "MirrorImageResource", "Mirror Image",
+                    "One Mirror Image use for this summoned Vrock.");
+            BlueprintAbility mirror = ConfigureVrockDailySpell37(library,
+                symbols, p + "MirrorImage", NativeMirrorImage37,
+                "Mirror Image", 2, mirrorResource,
+                "Once per summoning at caster level 12. The installed native spell owns its own image count, duration and loss behaviour; this vrock simply has one use of it.");
             var parameters = ScriptableObject.CreateInstance<
                 VrockRacialParameters37>();
             parameters.OwningBlueprint = unit;
             parameters.Abilities = new[] { screech, spores };
             parts.Add(parameters);
+            // Two independent single-use resources: spending one never
+            // touches the other.
+            parts.Add(AddResource(heroismResource));
+            parts.Add(AddResource(mirrorResource));
 
             var traits = Require<BlueprintFeature>(symbols, p + "Traits");
             BindInfernalTraits35(traits, p, "Vrock",
@@ -127,7 +153,7 @@ namespace KingmakerGunslinger.Blueprints
                     Feature(library, LightningReflexesGuid,
                         "Lightning Reflexes"),
                     Feature(library, PowerAttackGuid, "Power Attack"),
-                    screech, spores }).ToArray();
+                    screech, spores, heroism, mirror }).ToArray();
 
             var screechAi = Require<BlueprintAiCastSpell>(symbols,
                 p + "ScreechAi");
@@ -153,8 +179,18 @@ namespace KingmakerGunslinger.Blueprints
             sporeAi.ActorConsiderations = new Consideration[] { sporeSafety };
             sporeAi.BaseScore = 5;
 
+            // Both self-buffs sit below the control bomb and the spore
+            // cloud, and the released InfernalSpellAi35 refuses to cast
+            // while its own effect is already standing, so a single use
+            // is never spent on an already satisfied state.
+            InfernalSpellAi35 heroismAi = ConfigureInfernalAi35(symbols,
+                p + "HeroismAi", unit, heroism, true, false, 4);
+            heroismAi.ActiveBuff = VrockAppliedBuff37(heroism);
+            InfernalSpellAi35 mirrorAi = ConfigureInfernalAi35(symbols,
+                p + "MirrorImageAi", unit, mirror, true, false, 4);
+            mirrorAi.ActiveBuff = VrockAppliedBuff37(mirror);
             unit.Brain = InfernalBrain35(library, symbols, p, screechAi,
-                sporeAi);
+                sporeAi, heroismAi, mirrorAi);
 
             foreach (var pair in symbols.Where(pair =>
                 pair.Value is BlueprintUnitFact &&
@@ -164,6 +200,61 @@ namespace KingmakerGunslinger.Blueprints
                 if (fact.name != InternalName(pair.Key)) continue;
                 NamePrivateSummonFactComponents(fact, pair.Key, "Sprint37");
             }
+        }
+
+        /// <summary>
+        /// The buff a cloned native self-spell actually applies, read out
+        /// of its own graph. The released spell AI refuses to recast while
+        /// that buff stands, so reading it from the graph keeps the two
+        /// in step without pinning a second asset GUID.
+        /// </summary>
+        private static BlueprintBuff VrockAppliedBuff37(
+            BlueprintAbility ability)
+        {
+            BlueprintBuff[] applied = (ability.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>())
+                .OfType<AbilityEffectRunAction>()
+                .SelectMany(run => run.Actions == null ||
+                    run.Actions.Actions == null ?
+                    Array.Empty<GameAction>() : run.Actions.Actions)
+                .OfType<ContextActionApplyBuff>()
+                .Select(action => action.Buff)
+                .Where(buff => buff != null).Distinct().ToArray();
+            if (applied.Length != 1)
+                throw new InvalidOperationException(
+                    "A Vrock once-per-summoning self-spell needs exactly one applied native effect: " +
+                    ability.name);
+            return applied[0];
+        }
+
+        private static BlueprintAbilityResource ConfigureVrockDailyResource37(
+            IDictionary<string, BlueprintScriptableObject> symbols,
+            string symbol, string title, string description)
+        {
+            var resource = Require<BlueprintAbilityResource>(symbols, symbol);
+            ConfigureNamedResource(resource, symbol, symbol, title,
+                description, 1);
+            return resource;
+        }
+
+        private static BlueprintAbility ConfigureVrockDailySpell37(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> symbols,
+            string symbol, string nativeGuid, string title, int spellLevel,
+            BlueprintAbilityResource resource, string description)
+        {
+            BlueprintAbility ability = ConfigureOwnedSpell35(library,
+                symbols, symbol, nativeGuid, title, spellLevel,
+                UnitCommand.CommandType.Standard,
+                VrockRules37Policy.SpellLikeCasterLevel, description);
+            var cost = ScriptableObject.CreateInstance<
+                AbilityResourceLogic>();
+            cost.RequiredResource = resource;
+            cost.IsSpendResource = true;
+            cost.Amount = 1;
+            ability.ComponentsArray = ability.ComponentsArray.Concat(
+                new BlueprintComponent[] { cost }).ToArray();
+            return ability;
         }
 
         /// <summary>

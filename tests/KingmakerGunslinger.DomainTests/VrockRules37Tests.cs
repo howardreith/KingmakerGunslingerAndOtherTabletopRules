@@ -57,12 +57,14 @@ namespace KingmakerGunslinger.DomainTests
                 new { Type = "BlueprintFeature", Count = 1 },
                 new { Type = "BlueprintItemWeapon", Count = 3 },
                 new { Type = "BlueprintWeaponType", Count = 3 },
-                new { Type = "BlueprintAbility", Count = 2 },
+                new { Type = "BlueprintAbility", Count = 4 },
                 new { Type = "BlueprintBuff", Count = 4 },
+                new { Type = "BlueprintAbilityResource", Count = 2 },
                 new { Type = "BlueprintBrain", Count = 1 },
                 new { Type = "BlueprintAiCastSpell", Count = 2 },
                 new { Type = "VrockScreechEligibility37", Count = 1 },
                 new { Type = "VrockSporeEligibility37", Count = 1 },
+                new { Type = "InfernalSpellAi35", Count = 2 },
             };
             foreach (var row in expected)
                 Assertions.Equal(row.Count, privateIdentities.Count(value =>
