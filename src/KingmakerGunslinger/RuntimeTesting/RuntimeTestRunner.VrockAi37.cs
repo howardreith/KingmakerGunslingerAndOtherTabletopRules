@@ -10,6 +10,7 @@ using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
+using Kingmaker.Blueprints.Classes;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
@@ -152,25 +153,64 @@ namespace KingmakerGunslinger.RuntimeTesting
                     screech, false, check)) yield return frame;
 
                 // --- self-support once both area effects are unavailable ----
-                foreach (int frame in VrockAiReset37(vrock, target, ally,
-                    recharge, cooldown)) yield return frame;
-                PlaceExpandedSummoningUnit(ally, vrock.Position +
-                    Vector3.forward * (screechRadius - 3f));
-                PlaceExpandedSummoningUnit(target, vrock.Position +
-                    Vector3.right * (screechRadius - 1f));
-                vrock.Descriptor.AddBuff(recharge, vrock,
-                    TimeSpan.FromHours(1));
-                vrock.Descriptor.AddBuff(cooldown, vrock,
-                    TimeSpan.FromSeconds(GameConsts.RoundDuration * 3));
-                foreach (int frame in VrockAiChoice37(vrock, target,
-                    new[] { heroism, mirror }, "ai-self-support", null, true,
-                    check)) yield return frame;
-
+                // On a FRESH vrock. The sixth run showed this cell was
+                // unsatisfiable where it stood: the cells above deliberately
+                // let the brain take both single-use self-buffs, so by the
+                // time self-support was observed there was nothing left to
+                // choose, and the receipt showed twenty-two ticks with no
+                // command and both resources at zero. Observing self-support
+                // requires a vrock that still holds its two uses.
                 foreach (int frame in VrockAiReset37(vrock, target, ally,
                     recharge, cooldown)) yield return frame;
                 DisposeExpandedSummoningUnits(fixture.Created,
                     new[] { vrock });
                 owned.Remove(vrock);
+                UnitEntityData rested = CastExpandedSummoningOwnTier(
+                    fixture, "vrock");
+                owned.Add(rested);
+                VrockQuiesce37(rested);
+                foreach (int frame in Outsider30NativeAppearance(rested,
+                    rested.Blueprint.name)) yield return frame;
+                PlaceExpandedSummoningUnit(target, rested.Position +
+                    Vector3.right * (rested.Corpulence + target.Corpulence +
+                        0.3f));
+                // Both area effects held unavailable by their own markers, so
+                // the self-buffs are the only things left for the brain to
+                // weigh.
+                rested.Descriptor.AddBuff(recharge, rested,
+                    TimeSpan.FromHours(1));
+                rested.Descriptor.AddBuff(cooldown, rested,
+                    TimeSpan.FromSeconds(GameConsts.RoundDuration * 3));
+                int heroismHeld = rested.Descriptor.Resources
+                    .GetResourceAmount((BlueprintAbilityResource)
+                        ExpandedSummoningBlueprints.Registered.BySymbol[
+                            prefix + "HeroismResource"]);
+                int mirrorHeld = rested.Descriptor.Resources
+                    .GetResourceAmount((BlueprintAbilityResource)
+                        ExpandedSummoningBlueprints.Registered.BySymbol[
+                            prefix + "MirrorImageResource"]);
+                check("ai-self-support-preconditions",
+                    heroismHeld == 1 && mirrorHeld == 1 &&
+                    rested.Buffs.GetBuff(recharge) != null &&
+                    rested.Buffs.GetBuff(cooldown) != null,
+                    new JObject {
+                        ["owner"] = rested.UniqueId,
+                        ["heroismHeld"] = heroismHeld,
+                        ["mirrorHeld"] = mirrorHeld,
+                        ["screechMarkerHeld"] =
+                            rested.Buffs.GetBuff(recharge) != null,
+                        ["sporeMarkerHeld"] =
+                            rested.Buffs.GetBuff(cooldown) != null
+                    }, "The self-support case starts from a vrock that still holds both single uses while both area effects are held unavailable.");
+                foreach (int frame in VrockAiChoice37(rested, target,
+                    new[] { heroism, mirror }, "ai-self-support", null, true,
+                    check)) yield return frame;
+
+                foreach (int frame in VrockAiReset37(rested, target, ally,
+                    recharge, cooldown)) yield return frame;
+                DisposeExpandedSummoningUnits(fixture.Created,
+                    new[] { rested });
+                owned.Remove(rested);
                 ResetExpandedSummoningHostile(fixture);
                 target = fixture.Hostile;
                 target.Stats.HitPoints.BaseValue = 100000;
