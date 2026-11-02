@@ -15,9 +15,9 @@ namespace KingmakerGunslinger.Summoning
     /// native view donor a project creature happens to borrow. Three of those
     /// would each give a different and wrong answer:</para>
     /// <list type="bullet">
-    /// <item>Chaotic evil alignment would admit the Bebilith, whose printed
-    /// line is "CE Huge outsider (chaotic, evil, extraplanar)" with no demon
-    /// subtype at all.</item>
+    /// <item>Chaotic evil alignment would admit the registered Bebelith,
+    /// whose printed line is "CE Huge outsider (chaotic, evil, extraplanar)"
+    /// with no demon subtype at all.</item>
     /// <item>The outsider type would admit every devil, kyton, archon, azata,
     /// mephit and elemental in the roster.</item>
     /// <item>The view donor would make the Succubus a nymph and the Shadow
@@ -25,12 +25,20 @@ namespace KingmakerGunslinger.Summoning
     /// creature's subtype.</item>
     /// </list>
     ///
-    /// <para><b>Recorded limitation.</b> Kingmaker 2.1.7b has no demon subtype
-    /// fact. The installed library carries eighteen subtype features including
-    /// <c>SubtypeDevil</c> and <c>SubtypeDaemon</c>, but none for demons — this
-    /// was observed, not assumed, by the Sprint 37 installed-library audit
-    /// (run 20261102T0730259540236Z). So this set covers the project's own
-    /// demons and cannot cover a native campaign demon or a demon added by
+    /// <para><b>Why a native subtype fact is not used, and what was actually
+    /// established.</b> The Sprint 37 installed-library audit
+    /// (run 20261102T0730259540236Z) searched 2.1.7b's loaded blueprints for
+    /// features whose names contain "Subtype". It found eighteen, including
+    /// <c>SubtypeDevil</c> and <c>SubtypeDaemon</c>, and none naming demons.
+    /// That is a result about that name search over the loaded library at that
+    /// moment: it establishes that no such feature is reachable by that name,
+    /// and it is not a proof that the installed game expresses the demon
+    /// subtype nowhere by any other means. Either way there is nothing for
+    /// this code to read, so membership is resolved from the project's own
+    /// registered identities.</para>
+    ///
+    /// <para><b>Recorded limitation.</b> Because the set is this project's own
+    /// roster, it cannot cover a native campaign demon or a demon added by
     /// another mod. That interoperability gap is a named limitation for owner
     /// review, not an accepted waiver, and it is disclosed in the screech's own
     /// player-facing text rather than hidden.</para>

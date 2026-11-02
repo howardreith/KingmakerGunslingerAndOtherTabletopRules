@@ -49,6 +49,8 @@
     <Compile Include="Summoning\InfernalRules36.cs" />
     <Compile Include="Summoning\SummonDemonIdentityCatalog.cs" />
     <Compile Include="Summoning\SummonFootprintGeometry.cs" />
+    <Compile Include="Summoning\SummonFootprintGeometryPolicy.cs" />
+    <Compile Include="Summoning\SummonDescriptorImmunity.cs" />
     <Compile Include="Summoning\VrockRules37Policy.cs" />
     <Compile Include="Summoning\VrockRules37.cs" />
     <Compile Include="Summoning\VrockVisualPolicy37.cs" />

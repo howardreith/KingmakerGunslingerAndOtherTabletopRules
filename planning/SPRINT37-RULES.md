@@ -127,6 +127,62 @@ restoration. It is not a comparison of game settings, saves or the wider
 machine, and is not reported as one. The next gameplay or save campaign uses
 the existing complete intake and guarded save procedures before it begins.
 
+## Spores counterplay: what the engine can and cannot express
+
+The printed entry gives four counters. The extended installed-library audit
+(run `20261102T1419486445531Z`, PASS, mod directory restored to its pre-run
+hash) found consumers for three of them, and none for the fourth.
+
+| Printed counter | Live finding | Disposition |
+|---|---|---|
+| "halted by effects that ... provide immunity to disease" | `BuffDescriptorImmunity.OnEventAboutToTrigger` passes `RuleApplyBuff.Context` to its own `IsImmune`, which tests that **context's** `SpellDescriptor` | **Implemented**, after a second correction (see the descriptor-placement note below). An immune creature's vine application is refused by the engine itself, and the shared exposure gate consults the same immunity, so the opening 1d8 is prevented too |
+| "halted by effects that remove ... disease" | Native `RemoveDisease` `4093d5a0eb5cae94e909eb1e0e1a6b36` is a `ContextActionDispelMagic` with `m_BuffType = All` and `Descriptor = 16384` (`SpellDescriptor.Disease`). `TryDispelBuff` rejects `IsNotDispelable` first, then calls `CheckSchoolsAndDescriptor(buff.Context)` — the **buff's context**, not its blueprint | **Implemented** — and this corrected two real defects. (a) `TryDispelBuff` rejects an `IsNotDispelable` buff *before* it reads the descriptor, so the flag the vines originally set would have made them immune to the exact cure the printed text requires; the flag is gone. (b) The descriptor was on the wrong blueprint (see below). Ordinary Dispel Magic still cannot touch them, because it runs with `m_BuffType = FromSpell` and the vine blueprint never sets `IsFromSpell` |
+| "destroyed by casting *bless* on the affected creatures" | Native `Bless` `90e59f4a4ada87243b7b3535a06d0638` applies `BlessBuff` `87b8c6270ea85c743afc734dfe99afee` | **Implemented.** A component on the vine instance removes only itself when that exact effect lands on its exact owner. Bless itself is unchanged |
+| "or by sprinkling them with holy water" | No holy-water consumable or creature-applied effect exists. Every holy-water asset found is a Warpriest sprinkler: `HolyWaterSprinklerAbility` (activatable), `HolyWaterSprinklerBuff`, `HolyWaterSprinklerEnhancement` (weapon enchantment), `HolyWaterJetExploitAbility`, `GraveWardenHolyWaterResource`. None applies holy water *to a creature* | **No vehicle in this game.** A player cannot sprinkle holy water on anyone in Kingmaker for any purpose, so this is not a counter the implementation withholds — it is one the game does not have |
+
+### Where the Disease descriptor has to live
+
+Tracing the cure rather than its name found a second defect. Every one of these
+consumers reads `MechanicsContext.SpellDescriptor`, never a blueprint component
+directly: `BuffDescriptorImmunity` is handed `RuleApplyBuff.Context`,
+`ContextActionDispelMagic.TryDispelBuff` calls
+`CheckSchoolsAndDescriptor(buff.Context)`, and
+`ContextActionRemoveBuffsByDescriptor` reads
+`buff.MaybeContext.SpellDescriptor`. That value is fixed once, in the
+`MechanicsContext` constructor, as
+
+```
+SpellDescriptor = (ParentContext?.SpellDescriptor ?? 0)
+                | AssociatedBlueprint.GetComponent<SpellDescriptorComponent>()?.Descriptor
+```
+
+and a `Buff` stores the context it was handed verbatim —
+`BuffCollection.CreateFact` passes it straight into `Buff..ctor`, which assigns
+`m_Context`; no child context is created for the buff. So the vines' context is
+the **spores ability's** context, and a `SpellDescriptorComponent` on the vine
+blueprint alone is read by none of them: native Remove Disease would have found
+no Disease descriptor and left the vines growing. The component is now attached
+to the ability, which is what the cure and the immunity actually read. It stays
+on the vine blueprint as well, so a context built for that blueprint on its own
+still carries Disease.
+
+The vrock's own recharge marker is unaffected: it is attached with
+`caster.Descriptor.AddBuff(Marker, caster, wait)` — owner as source, no ability
+context — so an internal clock cannot inherit the ability's descriptor and be
+cancelled by the owner's own immunity.
+
+Stacking: the vines are `StackingType.Replace`, not `Stack`. The printed entry
+describes one growth and never multiplies the per-round damage, so a second
+exposure refreshes the ten rounds instead of adding another 1d4 tick. That also
+keeps the bless and disease cures unambiguous about what they remove.
+
+**This disposition is not yet owner-agreed.** Three of four printed counters
+work and the ability is demonstrably not an uncureable damage-over-time effect,
+but shipping it with the holy-water clause disclosed is a partial adaptation
+beyond the charter's conditional deferral, and the charter's alternative is to
+defer Spores entirely. The decision is recorded as open; nothing is released
+while it is.
+
 ## Carry-forward task 2B
 
 Confirmed by native inspection and corrected in commit
