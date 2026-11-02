@@ -210,6 +210,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["pounceRendCleaveFacts"] = new JArray(absentRoutines),
                 ["view"] = view,
                 ["visualStatus"] = status,
+                ["visualPublished"] = status == "visual:published",
+                ["visualFailureMeaning"] =
+                    status == "donor-visual:missing-mesh-file"
+                        ? "The asset files are not in the installed mod; packaging, not the mesh."
+                        : status == "donor-visual:invalid-mesh-data"
+                            ? "The asset files are installed but failed the anatomy, rig or albedo contract."
+                            : null,
                 ["meshVertices"] = mesh?.vertexCount,
                 ["albedoWidth"] = albedo?.width,
                 ["hitPoints"] = vrock.Stats.HitPoints.ModifiedValue,

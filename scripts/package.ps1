@@ -226,6 +226,16 @@ $infernal36Files = @('babau-mesh.json','babau-albedo.png','hezrou-mesh.json','he
 foreach ($file in $infernal36Files) {
     Copy-Item -LiteralPath (Join-Path $outputDirectory ('assets\sprint36-demons\'+$file)) -Destination $infernal36Destination
 }
+# One mesh and one albedo for the single Sprint 37 creature. The body is only
+# real if it reaches the installed mod: the first native observation of this
+# creature failed because these two files existed in the repository and in no
+# package, so the runtime fell back to the donor silhouette.
+$vrock37Destination = Join-Path $modDirectory 'assets\sprint37-vrock'
+New-Item -ItemType Directory -Path $vrock37Destination -Force | Out-Null
+$vrock37Files = @('vrock-mesh.json','vrock-albedo.png')
+foreach ($file in $vrock37Files) {
+    Copy-Item -LiteralPath (Join-Path $outputDirectory ('assets\sprint37-vrock\'+$file)) -Destination $vrock37Destination
+}
 $shadowOutsiderDestination = Join-Path $modDirectory 'assets\sprint33-shadow-outsiders'
 New-Item -ItemType Directory -Path $shadowOutsiderDestination -Force | Out-Null
 $shadowOutsiderFiles = @('invisible-stalker-mesh.json','invisible-stalker-albedo.png','shadow-demon-mesh.json','shadow-demon-albedo.png')
