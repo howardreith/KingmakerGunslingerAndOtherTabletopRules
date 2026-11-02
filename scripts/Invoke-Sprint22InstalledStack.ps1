@@ -26,6 +26,7 @@ $root=Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 if($PersistenceScope -ieq 'infernal-outsiders' -and $PersistenceScope -cne 'infernal-outsiders') { throw 'Sprint34 persistence scope is case-sensitive; no transaction entered.' }
 if($PersistenceScope -ieq 'infernal-reach-ii' -and $PersistenceScope -cne 'infernal-reach-ii') { throw 'Sprint35 persistence scope is case-sensitive; no transaction entered.' }
 if($PersistenceScope -ieq 'infernal-demons' -and $PersistenceScope -cne 'infernal-demons') { throw 'Sprint36 persistence scope is case-sensitive; no transaction entered.' }
+if($PersistenceScope -ieq 'vrock' -and $PersistenceScope -cne 'vrock') { throw 'Sprint37 persistence scope is case-sensitive; no transaction entered.' }
 $fixedDispelUi=$Scenario -ceq 'working-save-expanded-summoning-creature-review'
 if($fixedDispelUi) {
     $uiParameters=@{creatures='trumpet-archon,astral-deva';reviewCase=$ReviewCase}
@@ -48,6 +49,15 @@ $development=if($fixedDispelUi) {
     } else { throw 'Installed-stack fixed UI development requires its exact S30/S31 purpose; no transaction entered.' }
 } elseif($PersistenceScope -ceq 'infernal-outsiders' -or $PersistenceScope -ceq 'infernal-reach-ii' -or $PersistenceScope -ceq 'infernal-demons') {
     if(-not [string]::IsNullOrEmpty($DevelopmentPurpose)) { throw 'Infernal mixed persistence requires the final frozen release candidate; no development-purpose alias is admitted.' }
+    $false
+} elseif($PersistenceScope -ceq 'vrock') {
+    # Sprint 37 takes the same line as Sprints 34-36: the mixed persistence
+    # envelopes are release evidence, so only the final frozen release
+    # candidate is admitted and no development-purpose alias stands in for it.
+    # This is what lets every mandatory row bind to one candidate - this script
+    # deploys the given package once and reuses that exact deployment - so the
+    # strict no-reused-row contract needs no relaxing.
+    if(-not [string]::IsNullOrEmpty($DevelopmentPurpose)) { throw 'Sprint37 mixed persistence requires the final frozen release candidate; no development-purpose alias is admitted.' }
     $false
 } elseif($PersistenceScope -ceq 'shadow-outsiders') {
     Test-KmgSprint33DevelopmentPersistence -Scope $PersistenceScope -Purpose $DevelopmentPurpose
