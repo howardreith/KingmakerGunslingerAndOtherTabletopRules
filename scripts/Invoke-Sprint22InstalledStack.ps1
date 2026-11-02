@@ -4,7 +4,7 @@ param(
     [Parameter(Mandatory=$true)][ValidateSet('KMG_AUTOMATION_WORKING')][string]$SaveName,
     [Parameter(Mandatory=$true)][string]$PackagePath,
     [Parameter(Mandatory=$true)][string]$ExpectedVersion,
-    [ValidateSet('ankylosaurus','armored-dinosaurs','theropods','giant-bodies','magical-beasts','griffon','giant-humanoids','giant-humanoids-ii','outsider-celestial','fey-celestial','shadow-outsiders','infernal-outsiders','infernal-reach-ii','infernal-demons')]
+    [ValidateSet('ankylosaurus','armored-dinosaurs','theropods','giant-bodies','magical-beasts','griffon','giant-humanoids','giant-humanoids-ii','outsider-celestial','fey-celestial','shadow-outsiders','infernal-outsiders','infernal-reach-ii','infernal-demons','vrock')]
     [string]$PersistenceScope='ankylosaurus',
     [ValidateSet('sprints30-31-dispel-ui')][string]$ReviewCase,
     [string]$DevelopmentPurpose,

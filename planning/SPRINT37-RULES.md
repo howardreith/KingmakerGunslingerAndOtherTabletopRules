@@ -176,12 +176,30 @@ describes one growth and never multiplies the per-round damage, so a second
 exposure refreshes the ten rounds instead of adding another 1d4 tick. That also
 keeps the bless and disease cures unambiguous about what they remove.
 
-**This disposition is not yet owner-agreed.** Three of four printed counters
-work and the ability is demonstrably not an uncureable damage-over-time effect,
-but shipping it with the holy-water clause disclosed is a partial adaptation
-beyond the charter's conditional deferral, and the charter's alternative is to
-defer Spores entirely. The decision is recorded as open; nothing is released
-while it is.
+**Owner decision, 2026-11-02: approved with one explicit omission.** Spores
+ships with its three working printed counters — bless, a supported
+disease-removing effect, and disease immunity both before exposure and acquired
+after it. The owner explicitly accepts omission of the printed holy-water
+application and removal interaction for this release.
+
+This is a narrow owner-approved adaptation. It is **not** a claim that all
+printed Spores counterplay is implemented, and it does not turn any earlier
+incomplete observation into a pass. The capability finding is recorded
+narrowly: **no faithful creature-directed holy-water application was identified
+in the audited installed paths.** That is a statement about what the audit
+covered, not a proof that the engine could never express it, and no consumable,
+substitute action or repurposed weapon enchantment is introduced in its place.
+
+The approval waives nothing else. The bless, disease-removal and
+disease-immunity paths, the finite 1d8 impact and 1d4 ten-round cadence, the
+exposure geometry, and the immunity controls all still have to pass on the
+final frozen release artifact. Poison immunity remains no substitute for
+disease protection; ordinary Dispel Magic remains not the disease cure; the
+opening packet and the periodic damage keep one protection contract; and cures
+and cleanup remove only this growth.
+
+*Dated history retained:* before this decision the disposition above was
+recorded as open, with deferring Spores entirely as the charter's alternative.
 
 ## Observed on live units
 
@@ -198,6 +216,30 @@ stunned. So the exemption is observably not an alignment, outsider-type,
 faction or allegiance rule. The Fortitude difficulty class was the printed 21
 at the creature's live Constitution of 25, and moved to 25 when that score was
 raised to 33. Every cell holds in both real-time and turn-based combat.
+
+### Owner decision, 2026-11-02: conservative automatic screech retained
+
+The owner accepts the current conservative AI policy and its consequence that
+a vrock beside the party will often withhold Stunning Screech. The decision is
+an AI choice and changes nothing about effect eligibility:
+
+* automatic use requires a useful susceptible enemy and refuses whenever the
+  safety predicate finds a non-exempt ally or neutral in the area;
+* when it withholds, the vrock stays useful through its ordinary attacks and
+  other abilities rather than stalling or re-queueing the rejected command;
+* the printed non-demon collateral behaviour is preserved — the effect was not
+  made enemy-only, the party was not exempted by faction, and no alignment or
+  outsider class was treated as demonic;
+* **manual use remains available through the real action bar** (`Hidden` false,
+  `ActionBarAutoFillIgnored` false) under the ordinary standard-action and
+  once-per-hour rules, including the possibility of stunning non-demon allies.
+  The AI's refusal does not apply to the player's own command, and no
+  test-only dispatch stands in for that path.
+
+No repositioning search, ally-movement controller, tactical optimiser,
+target-immunity framework or extra UI toggle was added, and no automatic-use
+frequency is an acceptance requirement. A more aggressive AI remains a possible
+separate future improvement.
 
 ### The ally-safe AI makes the screech mostly player-driven
 

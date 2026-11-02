@@ -157,6 +157,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                 VrockRing37(vrock, inside,
                     VrockRules37Policy.ScreechRadiusFeet - 5f);
 
+                // The manual path, observed as a player would reach it.
+                // The owner decision keeps automatic use conservative, so the
+                // player's own command is the route that must stay open - and
+                // a claim of manual availability is only honest if the ability
+                // is actually on the action bar rather than merely invocable
+                // by a fixture.
+                var granted = vrock.Descriptor.Abilities.GetAbility(screech);
+                var manual = granted == null ? null : new AbilityData(granted);
+                check("screech-manual-interface",
+                    granted != null && granted.Active &&
+                    !screech.Hidden && !screech.ActionBarAutoFillIgnored &&
+                    screech.Type == AbilityType.Supernatural &&
+                    screech.ActionType == UnitCommand.CommandType.Standard &&
+                    screech.CanTargetSelf && manual != null &&
+                    manual.IsAvailable &&
+                    vrock.Buffs.GetBuff(recharge) == null,
+                    new JObject {
+                        ["owner"] = vrock.UniqueId,
+                        ["ability"] = screech.name,
+                        ["granted"] = granted != null,
+                        ["factActive"] = granted != null && granted.Active,
+                        ["hiddenFromUi"] = screech.Hidden,
+                        ["actionBarAutoFillIgnored"] =
+                            screech.ActionBarAutoFillIgnored,
+                        ["abilityType"] = screech.Type.ToString(),
+                        ["actionType"] = screech.ActionType.ToString(),
+                        ["availableBeforeUse"] = manual?.IsAvailable,
+                        ["hourMarkerBeforeUse"] =
+                            vrock.Buffs.GetBuff(recharge) != null,
+                        ["rechargeHours"] =
+                            VrockRules37Policy.ScreechRechargeHours,
+                        ["scope"] =
+                            "The ability is granted, active, visible to the action bar and not auto-fill-excluded, so the player's own standard action can reach it; the volley below issues the same UnitUseAbility command the action bar issues, and the refusal cell observes the hour rule afterwards."
+                    }, "Stunning Screech is reachable by the player's own standard action through the real action bar, not only by a fixture, and is available before its hour marker exists.");
+
                 foreach (int frame in VrockScreechVolley37(fixture, vrock,
                     screech, stunned, recharge, inside, target, ally,
                     controls, check)) yield return frame;
