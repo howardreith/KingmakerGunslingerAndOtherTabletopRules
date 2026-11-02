@@ -146,6 +146,40 @@ Assert-Stack ($arguments.Parameters.Count -eq 1 -and $arguments.Parameters.persi
 $fixedDispelUi=$false;$PersistenceScope='outsider-celestial';$DevelopmentPurpose='sprints30-31-persistence'
 foreach($expression in $construction){. $expression}
 Assert-Stack ($arguments.Parameters.Count -eq 1 -and $arguments.Parameters.persistenceScope -ceq $PersistenceScope -and $arguments.SaveName -ceq 'KMG_AUTOMATION_WORKING' -and $arguments.ExitAfterCompletion -and $arguments.CompletionTimeoutSeconds -eq 600 -and $arguments.RuntimeLease -eq $lease -and $arguments.ReuseInstalledArtifact -and $arguments.DevelopmentPurpose -ceq $DevelopmentPurpose) 'pilot persistence actual request keeps fixed scope, native budget, purpose, lease, artifact and Working guards'
+# Sprint 37 scope, confirmed through the shipped construction rather than a
+# duplicate request. The mission requires the complete forwarded scope, the
+# module-state admission, the exact package/manifest binding, the
+# case-sensitive refusal and the development-purpose refusal to be observed.
+$fixedDispelUi=$false;$PersistenceScope='vrock';$DevelopmentPurpose=''
+foreach($expression in $construction){. $expression}
+Assert-Stack ($arguments.Parameters.Count -eq 1 -and
+    $arguments.Parameters.persistenceScope -ceq 'vrock' -and
+    $arguments.SaveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    $arguments.ExitAfterCompletion -and
+    $arguments.CompletionTimeoutSeconds -eq 600 -and
+    $arguments.RuntimeLease -eq $lease -and
+    $arguments.ReuseInstalledArtifact -and
+    $arguments.PackagePath -ceq $candidate.packagePath -and
+    $arguments.DeploymentManifestPath -ceq $deployment -and
+    [string]::IsNullOrEmpty($arguments.DevelopmentPurpose)) 'Sprint37 persistence forwards exactly its scope, Working save, native budget, lease and the exact package and deployment manifest with no development alias'
+# The release-only line, and its case sensitivity, read from the shipped script.
+$scopeNodes=@($entryAst.FindAll({param($node) $node -is [Management.Automation.Language.StringConstantExpressionAst] -and $node.Value -ceq 'vrock'},$true))
+Assert-Stack ($scopeNodes.Count -ge 2) 'the shipped installed stack names the Sprint37 scope for both its case guard and its release-only branch'
+Assert-StackThrows {
+    & $uiEntry -Scenario working-save-expanded-summoning-prepare -SaveName KMG_AUTOMATION_WORKING `
+        -PackagePath (Join-Path $fixture 'missing-vrock.zip') -ExpectedVersion '0.0.175' `
+        -PersistenceScope 'Vrock' -Confirm:$false
+} 'case-sensitive'
+Assert-StackThrows {
+    & $uiEntry -Scenario working-save-expanded-summoning-prepare -SaveName KMG_AUTOMATION_WORKING `
+        -PackagePath (Join-Path $fixture 'missing-vrock.zip') -ExpectedVersion '0.0.175' `
+        -PersistenceScope 'vrock' -DevelopmentPurpose 'sprint37-vrock-native-observation' -Confirm:$false
+} 'final frozen release candidate'
+Assert-StackThrows {
+    & $uiEntry -Scenario working-save-expanded-summoning-prepare -SaveName KMG_AUTOMATION_WORKING `
+        -PackagePath (Join-Path $fixture 'missing-vrock.zip') -ExpectedVersion '0.0.175' `
+        -PersistenceScope 'vrock' -ExpandedSummoningDisabled -Confirm:$false
+} 'Module OFF is restricted'
 $receiptNodes=@($entryAst.FindAll({param($node) $node -is [Management.Automation.Language.IfStatementAst] -and $node.Extent.Text.Contains('NotePropertyName installedStackRecordPath')},$true))
 if($receiptNodes.Count -ne 1){throw 'Fixed UI installed-stack receipt binding is absent or ambiguous.'}
 $receiptBinding=[scriptblock]::Create($receiptNodes[0].Extent.Text)

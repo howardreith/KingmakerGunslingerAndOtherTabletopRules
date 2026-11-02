@@ -127,7 +127,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Vector3.forward * (screechRadius - 3f));
                 foreach (int frame in VrockAiChoice37(vrock, target,
                     new[] { screech, spores, heroism, mirror },
-                    "ai-ally-in-spread", screech, false, check))
+                    "ai-ally-in-spread", screech, false, check, true))
                     yield return frame;
                 // And with the ally still in the spread but both self-buffs
                 // already spent, the refusal must hold when the screech is
@@ -151,7 +151,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         0.3f));
                 foreach (int frame in VrockAiChoice37(vrock, target,
                     new[] { screech, spores }, "ai-ally-in-spread-no-buffs",
-                    screech, false, check)) yield return frame;
+                    screech, false, check, true)) yield return frame;
 
                 // --- self-support once both area effects are unavailable ----
                 // On a FRESH vrock. The sixth run showed this cell was
@@ -265,7 +265,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> VrockAiChoice37(UnitEntityData vrock,
             UnitEntityData target, BlueprintAbility[] watched, string id,
             BlueprintAbility expected, bool shouldChoose,
-            Action<string, bool, JObject, string> check)
+            Action<string, bool, JObject, string> check,
+            bool requireUsefulFallback = false)
         {
             // Three decision windows on one summon add up, and an expired
             // summon otherwise presents as an unregistered ability.
@@ -307,6 +308,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 vrock.Commands.InterruptAll(true);
                 vrock.Commands.RemoveFinishedAndUpdateQueue();
             }
+            Func<bool> usefulFallback = () => acted.Any(value => {
+                var use = value as UnitUseAbility;
+                if (use == null) return true;
+                return !ReferenceEquals(use.Spell?.Blueprint, expected);
+            });
             BlueprintAbility[] picked = picks();
             bool pass = expected == null
                 ? shouldChoose == picked.Any()
@@ -320,7 +326,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // is an ordinary attack, which is a UnitAttack and not a
                     // watched UnitUseAbility. Requiring a second watched pick
                     // made a correct double refusal look like a silent brain.
-                    : !picked.Contains(expected) && acted.Count > 0;
+                    //
+                    // The owner decision adds a stronger requirement for the
+                    // unsafe case: withholding must leave the vrock USEFUL,
+                    // not merely busy. A useful fallback is an actual attack
+                    // or some other ability - never the refused one - so an
+                    // owner that only shuffled or re-queued the rejected
+                    // command cannot pass.
+                    : !picked.Contains(expected) && acted.Count > 0 &&
+                        (!requireUsefulFallback || usefulFallback());
             check(id, pass, new JObject {
                 ["owner"] = vrock.UniqueId,
                 ["target"] = target.UniqueId,
@@ -336,6 +350,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["chosenInOrder"] = new JArray(chosen.Select(value =>
                     value.Spell?.Blueprint?.name)),
                 ["brainWasDeciding"] = acted.Count > 0,
+                ["usefulFallbackRequired"] = requireUsefulFallback,
+                ["usefulFallbackObserved"] = usefulFallback(),
                 ["commandsStarted"] = acted.Count,
                 ["commandTypesStarted"] = new JArray(acted
                     .Select(value => value.GetType().Name).Distinct()),
