@@ -288,8 +288,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (JObject)readiness.DeepClone(),
                     "The once-per-summoning " + pair.Label +
                     " is granted, holds its single use, and is castable at the vrock itself.");
-                var observed = new Astral31SmiteEvents(vrock, pair.Ability,
-                    null, null, new[] { vrock });
+                // Astral31SmiteEvents matches applications by buff
+                // identity, and this project does not choose the effect: the
+                // installed native spell owns it. Passing a null buff to that
+                // watcher silently records nothing, which is what made an
+                // otherwise correct cast look effectless. This watcher matches
+                // on the context's source ability instead, so the effect's
+                // blueprint is what the observation discovers.
+                var applications = new List<RuleApplyBuff>();
+                var observed = new VrockEffectWatcher37(vrock, pair.Ability,
+                    applications);
                 EventBus.Subscribe(observed);
                 UnitUseAbility command = null;
                 try
@@ -304,9 +312,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var granted = new AbilityData(
                         vrock.Descriptor.Abilities.GetAbility(pair.Ability));
                     var parameters = granted.CalculateParams();
-                    RuleApplyBuff[] applied = observed.Applications
-                        .Where(value => ReferenceEquals(value.Initiator,
-                            vrock) && value.AppliedBuff != null).ToArray();
+                    RuleApplyBuff[] applied = applications
+                        .Where(value => value.AppliedBuff != null).ToArray();
                     // The second use must be refused, observed by asking
                     // the engine rather than by attempting a cast: the shared
                     // cast helper throws on an unavailable ability, so using
@@ -357,12 +364,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                             VrockRules37Policy.SpellLikeCasterLevel,
                         ["whyTheyDiffer"] =
                             "RuleCalculateAbilityParams honours only ContextSetAbilityParams; ContextCalculateAbilityParams is read by MechanicsContext from the AssociatedBlueprint, so it lands on the resolving effect's context.",
+                        ["observedApplications"] = applications.Count,
                         ["appliedEffects"] = new JArray(applied.Select(
                             value => new JObject {
                                 ["blueprint"] = value.AppliedBuff
+                                    ?.Blueprint?.name,
+                                ["blueprintGuid"] = value.AppliedBuff
                                     ?.Blueprint?.AssetGuid,
+                                ["isNativeEffect"] = value.AppliedBuff
+                                    ?.Blueprint?.name != null &&
+                                    !value.AppliedBuff.Blueprint.name
+                                        .StartsWith("KMG_",
+                                            StringComparison.Ordinal),
+                                ["canApply"] = value.CanApply,
+                                ["immunity"] = value.Immunity,
                                 ["durationSeconds"] =
                                     value.Duration?.TotalSeconds,
+                                ["contextCasterLevel"] =
+                                    value.Context?.Params?.CasterLevel,
                                 ["caster"] =
                                     value.Context?.MaybeCaster?.UniqueId
                             })),
@@ -490,6 +509,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["canTarget"] = data.CanTarget(target);
             row["casterLevel"] = data.CalculateParams().CasterLevel;
             return row;
+        }
+
+        /// <summary>
+        /// Every buff application whose context came from one exact ability on
+        /// one exact owner. The effect's own blueprint is the result, not a
+        /// precondition, because the installed native spell owns it.
+        /// </summary>
+        private sealed class VrockEffectWatcher37 :
+            IGlobalRulebookHandler<RuleApplyBuff>
+        {
+            private readonly UnitEntityData _owner;
+            private readonly BlueprintAbility _ability;
+            private readonly List<RuleApplyBuff> _rules;
+
+            internal VrockEffectWatcher37(UnitEntityData owner,
+                BlueprintAbility ability, List<RuleApplyBuff> rules)
+            { _owner = owner; _ability = ability; _rules = rules; }
+
+            public void OnEventAboutToTrigger(RuleApplyBuff evt) { }
+
+            public void OnEventDidTrigger(RuleApplyBuff evt)
+            {
+                if (evt.Context == null ||
+                    !ReferenceEquals(evt.Context.MaybeCaster, _owner) ||
+                    !ReferenceEquals(evt.Context.SourceAbility, _ability))
+                    return;
+                _rules.Add(evt);
+            }
         }
 
         private sealed class VrockAttackWatcher37 :
