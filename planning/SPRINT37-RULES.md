@@ -183,6 +183,72 @@ beyond the charter's conditional deferral, and the charter's alternative is to
 defer Spores entirely. The decision is recorded as open; nothing is released
 while it is.
 
+## Observed on live units
+
+Recorded from the guarded Sprint 37 observation phases, each of which restored
+the live mod tree to its exact pre-run hash. These are observations, not
+restatements of intent.
+
+### What the screech exemption actually keys on
+
+Succubus and Shadow Demon — the two released demons the first hand-written
+four-entry set silently omitted — are never asked to save at all. A registered
+Bone Devil is asked, and is stunned. The summoner's own ally is asked, and is
+stunned. So the exemption is observably not an alignment, outsider-type,
+faction or allegiance rule. The Fortitude difficulty class was the printed 21
+at the creature's live Constitution of 25, and moved to 25 when that score was
+raised to 33. Every cell holds in both real-time and turn-based combat.
+
+### The ally-safe AI makes the screech mostly player-driven
+
+`VrockScreechEligibility37` scores zero when any non-enemy stands inside the
+thirty-foot spread, and a summoned vrock is a player unit: the whole party and
+every neutral bystander are non-enemies. Observed consequence, over six real
+AI ticks with the ability available at the highest base score and an enemy
+4.4m away inside a 9.14m spread: the brain correctly never screeched, and the
+receipt named the endangered unit. Only after the two disposable units were
+moved away from every non-enemy did the brain select it.
+
+That is the ally-safe requirement working exactly as section 4B asks, and it
+has a gameplay consequence worth stating plainly rather than leaving implicit:
+**a vrock summoned beside the party will rarely screech on its own.** The
+player can still trigger it manually, and the spore cloud — which keys on
+adjacency rather than the thirty-foot spread — was observed firing on its own
+with an ally 6m away. Nothing here is a waiver; it is the disclosed behaviour
+of the safety rule the charter required.
+
+### Which limb of the Babau dispel predicate carries the distinction
+
+`HarmfulToOwner` calls an effect harmful when the blueprint's own `Harmful`
+flag is set **or** its caster is an enemy of its owner. Of 187 loaded non-KMG
+spell buffs in this installation that are visible and dispellable, **none sets
+that flag**. The caster relationship is therefore the limb that does the work
+here, which is exactly the case the Sprint 36 review raised; without it the
+selector would have had no working notion of "harmful to its owner" at all.
+The controls vary only the caster — absent, enemy-cast, self-cast — rather than
+depending on a flag the game does not set.
+
+### Caster level lands on the resolving context, not the pre-cast estimate
+
+`AbilityData.CalculateParams` triggers `RuleCalculateAbilityParams`, which
+honours only `ContextSetAbilityParams` and otherwise derives the level from the
+unit, so for these spell-likes it reports the vrock's nine hit dice. The
+`ContextCalculateAbilityParams` this project attaches is read by
+`MechanicsContext` itself, from the `AssociatedBlueprint` into
+`m_ParamsCalculator`, so caster level 12 lands on the applied effect's own
+context. Both values are recorded in the receipt; they are different
+quantities and neither is a defect.
+
+### The body is only real once it is packaged
+
+The first observation of this creature failed on its own body, and the cause
+was not the mesh: `assets/sprint37-vrock/` had never been added to the build,
+package, build-output-validation, package-validation or deterministic-inventory
+scripts, so both files existed in the repository and in no installed mod. The
+domain case `sprint37-original-model` passed throughout, because it reads
+repository source rather than a package. All five scripts now carry the two
+files and pin their bytes.
+
 ## Carry-forward task 2B
 
 Confirmed by native inspection and corrected in commit
