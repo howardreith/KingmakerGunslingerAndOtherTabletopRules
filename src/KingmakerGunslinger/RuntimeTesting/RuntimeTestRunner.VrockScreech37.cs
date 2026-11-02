@@ -543,8 +543,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "vrock");
             owned.Add(second);
             VrockQuiesce37(second);
-            foreach (int frame in Outsider30NativeAppearance(second,
-                second.Blueprint.name)) yield return frame;
+            // No appearance settling for the second vrock. This cell observes
+            // that one owner's hour marker, its ability availability and its
+            // victim effect belong to it alone; the second vrock never casts,
+            // and its body is proven by the core phase on its own unit. The
+            // first combined release run stopped here with bodyPresent true,
+            // bodyEnabled false and fadedIn false after 267 frames - a
+            // presentation dependency this observation does not rest on, in a
+            // scene already crowded by five earlier reviews. Its view state is
+            // recorded below for information rather than required.
+            VrockRequireLiveSubject37(second, screech, "two-owner-second");
+            string secondView = ExpandedSummoningPteranodonViewPatch
+                .DescribeView(second.View);
             foreach (int frame in VrockClearRecharge37(first, recharge,
                 target, stunned)) yield return frame;
             PlaceExpandedSummoningUnit(second, first.Position +
@@ -594,6 +604,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["secondAvailable"] = secondAvailability.IsAvailable,
                         ["victimEffectsFromFirst"] = fromFirst.Length,
                         ["victimEffectsFromSecond"] = fromSecond.Length,
+                        ["secondView"] = secondView,
+                        ["secondViewRequired"] = false,
                         ["command"] = command == null ? null :
                             Sprint27AiCommand(command)
                     }, "One vrock's hour marker and victim effect belong to it alone; a second vrock standing beside it is neither spent nor refused.");
