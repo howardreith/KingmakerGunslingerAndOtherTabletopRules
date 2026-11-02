@@ -220,7 +220,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (BlueprintAbility ability in watched)
                 VrockRequireLiveSubject37(vrock, ability, id);
             var chosen = new List<UnitUseAbility>();
-            var watcher = new VrockCommandWatcher37(vrock, watched, chosen);
+            var acted = new List<UnitCommand>();
+            var watcher = new VrockCommandWatcher37(vrock, watched, chosen,
+                acted);
             EventBus.Subscribe(watcher);
             // The AI reads caches it does not maintain, so an observation that
             // only switches the brain on watches a brain with nothing to
@@ -259,8 +261,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 : shouldChoose
                     ? picked.Contains(expected)
                     // A refusal only means something while the brain was
-                    // demonstrably deciding other things.
-                    : !picked.Contains(expected) && picked.Any();
+                    // demonstrably acting. The evidence has to be ANY command
+                    // this owner started, not another watched ability: when
+                    // the ally veto refuses both area effects and both
+                    // self-buffs are already spent, the brain's remaining move
+                    // is an ordinary attack, which is a UnitAttack and not a
+                    // watched UnitUseAbility. Requiring a second watched pick
+                    // made a correct double refusal look like a silent brain.
+                    : !picked.Contains(expected) && acted.Count > 0;
             check(id, pass, new JObject {
                 ["owner"] = vrock.UniqueId,
                 ["target"] = target.UniqueId,
@@ -275,12 +283,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["chosen"] = new JArray(picked.Select(value => value.name)),
                 ["chosenInOrder"] = new JArray(chosen.Select(value =>
                     value.Spell?.Blueprint?.name)),
-                ["brainWasDeciding"] = picked.Any(),
+                ["brainWasDeciding"] = acted.Count > 0,
+                ["commandsStarted"] = acted.Count,
+                ["commandTypesStarted"] = new JArray(acted
+                    .Select(value => value.GetType().Name).Distinct()),
                 ["assertion"] = expected == null
                     ? "some watched ability was chosen"
                     : shouldChoose
                         ? "the named ability was chosen somewhere in the window"
-                        : "the named ability was never chosen while others were",
+                        : "the named ability was never chosen while the brain was acting",
                 ["commands"] = queued,
                 ["forcedCommands"] = 0,
                 ["scope"] =
@@ -511,16 +522,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly UnitEntityData _owner;
             private readonly BlueprintAbility[] _watched;
             private readonly List<UnitUseAbility> _chosen;
+            private readonly List<UnitCommand> _acted;
 
             internal VrockCommandWatcher37(UnitEntityData owner,
-                BlueprintAbility[] watched, List<UnitUseAbility> chosen)
-            { _owner = owner; _watched = watched; _chosen = chosen; }
+                BlueprintAbility[] watched, List<UnitUseAbility> chosen,
+                List<UnitCommand> acted)
+            {
+                _owner = owner; _watched = watched; _chosen = chosen;
+                _acted = acted;
+            }
 
             public void HandleUnitCommandDidStart(UnitCommand command)
             {
+                if (command == null ||
+                    !ReferenceEquals(command.Executor, _owner)) return;
+                _acted.Add(command);
                 var use = command as UnitUseAbility;
-                if (use == null ||
-                    !ReferenceEquals(use.Executor, _owner)) return;
+                if (use == null) return;
                 BlueprintAbility blueprint = use.Spell?.Blueprint;
                 if (blueprint != null && _watched.Contains(blueprint))
                     _chosen.Add(use);
