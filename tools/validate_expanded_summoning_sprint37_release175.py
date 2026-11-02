@@ -15,7 +15,7 @@ import expanded_summoning_manifest as manifest
 # The head is after the version bump, as Sprint 36's was, so the metadata check
 # degenerates to "product metadata is unchanged from the reviewed head" and
 # OLD_INFORMATIONAL equals INFORMATIONAL.
-PRODUCT = "1dec3c22adb4ac6163abcda99e1d85e5c4412d55"
+PRODUCT = "9a23bc991c64cc3ad5dc4778934dd8c2c3877308"
 RELEASED = "b1cf3a3dd97a4df7d4838961bdea97a254a576d8"
 VERSION = "0.0.175"
 INFORMATIONAL = VERSION + "-expanded-summoning-vrock"
