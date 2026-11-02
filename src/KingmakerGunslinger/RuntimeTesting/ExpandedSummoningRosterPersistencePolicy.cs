@@ -232,6 +232,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static string[] InfernalDemonKeys
         { get { return new[] { InfernalVisualPolicy36.Babau,
             InfernalVisualPolicy36.Hezrou }; } }
+        internal const string VrockScope = "vrock";
+        internal static string[] VrockKeys
+        { get { return new[] { VrockVisualPolicy37.Vrock }; } }
         internal const string ShadowOutsidersScope = "shadow-outsiders";
         internal static string[] ShadowOutsiderKeys
         { get { return new[] { "succubus", "invisible-stalker", "shadow-demon" }; } }
@@ -331,6 +334,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == InfernalOutsidersScope ? InfernalOutsiderKeys :
                 scope == InfernalReachTwoScope ? InfernalReachTwoKeys :
                 scope == InfernalDemonsScope ? InfernalDemonKeys :
+                scope == VrockScope ? VrockKeys :
                 scope == ShadowOutsidersScope ? ShadowOutsiderKeys :
                 scope == Scope ? ExpandedSummoningCatalog.All.Select(value => value.Key).ToArray() :
                 new string[0];
@@ -365,6 +369,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == InfernalOutsidersScope ? InfernalOutsiderKeys :
                 scope == InfernalReachTwoScope ? InfernalReachTwoKeys :
                 scope == InfernalDemonsScope ? InfernalDemonKeys :
+                scope == VrockScope ? VrockKeys :
                 scope == ShadowOutsidersScope ? ShadowOutsiderKeys :
                 scope == Scope ? Keys : new string[0];
             return expected.Length != 0 && observed.OrderBy(value => value,
@@ -387,7 +392,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == ArmoredDinosaursScope || scope == TheropodsScope ||
                 scope == GiantBodiesScope || scope == MagicalBeastsScope ||
                 scope == GriffonScope || scope == GiantHumanoidsScope ||
-                scope == GiantHumanoidsTwoScope || scope == OutsiderCelestialScope || scope == FeyCelestialScope || scope == ShadowOutsidersScope || scope == InfernalOutsidersScope || scope == InfernalReachTwoScope || scope == InfernalDemonsScope) &&
+                scope == GiantHumanoidsTwoScope || scope == OutsiderCelestialScope || scope == FeyCelestialScope || scope == ShadowOutsidersScope || scope == InfernalOutsidersScope || scope == InfernalReachTwoScope || scope == InfernalDemonsScope || scope == VrockScope) &&
                 (scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent);
