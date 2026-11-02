@@ -209,6 +209,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 yield break;
             }
             if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint37VrockReleasePhase)
+            {
+                // The release ordering matters. Each review disposes its own
+                // units, and the hostile fixture is reset between them, so the
+                // observations stay independent while sharing one candidate.
+                // Public routes come last because they exercise the real
+                // player path and leave the menus as a player would find them.
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewVrockCore37(fixture))
+                    yield return frame;
+                ResetExpandedSummoningHostile(fixture);
+                foreach (int frame in ReviewVrockSpores37(fixture))
+                    yield return frame;
+                ResetExpandedSummoningHostile(fixture);
+                foreach (int frame in ReviewVrockGeometry37(fixture))
+                    yield return frame;
+                ResetExpandedSummoningHostile(fixture);
+                foreach (int frame in ReviewVrockScreech37(fixture, false))
+                    yield return frame;
+                ResetExpandedSummoningHostile(fixture);
+                foreach (int frame in ReviewVrockAi37(fixture))
+                    yield return frame;
+                ResetExpandedSummoningHostile(fixture);
+                ReviewVrockPublic37(fixture);
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy
                     .Sprint37VrockCorePhase)
             {
                 CreateSprint32TurnHostile(fixture);
