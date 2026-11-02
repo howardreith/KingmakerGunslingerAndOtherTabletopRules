@@ -171,6 +171,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbility expected, bool shouldChoose,
             Action<string, bool, JObject, string> check)
         {
+            // Three decision windows on one summon add up, and an expired
+            // summon otherwise presents as an unregistered ability.
+            foreach (BlueprintAbility ability in watched)
+                VrockRequireLiveSubject37(vrock, ability, id);
             var chosen = new List<UnitUseAbility>();
             var watcher = new VrockCommandWatcher37(vrock, watched, chosen);
             EventBus.Subscribe(watcher);
