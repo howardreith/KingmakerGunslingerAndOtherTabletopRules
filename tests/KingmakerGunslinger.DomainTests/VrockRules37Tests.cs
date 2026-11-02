@@ -32,19 +32,19 @@ namespace KingmakerGunslinger.DomainTests
                 .GenerateVariants(SummonFamily.NaturesAlly)
                 .Any(value => value.Creature.Key == vrock.Key),
                 "Vrock registers no Nature's Ally route.");
-            Assertions.True(routes.All(value =>
-                !SummonVisibilityCatalog.IsPublished(value)),
-                "All three routes are withheld together while the creature is unqualified.");
+            Assertions.True(routes.All(
+                SummonVisibilityCatalog.IsPublished),
+                "All three routes are published together after the creature's six guarded mechanics phases.");
 
             var identities = ExpandedSummoningIdentityCatalog.Build();
             string[] routeSymbols = routes.Select(
                 ExpandedSummoningIdentityCatalog.AbilitySymbol).ToArray();
             Assertions.True(routeSymbols.All(symbol => identities.Any(value =>
                 value.Symbol == symbol)),
-                "All three executable routes are allocated while hidden, so publication moves no identity.");
+                "All three executable routes keep the identities they were allocated while hidden, so publication moved none of them.");
             Assertions.True(identities.Any(value => value.Symbol ==
                     ExpandedSummoningIdentityCatalog.UnitSymbol(vrock)),
-                "The exact unit identity is registered before publication.");
+                "The exact unit identity is the one registered before publication.");
             var privateIdentities = identities.Where(value =>
                 value.Symbol.StartsWith("KMG.Summoning.Demon.Vrock.",
                     StringComparison.Ordinal)).ToArray();
