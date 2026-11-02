@@ -15,6 +15,8 @@ using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
+using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
@@ -274,6 +276,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .GetResourceAmount(pair.Own);
                 int otherBefore = vrock.Descriptor.Resources
                     .GetResourceAmount(pair.Other);
+                // Why this ability is or is not castable, recorded before the
+                // attempt. A shared cast helper throws on an unavailable
+                // ability, which spends a whole guarded transaction to say
+                // only "unavailable"; this names the predicate instead.
+                JObject readiness = VrockCastReadiness37(vrock, pair.Ability,
+                    new TargetWrapper(vrock));
+                check("core-castable-" + pair.Label,
+                    (bool)readiness["isAvailable"] &&
+                    (bool)readiness["canTarget"] && ownBefore == 1,
+                    (JObject)readiness.DeepClone(),
+                    "The once-per-summoning " + pair.Label +
+                    " is granted, holds its single use, and is castable at the vrock itself.");
                 var observed = new Astral31SmiteEvents(vrock, pair.Ability,
                     null, null, new[] { vrock });
                 EventBus.Subscribe(observed);
@@ -388,6 +402,76 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["mirrorRemaining"] = vrock.Descriptor.Resources
                     .GetResourceAmount(mirrorResource)
             }, "With both single uses spent the brain falls through to real weapon attacks rather than stalling on an unavailable spell.");
+        }
+
+        /// <summary>
+        /// Everything the engine consults before it will let an ability be
+        /// cast, read without casting anything: the granted fact, its own
+        /// caster checkers, the resource it spends, and the target test.
+        /// </summary>
+        private static JObject VrockCastReadiness37(UnitEntityData owner,
+            BlueprintAbility blueprint, TargetWrapper target)
+        {
+            Ability granted = owner.Descriptor.Abilities
+                .GetAbility(blueprint);
+            var row = new JObject {
+                ["owner"] = owner.UniqueId,
+                ["ability"] = blueprint.name,
+                ["abilityGuid"] = blueprint.AssetGuid,
+                ["granted"] = granted != null,
+                ["factActive"] = granted != null && granted.Active,
+                ["type"] = blueprint.Type.ToString(),
+                ["range"] = blueprint.Range.ToString(),
+                ["actionType"] = blueprint.ActionType.ToString(),
+                ["canTargetSelf"] = blueprint.CanTargetSelf,
+                ["canTargetFriends"] = blueprint.CanTargetFriends,
+                ["canTargetEnemies"] = blueprint.CanTargetEnemies,
+                ["spellCastingForbidden"] =
+                    (bool)owner.Descriptor.State.SpellCastingForbidden,
+                ["casterCanAct"] = owner.Descriptor.State.CanAct,
+                ["polymorphed"] = owner.Body.IsPolymorphed
+            };
+            var checkers = new JArray();
+            foreach (IAbilityCasterChecker checker in
+                blueprint.CasterCheckers ??
+                Array.Empty<IAbilityCasterChecker>())
+            {
+                checkers.Add(new JObject {
+                    ["checker"] = checker.GetType().Name,
+                    ["correctCaster"] = checker.CorrectCaster(owner)
+                });
+            }
+            row["casterCheckers"] = checkers;
+            var costs = new JArray();
+            foreach (AbilityResourceLogic cost in
+                blueprint.GetComponents<AbilityResourceLogic>())
+            {
+                costs.Add(new JObject {
+                    ["resource"] = cost.RequiredResource?.name,
+                    ["resourceGuid"] = cost.RequiredResource?.AssetGuid,
+                    ["spends"] = cost.IsSpendResource,
+                    ["amount"] = cost.Amount,
+                    ["heldByCaster"] = cost.RequiredResource == null ? null :
+                        (int?)owner.Descriptor.Resources.GetResourceAmount(
+                            cost.RequiredResource),
+                    ["casterHasResourceFact"] =
+                        cost.RequiredResource != null &&
+                        owner.Descriptor.Resources.HasEnoughResource(
+                            cost.RequiredResource, cost.Amount)
+                });
+            }
+            row["resourceCosts"] = costs;
+            if (granted == null)
+            {
+                row["isAvailable"] = false;
+                row["canTarget"] = false;
+                return row;
+            }
+            var data = new AbilityData(granted);
+            row["isAvailable"] = data.IsAvailable;
+            row["canTarget"] = data.CanTarget(target);
+            row["casterLevel"] = data.CalculateParams().CasterLevel;
+            return row;
         }
 
         private sealed class VrockAttackWatcher37 :
