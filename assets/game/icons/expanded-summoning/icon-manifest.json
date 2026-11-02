@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  144,
+    "count":  145,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -1293,6 +1293,15 @@
                       "key":  "hezrou",
                       "file":  "hezrou.png",
                       "sha256":  "7ad545982cb4428b35b45d4edad3cf2fdbaa94b393ae68c0eadf4018bb6c6891",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "vrock",
+                      "file":  "vrock.png",
+                      "sha256":  "80ba028c4405dfd2a09f3e5ecaa526cacc17b8c053187462e827b34d82134ed2",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",
