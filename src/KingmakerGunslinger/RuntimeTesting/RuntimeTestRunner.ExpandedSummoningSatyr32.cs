@@ -225,6 +225,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 yield break;
             }
             if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint37VrockGeometryPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewVrockGeometry37(fixture))
+                    yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy
                     .Sprint37VrockScreechPhase)
             {
                 CreateSprint32TurnHostile(fixture);
