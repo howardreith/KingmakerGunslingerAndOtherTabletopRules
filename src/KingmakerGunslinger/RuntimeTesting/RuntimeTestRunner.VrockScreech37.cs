@@ -291,10 +291,46 @@ namespace KingmakerGunslinger.RuntimeTesting
             Action<string, bool, JObject, string> check)
         {
             VrockRequireLiveSubject37(vrock, screech, "volley");
+            // The exemption cell needs the enemy, the ally and the devil to
+            // all fail one Fortitude save, and a natural twenty always
+            // succeeds, so without a bounded retry this cell fails a correct
+            // creature about one run in seven. The released Sprint 36 burst
+            // observer solved exactly this: retry only when every
+            // deterministic fact was already exact and the sole shortfall was
+            // a natural twenty, record every attempt, and force no roll.
+            const int maximumAttempts = 3;
+            var attempts = new JArray();
+            bool volleyPassed = false;
+            Action report = () => check("screech-identity-exemption",
+                volleyPassed, new JObject {
+                    ["owner"] = vrock.UniqueId,
+                    ["attempts"] = attempts,
+                    ["maximumAttempts"] = maximumAttempts,
+                    ["selectedAttempt"] = volleyPassed ?
+                        (int?)attempts.Count : null,
+                    ["forcedRolls"] = 0,
+                    ["retryRule"] =
+                        "Retried only when the exemption pattern, the command and the hour marker were already exact and the sole shortfall was a natural twenty; no roll was forced and no assertion was relaxed."
+                }, "The exemption follows registered demon identity: both released demons are never even asked to save, while a devil, an enemy and an ally of the summoner all are.");
+            for (int attempt = 1; attempt <= maximumAttempts && !volleyPassed;
+                attempt++)
+            {
+            if (attempt > 1)
+            {
+                // Undo only this owner's own leftovers before rerolling: every
+                // stun it applied inside the ring, and its hour marker.
+                foreach (UnitEntityData unit in inside)
+                    foreach (Buff clear in unit.Buffs.Enumerable.Where(
+                        value => ReferenceEquals(value.Blueprint, stunned))
+                        .ToArray()) clear.Remove();
+                foreach (int frame in VrockClearRecharge37(vrock, recharge,
+                    target, stunned)) yield return frame;
+            }
             var observed = new Astral31SmiteEvents(vrock, screech, stunned,
                 null, inside);
             EventBus.Subscribe(observed);
             UnitUseAbility command = null;
+            bool naturalRetry = false;
             try
             {
                 foreach (int frame in Sprint26Cast(vrock, screech,
@@ -312,11 +348,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuleSavingThrow allySave = observed.Save(ally);
                 var controlRows = new JArray();
                 bool controlsCoherent = true;
+                bool controlNaturalTwenty = false;
                 foreach (var control in controls)
                 {
                     RuleSavingThrow save = observed.Save(control.Item2);
                     Buff effect = stun(control.Item2);
                     bool exempt = control.Item3;
+                    controlNaturalTwenty |= !exempt && save != null &&
+                        save.IsPassed && save.D20.Value == 20;
                     // An exempt creature is not merely unaffected: it is never
                     // asked to save, because the exemption is decided before
                     // the roll.
@@ -329,6 +368,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["unit"] = control.Item2.UniqueId,
                         ["expectedExempt"] = exempt,
                         ["saveRolled"] = save != null,
+                        ["saveD20"] = save?.D20.Value,
+                        ["saveDc"] = save?.DifficultyClass,
                         ["savePassed"] = save?.IsPassed,
                         ["stunned"] = effect == null ? null :
                             InfernalSavedEffect34(effect),
@@ -340,22 +381,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !targetSave.IsPassed && stun(target) != null &&
                     allySave != null && !allySave.IsPassed &&
                     stun(ally) != null;
-                check("screech-identity-exemption",
-                    commandExact && controlsCoherent && enemyAndAlly &&
-                    vrock.Buffs.GetBuff(recharge) != null,
-                    new JObject {
-                        ["owner"] = vrock.UniqueId,
-                        ["command"] = command == null ? null :
-                            Sprint27AiCommand(command),
-                        ["enemy"] = observed.Row(target),
-                        ["ally"] = observed.Row(ally),
-                        ["allyIsSameFactionAsCaster"] = true,
-                        ["controls"] = controlRows,
-                        ["rechargeHeld"] = vrock.Buffs.GetBuff(recharge) !=
-                            null
-                    }, "The exemption follows registered demon identity: both released demons are never even asked to save, while a devil, an enemy and an ally of the summoner all are.");
+                // Everything the product controls, independent of the three
+                // rolls: the command, the hour marker, the exemption pattern
+                // itself - no exempt creature was asked to save and no
+                // non-exempt creature was skipped - and that both the enemy
+                // and the ally were actually asked.
+                bool exemptionExact = commandExact && controlsCoherent &&
+                    vrock.Buffs.GetBuff(recharge) != null &&
+                    targetSave != null && allySave != null;
+                volleyPassed = exemptionExact && enemyAndAlly;
+                bool naturals = controlNaturalTwenty ||
+                    (targetSave != null && targetSave.IsPassed &&
+                        targetSave.D20.Value == 20) ||
+                    (allySave != null && allySave.IsPassed &&
+                        allySave.D20.Value == 20);
+                naturalRetry = exemptionExact && !volleyPassed && naturals;
+                attempts.Add(new JObject {
+                    ["attempt"] = attempt,
+                    ["command"] = command == null ? null :
+                        Sprint27AiCommand(command),
+                    ["enemy"] = observed.Row(target),
+                    ["enemySaveD20"] = targetSave?.D20.Value,
+                    ["enemySavePassed"] = targetSave?.IsPassed,
+                    ["ally"] = observed.Row(ally),
+                    ["allySaveD20"] = allySave?.D20.Value,
+                    ["allySavePassed"] = allySave?.IsPassed,
+                    ["allyIsSameFactionAsCaster"] = true,
+                    ["controls"] = controlRows,
+                    ["rechargeHeld"] = vrock.Buffs.GetBuff(recharge) != null,
+                    ["exemptionFactsExact"] = exemptionExact,
+                    ["naturalTwentyAmongRequiredSaves"] = naturals,
+                    ["nativeNaturalRetry"] = naturalRetry,
+                    ["passed"] = volleyPassed
+                });
+                if (!volleyPassed && naturalRetry) continue;
+                report();
                 if (!commandExact) throw new InvalidOperationException(
                     "Sprint37 screech volley did not complete.");
+                if (!volleyPassed) throw new InvalidOperationException(
+                    "Sprint37 screech exemption volley did not hold.");
 
                 // Refusal while the marker stands, asked of the engine
                 // rather than attempted: the caster checker is what refuses,
@@ -419,6 +483,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }, "A failed save stuns for its printed single round and then ends on its own.");
             }
             finally { EventBus.Unsubscribe(observed); }
+            }
+            if (!volleyPassed)
+            {
+                report();
+                throw new InvalidOperationException(
+                    "Sprint37 screech exemption volley exhausted its bounded natural-twenty retries.");
+            }
         }
 
         /// <summary>
@@ -598,37 +669,68 @@ namespace KingmakerGunslinger.RuntimeTesting
             PlaceExpandedSummoningUnit(target, first.Position +
                 Vector3.right * (first.Corpulence + target.Corpulence + 1f));
 
-            var observed = new Astral31SmiteEvents(first, screech, stunned,
-                null, new[] { target });
-            EventBus.Subscribe(observed);
-            try
+            // A save-or-lose observation needs a bounded natural-20 retry or
+            // it is flaky by construction: a natural twenty always succeeds,
+            // so one unlucky roll would fail a correct creature. The released
+            // Sprint 36 burst observer solved this the same way - retry only
+            // when the single reason for the miss was a natural twenty, and
+            // record every attempt so an RNG retry can never be mistaken for
+            // a product pass.
+            const int maximumAttempts = 3;
+            var attempts = new JArray();
+            bool passed = false;
+            for (int attempt = 1; attempt <= maximumAttempts && !passed;
+                attempt++)
             {
-                UnitUseAbility command = null;
-                foreach (int frame in Sprint26Cast(first, screech,
-                    new TargetWrapper(first), value => command = value))
-                    yield return frame;
-                var firstAvailability = new AbilityData(
-                    first.Descriptor.Abilities.GetAbility(screech));
-                var secondAvailability = new AbilityData(
-                    second.Descriptor.Abilities.GetAbility(screech));
-                Buff[] fromFirst = target.Buffs.Enumerable.Where(value =>
-                    ReferenceEquals(value.Blueprint, stunned) &&
-                    ReferenceEquals(value.Context?.MaybeCaster, first))
-                    .ToArray();
-                Buff[] fromSecond = target.Buffs.Enumerable.Where(value =>
-                    ReferenceEquals(value.Blueprint, stunned) &&
-                    ReferenceEquals(value.Context?.MaybeCaster, second))
-                    .ToArray();
-                check("screech-two-owner-isolation",
-                    command != null && command.IsFinished &&
-                    first.Buffs.GetBuff(recharge) != null &&
-                    second.Buffs.GetBuff(recharge) == null &&
-                    !firstAvailability.IsAvailable &&
-                    secondAvailability.IsAvailable &&
-                    fromFirst.Length == 1 && fromSecond.Length == 0,
-                    new JObject {
-                        ["first"] = first.UniqueId,
-                        ["second"] = second.UniqueId,
+                if (attempt > 1)
+                {
+                    foreach (int frame in VrockClearRecharge37(first,
+                        recharge, target, stunned)) yield return frame;
+                }
+                var observed = new Astral31SmiteEvents(first, screech,
+                    stunned, null, new[] { target });
+                EventBus.Subscribe(observed);
+                bool naturalRetry = false;
+                try
+                {
+                    UnitUseAbility command = null;
+                    foreach (int frame in Sprint26Cast(first, screech,
+                        new TargetWrapper(first), value => command = value))
+                        yield return frame;
+                    var firstAvailability = new AbilityData(
+                        first.Descriptor.Abilities.GetAbility(screech));
+                    var secondAvailability = new AbilityData(
+                        second.Descriptor.Abilities.GetAbility(screech));
+                    RuleSavingThrow save = observed.Save(target);
+                    Buff[] fromFirst = target.Buffs.Enumerable.Where(value =>
+                        ReferenceEquals(value.Blueprint, stunned) &&
+                        ReferenceEquals(value.Context?.MaybeCaster, first))
+                        .ToArray();
+                    Buff[] fromSecond = target.Buffs.Enumerable.Where(value =>
+                        ReferenceEquals(value.Blueprint, stunned) &&
+                        ReferenceEquals(value.Context?.MaybeCaster, second))
+                        .ToArray();
+                    // Ownership is the point of this cell and is checked on
+                    // every attempt regardless of the roll.
+                    bool ownership = command != null && command.IsFinished &&
+                        first.Buffs.GetBuff(recharge) != null &&
+                        second.Buffs.GetBuff(recharge) == null &&
+                        !firstAvailability.IsAvailable &&
+                        secondAvailability.IsAvailable &&
+                        fromSecond.Length == 0;
+                    passed = ownership && fromFirst.Length == 1;
+                    bool natural20 = save != null && save.IsPassed &&
+                        save.D20.Value == 20;
+                    naturalRetry = ownership && fromFirst.Length == 0 &&
+                        natural20;
+                    attempts.Add(new JObject {
+                        ["attempt"] = attempt,
+                        ["command"] = command == null ? null :
+                            Sprint27AiCommand(command),
+                        ["saveD20"] = save?.D20.Value,
+                        ["saveDc"] = save?.DifficultyClass,
+                        ["savePassed"] = save?.IsPassed,
+                        ["naturalTwenty"] = natural20,
                         ["firstMarker"] = first.Buffs.GetBuff(recharge) ==
                             null ? null : InfernalSavedEffect34(
                                 first.Buffs.GetBuff(recharge)),
@@ -639,13 +741,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["secondAvailable"] = secondAvailability.IsAvailable,
                         ["victimEffectsFromFirst"] = fromFirst.Length,
                         ["victimEffectsFromSecond"] = fromSecond.Length,
-                        ["secondView"] = secondView,
-                        ["secondViewRequired"] = false,
-                        ["command"] = command == null ? null :
-                            Sprint27AiCommand(command)
-                    }, "One vrock's hour marker and victim effect belong to it alone; a second vrock standing beside it is neither spent nor refused.");
+                        ["ownershipExact"] = ownership,
+                        ["nativeNaturalRetry"] = naturalRetry,
+                        ["passed"] = passed
+                    });
+                }
+                finally { EventBus.Unsubscribe(observed); }
+                if (!passed && !naturalRetry) break;
             }
-            finally { EventBus.Unsubscribe(observed); }
+            check("screech-two-owner-isolation", passed, new JObject {
+                ["first"] = first.UniqueId,
+                ["second"] = second.UniqueId,
+                ["attempts"] = attempts,
+                ["maximumAttempts"] = maximumAttempts,
+                ["selectedAttempt"] = passed ? (int?)attempts.Count : null,
+                ["secondView"] = secondView,
+                ["secondViewRequired"] = false,
+                ["forcedRolls"] = 0,
+                ["retryRule"] =
+                    "Retried only when ownership was already exact and the sole miss was a natural twenty; no roll was forced and no assertion was relaxed."
+            }, "One vrock's hour marker and victim effect belong to it alone within at most three natural attempts; a second vrock standing beside it is neither spent nor refused.");
         }
 
         /// <summary>
