@@ -134,8 +134,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     recharge, cooldown)) yield return frame;
                 PlaceExpandedSummoningUnit(ally, vrock.Position +
                     Vector3.forward * (screechRadius - 3f));
+                // The enemy is placed adjacent here, unlike the cells above.
+                // With both self-buffs spent and both area effects vetoed by
+                // the ally, the only move left is an ordinary attack, and the
+                // fifth run showed the brain starting nothing at all against a
+                // target eight metres away: it does not approach. An
+                // unreachable target makes a refusal unfalsifiable - "chose
+                // nothing" would pass for "correctly refused" - so the target
+                // is put in reach, exactly as the released attack-fallback
+                // observation does, and the refusal is then observed while the
+                // brain is demonstrably attacking.
                 PlaceExpandedSummoningUnit(target, vrock.Position +
-                    Vector3.right * (screechRadius - 1f));
+                    Vector3.right * (vrock.Corpulence + target.Corpulence +
+                        0.3f));
                 foreach (int frame in VrockAiChoice37(vrock, target,
                     new[] { screech, spores }, "ai-ally-in-spread-no-buffs",
                     screech, false, check)) yield return frame;
