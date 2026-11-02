@@ -1097,6 +1097,12 @@ def planned():
         ("KMG.Summoning.Demon.Vrock.ScreechEligibility", "VrockScreechEligibility37"),
         ("KMG.Summoning.Demon.Vrock.SporeAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.Demon.Vrock.SporeEligibility", "VrockSporeEligibility37"),
+        ("KMG.Summoning.Demon.Vrock.Heroism", "BlueprintAbility"),
+        ("KMG.Summoning.Demon.Vrock.HeroismResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Demon.Vrock.HeroismAi", "InfernalSpellAi35"),
+        ("KMG.Summoning.Demon.Vrock.MirrorImage", "BlueprintAbility"),
+        ("KMG.Summoning.Demon.Vrock.MirrorImageResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Demon.Vrock.MirrorImageAi", "InfernalSpellAi35"),
     ))
     expected = sum(identity_count(name) for name in (
         "UnitCount", "LogicalAbilityCount", "TemplateBuffCount", "SpecialIdentityCount",

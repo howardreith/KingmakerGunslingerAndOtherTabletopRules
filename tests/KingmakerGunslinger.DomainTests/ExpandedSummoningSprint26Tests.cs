@@ -32,7 +32,7 @@ namespace KingmakerGunslinger.DomainTests
         // adapters are counted by the live adapter surface, not here.
         internal const int Sprint37CreatureIdentityCount = 1;
         internal const int Sprint37RootIdentityCount = 3;
-        internal const int Sprint37PrivateIdentityCount = 19;
+        internal const int Sprint37PrivateIdentityCount = 25;
         internal const int Sprint37CatalogIdentityCount =
             Sprint37CreatureIdentityCount + Sprint37RootIdentityCount +
             Sprint37PrivateIdentityCount;
