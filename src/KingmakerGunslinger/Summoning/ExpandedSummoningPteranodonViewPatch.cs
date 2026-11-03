@@ -618,7 +618,16 @@ namespace KingmakerGunslinger.Summoning
                  InfernalVisualPolicy34.Handles(attachment.VisualKey) ||
                  InfernalVisualPolicy35.Handles(attachment.VisualKey) ||
                  InfernalVisualPolicy36.Handles(attachment.VisualKey) ||
-                 VrockVisualPolicy37.Handles(attachment.VisualKey)) ||
+                 VrockVisualPolicy37.Handles(attachment.VisualKey) ||
+                 // Sprint 38 rides the same measured theropod donor, so it
+                 // belongs in this branch. It was absent at first and fell
+                 // through to the single-renderer default, which rejected a
+                 // correct two-renderer donor with
+                 // "donor-renderer-count=2" and left the donor silhouette
+                 // showing while the authored mesh had loaded cleanly - the
+                 // exact reason a published visual status is not proof the
+                 // body reached the view.
+                 GlabrezuVisualPolicy38.Handles(attachment.VisualKey)) ||
                 attachment.VisualKey == HoundArchonVisualPolicy.Key)
             {
                 if (!TheropodVisualPolicy.IsExactRendererSet(

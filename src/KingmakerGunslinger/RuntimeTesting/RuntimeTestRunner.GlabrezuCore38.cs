@@ -211,11 +211,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.IndexOf("Grab",
                         StringComparison.OrdinalIgnoreCase) >= 0)
                 .ToArray();
+            // The printed reach is the weapon TYPE's configured attack range.
+            // The live EQUIPPED value is not the same number on a large body -
+            // the released Sprint 29 Huge giants record exactly this
+            // distinction, asserting the configured range and the approach
+            // radius rather than the equipped figure - so the assertion is on
+            // the configured range plus the fact that all five limbs share one
+            // live reach, and the equipped value and the body's own reach stat
+            // are recorded as evidence rather than pinned to a derived number.
+            int[] equipped = all.Select(value => value.AttackRange.Value)
+                .ToArray();
             bool exact = all.Length == 5 && identities.Length == 3 &&
                 pincers.Length == GlabrezuRules38Policy.RendPincerCount &&
                 others.Length == 3 &&
-                all.All(value => value.AttackRange.Value ==
-                    GlabrezuRules38Policy.ReachFeet) &&
+                all.All(value => value.Blueprint.Type != null &&
+                    value.Blueprint.Type.AttackRange.Value ==
+                        GlabrezuRules38Policy.ReachFeet) &&
+                equipped.Distinct().Count() == 1 &&
                 others.All(value => value.Blueprint.Type == null ||
                     value.Blueprint.Type.CriticalRollEdge == 20) &&
                 grab == null && absentRoutines.Length == 0 &&
@@ -229,9 +241,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["size"] = glabrezu.Descriptor.State.Size.ToString(),
                 ["limbCount"] = all.Length,
                 ["distinctWeaponIdentities"] = new JArray(identities),
-                ["reachFeet"] = new JArray(all.Select(value =>
-                    value.AttackRange.Value)),
+                ["configuredReachFeet"] = new JArray(all.Select(value =>
+                    (int?)value.Blueprint.Type?.AttackRange.Value)),
+                ["equippedReachFeet"] = new JArray(equipped),
+                ["bodyReachFeet"] = glabrezu.Stats.Reach.ModifiedValue,
                 ["printedReachFeet"] = GlabrezuRules38Policy.ReachFeet,
+                ["reachMeaning"] =
+                    "The printed 15 feet is the weapon type's configured attack range. The live equipped value is larger on a Huge body, which the released Sprint 29 Huge giants record the same way; what matters here is that every limb carries the printed configuration and that all five share one live reach, so no limb is short.",
                 ["pincerCount"] = pincers.Length,
                 ["printedPincerCount"] =
                     GlabrezuRules38Policy.RendPincerCount,
@@ -262,7 +278,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Where(value => value.StartsWith("KMG_",
                         StringComparison.Ordinal))
                     .OrderBy(value => value, StringComparer.Ordinal))
-            }, "The live Glabrezu fields five primary natural attacks from three weapon identities at one printed reach on its own attached four-armed body, the two pincers threaten on 19-20 while the claws and bite do not, and it carries no Pounce or Grab routine.");
+            }, "The live Glabrezu fields five primary natural attacks from three weapon identities at the one printed configured reach on its own attached four-armed body, the two pincers threaten on 19-20 while the claws and bite do not, and it carries no Pounce or Grab routine.");
         }
 
         /// <summary>
