@@ -125,29 +125,6 @@ namespace KingmakerGunslinger.Summoning
             { StateFor(owner).RecordOutcome(pincer, evt.Target, hit); }
         }
 
-        /// <summary>
-        /// A read-only look at one unit's round state, for observation only.
-        /// It creates nothing: a unit with no entry answers false, which is
-        /// exactly the fact a loaded save has to show. Nothing here may
-        /// mutate the table, because an observer that armed a rend by asking
-        /// about it would be reporting its own effect.
-        /// </summary>
-        internal static bool TryPeekRound(UnitEntityData unit,
-            out bool armed, out bool spent, out int trackedVictims)
-        {
-            armed = false;
-            spent = false;
-            trackedVictims = 0;
-            if (unit == null) return false;
-            GlabrezuRendRound38 round;
-            lock (States)
-            { if (!States.TryGetValue(unit, out round)) return false; }
-            armed = round.Armed;
-            spent = round.SpentThisRound;
-            trackedVictims = round.TrackedVictimCount;
-            return true;
-        }
-
         /// <summary>The round's one rend comes back, and pairs are forgotten.</summary>
         public void OnNewRound()
         {

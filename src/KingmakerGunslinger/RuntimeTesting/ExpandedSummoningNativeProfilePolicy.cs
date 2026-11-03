@@ -35,6 +35,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         // candidate; this phase is how all rows bind to the same bytes,
         // with one snapshot and one restoration.
         internal const string Sprint37VrockReleasePhase = "sprint37-vrock-release";
+        internal const string Sprint38GlabrezuCorePhase = "sprint38-glabrezu-core";
+        internal const string Sprint38GlabrezuRendPhase = "sprint38-glabrezu-rend";
+        internal const string Sprint38GlabrezuStunPhase = "sprint38-glabrezu-stun";
+        internal const string Sprint38GlabrezuSpellsPhase = "sprint38-glabrezu-spells";
+        internal const string Sprint38GlabrezuAiPhase = "sprint38-glabrezu-ai";
+        internal const string Sprint38GlabrezuPublicPhase = "sprint38-glabrezu-public";
+        // The same reasoning as Sprint 37's release phase: a release output
+        // is built once per commit, so separate invocations cannot share one
+        // candidate. Every mandatory Sprint 38 mechanics row binds to the
+        // same bytes here, under one snapshot and one restoration.
+        internal const string Sprint38GlabrezuReleasePhase = "sprint38-glabrezu-release";
         internal const string Sprint32ShadowDrainPhase = "sprint33-drain-observe";
         internal const string Sprint32ShadowPreservationPhase = "sprint33-preservation";
         internal const string Sprint32StalkerPurgePhase = "sprint33-stalker-purge";
@@ -72,7 +83,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static bool Sprint32NativeDefaultOutdoor(string scenario, string phase)
         { return scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview && Sprint32NativeDefaultPhase(phase); }
         internal static bool Sprint32Phase(string phase)
-        { return phase == Sprint32InfernalHealingPhase || phase == Sprint32InfernalAiPhase || phase == Sprint32InfernalEffectsPhase || phase == Sprint32InfernalLifetimePhase || phase == Sprint32InfernalCombatPhase || phase == Sprint32InfernalRoutesPhase || phase == Sprint32InfernalMechanicsPhase || phase == Sprint32InfernalEarlyPhase || phase == Sprint35InfernalEarlyPhase || phase == Sprint35InfernalBarbedPhase || phase == Sprint35InfernalBarbedCombatPhase || phase == Sprint35InfernalBonePhase || phase == Sprint35InfernalPublicPhase || phase == Sprint36InfernalCorePhase || phase == Sprint36InfernalCombatPhase || phase == Sprint36InfernalTurnsPhase || phase == Sprint36InfernalPublicPhase || phase == Sprint37VrockCorePhase || phase == Sprint37VrockSporesPhase || phase == Sprint37VrockGeometryPhase || phase == Sprint37VrockScreechPhase || phase == Sprint37VrockTurnsPhase || phase == Sprint37VrockAiPhase || phase == Sprint37VrockPublicPhase || phase == Sprint37VrockReleasePhase || phase == Sprint32ShadowDrainPhase || phase == Sprint32ShadowPreservationPhase || phase == Sprint32StalkerPurgePhase || phase == Sprint32ShadowOutsidersPhase || phase == Sprint32SatyrControlPhase || phase == Sprint32LillendSupportPhase ||
+        { return phase == Sprint32InfernalHealingPhase || phase == Sprint32InfernalAiPhase || phase == Sprint32InfernalEffectsPhase || phase == Sprint32InfernalLifetimePhase || phase == Sprint32InfernalCombatPhase || phase == Sprint32InfernalRoutesPhase || phase == Sprint32InfernalMechanicsPhase || phase == Sprint32InfernalEarlyPhase || phase == Sprint35InfernalEarlyPhase || phase == Sprint35InfernalBarbedPhase || phase == Sprint35InfernalBarbedCombatPhase || phase == Sprint35InfernalBonePhase || phase == Sprint35InfernalPublicPhase || phase == Sprint36InfernalCorePhase || phase == Sprint36InfernalCombatPhase || phase == Sprint36InfernalTurnsPhase || phase == Sprint36InfernalPublicPhase || phase == Sprint37VrockCorePhase || phase == Sprint37VrockSporesPhase || phase == Sprint37VrockGeometryPhase || phase == Sprint37VrockScreechPhase || phase == Sprint37VrockTurnsPhase || phase == Sprint37VrockAiPhase || phase == Sprint37VrockPublicPhase || phase == Sprint37VrockReleasePhase || phase == Sprint38GlabrezuCorePhase || phase == Sprint38GlabrezuRendPhase || phase == Sprint38GlabrezuStunPhase || phase == Sprint38GlabrezuSpellsPhase || phase == Sprint38GlabrezuAiPhase || phase == Sprint38GlabrezuPublicPhase || phase == Sprint38GlabrezuReleasePhase || phase == Sprint32ShadowDrainPhase || phase == Sprint32ShadowPreservationPhase || phase == Sprint32StalkerPurgePhase || phase == Sprint32ShadowOutsidersPhase || phase == Sprint32SatyrControlPhase || phase == Sprint32LillendSupportPhase ||
             phase == Sprint32SatyrTurnPhase || phase == Sprint32LillendTurnPhase || phase == Sprint32SuggestionPhase ||
             phase == Sprint32SatyrRoutesPhase || phase == Sprint32LillendRoutesPhase || phase == Sprint32LifecyclePhase ||
             phase == Sprint32CantripPhase || phase == Sprint32HoldPhase || phase == Sprint32HoldTurnPhase ||
