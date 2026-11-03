@@ -179,6 +179,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 out mesh, out bones, out paint, out status);
             add(mesh, VrockVisualPolicy37.Vrock + ".Mesh");
             add(paint, VrockVisualPolicy37.Vrock + ".Albedo");
+            // Sprint38 holds its one authored source mesh and albedo in the
+            // same immutable process cache, for the same reason: an owned
+            // resource with no ownership record classifies UNRESOLVED and
+            // fails the cold cleanup closed, which is exactly what that stage
+            // is for. Registering the pair here is what lets the cleanup tell
+            // this project's single decoded original from an unknown survivor.
+            PteranodonAssetRuntime.TryGetGlabrezuVisual38(
+                GlabrezuVisualPolicy38.Glabrezu,
+                out mesh, out bones, out paint, out status);
+            add(mesh, GlabrezuVisualPolicy38.Glabrezu + ".Mesh");
+            add(paint, GlabrezuVisualPolicy38.Glabrezu + ".Albedo");
             foreach (string key in ExpandedSummoningCatalog.All.Select(c => c.Key))
             {
                 if (PteranodonAssetRuntime.TryGetUngulateVisual(key, out mesh, out bones, out paint, out status) ||

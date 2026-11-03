@@ -611,24 +611,7 @@ namespace KingmakerGunslinger.Summoning
                 .Where(value => value != null && value.sharedMesh != null)
                 .ToArray();
             SkinnedMeshRenderer donor;
-            if (TheropodVisualPolicy.Handles(attachment.VisualKey) ||
-                attachment.VisualKey == LemureVisualPolicy.Key ||
-                attachment.VisualKey == DretchVisualPolicy.Key ||
-                (ShadowOutsiderVisualPolicy.Handles(attachment.VisualKey) ||
-                 InfernalVisualPolicy34.Handles(attachment.VisualKey) ||
-                 InfernalVisualPolicy35.Handles(attachment.VisualKey) ||
-                 InfernalVisualPolicy36.Handles(attachment.VisualKey) ||
-                 VrockVisualPolicy37.Handles(attachment.VisualKey) ||
-                 // Sprint 38 rides the same measured theropod donor, so it
-                 // belongs in this branch. It was absent at first and fell
-                 // through to the single-renderer default, which rejected a
-                 // correct two-renderer donor with
-                 // "donor-renderer-count=2" and left the donor silhouette
-                 // showing while the authored mesh had loaded cleanly - the
-                 // exact reason a published visual status is not proof the
-                 // body reached the view.
-                 GlabrezuVisualPolicy38.Handles(attachment.VisualKey)) ||
-                attachment.VisualKey == HoundArchonVisualPolicy.Key)
+            if (RidesMeasuredTheropodDonor(attachment.VisualKey))
             {
                 if (!TheropodVisualPolicy.IsExactRendererSet(
                         donors.Select(value => value.name)))
@@ -721,16 +704,8 @@ namespace KingmakerGunslinger.Summoning
                                     attachment.VisualKey == AnkylosaurusRulesPolicy.Key ||
                                     ArmoredDinosaurVisualPolicy.Handles(
                                         attachment.VisualKey) ||
-                                    TheropodVisualPolicy.Handles(
+                                    RidesMeasuredTheropodDonor(
                                         attachment.VisualKey) ||
-                                    attachment.VisualKey == LemureVisualPolicy.Key ||
-                                    attachment.VisualKey == DretchVisualPolicy.Key ||
-                                    (ShadowOutsiderVisualPolicy.Handles(attachment.VisualKey) ||
-                                     InfernalVisualPolicy34.Handles(attachment.VisualKey) ||
-                                     InfernalVisualPolicy35.Handles(attachment.VisualKey) ||
-                                     InfernalVisualPolicy36.Handles(attachment.VisualKey) ||
-                                     VrockVisualPolicy37.Handles(attachment.VisualKey)) ||
-                                    attachment.VisualKey == HoundArchonVisualPolicy.Key ||
                                     (GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key))
                                     ? "KMG_" + attachment.VisualKey + "_Original"
                                     : CustomVisualName;
@@ -782,15 +757,7 @@ namespace KingmakerGunslinger.Summoning
                         () => HasLiveOriginalVisual(view, attachment.VisualKey));
                 }
 
-                if (TheropodVisualPolicy.Handles(attachment.VisualKey) ||
-                    attachment.VisualKey == LemureVisualPolicy.Key ||
-                    attachment.VisualKey == DretchVisualPolicy.Key ||
-                    (ShadowOutsiderVisualPolicy.Handles(attachment.VisualKey) ||
-                     InfernalVisualPolicy34.Handles(attachment.VisualKey) ||
-                     InfernalVisualPolicy35.Handles(attachment.VisualKey) ||
-                     InfernalVisualPolicy36.Handles(attachment.VisualKey) ||
-                     VrockVisualPolicy37.Handles(attachment.VisualKey)) ||
-                    attachment.VisualKey == HoundArchonVisualPolicy.Key)
+                if (RidesMeasuredTheropodDonor(attachment.VisualKey))
                 {
                     // The same measured two-renderer donor needs the same per-view suppression.
                     attachment.TheropodSuppression = view.gameObject
@@ -930,6 +897,14 @@ namespace KingmakerGunslinger.Summoning
                     InfernalVisualPolicy35.Handles(attachment.VisualKey) ||
                     InfernalVisualPolicy36.Handles(attachment.VisualKey) ||
                     VrockVisualPolicy37.Handles(attachment.VisualKey) ||
+                    // Deliberately added beside the others rather than
+                    // replaced by the shared predicate: this list is a
+                    // different set. It covers the gorgon, the crocodilians
+                    // and the giant bodies, and does not cover the lemure,
+                    // the dretch, the shadow outsiders, Sprint 34 or the
+                    // hound, so asking the donor predicate here would widen
+                    // the rollback family rather than tidy it.
+                    GlabrezuVisualPolicy38.Handles(attachment.VisualKey) ||
                     (GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key)))
                 {
                     string ownedName = "KMG_" + attachment.VisualKey + "_Original";
@@ -1353,6 +1328,32 @@ namespace KingmakerGunslinger.Summoning
                 .Where(value => value != null).Distinct().ToArray();
         }
 
+        /// <summary>
+        /// Whether this visual key rides the measured two-renderer free-hands
+        /// donor.
+        ///
+        /// <para>Six places in this file kept their own copy of this list, and
+        /// each copy was a separate thing to remember. Sprint 37 was missing
+        /// from one of them, which made an assertion quietly weaker; Sprint 38
+        /// was missing from five, and the consequences were a donor silhouette
+        /// shown while the authored mesh had loaded cleanly, and a persistence
+        /// row that failed after a real game launch because the owned-resource
+        /// receipt came back empty. One predicate answers for all of them.</para>
+        /// </summary>
+        internal static bool RidesMeasuredTheropodDonor(string visualKey)
+        {
+            return TheropodVisualPolicy.Handles(visualKey) ||
+                visualKey == LemureVisualPolicy.Key ||
+                visualKey == DretchVisualPolicy.Key ||
+                ShadowOutsiderVisualPolicy.Handles(visualKey) ||
+                InfernalVisualPolicy34.Handles(visualKey) ||
+                InfernalVisualPolicy35.Handles(visualKey) ||
+                InfernalVisualPolicy36.Handles(visualKey) ||
+                VrockVisualPolicy37.Handles(visualKey) ||
+                GlabrezuVisualPolicy38.Handles(visualKey) ||
+                visualKey == HoundArchonVisualPolicy.Key;
+        }
+
         /// <summary>Exact per-view resources for original bodies on the measured free-hands donor.
         /// The disabled accessory and both donor renderers remain native and
         /// therefore never appear in this receipt.</summary>
@@ -1361,15 +1362,7 @@ namespace KingmakerGunslinger.Summoning
         {
             Attachment attachment;
             if (view == null || !Applied.TryGetValue(view, out attachment) ||
-                (!TheropodVisualPolicy.Handles(attachment.VisualKey) &&
-                 attachment.VisualKey != LemureVisualPolicy.Key &&
-                 attachment.VisualKey != DretchVisualPolicy.Key &&
-                 !ShadowOutsiderVisualPolicy.Handles(attachment.VisualKey) &&
-                 !InfernalVisualPolicy34.Handles(attachment.VisualKey) &&
-                 !InfernalVisualPolicy35.Handles(attachment.VisualKey) &&
-                 !InfernalVisualPolicy36.Handles(attachment.VisualKey) &&
-                 !VrockVisualPolicy37.Handles(attachment.VisualKey) &&
-                 attachment.VisualKey != HoundArchonVisualPolicy.Key))
+                !RidesMeasuredTheropodDonor(attachment.VisualKey))
                 return new UnityEngine.Object[0];
             Material[] installed = attachment.Donor == null
                 ? new Material[0] : attachment.Donor.sharedMaterials;
@@ -1439,16 +1432,7 @@ namespace KingmakerGunslinger.Summoning
                  !IsCrocodilian(attachment.VisualKey) &&
                  !ArmoredDinosaurVisualPolicy.Handles(
                     attachment.VisualKey) &&
-                 !TheropodVisualPolicy.Handles(
-                    attachment.VisualKey) &&
-                 attachment.VisualKey != LemureVisualPolicy.Key &&
-                 attachment.VisualKey != DretchVisualPolicy.Key &&
-                 !ShadowOutsiderVisualPolicy.Handles(attachment.VisualKey) &&
-                 !InfernalVisualPolicy34.Handles(attachment.VisualKey) &&
-                 !InfernalVisualPolicy35.Handles(attachment.VisualKey) &&
-                 !InfernalVisualPolicy36.Handles(attachment.VisualKey) &&
-                 !VrockVisualPolicy37.Handles(attachment.VisualKey) &&
-                 attachment.VisualKey != HoundArchonVisualPolicy.Key &&
+                 !RidesMeasuredTheropodDonor(attachment.VisualKey) &&
                  !(GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key))) return;
             string visualName = attachment.VisualKey == "stirge"
                 ? StirgeVisualName : attachment.VisualKey == "giant-wasp"
