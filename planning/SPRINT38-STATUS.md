@@ -283,9 +283,74 @@ complete unfiltered domain suite run as
 reaches the complete suite without the wrapper, so this substitution is only
 valid before freeze and is never used as release evidence.
 
+## Guarded mechanics qualification, 2026-11-03
+
+Six phases, each a separate guarded transaction against a development
+candidate, each restoring the live mod tree to its exact pre-run hash
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+
+| Phase | Rows | Result |
+|---|---|---|
+| `sprint38-glabrezu-core` | bootstrap, native appearance, five primary attacks, defences, feats and constant sense, attack fallback | PASS |
+| `sprint38-glabrezu-rend` | limbs, round clock live, live attack command, pair rends once, other limbs never, per-victim history, round-not-command | PASS |
+| `sprint38-glabrezu-stun` | printed range, every bucket, immune recipient refused, penetration at the printed caster level, Vrock screech verification | PASS |
+| `sprint38-glabrezu-spells` | at-will carries no resource, at-will repeats, bursts at printed difficulty | PASS |
+| `sprint38-glabrezu-ai` | second enemy is real, candidates differ, the word targets the affectable candidate | PASS |
+| `sprint38-glabrezu-public` | route scope, own 128px medallion with no fallback, real player route | PASS |
+
+### What the runs found, and what changed because of them
+
+1. **The authored body was not reaching the view.** The mesh loaded cleanly -
+   `visual:published`, 3,130 vertices, the 512px albedo - and the live view read
+   `donor-visual:donor-renderer-count=2`: the Sprint 38 policy was missing from
+   the view patch's measured-theropod-donor branch and fell through to the
+   single-renderer default. A published visual status is not proof the body
+   shipped; the installed view is.
+2. **Reach is read where it is printed.** The live *equipped* attack range is
+   22 on this Huge body against a printed 15. The printed value is the weapon
+   type's configured range, and the released Sprint 29 Huge giants already
+   record that distinction, so the cell asserts the configured range on every
+   limb plus one shared live reach.
+3. **Perception is 28, not the printed 26.** The installed native Persuasive
+   feat adds +2 Perception in this game as well as its Persuasion bonus, and
+   this creature's printed feat list includes Persuasive. Disclosed in
+   `planning/SPRINT38-RULES.md` and pinned exactly, with no unattributed
+   modifier permitted.
+4. **The round's rend allowance was never coming back.** The engine dispatches
+   `ITickEachRound` through `unit.Logic` - both the base `UnitTicksController`
+   and the turn-based `TurnController` call
+   `unit.Logic.CallFactComponents` - so a component carried by a FEATURE never
+   receives it, and the owner sat in real combat for 975 unpaused frames with
+   its rend spent. The gate now stamps the round from game time, which advances
+   in both combat modes; `OnNewRound` is kept and still resets. Scoped to
+   Sprint 38: the released rend and stun consumers with the same shape are not
+   touched.
+5. **One stun reported twice is not two stuns.** The engine raised
+   `RuleApplyBuff` twice for one application, both with the same eleven-round
+   duration, so the cell counts carrier instances on the recipient instead.
+
+### The narrow authorized Vrock check: nothing changed
+
+Measured against two real registered high-resistance non-demon recipients, the
+Trumpet Archon and the Astral Deva, both at spell resistance 25:
+
+- the released Vrock screech declares **no** spell resistance, so
+  `AbilityExecutionProcess.DoApplyEffect` never raises a resistance check for
+  it. The reported concern does not reproduce;
+- Power Word Stun, measured the same way as the resistance-applies neighbour,
+  declares spell resistance and penetrates at the printed caster level 14 - not
+  the 12 hit dice a pre-cast preview reports.
+
+No global resistance bypass, no Sprint 37 replay, and no change to any released
+byte. Sprint 37 remains closed.
+
 ## Not started
 
-The Sprint 38 runtime scope registration and observers, the narrow Vrock SR
-check, all native qualification, the version bump and its release validator,
-the exact-byte release, the public-download verification and the final records.
-Sprint 39 and the Nalfeshnee remain NOT_STARTED and are out of scope.
+The version bump to v0.0.176 and its release validator, publisher policy and
+refusal suite; the final frozen release candidate with its full unfiltered
+gate, strict package and byte reproducibility; the grouped release mechanics
+phase bound to that candidate; the two mixed persistence envelopes across six
+fresh processes; the affected integration pass; the publisher preflight, the
+merge, the exact-byte release, the public-download verification, the exact
+restoration and the final records. Sprint 39 and the Nalfeshnee remain
+NOT_STARTED and are out of scope.
