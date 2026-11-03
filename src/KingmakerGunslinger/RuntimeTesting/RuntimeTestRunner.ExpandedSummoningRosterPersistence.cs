@@ -68,22 +68,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.ArmoredDinosaursScope; } }
         private bool Sprint24PersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.TheropodsScope; } }
+        // Asks the policy for the scope's own creatures. This was a
+        // parallel fourteen-branch list with no Sprint 37 entry, so the vrock
+        // scope fell through to the whole roster and the selection then
+        // refused the first creature as one the scope does not own.
         private string[] RosterSelectedKeys
-        { get { return Sprint22PersistenceScope ? new[] { "ankylosaurus" } :
-            Sprint23PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.ArmoredDinosaurKeys :
-            Sprint24PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.TheropodKeys :
-            Sprint25PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GiantBodyKeys :
-            Sprint26PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.MagicalBeastKeys :
-            Sprint27PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GriffonKeys :
-            Sprint28PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GiantHumanoidKeys :
-            Sprint29PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GiantHumanoidsTwoKeys :
-            Sprints3031PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.OutsiderCelestialKeys :
-            Sprint32PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.FeyCelestialKeys :
-            Sprint36PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.InfernalDemonKeys :
-            Sprint35PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.InfernalReachTwoKeys :
-            Sprint34PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.InfernalOutsiderKeys :
-            Sprint33PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.ShadowOutsiderKeys :
-            ExpandedSummoningRosterPersistencePolicy.Keys; } }
+        { get { return ExpandedSummoningRosterPersistencePolicy.SelectedKeys(
+            (string)_request.Parameters?["persistenceScope"]); } }
         private IEnumerator<int> _rosterPersistenceSteps;
         private bool? _rosterPersistencePause;
         private readonly List<RuntimeTestAssertion> _rosterPersistenceChecks = new List<RuntimeTestAssertion>();

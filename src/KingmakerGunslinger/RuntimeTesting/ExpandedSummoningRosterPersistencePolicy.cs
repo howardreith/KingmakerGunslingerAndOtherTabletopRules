@@ -326,9 +326,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Concat(SummonNativeExpansionCatalog.All.Select(n => "native:" + n.UnitGuid))
                 .Distinct(StringComparer.Ordinal).OrderBy(k => k, StringComparer.Ordinal).ToArray(); }
         }
-        internal static SummonVariantSpec SelectCreatureVariant(string scope, string key)
+        /// <summary>
+        /// The creatures a persistence scope summons, as one list. There were
+        /// four parallel copies of this - the permitted set below, the exact
+        /// selected-key check, and the runner's own selection - and the vrock
+        /// scope was missing from the runner's, which fell through to the whole
+        /// roster and asked this scope for a creature it does not own. A
+        /// reflection test now requires every declared scope to round-trip
+        /// through this one function.
+        /// </summary>
+        internal static string[] SelectedKeys(string scope)
         {
-            string[] permitted = scope == AnkylosaurusScope ? new[] { "ankylosaurus" } :
+            return scope == AnkylosaurusScope ? new[] { "ankylosaurus" } :
                 scope == ArmoredDinosaursScope ? ArmoredDinosaurKeys :
                 scope == TheropodsScope ? TheropodKeys :
                 scope == GiantBodiesScope ? GiantBodyKeys :
@@ -343,8 +352,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == InfernalDemonsScope ? InfernalDemonKeys :
                 scope == VrockScope ? VrockKeys :
                 scope == ShadowOutsidersScope ? ShadowOutsiderKeys :
-                scope == Scope ? ExpandedSummoningCatalog.All.Select(value => value.Key).ToArray() :
-                new string[0];
+                scope == Scope ? Keys : new string[0];
+        }
+
+        internal static SummonVariantSpec SelectCreatureVariant(string scope, string key)
+        {
+            string[] permitted = scope == Scope
+                // The broad released-roster fixture selects from the catalog
+                // rather than from the save-identity list, as it always has.
+                ? ExpandedSummoningCatalog.All.Select(value => value.Key).ToArray()
+                : SelectedKeys(scope);
             if (!permitted.Contains(key, StringComparer.Ordinal))
                 throw new InvalidOperationException("Persistence scope does not own the requested creature key.");
             IEnumerable<SummonVariantSpec> variants = ExpandedSummoningCatalog
@@ -363,22 +380,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             IEnumerable<string> observed)
         {
             if (observed == null) return false;
-            string[] expected = scope == AnkylosaurusScope ?
-                new[] { "ankylosaurus" } : scope == ArmoredDinosaursScope ?
-                ArmoredDinosaurKeys : scope == TheropodsScope ?
-                TheropodKeys : scope == GiantBodiesScope ? GiantBodyKeys :
-                scope == MagicalBeastsScope ? MagicalBeastKeys :
-                scope == GriffonScope ? GriffonKeys :
-                scope == GiantHumanoidsScope ? GiantHumanoidKeys :
-                scope == GiantHumanoidsTwoScope ? GiantHumanoidsTwoKeys :
-                scope == OutsiderCelestialScope ? OutsiderCelestialKeys :
-                scope == FeyCelestialScope ? FeyCelestialKeys :
-                scope == InfernalOutsidersScope ? InfernalOutsiderKeys :
-                scope == InfernalReachTwoScope ? InfernalReachTwoKeys :
-                scope == InfernalDemonsScope ? InfernalDemonKeys :
-                scope == VrockScope ? VrockKeys :
-                scope == ShadowOutsidersScope ? ShadowOutsiderKeys :
-                scope == Scope ? Keys : new string[0];
+            string[] expected = SelectedKeys(scope);
             return expected.Length != 0 && observed.OrderBy(value => value,
                     StringComparer.Ordinal).SequenceEqual(expected.OrderBy(
                     value => value, StringComparer.Ordinal),
