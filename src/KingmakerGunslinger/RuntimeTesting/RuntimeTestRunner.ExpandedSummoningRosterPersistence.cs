@@ -32,12 +32,14 @@ namespace KingmakerGunslinger.RuntimeTesting
 
     internal sealed partial class RuntimeTestRunner
     {
+        // Asks the policy rather than keeping a parallel list. A
+        // hand-maintained duplicate is what let the vrock scope pass every
+        // other gate, miss this one, and report PASS from the generic
+        // persistence path without observing one Sprint 37 fact.
         private bool RosterPersistenceScope
-        { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.Scope ||
-            Sprint22PersistenceScope || Sprint23PersistenceScope ||
-            Sprint24PersistenceScope || Sprint25PersistenceScope || Sprint26PersistenceScope ||
-            Sprint27PersistenceScope || Sprint28PersistenceScope ||
-            Sprint29PersistenceScope || Sprints3031PersistenceScope || Sprint32PersistenceScope || Sprint33PersistenceScope || Sprint34PersistenceScope || Sprint35PersistenceScope || Sprint36PersistenceScope; } }
+        { get { return ExpandedSummoningRosterPersistencePolicy
+            .IsRosterPersistenceScope(
+                (string)_request.Parameters?["persistenceScope"]); } }
         private bool Sprint36PersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.InfernalDemonsScope; } }
         private bool Sprint35PersistenceScope

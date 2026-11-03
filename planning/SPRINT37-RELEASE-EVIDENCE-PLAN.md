@@ -174,6 +174,29 @@ final candidate at the commit that carries this correction, and the earlier
 two artifacts simply stand unused. The remedy is the one already written here,
 applied again, not a new mechanism.
 
+## A stage that passed without observing anything
+
+The first ON prepare stage against the frozen candidate reported PASS, and its
+receipt named not one Sprint 37 assertion. The vrock scope was admitted by the
+installed-stack parameter set, by the two targeted-trio allow-lists, by the
+compiled request validator and by the persistence policy's own load check - but
+the runner kept a separate hand-maintained disjunction deciding whether the
+roster-persistence observation runs at all, and Sprint 37 had never been added
+to it. So the stage ran the generic persistence path, passed its assertions
+honestly, and proved nothing about the Vrock.
+
+That receipt is history, not evidence. The fix is structural rather than one
+more entry in a list: the runner now asks the policy, the policy holds the one
+list, and a domain test reads the scope constants by reflection and requires
+every one of them to reach the observation - so the next sprint's scope is
+covered when it is declared rather than when someone remembers a second place.
+The Working fixture that stage wrote was restored to its original bytes,
+last-write time and creation time, verified by hash.
+
+Five scope-admission gates agreed and the sixth decided the behaviour. The
+lesson recorded here is that agreement among gates is not coverage: the gate
+that selects the observation is the one that has to be proven.
+
 ## How a fresh row is bound to the candidate
 
 The shared fresh-execution check accepts two execution receipts: a

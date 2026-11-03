@@ -386,13 +386,32 @@ namespace KingmakerGunslinger.RuntimeTesting
             return outcome == "donor-visual:module-disabled" &&
                 ownedResourceCount == 0;
         }
-        internal static bool ObserveLoad(string scenario, string scope)
+        /// <summary>
+        /// The single list of scopes that reach the roster-persistence
+        /// observation. The runner used to keep its own parallel disjunction,
+        /// and Sprint 37 was admitted by every other gate while missing from
+        /// that one - so the vrock scope silently ran the generic persistence
+        /// path and reported PASS without observing one Sprint 37 fact. Both
+        /// the runner and ObserveLoad now ask this, and a reflection test
+        /// requires every declared scope constant to appear here.
+        /// </summary>
+        internal static bool IsRosterPersistenceScope(string scope)
         {
-            return (scope == Scope || scope == AnkylosaurusScope ||
+            return scope == Scope || scope == AnkylosaurusScope ||
                 scope == ArmoredDinosaursScope || scope == TheropodsScope ||
                 scope == GiantBodiesScope || scope == MagicalBeastsScope ||
                 scope == GriffonScope || scope == GiantHumanoidsScope ||
-                scope == GiantHumanoidsTwoScope || scope == OutsiderCelestialScope || scope == FeyCelestialScope || scope == ShadowOutsidersScope || scope == InfernalOutsidersScope || scope == InfernalReachTwoScope || scope == InfernalDemonsScope || scope == VrockScope) &&
+                scope == GiantHumanoidsTwoScope ||
+                scope == OutsiderCelestialScope || scope == FeyCelestialScope ||
+                scope == ShadowOutsidersScope ||
+                scope == InfernalOutsidersScope ||
+                scope == InfernalReachTwoScope ||
+                scope == InfernalDemonsScope || scope == VrockScope;
+        }
+
+        internal static bool ObserveLoad(string scenario, string scope)
+        {
+            return IsRosterPersistenceScope(scope) &&
                 (scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent);
