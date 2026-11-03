@@ -57,11 +57,29 @@ namespace KingmakerGunslinger.RuntimeTesting
             int oldAllyFort = ally.Stats.SaveFortitude.BaseValue;
             Vector3 oldTargetPosition = target.Position;
             Vector3 oldAllyPosition = ally.Position;
+            bool oldMode = Kingmaker.UI.SettingsUI.SettingsRoot.Instance
+                .EnableTurnBasedMode.CurrentValue;
+            bool oldPause = Game.Instance.IsPaused;
             string suffix = turnBased ? "-turnbased" : "";
             Action<string, bool, JObject, string> check =
                 (id, pass, row, description) => {
                     row["cell"] = id;
                     row["turnBased"] = turnBased;
+                    // The requested mode is a label; this is the engine's own
+                    // answer. Every cell records it, and a turn-based cell
+                    // after the mode switch refuses to report at all if the
+                    // game is actually running in real time - so a -turnbased
+                    // assertion cannot stand for a mode never entered. The
+                    // roster cell is identity-only and is read before the
+                    // switch, which the receipt shows.
+                    row["nativeTurnBasedMode"] = TurnBased.Controllers
+                        .CombatController.IsInTurnBasedCombat();
+                    if (turnBased && !TurnBased.Controllers.CombatController
+                            .IsInTurnBasedCombat() &&
+                        id != "screech-control-roster")
+                        throw new InvalidOperationException(
+                            "Sprint37 turn-based screech cell observed real-time combat: "
+                            + id);
                     cells.Add(row);
                     Sprint25Check("sprint37-" + id + suffix, pass, row,
                         description);
@@ -157,6 +175,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 VrockRing37(vrock, inside,
                     VrockRules37Policy.ScreechRadiusFeet - 5f);
 
+                if (turnBased)
+                {
+                    // Real turn-based play, through the engine's own supported
+                    // toggle. Until this landed, the turns phase differed from
+                    // the real-time phase only by a suffix on its assertion
+                    // names - a label, not an observation of the second mode.
+                    // Every cast below already waits for its caster's own
+                    // native turn, so the switch was the only thing missing.
+                    var admission = new JObject();
+                    foreach (int frame in VrockEnterTurnBased37(vrock, target,
+                        admission)) yield return frame;
+                    check("screech-turn-admission",
+                        (bool)admission["admitted"] &&
+                        (bool)admission["ownerActing"] &&
+                        (bool)admission["nativeTurnBasedMode"], admission,
+                        "The vrock is enrolled in native turn-based combat through the engine's own real-time enrollment and turn-order toggle, and holds its own turn before any screech is ordered.");
+                }
+
                 // The manual path, observed as a player would reach it.
                 // The owner decision keeps automatic use conservative, so the
                 // player's own command is the route that must stay open - and
@@ -194,22 +230,30 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 foreach (int frame in VrockScreechVolley37(fixture, vrock,
                     screech, stunned, recharge, inside, target, ally,
-                    controls, check)) yield return frame;
+                    controls, turnBased, check)) yield return frame;
 
                 foreach (int frame in VrockScreechLiveDc37(fixture, vrock,
-                    screech, stunned, recharge, target, check))
+                    screech, stunned, recharge, target, turnBased, check))
                     yield return frame;
 
                 foreach (int frame in VrockScreechBoundary37(fixture, vrock,
-                    screech, stunned, recharge, target, ally, check))
-                    yield return frame;
+                    screech, stunned, recharge, target, ally, turnBased,
+                    check)) yield return frame;
 
                 foreach (int frame in VrockScreechTwoOwners37(fixture, vrock,
-                    screech, stunned, recharge, target, owned, check))
-                    yield return frame;
+                    screech, stunned, recharge, target, owned, turnBased,
+                    check)) yield return frame;
             }
             finally
             {
+                // The native mode and pause state belong to the player, not to
+                // this observation.
+                Kingmaker.UI.SettingsUI.SettingsRoot.Instance
+                    .EnableTurnBasedMode.CurrentValue = oldMode;
+                Game.Instance.TurnBasedCombatController.Activate();
+                Game.Instance.IsPaused = oldPause;
+                receipt["nativeModeRestored"] = TurnBased.Controllers
+                    .CombatController.IsInTurnBasedCombat() == oldMode;
                 foreach (Buff buff in new[] { target, ally }
                     .SelectMany(unit => unit.Buffs.Enumerable).ToArray())
                     if (buff.Blueprint != null && buff.Blueprint.name
@@ -251,6 +295,72 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "This is not a registration failure.");
         }
 
+        /// <summary>
+        /// Enrolls the vrock and its victim in native turn-based combat the
+        /// way the released turn-based reviews do: establish real combat in
+        /// real time first, then let the turn-based controller rebuild its
+        /// order from those combat states. Nothing writes initiative, the
+        /// current turn, cooldowns or command state.
+        /// </summary>
+        private IEnumerable<int> VrockEnterTurnBased37(UnitEntityData vrock,
+            UnitEntityData target, JObject evidence)
+        {
+            vrock.Memory.Add(target);
+            target.Memory.Add(vrock);
+            vrock.SightCache.ClearIfNeeded();
+            target.SightCache.ClearIfNeeded();
+            new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
+            vrock.JoinCombat();
+            target.JoinCombat();
+            Game.Instance.Player.UpdateIsInCombat();
+            new Kingmaker.Controllers.Combat.UnitCombatJoinController().Tick();
+            new Kingmaker.Controllers.Combat.UnitCombatPrepareController()
+                .Tick();
+            foreach (int frame in Sprint22EnrollTurnBasedOwners(
+                new[] { vrock }, target, evidence)) yield return frame;
+            DateTime deadline = DateTime.UtcNow.AddSeconds(90);
+            int frames = 0;
+            while (frames++ < 900 && DateTime.UtcNow < deadline &&
+                !Sprint18OwnerIsActing(vrock))
+            {
+                Game.Instance.IsPaused = false;
+                yield return 0;
+            }
+            evidence["ownerActing"] = Sprint18OwnerIsActing(vrock);
+            evidence["ownerVisible"] = vrock.IsVisibleForPlayer;
+            evidence["nativeTurnBasedMode"] = TurnBased.Controllers
+                .CombatController.IsInTurnBasedCombat();
+            evidence["round"] = Game.Instance.TurnBasedCombatController
+                .RoundNumber;
+            evidence["framesWaited"] = frames;
+        }
+
+        /// <summary>
+        /// Brings one further unit into the combat and native turn order this
+        /// observation already established, without letting it act.
+        /// </summary>
+        private IEnumerable<int> VrockJoinTurnOrder37(UnitEntityData unit,
+            UnitEntityData target, JObject evidence)
+        {
+            unit.Memory.Add(target);
+            target.Memory.Add(unit);
+            unit.SightCache.ClearIfNeeded();
+            new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
+            unit.JoinCombat();
+            Game.Instance.Player.UpdateIsInCombat();
+            new Kingmaker.Controllers.Combat.UnitCombatJoinController().Tick();
+            new Kingmaker.Controllers.Combat.UnitCombatPrepareController()
+                .Tick();
+            Game.Instance.TurnBasedCombatController.Activate();
+            for (int frame = 0; frame < 8; frame++) yield return 0;
+            evidence["unit"] = unit.UniqueId;
+            evidence["inCombat"] = unit.IsInCombat;
+            evidence["sorted"] = Game.Instance.TurnBasedCombatController
+                .SortedUnits.Any(value => ReferenceEquals(value, unit));
+            evidence["nativeTurnBasedMode"] = TurnBased.Controllers
+                .CombatController.IsInTurnBasedCombat();
+        }
+
         private static void VrockQuiesce37(UnitEntityData unit)
         {
             Sprint28SetBrainActivePreservingActions(unit, false);
@@ -288,7 +398,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintBuff recharge, UnitEntityData[] inside,
             UnitEntityData target, UnitEntityData ally,
             List<Tuple<string, UnitEntityData, bool>> controls,
-            Action<string, bool, JObject, string> check)
+            bool turnBased, Action<string, bool, JObject, string> check)
         {
             VrockRequireLiveSubject37(vrock, screech, "volley");
             // The exemption cell needs the enemy, the ally and the devil to
@@ -324,7 +434,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value => ReferenceEquals(value.Blueprint, stunned))
                         .ToArray()) clear.Remove();
                 foreach (int frame in VrockClearRecharge37(vrock, recharge,
-                    target, stunned)) yield return frame;
+                    target, stunned, turnBased)) yield return frame;
             }
             var observed = new Astral31SmiteEvents(vrock, screech, stunned,
                 null, inside);
@@ -466,7 +576,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         start < GameConsts.RoundDuration * 3)
                 {
                     Game.Instance.IsPaused = false;
-                    yield return 0;
+                    // In turn-based play the clock only moves when turns do,
+                    // so the printed one-round expiry is waited out by letting
+                    // the native round turn over rather than by idling.
+                    if (turnBased)
+                        foreach (int frame in Sprint18AdvanceRound(vrock))
+                            yield return frame;
+                    else yield return 0;
                 }
                 double elapsed = Game.Instance.TimeController.GameTime
                     .TotalSeconds - start;
@@ -500,7 +616,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> VrockScreechLiveDc37(
             ExpandedSummoningCorrectionFixture fixture, UnitEntityData vrock,
             BlueprintAbility screech, BlueprintBuff stunned,
-            BlueprintBuff recharge, UnitEntityData target,
+            BlueprintBuff recharge, UnitEntityData target, bool turnBased,
             Action<string, bool, JObject, string> check)
         {
             VrockRequireLiveSubject37(vrock, screech, "live-dc");
@@ -513,7 +629,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     vrock.Stats.Constitution.BaseValue = baseline + delta;
                     foreach (int frame in VrockClearRecharge37(vrock,
-                        recharge, target, stunned)) yield return frame;
+                        recharge, target, stunned, turnBased))
+                        yield return frame;
                     int bonus = vrock.Stats.Constitution.Bonus;
                     int expected = VrockRules37Policy
                         .ScreechDifficultyClass(bonus);
@@ -581,13 +698,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningCorrectionFixture fixture, UnitEntityData vrock,
             BlueprintAbility screech, BlueprintBuff stunned,
             BlueprintBuff recharge, UnitEntityData target,
-            UnitEntityData ally, Action<string, bool, JObject, string> check)
+            UnitEntityData ally, bool turnBased,
+            Action<string, bool, JObject, string> check)
         {
             VrockRequireLiveSubject37(vrock, screech, "radius-boundary");
             float radius = new Feet(
                 VrockRules37Policy.ScreechRadiusFeet).Meters;
             foreach (int frame in VrockClearRecharge37(vrock, recharge,
-                target, stunned)) yield return frame;
+                target, stunned, turnBased)) yield return frame;
             PlaceExpandedSummoningUnit(target, vrock.Position +
                 Vector3.right * (radius - 0.6f));
             PlaceExpandedSummoningUnit(ally, vrock.Position -
@@ -641,7 +759,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningCorrectionFixture fixture, UnitEntityData first,
             BlueprintAbility screech, BlueprintBuff stunned,
             BlueprintBuff recharge, UnitEntityData target,
-            List<UnitEntityData> owned,
+            List<UnitEntityData> owned, bool turnBased,
             Action<string, bool, JObject, string> check)
         {
             VrockRequireLiveSubject37(first, screech, "two-owner-first");
@@ -661,8 +779,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             VrockRequireLiveSubject37(second, screech, "two-owner-second");
             string secondView = ExpandedSummoningPteranodonViewPatch
                 .DescribeView(second.View);
+            // In turn-based play a unit outside the native turn order is not a
+            // fair witness to "neither spent nor refused": its availability
+            // would be answered by its absence from combat rather than by the
+            // hour rule. So the second vrock joins the same combat and the
+            // same order, and never casts.
+            var secondOrder = new JObject();
+            if (turnBased)
+                foreach (int frame in VrockJoinTurnOrder37(second, target,
+                    secondOrder)) yield return frame;
             foreach (int frame in VrockClearRecharge37(first, recharge,
-                target, stunned)) yield return frame;
+                target, stunned, turnBased)) yield return frame;
             PlaceExpandedSummoningUnit(second, first.Position +
                 Vector3.forward * (first.Corpulence + second.Corpulence +
                     1f));
@@ -685,7 +812,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (attempt > 1)
                 {
                     foreach (int frame in VrockClearRecharge37(first,
-                        recharge, target, stunned)) yield return frame;
+                        recharge, target, stunned, turnBased))
+                        yield return frame;
                 }
                 var observed = new Astral31SmiteEvents(first, screech,
                     stunned, null, new[] { target });
@@ -757,6 +885,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["selectedAttempt"] = passed ? (int?)attempts.Count : null,
                 ["secondView"] = secondView,
                 ["secondViewRequired"] = false,
+                ["secondTurnOrder"] = turnBased ? secondOrder : null,
                 ["forcedRolls"] = 0,
                 ["retryRule"] =
                     "Retried only when ownership was already exact and the sole miss was a natural twenty; no roll was forced and no assertion was relaxed."
@@ -772,7 +901,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         private IEnumerable<int> VrockClearRecharge37(UnitEntityData vrock,
             BlueprintBuff recharge, UnitEntityData target,
-            BlueprintBuff stunned)
+            BlueprintBuff stunned, bool turnBased = false)
         {
             foreach (Buff buff in vrock.Buffs.Enumerable.Where(value =>
                 ReferenceEquals(value.Blueprint, recharge)).ToArray())
@@ -780,6 +909,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (Buff buff in target.Buffs.Enumerable.Where(value =>
                 ReferenceEquals(value.Blueprint, stunned)).ToArray())
                 buff.Remove();
+            if (turnBased)
+            {
+                // A spent standard action returns at the owner's next turn,
+                // not after a wall-clock wait, so turn the native round over
+                // instead of idling until a timeout.
+                int rounds = 0;
+                while (rounds++ < 4 &&
+                    vrock.CombatState.Cooldown.StandardAction > 0f)
+                    foreach (int frame in Sprint18AdvanceRound(vrock))
+                        yield return frame;
+                yield break;
+            }
             DateTime deadline = DateTime.UtcNow.AddSeconds(15);
             while (vrock.CombatState.Cooldown.StandardAction > 0f &&
                 DateTime.UtcNow < deadline)

@@ -124,13 +124,20 @@ function Assert-KmgSprint37Qualification($Ledger,$Candidate) {
             throw 'Sprint37 spore protection state is not individually proven: '+$state
         }
     }
-    # The screech exemption must be proven by identity in both modes.
+    # The screech exemption must be proven by identity in both modes, and
+    # each row must also carry the one assertion that is specific to it: the
+    # real-time row the manual player interface the owner decision requires,
+    # and the turn-based row the engine's own admission to turn-based combat.
+    # Without that second pin a -turnbased suffix could stand for a mode the
+    # observation never actually entered.
     foreach($pair in @(@('screech-identity-and-recharge',''),@('both-modes-screech','-turnbased'))) {
         $row=@($Ledger.coverage|Where-Object id -ceq $pair[0])[0]
-        foreach($name in @('sprint37-screech-control-roster','sprint37-screech-identity-exemption',
+        $names=@('sprint37-screech-control-roster','sprint37-screech-identity-exemption',
             'sprint37-screech-live-constitution-dc','sprint37-screech-radius-boundary',
             'sprint37-screech-stun-expiry','sprint37-screech-recharge-refusal',
-            'sprint37-screech-two-owner-isolation')) {
+            'sprint37-screech-two-owner-isolation')
+        $names+=if($pair[1] -ceq ''){'sprint37-screech-manual-interface'}else{'sprint37-screech-turn-admission'}
+        foreach($name in $names) {
             if(@($row.evidenceSources|Where-Object {$_.requiredAssertions -ccontains ($name+$pair[1])}).Count -ne 1) {
                 throw 'Sprint37 screech assertion absent from '+$pair[0]+': '+$name
             }

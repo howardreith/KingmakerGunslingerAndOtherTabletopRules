@@ -229,6 +229,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in ReviewVrockScreech37(fixture, false))
                     yield return frame;
                 ResetExpandedSummoningHostile(fixture);
+                // Both combat modes, in the same transaction. The publisher
+                // contract asks the both-modes row for the same seven screech
+                // assertions carrying the -turnbased suffix, and a row cannot
+                // bind to bytes a different invocation produced, so the
+                // turn-based pass belongs here rather than in a separate
+                // process that would need its own release candidate.
+                foreach (int frame in ReviewVrockScreech37(fixture, true))
+                    yield return frame;
+                ResetExpandedSummoningHostile(fixture);
                 foreach (int frame in ReviewVrockAi37(fixture))
                     yield return frame;
                 ResetExpandedSummoningHostile(fixture);
