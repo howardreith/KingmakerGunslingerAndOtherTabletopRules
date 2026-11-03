@@ -160,6 +160,96 @@ Consequence for the rest of the sprint: Power Word Stun is now the sprint's
 single required signature ability, and the pincer rend and five-limb routine
 carry the melee leg. No other requirement changes.
 
+## Review corrections, 2026-11-03
+
+A review of the pushed head identified four concrete gaps. All four are
+corrected offline, before any further guarded candidate.
+
+### The failed bootstrap was not an input probe
+
+The guarded run `20261103T0651149368893Z` deployed, launched, started the game
+and restored the live tree to its exact pre-run hash - and then failed at mod
+initialization, so the scenario never executed. It is recorded as
+**NOT_COMPLETED**, not as native input discovery and not as any kind of
+qualification.
+
+The cause is a hard registration dependency rather than anything about the
+observation: `InfernalProfile36` calls
+`ExpandedSummoningProjectIcons.Require(creatureKey)` while building the unit
+type, and `ExpandedSummoningProjectIcons.Load` calls
+`SummonIconCatalog.Validate()`, which derives its expected key set from the
+roster. So the painted icon is required the moment the creature is
+**registered**, and no guarded scenario of any kind can run until it exists.
+That is the same dependency the two failing offline tests name; the launch
+added nothing the offline failures had not already said, and it is not
+repeated while the input is still missing.
+
+### Reflex +4 is correct; the explanation was not
+
+The earlier record claimed PF1 outsiders have three good saves and therefore
+filed the printed Reflex +4 as a published stat-block anomaly. The premise was
+wrong: the type grants **two** good saves, per-creature, and this entry's are
+Fortitude and Will with a poor Reflex. All three printed totals derive exactly
+on the standard progressions at 12 hit dice, so the shipped +18/+4/+11 were
+always right and nothing about them is anomalous. The false explanation and the
+assertion premised on it are gone; the values are unchanged.
+
+### Rend now enforces the round, not the command
+
+The claim that command resets prevented two rends in one round was false, and
+the released source says so: `ClawRendTracker.Follow()` calls `Reset()` on a
+sequence change, clearing `_emitted` along with the claw slots, so the released
+gate's limit is per *command* and `OnNewRound` only clears what a command change
+would have cleared anyway.
+
+`GlabrezuRendGate38` is a Glabrezu-local replacement that holds the round
+allowance as its own state with **no attack-command operand at all**, and
+scopes the victim bookkeeping to the round as the printed universal rule does.
+That makes the limit real in one direction and removes an under-trigger in the
+other: two pincer hits on one victim in different commands inside one round
+correctly rend. The round boundary is the installed `ITickEachRound.OnNewRound`,
+raised by the base engine's `UnitTicksController` outside turn-based combat and
+by the turn controller inside it, so it covers both modes without a fixture
+flag. Only an armed attack that actually hit spends the allowance.
+
+The released Dire Ape and Girallon keep `DireApeRendGate` and their behaviour
+unchanged. A domain test asserts the released tracker's command-change
+reopening directly, so the reason for the split is evidence rather than prose.
+
+### Power Word Stun's AI decides the actual candidate
+
+The eligibility consideration was attached only to `ActorConsiderations`, whose
+engine tooltip is "Considerations that only depend on deciding unit". That left
+a real selection gap: admitted because enemy A is eligible, selector picks
+enemy B, single daily use spent for no effect. Suitability now also sits on
+`TargetConsiderations`, which `AiAction.ScoreTarget` evaluates per candidate and
+multiplies into that candidate's own score, so an unusable candidate is removed
+rather than discouraged. Both paths call one shared predicate. Target protection
+uses the released `SummonDescriptorImmunity` pair, because
+`UnitPartSpellResistance.IsImmune` answers only for
+`SpellImmunityToSpellDescriptor`; numerical spell resistance is deliberately not
+consulted during scoring.
+
+### The two caster levels, followed through
+
+The pre-cast estimate really does report the creature's 12 hit dice:
+`RuleCalculateAbilityParams..ctor` reads
+`GetComponent<ContextSetAbilityParams>()`, the derived type, so it never sees
+this project's `ContextCalculateAbilityParams`. But
+`MechanicsContext.RecalculateAbilityParams` reads the
+`ContextAbilityParamsCalculator` **base** type and does honour it, and
+`AbilityExecutionProcess.PrepareCast` calls `context.Recalculate()` before any
+effect is applied. So the execution context carries 14, and
+`RuleSpellResistanceCheck.SpellPenetration` - which is that context's caster
+level - is the printed 14 rather than 12. Range is a separate fact entirely:
+the installed `GetRange` maps `AbilityRange.Close` to a flat 30 feet and reads
+no caster level at all, so the printed 60 feet at CL 14 does not exist in this
+engine and is recorded as a range compression. Both caster levels still get
+recorded at their consumers in the native run.
+
+Offline state after the batch: the complete domain suite is 2,800 registered,
+2,800 executed, **two** failures, both the same icon dependency above.
+
 ## Not started
 
 Registration and the demon-catalog extension, the chassis and rend, Power Word

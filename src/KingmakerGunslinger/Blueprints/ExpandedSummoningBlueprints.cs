@@ -216,6 +216,13 @@ namespace KingmakerGunslinger.Blueprints
                         consideration.name = InternalName(identity.Symbol);
                         return consideration;
                     });
+                else if (identity.PlannedType == "GlabrezuStunTargetEligibility38")
+                    blueprint = registry.Register<GlabrezuStunTargetEligibility38>(identity.Symbol, () =>
+                    {
+                        var consideration = ScriptableObject.CreateInstance<GlabrezuStunTargetEligibility38>();
+                        consideration.name = InternalName(identity.Symbol);
+                        return consideration;
+                    });
                 else if (identity.PlannedType == "BlueprintAiSwitchWeapon")
                     blueprint = registry.Register<BlueprintAiSwitchWeapon>(identity.Symbol, () => {
                         var value = ScriptableObject.CreateInstance<BlueprintAiSwitchWeapon>();

@@ -14,12 +14,37 @@ namespace KingmakerGunslinger.Summoning
     {
         internal const int GlabrezuHitDice = 12;
 
-        // Spell-like caster level 14 is deliberately NOT the hit dice. The
-        // engine's RuleCalculateAbilityParams derives a level from the unit
-        // and will report 12; the project's ContextCalculateAbilityParams
-        // puts 14 on the applied effect's own context. Both are recorded in
-        // receipts and neither is a defect.
+        // Spell-like caster level 14 is deliberately NOT the hit dice, and
+        // the installed engine applies it in two different places with two
+        // different answers. Traced rather than assumed:
+        //
+        //  * RuleCalculateAbilityParams..ctor does
+        //    GetComponent<ContextSetAbilityParams>() - the DERIVED type, not
+        //    the ContextAbilityParamsCalculator base - so it does not see
+        //    this project's ContextCalculateAbilityParams at all and the
+        //    pre-cast estimate reports the creature's 12 hit dice. That is
+        //    the preview value only.
+        //  * MechanicsContext.RecalculateAbilityParams does
+        //    GetComponent<ContextAbilityParamsCalculator>() - the base type -
+        //    so it does honour it, and AbilityExecutionProcess.PrepareCast
+        //    calls context.Recalculate() before the effect is applied. So the
+        //    execution context carries 14, and everything downstream of it
+        //    does too: the applied effect, and the spell-resistance check,
+        //    whose SpellPenetration is Context.Params.CasterLevel.
+        //
+        // Consequence actually followed through: penetration uses 14, which
+        // is what the printed caster level requires, and only the preview
+        // shows 12. Range is unaffected either way - the installed
+        // AbilityRange.Close is a flat 30 feet that never reads a caster
+        // level, so the printed "25 ft. + 5 ft./2 levels" scaling does not
+        // exist in this engine at all and is recorded as a range compression
+        // rather than a caster-level question.
         internal const int SpellLikeCasterLevel = 14;
+        internal const int PreCastEstimatedCasterLevel = GlabrezuHitDice;
+        // The installed flat range for AbilityRange.Close, and what the
+        // printed close range would have been at caster level 14.
+        internal const int InstalledCloseRangeFeet = 30;
+        internal const int PrintedCloseRangeFeet = 60;
 
         // Printed ability scores.
         internal const int Strength = 31;
@@ -38,25 +63,32 @@ namespace KingmakerGunslinger.Summoning
         // Huge: a 15-foot space and a 15-foot reach. Both printed.
         internal const int ReachFeet = 15;
 
-        // Printed save totals, retained only for comparison. The blueprint
-        // carries the base values; genuine native difficulty modifiers stay a
-        // separate finding and are never compensated for here.
+        // Printed save totals, and the base values the blueprint carries.
+        // Genuine native difficulty modifiers stay a separate finding and are
+        // never compensated for here.
         internal const int PrintedFortitude = 18;
         internal const int PrintedReflex = 4;
         internal const int PrintedWill = 11;
         internal const int BaseFortitude = 8;
+        internal const int BaseReflex = 4;
         internal const int BaseWill = 8;
 
-        // The printed Reflex +4 does not follow from the chassis. A 12-HD
-        // outsider has three good saves, which gives a +8 base, and Dexterity
-        // 11 adds nothing - so the derivation gives +8 while Fortitude and
-        // Will both match their printed totals exactly. The printed value is
-        // carried as printed, because the source entry is this project's
-        // authority and silently "fixing" a published stat block is not a
-        // Sprint 38 decision to take unilaterally. Recorded in
-        // planning/SPRINT38-RULES.md rather than hidden here.
-        internal const int BaseReflex = 4;
-        internal const int DerivedGoodSaveBase = 8;
+        // All three printed totals derive exactly, and nothing about them is
+        // anomalous. The outsider type gives a creature TWO good saves, not
+        // three, and which two is per-creature; this entry's are Fortitude
+        // and Will, with Reflex poor. On the standard progressions at 12 hit
+        // dice that is a good base of 2 + 12/2 = 8 and a poor base of
+        // 12/3 = 4, so:
+        //   Fortitude 8 + Constitution 10 = 18
+        //   Reflex    4 + Dexterity     0 =  4
+        //   Will      8 + Wisdom        3 = 11
+        // An earlier revision of this file claimed outsiders have three good
+        // saves and therefore recorded the printed Reflex as a published
+        // stat-block anomaly. That premise was wrong; the value was always
+        // right. The exact racial-profile mapping below expresses this
+        // creature's own good/poor selection and is not a balance adaptation.
+        internal const int GoodSaveBase = 8;
+        internal const int PoorSaveBase = 4;
 
         internal const int PrintedPerception = 26;
         internal const int PrintedStealth = 7;
@@ -165,18 +197,57 @@ namespace KingmakerGunslinger.Summoning
         }
 
         /// <summary>
-        /// Whether two pincer hits in one sequence make a rend. Claws and the
-        /// bite carry a different weapon identity and can never substitute,
-        /// and a sequence rends at most once - the universal once-per-round
-        /// limit, which the released gate enforces by resetting on the round
-        /// boundary as well as on the command boundary.
+        /// Whether this pincer attack is the rend.
+        ///
+        /// <para>The printed universal rule scopes both halves to the
+        /// <b>round</b>: two of the named attacks hitting the same opponent in
+        /// the same round, and usable only once per round. Neither half is
+        /// scoped to one attack command, so this predicate is not either.
+        /// That matters in both directions. A rend is allowed when the two
+        /// qualifying pincer hits land in different commands inside one round
+        /// - an attack of opportunity and then a full attack, say - and it is
+        /// refused for the rest of that round once it has actually
+        /// happened.</para>
+        ///
+        /// <para>The round allowance is deliberately a separate operand from
+        /// the attack-pair bookkeeping, because the released shared tracker
+        /// conflates them: its Follow() resets the whole tracker - emitted
+        /// flag included - whenever the attack command changes, so a second
+        /// qualifying pair in the same round would rend again. Keeping
+        /// <paramref name="spentThisRound"/> outside that bookkeeping is what
+        /// makes the printed limit real rather than incidental.</para>
+        /// </summary>
+        internal static bool RendQualifies(bool exactSource,
+            bool hasLiveAttackCommand,
+            bool everyOtherPincerHitThisVictimThisRound,
+            bool alreadyArmed, bool spentThisRound)
+        {
+            return exactSource && hasLiveAttackCommand &&
+                everyOtherPincerHitThisVictimThisRound && !alreadyArmed &&
+                !spentThisRound;
+        }
+
+        /// <summary>
+        /// The compact form, for a reader comparing the printed line against
+        /// the implementation: this many qualifying pincer hits on one victim
+        /// in one round, from the exact owner, once.
         /// </summary>
         internal static bool RendTriggers(bool exactSource, int pincerHits,
             bool sameVictim, bool alreadyRentThisRound)
         {
-            return exactSource && sameVictim && !alreadyRentThisRound &&
-                pincerHits >= RendPincerCount;
+            return RendQualifies(exactSource, true,
+                sameVictim && pincerHits >= RendPincerCount, false,
+                alreadyRentThisRound);
         }
+
+        /// <summary>
+        /// Whether a completed pincer attack spends the round's one rend. Only
+        /// an armed attack that actually hit does: a miss disarms and leaves
+        /// the allowance intact, and an attack that was never armed cannot
+        /// spend it, so repeating one event grants nothing.
+        /// </summary>
+        internal static bool RendSpends(bool wasArmed, bool hit)
+        { return wasArmed && hit; }
 
         internal static void Validate()
         {
@@ -229,15 +300,33 @@ namespace KingmakerGunslinger.Summoning
                 throw new InvalidOperationException(
                     "Sprint 38 Glabrezu rend contract changed.");
 
-            // Printed save totals. Fortitude and Will derive exactly; Reflex
-            // does not, and the mismatch against the derived good-save base is
-            // asserted so the anomaly cannot be quietly removed later.
+            // The round allowance is its own operand, so a command change -
+            // which is not one of these operands at all - cannot refill it.
+            if (!RendQualifies(true, true, true, false, false) ||
+                RendQualifies(false, true, true, false, false) ||
+                RendQualifies(true, false, true, false, false) ||
+                RendQualifies(true, true, false, false, false) ||
+                RendQualifies(true, true, true, true, false) ||
+                RendQualifies(true, true, true, false, true) ||
+                !RendSpends(true, true) || RendSpends(true, false) ||
+                RendSpends(false, true) || RendSpends(false, false))
+                throw new InvalidOperationException(
+                    "Sprint 38 Glabrezu round-level rend allowance changed.");
+
+            // Every printed save total derives from the two-good-save outsider
+            // contract: good Fortitude and Will, poor Reflex, on the standard
+            // progressions at this creature's hit dice.
             if (BaseFortitude + (Constitution - 10) / 2 != PrintedFortitude ||
                 BaseWill + (Wisdom - 10) / 2 != PrintedWill ||
                 BaseReflex + (Dexterity - 10) / 2 != PrintedReflex ||
-                BaseFortitude != DerivedGoodSaveBase ||
-                BaseWill != DerivedGoodSaveBase ||
-                BaseReflex == DerivedGoodSaveBase)
+                GoodSaveBase != 2 + GlabrezuHitDice / 2 ||
+                PoorSaveBase != GlabrezuHitDice / 3 ||
+                BaseFortitude != GoodSaveBase ||
+                BaseWill != GoodSaveBase ||
+                BaseReflex != PoorSaveBase ||
+                // Exactly two good saves, so the three base values are not
+                // all equal and the poor one is the Reflex.
+                GoodSaveBase == PoorSaveBase)
                 throw new InvalidOperationException(
                     "Sprint 38 Glabrezu save contract changed.");
 
@@ -255,6 +344,11 @@ namespace KingmakerGunslinger.Summoning
                 SpeedFeet != 40 || ReachFeet != 15 ||
                 SpellLikeCasterLevel != 14 ||
                 SpellLikeCasterLevel == GlabrezuHitDice ||
+                PreCastEstimatedCasterLevel != GlabrezuHitDice ||
+                PreCastEstimatedCasterLevel == SpellLikeCasterLevel ||
+                InstalledCloseRangeFeet != 30 ||
+                PrintedCloseRangeFeet != 25 + 5 * (SpellLikeCasterLevel / 2) ||
+                InstalledCloseRangeFeet >= PrintedCloseRangeFeet ||
                 PincerDiceCount != 2 || PincerDieSides != 8 ||
                 PincerCriticalRollEdge != 19 ||
                 ClawDiceCount != 1 || ClawDieSides != 6 ||
@@ -269,5 +363,100 @@ namespace KingmakerGunslinger.Summoning
                 throw new InvalidOperationException(
                     "Sprint 38 Glabrezu hit points no longer follow 12d10+120.");
         }
+    }
+
+    /// <summary>
+    /// One Glabrezu's rend state for the current round.
+    ///
+    /// <para>The victim slots and the round allowance are separate on purpose.
+    /// The released <see cref="ClawRendTracker"/> conflates them: its
+    /// <c>Follow()</c> calls <c>Reset()</c> whenever the attack command
+    /// changes, clearing the emitted flag along with the claw bookkeeping, so
+    /// its limit is genuinely per command and a second qualifying pair in the
+    /// same round rends again. Here an attack command is not an input at all,
+    /// so nothing a command does can refill the allowance; only
+    /// <see cref="BeginRound"/> does, and only the installed round boundary
+    /// calls it.</para>
+    ///
+    /// <para>Deliberately dependency-free, like the rest of this file, so the
+    /// domain tests exercise this exact production type rather than a copy of
+    /// its rules. The live component owns one of these per unit.</para>
+    /// </summary>
+    internal sealed class GlabrezuRendRound38
+    {
+        private readonly object[] _pincerVictims;
+
+        internal GlabrezuRendRound38(int pincerCount)
+        {
+            if (pincerCount < 2)
+                throw new ArgumentOutOfRangeException("pincerCount",
+                    "A printed rend needs at least two named attacks.");
+            _pincerVictims = new object[pincerCount];
+        }
+
+        internal int PincerCount { get { return _pincerVictims.Length; } }
+        internal bool Armed { get; private set; }
+        internal bool SpentThisRound { get; private set; }
+
+        /// <summary>A new round returns the allowance and forgets pairs.</summary>
+        internal void BeginRound()
+        {
+            for (int index = 0; index < _pincerVictims.Length; index++)
+                _pincerVictims[index] = null;
+            Armed = false;
+            SpentThisRound = false;
+        }
+
+        /// <summary>
+        /// Whether every pincer but this one has already hit this exact victim
+        /// in this round. Round-scoped, not command-scoped, because the
+        /// printed rule says "in the same round" and says nothing about an
+        /// attack command.
+        /// </summary>
+        internal bool EveryOtherPincerHit(int pincer, object victim)
+        {
+            for (int index = 0; index < _pincerVictims.Length; index++)
+            {
+                if (index == pincer - 1) continue;
+                if (_pincerVictims[index] == null ||
+                    !ReferenceEquals(_pincerVictims[index], victim))
+                    return false;
+            }
+            return true;
+        }
+
+        internal bool TryArm(bool exactSource, bool hasLiveAttackCommand,
+            int pincer, object victim)
+        {
+            if (victim == null || !Holds(pincer)) return false;
+            bool qualifies = GlabrezuRules38Policy.RendQualifies(exactSource,
+                hasLiveAttackCommand, EveryOtherPincerHit(pincer, victim),
+                Armed, SpentThisRound);
+            if (qualifies) Armed = true;
+            return qualifies;
+        }
+
+        /// <summary>
+        /// What the pincer attack actually did. A miss disarms and leaves the
+        /// round's allowance intact; an armed hit is the one rend this round
+        /// gets and spends it. An attack that was never armed cannot spend it,
+        /// so repeating one event grants nothing.
+        /// </summary>
+        internal void RecordOutcome(int pincer, object victim, bool hit)
+        {
+            if (!Holds(pincer)) return;
+            bool wasArmed = Armed;
+            Armed = false;
+            if (GlabrezuRules38Policy.RendSpends(wasArmed, hit))
+            {
+                SpentThisRound = true;
+                return;
+            }
+            if (wasArmed || !hit || victim == null) return;
+            _pincerVictims[pincer - 1] = victim;
+        }
+
+        private bool Holds(int pincer)
+        { return pincer >= 1 && pincer <= _pincerVictims.Length; }
     }
 }

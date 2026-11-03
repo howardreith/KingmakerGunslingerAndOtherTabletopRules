@@ -39,6 +39,7 @@
     <Compile Include="InfernalRules35Tests.cs" />
     <Compile Include="InfernalRules36Tests.cs" />
     <Compile Include="VrockRules37Tests.cs" />
+    <Compile Include="GlabrezuRules38Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InfernalRules36Policy.cs"><Link>Summoning\InfernalRules36Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InfernalVisualPolicy36.cs"><Link>Summoning\InfernalVisualPolicy36.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\VrockRules37Policy.cs"><Link>Summoning\VrockRules37Policy.cs</Link></Compile>
@@ -336,6 +337,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\CrocodilianRulesPolicy.cs"><Link>Summoning\CrocodilianRulesPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SerpentineRulesPolicy.cs"><Link>Summoning\SerpentineRulesPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\PrimateRulesPolicy.cs"><Link>Summoning\PrimateRulesPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GlabrezuRules38Policy.cs"><Link>Summoning\GlabrezuRules38Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GirallonRulesPolicy.cs"><Link>Summoning\GirallonRulesPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\XillRulesPolicy.cs"><Link>Summoning\XillRulesPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GiantScorpionRulesPolicy.cs"><Link>Summoning\GiantScorpionRulesPolicy.cs</Link></Compile>

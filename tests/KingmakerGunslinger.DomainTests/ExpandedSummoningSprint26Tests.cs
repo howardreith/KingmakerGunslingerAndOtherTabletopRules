@@ -38,13 +38,13 @@ namespace KingmakerGunslinger.DomainTests
             Sprint37PrivateIdentityCount;
         // Sprint 38 appends one creature, its single Summon Monster IX
         // root - it is registered at tier 9, so parent 9 is the only
-        // parent that admits it - and twenty-three private dependencies.
+        // parent that admits it - and twenty-four private dependencies.
         // Printed at-will confusion and its AI are deliberately absent:
         // the installed native identity is not recorded anywhere in this
         // project, so they are appended after the input probe names it.
         internal const int Sprint38CreatureIdentityCount = 1;
         internal const int Sprint38RootIdentityCount = 1;
-        internal const int Sprint38PrivateIdentityCount = 23;
+        internal const int Sprint38PrivateIdentityCount = 24;
         internal const int Sprint38CatalogIdentityCount =
             Sprint38CreatureIdentityCount + Sprint38RootIdentityCount +
             Sprint38PrivateIdentityCount;
