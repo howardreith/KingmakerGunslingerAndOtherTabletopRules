@@ -418,6 +418,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == InfernalDemonsScope || scope == VrockScope;
         }
 
+        /// <summary>
+        /// A named subset scope rather than the broad released-roster fixture.
+        /// With the feature module off, such a scope's saved receipts do
+        /// reconstruct natively while publication and private visual
+        /// allocation stay disabled; the whole-roster fixture instead expects
+        /// not one of this mod's creatures to instantiate. This was a ninth
+        /// hand-maintained sprint list and Sprint 37 was missing from it, so
+        /// the module-off stage demanded zero units from a scope whose saved
+        /// pair had correctly come back.
+        /// </summary>
+        internal static bool IsTargetedSubsetScope(string scope)
+        {
+            return scope != Scope && IsRosterPersistenceScope(scope);
+        }
+
         internal static bool ObserveLoad(string scenario, string scope)
         {
             return IsRosterPersistenceScope(scope) &&

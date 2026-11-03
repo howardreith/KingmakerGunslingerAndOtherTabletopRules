@@ -705,10 +705,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             // material or texture allocated, nothing published, and no unit to
             // clean up.
             bool moduleOn = _context.FeatureModules.Active.ExpandedSummoning;
-            bool savedTargetedSubset = (Sprint22PersistenceScope ||
-                Sprint23PersistenceScope || Sprint24PersistenceScope || Sprint25PersistenceScope ||
-                Sprint26PersistenceScope || Sprint27PersistenceScope ||
-                Sprint28PersistenceScope || Sprint29PersistenceScope || Sprints3031PersistenceScope || Sprint32PersistenceScope || Sprint33PersistenceScope || Sprint34PersistenceScope || Sprint35PersistenceScope || Sprint36PersistenceScope) && verify;
+            // Derived, not enumerated. This was a list of every sprint scope
+            // but the newest, so a module-off verify in the vrock scope took
+            // the whole-roster expectation of zero instantiated creatures and
+            // failed on its saved pair correctly coming back.
+            bool savedTargetedSubset = verify &&
+                ExpandedSummoningRosterPersistencePolicy.IsTargetedSubsetScope(
+                    (string)_request.Parameters?["persistenceScope"]);
             bool exact = moduleOn || savedTargetedSubset
                 ? ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(
                     (string)_request.Parameters["persistenceScope"], keys) &&
@@ -855,7 +858,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (Sprint33PersistenceScope && ShadowOutsiderVisualPolicy.Handles(receipt.Key)) ||
                     (Sprint34PersistenceScope && InfernalVisualPolicy34.Handles(receipt.Key)) ||
                     (Sprint35PersistenceScope && InfernalVisualPolicy35.Handles(receipt.Key)) ||
-                    (Sprint36PersistenceScope && InfernalVisualPolicy36.Handles(receipt.Key)))
+                    (Sprint36PersistenceScope && InfernalVisualPolicy36.Handles(receipt.Key)) ||
+                    // Sprint 37 was absent here, so this branch simply did not
+                    // run for the vrock: its body was neither required to be
+                    // attached with its own resources while the module is on,
+                    // nor required to be clean while the module is off. The
+                    // row did not fail, which is worse - it asserted less than
+                    // every sibling sprint does.
+                    (Sprint37PersistenceScope && VrockVisualPolicy37.Handles(receipt.Key)))
                     theropodBodyExact = moduleOn
                         ? originalBodyOutcome.StartsWith("visual:attached;",
                             StringComparison.Ordinal) &&
@@ -891,7 +901,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // and zero owned resources above. The native donor may retain a
                 // renderer with this shared name, so only require the private
                 // Sprint 36 mesh while the module is enabled.
-                if (Sprint36PersistenceScope && moduleOn) {
+                if ((Sprint36PersistenceScope || Sprint37PersistenceScope) && moduleOn) {
                     var skin = unit.View?.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                         .SingleOrDefault(value => value.name == TheropodVisualPolicy.BodyRendererName);
                     theropodBodyExact &= skin?.sharedMesh?.name ==

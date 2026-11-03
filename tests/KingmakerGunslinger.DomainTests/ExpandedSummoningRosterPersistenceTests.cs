@@ -389,6 +389,22 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.Equal(0, ExpandedSummoningRosterPersistencePolicy
                     .SelectedKeys(invalid).Length,
                     "An unadmitted scope selects nothing, never the whole roster.");
+            // The third face of the same bug: a scope can reach the
+            // observation, own its creatures, and still be measured against
+            // the broad fixture's module-off expectation of zero units.
+            foreach (FieldInfo field in declared)
+            {
+                var scope = (string)field.GetRawConstantValue();
+                bool whole = scope == ExpandedSummoningRosterPersistencePolicy.Scope;
+                Assertions.Equal(!whole, ExpandedSummoningRosterPersistencePolicy
+                    .IsTargetedSubsetScope(scope),
+                    "Every named subset scope is one, and the whole-roster fixture is not: " +
+                        field.Name);
+            }
+            foreach (string invalid in new[] { null, "", "Vrock", "vrocks" })
+                Assertions.False(ExpandedSummoningRosterPersistencePolicy
+                    .IsTargetedSubsetScope(invalid),
+                    "An unadmitted scope is not a targeted subset either.");
             foreach (string invalid in new[] { null, "", "Vrock", "vrock ",
                 "vrocks", "KMG_Release143_WholeRoster_v1", "retained" })
                 Assertions.False(ExpandedSummoningRosterPersistencePolicy
