@@ -1071,6 +1071,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (Sprint34PersistenceScope && verify) foreach (int step in CleanupInfernalSaved34(caster)) yield return step;
             if (Sprint35PersistenceScope && verify) foreach (int step in CleanupInfernalSaved35(caster)) yield return step;
             if (Sprint36PersistenceScope && verify) foreach (int step in CleanupInfernalSaved36(caster)) yield return step;
+            // Sprint 37 attaches its saved state only to units this fixture
+            // owns - the vrock's own hour and cadence markers, the growth on
+            // another roster source, and its two spent single uses - so the
+            // ordinary retirement above is the cleanup. This is the proof that
+            // nothing of it remains anywhere, including on units it never
+            // touched, rather than a second removal path.
+            if (Sprint37PersistenceScope && verify)
+                VrockSavedAbsence37(caster, "cleanup");
             bool preserved = unrelated.All(x => x.Unit.Destroyed == x.Destroyed && ReferenceEquals(x.Unit.HoldingState,x.HoldingState) && ReferenceEquals(x.Unit.Blueprint,x.Blueprint)) && Game.Instance.Player.Party.SequenceEqual(party);
             RosterPersistenceCheck("unrelated-preserved", preserved,
                 new JObject { ["preexistingUnits"] = unrelated.Length, ["preserved"] = preserved }, "exact unrelated unit references and party membership preserved");
