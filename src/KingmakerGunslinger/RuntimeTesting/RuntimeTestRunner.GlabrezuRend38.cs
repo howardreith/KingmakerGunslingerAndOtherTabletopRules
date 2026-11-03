@@ -53,6 +53,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             int oldTargetHp = target.Stats.HitPoints.BaseValue;
             int oldTargetDamage = target.Damage;
             Vector3 oldTargetPosition = target.Position;
+            // This phase pauses the engine to own one round; the caller's own
+            // pause state is restored before the next review runs.
+            bool oldPaused = Game.Instance.IsPaused;
             Action<string, bool, JObject, string> check =
                 (id, pass, row, description) => {
                     row["cell"] = id;
@@ -94,9 +97,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PlaceExpandedSummoningUnit(target, glabrezu.Position +
                     Vector3.right *
                     (glabrezu.Corpulence + target.Corpulence + 0.5f));
+                // Deliberately far. This is the live attack command's target,
+                // and a distant one makes the owner walk rather than attack if
+                // the engine is unpaused to cross a round boundary. Distance
+                // is irrelevant to the rules this phase triggers directly.
                 PlaceExpandedSummoningUnit(second, glabrezu.Position +
-                    Vector3.left *
-                    (glabrezu.Corpulence + second.Corpulence + 0.5f));
+                    Vector3.left * 30f);
 
                 ItemEntityWeapon[] pincers;
                 ItemEntityWeapon[] others;
@@ -107,6 +113,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                Game.Instance.IsPaused = oldPaused;
                 // The round state is request-local; a later phase in the
                 // same transaction must not inherit this one's pairs.
                 foreach (UnitEntityData unit in owned)
@@ -227,54 +234,81 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
-        /// Waits for the production round boundary - the real
-        /// <c>ITickEachRound</c> callback clearing this unit's state - rather
-        /// than for a duration this observer decides is a round. The game is
-        /// unpaused while waiting, because the boundary is raised by the
-        /// engine's own tick controllers.
+        /// Waits for the production round state to be genuinely fresh - no
+        /// armed rend, no spent round and no remembered attack pair - and
+        /// leaves the game PAUSED when it is.
+        ///
+        /// <para>Both halves are needed, and the first guarded run proved why.
+        /// The live attack command this phase has to hold is a real command:
+        /// left running, the owner attacked the adjacent victim on its own and
+        /// spent the round's rend before the deterministic sequence began, so
+        /// every cell measured an already-spent round. The engine raises the
+        /// round boundary from game time, so pausing stops both the ambient
+        /// attacking AND any further boundary - which is exactly the window
+        /// this phase needs: one round, no other attacker, and
+        /// <c>Rulebook.Trigger</c> still answering synchronously.</para>
+        ///
+        /// <para>The state is re-read after pausing, because a frame can land
+        /// an ambient attack between the check and the pause; a stale read is
+        /// retried rather than trusted.</para>
         /// </summary>
         private IEnumerable<int> GlabrezuAwaitRound38(UnitEntityData glabrezu,
             JObject record)
         {
-            GlabrezuRendRound38 round =
+            GlabrezuRendRound38 entry =
                 GlabrezuRendGate38.ObservedState(glabrezu);
-            bool wasSpent = round != null && round.SpentThisRound;
-            int victimsBefore = round == null ? 0 : round.TrackedVictimCount;
+            bool wasSpent = entry != null && entry.SpentThisRound;
+            int victimsBefore = entry == null ? 0 : entry.TrackedVictimCount;
+            Func<GlabrezuRendRound38, bool> isFresh = state =>
+                state == null || (!state.Armed && !state.SpentThisRound &&
+                    state.TrackedVictimCount == 0);
             DateTime deadline = DateTime.UtcNow.AddSeconds(30);
             int frames = 0;
-            bool cleared = false;
-            while (DateTime.UtcNow < deadline)
+            bool fresh = isFresh(entry);
+            while (!fresh && DateTime.UtcNow < deadline)
             {
                 Game.Instance.IsPaused = false;
                 frames++;
                 yield return 0;
-                GlabrezuRendRound38 now =
-                    GlabrezuRendGate38.ObservedState(glabrezu);
-                if (now != null && !now.SpentThisRound &&
-                    now.TrackedVictimCount == 0 &&
-                    (wasSpent || victimsBefore > 0))
-                { cleared = true; break; }
+                if (!isFresh(GlabrezuRendGate38.ObservedState(glabrezu)))
+                    continue;
+                Game.Instance.IsPaused = true;
+                fresh = isFresh(GlabrezuRendGate38.ObservedState(glabrezu));
             }
+            // Paused on every exit, including the timeout: a later cell must
+            // never run its sequence with the engine still attacking.
+            Game.Instance.IsPaused = true;
             record["roundBoundaryFrames"] = frames;
-            record["roundBoundaryObserved"] = cleared;
+            record["roundStateIsFresh"] = fresh;
             record["spentBeforeBoundary"] = wasSpent;
+            record["crossedFromSpentRound"] = wasSpent && fresh;
             record["trackedVictimsBeforeBoundary"] = victimsBefore;
             record["stateAfterBoundary"] = GlabrezuRendStateRow38(glabrezu);
+            record["pausedForSequence"] = Game.Instance.IsPaused;
         }
 
         /// <summary>
         /// Brings the owner to a real live attack command, which is the printed
-        /// requirement that a rend belongs to an attack sequence. The command
-        /// is issued through the engine's own queue; if that does not populate
-        /// <c>Commands.Attack</c>, the released brain fixture is driven until a
-        /// real one appears, and which path succeeded is recorded.
+        /// requirement that a rend belongs to an attack sequence.
+        ///
+        /// <para>The command is issued through the engine's own queue while the
+        /// game is paused. The first guarded run showed that
+        /// <c>Commands.Run</c> populates <c>Commands.Attack</c> in the same
+        /// frame - zero frames waited - so no time has to pass and nothing
+        /// executes. The target is the DISTANT victim on purpose: if the
+        /// engine is later unpaused to cross a round boundary, the owner walks
+        /// toward it rather than attacking and spending the round's rend
+        /// itself, which is what spoiled every cell on the first run.</para>
         /// </summary>
         private IEnumerable<int> GlabrezuLiveAttackCommand38(
-            UnitEntityData glabrezu, UnitEntityData victim, JObject record)
+            UnitEntityData glabrezu, UnitEntityData distantVictim,
+            JObject record)
         {
+            bool paused = Game.Instance.IsPaused;
+            Game.Instance.IsPaused = true;
             glabrezu.Commands.InterruptAll(true);
             glabrezu.Commands.RemoveFinishedAndUpdateQueue();
-            glabrezu.Commands.Run(new UnitAttack(victim));
+            glabrezu.Commands.Run(new UnitAttack(distantVictim));
             int frames = 0;
             while (glabrezu.Commands.Attack == null && frames < 120)
             {
@@ -282,17 +316,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 frames++;
                 yield return 0;
             }
+            Game.Instance.IsPaused = true;
             record["queuedCommandFrames"] = frames;
             record["queuedCommandWorked"] = glabrezu.Commands.Attack != null;
-            if (glabrezu.Commands.Attack == null)
-            {
-                JObject brain = VrockPrepareBrain37(glabrezu, victim);
-                foreach (int frame in VrockDriveBrain37(glabrezu,
-                    () => glabrezu.Commands.Attack != null, 30, brain))
-                    yield return frame;
-                record["brainFallback"] = brain;
-                Sprint28SetBrainActivePreservingActions(glabrezu, false);
-            }
+            record["pausedOnEntry"] = paused;
+            record["commandTarget"] = distantVictim.UniqueId;
+            record["commandTargetDistanceMeters"] = UnityEngine.Vector3
+                .Distance(glabrezu.Position, distantVictim.Position);
             record["liveAttackCommand"] = glabrezu.Commands.Attack == null ?
                 null : Sprint27AiCommand(glabrezu.Commands.Attack);
             record["hasLiveAttackCommand"] =
@@ -321,7 +351,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Action<string, bool, JObject, string> check)
         {
             var command = new JObject();
-            foreach (int frame in GlabrezuLiveAttackCommand38(glabrezu, first,
+            foreach (int frame in GlabrezuLiveAttackCommand38(glabrezu, second,
                 command)) yield return frame;
             check("rend-live-attack-command",
                 (bool)command["hasLiveAttackCommand"], command,
@@ -417,7 +447,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             // 4. A command change does not re-arm; a new round does.
             var reissue = new JObject();
-            foreach (int frame in GlabrezuLiveAttackCommand38(glabrezu, first,
+            foreach (int frame in GlabrezuLiveAttackCommand38(glabrezu, second,
                 reissue)) yield return frame;
             var sameRoundLog = new JArray();
             GlabrezuRendRecord38 afterCommandChange = GlabrezuRendStrike38(
@@ -437,7 +467,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             check("rend-round-not-command",
                 !afterCommandChange.Rend && !afterCommandChangePair.Rend &&
                 (bool)spentState["spentThisRound"] &&
-                (bool)newRound["roundBoundaryObserved"] &&
+                (bool)newRound["crossedFromSpentRound"] &&
                 !freshFirst.Rend && freshSecond.Rend,
                 new JObject {
                     ["owner"] = glabrezu.UniqueId,
