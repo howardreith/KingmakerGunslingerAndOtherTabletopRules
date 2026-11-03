@@ -250,10 +250,42 @@ recorded at their consumers in the native run.
 Offline state after the batch: the complete domain suite is 2,800 registered,
 2,800 executed, **two** failures, both the same icon dependency above.
 
+## Progress, 2026-11-03
+
+Registration, the demon-catalog extension, the chassis, the five printed
+attacks, the rend gate, Power Word Stun at its selected 60-foot CL14 custom
+range, the offensive and at-will spell-likes with their AI considerations, the
+icon and the original four-armed body are all in source and pass the focused
+suite and the complete unfiltered domain suite (2,800 registered, 2,800
+executed, 0 failures).
+
+### The repository wrapper is version-gated, and that is expected here
+
+`tools/validate_repository.py` selects a release validator by the current
+`Info.json` version. That is still `0.0.175`, whose validator pins the exact
+reviewed Sprint 37 product and therefore refuses any in-progress Sprint 38
+source:
+
+`Sprint37 release175 FAIL: Product/project/assets/identities differ from reviewed source`
+
+That is the version boundary doing its job, not a Sprint 38 regression. It was
+confirmed by reproducing the closed-Sprint-37 check in its own isolated clone
+at the reviewed merge `2af6f608`, where the product diff and the untracked list
+are both empty and the reviewed refusal suite passes. The wrapper, and so the
+`-Level Sprint` gate, goes green only once the version is bumped to `0.0.176`
+and `tools/validate_expanded_summoning_sprint38_release176.py` exists with the
+final product head pinned — which is the candidate-freeze step, exactly as
+Sprint 37 did it.
+
+Until that freeze, the real mid-sprint proof is `-Level Focused` plus the
+complete unfiltered domain suite run as
+`scripts/test-domain.ps1 -SkipRepositoryValidation`. No qualification level
+reaches the complete suite without the wrapper, so this substitution is only
+valid before freeze and is never used as release evidence.
+
 ## Not started
 
-Registration and the demon-catalog extension, the chassis and rend, Power Word
-Stun, the support and offensive spell-likes and their AI, the body and icon,
-the Sprint 38 scope and observers, all native qualification, the gate, the
-release and the records. Sprint 39 and the Nalfeshnee remain NOT_STARTED and
-are out of scope.
+The Sprint 38 runtime scope registration and observers, the narrow Vrock SR
+check, all native qualification, the version bump and its release validator,
+the exact-byte release, the public-download verification and the final records.
+Sprint 39 and the Nalfeshnee remain NOT_STARTED and are out of scope.

@@ -157,6 +157,8 @@ try {
         'assets\sprint36-demons\hezrou-albedo.png',
         'assets\sprint37-vrock\vrock-mesh.json',
         'assets\sprint37-vrock\vrock-albedo.png',
+        'assets\sprint38-glabrezu\glabrezu-mesh.json',
+        'assets\sprint38-glabrezu\glabrezu-albedo.png',
         'assets\sprint18-primates\ape-mesh.json',
         'assets\sprint18-primates\ape-albedo.png',
         'assets\sprint18-primates\dire-ape-mesh.json',
@@ -304,6 +306,15 @@ try {
     foreach ($entry in $vrock37Exports.GetEnumerator()) {
         if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint37-vrock\'+$entry.Key))) -cne $entry.Value) {
             throw 'Packaged Sprint 37 original export differs from its exact candidate input.'
+        }
+    }
+    $glabrezu38Exports = @{
+        'glabrezu-mesh.json'='5162a8614cd2d31dc98f0233962f79f035aae7c848cd249a51358bafea1d3b95'
+        'glabrezu-albedo.png'='564cc4a54289535f67c296ae44b24111afa6f09ef24394e79d649a9c14d376fd'
+    }
+    foreach ($entry in $glabrezu38Exports.GetEnumerator()) {
+        if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint38-glabrezu\'+$entry.Key))) -cne $entry.Value) {
+            throw 'Packaged Sprint 38 original export differs from its exact candidate input.'
         }
     }
     $humanMesh = Join-Path $modDirectory 'assets\sprint17-serpents\salamander-human-mesh.json'

@@ -156,7 +156,9 @@ namespace KingmakerGunslinger.Summoning
                 { "KMG_Summoning_Unit_BoneDevil", InfernalVisualPolicy35.Bone },
                 { "KMG_Summoning_Unit_Babau", InfernalVisualPolicy36.Babau },
                 { "KMG_Summoning_Unit_Hezrou", InfernalVisualPolicy36.Hezrou },
-                { VrockVisualPolicy37.BlueprintName, VrockVisualPolicy37.Vrock }
+                { VrockVisualPolicy37.BlueprintName, VrockVisualPolicy37.Vrock },
+                { GlabrezuVisualPolicy38.BlueprintName,
+                    GlabrezuVisualPolicy38.Glabrezu }
             };
         private static readonly HashSet<string> UngulateKeys =
             new HashSet<string>(StringComparer.Ordinal)
@@ -371,6 +373,10 @@ namespace KingmakerGunslinger.Summoning
                 !VrockVisualPolicy37.IsExactIdentity(visualKey,
                     __instance.EntityData.Blueprint.AssetGuid, blueprintName,
                     __instance.EntityData.Blueprint.Prefab?.AssetId)) return;
+            if (GlabrezuVisualPolicy38.Handles(visualKey) &&
+                !GlabrezuVisualPolicy38.IsExactIdentity(visualKey,
+                    __instance.EntityData.Blueprint.AssetGuid, blueprintName,
+                    __instance.EntityData.Blueprint.Prefab?.AssetId)) return;
             if (ShadowOutsiderVisualPolicy.Handles(visualKey) &&
                 !ShadowOutsiderVisualPolicy.IsExactIdentity(visualKey, __instance.EntityData.Blueprint.AssetGuid,
                     blueprintName, __instance.EntityData.Blueprint.Prefab == null ? null :
@@ -436,6 +442,13 @@ namespace KingmakerGunslinger.Summoning
             {
                 string status;
                 if (!PteranodonAssetRuntime.TryGetVrockVisual37(
+                    attachment.VisualKey, out source, out boneNames,
+                    out albedo, out status)) return Fallback(status);
+            }
+            else if (GlabrezuVisualPolicy38.Handles(attachment.VisualKey))
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetGlabrezuVisual38(
                     attachment.VisualKey, out source, out boneNames,
                     out albedo, out status)) return Fallback(status);
             }
