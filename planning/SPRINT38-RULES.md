@@ -338,3 +338,30 @@ VFX) were acceptable to disclose and ship. With omission selected there is no
 bounded effect for those particular disclosures to attach to, so that answer
 is recorded as confirming the project's disclosure standard and **not** as
 authorizing a bounded Reverse Gravity.
+
+## Measured deviation: live Perception reads 28, printed +26
+
+Measured on a live summoned unit during the Sprint 38 core phase, not inferred.
+Every other printed defensive value matched exactly - Fortitude 18, Reflex 4,
+Will 11, spell resistance 24 with a real installed consumer seeing it, speed
+40 - and Perception came back 28.
+
+The modifier stack names the cause. Two modifiers reach the skill:
+
+| Value | Descriptor | Source |
+|---|---|---|
+| +8 | Racial | this project's `KMG_Summoning_Demon_Glabrezu_Traits` `AddStatBonus`, the printed racial +8 Perception |
+| +2 | None | the installed native **Persuasive** feat, `86d93a5891d299d4983bdc6ef3987afd` |
+
+In this game the Persuasive feat adds **+2 Perception** as well as its
+Persuasion bonus, and this creature's printed feat list includes Persuasive.
+The printed +26 was computed without that implementation.
+
+Nothing is subtracted to make the live number match the printed line: removing
+the feat would drop a printed feat, and cancelling its bonus with a negative
+modifier would be inventing a correction the rules do not call for. The
+difference is disclosed here and pinned in
+`GlabrezuRules38Policy.NativePersuasivePerceptionBonus`, and the core phase
+asserts the live value is exactly the printed 26 plus that measured +2 with no
+unattributed modifier at all - so a third source appearing later fails the
+cell rather than hiding inside a tolerance.

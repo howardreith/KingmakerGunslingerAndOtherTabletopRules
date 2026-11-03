@@ -105,6 +105,18 @@ namespace KingmakerGunslinger.Summoning
         internal const int PrintedStealth = 7;
         internal const int SkillRanks = 12;
         internal const int RacialPerceptionBonus = 8;
+        /// <summary>
+        /// The installed native Persuasive feat's own Perception bonus,
+        /// measured on the live unit rather than assumed. In this game that
+        /// feat adds +2 to PERCEPTION as well as to Persuasion, and this
+        /// creature's printed feat list includes Persuasive, so the live
+        /// Perception reads two above the printed +26. The printed line was
+        /// computed without that implementation; nothing is subtracted to
+        /// match it, and the difference is disclosed instead.
+        /// </summary>
+        internal const int NativePersuasivePerceptionBonus = 2;
+        internal const string NativePersuasiveFeatGuid =
+            "86d93a5891d299d4983bdc6ef3987afd";
         internal const int RacialBluffBonus = 8;
 
         // Three exact natural weapons in five limbs. The pincer's printed
