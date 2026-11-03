@@ -1973,6 +1973,196 @@ def vrock():
         obj.scale = tuple(value * fit for value in obj.scale)
         obj.location = Vector(obj.location) * fit + Vector((0.0, 0.0, rise))
 
+def glabrezu():
+    """Sprint 38. A towering demon whose silhouette is two huge pincers, with
+    a second, smaller pair of humanoid arms on its chest and a dog-like head.
+
+    Three things have to read at 128 pixels, in this order. The pincers: they
+    are the widest thing in the frame and they are the printed rend, so they
+    are the portrait. The second pair of arms, small and clearly growing from
+    the chest rather than from the shoulders, because that is what separates
+    this creature from every other big demon. And the head, a long canine
+    muzzle under swept horns, which is the one piece of this outline a viewer
+    reads as a face.
+
+    The first pass got the pincers wrong in a way worth recording, because it
+    is a framing error rather than a modelling one: the claws were built
+    opening along -Y, straight at a camera that sits square in front of the
+    creature, so both jaws foreshortened into a single blob and the pincers
+    read as hooves. They now open along +/-X, outward and slightly forward, so
+    the gap between the jaws is seen in profile and survives the reduction to
+    128 pixels. The same pass framed the subject at fit 0.38 behind a camera
+    9.1 back, which left it floating in the middle of the ring; both are
+    pulled in here.
+
+    Deliberately not the Girallon. That entry is also four-armed, and the
+    temptation is to reuse its layout - but a girallon's four arms are four of
+    the same arm in two pairs of equal length, pale fur, and an ape skull. Here
+    the pairs are deliberately unequal: the upper pair is twice the mass of the
+    lower, ends in chitinous pincers rather than hands, and the lower pair is
+    short enough that its hands sit inside the pincer span. The hide is dark
+    red-brown and mottled rather than white, the head is canine rather than a
+    flat ape crest, and the horns have no counterpart anywhere in this roster.
+
+    The metaball lesson the Girallon docstring records applies here too and is
+    the reason for the shoulder spacing: the two shoulders on a side are far
+    enough apart that their fields stay separate and four limbs actually read
+    instead of fusing into one slab. Authored at the size the field was tuned
+    for and scaled as objects at the end."""
+    hide = material("GlabrezuHide", (0.31, 0.16, 0.13), 0.74,
+                    noise=(11.0, 0.52, (0.17, 0.08, 0.07)), subsurface=0.08)
+    plate = material("GlabrezuPlate", (0.20, 0.11, 0.10), 0.58,
+                     noise=(18.0, 0.45, (0.10, 0.05, 0.05)))
+    chitin = material("PincerChitin", (0.16, 0.13, 0.13), 0.34,
+                      noise=(26.0, 0.30, (0.08, 0.06, 0.06)))
+    horn = material("GlabrezuHorn", (0.58, 0.52, 0.42), 0.42)
+    nail = material("GlabrezuNail", (0.12, 0.11, 0.10), 0.26)
+    eye = material("GlabrezuEye", (0.42, 0.86, 0.34), 0.22,
+                   emission=(0.38, 0.95, 0.30), emission_strength=1.2)
+    maw = material("GlabrezuMaw", (0.040, 0.014, 0.013), 0.6)
+    tooth = material("GlabrezuTooth", (0.90, 0.87, 0.78), 0.4)
+
+    before = set(bpy.context.scene.objects)
+
+    body = Blob("Body", hide, 0.045)
+    # A heavy upright trunk. Broader at the shoulders than at the hips so the
+    # pincer roots have somewhere to come from, and deep front-to-back so the
+    # creature reads as mass rather than as a plate at three-quarter view.
+    body.ball((0.0, 0.14, -1.62), 1.02, (1.00, 0.96, 0.80), axis=(1, 0, 0))
+    body.ball((0.0, 0.02, -0.76), 0.94, (0.98, 0.92, 0.80), axis=(1, 0, 0))
+    body.ball((0.0, -0.12, 0.22), 1.18, (1.26, 1.00, 0.88), axis=(1, 0, 0))
+    body.ball((0.0, -0.20, 1.06), 1.10, (1.36, 0.94, 0.70), axis=(1, 0, 0))
+    # A short thick neck, carried forward. The head has to clear the shoulder
+    # mass or it disappears into it, which is what the first pass did.
+    body.ball((0.0, -0.46, 1.74), 0.46, (0.58, 0.56, 0.52), axis=(0, 1, 0))
+
+    pincer_wrists = []
+    small_hands = []
+    for s in (-1, 1):
+        # THE UPPER PAIR. Massive and carried wide and a little high, so the
+        # forearm runs outward and the pincer extends beyond it: the widest
+        # point of the frame is the claw, not the elbow.
+        body.ball((s * 1.46, -0.06, 1.14), 0.50)
+        elbow = (s * 2.26, 0.12, 0.60)
+        wrist = (s * 2.56, -0.30, -0.18)
+        body.chain((s * 1.58, -0.04, 1.10), elbow, 0.44, 0.36, 7)
+        body.chain(elbow, wrist, 0.36, 0.28, 7)
+        pincer_wrists.append((s, wrist))
+
+        # THE LOWER PAIR, from the chest. Shoulders are well below the upper
+        # ones and much further in, and the arms are short, so the hands land
+        # in front of the ribs and inside the pincer span. That containment is
+        # the whole point: a viewer must read "extra arms on the chest", not
+        # "four arms".
+        body.ball((s * 0.80, -0.64, 0.24), 0.32)
+        small_elbow = (s * 1.22, -1.04, -0.30)
+        small_wrist = (s * 0.98, -1.44, -0.82)
+        body.chain((s * 0.88, -0.68, 0.20), small_elbow, 0.25, 0.20, 6)
+        body.chain(small_elbow, small_wrist, 0.20, 0.16, 6)
+        small_hands.append((s, small_wrist))
+
+        # Digitigrade legs under the hips, heavy enough to carry the trunk.
+        body.ball((s * 0.74, 0.12, -2.08), 0.58)
+        body.chain((s * 0.76, 0.08, -2.32), (s * 0.88, 0.30, -3.10),
+                   0.48, 0.37, 6)
+        body.chain((s * 0.88, 0.30, -3.10), (s * 0.94, -0.18, -3.68),
+                   0.37, 0.29, 6)
+        body.ball((s * 0.96, -0.52, -3.78), 0.31, (0.60, 1.18, 0.38),
+                  axis=(0, 1, 0))
+
+    # Shoulder plates over the upper arm roots, as geometry rather than a
+    # tint, so the pincer arms separate from the chest against a warm rim.
+    for s in (-1, 1):
+        cone_along("Shoulder%d" % s, (s * 0.66, -0.12, 1.34),
+                   (s * 0.66, 0.62, 0.30), 1.12, 0.36, plate, 0.08)
+
+    head = Blob("Head", hide, 0.04)
+    # A canine skull, bigger than the first pass and carried clear of the
+    # shoulders. The muzzle is the longest single feature on the head, which
+    # is what stops it reading as the Girallon's flat ape face.
+    head.ball((0.0, -0.62, 2.26), 0.76, (0.98, 0.94, 0.86), axis=(1, 0, 0))
+    head.ball((0.0, -1.30, 2.06), 0.56, (1.16, 0.64, 0.56), axis=(0, 1, 0))
+    head.ball((0.0, -1.96, 1.86), 0.44, (1.26, 0.52, 0.44), axis=(0, 1, 0))
+    head.ball((0.0, -2.44, 1.72), 0.32, (0.84, 0.44, 0.36), axis=(0, 1, 0))
+    # Heavy jaw hinges, so the muzzle has something to close against.
+    for s in (-1, 1):
+        head.ball((s * 0.40, -1.14, 1.76), 0.28, (0.70, 0.62, 0.52),
+                  axis=(1, 0, 0))
+
+    # One strong swept pair of horns and a short second pair behind it. The
+    # first pass used four long ones and they read as a spiky crown rather
+    # than as a head shape.
+    for s in (-1, 1):
+        cone_along("Horn%d" % s, (s * 0.46, -0.38, 2.62),
+                   (s * 0.40, 0.80, 0.52), 1.72, 0.18, horn, 0.012)
+        cone_along("HornLow%d" % s, (s * 0.56, -0.18, 2.20),
+                   (s * 0.62, 0.70, 0.10), 0.78, 0.10, horn, 0.010)
+
+    for s in (-1, 1):
+        sphere("Eye%d" % s, (s * 0.30, -1.18, 2.26), (0.12, 0.10, 0.11), eye)
+    sphere("Nose", (0.0, -2.66, 1.74), (0.17, 0.11, 0.10), maw)
+    sphere("Maw", (0.0, -2.12, 1.58), (0.32, 0.38, 0.10), maw, (6, 0, 0))
+    # Visible canines: this is a predator's head and the open muzzle is most
+    # of what carries it at icon size.
+    for s in (-1, 1):
+        cone_along("Fang%d" % s, (s * 0.21, -2.20, 1.62),
+                   (0.0, -0.22, -1.0), 0.36, 0.068, tooth)
+        cone_along("LowerFang%d" % s, (s * 0.18, -2.16, 1.44),
+                   (0.0, -0.20, 1.0), 0.28, 0.058, tooth)
+
+    # THE PINCERS. Each is a wrist boss and two jaws held open, and the jaws
+    # run OUTWARD along +/-X with only a little forward lean, so a camera that
+    # sits square in front of the creature sees the gap between them. Built as
+    # cones along explicit directions rather than as boxes - the Vrock
+    # docstring records why boxes read as cardboard here - and in chitin
+    # rather than hide, which separates the claw from the arm carrying it.
+    for index, (s, wrist) in enumerate(pincer_wrists):
+        boss = (wrist[0] + s * 0.16, wrist[1] - 0.06, wrist[2] - 0.06)
+        sphere("PincerBoss%d" % index, boss, (0.46, 0.40, 0.40), chitin)
+        upper_dir = (s * 0.92, -0.26, 0.40)
+        lower_dir = (s * 0.94, -0.24, -0.34)
+        cone_along("PincerUpper%d" % index,
+                   (boss[0] + s * 0.10, boss[1] - 0.04, boss[2] + 0.16),
+                   upper_dir, 1.66, 0.30, chitin, 0.04)
+        cone_along("PincerLower%d" % index,
+                   (boss[0] + s * 0.10, boss[1] - 0.04, boss[2] - 0.18),
+                   lower_dir, 1.52, 0.27, chitin, 0.04)
+        # Inner teeth on both jaws, which is what makes the gap read as a
+        # grasping claw rather than as a V of two spikes.
+        for tooth_index in range(3):
+            along = 0.34 + tooth_index * 0.30
+            cone_along("PincerTeethUp%d%d" % (index, tooth_index),
+                       (boss[0] + s * (0.10 + 1.66 * along * 0.92),
+                        boss[1] - 0.04 - 1.66 * along * 0.26,
+                        boss[2] + 0.16 + 1.66 * along * 0.40),
+                       (0.0, -0.08, -1.0), 0.26, 0.050, nail)
+            cone_along("PincerTeethLow%d%d" % (index, tooth_index),
+                       (boss[0] + s * (0.10 + 1.52 * along * 0.94),
+                        boss[1] - 0.04 - 1.52 * along * 0.24,
+                        boss[2] - 0.18 - 1.52 * along * 0.34),
+                       (0.0, -0.08, 1.0), 0.24, 0.046, nail)
+
+    # The smaller arms end in ordinary clawed hands, three claws each. They
+    # are the printed claw attack, so they are geometry and not a tint.
+    for index, (s, wrist) in enumerate(small_hands):
+        hand = (wrist[0], wrist[1] - 0.14, wrist[2] - 0.14)
+        sphere("SmallHand%d" % index, hand, (0.27, 0.25, 0.21), hide)
+        for digit in range(3):
+            offset = (digit - 1) * 0.15
+            cone_along("SmallClaw%d%d" % (index, digit),
+                       (hand[0] + s * offset, hand[1] - 0.17, hand[2] - 0.06),
+                       (s * 0.14, -0.74, -0.66), 0.32, 0.052, nail)
+
+    # Frame it. Sole to horn tip is about eight authored units and the pincer
+    # span is wider than that, so the fit is set by the span rather than the
+    # height and the rise lifts the body out of the bottom of the ring.
+    fit = 0.42
+    rise = 0.16
+    for obj in set(bpy.context.scene.objects) - before:
+        obj.scale = tuple(value * fit for value in obj.scale)
+        obj.location = Vector(obj.location) * fit + Vector((0.0, 0.0, rise))
+
+
 CREATURES = {
     # The two ant castes share a backdrop and a light rig because they are one
     # creature in two builds; what separates them in the frame is the head and
@@ -2135,6 +2325,19 @@ CREATURES = {
                  inner=(0.07, 0.12, 0.09), outer=(0.006, 0.012, 0.009),
                  key=(0.78, 0.88, 1.0), rim=(0.45, 0.95, 0.70),
                  camera=((0.30, -8.0, 0.62), (-0.02, 0.0, 0.02), 55.0)),
+    # Sprint 38. A cold violet Abyssal ground, which no other entry in
+    # this roster uses: the Vrock next door is warm brown and the Xill is
+    # green-black, so a dark red-brown demon needs a complement rather
+    # than a neighbour. The key is warm and the rim is the same green the
+    # eyes emit, so the pincer chitin catches a cold edge against the
+    # warm hide. The camera sits square and further back than anything
+    # else here because the pincer span is the widest subject in the
+    # roster, and only a little above the waist so the raised pincers and
+    # the head share the upper half of the ring.
+    "glabrezu": dict(build=glabrezu,
+                     inner=(0.17, 0.09, 0.23), outer=(0.017, 0.009, 0.023),
+                     key=(1.0, 0.86, 0.64), rim=(0.46, 0.94, 0.68),
+                     camera=((0.30, -8.5, 0.74), (-0.02, 0.0, 0.18), 52.0)),
 }
 
 

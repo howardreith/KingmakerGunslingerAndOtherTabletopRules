@@ -95,8 +95,8 @@
     },
     {
       "path": "assets-source/original-icons/expanded-summoning/icon-manifest.json",
-      "sha256": "78789484ad8bc29876b392a84958524431030662a12f7367a360c597ed9f28f3",
-      "scope": "Preserved all earlier concepts and pixels; Sprint 37 appends the original Vrock source/export with its exact hidden unit and three route consumers through the delegated summoning manifest. It is a Blender 4.5 procedural render from the repository's own renderer, the established path for a session without image generation, not a placeholder. Technical native presentation remains separately recorded; no owner aesthetic approval claimed."
+      "sha256": "5219b5cd9475d7e5b09e5da4b19638dd73d799d2e07b4900918a8ff4de9c2feb",
+      "scope": "Preserved all earlier concepts and pixels; Sprint 37 appended the original Vrock source/export with its exact hidden unit and three route consumers, and Sprint 38 appends the original Glabrezu source/export with its exact hidden unit and single Summon Monster IX route consumer, both through the delegated summoning manifest. Both are Blender 4.5 procedural renders from the repository's own renderer, the established path for a session without image generation, not placeholders. Technical native presentation remains separately recorded; no owner aesthetic approval claimed."
     },
     {
       "path": "assets-source/original-icons/cord-of-stubborn-resolve/cord-of-stubborn-resolve-assets.json",
