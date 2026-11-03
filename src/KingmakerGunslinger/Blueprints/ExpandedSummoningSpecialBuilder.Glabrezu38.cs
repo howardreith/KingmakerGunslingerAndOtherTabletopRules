@@ -48,7 +48,11 @@ namespace KingmakerGunslinger.Blueprints
         // (run 20261103T1359412870584Z) rather than guessed.
         private const string NativeConfusion38 =
             "cf6c901fb7acc904e85c63b342e9c949";
-        private const string NativeTrueSeeingBuff38 =
+        // Internal rather than private: the Sprint 38 persistence observer
+        // reads the SAME identity to assert the printed constant sense comes
+        // back after a cold load, and a second copy of the GUID in the
+        // observer would be a second thing to keep in step.
+        internal const string NativeTrueSeeingBuff38 =
             "09b4b69169304474296484c74aa12027";
         private const string NativeVitalStrikeFeature38 =
             "14a1fc1356df9f146900e1e42142fc9d";

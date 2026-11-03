@@ -87,6 +87,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.VrockAi37.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.VrockPublic37.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.VrockPersistence37.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.GlabrezuPersistence38.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalPersistence35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalPersistence36.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBodies34.cs" />
