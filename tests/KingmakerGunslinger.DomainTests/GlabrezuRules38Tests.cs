@@ -299,5 +299,73 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(glabrezu.TryArm(true, true, 2, victim),
                 "The Glabrezu's round allowance survives any number of command changes.");
         }
+
+        /// <summary>
+        /// The round the allowance actually belongs to is the game's round,
+        /// stamped by the caller, not a callback the engine never delivers to
+        /// this component. Both the base UnitTicksController and the
+        /// turn-based TurnController dispatch ITickEachRound through the
+        /// unit's LOGIC fact collection, and this gate is carried by a
+        /// FEATURE, so it is never called; a guarded run showed the owner
+        /// sitting in real combat for 975 unpaused frames with its rend spent
+        /// and the allowance never returning.
+        /// </summary>
+        internal static void RendAllowanceReturnsOnTheGameRoundStamp()
+        {
+            object victim = new object();
+            var round = new GlabrezuRendRound38(
+                GlabrezuRules38Policy.RendPincerCount);
+
+            Assertions.Equal(long.MinValue, round.RoundStamp,
+                "A fresh state belongs to no round until one is stamped.");
+            Assertions.True(round.BeginRoundIfChanged(100L),
+                "The first stamp starts a round.");
+            Assertions.Equal(100L, round.RoundStamp,
+                "The state carries the round it was stamped with.");
+            Assertions.False(round.BeginRoundIfChanged(100L),
+                "The same round is not restarted, so a second qualifying pair inside it cannot rend again.");
+
+            // Spend the round's one rend.
+            Assertions.False(round.TryArm(true, true, 1, victim),
+                "The first pincer cannot rend with nothing before it.");
+            round.RecordOutcome(1, victim, true);
+            Assertions.True(round.TryArm(true, true, 2, victim),
+                "Both pincers on one creature in one round must rend.");
+            round.RecordOutcome(2, victim, true);
+            Assertions.True(round.SpentThisRound,
+                "An armed pincer that hit spends the round's rend.");
+
+            // Still the same round: no second rend, however the pair repeats.
+            Assertions.False(round.BeginRoundIfChanged(100L),
+                "The stamp has not moved, so the round has not.");
+            Assertions.False(round.TryArm(true, true, 1, victim),
+                "A spent round refuses a second rend.");
+            round.RecordOutcome(1, victim, true);
+            Assertions.False(round.TryArm(true, true, 2, victim),
+                "A spent round refuses a second rend even on a completed pair.");
+
+            // The next round returns the allowance and forgets the pair.
+            Assertions.True(round.BeginRoundIfChanged(101L),
+                "A new stamp starts a new round.");
+            Assertions.False(round.SpentThisRound,
+                "A new round returns the allowance.");
+            Assertions.Equal(0, round.TrackedVictimCount,
+                "A new round forgets every remembered pair.");
+            Assertions.False(round.TryArm(true, true, 2, victim),
+                "The forgotten pair cannot rend from one pincer alone.");
+            round.RecordOutcome(2, victim, true);
+            Assertions.True(round.TryArm(true, true, 1, victim),
+                "A fresh pair in the new round rends again.");
+
+            // A stamp that moves backwards is still a different round: the
+            // allowance is keyed on CHANGE, not on order, so a reloaded or
+            // rewound clock cannot leave a round permanently spent.
+            round.RecordOutcome(1, victim, true);
+            Assertions.True(round.SpentThisRound, "The new round is spent.");
+            Assertions.True(round.BeginRoundIfChanged(99L),
+                "A changed stamp starts a round even if the clock moved back.");
+            Assertions.False(round.SpentThisRound,
+                "A rewound clock does not leave the allowance spent forever.");
+        }
     }
 }
