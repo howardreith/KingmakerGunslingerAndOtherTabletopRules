@@ -2785,7 +2785,7 @@
     "releaseVersion": "0.0.176",
     "releaseInformationalVersion": "0.0.176-expanded-summoning-glabrezu",
     "baseStableVersion": "0.0.175",
-    "reviewedProductSource": "dd833a19f0df981e208178ae5066884a0dd3e5c9",
+    "reviewedProductSource": "d9df7a0318bebc08ed5eb1ddbb34b552fb6819ed",
     "appendedIdentities": 32,
     "releasedIdentityChanges": 0,
     "change": "Glabrezu, one untemplated Summon Monster IX route, a source-owned round-scoped rend and a source-owned Power Word Stun at its printed close range, five at-will and constant native spell-likes, and a distinct original four-armed body/icon",
@@ -2798,10 +2798,10 @@
       "scripts/Invoke-Sprint22InstalledStack.ps1": "64ee3bc0e803f461e2801341bc3bcea65c7b65ade4dc2bc6f450edfe2562c7f0",
       "scripts/RuntimeAutomation.Common.ps1": "8dbcf5a2ddabba81917bdc5ef3e2fcca430eab4173dfc8c079f7877defd8ffa3",
       "scripts/RuntimeHarness.Common.ps1": "f8c67bb58e84b677e377d4a8a93472ecfefffe38fa2b5b778186209d6f7aadb2",
-      "scripts/Sprint38QualifiedRelease.Common.ps1": "d1660caa54c2246e47cac30b82af2786799ddeabac2959749a84763996fd30ba",
+      "scripts/Sprint38QualifiedRelease.Common.ps1": "4934339e209e8faf7266bec3ec29afd70899aa431d2fa2819020b9d7300c8a5a",
       "scripts/Test-Sprint22InstalledStack.ps1": "e7c6c4a401e6881c02516d184c8d0e377c02df24af75cc491a9c7178fca08f2c",
       "scripts/Test-Sprint32NativePersistenceRequest.ps1": "e6e69985607782c5c1c4ee476a66e8f8a68c295f8603732fbd774c84b8d9dcb2",
-      "scripts/Test-Sprint38Release.ps1": "10aa6e6cf62c5ae3d2b6fde83e57bf421fd5c6c10dc77cc677e83e144765a8e6"
+      "scripts/Test-Sprint38Release.ps1": "f6a682157fc59939a53310b606e29626382efa20fc36c9af8e592d351e02179e"
     },
     "harnessIdentityNote": "Tool and fixture identity for the orchestration that produced the native rows, recorded separately from the compiled product identity. These paths lie outside the validator's guarded product roots, so they are pinned here rather than by the product diff. The validator file itself cannot carry its own digest; its provenance is the reviewed product commit.",
     "installedStackFixtureChecks": 52,
