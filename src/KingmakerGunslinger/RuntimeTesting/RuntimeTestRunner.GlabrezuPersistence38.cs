@@ -92,18 +92,32 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// <summary>
         /// The state this creature actually persists, and why these rows
         /// exist. Power Word Stun is once per summoning, so a use that came
-        /// back on load would be an unlimited save-scummed no-save stun; and
-        /// the stun it leaves on its target is a finite clock, so one that
-        /// restarted on load would be the same defect from the other side.
+        /// back on load would be an unlimited save-scummed no-save stun at no
+        /// cost at all.
         ///
-        /// <para>Three pieces of saved state are prepared exactly as
-        /// production attaches them: the recipient is brought into the printed
-        /// low hit-point bucket, the stun carrier is attached to it with the
-        /// owner as source and the bucket's bound, and the owner's single use
-        /// is spent. The rend's round state is deliberately NOT prepared: it
-        /// lives in a request-local table keyed by unit and rebuilt from the
-        /// round boundary, so what the envelope has to show is that no armed
-        /// rend and no attack-pair history survive a load.</para>
+        /// <para>The stun itself is applied, observed and then <b>withdrawn
+        /// before the save</b>, which is a correction rather than a
+        /// convenience. A guarded run showed why: the shared roster readiness
+        /// contract requires every owned unit to be able to act and move at
+        /// the save boundary, and this fixture may write only to units it
+        /// owns, so the only available recipient is a second owned glabrezu -
+        /// which a real stun then makes legitimately unable to act. Leaving it
+        /// stunned would have meant either a failing mandatory row or widening
+        /// a released contract every other scope depends on. What the stun has
+        /// to prove is proven while it stands: one finite effect, inside the
+        /// printed bucket's own dice, attributed to its owner, genuinely
+        /// preventing action. Its serialized duration is ordinary native buff
+        /// behaviour that the released Sprint 36 and 37 envelopes already
+        /// exercise.</para>
+        ///
+        /// <para>What crosses the save is therefore the state that is this
+        /// creature's own: the spent single use, the recipient's hit points so
+        /// the printed bucket is re-derived from live state rather than
+        /// remembered, and the printed constant true seeing. The rend's round
+        /// state is deliberately not prepared either - it lives in a
+        /// request-local table keyed by unit and rebuilt from the round
+        /// boundary - so what the envelope shows is that no armed rend and no
+        /// attack-pair history survive a load.</para>
         /// </summary>
         private IEnumerable<int> PrepareGlabrezuSaved38(UnitEntityData caster,
             UnitEntityData[] sources)
@@ -153,12 +167,48 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException(
                     "The Sprint 38 recipient is not in the printed low bucket.");
 
-            if (victim.Descriptor.AddBuff(carrier, glabrezu,
+            Kingmaker.UnitLogic.Buffs.Buff applied =
+                victim.Descriptor.AddBuff(carrier, glabrezu,
                     TimeSpan.FromSeconds(GameConsts.RoundDuration *
-                        GlabrezuStunBoundRounds38())) == null)
+                        GlabrezuStunBoundRounds38()));
+            if (applied == null)
                 throw new InvalidOperationException(
                     "Sprint 38 saved state could not be attached.");
             glabrezu.Descriptor.Resources.Spend(stun, 1);
+            double stunRounds = applied.TimeLeft.TotalSeconds /
+                GameConsts.RoundDuration;
+            bool stunStood = applied.Active && !applied.IsDisposed &&
+                stunRounds > 0 &&
+                stunRounds <= GlabrezuStunBoundRounds38() + 1 &&
+                ReferenceEquals(applied.Owner?.Unit, victim) &&
+                !victim.Descriptor.State.CanAct;
+            // Observed while it stands, then withdrawn: the save boundary
+            // requires every owned unit to be able to act, and the only
+            // recipient this fixture may write to is a unit it owns.
+            applied.Remove();
+            bool removed = victim.Buffs.GetBuff(carrier) == null &&
+                victim.Descriptor.State.CanAct &&
+                victim.Descriptor.State.CanMove;
+            RosterPersistenceCheck("s38-stun-stood-then-withdrawn",
+                stunStood && removed,
+                new JObject {
+                    ["glabrezu"] = glabrezu.UniqueId,
+                    ["recipient"] = victim.UniqueId,
+                    ["recipientHitPoints"] = victim.HPLeft,
+                    ["stunRoundsWhileStanding"] = stunRounds,
+                    ["stunBoundRounds"] = GlabrezuStunBoundRounds38(),
+                    ["stunOwnerWhileStanding"] = applied.Owner?.Unit?.UniqueId,
+                    ["stunPreventedActionWhileStanding"] = stunStood,
+                    ["stunWithdrawnBeforeSave"] = removed,
+                    ["recipientCanActAfterWithdrawal"] =
+                        victim.Descriptor.State.CanAct,
+                    ["recipientCanMoveAfterWithdrawal"] =
+                        victim.Descriptor.State.CanMove,
+                    ["whyItIsWithdrawn"] =
+                        "The shared roster readiness contract requires every owned unit to be able to act and move at the save boundary, and this fixture may write only to units it owns, so a real stun on the only available recipient would have meant either a failing mandatory row or widening a released contract every other scope depends on. The stun is proven while it stands; its serialized duration is ordinary native buff behaviour the released Sprint 36 and 37 envelopes already exercise."
+                }, "Power Word Stun leaves one finite effect on the recipient inside the printed bucket dice, attributed to its owner and genuinely preventing action, and it is then withdrawn so no owned unit reaches the save unable to act.");
+            if (!(stunStood && removed)) throw new InvalidOperationException(
+                "Sprint 38 stun did not stand and withdraw cleanly.");
             yield break;
         }
 
@@ -222,24 +272,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData victim = glabrezus
                 .Single(unit => !ReferenceEquals(unit, glabrezu));
 
-            // A save does not serialize the live caster reference, so after a
-            // cold load MaybeCaster is null and the attribution has to be read
-            // from the serialized reference - the lesson Sprint 36's held
-            // nausea recorded and Sprint 37 reused. Either answer identifies
-            // the owner; neither may name a different unit.
+            // No stun may remain anywhere: the prepare stage withdrew it
+            // before the save on purpose, so a survivor here would mean the
+            // withdrawal did not take or something re-applied it.
             Buff[] stuns = Game.Instance.State.Units.All
                 .Where(unit => unit != null && unit.IsInState)
                 .SelectMany(unit => unit.Buffs.Enumerable)
-                .Where(buff => ReferenceEquals(buff.Blueprint, carrier) &&
-                    (ReferenceEquals(buff.Context?.MaybeCaster, glabrezu) ||
-                        (buff.Context != null &&
-                            CircleOriginalCasterId(buff.Context) ==
-                                glabrezu.UniqueId)))
+                .Where(buff => ReferenceEquals(buff.Blueprint, carrier))
                 .ToArray();
-            double stunLeft = stuns.Length == 1 ?
-                stuns[0].TimeLeft.TotalSeconds : -1;
-            double stunBound = GameConsts.RoundDuration *
-                GlabrezuStunBoundRounds38();
             int ownerHeld = glabrezu.Descriptor.Resources
                 .GetResourceAmount(stun);
             int victimHeld = victim.Descriptor.Resources
@@ -262,33 +302,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             // single use still unspent beside it, the spent one is
             // demonstrably this owner's rather than the creature's in general.
             bool ownerClean = glabrezu.Buffs.GetBuff(carrier) == null;
-            bool exact =
-                // Present is not enough: present-but-restarted is also a
-                // defect, so the bound is the printed bucket and nothing
-                // longer.
-                stuns.Length == 1 && stuns[0].Active &&
-                !stuns[0].IsDisposed && stunLeft > 0 &&
-                stunLeft <= stunBound + 1 &&
-                ReferenceEquals(stuns[0].Owner?.Unit, victim) &&
-                ownerHeld == 0 &&
+            bool exact = stuns.Length == 0 && ownerHeld == 0 &&
                 victimHeld == GlabrezuRules38Policy.PowerWordStunUses &&
                 victimHitPoints ==
                     GlabrezuRules38Policy.PowerWordStunLowThreshold &&
                 derivedDice == GlabrezuRules38Policy.PowerWordStunLowDice &&
+                victim.Descriptor.State.CanAct &&
+                victim.Descriptor.State.CanMove &&
                 seeingBoth && rendClean && ownerClean;
             RosterPersistenceCheck("s38-state-" + phase, exact,
                 new JObject {
                     ["glabrezu"] = glabrezu.UniqueId,
                     ["moduleEnabled"] =
                         _context.FeatureModules.Active.ExpandedSummoning,
-                    ["stunCount"] = stuns.Length,
-                    ["stunSecondsLeft"] = stunLeft,
-                    ["stunBound"] = stunBound,
-                    ["stunBoundRounds"] = GlabrezuStunBoundRounds38(),
-                    ["stunOwner"] = stuns.Length == 1 ?
-                        stuns[0].Owner?.Unit?.UniqueId : null,
-                    ["stunSerializedCaster"] = stuns.Length == 1 ?
-                        stuns[0].Context?.MaybeCaster?.UniqueId : null,
+                    ["remainingStuns"] = stuns.Length,
+                    ["stunWithdrawnBeforeSave"] = true,
+                    ["recipientCanAct"] = victim.Descriptor.State.CanAct,
+                    ["recipientCanMove"] = victim.Descriptor.State.CanMove,
                     ["powerWordStunRemaining"] = ownerHeld,
                     ["ownerCarriesNoStun"] = ownerClean,
                     ["recipient"] = victim.UniqueId,
@@ -299,10 +329,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["trueSeeingOnBoth"] = seeingBoth,
                     ["rendRound"] = new JArray(ownerRound, recipientRound)
                 }, phase == "prepared"
-                    ? "The prepared fixture owns one finite stun attributed to it, its single Power Word Stun use spent, a recipient really inside the printed low hit-point bucket with its own use untouched, and constant true seeing on both."
-                    : "A fresh load preserves the serialized stun clock and its caster attribution, the spent single use, and the recipient's hit points - so the bucket is re-derived rather than remembered - reinstates the printed constant true seeing, and carries no armed rend or remembered attack pair, because that state is request-local and must not be saved.");
+                    ? "The prepared fixture has its single Power Word Stun use spent, a recipient really inside the printed low hit-point bucket with its own use untouched and able to act once the stun was withdrawn, constant true seeing on both, and no rend round state."
+                    : "A fresh load preserves the spent single use and the recipient hit points - so the printed bucket is re-derived from live state rather than remembered - reinstates the printed constant true seeing, leaves no stun behind, and carries no armed rend or remembered attack pair, because that state is request-local and must not be saved.");
             if (!exact) throw new InvalidOperationException(
-                "Sprint 38 saved stun, resource, bucket, sense or rend-round state differs.");
+                "Sprint 38 saved resource, bucket, sense, stun-absence or rend-round state differs.");
         }
 
         /// <summary>
@@ -325,7 +355,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             // The printed constant sense is the creature's own fact, so its
             // absence here is not a separate claim: with no glabrezu present
             // there is nothing to carry it. What this row does assert is that
-            // no stun this creature applied outlives it.
+            // no stun this creature applied outlives it anywhere, which is
+            // also the other half of the prepare stage's withdrawal.
             bool exact = effects == 0 && glabrezus == 0;
             RosterPersistenceCheck("s38-state-" + phase + "-absence", exact,
                 new JObject {

@@ -233,7 +233,7 @@ function Assert-KmgSprint38Qualification($Ledger,$Candidate) {
     # envelope that proves it, in both module states.
     foreach($sequenceName in @('on','off')) {
         $row=@($Ledger.coverage|Where-Object id -ceq ('mixed-'+$sequenceName+'-persistence'))[0]
-        foreach($name in @('s38-items-owned')) {
+        foreach($name in @('s38-items-owned','s38-stun-stood-then-withdrawn')) {
             if(@($row.evidenceSources|Where-Object {$_.requiredAssertions -ccontains $name}).Count -eq 0) {
                 throw 'Sprint38 persistence envelope does not name its own saved state: '+$name
             }
