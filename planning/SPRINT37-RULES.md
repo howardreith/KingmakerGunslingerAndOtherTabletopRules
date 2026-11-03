@@ -215,7 +215,30 @@ Bone Devil is asked, and is stunned. The summoner's own ally is asked, and is
 stunned. So the exemption is observably not an alignment, outsider-type,
 faction or allegiance rule. The Fortitude difficulty class was the printed 21
 at the creature's live Constitution of 25, and moved to 25 when that score was
-raised to 33. Every cell holds in both real-time and turn-based combat.
+raised to 33.
+
+### The turn-based pass was a label before it was an observation
+
+An earlier version of this section said every cell holds in both real-time and
+turn-based combat. That was not supported. The turns phase differed from the
+real-time phase only by a `-turnbased` suffix on its assertion names: it never
+set the native turn-based setting, so both phases ran in real time and the
+second one proved nothing about the second mode. The receipts show it — no cell
+recorded any mode fact at all.
+
+The phase now enters real turn-based play through the engine's own supported
+path, the one the released Satyr, Lillend and Hound reviews use: establish real
+combat in real time, let the turn-based controller rebuild its order from those
+combat states, and wait for the vrock to hold its own turn before anything is
+ordered. A `screech-turn-admission` cell requires that admission, every cell
+records `nativeTurnBasedMode` as the engine answers it, and a turn-based cell
+refuses to report at all if the game is actually in real time. The native mode
+and pause state are restored afterwards. The casts themselves needed no change:
+the shared cast helper already waits for its caster's own native turn, and the
+spent standard action and the printed one-round expiry now wait by letting the
+native round turn over rather than by idling against a wall clock.
+
+So the both-modes claim is made by the corrected phase or not at all.
 
 ### Owner decision, 2026-11-02: conservative automatic screech retained
 

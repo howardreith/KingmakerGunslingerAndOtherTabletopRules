@@ -43,6 +43,7 @@ $screechNames=@('sprint37-screech-control-roster','sprint37-screech-identity-exe
     'sprint37-screech-stun-expiry','sprint37-screech-recharge-refusal',
     'sprint37-screech-two-owner-isolation')
 $allAssertions=@('synthetic-required')+@($surface.routes.assertion)+$sporeStates+$screechNames+
+    @('sprint37-screech-manual-interface','sprint37-screech-turn-admission-turnbased')+
     @($screechNames|ForEach-Object {$_+'-turnbased'})
 function Native([string]$run,[string]$source=$head) {
     $raw=Proof ('native-'+$run) @{gitCommit=$source;runId=$run;status='PASS';assertions=@($allAssertions|ForEach-Object {@{name=$_;status='PASS'}})}
@@ -108,6 +109,16 @@ Refuse {$l=CopyLedger;$row=($l.coverage|Where-Object id -ceq 'both-modes-screech
     Assert-KmgSprint37Qualification $l $candidate}
 Refuse {$l=CopyLedger;$row=($l.coverage|Where-Object id -ceq 'screech-identity-and-recharge');
     $row.evidenceSources[0].requiredAssertions=@($row.evidenceSources[0].requiredAssertions|Where-Object {$_ -cne 'sprint37-screech-two-owner-isolation'});
+    Assert-KmgSprint37Qualification $l $candidate}
+# Each screech row also carries the one pin specific to it: the real-time row
+# the manual player interface the owner decision requires, and the turn-based
+# row the engine's own admission to turn-based combat. Without the second pin a
+# -turnbased suffix could stand for a mode the observation never entered.
+Refuse {$l=CopyLedger;$row=($l.coverage|Where-Object id -ceq 'screech-identity-and-recharge');
+    $row.evidenceSources[0].requiredAssertions=@($row.evidenceSources[0].requiredAssertions|Where-Object {$_ -cne 'sprint37-screech-manual-interface'});
+    Assert-KmgSprint37Qualification $l $candidate}
+Refuse {$l=CopyLedger;$row=($l.coverage|Where-Object id -ceq 'both-modes-screech');
+    $row.evidenceSources[0].requiredAssertions=@($row.evidenceSources[0].requiredAssertions|Where-Object {$_ -cne 'sprint37-screech-turn-admission-turnbased'});
     Assert-KmgSprint37Qualification $l $candidate}
 Refuse {$l=CopyLedger;($l.coverage|Where-Object id -ceq 'public-routes-presentation').routes[0].identity=('d'*32);Assert-KmgSprint37Qualification $l $candidate}
 Refuse {$l=CopyLedger;($l.coverage|Where-Object id -ceq 'mixed-on-persistence').evidenceSources=@($main);Assert-KmgSprint37Qualification $l $candidate}
