@@ -108,6 +108,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ItemEntityWeapon[] others;
                 GlabrezuRendLimbs38(glabrezu, out pincers, out others, check);
 
+                JObject combat = GlabrezuEnterCombat38(glabrezu, target);
+                check("rend-round-clock-is-live",
+                    (bool)combat["ownerInCombat"] &&
+                    (bool)combat["victimInCombat"] &&
+                    !(bool)combat["ownerBrainActive"],
+                    combat,
+                    "The owner and its victim are in real combat, so the engine's own round clock runs and the printed once-per-round allowance can be observed being returned; no brain is activated, so nothing attacks on its own.");
+
                 foreach (int frame in GlabrezuRendSequences38(glabrezu, target,
                     second, pincers, others, check)) yield return frame;
             }
@@ -234,6 +242,55 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
+        /// Puts the owner and its victim into real combat, which is what makes
+        /// the round clock run at all.
+        ///
+        /// <para>The second guarded run spent thirty unpaused seconds - 992
+        /// frames - waiting for a round boundary that never came, with the
+        /// state stuck at spent. Outside combat the engine raises no round
+        /// ticks, so <c>ITickEachRound</c> is never called and the rend
+        /// allowance is never returned. That is correct for the creature - a
+        /// rend only matters in combat - but an observation of the boundary has
+        /// to put the units in combat to see one.</para>
+        ///
+        /// <para>Only enrolment happens here. No brain is activated and no
+        /// command is issued, so nothing attacks on its own: the owner's brain
+        /// stays quiesced and its live attack command points at the distant
+        /// victim.</para>
+        /// </summary>
+        private static JObject GlabrezuEnterCombat38(UnitEntityData glabrezu,
+            UnitEntityData victim)
+        {
+            glabrezu.Memory.Add(victim).Visible = true;
+            victim.Memory.Add(glabrezu).Visible = true;
+            if (glabrezu.Group != null)
+                glabrezu.Group.Memory.Add(victim).Visible = true;
+            if (victim.Group != null)
+                victim.Group.Memory.Add(glabrezu).Visible = true;
+            new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
+            new Kingmaker.Controllers.Combat.UnitCombatJoinController().Tick();
+            new Kingmaker.Controllers.Combat.UnitCombatPrepareController()
+                .Tick();
+            if (!glabrezu.CombatState.IsInCombat)
+                glabrezu.CombatState.JoinCombat();
+            if (!victim.CombatState.IsInCombat)
+                victim.CombatState.JoinCombat();
+            new Kingmaker.Controllers.Combat.UnitCombatJoinController().Tick();
+            new Kingmaker.Controllers.Combat.UnitCombatPrepareController()
+                .Tick();
+            return new JObject {
+                ["owner"] = glabrezu.UniqueId,
+                ["victim"] = victim.UniqueId,
+                ["ownerInCombat"] = glabrezu.IsInCombat,
+                ["victimInCombat"] = victim.IsInCombat,
+                ["ownerBrainActive"] = glabrezu.IsBrainActive,
+                ["victimBrainActive"] = victim.IsBrainActive,
+                ["whyCombatIsRequired"] =
+                    "The engine raises no round ticks outside combat, so ITickEachRound is never called and the round's rend allowance is never returned. The second guarded run waited 992 unpaused frames for a boundary that could not come."
+            };
+        }
+
+        /// <summary>
         /// Waits for the production round state to be genuinely fresh - no
         /// armed rend, no spent round and no remembered attack pair - and
         /// leaves the game PAUSED when it is.
@@ -275,8 +332,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.IsPaused = true;
                 fresh = isFresh(GlabrezuRendGate38.ObservedState(glabrezu));
             }
-            // Paused on every exit, including the timeout: a later cell must
-            // never run its sequence with the engine still attacking.
+            // Pausing is best-effort isolation only. The second guarded run
+            // recorded IsPaused reading back false immediately after being
+            // set, so this phase does not depend on it: the owner's brain is
+            // quiesced, its live attack command points at the distant victim,
+            // and the near victim's brain is off, which is what actually keeps
+            // the sequence free of ambient attacks.
             Game.Instance.IsPaused = true;
             record["roundBoundaryFrames"] = frames;
             record["roundStateIsFresh"] = fresh;
@@ -284,7 +345,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             record["crossedFromSpentRound"] = wasSpent && fresh;
             record["trackedVictimsBeforeBoundary"] = victimsBefore;
             record["stateAfterBoundary"] = GlabrezuRendStateRow38(glabrezu);
-            record["pausedForSequence"] = Game.Instance.IsPaused;
+            record["pauseRequested"] = true;
+            record["pauseObserved"] = Game.Instance.IsPaused;
+            record["ownerInCombat"] = glabrezu.IsInCombat;
         }
 
         /// <summary>
