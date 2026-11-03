@@ -1171,6 +1171,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint37-recorded-speeds", VrockRules37Tests.MovementRecordsBothPrintedSpeeds),
             Case("expanded-summoning.sprint37-printed-defences", VrockRules37Tests.PrintedDefencesDeriveFromTheirBaseValues),
             Case("expanded-summoning.sprint37-original-model", VrockRules37Tests.OwnedBodyDecodesAndIsDistinct),
+            Case("expanded-summoning.sprint37-persistence-pair", VrockRules37Tests.PersistenceScopeCarriesTwoOwnedVrocks),
             Case("expanded-summoning.sprint18-twenty-six-roots", PrimateRulesTests.TwentySixRootsFollowFromTheCatalogTiers),
             Case("expanded-summoning.sprint18-registered-and-published", PrimateRulesTests.BothApesAreRegisteredAndPublished),
             Case("expanded-summoning.sprint18-ape-two-slams", PrimateRulesTests.ApeProfileIsTwoPrimarySlams),

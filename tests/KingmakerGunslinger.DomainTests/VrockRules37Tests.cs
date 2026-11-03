@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using KingmakerGunslinger.RuntimeTesting;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
 
@@ -320,6 +321,38 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(20, VrockRules37Policy.SpellResistance,
                 "Spell resistance is the printed 20, not the Hezrou's 22.");
             VrockRules37Policy.Validate();
+        }
+
+        /// <summary>
+        /// The persistence scope needs two vrocks, not one. The printed spore
+        /// growth lands on an adjacent creature rather than on the vrock
+        /// itself, and the fixture may not write to a party member or to any
+        /// unit it does not own, so a one-creature scope leaves the prepare
+        /// step with no faithful victim and throws. This pins the pair so a
+        /// later tidy-up cannot quietly reduce it to one.
+        /// </summary>
+        internal static void PersistenceScopeCarriesTwoOwnedVrocks()
+        {
+            string[] keys = ExpandedSummoningRosterPersistencePolicy.VrockKeys;
+            Assertions.Equal(2, keys.Length,
+                "The scope summons two vrocks so the growth has an adjacent victim it owns.");
+            foreach (string key in keys)
+                Assertions.Equal(VrockVisualPolicy37.Vrock, key,
+                    "Both sources are the registered vrock, not a stand-in creature.");
+            Assertions.True(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(
+                ExpandedSummoningRosterPersistencePolicy.VrockScope, keys),
+                "The pair is what the scope admits.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(
+                ExpandedSummoningRosterPersistencePolicy.VrockScope,
+                keys.Take(1)), "One vrock cannot satisfy the scope.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(
+                ExpandedSummoningRosterPersistencePolicy.VrockScope,
+                keys.Concat(new[] { VrockVisualPolicy37.Vrock })),
+                "A third vrock is not the scope either.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(
+                ExpandedSummoningRosterPersistencePolicy.VrockScope,
+                new[] { VrockVisualPolicy37.Vrock, "hezrou" }),
+                "Another creature cannot stand in as the victim.");
         }
 
         internal static void OwnedBodyDecodesAndIsDistinct()

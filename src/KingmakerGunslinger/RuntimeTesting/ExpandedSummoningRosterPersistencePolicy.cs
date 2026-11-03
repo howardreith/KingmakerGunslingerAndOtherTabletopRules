@@ -233,8 +233,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         { get { return new[] { InfernalVisualPolicy36.Babau,
             InfernalVisualPolicy36.Hezrou }; } }
         internal const string VrockScope = "vrock";
+        // Two, like the Sprint 32 scope. The printed spore growth lands on an
+        // adjacent creature and not on the vrock itself, and this fixture may
+        // not write to a party member or any unit it does not own, so the only
+        // faithful victim is a second owned vrock. It also makes the saved
+        // growth's attribution and the spent single uses demonstrably one
+        // owner's rather than merely "a vrock's".
         internal static string[] VrockKeys
-        { get { return new[] { VrockVisualPolicy37.Vrock }; } }
+        { get { return new[] { VrockVisualPolicy37.Vrock,
+            VrockVisualPolicy37.Vrock }; } }
         internal const string ShadowOutsidersScope = "shadow-outsiders";
         internal static string[] ShadowOutsiderKeys
         { get { return new[] { "succubus", "invisible-stalker", "shadow-demon" }; } }
