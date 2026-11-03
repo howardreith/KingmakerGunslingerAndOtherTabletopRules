@@ -37,12 +37,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExpandedSummoningSpecialBuilder.Vrock37Prefix + suffix];
         }
 
-        private static UnitEntityData VrockSavedSource37(
+        private static UnitEntityData[] VrockSavedSources37(
             UnitEntityData[] sources)
         {
-            return sources.SingleOrDefault(unit =>
+            return sources.Where(unit =>
                 unit.Get<UnitPartRelease143RosterReceipt>()?.Key ==
-                    VrockVisualPolicy37.Vrock);
+                    VrockVisualPolicy37.Vrock)
+                // A stable order so the same unit is the owner in every stage
+                // of an envelope, independent of enumeration.
+                .OrderBy(unit => unit.UniqueId, StringComparer.Ordinal)
+                .ToArray();
+        }
+
+        /// <summary>
+        /// The owner of the prepared state. Before preparation it is the first
+        /// of the two in a stable order; afterwards, and on every later stage,
+        /// it is the one actually carrying the hour marker - which is the fact
+        /// under observation, so it is read rather than assumed.
+        /// </summary>
+        private static UnitEntityData VrockSavedOwner37(
+            UnitEntityData[] vrocks, BlueprintBuff recharge)
+        {
+            UnitEntityData[] marked = vrocks
+                .Where(unit => unit.Buffs.GetBuff(recharge) != null)
+                .ToArray();
+            if (marked.Length > 1) throw new InvalidOperationException(
+                "More than one Sprint 37 vrock carries the hour marker.");
+            return marked.Length == 1 ? marked[0] : null;
         }
 
         /// <summary>
@@ -61,9 +82,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> PrepareVrockSaved37(UnitEntityData caster,
             UnitEntityData[] sources)
         {
-            UnitEntityData vrock = VrockSavedSource37(sources);
-            if (vrock == null) throw new InvalidOperationException(
-                "The Sprint 37 persistence scope found no summoned vrock.");
+            UnitEntityData[] vrocks = VrockSavedSources37(sources);
+            if (vrocks.Length != 2) throw new InvalidOperationException(
+                "The Sprint 37 persistence scope requires its two summoned vrocks.");
+            UnitEntityData vrock = vrocks[0];
             var recharge = VrockSavedBlueprint37<BlueprintBuff>(
                 "ScreechRecharge");
             var cooldown = VrockSavedBlueprint37<BlueprintBuff>(
@@ -78,10 +100,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException(
                     "The vrock already carries its own markers before preparation.");
 
-            // A victim for the growth. Any adjacent live unit is exposed by
-            // the printed ability, so another roster source serves and no
-            // party member is touched.
-            UnitEntityData victim = sources
+            // A victim for the growth. The printed ability exposes adjacent
+            // creatures and not the vrock itself, so the second owned vrock is
+            // the victim; no party member and no unit this fixture does not
+            // own is touched.
+            UnitEntityData victim = vrocks
                 .Where(unit => !ReferenceEquals(unit, vrock) &&
                     unit.IsInState && !unit.Descriptor.State.IsDead)
                 .OrderBy(unit => Vector3Distance(vrock, unit))
@@ -122,11 +145,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void ObserveVrockSaved37(UnitEntityData caster,
             UnitEntityData[] sources, string phase)
         {
-            UnitEntityData vrock = VrockSavedSource37(sources);
-            if (vrock == null) throw new InvalidOperationException(
-                "Exact saved Sprint 37 vrock absent.");
             var recharge = VrockSavedBlueprint37<BlueprintBuff>(
                 "ScreechRecharge");
+            UnitEntityData[] vrocks = VrockSavedSources37(sources);
+            if (vrocks.Length != 2) throw new InvalidOperationException(
+                "Exact saved Sprint 37 vrock pair absent.");
+            UnitEntityData vrock = VrockSavedOwner37(vrocks, recharge);
+            if (vrock == null) throw new InvalidOperationException(
+                "No saved Sprint 37 vrock carries the hour marker.");
+            UnitEntityData bystander = vrocks
+                .Single(unit => !ReferenceEquals(unit, vrock));
             var cooldown = VrockSavedBlueprint37<BlueprintBuff>(
                 "SporeCooldown");
             var vines = VrockSavedBlueprint37<BlueprintBuff>("SporeVines");
@@ -136,11 +164,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "MirrorImageResource");
             Buff marker = vrock.Buffs.GetBuff(recharge);
             Buff cadence = vrock.Buffs.GetBuff(cooldown);
+            // A save does not serialize the live caster reference, so after a
+            // cold load MaybeCaster is null and the attribution has to be read
+            // from the serialized reference - the lesson Sprint 36's held
+            // nausea recorded. Either answer identifies the owner; neither is
+            // allowed to name a different unit.
             Buff[] growth = Game.Instance.State.Units.All
                 .Where(unit => unit != null && unit.IsInState)
                 .SelectMany(unit => unit.Buffs.Enumerable)
                 .Where(buff => ReferenceEquals(buff.Blueprint, vines) &&
-                    ReferenceEquals(buff.Context?.MaybeCaster, vrock))
+                    (ReferenceEquals(buff.Context?.MaybeCaster, vrock) ||
+                        (buff.Context != null &&
+                            CircleOriginalCasterId(buff.Context) ==
+                                vrock.UniqueId)))
                 .ToArray();
             double markerLeft = marker == null ? -1 :
                 marker.TimeLeft.TotalSeconds;
@@ -154,6 +190,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .GetResourceAmount(heroism);
             int mirrorHeld = vrock.Descriptor.Resources
                 .GetResourceAmount(mirror);
+            // The second vrock stood beside the first through the same save.
+            // Its clean marker state and unspent uses are what make the
+            // owner's state its own rather than the creature's in general.
+            bool bystanderClean = bystander.Buffs.GetBuff(recharge) == null &&
+                bystander.Buffs.GetBuff(cooldown) == null &&
+                bystander.Descriptor.Resources.GetResourceAmount(heroism) == 1 &&
+                bystander.Descriptor.Resources.GetResourceAmount(mirror) == 1;
             double hour = 3600d;
             double cadenceBound = GameConsts.RoundDuration *
                 VrockRules37Policy.SporeCadenceRounds;
@@ -169,7 +212,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cadenceLeft <= cadenceBound + 1 &&
                 growth.Length == 1 && growthLeft > 0 &&
                 growthLeft <= growthBound + 1 &&
-                heroismHeld == 0 && mirrorHeld == 0;
+                ReferenceEquals(growth[0].Owner?.Unit, bystander) &&
+                heroismHeld == 0 && mirrorHeld == 0 && bystanderClean;
             RosterPersistenceCheck("s37-state-" + phase, exact,
                 new JObject {
                     ["vrock"] = vrock.UniqueId,
@@ -187,7 +231,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["growthSerializedCaster"] = growth.Length == 1 ?
                         growth[0].Context?.MaybeCaster?.UniqueId : null,
                     ["heroismRemaining"] = heroismHeld,
-                    ["mirrorRemaining"] = mirrorHeld
+                    ["mirrorRemaining"] = mirrorHeld,
+                    ["bystander"] = bystander.UniqueId,
+                    ["bystanderMarker"] =
+                        bystander.Buffs.GetBuff(recharge) != null,
+                    ["bystanderCadence"] =
+                        bystander.Buffs.GetBuff(cooldown) != null,
+                    ["bystanderHeroism"] = bystander.Descriptor.Resources
+                        .GetResourceAmount(heroism),
+                    ["bystanderMirror"] = bystander.Descriptor.Resources
+                        .GetResourceAmount(mirror),
+                    ["bystanderClean"] = bystanderClean
                 }, phase == "prepared"
                     ? "The prepared fixture owns the vrock's hour screech marker, its three-round spore cadence, one ten-round growth attributed to it, and both single uses spent."
                     : "A fresh load preserves the serialized hour marker, the spore cadence, the growth and its caster attribution, and both spent single uses: the once-per-hour screech is a saved clock rather than one that restarts on load.");
@@ -236,24 +290,34 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         private void ObserveVrockItems37(UnitEntityData[] sources)
         {
-            UnitEntityData vrock = VrockSavedSource37(sources);
-            if (vrock == null) throw new InvalidOperationException(
-                "Exact saved Sprint 37 vrock absent for the item observation.");
-            int inventory = vrock.Descriptor.Inventory == null ? 0 :
-                vrock.Descriptor.Inventory.Items.Count();
-            string primary = vrock.Body.PrimaryHand.MaybeWeapon?.Blueprint
-                ?.name;
-            int limbs = vrock.Body.AdditionalLimbs
-                .Count(slot => slot.MaybeWeapon != null);
-            bool exact = inventory == 0 && limbs == 4 &&
-                primary != null && primary.StartsWith("KMG_",
-                    StringComparison.Ordinal);
+            UnitEntityData[] vrocks = VrockSavedSources37(sources);
+            if (vrocks.Length != 2) throw new InvalidOperationException(
+                "Exact saved Sprint 37 vrock pair absent for the item observation.");
+            var rows = new JArray();
+            bool exact = true;
+            foreach (UnitEntityData vrock in vrocks)
+            {
+                int inventory = vrock.Descriptor.Inventory == null ? 0 :
+                    vrock.Descriptor.Inventory.Items.Count();
+                string primary = vrock.Body.PrimaryHand.MaybeWeapon?.Blueprint
+                    ?.name;
+                int limbs = vrock.Body.AdditionalLimbs
+                    .Count(slot => slot.MaybeWeapon != null);
+                bool row = inventory == 0 && limbs == 4 &&
+                    primary != null && primary.StartsWith("KMG_",
+                        StringComparison.Ordinal);
+                exact &= row;
+                rows.Add(new JObject {
+                    ["vrock"] = vrock.UniqueId,
+                    ["inventoryItems"] = inventory,
+                    ["primaryWeapon"] = primary,
+                    ["additionalArmedLimbs"] = limbs,
+                    ["exact"] = row
+                });
+            }
             RosterPersistenceCheck("s37-items-owned", exact, new JObject {
-                ["vrock"] = vrock.UniqueId,
-                ["inventoryItems"] = inventory,
-                ["primaryWeapon"] = primary,
-                ["additionalArmedLimbs"] = limbs
-            }, "The saved vrock carries no inventory item and keeps its five project natural attacks.");
+                ["vrocks"] = rows
+            }, "Each saved vrock carries no inventory item and keeps its five project natural attacks.");
             if (!exact) throw new InvalidOperationException(
                 "Sprint 37 saved item or limb state differs.");
         }
