@@ -62313,6 +62313,14 @@
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     },
     {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.Confusion",
+      "guid": "b152da62abe440019586d885ff36ceec",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
       "symbol": "KMG.Summoning.Demon.Glabrezu.DispelMagic",
       "guid": "9da3bc79e0e84a3a8fa2c310c668eb10",
       "plannedType": "BlueprintAbility",
@@ -62363,6 +62371,14 @@
     {
       "symbol": "KMG.Summoning.Demon.Glabrezu.ChaosAi",
       "guid": "e8bf5f56af704e92b7ba2d54f8ae40f7",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.ConfusionAi",
+      "guid": "03ebb6d43eb94609bd4a97a3ca44757b",
       "plannedType": "InfernalSpellAi35",
       "status": "active",
       "milestone": "Expanded Summoning",
