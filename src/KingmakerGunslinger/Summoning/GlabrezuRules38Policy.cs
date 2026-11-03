@@ -448,6 +448,7 @@ namespace KingmakerGunslinger.Summoning
 
         private readonly List<VictimHits> _victims = new List<VictimHits>();
         private readonly int _pincerCount;
+        private long _stamp = long.MinValue;
 
         internal GlabrezuRendRound38(int pincerCount)
         {
@@ -460,6 +461,39 @@ namespace KingmakerGunslinger.Summoning
         internal int PincerCount { get { return _pincerCount; } }
         internal bool Armed { get; private set; }
         internal bool SpentThisRound { get; private set; }
+
+        /// <summary>
+        /// The round this state belongs to, or <see cref="long.MinValue"/>
+        /// before one has been stamped.
+        /// </summary>
+        internal long RoundStamp { get { return _stamp; } }
+
+        /// <summary>
+        /// Begins a new round when, and only when, the caller's round stamp
+        /// differs from the one this state carries. Returns whether it reset.
+        ///
+        /// <para>This is what makes the printed once-per-round limit real
+        /// rather than dependent on a callback that does not arrive. The
+        /// engine dispatches <c>ITickEachRound</c> through the unit's LOGIC
+        /// fact collection - both the base <c>UnitTicksController</c> and the
+        /// turn-based <c>TurnController</c> call
+        /// <c>unit.Logic.CallFactComponents</c> - so a component carried by a
+        /// FEATURE never receives it. A guarded run proved the consequence
+        /// exactly: the owner sat in real combat for 975 unpaused frames with
+        /// its rend spent and the allowance never came back.</para>
+        ///
+        /// <para>The stamp itself is supplied by the caller, so this class
+        /// stays dependency-free and the domain tests drive the real
+        /// production type. The gate derives it from game time, which advances
+        /// in both real-time and turn-based play.</para>
+        /// </summary>
+        internal bool BeginRoundIfChanged(long stamp)
+        {
+            if (_stamp == stamp) return false;
+            BeginRound();
+            _stamp = stamp;
+            return true;
+        }
 
         /// <summary>A new round returns the allowance and forgets every pair.</summary>
         internal void BeginRound()

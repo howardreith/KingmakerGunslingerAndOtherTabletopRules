@@ -107,9 +107,12 @@ namespace KingmakerGunslinger.Summoning
             if (owner == null) return;
             int pincer = PincerLimb(owner, evt.Weapon);
             if (pincer < 1) return;
+            long stamp = CurrentRoundStamp();
             lock (States)
             {
-                if (StateFor(owner).TryArm(true, HasLiveAttackCommand(owner),
+                GlabrezuRendRound38 state = StateFor(owner);
+                state.BeginRoundIfChanged(stamp);
+                if (state.TryArm(true, HasLiveAttackCommand(owner),
                         pincer, evt.Target)) evt.IsRend = true;
             }
         }
@@ -121,8 +124,42 @@ namespace KingmakerGunslinger.Summoning
             int pincer = PincerLimb(owner, evt.Weapon);
             if (pincer < 1) return;
             bool hit = evt.AttackRoll != null && evt.AttackRoll.IsHit;
+            long stamp = CurrentRoundStamp();
             lock (States)
-            { StateFor(owner).RecordOutcome(pincer, evt.Target, hit); }
+            {
+                GlabrezuRendRound38 state = StateFor(owner);
+                state.BeginRoundIfChanged(stamp);
+                state.RecordOutcome(pincer, evt.Target, hit);
+            }
+        }
+
+        /// <summary>
+        /// Which round the game is in, as a count of elapsed round durations.
+        ///
+        /// <para>This, and not <see cref="OnNewRound"/>, is what actually
+        /// returns the printed once-per-round allowance. The engine dispatches
+        /// <c>ITickEachRound</c> through the unit's LOGIC fact collection -
+        /// both the base <c>UnitTicksController</c> and the turn-based
+        /// <c>TurnController</c> call <c>unit.Logic.CallFactComponents</c> -
+        /// so a component carried by a FEATURE, as this one is, never receives
+        /// it. A guarded run proved it: the owner sat in real combat for 975
+        /// unpaused frames with its rend spent and the allowance never came
+        /// back.</para>
+        ///
+        /// <para>Game time is the right replacement rather than a convenient
+        /// one. It advances in real-time play and it advances by one round
+        /// duration per turn-based round, which is how every buff duration in
+        /// this game is already measured, so the same stamp is correct in both
+        /// modes and needs no mode test. <see cref="OnNewRound"/> is kept and
+        /// still resets, so if the callback does arrive the result is the
+        /// same.</para>
+        /// </summary>
+        private static long CurrentRoundStamp()
+        {
+            if (Game.Instance == null || Game.Instance.Player == null)
+                return long.MinValue + 1;
+            return (long)(Game.Instance.Player.GameTime.TotalSeconds /
+                GameConsts.RoundDuration);
         }
 
         /// <summary>The round's one rend comes back, and pairs are forgotten.</summary>

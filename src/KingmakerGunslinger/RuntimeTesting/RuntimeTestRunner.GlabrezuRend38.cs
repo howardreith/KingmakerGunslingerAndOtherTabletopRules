@@ -237,7 +237,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["armed"] = round != null && round.Armed,
                 ["spentThisRound"] = round != null && round.SpentThisRound,
                 ["trackedVictims"] = round == null ? 0 :
-                    round.TrackedVictimCount
+                    round.TrackedVictimCount,
+                ["roundStamp"] = round == null ? (long?)null :
+                    round.RoundStamp
             };
         }
 

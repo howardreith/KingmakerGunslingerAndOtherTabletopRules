@@ -1176,6 +1176,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint38-power-word-stun-buckets", GlabrezuRules38Tests.PowerWordStunBucketsFollowCurrentHitPoints),
             Case("expanded-summoning.sprint38-rend-once-per-round", GlabrezuRules38Tests.RendIsOncePerRoundAndNotPerCommand),
             Case("expanded-summoning.sprint38-released-tracker-contrast", GlabrezuRules38Tests.ReleasedTrackerReopensOnACommandChangeAndIsUnchanged),
+            Case("expanded-summoning.sprint38-rend-round-stamp", GlabrezuRules38Tests.RendAllowanceReturnsOnTheGameRoundStamp),
             Case("expanded-summoning.sprint18-twenty-six-roots", PrimateRulesTests.TwentySixRootsFollowFromTheCatalogTiers),
             Case("expanded-summoning.sprint18-registered-and-published", PrimateRulesTests.BothApesAreRegisteredAndPublished),
             Case("expanded-summoning.sprint18-ape-two-slams", PrimateRulesTests.ApeProfileIsTwoPrimarySlams),
