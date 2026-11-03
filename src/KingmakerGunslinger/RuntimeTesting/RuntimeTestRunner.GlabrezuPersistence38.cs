@@ -182,18 +182,18 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static bool GlabrezuRendRoundClean38(UnitEntityData unit,
             out JObject row)
         {
-            bool armed, spent;
-            int victims;
-            bool present = GlabrezuRendGate38.TryPeekRound(unit, out armed,
-                out spent, out victims);
+            GlabrezuRendRound38 round =
+                GlabrezuRendGate38.ObservedState(unit);
             row = new JObject {
                 ["unit"] = unit?.UniqueId,
-                ["roundStatePresent"] = present,
-                ["armed"] = armed,
-                ["spentThisRound"] = spent,
-                ["trackedVictims"] = victims
+                ["roundStatePresent"] = round != null,
+                ["armed"] = round != null && round.Armed,
+                ["spentThisRound"] = round != null && round.SpentThisRound,
+                ["trackedVictims"] = round == null ? 0 :
+                    round.TrackedVictimCount
             };
-            return !present || (!armed && !spent && victims == 0);
+            return round == null || (!round.Armed && !round.SpentThisRound &&
+                round.TrackedVictimCount == 0);
         }
 
         /// <summary>

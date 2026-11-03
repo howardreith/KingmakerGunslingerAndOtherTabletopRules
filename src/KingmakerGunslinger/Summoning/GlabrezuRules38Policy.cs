@@ -153,6 +153,11 @@ namespace KingmakerGunslinger.Summoning
         // Printed difficulty classes, for comparison against the live values.
         internal const int PrintedChaosHammerDc = 19;
         internal const int PrintedConfusionDc = 19;
+        // Unholy blight is also a fourth-level spell, so the same derivation
+        // reaches the same printed 19. It is named separately rather than
+        // shared with chaos hammer's constant: if either printed spell level
+        // were ever read differently, one shared number would hide it.
+        internal const int PrintedUnholyBlightDc = 19;
 
         /// <summary>
         /// A spell-like ability's difficulty class: ten plus the spell level
@@ -277,6 +282,8 @@ namespace KingmakerGunslinger.Summoning
                     != PrintedChaosHammerDc ||
                 SpellDifficultyClass(ConfusionSpellLevel, CharismaBonus)
                     != PrintedConfusionDc ||
+                SpellDifficultyClass(UnholyBlightSpellLevel, CharismaBonus)
+                    != PrintedUnholyBlightDc ||
                 // Reverse gravity is omitted by owner decision, but the same
                 // formula reproduced its printed DC 22 at spell level 7. The
                 // check is retained because it is what establishes that the
