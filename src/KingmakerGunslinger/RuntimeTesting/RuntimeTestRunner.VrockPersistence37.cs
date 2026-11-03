@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Items;
+using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
@@ -283,41 +285,89 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
-        /// This creature fights with five natural attacks and carries no
-        /// equipment, so the owned-item observation is that it owns none - the
-        /// released Babau's longspear made that worth asserting rather than
-        /// assuming.
+        /// What each saved vrock owns. The first version of this row asserted
+        /// an empty inventory, reasoning that a creature with five natural
+        /// attacks carries no equipment - but in Kingmaker a natural attack is
+        /// itself a weapon item in the unit's own inventory, so both vrocks
+        /// legitimately held five and a correct creature failed. The released
+        /// Sprint 36 shape is the right one and is used here: the inventory is
+        /// exactly the blueprint's own body weapons, each owned by that unit,
+        /// non-removable, non-lootable and single, no instance is shared
+        /// between the two, and the party's inventory is untouched.
         /// </summary>
-        private void ObserveVrockItems37(UnitEntityData[] sources)
+        private void ObserveVrockItems37(UnitEntityData[] sources,
+            Kingmaker.Items.ItemEntity[] partyItems, int[] partyCounts)
         {
             UnitEntityData[] vrocks = VrockSavedSources37(sources);
             if (vrocks.Length != 2) throw new InvalidOperationException(
                 "Exact saved Sprint 37 vrock pair absent for the item observation.");
+            Kingmaker.Items.ItemEntity[] all = vrocks.SelectMany(unit =>
+                unit.Descriptor.Inventory.Items).ToArray();
+            bool exact = all.Length != 0 &&
+                all.Distinct().Count() == all.Length &&
+                Sprint28PartyInventoryExact(partyItems, partyCounts);
             var rows = new JArray();
-            bool exact = true;
             foreach (UnitEntityData vrock in vrocks)
             {
-                int inventory = vrock.Descriptor.Inventory == null ? 0 :
-                    vrock.Descriptor.Inventory.Items.Count();
-                string primary = vrock.Body.PrimaryHand.MaybeWeapon?.Blueprint
-                    ?.name;
-                int limbs = vrock.Body.AdditionalLimbs
-                    .Count(slot => slot.MaybeWeapon != null);
-                bool row = inventory == 0 && limbs == 4 &&
-                    primary != null && primary.StartsWith("KMG_",
-                        StringComparison.Ordinal);
+                var body = vrock.Blueprint.Body;
+                string[] expected = new BlueprintItem[] {
+                    body.PrimaryHand, body.SecondaryHand,
+                    body.PrimaryHandAlternative1,
+                    body.SecondaryHandAlternative1,
+                    body.PrimaryHandAlternative2,
+                    body.SecondaryHandAlternative2,
+                    body.PrimaryHandAlternative3,
+                    body.SecondaryHandAlternative3
+                }.Where(value => value != null)
+                    .Concat(body.AdditionalLimbs ??
+                        Array.Empty<BlueprintItemWeapon>())
+                    .Concat(body.AdditionalSecondaryLimbs ??
+                        Array.Empty<BlueprintItemWeapon>())
+                    .Select(value => value.AssetGuid)
+                    .OrderBy(value => value, StringComparer.Ordinal)
+                    .ToArray();
+                Kingmaker.Items.ItemEntity[] items = vrock.Descriptor
+                    .Inventory.Items.ToArray();
+                bool row = items.Select(item => item.Blueprint.AssetGuid)
+                        .OrderBy(value => value, StringComparer.Ordinal)
+                        .SequenceEqual(expected) &&
+                    items.All(item =>
+                        ReferenceEquals(item.Owner, vrock.Descriptor) &&
+                        item.IsNonRemovable && !item.IsLootable &&
+                        item.Count == 1) &&
+                    // Five project natural attacks - a bite, two claws and
+                    // two talons - none of them a donor's. The core phase
+                    // counts the same five on the live unit.
+                    items.Length == 5 &&
+                    items.All(item => item.Blueprint.name.StartsWith("KMG_",
+                        StringComparison.Ordinal)) &&
+                    vrock.Body.AdditionalLimbs
+                        .Count(slot => slot.MaybeWeapon != null) == 4;
                 exact &= row;
                 rows.Add(new JObject {
                     ["vrock"] = vrock.UniqueId,
-                    ["inventoryItems"] = inventory,
-                    ["primaryWeapon"] = primary,
-                    ["additionalArmedLimbs"] = limbs,
+                    ["inventoryItems"] = items.Length,
+                    ["inventoryBlueprints"] = new JArray(items
+                        .Select(item => item.Blueprint.name)),
+                    ["expectedBodyWeapons"] = expected.Length,
+                    ["primaryWeapon"] = vrock.Body.PrimaryHand.MaybeWeapon
+                        ?.Blueprint?.name,
+                    ["additionalArmedLimbs"] = vrock.Body.AdditionalLimbs
+                        .Count(slot => slot.MaybeWeapon != null),
+                    ["allOwnedNonRemovableSingle"] = items.All(item =>
+                        ReferenceEquals(item.Owner, vrock.Descriptor) &&
+                        item.IsNonRemovable && !item.IsLootable &&
+                        item.Count == 1),
                     ["exact"] = row
                 });
             }
             RosterPersistenceCheck("s37-items-owned", exact, new JObject {
-                ["vrocks"] = rows
-            }, "Each saved vrock carries no inventory item and keeps its five project natural attacks.");
+                ["vrocks"] = rows,
+                ["distinctInstances"] = all.Distinct().Count(),
+                ["totalInstances"] = all.Length,
+                ["partyInventoryExact"] =
+                    Sprint28PartyInventoryExact(partyItems, partyCounts)
+            }, "Each saved vrock owns exactly its own five natural attacks as non-removable single items, shares no instance with the other, and the party's inventory is untouched.");
             if (!exact) throw new InvalidOperationException(
                 "Sprint 37 saved item or limb state differs.");
         }
