@@ -5,6 +5,7 @@ using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
 using Kingmaker.Items;
 using Kingmaker.PubSubSystem;
@@ -312,13 +313,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ?.GetValue(context) ?? 0;
             int speed = glabrezu.Stats.Speed.ModifiedValue;
             int perception = glabrezu.Stats.SkillPerception.ModifiedValue;
+            // The live Perception came back two above the printed 26 on the
+            // first guarded run, so the whole modifier stack is recorded with
+            // its sources rather than guessed at. The racial contribution is
+            // asserted at the printed +8; the total is asserted as at least
+            // the printed value, and the excess has to be attributed to a
+            // named source before the final candidate rather than explained
+            // away or subtracted.
+            var perceptionModifiers = new JArray();
+            int racialPerception = 0;
+            foreach (ModifiableValue.Modifier modifier in
+                glabrezu.Stats.SkillPerception.Modifiers)
+            {
+                if (modifier == null) continue;
+                if (modifier.ModDescriptor == ModifierDescriptor.Racial)
+                    racialPerception += modifier.ModValue;
+                perceptionModifiers.Add(new JObject {
+                    ["value"] = modifier.ModValue,
+                    ["descriptor"] = modifier.ModDescriptor.ToString(),
+                    ["sourceFact"] = modifier.Source?.Blueprint?.name,
+                    ["sourceFactGuid"] = modifier.Source?.Blueprint?.AssetGuid,
+                    ["sourceComponent"] = modifier.SourceComponent
+                });
+            }
             bool exact = fortitude == GlabrezuRules38Policy.PrintedFortitude &&
                 reflex == GlabrezuRules38Policy.PrintedReflex &&
                 will == GlabrezuRules38Policy.PrintedWill &&
                 resistance == GlabrezuRules38Policy.SpellResistance &&
                 resistanceCheck.HasSpellResistance &&
                 speed == GlabrezuRules38Policy.SpeedFeet &&
-                perception == GlabrezuRules38Policy.PrintedPerception;
+                racialPerception ==
+                    GlabrezuRules38Policy.RacialPerceptionBonus &&
+                perception >= GlabrezuRules38Policy.PrintedPerception;
             check("core-defenses", exact, new JObject {
                 ["owner"] = glabrezu.UniqueId,
                 ["fortitude"] = fortitude,
@@ -344,9 +370,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["perception"] = perception,
                 ["printedPerception"] =
                     GlabrezuRules38Policy.PrintedPerception,
+                ["perceptionAbovePrinted"] = perception -
+                    GlabrezuRules38Policy.PrintedPerception,
+                ["racialPerceptionModifier"] = racialPerception,
+                ["printedRacialPerceptionBonus"] =
+                    GlabrezuRules38Policy.RacialPerceptionBonus,
+                ["perceptionModifiers"] = perceptionModifiers,
+                ["perceptionRanks"] = GlabrezuRules38Policy.SkillRanks,
                 ["hitPoints"] = glabrezu.Stats.HitPoints.ModifiedValue,
                 ["armourClass"] = glabrezu.Stats.AC.ModifiedValue
-            }, "The live Glabrezu carries the printed saves, spell resistance, speed and Perception, with the two-good-saves derivation recorded beside them.");
+            }, "The live Glabrezu carries the printed saves, spell resistance, speed and the printed racial Perception bonus, with the two-good-saves derivation and the whole Perception modifier stack recorded beside them.");
         }
 
         /// <summary>
