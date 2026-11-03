@@ -313,26 +313,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ?.GetValue(context) ?? 0;
             int speed = glabrezu.Stats.Speed.ModifiedValue;
             int perception = glabrezu.Stats.SkillPerception.ModifiedValue;
-            // The live Perception came back two above the printed 26 on the
-            // first guarded run, so the whole modifier stack is recorded with
-            // its sources rather than guessed at. The racial contribution is
-            // asserted at the printed +8; the total is asserted as at least
-            // the printed value, and the excess has to be attributed to a
-            // named source before the final candidate rather than explained
-            // away or subtracted.
+            // The live Perception reads two above the printed 26, and the
+            // modifier stack says exactly why: the installed native Persuasive
+            // feat - which this creature's printed feat list includes - adds
+            // +2 to PERCEPTION in this game as well as to Persuasion. The
+            // printed line was computed without that implementation. Nothing
+            // is subtracted to match the printed number; the whole stack is
+            // recorded, the racial contribution is asserted at the printed +8,
+            // and the excess is asserted to come from that exact feat and
+            // nothing else.
             var perceptionModifiers = new JArray();
             int racialPerception = 0;
+            int persuasivePerception = 0;
+            int unattributedPerception = 0;
             foreach (ModifiableValue.Modifier modifier in
                 glabrezu.Stats.SkillPerception.Modifiers)
             {
                 if (modifier == null) continue;
+                string source = modifier.Source?.Blueprint?.AssetGuid;
                 if (modifier.ModDescriptor == ModifierDescriptor.Racial)
                     racialPerception += modifier.ModValue;
+                else if (source ==
+                        GlabrezuRules38Policy.NativePersuasiveFeatGuid)
+                    persuasivePerception += modifier.ModValue;
+                else unattributedPerception += modifier.ModValue;
                 perceptionModifiers.Add(new JObject {
                     ["value"] = modifier.ModValue,
                     ["descriptor"] = modifier.ModDescriptor.ToString(),
                     ["sourceFact"] = modifier.Source?.Blueprint?.name,
-                    ["sourceFactGuid"] = modifier.Source?.Blueprint?.AssetGuid,
+                    ["sourceFactGuid"] = source,
                     ["sourceComponent"] = modifier.SourceComponent
                 });
             }
@@ -344,7 +353,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 speed == GlabrezuRules38Policy.SpeedFeet &&
                 racialPerception ==
                     GlabrezuRules38Policy.RacialPerceptionBonus &&
-                perception >= GlabrezuRules38Policy.PrintedPerception;
+                persuasivePerception == GlabrezuRules38Policy
+                    .NativePersuasivePerceptionBonus &&
+                unattributedPerception == 0 &&
+                perception == GlabrezuRules38Policy.PrintedPerception +
+                    GlabrezuRules38Policy.NativePersuasivePerceptionBonus;
             check("core-defenses", exact, new JObject {
                 ["owner"] = glabrezu.UniqueId,
                 ["fortitude"] = fortitude,
@@ -375,11 +388,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["racialPerceptionModifier"] = racialPerception,
                 ["printedRacialPerceptionBonus"] =
                     GlabrezuRules38Policy.RacialPerceptionBonus,
+                ["nativePersuasivePerceptionModifier"] = persuasivePerception,
+                ["expectedNativePersuasivePerceptionBonus"] =
+                    GlabrezuRules38Policy.NativePersuasivePerceptionBonus,
+                ["unattributedPerceptionModifier"] = unattributedPerception,
+                ["expectedLivePerception"] =
+                    GlabrezuRules38Policy.PrintedPerception +
+                    GlabrezuRules38Policy.NativePersuasivePerceptionBonus,
+                ["perceptionDisclosure"] =
+                    "The installed native Persuasive feat adds +2 Perception in this game as well as its Persuasion bonus, and this creature's printed feat list includes Persuasive. The printed +26 was computed without that implementation, so the live value is 28. Nothing is subtracted to match the printed number; the difference is disclosed.",
                 ["perceptionModifiers"] = perceptionModifiers,
                 ["perceptionRanks"] = GlabrezuRules38Policy.SkillRanks,
                 ["hitPoints"] = glabrezu.Stats.HitPoints.ModifiedValue,
                 ["armourClass"] = glabrezu.Stats.AC.ModifiedValue
-            }, "The live Glabrezu carries the printed saves, spell resistance, speed and the printed racial Perception bonus, with the two-good-saves derivation and the whole Perception modifier stack recorded beside them.");
+            }, "The live Glabrezu carries the printed saves, spell resistance, speed and a Perception of exactly the printed 26 plus the installed Persuasive feat's own measured +2 and nothing else, with the two-good-saves derivation and the whole modifier stack recorded beside them.");
         }
 
         /// <summary>
