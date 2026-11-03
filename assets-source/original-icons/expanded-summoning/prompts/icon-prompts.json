@@ -829,6 +829,13 @@
       "subjectPrompt": "A vulture-headed winged demon standing square to the viewer, upright and humanoid rather than avian: a deep grey-green feathered chest and shoulders, two mantled wings opened above and behind the shoulders whose scalloped trailing edges reach wider than the creature is tall, a small bald head carried forward on a long bare red-grey neck above a feather ruff, a heavy pale hooked beak angled down with the hook hanging below its tip, two long arms ending in bare clawed hands, and bird legs with bare scaled shins and three forward talons each. Sulphurous warm-ochre radial backdrop against dull grey-green plumage: the only wing-span silhouette in this roster and the only Abyssal warm ground, so it is never the Xill's green-black or the Girallon's dark warm brown. Two wings, two arms and two legs only; no tail, no horns, no weapon. Procedural Blender render: tools/render_creature_icon.py --creature vrock.",
       "generator": "blender-procedural",
       "compositionBriefSource": "assets-source/original-icons/expanded-summoning/prompts/sprint37-provenance.json"
+    },
+    {
+      "key": "glabrezu",
+      "displayName": "Glabrezu",
+      "subjectPrompt": "A towering four-limbed demon standing square to the viewer: a heavy upright dark red-brown mottled trunk on digitigrade legs, two massive arms ending in huge open two-jawed chitinous pincers held outward so the gap between the jaws is seen in profile and the span is the widest thing in the frame, a second much smaller pair of clawed humanoid arms growing from the chest and held inside that span, and a horned canine head carried forward and clear of the shoulders with a long muzzle, visible fangs and green eyes. Cold violet Abyssal radial backdrop against warm red-brown hide with a cold green rim: no other entry in this roster uses a violet ground, so it is never the Vrock's warm ochre, the Xill's green-black or the Girallon's dark warm brown. Four limbs only - two pincer arms and two small chest arms - plus two legs; no wings, no tail, no weapon, and the two pairs are deliberately unequal so it is never the Girallon's four matched arms. Procedural Blender render: tools/render_creature_icon.py --creature glabrezu.",
+      "generator": "blender-procedural",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/prompts/sprint38-provenance.json"
     }
   ]
 }
