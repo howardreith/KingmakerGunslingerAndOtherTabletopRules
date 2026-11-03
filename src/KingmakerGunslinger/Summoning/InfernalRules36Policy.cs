@@ -38,9 +38,25 @@ namespace KingmakerGunslinger.Summoning
             bool privateCleaveAttack)
         { return exactOwner && privateCleaveAttack; }
 
+        /// <summary>
+        /// Whether one observed effect on a hostile unit is worth an
+        /// autonomous Dispel Magic.
+        ///
+        /// <para>Kingmaker 2.1.7b supplies no polarity restriction of its own:
+        /// <c>ContextActionDispelMagic.TryDispelBuff</c> filters only on the
+        /// no-dispel flag, the from-spell buff type and the maximum spell
+        /// level, and <c>BlueprintAiCastSpell</c>'s own selector checks
+        /// locators, ability target checkers and range. So an effect that is
+        /// harmful to the unit carrying it reads as an ordinary dispellable
+        /// spell effect, and removing it would help that enemy.</para>
+        /// </summary>
         internal static bool UsefulDispelEffect(bool active, bool visible,
-            bool fromSpell, bool notDispellable, bool hasContext)
-        { return active && visible && fromSpell && !notDispellable && hasContext; }
+            bool fromSpell, bool notDispellable, bool hasContext,
+            bool harmfulToOwner)
+        {
+            return active && visible && fromSpell && !notDispellable &&
+                hasContext && !harmfulToOwner;
+        }
 
         internal static int AlignmentBurstDamage(int rolled, bool primary,
             bool exempt, bool savePassed)
@@ -73,9 +89,10 @@ namespace KingmakerGunslinger.Summoning
                 !DeclineGrabDuringCleave(true, true) ||
                 DeclineGrabDuringCleave(true, false) ||
                 DeclineGrabDuringCleave(false, true) ||
-                !UsefulDispelEffect(true, true, true, false, true) ||
-                UsefulDispelEffect(true, true, false, false, true) ||
-                UsefulDispelEffect(true, false, true, false, true) ||
+                !UsefulDispelEffect(true, true, true, false, true, false) ||
+                UsefulDispelEffect(true, true, false, false, true, false) ||
+                UsefulDispelEffect(true, false, true, false, true, false) ||
+                UsefulDispelEffect(true, true, true, false, true, true) ||
                 AlignmentBurstDamage(40, true, false, false) != 40 ||
                 AlignmentBurstDamage(40, true, false, true) != 20 ||
                 AlignmentBurstDamage(40, false, false, false) != 20 ||

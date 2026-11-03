@@ -32,12 +32,14 @@ namespace KingmakerGunslinger.RuntimeTesting
 
     internal sealed partial class RuntimeTestRunner
     {
+        // Asks the policy rather than keeping a parallel list. A
+        // hand-maintained duplicate is what let the vrock scope pass every
+        // other gate, miss this one, and report PASS from the generic
+        // persistence path without observing one Sprint 37 fact.
         private bool RosterPersistenceScope
-        { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.Scope ||
-            Sprint22PersistenceScope || Sprint23PersistenceScope ||
-            Sprint24PersistenceScope || Sprint25PersistenceScope || Sprint26PersistenceScope ||
-            Sprint27PersistenceScope || Sprint28PersistenceScope ||
-            Sprint29PersistenceScope || Sprints3031PersistenceScope || Sprint32PersistenceScope || Sprint33PersistenceScope || Sprint34PersistenceScope || Sprint35PersistenceScope || Sprint36PersistenceScope; } }
+        { get { return ExpandedSummoningRosterPersistencePolicy
+            .IsRosterPersistenceScope(
+                (string)_request.Parameters?["persistenceScope"]); } }
         private bool Sprint36PersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.InfernalDemonsScope; } }
         private bool Sprint35PersistenceScope
@@ -66,22 +68,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.ArmoredDinosaursScope; } }
         private bool Sprint24PersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.TheropodsScope; } }
+        // Asks the policy for the scope's own creatures. This was a
+        // parallel fourteen-branch list with no Sprint 37 entry, so the vrock
+        // scope fell through to the whole roster and the selection then
+        // refused the first creature as one the scope does not own.
         private string[] RosterSelectedKeys
-        { get { return Sprint22PersistenceScope ? new[] { "ankylosaurus" } :
-            Sprint23PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.ArmoredDinosaurKeys :
-            Sprint24PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.TheropodKeys :
-            Sprint25PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GiantBodyKeys :
-            Sprint26PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.MagicalBeastKeys :
-            Sprint27PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GriffonKeys :
-            Sprint28PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GiantHumanoidKeys :
-            Sprint29PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GiantHumanoidsTwoKeys :
-            Sprints3031PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.OutsiderCelestialKeys :
-            Sprint32PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.FeyCelestialKeys :
-            Sprint36PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.InfernalDemonKeys :
-            Sprint35PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.InfernalReachTwoKeys :
-            Sprint34PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.InfernalOutsiderKeys :
-            Sprint33PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.ShadowOutsiderKeys :
-            ExpandedSummoningRosterPersistencePolicy.Keys; } }
+        { get { return ExpandedSummoningRosterPersistencePolicy.SelectedKeys(
+            (string)_request.Parameters?["persistenceScope"]); } }
         private IEnumerator<int> _rosterPersistenceSteps;
         private bool? _rosterPersistencePause;
         private readonly List<RuntimeTestAssertion> _rosterPersistenceChecks = new List<RuntimeTestAssertion>();
@@ -532,7 +525,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var party = Game.Instance.Player.Party.Where(u => u != null && u.Descriptor != null).ToArray();
             if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount) throw new InvalidOperationException("Working party fingerprint changed.");
             ItemEntity[] giantPartyItems =
-                Sprint28PersistenceScope || Sprint29PersistenceScope || Sprints3031PersistenceScope || Sprint32PersistenceScope || Sprint34PersistenceScope || Sprint35PersistenceScope || Sprint36PersistenceScope ?
+                Sprint28PersistenceScope || Sprint29PersistenceScope || Sprints3031PersistenceScope || Sprint32PersistenceScope || Sprint34PersistenceScope || Sprint35PersistenceScope || Sprint36PersistenceScope || Sprint37PersistenceScope ?
                 Game.Instance.Player.Inventory.Items.ToArray() : null;
             int[] giantPartyCounts = giantPartyItems?.Select(item => item.Count).ToArray();
             var caster = party.First(u => u.HoldingState != null);
@@ -578,6 +571,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (Sprint34PersistenceScope) InfernalSavedAbsence34(caster, "fresh");
                 if (Sprint35PersistenceScope) InfernalSavedAbsence35(caster, "fresh");
                 if (Sprint36PersistenceScope) InfernalSavedAbsence36(caster, "fresh");
+                if (Sprint37PersistenceScope) VrockSavedAbsence37(caster, "fresh");
                 CompleteRosterPersistence(RuntimeTestStatuses.Pass, ""); yield break;
             }
             var units = existing;
@@ -592,6 +586,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (Sprint34PersistenceScope) InfernalSavedAbsence34(caster, "intake");
                 if (Sprint35PersistenceScope) InfernalSavedAbsence35(caster, "intake");
                 if (Sprint36PersistenceScope) InfernalSavedAbsence36(caster, "intake");
+                if (Sprint37PersistenceScope) VrockSavedAbsence37(caster, "intake");
                 var created = new List<UnitEntityData>();
                 var originalAlignment = caster.Descriptor.Alignment.Value;
                 try
@@ -647,6 +642,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (Sprint34PersistenceScope && verify) ObserveInfernalSaved34(caster, units, "cold");
             if (Sprint35PersistenceScope && verify) ObserveInfernalSaved35(caster, units, "cold");
             if (Sprint36PersistenceScope && verify) ObserveInfernalSaved36(caster, units, "cold");
+            if (Sprint37PersistenceScope && verify) ObserveVrockSaved37(caster, units, "cold");
             bool cleanup2Trio = (string)_request.Parameters["persistenceScope"] == "giant-humanoids-ii" &&
                 _context.FeatureModules.Active.ExpandedSummoning;
             // The general save-readiness contract deliberately allows native
@@ -709,10 +705,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             // material or texture allocated, nothing published, and no unit to
             // clean up.
             bool moduleOn = _context.FeatureModules.Active.ExpandedSummoning;
-            bool savedTargetedSubset = (Sprint22PersistenceScope ||
-                Sprint23PersistenceScope || Sprint24PersistenceScope || Sprint25PersistenceScope ||
-                Sprint26PersistenceScope || Sprint27PersistenceScope ||
-                Sprint28PersistenceScope || Sprint29PersistenceScope || Sprints3031PersistenceScope || Sprint32PersistenceScope || Sprint33PersistenceScope || Sprint34PersistenceScope || Sprint35PersistenceScope || Sprint36PersistenceScope) && verify;
+            // Derived, not enumerated. This was a list of every sprint scope
+            // but the newest, so a module-off verify in the vrock scope took
+            // the whole-roster expectation of zero instantiated creatures and
+            // failed on its saved pair correctly coming back.
+            bool savedTargetedSubset = verify &&
+                ExpandedSummoningRosterPersistencePolicy.IsTargetedSubsetScope(
+                    (string)_request.Parameters?["persistenceScope"]);
             bool exact = moduleOn || savedTargetedSubset
                 ? ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(
                     (string)_request.Parameters["persistenceScope"], keys) &&
@@ -859,7 +858,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (Sprint33PersistenceScope && ShadowOutsiderVisualPolicy.Handles(receipt.Key)) ||
                     (Sprint34PersistenceScope && InfernalVisualPolicy34.Handles(receipt.Key)) ||
                     (Sprint35PersistenceScope && InfernalVisualPolicy35.Handles(receipt.Key)) ||
-                    (Sprint36PersistenceScope && InfernalVisualPolicy36.Handles(receipt.Key)))
+                    (Sprint36PersistenceScope && InfernalVisualPolicy36.Handles(receipt.Key)) ||
+                    // Sprint 37 was absent here, so this branch simply did not
+                    // run for the vrock: its body was neither required to be
+                    // attached with its own resources while the module is on,
+                    // nor required to be clean while the module is off. The
+                    // row did not fail, which is worse - it asserted less than
+                    // every sibling sprint does.
+                    (Sprint37PersistenceScope && VrockVisualPolicy37.Handles(receipt.Key)))
                     theropodBodyExact = moduleOn
                         ? originalBodyOutcome.StartsWith("visual:attached;",
                             StringComparison.Ordinal) &&
@@ -895,7 +901,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // and zero owned resources above. The native donor may retain a
                 // renderer with this shared name, so only require the private
                 // Sprint 36 mesh while the module is enabled.
-                if (Sprint36PersistenceScope && moduleOn) {
+                if ((Sprint36PersistenceScope || Sprint37PersistenceScope) && moduleOn) {
                     var skin = unit.View?.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                         .SingleOrDefault(value => value.name == TheropodVisualPolicy.BodyRendererName);
                     theropodBodyExact &= skin?.sharedMesh?.name ==
@@ -1052,15 +1058,29 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (Sprint34PersistenceScope) ObserveInfernalItems34(units, giantPartyItems, giantPartyCounts);
             if (Sprint35PersistenceScope) ObserveInfernalItems35(units, giantPartyItems, giantPartyCounts);
             if (Sprint36PersistenceScope) ObserveInfernalItems36(units, giantPartyItems, giantPartyCounts);
+            if (Sprint37PersistenceScope)
+                ObserveVrockItems37(units, giantPartyItems, giantPartyCounts);
             if (Sprint34PersistenceScope && prepare) foreach (int step in PrepareInfernalSaved34(caster, units)) yield return step;
             if (Sprint35PersistenceScope && prepare) foreach (int step in PrepareInfernalSaved35(caster, units)) yield return step;
             if (Sprint36PersistenceScope && prepare) foreach (int step in PrepareInfernalSaved36(caster, units)) yield return step;
+            if (Sprint37PersistenceScope && prepare) {
+                foreach (int step in PrepareVrockSaved37(caster, units)) yield return step;
+                ObserveVrockSaved37(caster, units, "prepared");
+            }
             if (verify && !Sprint32PersistenceScope) foreach (var step in DestroyRosterPersistence(units, "cleanup")) yield return step;
             if (Sprint32PersistenceScope && verify) Sprint32PersistenceAbsence(caster, "cleanup");
             if (Sprint33PersistenceScope && verify) foreach (int step in CleanupControl33(caster)) yield return step;
             if (Sprint34PersistenceScope && verify) foreach (int step in CleanupInfernalSaved34(caster)) yield return step;
             if (Sprint35PersistenceScope && verify) foreach (int step in CleanupInfernalSaved35(caster)) yield return step;
             if (Sprint36PersistenceScope && verify) foreach (int step in CleanupInfernalSaved36(caster)) yield return step;
+            // Sprint 37 attaches its saved state only to units this fixture
+            // owns - the vrock's own hour and cadence markers, the growth on
+            // another roster source, and its two spent single uses - so the
+            // ordinary retirement above is the cleanup. This is the proof that
+            // nothing of it remains anywhere, including on units it never
+            // touched, rather than a second removal path.
+            if (Sprint37PersistenceScope && verify)
+                VrockSavedAbsence37(caster, "cleanup");
             bool preserved = unrelated.All(x => x.Unit.Destroyed == x.Destroyed && ReferenceEquals(x.Unit.HoldingState,x.HoldingState) && ReferenceEquals(x.Unit.Blueprint,x.Blueprint)) && Game.Instance.Player.Party.SequenceEqual(party);
             RosterPersistenceCheck("unrelated-preserved", preserved,
                 new JObject { ["preexistingUnits"] = unrelated.Length, ["preserved"] = preserved }, "exact unrelated unit references and party membership preserved");

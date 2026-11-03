@@ -232,6 +232,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static string[] InfernalDemonKeys
         { get { return new[] { InfernalVisualPolicy36.Babau,
             InfernalVisualPolicy36.Hezrou }; } }
+        internal const string VrockScope = "vrock";
+        // Two, like the Sprint 32 scope. The printed spore growth lands on an
+        // adjacent creature and not on the vrock itself, and this fixture may
+        // not write to a party member or any unit it does not own, so the only
+        // faithful victim is a second owned vrock. It also makes the saved
+        // growth's attribution and the spent single uses demonstrably one
+        // owner's rather than merely "a vrock's".
+        internal static string[] VrockKeys
+        { get { return new[] { VrockVisualPolicy37.Vrock,
+            VrockVisualPolicy37.Vrock }; } }
         internal const string ShadowOutsidersScope = "shadow-outsiders";
         internal static string[] ShadowOutsiderKeys
         { get { return new[] { "succubus", "invisible-stalker", "shadow-demon" }; } }
@@ -316,9 +326,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Concat(SummonNativeExpansionCatalog.All.Select(n => "native:" + n.UnitGuid))
                 .Distinct(StringComparer.Ordinal).OrderBy(k => k, StringComparer.Ordinal).ToArray(); }
         }
-        internal static SummonVariantSpec SelectCreatureVariant(string scope, string key)
+        /// <summary>
+        /// The creatures a persistence scope summons, as one list. There were
+        /// four parallel copies of this - the permitted set below, the exact
+        /// selected-key check, and the runner's own selection - and the vrock
+        /// scope was missing from the runner's, which fell through to the whole
+        /// roster and asked this scope for a creature it does not own. A
+        /// reflection test now requires every declared scope to round-trip
+        /// through this one function.
+        /// </summary>
+        internal static string[] SelectedKeys(string scope)
         {
-            string[] permitted = scope == AnkylosaurusScope ? new[] { "ankylosaurus" } :
+            return scope == AnkylosaurusScope ? new[] { "ankylosaurus" } :
                 scope == ArmoredDinosaursScope ? ArmoredDinosaurKeys :
                 scope == TheropodsScope ? TheropodKeys :
                 scope == GiantBodiesScope ? GiantBodyKeys :
@@ -331,9 +350,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == InfernalOutsidersScope ? InfernalOutsiderKeys :
                 scope == InfernalReachTwoScope ? InfernalReachTwoKeys :
                 scope == InfernalDemonsScope ? InfernalDemonKeys :
+                scope == VrockScope ? VrockKeys :
                 scope == ShadowOutsidersScope ? ShadowOutsiderKeys :
-                scope == Scope ? ExpandedSummoningCatalog.All.Select(value => value.Key).ToArray() :
-                new string[0];
+                scope == Scope ? Keys : new string[0];
+        }
+
+        internal static SummonVariantSpec SelectCreatureVariant(string scope, string key)
+        {
+            string[] permitted = scope == Scope
+                // The broad released-roster fixture selects from the catalog
+                // rather than from the save-identity list, as it always has.
+                ? ExpandedSummoningCatalog.All.Select(value => value.Key).ToArray()
+                : SelectedKeys(scope);
             if (!permitted.Contains(key, StringComparer.Ordinal))
                 throw new InvalidOperationException("Persistence scope does not own the requested creature key.");
             IEnumerable<SummonVariantSpec> variants = ExpandedSummoningCatalog
@@ -352,21 +380,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             IEnumerable<string> observed)
         {
             if (observed == null) return false;
-            string[] expected = scope == AnkylosaurusScope ?
-                new[] { "ankylosaurus" } : scope == ArmoredDinosaursScope ?
-                ArmoredDinosaurKeys : scope == TheropodsScope ?
-                TheropodKeys : scope == GiantBodiesScope ? GiantBodyKeys :
-                scope == MagicalBeastsScope ? MagicalBeastKeys :
-                scope == GriffonScope ? GriffonKeys :
-                scope == GiantHumanoidsScope ? GiantHumanoidKeys :
-                scope == GiantHumanoidsTwoScope ? GiantHumanoidsTwoKeys :
-                scope == OutsiderCelestialScope ? OutsiderCelestialKeys :
-                scope == FeyCelestialScope ? FeyCelestialKeys :
-                scope == InfernalOutsidersScope ? InfernalOutsiderKeys :
-                scope == InfernalReachTwoScope ? InfernalReachTwoKeys :
-                scope == InfernalDemonsScope ? InfernalDemonKeys :
-                scope == ShadowOutsidersScope ? ShadowOutsiderKeys :
-                scope == Scope ? Keys : new string[0];
+            string[] expected = SelectedKeys(scope);
             return expected.Length != 0 && observed.OrderBy(value => value,
                     StringComparer.Ordinal).SequenceEqual(expected.OrderBy(
                     value => value, StringComparer.Ordinal),
@@ -381,13 +395,47 @@ namespace KingmakerGunslinger.RuntimeTesting
             return outcome == "donor-visual:module-disabled" &&
                 ownedResourceCount == 0;
         }
-        internal static bool ObserveLoad(string scenario, string scope)
+        /// <summary>
+        /// The single list of scopes that reach the roster-persistence
+        /// observation. The runner used to keep its own parallel disjunction,
+        /// and Sprint 37 was admitted by every other gate while missing from
+        /// that one - so the vrock scope silently ran the generic persistence
+        /// path and reported PASS without observing one Sprint 37 fact. Both
+        /// the runner and ObserveLoad now ask this, and a reflection test
+        /// requires every declared scope constant to appear here.
+        /// </summary>
+        internal static bool IsRosterPersistenceScope(string scope)
         {
-            return (scope == Scope || scope == AnkylosaurusScope ||
+            return scope == Scope || scope == AnkylosaurusScope ||
                 scope == ArmoredDinosaursScope || scope == TheropodsScope ||
                 scope == GiantBodiesScope || scope == MagicalBeastsScope ||
                 scope == GriffonScope || scope == GiantHumanoidsScope ||
-                scope == GiantHumanoidsTwoScope || scope == OutsiderCelestialScope || scope == FeyCelestialScope || scope == ShadowOutsidersScope || scope == InfernalOutsidersScope || scope == InfernalReachTwoScope || scope == InfernalDemonsScope) &&
+                scope == GiantHumanoidsTwoScope ||
+                scope == OutsiderCelestialScope || scope == FeyCelestialScope ||
+                scope == ShadowOutsidersScope ||
+                scope == InfernalOutsidersScope ||
+                scope == InfernalReachTwoScope ||
+                scope == InfernalDemonsScope || scope == VrockScope;
+        }
+
+        /// <summary>
+        /// A named subset scope rather than the broad released-roster fixture.
+        /// With the feature module off, such a scope's saved receipts do
+        /// reconstruct natively while publication and private visual
+        /// allocation stay disabled; the whole-roster fixture instead expects
+        /// not one of this mod's creatures to instantiate. This was a ninth
+        /// hand-maintained sprint list and Sprint 37 was missing from it, so
+        /// the module-off stage demanded zero units from a scope whose saved
+        /// pair had correctly come back.
+        /// </summary>
+        internal static bool IsTargetedSubsetScope(string scope)
+        {
+            return scope != Scope && IsRosterPersistenceScope(scope);
+        }
+
+        internal static bool ObserveLoad(string scenario, string scope)
+        {
+            return IsRosterPersistenceScope(scope) &&
                 (scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent);

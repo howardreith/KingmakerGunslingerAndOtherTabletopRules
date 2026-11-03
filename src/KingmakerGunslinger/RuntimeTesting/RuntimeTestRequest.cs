@@ -619,6 +619,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.InfernalOutsidersScope &&
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.InfernalReachTwoScope &&
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.InfernalDemonsScope &&
+                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.VrockScope &&
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.ShadowOutsidersScope &&
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.Scope)))
                     return "summoning-persistence-scope-invalid";

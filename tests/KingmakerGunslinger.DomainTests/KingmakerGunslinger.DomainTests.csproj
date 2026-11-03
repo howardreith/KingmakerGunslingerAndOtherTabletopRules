@@ -38,8 +38,13 @@
     <Compile Include="InfernalRules34Tests.cs" />
     <Compile Include="InfernalRules35Tests.cs" />
     <Compile Include="InfernalRules36Tests.cs" />
+    <Compile Include="VrockRules37Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InfernalRules36Policy.cs"><Link>Summoning\InfernalRules36Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InfernalVisualPolicy36.cs"><Link>Summoning\InfernalVisualPolicy36.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\VrockRules37Policy.cs"><Link>Summoning\VrockRules37Policy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonFootprintGeometryPolicy.cs"><Link>Summoning\SummonFootprintGeometryPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonDemonIdentityCatalog.cs"><Link>Summoning\SummonDemonIdentityCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\VrockVisualPolicy37.cs"><Link>Summoning\VrockVisualPolicy37.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InfernalRules35Policy.cs"><Link>Summoning\InfernalRules35Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InfernalVisualPolicy35.cs"><Link>Summoning\InfernalVisualPolicy35.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InfernalRules34.cs"><Link>Summoning\InfernalRules34.cs</Link></Compile>

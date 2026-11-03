@@ -113,11 +113,22 @@ namespace KingmakerGunslinger.Summoning
         // their hidden native mechanics/body qualification and the owner's
         // explicit disposition of the three unsupported branches. All seven
         // Monster routes remain in their append-only positions.
+        // Sprint37 registered one further demon and withheld all three of
+        // its roots while it was qualified. Every route, child and dependency
+        // was allocated while hidden, so publication removed only that one
+        // suppression key and moved no identity, route or menu ordering: the
+        // append-only positions are the ones the hidden phases observed.
+        //
+        // Publication followed the six guarded mechanics phases, each of which
+        // restored the live tree to its exact pre-run hash: profile and body,
+        // spore protection, spore geometry, screech in real time, screech in
+        // turn-based combat, and observed AI including the Babau dispel
+        // follow-up. Nothing is withheld now.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(new string[0],
+            new HashSet<string>(Array.Empty<string>(),
                 StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 1182;
+        internal const int RegisteredLogicalPlacementCount = 1185;
         internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
@@ -178,6 +189,15 @@ namespace KingmakerGunslinger.Summoning
                 sprint36.Where(value => value.Creature.Key == "hezrou")
                     .Select(value => value.ParentTier).OrderBy(value => value)
                     .SequenceEqual(new[] { 8, 9 });
+            SummonVariantSpec[] sprint37 = all.Where(value =>
+                value.Creature.Key == "vrock").ToArray();
+            bool sprint37Routes = sprint37.Length == 3 &&
+                sprint37.All(value => value.Family == SummonFamily.Monster &&
+                    !value.Creature.MonsterTemplated &&
+                    IsPublished(value)) &&
+                sprint37.Select(value => value.ParentTier)
+                    .OrderBy(value => value)
+                    .SequenceEqual(new[] { 7, 8, 9 });
             bool giantRoutes = new[] { "hill-giant", "stone-giant" }
                 .All(key => giants.Where(value => value.Creature.Key == key)
                     .Select(value => value.ParentTier).OrderBy(value => value)
@@ -192,7 +212,7 @@ namespace KingmakerGunslinger.Summoning
                 all.Count(IsPublished) != PublishedLogicalPlacementCount ||
                 SuppressedCreatureKeys.Count != 0 ||
                 !sprint29Routes || !giantRoutes || !sprint35Routes ||
-                !sprint36Routes ||
+                !sprint36Routes || !sprint37Routes ||
                 !giants.All(IsPublished) ||
                 !giants.Select(value => value.Creature.Key).Distinct()
                     .OrderBy(value => value).SequenceEqual(

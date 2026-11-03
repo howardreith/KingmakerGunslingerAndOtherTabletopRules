@@ -610,7 +610,8 @@ namespace KingmakerGunslinger.DomainTests
                 ExpandedSummoningIdentityCatalog.SpecialIdentityCount - identities.Count(value =>
                     value.Symbol.StartsWith("KMG.Summoning.Natural.Griffon.", StringComparison.Ordinal) ||
                     value.Symbol.StartsWith("KMG.Summoning.Special.Griffon.", StringComparison.Ordinal) ||
-                    value.Symbol.StartsWith("KMG.Summoning.Infernal.", StringComparison.Ordinal)),
+                    value.Symbol.StartsWith("KMG.Summoning.Infernal.", StringComparison.Ordinal) ||
+                    value.Symbol.StartsWith("KMG.Summoning.Demon.", StringComparison.Ordinal)),
                 "Creature-owned identity count changed.");
             Assertions.Equal(2101 +
                     ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +

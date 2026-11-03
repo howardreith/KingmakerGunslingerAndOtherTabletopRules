@@ -204,6 +204,21 @@ namespace KingmakerGunslinger.Summoning
             States = new ConditionalWeakTable<UnitEntityData, State>();
         public BlueprintUnit OwningBlueprint;
 
+        /// <summary>
+        /// Whether one effect is harmful to the unit carrying it, from the two
+        /// native facts the installed build actually provides: the blueprint's
+        /// own <c>Harmful</c> flag, and whether the effect's caster is an enemy
+        /// of its owner. Nothing in the engine classifies this for a dispel
+        /// consumer, so the Babau's own selector has to.
+        /// </summary>
+        internal static bool HarmfulToOwner(Buff buff, UnitEntityData owner)
+        {
+            if (buff?.Blueprint == null) return true;
+            if (buff.Blueprint.Harmful) return true;
+            UnitEntityData caster = buff.Context?.MaybeCaster;
+            return caster != null && owner != null && caster.IsEnemy(owner);
+        }
+
         internal static bool HasUsefulEffect(UnitEntityData target)
         {
             return target?.Descriptor?.Buffs != null &&
@@ -213,7 +228,8 @@ namespace KingmakerGunslinger.Summoning
                         buff?.Blueprint?.IsHiddenInUI == false,
                         buff?.IsFromSpell == true,
                         buff?.IsNotDispelable == true,
-                        buff?.Context != null));
+                        buff?.Context != null,
+                        HarmfulToOwner(buff, target)));
         }
 
         public override TargetType GetTargetType(DecisionContext context)

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "provenance": "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, Phase 2 original creature/action paintings, and Sprint 24 original theropod paintings; no copied game or third-party pixels.",
   "generator": "tools/New-ExpandedSummoningIcons.ps1",
-  "count": 144,
+  "count": 145,
   "icons": [
     {
       "key": "air-mephit",
@@ -4035,6 +4035,24 @@
         "KMG.Summoning.Ability.SM.Tier8.Hezrou.One",
         "KMG.Summoning.Ability.SM.Tier9.Hezrou.OneD3",
         "KMG.Summoning.Unit.Hezrou"
+      ]
+    },
+    {
+      "key": "vrock",
+      "displayName": "Vrock",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/vrock.png",
+      "productionFile": "assets/game/icons/expanded-summoning/vrock.png",
+      "sourceSha256": "83f6ea7aa377eafe4461c64619b909edadf8a1c1934899d340cb1fbdabcbf0eb",
+      "outputSha256": "80ba028c4405dfd2a09f3e5ecaa526cacc17b8c053187462e827b34d82134ed2",
+      "width": 128,
+      "height": 128,
+      "format": "RGBA PNG",
+      "scope": "kmg-catalog",
+      "blueprintSymbols": [
+        "KMG.Summoning.Ability.SM.Tier7.Vrock.One",
+        "KMG.Summoning.Ability.SM.Tier8.Vrock.OneD3",
+        "KMG.Summoning.Ability.SM.Tier9.Vrock.OneD4PlusOne",
+        "KMG.Summoning.Unit.Vrock"
       ]
     }
   ]

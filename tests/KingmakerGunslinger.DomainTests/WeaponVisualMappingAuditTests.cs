@@ -51,7 +51,8 @@ namespace KingmakerGunslinger.DomainTests
                 expected.Count(value => !((string)value["symbol"]).StartsWith("KMG.Summoning.Natural.Griffon.", StringComparison.Ordinal) &&
                 !((string)value["symbol"]).StartsWith("KMG.Summoning.OutsiderCelestial.", StringComparison.Ordinal) &&
                 !Sprint32Weapons.ContainsKey((string)value["symbol"]) &&
-                !((string)value["symbol"]).StartsWith("KMG.Summoning.Infernal.", StringComparison.Ordinal)),
+                !((string)value["symbol"]).StartsWith("KMG.Summoning.Infernal.", StringComparison.Ordinal) &&
+                !((string)value["symbol"]).StartsWith("KMG.Summoning.Demon.", StringComparison.Ordinal)),
                 "The released pre-Griffon custom-weapon baseline changed.");
             Assertions.Equal(ExpandedSummoningSprints30And31Tests.RegisteredWeaponIdentityCount,
                 expected.Count(value => ((string)value["symbol"]).StartsWith(
@@ -141,7 +142,8 @@ namespace KingmakerGunslinger.DomainTests
                 !((string)value["symbolicIdentity"]).StartsWith("KMG.Summoning.Natural.Griffon.", StringComparison.Ordinal) &&
                 !((string)value["symbolicIdentity"]).StartsWith("KMG.Summoning.OutsiderCelestial.", StringComparison.Ordinal) &&
                 !Sprint32Weapons.ContainsKey((string)value["symbolicIdentity"]) &&
-                !((string)value["symbolicIdentity"]).StartsWith("KMG.Summoning.Infernal.", StringComparison.Ordinal)),
+                !((string)value["symbolicIdentity"]).StartsWith("KMG.Summoning.Infernal.", StringComparison.Ordinal) &&
+                !((string)value["symbolicIdentity"]).StartsWith("KMG.Summoning.Demon.", StringComparison.Ordinal)),
                 "Expanded Summoning weapon scope changed.");
             Assertions.True(audit["items"].Where(value =>
                     (string)value["mappingScope"] == "equipped project weapon")
