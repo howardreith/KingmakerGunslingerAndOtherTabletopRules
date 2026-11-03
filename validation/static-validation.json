@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.175-expanded-summoning-vrock",
+  "milestone": "0.0.176-expanded-summoning-glabrezu",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.175",
+  "version": "0.0.176",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2776,6 +2776,32 @@
       "scripts/Test-Sprint22InstalledStack.ps1": "e7c6c4a401e6881c02516d184c8d0e377c02df24af75cc491a9c7178fca08f2c",
       "scripts/Test-Sprint32NativePersistenceRequest.ps1": "684e09a1b7eb3487a7f659b2e24827b0137fdcaf71b0bd419017faf1659d8f6c",
       "scripts/Test-Sprint37Release.ps1": "bc5e097d046b6e038115de83474129cdfdda02fc8545aa1fb5dd746ecc0421dc"
+    },
+    "harnessIdentityNote": "Tool and fixture identity for the orchestration that produced the native rows, recorded separately from the compiled product identity. These paths lie outside the validator's guarded product roots, so they are pinned here rather than by the product diff. The validator file itself cannot carry its own digest; its provenance is the reviewed product commit.",
+    "installedStackFixtureChecks": 52,
+    "compiledRequestAdmissionChecks": 33
+  },
+  "expandedSummoningSprint38Release176": {
+    "releaseVersion": "0.0.176",
+    "releaseInformationalVersion": "0.0.176-expanded-summoning-glabrezu",
+    "baseStableVersion": "0.0.175",
+    "reviewedProductSource": "cb7d8e9dd493f49c961db03fd1fac4eec9cc0544",
+    "appendedIdentities": 32,
+    "releasedIdentityChanges": 0,
+    "change": "Glabrezu, one untemplated Summon Monster IX route, a source-owned round-scoped rend and a source-owned Power Word Stun at its printed close range, five at-will and constant native spell-likes, and a distinct original four-armed body/icon",
+    "nativeEvidence": "Final exact package requires fresh grouped proof for every mandatory row: no Sprint38 row may be reused, so no development-candidate receipt can qualify this release",
+    "ownerPublicationAuthority": "Sprint38 Glabrezu Fresh Codex Mission, its correction continuation and its completion instruction, together with the owner decisions of 2026-11-03 omitting Reverse Gravity with disclosure and no substitute, and accepting the self-only Veil omission with accurately scoped disclosure; greater teleport, nested summoning and wish remain excluded for every summon, and the live Perception of 28 against the printed 26 is a measured deviation caused by the installed Persuasive feat rather than an omission",
+    "harnessIdentity": {
+      "scripts/Deploy-Local.ps1": "713cceb319c2850d5f440139ebedc5468501d5b9c458e4d418d944cce98d9353",
+      "scripts/Invoke-ExpandedSummoningRuntimeScenario.ps1": "e1d798f8f228b6b9cd7444e20697f2e06de40343b92d8a5b8bf6681b0dec6c6a",
+      "scripts/Invoke-KingmakerRuntimeTest.ps1": "388e130c32947ce34afc4e51598b70ac50d23c7e9f5abc83e94cf217ec37f220",
+      "scripts/Invoke-Sprint22InstalledStack.ps1": "64ee3bc0e803f461e2801341bc3bcea65c7b65ade4dc2bc6f450edfe2562c7f0",
+      "scripts/RuntimeAutomation.Common.ps1": "8dbcf5a2ddabba81917bdc5ef3e2fcca430eab4173dfc8c079f7877defd8ffa3",
+      "scripts/RuntimeHarness.Common.ps1": "f8c67bb58e84b677e377d4a8a93472ecfefffe38fa2b5b778186209d6f7aadb2",
+      "scripts/Sprint38QualifiedRelease.Common.ps1": "19012b7a39a947df463d4e1555bed1e181a50f09bc995e8d38c8cb08e67dc05f",
+      "scripts/Test-Sprint22InstalledStack.ps1": "e7c6c4a401e6881c02516d184c8d0e377c02df24af75cc491a9c7178fca08f2c",
+      "scripts/Test-Sprint32NativePersistenceRequest.ps1": "e6e69985607782c5c1c4ee476a66e8f8a68c295f8603732fbd774c84b8d9dcb2",
+      "scripts/Test-Sprint38Release.ps1": "99388e60f898414e92911898de579154f20a77753d32264c6b21cc1685e44b33"
     },
     "harnessIdentityNote": "Tool and fixture identity for the orchestration that produced the native rows, recorded separately from the compiled product identity. These paths lie outside the validator's guarded product roots, so they are pinned here rather than by the product diff. The validator file itself cannot carry its own digest; its provenance is the reviewed product commit.",
     "installedStackFixtureChecks": 52,

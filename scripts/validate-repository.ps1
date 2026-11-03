@@ -263,3 +263,9 @@ if ($LASTEXITCODE -ne 0) { throw 'Sprint36 publisher tests failed.' }
 # the reviewed Sprint 37 merge where that surface is still current.
 & (Join-Path $PSScriptRoot 'Test-ClosedSprint37Release.ps1')
 if ($LASTEXITCODE -ne 0) { throw 'Sprint37 publisher tests failed.' }
+# Sprint 38 is the open sprint, so its suite runs against the current source:
+# the surface it pins - 132 creatures, 1,186 roots, 1,215 choices - is the
+# surface this tree derives. It becomes a closed sprint, and gains its own
+# isolation wrapper, when Sprint 39 opens.
+& (Join-Path $PSScriptRoot 'Test-Sprint38Release.ps1')
+if ($LASTEXITCODE -ne 0) { throw 'Sprint38 publisher tests failed.' }
