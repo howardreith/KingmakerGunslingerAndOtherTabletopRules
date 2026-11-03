@@ -43,6 +43,14 @@ namespace KingmakerGunslinger.Blueprints
             "86d93a5891d299d4983bdc6ef3987afd";
         private const string NativeDispelMagicTarget38 =
             "143775c49ae6b7446b805d3b2e702298";
+        // Named by the Sprint 38 installed-input probe
+        // (run 20261103T1359412870584Z) rather than guessed.
+        private const string NativeConfusion38 =
+            "cf6c901fb7acc904e85c63b342e9c949";
+        private const string NativeTrueSeeingBuff38 =
+            "09b4b69169304474296484c74aa12027";
+        private const string NativeVitalStrikeFeature38 =
+            "14a1fc1356df9f146900e1e42142fc9d";
 
         /// <summary>
         /// Sprint 38. One adult, untemplated Glabrezu at Summon Monster IX,
@@ -51,16 +59,16 @@ namespace KingmakerGunslinger.Blueprints
         /// released rend gate.
         ///
         /// <para>Scope is the printed profile, its five primary natural
-        /// attacks, the pincer-only rend, the single-use Power Word Stun and
-        /// the four at-will spell-likes whose installed identities are
-        /// already recorded.
-        /// Greater teleport, nested summoning and <i>wish</i> are excluded by
-        /// the existing summon sanitization policy; Reverse Gravity is omitted
-        /// by the owner decision of 2026-11-03; <i>veil</i>, constant
-        /// <i>true seeing</i>, printed at-will <i>confusion</i> and plain
-        /// Vital Strike wait on the Sprint 38 installed-input probe rather
-        /// than on a guessed asset identity. All of that is recorded in
-        /// planning/SPRINT38-RULES.md.</para>
+        /// attacks, the pincer-only rend, the single-use Power Word Stun,
+        /// five at-will spell-likes, printed plain Vital Strike and printed
+        /// constant true seeing. Greater teleport, nested summoning and
+        /// <i>wish</i> are excluded by the existing summon sanitization
+        /// policy; Reverse Gravity is omitted by the owner decision of
+        /// 2026-11-03; and printed self-only <i>veil</i> has no installed
+        /// consumer, which the Sprint 38 input probe established rather than
+        /// assumed - the library's only "Veil" abilities are Veil of Heaven
+        /// and Veil of Positive Energy, entirely different spells. All of
+        /// that is recorded in planning/SPRINT38-RULES.md.</para>
         /// </summary>
         private static void ConfigureGlabrezu38(
             LibraryScriptableObject library,
@@ -163,16 +171,14 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintAbility unholy = ConfigureAlignmentBurst36(library,
                 symbols, unit, false, p,
                 GlabrezuRules38Policy.SpellLikeCasterLevel);
-            // Two at-will owned spells with NO resource at all. The printed
+            // Three at-will owned spells with NO resource at all. The printed
             // entry lists them as at will, and the Sprint 37 Vrock's
             // single-use Mirror Image resource is deliberately not inherited:
             // a previous creature's frequency is not this creature's.
-            //
-            // Printed at-will CONFUSION is not here. Its installed native
-            // identity is not recorded anywhere in this project, and guessing
-            // an asset GUID is not acceptable, so it is appended after the
-            // Sprint 38 installed-input probe names it - exactly as Sprint 37
-            // appended Heroism and Mirror Image after its own probe.
+            BlueprintAbility confusion = ConfigureGlabrezuAtWillSpell38(
+                library, symbols, p + "Confusion", NativeConfusion38,
+                "Confusion", GlabrezuRules38Policy.ConfusionSpellLevel,
+                "At will at caster level 14. The installed native spell owns its own targeting, duration, confused behaviour and Will save.");
             BlueprintAbility dispel = ConfigureGlabrezuAtWillSpell38(library,
                 symbols, p + "DispelMagic", NativeDispelMagicTarget38,
                 "Dispel Magic", GlabrezuRules38Policy.DispelMagicSpellLevel,
@@ -185,7 +191,7 @@ namespace KingmakerGunslinger.Blueprints
 
             var traits = Require<BlueprintFeature>(symbols, p + "Traits");
             BindInfernalTraits35(traits, p, "Glabrezu",
-                "DR10/good; electricity and poison immunity; acid, cold and fire resistance 10; SR24. Five primary natural attacks - two pincers, two claws and a bite - all at 15-foot reach, with the pincers threatening a critical on 19-20. Two pincer hits on one creature in a round rend it; claws and the bite never do, and no round rends twice. Power Word Stun is once per summoning and has no saving throw: it stuns for longer the fewer hit points its target has, and does nothing at all to a creature with 151 or more. Chaos hammer, unholy blight, dispel magic and mirror image are at will; printed at-will confusion is not yet wired. Reverse gravity is not represented; veil and constant true seeing are not represented; greater teleport, nested summoning and wish are excluded for every summon. Bluff, Diplomacy, Intimidate, Knowledge, Sense Motive, Use Magic Device, darkvision and telepathy have no supported summon consumer and are not modelled.",
+                "DR10/good; electricity and poison immunity; acid, cold and fire resistance 10; SR24. Five primary natural attacks - two pincers, two claws and a bite - all at 15-foot reach, with the pincers threatening a critical on 19-20. Two pincer hits on one creature in a round rend it; claws and the bite never do, and no round rends twice. Power Word Stun is once per summoning and has no saving throw: it stuns for longer the fewer hit points its target has, and does nothing at all to a creature with 151 or more. Chaos hammer, unholy blight, confusion, dispel magic and mirror image are at will, and true seeing is constant. Reverse gravity is not represented; veil and constant true seeing are not represented; greater teleport, nested summoning and wish are excluded for every summon. Bluff, Diplomacy, Intimidate, Knowledge, Sense Motive, Use Magic Device, darkvision and telepathy have no supported summon consumer and are not modelled.",
                 parts);
             unit.AddFacts = InfernalFacts36(library, traits).Concat(
                 new BlueprintUnitFact[] {
@@ -196,8 +202,27 @@ namespace KingmakerGunslinger.Blueprints
                     Feature(library, NativeGreatCleave38, "Great Cleave"),
                     Feature(library, PowerAttackGuid, "Power Attack"),
                     Feature(library, NativePersuasive38, "Persuasive"),
-                    rend, stun, chaos, unholy, dispel,
-                    mirror }).ToArray();
+                    rend, stun, chaos, unholy, confusion, dispel,
+                    mirror,
+                    // Printed plain Vital Strike. The installed feature
+                    // carries a base-attack prerequisite of 6 and grants
+                    // VitalStrikeAbility; this creature's printed base attack
+                    // is 12, so the prerequisite is met rather than bypassed.
+                    Feature(library, NativeVitalStrikeFeature38,
+                        "Vital Strike"),
+                    // Printed CONSTANT true seeing. A spell-like ability has
+                    // no material component, so the charter's costly-component
+                    // boundary - which the summon sanitization policy enforces
+                    // as ExpensiveMaterialComponent - does not reach it; the
+                    // 250 gp ointment belongs to the cast spell, not to this.
+                    // The native effect buff is carried directly on the unit,
+                    // which is how the installed game expresses a permanent
+                    // creature sense, so the real native consumer owns the
+                    // behaviour and nothing here claims an unimplemented one.
+                    BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                        library, NativeTrueSeeingBuff38,
+                        "native constant true seeing effect")
+                    }).ToArray();
 
             // Power Word Stun outranks the at-will bursts: it is the single
             // daily control effect and it has no saving throw. Its own
@@ -246,6 +271,9 @@ namespace KingmakerGunslinger.Blueprints
             // Mirror Image is not re-queued over itself. This is an AI
             // selection policy only: it adds no resource and changes nothing
             // the player can command.
+            InfernalSpellAi35 confusionAi = ConfigureInfernalAi35(symbols,
+                p + "ConfusionAi", unit, confusion, false, true, 4);
+            confusionAi.SharedSpellCooldownRounds = 2;
             InfernalSpellAi35 mirrorAi = ConfigureInfernalAi35(symbols,
                 p + "MirrorImageAi", unit, mirror, true, false, 3);
             mirrorAi.ActiveBuff = VrockAppliedBuff37(mirror);
@@ -260,7 +288,7 @@ namespace KingmakerGunslinger.Blueprints
             dispelAi.BaseScore = 3;
 
             unit.Brain = InfernalBrain35(library, symbols, p, stunAi, chaosAi,
-                unholyAi, dispelAi, mirrorAi);
+                unholyAi, confusionAi, dispelAi, mirrorAi);
 
             foreach (var pair in symbols.Where(pair =>
                 pair.Value is BlueprintUnitFact &&

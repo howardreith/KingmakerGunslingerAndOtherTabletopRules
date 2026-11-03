@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 735;
+        internal const int SpecialIdentityCount = 737;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -1036,9 +1036,11 @@ namespace KingmakerGunslinger.Summoning
             // creature as its owner rather than reimplemented. Constant
             // true seeing is deliberately absent here: its installed
             // identity and disposition are settled by the Sprint 38 input
-            // probe first, and a guessed asset GUID is not acceptable. The
-            // same is true of printed at-will confusion, whose native
-            // identity this project has never recorded either.
+            // probe first, and a guessed asset GUID is not acceptable.
+            // That probe has now run: confusion, true seeing and plain
+            // Vital Strike are wired from the identities it named, and
+            // only confusion needs identities of its own - the other two
+            // are native facts carried directly on the unit.
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.UnitType", "BlueprintUnitType"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.Traits", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.Pincer", "BlueprintItemWeapon"));
@@ -1053,6 +1055,7 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.PowerWordStunCarrier", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.ChaosHammer", "BlueprintAbility"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.UnholyBlight", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.Confusion", "BlueprintAbility"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.DispelMagic", "BlueprintAbility"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.MirrorImage", "BlueprintAbility"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.Brain", "BlueprintBrain"));
@@ -1060,6 +1063,7 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.PowerWordStunEligibility", "GlabrezuStunEligibility38"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.PowerWordStunTargetEligibility", "GlabrezuStunTargetEligibility38"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.ChaosAi", "InfernalSpellAi35"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.ConfusionAi", "InfernalSpellAi35"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.UnholyAi", "InfernalSpellAi35"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.DispelAi", "BabauDispelAi36"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.MirrorImageAi", "InfernalSpellAi35"));
