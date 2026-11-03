@@ -320,11 +320,47 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return native.Branch == SummonNativeSpawnBranch.Evil ? 5 : 1;
         }
+        /// <summary>
+        /// The broad released-roster fixture's coverage list: every project
+        /// creature plus the retained native wrappers. It is deliberately the
+        /// <b>whole</b> roster and not a published subset, because it is also
+        /// the receipt-admission list and a receipt for any roster creature is
+        /// legitimate.
+        ///
+        /// <para>Creating a creature is a separate question from covering it.
+        /// <see cref="SelectCreatureVariant"/> refuses a withheld route under
+        /// this broad scope on purpose: a creature under qualification is
+        /// summoned by its own named scope, not by the released-roster
+        /// fixture. So a withheld creature appears here and is refused
+        /// there, and <see cref="HasPublishedSingleRoute"/> is what tells the
+        /// two apart rather than a hand-maintained list.</para>
+        /// </summary>
         internal static string[] Keys
         {
             get { return ExpandedSummoningCatalog.All.Select(c => c.Key)
                 .Concat(SummonNativeExpansionCatalog.All.Select(n => "native:" + n.UnitGuid))
                 .Distinct(StringComparer.Ordinal).OrderBy(k => k, StringComparer.Ordinal).ToArray(); }
+        }
+
+        /// <summary>
+        /// Whether this creature has a published quantity-one route, which is
+        /// exactly what the broad released-roster scope can summon. Public so
+        /// that the scope-coverage test asserts the refusal boundary from the
+        /// same predicate the production selection uses, instead of listing
+        /// the currently withheld creatures a second time.
+        /// </summary>
+        internal static bool HasPublishedSingleRoute(string key)
+        {
+            return SingleRoutes(key).Any(SummonVisibilityCatalog.IsPublished);
+        }
+
+        private static IEnumerable<SummonVariantSpec> SingleRoutes(string key)
+        {
+            return ExpandedSummoningCatalog
+                .GenerateVariants(SummonFamily.Monster)
+                .Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly))
+                .Where(value => value.Creature.Key == key &&
+                    value.Multiplicity == SummonMultiplicity.One);
         }
         /// <summary>
         /// The creatures a persistence scope summons, as one list. There were
@@ -364,17 +400,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 : SelectedKeys(scope);
             if (!permitted.Contains(key, StringComparer.Ordinal))
                 throw new InvalidOperationException("Persistence scope does not own the requested creature key.");
-            IEnumerable<SummonVariantSpec> variants = ExpandedSummoningCatalog
-                .GenerateVariants(SummonFamily.Monster)
-                .Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly))
-                .Where(value => value.Creature.Key == key &&
-                    value.Multiplicity == SummonMultiplicity.One);
+            IEnumerable<SummonVariantSpec> variants = SingleRoutes(key);
             // A named one-creature qualification scope must be able to create
             // its already-registered identity while its public roots remain
             // deliberately suppressed. The broad released-roster fixture must
             // still refuse unpublished routes.
             if (scope == Scope) variants = variants.Where(SummonVisibilityCatalog.IsPublished);
-            return variants.First();
+            SummonVariantSpec[] usable = variants.ToArray();
+            // Refuse in words rather than by letting First() report "Sequence
+            // contains no elements" from inside a live fixture. The broad
+            // scope reaching a withheld creature is a real and expected
+            // state - that creature is qualified through its own named scope -
+            // and it has to read as a refusal, not as an internal error.
+            if (usable.Length == 0)
+                throw new InvalidOperationException(
+                    "Persistence scope '" + scope + "' has no usable " +
+                    "quantity-one route for '" + key + "'" +
+                    (scope == Scope && SingleRoutes(key).Any()
+                        ? ": its routes are registered but still withheld, so " +
+                          "only that creature's own named scope may create it."
+                        : "."));
+            return usable[0];
         }
         internal static bool ExactSelectedKeys(string scope,
             IEnumerable<string> observed)

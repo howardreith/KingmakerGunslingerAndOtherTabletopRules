@@ -36,6 +36,18 @@ namespace KingmakerGunslinger.DomainTests
         internal const int Sprint37CatalogIdentityCount =
             Sprint37CreatureIdentityCount + Sprint37RootIdentityCount +
             Sprint37PrivateIdentityCount;
+        // Sprint 38 appends one creature, its single Summon Monster IX
+        // root - it is registered at tier 9, so parent 9 is the only
+        // parent that admits it - and twenty-three private dependencies.
+        // Printed at-will confusion and its AI are deliberately absent:
+        // the installed native identity is not recorded anywhere in this
+        // project, so they are appended after the input probe names it.
+        internal const int Sprint38CreatureIdentityCount = 1;
+        internal const int Sprint38RootIdentityCount = 1;
+        internal const int Sprint38PrivateIdentityCount = 23;
+        internal const int Sprint38CatalogIdentityCount =
+            Sprint38CreatureIdentityCount + Sprint38RootIdentityCount +
+            Sprint38PrivateIdentityCount;
         internal const int AppendedCatalogIdentityCount =
             Sprint26MagicalBeastRules.AppendedCatalogIdentityCount +
             ExpandedSummoningSprint27Tests.AppendedCatalogIdentityCount +
@@ -44,7 +56,8 @@ namespace KingmakerGunslinger.DomainTests
             Sprints30And31FoundationIdentityCount + 2 + 10 +
             Sprint32PrivateIdentityCount + 2 + 10 + 22 +
             InfernalRules35.AppendedCatalogIdentityCount +
-            Sprint36CatalogIdentityCount + Sprint37CatalogIdentityCount;
+            Sprint36CatalogIdentityCount + Sprint37CatalogIdentityCount +
+            Sprint38CatalogIdentityCount;
         internal const int AppendedLedgerIdentityCount =
             AppendedCatalogIdentityCount +
             Sprint36ReservedIdentityCount;
@@ -71,7 +84,8 @@ namespace KingmakerGunslinger.DomainTests
         // both fail, and every dependent count elsewhere is derived from it
         // rather than written down - so publishing a qualified creature is
         // removing its name here, and nothing else.
-        internal static readonly string[] WithheldKeys = { };
+        // Sprint 38 withholds the Glabrezu while it is qualified.
+        internal static readonly string[] WithheldKeys = { "glabrezu" };
         internal static bool IsWithheld(string key) { return Array.IndexOf(WithheldKeys, key) >= 0; }
     }
 

@@ -20,8 +20,8 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 131;
-        internal const int LogicalAbilityCount = 1185;
+        internal const int UnitCount = 132;
+        internal const int LogicalAbilityCount = 1186;
         internal const int TemplatedPlacementCount = 319;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 711;
+        internal const int SpecialIdentityCount = 734;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -1028,6 +1028,40 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.MirrorImage", "BlueprintAbility"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.MirrorImageResource", "BlueprintAbilityResource"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.MirrorImageAi", "InfernalSpellAi35"));
+            // Sprint 38. One demon, its three exact natural weapons in
+            // five limbs, the pincer-only rend, the single-use Power Word
+            // Stun with its own resource and stun carrier, five at-will
+            // spell-likes with no resource at all, and one brain. The
+            // dispel selector is the released Sprint 36 one, given this
+            // creature as its owner rather than reimplemented. Constant
+            // true seeing is deliberately absent here: its installed
+            // identity and disposition are settled by the Sprint 38 input
+            // probe first, and a guessed asset GUID is not acceptable. The
+            // same is true of printed at-will confusion, whose native
+            // identity this project has never recorded either.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.Pincer", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.PincerType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.Claw", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.ClawType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.Bite", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.BiteType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.Rend", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.PowerWordStun", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.PowerWordStunResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.PowerWordStunCarrier", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.ChaosHammer", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.UnholyBlight", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.DispelMagic", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.MirrorImage", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.PowerWordStunAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.PowerWordStunEligibility", "GlabrezuStunEligibility38"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.ChaosAi", "InfernalSpellAi35"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.UnholyAi", "InfernalSpellAi35"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.DispelAi", "BabauDispelAi36"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.MirrorImageAi", "InfernalSpellAi35"));
             Validate(result);
             return result.AsReadOnly();
         }

@@ -378,6 +378,34 @@ namespace KingmakerGunslinger.DomainTests
                 foreach (string key in keys.Distinct())
                 {
                     if (key.StartsWith("native:", StringComparison.Ordinal)) continue;
+                    // The broad released-roster scope covers the whole roster
+                    // but deliberately refuses to CREATE a withheld route: a
+                    // creature under qualification is summoned by its own
+                    // named scope. So for that one scope a withheld creature
+                    // must be refused rather than round-trip, and the refusal
+                    // boundary is asserted from the production predicate
+                    // instead of a second list of withheld keys. Every named
+                    // scope still has to create every creature it names,
+                    // published or not - which is the bug this test exists
+                    // for.
+                    bool broadAndWithheld = scope ==
+                        ExpandedSummoningRosterPersistencePolicy.Scope &&
+                        !ExpandedSummoningRosterPersistencePolicy
+                            .HasPublishedSingleRoute(key);
+                    if (broadAndWithheld)
+                    {
+                        bool refused = false;
+                        try
+                        {
+                            ExpandedSummoningRosterPersistencePolicy
+                                .SelectCreatureVariant(scope, key);
+                        }
+                        catch (InvalidOperationException) { refused = true; }
+                        Assertions.True(refused,
+                            "The broad released-roster scope refuses a withheld route: "
+                                + field.Name + "/" + key);
+                        continue;
+                    }
                     Assertions.Equal(key, ExpandedSummoningRosterPersistencePolicy
                         .SelectCreatureVariant(scope, key).Creature.Key,
                         "Each selected key is one this scope owns: " +
