@@ -52,8 +52,10 @@ namespace KingmakerGunslinger.Summoning
         //   Babau         CE Medium outsider (chaotic, demon, evil, extraplanar)
         //   Hezrou        CE Large  outsider (aquatic, chaotic, demon, evil, extraplanar)
         //   Vrock         CE Large  outsider (chaotic, demon, evil, extraplanar)
+        //   Glabrezu      CE Huge   outsider (chaotic, demon, evil, extraplanar)
         private static readonly string[] Keys = {
-            "dretch", "shadow-demon", "succubus", "babau", "hezrou", "vrock"
+            "dretch", "shadow-demon", "succubus", "babau", "hezrou",
+            "vrock", "glabrezu"
         };
 
         // Registered outsiders that are deliberately NOT demons, kept beside
@@ -107,11 +109,12 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Keys.Length != 6 ||
+            if (Keys.Length != 7 ||
                 Keys.Distinct(StringComparer.Ordinal).Count() != Keys.Length ||
                 NotDemons.Any(IsDemonKey) ||
                 !Keys.Contains("succubus", StringComparer.Ordinal) ||
                 !Keys.Contains("shadow-demon", StringComparer.Ordinal) ||
+                !Keys.Contains("glabrezu", StringComparer.Ordinal) ||
                 IsDemonKey("bebelith"))
                 throw new InvalidOperationException(
                     "The project demon identity set changed.");

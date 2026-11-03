@@ -139,9 +139,26 @@ come from a chosen lift height; and the native framework always offers a
 climb-out the printed spell does not.
 
 That last set is a balance and fidelity choice, not an engineering one, so it
-is **put to the owner as a single concrete decision** and this ability stays
-prototype-only until that decision exists. Every other Sprint 38 requirement
-proceeds independently.
+was put to the owner as a single concrete decision with the exact feasible
+effect, the severity options and every difference from print stated up front.
+
+**Owner decision, 2026-11-03: omit Reverse Gravity and disclose it.** It is
+not represented, nothing stands in for it, and the `AreaEffectPit` framework
+is not used by this sprint. This is recorded as a **charter change rather than
+a deferral under the charter** — the Sprint 38 row selects a bounded
+adaptation rather than permitting deferral, and the option the owner chose
+said exactly that. The feasibility evidence is retained, because it is what
+made the decision informed and it establishes the omission as a balance choice
+rather than an engineering dead end.
+
+A second question confirmed the project's engine-limit disclosure standard was
+acceptable. With omission selected there is no bounded effect for those
+specific disclosures to attach to, so that answer is **not** recorded as
+authorizing a bounded Reverse Gravity.
+
+Consequence for the rest of the sprint: Power Word Stun is now the sprint's
+single required signature ability, and the pincer rend and five-limb routine
+carry the melee leg. No other requirement changes.
 
 ## Not started
 

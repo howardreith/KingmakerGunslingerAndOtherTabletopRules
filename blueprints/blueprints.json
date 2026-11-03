@@ -62183,6 +62183,238 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.Glabrezu",
+      "guid": "3824e7589ae548f79a3eb8369f50359f",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Glabrezu.One",
+      "guid": "19985d3c659148cc8eb9756a1c68dae4",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.UnitType",
+      "guid": "c2496926872d4ba0b530492fa65a7d69",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.Traits",
+      "guid": "f77a5132294d4b329fe4fb0399294c18",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.Pincer",
+      "guid": "7af8a097a3594b53b8b40c05881146db",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.PincerType",
+      "guid": "2097b105f5bd4d6eb8c0a7c5c9e6ac49",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.Claw",
+      "guid": "d984a1fbac854b0bb1b0f1e0ca70a606",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.ClawType",
+      "guid": "21e5bddd0d7c49d79a3d2985293c550d",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.Bite",
+      "guid": "d44165bbdcad4ebf8ae6f3b5454e86cf",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.BiteType",
+      "guid": "e17d62a9c3b64bfab677d576d94c63f7",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.Rend",
+      "guid": "99f91e745cf24c429bb3980164a9d66d",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.PowerWordStun",
+      "guid": "e7f7d88a659847c79632880e0a580fc0",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.PowerWordStunResource",
+      "guid": "9a9ff623d209490f98871484211c110c",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.PowerWordStunCarrier",
+      "guid": "64c7d81ddb7e441282832c64d89ceeed",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.ChaosHammer",
+      "guid": "4750819753d94524942efc4fd3c94f0b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.UnholyBlight",
+      "guid": "0e953b9550934eaabe9b1e09e8c5096a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.DispelMagic",
+      "guid": "9da3bc79e0e84a3a8fa2c310c668eb10",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.MirrorImage",
+      "guid": "d88029168a9d4574a88f9b65afae5c3b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.Brain",
+      "guid": "ca5e900f14cb4693ae77b266668597db",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.PowerWordStunAi",
+      "guid": "c60b7fa19c1d4bc89024403966558d93",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.PowerWordStunEligibility",
+      "guid": "fdbf42ddbcfc4c25b9e5875785712794",
+      "plannedType": "GlabrezuStunEligibility38",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.ChaosAi",
+      "guid": "e8bf5f56af704e92b7ba2d54f8ae40f7",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.UnholyAi",
+      "guid": "7488eb2709744991a064471378bd0dd5",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.DispelAi",
+      "guid": "8f2e4e11725145a4a3214d4369594df3",
+      "plannedType": "BabauDispelAi36",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Glabrezu.MirrorImageAi",
+      "guid": "f30bd20c958c4a9bad96baae47eddbae",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier9.Glabrezu.One",
+      "guid": "2246d197c5eb571d94dca347a9160d77",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier9.Glabrezu.One",
+      "guid": "5ccd6c1b6ccd5b2fb5af3fb79d609ce5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier9.Glabrezu.One",
+      "guid": "ddf3511df2c2549f859847df35787231",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier9.Glabrezu.One",
+      "guid": "b4c7fb1a069c5e5f9f6eb2077eb2f160",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
     }
   ]
 }
