@@ -54,7 +54,7 @@ $spellNames=@('sprint32-sprint38-spells-at-will-carry-no-resource',
     'sprint32-sprint38-spells-bursts-at-printed-difficulty')
 $aiNames=@('sprint32-sprint38-ai-second-enemy-is-real','sprint32-sprint38-ai-candidates-differ',
     'sprint32-sprint38-ai-stun-picks-the-affectable-candidate')
-$allAssertions=@('synthetic-required','s38-items-owned')+@($surface.routes.assertion)+
+$allAssertions=@('synthetic-required','s38-items-owned','s38-stun-stood-then-withdrawn')+@($surface.routes.assertion)+
     $coreNames+$rendNames+$stunNames+$spellNames+$aiNames
 # The fresh-execution contract is exercised for real rather than stubbed: each
 # synthetic source carries the engine's loaded-build receipt and the execution
@@ -163,6 +163,9 @@ Refuse {$l=CopyLedger;$row=($l.coverage|Where-Object id -ceq 'power-word-stun');
 foreach($which in @('on','off')) {
     Refuse {$l=CopyLedger;$row=($l.coverage|Where-Object id -ceq ('mixed-'+$which+'-persistence'));
         foreach($s in $row.evidenceSources){$s.requiredAssertions=@($s.requiredAssertions|Where-Object {$_ -cne 's38-items-owned'})}
+        Assert-KmgSprint38Qualification $l $candidate}
+    Refuse {$l=CopyLedger;$row=($l.coverage|Where-Object id -ceq ('mixed-'+$which+'-persistence'));
+        foreach($s in $row.evidenceSources){$s.requiredAssertions=@($s.requiredAssertions|Where-Object {$_ -cne 's38-stun-stood-then-withdrawn'})}
         Assert-KmgSprint38Qualification $l $candidate}
 }
 Refuse {$l=CopyLedger;($l.coverage|Where-Object id -ceq 'public-routes-presentation').routes[0].identity=('d'*32);Assert-KmgSprint38Qualification $l $candidate}
