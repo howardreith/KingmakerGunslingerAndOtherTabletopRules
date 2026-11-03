@@ -174,6 +174,26 @@ final candidate at the commit that carries this correction, and the earlier
 two artifacts simply stand unused. The remedy is the one already written here,
 applied again, not a new mechanism.
 
+## How a fresh row is bound to the candidate
+
+The shared fresh-execution check accepts two execution receipts: a
+compatibility-profile transaction and an installed-stack transaction. The
+Sprint 37 mechanics group runs under the snapshot-and-restore scenario wrapper,
+which is neither, so Sprint 37 carries its own check with a third kind,
+`restored-scenario`, validated against that wrapper's own recorded facts: the
+restoration verified, no failures, the expected version, the live tree back at
+the exact hash it started from, and exactly one run - matching the evidence
+directory the raw result came from - that passed, exited cleanly and used the
+candidate's own package. Labelling such a run a compatibility profile to fit
+the older shape would have been a false claim about how it executed.
+
+Every fresh Sprint 37 source, of either kind, must also carry the engine's own
+loaded-build receipt: the commit, the DLL digest and the module version id of
+the assembly actually in the game process. That binds a row to the bytes that
+ran rather than to a package path on disk, which is a stronger link than the
+precedent had, and the publisher suite now exercises the whole check instead of
+stubbing it out.
+
 ## The finish sequence
 
 1. The complete source, build and package gate, once, by the harness inside

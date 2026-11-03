@@ -33,29 +33,57 @@ function Proof([string]$name,$data){
     [pscustomobject]@{path=$path;sha256=(Get-FileHash $path -Algorithm SHA256).Hash.ToLowerInvariant()}
 }
 $head=(& git -C $root rev-parse HEAD).Trim();if($LASTEXITCODE){throw 'Test source unavailable'}
-$candidate=[pscustomobject]@{commit=$head;version='0.0.175';packageSha256=('b'*64);dllSha256=('c'*64);dllMvid='7f1c3a92-5d44-4a0e-9c21-6b8e5f0d7a31';sourceStateSha256=('f'*64)}
-$sporeStates=@('sprint37-spore-susceptible','sprint37-spore-disease-immune',
-    'sprint37-spore-poison-immune-only','sprint37-spore-native-cure',
-    'sprint37-spore-late-immunity','sprint37-spore-footprint-boundary',
-    'sprint37-spore-descriptor-placement','sprint37-spore-protection-facts')
-$screechNames=@('sprint37-screech-control-roster','sprint37-screech-identity-exemption',
-    'sprint37-screech-live-constitution-dc','sprint37-screech-radius-boundary',
-    'sprint37-screech-stun-expiry','sprint37-screech-recharge-refusal',
-    'sprint37-screech-two-owner-isolation')
+$candidate=[pscustomobject]@{commit=$head;version='0.0.175';packageSha256=('b'*64);dllSha256=('c'*64);dllMvid='7f1c3a92-5d44-4a0e-9c21-6b8e5f0d7a31';sourceStateSha256=('f'*64);packagePath=(Join-Path $folder 'synthetic-candidate.zip')}
+[IO.File]::WriteAllText($candidate.packagePath,'synthetic')
+$sporeStates=@('sprint32-sprint37-spore-susceptible','sprint32-sprint37-spore-disease-immune',
+    'sprint32-sprint37-spore-poison-immune-only','sprint32-sprint37-spore-native-cure',
+    'sprint32-sprint37-spore-late-immunity','sprint32-sprint37-spore-footprint-boundary',
+    'sprint32-sprint37-spore-descriptor-placement','sprint32-sprint37-spore-protection-facts')
+$screechNames=@('sprint32-sprint37-screech-control-roster','sprint32-sprint37-screech-identity-exemption',
+    'sprint32-sprint37-screech-live-constitution-dc','sprint32-sprint37-screech-radius-boundary',
+    'sprint32-sprint37-screech-stun-expiry','sprint32-sprint37-screech-recharge-refusal',
+    'sprint32-sprint37-screech-two-owner-isolation')
 $allAssertions=@('synthetic-required')+@($surface.routes.assertion)+$sporeStates+$screechNames+
-    @('sprint37-screech-manual-interface','sprint37-screech-turn-admission-turnbased')+
+    @('sprint32-sprint37-screech-manual-interface','sprint32-sprint37-screech-turn-admission-turnbased')+
     @($screechNames|ForEach-Object {$_+'-turnbased'})
-function Native([string]$run,[string]$source=$head) {
-    $raw=Proof ('native-'+$run) @{gitCommit=$source;runId=$run;status='PASS';assertions=@($allAssertions|ForEach-Object {@{name=$_;status='PASS'}})}
-    [pscustomobject]@{source=$source;runId=$run;packageSha256=$candidate.packageSha256;dllSha256=$candidate.dllSha256;dllMvid=$candidate.dllMvid;nativeProof=$raw;requiredAssertions=$allAssertions}
+# The fresh-execution contract is exercised for real rather than stubbed:
+# each synthetic source carries the engine's loaded-build receipt and the
+# execution receipt of the controller that actually ran it, in the exact
+# directory relationship the contract requires.
+function LoadedIdentity([string]$run) {
+    Proof ('loaded-'+$run) @{semanticVersion=$candidate.version;gitCommit=$head;
+        moduleVersionId=$candidate.dllMvid;loadedModuleSha256=$candidate.dllSha256;processId=1}
 }
-function Assert-KmgSprints3031FreshExecution { param($Source,$Candidate,$Row) }
+function RestoredScenario([string]$run,[string]$directory) {
+    Proof ('restored-'+$run) @{restoration='verified';failures=0;expectedVersion=$candidate.version;
+        liveBefore=@{sha256=('a'*64)};liveAfterRestore=@{sha256=('a'*64)};
+        runs=@(@{scenario='disposable-expanded-summoning-sprint32-native-review';
+            evidenceDirectory=$directory;outcome='PASS';scenarioStatus='PASS';exitCode=0;
+            package=$candidate.packagePath})}
+}
+function InstalledStack([string]$run,[string]$directory) {
+    Proof ('stack-'+$run) @{candidateKind='release-candidate';releaseQualification=$true;
+        restoration=@{verified=$true;gameSettingsExact=$true;transactionStatus='Restored'};
+        launchReceipt=@{runId=$run;evidenceDirectory=$directory};
+        candidate=@{commit=$head;packageSha256=$candidate.packageSha256;dllSha256=$candidate.dllSha256;dllMvid=$candidate.dllMvid}}
+}
+function Native([string]$run,[string]$source=$head,[string]$kind='restored-scenario') {
+    $directory=Join-Path $folder $run
+    New-Item -ItemType Directory -Path $directory|Out-Null
+    $rawPath=Join-Path $directory 'runtime-result.json'
+    [IO.File]::WriteAllText($rawPath,(@{gitCommit=$source;runId=$run;status='PASS';assertions=@($allAssertions|ForEach-Object {@{name=$_;status='PASS'}})}|ConvertTo-Json -Depth 35))
+    $raw=[pscustomobject]@{path=$rawPath;sha256=(Get-FileHash $rawPath -Algorithm SHA256).Hash.ToLowerInvariant()}
+    $execution=if($kind -ceq 'installed-stack'){InstalledStack $run $directory}else{RestoredScenario $run $directory}
+    [pscustomobject]@{source=$source;runId=$run;packageSha256=$candidate.packageSha256;dllSha256=$candidate.dllSha256;dllMvid=$candidate.dllMvid;
+        nativeProof=$raw;loadedIdentityProof=(LoadedIdentity $run);executionProof=$execution;executionKind=$kind;requiredAssertions=$allAssertions}
+}
+function SourceProofs($sources){@($sources|ForEach-Object {$_.nativeProof;$_.loadedIdentityProof;$_.executionProof})}
 $main=Native 'synthetic-main'
 $coverage=@()
 foreach($id in @('core-profile-and-self-buffs','spore-protection-and-geometry',
     'screech-identity-and-recharge','both-modes-screech','observed-ai-and-babau-dispel',
     'public-routes-presentation','highest-risk-integration')) {
-    $entry=[pscustomobject]@{id=$id;result='PASS';proofs=@($main.nativeProof);evidenceSources=@($main)}
+    $entry=[pscustomobject]@{id=$id;result='PASS';proofs=@(SourceProofs @($main));evidenceSources=@($main)}
     if($id -ceq 'public-routes-presentation') {
         $entry|Add-Member routes @($surface.routes|ForEach-Object {@{creature=$_.creature;tier=$_.tier;identity=$_.identity;runId=$main.runId;observed=@('cleanup','duration','eligibility','quantity','slot')}})
     }
@@ -65,7 +93,7 @@ $sequences=@{}
 foreach($which in @('on','off')) {
     $sources=@();$stages=@();$proofs=@()
     foreach($stage in @('prepare','cleanup','absent')) {
-        $source=Native ('synthetic-'+$which+'-'+$stage);$sources+=$source;$proofs+=$source.nativeProof
+        $source=Native ('synthetic-'+$which+'-'+$stage) $head 'installed-stack';$sources+=$source;$proofs+=@(SourceProofs @($source))
         $stages+=@{stage=$stage;runId=$source.runId;rawSha256=$source.nativeProof.sha256;processIdentity=('synthetic-process-'+$which+'-'+$stage)}
     }
     $sequence=@{source=$head;sequence=$which;status='PASS';restoration=@{exactIntake=$true;gameExited=$true};stages=$stages}
@@ -105,20 +133,20 @@ foreach($state in $sporeStates) {
 }
 # The screech must be proven by identity in both modes.
 Refuse {$l=CopyLedger;$row=($l.coverage|Where-Object id -ceq 'both-modes-screech');
-    $row.evidenceSources[0].requiredAssertions=@($row.evidenceSources[0].requiredAssertions|Where-Object {$_ -cne 'sprint37-screech-identity-exemption-turnbased'});
+    $row.evidenceSources[0].requiredAssertions=@($row.evidenceSources[0].requiredAssertions|Where-Object {$_ -cne 'sprint32-sprint37-screech-identity-exemption-turnbased'});
     Assert-KmgSprint37Qualification $l $candidate}
 Refuse {$l=CopyLedger;$row=($l.coverage|Where-Object id -ceq 'screech-identity-and-recharge');
-    $row.evidenceSources[0].requiredAssertions=@($row.evidenceSources[0].requiredAssertions|Where-Object {$_ -cne 'sprint37-screech-two-owner-isolation'});
+    $row.evidenceSources[0].requiredAssertions=@($row.evidenceSources[0].requiredAssertions|Where-Object {$_ -cne 'sprint32-sprint37-screech-two-owner-isolation'});
     Assert-KmgSprint37Qualification $l $candidate}
 # Each screech row also carries the one pin specific to it: the real-time row
 # the manual player interface the owner decision requires, and the turn-based
 # row the engine's own admission to turn-based combat. Without the second pin a
 # -turnbased suffix could stand for a mode the observation never entered.
 Refuse {$l=CopyLedger;$row=($l.coverage|Where-Object id -ceq 'screech-identity-and-recharge');
-    $row.evidenceSources[0].requiredAssertions=@($row.evidenceSources[0].requiredAssertions|Where-Object {$_ -cne 'sprint37-screech-manual-interface'});
+    $row.evidenceSources[0].requiredAssertions=@($row.evidenceSources[0].requiredAssertions|Where-Object {$_ -cne 'sprint32-sprint37-screech-manual-interface'});
     Assert-KmgSprint37Qualification $l $candidate}
 Refuse {$l=CopyLedger;$row=($l.coverage|Where-Object id -ceq 'both-modes-screech');
-    $row.evidenceSources[0].requiredAssertions=@($row.evidenceSources[0].requiredAssertions|Where-Object {$_ -cne 'sprint37-screech-turn-admission-turnbased'});
+    $row.evidenceSources[0].requiredAssertions=@($row.evidenceSources[0].requiredAssertions|Where-Object {$_ -cne 'sprint32-sprint37-screech-turn-admission-turnbased'});
     Assert-KmgSprint37Qualification $l $candidate}
 Refuse {$l=CopyLedger;($l.coverage|Where-Object id -ceq 'public-routes-presentation').routes[0].identity=('d'*32);Assert-KmgSprint37Qualification $l $candidate}
 Refuse {$l=CopyLedger;($l.coverage|Where-Object id -ceq 'mixed-on-persistence').evidenceSources=@($main);Assert-KmgSprint37Qualification $l $candidate}
@@ -127,6 +155,47 @@ Refuse {$l=CopyLedger;$l.restoration.workingFixtureClean=$false;Assert-KmgSprint
 Refuse {$l=CopyLedger;$l.coverage=@($l.coverage|Where-Object id -cne 'observed-ai-and-babau-dispel');Assert-KmgSprint37Qualification $l $candidate}
 Refuse {$l=CopyLedger;$l.publication.prerelease=$true;Assert-KmgSprint37Qualification $l $candidate}
 Refuse {$l=CopyLedger;$l.sprint38Started=$true;Assert-KmgSprint37Qualification $l $candidate}
+# The fresh-execution contract itself. A row may not cite bytes other than the
+# ones the game loaded, an unverified or unrestored controller run, a scenario
+# that did not pass, another package, an unattributed receipt, or a kind this
+# sprint does not support.
+Refuse {$l=CopyLedger;$s=($l.coverage|Where-Object id -ceq 'core-profile-and-self-buffs').evidenceSources[0];
+    $s.loadedIdentityProof=(Proof 'loaded-other-mvid' @{semanticVersion=$candidate.version;gitCommit=$head;moduleVersionId='00000000-0000-0000-0000-000000000000';loadedModuleSha256=$candidate.dllSha256;processId=1});
+    ($l.coverage|Where-Object id -ceq 'core-profile-and-self-buffs').proofs=@(SourceProofs @($s));
+    Assert-KmgSprint37Qualification $l $candidate}
+Refuse {$l=CopyLedger;$s=($l.coverage|Where-Object id -ceq 'core-profile-and-self-buffs').evidenceSources[0];
+    $s.loadedIdentityProof=(Proof 'loaded-other-dll' @{semanticVersion=$candidate.version;gitCommit=$head;moduleVersionId=$candidate.dllMvid;loadedModuleSha256=('d'*64);processId=1});
+    ($l.coverage|Where-Object id -ceq 'core-profile-and-self-buffs').proofs=@(SourceProofs @($s));
+    Assert-KmgSprint37Qualification $l $candidate}
+Refuse {$l=CopyLedger;$row=($l.coverage|Where-Object id -ceq 'core-profile-and-self-buffs');
+    $row.proofs=@($row.evidenceSources[0].nativeProof);Assert-KmgSprint37Qualification $l $candidate}
+Refuse {$l=CopyLedger;$s=($l.coverage|Where-Object id -ceq 'core-profile-and-self-buffs').evidenceSources[0];
+    $s.executionKind='profile';Assert-KmgSprint37Qualification $l $candidate}
+Refuse {$l=CopyLedger;$s=($l.coverage|Where-Object id -ceq 'core-profile-and-self-buffs').evidenceSources[0];
+    $s.executionProof=(Proof 'restored-unverified' @{restoration='skipped';failures=0;expectedVersion=$candidate.version;
+        liveBefore=@{sha256=('a'*64)};liveAfterRestore=@{sha256=('a'*64)};
+        runs=@(@{scenario='disposable-expanded-summoning-sprint32-native-review';evidenceDirectory=(Join-Path $folder $s.runId);outcome='PASS';scenarioStatus='PASS';exitCode=0;package=$candidate.packagePath})});
+    ($l.coverage|Where-Object id -ceq 'core-profile-and-self-buffs').proofs=@(SourceProofs @($s));
+    Assert-KmgSprint37Qualification $l $candidate}
+Refuse {$l=CopyLedger;$s=($l.coverage|Where-Object id -ceq 'core-profile-and-self-buffs').evidenceSources[0];
+    $s.executionProof=(Proof 'restored-not-restored' @{restoration='verified';failures=0;expectedVersion=$candidate.version;
+        liveBefore=@{sha256=('a'*64)};liveAfterRestore=@{sha256=('b'*64)};
+        runs=@(@{scenario='disposable-expanded-summoning-sprint32-native-review';evidenceDirectory=(Join-Path $folder $s.runId);outcome='PASS';scenarioStatus='PASS';exitCode=0;package=$candidate.packagePath})});
+    ($l.coverage|Where-Object id -ceq 'core-profile-and-self-buffs').proofs=@(SourceProofs @($s));
+    Assert-KmgSprint37Qualification $l $candidate}
+Refuse {$l=CopyLedger;$s=($l.coverage|Where-Object id -ceq 'core-profile-and-self-buffs').evidenceSources[0];
+    $s.executionProof=(Proof 'restored-other-package' @{restoration='verified';failures=0;expectedVersion=$candidate.version;
+        liveBefore=@{sha256=('a'*64)};liveAfterRestore=@{sha256=('a'*64)};
+        runs=@(@{scenario='disposable-expanded-summoning-sprint32-native-review';evidenceDirectory=(Join-Path $folder $s.runId);outcome='PASS';scenarioStatus='PASS';exitCode=0;package=(Join-Path $folder 'other.zip')})});
+    ($l.coverage|Where-Object id -ceq 'core-profile-and-self-buffs').proofs=@(SourceProofs @($s));
+    Assert-KmgSprint37Qualification $l $candidate}
+Refuse {$l=CopyLedger;$row=($l.coverage|Where-Object id -ceq 'mixed-on-persistence');$s=$row.evidenceSources[0];
+    $s.executionProof=(Proof 'stack-unrestored' @{candidateKind='release-candidate';releaseQualification=$true;
+        restoration=@{verified=$true;gameSettingsExact=$true;transactionStatus='RESTORATION_FAILED'};
+        launchReceipt=@{runId=$s.runId;evidenceDirectory=(Join-Path $folder $s.runId)};
+        candidate=@{commit=$head;packageSha256=$candidate.packageSha256;dllSha256=$candidate.dllSha256;dllMvid=$candidate.dllMvid}});
+    $row.proofs=@(SourceProofs $row.evidenceSources)+@($row.sequenceProof);
+    Assert-KmgSprint37Qualification $l $candidate}
 }
 finally {if(Test-Path -LiteralPath $folder){Remove-Item -LiteralPath $folder -Recurse -Force}}
 Write-Host "Sprint37 publisher refusal checks PASS=$script:checks; synthetic proofs only, no network/publication."
