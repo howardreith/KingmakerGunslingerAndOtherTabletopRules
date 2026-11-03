@@ -177,6 +177,19 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         internal const string ObserveExpandedSummoningSprint37Inputs =
             "observe-expanded-summoning-sprint37-native-inputs";
+
+        /// <summary>
+        /// The one bounded Sprint 38 installed-library audit: whether a
+        /// native Glabrezu body exists, the exact installed confusion,
+        /// true seeing, veil and Vital Strike identities this sprint leaves
+        /// unwired until they are named, whether a native Power Word Stun
+        /// graph exists at all, and what the library returns for gravity,
+        /// pit and teleportation names. A name search establishes its own
+        /// results and not a universal absence.
+        /// Research only; it creates no actor and loads no save.
+        /// </summary>
+        internal const string ObserveExpandedSummoningSprint38Inputs =
+            "observe-expanded-summoning-sprint38-native-inputs";
         internal const string ObserveExpandedSummoningSprint32Inputs =
             "observe-expanded-summoning-sprint32-native-inputs";
         internal const string ObserveExpandedSummoningSprints30And31Inputs =
@@ -969,6 +982,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningSprint33Inputs,
                 ObserveExpandedSummoningSprint36Inputs,
                 ObserveExpandedSummoningSprint37Inputs,
+                ObserveExpandedSummoningSprint38Inputs,
                 DisposableExpandedSummoningSprint18Review,
                 DisposableExpandedSummoningSprint19Review,
                 DisposableExpandedSummoningSprint20Review,

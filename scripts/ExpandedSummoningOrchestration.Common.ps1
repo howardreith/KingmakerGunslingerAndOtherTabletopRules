@@ -39,6 +39,7 @@ function Test-KmgExactSummoningRuntimeBoundary {
         'observe-expanded-summoning-sprint33-native-inputs',
         'observe-expanded-summoning-sprint36-native-inputs',
         'observe-expanded-summoning-sprint37-native-inputs',
+        'observe-expanded-summoning-sprint38-native-inputs',
         'disposable-expanded-summoning-sprint22-native-review',
         'disposable-expanded-summoning-sprint23-native-review',
         'disposable-expanded-summoning-sprint24-native-review',
