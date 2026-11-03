@@ -226,6 +226,18 @@ namespace KingmakerGunslinger.Summoning
             return state;
         }
 
+        /// <summary>
+        /// For the guarded runtime fixture: the round the game is in right
+        /// now, read from the same derivation production uses.
+        ///
+        /// <para>The round state itself is updated lazily, on the next attack,
+        /// so an observer watching only the state cannot see a round change
+        /// until something strikes. It has to compare this live stamp against
+        /// the state's own.</para>
+        /// </summary>
+        internal static long ObservedRoundStamp()
+        { return CurrentRoundStamp(); }
+
         /// <summary>For the guarded runtime fixture: this unit's live state.</summary>
         internal static GlabrezuRendRound38 ObservedState(UnitEntityData unit)
         {

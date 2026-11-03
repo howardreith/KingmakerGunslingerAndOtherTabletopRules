@@ -293,23 +293,25 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
-        /// Waits for the production round state to be genuinely fresh - no
-        /// armed rend, no spent round and no remembered attack pair - and
-        /// leaves the game PAUSED when it is.
+        /// Waits for the game's round to actually change, and leaves the
+        /// engine paused if it can.
         ///
-        /// <para>Both halves are needed, and the first guarded run proved why.
-        /// The live attack command this phase has to hold is a real command:
-        /// left running, the owner attacked the adjacent victim on its own and
-        /// spent the round's rend before the deterministic sequence began, so
-        /// every cell measured an already-spent round. The engine raises the
-        /// round boundary from game time, so pausing stops both the ambient
-        /// attacking AND any further boundary - which is exactly the window
-        /// this phase needs: one round, no other attacker, and
-        /// <c>Rulebook.Trigger</c> still answering synchronously.</para>
+        /// <para>What it compares is the live round stamp against the stamp
+        /// the owner's round state carries. The state is updated lazily, on
+        /// the next attack, so an observer watching only for the state to be
+        /// cleared waits forever: the fourth guarded run burned the whole
+        /// thirty-second window with the stamp unchanged at 7209 and then saw
+        /// the very next strike rend correctly, because the strike itself
+        /// crossed the round. The stamp is read from the same derivation
+        /// production uses, so this waits for the round the creature's own
+        /// rule is keyed on.</para>
         ///
-        /// <para>The state is re-read after pausing, because a frame can land
-        /// an ambient attack between the check and the pause; a stale read is
-        /// retried rather than trusted.</para>
+        /// <para>Pausing is best-effort isolation only - a run recorded
+        /// IsPaused reading back false immediately after being set - so this
+        /// phase does not depend on it. What keeps the sequence free of
+        /// ambient attacks is that the owner's brain is quiesced, its live
+        /// attack command points at the distant victim, and the near victim's
+        /// brain is off.</para>
         /// </summary>
         private IEnumerable<int> GlabrezuAwaitRound38(UnitEntityData glabrezu,
             JObject record)
@@ -318,38 +320,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                 GlabrezuRendGate38.ObservedState(glabrezu);
             bool wasSpent = entry != null && entry.SpentThisRound;
             int victimsBefore = entry == null ? 0 : entry.TrackedVictimCount;
-            Func<GlabrezuRendRound38, bool> isFresh = state =>
-                state == null || (!state.Armed && !state.SpentThisRound &&
-                    state.TrackedVictimCount == 0);
+            long stampBefore = entry == null ?
+                GlabrezuRendGate38.ObservedRoundStamp() : entry.RoundStamp;
+            Func<bool> changed = () => {
+                GlabrezuRendRound38 state =
+                    GlabrezuRendGate38.ObservedState(glabrezu);
+                return state == null ||
+                    GlabrezuRendGate38.ObservedRoundStamp() !=
+                        state.RoundStamp;
+            };
             DateTime deadline = DateTime.UtcNow.AddSeconds(30);
             int frames = 0;
-            bool fresh = isFresh(entry);
-            while (!fresh && DateTime.UtcNow < deadline)
+            bool crossed = changed();
+            while (!crossed && DateTime.UtcNow < deadline)
             {
                 Game.Instance.IsPaused = false;
                 frames++;
                 yield return 0;
-                if (!isFresh(GlabrezuRendGate38.ObservedState(glabrezu)))
-                    continue;
-                Game.Instance.IsPaused = true;
-                fresh = isFresh(GlabrezuRendGate38.ObservedState(glabrezu));
+                crossed = changed();
             }
-            // Pausing is best-effort isolation only. The second guarded run
-            // recorded IsPaused reading back false immediately after being
-            // set, so this phase does not depend on it: the owner's brain is
-            // quiesced, its live attack command points at the distant victim,
-            // and the near victim's brain is off, which is what actually keeps
-            // the sequence free of ambient attacks.
             Game.Instance.IsPaused = true;
             record["roundBoundaryFrames"] = frames;
-            record["roundStateIsFresh"] = fresh;
+            record["roundStampCrossed"] = crossed;
+            record["roundStampBefore"] = stampBefore;
+            record["roundStampNow"] = GlabrezuRendGate38.ObservedRoundStamp();
             record["spentBeforeBoundary"] = wasSpent;
-            record["crossedFromSpentRound"] = wasSpent && fresh;
+            record["crossedFromSpentRound"] = wasSpent && crossed;
             record["trackedVictimsBeforeBoundary"] = victimsBefore;
-            record["stateAfterBoundary"] = GlabrezuRendStateRow38(glabrezu);
+            record["stateAtBoundary"] = GlabrezuRendStateRow38(glabrezu);
             record["pauseRequested"] = true;
             record["pauseObserved"] = Game.Instance.IsPaused;
             record["ownerInCombat"] = glabrezu.IsInCombat;
+            record["lazyStateMeaning"] =
+                "The round state is updated on the next attack, not by a timer, so the stamp it carries can lag the game's. The crossing is what matters: the first strike after it resets the pairs and returns the allowance.";
         }
 
         /// <summary>
