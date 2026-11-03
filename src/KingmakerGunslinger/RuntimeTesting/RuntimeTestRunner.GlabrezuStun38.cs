@@ -270,6 +270,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Where(value => value.Duration.HasValue)
                     .Select(value => value.Duration.Value.TotalSeconds /
                         GameConsts.RoundDuration).ToArray();
+                // The engine reports RuleApplyBuff more than once for a single
+                // application - the first run recorded two rules carrying the
+                // same eleven-round duration for one stun - so the rule count
+                // is evidence and the EFFECT count is the assertion: exactly
+                // one carrier instance on the recipient, and every reported
+                // duration identical, which is what distinguishes one stun
+                // reported twice from two stuns.
+                int carried = target.Buffs.Enumerable.Count(value =>
+                    ReferenceEquals(value.Blueprint, carrier));
+                bool oneDuration = roundsLeft.Length >= 1 &&
+                    roundsLeft.All(value =>
+                        Math.Abs(value - roundsLeft[0]) < 0.01);
                 int after = glabrezu.Descriptor.Resources
                     .GetResourceAmount(resource);
                 int[] casterLevels = stuns
@@ -284,8 +296,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     row = usable && command != null && command.IsFinished &&
                         command.Result == UnitCommand.ResultType.Success &&
                         held == GlabrezuRules38Policy.PowerWordStunUses &&
-                        after == 0 && stuns.Length == 1 &&
-                        roundsLeft.Length == 1 &&
+                        after == 0 && carried == 1 && oneDuration &&
                         roundsLeft[0] >= expectedDice - 0.01 &&
                         roundsLeft[0] <= expectedDice *
                             GlabrezuRules38Policy.PowerWordStunDieSides +
@@ -303,7 +314,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // usable choice, so the single use stays unspent. No cast
                     // is attempted: the shared cast helper throws on an
                     // unavailable ability, and that would say nothing.
-                    row = !usable && stuns.Length == 0 &&
+                    row = !usable && stuns.Length == 0 && carried == 0 &&
                         held == GlabrezuRules38Policy.PowerWordStunUses &&
                         after == GlabrezuRules38Policy.PowerWordStunUses &&
                         !target.Descriptor.State.HasCondition(
@@ -322,7 +333,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["readinessBefore"] = readiness,
                     ["command"] = command == null ? null :
                         Sprint27AiCommand(command),
-                    ["appliedStuns"] = stuns.Length,
+                    ["appliedStunRules"] = stuns.Length,
+                    ["carriedStunInstances"] = carried,
+                    ["allReportedDurationsEqual"] = oneDuration,
                     ["stunRoundsLeft"] = new JArray(roundsLeft),
                     ["effectCasterLevels"] = new JArray(casterLevels),
                     ["expectedCasterLevel"] =
@@ -350,7 +363,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["ceiling"] =
                         GlabrezuRules38Policy.PowerWordStunHitPointCeiling,
                     ["totalSavingThrowsRolled"] = saveCount
-                }, "At 50, 100 and 150 remaining hit points the word stuns for a duration inside that bucket's own dice at caster level 14, spending its single use and refusing a second; at 151 it is not a usable choice at all and the use stays unspent. No saving throw is rolled at any threshold.");
+                }, "At 50, 100 and 150 remaining hit points the word leaves exactly one stun instance whose duration lies inside that bucket's own dice, at caster level 14, spending its single use and refusing a second; at 151 it is not a usable choice at all and the use stays unspent. No saving throw is rolled at any threshold.");
         }
 
         /// <summary>
