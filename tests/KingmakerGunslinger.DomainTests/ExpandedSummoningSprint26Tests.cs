@@ -81,8 +81,10 @@ namespace KingmakerGunslinger.DomainTests
         // both fail, and every dependent count elsewhere is derived from it
         // rather than written down - so publishing a qualified creature is
         // removing its name here, and nothing else.
-        // Sprint 38 withholds the Glabrezu while it is qualified.
-        internal static readonly string[] WithheldKeys = { "glabrezu" };
+        // Empty again after Sprint 38 publication: the Glabrezu's five
+        // guarded mechanics phases are green on live units, so removing its
+        // name here is the whole of publishing it.
+        internal static readonly string[] WithheldKeys = { };
         internal static bool IsWithheld(string key) { return Array.IndexOf(WithheldKeys, key) >= 0; }
     }
 
