@@ -525,7 +525,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var party = Game.Instance.Player.Party.Where(u => u != null && u.Descriptor != null).ToArray();
             if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount) throw new InvalidOperationException("Working party fingerprint changed.");
             ItemEntity[] giantPartyItems =
-                Sprint28PersistenceScope || Sprint29PersistenceScope || Sprints3031PersistenceScope || Sprint32PersistenceScope || Sprint34PersistenceScope || Sprint35PersistenceScope || Sprint36PersistenceScope ?
+                Sprint28PersistenceScope || Sprint29PersistenceScope || Sprints3031PersistenceScope || Sprint32PersistenceScope || Sprint34PersistenceScope || Sprint35PersistenceScope || Sprint36PersistenceScope || Sprint37PersistenceScope ?
                 Game.Instance.Player.Inventory.Items.ToArray() : null;
             int[] giantPartyCounts = giantPartyItems?.Select(item => item.Count).ToArray();
             var caster = party.First(u => u.HoldingState != null);
@@ -1048,7 +1048,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (Sprint34PersistenceScope) ObserveInfernalItems34(units, giantPartyItems, giantPartyCounts);
             if (Sprint35PersistenceScope) ObserveInfernalItems35(units, giantPartyItems, giantPartyCounts);
             if (Sprint36PersistenceScope) ObserveInfernalItems36(units, giantPartyItems, giantPartyCounts);
-            if (Sprint37PersistenceScope) ObserveVrockItems37(units);
+            if (Sprint37PersistenceScope)
+                ObserveVrockItems37(units, giantPartyItems, giantPartyCounts);
             if (Sprint34PersistenceScope && prepare) foreach (int step in PrepareInfernalSaved34(caster, units)) yield return step;
             if (Sprint35PersistenceScope && prepare) foreach (int step in PrepareInfernalSaved35(caster, units)) yield return step;
             if (Sprint36PersistenceScope && prepare) foreach (int step in PrepareInfernalSaved36(caster, units)) yield return step;
