@@ -242,6 +242,23 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static string[] VrockKeys
         { get { return new[] { VrockVisualPolicy37.Vrock,
             VrockVisualPolicy37.Vrock }; } }
+        internal const string GlabrezuScope = "glabrezu";
+        // Two, for the same reason the Sprint 37 scope takes two. The printed
+        // rend lands on an opponent the glabrezu hit with both pincers this
+        // round, and the once-per-day power word stun must spend its single
+        // use on a unit that is really there; this fixture may not write to a
+        // party member or any unit it does not own, so the only faithful
+        // victim is a second owned glabrezu. It also makes the spent daily use
+        // demonstrably ONE owner's rather than merely "a glabrezu's", which is
+        // the fact the save has to carry.
+        //
+        // The rend round state is deliberately NOT saved state: it lives in a
+        // request-local ConditionalWeakTable keyed by unit and is rebuilt from
+        // the round boundary, so the envelope's job is to show that no armed
+        // rend survived the load, not to restore one.
+        internal static string[] GlabrezuKeys
+        { get { return new[] { GlabrezuVisualPolicy38.Glabrezu,
+            GlabrezuVisualPolicy38.Glabrezu }; } }
         internal const string ShadowOutsidersScope = "shadow-outsiders";
         internal static string[] ShadowOutsiderKeys
         { get { return new[] { "succubus", "invisible-stalker", "shadow-demon" }; } }
@@ -387,6 +404,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == InfernalReachTwoScope ? InfernalReachTwoKeys :
                 scope == InfernalDemonsScope ? InfernalDemonKeys :
                 scope == VrockScope ? VrockKeys :
+                scope == GlabrezuScope ? GlabrezuKeys :
                 scope == ShadowOutsidersScope ? ShadowOutsiderKeys :
                 scope == Scope ? Keys : new string[0];
         }
@@ -461,7 +479,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == ShadowOutsidersScope ||
                 scope == InfernalOutsidersScope ||
                 scope == InfernalReachTwoScope ||
-                scope == InfernalDemonsScope || scope == VrockScope;
+                scope == InfernalDemonsScope || scope == VrockScope ||
+                scope == GlabrezuScope;
         }
 
         /// <summary>
