@@ -27,7 +27,7 @@ for k,v in scope.items():
  for t in range(v,10):
   quantity='One' if t==v else 'OneD3' if t==v+1 else 'OneD4PlusOne'
   symbol=f'KMG.Summoning.Ability.SM.Tier{t}.{m.token(k)}.{quantity}'
-  routes.append(dict(creature=k,tier=t,quantity=quantity,identity=registry[symbol],assertion='sprint37-public-player-route-Monster.'+str(t)+'.'+k+'.'+quantity))
+  routes.append(dict(creature=k,tier=t,quantity=quantity,identity=registry[symbol],assertion='sprint32-sprint37-public-player-route-Monster.'+str(t)+'.'+k+'.'+quantity))
 print(json.dumps(dict(scopeExact=exact,creatures=sorted(scope),routes=routes,registeredRoots=monster+ally,generatedRoots=monster+ally-suppressed,nativeWrappers=len(m.NATIVE_EXPANDED_OPTIONS),suppressed=suppressed,choices=monster+ally-suppressed+len(m.NATIVE_EXPANDED_OPTIONS))))
 '@
     $out=@(& python -B -c $program $repositoryRoot)
@@ -43,6 +43,54 @@ function Assert-KmgSprint37Reuse($Row,$Candidate) {
     # Sprint 37 reuses nothing: the Vrock is a new creature and every one of
     # its mechanics proofs is fresh against this candidate's exact bytes.
     throw 'Sprint37 admits no reused coverage row.'
+}
+
+function Assert-KmgSprint37FreshExecution($Source,$Candidate,$Row) {
+    # Sprint 37 binds every fresh row to the bytes the game actually loaded,
+    # not merely to a package path on disk. The engine writes its own
+    # loaded-build receipt at startup carrying the commit, the DLL digest and
+    # the module version id of the assembly in the process, so that receipt is
+    # required for every source and is what the candidate is compared against.
+    foreach($proof in @($Source.executionProof,$Source.loadedIdentityProof)) {
+        if($null -eq $proof -or @($Row.proofs|Where-Object {$_.path -ceq $proof.path -and $_.sha256 -ceq $proof.sha256}).Count -ne 1) {
+            throw 'Fresh Sprint37 execution attribution omitted.'
+        }
+    }
+    $loaded=Read-KmgSprints3031Proof $Source.loadedIdentityProof
+    if($loaded.gitCommit -cne $Candidate.commit -or $loaded.moduleVersionId -cne $Candidate.dllMvid -or
+       $loaded.loadedModuleSha256 -cne $Candidate.dllSha256 -or $loaded.semanticVersion -cne $Candidate.version) {
+        throw 'Fresh Sprint37 execution loaded other bytes.'
+    }
+    $execution=Read-KmgSprints3031Proof $Source.executionProof
+    if($Source.executionKind -ceq 'installed-stack') {
+        if($execution.candidateKind -cne 'release-candidate' -or -not $execution.releaseQualification -or
+            -not $execution.restoration.verified -or -not $execution.restoration.gameSettingsExact -or
+            $execution.restoration.transactionStatus -cne 'Restored' -or
+            ($execution.PSObject.Properties['error'] -and $execution.error) -or
+            $execution.launchReceipt.runId -cne $Source.runId -or
+            [IO.Path]::GetFullPath((Join-Path $execution.launchReceipt.evidenceDirectory 'runtime-result.json')) -ine [IO.Path]::GetFullPath($Source.nativeProof.path)) {
+            throw 'Fresh Sprint37 installed-stack attribution or restoration differs.'
+        }
+        foreach($key in @('commit','packageSha256','dllSha256','dllMvid')) {
+            if([string]$execution.candidate.$key -cne [string]$Candidate.$key) { throw 'Fresh Sprint37 installed-stack used a different artifact.' }
+        }
+    } elseif($Source.executionKind -ceq 'restored-scenario') {
+        # The disposable mechanics review runs under the snapshot-and-restore
+        # wrapper rather than a compatibility profile, so the wrapper's own
+        # verified restoration record is the execution receipt. Nothing here is
+        # authored: these are its recorded facts, including that the live tree
+        # it mutated came back to the exact hash it started from.
+        $leaf=[IO.Path]::GetFileName([IO.Path]::GetDirectoryName([IO.Path]::GetFullPath($Source.nativeProof.path)))
+        $runs=@($execution.runs|Where-Object {[IO.Path]::GetFileName(([string]$_.evidenceDirectory).TrimEnd('\')) -ieq $leaf})
+        if($execution.restoration -cne 'verified' -or $execution.failures -ne 0 -or
+            $execution.expectedVersion -cne $Candidate.version -or
+            [string]$execution.liveBefore.sha256 -cne [string]$execution.liveAfterRestore.sha256 -or
+            $runs.Count -ne 1 -or $runs[0].outcome -cne 'PASS' -or $runs[0].scenarioStatus -cne 'PASS' -or
+            $runs[0].exitCode -ne 0 -or
+            [IO.Path]::GetFullPath([string]$runs[0].package) -ine [IO.Path]::GetFullPath([string]$Candidate.packagePath)) {
+            throw 'Fresh Sprint37 restored-scenario attribution or restoration differs.'
+        }
+    } else { throw 'Unsupported fresh Sprint37 execution receipt.' }
 }
 
 function Assert-KmgSprint37Qualification($Ledger,$Candidate) {
@@ -99,7 +147,7 @@ function Assert-KmgSprint37Qualification($Ledger,$Candidate) {
                    $source.dllSha256 -cne $Candidate.dllSha256 -or $source.dllMvid -cne $Candidate.dllMvid) {
                     throw 'Fresh Sprint37 proof is bound to other bytes.'
                 }
-                Assert-KmgSprints3031FreshExecution $source $Candidate $row
+                Assert-KmgSprint37FreshExecution $source $Candidate $row
                 $native=Read-KmgSprints3031Proof $source.nativeProof
                 if($native.gitCommit -cne $Candidate.commit -or $native.runId -cne $source.runId -or
                    $native.status -cne 'PASS' -or @($native.assertions|Where-Object status -cne 'PASS').Count -or
@@ -115,10 +163,13 @@ function Assert-KmgSprint37Qualification($Ledger,$Candidate) {
     # The five spore protection states must each be named by the spore row, so
     # a passing phase cannot stand in for a phase that silently lost a case.
     $spores=@($Ledger.coverage|Where-Object id -ceq 'spore-protection-and-geometry')[0]
-    $states=@('sprint37-spore-susceptible','sprint37-spore-disease-immune',
-        'sprint37-spore-poison-immune-only','sprint37-spore-native-cure',
-        'sprint37-spore-late-immunity','sprint37-spore-footprint-boundary',
-        'sprint37-spore-descriptor-placement','sprint37-spore-protection-facts')
+    # The runner prefixes every assertion of this scenario with sprint32-,
+    # as Sprint 36's contract also recorded. Without that prefix no mandatory
+    # row could match its own evidence.
+    $states=@('sprint32-sprint37-spore-susceptible','sprint32-sprint37-spore-disease-immune',
+        'sprint32-sprint37-spore-poison-immune-only','sprint32-sprint37-spore-native-cure',
+        'sprint32-sprint37-spore-late-immunity','sprint32-sprint37-spore-footprint-boundary',
+        'sprint32-sprint37-spore-descriptor-placement','sprint32-sprint37-spore-protection-facts')
     foreach($state in $states) {
         if(@($spores.evidenceSources|Where-Object {$_.requiredAssertions -ccontains $state}).Count -ne 1) {
             throw 'Sprint37 spore protection state is not individually proven: '+$state
@@ -132,11 +183,11 @@ function Assert-KmgSprint37Qualification($Ledger,$Candidate) {
     # observation never actually entered.
     foreach($pair in @(@('screech-identity-and-recharge',''),@('both-modes-screech','-turnbased'))) {
         $row=@($Ledger.coverage|Where-Object id -ceq $pair[0])[0]
-        $names=@('sprint37-screech-control-roster','sprint37-screech-identity-exemption',
-            'sprint37-screech-live-constitution-dc','sprint37-screech-radius-boundary',
-            'sprint37-screech-stun-expiry','sprint37-screech-recharge-refusal',
-            'sprint37-screech-two-owner-isolation')
-        $names+=if($pair[1] -ceq ''){'sprint37-screech-manual-interface'}else{'sprint37-screech-turn-admission'}
+        $names=@('sprint32-sprint37-screech-control-roster','sprint32-sprint37-screech-identity-exemption',
+            'sprint32-sprint37-screech-live-constitution-dc','sprint32-sprint37-screech-radius-boundary',
+            'sprint32-sprint37-screech-stun-expiry','sprint32-sprint37-screech-recharge-refusal',
+            'sprint32-sprint37-screech-two-owner-isolation')
+        $names+=if($pair[1] -ceq ''){'sprint32-sprint37-screech-manual-interface'}else{'sprint32-sprint37-screech-turn-admission'}
         foreach($name in $names) {
             if(@($row.evidenceSources|Where-Object {$_.requiredAssertions -ccontains ($name+$pair[1])}).Count -ne 1) {
                 throw 'Sprint37 screech assertion absent from '+$pair[0]+': '+$name

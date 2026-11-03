@@ -457,7 +457,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuleSavingThrow targetSave = observed.Save(target);
                 RuleSavingThrow allySave = observed.Save(ally);
                 var controlRows = new JArray();
-                bool controlsCoherent = true;
+                // The identity half and the outcome half are kept apart. Who
+                // is asked to save is the printed exemption and does not
+                // depend on any roll; whether a save then failed does. The
+                // first version of this cell conflated them, so a natural
+                // twenty on the devil made the retry predicate false and the
+                // attempt the retry exists for was reported as a hard
+                // failure.
+                bool controlsIdentity = true;
+                bool controlsOutcome = true;
                 bool controlNaturalTwenty = false;
                 foreach (var control in controls)
                 {
@@ -468,11 +476,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         save.IsPassed && save.D20.Value == 20;
                     // An exempt creature is not merely unaffected: it is never
                     // asked to save, because the exemption is decided before
-                    // the roll.
-                    bool coherent = exempt
+                    // the roll. A non-exempt one is always asked.
+                    bool identity = exempt
                         ? save == null && effect == null
-                        : save != null && !save.IsPassed && effect != null;
-                    controlsCoherent &= coherent;
+                        : save != null;
+                    bool outcome = exempt || (save != null &&
+                        !save.IsPassed && effect != null);
+                    controlsIdentity &= identity;
+                    controlsOutcome &= outcome;
+                    bool coherent = identity && outcome;
                     controlRows.Add(new JObject {
                         ["key"] = control.Item1,
                         ["unit"] = control.Item2.UniqueId,
@@ -483,6 +495,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["savePassed"] = save?.IsPassed,
                         ["stunned"] = effect == null ? null :
                             InfernalSavedEffect34(effect),
+                        ["identityExact"] = identity,
+                        ["outcomeExact"] = outcome,
                         ["coherent"] = coherent,
                         ["row"] = observed.Row(control.Item2)
                     });
@@ -495,11 +509,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // rolls: the command, the hour marker, the exemption pattern
                 // itself - no exempt creature was asked to save and no
                 // non-exempt creature was skipped - and that both the enemy
-                // and the ally were actually asked.
-                bool exemptionExact = commandExact && controlsCoherent &&
+                // and the ally were actually asked. Nothing here reads a save
+                // result, which is what makes it a sound gate for the retry.
+                bool exemptionExact = commandExact && controlsIdentity &&
                     vrock.Buffs.GetBuff(recharge) != null &&
                     targetSave != null && allySave != null;
-                volleyPassed = exemptionExact && enemyAndAlly;
+                volleyPassed = exemptionExact && controlsOutcome &&
+                    enemyAndAlly;
                 bool naturals = controlNaturalTwenty ||
                     (targetSave != null && targetSave.IsPassed &&
                         targetSave.D20.Value == 20) ||
@@ -519,6 +535,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["allyIsSameFactionAsCaster"] = true,
                     ["controls"] = controlRows,
                     ["rechargeHeld"] = vrock.Buffs.GetBuff(recharge) != null,
+                    ["controlsIdentityExact"] = controlsIdentity,
+                    ["controlsOutcomeExact"] = controlsOutcome,
                     ["exemptionFactsExact"] = exemptionExact,
                     ["naturalTwentyAmongRequiredSaves"] = naturals,
                     ["nativeNaturalRetry"] = naturalRetry,
