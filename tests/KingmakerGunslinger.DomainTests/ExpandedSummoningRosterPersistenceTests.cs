@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using KingmakerGunslinger.RuntimeTesting;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
@@ -317,6 +318,51 @@ namespace KingmakerGunslinger.DomainTests
             }
             Assertions.False(ExpandedSummoningRosterPersistencePolicy.ObserveLoad("working-save-smoke", scope), "No unrelated save action.");
             Assertions.False(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview, scope), "Save-free review cannot inherit save authority.");
+        }
+
+        /// <summary>
+        /// Every declared persistence scope must reach the roster-persistence
+        /// observation. The runner once kept its own parallel disjunction and
+        /// Sprint 37 was missing from it, so the vrock scope passed every other
+        /// gate, ran the generic persistence path and reported PASS without
+        /// observing a single Sprint 37 fact. This reads the scope constants by
+        /// reflection, so the next sprint's scope is covered the moment it is
+        /// declared rather than when someone remembers a second list.
+        /// </summary>
+        internal static void EveryDeclaredScopeReachesRosterPersistence()
+        {
+            FieldInfo[] declared = typeof(ExpandedSummoningRosterPersistencePolicy)
+                .GetFields(BindingFlags.Static | BindingFlags.Public |
+                    BindingFlags.NonPublic)
+                .Where(field => field.IsLiteral && field.FieldType == typeof(string) &&
+                    field.Name.EndsWith("Scope", StringComparison.Ordinal) &&
+                    field.Name != "ReceiptScope")
+                .ToArray();
+            Assertions.True(declared.Length >= 16,
+                "Every persistence scope constant is enumerated, not a subset.");
+            foreach (FieldInfo field in declared)
+            {
+                var scope = (string)field.GetRawConstantValue();
+                Assertions.True(ExpandedSummoningRosterPersistencePolicy
+                    .IsRosterPersistenceScope(scope),
+                    "Declared scope reaches roster persistence: " + field.Name);
+                foreach (string scenario in new[] {
+                    RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare,
+                    RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup,
+                    RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent })
+                    Assertions.True(ExpandedSummoningRosterPersistencePolicy
+                        .ObserveLoad(scenario, scope),
+                        "The same list arms the guarded trio: " + field.Name);
+            }
+            Assertions.True(declared.Any(field =>
+                (string)field.GetRawConstantValue() ==
+                ExpandedSummoningRosterPersistencePolicy.VrockScope),
+                "The Sprint 37 scope is one of the declared constants.");
+            foreach (string invalid in new[] { null, "", "Vrock", "vrock ",
+                "vrocks", "KMG_Release143_WholeRoster_v1", "retained" })
+                Assertions.False(ExpandedSummoningRosterPersistencePolicy
+                    .IsRosterPersistenceScope(invalid),
+                    "No alias, receipt name or transition widens the scope set.");
         }
 
         internal static void ScopeCannotOpenAnotherSaveOrScenario()
