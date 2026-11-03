@@ -342,7 +342,13 @@ foreach ($contract in @(
     'ObserverStartupTimeoutSeconds = $ObserverStartupTimeoutSeconds',
     'CompletionTimeoutSeconds = $CompletionTimeoutSeconds',
     '[string]$DevelopmentPurpose',
-    '-DevelopmentPurpose $DevelopmentPurpose',
+    # The deployment call now takes a splatted argument set, because one
+    # explicit package is deployed once whether or not it is a development
+    # candidate. What this pins is unchanged: the named purpose still reaches
+    # Deploy-Local, and the scenario still reaches the harness through the
+    # guarded reuse authority rather than a vague one.
+    '$deployArguments.DevelopmentPurpose = $DevelopmentPurpose',
+    "Deploy-Local.ps1') @deployArguments",
     '$arguments.DevelopmentPurpose = $DevelopmentPurpose',
     '$arguments.ReuseInstalledArtifact = $true')) {
     Assert-True ($wrapperSource.Contains($contract)) `

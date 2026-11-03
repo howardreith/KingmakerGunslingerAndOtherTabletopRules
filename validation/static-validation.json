@@ -2767,7 +2767,7 @@
     "ownerPublicationAuthority": "Sprint37 Vrock Fresh Codex Mission, its two corrections, and the owner decisions of 2026-11-02 approving the implemented Spores with its three working counters while explicitly accepting omission of the printed holy-water interaction, and retaining the conservative automatic Screech policy with manual use preserved through the supported player interface; telekinesis, Dance of Ruin, greater teleport and the printed 30-foot land speed remain disclosed omissions",
     "harnessIdentity": {
       "scripts/Deploy-Local.ps1": "713cceb319c2850d5f440139ebedc5468501d5b9c458e4d418d944cce98d9353",
-      "scripts/Invoke-ExpandedSummoningRuntimeScenario.ps1": "df662a36a3d8b1f83292767cae51f42beb3d30c5971a9354874633fe301e66f6",
+      "scripts/Invoke-ExpandedSummoningRuntimeScenario.ps1": "e1d798f8f228b6b9cd7444e20697f2e06de40343b92d8a5b8bf6681b0dec6c6a",
       "scripts/Invoke-KingmakerRuntimeTest.ps1": "68fb719fa5fdd00aa0c85d46106bf9e51cdae972ae703cc0e5f1ad9a383221bc",
       "scripts/Invoke-Sprint22InstalledStack.ps1": "bf9dcc9c9d9b3bd5f1de3bc2adfc1e66ff9c6a3191288038b63adc0e767c005a",
       "scripts/RuntimeAutomation.Common.ps1": "3e0488d5720f829e227da994cc56cf57dd2b52639092e5af3adeb845dc9f32ce",
