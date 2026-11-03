@@ -20,8 +20,8 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 130;
-        internal const int LogicalAbilityCount = 1182;
+        internal const int UnitCount = 131;
+        internal const int LogicalAbilityCount = 1185;
         internal const int TemplatedPlacementCount = 319;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 686;
+        internal const int SpecialIdentityCount = 711;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -998,6 +998,36 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.ChaosAi", "InfernalSpellAi35"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.UnholyAi", "InfernalSpellAi35"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.Hezrou.BlasphemyAi", "InfernalSpellAi35"));
+            // Sprint 37. One demon, its three exact natural weapons, the
+            // signature area stun with its own hour marker, the spore cadence
+            // with its own three-round marker, and one brain with two
+            // ally-safe considerations. Heroism and Mirror Image are appended
+            // after their installed native graphs are identified.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.Claw", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.ClawType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.Bite", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.BiteType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.Talon", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.TalonType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.Screech", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.Stunned", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.ScreechRecharge", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.Spores", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.SporeVines", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.SporeCooldown", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.ScreechAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.ScreechEligibility", "VrockScreechEligibility37"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.SporeAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.SporeEligibility", "VrockSporeEligibility37"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.Heroism", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.HeroismResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.HeroismAi", "InfernalSpellAi35"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.MirrorImage", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.MirrorImageResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Vrock.MirrorImageAi", "InfernalSpellAi35"));
             Validate(result);
             return result.AsReadOnly();
         }

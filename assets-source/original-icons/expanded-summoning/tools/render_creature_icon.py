@@ -1776,6 +1776,203 @@ def dire_crocodile():
                 (0.26, 0.20, 0.07), limb, bevel=0.025)
 
 
+
+
+
+def vrock():
+    """Sprint 37. A vulture-headed winged demon, and the only entry in this
+    roster whose silhouette is carried by a wing span rather than by a body.
+
+    What has to read at 128 pixels is three things in this order: two mantled
+    wings standing above and behind the shoulders, a small bald head pushed
+    forward on a bare neck under a hooked beak, and bird legs ending in
+    talons. The torso is deliberately the least interesting shape in the
+    frame, because a vrock identified at icon size is identified by its
+    outline.
+
+    The first pass built each wing as two flat boxes with a row of thin cones
+    along the edge. The boxes read as cardboard and the cones as spikes, so a
+    wing is built here the way the rest of this file builds a body: one
+    metaball vane whose leading edge is a thick chain and whose five finger
+    chains fall away from it to a scalloped trailing edge, with separate quill
+    lines laid over it. The first pass also framed the creature at about forty
+    per cent of the ring where the roster sits at about fifty-five, so the fit
+    is larger here and the camera is closer.
+
+    Nothing here is borrowed from another roster entry. It is not the Xill's
+    chitin - this is feather over bare skin - not the Girallon's pale fur, and
+    not a generic eagle: the body is upright and humanoid with hands, which no
+    bird in this roster has, and the head sits on a long bare neck that no
+    primate has."""
+    feather = material("Feather", (0.22, 0.24, 0.20), 0.62,
+                       noise=(9.0, 0.5, (0.12, 0.14, 0.12)))
+    quill = material("Quill", (0.14, 0.16, 0.13), 0.52,
+                     noise=(22.0, 0.45, (0.07, 0.08, 0.07)))
+    hide = material("BareHide", (0.50, 0.29, 0.26), 0.70,
+                    noise=(14.0, 0.45, (0.33, 0.17, 0.15)), subsurface=0.12)
+    beak = material("Beak", (0.62, 0.52, 0.34), 0.38)
+    nail = material("Talon", (0.13, 0.11, 0.10), 0.28)
+    eye = material("VrockEye", (0.82, 0.62, 0.10), 0.22,
+                   emission=(0.95, 0.64, 0.10), emission_strength=1.1)
+    maw = material("VrockMaw", (0.045, 0.016, 0.014), 0.6)
+
+    before = set(bpy.context.scene.objects)
+
+    body = Blob("Body", feather, 0.045)
+    # An upright humanoid trunk: narrow hips, a deep feathered chest, and
+    # shoulders wide enough to carry two wing roots without the wings growing
+    # out of the neck.
+    body.ball((0.0, 0.16, -1.52), 0.86, (0.86, 0.82, 0.72), axis=(1, 0, 0))
+    body.ball((0.0, 0.02, -0.70), 0.90, (0.90, 0.86, 0.76), axis=(1, 0, 0))
+    body.ball((0.0, -0.16, 0.16), 1.14, (1.22, 0.92, 0.82), axis=(1, 0, 0))
+    body.ball((0.0, -0.22, 0.96), 1.06, (1.26, 0.86, 0.66), axis=(1, 0, 0))
+
+    # The bare neck. Longer and thinner than anything else in the roster
+    # carries, because that length is half of what makes a vulture a vulture.
+    neck = Blob("Neck", hide, 0.032)
+    neck.chain((0.0, -0.24, 1.26), (0.0, -0.62, 2.26), 0.30, 0.23, 7)
+
+    # The feather ruff where bare neck meets plumage.
+    for row in range(2):
+        torus("Ruff%d" % row, (0.0, -0.26 - row * 0.05, 1.46 - row * 0.15),
+              0.44 - row * 0.06, 0.12, quill, rotation=(12.0, 0, 0))
+
+    head = Blob("Head", hide, 0.028)
+    # A bald vulture skull tipped forward over the beak. Low and long rather
+    # than round, so the profile is a wedge and not a ball on a stick.
+    head.ball((0.0, -0.76, 2.46), 0.62, (0.66, 0.80, 0.56), axis=(0, 1, 0))
+    head.ball((0.0, -1.14, 2.32), 0.46, (0.52, 0.64, 0.42), axis=(0, 1, 0))
+
+    # The hooked beak: a long upper mandible angled down, a short hook under
+    # its tip, and a shorter lower mandible. The hook is what separates a
+    # vulture from a raptor and from every other head in this roster.
+    cone_along("BeakUpper", (0.0, -1.18, 2.40), (0.0, -1.0, -0.58), 1.52,
+               0.30, beak, 0.030)
+    # The hook hangs below the tip of the upper mandible, where it shows
+    # against the chest even from a square-on camera.
+    cone_along("BeakHook", (0.0, -2.14, 1.62), (0.0, -0.10, -1.0), 0.66,
+               0.135, beak, 0.012)
+    cone_along("BeakLower", (0.0, -1.20, 2.16), (0.0, -1.0, -0.32), 1.00,
+               0.17, hide, 0.030)
+    sphere("Maw", (0.0, -1.34, 2.14), (0.16, 0.24, 0.09), maw)
+    for s in (-1, 1):
+        # Eyes on the sides of the skull at beak height, where a bird carries
+        # them. The first pass put them on the crown and they read as two
+        # pale knobs stuck on top.
+        sphere("Eye%d" % s, (s * 0.42, -1.06, 2.42), (0.11, 0.11, 0.11),
+               eye)
+        sphere("Wattle%d" % s, (s * 0.44, -0.62, 2.26), (0.15, 0.21, 0.25),
+               hide)
+
+    # The wings, mantled. A wing is a surface, so it is built as one: the
+    # leading edge is a thick chain out and up behind the shoulder, five
+    # finger tips set the scalloped trailing edge, and the vane between them
+    # is filled by sweeping a grid of small elements from edge to tip.
+    #
+    # The second pass hung five separate finger chains off the arm and they
+    # rendered as five strings of beads. The third closed the trailing edge
+    # and the wing became a rectangular frame with an empty middle, because an
+    # outline is not a surface. This fills the interior.
+    for s in (-1, 1):
+        root = Vector((s * 1.00, 0.06, 0.92))
+        elbow = Vector((s * 2.00, 0.46, 2.46))
+        wrist = Vector((s * 3.26, 0.72, 2.92))
+
+        def edge_at(u):
+            """A point along the leading edge, shoulder to wrist."""
+            return root.lerp(elbow, u / 0.62) if u <= 0.62 else \
+                elbow.lerp(wrist, (u - 0.62) / 0.38)
+
+        # Finger drops and sweeps at five stations. The inner fingers are
+        # short and nearly vertical, the outer ones long and swept back, so
+        # the trailing edge is an arc rather than a straight hem.
+        stations = ((0.00, 0.80, 0.04), (0.26, 1.50, 0.14),
+                    (0.52, 2.10, 0.24), (0.78, 2.35, 0.34),
+                    (1.00, 2.05, 0.46))
+
+        def tip_at(u):
+            """The trailing-edge point below the leading edge at u."""
+            for index in range(len(stations) - 1):
+                a, b = stations[index], stations[index + 1]
+                if u <= b[0] or index == len(stations) - 2:
+                    span = b[0] - a[0]
+                    t = 0.0 if span <= 0 else (u - a[0]) / span
+                    t = min(max(t, 0.0), 1.0)
+                    drop = a[1] + (b[1] - a[1]) * t
+                    sweep = a[2] + (b[2] - a[2]) * t
+                    break
+            base = edge_at(u)
+            return base + Vector((s * sweep * 0.5,
+                                  0.26 + sweep * 0.3, -drop))
+
+        wing = Blob("Wing%d" % s, feather, 0.040)
+        wing.chain(root, elbow, 0.40, 0.30, 9)
+        wing.chain(elbow, wrist, 0.30, 0.20, 7)
+        # The vane. Eleven stations across the span and nine down the chord,
+        # with elements small enough that the sheet stays thin and close
+        # enough that their fields meet.
+        # Fifteen stations across and twelve down at a constant radius.
+        # The fourth pass tapered the elements toward the hem and the lower
+        # vane rendered as rows of loose beads; a wing is a continuous
+        # surface and the feather lines are drawn on it, not built from it.
+        for across in range(15):
+            u = across / 14.0
+            base, hem = edge_at(u), tip_at(u)
+            for down in range(1, 13):
+                v = down / 12.0
+                wing.ball(base.lerp(hem, v), 0.23, stiffness=2.6)
+        # Quill lines laid over the vane at the five stations, so the sheet
+        # reads as feather rather than as a solid fin.
+        for index, (u, drop, sweep) in enumerate(stations):
+            base, hem = edge_at(u), tip_at(u)
+            cone_along("Quill%d%d" % (s, index), base,
+                       (hem - base).normalized(), drop * 0.88,
+                       0.070, quill, 0.014)
+
+    # Arms and hands. A vrock has hands as well as wings, which is why it is a
+    # demon and not a bird, so the claws are geometry.
+    for s in (-1, 1):
+        body.ball((s * 0.98, -0.14, 0.86), 0.40)
+        shoulder = (s * 1.02, -0.20, 0.74)
+        elbow = (s * 1.48, -0.78, -0.22)
+        wrist = (s * 1.24, -1.22, -1.10)
+        body.chain(shoulder, elbow, 0.29, 0.22, 6)
+        body.chain(elbow, wrist, 0.22, 0.17, 6)
+        hand = (wrist[0], wrist[1] - 0.14, wrist[2] - 0.18)
+        sphere("Hand%d" % s, hand, (0.20, 0.23, 0.17), hide)
+        for digit in range(3):
+            offset = (digit - 1) * 0.18
+            cone_along("Claw%d%d" % (s, digit),
+                       (hand[0] + s * offset, hand[1] - 0.17, hand[2] - 0.06),
+                       (s * 0.26, -0.72, -0.64), 0.46, 0.055, nail)
+
+        # Bird legs: a feathered thigh, a bare scaled shin, and a foot with
+        # three forward talons and one back.
+        body.ball((s * 0.58, 0.12, -1.80), 0.44)
+        knee = (s * 0.70, 0.46, -2.54)
+        body.chain((s * 0.60, 0.08, -1.98), knee, 0.36, 0.25, 6)
+        shin = Blob("Shin%d" % s, hide, 0.034)
+        shin.chain(knee, (s * 0.72, -0.28, -3.36), 0.22, 0.15, 6)
+        sphere("Knee%d" % s, knee, (0.23, 0.23, 0.23), hide)
+        foot = (s * 0.74, -0.46, -3.44)
+        sphere("Foot%d" % s, foot, (0.18, 0.32, 0.13), hide)
+        for digit in range(3):
+            spread = (digit - 1) * 0.44
+            cone_along("Talon%d%d" % (s, digit),
+                       (foot[0] + s * 0.02, foot[1] - 0.14, foot[2] - 0.02),
+                       (spread, -1.0, -0.28), 0.56, 0.07, nail, 0.012)
+        cone_along("Spur%d" % s, (foot[0], foot[1] + 0.16, foot[2] - 0.02),
+                   (0.0, 1.0, -0.24), 0.38, 0.06, nail, 0.012)
+
+    # Frame it. About six and a half authored units from talon to wing crown
+    # and about six and a half across the span, so the fit matches the roster
+    # where the first pass undersized it.
+    fit = 0.52
+    rise = 0.52
+    for obj in set(bpy.context.scene.objects) - before:
+        obj.scale = tuple(value * fit for value in obj.scale)
+        obj.location = Vector(obj.location) * fit + Vector((0.0, 0.0, rise))
+
 CREATURES = {
     # The two ant castes share a backdrop and a light rig because they are one
     # creature in two builds; what separates them in the frame is the head and
@@ -1923,6 +2120,17 @@ CREATURES = {
                        inner=(0.30, 0.21, 0.12), outer=(0.034, 0.023, 0.013),
                        key=(1.0, 0.92, 0.74), rim=(0.62, 0.84, 1.0),
                        camera=((0.0, -5.15, 3.35), (0.0, -0.06, 0.26), 50.0)),
+    # Sprint 37. The only wing-span silhouette in the roster, so it gets
+    # the only sulphurous warm-ochre ground: dull grey-green plumage
+    # separates from it where it would vanish against the Xill's
+    # green-black or the Girallon's dark warm brown, and the ground reads
+    # as Abyssal air rather than as any terrain another entry uses. The
+    # camera sits square and a little back because the span is wider than
+    # anything else in this roster is tall.
+    "vrock": dict(build=vrock,
+                  inner=(0.30, 0.20, 0.07), outer=(0.030, 0.019, 0.007),
+                  key=(0.86, 0.90, 1.0), rim=(1.0, 0.78, 0.42),
+                  camera=((0.34, -8.2, 0.92), (-0.02, 0.0, 0.34), 55.0)),
     "xill": dict(build=xill,
                  inner=(0.07, 0.12, 0.09), outer=(0.006, 0.012, 0.009),
                  key=(0.78, 0.88, 1.0), rim=(0.45, 0.95, 0.70),

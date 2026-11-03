@@ -27,6 +27,15 @@ namespace KingmakerGunslinger.DomainTests
         internal const int Sprint36CatalogIdentityCount =
             Sprint36CreatureIdentityCount + Sprint36RootIdentityCount +
             Sprint36PrivateIdentityCount;
+        // Sprint 37 appends one creature, its three Summon Monster roots and
+        // nineteen private dependencies. Its twelve deterministic caller
+        // adapters are counted by the live adapter surface, not here.
+        internal const int Sprint37CreatureIdentityCount = 1;
+        internal const int Sprint37RootIdentityCount = 3;
+        internal const int Sprint37PrivateIdentityCount = 25;
+        internal const int Sprint37CatalogIdentityCount =
+            Sprint37CreatureIdentityCount + Sprint37RootIdentityCount +
+            Sprint37PrivateIdentityCount;
         internal const int AppendedCatalogIdentityCount =
             Sprint26MagicalBeastRules.AppendedCatalogIdentityCount +
             ExpandedSummoningSprint27Tests.AppendedCatalogIdentityCount +
@@ -35,7 +44,7 @@ namespace KingmakerGunslinger.DomainTests
             Sprints30And31FoundationIdentityCount + 2 + 10 +
             Sprint32PrivateIdentityCount + 2 + 10 + 22 +
             InfernalRules35.AppendedCatalogIdentityCount +
-            Sprint36CatalogIdentityCount;
+            Sprint36CatalogIdentityCount + Sprint37CatalogIdentityCount;
         internal const int AppendedLedgerIdentityCount =
             AppendedCatalogIdentityCount +
             Sprint36ReservedIdentityCount;
@@ -54,7 +63,15 @@ namespace KingmakerGunslinger.DomainTests
         // Seven split-native, four preserved-native, plus Remove Stirge,
         // Trumpet Blast and the approved private Lullaby spell/effect concept.
         internal const int IconConceptCount = ExpandedSummoningIdentityCatalog.UnitCount + 7 + 4 + 3;
-        internal static readonly string[] WithheldKeys = new string[0];
+        // Sprint 37 registers the Vrock and withholds all three of its
+        // roots until its native qualification completes. Nothing
+        // previously published becomes suppressed.
+        // Empty after Sprint 37 publication. This pin names withheld
+        // creatures so that an unexpected arrival and a forgotten departure
+        // both fail, and every dependent count elsewhere is derived from it
+        // rather than written down - so publishing a qualified creature is
+        // removing its name here, and nothing else.
+        internal static readonly string[] WithheldKeys = { };
         internal static bool IsWithheld(string key) { return Array.IndexOf(WithheldKeys, key) >= 0; }
     }
 

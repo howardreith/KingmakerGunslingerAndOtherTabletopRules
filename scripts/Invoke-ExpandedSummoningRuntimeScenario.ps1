@@ -27,8 +27,10 @@ param(
     [Parameter(Mandatory = $true)][string]$ExpectedVersion,
     [string]$PackagePath,
     # Names the exact development-candidate purpose when PackagePath is not a
-    # release candidate. The wrapper deploys it once, then every scenario uses
-    # the exact returned deployment manifest through the guarded reuse path.
+    # release candidate. Either way, an explicit PackagePath is deployed once
+    # and then every scenario uses the exact returned deployment manifest
+    # through the guarded reuse path; the purpose only decides whether the
+    # candidate is a development one.
     [string]$DevelopmentPurpose,
     # Save name for scenarios that require one. AGENTS permits only
     # KMG_AUTOMATION_WORKING for automated runs.
@@ -134,20 +136,31 @@ try {
         }
         Write-Host 'Staged Expanded Summoning OFF for one guarded working-save verify/cleanup; the outer snapshot will restore the exact original setting.'
     }
-    if (-not [string]::IsNullOrEmpty($DevelopmentPurpose)) {
+    if ($PackagePath) {
+        # One deployment for the whole batch, whether this is a development
+        # candidate or an already-frozen release one. Every scenario below then
+        # runs against these exact installed bytes through the guarded reuse
+        # authority, which is what lets many fresh executions share one
+        # package without any of them rebuilding it.
         $reusePackage = (Resolve-Path -LiteralPath $PackagePath).Path
-        $deploymentOutput = @(& (Join-Path $PSScriptRoot 'Deploy-Local.ps1') `
-            -PackagePath $reusePackage -DevelopmentPurpose $DevelopmentPurpose `
-            -Confirm:$false -PassThru)
+        $deployArguments = @{ PackagePath = $reusePackage; Confirm = $false; PassThru = $true }
+        if (-not [string]::IsNullOrEmpty($DevelopmentPurpose)) {
+            $deployArguments.DevelopmentPurpose = $DevelopmentPurpose
+        }
+        $deploymentOutput = @(& (Join-Path $PSScriptRoot 'Deploy-Local.ps1') @deployArguments)
         if ($deploymentOutput.Count -ne 1 -or
             $deploymentOutput[0] -isnot [string] -or
             -not (Test-Path -LiteralPath $deploymentOutput[0] -PathType Leaf)) {
-            throw 'Development deployment did not return exactly one deployment manifest.'
+            throw 'Explicit-candidate deployment did not return exactly one deployment manifest.'
         }
         $reuseManifest = (Resolve-Path -LiteralPath $deploymentOutput[0]).Path
-        $record.developmentPurpose = $DevelopmentPurpose
-        $record.developmentDeploymentManifest = $reuseManifest
-        $record.developmentPackage = $reusePackage
+        $record.explicitPackage = $reusePackage
+        $record.explicitDeploymentManifest = $reuseManifest
+        if (-not [string]::IsNullOrEmpty($DevelopmentPurpose)) {
+            $record.developmentPurpose = $DevelopmentPurpose
+            $record.developmentDeploymentManifest = $reuseManifest
+            $record.developmentPackage = $reusePackage
+        }
     }
     # Each scenario is attempted even if an earlier one fails, so one bad
     # scenario cannot hide the rest of a baseline suite. Restoration still
@@ -203,14 +216,15 @@ try {
             }
             if ($AllowDirtyGit) { $arguments.AllowDirtyGit = $true }
             if ($SaveName) { $arguments.SaveName = $SaveName }
-            if ($PackagePath) { $arguments.PackagePath = $PackagePath; $arguments.PassThru = $true }
+            if ($PackagePath) { $arguments.PassThru = $true }
             if ($DevelopmentPurpose) { $arguments.DevelopmentPurpose = $DevelopmentPurpose }
-            # Only the first scenario needs to build and deploy; the rest run
-            # against the artifact it installed. Reuse is refused unless the
-            # exact deployment manifest and package are named, so resolve both
-            # from what the first run actually produced rather than assuming.
-            if (($DevelopmentPurpose -or -not $first) -and
-                $reusePackage -and $reuseManifest) {
+            # An explicit package was deployed once above, so every scenario
+            # reuses it. Without one, only the first scenario builds and
+            # deploys and the rest run against what it installed. Reuse is
+            # refused unless the exact deployment manifest and package are
+            # named, so both are resolved from what actually happened rather
+            # than assumed.
+            if ($reusePackage -and $reuseManifest) {
                 $arguments.ReuseInstalledArtifact = $true
                 $arguments.DeploymentManifestPath = $reuseManifest
                 $arguments.PackagePath = $reusePackage

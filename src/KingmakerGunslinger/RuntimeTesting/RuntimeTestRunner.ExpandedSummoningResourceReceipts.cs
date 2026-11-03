@@ -166,6 +166,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PteranodonAssetRuntime.TryGetInfernalVisual36(key, out mesh, out bones, out paint, out status);
                 add(mesh, key + ".Mesh"); add(paint, key + ".Albedo");
             }
+            // Sprint37 keeps its one authored source mesh and albedo in the
+            // same immutable process cache, shared by every vrock view. The
+            // cold cleanup classified the surviving albedo UNRESOLVED and
+            // failed closed, exactly as the giant palettes and the Sprint 18
+            // and 19 bodies did before their owners were asked: the texture
+            // was never a leak, it is the single decoded original that the
+            // cache holds with DontUnloadUnusedAsset and that both vrock views
+            // borrow. This getter allocates nothing; a same-named survivor
+            // that is not this cache object stays unresolved.
+            PteranodonAssetRuntime.TryGetVrockVisual37(VrockVisualPolicy37.Vrock,
+                out mesh, out bones, out paint, out status);
+            add(mesh, VrockVisualPolicy37.Vrock + ".Mesh");
+            add(paint, VrockVisualPolicy37.Vrock + ".Albedo");
             foreach (string key in ExpandedSummoningCatalog.All.Select(c => c.Key))
             {
                 if (PteranodonAssetRuntime.TryGetUngulateVisual(key, out mesh, out bones, out paint, out status) ||

@@ -228,23 +228,26 @@ namespace KingmakerGunslinger.DomainTests
         internal static void DispelNeedsARealUsefulEffect()
         {
             Assertions.True(InfernalRules36Policy.UsefulDispelEffect(
-                true, true, true, false, true),
-                "An active spell effect with context and no no-dispel flag is useful.");
+                true, true, true, false, true, false),
+                "An active beneficial spell effect with context and no no-dispel flag is useful.");
             Assertions.False(InfernalRules36Policy.UsefulDispelEffect(
-                false, true, true, false, true),
+                false, true, true, false, true, false),
                 "An inactive effect is not useful.");
             Assertions.False(InfernalRules36Policy.UsefulDispelEffect(
-                true, true, false, false, true),
+                true, true, false, false, true, false),
                 "A non-spell effect is not a Dispel target.");
             Assertions.False(InfernalRules36Policy.UsefulDispelEffect(
-                true, true, true, true, true),
+                true, true, true, true, true, false),
                 "A no-dispel effect is not useful.");
             Assertions.False(InfernalRules36Policy.UsefulDispelEffect(
-                true, true, true, false, false),
+                true, true, true, false, false, false),
                 "An effect without casting context cannot support a real check.");
             Assertions.False(InfernalRules36Policy.UsefulDispelEffect(
-                true, false, true, false, true),
+                true, false, true, false, true, false),
                 "A hidden effect is not known enough for autonomous selection.");
+            Assertions.False(InfernalRules36Policy.UsefulDispelEffect(
+                true, true, true, false, true, true),
+                "An otherwise dispellable effect that harms the enemy carrying it is not worth removing for that enemy.");
         }
 
         internal static void StenchAndHeldNauseaKeepSeparateState()

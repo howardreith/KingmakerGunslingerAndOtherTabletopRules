@@ -166,6 +166,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-expanded-summoning-sprint33-native-inputs";
         internal const string ObserveExpandedSummoningSprint36Inputs =
             "observe-expanded-summoning-sprint36-native-inputs";
+
+        /// <summary>
+        /// The one bounded Sprint 37 installed-library audit: whether a
+        /// native Vrock body exists, what a name search over the loaded
+        /// blueprints returns for subtype features, and the exact installed
+        /// Heroism and Mirror Image identities. A name search establishes its
+        /// own results and not a universal absence.
+        /// Research only; it creates no actor and loads no save.
+        /// </summary>
+        internal const string ObserveExpandedSummoningSprint37Inputs =
+            "observe-expanded-summoning-sprint37-native-inputs";
         internal const string ObserveExpandedSummoningSprint32Inputs =
             "observe-expanded-summoning-sprint32-native-inputs";
         internal const string ObserveExpandedSummoningSprints30And31Inputs =
@@ -957,6 +968,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningSprint32Inputs,
                 ObserveExpandedSummoningSprint33Inputs,
                 ObserveExpandedSummoningSprint36Inputs,
+                ObserveExpandedSummoningSprint37Inputs,
                 DisposableExpandedSummoningSprint18Review,
                 DisposableExpandedSummoningSprint19Review,
                 DisposableExpandedSummoningSprint20Review,
