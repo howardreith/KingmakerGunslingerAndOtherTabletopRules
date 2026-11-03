@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace KingmakerGunslinger.Summoning
 {
@@ -34,17 +35,27 @@ namespace KingmakerGunslinger.Summoning
         //
         // Consequence actually followed through: penetration uses 14, which
         // is what the printed caster level requires, and only the preview
-        // shows 12. Range is unaffected either way - the installed
-        // AbilityRange.Close is a flat 30 feet that never reads a caster
-        // level, so the printed "25 ft. + 5 ft./2 levels" scaling does not
-        // exist in this engine at all and is recorded as a range compression
-        // rather than a caster-level question.
+        // shows 12.
+        //
+        // Range is a third, separate fact. The installed AbilityRange.Close
+        // CATEGORY is a flat 30 feet that never reads a caster level, so the
+        // printed 25 ft. + 5 ft./2 levels scaling does not exist in that
+        // category. That is a reason not to use the category, not a reason to
+        // halve this creature's printed reach: the ability ships with
+        // AbilityRange.Custom and an explicit CustomRange derived from its own
+        // spell-like caster level. That is the mechanism the released scatter,
+        // web, ray, Infernal34 and Breeze-Kissed abilities already use, and
+        // BlueprintAbility.GetRange returns CustomRange verbatim, so player
+        // targeting, approach, the cast and the AI all share one distance. No
+        // other consumer of Close is touched.
         internal const int SpellLikeCasterLevel = 14;
         internal const int PreCastEstimatedCasterLevel = GlabrezuHitDice;
-        // The installed flat range for AbilityRange.Close, and what the
-        // printed close range would have been at caster level 14.
-        internal const int InstalledCloseRangeFeet = 30;
-        internal const int PrintedCloseRangeFeet = 60;
+        // What the installed Close CATEGORY would have given, recorded only to
+        // explain why this ability does not use it.
+        internal const int InstalledCloseCategoryFeet = 30;
+        // The printed close range at this creature's spell-like caster level,
+        // and the range the ability actually ships with.
+        internal const int SelectedCloseRangeFeet = 60;
 
         // Printed ability scores.
         internal const int Strength = 31;
@@ -156,6 +167,17 @@ namespace KingmakerGunslinger.Summoning
             int charismaBonus)
         {
             return 10 + spellLevel + charismaBonus;
+        }
+
+        /// <summary>
+        /// The printed close range at a given caster level: 25 feet plus 5
+        /// feet per two caster levels. Derived here so the ability's
+        /// configured distance follows its own selected spell-like caster
+        /// level rather than being written down a second time.
+        /// </summary>
+        internal static int CloseRangeFeet(int casterLevel)
+        {
+            return 25 + 5 * (casterLevel / 2);
         }
 
         /// <summary>
@@ -346,9 +368,14 @@ namespace KingmakerGunslinger.Summoning
                 SpellLikeCasterLevel == GlabrezuHitDice ||
                 PreCastEstimatedCasterLevel != GlabrezuHitDice ||
                 PreCastEstimatedCasterLevel == SpellLikeCasterLevel ||
-                InstalledCloseRangeFeet != 30 ||
-                PrintedCloseRangeFeet != 25 + 5 * (SpellLikeCasterLevel / 2) ||
-                InstalledCloseRangeFeet >= PrintedCloseRangeFeet ||
+                InstalledCloseCategoryFeet != 30 ||
+                SelectedCloseRangeFeet !=
+                    CloseRangeFeet(SpellLikeCasterLevel) ||
+                CloseRangeFeet(14) != 60 || CloseRangeFeet(12) != 55 ||
+                CloseRangeFeet(1) != 25 ||
+                // The ability ships at the printed range, so the shorter
+                // category distance must NOT be what it uses.
+                SelectedCloseRangeFeet == InstalledCloseCategoryFeet ||
                 PincerDiceCount != 2 || PincerDieSides != 8 ||
                 PincerCriticalRollEdge != 19 ||
                 ClawDiceCount != 1 || ClawDieSides != 6 ||
@@ -384,43 +411,66 @@ namespace KingmakerGunslinger.Summoning
     /// </summary>
     internal sealed class GlabrezuRendRound38
     {
-        private readonly object[] _pincerVictims;
+        /// <summary>
+        /// Which of this creature's named attacks have hit one victim so far
+        /// this round.
+        /// </summary>
+        private sealed class VictimHits
+        {
+            internal VictimHits(object victim, int pincerCount)
+            {
+                Victim = victim;
+                Limbs = new bool[pincerCount];
+            }
+
+            internal readonly object Victim;
+            internal readonly bool[] Limbs;
+        }
+
+        private readonly List<VictimHits> _victims = new List<VictimHits>();
+        private readonly int _pincerCount;
 
         internal GlabrezuRendRound38(int pincerCount)
         {
             if (pincerCount < 2)
                 throw new ArgumentOutOfRangeException("pincerCount",
                     "A printed rend needs at least two named attacks.");
-            _pincerVictims = new object[pincerCount];
+            _pincerCount = pincerCount;
         }
 
-        internal int PincerCount { get { return _pincerVictims.Length; } }
+        internal int PincerCount { get { return _pincerCount; } }
         internal bool Armed { get; private set; }
         internal bool SpentThisRound { get; private set; }
 
-        /// <summary>A new round returns the allowance and forgets pairs.</summary>
+        /// <summary>A new round returns the allowance and forgets every pair.</summary>
         internal void BeginRound()
         {
-            for (int index = 0; index < _pincerVictims.Length; index++)
-                _pincerVictims[index] = null;
+            _victims.Clear();
             Armed = false;
             SpentThisRound = false;
         }
 
         /// <summary>
         /// Whether every pincer but this one has already hit this exact victim
-        /// in this round. Round-scoped, not command-scoped, because the
-        /// printed rule says "in the same round" and says nothing about an
-        /// attack command.
+        /// in this round.
+        ///
+        /// <para>The hits are remembered <b>per victim</b>, not per limb. An
+        /// earlier shape kept one slot per pincer holding its most recent
+        /// victim, which silently lost a qualifying hit whenever a pincer
+        /// moved on: pincer one hits A, pincer one then hits B, pincer two
+        /// hits A - the printed rule says two pincers hit the same opponent in
+        /// the same round, and they did, but A had already been overwritten by
+        /// B and the rend was refused. The printed rule is about the victim,
+        /// so the bookkeeping is too.</para>
         /// </summary>
         internal bool EveryOtherPincerHit(int pincer, object victim)
         {
-            for (int index = 0; index < _pincerVictims.Length; index++)
+            VictimHits hits = Find(victim);
+            if (hits == null) return false;
+            for (int index = 0; index < _pincerCount; index++)
             {
                 if (index == pincer - 1) continue;
-                if (_pincerVictims[index] == null ||
-                    !ReferenceEquals(_pincerVictims[index], victim))
-                    return false;
+                if (!hits.Limbs[index]) return false;
             }
             return true;
         }
@@ -440,7 +490,9 @@ namespace KingmakerGunslinger.Summoning
         /// What the pincer attack actually did. A miss disarms and leaves the
         /// round's allowance intact; an armed hit is the one rend this round
         /// gets and spends it. An attack that was never armed cannot spend it,
-        /// so repeating one event grants nothing.
+        /// and recording the same limb against the same victim twice sets a
+        /// flag that is already set, so a replayed callback is not a second
+        /// successful attack.
         /// </summary>
         internal void RecordOutcome(int pincer, object victim, bool hit)
         {
@@ -453,10 +505,38 @@ namespace KingmakerGunslinger.Summoning
                 return;
             }
             if (wasArmed || !hit || victim == null) return;
-            _pincerVictims[pincer - 1] = victim;
+            Remember(victim).Limbs[pincer - 1] = true;
+        }
+
+        /// <summary>For the guarded fixture: which limbs have hit this victim.</summary>
+        internal bool HasHit(int pincer, object victim)
+        {
+            VictimHits hits = Holds(pincer) ? Find(victim) : null;
+            return hits != null && hits.Limbs[pincer - 1];
+        }
+
+        /// <summary>For the guarded fixture: how many victims this round touched.</summary>
+        internal int TrackedVictimCount { get { return _victims.Count; } }
+
+        private VictimHits Find(object victim)
+        {
+            if (victim == null) return null;
+            for (int index = 0; index < _victims.Count; index++)
+                if (ReferenceEquals(_victims[index].Victim, victim))
+                    return _victims[index];
+            return null;
+        }
+
+        private VictimHits Remember(object victim)
+        {
+            VictimHits hits = Find(victim);
+            if (hits != null) return hits;
+            hits = new VictimHits(victim, _pincerCount);
+            _victims.Add(hits);
+            return hits;
         }
 
         private bool Holds(int pincer)
-        { return pincer >= 1 && pincer <= _pincerVictims.Length; }
+        { return pincer >= 1 && pincer <= _pincerCount; }
     }
 }

@@ -53,9 +53,21 @@ namespace KingmakerGunslinger.DomainTests
                 "The pre-cast estimate is the creature's hit dice, because RuleCalculateAbilityParams reads only ContextSetAbilityParams.");
             Assertions.Equal(14, GlabrezuRules38Policy.SpellLikeCasterLevel,
                 "The execution context and everything downstream of it carry the printed caster level.");
-            Assertions.True(GlabrezuRules38Policy.InstalledCloseRangeFeet <
-                    GlabrezuRules38Policy.PrintedCloseRangeFeet,
-                "The installed close range is a flat compression of the printed one and reads no caster level.");
+            // The ability does not use the installed Close category, which
+            // is a flat 30 that reads no caster level; it carries an explicit
+            // custom range derived from its own caster level, so the printed
+            // reach survives rather than being halved by that limitation.
+            Assertions.Equal(60,
+                GlabrezuRules38Policy.CloseRangeFeet(
+                    GlabrezuRules38Policy.SpellLikeCasterLevel),
+                "Printed close range at caster level 14.");
+            Assertions.Equal(GlabrezuRules38Policy.SelectedCloseRangeFeet,
+                GlabrezuRules38Policy.CloseRangeFeet(
+                    GlabrezuRules38Policy.SpellLikeCasterLevel),
+                "The shipped range is derived from the caster level, not written down twice.");
+            Assertions.True(GlabrezuRules38Policy.SelectedCloseRangeFeet >
+                    GlabrezuRules38Policy.InstalledCloseCategoryFeet,
+                "The shipped range is the printed one, not the shorter installed category.");
         }
 
         internal static void PowerWordStunBucketsFollowCurrentHitPoints()
@@ -155,6 +167,25 @@ namespace KingmakerGunslinger.DomainTests
             round.BeginRound();
             Assertions.False(round.TryArm(true, true, 2, victim),
                 "A pincer hit in the previous round is not a pair in this one.");
+
+            // A pincer that moves between victims inside one round must not
+            // erase the hit it already landed. Pincer one hits A, pincer one
+            // then hits B, pincer two hits A: the printed rule says two
+            // pincers hit the same opponent in the same round, and they did,
+            // so this rends. Storing only the last victim per limb would have
+            // overwritten A with B and silently refused it.
+            var moved = new GlabrezuRendRound38(2);
+            moved.RecordOutcome(1, victim, true);
+            moved.RecordOutcome(1, other, true);
+            Assertions.True(moved.TryArm(true, true, 2, victim),
+                "A pincer that already hit this victim earlier in the round still pairs after it strikes someone else.");
+            moved.RecordOutcome(2, victim, true);
+            Assertions.True(moved.SpentThisRound,
+                "And that rend spends the round's one use.");
+            // The other victim is still only half-hit, and the allowance is
+            // gone for the round anyway.
+            Assertions.False(moved.TryArm(true, true, 2, other),
+                "The round's rend is spent, so the second victim does not also rend.");
 
             // Pincers on different creatures never rend.
             var split = new GlabrezuRendRound38(2);

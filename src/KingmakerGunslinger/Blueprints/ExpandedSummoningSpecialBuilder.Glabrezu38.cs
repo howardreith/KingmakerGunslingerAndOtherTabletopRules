@@ -19,6 +19,7 @@ using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Components;
+using Kingmaker.Utility;
 using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using Kingmaker.Blueprints.Classes.Spells;
 using KingmakerGunslinger.Summoning;
@@ -191,7 +192,7 @@ namespace KingmakerGunslinger.Blueprints
 
             var traits = Require<BlueprintFeature>(symbols, p + "Traits");
             BindInfernalTraits35(traits, p, "Glabrezu",
-                "DR10/good; electricity and poison immunity; acid, cold and fire resistance 10; SR24. Five primary natural attacks - two pincers, two claws and a bite - all at 15-foot reach, with the pincers threatening a critical on 19-20. Two pincer hits on one creature in a round rend it; claws and the bite never do, and no round rends twice. Power Word Stun is once per summoning and has no saving throw: it stuns for longer the fewer hit points its target has, and does nothing at all to a creature with 151 or more. Chaos hammer, unholy blight, confusion, dispel magic and mirror image are at will, and true seeing is constant. Reverse gravity is not represented; veil and constant true seeing are not represented; greater teleport, nested summoning and wish are excluded for every summon. Bluff, Diplomacy, Intimidate, Knowledge, Sense Motive, Use Magic Device, darkvision and telepathy have no supported summon consumer and are not modelled.",
+                "DR10/good; electricity and poison immunity; acid, cold and fire resistance 10; SR24. Five primary natural attacks - two pincers, two claws and a bite - all at 15-foot reach, with the pincers threatening a critical on 19-20. Two pincer hits on one creature in a round rend it; claws and the bite never do, and no round rends twice. Power Word Stun is once per summoning and has no saving throw: it stuns for longer the fewer hit points its target has, and does nothing at all to a creature with 151 or more. Chaos hammer, unholy blight, confusion, dispel magic and mirror image are at will, and true seeing is constant. Reverse gravity and veil are not represented; greater teleport, nested summoning and wish are excluded for every summon. Bluff, Diplomacy, Intimidate, Knowledge, Sense Motive, Use Magic Device, darkvision and telepathy have no supported summon consumer and are not modelled.",
                 parts);
             unit.AddFacts = InfernalFacts36(library, traits).Concat(
                 new BlueprintUnitFact[] {
@@ -456,7 +457,21 @@ namespace KingmakerGunslinger.Blueprints
             ability.name = InternalName(symbol);
             ability.Parent = null;
             ability.Type = AbilityType.SpellLike;
-            ability.Range = AbilityRange.Close;
+            // The printed close range at caster level 14 is 60 feet. The
+            // installed Close CATEGORY is a flat 30 that reads no caster
+            // level, so using it would silently halve this creature's reach;
+            // an engine limitation in one category is not authority to
+            // shorten the ability. AbilityRange.Custom with an explicit
+            // CustomRange is the mechanism the released scatter, web, ray,
+            // Infernal34 and Breeze-Kissed abilities already use, and
+            // BlueprintAbility.GetRange returns CustomRange verbatim, so one
+            // distance is shared by player targeting, approach, the cast and
+            // the AI rather than being restated anywhere. The number is
+            // derived from this ability's own caster level, not written down.
+            ability.Range = AbilityRange.Custom;
+            ability.CustomRange = new Feet(
+                GlabrezuRules38Policy.CloseRangeFeet(
+                    GlabrezuRules38Policy.SpellLikeCasterLevel));
             ability.CanTargetEnemies = true;
             ability.CanTargetFriends = true;
             ability.CanTargetSelf = false;
@@ -487,7 +502,7 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create(symbol + ".Name",
                     "Power Word Stun"),
                 LocalizationService.Create(symbol + ".Description",
-                    "Once per summoning, at caster level 14: speak a word of power that stuns one creature at close range, whether or not it can hear. There is no saving throw. The stun lasts 4d4 rounds against a creature at 50 or fewer current hit points, 2d4 rounds from 51 to 100, and 1d4 rounds from 101 to 150; a creature with 151 or more current hit points is unaffected entirely. Spell resistance applies, and it is a mind-affecting compulsion, so a creature immune to either is unaffected."),
+                    "Once per summoning, at caster level 14: speak a word of power that stuns one creature within 60 feet, whether or not it can hear. There is no saving throw. The stun lasts 4d4 rounds against a creature at 50 or fewer current hit points, 2d4 rounds from 51 to 100, and 1d4 rounds from 101 to 150; a creature with 151 or more current hit points is unaffected entirely. Spell resistance applies, and it is a mind-affecting compulsion, so a creature immune to either is unaffected."),
                 nativeStun.Icon);
             return ability;
         }
