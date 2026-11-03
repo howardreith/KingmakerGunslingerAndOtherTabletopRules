@@ -1123,6 +1123,7 @@ def planned():
         ("KMG.Summoning.Demon.Glabrezu.Brain", "BlueprintBrain"),
         ("KMG.Summoning.Demon.Glabrezu.PowerWordStunAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.Demon.Glabrezu.PowerWordStunEligibility", "GlabrezuStunEligibility38"),
+        ("KMG.Summoning.Demon.Glabrezu.PowerWordStunTargetEligibility", "GlabrezuStunTargetEligibility38"),
         ("KMG.Summoning.Demon.Glabrezu.ChaosAi", "InfernalSpellAi35"),
         ("KMG.Summoning.Demon.Glabrezu.UnholyAi", "InfernalSpellAi35"),
         ("KMG.Summoning.Demon.Glabrezu.DispelAi", "BabauDispelAi36"),

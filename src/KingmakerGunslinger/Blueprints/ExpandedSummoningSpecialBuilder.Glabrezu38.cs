@@ -213,6 +213,22 @@ namespace KingmakerGunslinger.Blueprints
             stunEligibility.PowerWordStun = stun;
             stunAi.ActorConsiderations = new Consideration[] {
                 stunEligibility };
+            // The actor consideration above can only say that SOME enemy is
+            // usable - the engine's own tooltip for ActorConsiderations is
+            // "Considerations that only depend on deciding unit". Suitability
+            // also has to sit on the candidate path, or the brain can be
+            // admitted because enemy A is eligible and then select enemy B,
+            // spending the one daily use on a creature the printed spell
+            // cannot touch. AiAction.ScoreTarget multiplies every target
+            // consideration into that candidate's own score, so a zero here
+            // removes the candidate rather than merely discouraging it.
+            var stunTargetEligibility =
+                Require<GlabrezuStunTargetEligibility38>(symbols,
+                    p + "PowerWordStunTargetEligibility");
+            stunTargetEligibility.SourceUnit = unit;
+            stunTargetEligibility.PowerWordStun = stun;
+            stunAi.TargetConsiderations = new Consideration[] {
+                stunTargetEligibility };
             stunAi.BaseScore = 8;
 
             InfernalSpellAi35 chaosAi = ConfigureInfernalAi35(symbols,
@@ -264,12 +280,15 @@ namespace KingmakerGunslinger.Blueprints
         /// as one event, which is the printed 2d8+15 at Strength 31 and which
         /// follows a buffed, enlarged or weakened creature.
         ///
-        /// <para>Only the decision is this project's, and it is the released
-        /// decision given a different weapon identity and count rather than a
-        /// new one: <c>Claw</c> is the <b>pincer</b> and the count is two. The
-        /// gate resets on the command boundary and again on
-        /// <c>OnNewRound</c>, so the universal once-per-round limit holds even
-        /// across two separate commands in the same round.</para>
+        /// <para>Only the decision is this project's, and it is a
+        /// Glabrezu-local one. The released <c>DireApeRendGate</c> could not
+        /// be reused here: its shared tracker resets - emitted flag included -
+        /// whenever the attack command changes, so its limit is per command
+        /// and a second qualifying pair in the same round would rend again.
+        /// <see cref="GlabrezuRendGate38"/> keeps the round allowance as its
+        /// own state, scopes the victim bookkeeping to the round as the
+        /// printed rule does, and leaves the released Dire Ape and Girallon
+        /// gates untouched.</para>
         /// </summary>
         private static BlueprintFeature ConfigureGlabrezuRend38(
             IDictionary<string, BlueprintScriptableObject> symbols,
@@ -282,10 +301,10 @@ namespace KingmakerGunslinger.Blueprints
             native.RendDamage = new DiceFormula(
                 GlabrezuRules38Policy.RendDiceCount, DiceType.D8);
             native.RendType = pincer.Type.DamageType.Copy();
-            var gate = ScriptableObject.CreateInstance<DireApeRendGate>();
+            var gate = ScriptableObject.CreateInstance<GlabrezuRendGate38>();
             gate.OwningBlueprint = unit;
-            gate.Claw = pincer;
-            gate.RendClawCount = GlabrezuRules38Policy.RendPincerCount;
+            gate.Pincer = pincer;
+            gate.RendPincerCount = GlabrezuRules38Policy.RendPincerCount;
             feature.name = InternalName(symbol);
             feature.IsClassFeature = false;
             feature.HideInUI = false;
@@ -293,7 +312,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().Configure(feature,
                 LocalizationService.Create(symbol + ".Name", "Rend"),
                 LocalizationService.Create(symbol + ".Description",
-                    "When both of this glabrezu's pincers hit the same creature in one attack sequence, it tears the wound open for 2d8 plus one and a half times its Strength bonus - 2d8+15 for an unmodified glabrezu. One pincer, two pincers on different creatures, a claw or the bite standing in for a pincer, and hits in separate commands or turns do not rend, and no round rends more than once."),
+                    "When both of this glabrezu's pincers hit the same creature in the same round, it tears the wound open for 2d8 plus one and a half times its Strength bonus - 2d8+15 for an unmodified glabrezu. One pincer, two pincers on different creatures, and a claw or the bite standing in for a pincer do not rend. It happens at most once a round, however many attacks the round contains, and the two hits may come from different attacks in that round."),
                 null);
             return feature;
         }
