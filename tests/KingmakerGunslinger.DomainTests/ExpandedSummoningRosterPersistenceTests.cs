@@ -358,6 +358,37 @@ namespace KingmakerGunslinger.DomainTests
                 (string)field.GetRawConstantValue() ==
                 ExpandedSummoningRosterPersistencePolicy.VrockScope),
                 "The Sprint 37 scope is one of the declared constants.");
+            // The same bug twice over: a scope can reach the observation and
+            // still have no creatures of its own, because the selection used
+            // to be a separate list. A scope that falls through to the whole
+            // roster then asks for a creature it does not own and the stage
+            // dies mid-fixture, so every declared scope must name a non-empty
+            // set and every key in it must round-trip through the selection.
+            foreach (FieldInfo field in declared)
+            {
+                var scope = (string)field.GetRawConstantValue();
+                string[] keys = ExpandedSummoningRosterPersistencePolicy
+                    .SelectedKeys(scope);
+                Assertions.True(keys.Length > 0,
+                    "Declared scope names its own creatures: " + field.Name);
+                Assertions.True(ExpandedSummoningRosterPersistencePolicy
+                    .ExactSelectedKeys(scope, keys),
+                    "A scope's own selection is exactly what it admits: " +
+                        field.Name);
+                foreach (string key in keys.Distinct())
+                {
+                    if (key.StartsWith("native:", StringComparison.Ordinal)) continue;
+                    Assertions.Equal(key, ExpandedSummoningRosterPersistencePolicy
+                        .SelectCreatureVariant(scope, key).Creature.Key,
+                        "Each selected key is one this scope owns: " +
+                            field.Name + "/" + key);
+                }
+            }
+            foreach (string invalid in new[] { null, "", "Vrock", "vrock ",
+                "vrocks" })
+                Assertions.Equal(0, ExpandedSummoningRosterPersistencePolicy
+                    .SelectedKeys(invalid).Length,
+                    "An unadmitted scope selects nothing, never the whole roster.");
             foreach (string invalid in new[] { null, "", "Vrock", "vrock ",
                 "vrocks", "KMG_Release143_WholeRoster_v1", "retained" })
                 Assertions.False(ExpandedSummoningRosterPersistencePolicy
