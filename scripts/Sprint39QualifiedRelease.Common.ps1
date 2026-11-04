@@ -200,7 +200,10 @@ function Assert-KmgSprint39Qualification($Ledger,$Candidate) {
             'sprint32-sprint39-nalfeshnee-feeblemind-lasting',
             'sprint32-sprint39-nalfeshnee-feeblemind-cure',
             'sprint32-sprint39-nalfeshnee-dispel-one-check-cap-and-no-retry',
-            'sprint32-sprint39-nalfeshnee-spells-at-will-repeat')
+            'sprint32-sprint39-nalfeshnee-spells-at-will-repeat');
+        'highest-risk-integration'=@('sprint32-sprint39-nalfeshnee-integration-heal-graph',
+            'sprint32-sprint39-nalfeshnee-integration-heal-cures-both',
+            'sprint32-sprint39-nalfeshnee-integration-vrock-exemption')
     }
     foreach($id in $rows.Keys) {
         $row=@($Ledger.coverage|Where-Object id -ceq $id)[0]

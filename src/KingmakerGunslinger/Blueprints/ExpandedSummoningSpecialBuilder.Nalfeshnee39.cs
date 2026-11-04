@@ -39,7 +39,12 @@ namespace KingmakerGunslinger.Blueprints
         // these was returned as an exact name match in that receipt.
         private const string NativeFeeblemind39 =
             "444eed6e26f773a40ab6e4d160c67faa";
-        private const string NativeFeeblemindBuff39 =
+        // Internal rather than private for the same reason native Heal is:
+        // the integration review attaches this exact native condition and
+        // then asks the native cure to remove it beside this project's clone,
+        // and it must name the same identity the build attached to rather
+        // than a second copy of it.
+        internal const string NativeFeeblemindBuff39 =
             "8b3b4c225fe0fb046bfa8881c3ddad0d";
         private const string NativeUnholyAuraBuff39 =
             "9eda82a1f78558747a03c17e0e9a1a68";
