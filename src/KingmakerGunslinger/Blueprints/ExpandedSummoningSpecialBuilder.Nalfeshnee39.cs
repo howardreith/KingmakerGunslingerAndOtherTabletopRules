@@ -370,9 +370,21 @@ namespace KingmakerGunslinger.Blueprints
             string symbol, string nativeGuid, string title, int spellLevel,
             string description)
         {
-            return ConfigureOwnedSpell35(library, symbols, symbol, nativeGuid,
-                title, spellLevel, UnitCommand.CommandType.Standard,
+            BlueprintAbility ability = ConfigureOwnedSpell35(library,
+                symbols, symbol, nativeGuid, title, spellLevel,
+                UnitCommand.CommandType.Standard,
                 NalfeshneeRules39Policy.SpellLikeCasterLevel, description);
+            // VISIBLE ON THE ACTION BAR. The shared ability shell is created
+            // hidden and auto-fill-excluded, which is right for the private
+            // adapter shells it was written for and wrong for a creature's own
+            // printed ability: a hidden ability is still castable by the brain,
+            // so the creature would fight normally and the player would simply
+            // never see a button. Every released sibling clears these two at
+            // its own call site rather than relying on a donor to carry them,
+            // and the Sprint 39 nimbus phase measures them on the live unit.
+            ability.Hidden = false;
+            ability.ActionBarAutoFillIgnored = false;
+            return ability;
         }
 
         /// <summary>
@@ -516,6 +528,16 @@ namespace KingmakerGunslinger.Blueprints
             // SpellLike would have quietly given it the wrong half of all of
             // that while still looking correct in the action bar.
             ability.Type = AbilityType.Supernatural;
+            // VISIBLE ON THE ACTION BAR. The shared ability shell is created
+            // hidden and auto-fill-excluded, which is right for the private
+            // adapter shells it was written for and wrong for a creature's own
+            // printed ability: a hidden ability is still castable by the brain,
+            // so the creature would fight normally and the player would simply
+            // never see a button. Every released sibling clears these two at
+            // its own call site rather than relying on a donor to carry them,
+            // and the Sprint 39 nimbus phase measures them on the live unit.
+            ability.Hidden = false;
+            ability.ActionBarAutoFillIgnored = false;
             ability.Range = AbilityRange.Personal;
             ability.CanTargetSelf = true;
             ability.CanTargetEnemies = false;
@@ -677,6 +699,16 @@ namespace KingmakerGunslinger.Blueprints
             ability.Type = AbilityType.SpellLike;
             ability.ActionType = UnitCommand.CommandType.Standard;
             ability.SetIsFullRoundAction(false);
+            // VISIBLE ON THE ACTION BAR. The shared ability shell is created
+            // hidden and auto-fill-excluded, which is right for the private
+            // adapter shells it was written for and wrong for a creature's own
+            // printed ability: a hidden ability is still castable by the brain,
+            // so the creature would fight normally and the player would simply
+            // never see a button. Every released sibling clears these two at
+            // its own call site rather than relying on a donor to carry them,
+            // and the Sprint 39 nimbus phase measures them on the live unit.
+            ability.Hidden = false;
+            ability.ActionBarAutoFillIgnored = false;
             // The printed medium range at this creature's own caster level,
             // 100 + 10 per level. A fixed range CATEGORY does not read a
             // caster level at all - the Sprint 38 finding about Close - so the

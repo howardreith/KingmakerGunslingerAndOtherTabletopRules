@@ -191,8 +191,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     manual != null && manual.IsAvailable &&
                     uses == NalfeshneeRules39Policy.NimbusUsesPerDay &&
                     parameters != null && parameters.DC == expectedDc &&
-                    parameters.CasterLevel ==
-                        NalfeshneeRules39Policy.SpellLikeCasterLevel &&
                     owner.Descriptor.Buffs.GetBuff(windup) == null,
                 new JObject {
                     ["owner"] = owner.UniqueId,
@@ -217,8 +215,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["printedDc"] = NalfeshneeRules39Policy.PrintedNimbusDc,
                     ["observedParamDc"] = parameters == null ? null :
                         (int?)parameters.DC,
-                    ["observedParamCasterLevel"] = parameters == null ? null :
+                    // Recorded, NOT asserted, and the distinction is the
+                    // engine's. ContextCalculateAbilityParams.Calculate takes
+                    // a MechanicsContext and triggers its own
+                    // RuleCalculateAbilityParams with the replacement caster
+                    // level, so it can only run once a cast has a context.
+                    // AbilityData.CalculateParams is the PRE-CAST estimate on
+                    // a different path and reports the creature's own level -
+                    // fourteen here - however the ability declares its
+                    // override. The printed twelve is therefore observed
+                    // in-context on the pending windup below, where it is
+                    // actually the number the rules use.
+                    ["preCastParamCasterLevel"] = parameters == null ? null :
                         (int?)parameters.CasterLevel,
+                    ["preCastCasterLevelIsTheCreaturesOwn"] = true,
+                    ["printedSpellLikeCasterLevel"] =
+                        NalfeshneeRules39Policy.SpellLikeCasterLevel,
                     ["pendingBeforeUse"] =
                         owner.Descriptor.Buffs.GetBuff(windup) != null,
                     ["scope"] = "The cycle cell below issues the same UnitUseAbility command the action bar issues; this cell establishes only that the bar can reach it."
@@ -328,6 +340,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         pending != null && pendingCount == 1 &&
                         afterFirst == before - 1 && remaining > 0 &&
                         remaining <= GameConsts.RoundDuration * 1.5 &&
+                        pending.Context != null &&
+                        pending.Context.Params.CasterLevel ==
+                            NalfeshneeRules39Policy.SpellLikeCasterLevel &&
                         watcher.Saves.Count == 0 &&
                         watcher.DazeApplications.Count == 0,
                     new JObject {
@@ -348,7 +363,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["roundDuration"] = GameConsts.RoundDuration,
                         ["savesAtActivation"] = watcher.Saves.Count,
                         ["dazesAtActivation"] = watcher.DazeApplications.Count,
-                        ["activationGameTime"] = startTime
+                        ["activationGameTime"] = startTime,
+                        // The in-context caster level, which is the number the
+                        // printed ranges and the greater dispel cap read. The
+                        // pre-cast estimate in the interface cell is a
+                        // different quantity on a different path.
+                        ["inContextCasterLevel"] = pending == null ||
+                            pending.Context == null ? null :
+                            (int?)pending.Context.Params.CasterLevel,
+                        ["printedSpellLikeCasterLevel"] =
+                            NalfeshneeRules39Policy.SpellLikeCasterLevel
                     },
                     "One legal free action succeeds, spends exactly one use, creates exactly one pending windup carrying an absolute deadline about one round out, and resolves nothing yet - no save is rolled and nobody is dazed at activation.");
 

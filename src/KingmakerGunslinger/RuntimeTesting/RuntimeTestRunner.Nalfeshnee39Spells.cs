@@ -206,6 +206,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     spell.Type == AbilityType.SpellLike &&
                     spell.ActionType == UnitCommand.CommandType.Standard &&
                     !spell.IsFullRoundAction && !spell.Hidden &&
+                    // Both action-bar flags, on all four. The shared ability
+                    // shell is created hidden and auto-fill-excluded, and the
+                    // nimbus phase caught exactly that reaching a creature's
+                    // own printed ability - so these are measured here rather
+                    // than trusted to a native donor's values.
+                    !spell.ActionBarAutoFillIgnored &&
                     (!ranged || (spell.Range == AbilityRange.Custom &&
                         (int)spell.CustomRange.Value == medium));
                 coherent &= row;
@@ -217,6 +223,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["actionType"] = spell.ActionType.ToString(),
                     ["fullRoundAction"] = spell.IsFullRoundAction,
                     ["hiddenFromUi"] = spell.Hidden,
+                    ["actionBarAutoFillIgnored"] =
+                        spell.ActionBarAutoFillIgnored,
                     ["range"] = spell.Range.ToString(),
                     ["customRangeFeet"] = (int)spell.CustomRange.Value,
                     ["derivedRangeExpected"] = ranged ? (int?)medium : null,
