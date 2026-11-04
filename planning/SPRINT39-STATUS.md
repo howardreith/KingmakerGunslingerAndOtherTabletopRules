@@ -1,10 +1,38 @@
 # Sprint 39 status — Nalfeshnee
 
-**IN PROGRESS.** Not released, not qualified, nothing claimed as proven on a
-frozen artifact. Sprint 38 is closed at v0.0.176 and is not reopened: its
-artifact, its original four-armed body, its native adaptations, its approved
-Reverse Gravity and Veil omissions and its completed Vrock spell-resistance
-finding all stand.
+**RELEASED at v0.0.177 / STOP.** Published and publicly verified from product
+PR #94: tested source `d1365d621295cf63c7b646247d6bf604edb208da`, product
+merge `6782721cf08c75c0377f777a265b2f8b01f2cbad`, downloaded ZIP SHA-256
+`47ef6ee375164ab367ee8e8a7ecf178e60aa7344e3983127938abb18957014e4`. Sprint 38
+is closed at v0.0.176 and was not reopened: its artifact, its original
+four-armed body, its native adaptations, its approved Reverse Gravity and Veil
+omissions and its completed Vrock spell-resistance finding all stand — except
+that its Vrock now spares a Nalfeshnee, which is the demon catalog growing from
+seven members to eight and is asserted in this sprint's integration row.
+
+The qualification is recorded in
+[release evidence](SPRINT39-RELEASE-EVIDENCE.json): ten fresh coverage rows
+against the frozen artifact's exact bytes, nothing reused from an earlier
+sprint or from any development candidate, a 2,810/2,810 unfiltered gate, a
+byte-identical independent rebuild, six fresh persistence processes across the
+mixed ON and OFF envelopes, an actual public download, and byte-exact
+restoration of the one authorized disposable working save with the immutable
+baseline never written.
+
+### What the last repair was
+
+The final defect was mine, not the creature's. The integration group's
+enemy-targeted feeblemind was refused with a bare `canTarget: false` while
+every other recorded condition was correct. Native enemy-ness is decided per
+`UnitGroup`, not per faction: a group whose `IsPlayerParty` flag is set is
+never an enemy in either direction, a unit's group id is computed once and
+cached for life, and joining the party rewrites that cached id. The cure cell
+has to lend the shared hostile to the party for the party's own *heal* to land
+on it, and restoring its faction could never put its group back. The lender now
+returns the group through the engine's own group-id setter, in the order that
+keeps both faction multisets exact, and the integration group asserts mutual
+hostility and distinct groups before it casts — so a refusal of that kind names
+its cause on the first run instead of costing a qualification cycle.
 
 ## Working identities
 
@@ -505,4 +533,4 @@ is not qualification.
 ## Not started
 
 Everything after this point. Sprint 40 and the Ice Devil are NOT_STARTED and
-out of scope.
+out of scope. Sprint 39 is RELEASED; stop here.

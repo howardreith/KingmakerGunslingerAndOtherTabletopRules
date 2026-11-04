@@ -1,3 +1,41 @@
+# Sprint 39 — v0.0.177 RELEASED / STOP
+
+Stable [v0.0.177](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.177)
+is published and publicly verified from product
+[PR #94](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/94).
+One adult, untemplated Nalfeshnee is functional through exactly one Summon
+Monster IX route. Tested source `d1365d621295cf63c7b646247d6bf604edb208da`
+merged at `6782721cf08c75c0377f777a265b2f8b01f2cbad`; publication promoted the
+exact qualified ZIP without rebuilding. The downloaded ZIP SHA-256 is
+`47ef6ee375164ab367ee8e8a7ecf178e60aa7344e3983127938abb18957014e4`; DLL
+SHA-256 `e9b5544148d14d46c53623f727a533c9875c1d9b9a20822a37ccbae04157d016`;
+MVID `251876ff-6cca-4e94-acea-b9052fb08a76`. The 2,810/2,810 unfiltered gate,
+exact byte reproducibility, ten fresh mandatory coverage rows, six fresh
+ON/OFF persistence processes, the public download check and exact
+laptop/Working restoration all passed. The public surface goes from 132
+creatures and 1,215 choices to 133 and 1,216 — this one route and nothing
+else.
+
+Unholy Nimbus arms a delayed burst one round later rather than resolving on
+activation, rolls 1d10 rounds of blindness at the burst, catches a latecomer
+and spares a departer, and allows at most one pending activation per creature,
+where a refusal spends no use and adds no cooldown. The constant Unholy Aura
+is an exact-source self effect with no ally grant. Feeblemind imposes a real
+spellcasting prohibition without banning magic items, survives its caster's
+destruction, and is cured by native *heal* through one removal inserted beside
+the native one — with heal's other cures shown still intact. Greater dispel
+magic carries one decisive check to its printed CL/4 cap with no retry.
+
+Summoning demon reinforcements is an owner-authorized omission with no
+substitute; greater teleport, nested summoning and wish remain excluded for
+every summon. Two deviations are disclosed rather than corrected: effective
+movement is the printed 40-foot fly with the 30-foot land mode omitted, and
+Slow carries this project's recorded medium reach. No owner aesthetic approval
+is claimed; fine visual polish remains backlog. Full attribution and release
+identities are in [Sprint 39 status](planning/SPRINT39-STATUS.md) and
+[release evidence](planning/SPRINT39-RELEASE-EVIDENCE.json).
+**Stop before Sprint 40.** Historical text below is not current authority.
+
 # Sprint 38 — v0.0.176 RELEASED / STOP
 
 Stable [v0.0.176](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.176)
@@ -25,7 +63,7 @@ Persuasive. No owner aesthetic approval is claimed; fine visual polish remains
 backlog. Full attribution and release identities are in
 [Sprint 38 status](planning/SPRINT38-STATUS.md) and
 [release evidence](planning/SPRINT38-RELEASE-EVIDENCE.json).
-**Stop before Sprint 39.** Historical text below is not current authority.
+**Stop before Sprint 39.** (Historical: superseded by the Sprint 39 record above.)
 
 # Sprint 36 — v0.0.174 RELEASED / STOP
 
