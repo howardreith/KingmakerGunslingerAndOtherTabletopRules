@@ -345,6 +345,39 @@ namespace KingmakerGunslinger.Summoning
             return unit.Descriptor.Buffs.GetBuff(windup) != null;
         }
 
+        /// <summary>
+        /// For the guarded runtime fixture: is the windup on this unit
+        /// actually ARMED, and not cancelled.
+        ///
+        /// <para>This exists because presence and armedness are different
+        /// facts and only the second one decides a burst. Across a save the
+        /// distinction is the whole question: the buff itself serializes
+        /// through the engine's own channels, but the component's flags ride
+        /// the per-component <c>LogicComponentData</c> bag, and a windup that
+        /// came back present-but-unarmed would silently never resolve while
+        /// looking entirely healthy. The flags are read off the live
+        /// per-fact component instance rather than recomputed, so what is
+        /// reported is what a resolution would actually consult.</para>
+        /// </summary>
+        internal static bool ObservedArmed(UnitEntityData unit,
+            BlueprintBuff windup)
+        {
+            if (unit == null || windup == null || unit.Descriptor == null)
+                return false;
+            Buff buff = unit.Descriptor.Buffs.GetBuff(windup);
+            if (buff == null) return false;
+            // SelectComponents is the engine's own per-FACT accessor, which
+            // is the one that matters here: the blueprint's component array
+            // holds the shared template, while each fact holds an
+            // Object.Instantiate'd copy carrying this windup's own flags.
+            NalfeshneeNimbusWindup39 component = buff
+                .SelectComponents<NalfeshneeNimbusWindup39>()
+                .FirstOrDefault();
+            if (component == null) return false;
+            lock (component)
+            { return component.m_Armed && !component.m_Cancelled; }
+        }
+
         /// <summary>For the guarded runtime fixture: remaining windup time.</summary>
         internal static TimeSpan ObservedTimeLeft(UnitEntityData unit,
             BlueprintBuff windup)
