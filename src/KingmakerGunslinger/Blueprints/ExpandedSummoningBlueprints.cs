@@ -223,6 +223,27 @@ namespace KingmakerGunslinger.Blueprints
                         consideration.name = InternalName(identity.Symbol);
                         return consideration;
                     });
+                else if (identity.PlannedType == "NalfeshneeNimbusEligibility39")
+                    blueprint = registry.Register<NalfeshneeNimbusEligibility39>(identity.Symbol, () =>
+                    {
+                        var consideration = ScriptableObject.CreateInstance<NalfeshneeNimbusEligibility39>();
+                        consideration.name = InternalName(identity.Symbol);
+                        return consideration;
+                    });
+                else if (identity.PlannedType == "NalfeshneeFeeblemindEligibility39")
+                    blueprint = registry.Register<NalfeshneeFeeblemindEligibility39>(identity.Symbol, () =>
+                    {
+                        var consideration = ScriptableObject.CreateInstance<NalfeshneeFeeblemindEligibility39>();
+                        consideration.name = InternalName(identity.Symbol);
+                        return consideration;
+                    });
+                else if (identity.PlannedType == "NalfeshneeFeeblemindTargetEligibility39")
+                    blueprint = registry.Register<NalfeshneeFeeblemindTargetEligibility39>(identity.Symbol, () =>
+                    {
+                        var consideration = ScriptableObject.CreateInstance<NalfeshneeFeeblemindTargetEligibility39>();
+                        consideration.name = InternalName(identity.Symbol);
+                        return consideration;
+                    });
                 else if (identity.PlannedType == "BlueprintAiSwitchWeapon")
                     blueprint = registry.Register<BlueprintAiSwitchWeapon>(identity.Symbol, () => {
                         var value = ScriptableObject.CreateInstance<BlueprintAiSwitchWeapon>();

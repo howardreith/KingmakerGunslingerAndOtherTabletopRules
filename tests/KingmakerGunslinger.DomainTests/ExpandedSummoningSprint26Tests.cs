@@ -45,6 +45,19 @@ namespace KingmakerGunslinger.DomainTests
         internal const int Sprint38CatalogIdentityCount =
             Sprint38CreatureIdentityCount + Sprint38RootIdentityCount +
             Sprint38PrivateIdentityCount;
+        // Sprint 39 appends one creature, its single Summon Monster IX root -
+        // registered at tier 9, so parent 9 is the only parent that admits
+        // it - and twenty-five private dependencies. Constant true seeing and
+        // the Airborne navigation fact add none: both are native facts
+        // carried directly on the unit. The constant unholy aura does add
+        // one, because it is a project-owned clone rather than the native
+        // buff itself.
+        internal const int Sprint39CreatureIdentityCount = 1;
+        internal const int Sprint39RootIdentityCount = 1;
+        internal const int Sprint39PrivateIdentityCount = 25;
+        internal const int Sprint39CatalogIdentityCount =
+            Sprint39CreatureIdentityCount + Sprint39RootIdentityCount +
+            Sprint39PrivateIdentityCount;
         internal const int AppendedCatalogIdentityCount =
             Sprint26MagicalBeastRules.AppendedCatalogIdentityCount +
             ExpandedSummoningSprint27Tests.AppendedCatalogIdentityCount +
@@ -54,7 +67,7 @@ namespace KingmakerGunslinger.DomainTests
             Sprint32PrivateIdentityCount + 2 + 10 + 22 +
             InfernalRules35.AppendedCatalogIdentityCount +
             Sprint36CatalogIdentityCount + Sprint37CatalogIdentityCount +
-            Sprint38CatalogIdentityCount;
+            Sprint38CatalogIdentityCount + Sprint39CatalogIdentityCount;
         internal const int AppendedLedgerIdentityCount =
             AppendedCatalogIdentityCount +
             Sprint36ReservedIdentityCount;
@@ -84,7 +97,11 @@ namespace KingmakerGunslinger.DomainTests
         // Empty again after Sprint 38 publication: the Glabrezu's five
         // guarded mechanics phases are green on live units, so removing its
         // name here is the whole of publishing it.
-        internal static readonly string[] WithheldKeys = { };
+        // Empty again after Sprint 39 publication: the Nalfeshnee's complete
+        // candidate is green on live units in both combat modes, so removing
+        // its name here is the whole of publishing it - every dependent count
+        // in this file derives rather than being pinned a second time.
+        internal static readonly string[] WithheldKeys = new string[0];
         internal static bool IsWithheld(string key) { return Array.IndexOf(WithheldKeys, key) >= 0; }
     }
 

@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.176-expanded-summoning-glabrezu",
+  "milestone": "0.0.177-expanded-summoning-nalfeshnee",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.176",
+  "version": "0.0.177",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2802,6 +2802,32 @@
       "scripts/Test-Sprint22InstalledStack.ps1": "e7c6c4a401e6881c02516d184c8d0e377c02df24af75cc491a9c7178fca08f2c",
       "scripts/Test-Sprint32NativePersistenceRequest.ps1": "e6e69985607782c5c1c4ee476a66e8f8a68c295f8603732fbd774c84b8d9dcb2",
       "scripts/Test-Sprint38Release.ps1": "f76143de8b2af7c2580fe56448d68e048678135d31b012625d8205c67b3f1dbc"
+    },
+    "harnessIdentityNote": "Tool and fixture identity for the orchestration that produced the native rows, recorded separately from the compiled product identity. These paths lie outside the validator's guarded product roots, so they are pinned here rather than by the product diff. The validator file itself cannot carry its own digest; its provenance is the reviewed product commit.",
+    "installedStackFixtureChecks": 52,
+    "compiledRequestAdmissionChecks": 33
+  },
+  "expandedSummoningSprint39Release177": {
+    "releaseVersion": "0.0.177",
+    "releaseInformationalVersion": "0.0.177-expanded-summoning-nalfeshnee",
+    "baseStableVersion": "0.0.176",
+    "reviewedProductSource": "f81ffa60588ceebedb37f0c449650d9028a710f3",
+    "appendedIdentities": 31,
+    "releasedIdentityChanges": 0,
+    "change": "Nalfeshnee, one untemplated Summon Monster IX route, a source-owned Unholy Nimbus with a one-round delayed burst and at most one pending activation per creature, an exact-source constant Unholy Aura, feeblemind with a real spellcasting prohibition and the native heal cure, greater dispel magic carrying one decisive check to its printed cap, two further at-will spell-likes at their own derived reach, and a distinct original corpulent boar-headed winged body/icon",
+    "nativeEvidence": "Final exact package requires fresh grouped proof for every mandatory row: no Sprint39 row may be reused, so no development-candidate receipt can qualify this release. Unholy Nimbus carries two rows because its two combat modes are separate phases and game time advances differently in each",
+    "ownerPublicationAuthority": "Sprint39 Nalfeshnee Completion Mission, its implementation/release continuation, its native-behaviour repair instruction and its finish instruction, together with the owner decisions of 2026-11-04 limiting Unholy Nimbus to at most one pending activation per creature and scoping the constant Unholy Aura to an exact-source self effect with no ally grant; greater teleport, nested summoning and wish remain excluded for every summon, demon reinforcement summoning is a disclosed omission, the effective movement is the printed 40-foot fly with the 30-foot land mode recorded as omitted, feeblemind deliberately forbids spellcasting and not magic items, and Slow carries the project-recorded medium reach rather than the printed close derivation",
+    "harnessIdentity": {
+      "scripts/Deploy-Local.ps1": "713cceb319c2850d5f440139ebedc5468501d5b9c458e4d418d944cce98d9353",
+      "scripts/Invoke-ExpandedSummoningRuntimeScenario.ps1": "e1d798f8f228b6b9cd7444e20697f2e06de40343b92d8a5b8bf6681b0dec6c6a",
+      "scripts/Invoke-KingmakerRuntimeTest.ps1": "6bab6582bfdcf3913dab2ab296a7a206c5f047503647dc66c7df4fc371609164",
+      "scripts/Invoke-Sprint22InstalledStack.ps1": "70c2734fc81ee6c9f47d7060c974e03268c664aac02bc2ff4dbdcc0e9d63b398",
+      "scripts/RuntimeAutomation.Common.ps1": "43ddee00e71601d248356b81bc6912835bb7db51fb31d9158dce6d273fb058be",
+      "scripts/RuntimeHarness.Common.ps1": "f8c67bb58e84b677e377d4a8a93472ecfefffe38fa2b5b778186209d6f7aadb2",
+      "scripts/Sprint39QualifiedRelease.Common.ps1": "cc0c90d05d4e49d3cc4337a2f2fb6b7f3786412cc7ecbf5fb96adbc57f73efcc",
+      "scripts/Test-Sprint22InstalledStack.ps1": "e7c6c4a401e6881c02516d184c8d0e377c02df24af75cc491a9c7178fca08f2c",
+      "scripts/Test-Sprint32NativePersistenceRequest.ps1": "173001949007ba2821be83adaaf6abc40257077b63786f6eb873feae33057f48",
+      "scripts/Test-Sprint39Release.ps1": "353c96570b56810889f642759864a9bd767e6b7aea160dbb882cf2c0c31f795f"
     },
     "harnessIdentityNote": "Tool and fixture identity for the orchestration that produced the native rows, recorded separately from the compiled product identity. These paths lie outside the validator's guarded product roots, so they are pinned here rather than by the product diff. The validator file itself cannot carry its own digest; its provenance is the reviewed product commit.",
     "installedStackFixtureChecks": 52,

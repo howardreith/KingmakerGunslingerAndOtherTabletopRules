@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  146,
+    "count":  147,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -1311,6 +1311,15 @@
                       "key":  "glabrezu",
                       "file":  "glabrezu.png",
                       "sha256":  "f69dee9fc9bbd7330e393f8bc2bcb1b5d9416eea67710a40e8476dd4a5b1d71f",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "nalfeshnee",
+                      "file":  "nalfeshnee.png",
+                      "sha256":  "e7dbde2cf744d56b265a0ae79b286843ef8f2a2c555917eb01dba5dda1aed73a",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",
