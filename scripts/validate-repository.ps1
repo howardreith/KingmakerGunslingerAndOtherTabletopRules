@@ -273,3 +273,10 @@ if ($LASTEXITCODE -ne 0) { throw 'Sprint37 publisher tests failed.' }
 # 1,186 and 1,215 while the census does not.
 & (Join-Path $PSScriptRoot 'Test-ClosedSprint38Release.ps1')
 if ($LASTEXITCODE -ne 0) { throw 'Sprint38 publisher tests failed.' }
+# Sprint 39 is the open sprint, so its suite runs against the current source:
+# the census it pins - 133 creatures, 111 Monster entries, 599 Monster
+# placements, 1,187 published roots and 1,216 visible choices - is the census
+# this tree derives. It becomes a closed sprint, and gains its own isolation
+# wrapper, when Sprint 40 opens.
+& (Join-Path $PSScriptRoot 'Test-Sprint39Release.ps1')
+if ($LASTEXITCODE -ne 0) { throw 'Sprint39 publisher tests failed.' }
