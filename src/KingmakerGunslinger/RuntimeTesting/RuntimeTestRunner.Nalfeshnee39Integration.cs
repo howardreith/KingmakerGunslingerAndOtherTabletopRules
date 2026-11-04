@@ -151,6 +151,124 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
+        /// What the engine actually consults when it is asked whether two
+        /// units are enemies.
+        ///
+        /// <para>Native enemy-ness is NOT a property of a unit's faction. It
+        /// is decided by <c>UnitGroup</c>: a group whose <c>IsPlayerParty</c>
+        /// flag is set is never an enemy in either direction, and the only
+        /// live direction asks whether the other group's attack-faction cache
+        /// names a faction that this group's faction multiset holds. A
+        /// group's identity is fixed the first time it is asked for and never
+        /// recomputed, its multiset is maintained with the faction a unit
+        /// held when it JOINED and the faction it holds when it LEAVES, and
+        /// its attack list is a cache. So "not an enemy" has several
+        /// independent causes, and recording the faction alone - which is
+        /// what this observer used to do - names none of them.</para>
+        /// </summary>
+        private static JObject Nalfeshnee39GroupFacts(UnitEntityData unit)
+        {
+            if (unit == null) return null;
+            Kingmaker.UnitLogic.Groups.UnitGroup group = unit.Group;
+            if (group == null)
+                return new JObject { ["unit"] = unit.UniqueId,
+                    ["group"] = "(none)" };
+            var factions = new JArray();
+            System.Reflection.FieldInfo field = ExpandedSummoningFields(
+                typeof(Kingmaker.UnitLogic.Groups.UnitGroup))
+                .FirstOrDefault(value => value.Name == "m_Factions");
+            var multiset = field == null ? null :
+                field.GetValue(group) as IEnumerable<BlueprintFaction>;
+            if (multiset != null)
+                foreach (BlueprintFaction faction in multiset)
+                    factions.Add(faction == null ? "(null)" : faction.name);
+            return new JObject {
+                ["unit"] = unit.UniqueId,
+                ["groupId"] = group.Id,
+                ["isPlayerParty"] = group.IsPlayerParty,
+                ["unitFaction"] = unit.Descriptor.Faction == null ? null :
+                    unit.Descriptor.Faction.name,
+                ["groupFactionMultiset"] = factions,
+                ["groupAttackFactionCache"] = new JArray(group.AttackFactions
+                    .Select(value => value == null ? "(null)" : value.name)),
+                ["unitAttackFactions"] = new JArray(
+                    unit.Descriptor.AttackFactions
+                        .Select(value => value == null ? "(null)" :
+                            value.name)) };
+        }
+
+        /// <summary>
+        /// Puts the shared recipient back in a state where an enemy-targeted
+        /// cast is legal, and says in the record that it did.
+        ///
+        /// <para>This group runs last. The cure cell in the group before it
+        /// has to borrow this recipient's faction and party membership -
+        /// there is no other way to have the party's own <i>heal</i> land on
+        /// it - and it hands both back. What it cannot hand back is the group
+        /// bookkeeping described on <see cref="Nalfeshnee39GroupFacts"/>: the
+        /// faction multiset is maintained at join and leave time, so a unit
+        /// whose faction changed in between leaves its group describing a
+        /// unit that no longer exists, and the attack list is a cache of its
+        /// members' runtime sets. <c>ResetFactionSet</c> and
+        /// <c>UpdateAttackFactionsCache</c> are the engine's own
+        /// recomputations of exactly those two things from the current
+        /// members; they restore agreement with the units that are really
+        /// there and cannot invent a relation the game would not have. The
+        /// faction itself is re-established through the fixture's own private
+        /// hostile faction with the attack set reset to match it exactly,
+        /// which is the seam the released sprints already use.</para>
+        ///
+        /// <para>The result is asserted rather than assumed, so a future
+        /// refusal to cast names hostility directly instead of surfacing as a
+        /// bare unexplained refusal - which is what it did here, and cost a
+        /// qualification cycle to attribute.</para>
+        /// </summary>
+        private static JObject Nalfeshnee39EstablishHostility(
+            ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData owner, UnitEntityData target)
+        {
+            bool wasInParty = Game.Instance.Player.Party.Contains(target);
+            if (wasInParty) Game.Instance.Player.Party.Remove(target);
+            BlueprintFaction wanted = fixture.OwnedHostileFaction;
+            bool switched = false;
+            if (wanted != null)
+            {
+                if (!ReferenceEquals(target.Descriptor.Faction, wanted))
+                {
+                    target.Descriptor.SwitchFactions(wanted, true);
+                    switched = true;
+                }
+                else
+                {
+                    // The blueprint can be right while the runtime attack set
+                    // still carries the list merged in from the faction the
+                    // unit was lent. Match sets it to exactly this one's own.
+                    target.Descriptor.AttackFactions.Match(
+                        wanted.AttackFactions);
+                }
+            }
+            foreach (UnitEntityData unit in new[] { target, owner })
+            {
+                Kingmaker.UnitLogic.Groups.UnitGroup group =
+                    unit == null ? null : unit.Group;
+                if (group == null || group.Disposed) continue;
+                group.ResetFactionSet();
+                group.UpdateAttackFactionsCache();
+            }
+            owner.Memory.Add(target).Visible = true;
+            target.Memory.Add(owner).Visible = true;
+            return new JObject {
+                ["removedFromParty"] = wasInParty,
+                ["switchedToOwnedHostileFaction"] = switched,
+                ["ownedHostileFaction"] = wanted == null ? null : wanted.name,
+                ["ownerSeesTargetAsEnemy"] = owner.IsEnemy(target),
+                ["targetSeesOwnerAsEnemy"] = target.IsEnemy(owner),
+                ["sameGroup"] = ReferenceEquals(owner.Group, target.Group),
+                ["ownerGroup"] = Nalfeshnee39GroupFacts(owner),
+                ["targetGroup"] = Nalfeshnee39GroupFacts(target) };
+        }
+
+        /// <summary>
         /// The native heal action graph, read as it now stands.
         ///
         /// <para>This is a structural reading rather than a behavioural one,
@@ -284,6 +402,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             nalfeshnee.Memory.Add(target).Visible = true;
             target.Memory.Add(nalfeshnee).Visible = true;
             target.Stats.SaveWill.BaseValue = -100;
+
+            // Feeblemind is enemy-targeted, so hostility is a precondition of
+            // the cast and not an incidental detail of it.
+            JObject hostility = Nalfeshnee39EstablishHostility(fixture,
+                nalfeshnee, target);
+            check("nalfeshnee-integration-recipient-hostile",
+                (bool)hostility["ownerSeesTargetAsEnemy"] &&
+                    (bool)hostility["targetSeesOwnerAsEnemy"] &&
+                    !(bool)hostility["sameGroup"],
+                hostility,
+                "The shared recipient is mutually hostile to this group's own summon before an enemy-targeted spell is asked for, re-established through the fixture's private hostile faction and the engine's own group recomputations after the previous group had to lend that recipient to the party to heal it.");
 
             // The clone, through the production cast, with the same bounded
             // natural-twenty retry the spells phase uses.

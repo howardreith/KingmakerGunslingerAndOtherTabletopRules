@@ -157,7 +157,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (loan.PartyAdded)
                     Game.Instance.Player.Party.Remove(target);
-                target.Descriptor.SwitchFactions(oldFaction, false);
+                // Hand the recipient back whole. The cure cell has to lend
+                // this shared hostile to the party to have the party's own
+                // heal land on it, and a differential switch back leaves the
+                // borrowed faction's attack list merged into the unit's
+                // runtime set while the group's own faction multiset and
+                // attack cache still describe the unit as it was when it
+                // joined. Resetting to the recorded faction exactly and
+                // recomputing that group from its current members is what
+                // makes the next group's enemy-targeted casts legal.
+                target.Descriptor.SwitchFactions(oldFaction, true);
+                Kingmaker.UnitLogic.Groups.UnitGroup lentGroup = target.Group;
+                if (lentGroup != null && !lentGroup.Disposed)
+                {
+                    lentGroup.ResetFactionSet();
+                    lentGroup.UpdateAttackFactionsCache();
+                }
                 if (loan.Heal != null)
                     fixture.Caster.Descriptor.RemoveFact(loan.Heal);
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue =
@@ -259,6 +274,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     victim.HPLeft;
                 evidence["targetIsEnemyOfOwner"] = victim != null &&
                     owner.IsEnemy(victim);
+                // Enemy-ness is decided per GROUP, so the groups are what a
+                // reader needs when it comes back false.
+                evidence["ownerGroup"] = Nalfeshnee39GroupFacts(owner);
+                evidence["targetGroup"] = Nalfeshnee39GroupFacts(victim);
+                evidence["sameGroup"] = victim != null &&
+                    ReferenceEquals(owner.Group, victim.Group);
                 evidence["distanceMeters"] = victim == null ? 0f :
                     UnityEngine.Vector3.Distance(owner.Position,
                         victim.Position);
