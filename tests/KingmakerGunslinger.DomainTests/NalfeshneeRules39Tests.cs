@@ -239,55 +239,85 @@ namespace KingmakerGunslinger.DomainTests
         /// One carried check over ordered effects: what it removes, what it
         /// skips, and what it never does.
         ///
-        /// <para>These drive the same pure selection the production action
-        /// uses, so they are behaviour rather than a restated formula. Each
-        /// case is one of the three ways a naive loop gets the printed rule
-        /// wrong.</para>
+        /// <para>These drive <c>GreaterDispelResolve</c>, which is the same
+        /// traversal and the same accounting the production action runs - the
+        /// action differs only in supplying a delegate that really dispatches
+        /// the native rule instead of a scripted outcome. So these are the
+        /// behaviour, not a restated formula.</para>
         /// </summary>
         internal static void GreaterDispelCarriesOneCheckOverOrderedEffects()
         {
             int cl = NalfeshneeRules39Policy.SpellLikeCasterLevel;
             int cap = NalfeshneeRules39Policy.GreaterDispelMaxRemovals(cl);
+            Func<int, bool> always = index => true;
 
-            // A high-level effect the carried check FAILS must be skipped,
-            // not treated as the end of the walk - the lower effects after
-            // it are still eligible. Roll 5 and caster level 12 beat a DC of
+            // A high-level effect the carried check FAILS is skipped, not
+            // treated as the end of the walk. Roll 5 at caster level 12 beats
             // 11 + level, so levels 6 and below fall and level 20 stands.
-            int[] mixed = NalfeshneeRules39Policy.GreaterDispelSelection(
-                cl, 5, new[] { 20, 6, 4, 2 }, cap);
+            var visited = new System.Collections.Generic.List<int>();
+            int[] mixed = NalfeshneeRules39Policy.GreaterDispelResolve(
+                cl, 5, new[] { 20, 6, 4, 2 }, cap,
+                index => { visited.Add(index); return true; });
             Assertions.True(mixed.SequenceEqual(new[] { 1, 2, 3 }),
                 "A failed higher effect is skipped and the lower ones are still removed.");
-
-            // The cap counts REMOVALS, not attempts, so the failed entry
-            // above did not consume one of the three.
-            Assertions.Equal(3, mixed.Length,
-                "Three removals at caster level 12.");
+            Assertions.True(visited.SequenceEqual(new[] { 1, 2, 3 }),
+                "The failed effect is never dispatched, so it is never retried either.");
 
             // A fourth eligible effect beyond the cap survives.
-            int[] capped = NalfeshneeRules39Policy.GreaterDispelSelection(
-                cl, 20, new[] { 5, 4, 3, 2, 1 }, cap);
+            int[] capped = NalfeshneeRules39Policy.GreaterDispelResolve(
+                cl, 20, new[] { 5, 4, 3, 2, 1 }, cap, always);
             Assertions.True(capped.SequenceEqual(new[] { 0, 1, 2 }),
                 "The cap stops at three even when every effect would fall.");
 
-            // ONE check decides them all: the same roll either beats a given
-            // level or does not, so a second attempt at a failed effect could
-            // never succeed. That is why no retry exists in the action.
+            // THE CASE THAT PRE-TRUNCATION GOT WRONG. Five effects all beat
+            // the check, but the first dispatch removes nothing - a
+            // concurrent removal, an undispelable guard, a refusing
+            // subscriber. The cap counts CONFIRMATIONS, so that attempt costs
+            // nothing and the walk continues until three really left. An
+            // implementation that selected the first three candidates up
+            // front would have stopped at index 2 and returned two removals.
+            var attempted = new System.Collections.Generic.List<int>();
+            int[] afterMiss = NalfeshneeRules39Policy.GreaterDispelResolve(
+                cl, 20, new[] { 5, 4, 3, 2, 1 }, cap,
+                index => { attempted.Add(index); return index != 0; });
+            Assertions.True(afterMiss.SequenceEqual(new[] { 1, 2, 3 }),
+                "A dispatch that removes nothing does not consume the cap, and a later qualifying candidate is still reached.");
+            Assertions.True(attempted.SequenceEqual(new[] { 0, 1, 2, 3 }),
+                "The unconfirmed candidate is attempted once and never revisited.");
+            Assertions.Equal(cap, afterMiss.Length,
+                "Three confirmed removals still happen despite the miss.");
+
+            // Every dispatch missing yields no removals and still visits each
+            // qualifying candidate exactly once.
+            var all = new System.Collections.Generic.List<int>();
+            int[] none = NalfeshneeRules39Policy.GreaterDispelResolve(
+                cl, 20, new[] { 5, 4, 3 }, cap,
+                index => { all.Add(index); return false; });
+            Assertions.Equal(0, none.Length,
+                "No confirmations, no removals.");
+            Assertions.True(all.SequenceEqual(new[] { 0, 1, 2 }),
+                "Each qualifying candidate is attempted exactly once even when none confirm.");
+
+            // One check decides them all, so retrying a failed effect could
+            // only ever repeat its own answer - which is why no retry exists.
             Assertions.True(
                 !NalfeshneeRules39Policy.DispelCheckBeats(cl, 5, 20) &&
                 !NalfeshneeRules39Policy.DispelCheckBeats(cl, 5, 20),
-                "The carried check is deterministic for a given effect, so retrying one could only ever repeat its own answer.");
+                "The carried check is deterministic for a given effect.");
 
-            // A check that beats nothing removes nothing, and an empty or
-            // capless call is inert rather than throwing.
-            Assertions.Equal(0, NalfeshneeRules39Policy
-                .GreaterDispelSelection(cl, 1, new[] { 30, 29 }, cap).Length,
+            // Degenerate inputs are inert rather than throwing.
+            Assertions.Equal(0, NalfeshneeRules39Policy.GreaterDispelResolve(
+                cl, 1, new[] { 30, 29 }, cap, always).Length,
                 "A check that beats no effect removes none.");
-            Assertions.Equal(0, NalfeshneeRules39Policy
-                .GreaterDispelSelection(cl, 20, new int[0], cap).Length,
+            Assertions.Equal(0, NalfeshneeRules39Policy.GreaterDispelResolve(
+                cl, 20, new int[0], cap, always).Length,
                 "No effects, no removals.");
-            Assertions.Equal(0, NalfeshneeRules39Policy
-                .GreaterDispelSelection(cl, 20, new[] { 1 }, 0).Length,
+            Assertions.Equal(0, NalfeshneeRules39Policy.GreaterDispelResolve(
+                cl, 20, new[] { 1 }, 0, always).Length,
                 "A zero cap removes nothing.");
+            Assertions.Equal(0, NalfeshneeRules39Policy.GreaterDispelResolve(
+                cl, 20, new[] { 1 }, cap, null).Length,
+                "No dispatcher, no removals.");
         }
 
         /// <summary>

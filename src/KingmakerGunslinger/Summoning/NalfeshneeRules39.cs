@@ -9,6 +9,7 @@ using Kingmaker.Controllers.Brain.Blueprints.Considerations;
 using Kingmaker.ElementsSystem;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
+using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
@@ -102,7 +103,8 @@ namespace KingmakerGunslinger.Summoning
     /// already spent.</para>
     /// </summary>
     [Serializable]
-    public sealed class NalfeshneeNimbusWindup39 : BuffLogic
+    public sealed class NalfeshneeNimbusWindup39 : BuffLogic,
+        IUnitHandler, IGlobalSubscriber
     {
         public BlueprintUnit OwningBlueprint;
         public BlueprintAbility Nimbus;
@@ -157,28 +159,59 @@ namespace KingmakerGunslinger.Summoning
         }
 
         /// <summary>
-        /// The one authorized way to abandon a pending windup.
+        /// Abandon this pending windup: mark it first, so that whatever
+        /// removal follows is already known not to be a resolution.
         ///
         /// <para>Cancellation takes ownership BEFORE any removal callback can
         /// run, including a late one at or after the deadline, which is the
         /// case a time comparison cannot distinguish. If a legitimate
-        /// resolution has already happened the flag is already down and this
-        /// cannot undo it. Neither route refunds the spent use.</para>
+        /// resolution has already happened the armed flag is already down and
+        /// this cannot undo it. Neither route refunds the spent use.</para>
         /// </summary>
-        internal static void Cancel(UnitEntityData owner, BlueprintBuff windup)
+        private void MarkCancelled()
         {
-            if (owner == null || windup == null ||
-                owner.Descriptor == null) return;
-            Buff pending = owner.Descriptor.Buffs.GetBuff(windup);
-            if (pending == null) return;
-            foreach (NalfeshneeNimbusWindup39 component in pending
-                .SelectComponents<NalfeshneeNimbusWindup39>())
-                lock (component)
-                {
-                    component.m_Cancelled = true;
-                    component.m_Armed = false;
-                }
-            pending.Remove();
+            lock (this)
+            {
+                m_Cancelled = true;
+                m_Armed = false;
+            }
+        }
+
+        // The exact-source lifetime hooks, on the released Sprint 32 pattern:
+        // native destruction raises IUnitHandler BEFORE the unit leaves the
+        // entity pool, so the owner is still resolvable here and the windup
+        // can be marked while the engine's own removal is still ahead of it.
+        //
+        // This is what turns "the owner happened to be dead by the time the
+        // removal callback ran" from an inference into a recorded fact. The
+        // owner-state clause in IsDueResolution still stands as the backstop
+        // for any destruction path that does not raise these.
+        //
+        // Nothing is removed here. The engine removes the buff as part of
+        // destroying the unit; marking is the whole job, which is why this
+        // adds no scheduler and intercepts no other buff's removal.
+        public void HandleUnitSpawned(UnitEntityData unit) { }
+
+        public void HandleUnitDeath(UnitEntityData unit)
+        {
+            if (Mine39(unit)) MarkCancelled();
+        }
+
+        public void HandleUnitDestroyed(UnitEntityData unit)
+        {
+            if (Mine39(unit)) MarkCancelled();
+        }
+
+        /// <summary>
+        /// Whether this lifetime event is about the exact unit carrying this
+        /// windup. A global subscriber hears every unit, so identity is
+        /// checked rather than assumed - another nalfeshnee dying must not
+        /// cancel this one's activation.
+        /// </summary>
+        private bool Mine39(UnitEntityData unit)
+        {
+            return unit != null && Owner != null &&
+                ReferenceEquals(Owner.Unit, unit);
         }
 
         /// <summary>
@@ -460,36 +493,64 @@ namespace KingmakerGunslinger.Summoning
                 DiceType.D20)) { Reason = Context };
             int check = Context.TriggerRule(roll).Result;
 
-            // The ordered candidates, and the selection the carried check
-            // makes over them. That decision lives in one pure policy the
-            // domain tests drive directly, so the action and its test cannot
-            // end up holding two copies of it.
+            // The ordered snapshot, taken once, and the traversal the
+            // carried check drives over it. The traversal and its accounting
+            // live in one pure policy the domain tests drive directly, so the
+            // action and its test cannot hold two copies of the rule.
+            //
+            // The delegate is where "removed" actually means removed: it
+            // re-checks that this exact effect is still present and eligible
+            // - an effect already gone before dispatch was not removed BY
+            // THIS CAST and must not consume part of the cap - then raises
+            // the native rule and reads the live collection to confirm the
+            // membership transition. Only a true return advances the cap, so
+            // a dispatch that removes nothing leaves a later qualifying
+            // candidate reachable.
             Buff[] ordered = Eligible(target);
-            int[] selected = NalfeshneeRules39Policy.GreaterDispelSelection(
+            int[] confirmed = NalfeshneeRules39Policy.GreaterDispelResolve(
                 casterLevel, check,
                 ordered.Select(value => value.Context.Params.CasterLevel)
-                    .ToArray(), cap);
-            int removed = 0;
-            foreach (int index in selected)
-            {
-                Buff buff = ordered[index];
-                // Native removal, native event, native attribution. The None
-                // check type is the branch that removes without rolling, so
-                // the carried result stays the one that decided this.
-                var dispel = new RuleDispelMagic(caster, target, buff,
-                    RuleDispelMagic.CheckType.None, StatType.Unknown);
-                Context.TriggerRule(dispel);
-                // Count CONFIRMED removals, not dispatched requests. The
-                // None branch removes unconditionally, but "the rule was
-                // raised" and "the effect is gone" are different facts, and
-                // only the second one may consume part of the printed cap.
-                // Asking the live collection is the supported way to tell
-                // them apart; a subscriber that refused the removal, or a
-                // buff already gone for an unrelated reason, both show up
-                // here rather than being counted as a success.
-                if (!target.Descriptor.Buffs.Enumerable.Any(value =>
-                        ReferenceEquals(value, buff))) removed++;
-            }
+                    .ToArray(), cap,
+                index => DispelOne39(caster, target, ordered[index]));
+            if (confirmed.Length == 0) return;
+        }
+
+        /// <summary>
+        /// Dispatch one native removal and report whether it actually
+        /// happened.
+        ///
+        /// <para>Presence is checked twice for different reasons. Before
+        /// dispatch, because an effect that has already gone - a concurrent
+        /// removal, an expiry between the snapshot and here - is not a
+        /// removal by this cast. After dispatch, because raising the rule and
+        /// the effect leaving are different facts, and only the second one
+        /// may consume part of the printed cap.</para>
+        /// </summary>
+        private static bool DispelOne39(UnitEntityData caster,
+            UnitEntityData target, Buff buff)
+        {
+            if (buff == null || !IsLiveDispelCandidate39(target, buff))
+                return false;
+            // Native removal, native event, native attribution. The None
+            // check type is the branch of OnTrigger that removes without
+            // rolling, so the carried result stays the one that decided this.
+            var dispel = new RuleDispelMagic(caster, target, buff,
+                RuleDispelMagic.CheckType.None, StatType.Unknown);
+            buff.Context.TriggerRule(dispel);
+            return !IsLiveDispelCandidate39(target, buff);
+        }
+
+        /// <summary>
+        /// Whether this exact effect instance is still on the target and
+        /// still a legal dispel candidate.
+        /// </summary>
+        private static bool IsLiveDispelCandidate39(UnitEntityData target,
+            Buff buff)
+        {
+            return target != null && target.Descriptor != null &&
+                buff != null && !buff.IsNotDispelable && buff.IsFromSpell &&
+                target.Descriptor.Buffs.Enumerable.Any(value =>
+                    ReferenceEquals(value, buff));
         }
 
         /// <summary>
