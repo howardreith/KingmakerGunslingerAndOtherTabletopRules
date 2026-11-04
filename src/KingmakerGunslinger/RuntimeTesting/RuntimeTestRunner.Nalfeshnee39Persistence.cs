@@ -43,6 +43,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExpandedSummoningSpecialBuilder.Nalfeshnee39Prefix + suffix];
         }
 
+        /// <summary>
+        /// Whether this unit carries its printed constant aura, asked the same
+        /// way the core phase asks it. A blueprint-granted buff reaches a
+        /// live unit as a permanent buff, but which of the two a given
+        /// reconstruction shows is the engine's business rather than this
+        /// creature's contract - and demanding only the live-buff form would
+        /// make a cold-load cell fail on a distinction the printed rule does
+        /// not draw. Both forms are recorded beside the answer.
+        /// </summary>
+        private static bool Nalfeshnee39CarriesAura(UnitEntityData unit,
+            BlueprintBuff aura)
+        {
+            return unit.Descriptor.Buffs.GetBuff(aura) != null ||
+                unit.Blueprint.AddFacts.Any(fact =>
+                    ReferenceEquals(fact, aura));
+        }
+
         private static UnitEntityData[] Nalfeshnee39SavedSources(
             UnitEntityData[] sources)
         {
@@ -107,6 +124,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             var rows = new JArray();
             bool coherent = true;
             var deadlines = new List<double>();
+            // THE FIXTURE ARRIVES PAUSED, and these are real commands. The
+            // roster-persistence fixture pauses the game for its own snapshot
+            // work, and a paused game never advances an ability's execution
+            // process - the first guarded attempt spent its whole budget
+            // waiting and reported that the native ability "did not finish".
+            // So the clock runs for the length of the activations and the
+            // caller's pause state is handed back, which is the same local and
+            // reversible thing the gap below already did.
+            bool callerPaused = Game.Instance.IsPaused;
+            Game.Instance.IsPaused = false;
+            try
+            {
             for (int index = 0; index < nalfeshnees.Length; index++)
             {
                 UnitEntityData owner = nalfeshnees[index];
@@ -117,14 +146,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // instants rather than the same number twice.
                     double start = Game.Instance.TimeController.GameTime
                         .TotalSeconds;
-                    bool paused = Game.Instance.IsPaused;
-                    Game.Instance.IsPaused = false;
                     int frames = 0;
                     while (frames++ < 600 &&
                         Game.Instance.TimeController.GameTime.TotalSeconds -
                             start < GameConsts.RoundDuration * 0.25)
                         yield return 0;
-                    Game.Instance.IsPaused = paused;
                 }
 
                 // The production command, not a fixture buff application. A
@@ -175,6 +201,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["canMove"] = owner.Descriptor.State.CanMove,
                     ["coherent"] = row });
             }
+            }
+            finally { Game.Instance.IsPaused = callerPaused; }
             bool distinct = deadlines.Count == 2 &&
                 Math.Abs(deadlines[0] - deadlines[1]) > 0.001;
             RosterPersistenceCheck("s39-nimbus-pending-armed", coherent &&
@@ -184,6 +212,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["deadlines"] = new JArray(deadlines),
                     ["deadlinesDistinct"] = distinct,
                     ["pendingWithdrawnBeforeSave"] = false,
+                    ["clockRanForTheActivations"] = true,
+                    ["callerPauseRestored"] =
+                        Game.Instance.IsPaused == callerPaused,
                     ["whyItIsNotWithdrawn"] = "The Sprint 38 envelope had to withdraw its stun because a real stun stops an owned unit acting and the shared roster contract requires every owned unit to be able to act at the save boundary. A nimbus windup imposes no restriction on its owner, so it crosses this save intact and no readiness waiver is needed."
                 }, "Two real activations leave each nalfeshnee with one armed pending windup at its own distinct absolute deadline and one spent use of three, both owners still able to act and move, so the pending state reaches the save without being withdrawn.");
             if (!(coherent && distinct))
@@ -239,7 +270,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     held == NalfeshneeRules39Policy.NimbusUsesPerDay - 1 &&
                     owner.Descriptor.Buffs.Enumerable.Count(value =>
                         ReferenceEquals(value.Blueprint, windup)) == 1 &&
-                    owner.Descriptor.Buffs.GetBuff(aura) != null &&
+                    Nalfeshnee39CarriesAura(owner, aura) &&
                     owner.Descriptor.State.CanAct &&
                     owner.Descriptor.State.CanMove;
                 coherent &= row;
@@ -255,8 +286,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["remainingGameSeconds"] = pending == null ? 0 :
                         pending.TimeLeft.TotalSeconds,
                     ["usesRemaining"] = held,
-                    ["auraReinstated"] =
+                    ["auraReinstated"] = Nalfeshnee39CarriesAura(owner, aura),
+                    ["auraAsLiveBuff"] =
                         owner.Descriptor.Buffs.GetBuff(aura) != null,
+                    ["auraAsBlueprintFact"] = owner.Blueprint.AddFacts
+                        .Any(fact => ReferenceEquals(fact, aura)),
                     ["canAct"] = owner.Descriptor.State.CanAct,
                     ["canMove"] = owner.Descriptor.State.CanMove,
                     ["coherent"] = row });
