@@ -55,6 +55,7 @@
     <Compile Include="Summoning\VrockRules37.cs" />
     <Compile Include="Summoning\VrockVisualPolicy37.cs" />
     <Compile Include="Summoning\GlabrezuRules38Policy.cs" />
+    <Compile Include="Summoning\NalfeshneeRules39Policy.cs" />
     <Compile Include="Summoning\GlabrezuRules38.cs" />
     <Compile Include="Summoning\GlabrezuVisualPolicy38.cs" />
     <Compile Include="Summoning\BoneDevilTailVisual35.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint36Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint37Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint38Inputs.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint39Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBarbedCombat35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBone35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCore36.cs" />
