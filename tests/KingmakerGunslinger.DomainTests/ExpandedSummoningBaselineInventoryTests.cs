@@ -161,7 +161,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("dire-tiger<Smilodon"),
                 "Smilodon displays under its own name and is not a proxy.");
-            string[] batchAdditions = { "lemure", "dretch", "hound-archon", "astral-deva", "trumpet-archon", "lillend-azata", "bearded-devil", "kyton-chain-devil", "barbed-devil", "bone-devil", "babau", "hezrou", "vrock" };
+            string[] batchAdditions = { "lemure", "dretch", "hound-archon", "astral-deva", "trumpet-archon", "lillend-azata", "bearded-devil", "kyton-chain-devil", "barbed-devil", "bone-devil", "babau", "hezrou", "vrock", "glabrezu" };
             Assertions.True(batchAdditions.All(key => ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                     .Count(value => value.StartsWith(key + "<", StringComparison.Ordinal)) == 1),
                 "Each selected new body retains its actual borrowed-rig disclosure.");

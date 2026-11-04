@@ -68,10 +68,20 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(SummoningCurrentSurface.Sprint37RootIdentityCount,
                 sprint37Routes,
                 "Sprint37 owns exactly its three public route abilities.");
+            // Sprint 38 is registered at Monster tier 9, so parent 9 is the
+            // only parent that admits it and there is exactly one root.
+            int sprint38Routes = released.Count(value =>
+                value.Symbol.StartsWith("KMG.Summoning.Ability.SM.",
+                    StringComparison.Ordinal) &&
+                value.Symbol.Contains(".Glabrezu."));
+            Assertions.Equal(SummoningCurrentSurface.Sprint38RootIdentityCount,
+                sprint38Routes,
+                "Sprint38 owns exactly its one public route ability.");
             Assertions.Equal(1760 + TheropodRulesPolicy.AppendedAbilityIdentityCount +
                     GiantBodyRulesPolicy.AppendedTotalAbilityIdentityCount + 9 +
                     ExpandedSummoningSprints30And31Tests.RegisteredAbilityIdentityCount +
-                    sprint35Routes + sprint36Routes + sprint37Routes,
+                    sprint35Routes + sprint36Routes + sprint37Routes +
+                    sprint38Routes,
                 released.Count(value => value.PlannedType == "BlueprintAbility"),
                 "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(

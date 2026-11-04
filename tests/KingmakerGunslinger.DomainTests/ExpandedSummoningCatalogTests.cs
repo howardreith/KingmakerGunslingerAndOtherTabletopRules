@@ -58,7 +58,8 @@ namespace KingmakerGunslinger.DomainTests
                     value.Creature.Key != "bearded-devil" && value.Creature.Key != "kyton-chain-devil" &&
                     value.Creature.Key != "barbed-devil" && value.Creature.Key != "bone-devil" &&
                     value.Creature.Key != "babau" && value.Creature.Key != "hezrou" &&
-                    value.Creature.Key != "vrock").ToArray();
+                    value.Creature.Key != "vrock" &&
+                    value.Creature.Key != "glabrezu").ToArray();
             Assertions.Equal(1150, prior.Length, "Accepted public route surface must be preserved.");
             Assertions.True(prior.All(SummonVisibilityCatalog.IsPublished), "Existing routes must remain published.");
             SummonVisibilityCatalog.Validate();

@@ -165,12 +165,14 @@ namespace KingmakerGunslinger.DomainTests
 
             // Positive controls, including the two released species the first
             // hand-written four-entry set silently omitted.
+            // Sprint 38 appends the Glabrezu, whose own printed type line
+            // is "CE Huge outsider (chaotic, demon, evil, extraplanar)".
             foreach (string key in new[] { "succubus", "shadow-demon",
-                "dretch", "babau", "hezrou", "vrock" })
+                "dretch", "babau", "hezrou", "vrock", "glabrezu" })
                 Assertions.True(SummonDemonIdentityCatalog.IsDemonKey(key),
                     "A printed demon is in the exemption set: " + key);
-            Assertions.Equal(6, keys.Count,
-                "The exemption covers exactly this project's six printed demons.");
+            Assertions.Equal(7, keys.Count,
+                "The exemption covers exactly this project's seven printed demons.");
 
             // Negative controls. The Bebilith is the one that matters most:
             // it is a chaotic evil extraplanar outsider with no demon subtype,

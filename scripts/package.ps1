@@ -236,6 +236,15 @@ $vrock37Files = @('vrock-mesh.json','vrock-albedo.png')
 foreach ($file in $vrock37Files) {
     Copy-Item -LiteralPath (Join-Path $outputDirectory ('assets\sprint37-vrock\'+$file)) -Destination $vrock37Destination
 }
+# Same reason as the Vrock above: a body is only real if it reaches the
+# installed mod, and a creature whose files sit in the repository and in
+# no package renders as its donor instead.
+$glabrezu38Destination = Join-Path $modDirectory 'assets\sprint38-glabrezu'
+New-Item -ItemType Directory -Path $glabrezu38Destination -Force | Out-Null
+$glabrezu38Files = @('glabrezu-mesh.json','glabrezu-albedo.png')
+foreach ($file in $glabrezu38Files) {
+    Copy-Item -LiteralPath (Join-Path $outputDirectory ('assets\sprint38-glabrezu\'+$file)) -Destination $glabrezu38Destination
+}
 $shadowOutsiderDestination = Join-Path $modDirectory 'assets\sprint33-shadow-outsiders'
 New-Item -ItemType Directory -Path $shadowOutsiderDestination -Force | Out-Null
 $shadowOutsiderFiles = @('invisible-stalker-mesh.json','invisible-stalker-albedo.png','shadow-demon-mesh.json','shadow-demon-albedo.png')
@@ -344,7 +353,7 @@ $summonManifest = Get-KmgSummonIconManifest -RepositoryRoot $repositoryRoot
 $basePackageFileCount = 278 + @($summonManifest.icons).Count +
     $s3031OriginalBodyParts.Count + $shadowOutsiderFiles.Count +
     $infernalFiles.Count + $infernal35Files.Count + $infernal36Files.Count +
-    $vrock37Files.Count
+    $vrock37Files.Count + $glabrezu38Files.Count
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {

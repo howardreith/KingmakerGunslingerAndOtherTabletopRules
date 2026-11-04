@@ -126,7 +126,22 @@ namespace KingmakerGunslinger.Summoning
                 "bone-devil|a8cbd4cdb0feaf64eab1452257c3c971|0",
                 "babau|a8cbd4cdb0feaf64eab1452257c3c971|0",
                 "hezrou|a8cbd4cdb0feaf64eab1452257c3c971|0",
-                "vrock|a8cbd4cdb0feaf64eab1452257c3c971|0"
+                "vrock|a8cbd4cdb0feaf64eab1452257c3c971|0",
+                // Sprint 38 reuses the same measured free-hands rig every
+                // released Sprint 34-37 outsider rides, rather than
+                // spending a guarded transaction to re-derive a capture
+                // that is already hash-verified. The Glabrezu is
+                // four-armed and no rig in this game has four arms: its
+                // two large pincer limbs ride the rig's two real animated
+                // arm chains, and the two smaller claw arms are project
+                // geometry weighted to the upper torso, exactly as the
+                // released four-armed Girallon and Xill borrow a
+                // two-armed rig and as the Sprint 37 Vrock's wings ride
+                // its chest. The pincers get the animated chains because
+                // they are the signature limbs and the rend carriers. The
+                // body is original geometry and the rig is an animation
+                // skeleton only.
+                "glabrezu|a8cbd4cdb0feaf64eab1452257c3c971|0"
             });
         }
 

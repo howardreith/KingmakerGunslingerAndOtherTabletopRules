@@ -298,6 +298,80 @@ namespace KingmakerGunslinger.RuntimeTesting
                     yield return frame;
                 yield break;
             }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint38GlabrezuReleasePhase)
+            {
+                // The same release ordering Sprint 37 settled on. Each review
+                // disposes its own units and the hostile fixture is reset
+                // between them, so the observations stay independent while
+                // sharing one candidate. Public routes come last because they
+                // exercise the real player path and leave the menus as a
+                // player would find them.
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewGlabrezuCore38(fixture))
+                    yield return frame;
+                ResetExpandedSummoningHostile(fixture);
+                foreach (int frame in ReviewGlabrezuRend38(fixture))
+                    yield return frame;
+                ResetExpandedSummoningHostile(fixture);
+                foreach (int frame in ReviewGlabrezuStun38(fixture))
+                    yield return frame;
+                ResetExpandedSummoningHostile(fixture);
+                foreach (int frame in ReviewGlabrezuSpells38(fixture))
+                    yield return frame;
+                ResetExpandedSummoningHostile(fixture);
+                foreach (int frame in ReviewGlabrezuAi38(fixture))
+                    yield return frame;
+                ResetExpandedSummoningHostile(fixture);
+                ReviewGlabrezuPublic38(fixture);
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint38GlabrezuCorePhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewGlabrezuCore38(fixture))
+                    yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint38GlabrezuRendPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewGlabrezuRend38(fixture))
+                    yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint38GlabrezuStunPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewGlabrezuStun38(fixture))
+                    yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint38GlabrezuSpellsPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewGlabrezuSpells38(fixture))
+                    yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint38GlabrezuAiPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewGlabrezuAi38(fixture))
+                    yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint38GlabrezuPublicPhase)
+            {
+                ReviewGlabrezuPublic38(fixture);
+                yield break;
+            }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32ShadowDrainPhase)
             {
                 CreateSprint32TurnHostile(fixture);

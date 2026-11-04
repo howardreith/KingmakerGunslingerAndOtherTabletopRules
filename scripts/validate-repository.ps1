@@ -256,8 +256,16 @@ if ($activeVersion -eq '0.0.174') {
 }
 & (Join-Path $PSScriptRoot 'Test-ClosedSprint36Release.ps1')
 if ($LASTEXITCODE -ne 0) { throw 'Sprint36 publisher tests failed.' }
-# Sprint 37's suite pins the CURRENT surface, so unlike Sprint 35's and
-# Sprint 36's it runs directly rather than through a closed-sprint isolation
-# wrapper. It becomes a closed sprint, and gains one, when Sprint 38 opens.
-& (Join-Path $PSScriptRoot 'Test-Sprint37Release.ps1')
+# Sprint 38 has opened, so Sprint 37's suite is now a closed sprint and has
+# gained its isolation wrapper, exactly as the note here said it would. Its
+# suite pins the Sprint 37 surface - 131 creatures, 1,185 roots, 1,214
+# choices - which registering the Glabrezu necessarily moves, so it runs at
+# the reviewed Sprint 37 merge where that surface is still current.
+& (Join-Path $PSScriptRoot 'Test-ClosedSprint37Release.ps1')
 if ($LASTEXITCODE -ne 0) { throw 'Sprint37 publisher tests failed.' }
+# Sprint 38 is the open sprint, so its suite runs against the current source:
+# the surface it pins - 132 creatures, 1,186 roots, 1,215 choices - is the
+# surface this tree derives. It becomes a closed sprint, and gains its own
+# isolation wrapper, when Sprint 39 opens.
+& (Join-Path $PSScriptRoot 'Test-Sprint38Release.ps1')
+if ($LASTEXITCODE -ne 0) { throw 'Sprint38 publisher tests failed.' }
