@@ -263,9 +263,13 @@ if ($LASTEXITCODE -ne 0) { throw 'Sprint36 publisher tests failed.' }
 # the reviewed Sprint 37 merge where that surface is still current.
 & (Join-Path $PSScriptRoot 'Test-ClosedSprint37Release.ps1')
 if ($LASTEXITCODE -ne 0) { throw 'Sprint37 publisher tests failed.' }
-# Sprint 38 is the open sprint, so its suite runs against the current source:
-# the surface it pins - 132 creatures, 1,186 roots, 1,215 choices - is the
-# surface this tree derives. It becomes a closed sprint, and gains its own
-# isolation wrapper, when Sprint 39 opens.
-& (Join-Path $PSScriptRoot 'Test-Sprint38Release.ps1')
+# Sprint 39 has opened, so Sprint 38's suite is now a closed sprint and has
+# gained its isolation wrapper, exactly as the note here said it would. Its
+# suite pins the Sprint 38 census - 132 creatures, 110 Monster entries and 598
+# Monster placements - which registering the Nalfeshnee necessarily moves, so
+# it runs at the reviewed Sprint 38 merge where that census is still current.
+# Its generated-root and visible-choice pins are NOT what moved: Sprint 39
+# registers one more placement and withholds it, so published totals stay at
+# 1,186 and 1,215 while the census does not.
+& (Join-Path $PSScriptRoot 'Test-ClosedSprint38Release.ps1')
 if ($LASTEXITCODE -ne 0) { throw 'Sprint38 publisher tests failed.' }
