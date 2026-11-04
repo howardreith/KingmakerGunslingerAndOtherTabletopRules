@@ -93,6 +93,13 @@ additionally requires a live, non-destroyed, exact-source owner.
 
 ### 5. `UnholyGrace` covers two of the aura's branches, not five
 
+> **Corrected by the live observation. `UnholyGrace` is not the aura's
+> carrier at all** - it is a standalone feature, and `UnholyAuraBuff` carries
+> every printed branch. See *Three corrections to the offline analysis* below.
+> The component reading here is accurate about `UnholyGrace` itself; the
+> inference that it was therefore the aura's implementation was wrong, and it
+> is retained to show how the name misled the offline pass.
+
 `Kingmaker.UnitLogic.FactLogic.UnholyGrace` carries exactly two fields:
 `m_AcModifier` and `m_ReflexModifier`. It does **not** supply the Fortitude
 and Will resistance bonuses, the conditional spell resistance, the
@@ -110,6 +117,10 @@ The other branches do have native support:
   "when this unit is attacked" hook the Strength-damage response needs.
 
 ### 6. Feeblemind's prohibition has a native component; its score change does not
+
+> **Refined by the live observation.** A native feeblemind graph does ship,
+> and it already implements the printed arcane term as a conditional DC
+> increase. What it omits is the casting prohibition. See below.
 
 * `Kingmaker.UnitLogic.FactLogic.ForbidSpellCasting` exists and carries a
   `ForbidMagicItems` flag — which covers both of the printed spell's
@@ -152,6 +163,130 @@ removes **one for every four caster levels**, which is three at caster level
 12. Neither native setting is that number. This is an enumerated native
 limitation, recorded before implementation rather than discovered during
 qualification.
+
+## What the one bounded observation returned
+
+Run `20261104T0415356825476Z-observe-expanded-summoning-sprint39-native-inputs`,
+status **PASS**, against development candidate `e531ea954b9d` (package
+`b1b94bca39ff388ccb86d7fb2b58d17b46e6ffaf385b7e75f3c751afa09242df`, DLL
+`d0711d8c3a4d9d08bd9cf6084742bf258a8fb1a4edb729fb4064a7d55fb74019`, MVID
+`9460a8c3-b1e6-48a6-9f3d-644ec83f25ed`). Research only: no actor created, no
+save loaded. The live mod tree was
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3` before the
+run and restored to exactly that afterwards.
+
+A name search establishes its own result and not a universal absence. These are
+the identities it named.
+
+| Input | Result |
+|---|---|
+| native Nalfeshnee unit | **none** - 0 units, and the name query returned 0 matches of any type |
+| `Feeblemind` | `444eed6e26f773a40ab6e4d160c67faa` (ability) |
+| `FeeblemindBuff` | `8b3b4c225fe0fb046bfa8881c3ddad0d` |
+| `UnholyAura` | `47f9cb1c367a5e4489cfa32fce290f86` (ability) |
+| `UnholyAuraBuff` | `9eda82a1f78558747a03c17e0e9a1a68` |
+| `DispelMagicGreater` | `f0f761b808dc4b149b08eaf44b99f633` (variant parent) |
+| `DispelMagicGreaterTarget` | `6d490c80598f1d34bb277735b52d52c1` |
+| `DispelMagicGreaterArea` | `b9be852b03568064b8d2275a6cf9e2de` |
+| `CallLightning` | `2a9ef0e0b5822a24d88b16673a267456` |
+| `Slow` | `f492622e473d34747806bdb39356eb89` |
+| `Heal` | `ff8f1534f66559c478448723e16b6624` |
+| `Restoration` | `f2115ac1148256b4ba20788f7e966830` |
+| `BreakEnchantment` | `7792da00c85b9e042a0fdfc2b66ec9a8` |
+| `ImprovedCritical` | `f4201c85a991369408740c6888362e20`, a `BlueprintParametrizedFeature` |
+| `UnholyGrace` carriers | exactly **one**, the standalone feature `2334cca051360914d970839e81b1f7d9` |
+| `SpellResistanceAgainstAlignment` carriers | 6, including `UnholyAuraBuff`, `HolyAuraBuff`, `CloakOfChaosBuff`, `ShieldOfLawBuff` |
+| `ForbidSpellCasting` carriers | 10, all rage/transformation/skald buffs - **`FeeblemindBuff` is not among them** |
+
+### Three corrections to the offline analysis
+
+**`UnholyGrace` is not the aura's carrier.** The offline reading inferred from
+the component's name that it implemented the aura and therefore covered only
+two branches. The live library disagrees: `UnholyGrace` is a standalone
+`BlueprintFeature` carrying only that component, and the actual aura consumer
+is `UnholyAuraBuff`, which carries **all** of the printed branches:
+
+* `AddStatBonus` Descriptor `Deflection`, Stat `AC`, Value 4;
+* `BuffAllSavesBonus` Descriptor `Resistance`, Value 4 - all three saves, not
+  Reflex alone;
+* `BuffDescriptorImmunity` descriptor 16 and `SpellImmunityToSpellDescriptor`
+  descriptor 16, which is the printed protection from mental control;
+* `AddTargetAttackRollTrigger` with `OnlyHit` and `OnlyMelee`, whose actions on
+  the attacker are conditional on `ContextConditionAlignment Good` (or the
+  evil-domain buff) and then take a **Fortitude** saving throw - the printed
+  Strength-damage response to a good melee attacker;
+* `SpellResistanceAgainstAlignment` Value 25, Alignment `Good` - the printed
+  conditional resistance.
+
+So the selected mechanism is **clone `UnholyAuraBuff`**, not assemble the
+branches from `UnholyGrace` plus separate stat bonuses. Simpler, exactly the
+native consumer, and the amounts match the derivation: racial AC 25 + 4 = the
+printed 29, and racial Fort/Ref/Will 18/5/17 + 4 = the printed 22/9/21.
+
+**Greater dispel's cap is confirmed absent, from the shipped configuration
+rather than from the component's field list.** The two targeted graphs differ in
+exactly one value:
+
+| Blueprint | `m_StopAfterFirstRemoved` | Effect |
+|---|---|---|
+| `DispelMagicTarget` | `True` | removes exactly one effect |
+| `DispelMagicGreaterTarget` | `False` | removes **every** eligible effect |
+
+Both use `m_BuffType = FromSpells`, `m_CheckType = CasterLevel`, no school or
+descriptor filter and no maximum spell level. So the installed greater form is
+**unbounded**, and the printed one-per-four-caster-levels cap is genuinely
+unexpressible natively. The adaptation stands and is now evidence-backed, and
+it makes the summon *weaker* than the native spell - the correct direction for
+fidelity. Both the targeted and area variants ship; **no counterspell variant
+exists**, which is the exact disposition rather than a blanket claim.
+
+**Native feeblemind is faithful about the save and silent about the
+prohibition.** The ability carries `ContextActionSavingThrow` Type `Will` with a
+`ConditionalDCIncrease` of 4 gated on `ContextConditionTargetIsArcaneCaster` -
+so the printed arcane penalty is already implemented, as a DC increase rather
+than a save penalty, and the engine owns the authoritative answer to "is this
+target an arcane caster" so nothing has to be inferred from Intelligence, a
+class label or the presence of spell-like abilities.
+
+But `FeeblemindBuff` carries **only** `AddStatBonusAbilityValue` Intelligence
+-99 and Charisma -99, plus the descriptor. It does **not** carry
+`ForbidSpellCasting`, and it is absent from that component's ten shipped
+carriers. So the native effect reduces two ability scores and relies on that
+alone to stop casting - which is exactly the failure mode the mission names: an
+ability-score change that silently fails to restrict the relevant casting
+behaviour. A Wisdom-based divine caster loses nothing it needs to cast.
+
+The bounded correction is therefore one native component on the project's own
+clone: keep the faithful Will save, the arcane DC increase, the descriptor and
+the Int/Cha reduction, and **add `ForbidSpellCasting`** so the printed
+prohibition actually holds. The native buff is not modified.
+
+### One scoping decision: the constant aura's recipients
+
+The native `UnholyAura` **ability** is the spell's normal cast -
+`AbilityTargetsAround` with a 20-foot radius, `m_TargetType = Ally`, and a
+caster-level duration in rounds. A printed **constant** creature aura is not
+that cast, and the mission is explicit that it must not be converted into
+unlimited permanent party-wide protection.
+
+So the constant feature grants the cloned `UnholyAuraBuff` **to the Nalfeshnee
+itself**, permanently, through an exact-source grant that reconstructs once on
+load. The 20-foot ally extension is deliberately **not** implemented: the
+printed stat block establishes only that this creature benefits from its own
+aura - its AC, saves and CMD all include it - and extending +4 AC, +4 on all
+saves and SR 25 against good to every party member standing near a summoned
+creature would be a material power addition the entry does not grant. This is
+recorded as an accurately scoped decision with disclosure, on the same footing
+as Sprint 38's self-only Veil scoping, and **not** as an omission of the
+feature.
+
+### The bite's threat range
+
+A native `ImprovedCritical` exists, but as a `BlueprintParametrizedFeature` -
+the player feat, parametrised by weapon category. The printed 19-20 is
+therefore delivered by the bite weapon type's own critical roll edge of 19, as
+Sprint 38 delivered the pincer's, and the parametrised feat is **not** also
+attached. Exactly one mechanism, never both.
 
 ## The three risks, and the selected designs
 
