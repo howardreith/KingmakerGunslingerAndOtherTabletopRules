@@ -408,6 +408,101 @@ table in `scripts/RuntimeAutomation.Common.ps1`, and the documented `$expected`
 union in `scripts/Test-RuntimeScenarioPreflight.ps1` — or the harness refuses
 the scenario as not allowlisted *after* snapshotting.
 
+## Where this sits now, and exactly what remains
+
+Branch `codex/expanded-summoning-sprint39-nalfeshnee` at `3b7e0be4`, pushed.
+The worktree is clean and the tree is **deliberately not green**: registering a
+creature opens a cascade, and the remainder of it depends on blueprints that do
+not exist yet.
+
+### Done and verified
+
+| Item | State |
+|---|---|
+| intake, worktree, promotion root, allowlist, push | complete; 38 wrapper cases pass |
+| Sprint 38 documentation carry-forward | complete; three corrections, no rebuild |
+| printed contract + derivations | complete; 8 domain tests, 2,801 -> 2,809 registered |
+| all four risks | settled; three corrected by the live observation |
+| bounded installed-library observation | PASS, live tree restored to `216A9DC2...` |
+| original icon | authored, rendered, exported; manifest 146 -> 147 |
+| roster registration, demon catalog, donor, visibility, presentation | complete |
+
+`scripts/Invoke-KmgGate.ps1 -Filter 'expanded-summoning'`: 612 selected, **51
+failures**, in exactly two causes, both of which close with the identity block:
+
+* **41** - `Expanded Summoning foundation identity count must be 2736`. The
+  count derives from `UnitCount` plus the appended identities, so it cannot be
+  set until the builder's blueprint set exists. It is never bumped to whatever
+  the code happens to produce; it is recomputed from the declared counts.
+* **10** - `The ledger is append-only`. `ExpandedSummoningIdentityCatalog.Build`
+  has no Sprint 39 block. The append point is immediately after the last
+  `KMG.Summoning.Demon.Glabrezu.MirrorImageAi` row and before
+  `Validate(result)`.
+
+### Remaining, in dependency order
+
+1. **Builder** `ExpandedSummoningSpecialBuilder.Nalfeshnee39.cs`, on
+   `ConfigureGlabrezu38`'s shape with this creature's own numbers: three limbs
+   not five, `InfernalProfile36` with hit dice 14 / hit points 203 / good base
+   9 / poor base 4 / skill ranks 14, `ConfigureUnitCore` Huge at speed 30,
+   `Sprint29Weapon` for a 3d8 bite at critical edge **19** and a 2d6 claw,
+   `NaturalBody(bite, {claw, claw})`, `InfernalDefenses36` at natural armour 16
+   and spell resistance 25, `DeinonychusPrimaryTalonStrength` to take the
+   lone-natural-weapon multiplier back off the bite, racial Perception +8, and
+   the released Cleave / Awesome Blow / Improved Bull Rush / Iron Will / Power
+   Attack / Improved Initiative identities.
+2. **Components** `NalfeshneeRules39.cs`: the pending-nimbus buff component
+   with its genuine-expiry guard, the capped greater-dispel action, the
+   feeblemind clone's `ForbidSpellCasting` addition, the constant aura's
+   exact-source grant, and the actor/per-target AI considerations on the
+   released `GlabrezuStunEligibility38` / `...TargetEligibility38` shape.
+   Idioms already located: `new RuleSavingThrow(victim, SavingThrowType.Will,
+   context.Params.DC) { Reason = context }` as `ArchonAuraOfMenace` uses it,
+   and `GameHelper.GetTargetsAround` for the burst's candidates.
+3. **Identity block** appended at the point named above, then
+   `Sprint39CreatureIdentityCount` / `RootIdentityCount` /
+   `PrivateIdentityCount` added to `SummoningCurrentSurface`, then the
+   foundation count recomputed.
+4. **Visual policy and asset runtime**: `NalfeshneeVisualPolicy39` on
+   `GlabrezuVisualPolicy38`'s shape, plus the body generator under
+   `assets-source/original-models/`, its 512x512 albedo and its `-mesh.json`.
+5. **Persistence scope**: add `NalfeshneeScope` to
+   `ExpandedSummoningRosterPersistencePolicy.IsRosterPersistenceScope`, the one
+   authoritative list Sprint 38 consolidated; a reflection test requires every
+   declared scope constant to appear there.
+6. **Observers and scenarios**: the review and persistence scenarios, each
+   needing the **four** registrations this sprint established - the C# catalog,
+   the PowerShell metadata table, the preflight union, and
+   `Test-KmgExactSummoningRuntimeBoundary`.
+7. **Qualification**: guarded mechanics phases, then one ON and one OFF
+   envelope across six fresh processes, then the installed-stack integration.
+8. **Release**: version bump to 0.0.177, a new
+   `tools/validate_expanded_summoning_sprint39_release177.py` with the final
+   product head pinned and its entry in `tools/validate_repository.py`, the
+   full unfiltered gate, merge, publication from the exact qualified ZIP,
+   public-download verification, exact restoration and the records merge.
+
+### Mid-sprint mechanics worth not rediscovering
+
+* The repository wrapper is **version-gated**. `tools/validate_repository.py`
+  selects its validator by `Info.json` version, which is still `0.0.176`, whose
+  validator pins Sprint 38's reviewed product and therefore refuses any
+  in-progress source. That is the version boundary working. Guarded scenarios
+  before the candidate freeze need a development candidate: build with
+  `-DevelopmentPurpose <lower-case-hyphenated>` plus `-DevelopmentTestFilter`,
+  then pass the resulting package to the scenario launcher with
+  `-PackagePath`, which it **requires** for a development purpose. This is the
+  opposite of the release path, where `-PackagePath` is only for batch reuse.
+* `Build-Local.ps1` fingerprints the source at the start and re-checks it at
+  the end. Writing anything into the worktree during a build - including an
+  untracked planning document outside the validator's product roots - fails it
+  with "The source state changed during the development build", *after* the
+  package has been built and validated. Commit first, then build, then leave
+  the tree alone.
+* Both shells are **unelevated** in this session, which is what the guarded
+  harness requires and which also means worktrees need no `runas`. Verify
+  rather than assume; it has been the other way before.
+
 ## Not started
 
 Everything after this point. Sprint 40 and the Ice Devil are NOT_STARTED and
