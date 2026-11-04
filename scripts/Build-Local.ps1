@@ -337,6 +337,12 @@ foreach ($kind in @('glabrezu')) {
         Copy-Item -LiteralPath (Join-Path $root ("assets\sprint38-glabrezu\$kind-$suffix")) -Destination (Join-Path $buildOutput 'assets\sprint38-glabrezu') -Force
     }
 }
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint39-nalfeshnee') -Force | Out-Null
+foreach ($kind in @('nalfeshnee')) {
+    foreach ($suffix in @('mesh.json','albedo.png')) {
+        Copy-Item -LiteralPath (Join-Path $root ("assets\sprint39-nalfeshnee\$kind-$suffix")) -Destination (Join-Path $buildOutput 'assets\sprint39-nalfeshnee') -Force
+    }
+}
 New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint18-primates') -Force | Out-Null
 foreach ($kind in @('ape','dire-ape')) {
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint18-primates\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint18-primates') -Force

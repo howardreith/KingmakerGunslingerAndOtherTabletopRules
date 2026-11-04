@@ -6,7 +6,8 @@ namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
     /// The one authoritative list of this project's own demon-subtype
-    /// creatures. The Vrock's Stunning Screech exempts demons, and both the
+    /// creatures. The Vrock's Stunning Screech and the Nalfeshnee's Unholy
+    /// Nimbus both exempt demons, and both the
     /// real effect and its AI safety consideration resolve their identities
     /// from here, so the two can never drift apart.
     ///
@@ -53,9 +54,10 @@ namespace KingmakerGunslinger.Summoning
         //   Hezrou        CE Large  outsider (aquatic, chaotic, demon, evil, extraplanar)
         //   Vrock         CE Large  outsider (chaotic, demon, evil, extraplanar)
         //   Glabrezu      CE Huge   outsider (chaotic, demon, evil, extraplanar)
+        //   Nalfeshnee    CE Huge   outsider (chaotic, demon, evil, extraplanar)
         private static readonly string[] Keys = {
             "dretch", "shadow-demon", "succubus", "babau", "hezrou",
-            "vrock", "glabrezu"
+            "vrock", "glabrezu", "nalfeshnee"
         };
 
         // Registered outsiders that are deliberately NOT demons, kept beside
@@ -109,12 +111,13 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Keys.Length != 7 ||
+            if (Keys.Length != 8 ||
                 Keys.Distinct(StringComparer.Ordinal).Count() != Keys.Length ||
                 NotDemons.Any(IsDemonKey) ||
                 !Keys.Contains("succubus", StringComparer.Ordinal) ||
                 !Keys.Contains("shadow-demon", StringComparer.Ordinal) ||
                 !Keys.Contains("glabrezu", StringComparer.Ordinal) ||
+                !Keys.Contains("nalfeshnee", StringComparer.Ordinal) ||
                 IsDemonKey("bebelith"))
                 throw new InvalidOperationException(
                     "The project demon identity set changed.");

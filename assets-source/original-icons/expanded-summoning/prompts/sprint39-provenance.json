@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Sprint 39 original Nalfeshnee summon-choice render",
+  "generator": "Blender 4.5 procedural render (assets-source/original-icons/expanded-summoning/tools/render_creature_icon.py)",
+  "generatedAtUtc": "2026-11-04",
+  "ownership": "Project-owned original procedural geometry and materials; no game, third-party, downloaded, public-domain or generative-model pixels are inputs.",
+  "referencePolicy": "The creature is built from metaballs and mesh primitives with procedural materials, lit and framed by the same script that produced the roster's other procedural renders, so the image is reproducible from the script alone. No native game image, mesh, texture or existing source bitmap was supplied to or read by the renderer. The bounded Sprint 39 installed-library observation confirmed the game ships no Nalfeshnee unit at all, so there was nothing native to reuse even had policy allowed it.",
+  "capabilityNote": "This session has no image-generation capability, which is the same condition the charter Sprint 3-8 and Phase 2 Sprint 13-14 concepts, the Sprint 37 Vrock and the Sprint 38 Glabrezu were authored under. The established procedural renderer is the project's own authorized path for exactly that case; no new or paid backend was introduced.",
+  "reproduce": "blender --background --factory-startup --python tools/render_creature_icon.py -- --creature nalfeshnee --out sources/nalfeshnee.png --samples 128",
+  "rendererSha256": "19a9a7b2b2da8dde960a58b898d8ec5032880b9086c2f4aa9dcf388d3ccd0829",
+  "icons": [
+    {
+      "key": "nalfeshnee",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/nalfeshnee.png",
+      "sourceSha256": "487b96fb88f360ad06a506cc7b145215c58c98cb0ae8efb138cb744943290fa8",
+      "identity": "a vast corpulent dark red-brown mottled boar-headed demon whose belly is far wider than its shoulders, with two upward-curving lower tusks under a blunt snout, large amber eyes, and two deliberately undersized membranous wings tucked behind the shoulders",
+      "samples": 128,
+      "resolution": "1254x1254 RGBA",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "secondPass": "The first pass used a pale tan hide with a gentle mottle and small eyes tucked under a heavy brow. At icon size the noise vanished entirely, the eyes disappeared and the result read as a cartoon farm pig rather than as a demon. The hide, belly and wing membrane were darkened and reddened into the same register as the released Glabrezu hide with the mottle strength roughly doubled, the eyes were enlarged from 0.105 to 0.155 and pushed forward and down out from under the brow, and the head and neck were lifted and carried further forward. Recorded because the failure was a material and value decision rather than a modelling one: the silhouette was already correct in the first pass.",
+      "visualBacklog": "The head still merges into the shoulder mass so the short neck does not read as a neck, and the boar skull consequently sits lower on the chest than intended; surface relief is low, so the bulk reads as a smooth mass rather than as folded hide, and the mottle is the only surface break; the wing membrane has no visible finger-bone relief at icon size; the feet are simple ovoids. All cosmetic and non-blocking, and a third framing iteration was deliberately not taken rather than opening an unbounded art pass."
+    }
+  ]
+}

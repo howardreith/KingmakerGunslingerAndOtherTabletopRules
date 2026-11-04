@@ -362,6 +362,10 @@ namespace KingmakerGunslinger.DomainTests
                 (string)field.GetRawConstantValue() ==
                 ExpandedSummoningRosterPersistencePolicy.GlabrezuScope),
                 "The Sprint 38 scope is one of the declared constants.");
+            Assertions.True(declared.Any(field =>
+                (string)field.GetRawConstantValue() ==
+                ExpandedSummoningRosterPersistencePolicy.NalfeshneeScope),
+                "The Sprint 39 scope is one of the declared constants.");
             // The same bug twice over: a scope can reach the observation and
             // still have no creatures of its own, because the selection used
             // to be a separate list. A scope that falls through to the whole
@@ -417,7 +421,8 @@ namespace KingmakerGunslinger.DomainTests
                 }
             }
             foreach (string invalid in new[] { null, "", "Vrock", "vrock ",
-                "vrocks", "Glabrezu", "glabrezu ", "glabrezus" })
+                "vrocks", "Glabrezu", "glabrezu ", "glabrezus",
+                "Nalfeshnee", "nalfeshnee ", "nalfeshnees" })
                 Assertions.Equal(0, ExpandedSummoningRosterPersistencePolicy
                     .SelectedKeys(invalid).Length,
                     "An unadmitted scope selects nothing, never the whole roster.");
@@ -434,12 +439,13 @@ namespace KingmakerGunslinger.DomainTests
                         field.Name);
             }
             foreach (string invalid in new[] { null, "", "Vrock", "vrocks",
-                "Glabrezu", "glabrezus" })
+                "Glabrezu", "glabrezus", "Nalfeshnee", "nalfeshnees" })
                 Assertions.False(ExpandedSummoningRosterPersistencePolicy
                     .IsTargetedSubsetScope(invalid),
                     "An unadmitted scope is not a targeted subset either.");
             foreach (string invalid in new[] { null, "", "Vrock", "vrock ",
                 "vrocks", "Glabrezu", "glabrezu ", "glabrezus",
+                "Nalfeshnee", "nalfeshnee ", "nalfeshnees",
                 "KMG_Release143_WholeRoster_v1", "retained" })
                 Assertions.False(ExpandedSummoningRosterPersistencePolicy
                     .IsRosterPersistenceScope(invalid),

@@ -2163,6 +2163,207 @@ def glabrezu():
         obj.location = Vector(obj.location) * fit + Vector((0.0, 0.0, rise))
 
 
+def nalfeshnee():
+    """Sprint 39. A vast corpulent boar-headed winged demon, and the only
+    entry in this roster whose silhouette is carried by sheer belly mass.
+
+    Three things have to read at 128 pixels, in this order. The bulk: a
+    pear-shaped body far wider at the gut than at the shoulders, which is the
+    whole portrait and the one thing no other demon here has. The boar head,
+    broad and low with a blunt snout and two tusks curving up out of the lower
+    jaw, which is the piece a viewer reads as a face. And the wings - which
+    matter here by being *small*: a nalfeshnee's wings are comically
+    undersized for its mass, and that mismatch is itself identifying.
+
+    Deliberately not the Vrock, and the contrast is the point. That entry is
+    the roster's wing-span creature: lean, upright, bird-legged, and its wings
+    are the widest thing in its frame. Here the wings are tucked and span less
+    than the belly, so the two silhouettes cannot be confused even as
+    thumbnails. It is also not the Glabrezu: no pincers, no second pair of
+    arms, no towering upright trunk, and a head that is a broad boar wedge
+    rather than a long canine muzzle under swept horns.
+
+    The bulk is built as one metaball mass rather than a stack of separate
+    spheres. An earlier approach that placed a big belly ball and a separate
+    chest ball left a visible waist crease where the two fields met, which
+    read as a belt rather than as fat; the masses here overlap enough that the
+    body is one continuous surface from hip to shoulder.
+
+    The wings use the Sprint 37 vane construction - a thick leading-edge
+    chain, finger stations setting a scalloped trailing edge, and a filled
+    interior - because an outline is not a surface. They are built at roughly
+    a third of the vrock's span and held high and back so they frame the
+    shoulders instead of competing with the gut.
+
+    The legs are deliberately short and mostly swallowed by the belly, so the
+    creature reads as squatting under its own weight. Only the feet and a
+    little shin clear the mass."""
+    # The first pass used a pale tan hide with a gentle mottle, and the render
+    # read as a farm pig rather than as a demon: at icon size the noise
+    # vanished entirely and what survived was a smooth light silhouette. These
+    # are much darker, much redder and mottled far harder, in the same register
+    # as the released Glabrezu hide, so the belly still catches the key but the
+    # creature reads as something abyssal.
+    hide = material("NalfeshneeHide", (0.26, 0.13, 0.09), 0.80,
+                    noise=(7.0, 0.85, (0.11, 0.05, 0.04)), subsurface=0.07)
+    belly = material("NalfeshneeBelly", (0.34, 0.19, 0.13), 0.82,
+                     noise=(10.0, 0.80, (0.14, 0.07, 0.05)), subsurface=0.10)
+    membrane = material("NalfeshneeMembrane", (0.20, 0.09, 0.08), 0.70,
+                        noise=(15.0, 0.70, (0.08, 0.035, 0.03)),
+                        subsurface=0.06)
+    tusk = material("NalfeshneeTusk", (0.86, 0.82, 0.68), 0.36)
+    nail = material("NalfeshneeNail", (0.14, 0.12, 0.10), 0.28)
+    eye = material("NalfeshneeEye", (0.96, 0.72, 0.16), 0.22,
+                   emission=(1.0, 0.70, 0.12), emission_strength=1.3)
+    maw = material("NalfeshneeMaw", (0.05, 0.018, 0.015), 0.6)
+
+    before = set(bpy.context.scene.objects)
+
+    # THE BULK. One mass, hip to shoulder, widest low and forward. The gut
+    # overhangs the legs, which is what makes the outline read as fat rather
+    # than as a barrel.
+    body = Blob("Body", belly, 0.050)
+    body.ball((0.0, -0.30, -1.44), 1.74, (1.00, 1.10, 0.90), axis=(1, 0, 0))
+    body.ball((0.0, -0.34, -0.66), 1.86, (1.00, 1.14, 0.88), axis=(1, 0, 0))
+    body.ball((0.0, -0.22, 0.20), 1.66, (1.00, 1.04, 0.86), axis=(1, 0, 0))
+    body.ball((0.0, -0.06, 0.96), 1.26, (1.06, 0.92, 0.78), axis=(1, 0, 0))
+    # Shoulders, narrower than the gut by a wide margin. This difference is
+    # the single most identifying measurement in the figure.
+    body.ball((0.0, -0.02, 1.52), 1.02, (1.18, 0.86, 0.68), axis=(1, 0, 0))
+    # A short thick neck carried forward, barely clearing the chest.
+    # The first pass set this at z 1.94 with radius 0.56 and the head merged
+    # straight into the shoulders, so the creature had no neck at all and the
+    # skull read as a growth on the chest.
+    body.ball((0.0, -0.46, 2.06), 0.44, (0.58, 0.60, 0.54), axis=(0, 1, 0))
+
+    # THE BOAR HEAD. Broad and low, snout forward and down, jaw heavy. Built
+    # on its own blob so the hide reads differently from the belly.
+    head = Blob("Head", hide, 0.030)
+    head.ball((0.0, -0.86, 2.62), 0.72, (0.84, 0.92, 0.70), axis=(0, 1, 0))
+    # The snout: a blunt cylinder of mass, not a taper, because a boar's
+    # muzzle ends in a flat disc rather than a point.
+    head.ball((0.0, -1.42, 2.42), 0.48, (0.70, 0.56, 0.44), axis=(0, 1, 0))
+    head.ball((0.0, -1.78, 2.33), 0.40, (0.46, 0.50, 0.38), axis=(0, 1, 0))
+    # The heavy lower jaw, set back and below, where the tusks root.
+    head.ball((0.0, -1.40, 2.06), 0.42, (0.64, 0.56, 0.36), axis=(0, 1, 0))
+
+    sphere("Snout", (0.0, -2.00, 2.31), (0.30, 0.10, 0.24), hide)
+    sphere("Maw", (0.0, -1.66, 2.14), (0.26, 0.20, 0.09), maw)
+    for s in (-1, 1):
+        sphere("Nostril%d" % s, (s * 0.13, -2.07, 2.35),
+               (0.055, 0.04, 0.065), maw)
+        # Eyes small and set wide on the brow, which is what makes a head
+        # this broad read as a boar rather than as a dog.
+        # Bigger and pushed forward and down out from under the brow. At
+        # 0.105 tucked behind a heavy ridge they disappeared at icon size,
+        # and the face went with them.
+        sphere("Eye%d" % s, (s * 0.44, -1.22, 2.74), (0.155, 0.155, 0.155),
+               eye)
+        sphere("Brow%d" % s, (s * 0.46, -1.04, 2.94), (0.24, 0.16, 0.10),
+               hide)
+        # Small low ears, swept back against the skull.
+        sphere("Ear%d" % s, (s * 0.70, -0.56, 2.82), (0.12, 0.22, 0.26),
+               hide, rotation=(0.0, s * 24.0, s * 18.0))
+        # THE TUSKS. Two from the lower jaw, curving up and outward past the
+        # snout line, plus a short upper pair. The lower pair is what a
+        # viewer actually sees at icon size, so it is the longer one.
+        cone_along("TuskLower%d" % s, (s * 0.30, -1.66, 2.00),
+                   (s * 0.34, -0.52, 1.0), 0.92, 0.100, tusk, 0.018)
+        cone_along("TuskUpper%d" % s, (s * 0.26, -1.80, 2.36),
+                   (s * 0.22, -0.46, -1.0), 0.42, 0.068, tusk, 0.014)
+
+    # THE WINGS, tucked and small. Same vane construction as the Sprint 37
+    # vrock, at roughly a third of its span, held high and back. They are
+    # membrane over a finger frame rather than feather.
+    for s in (-1, 1):
+        root = Vector((s * 0.86, 0.30, 1.48))
+        elbow = Vector((s * 1.70, 0.86, 2.24))
+        wrist = Vector((s * 2.26, 1.06, 1.84))
+
+        def edge_at(u, root=root, elbow=elbow, wrist=wrist):
+            """A point along the leading edge, shoulder to wrist."""
+            return root.lerp(elbow, u / 0.60) if u <= 0.60 else \
+                elbow.lerp(wrist, (u - 0.60) / 0.40)
+
+        # Four stations: short inner fingers, a long middle, a swept outer.
+        stations = ((0.00, 0.52, 0.03), (0.34, 1.02, 0.10),
+                    (0.70, 1.26, 0.18), (1.00, 0.96, 0.26))
+
+        def tip_at(u, stations=stations, edge_at=edge_at, s=s):
+            """The trailing-edge point below the leading edge at u."""
+            drop, sweep = stations[-1][1], stations[-1][2]
+            for index in range(len(stations) - 1):
+                a, b = stations[index], stations[index + 1]
+                if u <= b[0] or index == len(stations) - 2:
+                    span = b[0] - a[0]
+                    t = 0.0 if span <= 0 else (u - a[0]) / span
+                    t = min(max(t, 0.0), 1.0)
+                    drop = a[1] + (b[1] - a[1]) * t
+                    sweep = a[2] + (b[2] - a[2]) * t
+                    break
+            base = edge_at(u)
+            return base + Vector((s * sweep * 0.5,
+                                  0.22 + sweep * 0.28, -drop))
+
+        wing = Blob("Wing%d" % s, membrane, 0.038)
+        wing.chain(root, elbow, 0.26, 0.19, 8)
+        wing.chain(elbow, wrist, 0.19, 0.13, 6)
+        # The vane, filled rather than outlined.
+        for across in range(12):
+            u = across / 11.0
+            base, hem = edge_at(u), tip_at(u)
+            for down in range(1, 10):
+                v = down / 9.0
+                wing.ball(base.lerp(hem, v), 0.155, stiffness=2.6)
+        # Finger lines over the membrane, so the sheet reads as a wing.
+        for index, (u, drop, sweep) in enumerate(stations):
+            base, hem = edge_at(u), tip_at(u)
+            cone_along("WingFinger%d%d" % (s, index), base,
+                       (hem - base).normalized(), drop * 0.90,
+                       0.055, hide, 0.012)
+
+    # Short thick arms, held out from the gut because they cannot hang
+    # against it. Three claws each.
+    for s in (-1, 1):
+        body.ball((s * 1.02, -0.16, 1.36), 0.42)
+        elbow = (s * 1.86, -0.52, 0.76)
+        wrist = (s * 2.08, -0.96, 0.08)
+        body.chain((s * 1.12, -0.20, 1.30), elbow, 0.38, 0.30, 6)
+        body.chain(elbow, wrist, 0.30, 0.23, 6)
+        hand = (wrist[0], wrist[1] - 0.16, wrist[2] - 0.20)
+        sphere("Hand%d" % s, hand, (0.25, 0.28, 0.21), hide)
+        for digit in range(3):
+            offset = (digit - 1) * 0.20
+            cone_along("Claw%d%d" % (s, digit),
+                       (hand[0] + s * offset, hand[1] - 0.19, hand[2] - 0.07),
+                       (s * 0.24, -0.70, -0.68), 0.50, 0.060, nail)
+
+        # Short legs, mostly swallowed by the gut. Only the shin and foot
+        # clear the mass, which is what makes the creature read as squatting
+        # under its own weight rather than standing on it.
+        body.ball((s * 0.80, -0.14, -2.00), 0.62)
+        knee = (s * 0.92, 0.14, -2.62)
+        body.chain((s * 0.82, -0.12, -2.18), knee, 0.52, 0.40, 6)
+        shin = Blob("Shin%d" % s, hide, 0.034)
+        shin.chain(knee, (s * 0.98, -0.20, -3.16), 0.36, 0.28, 6)
+        foot = (s * 1.00, -0.46, -3.26)
+        sphere("Foot%d" % s, foot, (0.30, 0.42, 0.17), hide)
+        for digit in range(3):
+            spread = (digit - 1) * 0.40
+            cone_along("Toe%d%d" % (s, digit),
+                       (foot[0] + s * 0.02, foot[1] - 0.20, foot[2] - 0.02),
+                       (spread, -1.0, -0.26), 0.44, 0.075, nail, 0.014)
+
+    # Frame it. About seven authored units from toe to wing crown and about
+    # four and a half across the gut, so the fit sits where the roster does
+    # and the belly - not the wings - touches the ring.
+    fit = 0.50
+    rise = 0.46
+    for obj in set(bpy.context.scene.objects) - before:
+        obj.scale = tuple(value * fit for value in obj.scale)
+        obj.location = Vector(obj.location) * fit + Vector((0.0, 0.0, rise))
+
+
 CREATURES = {
     # The two ant castes share a backdrop and a light rig because they are one
     # creature in two builds; what separates them in the frame is the head and
@@ -2338,6 +2539,19 @@ CREATURES = {
                      inner=(0.17, 0.09, 0.23), outer=(0.017, 0.009, 0.023),
                      key=(1.0, 0.86, 0.64), rim=(0.46, 0.94, 0.68),
                      camera=((0.30, -8.5, 0.74), (-0.02, 0.0, 0.18), 52.0)),
+    # Sprint 39. The hide is a warm ochre-brown, so the backdrop goes cool
+    # blue-violet for complement rather than neighbour, the key stays warm
+    # and the rim takes the amber the eyes emit so the tusks and the belly
+    # edge catch a light line against it. The camera sits square and a
+    # little ABOVE the gut, looking slightly down: that angle is what makes
+    # the belly overhang read as overhang instead of as width, and it keeps
+    # the small wings behind the shoulder line where they belong. It is
+    # closer than the glabrezu's because the widest subject here is the
+    # body rather than a limb span.
+    "nalfeshnee": dict(build=nalfeshnee,
+                       inner=(0.11, 0.13, 0.26), outer=(0.011, 0.013, 0.026),
+                       key=(1.0, 0.88, 0.66), rim=(1.0, 0.76, 0.30),
+                       camera=((0.0, -7.7, 1.46), (0.0, 0.0, 0.10), 52.0)),
 }
 
 

@@ -836,6 +836,13 @@
       "subjectPrompt": "A towering four-limbed demon standing square to the viewer: a heavy upright dark red-brown mottled trunk on digitigrade legs, two massive arms ending in huge open two-jawed chitinous pincers held outward so the gap between the jaws is seen in profile and the span is the widest thing in the frame, a second much smaller pair of clawed humanoid arms growing from the chest and held inside that span, and a horned canine head carried forward and clear of the shoulders with a long muzzle, visible fangs and green eyes. Cold violet Abyssal radial backdrop against warm red-brown hide with a cold green rim: no other entry in this roster uses a violet ground, so it is never the Vrock's warm ochre, the Xill's green-black or the Girallon's dark warm brown. Four limbs only - two pincer arms and two small chest arms - plus two legs; no wings, no tail, no weapon, and the two pairs are deliberately unequal so it is never the Girallon's four matched arms. Procedural Blender render: tools/render_creature_icon.py --creature glabrezu.",
       "generator": "blender-procedural",
       "compositionBriefSource": "assets-source/original-icons/expanded-summoning/prompts/sprint38-provenance.json"
+    },
+    {
+      "key": "nalfeshnee",
+      "displayName": "Nalfeshnee",
+      "subjectPrompt": "A vast corpulent boar-headed winged demon standing square to the viewer, squatting under its own weight: a dark red-brown mottled body whose belly is far wider than its shoulders and overhangs its short legs, a broad low boar skull carried forward with a blunt snout, two long pale tusks curving up out of the lower jaw past the snout line, a shorter upper pair, small swept-back ears and large amber eyes set wide, two short thick arms held out from the gut ending in three claws each, and two deliberately undersized membranous wings tucked high and back whose span is narrower than the belly. Cold blue-violet radial backdrop against warm red-brown hide with a warm amber rim. The bulk is the portrait and the small wings are identifying by their mismatch with it, so it is never the Vrock's wing-span silhouette, never the Glabrezu's towering pincered trunk, and never a lean humanoid. Two wings, two arms and two legs only; no pincers, no second pair of arms, no tail, no horns, no weapon. Procedural Blender render: tools/render_creature_icon.py --creature nalfeshnee.",
+      "generator": "blender-procedural",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/prompts/sprint39-provenance.json"
     }
   ]
 }

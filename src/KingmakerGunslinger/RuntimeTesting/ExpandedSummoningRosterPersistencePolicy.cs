@@ -259,6 +259,30 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static string[] GlabrezuKeys
         { get { return new[] { GlabrezuVisualPolicy38.Glabrezu,
             GlabrezuVisualPolicy38.Glabrezu }; } }
+        internal const string NalfeshneeScope = "nalfeshnee";
+        // Two owners, for a reason specific to this creature rather than
+        // inherited. Unholy Nimbus is the state the envelope exists to carry:
+        // a windup pending at the save boundary, with its absolute deadline,
+        // and a spent use that must be demonstrably ONE owner's rather than
+        // merely "a nalfeshnee's". Two independent owners are what separate
+        // those, and they are also what shows a second owner's windup is not
+        // reset, refunded or detonated by the first one resolving.
+        //
+        // The owner-decision limit of one pending nimbus per creature is per
+        // CREATURE, so two owners can legitimately hold one windup each; that
+        // is the case this scope sets up.
+        //
+        // Unlike Sprint 38, the pending effect is NOT withdrawn before the
+        // save. The Glabrezu envelope had to withdraw its stun because a real
+        // stun stops an owned unit acting and the fixture's shared readiness
+        // contract requires every owned unit to be able to act at the
+        // boundary; a nimbus windup imposes no such restriction on its owner,
+        // which may keep acting normally while it is pending. So what crosses
+        // this save really is the pending windup itself, and no readiness
+        // waiver is needed to get it there.
+        internal static string[] NalfeshneeKeys
+        { get { return new[] { NalfeshneeVisualPolicy39.Nalfeshnee,
+            NalfeshneeVisualPolicy39.Nalfeshnee }; } }
         internal const string ShadowOutsidersScope = "shadow-outsiders";
         internal static string[] ShadowOutsiderKeys
         { get { return new[] { "succubus", "invisible-stalker", "shadow-demon" }; } }
@@ -405,6 +429,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == InfernalDemonsScope ? InfernalDemonKeys :
                 scope == VrockScope ? VrockKeys :
                 scope == GlabrezuScope ? GlabrezuKeys :
+                scope == NalfeshneeScope ? NalfeshneeKeys :
                 scope == ShadowOutsidersScope ? ShadowOutsiderKeys :
                 scope == Scope ? Keys : new string[0];
         }
@@ -480,7 +505,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == InfernalOutsidersScope ||
                 scope == InfernalReachTwoScope ||
                 scope == InfernalDemonsScope || scope == VrockScope ||
-                scope == GlabrezuScope;
+                scope == GlabrezuScope || scope == NalfeshneeScope;
         }
 
         /// <summary>

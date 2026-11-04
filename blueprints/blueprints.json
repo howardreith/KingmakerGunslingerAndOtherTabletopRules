@@ -62439,6 +62439,254 @@
       "status": "active",
       "milestone": "Expanded Summoning alternate sources",
       "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.Nalfeshnee",
+      "guid": "9930f78084f0fe78d1de849aed58b753",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Nalfeshnee.One",
+      "guid": "62430452ae08025b0e104089c49868e8",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.UnitType",
+      "guid": "dc3ec330f347c269fda7530927f28f67",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.Traits",
+      "guid": "25933cb24a3959e707008c9ae62b88dc",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.Bite",
+      "guid": "e061d98c5542b5625a83daaef4c86076",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.BiteType",
+      "guid": "a642301b1d2cea009d2bfeb726b60a87",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.Claw",
+      "guid": "4038f0c02ba5614ee0aa706053631d55",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.ClawType",
+      "guid": "a542beeff43d04f2c676070581fd7865",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.UnholyAura",
+      "guid": "50012f40b49e10ef3e44f9684d30f026",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.UnholyNimbus",
+      "guid": "8c70c7ca4f7b795a11c8aa80ccfee925",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.UnholyNimbusResource",
+      "guid": "5d7882835e9ab2bf3f48f6824a8ab444",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.UnholyNimbusWindup",
+      "guid": "ffb6b787b7724cfec6351af50dd278a9",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.UnholyNimbusDaze",
+      "guid": "9f918c78f2a95e2cbb11976b1c732ece",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.Feeblemind",
+      "guid": "269b6ed2ac85978f46f7e46767714326",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.FeeblemindCondition",
+      "guid": "442d01df0b71ee541edb1c55caefeaca",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.GreaterDispelMagic",
+      "guid": "a0f091f2992fd620bc634fed21d71026",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.CallLightning",
+      "guid": "8af96833b10d186de505dff8402b5865",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.Slow",
+      "guid": "aaface9fa0a914dbd8697cd63e9c8bb6",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.Brain",
+      "guid": "f429cf938ce15fb759fe3f91ce7ac9b3",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.UnholyNimbusAi",
+      "guid": "8949ac4ece3fd73d0b26444a7134b082",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.UnholyNimbusEligibility",
+      "guid": "118c4cbc3a7a2ff7ab37e67212eb3928",
+      "plannedType": "NalfeshneeNimbusEligibility39",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.FeeblemindAi",
+      "guid": "85d2751d523aea21d0798fd517336e0f",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.FeeblemindEligibility",
+      "guid": "c00132321341f8e0968fa34bc1cd9d04",
+      "plannedType": "NalfeshneeFeeblemindEligibility39",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.FeeblemindTargetEligibility",
+      "guid": "4af5011a0c0038905b327c8a21b1d288",
+      "plannedType": "NalfeshneeFeeblemindTargetEligibility39",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.GreaterDispelAi",
+      "guid": "defd169be27e2cbede2273125de98bc0",
+      "plannedType": "BabauDispelAi36",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.CallLightningAi",
+      "guid": "81f44545945035dc13a77cf0b887f8e1",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Demon.Nalfeshnee.SlowAi",
+      "guid": "47fd1c9b19a0002bc47cc8ceed4dfda7",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier9.Nalfeshnee.One",
+      "guid": "56b749f99a1a5f25bceb76efbfae7cb7",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier9.Nalfeshnee.One",
+      "guid": "b610ef32669153248bfb6233b2ef37e7",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier9.Nalfeshnee.One",
+      "guid": "13c2b65b58775505a5faa966f2bd0ee4",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier9.Nalfeshnee.One",
+      "guid": "262be047cead55829fad383c7043d912",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
     }
   ]
 }

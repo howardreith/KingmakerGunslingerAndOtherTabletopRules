@@ -526,7 +526,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount) throw new InvalidOperationException("Working party fingerprint changed.");
             ItemEntity[] giantPartyItems =
                 Sprint28PersistenceScope || Sprint29PersistenceScope || Sprints3031PersistenceScope || Sprint32PersistenceScope || Sprint34PersistenceScope || Sprint35PersistenceScope || Sprint36PersistenceScope || Sprint37PersistenceScope ||
-                Sprint38PersistenceScope ?
+                Sprint38PersistenceScope || Sprint39PersistenceScope ?
                 Game.Instance.Player.Inventory.Items.ToArray() : null;
             int[] giantPartyCounts = giantPartyItems?.Select(item => item.Count).ToArray();
             var caster = party.First(u => u.HoldingState != null);
@@ -574,6 +574,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (Sprint36PersistenceScope) InfernalSavedAbsence36(caster, "fresh");
                 if (Sprint37PersistenceScope) VrockSavedAbsence37(caster, "fresh");
                 if (Sprint38PersistenceScope) GlabrezuSavedAbsence38(caster, "fresh");
+                if (Sprint39PersistenceScope) NalfeshneeSavedAbsence39(caster, "fresh");
                 CompleteRosterPersistence(RuntimeTestStatuses.Pass, ""); yield break;
             }
             var units = existing;
@@ -590,6 +591,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (Sprint36PersistenceScope) InfernalSavedAbsence36(caster, "intake");
                 if (Sprint37PersistenceScope) VrockSavedAbsence37(caster, "intake");
                 if (Sprint38PersistenceScope) GlabrezuSavedAbsence38(caster, "intake");
+                if (Sprint39PersistenceScope) NalfeshneeSavedAbsence39(caster, "intake");
                 var created = new List<UnitEntityData>();
                 var originalAlignment = caster.Descriptor.Alignment.Value;
                 try
@@ -647,6 +649,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (Sprint36PersistenceScope && verify) ObserveInfernalSaved36(caster, units, "cold");
             if (Sprint37PersistenceScope && verify) ObserveVrockSaved37(caster, units, "cold");
             if (Sprint38PersistenceScope && verify) ObserveGlabrezuSaved38(caster, units, "cold");
+            if (Sprint39PersistenceScope && verify) ObserveNalfeshneeSaved39(caster, units, "cold");
             bool cleanup2Trio = (string)_request.Parameters["persistenceScope"] == "giant-humanoids-ii" &&
                 _context.FeatureModules.Active.ExpandedSummoning;
             // The general save-readiness contract deliberately allows native
@@ -870,7 +873,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // row did not fail, which is worse - it asserted less than
                     // every sibling sprint does.
                     (Sprint37PersistenceScope && VrockVisualPolicy37.Handles(receipt.Key)) ||
-                    (Sprint38PersistenceScope && GlabrezuVisualPolicy38.Handles(receipt.Key)))
+                    (Sprint38PersistenceScope && GlabrezuVisualPolicy38.Handles(receipt.Key)) ||
+                    (Sprint39PersistenceScope && NalfeshneeVisualPolicy39.Handles(receipt.Key)))
                     theropodBodyExact = moduleOn
                         ? originalBodyOutcome.StartsWith("visual:attached;",
                             StringComparison.Ordinal) &&
@@ -1067,6 +1071,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveVrockItems37(units, giantPartyItems, giantPartyCounts);
             if (Sprint38PersistenceScope)
                 ObserveGlabrezuItems38(units, giantPartyItems, giantPartyCounts);
+            if (Sprint39PersistenceScope)
+                ObserveNalfeshneeItems39(units, giantPartyItems, giantPartyCounts);
             if (Sprint34PersistenceScope && prepare) foreach (int step in PrepareInfernalSaved34(caster, units)) yield return step;
             if (Sprint35PersistenceScope && prepare) foreach (int step in PrepareInfernalSaved35(caster, units)) yield return step;
             if (Sprint36PersistenceScope && prepare) foreach (int step in PrepareInfernalSaved36(caster, units)) yield return step;
@@ -1077,6 +1083,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (Sprint38PersistenceScope && prepare) {
                 foreach (int step in PrepareGlabrezuSaved38(caster, units)) yield return step;
                 ObserveGlabrezuSaved38(caster, units, "prepared");
+            }
+            if (Sprint39PersistenceScope && prepare) {
+                foreach (int step in PrepareNalfeshneeSaved39(caster, units)) yield return step;
+                ObserveNalfeshneeSaved39(caster, units, "prepared");
             }
             if (verify && !Sprint32PersistenceScope) foreach (var step in DestroyRosterPersistence(units, "cleanup")) yield return step;
             if (Sprint32PersistenceScope && verify) Sprint32PersistenceAbsence(caster, "cleanup");
@@ -1098,6 +1108,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             // this row proves nothing of it remains anywhere.
             if (Sprint38PersistenceScope && verify)
                 GlabrezuSavedAbsence38(caster, "cleanup");
+            // Sprint 39 is the same shape again: the pending windup and the
+            // spent use both sit on nalfeshnees this fixture owns, so the
+            // ordinary retirement above IS the cleanup and this row proves
+            // nothing of it - windup, daze, constant aura or the durationless
+            // feeblemind condition - remains anywhere.
+            if (Sprint39PersistenceScope && verify)
+                NalfeshneeSavedAbsence39(caster, "cleanup");
             bool preserved = unrelated.All(x => x.Unit.Destroyed == x.Destroyed && ReferenceEquals(x.Unit.HoldingState,x.HoldingState) && ReferenceEquals(x.Unit.Blueprint,x.Blueprint)) && Game.Instance.Player.Party.SequenceEqual(party);
             RosterPersistenceCheck("unrelated-preserved", preserved,
                 new JObject { ["preexistingUnits"] = unrelated.Length, ["preserved"] = preserved }, "exact unrelated unit references and party membership preserved");

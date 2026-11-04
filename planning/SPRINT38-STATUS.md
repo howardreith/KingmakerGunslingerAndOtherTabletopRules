@@ -1,7 +1,20 @@
 # Sprint 38 status — Glabrezu
 
-**IN PROGRESS.** Not released, not qualified, nothing claimed as proven on a
-frozen artifact. Sprint 37 is closed at v0.0.175 and is not reopened.
+**RELEASED at v0.0.176.** Sprint 38 is closed. The tested source is
+`e4c4d77a88ca19c3d22c0a516a645669d43eb64c`, the product merge and tag are
+`6370addc14a438fc80adf54e9b0062bd5777ef99` (PR #92), the published package is
+`7c32c32cded0d4cffaeceebe0d6765bbf35caac3a5ca8da45dd053ec86aa5d82`, and the
+records merge is `c69212d6c7871c8f3ebf043bfffa53ee3851455c` (PR #93). The
+authority for the final state is the **Release qualification, 2026-11-04**
+section below and `SPRINT38-RELEASE-EVIDENCE.json`. Sprint 37 is closed at
+v0.0.175 and is not reopened.
+
+The banner above this line previously read "IN PROGRESS. Not released, not
+qualified, nothing claimed as proven on a frozen artifact." That was true when
+written and became stale when the sprint released; it was corrected as a
+documentation-only carry-forward during Sprint 39 intake, with no rebuild and
+no change to any released byte. Every dated section below is preserved exactly
+as recorded, including its failures.
 
 ## Working identities
 
@@ -62,6 +75,15 @@ wrapper's pinned qualified baseline `2d9d95c8`.
 
 ## Early bounded probe
 
+> **Historical, 2026-11-03.** This section and the two that follow it
+> (**Review corrections** and **Progress**) record intake and in-flight state
+> as it stood while Sprint 38 was open. Their "still UNKNOWN", "outstanding"
+> and "pending" statements describe that moment, not the closed sprint. All of
+> them were resolved before release; the final state is the **Guarded mechanics
+> qualification** and **Release qualification** sections below. Retained
+> verbatim, failures included, as the record of how the sprint reached its
+> decisions.
+
 The mission's three intake questions, and where each stands.
 
 ### 1. A suitable existing four-arm body/rig — **resolved, reuse available**
@@ -115,9 +137,19 @@ a mod's dump.
 Settled offline from the retained `Assembly-CSharp.il`, with no guarded
 transaction spent. Two findings, both in `SPRINT38-RULES.md` in full:
 
-* The engine has **no gravity and no levitation concept at all** — zero
-  occurrences of `gravit` or `levitat` in 103 MB of IL, against working
-  positive controls. A faithful implementation is impossible.
+* A substring search for `gravit` and `levitat` over 103 MB of
+  `Assembly-CSharp.il` returned **zero occurrences**, against working positive
+  controls. That is a result about those two names in that assembly at that
+  moment: it establishes that no gravity or levitation concept is reachable
+  under either name, and it is **not** a proof that the engine expresses such a
+  concept nowhere by any other means, nor that a faithful implementation is
+  universally impossible. *(Narrowed during Sprint 39 intake. The original
+  wording concluded "The engine has no gravity and no levitation concept at
+  all — A faithful implementation is impossible." The search result itself is
+  unchanged and is retained above; only the inference drawn from it is
+  corrected. Reverse Gravity was omitted by the recorded owner decision of
+  2026-11-03, a balance and fidelity choice, and that decision does not rest on
+  this inference.)*
 * The engine **does** ship a complete, persisted, bounded vertical-capture
   framework: `AreaEffectPit` with `UnitPartInPit` and `UnitInPitController`
   already provide a point-anchored finite area, a **Reflex save against the
