@@ -53,16 +53,12 @@ $development=if($fixedDispelUi) {
     if(-not [string]::IsNullOrEmpty($DevelopmentPurpose)) { throw 'Infernal mixed persistence requires the final frozen release candidate; no development-purpose alias is admitted.' }
     $false
 } elseif($PersistenceScope -ceq 'nalfeshnee') {
-    # Sprint 39 takes the same line as Sprints 34-38: the mixed persistence
-    # envelopes are release evidence, so only the final frozen release
-    # candidate is admitted and no development-purpose alias stands in for it.
-    # That is what lets every mandatory row bind to one candidate's bytes -
-    # this script deploys the given package once and reuses that exact
-    # deployment - so the strict no-reused-row contract needs no relaxing, and
-    # it is why this sprint's persistence observer is not shaken out against a
-    # development build first.
-    if(-not [string]::IsNullOrEmpty($DevelopmentPurpose)) { throw 'Sprint39 mixed persistence requires the final frozen release candidate; no development-purpose alias is admitted.' }
-    $false
+    # One named development purpose for a hidden bootstrap, and nothing else.
+    # The qualifying rows still require the final frozen release candidate -
+    # Assert-KmgSprint39FreshExecution refuses any installed-stack receipt
+    # whose candidateKind is not 'release-candidate' - so this admits a
+    # shake-out run without admitting it as evidence.
+    Test-KmgSprint39DevelopmentPersistence -Scope $PersistenceScope -Purpose $DevelopmentPurpose
 } elseif($PersistenceScope -ceq 'glabrezu') {
     # Sprint 38 takes the same line as Sprints 34-37: the mixed persistence
     # envelopes are release evidence, so only the final frozen release
