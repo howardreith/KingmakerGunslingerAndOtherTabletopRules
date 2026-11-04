@@ -2587,7 +2587,7 @@ function Assert-KmgRuntimeScenarioPreflight {
             'working-save-expanded-summoning-verify-cleanup', 'working-save-expanded-summoning-verify-absent') -and
             $Parameters.ContainsKey('persistenceScope')
         if ($targetedSummonPersistence -and ($Parameters.persistenceScope -isnot [string] -or
-            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon', 'giant-humanoids', 'giant-humanoids-ii', 'outsider-celestial', 'fey-celestial', 'shadow-outsiders', 'infernal-outsiders', 'infernal-reach-ii', 'infernal-demons', 'vrock', 'glabrezu') -or -not $ExitAfterCompletion)) {
+            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon', 'giant-humanoids', 'giant-humanoids-ii', 'outsider-celestial', 'fey-celestial', 'shadow-outsiders', 'infernal-outsiders', 'infernal-reach-ii', 'infernal-demons', 'vrock', 'glabrezu', 'nalfeshnee') -or -not $ExitAfterCompletion)) {
             throw 'The targeted persistence trio permits only its exact named persistence scopes, including infernal-outsiders, infernal-reach-ii, infernal-demons, vrock or glabrezu, with automatic exit.'
         }
         $dispelUi = $Scenario -ceq 'working-save-expanded-summoning-creature-review' -and $Parameters.ContainsKey('reviewCase')
