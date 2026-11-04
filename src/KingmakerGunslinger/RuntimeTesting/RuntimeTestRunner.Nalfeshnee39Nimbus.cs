@@ -464,6 +464,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Buff victimDaze = victim.Descriptor.Buffs.GetBuff(daze);
                 Buff allyDaze = ally.Descriptor.Buffs.GetBuff(daze);
                 Buff latecomerDaze = latecomer.Descriptor.Buffs.GetBuff(daze);
+                // WAS CAUGHT, which is a different fact from IS STILL DAZED.
+                // The printed duration is a 1d10 roll, so a creature that
+                // rolled one round can legitimately be clear again by the
+                // time the burst's own round advance returns - and in
+                // turn-based play the advance IS how the deadline is reached,
+                // so the two readings can never be made simultaneous. The
+                // first turn-based run failed exactly there: the latecomer's
+                // save was rolled and its daze applied, and it had expired on
+                // its own clock a round later.
+                //
+                // So what the burst DID is read from the applications the
+                // burst itself made, and the live condition is kept beside it
+                // as supporting evidence. For the spared creatures the
+                // recorded absence is the stronger claim of the two: nothing
+                // was ever applied to them, not merely nothing remains.
+                Func<UnitEntityData, bool> caught = unit =>
+                    watcher.DazeApplications.Any(value =>
+                        ReferenceEquals(value.Initiator, unit) &&
+                        value.AppliedBuff != null);
                 int expectedDc = NalfeshneeRules39Policy
                     .SupernaturalDifficultyClass(
                         NalfeshneeRules39Policy.NalfeshneeHitDice,
@@ -474,8 +493,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         victimSave != null && !victimSave.IsPassed &&
                         victimSave.Type == SavingThrowType.Will &&
                         victimSave.DifficultyClass == expectedDc &&
-                        victimDaze != null && allySave != null &&
-                        allyDaze != null,
+                        caught(victim) && allySave != null &&
+                        caught(ally),
                     new JObject {
                         ["owner"] = owner.UniqueId,
                         ["pendingAfter"] =
@@ -492,9 +511,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         // made faction-safe - which would be a different
                         // ability.
                         ["allySaveRolled"] = allySave != null,
-                        ["allyDazed"] = allyDaze != null,
+                        ["victimCaughtByTheBurst"] = caught(victim),
+                        ["allyCaughtByTheBurst"] = caught(ally),
+                        ["victimStillDazedWhenRead"] = victimDaze != null,
+                        ["allyStillDazedWhenRead"] = allyDaze != null,
                         ["collateralRetained"] = allySave != null &&
-                            allyDaze != null,
+                            caught(ally),
                         ["removedByObserver"] = false
                     },
                     "The windup resolves on its own deadline about a round after activation: real Will saves at the live Charisma-derived difficulty are rolled for every non-demon in the radius, and both the enemy and the summoner's own ally that fail are dazed, so the collateral is retained rather than filtered to enemies.");
@@ -535,10 +557,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "The daze lasts a natively rolled one-to-ten rounds taken from the engine's own dice rather than a fixed number, and the duration actually applied is exactly that roll in rounds.");
 
                 check("nalfeshnee-nimbus-recipients-at-burst" + suffix,
-                    latecomerSave != null && latecomerDaze != null &&
-                        watcher.Save(devil) == null &&
+                    latecomerSave != null && caught(latecomer) &&
+                        watcher.Save(devil) == null && !caught(devil) &&
                         devil.Descriptor.Buffs.GetBuff(daze) == null &&
                         watcher.Save(exemptDemon) == null &&
+                        !caught(exemptDemon) &&
                         exemptDemon.Descriptor.Buffs.GetBuff(daze) == null &&
                         SummonDemonIdentityCatalog.IsDemonKey("succubus") &&
                         !SummonDemonIdentityCatalog.IsDemonKey("bone-devil"),
@@ -547,17 +570,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["latecomerOutsideAtActivation"] = true,
                         ["latecomerInsideAtBurst"] = true,
                         ["latecomerSaveRolled"] = latecomerSave != null,
-                        ["latecomerDazed"] = latecomerDaze != null,
+                        ["latecomerCaughtByTheBurst"] = caught(latecomer),
+                        ["latecomerStillDazedWhenRead"] =
+                            latecomerDaze != null,
                         ["departedKey"] = "bone-devil",
                         ["departedInsideAtActivation"] = true,
                         ["departedOutsideAtBurst"] = true,
                         ["departedSaveRolled"] = watcher.Save(devil) != null,
+                        ["departedCaughtByTheBurst"] = caught(devil),
                         ["departedDazed"] = devil.Descriptor.Buffs
                             .GetBuff(daze) != null,
                         ["exemptDemonKey"] = "succubus",
                         ["exemptDemonInsideAtBurst"] = true,
                         ["exemptDemonSaveRolled"] =
                             watcher.Save(exemptDemon) != null,
+                        ["exemptDemonCaughtByTheBurst"] =
+                            caught(exemptDemon),
                         ["exemptDemonDazed"] = exemptDemon.Descriptor.Buffs
                             .GetBuff(daze) != null,
                         ["succubusIsDemon"] =
