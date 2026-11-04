@@ -401,6 +401,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in ReviewNalfeshneeSpells39(fixture))
                     yield return frame;
                 ResetExpandedSummoningHostile(fixture);
+                foreach (int frame in ReviewNalfeshneeIntegration39(fixture))
+                    yield return frame;
+                ResetExpandedSummoningHostile(fixture);
                 ReviewNalfeshneePublic39(fixture);
                 yield break;
             }
@@ -433,6 +436,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 CreateSprint32TurnHostile(fixture);
                 foreach (int frame in ReviewNalfeshneeSpells39(fixture))
+                    yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint39NalfeshneeIntegrationPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewNalfeshneeIntegration39(fixture))
                     yield return frame;
                 yield break;
             }

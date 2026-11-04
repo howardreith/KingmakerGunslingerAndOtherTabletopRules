@@ -72,8 +72,14 @@ $spellNames=@('sprint32-sprint39-nalfeshnee-spells-at-will-declarations',
     'sprint32-sprint39-nalfeshnee-spells-at-will-repeat')
 $persistenceNames=@('whole-roster-persistence-s39-items-owned',
     'whole-roster-persistence-s39-nimbus-pending-armed')
+# The two places this sprint reaches outside its own creature: the native heal
+# action graph every consumer of heal walks, and the authoritative demon set
+# the released Vrock also reads.
+$integrationNames=@('sprint32-sprint39-nalfeshnee-integration-heal-graph',
+    'sprint32-sprint39-nalfeshnee-integration-heal-cures-both',
+    'sprint32-sprint39-nalfeshnee-integration-vrock-exemption')
 $allAssertions=@('synthetic-required')+$persistenceNames+@($surface.routes.assertion)+
-    $coreNames+$nimbusNames+$turnNames+$spellNames
+    $coreNames+$nimbusNames+$turnNames+$spellNames+$integrationNames
 # The fresh-execution contract is exercised for real rather than stubbed: each
 # synthetic source carries the engine's loaded-build receipt and the execution
 # receipt of the controller that actually ran it, in the exact directory
@@ -172,7 +178,8 @@ Refuse {$l=CopyLedger;$l.gameplayWaiver=$true;Assert-KmgSprint39Qualification $l
 # that silently lost one case cannot pass on its siblings.
 foreach($pair in @(@('core-profile-and-body',$coreNames),
     @('unholy-nimbus-real-time',$nimbusNames),@('unholy-nimbus-turn-based',$turnNames),
-    @('spells-aura-feeblemind-and-dispel',$spellNames))) {
+    @('spells-aura-feeblemind-and-dispel',$spellNames),
+    @('highest-risk-integration',$integrationNames))) {
     foreach($name in $pair[1]) {
         Refuse {$l=CopyLedger;$row=($l.coverage|Where-Object id -ceq $pair[0]);
             $row.evidenceSources[0].requiredAssertions=@($row.evidenceSources[0].requiredAssertions|Where-Object {$_ -cne $name});
@@ -183,6 +190,15 @@ foreach($pair in @(@('core-profile-and-body',$coreNames),
 # the real-time pass alone - which is exactly what a single nimbus row would
 # have allowed, and the two modes do not share a clock.
 Refuse {$l=CopyLedger;$l.coverage=@($l.coverage|Where-Object id -cne 'unholy-nimbus-turn-based');Assert-KmgSprint39Qualification $l $candidate}
+# The two shared surfaces this sprint touches must each be named by the
+# integration row: a release cannot be qualified with the native heal graph or
+# the released Vrock's exemption unmeasured.
+Refuse {$l=CopyLedger;$row=($l.coverage|Where-Object id -ceq 'highest-risk-integration');
+    $row.evidenceSources[0].requiredAssertions=@($row.evidenceSources[0].requiredAssertions|Where-Object {$_ -cne 'sprint32-sprint39-nalfeshnee-integration-heal-cures-both'});
+    Assert-KmgSprint39Qualification $l $candidate}
+Refuse {$l=CopyLedger;$row=($l.coverage|Where-Object id -ceq 'highest-risk-integration');
+    $row.evidenceSources[0].requiredAssertions=@($row.evidenceSources[0].requiredAssertions|Where-Object {$_ -cne 'sprint32-sprint39-nalfeshnee-integration-vrock-exemption'});
+    Assert-KmgSprint39Qualification $l $candidate}
 Refuse {$l=CopyLedger;$row=($l.coverage|Where-Object id -ceq 'unholy-nimbus-turn-based');
     $row.evidenceSources[0].requiredAssertions=@($row.evidenceSources[0].requiredAssertions|Where-Object {$_ -cne 'sprint32-sprint39-nalfeshnee-nimbus-delayed-burst-turnbased'});
     Assert-KmgSprint39Qualification $l $candidate}
