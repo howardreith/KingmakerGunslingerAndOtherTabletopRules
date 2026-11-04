@@ -204,19 +204,18 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// <para>This group runs last. The cure cell in the group before it
         /// has to borrow this recipient's faction and party membership -
         /// there is no other way to have the party's own <i>heal</i> land on
-        /// it - and it hands both back. What it cannot hand back is the group
-        /// bookkeeping described on <see cref="Nalfeshnee39GroupFacts"/>: the
-        /// faction multiset is maintained at join and leave time, so a unit
-        /// whose faction changed in between leaves its group describing a
-        /// unit that no longer exists, and the attack list is a cache of its
-        /// members' runtime sets. <c>ResetFactionSet</c> and
-        /// <c>UpdateAttackFactionsCache</c> are the engine's own
-        /// recomputations of exactly those two things from the current
-        /// members; they restore agreement with the units that are really
-        /// there and cannot invent a relation the game would not have. The
-        /// faction itself is re-established through the fixture's own private
-        /// hostile faction with the attack set reset to match it exactly,
-        /// which is the seam the released sprints already use.</para>
+        /// it. The borrowed faction comes back; what very nearly did not is
+        /// the recipient's GROUP, and by the measurements on
+        /// <see cref="Nalfeshnee39GroupFacts"/> that is the only thing that
+        /// decides enemy-ness. A unit's group id is computed once and cached
+        /// for good, and joining the party rewrites it, so a recipient that
+        /// has been lent sits in the player's own group afterwards and reads
+        /// as nobody's enemy however its faction is restored. The lender now
+        /// puts that identity back through the engine's own group-id setter;
+        /// this is the second line of defence, and it is deliberate, because
+        /// the symptom was a bare refusal to cast that cost a qualification
+        /// cycle to attribute. It restores only the recipient's own group,
+        /// never a group the fixture does not own.</para>
         ///
         /// <para>The result is asserted rather than assumed, so a future
         /// refusal to cast names hostility directly instead of surfacing as a
@@ -247,18 +246,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                         wanted.AttackFactions);
                 }
             }
-            foreach (UnitEntityData unit in new[] { target, owner })
+            // The recipient's own group, and only its own. An earlier
+            // version recomputed the OWNER's group too, which is the player
+            // party's: harmless-looking, but it folded the recipient into the
+            // party's own faction multiset and left that group's attack cache
+            // naming Player. Nothing here may touch a group the fixture does
+            // not own.
+            bool regrouped = target.GroupId != target.UniqueId;
+            if (regrouped) target.GroupId = target.UniqueId;
+            Kingmaker.UnitLogic.Groups.UnitGroup recipientGroup = target.Group;
+            if (recipientGroup != null && !recipientGroup.Disposed)
             {
-                Kingmaker.UnitLogic.Groups.UnitGroup group =
-                    unit == null ? null : unit.Group;
-                if (group == null || group.Disposed) continue;
-                group.ResetFactionSet();
-                group.UpdateAttackFactionsCache();
+                recipientGroup.ResetFactionSet();
+                recipientGroup.UpdateAttackFactionsCache();
             }
             owner.Memory.Add(target).Visible = true;
             target.Memory.Add(owner).Visible = true;
             return new JObject {
                 ["removedFromParty"] = wasInParty,
+                ["restoredOwnGroupIdentity"] = regrouped,
                 ["switchedToOwnedHostileFaction"] = switched,
                 ["ownedHostileFaction"] = wanted == null ? null : wanted.name,
                 ["ownerSeesTargetAsEnemy"] = owner.IsEnemy(target),

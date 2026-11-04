@@ -157,21 +157,38 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (loan.PartyAdded)
                     Game.Instance.Player.Party.Remove(target);
-                // Hand the recipient back whole. The cure cell has to lend
-                // this shared hostile to the party to have the party's own
-                // heal land on it, and a differential switch back leaves the
-                // borrowed faction's attack list merged into the unit's
-                // runtime set while the group's own faction multiset and
-                // attack cache still describe the unit as it was when it
-                // joined. Resetting to the recorded faction exactly and
-                // recomputing that group from its current members is what
-                // makes the next group's enemy-targeted casts legal.
+                // Hand the recipient back WHOLE, group included.
+                //
+                // The cure cell has to lend this shared hostile to the party
+                // to have the party's own heal land on it, and lending it
+                // rewrites the one thing a faction cannot put back. Native
+                // enemy-ness is decided per UnitGroup, a unit's group id is
+                // computed once and then cached forever, and joining the
+                // party rewrites that cached id to the directly-controllable
+                // group. Restoring the faction alone therefore returned a
+                // recipient that sat in the player's own group, where
+                // UnitGroup.IsEnemy answers false in both directions - once
+                // because the groups are the same object and again because
+                // that group is the player party - so every later
+                // enemy-targeted cast on it was refused.
+                //
+                // The group id has a real setter, and it is the engine's own
+                // move: it removes the unit from its current group, drops the
+                // cached group, and lets the next access re-resolve and
+                // re-add. Order matters, so the id goes back BEFORE the
+                // faction: the departure from the party group is then
+                // accounted with the faction the unit joined it under, and
+                // the re-add to its own group is accounted with the faction
+                // it is being restored to. Both multisets stay exact.
+                string lentGroupId = target.GroupId;
+                if (lentGroupId != target.UniqueId)
+                    target.GroupId = target.UniqueId;
                 target.Descriptor.SwitchFactions(oldFaction, true);
-                Kingmaker.UnitLogic.Groups.UnitGroup lentGroup = target.Group;
-                if (lentGroup != null && !lentGroup.Disposed)
+                Kingmaker.UnitLogic.Groups.UnitGroup regrouped = target.Group;
+                if (regrouped != null && !regrouped.Disposed)
                 {
-                    lentGroup.ResetFactionSet();
-                    lentGroup.UpdateAttackFactionsCache();
+                    regrouped.ResetFactionSet();
+                    regrouped.UpdateAttackFactionsCache();
                 }
                 if (loan.Heal != null)
                     fixture.Caster.Descriptor.RemoveFact(loan.Heal);
