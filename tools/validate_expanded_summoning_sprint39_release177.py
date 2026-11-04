@@ -15,7 +15,7 @@ import expanded_summoning_manifest as manifest
 # The head is after the version bump, as Sprints 36 to 38's were, so the
 # metadata check degenerates to "product metadata is unchanged from the
 # reviewed head" and OLD_INFORMATIONAL equals INFORMATIONAL.
-PRODUCT = "d31edc91891ec0c01d4a9c9e91ae9c65bcfc1818"
+PRODUCT = "0bbc4da036234ed64910e54cc3c2bbd3738b1f57"
 RELEASED = "c69212d6c7871c8f3ebf043bfffa53ee3851455c"
 VERSION = "0.0.177"
 INFORMATIONAL = VERSION + "-expanded-summoning-nalfeshnee"
