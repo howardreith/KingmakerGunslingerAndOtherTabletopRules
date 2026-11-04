@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "provenance": "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, Phase 2 original creature/action paintings, and Sprint 24 original theropod paintings; no copied game or third-party pixels.",
   "generator": "tools/New-ExpandedSummoningIcons.ps1",
-  "count": 146,
+  "count": 147,
   "icons": [
     {
       "key": "air-mephit",
@@ -4070,6 +4070,19 @@
         "KMG.Summoning.Ability.SM.Tier9.Glabrezu.One",
         "KMG.Summoning.Unit.Glabrezu"
       ]
+    },
+    {
+      "key": "nalfeshnee",
+      "displayName": "Nalfeshnee",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/nalfeshnee.png",
+      "productionFile": "assets/game/icons/expanded-summoning/nalfeshnee.png",
+      "sourceSha256": "487b96fb88f360ad06a506cc7b145215c58c98cb0ae8efb138cb744943290fa8",
+      "outputSha256": "e7dbde2cf744d56b265a0ae79b286843ef8f2a2c555917eb01dba5dda1aed73a",
+      "width": 128,
+      "height": 128,
+      "format": "RGBA PNG",
+      "scope": "kmg-catalog",
+      "blueprintSymbols": []
     }
   ]
 }

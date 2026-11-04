@@ -48,7 +48,12 @@ namespace KingmakerGunslinger.Summoning
             // unchanged at 95/543, and Elephant's eight existing roots are
             // completed rather than re-registered, so they are already counted
             // in both families above.
-            ValidateFamily(SummonFamily.Monster, 110, 598);
+            // Sprint 39 adds the Nalfeshnee to Summon Monster IX only. A
+            // tier-9 creature is admitted by GenerateVariants for parent 9
+            // alone, so the Monster roster gains one creature and exactly one
+            // placement - 110/598 becomes 111/599 - and the Nature's Ally
+            // side is deliberately untouched at 105/588.
+            ValidateFamily(SummonFamily.Monster, 111, 599);
             ValidateFamily(SummonFamily.NaturesAlly, 105, 588);
         }
 
@@ -168,7 +173,14 @@ namespace KingmakerGunslinger.Summoning
                 // Summon Monster IX only. Registered at tier 9, so
                 // GenerateVariants admits it for parent 9 alone and it
                 // contributes exactly one placement, at quantity One.
-                C("glabrezu","Glabrezu",9,false,null,"Original four-armed pincered demon; measured Lizardfolk rig")
+                C("glabrezu","Glabrezu",9,false,null,"Original four-armed pincered demon; measured Lizardfolk rig"),
+                // Sprint 39: one adult, untemplated endgame anti-caster demon
+                // at Summon Monster IX only, registered at tier 9 exactly as
+                // the Glabrezu is - so GenerateVariants admits it for parent 9
+                // alone and it contributes exactly one placement, at quantity
+                // One. No Nature's Ally row, so that family's totals do not
+                // move at all.
+                C("nalfeshnee","Nalfeshnee",9,false,null,"Original corpulent boar-headed winged demon; measured Lizardfolk rig")
             };
         }
 
