@@ -56,8 +56,11 @@ namespace KingmakerGunslinger.Blueprints
         // that marker is deliberately not copied here.
         private const string NativeDazeCondition39 =
             "9934fedff1b14994ea90205d189c8759";
-        // The printed feeblemind cure that this game actually ships.
-        private const string NativeHeal39 =
+        // The printed feeblemind cure that this game actually ships. Internal
+        // rather than private because the spells review casts this exact
+        // native spell to observe the cure, and it must name the same
+        // identity the build attached to rather than a second copy of it.
+        internal const string NativeHeal39 =
             "ff8f1534f66559c478448723e16b6624";
 
         /// <summary>

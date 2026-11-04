@@ -82,6 +82,10 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint38Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint39Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.Nalfeshnee39Core.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.Nalfeshnee39Nimbus.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.Nalfeshnee39Persistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.Nalfeshnee39Public.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.Nalfeshnee39Spells.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBarbedCombat35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBone35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCore36.cs" />
