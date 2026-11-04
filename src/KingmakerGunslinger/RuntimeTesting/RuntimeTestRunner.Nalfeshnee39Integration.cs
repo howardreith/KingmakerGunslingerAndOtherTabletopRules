@@ -85,8 +85,35 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 Nalfeshnee39HealGraph(check);
+                // REAL TIME and a live recipient, explicitly. This group runs
+                // last, after four earlier groups have advanced rounds,
+                // switched combat modes, damaged this shared hostile and
+                // borrowed its party membership - so none of that is assumed
+                // to have been handed back in the state a standard-action
+                // cast needs. The turn-based toggle is the one that matters
+                // most: a standard action is unavailable outside its owner's
+                // turn, and nothing here enrols anyone in a turn order.
+                Kingmaker.UI.SettingsUI.SettingsRoot.Instance
+                    .EnableTurnBasedMode.CurrentValue = false;
+                Game.Instance.TurnBasedCombatController.Activate();
+                Game.Instance.IsPaused = false;
+                ResetExpandedSummoningHostile(fixture);
                 target.Stats.HitPoints.BaseValue = 100000;
                 target.Damage = 0;
+                target.Descriptor.State.Immortality.Retain();
+                receipt["recipientAtGroupStart"] = new JObject {
+                    ["unit"] = target.UniqueId,
+                    ["destroyed"] = target.Destroyed,
+                    ["inState"] = target.IsInState,
+                    ["isDead"] = target.Descriptor.State.IsDead,
+                    ["lifeState"] =
+                        target.Descriptor.State.LifeState.ToString(),
+                    ["hitPointsLeft"] = target.HPLeft,
+                    ["canAct"] = target.Descriptor.State.CanAct,
+                    ["inParty"] = Game.Instance.Player.Party
+                        .Contains(target),
+                    ["nativeTurnBasedMode"] = TurnBased.Controllers
+                        .CombatController.IsInTurnBasedCombat() };
                 foreach (int frame in Nalfeshnee39HealCuresBoth(fixture,
                     owned, target, loan, check)) yield return frame;
                 foreach (int frame in Nalfeshnee39VrockExemption(fixture,
@@ -110,6 +137,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Stats.SaveFortitude.BaseValue = oldFort;
                 target.Stats.HitPoints.BaseValue = oldHp;
                 target.Damage = oldDamage;
+                target.Descriptor.State.Immortality.Release();
                 PlaceExpandedSummoningUnit(target, oldPosition);
                 PlaceExpandedSummoningUnit(fixture.Caster, oldCasterPosition);
                 DisposeExpandedSummoningUnits(fixture.Created,
