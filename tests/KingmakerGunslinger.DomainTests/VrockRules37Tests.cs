@@ -167,12 +167,18 @@ namespace KingmakerGunslinger.DomainTests
             // hand-written four-entry set silently omitted.
             // Sprint 38 appends the Glabrezu, whose own printed type line
             // is "CE Huge outsider (chaotic, demon, evil, extraplanar)".
+            // Sprint 39 appends the Nalfeshnee, whose own printed type line
+            // is also "CE Huge outsider (chaotic, demon, evil, extraplanar)".
+            // The Vrock's screech and the Nalfeshnee's nimbus now resolve
+            // their exemptions from this same set, so it cannot drift between
+            // the two.
             foreach (string key in new[] { "succubus", "shadow-demon",
-                "dretch", "babau", "hezrou", "vrock", "glabrezu" })
+                "dretch", "babau", "hezrou", "vrock", "glabrezu",
+                "nalfeshnee" })
                 Assertions.True(SummonDemonIdentityCatalog.IsDemonKey(key),
                     "A printed demon is in the exemption set: " + key);
-            Assertions.Equal(7, keys.Count,
-                "The exemption covers exactly this project's seven printed demons.");
+            Assertions.Equal(8, keys.Count,
+                "The exemption covers exactly this project's eight printed demons.");
 
             // Negative controls. The Bebilith is the one that matters most:
             // it is a chaotic evil extraplanar outsider with no demon subtype,

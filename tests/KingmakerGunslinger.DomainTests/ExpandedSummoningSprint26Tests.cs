@@ -84,7 +84,11 @@ namespace KingmakerGunslinger.DomainTests
         // Empty again after Sprint 38 publication: the Glabrezu's five
         // guarded mechanics phases are green on live units, so removing its
         // name here is the whole of publishing it.
-        internal static readonly string[] WithheldKeys = { };
+        // Sprint 39 registers the Nalfeshnee and withholds its single
+        // Summon Monster IX route until its complete candidate passes, so the
+        // withheld set is non-empty again. Publishing it is removing this one
+        // name, and nothing else: every dependent count here derives.
+        internal static readonly string[] WithheldKeys = { "nalfeshnee" };
         internal static bool IsWithheld(string key) { return Array.IndexOf(WithheldKeys, key) >= 0; }
     }
 
