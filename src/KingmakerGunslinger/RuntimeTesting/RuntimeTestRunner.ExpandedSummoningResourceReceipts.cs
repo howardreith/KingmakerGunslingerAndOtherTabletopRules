@@ -190,6 +190,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 out mesh, out bones, out paint, out status);
             add(mesh, GlabrezuVisualPolicy38.Glabrezu + ".Mesh");
             add(paint, GlabrezuVisualPolicy38.Glabrezu + ".Albedo");
+            // Sprint39 holds its one authored source mesh and albedo in the
+            // same immutable process cache, and the cold cleanup found the
+            // omission the same way it found Sprint 37's: the surviving albedo
+            // classified UNRESOLVED and failed closed, with the two nalfeshnee
+            // views both referencing it. That is the stage working. The
+            // texture is not a leak - it is the single decoded original the
+            // cache holds with DontUnloadUnusedAsset while each view takes its
+            // own mesh and material copies, which the same receipt shows being
+            // destroyed as PRIVATE_VIEW_OWNED. Registering the pair here is
+            // what lets the cleanup tell this project's decoded original from
+            // an unknown survivor; the getter allocates nothing, and a
+            // same-named survivor that is not this cache object stays
+            // unresolved.
+            PteranodonAssetRuntime.TryGetNalfeshneeVisual39(
+                NalfeshneeVisualPolicy39.Nalfeshnee,
+                out mesh, out bones, out paint, out status);
+            add(mesh, NalfeshneeVisualPolicy39.Nalfeshnee + ".Mesh");
+            add(paint, NalfeshneeVisualPolicy39.Nalfeshnee + ".Albedo");
             foreach (string key in ExpandedSummoningCatalog.All.Select(c => c.Key))
             {
                 if (PteranodonAssetRuntime.TryGetUngulateVisual(key, out mesh, out bones, out paint, out status) ||
