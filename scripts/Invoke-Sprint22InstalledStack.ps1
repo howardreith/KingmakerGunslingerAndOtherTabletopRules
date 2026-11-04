@@ -53,12 +53,22 @@ $development=if($fixedDispelUi) {
     if(-not [string]::IsNullOrEmpty($DevelopmentPurpose)) { throw 'Infernal mixed persistence requires the final frozen release candidate; no development-purpose alias is admitted.' }
     $false
 } elseif($PersistenceScope -ceq 'nalfeshnee') {
-    # One named development purpose for a hidden bootstrap, and nothing else.
-    # The qualifying rows still require the final frozen release candidate -
-    # Assert-KmgSprint39FreshExecution refuses any installed-stack receipt
-    # whose candidateKind is not 'release-candidate' - so this admits a
-    # shake-out run without admitting it as evidence.
-    Test-KmgSprint39DevelopmentPersistence -Scope $PersistenceScope -Purpose $DevelopmentPurpose
+    # Sprint 39 takes the same line as Sprints 34-38: the mixed persistence
+    # envelopes are release evidence, so only the final frozen release
+    # candidate is admitted and no development-purpose alias stands in for it.
+    #
+    # This was briefly changed to admit one named bootstrap purpose, on the
+    # reasoning that the publisher refuses development receipts anyway so a
+    # shake-out could not qualify anything. The toolchain then supplied the
+    # real reason the sibling sprints chose release-only, and it is stronger
+    # than the one their comments give: a development candidate must EXTEND a
+    # released version, and by the time a sprint reaches its persistence
+    # envelope the version has already been bumped to one that is not released
+    # yet. So there is no development candidate to bootstrap with at this point
+    # in the pipeline at all, and the restriction is structural rather than a
+    # policy choice. The bootstrap purpose is withdrawn.
+    if(-not [string]::IsNullOrEmpty($DevelopmentPurpose)) { throw 'Sprint39 mixed persistence requires the final frozen release candidate; a development candidate must extend a released version and this version is not released yet.' }
+    $false
 } elseif($PersistenceScope -ceq 'glabrezu') {
     # Sprint 38 takes the same line as Sprints 34-37: the mixed persistence
     # envelopes are release evidence, so only the final frozen release

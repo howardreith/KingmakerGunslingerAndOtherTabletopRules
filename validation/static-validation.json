@@ -2820,13 +2820,13 @@
     "harnessIdentity": {
       "scripts/Deploy-Local.ps1": "713cceb319c2850d5f440139ebedc5468501d5b9c458e4d418d944cce98d9353",
       "scripts/Invoke-ExpandedSummoningRuntimeScenario.ps1": "e1d798f8f228b6b9cd7444e20697f2e06de40343b92d8a5b8bf6681b0dec6c6a",
-      "scripts/Invoke-KingmakerRuntimeTest.ps1": "388e130c32947ce34afc4e51598b70ac50d23c7e9f5abc83e94cf217ec37f220",
-      "scripts/Invoke-Sprint22InstalledStack.ps1": "0a617d1a8919d067bc3a57ecee28a8d511c726e31b8f283350e02d596ad721b6",
-      "scripts/RuntimeAutomation.Common.ps1": "b53c5de315340c22d8bb260ff0cc6394d86e9814aee654ff96388ed28263c70c",
+      "scripts/Invoke-KingmakerRuntimeTest.ps1": "6bab6582bfdcf3913dab2ab296a7a206c5f047503647dc66c7df4fc371609164",
+      "scripts/Invoke-Sprint22InstalledStack.ps1": "70c2734fc81ee6c9f47d7060c974e03268c664aac02bc2ff4dbdcc0e9d63b398",
+      "scripts/RuntimeAutomation.Common.ps1": "43ddee00e71601d248356b81bc6912835bb7db51fb31d9158dce6d273fb058be",
       "scripts/RuntimeHarness.Common.ps1": "f8c67bb58e84b677e377d4a8a93472ecfefffe38fa2b5b778186209d6f7aadb2",
       "scripts/Sprint39QualifiedRelease.Common.ps1": "4016f4e6fc767f493a1f5e5665b94ff1b8b1d72828098c89fabed1deb692684b",
       "scripts/Test-Sprint22InstalledStack.ps1": "e7c6c4a401e6881c02516d184c8d0e377c02df24af75cc491a9c7178fca08f2c",
-      "scripts/Test-Sprint32NativePersistenceRequest.ps1": "e6e69985607782c5c1c4ee476a66e8f8a68c295f8603732fbd774c84b8d9dcb2",
+      "scripts/Test-Sprint32NativePersistenceRequest.ps1": "173001949007ba2821be83adaaf6abc40257077b63786f6eb873feae33057f48",
       "scripts/Test-Sprint39Release.ps1": "694e41410fa7605bb9ab8a79a36bb486145281425a4d5e07197233dc7c29d67e"
     },
     "harnessIdentityNote": "Tool and fixture identity for the orchestration that produced the native rows, recorded separately from the compiled product identity. These paths lie outside the validator's guarded product roots, so they are pinned here rather than by the product diff. The validator file itself cannot carry its own digest; its provenance is the reviewed product commit.",
