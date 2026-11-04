@@ -385,8 +385,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in ReviewNalfeshneeCore39(fixture))
                     yield return frame;
                 ResetExpandedSummoningHostile(fixture);
-                foreach (int frame in ReviewNalfeshneeNimbus39(fixture))
-                    yield return frame;
+                foreach (int frame in ReviewNalfeshneeNimbus39(fixture,
+                    false)) yield return frame;
+                ResetExpandedSummoningHostile(fixture);
+                // Both combat modes, in the same transaction, each pass
+                // retiring its own units first. The publisher contract asks
+                // the both-modes row for the same nimbus assertions carrying
+                // the -turnbased suffix, and a row cannot bind to bytes a
+                // different invocation produced, so the turn-based pass
+                // belongs here rather than in a separate process that would
+                // need its own release candidate.
+                foreach (int frame in ReviewNalfeshneeNimbus39(fixture,
+                    true)) yield return frame;
                 ResetExpandedSummoningHostile(fixture);
                 foreach (int frame in ReviewNalfeshneeSpells39(fixture))
                     yield return frame;
@@ -406,8 +416,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Sprint39NalfeshneeNimbusPhase)
             {
                 CreateSprint32TurnHostile(fixture);
-                foreach (int frame in ReviewNalfeshneeNimbus39(fixture))
-                    yield return frame;
+                foreach (int frame in ReviewNalfeshneeNimbus39(fixture,
+                    false)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy
+                    .Sprint39NalfeshneeTurnsPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewNalfeshneeNimbus39(fixture,
+                    true)) yield return frame;
                 yield break;
             }
             if (phase == ExpandedSummoningNativeProfilePolicy
