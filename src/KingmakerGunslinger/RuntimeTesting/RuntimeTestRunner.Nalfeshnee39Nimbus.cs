@@ -785,14 +785,32 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             foreach (int frame in NimbusWaitDazeOut39(victim, daze))
                 yield return frame;
-            // One witness inside the first's radius; the second stands well
-            // outside it, so its own burst is distinguishable from the
-            // first's rather than being inferred from a shared recipient.
+            // EACH OWNER GETS ITS OWN WITNESS, and the two are far enough
+            // apart that neither is in the other's radius. That is what makes
+            // the two bursts distinguishable: a shared recipient would leave
+            // "the second one resolved" indistinguishable from "the first one
+            // caught everybody".
+            //
+            // The first version placed the second owner far away and gave it
+            // no witness at all, and it passed only because earlier groups
+            // left their summons standing nearby. Retiring each group's units
+            // promptly removed that accident and the cell failed honestly:
+            // the burst resolved and caught nobody, because nobody was there.
+            UnitEntityData secondWitness = CastExpandedSummoningOwnTier(
+                fixture, "bone-devil");
+            owned.Add(secondWitness);
+            mine.Add(secondWitness);
+            VrockQuiesce37(secondWitness);
+            secondWitness.Stats.SaveWill.BaseValue = -100;
+            foreach (int frame in WaitInfernalSupport34(secondWitness))
+                yield return frame;
             VrockRing37(first, new[] { victim },
                 NalfeshneeRules39Policy.NimbusRadiusFeet - 15f);
             PlaceExpandedSummoningUnit(second, first.Position +
                 Vector3.right * new Feet(
-                    NalfeshneeRules39Policy.NimbusRadiusFeet * 3f).Meters);
+                    NalfeshneeRules39Policy.NimbusRadiusFeet * 4f).Meters);
+            VrockRing37(second, new[] { secondWitness },
+                NalfeshneeRules39Policy.NimbusRadiusFeet - 15f);
 
             var watcher = new NalfeshneeNimbusWatcher39(second, nimbus, daze);
             EventBus.Subscribe(watcher);
@@ -876,22 +894,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 check("nalfeshnee-nimbus-second-owner-resolves",
                     second.Descriptor.Buffs.GetBuff(windup) == null &&
-                        watcher.Saves.Count >= 1 &&
+                        watcher.Save(secondWitness) != null &&
                         watcher.Saves.All(value =>
-                            value.Type == SavingThrowType.Will),
+                            value.Type == SavingThrowType.Will) &&
+                        // Its own area, not the first's: the far witness is
+                        // caught and the near one is untouched by THIS owner.
+                        watcher.Save(victim) == null,
                     new JObject {
                         ["secondOwner"] = second.UniqueId,
                         ["secondResolved"] =
                             second.Descriptor.Buffs.GetBuff(windup) == null,
+                        ["secondWitness"] = secondWitness.UniqueId,
+                        ["secondWitnessSaveRolled"] =
+                            watcher.Save(secondWitness) != null,
                         ["secondSaveCount"] = watcher.Saves.Count,
                         ["secondSaveTypes"] = new JArray(watcher.Saves
                             .Select(value => value.Type.ToString())
                             .Distinct()),
                         ["secondRecipients"] = new JArray(watcher.Saves
                             .Select(value => value.Initiator.UniqueId)
-                            .Distinct())
+                            .Distinct()),
+                        ["firstOwnersWitnessSparedBySecond"] =
+                            watcher.Save(victim) == null,
+                        ["ownerSeparationFeet"] =
+                            NalfeshneeRules39Policy.NimbusRadiusFeet * 4
                     },
-                    "The second nalfeshnee's own windup then bursts on its own later deadline with its own real Will saves, so neither owner's pending resolution was consumed by the other's.");
+                    "The second nalfeshnee's own windup then bursts on its own later deadline, rolling a real Will save for the witness inside ITS radius and none for the first owner's witness far outside it - so each burst resolves against its own area and neither owner's pending resolution was consumed by the other's.");
             }
             finally
             {
