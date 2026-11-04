@@ -641,6 +641,28 @@ function Test-KmgSprints3031DevelopmentPersistence {
     return $true
 }
 
+# Sprint 39 permits ONE named development purpose for a hidden bootstrap of its
+# persistence envelope, and nothing else. This does not weaken the release
+# contract by a single clause: Assert-KmgSprint39FreshExecution refuses any
+# installed-stack receipt whose candidateKind is not 'release-candidate', and
+# the publisher refusal suite has a case proving it, so a development run can
+# shake the observer out but can never qualify a row.
+#
+# Sprints 34 to 38 chose release-only here. The difference is situational
+# rather than a disagreement: their persistence observers reused shapes already
+# proven in earlier sprints, and this one carries a new kind of saved state - a
+# pending delayed effect with an absolute deadline and a per-component armed
+# flag - that no earlier envelope has ever put through a cold load.
+function Test-KmgSprint39DevelopmentPersistence {
+    param([string]$Scope,[string]$Purpose)
+    if([string]::IsNullOrEmpty($Purpose)){return $false}
+    if($Scope -cne 'nalfeshnee' -or
+        $Purpose -cne 'sprint39-nalfeshnee-persistence-bootstrap') {
+        throw 'Development installed-stack persistence permits only exact nalfeshnee scope and sprint39-nalfeshnee-persistence-bootstrap purpose.'
+    }
+    return $true
+}
+
 function Test-KmgSprint29DevelopmentPersistence {
     param([string]$Scope,[string]$Purpose)
     if([string]::IsNullOrEmpty($Purpose)){return $false}
