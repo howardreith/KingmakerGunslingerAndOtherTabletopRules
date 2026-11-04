@@ -190,6 +190,20 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         internal const string ObserveExpandedSummoningSprint38Inputs =
             "observe-expanded-summoning-sprint38-native-inputs";
+
+        /// <summary>
+        /// The one bounded Sprint 39 installed-library audit: whether a native
+        /// Nalfeshnee body exists, whether native feeblemind, unholy aura and
+        /// greater dispel magic graphs exist, which shipped blueprints carry
+        /// UnholyGrace, the alignment-conditional spell resistance and
+        /// ForbidSpellCasting, and whether a native Improved Critical (bite)
+        /// ships. Deliberately narrow: every question the engine assembly can
+        /// answer alone was already settled offline during intake.
+        /// A name search establishes its own results and not a universal
+        /// absence. Research only; it creates no actor and loads no save.
+        /// </summary>
+        internal const string ObserveExpandedSummoningSprint39Inputs =
+            "observe-expanded-summoning-sprint39-native-inputs";
         internal const string ObserveExpandedSummoningSprint32Inputs =
             "observe-expanded-summoning-sprint32-native-inputs";
         internal const string ObserveExpandedSummoningSprints30And31Inputs =
@@ -983,6 +997,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningSprint36Inputs,
                 ObserveExpandedSummoningSprint37Inputs,
                 ObserveExpandedSummoningSprint38Inputs,
+                ObserveExpandedSummoningSprint39Inputs,
                 DisposableExpandedSummoningSprint18Review,
                 DisposableExpandedSummoningSprint19Review,
                 DisposableExpandedSummoningSprint20Review,
