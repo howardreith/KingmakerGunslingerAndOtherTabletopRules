@@ -294,13 +294,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (bool)admission["ownerActing"] &&
                         (bool)admission["nativeTurnBasedMode"], admission,
                     "The nalfeshnee is enrolled in native turn-based combat through the engine's own enrollment and turn-order toggle, and holds its own turn before any nimbus is ordered.");
-                foreach (UnitEntityData joining in
-                    new[] { exemptDemon, devil, latecomer, ally })
-                {
-                    var joined = new JObject();
-                    foreach (int frame in VrockJoinTurnOrder37(joining,
-                        owner, joined)) yield return frame;
-                }
+                // Deliberately nothing else is enrolled. Only the OWNER has
+                // to act here, and the released turns phase enrols exactly
+                // one extra unit - a second caster that needs its own turn.
+                // Recipients do not: a save and a condition are unit-agnostic
+                // and need no initiative, and the burst comes from the
+                // owner's own buff expiry rather than from anyone's turn.
+                //
+                // The first turn-based attempt did enrol all four recipients,
+                // the party caster among them, and the installed turn-based
+                // combat mod then threw inside its own StartTurn from the
+                // harness clock. That is outside the shape every released
+                // turns phase uses, and enrolling a party member in combat
+                // with a hostile summon is a state change this observation
+                // never needed, so the fix is to stop asking for it rather
+                // than to work around another mod.
             }
 
             // Inside the printed radius at activation: the enemy, the ALLY -
