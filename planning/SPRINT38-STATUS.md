@@ -344,13 +344,118 @@ Trumpet Archon and the Astral Deva, both at spell resistance 25:
 No global resistance bypass, no Sprint 37 replay, and no change to any released
 byte. Sprint 37 remains closed.
 
+## Release qualification, 2026-11-04
+
+### The candidate, and why it moved four times
+
+A release candidate is frozen bytes, and the publisher requires the artifact
+head and a clean working tree to be exactly that commit. Four source
+corrections arrived after the first freeze, so the candidate was rebuilt and
+every mandatory native row re-run against the new bytes each time rather than
+carried over. That is the contract working: no Sprint 38 row may be reused, and
+a row bound to other bytes is not evidence.
+
+| Candidate | Why it was superseded |
+|---|---|
+| `cb7d8e9d` | version bump only; the validator pins it as the reviewed product head |
+| `5419dc95` | the compiled request validator refused the new persistence scope |
+| `88b20ec8` | the view patch's donor-policy lists were missing Sprint 38 |
+| `f091879a` | the prepared stun left an owned unit unable to act at the save boundary |
+| `dd9218ef` | the publisher named the persistence assertions without the runner's prefix |
+| `e4c4d77a` | **the released candidate** |
+
+### What the release runs found
+
+Every one of these was found by a guarded run against real bytes, and every run
+restored the live mod tree to its exact pre-run hash
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+
+1. **The game refused the new persistence scope.** The compiled request
+   validator kept its own chain of eighteen scope inequalities, and Sprint 38
+   was absent: declared in the policy, dispatched by the runner, admitted by
+   both PowerShell gates, and refused in-game after a real launch with
+   `summoning-persistence-scope-invalid`. No hook was installed and no save was
+   touched. The validator now asks the one authoritative list.
+2. **One donor-policy list existed six times.** The authored body had loaded
+   cleanly and the live view still read `donor-visual:donor-renderer-count=2`;
+   later, the owned-resource receipt for a correctly attached body came back
+   empty. Five of the six copies now ask one predicate. The sixth is left alone
+   deliberately, because it is a different set and asking the predicate there
+   would widen it.
+3. **The prepared stun collided with the shared readiness contract.** Every
+   owned unit must be able to act and move at the save boundary, and this
+   fixture may write only to units it owns, so the only Power Word Stun
+   recipient available is a second owned glabrezu - which a real stun
+   legitimately stops from acting. The stun is now proven while it stands and
+   withdrawn before the save; what crosses the save is the spent single use,
+   the recipient's hit points and the constant sense.
+4. **The publisher named assertions the runner does not write.** The
+   roster-persistence scenarios prefix every assertion with
+   `whole-roster-persistence-`, so requiring the bare cell name refused a
+   complete envelope with "does not name its own saved state".
+
+### One interrupted transaction, and how it was closed
+
+The first attempt at the ON envelope was interrupted: the orchestrator process
+ended while the game it had launched was still running, leaving the release
+candidate deployed and the compatibility transaction open. It was closed
+explicitly rather than left or worked around - the game was closed, the
+transaction restored through the dedicated compatibility restore entry point
+and verified, and the installed mod confirmed back at 0.0.117 with all eleven
+mods present. The authorized Working fixture was untouched by it: the in-game
+request had been refused before any hook was installed or any save written, and
+its bytes still matched the captured original exactly.
+
+A second aborted attempt did write a prepared save, and the Working fixture was
+restored from its capture with a boundary proof naming the restart before the
+envelope was retried.
+
+### Working fixture boundaries
+
+The authorized Working fixture was captured before any envelope at
+`650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850`, 8,550,225
+bytes, and restored with bytes, last-write and creation time verified at three
+boundaries: the aborted ON restart, ON to OFF, and after OFF. Nothing else in
+the save directory was written: 118 entries before and after, with the baseline
+save unchanged at `cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`.
+
+### Release and public verification
+
+Stable **v0.0.176** is published from the exact tested ZIP, promoted without
+rebuilding:
+
+| Fact | Value |
+|---|---|
+| tag | `v0.0.176`, not a draft, not a prerelease, marked latest |
+| tested source | `e4c4d77a88ca19c3d22c0a516a645669d43eb64c` |
+| product merge | `6370addc14a438fc80adf54e9b0062bd5777ef99` (PR #92), and the tag is that merge |
+| package | `7c32c32cded0d4cffaeceebe0d6765bbf35caac3a5ca8da45dd053ec86aa5d82` |
+| assembly | `5b81f5f5cc314252b7cc7647cc63f1c76223679a73678f27d7b8e4ff626911a1` |
+| module version id | `dd4a21a8-c4f4-44ff-b0d9-16fb14d53a62` |
+| full suite | 2,801 registered, 2,801 executed, 0 failures, unfiltered |
+
+The published asset was downloaded again from the public release and checked
+rather than assumed: its bytes, the checksum file served beside it, the release
+manifest, the assembly inside the archive, that assembly's module version id,
+the `Info.json` version, the tag being the product merge, the tested source
+being an ancestor of the tag, and that the archive carries no `scripts/` entry.
+All nine agree.
+
+### Closing machine state
+
+Read back after publication and the public-download check: the live mod tree at
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`, the
+owner's own 0.0.117 build installed with assembly
+`fd2fc61c250b13857d81acc197a896450f5b242ee392fa7192b01201e908f35f`, 968 manifest
+entries across eleven mods, 118 saves with the Working fixture at its captured
+original bytes and the baseline untouched, no Kingmaker process, no leftover
+staging directory and no compatibility lock. This is the state Sprint 37 left,
+unchanged.
+
+No owner aesthetic approval is claimed. **Sprint 38 is RELEASED. Sprint 39 and
+the Nalfeshnee are not started.**
+
 ## Not started
 
-The version bump to v0.0.176 and its release validator, publisher policy and
-refusal suite; the final frozen release candidate with its full unfiltered
-gate, strict package and byte reproducibility; the grouped release mechanics
-phase bound to that candidate; the two mixed persistence envelopes across six
-fresh processes; the affected integration pass; the publisher preflight, the
-merge, the exact-byte release, the public-download verification, the exact
-restoration and the final records. Sprint 39 and the Nalfeshnee remain
-NOT_STARTED and are out of scope.
+Nothing in Sprint 38 remains. Sprint 39 and the Nalfeshnee are NOT_STARTED and
+out of scope.
