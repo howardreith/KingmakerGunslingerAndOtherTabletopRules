@@ -141,7 +141,18 @@ namespace KingmakerGunslinger.Summoning
                 // they are the signature limbs and the rend carriers. The
                 // body is original geometry and the rig is an animation
                 // skeleton only.
-                "glabrezu|a8cbd4cdb0feaf64eab1452257c3c971|0"
+                "glabrezu|a8cbd4cdb0feaf64eab1452257c3c971|0",
+                // Sprint 39 rides the same measured free-hands rig as every
+                // released Sprint 34-38 outsider. The bounded installed-input
+                // observation found no native Nalfeshnee unit and no
+                // Nalfeshnee-named asset of any type, so there was nothing
+                // native to reuse: the body is project-owned original
+                // geometry and this is an animation skeleton only. The two
+                // undersized wings ride the chest as authored geometry, as
+                // the Sprint 37 Vrock's do, so they move with the torso and
+                // do not articulate independently - a recorded limitation,
+                // not a claim of wing articulation.
+                "nalfeshnee|a8cbd4cdb0feaf64eab1452257c3c971|0"
             });
         }
 

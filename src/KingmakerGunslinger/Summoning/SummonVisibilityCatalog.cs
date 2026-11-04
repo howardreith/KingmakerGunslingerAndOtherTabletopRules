@@ -142,12 +142,18 @@ namespace KingmakerGunslinger.Summoning
         // the alignment bursts at their derived difficulties; and the AI
         // choosing the word against the affectable candidate of two live
         // enemies. Nothing is withheld now.
+        // Sprint 39 registers the Nalfeshnee and WITHHOLDS it. Its single
+        // Summon Monster IX route exists, carries its own icon and is
+        // executable with the rest of the roster, but it is suppressed until
+        // its complete candidate passes - so the published surface is
+        // unchanged from the one Sprint 38 released. Removing this one key is
+        // all that publication should take.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(new string[0],
+            new HashSet<string>(new[] { "nalfeshnee" },
                 StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 1186;
-        internal const int SuppressedLogicalPlacementCount = 0;
+        internal const int RegisteredLogicalPlacementCount = 1187;
+        internal const int SuppressedLogicalPlacementCount = 1;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 
@@ -228,6 +234,22 @@ namespace KingmakerGunslinger.Summoning
                 sprint38.Select(value => value.ParentTier)
                     .OrderBy(value => value)
                     .SequenceEqual(new[] { 9 });
+            // Sprint 39 is one creature with one route, shaped exactly like
+            // Sprint 38's - Monster tier 9, so GenerateVariants admits it for
+            // parent 9 alone. The one difference that matters here is the
+            // last clause: this route is NOT published. Asserting the
+            // withholding rather than the publication is what makes the
+            // hidden phase observable, and flipping it is all publication
+            // should take.
+            SummonVariantSpec[] sprint39 = all.Where(value =>
+                value.Creature.Key == "nalfeshnee").ToArray();
+            bool sprint39Routes = sprint39.Length == 1 &&
+                sprint39.All(value => value.Family == SummonFamily.Monster &&
+                    !value.Creature.MonsterTemplated &&
+                    !IsPublished(value)) &&
+                sprint39.Select(value => value.ParentTier)
+                    .OrderBy(value => value)
+                    .SequenceEqual(new[] { 9 });
             bool giantRoutes = new[] { "hill-giant", "stone-giant" }
                 .All(key => giants.Where(value => value.Creature.Key == key)
                     .Select(value => value.ParentTier).OrderBy(value => value)
@@ -240,9 +262,16 @@ namespace KingmakerGunslinger.Summoning
             if (all.Length != RegisteredLogicalPlacementCount ||
                 suppressed.Length != SuppressedLogicalPlacementCount ||
                 all.Count(IsPublished) != PublishedLogicalPlacementCount ||
-                SuppressedCreatureKeys.Count != 0 ||
+                // Exactly one creature is withheld, and it is this
+                // sprint's. Pinning the identity as well as the count means a
+                // future suppression cannot be added silently, and publishing
+                // the Nalfeshnee is a one-line change here plus the two
+                // placement counts.
+                SuppressedCreatureKeys.Count != 1 ||
+                !SuppressedCreatureKeys.Contains("nalfeshnee") ||
                 !sprint29Routes || !giantRoutes || !sprint35Routes ||
                 !sprint36Routes || !sprint37Routes || !sprint38Routes ||
+                !sprint39Routes ||
                 !giants.All(IsPublished) ||
                 !giants.Select(value => value.Creature.Key).Distinct()
                     .OrderBy(value => value).SequenceEqual(
