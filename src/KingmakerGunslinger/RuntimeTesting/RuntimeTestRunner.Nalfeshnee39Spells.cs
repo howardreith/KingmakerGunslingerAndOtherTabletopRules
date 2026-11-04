@@ -420,27 +420,59 @@ namespace KingmakerGunslinger.RuntimeTesting
             int chaBefore = target.Stats.Charisma.ModifiedValue;
             target.Stats.SaveWill.BaseValue = -100;
 
-            var watcher = new Nalfeshnee39SpellWatcher(nalfeshnee,
-                feeblemind, target);
-            EventBus.Subscribe(watcher);
+            // A NATURAL TWENTY IS AN AUTOMATIC SUCCESS on a saving throw, so
+            // a recipient set to fail honestly still passes one save in
+            // twenty however far its bonus is driven down. The first grouped
+            // release run rolled exactly that and the cell reported a save
+            // passed with nothing applied - a correct observation of an
+            // uninteresting outcome rather than a defect.
+            //
+            // So the cast is retried a bounded number of times while the only
+            // reason it did not land is that automatic success, which is the
+            // same idiom the released screech volley uses. Feeblemind is at
+            // will, so a retry costs nothing, and every attempt's own d20 is
+            // recorded - a run that rolled twenty every time would report
+            // that rather than passing on something weaker.
+            var attempts = new JArray();
             UnitUseAbility command = null;
-            try
+            RuleSavingThrow save = null;
+            Buff applied = null;
+            for (int attempt = 1; attempt <= 6 && applied == null; attempt++)
             {
-                foreach (int frame in Sprint26Cast(nalfeshnee, feeblemind,
-                    new TargetWrapper(target), value => command = value))
-                    yield return frame;
+                var watcher = new Nalfeshnee39SpellWatcher(nalfeshnee,
+                    feeblemind, target);
+                EventBus.Subscribe(watcher);
+                try
+                {
+                    foreach (int frame in Sprint26Cast(nalfeshnee, feeblemind,
+                        new TargetWrapper(target), value => command = value))
+                        yield return frame;
+                }
+                finally { EventBus.Unsubscribe(watcher); }
+                save = watcher.Saves.Count == 1 ? watcher.Saves[0] : null;
+                applied = target.Descriptor.Buffs.GetBuff(condition);
+                attempts.Add(new JObject {
+                    ["attempt"] = attempt,
+                    ["commandResult"] = command == null ? null :
+                        command.Result.ToString(),
+                    ["saveCount"] = watcher.Saves.Count,
+                    ["saveD20"] = save == null ? null : (int?)save.D20.Value,
+                    ["savePassed"] = save == null ? null :
+                        (bool?)save.IsPassed,
+                    ["naturalTwenty"] = save != null && save.D20.Value == 20,
+                    ["spellResistanceChecked"] =
+                        watcher.Resistances.Count > 0,
+                    ["cloneApplied"] = applied != null });
+                if (applied == null && (save == null ||
+                    save.D20.Value != 20)) break;
             }
-            finally { EventBus.Unsubscribe(watcher); }
-
-            Buff applied = target.Descriptor.Buffs.GetBuff(condition);
             ForbidSpellCastingState39 state = ForbidSpellCastingState39.Read(
                 condition);
             check("nalfeshnee-feeblemind-disability",
                 command != null &&
                     command.Result == UnitCommand.ResultType.Success &&
-                    watcher.Saves.Count == 1 &&
-                    watcher.Saves[0].Type == SavingThrowType.Will &&
-                    !watcher.Saves[0].IsPassed &&
+                    save != null && save.Type == SavingThrowType.Will &&
+                    !save.IsPassed &&
                     applied != null && applied.IsPermanent &&
                     target.Stats.Intelligence.ModifiedValue < intBefore &&
                     target.Stats.Charisma.ModifiedValue < chaBefore &&
@@ -452,15 +484,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["target"] = target.UniqueId,
                     ["commandResult"] = command == null ? null :
                         command.Result.ToString(),
-                    ["saveCount"] = watcher.Saves.Count,
-                    ["saveType"] = watcher.Saves.Count == 0 ? null :
-                        watcher.Saves[0].Type.ToString(),
-                    ["savePassed"] = watcher.Saves.Count == 0 ? null :
-                        (bool?)watcher.Saves[0].IsPassed,
-                    ["saveDc"] = watcher.Saves.Count == 0 ? null :
-                        (int?)watcher.Saves[0].DifficultyClass,
-                    ["spellResistanceChecked"] =
-                        watcher.Resistances.Count > 0,
+                    ["attempts"] = attempts,
+                    ["saveType"] = save == null ? null :
+                        save.Type.ToString(),
+                    ["saveD20"] = save == null ? null : (int?)save.D20.Value,
+                    ["savePassed"] = save == null ? null :
+                        (bool?)save.IsPassed,
+                    ["saveDc"] = save == null ? null :
+                        (int?)save.DifficultyClass,
+                    ["boundedNaturalTwentyRetries"] =
+                        "A natural twenty is an automatic success on a save, so the cast is retried only while that is the one reason it did not land.",
                     ["cloneApplied"] = applied != null,
                     ["clonePermanent"] = applied != null &&
                         applied.IsPermanent,

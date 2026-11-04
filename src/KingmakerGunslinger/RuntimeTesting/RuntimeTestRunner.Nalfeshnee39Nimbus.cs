@@ -513,6 +513,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                     watcher.DazeApplications.Any(value =>
                         ReferenceEquals(value.Initiator, unit) &&
                         value.AppliedBuff != null);
+                // THE PRINTED RULE IS "SAVE OR BE DAZED", and that is what
+                // these cells assert: every non-demon in the radius had a
+                // real Will save rolled at the right difficulty, and every
+                // one that FAILED was caught. Demanding that a particular
+                // recipient be caught additionally requires the die to
+                // cooperate, and a natural twenty is an automatic success on
+                // a saving throw however far a bonus is driven down - the
+                // first grouped release run lost its feeblemind cell to
+                // exactly that. With three recipients a burst would flake
+                // about one run in seven.
+                //
+                // The implication alone could be satisfied vacuously by three
+                // automatic successes, so at least one recipient must have
+                // actually failed and been dazed. That is one chance in eight
+                // thousand of needing a retry rather than one in seven.
+                Func<UnitEntityData, bool> savedAndConsistent = unit => {
+                    RuleSavingThrow roll = watcher.Save(unit);
+                    return roll != null && roll.Type == SavingThrowType.Will &&
+                        roll.DifficultyClass == NalfeshneeRules39Policy
+                            .SupernaturalDifficultyClass(
+                                NalfeshneeRules39Policy.NalfeshneeHitDice,
+                                owner.Descriptor.Stats.Charisma.Bonus) &&
+                        (roll.IsPassed || caught(unit));
+                };
                 int expectedDc = NalfeshneeRules39Policy
                     .SupernaturalDifficultyClass(
                         NalfeshneeRules39Policy.NalfeshneeHitDice,
@@ -520,11 +544,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 check("nalfeshnee-nimbus-delayed-burst" + suffix,
                     owner.Descriptor.Buffs.GetBuff(windup) == null &&
                         elapsed >= GameConsts.RoundDuration * 0.5 &&
-                        victimSave != null && !victimSave.IsPassed &&
-                        victimSave.Type == SavingThrowType.Will &&
-                        victimSave.DifficultyClass == expectedDc &&
-                        caught(victim) && allySave != null &&
-                        caught(ally),
+                        savedAndConsistent(victim) &&
+                        savedAndConsistent(ally) &&
+                        (caught(victim) || caught(ally)),
                     new JObject {
                         ["owner"] = owner.UniqueId,
                         ["pendingAfter"] =
@@ -541,20 +563,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                         // made faction-safe - which would be a different
                         // ability.
                         ["allySaveRolled"] = allySave != null,
+                        ["victimSaveD20"] = victimSave == null ? null :
+                            (int?)victimSave.D20.Value,
+                        ["allySaveD20"] = allySave == null ? null :
+                            (int?)allySave.D20.Value,
                         ["victimCaughtByTheBurst"] = caught(victim),
                         ["allyCaughtByTheBurst"] = caught(ally),
+                        ["atLeastOneRecipientActuallyDazed"] =
+                            caught(victim) || caught(ally),
+                        ["naturalTwentyIsAnAutomaticSave"] = true,
                         ["victimStillDazedWhenRead"] = victimDaze != null,
                         ["allyStillDazedWhenRead"] = allyDaze != null,
                         ["collateralRetained"] = allySave != null &&
                             caught(ally),
                         ["removedByObserver"] = false
                     },
-                    "The windup resolves on its own deadline about a round after activation: real Will saves at the live Charisma-derived difficulty are rolled for every non-demon in the radius, and both the enemy and the summoner's own ally that fail are dazed, so the collateral is retained rather than filtered to enemies.");
+                    "The windup resolves on its own deadline about a round after activation: real Will saves at the live Charisma-derived difficulty are rolled for BOTH the enemy and the summoner's own ally in the radius, every one of them that fails is dazed, and at least one actually is - so the printed save-or-be-dazed rule holds and the collateral is retained rather than filtered to enemies.");
 
-                RuleRollDice rolled = watcher.Roll(victim);
+                // Whichever recipient the burst actually caught, for the same
+                // reason the cells above assert the implication: the victim
+                // may legitimately have rolled an automatic save while the
+                // ally failed, and the printed duration is a property of the
+                // daze that landed rather than of any one recipient.
                 RuleApplyBuff applied = watcher.DazeApplications
-                    .FirstOrDefault(value =>
-                        ReferenceEquals(value.Initiator, victim));
+                    .FirstOrDefault(value => value.AppliedBuff != null);
+                UnitEntityData dazed = applied == null ? victim :
+                    applied.Initiator;
+                RuleRollDice rolled = watcher.Roll(dazed);
                 double expectedSeconds = rolled == null ? -1 :
                     GameConsts.RoundDuration * rolled.Result;
                 check("nalfeshnee-nimbus-rolled-duration" + suffix,
@@ -582,12 +617,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["appliedSeconds"] = applied == null ||
                             !applied.Duration.HasValue ? null :
                             (double?)applied.Duration.Value.TotalSeconds,
-                        ["expectedSeconds"] = expectedSeconds
+                        ["expectedSeconds"] = expectedSeconds,
+                        ["measuredOnRecipient"] = dazed.UniqueId,
+                        ["measuredOnTheRecipientTheBurstCaught"] =
+                            applied != null
                     },
                     "The daze lasts a natively rolled one-to-ten rounds taken from the engine's own dice rather than a fixed number, and the duration actually applied is exactly that roll in rounds.");
 
                 check("nalfeshnee-nimbus-recipients-at-burst" + suffix,
-                    latecomerSave != null && caught(latecomer) &&
+                    savedAndConsistent(latecomer) &&
                         watcher.Save(devil) == null && !caught(devil) &&
                         devil.Descriptor.Buffs.GetBuff(daze) == null &&
                         watcher.Save(exemptDemon) == null &&
@@ -600,6 +638,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["latecomerOutsideAtActivation"] = true,
                         ["latecomerInsideAtBurst"] = true,
                         ["latecomerSaveRolled"] = latecomerSave != null,
+                        ["latecomerSaveD20"] = latecomerSave == null ? null :
+                            (int?)latecomerSave.D20.Value,
                         ["latecomerCaughtByTheBurst"] = caught(latecomer),
                         ["latecomerStillDazedWhenRead"] =
                             latecomerDaze != null,
@@ -625,7 +665,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["authoritativeDemonCount"] =
                             SummonDemonIdentityCatalog.UnitSymbols().Count()
                     },
-                    "Recipients are chosen at the burst from the world as it then is: a creature that walked in during the windup is caught and one that walked out is not, while a released demon standing inside is spared and a released devil inside is not - so the exemption is a subtype identity rather than an outsider, alignment or faction rule.");
+                    "Recipients are chosen at the burst from the world as it then is: a creature that walked in during the windup has a real save rolled for it and is dazed unless it saves, and one that walked out has none rolled at all, while a released demon standing inside is spared and a released devil inside is not - so the exemption is a subtype identity rather than an outsider, alignment or faction rule.");
             }
             finally
             {
