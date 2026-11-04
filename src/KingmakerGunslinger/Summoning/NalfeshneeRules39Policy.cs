@@ -356,6 +356,39 @@ namespace KingmakerGunslinger.Summoning
         }
 
         /// <summary>
+        /// Which of the ordered effects one carried dispel check removes.
+        ///
+        /// <para>The inputs are the caster level, the single decisive roll,
+        /// and the effects' own caster levels <b>already in the order the
+        /// installed action uses</b> - descending, which is the native
+        /// comparison and the printed "highest first". The result is the
+        /// indices to remove, in that order, capped at
+        /// <see cref="GreaterDispelMaxRemovals"/>.</para>
+        ///
+        /// <para>This exists as a pure function because the action and its
+        /// test would otherwise each carry their own copy of the same
+        /// decision, and a copy is what drifts. Three properties the printed
+        /// rule needs and a naive loop gets wrong are all visible here: an
+        /// effect the check fails is SKIPPED rather than ending the walk, it
+        /// is never retried, and the cap counts removals rather than
+        /// attempts - so a failed high-level effect does not consume one.</para>
+        /// </summary>
+        internal static int[] GreaterDispelSelection(int casterLevel,
+            int roll, int[] orderedEffectCasterLevels, int cap)
+        {
+            if (orderedEffectCasterLevels == null || cap <= 0)
+                return new int[0];
+            var removed = new System.Collections.Generic.List<int>();
+            for (int index = 0;
+                index < orderedEffectCasterLevels.Length && removed.Count < cap;
+                index++)
+                if (DispelCheckBeats(casterLevel, roll,
+                        orderedEffectCasterLevels[index]))
+                    removed.Add(index);
+            return removed.ToArray();
+        }
+
+        /// <summary>
         /// Every printed total, re-derived. This is the self-check that the
         /// constants above are consistent with the printed entry rather than
         /// transcribed twice: if a reader ever "corrects" one of them in

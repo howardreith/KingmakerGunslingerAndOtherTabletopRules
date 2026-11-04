@@ -1183,6 +1183,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint39-hit-dice-versus-caster-level", NalfeshneeRules39Tests.HitDiceAndCasterLevelAreDifferentQuantities),
             Case("expanded-summoning.sprint39-ranges-scale-with-caster-level", NalfeshneeRules39Tests.SpellLikeRangesScaleWithCasterLevel),
             Case("expanded-summoning.sprint39-greater-dispel-cap", NalfeshneeRules39Tests.GreaterDispelCapIsCasterLevelDerivedAndNotOne),
+            Case("expanded-summoning.sprint39-greater-dispel-selection", NalfeshneeRules39Tests.GreaterDispelCarriesOneCheckOverOrderedEffects),
             Case("expanded-summoning.sprint39-nimbus-delayed-identity", NalfeshneeRules39Tests.NimbusKeepsItsOwnDelayedIdentity),
             Case("expanded-summoning.sprint39-attacks-and-feats", NalfeshneeRules39Tests.NaturalAttacksAndFeatsAreThisCreaturesOwn),
             Case("expanded-summoning.sprint18-twenty-six-roots", PrimateRulesTests.TwentySixRootsFollowFromTheCatalogTiers),
