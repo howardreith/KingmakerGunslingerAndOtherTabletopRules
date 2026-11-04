@@ -48,13 +48,21 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// second cast did nothing" check and fail all three of these.</para>
         /// </summary>
         private IEnumerable<int> ReviewNalfeshneeNimbus39(
-            ExpandedSummoningCorrectionFixture fixture)
+            ExpandedSummoningCorrectionFixture fixture, bool turnBased)
         {
+            // Each group retires its own units as it finishes - that is what
+            // keeps the next group and the other combat mode starting from a
+            // clean scene. This list is only the safety sweep for a group
+            // that threw before reaching its own disposal.
             var owned = new List<UnitEntityData>();
             var cells = new JArray();
             var receipt = new JObject {
-                ["phase"] = ExpandedSummoningNativeProfilePolicy
-                    .Sprint39NalfeshneeNimbusPhase,
+                ["phase"] = turnBased
+                    ? ExpandedSummoningNativeProfilePolicy
+                        .Sprint39NalfeshneeTurnsPhase
+                    : ExpandedSummoningNativeProfilePolicy
+                        .Sprint39NalfeshneeNimbusPhase,
+                ["turnBased"] = turnBased,
                 ["finalQualification"] = false,
                 ["cells"] = cells
             };
@@ -96,28 +104,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ally.Stats.SaveWill.BaseValue = -100;
                 ally.Stats.HitPoints.BaseValue = 100000;
 
-                foreach (int frame in NimbusInterface39(fixture, owned,
-                    nimbus, windup, resource, check)) yield return frame;
-                foreach (int frame in NimbusCycle39(fixture, owned, nimbus,
-                    windup, daze, resource, victim, ally, false, check))
-                    yield return frame;
-                foreach (int frame in NimbusExhaustion39(fixture, owned,
-                    nimbus, windup, daze, resource, victim, check))
-                    yield return frame;
-                foreach (int frame in NimbusTwoOwners39(fixture, owned,
-                    nimbus, windup, daze, resource, victim, check))
-                    yield return frame;
-                foreach (int frame in NimbusDestroyedSource39(fixture,
-                    nimbus, windup, daze, victim, check)) yield return frame;
-
-                // The second mode, through the engine's own supported toggle
-                // and on a fresh owner. Until this ran, a turn-based claim
-                // for this ability would have been a label on a real-time
-                // observation: the windup's deadline is absolute game time,
-                // and game time only advances with turns there.
-                foreach (int frame in NimbusCycle39(fixture, owned, nimbus,
-                    windup, daze, resource, victim, ally, true, check))
-                    yield return frame;
+                // ONE MODE PER PASS, and every group disposes its own units
+                // before the next begins. The released turns reviews are one
+                // reviewer called twice for exactly this reason: a turn-based
+                // pass that inherits a scene full of still-living summons
+                // from earlier groups puts the installed turn-based combat
+                // mod into a state no released phase creates, and it threw
+                // inside its own StartTurn from the harness clock when this
+                // phase first tried to carry both modes and ten owned units
+                // through one transaction.
+                if (turnBased)
+                {
+                    foreach (int frame in NimbusCycle39(fixture, owned,
+                        nimbus, windup, daze, resource, victim, ally, true,
+                        check)) yield return frame;
+                }
+                else
+                {
+                    foreach (int frame in NimbusInterface39(fixture, owned,
+                        nimbus, windup, resource, check)) yield return frame;
+                    foreach (int frame in NimbusCycle39(fixture, owned,
+                        nimbus, windup, daze, resource, victim, ally, false,
+                        check)) yield return frame;
+                    foreach (int frame in NimbusExhaustion39(fixture, owned,
+                        nimbus, windup, daze, resource, victim, check))
+                        yield return frame;
+                    foreach (int frame in NimbusTwoOwners39(fixture, owned,
+                        nimbus, windup, daze, resource, victim, check))
+                        yield return frame;
+                    foreach (int frame in NimbusDestroyedSource39(fixture,
+                        nimbus, windup, daze, victim, check))
+                        yield return frame;
+                }
             }
             finally
             {
@@ -138,11 +156,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ally.Stats.HitPoints.BaseValue = oldAllyHp;
                 PlaceExpandedSummoningUnit(victim, oldVictimPosition);
                 PlaceExpandedSummoningUnit(ally, oldAllyPosition);
+                // Normally a no-op: every group retired its own units, so
+                // this only catches a group that threw before it could.
                 DisposeExpandedSummoningUnits(fixture.Created,
-                    owned.ToArray());
+                    owned.Where(unit => unit != null && !unit.Destroyed)
+                        .ToArray());
                 RuntimeTestResultWriter.WriteAtomic(Path.Combine(
-                    _request.EvidenceDirectory,
-                    "sprint39-nalfeshnee-nimbus.json"),
+                    _request.EvidenceDirectory, turnBased
+                        ? "sprint39-nalfeshnee-turns.json"
+                        : "sprint39-nalfeshnee-nimbus.json"),
                     receipt.ToString(Formatting.Indented));
             }
         }
@@ -163,9 +185,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintBuff windup, BlueprintAbilityResource resource,
             Action<string, bool, JObject, string> check)
         {
+            var mine = new List<UnitEntityData>();
             UnitEntityData owner = CastExpandedSummoningOwnTier(
                 fixture, NalfeshneeVisualPolicy39.Nalfeshnee);
             owned.Add(owner);
+            mine.Add(owner);
             VrockQuiesce37(owner);
             foreach (int frame in Outsider30NativeAppearance(owner,
                 owner.Blueprint.name)) yield return frame;
@@ -236,6 +260,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["scope"] = "The cycle cell below issues the same UnitUseAbility command the action bar issues; this cell establishes only that the bar can reach it."
                 },
                 "Unholy Nimbus is granted, active and reachable by the player's own free action, is declared supernatural rather than spell-like, carries its three printed daily uses and takes its difficulty from half the hit dice plus live Charisma.");
+            // Retired here rather than at the end of the phase, so the
+            // next group and the other combat mode see a clean scene.
+            DisposeExpandedSummoningUnits(fixture.Created, mine.ToArray());
         }
 
         /// <summary>
@@ -253,9 +280,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             Action<string, bool, JObject, string> check)
         {
             string suffix = turnBased ? "-turnbased" : "";
+            var mine = new List<UnitEntityData>();
             UnitEntityData owner = CastExpandedSummoningOwnTier(
                 fixture, NalfeshneeVisualPolicy39.Nalfeshnee);
             owned.Add(owner);
+            mine.Add(owner);
             VrockQuiesce37(owner);
             foreach (int frame in Outsider30NativeAppearance(owner,
                 owner.Blueprint.name)) yield return frame;
@@ -278,6 +307,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new[] { exemptDemon, devil, latecomer })
             {
                 owned.Add(control);
+                mine.Add(control);
                 VrockQuiesce37(control);
                 control.Stats.SaveWill.BaseValue = -100;
                 foreach (int frame in WaitInfernalSupport34(control))
@@ -597,7 +627,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     },
                     "Recipients are chosen at the burst from the world as it then is: a creature that walked in during the windup is caught and one that walked out is not, while a released demon standing inside is spared and a released devil inside is not - so the exemption is a subtype identity rather than an outsider, alignment or faction rule.");
             }
-            finally { EventBus.Unsubscribe(watcher); }
+            finally
+            {
+                EventBus.Unsubscribe(watcher);
+            // Retired here rather than at the end of the phase, so the
+            // next group and the other combat mode see a clean scene.
+            DisposeExpandedSummoningUnits(fixture.Created, mine.ToArray());
+            }
         }
 
         /// <summary>
@@ -616,9 +652,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbilityResource resource, UnitEntityData victim,
             Action<string, bool, JObject, string> check)
         {
+            var mine = new List<UnitEntityData>();
             UnitEntityData owner = CastExpandedSummoningOwnTier(
                 fixture, NalfeshneeVisualPolicy39.Nalfeshnee);
             owned.Add(owner);
+            mine.Add(owner);
             VrockQuiesce37(owner);
             foreach (int frame in Outsider30NativeAppearance(owner,
                 owner.Blueprint.name)) yield return frame;
@@ -710,6 +748,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         owner.Descriptor.Buffs.GetBuff(windup) != null
                 },
                 "All three printed daily uses are spent by three real activations, each resolving before the next may begin, and the fourth is refused by the empty resource rather than by the pending-buff restriction, which is satisfied at that moment.");
+            // Retired here rather than at the end of the phase, so the
+            // next group and the other combat mode see a clean scene.
+            DisposeExpandedSummoningUnits(fixture.Created, mine.ToArray());
         }
 
         /// <summary>
@@ -733,6 +774,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 fixture, NalfeshneeVisualPolicy39.Nalfeshnee);
             UnitEntityData second = CastExpandedSummoningOwnTier(
                 fixture, NalfeshneeVisualPolicy39.Nalfeshnee);
+            var mine = new List<UnitEntityData> { first, second };
             owned.Add(first);
             owned.Add(second);
             foreach (UnitEntityData unit in new[] { first, second })
@@ -851,7 +893,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     },
                     "The second nalfeshnee's own windup then bursts on its own later deadline with its own real Will saves, so neither owner's pending resolution was consumed by the other's.");
             }
-            finally { EventBus.Unsubscribe(watcher); }
+            finally
+            {
+                EventBus.Unsubscribe(watcher);
+            // Retired here rather than at the end of the phase, so the
+            // next group and the other combat mode see a clean scene.
+            DisposeExpandedSummoningUnits(fixture.Created, mine.ToArray());
+            }
         }
 
         /// <summary>
