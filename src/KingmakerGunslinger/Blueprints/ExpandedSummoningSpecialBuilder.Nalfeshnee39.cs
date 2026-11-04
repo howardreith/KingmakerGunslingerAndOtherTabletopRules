@@ -15,6 +15,7 @@ using Kingmaker.EntitySystem.Stats;
 using Kingmaker.RuleSystem;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
+using Kingmaker.UnitLogic.Abilities.Components.CasterCheckers;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.Commands.Base;
@@ -503,7 +504,15 @@ namespace KingmakerGunslinger.Blueprints
             // day, carrying the Charisma-derived supernatural difficulty.
             var ability = Require<BlueprintAbility>(symbols, symbol);
             ability.name = InternalName(symbol);
-            ability.Type = AbilityType.SpellLike;
+            // SUPERNATURAL, not spell-like. The printed entry marks Unholy
+            // Nimbus (Su), and the two classifications are not
+            // interchangeable: a supernatural ability is not a spell, so it
+            // is not subject to spell resistance, does not provoke as a spell
+            // and is not counterspelled, and its difficulty class derives
+            // from half the hit dice rather than a spell level. Declaring it
+            // SpellLike would have quietly given it the wrong half of all of
+            // that while still looking correct in the action bar.
+            ability.Type = AbilityType.Supernatural;
             ability.Range = AbilityRange.Personal;
             ability.CanTargetSelf = true;
             ability.CanTargetEnemies = false;
@@ -547,8 +556,28 @@ namespace KingmakerGunslinger.Blueprints
             cost.IsSpendResource = true;
             cost.Amount = 1;
 
+            // THE ONE-PENDING RULE, enforced where the engine actually asks
+            // before it spends. Traced rather than assumed:
+            // AbilityData.IsAvailable is IsAvailableInSpellbook &&
+            // IsAvailableForCast; IsAvailableForCast walks
+            // BlueprintAbility.CasterCheckers calling
+            // IAbilityCasterChecker.CorrectCaster; and UnitUseAbility
+            // consults IsAvailable BEFORE it calls AbilityData.Spend, which
+            // is what reaches AbilityResourceLogic.Spend. So a caster checker
+            // refuses the second activation on the real action-bar command
+            // path with nothing spent - rather than the effect action
+            // returning after the use has already gone and a refund being
+            // needed to manufacture the right answer.
+            //
+            // AbilityCasterHasNoFacts.CorrectCaster returns false as soon as
+            // the caster HAS any listed fact, so listing the windup makes the
+            // ability unavailable exactly while one is pending.
+            var pendingGate = ScriptableObject.CreateInstance<
+                AbilityCasterHasNoFacts>();
+            pendingGate.Facts = new BlueprintUnitFact[] { windup };
+
             ability.ComponentsArray = new BlueprintComponent[] {
-                run, parameters, cost };
+                run, parameters, cost, pendingGate };
             AlternateSummoningAdapterBuilder.ResetComponentCaches(ability);
             BlueprintUnitFactAccess.Resolve().Configure(ability,
                 LocalizationService.Create(symbol + ".Name", "Unholy Nimbus"),
@@ -697,41 +726,111 @@ namespace KingmakerGunslinger.Blueprints
 
         /// <summary>
         /// Teaches the native <i>heal</i> spell to cure this project's own
-        /// feeblemind clone, by appending one removal action naming that exact
-        /// clone to the action list Heal already uses for the native one.
+        /// feeblemind clone, by inserting one removal action <b>beside the
+        /// native one</b> - in the same action list, under the same
+        /// condition.
         ///
-        /// <para>Narrow on purpose. Heal's existing actions are preserved
-        /// exactly and nothing else about it changes, so every condition it
-        /// already cures is cured identically. The alternative - a watcher
-        /// component on the clone that notices Heal resolving - would
-        /// duplicate the cure decision in a second place and drift from
-        /// it.</para>
+        /// <para><b>Why beside, and not appended at the top.</b> Heal's
+        /// effect actions are not a flat list. Its one top-level action is a
+        /// <c>Conditional</c> whose checker is
+        /// <c>ContextConditionHasNegativeEnergyAffinity</c> with
+        /// <c>Not = true</c>, so its <c>IfTrue</c> branch is "the target is
+        /// not undead" and every cure Heal performs - daze, stunned,
+        /// blindness, dazzled, insanity and feeblemind - lives inside that
+        /// branch, while the <c>IfFalse</c> branch harms undead instead.
+        /// Appending to the top-level list would therefore have cured this
+        /// clone <i>unconditionally</i>, including on a target the native
+        /// feeblemind cure deliberately skips. Locating the native removal
+        /// and inserting next to it inherits whatever condition encloses it,
+        /// now and if Owlcat ever moves it.</para>
+        ///
+        /// <para>Narrow on purpose: no existing action is altered or removed,
+        /// every other condition Heal cures is untouched, the insertion is
+        /// idempotent, and the array is replaced rather than any shared
+        /// element being mutated. If the native removal cannot be found the
+        /// contract has changed and this throws rather than silently curing
+        /// in the wrong place.</para>
         /// </summary>
         private static void GrantNalfeshneeHealCure39(
             LibraryScriptableObject library, BlueprintBuff condition)
         {
             var heal = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
                 library, NativeHeal39, "native Heal");
-            var run = heal.GetComponents<AbilityEffectRunAction>().Single();
-            if (!HasNalfeshneeRemoval39(run.Actions, condition))
-            {
-                var remove = ScriptableObject.CreateInstance<
-                    ContextActionRemoveBuff>();
-                remove.Buff = condition;
-                remove.ToCaster = false;
-                run.Actions = new ActionList {
-                    Actions = run.Actions.Actions
-                        .Concat(new GameAction[] { remove }).ToArray() };
-            }
+            var nativeCondition =
+                BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library,
+                    NativeFeeblemindBuff39, "native Feeblemind condition");
+            bool placed = false;
+            foreach (AbilityEffectRunAction run in
+                heal.GetComponents<AbilityEffectRunAction>())
+                if (PlaceNalfeshneeHealCure39(run.Actions, nativeCondition,
+                    condition)) placed = true;
+            if (!placed) throw new InvalidOperationException(
+                "Native Heal no longer removes the native Feeblemind condition; the Sprint 39 cure has nowhere faithful to attach.");
             AlternateSummoningAdapterBuilder.ResetComponentCaches(heal);
         }
 
-        private static bool HasNalfeshneeRemoval39(ActionList actions,
-            BlueprintBuff condition)
+        /// <summary>
+        /// Finds the action list that removes <paramref name="nativeBuff"/>
+        /// and puts a removal of <paramref name="clone"/> beside it,
+        /// descending through every nested action list rather than assuming
+        /// a shape. Returns whether it was placed; already-present counts as
+        /// placed, which is what makes a second build a no-op.
+        /// </summary>
+        private static bool PlaceNalfeshneeHealCure39(ActionList actions,
+            BlueprintBuff nativeBuff, BlueprintBuff clone)
         {
-            return actions != null && actions.Actions != null &&
-                actions.Actions.OfType<ContextActionRemoveBuff>()
-                    .Any(value => ReferenceEquals(value.Buff, condition));
+            if (actions == null || actions.Actions == null) return false;
+            GameAction[] current = actions.Actions;
+            if (current.OfType<ContextActionRemoveBuff>()
+                .Any(value => ReferenceEquals(value.Buff, clone))) return true;
+            int index = Array.FindIndex(current, value => {
+                var remove = value as ContextActionRemoveBuff;
+                return remove != null &&
+                    ReferenceEquals(remove.Buff, nativeBuff); });
+            if (index >= 0)
+            {
+                var native = (ContextActionRemoveBuff)current[index];
+                var mirror = ScriptableObject.CreateInstance<
+                    ContextActionRemoveBuff>();
+                mirror.Buff = clone;
+                // The same recipient the native cure uses, read from it
+                // rather than assumed, so the two always agree.
+                mirror.ToCaster = native.ToCaster;
+                var updated = new GameAction[current.Length + 1];
+                Array.Copy(current, updated, index + 1);
+                updated[index + 1] = mirror;
+                Array.Copy(current, index + 1, updated, index + 2,
+                    current.Length - index - 1);
+                actions.Actions = updated;
+                return true;
+            }
+            bool placed = false;
+            foreach (GameAction action in current)
+            {
+                if (action == null) continue;
+                foreach (ActionList nested in NalfeshneeNestedActions39(action))
+                    if (PlaceNalfeshneeHealCure39(nested, nativeBuff, clone))
+                        placed = true;
+            }
+            return placed;
+        }
+
+        /// <summary>
+        /// Every action list an action carries, found by reflection so that
+        /// conditionals, saved-throw branches and any other container the
+        /// installed game uses are all descended into without this code
+        /// naming them.
+        /// </summary>
+        private static IEnumerable<ActionList> NalfeshneeNestedActions39(
+            GameAction action)
+        {
+            return action.GetType()
+                .GetFields(System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.NonPublic)
+                .Where(field => field.FieldType == typeof(ActionList))
+                .Select(field => (ActionList)field.GetValue(action))
+                .Where(value => value != null);
         }
 
         /// <summary>

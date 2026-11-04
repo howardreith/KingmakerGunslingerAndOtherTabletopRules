@@ -20,6 +20,7 @@ using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Utility;
+using KingmakerGunslinger.Bootstrap;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
@@ -113,19 +114,71 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintUnit[] ExemptDemons;
 
         /// <summary>
-        /// Set only while this windup is genuinely pending. The burst takes it
-        /// once, under <see cref="_gate"/>; every other deactivation path -
-        /// cancellation, dispel, death, module-off teardown - clears it
-        /// without resolving. So one activation yields at most one burst even
-        /// if the engine calls back twice.
+        /// Whether this windup is still a live, uncancelled activation.
+        ///
+        /// <para><c>[JsonProperty]</c> because the component instance does
+        /// NOT survive a load: <c>Fact</c> keeps its own
+        /// <c>Object.Instantiate</c>d copy of each blueprint component in
+        /// <c>m_Components</c>, and only the per-component
+        /// <c>LogicComponentData</c> bag is serialized. Sixty-one shipped
+        /// components persist their own state exactly this way - <c>AddPet</c>
+        /// carries a <c>[JsonProperty] bool m_Disabled</c> - so this is the
+        /// engine's own channel rather than a new one. Because the instance
+        /// is per fact, two pending nalfeshnees never share this flag.</para>
         /// </summary>
-        private bool _armed;
-        private readonly object _gate = new object();
+        [Newtonsoft.Json.JsonProperty]
+        private bool m_Armed;
+
+        /// <summary>
+        /// Set by the one authorized cancellation route BEFORE the buff is
+        /// removed, so the removal callback can tell an owned cancellation
+        /// from a due resolution. It is persisted for the same reason
+        /// <see cref="m_Armed"/> is: a cancellation that straddles a save
+        /// must not come back as a pending activation.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty]
+        private bool m_Cancelled;
+
+        // Locking on the component instance itself rather than on a field.
+        // Fact keeps its own Object.Instantiate'd copy of each component, and
+        // a non-serialized readonly field is not guaranteed to survive that
+        // clone - a null monitor would throw inside the removal callback,
+        // which is the worst place to find out. The instance is per fact, so
+        // this is still one lock per pending windup.
 
         public override void OnFactActivate()
         {
             base.OnFactActivate();
-            lock (_gate) { _armed = true; }
+            // Arming is idempotent and never revives a cancelled windup. It
+            // is safe whether or not the engine replays activation during
+            // reconstruction: if it does, this is the same true it already
+            // held; if it does not, the persisted flag carried it.
+            lock (this) { if (!m_Cancelled) m_Armed = true; }
+        }
+
+        /// <summary>
+        /// The one authorized way to abandon a pending windup.
+        ///
+        /// <para>Cancellation takes ownership BEFORE any removal callback can
+        /// run, including a late one at or after the deadline, which is the
+        /// case a time comparison cannot distinguish. If a legitimate
+        /// resolution has already happened the flag is already down and this
+        /// cannot undo it. Neither route refunds the spent use.</para>
+        /// </summary>
+        internal static void Cancel(UnitEntityData owner, BlueprintBuff windup)
+        {
+            if (owner == null || windup == null ||
+                owner.Descriptor == null) return;
+            Buff pending = owner.Descriptor.Buffs.GetBuff(windup);
+            if (pending == null) return;
+            foreach (NalfeshneeNimbusWindup39 component in pending
+                .SelectComponents<NalfeshneeNimbusWindup39>())
+                lock (component)
+                {
+                    component.m_Cancelled = true;
+                    component.m_Armed = false;
+                }
+            pending.Remove();
         }
 
         /// <summary>
@@ -135,27 +188,26 @@ namespace KingmakerGunslinger.Summoning
         public override void OnFactDeactivate()
         {
             bool resolve;
-            lock (_gate)
+            lock (this)
             {
-                resolve = _armed && IsDueResolution();
-                _armed = false;
+                resolve = m_Armed && !m_Cancelled && IsDueResolution();
+                m_Armed = false;
             }
             if (resolve) Burst();
             base.OnFactDeactivate();
         }
 
         /// <summary>
-        /// Whether this deactivation is the windup actually coming due on a
-        /// live, enabled owner in a running world - as opposed to the buff
-        /// being removed early, the owner being destroyed or killed, the world
-        /// being torn down, or the module being switched off.
+        /// Whether this deactivation is an authorized due resolution.
         ///
-        /// <para>Each clause rules out a specific way a burst could escape.
-        /// The time comparison is deliberately the LAST of them and never the
-        /// only one: a module-off teardown or a load-time cleanup can easily
-        /// happen after the deadline has passed, and on a time test alone each
-        /// would fire an offensive area effect with no player action behind
-        /// it.</para>
+        /// <para>The ordering matters and the deadline is deliberately LAST,
+        /// because it is the weakest of these clauses rather than the
+        /// decisive one: a late cancellation, a teardown or a load-time
+        /// cleanup can all happen at or after the deadline on a live owner,
+        /// so time alone cannot identify an expiry. What actually
+        /// distinguishes the causes is the cancellation flag taken by
+        /// <see cref="Cancel"/> before removal, the owner's real lifetime,
+        /// and the real module and world state.</para>
         /// </summary>
         private bool IsDueResolution()
         {
@@ -166,20 +218,25 @@ namespace KingmakerGunslinger.Summoning
             if (!NalfeshneeIdentity39.IsLiveTarget(owner) ||
                 !NalfeshneeIdentity39.IsExactSource(owner, OwningBlueprint))
                 return false;
+            // The ACTUAL feature-module state, read from the mod context the
+            // same way the asset runtime reads it. Ability presence is not a
+            // module test: retained blueprints and saved facts are exactly
+            // what a module-OFF deserialization needs, so a disabled module
+            // can still show the granted ability while nothing may fire.
+            ModContext context;
+            if (!ModContext.TryGet(out context) || context == null ||
+                context.FeatureModules == null ||
+                !context.FeatureModules.Active.ExpandedSummoning)
+                return false;
             // No running world, no burst. This is what keeps a teardown or a
             // partially reconstructed load from detonating.
             if (Game.Instance == null || Game.Instance.State == null ||
                 Game.Instance.Player == null ||
                 !owner.IsInGame || owner.Descriptor == null) return false;
-            // The owner has to still carry the ability this windup belongs to.
-            // With the module disabled the granted fact is gone, so a teardown
-            // that happens to run late cannot resolve.
-            if (Nimbus == null || Daze == null ||
-                owner.Descriptor.Abilities == null ||
-                owner.Descriptor.Abilities.GetAbility(Nimbus) == null)
-                return false;
+            if (Nimbus == null || Daze == null) return false;
             // Only now: has the recorded deadline actually arrived? An early
-            // removal is strictly before it.
+            // removal is strictly before it, and this clause alone proves
+            // nothing without every clause above.
             return Buff.TimeLeft <= TimeSpan.Zero;
         }
 
@@ -335,23 +392,35 @@ namespace KingmakerGunslinger.Summoning
     /// most one effect per four caster levels, which is three here.</para>
     ///
     /// <para><b>Why the roll is made here instead of by
-    /// <c>RuleDispelMagic</c>.</b> The printed targeted form makes ONE dispel
-    /// check and applies that one result against the effects in order. The
-    /// native rule cannot be told to reuse a roll: its <c>OnTrigger</c>
-    /// unconditionally assigns <c>CheckRoll = Dice.D20</c> and recomputes
-    /// <c>DC</c> from the effect's own context, with no guard, so a value set
-    /// before triggering is always overwritten. Invoking it once per effect
-    /// would therefore roll a fresh d20 each time, which is a different and
-    /// more generous rule, and invoking the ordinary one-effect form three
-    /// times would additionally retry effects that had already failed.</para>
+    /// <c>RuleDispelMagic</c>, stated precisely.</b> <c>OnTrigger</c> opens
+    /// with <c>switch (Check)</c> over four cases. The <c>None</c> case jumps
+    /// straight to <c>Buff.Remove()</c> / <c>AreaEffect.ForceEnd()</c> and
+    /// returns, reaching no dice and no difficulty class at all. Every OTHER
+    /// case computes a difficulty - <c>CasterLevel</c> is <c>11 +</c> the
+    /// effect's own caster level - and then, unconditionally and with no
+    /// guard, assigns <c>CheckRoll = Dice.D20</c> before testing
+    /// <c>Success</c>. Both halves of that are true and they are about
+    /// different branches; an earlier comment here ran them together as
+    /// though they contradicted.</para>
     ///
-    /// <para>So the check is rolled once through native dice, and each
-    /// successful removal is still performed by the native rule with
-    /// <c>CheckType.None</c> - traced to the branch of <c>OnTrigger</c> that
-    /// removes without rolling - so the removal, its event and its attribution
-    /// all stay native. Ordering and eligibility replicate the native action's
-    /// own: sorted by descending effect caster level, and filtered by the same
-    /// chain <c>TryDispelBuff</c> applies.</para>
+    /// <para>The consequence is the one that matters: because the rolling
+    /// branches overwrite <c>CheckRoll</c> inside <c>OnTrigger</c>, a value
+    /// set beforehand is always discarded, so the native rule cannot be told
+    /// to reuse one roll. Invoking it once per effect would roll a fresh d20
+    /// each time, which is a more generous rule than the printed one, and
+    /// invoking the ordinary one-effect form repeatedly would additionally
+    /// retry effects that had already failed.</para>
+    ///
+    /// <para>So one decisive check is rolled here through native dice and
+    /// carried across the ordered effects, and each removal is still
+    /// performed by the native rule on its <c>None</c> branch, so the
+    /// removal, its event and its attribution stay native. Ordering and
+    /// eligibility replicate the installed action's own: sorted by descending
+    /// effect caster level, and filtered by the same chain
+    /// <c>TryDispelBuff</c> walks. This claims one decisive CHECK, not one
+    /// RNG call anywhere in the engine - incidental dice inside unrelated
+    /// machinery are not a second dispel opportunity because nothing here
+    /// consults them.</para>
     ///
     /// <para>Scope: this is the Nalfeshnee's own action. No released dispeller
     /// is altered, and the area and counterspell forms are untouched - only
@@ -391,23 +460,35 @@ namespace KingmakerGunslinger.Summoning
                 DiceType.D20)) { Reason = Context };
             int check = Context.TriggerRule(roll).Result;
 
+            // The ordered candidates, and the selection the carried check
+            // makes over them. That decision lives in one pure policy the
+            // domain tests drive directly, so the action and its test cannot
+            // end up holding two copies of it.
+            Buff[] ordered = Eligible(target);
+            int[] selected = NalfeshneeRules39Policy.GreaterDispelSelection(
+                casterLevel, check,
+                ordered.Select(value => value.Context.Params.CasterLevel)
+                    .ToArray(), cap);
             int removed = 0;
-            foreach (Buff buff in Eligible(target))
+            foreach (int index in selected)
             {
-                if (removed >= cap) break;
-                int effectCasterLevel = buff.Context.Params.CasterLevel;
-                // The carried result, against this effect's own difficulty.
-                // A failure here is final for this casting: the effect is
-                // skipped and never retried.
-                if (!NalfeshneeRules39Policy.DispelCheckBeats(casterLevel,
-                        check, effectCasterLevel)) continue;
+                Buff buff = ordered[index];
                 // Native removal, native event, native attribution. The None
                 // check type is the branch that removes without rolling, so
                 // the carried result stays the one that decided this.
                 var dispel = new RuleDispelMagic(caster, target, buff,
                     RuleDispelMagic.CheckType.None, StatType.Unknown);
                 Context.TriggerRule(dispel);
-                removed++;
+                // Count CONFIRMED removals, not dispatched requests. The
+                // None branch removes unconditionally, but "the rule was
+                // raised" and "the effect is gone" are different facts, and
+                // only the second one may consume part of the printed cap.
+                // Asking the live collection is the supported way to tell
+                // them apart; a subscriber that refused the removal, or a
+                // buff already gone for an unrelated reason, both show up
+                // here rather than being counted as a success.
+                if (!target.Descriptor.Buffs.Enumerable.Any(value =>
+                        ReferenceEquals(value, buff))) removed++;
             }
         }
 
@@ -419,7 +500,7 @@ namespace KingmakerGunslinger.Summoning
         /// <c>ContextActionDispelMagic.TryDispelBuff</c> walks - a dispelable
         /// buff that came from a spell.
         /// </summary>
-        private static IEnumerable<Buff> Eligible(UnitEntityData target)
+        private static Buff[] Eligible(UnitEntityData target)
         {
             return target.Descriptor.Buffs.Enumerable
                 .Where(buff => buff != null && !buff.IsNotDispelable &&
@@ -523,9 +604,10 @@ namespace KingmakerGunslinger.Summoning
         /// adjudication.</para>
         /// </summary>
         internal static bool IsUsableRecipient(UnitEntityData actor,
-            UnitEntityData target, BlueprintBuff condition)
+            UnitEntityData target, BlueprintAbility feeblemind,
+            BlueprintBuff condition)
         {
-            if (actor == null || condition == null ||
+            if (actor == null || feeblemind == null || condition == null ||
                 !NalfeshneeIdentity39.IsLiveTarget(target) ||
                 !actor.IsEnemy(target) ||
                 !actor.Memory.ContainsVisible(target) ||
@@ -533,8 +615,20 @@ namespace KingmakerGunslinger.Summoning
             // Already feebleminded: a second casting adds nothing.
             if (target.Descriptor.Buffs.GetBuff(condition) != null)
                 return false;
+            // The immunity question has to be asked about THIS effect. The
+            // released helper reads the context's own descriptors - which
+            // MechanicsContext fixes from the ASSOCIATED BLUEPRINT's
+            // descriptor component - and then asks
+            // UnitPartSpellResistance.IsImmune and every live
+            // BuffDescriptorImmunity about them. A context built with a null
+            // blueprint carries no descriptors at all, so every immunity
+            // answers "not immune" and the check is vacuously true: a
+            // creature protected against compulsion or mind-affecting
+            // effects would read as a usable recipient. Passing the real
+            // owned feeblemind ability is what makes the question mean
+            // anything.
             var effect = new MechanicsContext(actor, target.Descriptor,
-                null, null, new TargetWrapper(target));
+                feeblemind, null, new TargetWrapper(target));
             if (SummonDescriptorImmunity.IsImmune(target, effect))
                 return false;
             return CastsSpells(target);
@@ -586,7 +680,8 @@ namespace KingmakerGunslinger.Summoning
                     SourceUnit, Feeblemind)) return 0f;
             return context.Enemies.Any(info =>
                 NalfeshneeFeeblemindSuitability39.IsUsableRecipient(actor,
-                    info == null ? null : info.Unit, Condition)) ? 1f : 0f;
+                    info == null ? null : info.Unit, Feeblemind, Condition))
+                ? 1f : 0f;
         }
     }
 
@@ -610,7 +705,7 @@ namespace KingmakerGunslinger.Summoning
             UnitEntityData candidate = context.Target == null ? null :
                 context.Target.Unit;
             return NalfeshneeFeeblemindSuitability39.IsUsableRecipient(actor,
-                candidate, Condition) ? 1f : 0f;
+                candidate, Feeblemind, Condition) ? 1f : 0f;
         }
     }
 }
