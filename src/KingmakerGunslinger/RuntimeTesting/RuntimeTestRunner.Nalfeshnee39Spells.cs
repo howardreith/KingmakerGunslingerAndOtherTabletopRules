@@ -211,22 +211,60 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             int frames = 0;
             bool ready = false;
+            bool grantedAtAll = false, available = false, targetable = false;
             DateTime wall = DateTime.UtcNow.AddSeconds(30);
             while (frames++ < 600 && DateTime.UtcNow < wall)
             {
                 Game.Instance.IsPaused = false;
                 Ability granted = owner.Descriptor.Abilities
                     .GetAbility(ability);
+                grantedAtAll = granted != null;
                 if (granted != null)
                 {
                     var data = new AbilityData(granted);
-                    if (data.IsAvailable && data.CanTarget(target))
-                    { ready = true; break; }
+                    available = data.IsAvailable;
+                    targetable = data.CanTarget(target);
+                    if (available && targetable) { ready = true; break; }
                 }
                 yield return 0;
             }
             evidence["castReadyAfterFrames"] = frames;
             evidence["castReady"] = ready;
+            // WHY it was not ready, every time. "Not ready" on its own cost a
+            // whole qualification cycle to diagnose: the engine's refusal has
+            // several independent causes and the helper used to report none
+            // of them.
+            if (!ready)
+            {
+                UnitEntityData victim = target == null ? null : target.Unit;
+                evidence["abilityGranted"] = grantedAtAll;
+                evidence["isAvailable"] = available;
+                evidence["canTarget"] = targetable;
+                evidence["ownerDestroyed"] = owner.Destroyed;
+                evidence["ownerInState"] = owner.IsInState;
+                evidence["ownerCanAct"] = owner.Descriptor.State.CanAct;
+                evidence["ownerIsDead"] = owner.Descriptor.State.IsDead;
+                evidence["ownerInCombat"] = owner.IsInCombat;
+                evidence["nativeTurnBasedMode"] = TurnBased.Controllers
+                    .CombatController.IsInTurnBasedCombat();
+                evidence["ownerActingItsTurn"] = Sprint18OwnerIsActing(owner);
+                evidence["targetPresent"] = victim != null;
+                evidence["targetDestroyed"] = victim != null &&
+                    victim.Destroyed;
+                evidence["targetIsDead"] = victim != null &&
+                    victim.Descriptor.State.IsDead;
+                evidence["targetLifeState"] = victim == null ? null :
+                    victim.Descriptor.State.LifeState.ToString();
+                evidence["targetHitPointsLeft"] = victim == null ? 0 :
+                    victim.HPLeft;
+                evidence["targetIsEnemyOfOwner"] = victim != null &&
+                    owner.IsEnemy(victim);
+                evidence["distanceMeters"] = victim == null ? 0f :
+                    UnityEngine.Vector3.Distance(owner.Position,
+                        victim.Position);
+                evidence["abilityRangeFeet"] =
+                    (int)ability.CustomRange.Value;
+            }
         }
 
         private static BlueprintAbility Nalfeshnee39Spell(string symbol)
