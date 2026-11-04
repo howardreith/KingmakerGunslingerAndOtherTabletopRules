@@ -103,7 +103,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Registered.BySymbol[p + "UnholyAura"];
 
                 Nalfeshnee39SpellDeclarations(new[] { feeblemind, dispel,
-                    lightning, slow }, feeblemind, dispel, check);
+                    lightning, slow }, feeblemind, dispel, lightning, check);
 
                 UnitEntityData nalfeshnee = CastExpandedSummoningOwnTier(
                     fixture, NalfeshneeVisualPolicy39.Nalfeshnee);
@@ -208,19 +208,25 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         private static void Nalfeshnee39SpellDeclarations(
             BlueprintAbility[] spells, BlueprintAbility feeblemind,
-            BlueprintAbility dispel,
+            BlueprintAbility dispel, BlueprintAbility lightning,
             Action<string, bool, JObject, string> check)
         {
             var rows = new JArray();
             bool coherent = true;
             int medium = NalfeshneeRules39Policy.MediumRangeFeet(
                 NalfeshneeRules39Policy.SpellLikeCasterLevel);
+            int distant = NalfeshneeRules39Policy.LongRangeFeet(
+                NalfeshneeRules39Policy.SpellLikeCasterLevel);
             foreach (BlueprintAbility spell in spells)
             {
                 AbilityResourceLogic[] costs = spell
                     .GetComponents<AbilityResourceLogic>().ToArray();
-                bool ranged = ReferenceEquals(spell, feeblemind) ||
-                    ReferenceEquals(spell, dispel);
+                // EVERY one of the four, each against its OWN printed
+                // distance. Checking only the two obvious medium-range ones
+                // is how Call Lightning shipped at the flat Medium category
+                // and Slow at the flat Close one through a passing cell.
+                int expected = ReferenceEquals(spell, lightning) ?
+                    distant : medium;
                 bool row = costs.Length == 0 &&
                     spell.Type == AbilityType.SpellLike &&
                     spell.ActionType == UnitCommand.CommandType.Standard &&
@@ -231,8 +237,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // own printed ability - so these are measured here rather
                     // than trusted to a native donor's values.
                     !spell.ActionBarAutoFillIgnored &&
-                    (!ranged || (spell.Range == AbilityRange.Custom &&
-                        (int)spell.CustomRange.Value == medium));
+                    spell.Range == AbilityRange.Custom &&
+                    (int)spell.CustomRange.Value == expected;
                 coherent &= row;
                 rows.Add(new JObject {
                     ["ability"] = spell.name,
@@ -246,7 +252,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         spell.ActionBarAutoFillIgnored,
                     ["range"] = spell.Range.ToString(),
                     ["customRangeFeet"] = (int)spell.CustomRange.Value,
-                    ["derivedRangeExpected"] = ranged ? (int?)medium : null,
+                    ["derivedRangeExpected"] = expected,
                     ["coherent"] = row });
             }
             check("nalfeshnee-spells-at-will-declarations", coherent &&
@@ -256,9 +262,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["casterLevel"] =
                         NalfeshneeRules39Policy.SpellLikeCasterLevel,
                     ["mediumRangeFeet"] = medium,
+                    ["longRangeFeet"] = distant,
                     ["scope"] = "Unholy Nimbus is NOT in this set: it is supernatural with its own three daily uses, and is observed in the nimbus phase."
                 },
-                "All four at-will spell-likes carry no resource of any kind, are declared spell-like standard actions, and the two ranged ones carry the printed medium range derived from this creature's own caster level rather than a fixed range category.");
+                "All four at-will spell-likes carry no resource of any kind, are declared spell-like standard actions visible on the action bar, and each carries ITS OWN printed reach derived from this creature's caster level - long for Call Lightning, medium for the other three - rather than a fixed range category that reads no caster level at all.");
         }
 
         /// <summary>
@@ -768,11 +775,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         yield return frame;
                     var after = new AbilityData(nalfeshnee.Descriptor
                         .Abilities.GetAbility(spell));
+                    // At-will repeatability is what this cell is about, and
+                    // the pre-cast parameters are NOT asserted: as the nimbus
+                    // phase established, AbilityData.CalculateParams cannot
+                    // apply ContextCalculateAbilityParams - that needs a
+                    // MechanicsContext a cast has not created yet - so it
+                    // reports the creature's own level and a derived spell
+                    // level for every ability alike. The declared caster
+                    // level is observed where it is real: in-context on the
+                    // nimbus windup, and in the derived reaches above.
                     bool row = availableBefore && after.IsAvailable &&
                         command != null &&
-                        command.Result == UnitCommand.ResultType.Success &&
-                        parameters.CasterLevel ==
-                            NalfeshneeRules39Policy.SpellLikeCasterLevel;
+                        command.Result == UnitCommand.ResultType.Success;
                     coherent &= row;
                     rows.Add(new JObject {
                         ["ability"] = spell.name,
@@ -781,9 +795,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["availableAfter"] = after.IsAvailable,
                         ["commandResult"] = command == null ? null :
                             command.Result.ToString(),
-                        ["casterLevel"] = parameters.CasterLevel,
-                        ["spellLevel"] = parameters.SpellLevel,
-                        ["difficultyClass"] = parameters.DC,
+                        ["preCastCasterLevel"] = parameters.CasterLevel,
+                        ["preCastSpellLevel"] = parameters.SpellLevel,
+                        ["preCastDifficultyClass"] = parameters.DC,
                         ["coherent"] = row });
                 }
             }
@@ -791,10 +805,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new JObject {
                     ["caster"] = nalfeshnee.UniqueId,
                     ["casts"] = rows,
-                    ["expectedCasterLevel"] =
-                        NalfeshneeRules39Policy.SpellLikeCasterLevel
+                    ["declaredCasterLevel"] =
+                        NalfeshneeRules39Policy.SpellLikeCasterLevel,
+                    ["preCastParametersAreRecordedNotAsserted"] = true
                 },
-                "Call Lightning and Slow each succeed twice in a row and stay available immediately afterwards, at this creature's own caster level of twelve - so at will is a real frequency rather than a label on a once-a-day ability.");
+                "Call Lightning and Slow each succeed twice in a row and stay available immediately afterwards, so at will is a real frequency rather than a label on a once-a-day ability.");
         }
 
         /// <summary>

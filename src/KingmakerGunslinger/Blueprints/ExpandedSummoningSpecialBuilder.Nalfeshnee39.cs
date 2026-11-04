@@ -194,6 +194,29 @@ namespace KingmakerGunslinger.Blueprints
                 symbols, p + "Slow", NativeSlowSpell39, "Slow",
                 NalfeshneeRules39Policy.SlowSpellLevel,
                 "At will at caster level 12. The installed native spell owns its own target selection, Will save, spell resistance, duration and action penalties.");
+            // DERIVED DISTANCES, not inherited range categories. The Sprint 38
+            // finding applies to these two as much as to feeblemind and
+            // greater dispel, which already carry their own: a range CATEGORY
+            // does not read a caster level at all, so a cloned native spell
+            // reaches whatever flat distance the engine's own category
+            // happens to be rather than this creature's printed reach.
+            //
+            // The first guarded spells run measured exactly that - Call
+            // Lightning arrived as the flat Medium category and Slow as the
+            // flat Close one - while this project's own policy had already
+            // recorded both intended distances and the domain suite had
+            // already been testing both formulas against nothing. So the
+            // formulas are applied here rather than declared and unused.
+            lightning.Range = AbilityRange.Custom;
+            lightning.CustomRange = new Feet(
+                NalfeshneeRules39Policy.LongRangeFeet(
+                    NalfeshneeRules39Policy.SpellLikeCasterLevel));
+            slow.Range = AbilityRange.Custom;
+            slow.CustomRange = new Feet(
+                NalfeshneeRules39Policy.MediumRangeFeet(
+                    NalfeshneeRules39Policy.SpellLikeCasterLevel));
+            AlternateSummoningAdapterBuilder.ResetComponentCaches(lightning);
+            AlternateSummoningAdapterBuilder.ResetComponentCaches(slow);
             parts.Add(AddResource(nimbusResource));
 
             var traits = Require<BlueprintFeature>(symbols, p + "Traits");
