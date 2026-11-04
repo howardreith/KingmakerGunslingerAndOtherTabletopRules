@@ -128,10 +128,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     yield return frame;
                 foreach (int frame in Nalfeshnee39FeeblemindCure(fixture,
                     target, condition, loan, check)) yield return frame;
+
+                // A FRESH caster for everything below. The lasting cell above
+                // destroys the first one on purpose - that is how it shows an
+                // instantaneous spell's result outliving the summon that
+                // caused it - so reusing it here asked a destroyed unit to
+                // cast and the engine answered, correctly, that it holds no
+                // such ability.
+                UnitEntityData caster = CastExpandedSummoningOwnTier(
+                    fixture, NalfeshneeVisualPolicy39.Nalfeshnee);
+                owned.Add(caster);
+                VrockQuiesce37(caster);
+                foreach (int frame in Outsider30NativeAppearance(caster,
+                    caster.Blueprint.name)) yield return frame;
+                PlaceExpandedSummoningUnit(target, caster.Position +
+                    Vector3.right * (caster.Corpulence +
+                        target.Corpulence + 1f));
+                caster.Memory.Add(target).Visible = true;
+                target.Memory.Add(caster).Visible = true;
+
                 foreach (int frame in Nalfeshnee39GreaterDispel(fixture,
-                    nalfeshnee, target, dispel, transient, check))
+                    caster, target, dispel, transient, check))
                     yield return frame;
-                foreach (int frame in Nalfeshnee39AtWillRepeats(nalfeshnee,
+                foreach (int frame in Nalfeshnee39AtWillRepeats(caster,
                     target, lightning, slow, check)) yield return frame;
             }
             finally
