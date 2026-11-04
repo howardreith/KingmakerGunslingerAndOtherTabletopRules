@@ -56,6 +56,7 @@
     <Compile Include="Summoning\VrockVisualPolicy37.cs" />
     <Compile Include="Summoning\GlabrezuRules38Policy.cs" />
     <Compile Include="Summoning\NalfeshneeRules39Policy.cs" />
+    <Compile Include="Summoning\NalfeshneeRules39.cs" />
     <Compile Include="Summoning\GlabrezuRules38.cs" />
     <Compile Include="Summoning\GlabrezuVisualPolicy38.cs" />
     <Compile Include="Summoning\BoneDevilTailVisual35.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Infernal36.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Vrock37.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Glabrezu38.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Nalfeshnee39.cs" />
     <Compile Include="Summoning\InfernalRules34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEvents34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEarly34.cs" />

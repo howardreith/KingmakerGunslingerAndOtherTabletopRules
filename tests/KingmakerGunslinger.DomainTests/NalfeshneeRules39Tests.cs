@@ -297,11 +297,23 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(15, NalfeshneeRules39Policy.ReachFeet,
                 "Huge: a 15-foot reach.");
 
-            // The printed land and fly speeds differ, and the distinction is
-            // recorded rather than implemented as a second movement mode.
-            Assertions.True(NalfeshneeRules39Policy.FlySpeedFeet >
-                NalfeshneeRules39Policy.SpeedFeet,
-                "The printed fly speed exceeds the land speed, and the difference is recorded.");
+            // One movement contract. Kingmaker exposes a single movement
+            // speed, so the effective speed IS the printed flying speed,
+            // carried with the released Airborne navigation fact, and the
+            // printed land speed is recorded as omitted rather than summed,
+            // averaged or silently substituted. Asserting the inequality as
+            // well as both values is what catches a future edit that quietly
+            // wires the land speed as the creature's one speed and drops
+            // flight.
+            Assertions.Equal(40,
+                NalfeshneeRules39Policy.EffectiveFlySpeedFeet,
+                "The one effective speed is the printed 40-foot fly speed.");
+            Assertions.Equal(30,
+                NalfeshneeRules39Policy.OmittedLandSpeedFeet,
+                "The printed 30-foot land speed is recorded as omitted.");
+            Assertions.True(NalfeshneeRules39Policy.EffectiveFlySpeedFeet >
+                NalfeshneeRules39Policy.OmittedLandSpeedFeet,
+                "The effective speed is the larger of the two printed modes.");
         }
     }
 }

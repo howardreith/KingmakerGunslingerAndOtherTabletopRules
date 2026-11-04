@@ -45,6 +45,19 @@ namespace KingmakerGunslinger.DomainTests
         internal const int Sprint38CatalogIdentityCount =
             Sprint38CreatureIdentityCount + Sprint38RootIdentityCount +
             Sprint38PrivateIdentityCount;
+        // Sprint 39 appends one creature, its single Summon Monster IX root -
+        // registered at tier 9, so parent 9 is the only parent that admits
+        // it - and twenty-five private dependencies. Constant true seeing and
+        // the Airborne navigation fact add none: both are native facts
+        // carried directly on the unit. The constant unholy aura does add
+        // one, because it is a project-owned clone rather than the native
+        // buff itself.
+        internal const int Sprint39CreatureIdentityCount = 1;
+        internal const int Sprint39RootIdentityCount = 1;
+        internal const int Sprint39PrivateIdentityCount = 25;
+        internal const int Sprint39CatalogIdentityCount =
+            Sprint39CreatureIdentityCount + Sprint39RootIdentityCount +
+            Sprint39PrivateIdentityCount;
         internal const int AppendedCatalogIdentityCount =
             Sprint26MagicalBeastRules.AppendedCatalogIdentityCount +
             ExpandedSummoningSprint27Tests.AppendedCatalogIdentityCount +
@@ -54,7 +67,7 @@ namespace KingmakerGunslinger.DomainTests
             Sprint32PrivateIdentityCount + 2 + 10 + 22 +
             InfernalRules35.AppendedCatalogIdentityCount +
             Sprint36CatalogIdentityCount + Sprint37CatalogIdentityCount +
-            Sprint38CatalogIdentityCount;
+            Sprint38CatalogIdentityCount + Sprint39CatalogIdentityCount;
         internal const int AppendedLedgerIdentityCount =
             AppendedCatalogIdentityCount +
             Sprint36ReservedIdentityCount;

@@ -21,7 +21,10 @@ namespace KingmakerGunslinger.Summoning
     internal static class ExpandedSummoningIdentityCatalog
     {
         internal const int UnitCount = 133;
-        internal const int LogicalAbilityCount = 1186;
+        // One logical summon ability per generated placement. Sprint 39's
+        // Nalfeshnee is registered at Monster tier 9, so GenerateVariants
+        // admits it for parent 9 alone and this moves by exactly one.
+        internal const int LogicalAbilityCount = 1187;
         internal const int TemplatedPlacementCount = 319;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -90,7 +93,13 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 737;
+        // Sprint 39 appends twenty-five private Nalfeshnee dependencies -
+        // the figure declared in its identity block below and in
+        // SummoningCurrentSurface.Sprint39PrivateIdentityCount - so this
+        // moves from 737 by exactly that, and the derived
+        // FoundationIdentityCount follows. It is not fitted to whatever the
+        // builder happened to produce.
+        internal const int SpecialIdentityCount = 762;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -1067,6 +1076,41 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.UnholyAi", "InfernalSpellAi35"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.DispelAi", "BabauDispelAi36"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Glabrezu.MirrorImageAi", "InfernalSpellAi35"));
+            // Sprint 39. One creature, its single Summon Monster IX root -
+            // registered at tier 9, so parent 9 is the only parent that
+            // admits it - and twenty-five private dependencies appended here
+            // in order. No released identity above this point moves.
+            //
+            // Constant true seeing and the Airborne navigation fact carry no
+            // identities of their own: both are native facts carried directly
+            // on the unit, as Sprint 38's true seeing is. The constant unholy
+            // aura DOES need one, because it is a project-owned clone of the
+            // native UnholyAuraBuff rather than the native buff itself.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.Bite", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.BiteType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.Claw", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.ClawType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.UnholyAura", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.UnholyNimbus", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.UnholyNimbusResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.UnholyNimbusWindup", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.UnholyNimbusDaze", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.Feeblemind", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.FeeblemindCondition", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.GreaterDispelMagic", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.CallLightning", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.Slow", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.UnholyNimbusAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.UnholyNimbusEligibility", "NalfeshneeNimbusEligibility39"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.FeeblemindAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.FeeblemindEligibility", "NalfeshneeFeeblemindEligibility39"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.FeeblemindTargetEligibility", "NalfeshneeFeeblemindTargetEligibility39"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.GreaterDispelAi", "BabauDispelAi36"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.CallLightningAi", "InfernalSpellAi35"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.SlowAi", "InfernalSpellAi35"));
             Validate(result);
             return result.AsReadOnly();
         }
