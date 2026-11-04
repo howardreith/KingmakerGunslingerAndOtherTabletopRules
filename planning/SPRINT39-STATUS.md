@@ -410,98 +410,97 @@ the scenario as not allowlisted *after* snapshotting.
 
 ## Where this sits now, and exactly what remains
 
-Branch `codex/expanded-summoning-sprint39-nalfeshnee` at `3b7e0be4`, pushed.
-The worktree is clean and the tree is **deliberately not green**: registering a
-creature opens a cascade, and the remainder of it depends on blueprints that do
-not exist yet.
+Branch `codex/expanded-summoning-sprint39-nalfeshnee` at `71559d1c`, pushed.
+The worktree is clean and the **complete unfiltered domain suite is green:
+2,809 registered, 2,809 executed, 0 failures.**
 
 ### Done and verified
 
 | Item | State |
 |---|---|
-| intake, worktree, promotion root, allowlist, push | complete; 38 wrapper cases pass |
+| intake, worktree, promotion root, allowlist, push | complete |
 | Sprint 38 documentation carry-forward | complete; three corrections, no rebuild |
-| printed contract + derivations | complete; 8 domain tests, 2,801 -> 2,809 registered |
-| all four risks | settled; three corrected by the live observation |
-| bounded installed-library observation | PASS, live tree restored to `216A9DC2...` |
-| original icon | authored, rendered, exported; manifest 146 -> 147 |
-| roster registration, demon catalog, donor, visibility, presentation | complete |
+| printed contract + derivations | complete; 8 domain tests |
+| all four risk designs | selected, with the native evidence for each |
+| bounded installed-library observation | PASS, live tree restored |
+| original icon | authored, exported, manifest 146 -> 147 |
+| roster registration, suppressed route, demon catalog 7 -> 8 | complete |
+| builder, production components, identity block, ledger, counts | complete, suite green |
+| original body, view wiring, packaging, strict inventory | complete |
+| persistence scope `NalfeshneeScope` | added to the one authoritative list |
+| review phases + core observer | declared, admitted, compiling |
 
-`scripts/Invoke-KmgGate.ps1 -Filter 'expanded-summoning'`: 612 selected, **51
-failures**, in exactly two causes, both of which close with the identity block:
-
-* **41** - `Expanded Summoning foundation identity count must be 2736`. The
-  count derives from `UnitCount` plus the appended identities, so it cannot be
-  set until the builder's blueprint set exists. It is never bumped to whatever
-  the code happens to produce; it is recomputed from the declared counts.
-* **10** - `The ledger is append-only`. `ExpandedSummoningIdentityCatalog.Build`
-  has no Sprint 39 block. The append point is immediately after the last
-  `KMG.Summoning.Demon.Glabrezu.MirrorImageAi` row and before
-  `Validate(result)`.
+The 51 failures the earlier checkpoint carried were **one incomplete
+dependency graph**, not 51 defects; completing it closed all of them. Two real
+defects the full suite caught along the way were fixed rather than pinned
+around: the four caller-adapter GUIDs had to be the tool's deterministic
+RFC-4122 v5 allocation rather than freshly allocated ones, and the two new
+natural weapons needed rows in both the JSON and the narrative weapon-visual
+audits.
 
 ### Remaining, in dependency order
 
-1. **Builder** `ExpandedSummoningSpecialBuilder.Nalfeshnee39.cs`, on
-   `ConfigureGlabrezu38`'s shape with this creature's own numbers: three limbs
-   not five, `InfernalProfile36` with hit dice 14 / hit points 203 / good base
-   9 / poor base 4 / skill ranks 14, `ConfigureUnitCore` Huge at speed 30,
-   `Sprint29Weapon` for a 3d8 bite at critical edge **19** and a 2d6 claw,
-   `NaturalBody(bite, {claw, claw})`, `InfernalDefenses36` at natural armour 16
-   and spell resistance 25, `DeinonychusPrimaryTalonStrength` to take the
-   lone-natural-weapon multiplier back off the bite, racial Perception +8, and
-   the released Cleave / Awesome Blow / Improved Bull Rush / Iron Will / Power
-   Attack / Improved Initiative identities.
-2. **Components** `NalfeshneeRules39.cs`: the pending-nimbus buff component
-   with its genuine-expiry guard, the capped greater-dispel action, the
-   feeblemind clone's `ForbidSpellCasting` addition, the constant aura's
-   exact-source grant, and the actor/per-target AI considerations on the
-   released `GlabrezuStunEligibility38` / `...TargetEligibility38` shape.
-   Idioms already located: `new RuleSavingThrow(victim, SavingThrowType.Will,
-   context.Params.DC) { Reason = context }` as `ArchonAuraOfMenace` uses it,
-   and `GameHelper.GetTargetsAround` for the burst's candidates.
-3. **Identity block** appended at the point named above, then
-   `Sprint39CreatureIdentityCount` / `RootIdentityCount` /
-   `PrivateIdentityCount` added to `SummoningCurrentSurface`, then the
-   foundation count recomputed.
-4. **Visual policy and asset runtime**: `NalfeshneeVisualPolicy39` on
-   `GlabrezuVisualPolicy38`'s shape, plus the body generator under
-   `assets-source/original-models/`, its 512x512 albedo and its `-mesh.json`.
-5. **Persistence scope**: add `NalfeshneeScope` to
-   `ExpandedSummoningRosterPersistencePolicy.IsRosterPersistenceScope`, the one
-   authoritative list Sprint 38 consolidated; a reflection test requires every
-   declared scope constant to appear there.
-6. **Observers and scenarios**: the review and persistence scenarios, each
-   needing the **four** registrations this sprint established - the C# catalog,
-   the PowerShell metadata table, the preflight union, and
-   `Test-KmgExactSummoningRuntimeBoundary`.
-7. **Qualification**: guarded mechanics phases, then one ON and one OFF
-   envelope across six fresh processes, then the installed-stack integration.
-8. **Release**: version bump to 0.0.177, a new
+Nothing below has been attempted yet, and **no gameplay behaviour has been
+observed on a live unit.** The designs are selected and the code compiles; that
+is not qualification.
+
+1. **Three more observers**, on the core observer's shape:
+   - *Nimbus*: activation debits one of three uses; a second activation while
+     pending is refused and costs nothing; the burst resolves one round later
+     and dazes a non-demon while sparing a demon; early removal does not
+     burst; destroying the owner while pending does not burst.
+   - *Spells*: feeblemind against an arcane and a divine caster, with real
+     spell commands rather than a component list; effective Intelligence and
+     Charisma actually reaching 1; ordinary lawful actions still available;
+     the cure proven through native Heal against the project clone; greater
+     dispel with one carried check over multiple ordered effects, a failed
+     higher entry, successful lower entries and an eligible effect beyond the
+     cap; call lightning and slow at caster level 12.
+   - *Public*: the one Summon Monster IX route, slot, quantity and duration.
+2. **Persistence observer** plus its hooks in
+   `RuntimeTestRunner.ExpandedSummoningRosterPersistence.cs`, mirroring the
+   Sprint 38 `Sprint38PersistenceScope` shape. What crosses the save is the
+   pending windup with its absolute deadline and the spent uses; unlike Sprint
+   38 the pending effect is **not** withdrawn first, because a windup does not
+   stop its owner acting and so needs no readiness waiver.
+3. **Phase dispatch** in `RuntimeTestRunner.ExpandedSummoningSatyr32.cs` and a
+   review scenario, which needs the **four** registrations this sprint
+   established: the C# catalog, the PowerShell metadata table, the preflight
+   union, and `Test-KmgExactSummoningRuntimeBoundary`.
+4. **Guarded mechanics qualification** against a development candidate, then
+   repair whatever it finds.
+5. **Offline scope/selection/publisher checks**, then the candidate freeze:
+   version bump to 0.0.177, a new
    `tools/validate_expanded_summoning_sprint39_release177.py` with the final
-   product head pinned and its entry in `tools/validate_repository.py`, the
-   full unfiltered gate, merge, publication from the exact qualified ZIP,
-   public-download verification, exact restoration and the records merge.
+   product head pinned, its entry in `tools/validate_repository.py`, and the
+   full unfiltered gate.
+6. **One ON and one OFF envelope across six fresh processes**, then the
+   installed-stack integration.
+7. **Release**: reproducibility, publisher preflight, merge, stable
+   publication of the exact qualified ZIP, public-download verification, exact
+   restoration and the final-records merge.
 
 ### Mid-sprint mechanics worth not rediscovering
 
-* The repository wrapper is **version-gated**. `tools/validate_repository.py`
-  selects its validator by `Info.json` version, which is still `0.0.176`, whose
-  validator pins Sprint 38's reviewed product and therefore refuses any
-  in-progress source. That is the version boundary working. Guarded scenarios
-  before the candidate freeze need a development candidate: build with
-  `-DevelopmentPurpose <lower-case-hyphenated>` plus `-DevelopmentTestFilter`,
-  then pass the resulting package to the scenario launcher with
-  `-PackagePath`, which it **requires** for a development purpose. This is the
-  opposite of the release path, where `-PackagePath` is only for batch reuse.
+* The repository wrapper is **version-gated** and still selects Sprint 38's
+  validator at `Info.json` 0.0.176, so it refuses in-progress source. That is
+  the boundary working. Guarded scenarios before the freeze need a development
+  candidate: build with `-DevelopmentPurpose <lower-case-hyphenated>` plus
+  `-DevelopmentTestFilter`, then pass that package to the scenario launcher
+  with `-PackagePath`, which it **requires** for a development purpose - the
+  opposite of the release path, where `-PackagePath` is batch reuse only.
 * `Build-Local.ps1` fingerprints the source at the start and re-checks it at
-  the end. Writing anything into the worktree during a build - including an
-  untracked planning document outside the validator's product roots - fails it
-  with "The source state changed during the development build", *after* the
-  package has been built and validated. Commit first, then build, then leave
-  the tree alone.
-* Both shells are **unelevated** in this session, which is what the guarded
-  harness requires and which also means worktrees need no `runas`. Verify
-  rather than assume; it has been the other way before.
+  the end, counting untracked files anywhere in the tree. Writing a planning
+  document during a build fails it *after* packaging. Commit first, build,
+  then leave the tree alone.
+* Both shells are **unelevated** this session, which the guarded harness
+  requires and which has been the other way before. Verify, do not assume.
+* The ledger's caller-adapter GUIDs are **deterministic**: RFC-4122 v5, SHA-1
+  over namespace `5f1c8e0b-6d63-4c55-9a41-2b7e3f9c0d18` plus the symbol, with
+  version and variant bits set. Every other ledger GUID is freshly allocated.
+* The measured rig capture lives on the owned `E:` archive at
+  `KingmakerGunslingerLab-archive/runtime-evidence-20261101/20261014T0546181325834Z-observe-expanded-summoning-sprint24-theropod-census/sprint24-theropod-census.json`,
+  SHA-256 `727645bb...`; no new census is needed.
 
 ## Not started
 
