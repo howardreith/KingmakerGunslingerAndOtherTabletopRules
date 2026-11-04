@@ -1,3 +1,32 @@
+# Sprint 38 — v0.0.176 RELEASED / STOP
+
+Stable [v0.0.176](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.176)
+is published and publicly verified from product
+[PR #92](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/92).
+One adult, untemplated Glabrezu is functional through exactly one Summon
+Monster IX route. Tested source `e4c4d77a88ca19c3d22c0a516a645669d43eb64c`
+merged at `6370addc14a438fc80adf54e9b0062bd5777ef99`; publication promoted the
+exact qualified ZIP without rebuilding. The 2,801/2,801 unfiltered gate, exact
+byte reproducibility, eleven fresh mandatory coverage rows, six fresh ON/OFF
+persistence processes, the public download check and exact laptop/Working
+restoration all passed.
+
+The printed rend is scoped to the round with per-victim history, Power Word
+Stun is once per summoning at its printed 60-foot close range with every
+hit-point bucket and no saving throw, and the AI spends that single use only on
+a candidate the printed spell can actually affect.
+
+Reverse gravity and veil are owner-authorized omissions with no substitute;
+greater teleport, nested summoning and wish remain excluded for every summon.
+One measured deviation is disclosed rather than corrected: live Perception
+reads 28 against the printed 26 because the installed Persuasive feat adds +2
+Perception in this game, and this creature's printed feat list includes
+Persuasive. No owner aesthetic approval is claimed; fine visual polish remains
+backlog. Full attribution and release identities are in
+[Sprint 38 status](planning/SPRINT38-STATUS.md) and
+[release evidence](planning/SPRINT38-RELEASE-EVIDENCE.json).
+**Stop before Sprint 39.** Historical text below is not current authority.
+
 # Sprint 36 — v0.0.174 RELEASED / STOP
 
 Stable [v0.0.174](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.174)
