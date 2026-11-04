@@ -266,9 +266,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         NalfeshneeRules39Policy
                             .AuraConditionalSpellResistance,
                     ["hitPoints"] = NalfeshneeRules39Policy.HitPoints,
-                    ["speedFeet"] = NalfeshneeRules39Policy.SpeedFeet,
-                    ["flySpeedFeet"] =
-                        NalfeshneeRules39Policy.FlySpeedFeet,
+                    ["effectiveFlySpeedFeet"] =
+                        NalfeshneeRules39Policy.EffectiveFlySpeedFeet,
+                    ["omittedLandSpeedFeet"] =
+                        NalfeshneeRules39Policy.OmittedLandSpeedFeet,
                     ["reachFeet"] = NalfeshneeRules39Policy.ReachFeet,
                     ["biteCriticalRollEdge"] =
                         NalfeshneeRules39Policy.BiteCriticalRollEdge,

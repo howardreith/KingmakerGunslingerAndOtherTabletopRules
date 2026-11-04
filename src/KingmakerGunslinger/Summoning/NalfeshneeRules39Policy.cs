@@ -89,13 +89,20 @@ namespace KingmakerGunslinger.Summoning
         internal const int HitDieSides = 10;
         internal const int HitPointConstitutionTotal = 126;
 
-        // Printed movement. The land and fly values differ and the
-        // manoeuvrability is poor; the project's established ordinary-map
-        // flying representation uses one effective movement mode, so the
-        // printed distinction is recorded rather than implemented as a second
-        // mode, a new altitude system or free flight through walls.
-        internal const int SpeedFeet = 30;
-        internal const int FlySpeedFeet = 40;
+        // Printed movement, and the one movement contract this creature
+        // actually gets. Kingmaker exposes ONE movement speed, so the
+        // established ordinary-map representation every released flying
+        // summon uses applies here too: the effective speed IS the flying
+        // speed, carried with the released Airborne navigation fact, and the
+        // land speed is omitted rather than summed or averaged. The Sprint 37
+        // Vrock is the precedent at 50/30; this creature is 40/30.
+        //
+        // The omission is disclosed data, not a silent drop: a nalfeshnee
+        // that walks at 30 and flies at 40 cannot be expressed by one number,
+        // and taking the larger with airborne navigation is the released
+        // choice rather than a new dual-mode flight or navigation system.
+        internal const int EffectiveFlySpeedFeet = 40;
+        internal const int OmittedLandSpeedFeet = 30;
         internal const string PrintedFlyManeuverability = "poor";
 
         // Huge: a 15-foot space and a 15-foot reach. Both printed.
@@ -176,6 +183,28 @@ namespace KingmakerGunslinger.Summoning
         internal const int NimbusDazeDiceCount = 1;
         internal const int NimbusDazeDieSides = 10;
         internal const int PrintedNimbusDc = 22;
+        /// <summary>
+        /// How many Unholy Nimbus windups one Nalfeshnee may have pending at
+        /// once.
+        ///
+        /// <para><b>Owner decision, 2026-11-04, for an ambiguity the printed
+        /// entry does not resolve.</b> The stat block says three uses a day,
+        /// a free-action activation and a burst one round later; it does not
+        /// say what a second activation does while the first is still winding
+        /// up. The decision is: at most one pending activation per creature.
+        /// A second activation while one is pending is refused outright - it
+        /// spends no additional use, does not replace or extend the pending
+        /// deadline, and queues no second burst. Once the pending one resolves
+        /// or is legitimately cancelled, a remaining daily use is available
+        /// again under the ordinary action rules, with no added cooldown.
+        /// Different summoned nalfeshnees are entirely independent.</para>
+        ///
+        /// <para>This is recorded as a bounded gameplay decision for an
+        /// ambiguity, not as a claim that the printed entry specifies the
+        /// restriction. It is also deliberately not a scheduler: there is no
+        /// queue, so there is nothing to order.</para>
+        /// </summary>
+        internal const int NimbusMaxPendingPerOwner = 1;
 
         // Spell-like levels, used only to derive their difficulty classes,
         // their caster-level-dependent ranges and to label the cloned graphs.
@@ -298,6 +327,35 @@ namespace KingmakerGunslinger.Summoning
         }
 
         /// <summary>
+        /// The dispel check's difficulty against one ongoing effect: eleven
+        /// plus that effect's own caster level. This is the same derivation
+        /// the installed <c>RuleDispelMagic</c> performs for
+        /// <c>CheckType.CasterLevel</c> - traced as <c>11 + Context.Params
+        /// .CasterLevel</c> - and it is restated here because the carried
+        /// check has to evaluate it without letting that rule reroll.
+        /// </summary>
+        internal static int DispelCheckDifficulty(int effectCasterLevel)
+        {
+            return DispelCheckDifficultyBase + effectCasterLevel;
+        }
+
+        internal const int DispelCheckDifficultyBase = 11;
+
+        /// <summary>
+        /// Whether one carried dispel check beats one ongoing effect. The
+        /// roll is made ONCE for the whole casting and reused here for every
+        /// ordered effect, which is the printed targeted contract; the cap
+        /// limits how many may be removed, not how many times the die is
+        /// thrown.
+        /// </summary>
+        internal static bool DispelCheckBeats(int casterLevel, int roll,
+            int effectCasterLevel)
+        {
+            return casterLevel + roll >=
+                DispelCheckDifficulty(effectCasterLevel);
+        }
+
+        /// <summary>
         /// Every printed total, re-derived. This is the self-check that the
         /// constants above are consistent with the printed entry rather than
         /// transcribed twice: if a reader ever "corrects" one of them in
@@ -414,6 +472,27 @@ namespace KingmakerGunslinger.Summoning
                     LongRangeFeet(SpellLikeCasterLevel))
                 throw new InvalidOperationException(
                     "A Nalfeshnee spell-like range no longer scales with the caster level.");
+
+            // One movement contract: the effective speed is the flying one
+            // and the land speed is recorded as omitted, never summed.
+            if (EffectiveFlySpeedFeet <= OmittedLandSpeedFeet ||
+                EffectiveFlySpeedFeet != 40 || OmittedLandSpeedFeet != 30)
+                throw new InvalidOperationException(
+                    "The Nalfeshnee movement contract is the printed 40-foot fly speed with the 30-foot land speed omitted.");
+
+            // At most one pending nimbus per owner, by owner decision.
+            if (NimbusMaxPendingPerOwner != 1)
+                throw new InvalidOperationException(
+                    "At most one Unholy Nimbus windup may be pending per Nalfeshnee.");
+
+            // The carried dispel check derives, and the cap is separate from
+            // the roll. A check that beats a low-level effect must not be
+            // assumed to beat a high-level one.
+            if (DispelCheckDifficulty(0) != DispelCheckDifficultyBase ||
+                !DispelCheckBeats(SpellLikeCasterLevel, 10, 10) ||
+                DispelCheckBeats(SpellLikeCasterLevel, 1, 20))
+                throw new InvalidOperationException(
+                    "The carried dispel check no longer derives from eleven plus the effect's own caster level.");
 
             // The caster level is deliberately not the hit dice.
             if (SpellLikeCasterLevel == NalfeshneeHitDice)
