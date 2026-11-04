@@ -356,36 +356,65 @@ namespace KingmakerGunslinger.Summoning
         }
 
         /// <summary>
-        /// Which of the ordered effects one carried dispel check removes.
+        /// Which of the ordered effects one carried dispel check would beat,
+        /// with no cap applied.
         ///
-        /// <para>The inputs are the caster level, the single decisive roll,
-        /// and the effects' own caster levels <b>already in the order the
-        /// installed action uses</b> - descending, which is the native
-        /// comparison and the printed "highest first". The result is the
-        /// indices to remove, in that order, capped at
-        /// <see cref="GreaterDispelMaxRemovals"/>.</para>
-        ///
-        /// <para>This exists as a pure function because the action and its
-        /// test would otherwise each carry their own copy of the same
-        /// decision, and a copy is what drifts. Three properties the printed
-        /// rule needs and a naive loop gets wrong are all visible here: an
-        /// effect the check fails is SKIPPED rather than ending the walk, it
-        /// is never retried, and the cap counts removals rather than
-        /// attempts - so a failed high-level effect does not consume one.</para>
+        /// <para>Deliberately uncapped. The cap counts effects that were
+        /// actually removed, and whether a removal happened is not knowable
+        /// until the native rule has been dispatched - so truncating the
+        /// candidate list to the cap up front would silently assume every
+        /// requested removal succeeds, and a candidate beyond the truncation
+        /// could never be reached if an earlier one did not. The cap belongs
+        /// to <see cref="GreaterDispelResolve"/>, which applies it to
+        /// confirmations.</para>
         /// </summary>
-        internal static int[] GreaterDispelSelection(int casterLevel,
-            int roll, int[] orderedEffectCasterLevels, int cap)
+        internal static int[] GreaterDispelPassingCandidates(int casterLevel,
+            int roll, int[] orderedEffectCasterLevels)
         {
-            if (orderedEffectCasterLevels == null || cap <= 0)
-                return new int[0];
-            var removed = new System.Collections.Generic.List<int>();
+            if (orderedEffectCasterLevels == null) return new int[0];
+            var passing = new System.Collections.Generic.List<int>();
             for (int index = 0;
-                index < orderedEffectCasterLevels.Length && removed.Count < cap;
-                index++)
+                index < orderedEffectCasterLevels.Length; index++)
                 if (DispelCheckBeats(casterLevel, roll,
                         orderedEffectCasterLevels[index]))
-                    removed.Add(index);
-            return removed.ToArray();
+                    passing.Add(index);
+            return passing.ToArray();
+        }
+
+        /// <summary>
+        /// The whole targeted traversal: walk the ordered effects once,
+        /// dispatch a removal for each the carried check beats, and stop when
+        /// the number of CONFIRMED removals reaches the cap.
+        ///
+        /// <para><paramref name="dispatchAndConfirm"/> is handed each passing
+        /// index and returns whether that effect actually left. The
+        /// production action passes a delegate that re-checks presence and
+        /// eligibility, raises the native removal rule and then reads the
+        /// live collection; the tests pass explicit outcomes. Because both
+        /// drive this same function, the accounting cannot drift between
+        /// them.</para>
+        ///
+        /// <para>Four printed properties live here. Each effect is evaluated
+        /// at most once, so nothing is retried and nothing is rerolled. An
+        /// effect the check fails is skipped rather than ending the walk. The
+        /// cap counts confirmations, so a dispatch that does not remove
+        /// anything does not consume one - and a later qualifying candidate
+        /// is still reached, which is exactly what pre-truncating the
+        /// candidates would have prevented.</para>
+        /// </summary>
+        internal static int[] GreaterDispelResolve(int casterLevel, int roll,
+            int[] orderedEffectCasterLevels, int cap,
+            Func<int, bool> dispatchAndConfirm)
+        {
+            var confirmed = new System.Collections.Generic.List<int>();
+            if (dispatchAndConfirm == null || cap <= 0) return confirmed.ToArray();
+            foreach (int index in GreaterDispelPassingCandidates(casterLevel,
+                roll, orderedEffectCasterLevels))
+            {
+                if (confirmed.Count >= cap) break;
+                if (dispatchAndConfirm(index)) confirmed.Add(index);
+            }
+            return confirmed.ToArray();
         }
 
         /// <summary>
