@@ -190,6 +190,45 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        /// <summary>
+        /// Waits, bounded, for a caster to be able to use an ability again.
+        ///
+        /// <para>A standard action does not leave its caster instantly ready:
+        /// the command has to finish unwinding before the engine's own
+        /// availability check says yes again. The released cast helper
+        /// refuses an unavailable ability outright - correctly, because it
+        /// cannot tell "not ready yet" from "never granted" - so a loop that
+        /// casts twice has to wait in between. The integration group's
+        /// natural-twenty retry hit exactly that and reported the ability
+        /// unavailable one frame after a successful cast.</para>
+        ///
+        /// <para>Returns whether it became ready, so a caller can record a
+        /// refusal rather than throw from inside the cast helper.</para>
+        /// </summary>
+        private IEnumerable<int> Nalfeshnee39WaitCastReady(
+            UnitEntityData owner, BlueprintAbility ability,
+            TargetWrapper target, JObject evidence)
+        {
+            int frames = 0;
+            bool ready = false;
+            DateTime wall = DateTime.UtcNow.AddSeconds(30);
+            while (frames++ < 600 && DateTime.UtcNow < wall)
+            {
+                Game.Instance.IsPaused = false;
+                Ability granted = owner.Descriptor.Abilities
+                    .GetAbility(ability);
+                if (granted != null)
+                {
+                    var data = new AbilityData(granted);
+                    if (data.IsAvailable && data.CanTarget(target))
+                    { ready = true; break; }
+                }
+                yield return 0;
+            }
+            evidence["castReadyAfterFrames"] = frames;
+            evidence["castReady"] = ready;
+        }
+
         private static BlueprintAbility Nalfeshnee39Spell(string symbol)
         {
             return (BlueprintAbility)ExpandedSummoningBlueprints.Registered
@@ -439,6 +478,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             Buff applied = null;
             for (int attempt = 1; attempt <= 6 && applied == null; attempt++)
             {
+                var readiness = new JObject();
+                foreach (int frame in Nalfeshnee39WaitCastReady(nalfeshnee,
+                    feeblemind, new TargetWrapper(target), readiness))
+                    yield return frame;
+                if (!(bool)readiness["castReady"])
+                {
+                    attempts.Add(new JObject { ["attempt"] = attempt,
+                        ["readiness"] = readiness,
+                        ["castSkipped"] = true });
+                    break;
+                }
                 var watcher = new Nalfeshnee39SpellWatcher(nalfeshnee,
                     feeblemind, target);
                 EventBus.Subscribe(watcher);
@@ -683,6 +733,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             SpellDescriptor.None, false, transient, planted,
                             observed);
                     Buff[] effects = planted.Take(levels.Length).ToArray();
+                    var readiness = new JObject();
+                    foreach (int frame in Nalfeshnee39WaitCastReady(
+                        nalfeshnee, dispel, new TargetWrapper(target),
+                        readiness)) yield return frame;
                     UnitUseAbility command = null;
                     foreach (int frame in Sprint26Cast(nalfeshnee, dispel,
                         new TargetWrapper(target), value => command = value))
@@ -708,6 +762,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool inWindow = roll >= 4 && roll <= 19;
                     var row = new JObject {
                         ["attempt"] = attempt,
+                        ["readiness"] = readiness,
                         ["commandResult"] = command == null ? null :
                             command.Result.ToString(),
                         ["decisiveRollCount"] = dice.Rolls.Count,
@@ -798,6 +853,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 for (int round = 1; round <= 2; round++)
                 {
+                    // Same bounded readiness wait as the retry loops: a
+                    // standard action does not leave its caster instantly
+                    // ready, and these two casts are back to back.
+                    var readiness = new JObject();
+                    foreach (int frame in Nalfeshnee39WaitCastReady(
+                        nalfeshnee, spell, new TargetWrapper(target),
+                        readiness)) yield return frame;
                     var granted = new AbilityData(nalfeshnee.Descriptor
                         .Abilities.GetAbility(spell));
                     bool availableBefore = granted.IsAvailable;
@@ -825,6 +887,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["ability"] = spell.name,
                         ["round"] = round,
                         ["availableBefore"] = availableBefore,
+                        ["readiness"] = readiness,
                         ["availableAfter"] = after.IsAvailable,
                         ["commandResult"] = command == null ? null :
                             command.Result.ToString(),
