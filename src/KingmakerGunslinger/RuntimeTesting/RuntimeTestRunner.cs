@@ -1387,6 +1387,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunExpandedSummoningSprint37Inputs());
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveExpandedSummoningSprint38Inputs)
+                {
+                    Complete(RunExpandedSummoningSprint38Inputs());
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveExpandedSummoningSprint32Inputs)
                 {
                     Complete(RunExpandedSummoningSprint32Inputs());

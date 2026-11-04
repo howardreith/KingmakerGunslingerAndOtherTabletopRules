@@ -535,12 +535,29 @@ namespace KingmakerGunslinger.Blueprints
                 chaosAi, unholyAi);
         }
 
+        /// <summary>
+        /// One released alignment burst - chaos hammer or unholy blight -
+        /// built from this project's own resolution action.
+        ///
+        /// <para><paramref name="prefix"/> and <paramref name="casterLevel"/>
+        /// default to the Sprint 36 Hezrou's, which is what every released
+        /// call passes, so the Hezrou's two abilities are unchanged. Sprint 38
+        /// passes its own prefix and caster level 14 rather than cloning this
+        /// method, because both creatures print the same two spell-likes and
+        /// the printed dice caps (5d8, and 10d6 against the opposed outsider)
+        /// are already reached at caster level 13.</para>
+        /// </summary>
         private static BlueprintAbility ConfigureAlignmentBurst36(
             LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> symbols,
-            BlueprintUnit unit, bool chaos)
+            BlueprintUnit unit, bool chaos, string prefix = null,
+            int casterLevel = 0)
         {
-            string symbol = Hezrou36Prefix +
+            prefix = prefix ?? Hezrou36Prefix;
+            if (casterLevel <= 0)
+                casterLevel = InfernalRules36Policy
+                    .HezrouSpellLikeCasterLevel;
+            string symbol = prefix +
                 (chaos ? "ChaosHammer" : "UnholyBlight");
             var ability = Require<BlueprintAbility>(symbols, symbol);
             var around = ScriptableObject.CreateInstance<
@@ -564,8 +581,7 @@ namespace KingmakerGunslinger.Blueprints
                 action.Slowed = BlueprintLibraryLookup.RequireExact<
                     BlueprintBuff>(library, NativeSlow36,
                         "native slowed condition");
-                action.CasterLevel =
-                    InfernalRules36Policy.HezrouSpellLikeCasterLevel;
+                action.CasterLevel = casterLevel;
                 action.SpellLevel = 4;
                 action.DamageDiceCount = 5;
                 action.OutsiderDamageDiceCount = 10;
@@ -581,8 +597,7 @@ namespace KingmakerGunslinger.Blueprints
                 action.Sickened = BlueprintLibraryLookup.RequireExact<
                     BlueprintBuff>(library, NativeSickened36,
                         "native sickened condition");
-                action.CasterLevel =
-                    InfernalRules36Policy.HezrouSpellLikeCasterLevel;
+                action.CasterLevel = casterLevel;
                 action.SpellLevel = 4;
                 action.DamageDiceCount = 5;
                 action.OutsiderDamageDiceCount = 10;
@@ -603,8 +618,7 @@ namespace KingmakerGunslinger.Blueprints
                 ContextCalculateAbilityParams>();
             parameters.StatType = StatType.Charisma;
             parameters.ReplaceCasterLevel = true;
-            parameters.CasterLevel = Simple(
-                InfernalRules36Policy.HezrouSpellLikeCasterLevel);
+            parameters.CasterLevel = Simple(casterLevel);
             parameters.ReplaceSpellLevel = true;
             parameters.SpellLevel = Simple(4);
             ability.name = InternalName(symbol);
@@ -639,7 +653,8 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().Configure(ability,
                 LocalizationService.Create(symbol + ".Name", title),
                 LocalizationService.Create(symbol + ".Description",
-                    "At will at caster level 13, burst power in a 20-foot radius at medium range. " +
+                    "At will at caster level " + casterLevel +
+                    ", burst power in a 20-foot radius at medium range. " +
                     exempt + " creatures are unaffected; " + primary +
                     " creatures take full alignment-sensitive damage and the condition only on a failed Will save; neutral creatures take half damage and no condition. Spell resistance applies. Allies are not automatically excluded."),
                 icon);

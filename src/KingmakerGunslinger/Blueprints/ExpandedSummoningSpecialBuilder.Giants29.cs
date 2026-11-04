@@ -635,11 +635,25 @@ namespace KingmakerGunslinger.Blueprints
             unit.Brain = brain;
         }
 
+        /// <summary>
+        /// One immutable private natural weapon cloned from a native donor,
+        /// with this project's own dice, size and attack range.
+        ///
+        /// <para><paramref name="criticalRollEdge"/> defaults to zero, which
+        /// keeps the donor type's own threat range - what every released
+        /// caller gets. The engine's <c>BlueprintWeaponType</c> defaults the
+        /// edge to 20 and the character sheet renders the width as
+        /// <c>21 - edge</c>, so passing 19 is exactly a 19-20 range. Sprint 38
+        /// uses it for the Glabrezu's printed Improved Critical (pincer),
+        /// because the installed game has no pincer weapon category and so no
+        /// native Improved Critical (pincer) feature can exist.</para>
+        /// </summary>
         private static BlueprintItemWeapon Sprint29Weapon(
             LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol,
             string symbol, string typeSymbol, string donorGuid, Size size,
-            int dice, DiceType die, int rangeFeet)
+            int dice, DiceType die, int rangeFeet,
+            int criticalRollEdge = 0)
         {
             BlueprintItemWeapon donor = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, donorGuid, symbol + " donor");
@@ -653,6 +667,14 @@ namespace KingmakerGunslinger.Blueprints
             if (rangeFeet > 0)
                 SetField(type, "m_AttackRange",
                     new Kingmaker.Utility.Feet(rangeFeet));
+            if (criticalRollEdge > 0)
+            {
+                if (criticalRollEdge > 20)
+                    throw new ArgumentOutOfRangeException(
+                        "criticalRollEdge",
+                        "A critical roll edge above 20 threatens nothing.");
+                SetField(type, "m_CriticalRollEdge", criticalRollEdge);
+            }
             BlueprintItemWeapon item = Require<BlueprintItemWeapon>(bySymbol,
                 symbol);
             CopyFields(donor, item);

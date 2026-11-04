@@ -124,11 +124,29 @@ namespace KingmakerGunslinger.Summoning
         // spore protection, spore geometry, screech in real time, screech in
         // turn-based combat, and observed AI including the Babau dispel
         // follow-up. Nothing is withheld now.
+        // Sprint38 registered one further demon at Summon Monster IX only
+        // and withheld its single root while it was qualified. The route, its
+        // dependencies and its icon were all allocated while hidden, so
+        // publication removed only that one suppression key and moved no
+        // identity, route or menu ordering: the append-only position is the
+        // one the hidden phases observed.
+        //
+        // Publication followed the five guarded mechanics phases, each of
+        // which restored the live tree to its exact pre-run hash: the profile,
+        // defences, feats, constant sense and attached four-armed body; the
+        // printed rend driven as real attack rules, including the per-victim
+        // history and the round-not-command limit; Power Word Stun's printed
+        // range, every hit-point bucket, its single use, its absence of a
+        // saving throw, its refusal of an immune recipient and its penetration
+        // at the printed caster level; the at-will spells with no resource and
+        // the alignment bursts at their derived difficulties; and the AI
+        // choosing the word against the affectable candidate of two live
+        // enemies. Nothing is withheld now.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(Array.Empty<string>(),
+            new HashSet<string>(new string[0],
                 StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 1185;
+        internal const int RegisteredLogicalPlacementCount = 1186;
         internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
@@ -198,6 +216,18 @@ namespace KingmakerGunslinger.Summoning
                 sprint37.Select(value => value.ParentTier)
                     .OrderBy(value => value)
                     .SequenceEqual(new[] { 7, 8, 9 });
+            // Sprint 38 is one creature with one route. Registered at
+            // Monster tier 9, GenerateVariants admits it for parent 9
+            // alone, so exactly one placement exists and it is published.
+            SummonVariantSpec[] sprint38 = all.Where(value =>
+                value.Creature.Key == "glabrezu").ToArray();
+            bool sprint38Routes = sprint38.Length == 1 &&
+                sprint38.All(value => value.Family == SummonFamily.Monster &&
+                    !value.Creature.MonsterTemplated &&
+                    IsPublished(value)) &&
+                sprint38.Select(value => value.ParentTier)
+                    .OrderBy(value => value)
+                    .SequenceEqual(new[] { 9 });
             bool giantRoutes = new[] { "hill-giant", "stone-giant" }
                 .All(key => giants.Where(value => value.Creature.Key == key)
                     .Select(value => value.ParentTier).OrderBy(value => value)
@@ -212,7 +242,7 @@ namespace KingmakerGunslinger.Summoning
                 all.Count(IsPublished) != PublishedLogicalPlacementCount ||
                 SuppressedCreatureKeys.Count != 0 ||
                 !sprint29Routes || !giantRoutes || !sprint35Routes ||
-                !sprint36Routes || !sprint37Routes ||
+                !sprint36Routes || !sprint37Routes || !sprint38Routes ||
                 !giants.All(IsPublished) ||
                 !giants.Select(value => value.Creature.Key).Distinct()
                     .OrderBy(value => value).SequenceEqual(

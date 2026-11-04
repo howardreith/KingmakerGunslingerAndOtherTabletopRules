@@ -48,7 +48,7 @@ namespace KingmakerGunslinger.Summoning
             // unchanged at 95/543, and Elephant's eight existing roots are
             // completed rather than re-registered, so they are already counted
             // in both families above.
-            ValidateFamily(SummonFamily.Monster, 109, 597);
+            ValidateFamily(SummonFamily.Monster, 110, 598);
             ValidateFamily(SummonFamily.NaturesAlly, 105, 588);
         }
 
@@ -163,7 +163,12 @@ namespace KingmakerGunslinger.Summoning
                 C("hezrou","Hezrou",8,false,null,"Original broad toad demon; measured Lizardfolk rig"),
                 // Sprint 37: one adult, untemplated area-stun demon at
                 // Summon Monster VII-IX.
-                C("vrock","Vrock",7,false,null,"Original vulture-headed winged demon; measured Lizardfolk rig")
+                C("vrock","Vrock",7,false,null,"Original vulture-headed winged demon; measured Lizardfolk rig"),
+                // Sprint 38: one adult, untemplated four-armed demon at
+                // Summon Monster IX only. Registered at tier 9, so
+                // GenerateVariants admits it for parent 9 alone and it
+                // contributes exactly one placement, at quantity One.
+                C("glabrezu","Glabrezu",9,false,null,"Original four-armed pincered demon; measured Lizardfolk rig")
             };
         }
 

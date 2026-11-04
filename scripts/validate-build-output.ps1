@@ -96,6 +96,8 @@ $requiredFiles = @(
     'assets\sprint36-demons\hezrou-albedo.png',
     'assets\sprint37-vrock\vrock-mesh.json',
     'assets\sprint37-vrock\vrock-albedo.png',
+    'assets\sprint38-glabrezu\glabrezu-mesh.json',
+    'assets\sprint38-glabrezu\glabrezu-albedo.png',
     'assets\sprint32-support\lillend-mesh.json',
     'assets\sprint32-support\lillend-albedo.png',
     'assets\sprint18-primates\ape-mesh.json',
@@ -232,6 +234,8 @@ $allowedRelativePaths = @{
     'assets\sprint36-demons\hezrou-albedo.png' = $true
     'assets\sprint37-vrock\vrock-mesh.json' = $true
     'assets\sprint37-vrock\vrock-albedo.png' = $true
+    'assets\sprint38-glabrezu\glabrezu-mesh.json' = $true
+    'assets\sprint38-glabrezu\glabrezu-albedo.png' = $true
     'assets\sprint32-support\lillend-mesh.json' = $true
     'assets\sprint32-support\lillend-albedo.png' = $true
     'assets\sprint18-primates\ape-mesh.json' = $true

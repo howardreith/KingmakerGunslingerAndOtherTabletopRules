@@ -602,26 +602,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
                     request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent) &&
                     request.Parameters?["persistenceScope"] != null;
+                // The admitted scopes are the policy's own list plus the two
+                // that predate it. This used to be a hand-maintained chain of
+                // eighteen inequalities, which is precisely the duplicate the
+                // policy's single list exists to retire: the Sprint 38 scope
+                // was declared, dispatched, admitted by both PowerShell
+                // gates and still rejected HERE, in the game, after a launch -
+                // "summoning-persistence-scope-invalid" with no hook
+                // installed and no save touched. The policy's reflection test
+                // already requires every declared scope to reach its list, so
+                // asking that list is what makes this gate correct by
+                // construction rather than by remembering.
+                string persistenceScope = targetedSummonPersistence
+                    ? (string)request.Parameters["persistenceScope"] : null;
                 if (targetedSummonPersistence && (!request.ExitAfterCompletion ||
                     request.Parameters["persistenceScope"].Type != JTokenType.String ||
-                    ((string)request.Parameters["persistenceScope"] != "crocodilians" &&
-                     (string)request.Parameters["persistenceScope"] != SerpentinePersistenceReviewPolicy.Scope &&
-                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.AnkylosaurusScope &&
-                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.ArmoredDinosaursScope &&
-                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.TheropodsScope &&
-                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.GiantBodiesScope &&
-                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.MagicalBeastsScope &&
-                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.GriffonScope &&
-                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.GiantHumanoidsScope &&
-                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.GiantHumanoidsTwoScope &&
-                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.OutsiderCelestialScope &&
-                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.FeyCelestialScope &&
-                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.InfernalOutsidersScope &&
-                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.InfernalReachTwoScope &&
-                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.InfernalDemonsScope &&
-                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.VrockScope &&
-                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.ShadowOutsidersScope &&
-                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.Scope)))
+                    !(persistenceScope == "crocodilians" ||
+                      persistenceScope == SerpentinePersistenceReviewPolicy.Scope ||
+                      ExpandedSummoningRosterPersistencePolicy
+                          .IsRosterPersistenceScope(persistenceScope))))
                     return "summoning-persistence-scope-invalid";
                 bool suggestionTransition = request.Parameters?.Property("suggestionTransition") != null;
                 if (suggestionTransition && (!targetedSummonPersistence ||

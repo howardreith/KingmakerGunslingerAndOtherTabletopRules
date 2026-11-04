@@ -338,7 +338,7 @@ namespace KingmakerGunslinger.DomainTests
                     field.Name.EndsWith("Scope", StringComparison.Ordinal) &&
                     field.Name != "ReceiptScope")
                 .ToArray();
-            Assertions.True(declared.Length >= 16,
+            Assertions.True(declared.Length >= 17,
                 "Every persistence scope constant is enumerated, not a subset.");
             foreach (FieldInfo field in declared)
             {
@@ -358,6 +358,10 @@ namespace KingmakerGunslinger.DomainTests
                 (string)field.GetRawConstantValue() ==
                 ExpandedSummoningRosterPersistencePolicy.VrockScope),
                 "The Sprint 37 scope is one of the declared constants.");
+            Assertions.True(declared.Any(field =>
+                (string)field.GetRawConstantValue() ==
+                ExpandedSummoningRosterPersistencePolicy.GlabrezuScope),
+                "The Sprint 38 scope is one of the declared constants.");
             // The same bug twice over: a scope can reach the observation and
             // still have no creatures of its own, because the selection used
             // to be a separate list. A scope that falls through to the whole
@@ -378,6 +382,34 @@ namespace KingmakerGunslinger.DomainTests
                 foreach (string key in keys.Distinct())
                 {
                     if (key.StartsWith("native:", StringComparison.Ordinal)) continue;
+                    // The broad released-roster scope covers the whole roster
+                    // but deliberately refuses to CREATE a withheld route: a
+                    // creature under qualification is summoned by its own
+                    // named scope. So for that one scope a withheld creature
+                    // must be refused rather than round-trip, and the refusal
+                    // boundary is asserted from the production predicate
+                    // instead of a second list of withheld keys. Every named
+                    // scope still has to create every creature it names,
+                    // published or not - which is the bug this test exists
+                    // for.
+                    bool broadAndWithheld = scope ==
+                        ExpandedSummoningRosterPersistencePolicy.Scope &&
+                        !ExpandedSummoningRosterPersistencePolicy
+                            .HasPublishedSingleRoute(key);
+                    if (broadAndWithheld)
+                    {
+                        bool refused = false;
+                        try
+                        {
+                            ExpandedSummoningRosterPersistencePolicy
+                                .SelectCreatureVariant(scope, key);
+                        }
+                        catch (InvalidOperationException) { refused = true; }
+                        Assertions.True(refused,
+                            "The broad released-roster scope refuses a withheld route: "
+                                + field.Name + "/" + key);
+                        continue;
+                    }
                     Assertions.Equal(key, ExpandedSummoningRosterPersistencePolicy
                         .SelectCreatureVariant(scope, key).Creature.Key,
                         "Each selected key is one this scope owns: " +
@@ -385,7 +417,7 @@ namespace KingmakerGunslinger.DomainTests
                 }
             }
             foreach (string invalid in new[] { null, "", "Vrock", "vrock ",
-                "vrocks" })
+                "vrocks", "Glabrezu", "glabrezu ", "glabrezus" })
                 Assertions.Equal(0, ExpandedSummoningRosterPersistencePolicy
                     .SelectedKeys(invalid).Length,
                     "An unadmitted scope selects nothing, never the whole roster.");
@@ -401,12 +433,14 @@ namespace KingmakerGunslinger.DomainTests
                     "Every named subset scope is one, and the whole-roster fixture is not: " +
                         field.Name);
             }
-            foreach (string invalid in new[] { null, "", "Vrock", "vrocks" })
+            foreach (string invalid in new[] { null, "", "Vrock", "vrocks",
+                "Glabrezu", "glabrezus" })
                 Assertions.False(ExpandedSummoningRosterPersistencePolicy
                     .IsTargetedSubsetScope(invalid),
                     "An unadmitted scope is not a targeted subset either.");
             foreach (string invalid in new[] { null, "", "Vrock", "vrock ",
-                "vrocks", "KMG_Release143_WholeRoster_v1", "retained" })
+                "vrocks", "Glabrezu", "glabrezu ", "glabrezus",
+                "KMG_Release143_WholeRoster_v1", "retained" })
                 Assertions.False(ExpandedSummoningRosterPersistencePolicy
                     .IsRosterPersistenceScope(invalid),
                     "No alias, receipt name or transition widens the scope set.");

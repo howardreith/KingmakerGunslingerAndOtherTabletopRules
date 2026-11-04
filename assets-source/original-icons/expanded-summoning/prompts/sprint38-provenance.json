@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Sprint 38 original Glabrezu summon-choice render",
+  "generator": "Blender 4.5 procedural render (assets-source/original-icons/expanded-summoning/tools/render_creature_icon.py)",
+  "generatedAtUtc": "2026-11-03",
+  "ownership": "Project-owned original procedural geometry and materials; no game, third-party, downloaded, public-domain or generative-model pixels are inputs.",
+  "referencePolicy": "The creature is built from metaballs and mesh primitives with procedural materials, lit and framed by the same script that produced the roster's other procedural renders, so the image is reproducible from the script alone. No native game image, mesh, texture or existing source bitmap was supplied to or read by the renderer.",
+  "capabilityNote": "This session has no image-generation capability, which is the same condition the charter Sprint 3-8 and Phase 2 Sprint 13-14 concepts and the Sprint 37 Vrock were authored under. The established procedural renderer is the project's own authorized path for exactly that case; no new or paid backend was introduced.",
+  "reproduce": "blender --background --factory-startup --python tools/render_creature_icon.py -- --creature glabrezu --out sources/glabrezu.png --samples 128",
+  "rendererSha256": "a0fcfcf8b86f73232a8e75082f05124ce716d3f81f26e4e045e068a9eb50ebd9",
+  "icons": [
+    {
+      "key": "glabrezu",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/glabrezu.png",
+      "sourceSha256": "a1301475f563195849fb686e883503dbd21fe9e22c53757407763ca62563d2ed",
+      "identity": "heavy upright dark red-brown demon carrying two huge open chitinous pincers wider than its body, a second smaller pair of clawed humanoid arms growing from its chest inside that span, and a horned canine head",
+      "samples": 128,
+      "resolution": "1254x1254 RGBA",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "secondPass": "The first pass opened both pincer jaws along -Y, straight at a camera that sits square in front of the creature, so each claw foreshortened into a single blob and read as a hoof. The jaws now run outward along the creature's own X axis with only a slight forward lean, so the gap between them is seen in profile. The same pass framed the subject at fit 0.38 behind a camera 9.1 back and left it floating inside the ring; both were pulled in, and the head was enlarged and lifted clear of the shoulder mass. Recorded because the failure was a framing decision rather than a modelling one.",
+      "visualBacklog": "The pincer jaws are tapered cones and read closer to shears than to a thick crab claw; the muzzle is short enough that the head reads more generically draconic than specifically canine; the shoulder plates sit as flat wedges behind the neck rather than wrapping the arm root; surfacing is a procedural mottle rather than painted hide. All cosmetic and non-blocking."
+    }
+  ]
+}
