@@ -57,6 +57,7 @@
     <Compile Include="Summoning\GlabrezuRules38Policy.cs" />
     <Compile Include="Summoning\NalfeshneeRules39Policy.cs" />
     <Compile Include="Summoning\NalfeshneeRules39.cs" />
+    <Compile Include="Summoning\NalfeshneeVisualPolicy39.cs" />
     <Compile Include="Summoning\GlabrezuRules38.cs" />
     <Compile Include="Summoning\GlabrezuVisualPolicy38.cs" />
     <Compile Include="Summoning\BoneDevilTailVisual35.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="Assets\PteranodonAssetRuntime.Infernal36.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.Vrock37.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.Glabrezu38.cs" />
+    <Compile Include="Assets\PteranodonAssetRuntime.Nalfeshnee39.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Infernal35.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Infernal36.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Vrock37.cs" />
