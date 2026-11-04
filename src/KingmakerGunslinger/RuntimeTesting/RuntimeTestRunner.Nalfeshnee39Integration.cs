@@ -263,6 +263,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             var rolls = new JArray();
             for (int attempt = 1; attempt <= 6 && cloned == null; attempt++)
             {
+                var readiness = new JObject();
+                foreach (int frame in Nalfeshnee39WaitCastReady(nalfeshnee,
+                    feeblemind, new TargetWrapper(target), readiness))
+                    yield return frame;
+                if (!(bool)readiness["castReady"])
+                {
+                    rolls.Add(new JObject { ["attempt"] = attempt,
+                        ["readiness"] = readiness,
+                        ["castSkipped"] = true });
+                    break;
+                }
                 var watcher = new Nalfeshnee39SpellWatcher(nalfeshnee,
                     feeblemind, target);
                 EventBus.Subscribe(watcher);
