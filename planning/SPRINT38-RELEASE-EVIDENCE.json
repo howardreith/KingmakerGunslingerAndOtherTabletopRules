@@ -1,0 +1,870 @@
+{
+  "schemaVersion": 1,
+  "mission": "Sprint38Glabrezu",
+  "status": "QUALIFIED",
+  "releaseEligible": true,
+  "sprint39Started": false,
+  "gameplayWaiver": false,
+  "baselineExceptions": [],
+  "unresolvedFindings": [],
+  "candidate": {
+    "source": "e4c4d77a88ca19c3d22c0a516a645669d43eb64c",
+    "zipSha256": "7c32c32cded0d4cffaeceebe0d6765bbf35caac3a5ca8da45dd053ec86aa5d82",
+    "dllSha256": "5b81f5f5cc314252b7cc7647cc63f1c76223679a73678f27d7b8e4ff626911a1",
+    "dllMvid": "dd4a21a8-c4f4-44ff-b0d9-16fb14d53a62",
+    "sourceFingerprint": "bb87a7023156951028e1d7ca46d4cb15da57000bcf74924a2f84d8c636518bd0",
+    "pipelineExitCode": 0,
+    "fullSuite": {
+      "exitCode": 0,
+      "registered": 2801,
+      "executed": 2801,
+      "failures": 0,
+      "unfiltered": true
+    },
+    "reproducibilityProof": {
+      "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-final-5419dc95\\proofs\\exact-reproducibility.json",
+      "sha256": "5d4a32d247496b54479e535a171f7177fb5623ea9dbad509de8e33197455bb84"
+    }
+  },
+  "restoration": {
+    "current": "EXACT_INTAKE_VERIFIED_AFTER_PUBLICATION",
+    "workingFixtureClean": true,
+    "mixedOnExact": true,
+    "mixedOffExact": true,
+    "publicProfileExact": true,
+    "intakeManifest": "intake-after-native-qualification.json",
+    "intakeContinuity": "Every Sprint 38 transaction restored the live mod tree to its pre-run hash 216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3 and the native game settings exactly, and the protected Working fixture came back to its captured original bytes at every envelope boundary. One interrupted transaction - a request the game refused before installing any hook or touching any save - was restored explicitly through the compatibility restore entry point and verified.",
+    "intakeProof": {
+      "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-final-5419dc95\\intake-after-native-qualification.json",
+      "sha256": "8f27449166672fdb59b44ce2b068c51866c705a93fc2887d13583969b56c82ed"
+    },
+    "restorationSummaryProof": {
+      "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-final-5419dc95\\proofs\\final-restoration.json",
+      "sha256": "697b091f7aa70f5f9bd8f21d20339a889c2383c53a172466641f85b181533ec9"
+    },
+    "workingFixtureProof": {
+      "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-final-5419dc95\\working-original.json",
+      "sha256": "04c1181e84886d3e1e6ae28ecf34508c676ff99405fb2b6ea738fd502cbb4350"
+    },
+    "workingBoundaryProofs": [
+      {
+        "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-final-5419dc95\\proofs\\working-boundary-aborted-on-envelope-restart.json",
+        "sha256": "307f636cc9032aa25c5fdee6ac9750695f47e483e7df7bca4ec84fa4216a75b7"
+      },
+      {
+        "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-final-5419dc95\\proofs\\working-boundary-final-after-mixed-on-before-mixed-off.json",
+        "sha256": "e2a3b8d40b87b71492d0447b10a1d1203a2be6113413d7f7dd1b1ec9f853798d"
+      },
+      {
+        "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-final-5419dc95\\proofs\\working-boundary-final-after-mixed-off-restored-intake.json",
+        "sha256": "dfac3910f1153a3d2afc3f33e326fd471ce0a4367675764c9137fc8f601c4dc1"
+      }
+    ],
+    "finalVerification": {
+      "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-final-5419dc95\\proofs\\final-restoration-after-publication.json",
+      "sha256": "fa24094438350e9f6e38791f118265b87504b62162cac516269282ecc5fc7675"
+    }
+  },
+  "ownerVisualReview": "NOT_PERFORMED_NONBLOCKING",
+  "roster": {
+    "sprint29RosterExact": true,
+    "sprint29Placements": 8,
+    "sprint29SuppressedPlacements": 0,
+    "projectCreatures": 132,
+    "monsterCreatures": 110,
+    "monsterPlacements": 598,
+    "natureAllyCreatures": 105,
+    "natureAllyPlacements": 588,
+    "registeredRoots": 1186,
+    "generatedRoots": 1186,
+    "nativeWrappers": 29,
+    "choices": 1215,
+    "suppressedLogicalPlacements": 0,
+    "scopeExact": true,
+    "creatures": [
+      "glabrezu"
+    ],
+    "routes": [
+      {
+        "creature": "glabrezu",
+        "tier": 9,
+        "quantity": "One",
+        "identity": "19985d3c659148cc8eb9756a1c68dae4",
+        "assertion": "sprint32-sprint38-public-player-route-Monster.9.glabrezu.One"
+      }
+    ],
+    "scopePublic": true,
+    "protectedIdentitySetsEqual": true
+  },
+  "scopeDecisions": {
+    "glabrezuSlaOmissions": [
+      "Reverse Gravity",
+      "Veil"
+    ],
+    "everySummonExclusions": [
+      "Greater Teleport",
+      "Nested Summoning",
+      "Wish"
+    ],
+    "measuredDeviations": [
+      "Live Perception 28 from the installed Persuasive feat"
+    ],
+    "unrepresentedSkills": [
+      "Bluff",
+      "Diplomacy",
+      "Intimidate",
+      "Knowledge",
+      "Sense Motive",
+      "Use Magic Device",
+      "darkvision",
+      "telepathy"
+    ],
+    "otherGameplayOmissions": []
+  },
+  "coverage": [
+    {
+      "id": "core-profile-and-body",
+      "result": "PASS",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-result.json",
+          "sha256": "b554b6c88dc8382ddc843df639e899f354141840189dd56883ecfdfecd1a613c"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-loaded-build-identity.json",
+          "sha256": "38c438ccbdb6db972e5d077ba0b2c7f59ce1610f18d7c0f52f82f3f8346080f5"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\expanded-summoning-restoration\\20261104T0116148506043Z-disposable-expanded-summoning-sprint32-native-review.json",
+          "sha256": "94f6ac7664a5472e01d4d9dc1cf9ac983b0bec459e54a163388ea12fa92c0af0"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "duplicateAssertionNames": {
+            "sprint32-native-appearance-ready-KMG_Summoning_Unit_Glabrezu": 5
+          },
+          "source": "e4c4d77a88ca19c3d22c0a516a645669d43eb64c",
+          "runId": "20261104T0111430594974Z-8c06655e491747988b8e559393291dc3",
+          "packageSha256": "7c32c32cded0d4cffaeceebe0d6765bbf35caac3a5ca8da45dd053ec86aa5d82",
+          "dllSha256": "5b81f5f5cc314252b7cc7647cc63f1c76223679a73678f27d7b8e4ff626911a1",
+          "dllMvid": "dd4a21a8-c4f4-44ff-b0d9-16fb14d53a62",
+          "nativeProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-result.json",
+            "sha256": "b554b6c88dc8382ddc843df639e899f354141840189dd56883ecfdfecd1a613c"
+          },
+          "loadedIdentityProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-loaded-build-identity.json",
+            "sha256": "38c438ccbdb6db972e5d077ba0b2c7f59ce1610f18d7c0f52f82f3f8346080f5"
+          },
+          "executionProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\expanded-summoning-restoration\\20261104T0116148506043Z-disposable-expanded-summoning-sprint32-native-review.json",
+            "sha256": "94f6ac7664a5472e01d4d9dc1cf9ac983b0bec459e54a163388ea12fa92c0af0"
+          },
+          "executionKind": "restored-scenario",
+          "requiredAssertions": [
+            "sprint32-sprint38-core-bootstrap",
+            "sprint32-sprint38-core-five-primary-attacks",
+            "sprint32-sprint38-core-defenses",
+            "sprint32-sprint38-core-feats-and-constant-sense",
+            "sprint32-sprint38-core-attack-fallback"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rend-round-contract",
+      "result": "PASS",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-result.json",
+          "sha256": "b554b6c88dc8382ddc843df639e899f354141840189dd56883ecfdfecd1a613c"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-loaded-build-identity.json",
+          "sha256": "38c438ccbdb6db972e5d077ba0b2c7f59ce1610f18d7c0f52f82f3f8346080f5"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\expanded-summoning-restoration\\20261104T0116148506043Z-disposable-expanded-summoning-sprint32-native-review.json",
+          "sha256": "94f6ac7664a5472e01d4d9dc1cf9ac983b0bec459e54a163388ea12fa92c0af0"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "duplicateAssertionNames": {
+            "sprint32-native-appearance-ready-KMG_Summoning_Unit_Glabrezu": 5
+          },
+          "source": "e4c4d77a88ca19c3d22c0a516a645669d43eb64c",
+          "runId": "20261104T0111430594974Z-8c06655e491747988b8e559393291dc3",
+          "packageSha256": "7c32c32cded0d4cffaeceebe0d6765bbf35caac3a5ca8da45dd053ec86aa5d82",
+          "dllSha256": "5b81f5f5cc314252b7cc7647cc63f1c76223679a73678f27d7b8e4ff626911a1",
+          "dllMvid": "dd4a21a8-c4f4-44ff-b0d9-16fb14d53a62",
+          "nativeProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-result.json",
+            "sha256": "b554b6c88dc8382ddc843df639e899f354141840189dd56883ecfdfecd1a613c"
+          },
+          "loadedIdentityProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-loaded-build-identity.json",
+            "sha256": "38c438ccbdb6db972e5d077ba0b2c7f59ce1610f18d7c0f52f82f3f8346080f5"
+          },
+          "executionProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\expanded-summoning-restoration\\20261104T0116148506043Z-disposable-expanded-summoning-sprint32-native-review.json",
+            "sha256": "94f6ac7664a5472e01d4d9dc1cf9ac983b0bec459e54a163388ea12fa92c0af0"
+          },
+          "executionKind": "restored-scenario",
+          "requiredAssertions": [
+            "sprint32-sprint38-rend-limbs",
+            "sprint32-sprint38-rend-round-clock-is-live",
+            "sprint32-sprint38-rend-live-attack-command",
+            "sprint32-sprint38-rend-pair-rends-once",
+            "sprint32-sprint38-rend-other-limbs-never",
+            "sprint32-sprint38-rend-history-is-per-victim",
+            "sprint32-sprint38-rend-round-not-command"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "power-word-stun",
+      "result": "PASS",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-result.json",
+          "sha256": "b554b6c88dc8382ddc843df639e899f354141840189dd56883ecfdfecd1a613c"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-loaded-build-identity.json",
+          "sha256": "38c438ccbdb6db972e5d077ba0b2c7f59ce1610f18d7c0f52f82f3f8346080f5"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\expanded-summoning-restoration\\20261104T0116148506043Z-disposable-expanded-summoning-sprint32-native-review.json",
+          "sha256": "94f6ac7664a5472e01d4d9dc1cf9ac983b0bec459e54a163388ea12fa92c0af0"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "duplicateAssertionNames": {
+            "sprint32-native-appearance-ready-KMG_Summoning_Unit_Glabrezu": 5
+          },
+          "source": "e4c4d77a88ca19c3d22c0a516a645669d43eb64c",
+          "runId": "20261104T0111430594974Z-8c06655e491747988b8e559393291dc3",
+          "packageSha256": "7c32c32cded0d4cffaeceebe0d6765bbf35caac3a5ca8da45dd053ec86aa5d82",
+          "dllSha256": "5b81f5f5cc314252b7cc7647cc63f1c76223679a73678f27d7b8e4ff626911a1",
+          "dllMvid": "dd4a21a8-c4f4-44ff-b0d9-16fb14d53a62",
+          "nativeProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-result.json",
+            "sha256": "b554b6c88dc8382ddc843df639e899f354141840189dd56883ecfdfecd1a613c"
+          },
+          "loadedIdentityProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-loaded-build-identity.json",
+            "sha256": "38c438ccbdb6db972e5d077ba0b2c7f59ce1610f18d7c0f52f82f3f8346080f5"
+          },
+          "executionProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\expanded-summoning-restoration\\20261104T0116148506043Z-disposable-expanded-summoning-sprint32-native-review.json",
+            "sha256": "94f6ac7664a5472e01d4d9dc1cf9ac983b0bec459e54a163388ea12fa92c0af0"
+          },
+          "executionKind": "restored-scenario",
+          "requiredAssertions": [
+            "sprint32-sprint38-stun-range-is-printed-close",
+            "sprint32-sprint38-stun-buckets-follow-current-hit-points",
+            "sprint32-sprint38-stun-refuses-an-immune-recipient",
+            "sprint32-sprint38-stun-resistance-uses-printed-caster-level",
+            "sprint32-sprint38-vrock-screech-numerical-resistance-unchanged"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "at-will-spells-and-bursts",
+      "result": "PASS",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-result.json",
+          "sha256": "b554b6c88dc8382ddc843df639e899f354141840189dd56883ecfdfecd1a613c"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-loaded-build-identity.json",
+          "sha256": "38c438ccbdb6db972e5d077ba0b2c7f59ce1610f18d7c0f52f82f3f8346080f5"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\expanded-summoning-restoration\\20261104T0116148506043Z-disposable-expanded-summoning-sprint32-native-review.json",
+          "sha256": "94f6ac7664a5472e01d4d9dc1cf9ac983b0bec459e54a163388ea12fa92c0af0"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "duplicateAssertionNames": {
+            "sprint32-native-appearance-ready-KMG_Summoning_Unit_Glabrezu": 5
+          },
+          "source": "e4c4d77a88ca19c3d22c0a516a645669d43eb64c",
+          "runId": "20261104T0111430594974Z-8c06655e491747988b8e559393291dc3",
+          "packageSha256": "7c32c32cded0d4cffaeceebe0d6765bbf35caac3a5ca8da45dd053ec86aa5d82",
+          "dllSha256": "5b81f5f5cc314252b7cc7647cc63f1c76223679a73678f27d7b8e4ff626911a1",
+          "dllMvid": "dd4a21a8-c4f4-44ff-b0d9-16fb14d53a62",
+          "nativeProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-result.json",
+            "sha256": "b554b6c88dc8382ddc843df639e899f354141840189dd56883ecfdfecd1a613c"
+          },
+          "loadedIdentityProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-loaded-build-identity.json",
+            "sha256": "38c438ccbdb6db972e5d077ba0b2c7f59ce1610f18d7c0f52f82f3f8346080f5"
+          },
+          "executionProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\expanded-summoning-restoration\\20261104T0116148506043Z-disposable-expanded-summoning-sprint32-native-review.json",
+            "sha256": "94f6ac7664a5472e01d4d9dc1cf9ac983b0bec459e54a163388ea12fa92c0af0"
+          },
+          "executionKind": "restored-scenario",
+          "requiredAssertions": [
+            "sprint32-sprint38-spells-at-will-carry-no-resource",
+            "sprint32-sprint38-spells-at-will-repeat",
+            "sprint32-sprint38-spells-bursts-at-printed-difficulty"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "observed-ai-target-binding",
+      "result": "PASS",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-result.json",
+          "sha256": "b554b6c88dc8382ddc843df639e899f354141840189dd56883ecfdfecd1a613c"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-loaded-build-identity.json",
+          "sha256": "38c438ccbdb6db972e5d077ba0b2c7f59ce1610f18d7c0f52f82f3f8346080f5"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\expanded-summoning-restoration\\20261104T0116148506043Z-disposable-expanded-summoning-sprint32-native-review.json",
+          "sha256": "94f6ac7664a5472e01d4d9dc1cf9ac983b0bec459e54a163388ea12fa92c0af0"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "duplicateAssertionNames": {
+            "sprint32-native-appearance-ready-KMG_Summoning_Unit_Glabrezu": 5
+          },
+          "source": "e4c4d77a88ca19c3d22c0a516a645669d43eb64c",
+          "runId": "20261104T0111430594974Z-8c06655e491747988b8e559393291dc3",
+          "packageSha256": "7c32c32cded0d4cffaeceebe0d6765bbf35caac3a5ca8da45dd053ec86aa5d82",
+          "dllSha256": "5b81f5f5cc314252b7cc7647cc63f1c76223679a73678f27d7b8e4ff626911a1",
+          "dllMvid": "dd4a21a8-c4f4-44ff-b0d9-16fb14d53a62",
+          "nativeProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-result.json",
+            "sha256": "b554b6c88dc8382ddc843df639e899f354141840189dd56883ecfdfecd1a613c"
+          },
+          "loadedIdentityProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-loaded-build-identity.json",
+            "sha256": "38c438ccbdb6db972e5d077ba0b2c7f59ce1610f18d7c0f52f82f3f8346080f5"
+          },
+          "executionProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\expanded-summoning-restoration\\20261104T0116148506043Z-disposable-expanded-summoning-sprint32-native-review.json",
+            "sha256": "94f6ac7664a5472e01d4d9dc1cf9ac983b0bec459e54a163388ea12fa92c0af0"
+          },
+          "executionKind": "restored-scenario",
+          "requiredAssertions": [
+            "sprint32-sprint38-ai-second-enemy-is-real",
+            "sprint32-sprint38-ai-candidates-differ",
+            "sprint32-sprint38-ai-stun-picks-the-affectable-candidate"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "public-routes-presentation",
+      "result": "PASS",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-result.json",
+          "sha256": "b554b6c88dc8382ddc843df639e899f354141840189dd56883ecfdfecd1a613c"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-loaded-build-identity.json",
+          "sha256": "38c438ccbdb6db972e5d077ba0b2c7f59ce1610f18d7c0f52f82f3f8346080f5"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\expanded-summoning-restoration\\20261104T0116148506043Z-disposable-expanded-summoning-sprint32-native-review.json",
+          "sha256": "94f6ac7664a5472e01d4d9dc1cf9ac983b0bec459e54a163388ea12fa92c0af0"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "duplicateAssertionNames": {
+            "sprint32-native-appearance-ready-KMG_Summoning_Unit_Glabrezu": 5
+          },
+          "source": "e4c4d77a88ca19c3d22c0a516a645669d43eb64c",
+          "runId": "20261104T0111430594974Z-8c06655e491747988b8e559393291dc3",
+          "packageSha256": "7c32c32cded0d4cffaeceebe0d6765bbf35caac3a5ca8da45dd053ec86aa5d82",
+          "dllSha256": "5b81f5f5cc314252b7cc7647cc63f1c76223679a73678f27d7b8e4ff626911a1",
+          "dllMvid": "dd4a21a8-c4f4-44ff-b0d9-16fb14d53a62",
+          "nativeProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-result.json",
+            "sha256": "b554b6c88dc8382ddc843df639e899f354141840189dd56883ecfdfecd1a613c"
+          },
+          "loadedIdentityProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0111430290681Z-disposable-expanded-summoning-sprint32-native-review\\runtime-loaded-build-identity.json",
+            "sha256": "38c438ccbdb6db972e5d077ba0b2c7f59ce1610f18d7c0f52f82f3f8346080f5"
+          },
+          "executionProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\expanded-summoning-restoration\\20261104T0116148506043Z-disposable-expanded-summoning-sprint32-native-review.json",
+            "sha256": "94f6ac7664a5472e01d4d9dc1cf9ac983b0bec459e54a163388ea12fa92c0af0"
+          },
+          "executionKind": "restored-scenario",
+          "requiredAssertions": [
+            "sprint32-sprint38-public-route-scope",
+            "sprint32-sprint38-public-icon-glabrezu",
+            "sprint32-sprint38-public-player-route-Monster.9.glabrezu.One"
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "creature": "glabrezu",
+          "tier": 9,
+          "identity": "19985d3c659148cc8eb9756a1c68dae4",
+          "runId": "20261104T0111430594974Z-8c06655e491747988b8e559393291dc3",
+          "observed": [
+            "cleanup",
+            "duration",
+            "eligibility",
+            "quantity",
+            "slot"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mixed-on-persistence",
+      "result": "PASS",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0117466923028Z-working-save-expanded-summoning-prepare\\runtime-result.json",
+          "sha256": "8831faf04add3ca159910ed7ff5b42553fb7b7f9348886d4b659086d2049c706"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0117466923028Z-working-save-expanded-summoning-prepare\\runtime-loaded-build-identity.json",
+          "sha256": "f228a352d5c411ae8383912d97d9b980c36ffacc5ed8233cf1fcc3cfa69d2d47"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-stack-20261104T011632Z-be7f5f65e77f\\installed-stack.json",
+          "sha256": "e6eb7d6490eb2160e5d84935fc96e90c2c5f88e1b85609dcc5251aab96326c1c"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0123130363878Z-working-save-expanded-summoning-verify-cleanup\\runtime-result.json",
+          "sha256": "10978dd87f567010f57dbc4de6e4a638ee0ac327385ebc181ba22d87c0509377"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0123130363878Z-working-save-expanded-summoning-verify-cleanup\\runtime-loaded-build-identity.json",
+          "sha256": "71d2cc9d87bc739cb7041d6569bc8be9f3a605075c92261abcb313212122ea08"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-stack-20261104T012200Z-9043c7f91216\\installed-stack.json",
+          "sha256": "f3267d2a7c5f78c5eb6272667749a6a1553febca9e9d486b2e88d28b4cbf987e"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0128361276712Z-working-save-expanded-summoning-verify-absent\\runtime-result.json",
+          "sha256": "fb278a9eae4d9d5b53277c46de90ee8ad6438b1dae6a0acbb9851bc4c802ab24"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0128361276712Z-working-save-expanded-summoning-verify-absent\\runtime-loaded-build-identity.json",
+          "sha256": "6c7f5ed795ef116a12854a0ca86c756237006150ad7b26c198e9fbfb7f0349c7"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-stack-20261104T012722Z-2bb7f2575b03\\installed-stack.json",
+          "sha256": "f83dbd32186c0c89c8e7f02ac742763dc2905f2c38e896c2f27f803ce4290e9e"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-final-5419dc95\\proofs\\mixed-on-persistence.json",
+          "sha256": "18f91b18c9ba526d84b966bdc79a4dba9b09063c9f0a1150399857f1c346779a"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "duplicateAssertionNames": {
+            "whole-roster-persistence-profile-view-glabrezu": 2
+          },
+          "source": "e4c4d77a88ca19c3d22c0a516a645669d43eb64c",
+          "runId": "20261104T0117467255679Z-52d02cac667a494cb5c669ce9e953a6a",
+          "packageSha256": "7c32c32cded0d4cffaeceebe0d6765bbf35caac3a5ca8da45dd053ec86aa5d82",
+          "dllSha256": "5b81f5f5cc314252b7cc7647cc63f1c76223679a73678f27d7b8e4ff626911a1",
+          "dllMvid": "dd4a21a8-c4f4-44ff-b0d9-16fb14d53a62",
+          "nativeProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0117466923028Z-working-save-expanded-summoning-prepare\\runtime-result.json",
+            "sha256": "8831faf04add3ca159910ed7ff5b42553fb7b7f9348886d4b659086d2049c706"
+          },
+          "loadedIdentityProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0117466923028Z-working-save-expanded-summoning-prepare\\runtime-loaded-build-identity.json",
+            "sha256": "f228a352d5c411ae8383912d97d9b980c36ffacc5ed8233cf1fcc3cfa69d2d47"
+          },
+          "executionProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-stack-20261104T011632Z-be7f5f65e77f\\installed-stack.json",
+            "sha256": "e6eb7d6490eb2160e5d84935fc96e90c2c5f88e1b85609dcc5251aab96326c1c"
+          },
+          "executionKind": "installed-stack",
+          "requiredAssertions": [
+            "whole-roster-persistence-native-load-boundary",
+            "whole-roster-persistence-publication",
+            "whole-roster-persistence-s38-state-intake-absence",
+            "whole-roster-persistence-s38-items-owned",
+            "whole-roster-persistence-s38-stun-stood-then-withdrawn",
+            "whole-roster-persistence-s38-state-prepared",
+            "whole-roster-persistence-unrelated-preserved",
+            "exact-working-load",
+            "exact-working-save-write",
+            "loaded-mod-version"
+          ]
+        },
+        {
+          "duplicateAssertionNames": {
+            "whole-roster-persistence-profile-view-glabrezu": 2
+          },
+          "source": "e4c4d77a88ca19c3d22c0a516a645669d43eb64c",
+          "runId": "20261104T0123130592731Z-ce2439af6d264e518398eaf367efd69c",
+          "packageSha256": "7c32c32cded0d4cffaeceebe0d6765bbf35caac3a5ca8da45dd053ec86aa5d82",
+          "dllSha256": "5b81f5f5cc314252b7cc7647cc63f1c76223679a73678f27d7b8e4ff626911a1",
+          "dllMvid": "dd4a21a8-c4f4-44ff-b0d9-16fb14d53a62",
+          "nativeProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0123130363878Z-working-save-expanded-summoning-verify-cleanup\\runtime-result.json",
+            "sha256": "10978dd87f567010f57dbc4de6e4a638ee0ac327385ebc181ba22d87c0509377"
+          },
+          "loadedIdentityProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0123130363878Z-working-save-expanded-summoning-verify-cleanup\\runtime-loaded-build-identity.json",
+            "sha256": "71d2cc9d87bc739cb7041d6569bc8be9f3a605075c92261abcb313212122ea08"
+          },
+          "executionProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-stack-20261104T012200Z-9043c7f91216\\installed-stack.json",
+            "sha256": "f3267d2a7c5f78c5eb6272667749a6a1553febca9e9d486b2e88d28b4cbf987e"
+          },
+          "executionKind": "installed-stack",
+          "requiredAssertions": [
+            "whole-roster-persistence-native-load-boundary",
+            "whole-roster-persistence-publication",
+            "whole-roster-persistence-s38-state-cold",
+            "whole-roster-persistence-s38-items-owned",
+            "whole-roster-persistence-s38-state-cleanup-absence",
+            "whole-roster-persistence-unrelated-preserved",
+            "exact-working-load",
+            "exact-working-save-write",
+            "loaded-mod-version"
+          ]
+        },
+        {
+          "duplicateAssertionNames": {},
+          "source": "e4c4d77a88ca19c3d22c0a516a645669d43eb64c",
+          "runId": "20261104T0128361606615Z-afe60920fc654a498c503130c544cb04",
+          "packageSha256": "7c32c32cded0d4cffaeceebe0d6765bbf35caac3a5ca8da45dd053ec86aa5d82",
+          "dllSha256": "5b81f5f5cc314252b7cc7647cc63f1c76223679a73678f27d7b8e4ff626911a1",
+          "dllMvid": "dd4a21a8-c4f4-44ff-b0d9-16fb14d53a62",
+          "nativeProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0128361276712Z-working-save-expanded-summoning-verify-absent\\runtime-result.json",
+            "sha256": "fb278a9eae4d9d5b53277c46de90ee8ad6438b1dae6a0acbb9851bc4c802ab24"
+          },
+          "loadedIdentityProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0128361276712Z-working-save-expanded-summoning-verify-absent\\runtime-loaded-build-identity.json",
+            "sha256": "6c7f5ed795ef116a12854a0ca86c756237006150ad7b26c198e9fbfb7f0349c7"
+          },
+          "executionProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-stack-20261104T012722Z-2bb7f2575b03\\installed-stack.json",
+            "sha256": "f83dbd32186c0c89c8e7f02ac742763dc2905f2c38e896c2f27f803ce4290e9e"
+          },
+          "executionKind": "installed-stack",
+          "requiredAssertions": [
+            "whole-roster-persistence-native-load-boundary",
+            "whole-roster-persistence-publication",
+            "whole-roster-persistence-fresh-absence",
+            "whole-roster-persistence-s38-state-fresh-absence",
+            "exact-working-load",
+            "loaded-mod-version"
+          ]
+        }
+      ],
+      "sequenceProof": {
+        "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-final-5419dc95\\proofs\\mixed-on-persistence.json",
+        "sha256": "18f91b18c9ba526d84b966bdc79a4dba9b09063c9f0a1150399857f1c346779a"
+      }
+    },
+    {
+      "id": "mixed-off-persistence",
+      "result": "PASS",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0134390810443Z-working-save-expanded-summoning-prepare\\runtime-result.json",
+          "sha256": "87bce37272ecb9a1a07ab3b5e72a2bb81a05bd7f341c7cc411fbbbfa989d738c"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0134390810443Z-working-save-expanded-summoning-prepare\\runtime-loaded-build-identity.json",
+          "sha256": "769bfbf85474dbba4b7760bcd0d8d8aef81a9d389e3060ef0df5a0e99d8b92e1"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-stack-20261104T013325Z-3f306d9fc6aa\\installed-stack.json",
+          "sha256": "e097f3482524a402e00e498067e252c28773ab99683bfc14e7a88055905f75f1"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0140212738240Z-working-save-expanded-summoning-verify-cleanup\\runtime-result.json",
+          "sha256": "f5452befe15eea28cbb110dd718cabb5f9fd44aec202ca72d52788b7038507a9"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0140212738240Z-working-save-expanded-summoning-verify-cleanup\\runtime-loaded-build-identity.json",
+          "sha256": "2757f79df1d0d9baf8c0793e0abe75efedc47edaabf3cfd4422fdce787ca3408"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-stack-20261104T013908Z-3dcda613d898\\installed-stack.json",
+          "sha256": "4f0864a00f71922af35e41dcca9535a179ca3e376781edd750453bed7b448528"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0145402786044Z-working-save-expanded-summoning-verify-absent\\runtime-result.json",
+          "sha256": "f5f25ea17fc05109e5ae326eb5a20958035128044b51de9dc27777c7ee33dd07"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0145402786044Z-working-save-expanded-summoning-verify-absent\\runtime-loaded-build-identity.json",
+          "sha256": "54cf97a352363a30ce692d4a25f1b589bb73544b0a2f12ff108919287ba97cf4"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-stack-20261104T014428Z-f70181435006\\installed-stack.json",
+          "sha256": "2ae688bc9aa1703b6589927f0f3d7746c6bd52ab0d3bcfb313e623590e153da5"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-final-5419dc95\\proofs\\mixed-off-persistence.json",
+          "sha256": "f40653b6496fdb35cb562c3970fadae3f5774a45dc78c12f07b5f5b816811c8c"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "duplicateAssertionNames": {
+            "whole-roster-persistence-profile-view-glabrezu": 2
+          },
+          "source": "e4c4d77a88ca19c3d22c0a516a645669d43eb64c",
+          "runId": "20261104T0134391044434Z-9e175ac56896461896d94ee816069ba3",
+          "packageSha256": "7c32c32cded0d4cffaeceebe0d6765bbf35caac3a5ca8da45dd053ec86aa5d82",
+          "dllSha256": "5b81f5f5cc314252b7cc7647cc63f1c76223679a73678f27d7b8e4ff626911a1",
+          "dllMvid": "dd4a21a8-c4f4-44ff-b0d9-16fb14d53a62",
+          "nativeProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0134390810443Z-working-save-expanded-summoning-prepare\\runtime-result.json",
+            "sha256": "87bce37272ecb9a1a07ab3b5e72a2bb81a05bd7f341c7cc411fbbbfa989d738c"
+          },
+          "loadedIdentityProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0134390810443Z-working-save-expanded-summoning-prepare\\runtime-loaded-build-identity.json",
+            "sha256": "769bfbf85474dbba4b7760bcd0d8d8aef81a9d389e3060ef0df5a0e99d8b92e1"
+          },
+          "executionProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-stack-20261104T013325Z-3f306d9fc6aa\\installed-stack.json",
+            "sha256": "e097f3482524a402e00e498067e252c28773ab99683bfc14e7a88055905f75f1"
+          },
+          "executionKind": "installed-stack",
+          "requiredAssertions": [
+            "whole-roster-persistence-native-load-boundary",
+            "whole-roster-persistence-publication",
+            "whole-roster-persistence-s38-state-intake-absence",
+            "whole-roster-persistence-s38-items-owned",
+            "whole-roster-persistence-s38-stun-stood-then-withdrawn",
+            "whole-roster-persistence-s38-state-prepared",
+            "whole-roster-persistence-unrelated-preserved",
+            "exact-working-load",
+            "exact-working-save-write",
+            "loaded-mod-version"
+          ]
+        },
+        {
+          "duplicateAssertionNames": {
+            "whole-roster-persistence-profile-view-glabrezu": 2
+          },
+          "source": "e4c4d77a88ca19c3d22c0a516a645669d43eb64c",
+          "runId": "20261104T0140213064473Z-457ae4b8c92d4d2ca21736b85b165a29",
+          "packageSha256": "7c32c32cded0d4cffaeceebe0d6765bbf35caac3a5ca8da45dd053ec86aa5d82",
+          "dllSha256": "5b81f5f5cc314252b7cc7647cc63f1c76223679a73678f27d7b8e4ff626911a1",
+          "dllMvid": "dd4a21a8-c4f4-44ff-b0d9-16fb14d53a62",
+          "nativeProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0140212738240Z-working-save-expanded-summoning-verify-cleanup\\runtime-result.json",
+            "sha256": "f5452befe15eea28cbb110dd718cabb5f9fd44aec202ca72d52788b7038507a9"
+          },
+          "loadedIdentityProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0140212738240Z-working-save-expanded-summoning-verify-cleanup\\runtime-loaded-build-identity.json",
+            "sha256": "2757f79df1d0d9baf8c0793e0abe75efedc47edaabf3cfd4422fdce787ca3408"
+          },
+          "executionProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-stack-20261104T013908Z-3dcda613d898\\installed-stack.json",
+            "sha256": "4f0864a00f71922af35e41dcca9535a179ca3e376781edd750453bed7b448528"
+          },
+          "executionKind": "installed-stack",
+          "requiredAssertions": [
+            "whole-roster-persistence-native-load-boundary",
+            "whole-roster-persistence-publication",
+            "whole-roster-persistence-s38-state-cold",
+            "whole-roster-persistence-s38-items-owned",
+            "whole-roster-persistence-s38-state-cleanup-absence",
+            "whole-roster-persistence-unrelated-preserved",
+            "exact-working-load",
+            "exact-working-save-write",
+            "loaded-mod-version"
+          ]
+        },
+        {
+          "duplicateAssertionNames": {},
+          "source": "e4c4d77a88ca19c3d22c0a516a645669d43eb64c",
+          "runId": "20261104T0145403062555Z-ce927776255e4619be2f4e7fefe2b69c",
+          "packageSha256": "7c32c32cded0d4cffaeceebe0d6765bbf35caac3a5ca8da45dd053ec86aa5d82",
+          "dllSha256": "5b81f5f5cc314252b7cc7647cc63f1c76223679a73678f27d7b8e4ff626911a1",
+          "dllMvid": "dd4a21a8-c4f4-44ff-b0d9-16fb14d53a62",
+          "nativeProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0145402786044Z-working-save-expanded-summoning-verify-absent\\runtime-result.json",
+            "sha256": "f5f25ea17fc05109e5ae326eb5a20958035128044b51de9dc27777c7ee33dd07"
+          },
+          "loadedIdentityProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0145402786044Z-working-save-expanded-summoning-verify-absent\\runtime-loaded-build-identity.json",
+            "sha256": "54cf97a352363a30ce692d4a25f1b589bb73544b0a2f12ff108919287ba97cf4"
+          },
+          "executionProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-stack-20261104T014428Z-f70181435006\\installed-stack.json",
+            "sha256": "2ae688bc9aa1703b6589927f0f3d7746c6bd52ab0d3bcfb313e623590e153da5"
+          },
+          "executionKind": "installed-stack",
+          "requiredAssertions": [
+            "whole-roster-persistence-native-load-boundary",
+            "whole-roster-persistence-publication",
+            "whole-roster-persistence-fresh-absence",
+            "whole-roster-persistence-s38-state-fresh-absence",
+            "exact-working-load",
+            "loaded-mod-version"
+          ]
+        }
+      ],
+      "sequenceProof": {
+        "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-final-5419dc95\\proofs\\mixed-off-persistence.json",
+        "sha256": "f40653b6496fdb35cb562c3970fadae3f5774a45dc78c12f07b5f5b816811c8c"
+      }
+    },
+    {
+      "id": "highest-risk-integration",
+      "result": "PASS",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0117466923028Z-working-save-expanded-summoning-prepare\\runtime-result.json",
+          "sha256": "8831faf04add3ca159910ed7ff5b42553fb7b7f9348886d4b659086d2049c706"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0117466923028Z-working-save-expanded-summoning-prepare\\runtime-loaded-build-identity.json",
+          "sha256": "f228a352d5c411ae8383912d97d9b980c36ffacc5ed8233cf1fcc3cfa69d2d47"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-stack-20261104T011632Z-be7f5f65e77f\\installed-stack.json",
+          "sha256": "e6eb7d6490eb2160e5d84935fc96e90c2c5f88e1b85609dcc5251aab96326c1c"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "duplicateAssertionNames": {
+            "whole-roster-persistence-profile-view-glabrezu": 2
+          },
+          "source": "e4c4d77a88ca19c3d22c0a516a645669d43eb64c",
+          "runId": "20261104T0117467255679Z-52d02cac667a494cb5c669ce9e953a6a",
+          "packageSha256": "7c32c32cded0d4cffaeceebe0d6765bbf35caac3a5ca8da45dd053ec86aa5d82",
+          "dllSha256": "5b81f5f5cc314252b7cc7647cc63f1c76223679a73678f27d7b8e4ff626911a1",
+          "dllMvid": "dd4a21a8-c4f4-44ff-b0d9-16fb14d53a62",
+          "nativeProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0117466923028Z-working-save-expanded-summoning-prepare\\runtime-result.json",
+            "sha256": "8831faf04add3ca159910ed7ff5b42553fb7b7f9348886d4b659086d2049c706"
+          },
+          "loadedIdentityProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261104T0117466923028Z-working-save-expanded-summoning-prepare\\runtime-loaded-build-identity.json",
+            "sha256": "f228a352d5c411ae8383912d97d9b980c36ffacc5ed8233cf1fcc3cfa69d2d47"
+          },
+          "executionProof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-stack-20261104T011632Z-be7f5f65e77f\\installed-stack.json",
+            "sha256": "e6eb7d6490eb2160e5d84935fc96e90c2c5f88e1b85609dcc5251aab96326c1c"
+          },
+          "executionKind": "installed-stack",
+          "requiredAssertions": [
+            "whole-roster-persistence-native-load-boundary",
+            "whole-roster-persistence-publication",
+            "whole-roster-persistence-s38-state-intake-absence",
+            "whole-roster-persistence-s38-items-owned",
+            "whole-roster-persistence-s38-stun-stood-then-withdrawn",
+            "whole-roster-persistence-s38-state-prepared",
+            "whole-roster-persistence-unrelated-preserved",
+            "exact-working-load",
+            "exact-working-save-write",
+            "loaded-mod-version"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "complete-source-build-package-gate",
+      "result": "PASS",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-final-5419dc95\\proofs\\complete-source-build-package-gate.json",
+          "sha256": "d80cbb589a19af4a4cd2110f3754aee6a1db9bb59d637b7b55803e0850d4e94a"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "e4c4d77a88ca19c3d22c0a516a645669d43eb64c",
+          "runId": "complete-source-build-package-gate-e4c4d77a",
+          "packageSha256": "7c32c32cded0d4cffaeceebe0d6765bbf35caac3a5ca8da45dd053ec86aa5d82",
+          "dllSha256": "5b81f5f5cc314252b7cc7647cc63f1c76223679a73678f27d7b8e4ff626911a1",
+          "dllMvid": "dd4a21a8-c4f4-44ff-b0d9-16fb14d53a62",
+          "executionKind": "build-gate",
+          "nativeExecution": false,
+          "requiredAssertions": [
+            "complete-domain-suite-2801"
+          ],
+          "proof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-final-5419dc95\\proofs\\complete-source-build-package-gate.json",
+            "sha256": "d80cbb589a19af4a4cd2110f3754aee6a1db9bb59d637b7b55803e0850d4e94a"
+          }
+        }
+      ]
+    },
+    {
+      "id": "exact-reproducibility",
+      "result": "PASS",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-final-5419dc95\\proofs\\exact-reproducibility.json",
+          "sha256": "5d4a32d247496b54479e535a171f7177fb5623ea9dbad509de8e33197455bb84"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "e4c4d77a88ca19c3d22c0a516a645669d43eb64c",
+          "runId": "exact-reproducibility-e4c4d77a",
+          "packageSha256": "7c32c32cded0d4cffaeceebe0d6765bbf35caac3a5ca8da45dd053ec86aa5d82",
+          "dllSha256": "5b81f5f5cc314252b7cc7647cc63f1c76223679a73678f27d7b8e4ff626911a1",
+          "dllMvid": "dd4a21a8-c4f4-44ff-b0d9-16fb14d53a62",
+          "executionKind": "reproducibility-rebuild",
+          "nativeExecution": false,
+          "requiredAssertions": [
+            "byte-identical-zip-dll-mvid"
+          ],
+          "proof": {
+            "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-final-5419dc95\\proofs\\exact-reproducibility.json",
+            "sha256": "5d4a32d247496b54479e535a171f7177fb5623ea9dbad509de8e33197455bb84"
+          }
+        }
+      ]
+    }
+  ],
+  "publication": {
+    "tag": "v0.0.176",
+    "draft": false,
+    "prerelease": false,
+    "latest": true,
+    "status": "PUBLISHED",
+    "productMergeCommit": "6370addc14a438fc80adf54e9b0062bd5777ef99",
+    "mergeContainsTestedSource": true,
+    "expectedBaseCommit": "2af6f60858b23fef58e981da78725c5e6d8cde73",
+    "productPr": "92",
+    "releaseUrl": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.176",
+    "publishedUtc": "2026-11-04T01:58:48Z",
+    "publishedAsset": "KingmakerGunslinger-0.0.176-expanded-summoning-glabrezu.zip",
+    "publicDownloadProof": {
+      "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-final-5419dc95\\proofs\\public-download.json",
+      "sha256": "a5580c47634d0bafc0c8843df2108b6829a1e0cc72dc00c7c6059de73932f9c1"
+    }
+  },
+  "stopCondition": "Sprint 38 is RELEASED. Sprint 39 and the Nalfeshnee are not started.",
+  "evidenceRoot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint38-final-5419dc95",
+  "harness": null,
+  "recordKind": "verified-release-records"
+}
