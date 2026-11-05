@@ -526,7 +526,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitEntityData nearest = Game.Instance.State.Units.Where(unit => unit != null && !unit.Destroyed &&
                     unit.IsInState && !unit.Descriptor.State.IsDead).OrderBy(unit => Vector3.Distance(unit.Position, position)).FirstOrDefault();
                 return new JObject { ["position"] = SurveyVector(position), ["originalWalkable"] = value.Value,
-                    ["currentWalkable"] = value.Key.Walkable, ["claimOwners"] = InfernalWallNavmesh35.ClaimOwnerCount(value.Key),
+                    ["currentWalkable"] = value.Key.Walkable, ["staticWalkable"] = value.Key.StaticWalkable,
+                    ["dynamicBlocked"] = value.Key.DynamicBlocked,
+                    ["claimOwners"] = InfernalWallNavmesh35.ClaimOwnerCount(value.Key),
                     ["nearestLiveUnit"] = nearest?.UniqueId,
                     ["nearestLiveUnitDistance"] = nearest == null ? (float?)null : Vector3.Distance(nearest.Position, position) };
             }));
@@ -882,8 +884,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             InfernalBoneRemoveEffects35(mover, new[] { run.Bone }, run.Frightened);
             foreach (int frame in InfernalWallPlaceAndSettle35(mover, plan.Start, plan, "restoration-" + label)) yield return frame;
             var after = InfernalEarlyPath35(mover, plan.Destination);
+            // Native Walkable is the static flag AND no DynamicBlocked counter.
+            // Both layers must be back: the flag at its original value and the
+            // cut's dynamic block released.
             Func<bool> nodesRestored = () => formed.Nodes.Length > 0 && formed.Nodes.All(value =>
-                value.Key.Walkable == value.Value && InfernalWallNavmesh35.ClaimOwnerCount(value.Key) == 0);
+                value.Key.Walkable == value.Value && value.Key.StaticWalkable == value.Value &&
+                value.Key.DynamicBlocked == 0 && InfernalWallNavmesh35.ClaimOwnerCount(value.Key) == 0);
             DateTime deadline = DateTime.UtcNow.AddSeconds(15);
             int nextSample = Time.frameCount;
             while (DateTime.UtcNow < deadline && (!InfernalEarlyWallRestored35(formed.PathBefore, after) || !nodesRestored()))
@@ -907,10 +913,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["nodesRestored"] = nodesRestored(), ["gridRestoreQueued"] = binding?.GridRestoreQueued,
                 ["gridRestoreCompleted"] = binding?.GridRestoreCompleted, ["gridNodesRestored"] = binding?.GridNodesRestored,
                 ["gridNodesChangedAtFormation"] = formed.NodesChanged, ["gridFailure"] = binding?.GridFailure,
+                ["cutGridBlockAppliedAtRelease"] = binding?.CutGridBlockAppliedAtRelease,
+                ["cutGridRevertQueued"] = binding?.CutGridRevertQueued,
+                ["restorationContract"] = "Native GridGraph updates restore node flags from their pre-erosion state, so a flag the section claimed may already be back before release; GridNodesRestored counts only flags still changed. Acceptance is every claimed node's flag and DynamicBlocked counter back to original with no claim.",
                 ["cutRetired"] = cutRetired, ["pathBefore"] = formed.PathBefore, ["pathAfter"] = after, ["pathRestored"] = restoredPath };
             InfernalWallPersist35(run, "navigation-restored-" + label, row);
             run.Check("wall-navigation-restored-" + label, InfernalWallNavmesh35.ActiveGridClaimCount == 0 && nodesRestored() &&
-                binding.GridRestoreCompleted && binding.GridNodesRestored >= formed.NodesChanged && binding.GridFailure == null &&
+                binding.GridRestoreCompleted && binding.GridFailure == null &&
+                (!binding.CutGridBlockAppliedAtRelease || binding.CutGridRevertQueued) &&
                 cutRetired && restoredPath, row,
                 "This exact section released its cut and every claim, each affected node regained its original state with witnesses parked, and the route query returned.");
 
