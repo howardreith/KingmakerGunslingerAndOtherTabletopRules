@@ -116,7 +116,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (!independent) throw new InvalidOperationException("Shared mutable original body.");
                         var siblingChains = owners[1].View.GetComponent<KytonChainVisual34>();
                         int siblingContacts = siblingChains == null ? 0 : siblingChains.Contacts;
-                        bool siblingControlled = InfernalMartialProfile34.For(owners[1]).ControlsOwnChains(owners[1]);
+                        bool siblingControlled = siblingChains != null &&
+                            InfernalMartialProfile34.For(owners[1]).ControlsOwnChains(owners[1]);
                         foreach (int frame in ReviewInfernalMotion34(fixture, owners[0], key, trace, receipt)) yield return frame;
                         if (iceDevil)
                             foreach (int frame in ReviewIceDevilLifetime40(fixture, owners[0], owners[1],
