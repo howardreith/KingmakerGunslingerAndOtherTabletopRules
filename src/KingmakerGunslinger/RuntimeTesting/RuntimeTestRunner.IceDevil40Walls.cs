@@ -59,7 +59,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Vector3.forward * (8f + actors.Count * 4f));
                     foreach (int frame in Outsider30NativeAppearance(actor, actor.Blueprint.name)) yield return frame;
                 }
-                for (int index = 0; index < actors.Count; index++)
+                // Test the two required owner pairs sequentially. Three
+                // simultaneous legal sections are not a wall contract.
+                for (int index = 0; index < 2; index++)
                 {
                     UnitEntityData section = null;
                     foreach (int frame in IceDevilCastWall40(fixture, actors[index], actors, surveyCenter,
@@ -74,13 +76,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         originals[pair.Key] = pair.Value;
                     }
                 }
-                check("wall-three-owner-claims", bindings.All(x => x.GridApplyCompleted &&
+                check("wall-two-ice-owner-claims", bindings.Count == 2 && bindings.All(x => x.GridApplyCompleted &&
                     x.GridNodesClaimed > 0 && x.GridNodeSnapshot().All(n => !n.Key.Walkable)),
                     new JObject { ["owners"] = new JArray(actors.Select(x => x.UniqueId)),
                         ["sections"] = new JArray(sections.Select(x => x.UniqueId)),
                         ["claims"] = InfernalWallNavmesh35.ActiveGridClaimCount,
                         ["uniqueOriginalNodes"] = originals.Count },
-                    "Two Ice sources and one Bone source own distinct real casts and live node claims; shared original bits agree.");
+                    "Two Ice sources own distinct real casts and live node claims; shared original bits agree.");
                 // Exercise the native object-damage consumer rather than
                 // deleting a section or invoking its breach method.
                 var physical = new PhysicalDamage(new DiceFormula(0, DiceType.Zero), PhysicalDamageForm.Bludgeoning);
@@ -116,7 +118,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["residual"] = residual.Length, ["fog"] = fog.Length,
                         ["remainingClaims"] = InfernalWallNavmesh35.ActiveGridClaimCount,
                         ["otherSectionsAlive"] = sections.Skip(1).Count(x => !x.Destroyed && !x.Descriptor.State.IsDead) },
-                    "Native fire breach releases only the first section and creates its residual cold/fire-fog branch; second Ice and Bone claims survive.");
+                    "Native fire breach releases only the first section and creates its residual cold/fire-fog branch; second Ice claims survive.");
                 Vector3 center = sections[0].Position;
                 Vector3 forward = sections[0].OrientationDirection;
                 var from = ObstacleAnalyzer.GetNearestNode(center - forward * 3f);
@@ -145,9 +147,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !x.Destroyed && !x.Descriptor.State.IsDead) &&
                     bindings.Skip(1).All(x => x.GridNodeSnapshot().All(n => !n.Key.Walkable)),
                     new JObject { ["firstSourceDestroyed"] = actors[0].Destroyed,
-                        ["secondIceAlive"] = !sections[1].Destroyed,
-                        ["boneAlive"] = !sections[2].Destroyed },
-                    "First exact source removal cleans its residual and fog without releasing either other source's movement claims.");
+                        ["secondIceAlive"] = !sections[1].Destroyed },
+                    "First exact source removal cleans its residual and fog without releasing the second Ice source's movement claims.");
+                UnitEntityData boneSection = null;
+                foreach (int frame in IceDevilCastWall40(fixture, actors[2], actors, surveyCenter,
+                    value => boneSection = value, check, "bone-after-breach")) yield return frame;
+                sections.Add(boneSection);
+                var boneBinding = boneSection.View.GetComponent<InfernalWallNavmesh35>();
+                bindings.Add(boneBinding);
+                foreach (var pair in boneBinding.GridNodeSnapshot())
+                {
+                    bool prior;
+                    if (originals.TryGetValue(pair.Key, out prior) && prior != pair.Value)
+                        throw new InvalidOperationException("Cross-species shared node original differs.");
+                    originals[pair.Key] = pair.Value;
+                }
+                check("wall-cross-species-live-claims", bindings.Skip(1).All(x =>
+                    x.GridApplyCompleted && x.GridNodesClaimed > 0 &&
+                    x.GridNodeSnapshot().All(n => !n.Key.Walkable)),
+                    new JObject { ["ice"] = sections[1].UniqueId, ["bone"] = boneSection.UniqueId,
+                        ["claims"] = InfernalWallNavmesh35.ActiveGridClaimCount },
+                    "An unchanged Bone36 HP/CL12 cast and the second Ice39 HP/CL13 section hold live claims together after the first source retires.");
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { actors[1] });
                 foreach (int frame in InfernalBoneWaitUntil35(() => sections[1].Destroyed ||
                     !sections[1].IsInGame, 12)) yield return frame;
@@ -191,16 +211,28 @@ namespace KingmakerGunslinger.RuntimeTesting
             var sectionBp = (BlueprintUnit)ExpandedSummoningBlueprints.Registered.BySymbol[prefix + "WallSectionUnit"];
             var data = new AbilityData(source.Descriptor.Abilities.GetAbility(spell));
             Vector3 start, middle, end, casterPoint; JArray attempts;
+            int admittedCandidates = 0, availableCandidates = 0, legalCandidates = 0;
             Func<Vector3, Vector3, bool> admit = (point, offLane) => {
                 for (int index = 0; index < actors.Count; index++)
                     if (!actors[index].Destroyed)
                         PlaceExpandedSummoningUnit(actors[index], offLane + Vector3.forward * ((index + 1) * 4f));
                 PlaceExpandedSummoningUnit(source, offLane);
-                return data.IsAvailable && data.CanTarget(new TargetWrapper(point));
+                admittedCandidates++;
+                bool available = data.IsAvailable;
+                if (available) availableCandidates++;
+                bool legal = available && data.CanTarget(new TargetWrapper(point));
+                if (legal) legalCandidates++;
+                return legal;
             };
-            if (!InfernalEarlyWallLane35(fixture, out start, out middle, out end,
-                out casterPoint, out attempts, admit, surveyCenter))
-                throw new InvalidOperationException("No legal native wall lane for " + label + ": " + attempts);
+            bool found = InfernalEarlyWallLane35(fixture, out start, out middle, out end,
+                out casterPoint, out attempts, admit, surveyCenter);
+            check("wall-survey-" + label, found && legalCandidates > 0,
+                new JObject { ["source"] = source.UniqueId, ["surveyCenter"] = Vec(surveyCenter),
+                    ["sourcePosition"] = Vec(source.Position), ["sourceCanAct"] = source.Descriptor.State.CanAct,
+                    ["nativeAvailable"] = data.IsAvailable, ["geometryCandidates"] = admittedCandidates,
+                    ["availableCandidates"] = availableCandidates, ["legalCandidates"] = legalCandidates,
+                    ["boundedSurvey"] = attempts },
+                "Existing bounded survey retains native availability/targeting; refusal records the actual admission boundary rather than forcing a placement.");
             PlaceExpandedSummoningUnit(fixture.Caster, start);
             var prior = new HashSet<string>(Game.Instance.State.Units.Select(x => x.UniqueId));
             var command = new UnitUseAbility(data, new TargetWrapper(middle)); source.Commands.Run(command);

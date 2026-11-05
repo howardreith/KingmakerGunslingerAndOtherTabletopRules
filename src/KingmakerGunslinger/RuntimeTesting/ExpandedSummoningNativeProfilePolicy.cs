@@ -51,6 +51,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string Sprint40NalfeshneeRangePhase = "sprint40-nalfeshnee-range";
         internal const string Sprint40IceDevilWallsPhase = "sprint40-ice-devil-walls";
         internal const string Sprint40IceDevilSlowPhase = "sprint40-ice-devil-slow";
+        internal const string Sprint40IceDevilPresentationPhase = "sprint40-ice-devil-presentation";
+        internal const string Sprint40IceDevilPublicPhase = "sprint40-ice-devil-public";
+        internal const string Sprint40IceDevilAiPhase = "sprint40-ice-devil-ai";
+        internal const string Sprint40IceDevilSlowTurnPhase = "sprint40-ice-devil-slow-turn";
         internal const string Sprint39NalfeshneeCorePhase = "sprint39-nalfeshnee-core";
         internal const string Sprint39NalfeshneeNimbusPhase = "sprint39-nalfeshnee-nimbus";
         // The second combat mode is its own phase, as every released
@@ -102,7 +106,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static bool Sprint32NativeInputPhase(string phase)
         { return phase == Sprint32DruidInputPhase || phase == Sprint32WizardInputPhase || phase == Sprint32SorcererInputPhase; }
         internal static bool Sprint32NativeDefaultPhase(string phase)
-        { return phase == Sprint32InfernalBodiesPhase || phase == Sprint32ShadowMotionPhase || Sprint32NativeInputPhase(phase) || phase == Sprint32PerformancePhase ||
+        { return phase == Sprint40IceDevilSlowTurnPhase || phase == Sprint40IceDevilAiPhase || phase == Sprint40NalfeshneeRangePhase || phase == Sprint40IceDevilPresentationPhase || phase == Sprint40IceDevilPublicPhase || phase == Sprint32InfernalBodiesPhase || phase == Sprint32ShadowMotionPhase || Sprint32NativeInputPhase(phase) || phase == Sprint32PerformancePhase ||
             phase == Sprint32FascinatePhase || phase == Sprint32BardicSuggestionPhase || phase == Sprint32GrabPhase || phase == Sprint32PresentationPhase || phase == Sprint32SuggestionTerminalsPhase; }
         internal static bool Sprint32NativeDefaultOutdoor(string scenario, string phase)
         { return scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview && Sprint32NativeDefaultPhase(phase); }

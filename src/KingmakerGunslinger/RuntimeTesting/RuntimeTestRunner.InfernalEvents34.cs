@@ -138,6 +138,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 JObject row;
                 if (!damage.TryGetValue(evt, out row)) return;
                 row["after"] = evt.Target.Damage; row["actual"] = evt.Damage;
+                row["results"] = evt.ResultDamage == null ? new JArray() : new JArray(evt.ResultDamage.Select(value =>
+                    new JObject { ["type"] = value.Source?.GetType().Name,
+                        ["energy"] = (value.Source as EnergyDamage)?.EnergyType.ToString(),
+                        ["actual"] = value.FinalValue, ["immune"] = value.Source?.Immune }));
                 row["weapon"] = evt.DamageBundle.Weapon?.Blueprint?.AssetGuid;
                 row["hasAttackRoll"] = evt.AttackRoll != null;
                 row["packets"] = new JArray(evt.DamageBundle.Select(value => new JObject {

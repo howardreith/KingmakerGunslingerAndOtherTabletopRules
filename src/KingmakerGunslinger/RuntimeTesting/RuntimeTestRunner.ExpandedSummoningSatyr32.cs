@@ -413,6 +413,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in ReviewIceDevilEarly40(fixture)) yield return frame;
                 yield break;
             }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilPresentationPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewInfernalBodies34(fixture, iceDevil: true)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilPublicPhase)
+            {
+                ReviewIceDevilPublic40(fixture);
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilAiPhase)
+            {
+                foreach (int frame in ReviewIceDevilAi40(fixture)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilSlowTurnPhase)
+            {
+                foreach (int frame in ReviewIceDevilSlowTurn40(fixture)) yield return frame;
+                yield break;
+            }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilCombatPhase)
             {
                 CreateSprint32TurnHostile(fixture);

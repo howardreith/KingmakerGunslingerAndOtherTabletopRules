@@ -9,29 +9,65 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 - Branch `codex/expanded-summoning-sprint40-ice-devil`, root
   `C:/Dev/KingmakerGunslingerLab/wt/s40`, HOWARD-LAPTOP. Last pushed/source-tested
-  checkpoint `6ef13ccb9f2582ee5d3eef92ac745caf04a1b052`; following repair batch
+  checkpoint `76b294ef7c5ce1f730e43e64322cd47fd171bd13`; following repair batch
   is identified by this commit and `git rev-parse HEAD` after commit.
 - No active game/deployment/lease; original118 saves were never loaded/written.
   Latest full exact intake audit:
-  `sprint40-intake-20261105T002300Z/post-early-20261105T054110Z/restoration.json`.
+  `sprint40-intake-20261105T002300Z/post-early-20261105T062345Z/restoration.json`.
   Mods/references/settings/saves exact; game absent. Native Goal remains active.
 - Completed: hidden graph/art dependencies, early development mechanics,
   Nalfeshnee55-foot source correction and Nimbus Daze wording correction.
   Persistent Image omission explicitly approved; no substitute. No pending
   material gameplay decision. One SM IX route remains suppressed.
-- Native6ef probes found one product defect (totalHP245: base161 plus84Con)
-  and fixture gaps: Haste lookup, drifting wall survey center and unnecessarily
-  long range lane. Repairs now use derived base77, retained Haste identity,
-  one fixed survey center and a closer outside-range point. Added actual Slow
-  descriptor-immunity, independent-source and natural finite-expiry observations.
+- Native76b: early20/20, combat20/20 and effects27/27 PASS. HP161 confirmed;
+  native spear/standard/AoO/Charge/disarm/Haste/Cleave (RTWP and TB), cold casts,
+  regeneration/good-only suppression/recovery/fatal protection, energy defenses
+  and independent live-DC fear observed. All development evidence, not final.
+- Slow edges FAIL at observer half-speed expectation after positive real
+  zero-damage/cold-immune DC25 hits and event dedup. Installed native getter
+  halves for Staggered AND Slowed; native Slow carries both, so actual combat
+  rate is one quarter. Current observer repair preserves those native consumers.
+- Third simultaneous wall survey still refused after fixed-center repair;
+  cause unproven. Current fixture instead tests required Ice/Ice then Ice/Bone
+  pairs after first breach/removal, with explicit native admission counts.
+  Nalfeshnee actual18.164m boundary passed twice; both indoor lane surveys
+  had zero native LOS candidates. Move this exact phase to existing outdoor
+  fixture, keeping native targeting/range/approach assertions.
 - Focused repaired batch: production27.1s,31/31 related tests of2815 PASS,
   tests9.7s including rebuild. Log `artifacts/s40-native-repairs-compile-fixed.log`.
   Missing namespace compile failure retained in `artifacts/s40-native-repairs-compile.log`.
-- NEXT: build one coherent development package, run repaired early/combat/Slow/
-  walls/range and effects groups; inspect each failure before relaunching.
-  Then complete AI/TB, presentation/public-route, persistence and publisher scopes,
+- NEXT: commit this compiled observer batch, run the real clean-tree outer
+  WhatIf admission checks, then package once for changed native cases.
+  Complete persistence/publisher scopes,
   final public artifact and six-process envelopes, exact release/downloads/closure.
   No development probe is final-artifact qualification.
+- Following batch now includes exact outdoor admission for Nalfeshnee range,
+  body/public, AI and Slow-turn observations; presentation reuses the S34
+  measured-rig movement/contact/private-pair path with Ice's own five attacks.
+  Native timer expiry and good-damage death precede fixture cleanup in the new
+  gear/resource proof. AI observes RTWP Cone, TB Storm through cold immunity,
+  useful wall placement, actual friendly-footprint refusals and Storm cadence.
+  Slow turn uses a real armed Ice recipient and its existing native routine;
+  it neither grants extra attacks nor forces a single attack.
+  All these new/changed native rows remain UNRUN. Public phase deliberately
+  requires the currently suppressed route to be enabled on the final candidate.
+- Batch compilation:31/31 related checks PASS, production26.8s/tests9.1s;
+  final native-plan helper adjustment compiled with5/5 S40 checks,
+  production26.9s/tests0.8s. Orchestration297 assertions PASS.
+  Logs `artifacts/s40-all-mechanics-observers-compile.log`,
+  `artifacts/s40-slow-turn-plan-compile.log`, `artifacts/s40-new-phases-preflight.log`.
+  Real outer WhatIf correctly refused the uncommitted tree; retry only after
+  coherent commit, without a dirty-source override.
+- Final source review matched Storm's two separate native damage rules from
+  retained raw receipts; its new native probe requires physical injury through
+  cold immunity, zero cold damage, no save and no repeated round damage.
+  Evil enemy/friend controls exercise the actual alignment predicates. Wall AI
+  waits for an actual section and pays for each native attempt; real formation
+  natural20s remain recorded. A receipt-only invalid CharacterStats SR member
+  compile failure is retained in `artifacts/s40-complete-observer-batch-compile.log`;
+  corrected full related checks31/31 PASS, production26.5s/tests5.3s.
+  Latest isolated AI change5/5 PASS, production26.6s/tests0.9s, log
+  `artifacts/s40-ai-formation-precondition-compile.log`.
 
 ## Historical development notes preceding the native6ef repairs
 
@@ -379,3 +415,41 @@ Evidence directories are under `C:/Dev/KingmakerGunslingerLab/runtime-evidence/`
   approach travel, retaining actual targeting/range checks.
 - Full audits after each group passed. Latest full audit is named above.
   Working/baseline/all118 original saves remained byte/metadata exact.
+
+## Native76b development evidence, 2026-11-05 UTC
+
+Source `76b294ef7c5ce1f730e43e64322cd47fd171bd13`, purpose `sprint40-mechanics`.
+ZIP `cadaad0d008274ec66284cac15bacae4887d4b2f7b34598c0a1b3c306e90eae8`;
+DLL `0465f2d19af50f5197d21dc2600dbd15cec25d20f2e155649ac304445fc76e95`;
+MVID `cb6acc66-084c-4479-addb-1303bda68cfb`. Build/independent strict receipt
+reader passed,458 package files,31/31 selected tests. Initial direct PowerShell
+build invocation stopped on redirected Python unittest stderr; the established
+console invocation then completed (log `artifacts/s40-mechanics-build-76b294ef-console.log`).
+No package or runtime evidence is final stable qualification.
+
+Evidence directories below are relative to `C:/Dev/KingmakerGunslingerLab/runtime-evidence/`.
+
+| Phase / result | Exact evidence directory | Observed scope / limit |
+|---|---|---|
+| Early PASS20/20 | `20261105T0554260905003Z-disposable-expanded-summoning-sprint32-native-review` | Actual HP161, AC32, saves15/14/12, skills27/18/22, original body attachment, armed5 attacks, live Slow, native cold casts and wall obstruction/source cleanup. |
+| Slow FAIL | `20261105T0559023971537Z-disposable-expanded-summoning-sprint32-native-review` | Real zero-final-damage/cold-immune spear hits each emit Fort25; real application and duplicate-event suppression PASS. Failed observer half-speed expectation:3.048 to0.762m/s. Later cases unobserved. |
+| Combat PASS20/20 | `20261105T0603418456327Z-disposable-expanded-summoning-sprint32-native-review` | PA17/22, standard spear/AoO/Charge, real Disarm/exact retained gear, hit bite no Slow, bite/tail fallback, legitimate Haste extra bite, ordinary Cleave and first-miss controls in RTWP/TB. |
+| Walls FAIL | `20261105T0608475586548Z-disposable-expanded-summoning-sprint32-native-review` | Two real39HP/CL13 Ice walls pass; no legal third simultaneous Bone lane, even with fixed center. No breach/cross-species result claimed. |
+| Effects PASS27/27 | `20261105T0614462326033Z-disposable-expanded-summoning-sprint32-native-review` | Native regeneration5 mundane/silver/good distinction/recovery, good-spell suppression, fatal ordinary protection/good bypass; fire/cold immune, acid10, electricity unprotected; actual fear and independent live DC22/24. |
+| Nalf range FAIL | `20261105T0619557082960Z-disposable-expanded-summoning-sprint32-native-review` | Correct18.164m native command boundary again;18.914m connected survey had71 candidate lanes but zero native LOS candidates. No inside/outside cast proof yet. |
+
+The speed diagnosis used the existing repository disassembler against only the
+relevant installed getters and attack restriction method. Native
+`CalculateSpeedModifier` halves separately for `Staggered`(6) and `Slowed`(10),
+both present on native Slow. This is the observed combined combat-rate consumer,
+not a new product slowdown or a global spell edit. Native `IsFullAttackRestricted`
+reads move-action restriction on the actor's actual TB turn. `AllAttacks` is empty
+before initialization; the new diagnostic baseline calls the native enumeration
+without queuing/emitting an attack. Raw IL/assemblies were not committed.
+
+All six transactions restored original KMG tree hash
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Full closing audit `sprint40-intake-20261105T002300Z/post-early-20261105T062345Z/restoration.json`
+passed exact Mods/references/settings/118 saves, game absent, lease released.
+Working and baseline were never loaded or written. Local audit log:
+`artifacts/s40-76b-native-groups-restoration-audit.log`.
