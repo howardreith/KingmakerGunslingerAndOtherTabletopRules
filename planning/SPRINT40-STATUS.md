@@ -238,6 +238,25 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   gameplay remains unchanged. Production compilation and all five focused
   Sprint40 checks pass. NEXT: commit/push, repin and rebuild once, then rerun
   the wall phase as the discriminating native check.
+- Reporting head `21ea6338a283a0f61d38844f8a0b57523713be4c` passed 2,816/2,816
+  and strict packaging: ZIP SHA256 `9ccd0d3966ccecaf9f62436634c5bf5008b3235dce1173aeea11b85cd0ab5684`,
+  DLL SHA256 `d760f96a0631cd9560db75de2e147d14a684f8d4709ed65c387c7139c67a6092`,
+  MVID `9219f8ce-23de-4e94-aea0-1995f504c4e9`; compiled persistence admission/
+  refusals pass33/33. Wall run
+  `20261105T2345152565793Z-disposable-expanded-summoning-sprint32-native-review`
+  proves all three owners completed visible native materialization and were parked
+  on recorded connected walkable points. The legal native wall survey passed,
+  then the first cast self-interrupted before acting because moving the disposable
+  party anchor to the lane caused its summoned followers to retain formation-move
+  commands. Restoration receipt
+  `expanded-summoning-restoration/20261105T2348456161809Z-disposable-expanded-summoning-sprint32-native-review.json`
+  is exact. The observer now reuses the qualified S35 fixture preparation seam to
+  stop only those request-owned unrelated moves, asserts every exact owner is idle,
+  naturally able and still legally targeting at the surveyed casting point, and
+  does not move the unrelated anchor before the real cast. Wall gameplay remains
+  unchanged. Production compilation and all five focused Sprint40 checks pass.
+  NEXT: build one supported development artifact and rerun only the wall phase;
+  freeze another full public candidate only after that affected proof is green.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 

@@ -268,7 +268,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["availableCandidates"] = availableCandidates, ["legalCandidates"] = legalCandidates,
                     ["boundedSurvey"] = attempts, ["nativeSurvey"] = survey },
                 "Existing bounded survey retains native availability/targeting; refusal records the actual admission boundary rather than forcing a placement.");
-            PlaceExpandedSummoningUnit(fixture.Caster, start);
+            var readinessBefore = new JArray(actors.Where(actor => !actor.Destroyed)
+                .Select(InfernalWallActorState35));
+            foreach (var actor in actors.Where(actor => !actor.Destroyed))
+                InfernalWallPrepareActor35(actor);
+            bool ready = actors.Where(actor => !actor.Destroyed).All(actor =>
+                actor.Commands.Empty && actor.Commands.Queue.Count == 0 &&
+                !actor.View.MovementAgent.IsReallyMoving &&
+                actor.View.MovementAgent.Velocity.sqrMagnitude < .0001f &&
+                actor.Descriptor.State.CanAct) &&
+                Vector3.Distance(source.Position, casterPoint) < .1f &&
+                data.IsAvailable && data.CanTarget(new TargetWrapper(middle));
+            check("wall-cast-readiness-" + label, ready,
+                new JObject { ["source"] = source.UniqueId,
+                    ["castingPoint"] = Vec(casterPoint), ["sourcePosition"] = Vec(source.Position),
+                    ["before"] = readinessBefore,
+                    ["after"] = new JArray(actors.Where(actor => !actor.Destroyed)
+                        .Select(InfernalWallActorState35)) },
+                "Only request-owned sources retire unrelated formation movement through the qualified S35 fixture seam; the exact source remains naturally available and legal at the surveyed casting point.");
             var prior = new HashSet<string>(Game.Instance.State.Units.Select(x => x.UniqueId));
             var command = new UnitUseAbility(data, new TargetWrapper(middle)); source.Commands.Run(command);
             UnitEntityData section = null; DateTime deadline = DateTime.UtcNow.AddSeconds(25);
