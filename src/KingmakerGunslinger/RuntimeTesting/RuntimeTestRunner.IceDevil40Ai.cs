@@ -266,14 +266,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var originalNodes = binding.GridNodeSnapshot().ToArray();
                     DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
                     sourceRetired = true;
-                    foreach (int frame in InfernalBoneWaitUntil35(() =>
+                    DateTime retirementDeadline = DateTime.UtcNow.AddSeconds(12);
+                    Func<bool> retired = () =>
                         wall.Buffs.GetBuff(Kingmaker.Blueprints.Root.BlueprintRoot.Instance
                             .SystemMechanics.SummonedUnitBuff) == null &&
                         trace.Rows.Any(row => (string)row["event"] == "effect-application" &&
                             (string)row["target"] == wall.UniqueId &&
                             (string)row["blueprint"] == "c98d765d063f57a49a03f13d4f697c33") &&
-                        originalNodes.All(node => node.Key.Walkable == node.Value), 12))
-                        yield return frame;
+                        originalNodes.All(node => node.Key.Walkable == node.Value);
+                    while (DateTime.UtcNow < retirementDeadline && !retired())
+                    { Game.Instance.IsPaused = false; yield return 0; }
                     var wallLifetime = wall.Buffs.GetBuff(
                         Kingmaker.Blueprints.Root.BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff);
                     bool nativeRetirement = trace.Rows.Any(row =>
@@ -287,6 +289,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["sectionDestroyed"] = wall.Destroyed, ["sectionDead"] = wall.Descriptor.State.IsDead,
                             ["sectionInGame"] = wall.IsInGame, ["lifetimeRemoved"] = wallLifetime == null,
                             ["nativeDismembermentTransition"] = nativeRetirement,
+                            ["bindingRestoreCompleted"] = binding == null || binding.GridRestoreCompleted,
+                            ["bindingClaims"] = binding?.GridNodesClaimed,
+                            ["activeClaims"] = InfernalWallNavmesh35.ActiveGridClaimCount,
                             ["nodes"] = originalNodes.Length,
                             ["allOriginalBitsRestored"] = originalNodes.All(node => node.Key.Walkable == node.Value) },
                         "Actual source removal removes the wall lifetime, enters the native dismemberment transition and restores every claimed navigation bit before fixture teardown.");
