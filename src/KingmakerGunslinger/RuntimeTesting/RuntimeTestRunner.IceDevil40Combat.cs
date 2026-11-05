@@ -121,9 +121,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Disarmed native full attack retains one bite and one tail, without spear iteratives or a duplicate fallback bite.");
                 // Native Haste supplies its own extra attack. This is effect
                 // setup, not a claimed Haste casting/action-cost observation.
+                // The preceding real full attack consumes nearly all of the
+                // one-round native Disarm duration in RTWP. Isolate that case,
+                // then establish a fresh Disarm through the same real native
+                // maneuver so the hasted command plans from the fallback hand.
+                owner.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.DisarmMainHandBuff)?.Remove();
+                var hasteDisarmAttempts = new JArray(); bool hasteDisarmed = false;
+                for (int attempt = 0; attempt < 8 && !hasteDisarmed; attempt++)
+                {
+                    var rule = Rulebook.Trigger(new RuleCombatManeuver(target, owner,
+                        CombatManeuver.Disarm));
+                    hasteDisarmAttempts.Add(new JObject { ["success"] = rule.Success,
+                        ["partial"] = rule.IsPartialSuccess });
+                    hasteDisarmed = rule.Success && owner.Buffs.GetBuff(
+                        BlueprintRoot.Instance.SystemMechanics.DisarmMainHandBuff) != null;
+                }
                 var haste = IceDevilNativeHaste40();
-                if (!ReferenceEquals(owner.Body.PrimaryHand.MaybeWeapon?.Blueprint, profile.Bite))
-                    throw new InvalidOperationException("Unobserved precondition: native Disarm expired before Haste fallback case.");
+                if (!hasteDisarmed ||
+                    !ReferenceEquals(owner.Body.PrimaryHand.MaybeWeapon?.Blueprint, profile.Bite))
+                    throw new InvalidOperationException("Unobserved precondition: fresh native Disarm failed before Haste fallback case.");
                 var context = new MechanicsContext(owner, owner.Descriptor, haste, null, new TargetWrapper(owner));
                 context.Params.CasterLevel = 13; context.Params.SpellLevel = 3;
                 var hasted = owner.Buffs.AddBuff(haste, context, TimeSpan.FromSeconds(30));
@@ -140,6 +156,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         hasteEvents.Count(x => (string)x["weapon"] == profile.Tail.AssetGuid) == 1,
                         new JObject { ["attacks"] = new JArray(hasteEvents),
                             ["nativeHasteBuff"] = haste.AssetGuid, ["observerExtraAttacks"] = 0,
+                            ["freshNativeDisarmAttempts"] = hasteDisarmAttempts,
                             ["nativeBuffSetupNotCastProof"] = true },
                         "Native Haste legitimately repeats the primary bite; deduplication removes only the separate duplicate limb and preserves the real extra attack.");
                 }
