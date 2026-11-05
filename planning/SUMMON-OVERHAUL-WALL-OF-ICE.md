@@ -1,5 +1,34 @@
 # Summon visual overhaul: Wall of Ice investigation
 
+## Sprint 1 complete — fixture prerequisite verified; full Wall acceptance pending
+
+[Sprint 1 checkpoint](WALL-FIXTURE-SPRINT1.md) records the implemented shared
+native-constrained lane/placement/baseline/return correction and two successful
+fresh-process preflights on exact source
+`8c9ccb761c4742ba1da9aa1e028064df883f806b` (21 assertions each).
+
+The first candidate's repeat failure was retained and diagnosed before repair:
+native Translocate agreed immediately, then a new Move appeared while the
+witness carried naturally applied Bone-source frightened state. Shared fixture
+setup now isolates that exact unrelated effect, preserves natural source memory
+and requires ordinary native panic retirement. No production aura/Wall change,
+roll override, position write or tolerance increase. Both final passes had no
+setup fear to remove; nonempty removal was not separately reproduced. The old
+nineteen-metre displacement's causal explanation remains unproven.
+
+Both final runs proved immediate and three-frame intended placement, real native
+Success movement and return to the immutable planned start. They explicitly
+stopped before Wall ability lookup/casting, with zero sections/claims. Exact
+installation/settings/protected saves restored. Additional validation 32.46min,
+retaining 84.86min; the owner superseded that prior ceiling for this sprint.
+
+Do not continue into Wall acceptance within this sprint. Next: legal casting,
+actual obstruction and attack eligibility, physical breach, destruction, exact
+navigation cleanup, controlled original-deadline expiry, post-removal movement
+and Bone Devil tail. Prior P2 navigation/LOS snapshot correction remains intact
+but its post-cast branches remain unexercised here. PR stays draft/unmerged.
+The earlier dated outcomes and allowance chronology remain below unchanged.
+
 ## Latest Wall-only diagnosis: early record corrected, initial placement refused
 
 Owner authorized one diagnostic build/run within a ceiling raised from 70 to
