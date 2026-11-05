@@ -299,6 +299,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["nativeDismembermentTransition"] = nativeRetirement,
                             ["bindingRestoreCompleted"] = binding == null || binding.GridRestoreCompleted,
                             ["nativeCutDisabledBeforeDestroy"] = binding?.NativeCutDisabledBeforeDestroy,
+                            ["nativeGridCutRevertQueued"] = binding?.NativeGridCutRevertQueued,
                             ["bindingClaims"] = binding?.GridNodesClaimed,
                             ["reconcileRequests"] = binding?.GridReconcileRequests,
                             ["reconcileCompleted"] = binding?.GridReconcileCompleted,
