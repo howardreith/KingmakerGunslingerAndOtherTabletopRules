@@ -7,6 +7,37 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 ## Current continuation state
 
+- Owner/root: HOWARD-LAPTOP, `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
+  `codex/expanded-summoning-sprint40-ice-devil`. Last pushed `ea73488bb382b35a1bf01bc6ac2e88a1fd5ca917`;
+  following survey repair is identified by its enclosing commit/HEAD.
+- No game/deployment/lease. Original118 saves never loaded/written; full exact
+  audit `sprint40-intake-20261105T002300Z/post-early-20261105T081110Z/restoration.json`
+  passed Mods/references/settings/saves. Log `artifacts/s40-ea-early-restoration-audit.log`.
+- Hidden creature graph, original body/icon, early mechanics, Nalfeshnee55-foot
+  source correction and Nimbus Daze wording are implemented. Persistent Image
+  omission explicitly approved/no substitute. No unresolved gameplay decision.
+- Latest native `20261105T0807491020519Z-disposable-expanded-summoning-sprint32-native-review`
+  refused before summons: no60m survey candidate. Protected actors1, owned events0,
+  violations0; not Slow proof. World/clock and native empty world restored.
+- Correct survey's lateral projection check to exclude terrain height, retain
+  native projected height and60m separation, inspect four native local routes,
+  and retain each bounded candidate/rejection even on failure. Original refusal
+  did not retain candidate geometry, so its exact rejecting factor is unproven.
+- NEXT: coherent commit/build of survey repair, native Slow/isolation proof;
+  then range/body/AI/Slow-turn and remaining rider cases. Body/public/AI/lifetime
+  observers exist but are unqualified. One SM IX route remains suppressed.
+  Persistence/publisher wiring, final public artifact, fresh final qualification,
+  six-process ON/OFF, exact release/public downloads/restoration/records remain.
+  Native Goal active; no surfaced hard refusal. Do not stop at a milestone.
+- ea development package/independent reader/strict validation PASS,40/40 tests:
+  ZIP `05c57f2a2fb310227ae1e87e8a9d767925b7247c54e87683bde683ec31e0d4e1`,
+  DLL `48a701fabdfbf8751c9c46929ef45f66fb729c7ed83408b68e0a0ea65c85b689`,
+  MVID `263c38bd-9084-4e11-a929-9ae1cfe83f9b`. Log `artifacts/s40-mechanics-build-ea73488b.log`.
+- Survey repair production compilation27.9s and5/5 selected checks PASS;
+  `artifacts/s40-isolation-survey-compile.log`. No native claim yet.
+
+## Development chronology through source0d and isolation repair
+
 - Branch `codex/expanded-summoning-sprint40-ice-devil`, root
   `C:/Dev/KingmakerGunslingerLab/wt/s40`, HOWARD-LAPTOP. Last pushed/source-tested
   checkpoint `0d1973a94907b540c5a3a2f7abfc96c65bde2249`; following repair batch

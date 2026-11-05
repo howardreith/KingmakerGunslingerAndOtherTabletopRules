@@ -24,7 +24,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var receipt = new JObject { ["phase"] = phase };
                 try
                 {
-                    receipt["placement"] = PrepareIceDevilQuietCaster40(fixture);
+                    var placement = new JObject(); receipt["placement"] = placement;
+                    PrepareIceDevilQuietCaster40(fixture, placement);
                     IEnumerable<int> run;
                     switch (phase)
                     {
@@ -70,38 +71,56 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private JObject PrepareIceDevilQuietCaster40(ExpandedSummoningCorrectionFixture fixture)
+        private void PrepareIceDevilQuietCaster40(ExpandedSummoningCorrectionFixture fixture, JObject receipt)
         {
             var protectedUnits = fixture.UnitsBefore.OfType<UnitEntityData>().Where(x =>
                 x != null && !x.Destroyed && x.IsInGame && ReferenceEquals(x.HoldingState, fixture.Scene)).ToArray();
             if (protectedUnits.Length == 0) throw new InvalidOperationException("No nonempty protected scene intake.");
             Vector3 origin = fixture.Caster.Position;
+            var candidates = new JArray(); receipt["candidates"] = candidates;
+            receipt["origin"] = Vec(origin);
+            receipt["protectedActors"] = new JArray(protectedUnits.Select(x => new JObject {
+                ["unit"] = x.UniqueId, ["position"] = Vec(x.Position), ["corpulence"] = x.Corpulence }));
             int surveyed = 0;
-            for (int radius = 64; radius <= 96; radius += 8)
+            for (int radius = 64; radius <= 128; radius += 8)
             foreach (Vector3 direction in CompassOffsets)
             {
                 surveyed++;
                 Vector3 requested = origin + direction.normalized * radius;
                 var node = ObstacleAnalyzer.GetNearestNode(requested);
-                if (node.node == null || !node.node.Walkable || Vector3.Distance(requested, node.clampedPosition) > 1.5f)
+                Vector3 projection = requested - node.clampedPosition; projection.y = 0;
+                var candidate = new JObject { ["requested"] = Vec(requested),
+                    ["clamped"] = Vec(node.clampedPosition), ["node"] = node.node != null,
+                    ["walkable"] = node.node != null && node.node.Walkable,
+                    ["horizontalProjectionGap"] = projection.magnitude };
+                candidates.Add(candidate);
+                if (node.node == null || !node.node.Walkable || projection.magnitude > 1.5f)
                     continue;
                 Vector3 point = node.clampedPosition;
                 float separation = protectedUnits.Min(x => {
                     Vector3 delta = x.Position - point; delta.y = 0; return delta.magnitude - x.Corpulence;
                 });
+                candidate["protectedGapMeters"] = separation;
                 if (separation < 60f) continue;
-                var end = ObstacleAnalyzer.GetNearestNode(point + Vector3.forward * 5f);
-                if (end.node == null || !end.node.Walkable ||
-                    Vector3.Distance(end.clampedPosition, point + Vector3.forward * 5f) > 1.5f ||
-                    Vector3.Distance(ObstacleAnalyzer.TraceAlongNavmesh(point, end.clampedPosition), end.clampedPosition) > .15f)
-                    continue;
+                bool localRoute = false;
+                foreach (var localDirection in CompassOffsets.Take(4))
+                {
+                    Vector3 requestedEnd = point + localDirection * 5f;
+                    var end = ObstacleAnalyzer.GetNearestNode(requestedEnd);
+                    Vector3 endProjection = requestedEnd - end.clampedPosition; endProjection.y = 0;
+                    if (end.node != null && end.node.Walkable && endProjection.magnitude <= 1.5f &&
+                        Vector3.Distance(ObstacleAnalyzer.TraceAlongNavmesh(point, end.clampedPosition), end.clampedPosition) <= .15f)
+                    { localRoute = true; break; }
+                }
+                candidate["localNativeRoute"] = localRoute;
+                if (!localRoute) continue;
                 // Only the disposable caster moves. The original party anchor
                 // and every other intake actor remain at their exact positions.
                 PlaceExpandedSummoningUnit(fixture.Caster, point);
-                return new JObject { ["caster"] = fixture.Caster.UniqueId, ["point"] = Vec(point),
-                    ["protectedActors"] = protectedUnits.Length, ["nearestProtectedGapMeters"] = separation,
-                    ["surveyed"] = surveyed, ["scene"] = "existing Oleg outdoor fixture",
-                    ["intakeActorsMoved"] = 0 };
+                receipt["caster"] = fixture.Caster.UniqueId; receipt["point"] = Vec(point);
+                receipt["nearestProtectedGapMeters"] = separation; receipt["surveyed"] = surveyed;
+                receipt["scene"] = "existing Oleg outdoor fixture"; receipt["intakeActorsMoved"] = 0;
+                return;
             }
             throw new InvalidOperationException("No bounded native quiet caster position60m from protected intake; no summon created.");
         }
