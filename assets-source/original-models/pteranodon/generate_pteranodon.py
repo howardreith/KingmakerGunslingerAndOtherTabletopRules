@@ -587,9 +587,16 @@ def write_mesh_data(path, obj, mesh, weights, uvs, report, albedo):
     # Blender 4.5 computes vertex normals itself; calc_normals_split was
     # removed. Per-vertex normals are what a skinned mesh needs anyway.
     vertices, normals, coords, triangles = [], [], [], []
+    # Opt-in continuous skin duplicates positions at atlas boundaries. Keep
+    # the original smooth normal across those UV-only splits. Other authors
+    # have no such layer, and discrete features leave its value zero.
+    smooth_skin = mesh.attributes.get('KMG_ContinuousSkinNormal')
     for vertex in mesh.vertices:
         vertices.append((vertex.co.x, vertex.co.y, vertex.co.z))
-        normals.append((vertex.normal.x, vertex.normal.y, vertex.normal.z))
+        normal = smooth_skin.data[vertex.index].vector if smooth_skin is not None else vertex.normal
+        if normal.length_squared < .5:
+            normal = vertex.normal
+        normals.append((normal.x, normal.y, normal.z))
         if vertex.index not in uvs:
             raise SystemExit("vertex %d has no texture coordinate" % vertex.index)
         coords.append(uvs[vertex.index])

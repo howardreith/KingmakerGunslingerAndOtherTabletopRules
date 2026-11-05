@@ -1,6 +1,7 @@
 # Original Lillend body
 
-Project-authored geometry and procedural paint, revised October29,2026. The winged
+Project-authored geometry and procedural paint, revised for the November 2026
+summoned-creature visual-overhaul review. The winged
 elven upper body and serpent lower body follow the printed
 [Lillend](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Lillend).
 No third-party mesh, pixels or native animation curves are embedded. The
@@ -11,6 +12,20 @@ folded hems and gold seams, and layered curved feather vanes. The existing
 `outsider-celestial/sdf_sculpt.py` and `continuous-bodies/continuous_body.py`
 authoring tools are reused; no new runtime art system is introduced.
 No owner aesthetic approval is claimed.
+
+The PR #96 review correction lightly flattens and tapers the clavicle/deltoid
+transitions. Face, hair, bodice, wings and tail retain their revised human
+presentation. Current native motion/casting acceptance remains open in the
+overhaul checkpoint; older native passes below do not qualify these new bytes.
+
+The visual-overhaul revision fits the blouse and teal bodice to a sculpted
+ribcage/waist, replaces the wide rigid garment with closed fabric shells and
+curved collars/hems, blends fabric weights across the existing spine controls,
+and refines the shoulder, arm, neck and facial proportions. A fitted peplum
+retains clearance over the original serpent waist. Skin and eye values are
+slightly restrained so exposed shoulders read separately from ivory fabric.
+The hair cap is 4 mm lower. The wing recipe, tail centreline, authored slap,
+native equipment/animation integration and mechanical size are unchanged.
 
 The exact existing human bind-only observation is the private source input:
 SHA256 `eb0d5eaaf4bec8bf68506d42f299ded5d3d86cb676ff72e53f15d0cfbce9bfd2`.
@@ -31,10 +46,10 @@ Exact exports:
 
 | File | SHA256 |
 |---|---|
-| `assets/sprint32-support/lillend-mesh.json` | `11ad83a0858d95c72627f63c131a713de26c1e9bc83c3c79a84000b9816a8dd7` |
-| `assets/sprint32-support/lillend-albedo.png` | `5148b79042d0e09010269155936c984613c4992b28302999f6caba7779a962d7` |
+| `assets/sprint32-support/lillend-mesh.json` | `12d2f82f0051b9933ab541c1e8d8c8050961d1335f0fc3a9cca7b394143c54b7` |
+| `assets/sprint32-support/lillend-albedo.png` | `f8538166f01434f5522e15bc8bd70be601154ea7ae2878fa0fd489859114c7de` |
 
-Mesh23116vertices/45408triangles;36drivers; maximum2influences per vertex.
+Mesh 26,332 vertices / 52,128 triangles; 36 drivers; maximum 2 influences per vertex.
 Paint1024x1024RGB. Native adapter admits only exact Lillend unit, native human
 carrier and owned sword; each summon owns its mesh/material/tail action. The
 accepted Salamander gait/playback/settlement helpers are reused unchanged;
@@ -49,7 +64,11 @@ The generator imports the existing sibling `sprint17-serpents` export primitives
 geometry, normalized legal weights/UVs, closed identity and tail segment lengths.
 No external downloads or personal files are needed for authoring.
 
-Three focused export checks pass. The released tail rest centreline, all action
+Three focused export checks pass on the visual-overhaul surfaces (6.456 seconds
+runner time). All 132 exported components are closed, outward and consistently
+wound. Exact-export front, side and party-camera views were reviewed offline;
+revised native presentation and owner aesthetic approval remain open. The
+released tail rest centreline, all action
 frames and timing remain unchanged; progressively tapered cross-sections open
 the visible coil without moving the tail drivers/contact recipe. Offline front,
 side, three-quarter and party-camera views are authoring evidence. Native
@@ -57,7 +76,9 @@ presentation, exact artifact identities and owner-review status belong to
 [the repair record](../../../planning/SATYR-LILLEND-PRESENTATION-REPAIR.md).
 Editable authoring instructions are `generate_lillend.py`, `lillend_surfaces.py`
 and `paint_lillend.py`; the native-frame-containing `.blend` stays ignored in
-`artifacts/repair-packet-0.0.169/lillend-authored.blend`.
+`artifacts/summon-overhaul/lillend/lillend-authored.blend`. The earlier repair's
+scene and qualified evidence retain their original identities and are not
+execution evidence for this revision.
 
 ## Native Satyr blade mapping
 

@@ -8,6 +8,9 @@ weighted to the upper torso: they move with the chest and do not articulate.
 That is a deliberate, recorded limitation rather than a claim of flight
 animation.
 """
+# Owner visual overhaul: continuous organic skin, revised anatomy and albedo.
+# Rig/wing articulation limits above remain; native aesthetic review is separate.
+
 import argparse
 import json
 import math
@@ -35,6 +38,11 @@ for name in ('sprint17-serpents', 'sprint24-theropods'):
 import generate_snakes as common
 import generate_theropods as donor
 import paint_snake_albedo as paint
+
+sys.path.insert(0, str(args.pipeline_root / 'continuous-bodies'))
+from outsider_surface import consolidate_skin
+sys.path.insert(0, str(args.pipeline_root / 'sprint36-demons'))
+from anatomy_planes import muscle, bevel_mass
 
 SIDE, UP, FRONT = Vector((1, 0, 0)), Vector((0, 0, 1)), Vector((0, 1, 0))
 TORSO = ('Torso_Lower', 'Torso_Upper', 'neck', 'neck1', 'Head')
@@ -76,6 +84,11 @@ def build_body(bm, weights, uvs, rig, kind):
          'Torso_Lower')
     mass(upper + FRONT * .020, (.225, .170, .180), 'Torso_Upper')
 
+    muscle(common,bm,weights,uvs,upper+UP*.10,upper+UP*.38,
+           .205,.175,'Torso_Upper','body')
+    bevel_mass(common,bm,weights,uvs,upper+UP*.21+FRONT*.11,
+               (.155,.180,.090),'Torso_Upper','body',.65)
+
     # The bare neck: a long thin bridge in bare-skin colour, which with the
     # beak is what makes this a vulture rather than a bird of prey.
     tube([neck - UP * .030, neck + FRONT * .030 + UP * .060,
@@ -116,26 +129,39 @@ def build_body(bm, weights, uvs, rig, kind):
         wrist = elbow + SIDE * sign * .390 - FRONT * .050 + UP * .060
         tube([root, elbow, wrist], [.062, .044, .022],
              ['Torso_Upper'] * 3, 'wing', 10)
-        # Seven primaries, long enough that the span rather than the torso
-        # carries the silhouette. The first pass dropped five of them a
-        # tenth of a unit from a short leading edge and the wings read as
-        # shoulder spikes rather than as wings.
-        for index in range(7):
-            t = index / 6.0
-            base = root.lerp(elbow, t * 2.0) if t <= .5 else (
-                elbow.lerp(wrist, (t - .5) * 2.0))
-            drop = .230 + .300 * math.sin(math.pi * (0.22 + 0.62 * t))
-            tip = base + Vector((sign * .070 * t, -.060 - .045 * t, -drop))
-            tube([base, base.lerp(tip, .55), tip],
-                 [.050, .038, .011], ['Torso_Upper'] * 3, 'wing', 8)
+        # Connected layered feather vanes; rigid chest ownership is retained.
+        tube([root, elbow, wrist], [.075,.070,.030],
+             ['Torso_Upper']*3, 'wing', 14)
+        for index in range(9):
+            t = index/8.0
+            base = root.lerp(elbow, min(1,t*2)) if t<=.5 else elbow.lerp(wrist,(t-.5)*2)
+            # Three interleaving groups, with unequal lengths and pointed
+            # ends; regular equal rounded slabs erase the feather identity.
+            group_offset=(.022,-.020,.008)[index%3]
+            drop = .18 + .31*math.sin(math.pi*(.18+.68*t))+group_offset
+            tip = base + Vector((sign*(.04+.15*t), -.065-.055*t, -drop))
+            axis = (tip-base).normalized()
+            across = axis.cross(FRONT).normalized()
+            depth = across.cross(axis).normalized()
+            common.sweep(bm,weights,uvs,
+                         [base,base.lerp(tip,.22),base.lerp(tip,.70),tip],
+                         [.027,.074,.054,.0015],[.007,.014,.010,.0015],
+                         ['Torso_Upper']*4,region=ATLAS_REGION['wing'],
+                         steps=2,sides=10,up=depth,forward=axis)
+            # Shorter overlapping covert row over the vane roots.
+            common.ellipsoid(bm, weights, uvs, base.lerp(tip,.17)+depth*.015,
+                             across, axis, depth,
+                             (.075, drop*(.25+.025*(index%3)), .016), 'Torso_Upper',
+                             ATLAS_REGION['feather'], 8, 12)
             primaries += 1
 
     for side in ('L', 'R'):
         arm = [side + '_' + name for name in ARMS[:3]]
         shoulder, elbow, palm = [at(name) for name in arm]
-        tube([upper, shoulder, elbow, palm], [.098, .092, .058, .034],
-             ['Torso_Upper', *arm], 'feather', 11)
-        mass(shoulder, (.098, .090, .096), arm[0])
+        tube([upper+UP*.2,shoulder,shoulder.lerp(elbow,.45),elbow,palm],
+             [.085,.077,.079,.047,.033],
+             ['Torso_Upper',arm[0],arm[0],arm[1],arm[2]],'feather',12)
+        muscle(common,bm,weights,uvs,shoulder,elbow,.074,.058,arm[0],'body')
         mass(palm, (.046, .062, .030), arm[2], 'bare')
         for digit in ('finger', 'Bfinger'):
             first, second = side + '_' + digit + '1', side + '_' + digit + '2'
@@ -151,21 +177,35 @@ def build_body(bm, weights, uvs, rig, kind):
         # three forward talons and one back spur.
         leg = [side + '_' + name for name in LEGS]
         points = [at(name) for name in leg]
-        tube([pelvis, points[0], points[1]], [.118, .110, .070],
-             ['Torso_Lower', leg[0], leg[1]], 'feather', 11)
-        tube([points[1], points[2], points[3]], [.060, .036, .024],
-             [leg[1], leg[2], leg[3]], 'bare', 10)
-        foot = points[-1] + FRONT * .030
-        mass(foot, (.040, .055, .024), leg[-1], 'bare', 8, 14)
+        thigh,knee,ankle,toe=points
+        tube([pelvis,thigh,thigh.lerp(knee,.4),knee],[.114,.096,.089,.053],
+             ['Torso_Lower',leg[0],leg[0],leg[1]],'feather',12)
+        for group in range(3):
+            centre=thigh.lerp(knee,.25+group*.19)+FRONT*.058
+            common.ellipsoid(bm,weights,uvs,centre,SIDE,UP,FRONT,
+                             (.065-group*.009,.100,.022),leg[0],
+                             ATLAS_REGION['feather'],8,10)
+        tube([knee,knee.lerp(ankle,.30)-FRONT*.010,ankle,
+              ankle.lerp(toe,.35),toe],
+             [.052,.058,.030,.036,.027],
+             [leg[1],leg[1],leg[2],leg[2],leg[3]],'bare',12)
+        tube([knee+FRONT*.025,ankle+FRONT*.020,toe+FRONT*.045],
+             [.010,.009,.007],[leg[1],leg[2],leg[3]],'bare',7)
+        foot = toe + FRONT * .045 + UP*.014
+        bevel_mass(common,bm,weights,uvs,foot,(.043,.026,.055),leg[-1],'limbs')
         for index in range(3):
-            spread = (index - 1) * .038
-            tube([foot + SIDE * spread * .4,
-                  foot + SIDE * spread + FRONT * .085 - UP * .012],
-                 [.014, .003], [leg[-1]] * 2, 'talon', 7)
-        tube([foot - FRONT * .018, foot - FRONT * .075 - UP * .010],
-             [.012, .003], [leg[-1]] * 2, 'talon', 7)
+            spread = (index - 1) * .052
+            tip=foot+SIDE*spread+FRONT*(.16-.025*abs(index-1))-UP*.005
+            tube([foot+SIDE*spread*.35,foot.lerp(tip,.65),tip],
+                 [.019,.015,.009],[leg[-1]]*3,'bare',8)
+            tube([tip,tip+FRONT*.035-UP*.018],[.010,.0015],[leg[-1]]*2,'talon',7)
+        tube([foot - FRONT * .018, foot - FRONT * .110 - UP * .005],
+             [.018, .003], [leg[-1]] * 2, 'talon', 8)
 
     DETAIL_COUNTS.update(wings=2, primaries=primaries, talons=2)
+
+    consolidate_skin(bm, weights, uvs, common.shared.ATLAS,
+                     regions=('body',), voxel=.007, triangles=8000)
 
 
 def write_albedo(path):
@@ -175,9 +215,9 @@ def write_albedo(path):
     # Nothing here repeats the Babau's slime green-black or the Hezrou's
     # olive-brown warts.
     palette = {
-        'body': (.165, .185, .145), 'crest': (.105, .118, .095),
-        'beak': (.50, .44, .30), 'limbs': (.355, .205, .185),
-        'membrane': (.205, .225, .175)}
+        'body': (.32, .345, .29), 'crest': (.18, .17, .13),
+        'beak': (.74, .64, .44), 'limbs': (.46, .295, .255),
+        'membrane': (.40, .42, .34)}
     for region in sorted(paint.shared.ATLAS):
         (y0, y1, x0, x1), u, v = paint.shared.region_canvas(size, region)
         base = np.array(palette.get(region, palette['body']))
