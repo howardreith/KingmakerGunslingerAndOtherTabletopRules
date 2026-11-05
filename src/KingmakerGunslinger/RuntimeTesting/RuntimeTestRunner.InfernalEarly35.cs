@@ -744,9 +744,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ForceFullAttack = false
                 };
                 breachAttack.Init(attacker);
-                if (correction && !breachAttack.IsUnitEnoughClose)
-                    throw new InvalidOperationException("Grounded physical Wall witness is outside native attack reach: " +
-                        attacker.DistanceTo(section) + "; " + Sprint27AiCommand(breachAttack));
+                if (correction)
+                {
+                    // Kingmaker's IsUnitEnoughClose includes both mechanics
+                    // distance and NeedLoS. Preserve the actual inputs before
+                    // refusing dispatch; distance alone cannot name the cause.
+                    Vector3 approach = breachAttack.ApproachPoint;
+                    float distanceSquared = GeometryUtils.SqrMechanicsDistance(
+                        approach, attacker.Position);
+                    bool losBlocked = breachAttack.NeedLoS &&
+                        Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance.HasObstacle(
+                            attacker.EyePosition, approach, breachAttack.GetTargetLOSObjectId());
+                    bool eligible = breachAttack.IsUnitEnoughClose;
+                    Sprint25Check("wall-physical-native-eligibility", eligible,
+                        new JObject {
+                            ["attackerPosition"] = SurveyVector(attacker.Position),
+                            ["attackerEye"] = SurveyVector(attacker.EyePosition),
+                            ["sectionPosition"] = SurveyVector(section.Position),
+                            ["approachPoint"] = SurveyVector(approach),
+                            ["mechanicsDistanceSquared"] = distanceSquared,
+                            ["approachRadius"] = breachAttack.ApproachRadius,
+                            ["distanceAdmitted"] = distanceSquared <= breachAttack.ApproachRadius * breachAttack.ApproachRadius,
+                            ["needLoS"] = breachAttack.NeedLoS,
+                            ["losBlocked"] = losBlocked,
+                            ["command"] = Sprint27AiCommand(breachAttack),
+                            ["creation"] = wallCreation,
+                            ["wallImage"] = wallImage,
+                            ["pathBefore"] = before,
+                            ["pathWithWall"] = withWall,
+                            ["pathObstructionObserved"] = obstruction,
+                            ["gridClaims"] = gridClaimsBeforeRelease
+                        }, "Read-only native distance and LOS eligibility before dispatch; no reach or LOS override.");
+                    if (!eligible)
+                        throw new InvalidOperationException("Grounded physical Wall witness failed native distance/LOS eligibility; see wall-physical-native-eligibility.");
+                }
                 attacker.Commands.Run(breachAttack);
                 foreach (int frame in WaitInfernalCommand34(breachAttack,
                     () => true, 25)) yield return frame;
