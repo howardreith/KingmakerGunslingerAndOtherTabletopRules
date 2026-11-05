@@ -8,9 +8,9 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 - Owner: active native Goal, HOWARD-LAPTOP. Branch
   `codex/expanded-summoning-sprint40-ice-devil`, root `C:/Dev/KingmakerGunslingerLab/wt/s40`.
-  Last committed source `d9ad7f331b519dc151480fc71d8a7ca11a2bb39d`;
-  current hidden builder, shared parameterization, package/view wiring and
-  focused native command observer follow it in one coherent batch.
+  Last committed hidden implementation `eb11c662c1d543c457edc68c4bb6003eeaa2256d`.
+  Current repair adds pre-cast owned-footprint guards and completes the
+  deterministic package inventory for the two newly declared body files.
 - Prior intake, Nalfeshnee-only range fix and branch policy are preserved.
   No quota/context/tool refusal was surfaced; previous capacity-stop cause is
   unknown. CLI `0.166.0`; native Goal active, no update required.
@@ -230,3 +230,15 @@ this provides no fear qualification. All rolls/effects remain native.
 Current model mesh uses canonical LF bytes, SHA-256
 `3c6e0a8ecfd17f50c3996a1ecf6813112e4248da2f5599571b0f27d10cabf753`;
 texture `6d24aafc619ba435899f348444a311ac8072e0d389ea950df83ccad5569cec83`.
+
+Development build attempt at `eb11c662` passed repository validation, closed
+publisher suites and 21/21 selected domain checks, then FAILED deterministic
+package inventory: expected456, actual458. The two Ice Devil model files were
+declared/copied/strictly required but omitted from the aggregate inventory
+expression. Corrected by adding the existing two-file declaration's Count;
+no archive/receipt was altered. Retain `artifacts/s40-early-build-eb11c662.log`.
+No native run occurred. Review also found the cold fixture needed an explicit
+protected-actor footprint guard; it now surveys a clear connected lane,
+checks actual native cone membership (conservative storm radius/footprints),
+and refuses before any cast unless only the exact disposable target is in it.
+Storm aims at its native ground point. Product effects remain unchanged.
