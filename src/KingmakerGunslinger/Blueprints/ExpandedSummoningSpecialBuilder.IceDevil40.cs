@@ -176,6 +176,8 @@ namespace KingmakerGunslinger.Blueprints
             coneAi.AvoidFriendlyArea = true; coneAi.NoAlignmentExemption = true;
             coneAi.UseNativeProjectileShape = true; coneAi.AreaRadiusFeet = 60;
             coneAi.AvoidColdImmuneTarget = true;
+            coneAi.ColdImmunityFact = Feature(library, ColdImmunityGuid,
+                "native cold immunity AI predicate");
             var stormAi = ConfigureInfernalAi35(symbols, p + "IceStormAi", unit,
                 storm, false, true, 5);
             stormAi.AvoidFriendlyArea = true; stormAi.NoAlignmentExemption = true;

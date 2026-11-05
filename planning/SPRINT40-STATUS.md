@@ -57,8 +57,23 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   DLL42a0c7f567f0f23a3b6d34c29c78b074d18c4c47682ab41838b621acd8a41276,
   MVID30c7588c-dcc2-411f-8307-0c31d5c8012e. It is a development/recovery
   artifact, never a release or gameplay qualification substitute.
-- NEXT: continue the existing presentation/visible spear/gear lifetime,
-  AI/Slow-TB development proof, then persistence/publisher, final fresh campaign,
+- Development artifact `f47b749e` (ZIPb953479b..., MVIDe018a498...)
+  proved the real Slow turn4/4: actual spear hit/failed Fortitude, native five
+  attacks reduced to one, one standard action, and exact exhausted-command
+  terminal. Presentation proved both bodies, movement, visible spear contact,
+  five-attack routine, private spear Frost with no natural Cold, and private
+  ownership; native expiry then showed all gear/resource/sibling/party facts
+  correct but an unrelated native AoO defeated an over-broad observer clause.
+  AI proved real Cone RTWP cast/damage, then exposed that the installed native
+  ColdImmunity marker is active but intentionally has no discoverable immunity
+  component. Failed observations remain at `20261105T1500015477651Z-...` and
+  `20261105T1504416693120Z-...`; diagnostic reruns bind the causes exactly.
+- Pending source repair binds Cone AI to the retained native ColdImmunity fact
+  while retaining generic component detection, and binds expiry proof to the
+  selected command reference while recording unrelated events. Focused compile/
+  22 related checks PASS; affected native reruns are next.
+- NEXT: commit/build and rerun only presentation and AI. Then implement the
+  existing persistence/publisher scopes, final fresh campaign,
   publication/download verification, restoration and final-records sequence.
 - Native Goal tool still reports BLOCKED and exposes no resume mutation in this
   session; owner continuation authorization is recorded and work is continuing.
