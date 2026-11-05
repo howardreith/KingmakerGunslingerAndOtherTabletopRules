@@ -10,6 +10,7 @@ using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums.Damage;
+using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
@@ -32,6 +33,52 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        // Read-only and scoped to the first ordinary wall cast. Capture its
+        // original native lifetime synchronously, before yielded frames age it.
+        private sealed class InfernalWallCreationObservation35 : IDisposable,
+            IGlobalRulebookHandler<RuleSummonUnit>
+        {
+            private readonly UnitEntityData _caster;
+            private readonly BlueprintUnit _section;
+            internal readonly JObject Receipt = new JObject();
+            internal int Matches;
+
+            internal InfernalWallCreationObservation35(UnitEntityData caster,
+                BlueprintUnit section)
+            {
+                _caster = caster;
+                _section = section;
+                EventBus.Subscribe(this);
+            }
+
+            public void OnEventAboutToTrigger(RuleSummonUnit evt) { }
+            public void OnEventDidTrigger(RuleSummonUnit evt)
+            {
+                if (!ReferenceEquals(evt.Initiator, _caster) ||
+                    !ReferenceEquals(evt.Blueprint, _section)) return;
+                Matches++;
+                UnitEntityData unit = evt.SummonedUnit;
+                Buff lifetime = unit?.Buffs.GetBuff(BlueprintRoot.Instance
+                    .SystemMechanics.SummonedUnitBuff);
+                Receipt["section"] = unit?.UniqueId;
+                Receipt["hitPointsAtCreation"] =
+                    unit?.Stats.HitPoints.ModifiedValue;
+                Receipt["nativeRuleDurationSeconds"] =
+                    evt.Duration.Seconds.TotalSeconds;
+                Receipt["nativeRuleBonusSeconds"] =
+                    evt.BonusDuration.Seconds.TotalSeconds;
+                Receipt["nativeLifetimeSecondsAtCreation"] =
+                    lifetime == null ? (double?)null :
+                        lifetime.TimeLeft.TotalSeconds;
+                Receipt["nativeLifetimeEndTicks"] =
+                    lifetime == null ? (long?)null : lifetime.EndTime.Ticks;
+                Receipt["observedGameTimeTicks"] =
+                    Game.Instance.TimeController.GameTime.Ticks;
+            }
+
+            public void Dispose() { EventBus.Unsubscribe(this); }
+        }
+
         // This deliberately small hidden-candidate run answers the two new
         // engine questions before broader Sprint 35 mechanics are expanded.
         // It issues native commands and observes production components; it
@@ -469,17 +516,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Where(value => ReferenceEquals(value.Blueprint,
                     sectionBlueprint)).Select(value => value.UniqueId));
             var command = new UnitUseAbility(data, target);
-            bone.Commands.Run(command);
-            DateTime deadline = DateTime.UtcNow.AddSeconds(25);
+            DateTime deadline;
             UnitEntityData section = null;
-            while (DateTime.UtcNow < deadline &&
-                (!command.IsFinished || section == null))
+            JObject wallCreation;
+            int wallCreationMatches;
+            using (var creation = new InfernalWallCreationObservation35(
+                bone, sectionBlueprint))
             {
-                Game.Instance.IsPaused = false;
-                yield return 0;
-                section = Game.Instance.State.Units.FirstOrDefault(value =>
-                    ReferenceEquals(value.Blueprint, sectionBlueprint) &&
-                    !prior.Contains(value.UniqueId));
+                bone.Commands.Run(command);
+                deadline = DateTime.UtcNow.AddSeconds(25);
+                while (DateTime.UtcNow < deadline &&
+                    (!command.IsFinished || section == null))
+                {
+                    Game.Instance.IsPaused = false;
+                    yield return 0;
+                    section = Game.Instance.State.Units.FirstOrDefault(value =>
+                        ReferenceEquals(value.Blueprint, sectionBlueprint) &&
+                        !prior.Contains(value.UniqueId));
+                }
+                wallCreation = creation.Receipt;
+                wallCreationMatches = creation.Matches;
             }
             if (section != null) owned.Add(section);
             var wallSamples = new JArray();
@@ -863,6 +919,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["sectionBlueprint"] = section?.Blueprint?.AssetGuid,
                 ["sectionOffsetFromLane"] = sectionOffset,
                 ["sectionHitPoints"] = section?.Stats.HitPoints.ModifiedValue,
+                ["originalSectionCreation"] = wallCreation,
+                ["originalSectionCreationMatches"] = wallCreationMatches,
+                ["naturalExpiryObserved"] = false,
                 ["summonedLifetimeBuff"] = hadSummonBuff,
                 ["sectionRetired"] = section != null &&
                     (section.Destroyed || !section.IsInGame ||
@@ -1002,6 +1061,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 targetable &&
                 command.Result == UnitCommand.ResultType.Success &&
                 section != null && sectionOffset <= .75f &&
+                wallCreationMatches == 1 &&
+                (string)wallCreation["section"] == section.UniqueId &&
+                (int?)wallCreation["hitPointsAtCreation"] == 36 &&
+                (double?)wallCreation["nativeRuleDurationSeconds"] == 720d &&
+                (double?)wallCreation["nativeRuleBonusSeconds"] == 0d &&
+                Math.Abs(((double?)wallCreation[
+                    "nativeLifetimeSecondsAtCreation"] ?? -1d) - 720d) < .01d &&
                 hadSummonBuff && bindingPresent && wallVisualPresent &&
                 wallVisualEnabled && hiddenDonorRenderers > 0 &&
                 sectionLaneAlignment >= .9f && cutPresent &&
