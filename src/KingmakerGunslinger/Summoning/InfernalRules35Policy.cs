@@ -167,6 +167,35 @@ namespace KingmakerGunslinger.Summoning
         internal static bool WallDamageUsesObjectHalf(bool fireEnergy)
         { return !fireEnergy; }
 
+        // Expanded summons carry the native Summoned faction, so a player's
+        // Bone Devil is never IsPlayerFaction itself; its summoner decides.
+        internal static bool WallFeedbackVisibleToPlayer(
+            bool casterIsPlayerFaction, bool summonerIsPlayerFaction)
+        { return casterIsPlayerFaction || summonerIsPlayerFaction; }
+
+        // The section is drawn only by its private ice plane. Native body
+        // meshes stay hidden; particle effects such as hit FX stay untouched.
+        internal static bool WallSuppressesRenderer(bool wallVisual,
+            bool bodyMesh)
+        { return !wallVisual && bodyMesh; }
+
+        // Consecutive native hits on one section: each continues from the last
+        // recorded total and adds damage, and the final total reaches its HP.
+        internal static bool WallDamageSequenceDestroys(int[] before,
+            int[] after, int hitPoints)
+        {
+            if (before == null || after == null || hitPoints <= 0 ||
+                before.Length != after.Length || before.Length == 0 ||
+                before[0] != 0) return false;
+            for (int index = 0; index < before.Length; index++)
+            {
+                if (after[index] <= before[index]) return false;
+                if (index > 0 && before[index] != after[index - 1])
+                    return false;
+            }
+            return after[after.Length - 1] >= hitPoints;
+        }
+
         internal static int UnholyBlightDiceCount(bool goodOutsider)
         {
             return goodOutsider ? UnholyBlightGoodOutsiderDice :

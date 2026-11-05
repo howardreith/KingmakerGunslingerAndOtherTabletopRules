@@ -48,8 +48,10 @@ namespace KingmakerGunslinger.Summoning
         private int _gridGeneration;
         private GameObject _wallVisual;
         private Material _wallMaterial;
-        private readonly Dictionary<Renderer, bool> _hiddenRenderers =
-            new Dictionary<Renderer, bool>();
+        private readonly HashSet<Renderer> _hiddenRenderers =
+            new HashSet<Renderer>();
+        private readonly List<Renderer> _rendererScratch =
+            new List<Renderer>();
         private readonly List<GraphNode> _claimedNodes =
             new List<GraphNode>();
         private readonly Dictionary<GraphNode, bool> _nodeOriginals =
@@ -61,6 +63,7 @@ namespace KingmakerGunslinger.Summoning
         internal GameObject WallVisual { get { return _wallVisual; } }
         internal int HiddenDonorRendererCount
         { get { return _hiddenRenderers.Count; } }
+        internal int DonorRendererSuppressions { get; private set; }
         internal string UpdateRoute { get; private set; }
         internal int RecastApplyRequests { get; private set; }
         internal int GridGraphIndex { get; private set; } = -1;
@@ -77,6 +80,19 @@ namespace KingmakerGunslinger.Summoning
 
         internal KeyValuePair<GraphNode, bool>[] GridNodeSnapshot()
         { return _nodeOriginals.ToArray(); }
+        internal static int ClaimOwnerCount(GraphNode node)
+        {
+            NodeClaim claim;
+            return node != null && Claims.TryGetValue(node, out claim) ?
+                claim.Owners.Count : 0;
+        }
+        // Read-only: a donor body the native renderer actually drew last frame.
+        internal int VisibleDonorRendererCount()
+        {
+            GetComponentsInChildren(true, _rendererScratch);
+            return _rendererScratch.Count(renderer => renderer != null &&
+                renderer.isVisible && SuppressesRenderer(renderer));
+        }
 
         internal static bool IsExactIdentity(UnitEntityView view)
         {
@@ -124,13 +140,8 @@ namespace KingmakerGunslinger.Summoning
 
         private void CreateWallVisual()
         {
-            foreach (Renderer renderer in _view.GetComponentsInChildren<
-                Renderer>(true))
-            {
-                if (renderer == null) continue;
-                _hiddenRenderers[renderer] = renderer.enabled;
-                renderer.enabled = false;
-            }
+            SuppressDonorRenderers();
+            DonorRendererSuppressions = 0;
             _wallVisual = GameObject.CreatePrimitive(PrimitiveType.Cube);
             _wallVisual.name = "KMG_S35_WallOfIceSection";
             _wallVisual.transform.SetParent(_view.transform, false);
@@ -344,7 +355,6 @@ namespace KingmakerGunslinger.Summoning
         {
             if (_released) return;
             _released = true;
-            enabled = false;
             if (_cut != null)
             {
                 UnityEngine.Object.DestroyImmediate(_cut);
@@ -357,9 +367,9 @@ namespace KingmakerGunslinger.Summoning
                 UnityEngine.Object.DestroyImmediate(_wallVisual);
             if (_wallMaterial != null)
                 UnityEngine.Object.DestroyImmediate(_wallMaterial);
-            foreach (var pair in _hiddenRenderers)
-                if (pair.Key != null) pair.Key.enabled = pair.Value;
-            _hiddenRenderers.Clear();
+            // The donor body never returns: a retiring section is dead or
+            // leaving the world, and this component keeps it hidden until the
+            // native view is destroyed.
             QueueGridRestore();
             _cut = null;
             _wallVisual = null;
@@ -379,6 +389,32 @@ namespace KingmakerGunslinger.Summoning
                 UnitEntityData retiring = _owner;
                 Release();
                 InfernalWallSection35.Retire(retiring);
+            }
+        }
+
+        // Native fade/visibility controllers revisit every view renderer after
+        // attachment and would otherwise reveal the theropod donor inside the
+        // ice, or standing in its place after a breach.
+        private void LateUpdate() { SuppressDonorRenderers(); }
+
+        private bool SuppressesRenderer(Renderer renderer)
+        {
+            return InfernalRules35.WallSuppressesRenderer(
+                _wallVisual != null &&
+                    ReferenceEquals(renderer.gameObject, _wallVisual),
+                renderer is SkinnedMeshRenderer || renderer is MeshRenderer);
+        }
+
+        private void SuppressDonorRenderers()
+        {
+            GetComponentsInChildren(true, _rendererScratch);
+            foreach (Renderer renderer in _rendererScratch)
+            {
+                if (renderer == null || !SuppressesRenderer(renderer)) continue;
+                _hiddenRenderers.Add(renderer);
+                if (!renderer.enabled) continue;
+                renderer.enabled = false;
+                DonorRendererSuppressions++;
             }
         }
 

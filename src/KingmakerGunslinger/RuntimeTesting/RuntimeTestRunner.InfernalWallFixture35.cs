@@ -43,9 +43,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         // Neither path can bypass the same initial/movement/return checkpoint.
         private IEnumerable<int> InfernalWallFixturePrerequisite35(
             ExpandedSummoningCorrectionFixture fixture, UnitEntityData bone, IList<UnitEntityData> owned,
-            InfernalWallFixturePlan35 plan, Action<string, bool, JObject, string> check)
+            InfernalWallFixturePlan35 plan, Action<string, bool, JObject, string> check, string lane = null)
         {
-            foreach (var actor in owned)
+            string suffix = lane == null ? "" : "-" + lane;
+            foreach (var actor in owned.Where(value => value != null && !value.Destroyed &&
+                value.IsInState && !value.Descriptor.State.IsDead &&
+                value.Blueprint?.AssetGuid != KingmakerGunslinger.Summoning.InfernalRules35.WallSectionUnitGuid))
                 PlaceExpandedSummoningUnit(actor, plan.CastingPoint);
             // A real failed DC19 setup exposure was followed by the native
             // fear controller's new Move, even with this witness brain off.
@@ -56,7 +59,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExpandedSummoningSpecialBuilder.Bone35Prefix + "FearFrightened"];
             var beforeFear = InfernalWallActorState35(fixture.Caster);
             InfernalBoneRemoveEffects35(fixture.Caster, new[] { bone }, frightened);
-            check("wall-fixture-setup-fear-isolation", InfernalBoneBuff35(fixture.Caster, frightened, bone) == null,
+            check("wall-fixture-setup-fear-isolation" + suffix, InfernalBoneBuff35(fixture.Caster, frightened, bone) == null,
                 new JObject { ["source"] = bone.UniqueId, ["before"] = beforeFear,
                     ["afterRemoval"] = InfernalWallActorState35(fixture.Caster),
                     ["removedBlueprint"] = frightened.AssetGuid,
@@ -65,14 +68,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["scope"] = "Only exact owned Bone-source setup frightened buff removed from the disposable witness through the established helper; native panic retirement is observed across ordinary placement frames." },
                 "A clear-lane movement fixture retires its unrelated, naturally applied source-owned setup fear without overriding any movement result.");
             foreach (int frame in InfernalWallPlaceAndSettle35(fixture.Caster,
-                plan.Start, plan, "initial-path")) yield return frame;
+                plan.Start, plan, "initial-path" + suffix)) yield return frame;
             foreach (int frame in InfernalEarlyWallMove35(fixture, plan.Start,
-                plan.Destination, plan.Midpoint, false, "baseline", check, plan, true)) yield return frame;
-            check("wall-fixture-prerequisite", true, new JObject {
+                plan.Destination, plan.Midpoint, false, "baseline" + suffix, check, plan, true)) yield return frame;
+            check("wall-fixture-prerequisite" + suffix, true, new JObject {
                 ["plan"] = plan.Document(), ["final"] = InfernalWallActorState35(fixture.Caster),
                 ["initialAndReturnPlacementVerified"] = true,
                 ["baselineNativeMovementVerified"] = true,
-                ["wallAbilityLookupReached"] = false, ["wallCastingReached"] = false,
+                ["wallAbilityLookupReached"] = lane != null, ["wallCastingReached"] = lane != null,
                 ["tailReached"] = false,
                 ["preflightOnly"] = ExpandedSummoningNativeProfilePolicy.WallPlacementPreflightPhase(
                     RuntimeTestRequestParser.Sprint32ReviewPhase(_request))
