@@ -78,6 +78,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         if (!off) using (var mode = Cleanup2EnterNativeDefault(fixture, phase))
                         {
+                            Vector3 referenceBeforeMovement = fixture.Caster.Position;
                             Vector3 destination; string lane, direction;
                             var start = Sprint24AiCombatLane(fixture.Caster, owner, fixture.Hostile ?? fixture.Caster,
                                 6f, out destination, out lane, out direction);
@@ -101,6 +102,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 throw new InvalidOperationException("Overhaul movement lacks settled native ground support.");
                             row["movementGround"] = ground;
                             start = owner.Position;
+                            // Keep the real party reference within sight of
+                            // the lane. Distant surveyed origins can otherwise
+                            // put non-party summons in ordinary fog of war.
+                            Vector3 across = Vector3.Cross(Vector3.up, destination - start).normalized;
+                            bool referencePlaced = false;
+                            foreach (float side in new[] { 1f, -1f })
+                            {
+                                Vector3 candidate = Kingmaker.View.ObstacleAnalyzer.GetNearestNode(
+                                    (start + destination) * .5f + across * (4f * side)).clampedPosition;
+                                if (Vector3.Distance(candidate, start) > 8f || Vector3.Distance(candidate, destination) > 8f ||
+                                    InfernalEarlyDistanceToSegment35(candidate, start, destination) < 2.5f) continue;
+                                PlaceExpandedSummoningUnit(fixture.Caster, candidate);
+                                row["movementReference"] = new JObject { ["unit"] = fixture.Caster.UniqueId,
+                                    ["originalPosition"] = SurveyVector(referenceBeforeMovement),
+                                    ["position"] = SurveyVector(fixture.Caster.Position),
+                                    ["scope"] = "Owned native party reference placed beside the surveyed lane for ordinary vision; no fog/material override." };
+                                referencePlaced = true; break;
+                            }
+                            if (!referencePlaced) throw new InvalidOperationException("No supported party reference beside the movement lane.");
+                            foreach (int frame in SummonOverhaulSettlePartyCamera(owner)) yield return frame;
                             var command = new UnitMoveTo(destination, .5f); command.Init(owner);
                             if (!command.CanStart) throw new InvalidOperationException("Native movement command refused.");
                             owner.Commands.Run(command);
@@ -122,6 +143,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (!moved || !captured) throw new InvalidOperationException("Actual native movement/clearance incomplete.");
                             if (key == "lillend-azata")
                                 foreach (int frame in SummonOverhaulLillendCast(owner, mode, row)) yield return frame;
+                            PlaceExpandedSummoningUnit(fixture.Caster, referenceBeforeMovement);
                         }
                         if (key == "nalfeshnee")
                         {
