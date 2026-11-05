@@ -55,11 +55,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Actual command approach radius is the printed CL12 close range with the engine's real footprint allowance, far below220 feet.");
                 Vector3 outside; string lane, direction;
                 Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner, recipient,
-                    nativeRadius + 3f, out outside, out lane, out direction,
+                    nativeRadius + .75f, out outside, out lane, out direction,
                     originSearchRadiusMeters: 30);
                 Vector3 axis = (outside - origin).normalized;
                 PlaceExpandedSummoningUnit(owner, origin);
-                PlaceExpandedSummoningUnit(recipient, origin + axis * (nativeRadius - 1f));
+                PlaceExpandedSummoningUnit(recipient, origin + axis * (nativeRadius - .75f));
                 var insideProbe = new UnitUseAbility(data, new TargetWrapper(recipient)); insideProbe.Init(owner);
                 bool insideLegal = data.IsAvailable && data.CanTarget(new TargetWrapper(recipient)) &&
                     insideProbe.IsUnitEnoughClose;
@@ -91,7 +91,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var acts = trace.Rows.Skip(start).Where(x => (string)x["event"] == "command-act" &&
                     (string)x["owner"] == owner.UniqueId && (string)x["ability"] == spell.AssetGuid).ToArray();
                 check("nalfeshnee-slow-outside-native-approach", approach.Result == UnitCommand.ResultType.Success &&
-                    Vector3.Distance(before, owner.Position) > 1f && acts.Length == 1 &&
+                    Vector3.Distance(before, owner.Position) > .2f && acts.Length == 1 &&
                     (bool)acts[0]["nativeEnoughClose"],
                     new JObject { ["command"] = Sprint27AiCommand(approach),
                         ["travel"] = Vector3.Distance(before, owner.Position), ["acts"] = new JArray(acts) },

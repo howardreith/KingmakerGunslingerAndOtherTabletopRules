@@ -5,6 +5,8 @@ using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.Designers.EventConditionActionSystem.Actions;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
@@ -17,6 +19,7 @@ using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
+using Kingmaker.UnitLogic.Mechanics.Components;
 using Kingmaker.Utility;
 using Kingmaker.View;
 using KingmakerGunslinger.Blueprints;
@@ -157,9 +160,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // Haste is a native external effect setup. The product's own
                 // failed-save branch must perform the actual countering.
                 target.Buffs.GetBuff(slow)?.Remove();
-                var branch = live.OnFailedSave.Actions.OfType<Conditional>().Single();
-                var haste = branch.IfTrue.Actions.Concat(branch.IfFalse.Actions)
-                    .OfType<ContextActionRemoveBuff>().Single().Buff;
+                var haste = IceDevilNativeHaste40();
                 var context = new MechanicsContext(target, target.Descriptor, haste, null, new TargetWrapper(target));
                 context.Params.CasterLevel = 13; context.Params.SpellLevel = 3;
                 hastedSetup = target.Buffs.AddBuff(haste, context, TimeSpan.FromSeconds(78));
@@ -174,6 +175,96 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new JObject { ["events"] = new JArray(trace.Rows.Skip(start)),
                         ["nativeHasteSetupNotCastProof"] = true, ["unexpiredHasteDeadline"] = hasteDeadline.ToString() },
                     "A real failed Fort save invokes the native branch and counters unexpired Haste without adding Slow; the observer does not remove Haste for the outcome.");
+
+                // Exercise the native buff-immunity consumer using the actual
+                // retained condition's descriptor, not a special product exemption.
+                var descriptor = ScriptableObject.CreateInstance<BuffDescriptorImmunity>();
+                descriptor.Descriptor = slow.GetComponent<SpellDescriptorComponent>().Descriptor;
+                var immunity = ScriptableObject.CreateInstance<BlueprintFeature>();
+                immunity.name = "KMG_Runtime_S40_SlowDescriptorImmunity"; immunity.Ranks = 1;
+                immunity.ComponentsArray = new BlueprintComponent[] { descriptor };
+                try
+                {
+                    target.Descriptor.AddFact(immunity); start = trace.Rows.Count;
+                    foreach (int frame in IceDevilSpearUntil40(owner, target, () =>
+                        trace.Rows.Skip(start).Any(x => (string)x["event"] == "save" &&
+                            (string)x["owner"] == owner.UniqueId && (int?)x["dc"] == 25 &&
+                            !(bool)x["passed"]))) yield return frame;
+                    check("slow-native-descriptor-immunity", target.Buffs.GetBuff(slow) == null &&
+                        !target.Descriptor.State.HasCondition(UnitCondition.Slowed) &&
+                        Math.Abs(target.CombatSpeedMps - beforeSpeed) < .01f,
+                        new JObject { ["events"] = new JArray(trace.Rows.Skip(start)),
+                            ["descriptor"] = descriptor.Descriptor.ToString(),
+                            ["combatMps"] = target.CombatSpeedMps },
+                        "A real hit and failed Fort save reach native descriptor immunity; no Slow or impaired movement bypasses that defender boundary.");
+                }
+                finally
+                {
+                    target.Descriptor.RemoveFact(immunity);
+                    UnityEngine.Object.Destroy(immunity); UnityEngine.Object.Destroy(descriptor);
+                }
+
+                var second = CastExpandedSummoningOwnTier(fixture, IceDevilVisualPolicy40.Key);
+                owned.Add(second); Sprint28SetBrainActivePreservingActions(second, false);
+                foreach (int frame in Outsider30NativeAppearance(second, second.Blueprint.name)) yield return frame;
+                var secondTarget = Game.Instance.EntityCreator.SpawnUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter, target.Position,
+                    Quaternion.identity, fixture.Caster.HoldingState);
+                fixture.Created.Add(secondTarget); owned.Add(secondTarget);
+                Game.Instance.EntityCreator.Tick();
+                secondTarget.GroupId = secondTarget.UniqueId;
+                Sprint28SetBrainActivePreservingActions(secondTarget, false);
+                secondTarget.Stats.HitPoints.BaseValue = 100000;
+                secondTarget.Stats.SaveFortitude.BaseValue = -100;
+                secondTarget.Descriptor.State.AddConditionImmunity(UnitCondition.Frightened);
+                try
+                {
+                    var secondHostility = Nalfeshnee39EstablishHostility(fixture, second, secondTarget);
+                    check("slow-second-recipient-hostility", second.IsEnemy(secondTarget) &&
+                        secondTarget.IsEnemy(second) && !ReferenceEquals(second.Group, secondTarget.Group),
+                        secondHostility, "A separate disposable recipient has its own native group and actual mutual hostility.");
+                    InfernalCombatLane34(fixture, owner, target, 3);
+                    foreach (int frame in IceDevilSpearUntil40(owner, target, () =>
+                        target.Buffs.GetBuff(slow)?.TimeLeft.TotalSeconds > 8)) yield return frame;
+                    InfernalCombatLane34(fixture, second, secondTarget, 3);
+                    foreach (int frame in IceDevilSpearUntil40(second, secondTarget, () =>
+                        secondTarget.Buffs.GetBuff(slow)?.TimeLeft.TotalSeconds > 8)) yield return frame;
+                    var firstBuff = target.Buffs.GetBuff(slow);
+                    var secondBuff = secondTarget.Buffs.GetBuff(slow);
+                    var firstEnd = firstBuff.EndTime; var secondEnd = secondBuff.EndTime;
+                    check("slow-independent-native-owners", firstBuff.IsTurnedOn && secondBuff.IsTurnedOn &&
+                        ReferenceEquals(firstBuff.Context.MaybeCaster, owner) &&
+                        ReferenceEquals(secondBuff.Context.MaybeCaster, second) &&
+                        firstEnd > Game.Instance.TimeController.GameTime &&
+                        secondEnd > Game.Instance.TimeController.GameTime,
+                        new JObject { ["firstSource"] = owner.UniqueId, ["secondSource"] = second.UniqueId,
+                            ["firstDeadline"] = firstEnd.ToString(), ["secondDeadline"] = secondEnd.ToString(),
+                            ["secondDc"] = IceDevilRules40Policy.SlowDc(second.Stats.Constitution.Bonus),
+                            ["events"] = trace.Rows },
+                        "Two real owners apply finite native Slow to independent recipients, with exact source contexts and native rolled deadlines.");
+                    DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
+                    check("slow-survives-source-removal-finitely", !firstBuff.IsDisposed &&
+                        firstBuff.EndTime == firstEnd && !secondBuff.IsDisposed &&
+                        secondBuff.EndTime == secondEnd && !second.Destroyed,
+                        new JObject { ["firstSourceDestroyed"] = owner.Destroyed,
+                            ["firstDeadlineUnchanged"] = firstBuff.EndTime == firstEnd,
+                            ["secondDeadlineUnchanged"] = secondBuff.EndTime == secondEnd },
+                        "Removing the first source does not cure or refresh its finite recipient condition and does not alter the other owner's condition.");
+                    foreach (int frame in InfernalBoneWaitUntil35(() =>
+                        target.Buffs.GetBuff(slow) == null && secondTarget.Buffs.GetBuff(slow) == null, 45))
+                    { Game.Instance.IsPaused = false; yield return frame; }
+                    check("slow-native-finite-expiry", firstBuff.IsDisposed && secondBuff.IsDisposed &&
+                        !target.Descriptor.State.HasCondition(UnitCondition.Slowed) &&
+                        !secondTarget.Descriptor.State.HasCondition(UnitCondition.Slowed) &&
+                        Game.Instance.TimeController.GameTime >= firstEnd &&
+                        Game.Instance.TimeController.GameTime >= secondEnd &&
+                        Math.Abs(target.CombatSpeedMps - beforeSpeed) < .01f,
+                        new JObject { ["now"] = Game.Instance.TimeController.GameTime.ToString(),
+                            ["firstDeadline"] = firstEnd.ToString(), ["secondDeadline"] = secondEnd.ToString(),
+                            ["combatMpsRestored"] = target.CombatSpeedMps },
+                        "Native timer dispatch expires both rolled conditions and restores movement; the observer never removes either condition for this outcome.");
+                }
+                finally { secondTarget.Descriptor.State.RemoveConditionImmunity(UnitCondition.Frightened); }
             }
             finally
             {
@@ -190,6 +281,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory,
                     "sprint40-ice-devil-slow.json"), receipt.ToString(Formatting.Indented));
             }
+        }
+
+        private static BlueprintBuff IceDevilNativeHaste40()
+        {
+            // Retained native identity already used by the installed-contract
+            // observers. Haste is an external fixture effect, not a new SLA.
+            return BlueprintLibraryLookup.RequireExact<BlueprintBuff>(BlueprintBootstrap.Library,
+                "03464790f40c3c24aa684b57155f3280", "native Haste defender boundary");
         }
 
         private IEnumerable<int> IceDevilSpearUntil40(UnitEntityData owner, UnitEntityData target,

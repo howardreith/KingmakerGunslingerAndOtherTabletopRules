@@ -43,7 +43,7 @@ namespace KingmakerGunslinger.Blueprints
             string p = IceDevil40Prefix;
             var unit = InfernalProfile35(library, symbols, "IceDevil", "ice-devil",
                 p, "Ice Devil (Gelugon)", IceDevilRules40Policy.HitDice,
-                IceDevilRules40Policy.HitPoints, IceDevilRules40Policy.FortitudeBase,
+                IceDevilRules40Policy.RacialBaseHitPoints, IceDevilRules40Policy.FortitudeBase,
                 IceDevilRules40Policy.ReflexBase, IceDevilRules40Policy.WillBase,
                 14, 14, 14);
             ConfigureUnitCore(unit, "IceDevil", "Ice Devil (Gelugon)",

@@ -14,6 +14,9 @@ namespace KingmakerGunslinger.Summoning
         internal const int Strength = 23, Dexterity = 21, Constitution = 22;
         internal const int Intelligence = 25, Wisdom = 22, Charisma = 20;
         internal const int HitPoints = 161, NaturalArmor = 18;
+        // The native racial profile adds Constitution per racial HD to its
+        // base. The printed 14d10+84 total must not receive that bonus twice.
+        internal const int RacialBaseHitPoints = HitPoints - HitDice * ((Constitution - 10) / 2);
         internal const int FortitudeBase = 9, ReflexBase = 9, WillBase = 4;
         internal const int SpellResistance = 24, DamageReduction = 10;
         internal const int FlySpeedFeet = 60, OmittedLandSpeedFeet = 40;

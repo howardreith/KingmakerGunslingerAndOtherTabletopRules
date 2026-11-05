@@ -1,10 +1,39 @@
 # Sprint 40 — Ice Devil (Gelugon)
 
-IN PROGRESS. Ice Devil registered hidden; no native gameplay qualification or release yet.
+IN PROGRESS. Ice Devil registered hidden; development native proof exists;
+final qualification and release remain incomplete.
 Owner mission selects completion through exact-artifact stable publication,
 public downloads, restoration and merged records. Stop before Sprint 41.
 
 ## Current continuation state
+
+- Branch `codex/expanded-summoning-sprint40-ice-devil`, root
+  `C:/Dev/KingmakerGunslingerLab/wt/s40`, HOWARD-LAPTOP. Last pushed/source-tested
+  checkpoint `6ef13ccb9f2582ee5d3eef92ac745caf04a1b052`; following repair batch
+  is identified by this commit and `git rev-parse HEAD` after commit.
+- No active game/deployment/lease; original118 saves were never loaded/written.
+  Latest full exact intake audit:
+  `sprint40-intake-20261105T002300Z/post-early-20261105T054110Z/restoration.json`.
+  Mods/references/settings/saves exact; game absent. Native Goal remains active.
+- Completed: hidden graph/art dependencies, early development mechanics,
+  Nalfeshnee55-foot source correction and Nimbus Daze wording correction.
+  Persistent Image omission explicitly approved; no substitute. No pending
+  material gameplay decision. One SM IX route remains suppressed.
+- Native6ef probes found one product defect (totalHP245: base161 plus84Con)
+  and fixture gaps: Haste lookup, drifting wall survey center and unnecessarily
+  long range lane. Repairs now use derived base77, retained Haste identity,
+  one fixed survey center and a closer outside-range point. Added actual Slow
+  descriptor-immunity, independent-source and natural finite-expiry observations.
+- Focused repaired batch: production27.1s,31/31 related tests of2815 PASS,
+  tests9.7s including rebuild. Log `artifacts/s40-native-repairs-compile-fixed.log`.
+  Missing namespace compile failure retained in `artifacts/s40-native-repairs-compile.log`.
+- NEXT: build one coherent development package, run repaired early/combat/Slow/
+  walls/range and effects groups; inspect each failure before relaunching.
+  Then complete AI/TB, presentation/public-route, persistence and publisher scopes,
+  final public artifact and six-process envelopes, exact release/downloads/closure.
+  No development probe is final-artifact qualification.
+
+## Historical development notes preceding the native6ef repairs
 
 - Owner: active native Goal, HOWARD-LAPTOP. Branch
   `codex/expanded-summoning-sprint40-ice-devil`, root `C:/Dev/KingmakerGunslingerLab/wt/s40`.
@@ -315,3 +344,38 @@ Storm aims at its native ground point. Product effects remain unchanged.
   Local audit helper `artifacts/s40-restore-audit.ps1` refuses changed mod/save
   bytes; only restores byte-identical mod timestamps and original typed registry
   values via the existing settings restore helper. No save mutation occurred.
+
+## Native6ef findings and repairs, 2026-11-05 UTC
+
+All runs used ZIP `fdf6d384995ebbfb9d91a70725ee4552388120672022582c5e3e23ea2f9ffb0c`,
+DLL `fffb0299c624282eb2802e6fc0ebd42db1a786c9e6b9a226b6daf86da7d9319d`,
+MVID `8a9dbeda-c825-4f5d-beb4-b40ab2900aec`, source6ef13ccb9f25;
+package purpose `sprint40-mechanics`. Build/strict458-file inventory and31
+selected tests passed. Native results below remain FAIL; passed cells retain
+their limited development attribution. All transactions restored original KMG
+tree hash216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Evidence directories are under `C:/Dev/KingmakerGunslingerLab/runtime-evidence/`.
+
+- `20261105T0519584213287Z-disposable-expanded-summoning-sprint32-native-review`:
+  early FAIL at live totalHP245. AC32/saves15,14,12/Perception27/Stealth18/
+  Mobility22 observed correct. Earlier19/19 checked **base** HP161 only; that
+  observation did not prove the printed total. Current repair passes77 to the
+  existing racial consumer, which adds14*Con6; older creature callers unchanged.
+- `20261105T0526449752181Z-disposable-expanded-summoning-sprint32-native-review`:
+  real standard spear, AoO, Charge, native Disarm/exact retained gear, successful
+  bite without Slow and disarmed bite/tail full routine PASS. Observer then
+  threw `Sequence contains no elements` locating Haste through the wrong
+  graph level. Fixture setup now resolves the already retained native Haste ID;
+  native countering remains the product's own branch under observation.
+- `20261105T0533053568725Z-disposable-expanded-summoning-sprint32-native-review`:
+  two actual Ice wall casts PASS:39HP/CL13, about779sec remaining,22/24 node
+  claims. Third Bone lane survey failed; no breach/isolation result claimed.
+  Subsequent surveys used the moved witness as their center. Fixed-center
+  optional argument preserves existing S35 defaults and native placement checks.
+- `20261105T0537409563057Z-disposable-expanded-summoning-sprint32-native-review`:
+  actual Nalfeshnee range PASS:18.164m =55ft plus1.4m native footprints.
+  Then no clear21.164m lane; inside/outside casts unobserved. Repair searches
+  only0.75m beyond the actual command boundary and requires positive native
+  approach travel, retaining actual targeting/range checks.
+- Full audits after each group passed. Latest full audit is named above.
+  Working/baseline/all118 original saves remained byte/metadata exact.
