@@ -93,6 +93,10 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.Sprint40SlowRange.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.IceDevil40Walls.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.IceDevil40Slow.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.IceDevil40Public.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.IceDevil40Lifetime.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.IceDevil40Ai.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.IceDevil40SlowTurn.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.Nalfeshnee39Core.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.Nalfeshnee39Integration.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.Nalfeshnee39Nimbus.cs" />

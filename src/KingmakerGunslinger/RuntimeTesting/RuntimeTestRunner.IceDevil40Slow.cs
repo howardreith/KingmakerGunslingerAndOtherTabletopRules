@@ -116,11 +116,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 finally { EventBus.Unsubscribe(capture); }
                 float slowedSpeed = target.CombatSpeedMps;
+                // Installed CalculateSpeedModifier halves for Staggered and
+                // Slowed separately. Native Slow carries both, so this getter
+                // reports a quarter of the unrestricted combat rate. Preserve
+                // that native condition/action consumer; do not compensate it.
                 check("slow-native-movement-speed", beforeSpeed > 0 && slowedSpeed > 0 &&
-                    Math.Abs(slowedSpeed - beforeSpeed * .5f) < .01f,
+                    target.Descriptor.State.HasCondition(UnitCondition.Staggered) &&
+                    target.Descriptor.State.HasCondition(UnitCondition.Slowed) &&
+                    Math.Abs(slowedSpeed - beforeSpeed * .25f) < .01f,
                     new JObject { ["beforeCombatMps"] = beforeSpeed, ["slowedCombatMps"] = slowedSpeed,
                         ["nativeSpeed"] = Sprint16Speed(target) },
-                    "The actual native combat movement consumer halves speed; the base30-foot stat alone is not treated as proof.");
+                    "Installed native Slow carries Slowed and Staggered; each halves CalculateSpeedModifier, yielding the observed quarter combat rate. Base30 feet is unchanged; actual directed movement follows.");
                 Vector3 position = target.Position;
                 Vector3 away = (target.Position - owner.Position).normalized;
                 var destination = ObstacleAnalyzer.GetNearestNode(position + away).clampedPosition;
