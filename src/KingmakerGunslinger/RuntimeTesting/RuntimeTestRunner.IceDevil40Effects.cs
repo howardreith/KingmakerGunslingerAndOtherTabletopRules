@@ -161,7 +161,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owner, trace, check, recipientKey: IceDevilVisualPolicy40.Key,
                     assertionOwner: "ice-devil", getRegeneration: unit =>
                         unit.Buffs.GetBuff(regenBp).SelectComponents<KytonRegeneration34>().Single(),
-                    isolateFear: true)) yield return frame;
+                    isolateFear: true, stabilizeGoodSpellCombat: true)) yield return frame;
             }
             finally
             {
