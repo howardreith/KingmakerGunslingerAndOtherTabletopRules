@@ -492,8 +492,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !ReferenceEquals(value, bone)))
                 PlaceExpandedSummoningUnit(actor, casterPoint);
             PlaceExpandedSummoningUnit(bone, casterPoint);
-            var before = InfernalEarlyPath35(fixture.Caster, destination);
             bool correction = RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulWallPhase;
+            if (correction)
+                foreach (int frame in InfernalWallSettleWitness35(fixture.Caster, "initial-path")) yield return frame;
+            var before = InfernalEarlyPath35(fixture.Caster, destination);
             if (correction)
                 foreach (int frame in InfernalEarlyWallMove35(fixture, start, destination, midpoint, false, "baseline", check)) yield return frame;
             bool losBefore = Kingmaker.Visual.FogOfWar.LineOfSightGeometry
@@ -687,9 +689,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 sectionAttackable = sectionAppearanceBuffAbsent &&
                     !sectionUntargetable && !section.Destroyed &&
                     !section.Descriptor.State.IsDead;
-                Vector3 attackPoint = ObstacleAnalyzer.GetNearestNode(
-                    section.Position + section.OrientationDirection * 2.5f)
-                    .clampedPosition;
+                Vector3 attackPoint = correction ? InfernalWallGroundWitness35(attacker,
+                    section.Position + section.OrientationDirection * 2.5f) :
+                    ObstacleAnalyzer.GetNearestNode(section.Position + section.OrientationDirection * 2.5f).clampedPosition;
                 attacker.Commands.InterruptAll(true);
                 attacker.Commands.RemoveFinishedAndUpdateQueue();
                 PlaceExpandedSummoningUnit(attacker, attackPoint);
@@ -707,7 +709,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.Player.UpdateIsInCombat();
                 new UnitCombatJoinController().Tick();
                 new UnitCombatPrepareController().Tick();
-                for (int frame = 0; frame < 3; frame++) yield return 0;
+                if (correction)
+                    foreach (int frame in InfernalWallSettleWitness35(attacker,
+                        "physical-breach")) yield return frame;
+                else for (int frame = 0; frame < 3; frame++) yield return 0;
                 physicalGreenNpcGuard = Kingmaker.Designers.GameHelper
                     .IsAttackingGreenNPC(attacker, section);
                 int physicalStart = trace.Rows.Count;
@@ -715,6 +720,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     IsSingleAttack = true,
                     ForceFullAttack = false
                 };
+                breachAttack.Init(attacker);
+                if (correction && !breachAttack.IsUnitEnoughClose)
+                    throw new InvalidOperationException("Grounded physical Wall witness is outside native attack reach: " +
+                        attacker.DistanceTo(section) + "; " + Sprint27AiCommand(breachAttack));
                 attacker.Commands.Run(breachAttack);
                 foreach (int frame in WaitInfernalCommand34(breachAttack,
                     () => true, 25)) yield return frame;
@@ -732,10 +741,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !section.Descriptor.State.IsDead;
                 damageAfterPhysical = section.Damage;
 
-                Vector3 witnessPoint = ObstacleAnalyzer.GetNearestNode(
-                    section.Position - section.OrientationDirection * 1.2f)
-                    .clampedPosition;
                 fireSource = fixture.Hostile;
+                Vector3 witnessPoint = correction ? InfernalWallGroundWitness35(fireSource,
+                    section.Position - section.OrientationDirection * 1.2f) :
+                    ObstacleAnalyzer.GetNearestNode(section.Position - section.OrientationDirection * 1.2f).clampedPosition;
                 PlaceExpandedSummoningUnit(fireSource, witnessPoint);
                 fireGreenNpcGuard = Kingmaker.Designers.GameHelper
                     .IsAttackingGreenNPC(fireSource, section);
@@ -804,10 +813,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 fixture.Caster.Stats.SaveReflex.BaseValue = 100;
-                Vector3 adjacent = ObstacleAnalyzer.GetNearestNode(midpoint +
-                    (casterPoint - midpoint).normalized * 1.2f)
-                    .clampedPosition;
+                Vector3 adjacent = correction ? InfernalWallGroundWitness35(fixture.Caster,
+                    midpoint + (casterPoint - midpoint).normalized * 1.2f) :
+                    ObstacleAnalyzer.GetNearestNode(midpoint + (casterPoint - midpoint).normalized * 1.2f).clampedPosition;
                 PlaceExpandedSummoningUnit(fixture.Caster, adjacent);
+                if (correction)
+                    foreach (int frame in InfernalWallSettleWitness35(fixture.Caster,
+                        "adjacent-formation")) yield return frame;
                 for (int attempt = 0; attempt < 4 &&
                     !formationDisrupted; attempt++)
                 {
@@ -877,6 +889,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 fixture.Caster.Stats.SaveReflex.BaseValue = oldReflex;
+            }
+            if (correction)
+            {
+                // Observe restored bare navigation, not cells occupied by
+                // the disposable fire/Reflex witnesses from the preceding cells.
+                foreach (var actor in owned.Where(value => value != null &&
+                    !value.Destroyed && value.IsInGame && !value.Descriptor.State.IsDead))
+                    PlaceExpandedSummoningUnit(actor, casterPoint);
+                PlaceExpandedSummoningUnit(fixture.Hostile, casterPoint + Vector3.forward * 10f);
+                PlaceExpandedSummoningUnit(fixture.Caster, start);
+                foreach (int frame in InfernalWallSettleWitness35(fixture.Caster,
+                    "restoration")) yield return frame;
             }
             PlaceExpandedSummoningUnit(fixture.Caster, start);
             var after = InfernalEarlyPath35(fixture.Caster, destination);
@@ -970,6 +994,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["gridClaimsBeforeRelease"] = gridClaimsBeforeRelease,
                 ["gridClaimsAfterRelease"] = gridClaimsAfterRelease,
                 ["gridNodeStateRestored"] = gridNodeStateRestored,
+                ["gridRestoreQueued"] = binding?.GridRestoreQueued,
+                ["gridRestoreCompleted"] = binding?.GridRestoreCompleted,
+                ["gridNodesRestored"] = binding?.GridNodesRestored,
+                ["gridRestorationStates"] = new JArray(gridSnapshot.Select(value => new JObject {
+                    ["position"] = Vec((Vector3)value.Key.position),
+                    ["originalWalkable"] = value.Value, ["currentWalkable"] = value.Key.Walkable })),
                 ["pathGraphIndex"] = graphIndex,
                 ["pathGraphType"] = graphType,
                 ["activeGraphs"] = new JArray(AstarPath.active.graphs
@@ -1081,7 +1111,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cutExactOwner && cutType ==
                     Pathfinding.NavmeshCut.MeshType.Rectangle.ToString() &&
                 cutRegistered && gridApplyQueued && gridApplyCompleted &&
-                gridFailure == null && gridGraphIndex == graphIndex &&
+                gridFailure == null &&
+                ((graphType == typeof(Pathfinding.GridGraph).FullName && gridGraphIndex == graphIndex) ||
+                 (graphType == typeof(Pathfinding.RecastGraph).FullName && cutRegistered && productionRecastApplyRequests > 0)) &&
                 gridNodesClaimed > 0 && gridNodesChanged > 0 &&
                 sectionAttackable && !physicalGreenNpcGuard &&
                 !fireGreenNpcGuard && breachAttack != null &&
@@ -1121,6 +1153,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var target = new TargetWrapper(midpoint);
             if (!data.IsAvailable || !data.CanTarget(target))
                 throw new InvalidOperationException("Controlled expiry requires another legal empty-ground wall cast.");
+            foreach (int frame in InfernalWallSettleWitness35(fixture.Caster, "expiry-baseline")) yield return frame;
             var before = InfernalEarlyPath35(fixture.Caster, destination);
             var prior = new HashSet<string>(Game.Instance.State.Units.Where(value =>
                 ReferenceEquals(value.Blueprint, sectionBlueprint)).Select(value => value.UniqueId));
@@ -1267,6 +1300,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                 wallPresent ? "The live wall changes an actual mover's route before destruction; path queries alone do not supply this verdict." :
                     "An actual native mover follows the direct lane with no live wall obstruction.");
             PlaceExpandedSummoningUnit(mover, start);
+            foreach (int frame in InfernalWallSettleWitness35(mover, "post-move-" + label)) yield return frame;
+        }
+
+        private static Vector3 InfernalWallGroundWitness35(UnitEntityData actor, Vector3 desired)
+        {
+            Vector3 supported; JObject ground;
+            if (actor == null || !Cleanup2CreatureNativeGroundRoot(actor, desired, out supported, out ground))
+                throw new InvalidOperationException("Wall witness has no native ground support.");
+            return supported;
+        }
+
+        private IEnumerable<int> InfernalWallSettleWitness35(UnitEntityData actor, string label)
+        {
+            var mode = _cleanup2NativeDefaultOwner;
+            if (mode == null || !mode.Current) throw new InvalidOperationException("Wall witness requires its native Default lease.");
+            int quiet = 0; Vector3 previous = actor.Position;
+            foreach (int frame in WaitPresentation32(mode, () => quiet >= 3, 8, () => {
+                bool stable = actor.Commands.Empty && actor.View.MovementAgent.Velocity.sqrMagnitude < .0001f &&
+                    Vector3.Distance(previous, actor.Position) < .01f && actor.Descriptor.State.CanAct;
+                quiet = stable ? quiet + 1 : 0; previous = actor.Position;
+            })) yield return frame;
+            Vector3 supported; JObject ground;
+            bool pass = Cleanup2CreatureNativeGroundRoot(actor, actor.Position, out supported, out ground) &&
+                Vector3.Distance(supported, actor.Position) < .02f;
+            Sprint25Check("wall-settled-witness-" + label, pass, new JObject {
+                ["unit"] = actor.UniqueId, ["quietFrames"] = quiet, ["position"] = SurveyVector(actor.Position), ["ground"] = ground },
+                "The exact disposable witness is idle and supported on native floor before its command or path observation.");
+            if (!pass) throw new InvalidOperationException("Wall witness failed native support: " + label);
         }
 
         private static bool InfernalEarlyWallObstructs35(JObject before,

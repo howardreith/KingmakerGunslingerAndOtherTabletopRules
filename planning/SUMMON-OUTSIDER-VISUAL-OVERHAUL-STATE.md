@@ -1,5 +1,53 @@
 # Summoned creature visual overhaul: active checkpoint
 
+## Second-review native progress and narrowed follow-up
+
+Candidate `162d089e2636c5a5ab81e9d677c2c8a9a909f3ed` passed exact build/package
+validation. ZIP SHA-256 `2eb94b4d3569aa5eb190bff739ff02cbc782e08dc17addc289a7b2594493f16f`;
+DLL SHA-256 `57b7b53e24c38ee4620423b4c069c2e03d15051f45c68f497b93496ef373aaf3`;
+MVID `d97a7ee3-a4ec-4474-b641-860277e1d281`. All twenty export identities
+remain unchanged. New evidence under the assigned lab's runtime-evidence:
+
+- `20261105T0505593606969Z-disposable-expanded-summoning-sprint32-native-review`:
+  indoor PASS 4 assertions; ordinary-camera image inspected sharp in the dim
+  original hall. Appearance JSON is metadata-only and produces no overhead render.
+- `20261105T0509182581276Z-disposable-expanded-summoning-sprint32-native-review`:
+  daylight PASS 11 assertions; sharp image inspected, Nalfeshnee native move
+  started/acted/finished Success, ON reconstruction retained 2.10 scale.
+- `20261105T0512270408795Z-disposable-expanded-summoning-sprint32-native-review`:
+  motion FAIL at Lillend after Glabrezu/Vrock/Babau/Hezrou/Barbed/Bone successful
+  movement. Lillend translated but its supplied command did not start; lane
+  receipt says `anchorGap=0`. Unlike established presentation code, the generic
+  observer had not relocated its hostile witness from the surveyed origin.
+  Casting and infernal pair/contact sequence were not reached.
+- `20261105T0517083304769Z-disposable-expanded-summoning-sprint32-native-review`:
+  Wall FAIL at strict viability after actual formation (original 36 HP/720s),
+  successful baseline/live mover with a real detour, controlled native fire
+  destruction and restored Recast route. Physical attack never started; old
+  graph-index equality and final grid snapshot also failed. Expiry/tail not reached.
+
+Every transaction restored original installation/settings/save bytes and mtime
+exactly. No save was loaded. The three previously closed defects remain closed;
+module OFF is credited to its prior candidate and was not repeated.
+
+Follow-up observers now compile: move the owned hostile clear of the generic
+movement lane; use native floor support instead of nearest-node projections
+for Wall witnesses; settle physical/adjacent/path observers; clear disposable
+witnesses before bare-grid restoration checks; accept both actual supported
+path backends, with native Recast-cut admission required for Recast. Keep the
+strict physical hit/halving and exact walkability restoration assertions and
+add restoration diagnostics. These changes have not run natively. They do not
+constitute a claimed gameplay repair. A new candidate is required.
+
+Measured seconds so far: preflight 36.35, candidate build 681.87, indoor 171.57,
+daylight 163.13, motion 201.07, Wall 212.41, follow-up compile/checks 29.48.
+Logs/exact timers are in `artifacts/summon-overhaul-final`. About 25 minutes of
+the new ordinary 30-minute envelope are used before report QA. Another roughly
+11-minute build plus remaining native observations exceeds the balance; seek
+an explicit additional allocation under validation policy section 7 before
+starting it. Preserve both earlier ledgers. PR remains draft, acceptance open.
+
+
 ## Current second-review continuation: source frozen for prerequisites
 
 Owner requests completion of the remaining observer/native items and will

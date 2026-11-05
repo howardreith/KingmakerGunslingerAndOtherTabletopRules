@@ -82,6 +82,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             var start = Sprint24AiCombatLane(fixture.Caster, owner, fixture.Hostile ?? fixture.Caster,
                                 6f, out destination, out lane, out direction);
                             PlaceExpandedSummoningUnit(owner, start);
+                            // Match the established presentation lane: the
+                            // survey may choose the hostile's current origin.
+                            // Move that owned witness before yielding so it
+                            // cannot overlap/interfere with the moving owner.
+                            if (fixture.Hostile != null)
+                                PlaceExpandedSummoningUnit(fixture.Hostile,
+                                    fixture.Caster.Position + Vector3.forward * 40f);
                             int quiet = 0; Vector3 previous = owner.Position;
                             foreach (int frame in WaitPresentation32(mode, () => quiet >= 3, 8, () => {
                                 bool stable = owner.Commands.Empty && owner.View.MovementAgent.Velocity.sqrMagnitude < .0001f &&
