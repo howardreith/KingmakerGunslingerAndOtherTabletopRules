@@ -27,7 +27,8 @@ $modules=@{gunslinger=$true;acadamaeGraduate=$true;shieldOther=$true;expandedSum
  elvenBranchedSpears=$true;easternWeapons=$true;brownFurTransmuter=$true;urbanBarbarian=$true;
  bodyguardFeats=$true;protectionFromAlignmentControlImmunity=$true;elementalRaces=$true;
  teleportationSpells=$true;magicCircleSpells=$true}
-$requestBase=@{Scenario='observe-feature-module-settings';ExpectedVersion='0.0.177';TimeoutSeconds=120;
+$activeVersion=(Get-KmgModInfo -RepositoryRoot (Split-Path $PSScriptRoot -Parent)).Version
+$requestBase=@{Scenario='observe-feature-module-settings';ExpectedVersion=$activeVersion;TimeoutSeconds=120;
  ExitAfterCompletion=$true;EvidenceDirectory=('C:/Dev/KingmakerGunslingerLab/runtime-evidence/test-s40-request-'+[Guid]::NewGuid().ToString('N'))}
 $ordinary=New-KmgRuntimeRequest @requestBase -Parameters $modules
 Check ($ordinary.parameters.Count -eq 13 -and -not $ordinary.parameters.Contains('sprint40DiagnosticRecovery')) 'Ordinary settings request remains unchanged.'
