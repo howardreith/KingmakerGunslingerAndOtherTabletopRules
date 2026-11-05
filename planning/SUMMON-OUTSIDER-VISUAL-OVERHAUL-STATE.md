@@ -1,5 +1,27 @@
 # Summoned creature visual overhaul: active checkpoint
 
+## Current second-review continuation: source frozen for prerequisites
+
+Owner requests completion of the remaining observer/native items and will
+perform the final manual review. Reviewed HEAD is `b2f65d530a80ecedc94ecbf9c36f9e97e11f325a`.
+The three prior defects stay closed. All model exports, scale logic and
+protected designs stay fixed. Appearance collection is now metadata-only;
+Lillend casting uses the settled ordinary party camera. Wall witnesses wait
+for three stable native frames and require ground support before moving.
+The prior Default clock-ownership correction is retained.
+
+This new review task selects an ordinary focused validation envelope, target
+15 minutes / ceiling 30; both earlier ledgers (26.80 and 28.10) are retained.
+Preflight production compilation and 28 selected tests PASS in 36.35 seconds.
+Plan one immutable candidate build (~11 minutes), then inspect indoor capture
+and the separate Nalfeshnee daylight movement/ON-reconstruction prerequisite
+before selecting remaining motion and Wall processes (~14–17 minutes total).
+The exact motion phase is separately admitted to avoid running the full
+sequence before its prerequisites are reviewed. Module OFF is not repeated.
+Native results for this candidate are NOT RUN until recorded below. No
+release/merge/full compatibility campaign is selected.
+
+
 ## Latest review correction outcome: mission acceptance remains open
 
 The three demonstrated defects and ten further art revisions are implemented

@@ -18,18 +18,20 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
-        // Three closed, save-free phases; no arbitrary fixture or module toggle.
+        // Closed save-free phases; prerequisite movement is inspected before
+        // selecting the remaining motion phase. No arbitrary fixture or toggle.
         private IEnumerable<int> ReviewSummonOverhaul(ExpandedSummoningCorrectionFixture fixture, string phase)
         {
             bool off = phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulOffPhase;
             bool indoor = phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulIndoorPhase;
+            bool motion = phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulMotionPhase;
             if (!IsSprint32Review || !_request.ExitAfterCompletion || !ReferenceEquals(fixture, _sprint25Fixture) ||
                 fixture?.Scene == null || fixture.Caster == null || _context.FeatureModules.Active.ExpandedSummoning == off)
                 throw new InvalidOperationException("Exact fresh overhaul fixture and actual startup module state required.");
             var rows = new JArray();
             var owned = new List<UnitEntityData>();
             string[] keys = off ? new[] { "nalfeshnee", "glabrezu", "vrock", "hezrou", "bone-devil" } :
-                indoor ? new[] { "nalfeshnee" } : new[] { "nalfeshnee", "glabrezu", "vrock", "babau", "hezrou", "barbed-devil", "bone-devil", "lillend-azata" };
+                motion ? new[] { "glabrezu", "vrock", "babau", "hezrou", "barbed-devil", "bone-devil", "lillend-azata" } : new[] { "nalfeshnee" };
             try
             {
                 foreach (string key in keys)
@@ -148,7 +150,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
                     for (int frame = 0; frame < 8; frame++) yield return 0;
                 }
-                if (!off && !indoor)
+                if (motion)
                     foreach (int frame in ReviewInfernalBodies34(fixture)) yield return frame;
                 Sprint25Check("overhaul-" + phase, true, new JObject { ["bodies"] = rows,
                     ["scope"] = "Native body/material, actual collider and selection surfaces, clear-lane command movement and presentation captures. Images require owner aesthetic review; no full compatibility qualification." },
@@ -213,6 +215,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int oldDamage = owner.Damage, slots = book.GetSpontaneousSlots(1); bool captured = false;
             try
             {
+                foreach (int frame in SummonOverhaulSettlePartyCamera(owner)) yield return frame;
                 owner.Damage = 5;
                 if (!cure.IsAvailable || !cure.CanTarget(new TargetWrapper(owner))) throw new InvalidOperationException("Native Lillend self-cure unavailable.");
                 var cast = new UnitUseAbility(cure, new TargetWrapper(owner)); owner.Commands.Run(cast);
@@ -220,8 +223,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owner.Damage < 5 && owner.Commands.Empty, 24, () => {
                         if (captured || cast.Animation?.IsStarted != true || cast.Animation.ActiveAnimation == null) return;
                         row["castingPose"] = Presentation32Pose(owner, true);
-                        row["castingImage"] = WriteExpandedSummoningOverheadStrikeCapture(owner, owner,
-                            _request.EvidenceDirectory, "overhaul-lillend-casting.png", 13f); captured = true;
+                        row["castingImage"] = WriteExpandedSummoningPartyCameraCapture(owner,
+                            _request.EvidenceDirectory, "overhaul-lillend-casting.png",
+                            owner.View.GetComponent<LillendHumanVisualAttachment>()?.Body?.name); captured = true;
                     })) yield return frame;
                 bool pass = captured && cast.IsActed && owner.Damage < 5 && book.GetSpontaneousSlots(1) == slots - 1 &&
                     (bool)row["castingPose"]["finite"];

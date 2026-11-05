@@ -9,14 +9,14 @@ namespace KingmakerGunslinger.DomainTests
         {
             string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview;
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultPhase("sprint35-infernal-early"), "Historical early phase retains its established admission.");
-            foreach (string phase in new[] { "summon-overhaul-indoor", "summon-overhaul-daylight", "summon-overhaul-wall", "summon-overhaul-off" })
+            foreach (string phase in new[] { "summon-overhaul-indoor", "summon-overhaul-daylight", "summon-overhaul-motion", "summon-overhaul-wall", "summon-overhaul-off" })
             {
                 Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Exact fresh overhaul phase admitted.");
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 1, 0, 0, false, false, false, false, true), "Overhaul cannot replace a live world.");
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 2, phase), "Overhaul cannot add a save or second parameter.");
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase(phase), "Overhaul grants no player input.");
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 1, phase + " "), "Malformed overhaul phase refused.");
-                Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, phase) == (phase != "summon-overhaul-indoor"), "Only the two exact outdoor phases use Default; indoor remains static.");
+                Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, phase) == (phase != "summon-overhaul-indoor"), "Only exact outdoor phases use Default; indoor remains static.");
             }
             foreach (string phase in new[] { "satyr-control", "lillend-support", "satyr-turn", "lillend-turn", "optional-suggestion", "suggestion-terminals", "satyr-routes", "lillend-routes", "support-lifecycle", "druid-input", "wizard-input", "sorcerer-input", "lillend-performance", "lillend-cantrips", "lillend-fascinate", "lillend-bardic-suggestion", "satyr-atwill", "satyr-atwill-turn", "lillend-hold", "lillend-hold-turn", "lillend-controls", "lillend-controls-turn", "lillend-grab", "technical-presentation" })
             {

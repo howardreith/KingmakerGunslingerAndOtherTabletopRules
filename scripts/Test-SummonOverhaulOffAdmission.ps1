@@ -26,7 +26,7 @@ foreach ($change in $cases) {
     $probe=$good.Clone(); foreach ($name in $change.Keys) {$probe[$name]=$change[$name]}
     if (Test-KmgTemporaryExpandedSummoningOffScope @probe) { throw ('Foreign OFF request admitted: '+($change|ConvertTo-Json -Compress)) }
 }
-foreach ($phase in @('summon-overhaul-indoor','summon-overhaul-daylight','summon-overhaul-wall','summon-overhaul-off')) {
+foreach ($phase in @('summon-overhaul-indoor','summon-overhaul-daylight','summon-overhaul-motion','summon-overhaul-wall','summon-overhaul-off')) {
     if (!(Test-KmgSprint32ReviewPhaseScope -Scenario 'disposable-expanded-summoning-sprint32-native-review' -Parameters @{reviewPhase=$phase})) { throw "Exact phase rejected: $phase" }
 }
-Write-Host 'PASS: exact OFF and released cleanup admitted; fourteen foreign OFF requests rejected; four exact phases recognized. No runtime launch.'
+Write-Host 'PASS: exact OFF and released cleanup admitted; fourteen foreign OFF requests rejected; five exact phases recognized. No runtime launch.'

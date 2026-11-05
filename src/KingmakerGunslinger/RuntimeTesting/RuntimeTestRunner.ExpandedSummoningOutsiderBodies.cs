@@ -292,10 +292,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["localBounds"] = SurveyVector(skin.localBounds.size),
                     ["worldBounds"] = SurveyVector(skin.bounds.size),
                     ["materials"] = new JArray(skin.sharedMaterials.Select(Cleanup2Material)) })),
-                ["captureScope"] = "Settled live materials and actual bounds; no aesthetic or mechanical verdict follows from a screenshot."
+                ["captureScope"] = "Metadata only: settled live materials and actual bounds. No camera movement or render; ordinary-camera images are captured separately."
             };
-            row["image"] = WriteExpandedSummoningOverheadStrikeCapture(unit, unit,
-                _request.EvidenceDirectory, stem + ".png", 13f);
             RuntimeTestResultWriter.WriteAtomic(System.IO.Path.Combine(
                 _request.EvidenceDirectory, stem + ".json"), row.ToString());
         }

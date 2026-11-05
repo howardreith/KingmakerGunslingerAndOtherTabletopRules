@@ -6,6 +6,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         internal const string Sprint39OverhaulIndoorPhase = "summon-overhaul-indoor";
         internal const string Sprint39OverhaulDaylightPhase = "summon-overhaul-daylight";
+        internal const string Sprint39OverhaulMotionPhase = "summon-overhaul-motion";
         internal const string Sprint39OverhaulOffPhase = "summon-overhaul-off";
         internal const string Sprint39OverhaulWallPhase = "summon-overhaul-wall";
         internal const string Sprint32InfernalHealingPhase = "sprint34-infernal-healing";
@@ -100,7 +101,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static bool Sprint32NativeInputPhase(string phase)
         { return phase == Sprint32DruidInputPhase || phase == Sprint32WizardInputPhase || phase == Sprint32SorcererInputPhase; }
         internal static bool Sprint32NativeDefaultPhase(string phase)
-        { return phase == Sprint39OverhaulWallPhase || phase == Sprint39OverhaulDaylightPhase || phase == Sprint39OverhaulOffPhase || phase == Sprint32InfernalBodiesPhase || phase == Sprint32ShadowMotionPhase || Sprint32NativeInputPhase(phase) || phase == Sprint32PerformancePhase ||
+        { return phase == Sprint39OverhaulWallPhase || phase == Sprint39OverhaulDaylightPhase || phase == Sprint39OverhaulMotionPhase || phase == Sprint39OverhaulOffPhase || phase == Sprint32InfernalBodiesPhase || phase == Sprint32ShadowMotionPhase || Sprint32NativeInputPhase(phase) || phase == Sprint32PerformancePhase ||
             phase == Sprint32FascinatePhase || phase == Sprint32BardicSuggestionPhase || phase == Sprint32GrabPhase || phase == Sprint32PresentationPhase || phase == Sprint32SuggestionTerminalsPhase; }
         internal static bool Sprint32NativeDefaultOutdoor(string scenario, string phase)
         { return scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview && Sprint32NativeDefaultPhase(phase); }
