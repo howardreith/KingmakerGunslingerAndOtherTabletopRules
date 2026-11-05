@@ -13,6 +13,11 @@ folded hems and gold seams, and layered curved feather vanes. The existing
 authoring tools are reused; no new runtime art system is introduced.
 No owner aesthetic approval is claimed.
 
+The PR #96 review correction lightly flattens and tapers the clavicle/deltoid
+transitions. Face, hair, bodice, wings and tail retain their revised human
+presentation. Current native motion/casting acceptance remains open in the
+overhaul checkpoint; older native passes below do not qualify these new bytes.
+
 The visual-overhaul revision fits the blouse and teal bodice to a sculpted
 ribcage/waist, replaces the wide rigid garment with closed fabric shells and
 curved collars/hems, blends fabric weights across the existing spine controls,
@@ -41,7 +46,7 @@ Exact exports:
 
 | File | SHA256 |
 |---|---|
-| `assets/sprint32-support/lillend-mesh.json` | `7485c6e414747bad1b39df10ac9762c89ec242b026bf0bf2528e80b5ef37395f` |
+| `assets/sprint32-support/lillend-mesh.json` | `12d2f82f0051b9933ab541c1e8d8c8050961d1335f0fc3a9cca7b394143c54b7` |
 | `assets/sprint32-support/lillend-albedo.png` | `f8538166f01434f5522e15bc8bd70be601154ea7ae2878fa0fd489859114c7de` |
 
 Mesh 26,332 vertices / 52,128 triangles; 36 drivers; maximum 2 influences per vertex.
