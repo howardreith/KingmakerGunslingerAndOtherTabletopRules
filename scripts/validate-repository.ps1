@@ -115,6 +115,9 @@ if ($activeVersion -in @('0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', 
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 27 corruption fixtures failed.' }
 }
 
+& (Join-Path $PSScriptRoot 'Test-Sprint40BlueprintFactory.ps1')
+& (Join-Path $PSScriptRoot 'Test-Sprint40StartupFiles.ps1')
+
 & (Join-Path $PSScriptRoot 'Test-IconOverhaulAssets.ps1') `
     -RepositoryRoot $repositoryRoot
 & (Join-Path $PSScriptRoot 'Test-IconPolishRound2Assets.ps1') `
