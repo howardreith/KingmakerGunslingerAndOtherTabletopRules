@@ -1,5 +1,83 @@
 # Summoned creature visual overhaul: active checkpoint
 
+## Wall-only diagnostic continuation: P2 corrected; run refused before casting
+
+Owner accepted the motion checkpoint and explicitly authorized a **15-minute
+Wall diagnosis**, ceiling **70 to 85**, retaining 69.78 already spent. Completed
+creature checks were not rerun. Model exports and scale implementation stayed
+fixed. This allowance selected one build, one guarded Wall phase and evidence
+review; it did not select a repair/rebuild campaign.
+
+Source `ee5812b64e5a914a3036588827d75a58d83fe552` corrects the reviewed P2.
+The already-collected cut/owner/dimensions/bounds/registration, Recast route and
+requests, grid queue/completion/failure/counts/original walkability, active
+graphs/tile handlers, paths and bounded obstruction samples are saved to
+`s35-wall-navigation-before-breach.json` **before** the live mover or attack can
+abort. This partial snapshot carries no PASS verdict. The attack-eligibility
+result also attaches it, and serializes the exact `targetLosObjectId` local used
+as HasObstacle's third input. No reach/LOS override or assertion weakening.
+
+Focused production compilation / 10 tests PASS (26.249s). One clean immutable
+development candidate on that source then passed exact-reference compilation,
+the same 10 selected tests and strict packaging:
+
+- ZIP `artifacts/development-candidates/summon-outsider-review-corrections/ee5812b64e5a/KingmakerGunslinger-0.0.177-development-summon-outsider-review-corrections-ee5812b64e5a.zip`.
+- ZIP SHA-256 `0a14c203579a31b115eab142d104ddd5f73f66eb0efb3ca18875046bc0bad5c1`.
+- DLL SHA-256 `d2ea064d0a915c76e5b1cb84057719d264f7d34df64f9cbae95bb741e2e499f0`.
+- DLL MVID `36d83034-b236-4f20-8230-67a648192076`.
+- Source fingerprint `b8b6f5bd29255310df3aad765d08a359c1d7c70d42e7ed1e609224df06015af6`.
+
+Exact Wall-only native directory:
+`20261105T1539045203048Z-disposable-expanded-summoning-sprint32-native-review`
+under the assigned lab runtime-evidence root. **FAIL / 15 assertions total**;
+result SHA-256 `ab2ea894f82bd5b9480218d35a0606ad16b556c9f54ca1d3507bf5aa78104785`.
+
+This run stopped at `wall-settled-witness-initial-path`, **before any Wall cast**.
+After three quiet frames the requested origin was
+`[12.747345,-5.749453,21.9154739]`, while the actor stood at
+`[-5.7529707,-5.61068439,26.8096256]`, about **19.14m horizontally away**.
+The native ground-root query returned Y=-5.630837, a 0.02015m discrepancy against
+the existing 0.02m support tolerance; expected-position admission independently
+failed by metres. The strict setup guard correctly refused continuation.
+
+**Classification:** fixture placement/settling precondition failure. This is
+not a Wall obstruction, LOS, attack, damage or expiry result. Neither the new
+partial navigation snapshot nor physical eligibility branch was reached; both
+remain native-unexercised. The previous candidate's unobstructed-path observation
+and attack refusal therefore remain unresolved at their original identity.
+No new gameplay regression or mechanical repair is inferred. Do not rerun this
+unchanged phase, increase reach, ignore LOS or relax support/position admission.
+
+The smallest next investigation is the fixture's initial placement boundary:
+reconcile the owned actor's entity/view/movement state immediately after native
+placement and across its first settled frames before issuing any Wall command.
+Select a fixture repair from that evidence before another full Wall run. The
+cause of the displacement itself is not yet established; a production Wall
+repair cannot be selected from this pre-cast failure. Full physical damage,
+obstruction, grid/claim restoration, controlled expiry, post-removal movement
+and Bone Devil tail acceptance remain open.
+
+Exact current installation v0.0.140 restored, live-tree fingerprint
+`5c3e4ad499dc5116d2024d06260d11700087379937b96b7372c821628cb9bfbb`.
+Native settings and protected save bytes/length/mtime restored unchanged. No save
+load or mutation; fresh save-free process and guarded leases/staging used.
+
+Ledger `artifacts/summon-wall-diagnosis/validation-ledger.json`: retained 69.78,
+build **647.231s**, Wall **237.418s**, evidence/text/identity review reserve 20s;
+**84.86/85 minutes**. The 26.249s focused correction gate is already included
+in retained 69.78, not counted twice. Prior 69.34 and all earlier ledgers remain.
+Commands/logs/timers and the raw-result summary are in the same artifact root.
+Build: `Build-Local.ps1 -DevelopmentPurpose summon-outsider-review-corrections`
+with filter `expanded-summoning.sprint35;expanded-summoning.overhaul` and the
+existing exact private bundle. Guarded `run-native.ps1` admits only Wall.
+
+Accepted creature motion, casting, glaive/chain contacts/isolation and prior
+geometry/scale/camera fixes remain credited without a routine campaign. The
+65-image illustrated review below stays frozen at its own tested identities;
+this pre-cast failure produced no new Wall screenshot. PR #96 remains draft.
+The following checkpoints are historical; their allowance requests are not new
+approval requests and their PASS records are not results on changed bytes.
+
 ## Latest approved extension: motion PASS; Wall native eligibility still blocks acceptance
 
 Owner approved “Yes finish those checks”, raising the same continuation ceiling

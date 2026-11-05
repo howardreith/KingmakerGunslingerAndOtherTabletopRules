@@ -1,5 +1,43 @@
 # Summon visual overhaul: Wall of Ice investigation
 
+## Latest Wall-only diagnosis: early record corrected, initial placement refused
+
+Owner authorized one diagnostic build/run within a ceiling raised from 70 to
+85 minutes, retaining 69.78. Creature/model/scale work and completed motion
+checks were held fixed. Source `ee5812b64e5a914a3036588827d75a58d83fe552`
+now persists all existing navigation observations before the live mover/attack
+abort boundary, attaches that snapshot to eligibility and records the exact LOS
+object ID used. No new framework, gameplay change or weakened assertion.
+Compilation / 10 focused tests and immutable candidate packaging PASS.
+
+ZIP SHA-256 `0a14c203579a31b115eab142d104ddd5f73f66eb0efb3ca18875046bc0bad5c1`.
+Wall-only run `20261105T1539045203048Z-disposable-expanded-summoning-sprint32-native-review`
+FAIL / 15 assertions total; result SHA-256
+`ab2ea894f82bd5b9480218d35a0606ad16b556c9f54ca1d3507bf5aa78104785`.
+
+The run failed **before casting** at initial-path settling. Requested origin
+`[12.747345,-5.749453,21.9154739]`; actual settled actor
+`[-5.7529707,-5.61068439,26.8096256]`, horizontal gap about 19.14m. Three quiet
+frames did not imply correct placement. Native floor mismatch was 0.02015m
+against the unchanged 0.02m tolerance; expected horizontal position also failed
+independently. This is a fixture-precondition failure, not new evidence about
+Wall obstruction or attack eligibility. The new pre-breach/LOS records were not
+reached. Their diagnostic branches remain native-unexercised, despite being in
+the actual loaded candidate. Earlier two questions remain unanswered.
+
+Next narrow investigation: reconcile entity/view/native movement state across
+the initial placement and first settled frames, then select a fixture repair
+before another Wall run. No evidence supports reach/LOS overrides, a relaxed
+support guard or a production Wall repair. Do not repeat the unchanged failure.
+Physical damage, obstruction, exact grid/claim restoration, controlled expiry,
+post-removal movement and Bone Devil tail contact remain open.
+
+Current installation/settings/protected saves restored exactly; no load/save.
+One build 647.231s, one Wall run 237.418s, review reserve 20s: **84.86/85 minutes**.
+Exact candidate/DLL identities, commands and prior ledger retention are in the
+active overhaul checkpoint. PR stays draft; accepted creature checks stay
+credited. The records below retain historical results and allowance chronology.
+
 ## Latest approved 70-minute checkpoint: drift fixed; native attack eligibility unresolved
 
 Candidate source `59603558d754c0fe3c8aa5767430030b218daa2b`, ZIP SHA-256
