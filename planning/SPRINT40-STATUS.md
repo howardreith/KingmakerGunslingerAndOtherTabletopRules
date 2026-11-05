@@ -8,22 +8,25 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 ## Current continuation state
 
 - Owner/root: HOWARD-LAPTOP, `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
-  `codex/expanded-summoning-sprint40-ice-devil`. Last pushed `ea73488bb382b35a1bf01bc6ac2e88a1fd5ca917`;
-  following survey repair is identified by its enclosing commit/HEAD.
+  `codex/expanded-summoning-sprint40-ice-devil`. Last pushed `d10f9db2fb76c60a994148ede3a70b9d16b2e0e0`;
+  following vision repair is identified by its enclosing commit/HEAD.
 - No game/deployment/lease. Original118 saves never loaded/written; full exact
-  audit `sprint40-intake-20261105T002300Z/post-early-20261105T081110Z/restoration.json`
-  passed Mods/references/settings/saves. Log `artifacts/s40-ea-early-restoration-audit.log`.
+  audit `sprint40-intake-20261105T002300Z/post-early-20261105T082524Z/restoration.json`
+  passed Mods/references/settings/saves. Log `artifacts/s40-d10-early-restoration-audit.log`.
 - Hidden creature graph, original body/icon, early mechanics, Nalfeshnee55-foot
   source correction and Nimbus Daze wording are implemented. Persistent Image
   omission explicitly approved/no substitute. No unresolved gameplay decision.
-- Latest native `20261105T0807491020519Z-disposable-expanded-summoning-sprint32-native-review`
-  refused before summons: no60m survey candidate. Protected actors1, owned events0,
-  violations0; not Slow proof. World/clock and native empty world restored.
-- Correct survey's lateral projection check to exclude terrain height, retain
-  native projected height and60m separation, inspect four native local routes,
-  and retain each bounded candidate/rejection even on failure. Original refusal
-  did not retain candidate geometry, so its exact rejecting factor is unproven.
-- NEXT: coherent commit/build of survey repair, native Slow/isolation proof;
+- Latest native `20261105T0821539854101Z-disposable-expanded-summoning-sprint32-native-review`
+  admitted a63.376m protected gap with native local route, observed17 owned
+  events/zero protected recipients, then FAIL appearance: body exists, disabled,
+  faderfalse/dissolve1 after19.153 game seconds. No Slow mechanics proof.
+  World/clock/native empty world restored. Native visibility getter depends on
+  FOW and live view. Next fixture uses actual party vision on the disposable
+  caster and native camera scrolling, with exact removal/camera restoration;
+  no original party actor moves and no visibility/fader/renderer is forced.
+  Quiet-anchor admission requires the exact original anchor plus this caster
+  only for the authoritative S40 phases; old phases retain one anchor.
+- NEXT: coherent commit/build of vision repair, native Slow/isolation proof;
   then range/body/AI/Slow-turn and remaining rider cases. Body/public/AI/lifetime
   observers exist but are unqualified. One SM IX route remains suppressed.
   Persistence/publisher wiring, final public artifact, fresh final qualification,
@@ -35,6 +38,14 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   MVID `263c38bd-9084-4e11-a929-9ae1cfe83f9b`. Log `artifacts/s40-mechanics-build-ea73488b.log`.
 - Survey repair production compilation27.9s and5/5 selected checks PASS;
   `artifacts/s40-isolation-survey-compile.log`. No native claim yet.
+- d10 package/independent reader/strict validation PASS, ZIP
+  `df489ba91ccdc47ef19ecda580371c3577c1eacca9fefeb25ff886c12fe9f017`, DLL
+  `d47d0c775f1fd0bd5ed806518cb8592442d6c28292de90d26c80987a20e0b3a7`,
+  MVID `595dd750-a457-49c0-aa05-ce2d17bc1367`.
+  Vision batch22/22 neighbor checks PASS (production26.1s/tests5.3s), then5/5
+  with added native visibility receipt fields. Logs `artifacts/s40-isolation-vision-neighbors.log`
+  and `artifacts/s40-isolation-visibility-receipt-compile.log`. Rejected CameraRig
+  TargetPosition compile retained; fixed to existing native GetPosition API.
 
 ## Development chronology through source0d and isolation repair
 
