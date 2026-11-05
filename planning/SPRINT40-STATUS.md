@@ -9,7 +9,7 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 - HOWARD-LAPTOP, root `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
   `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Reviewed candidate
-  product head `63e552820652d643ebf807f04a219b38d9819752`. No game,
+  product head `45f67a7e3eff86748c17e19ce02d450b8d0bc0fe`. No game,
   deployment, staging or lease is active; the live KMG tree is restored to
   SHA256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 - Recovery is CLOSED EXACTLY. The typed `BlueprintWeaponEnchantment` factory
@@ -69,19 +69,22 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   current `origin/master`; the three overlapping phase/body/wall-survey seams were
   unioned and compiled rather than reset. v0.0.178 remains absent from remote tags
   and releases. PR97 is draft and will be refreshed after the next guarded push.
-- The v0.0.178 version-only metadata, exact-product validator/static record,
-  regenerated roster ledger and stable notes are prepared; direct and dispatched
-  repository validation PASS. The first full-gate attempt stopped before product
-  compilation because the disposable Sprint40 startup-file fixture still passed
-  literal version 0.0.177 to the current-version guard; its positive request now
-  derives the active Info version while historical negative cases remain pinned.
-  No game, deployment or save was touched. No material gameplay decision remains.
-  Sprint40 remains unreleased. The startup-fixture repair is committed as
-  `48014aa4`; NEXT: commit the complete-suite repair, repin the exact-product
-  validator to it, and rerun the complete clean source/build/package gate, then
-  execute fresh mechanics,
-  route/integration and six-process ON/OFF persistence campaign before exact-byte
-  publication, public-download verification, closing restoration and final records.
+- The v0.0.178 source/build/package gate passed on candidate source `00916d54`:
+  all 2,816 registered tests executed with zero failures, exact-reference Release
+  compilation passed, and strict packaging produced ZIP SHA256 `037166ee...`, DLL
+  SHA256 `7a985aa0...`, MVID `97dc4ca5-5b7e-40f9-808f-283898d992e3`, source
+  fingerprint `98e66313...`. Compiled `ice-devil` admission/refusals passed 33/33.
+  The first fresh final presentation execution on those bytes recorded the required
+  body, private-pair, native expiry/death and resource-lifetime outcomes, then FAILed
+  during observer teardown because the shared presentation routine passed its two
+  already-retired Ice Devil owners back into the generic disposer. Evidence is
+  `20261105T2003174741769Z-disposable-expanded-summoning-sprint32-native-review`;
+  restoration receipt `expanded-summoning-restoration/20261105T2006204260315Z-disposable-expanded-summoning-sprint32-native-review.json`
+  verifies the exact live-tree hash, nine startup-written peer files and all 118
+  protected saves. Commit `45f67a7e` applies only the live-owner teardown filter;
+  production compilation and five focused Sprint40 checks PASS. NEXT: rebuild the
+  coherent candidate, rerun presentation once, then execute the remaining fresh
+  mechanics, public route, affected integration and six-process ON/OFF campaign.
 - The first complete-suite pass on `48014aa4` reached all 2,816 tests and found
   six finite candidate-contract failures: two new unit/route census increments,
   the extracted enchantment-shell source boundary, the guarded 13/14-parameter
