@@ -282,9 +282,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (string)row["event"] == "effect-application" &&
                         (string)row["target"] == wall.UniqueId &&
                         (string)row["blueprint"] == "c98d765d063f57a49a03f13d4f697c33");
+                    var nodeMismatches = originalNodes.Where(node =>
+                        node.Key.Walkable != node.Value).Select(node => new JObject {
+                            ["node"] = node.Key.position.ToString(),
+                            ["graph"] = node.Key.GraphIndex,
+                            ["original"] = node.Value,
+                            ["current"] = node.Key.Walkable
+                        }).ToArray();
                     check(id + "-source-removal", wallLifetime == null && nativeRetirement &&
-                        originalNodes.Length > 0 &&
-                        originalNodes.All(node => node.Key.Walkable == node.Value),
+                        originalNodes.Length > 0 && nodeMismatches.Length == 0,
                         new JObject { ["sourceDestroyed"] = owner.Destroyed,
                             ["sectionDestroyed"] = wall.Destroyed, ["sectionDead"] = wall.Descriptor.State.IsDead,
                             ["sectionInGame"] = wall.IsInGame, ["lifetimeRemoved"] = wallLifetime == null,
@@ -293,7 +299,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["bindingClaims"] = binding?.GridNodesClaimed,
                             ["activeClaims"] = InfernalWallNavmesh35.ActiveGridClaimCount,
                             ["nodes"] = originalNodes.Length,
-                            ["allOriginalBitsRestored"] = originalNodes.All(node => node.Key.Walkable == node.Value) },
+                            ["allOriginalBitsRestored"] = nodeMismatches.Length == 0,
+                            ["nodeMismatches"] = new JArray(nodeMismatches) },
                         "Actual source removal removes the wall lifetime, enters the native dismemberment transition and restores every claimed navigation bit before fixture teardown.");
                     // The production contract above has completed. Remove its
                     // request-owned native corpse only to keep the shared
