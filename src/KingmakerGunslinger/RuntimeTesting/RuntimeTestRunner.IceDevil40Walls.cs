@@ -37,8 +37,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool recipientFearIsolation = false;
             int baselineClaims = InfernalWallNavmesh35.ActiveGridClaimCount;
             Vector3 surveyCenter = fixture.Caster.Position;
+            var appearancePlacements = new JArray();
             var receipt = new JObject { ["cells"] = cells, ["events"] = trace.Rows,
                 ["fixtureFearIsolation"] = true, ["baselineClaims"] = baselineClaims,
+                ["appearancePlacements"] = appearancePlacements,
                 ["phase"] = ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilWallsPhase };
             Action<string, bool, JObject, string> check = (id, pass, row, why) => {
                 row["cell"] = id; cells.Add(row); Sprint25Check("sprint40-" + id, pass, row, why);
@@ -53,10 +55,43 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var actor = CastExpandedSummoningOwnTier(fixture, key); actors.Add(actor);
                     actor.Descriptor.State.AddConditionImmunity(UnitCondition.Frightened);
                     Sprint28SetBrainActivePreservingActions(actor, false);
-                    // Move only the new source beyond existing auras before
-                    // asking the ordinary native appearance readiness gate.
-                    PlaceExpandedSummoningUnit(actor, fixture.Caster.Position +
-                        Vector3.forward * (8f + actors.Count * 4f));
+                    // Park each source on the real connected walking graph
+                    // before asking the ordinary appearance gate. An arbitrary
+                    // transform offset can land on a blocked or roof node and
+                    // is not a native placement precondition.
+                    var walking = Sprint40WalkingConstraint(actor);
+                    var anchor = AstarPath.active.GetNearest(fixture.Caster.Position, walking);
+                    if (anchor.node == null || !anchor.node.Walkable)
+                        throw new InvalidOperationException("No native wall-owner walking anchor.");
+                    walking.SetStart(anchor.node); walking.constrainArea = true;
+                    float minimumRadius = 8f + actors.Count * 4f;
+                    bool parked = false;
+                    for (float radius = minimumRadius; radius <= minimumRadius + 12f && !parked; radius += 3f)
+                    for (int angle = 0; angle < 16 && !parked; angle++)
+                    {
+                        Vector3 requested = fixture.Caster.Position +
+                            Quaternion.Euler(0f, angle * 22.5f, 0f) * Vector3.forward * radius;
+                        var point = AstarPath.active.GetNearest(requested, walking);
+                        Vector3 projection = requested - point.clampedPosition; projection.y = 0f;
+                        if (point.node == null || !point.node.Walkable ||
+                            !walking.Suitable(point.node) || projection.magnitude > 1.5f) continue;
+                        Vector3 horizontal = point.clampedPosition - fixture.Caster.Position; horizontal.y = 0f;
+                        if (horizontal.magnitude < minimumRadius - 1.5f ||
+                            actors.Take(actors.Count - 1).Any(other => {
+                                Vector3 gap = other.Position - point.clampedPosition; gap.y = 0f;
+                                return gap.magnitude < 3f;
+                            })) continue;
+                        PlaceExpandedSummoningUnit(actor, point.clampedPosition);
+                        appearancePlacements.Add(new JObject {
+                            ["actor"] = actor.UniqueId, ["requested"] = Vec(requested),
+                            ["clamped"] = Vec(point.clampedPosition), ["radius"] = radius,
+                            ["angleDegrees"] = angle * 22.5f,
+                            ["horizontalProjectionGap"] = projection.magnitude,
+                            ["graph"] = point.node.GraphIndex, ["tags"] = walking.tags });
+                        parked = true;
+                    }
+                    if (!parked) throw new InvalidOperationException(
+                        "No bounded connected wall-owner appearance placement.");
                     foreach (int frame in Outsider30NativeAppearance(actor, actor.Blueprint.name)) yield return frame;
                 }
                 // Test the two required owner pairs sequentially. Three

@@ -199,6 +199,28 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   before casting, and records normal action cost; it never clears/ignores cost or
   forces a roll, and S34's default path is unchanged. Focused production compile
   and all five Sprint40 tests pass. NEXT: pin/push and freeze one replacement.
+- Reporting head `07772dff2ee43d23703feafee25e2934a1931167` passed 2,816/2,816
+  and strict packaging: ZIP SHA256 `ee32e5459865107ff9698d31acce1122bb00c2a33ea576821a864a2c10a05e88`,
+  DLL SHA256 `289e282e7f1065397255b969969775135633ba8da81c4ee8713e8ab496b51d09`,
+  MVID `8cab5605-60c5-48e6-a7f1-42fdd0a70af0`. Fresh final early, combat,
+  effects, Slow and turn-based Slow phases passed respectively at
+  `20261105T2250075779443Z-disposable-expanded-summoning-sprint32-native-review`,
+  `20261105T2254113483984Z-disposable-expanded-summoning-sprint32-native-review`,
+  `20261105T2259494330722Z-disposable-expanded-summoning-sprint32-native-review`,
+  `20261105T2304037148205Z-disposable-expanded-summoning-sprint32-native-review`
+  and `20261105T2308335651182Z-disposable-expanded-summoning-sprint32-native-review`.
+  Every wrapper restored the protected live hash, peer bytes/metadata and all118
+  saves exactly. Wall evidence
+  `20261105T2312425950792Z-disposable-expanded-summoning-sprint32-native-review`
+  retains a setup FAIL before any wall cell: its first owner was moved to an
+  arbitrary12-meter transform offset whose nearest native node was blocked.
+  Restoration receipt
+  `expanded-summoning-restoration/20261105T2315316114367Z-disposable-expanded-summoning-sprint32-native-review.json`
+  is exact. The narrow observer repair now selects and records a bounded connected
+  walkable node with the exact owner's traversal tags before appearance; gameplay
+  wall code is unchanged. Production compilation and all five focused Sprint40
+  tests pass. NEXT: commit/push, rebuild the changed test DLL, and run the
+  discriminating wall phase before restarting final-artifact qualification.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 
