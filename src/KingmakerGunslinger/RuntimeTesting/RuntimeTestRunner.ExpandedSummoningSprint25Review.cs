@@ -110,10 +110,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_sprint25Fixture != null)
                 {
                     bool cleaned = false, clockRestored = false;
+                    JObject cleanupReceipt = null;
                     try
                     {
                         EndExpandedSummoningCorrectionFixture(_sprint25Fixture,
                             out cleaned);
+                        cleanupReceipt = _sprint25Fixture.CleanupReceipt;
                     }
                     finally
                     {
@@ -127,7 +129,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     Sprint25Check("fixture-restored", cleaned && clockRestored,
                         new JObject { ["referencesRestored"] = cleaned,
-                            ["clockRestored"] = clockRestored },
+                            ["clockRestored"] = clockRestored,
+                            ["cleanup"] = cleanupReceipt },
                         "Original world, party, area references and request-local clock are restored.");
                 }
                 else { _sprint25Clock?.Dispose(); _sprint25Clock = null; }
