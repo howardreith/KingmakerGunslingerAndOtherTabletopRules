@@ -11,9 +11,15 @@ roster sprint is selected.
 
 **Status: reviewable development work; mission acceptance incomplete.**
 Technical validation, native visual review and owner aesthetic approval remain
-separate. The twelve named November 5 screenshots were not found in the
-assigned lab; their location was requested. The illustrated report therefore
-uses actual exported v0.0.177 bodies as its explicitly labeled offline baseline.
+separate. The owner located all twelve references in
+`C:/Dev/KingmakerBuffPlannerLab/handoff`, with `ChatGPT Image Nov 4, 2026,
+08_51_46 PM.png` through `08_52_31 PM.png` names. Each image was viewed and
+matched to its visible creature name/combat log in mission order. The report
+embeds the supplied images in expandable panels alongside the explicitly
+labeled offline v0.0.177/revised export comparisons. Raw inputs stay unchanged
+and out of Git. The Stalker outline, successful dark bat-winged Shadow Demon,
+detached Kyton arcs and Lillend garment concerns were confirmed from these
+references; final native states still require observation.
 
 ## Current per-creature disposition
 
@@ -115,6 +121,17 @@ Other changed meshes receive the existing orientation audit during report
 generation. Exact final mesh/albedo hashes, triangle/vertex counts and audit
 results are written in the local `review-manifest.json`.
 
+The first final development build at `3781d9bdf4ba` ran 441.604 s: selected
+68/68 tests, exact-reference production compilation, supply-icon/native
+companion checks and package assembly passed; strict packaging then correctly
+rejected the old Lillend export pins. The missed packaging pins for all ten
+revised models were updated to the reviewed exported bytes, retaining the
+preserved shadow-outsider and unrelated pins. The failed archive/log remains
+in its original location without a successful development receipt. Narrow
+positive validation and a valid-JSON tampered-Lillend negative fixture are
+recorded separately before the corrected candidate build. No package from
+this failed attempt is deployed or presented as a qualified candidate.
+
 The final development package, exact source commit, actual build/native
 durations/results and cumulative selected validation time will be appended
 after the single final guarded attempt. Full suite, compatibility, persistence,
@@ -130,7 +147,7 @@ sources keep their normal `--kind`, `--capture`, `--albedo`, `--mesh-data`,
 human-bind capture and direct `generate_lillend.py` pipeline; see its README.
 
 ```powershell
-& '<Blender bundled Python>' scripts/Export-SummonOutsiderVisualReview.py --blender '<Blender executable>' --before-ref ffb1f8bf2c0014ee6bb5465103252195f75e449b
+& '<Blender bundled Python>' scripts/Export-SummonOutsiderVisualReview.py --blender '<Blender executable>' --before-ref ffb1f8bf2c0014ee6bb5465103252195f75e449b --owner-reference-dir C:/Dev/KingmakerBuffPlannerLab/handoff
 ```
 
 Review document: `artifacts/summon-overhaul/review/Summoned-Creature-Visual-Review.html`.
