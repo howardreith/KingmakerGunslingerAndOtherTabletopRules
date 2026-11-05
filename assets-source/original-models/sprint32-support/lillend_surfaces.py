@@ -59,9 +59,16 @@ def build_body(bm, weights, uvs, rig, kind, common, rest, native, tail):
     field.ellipsoid(s3 + Y * .033 + Z * .010, (.155, .125, .090), k=.025)
     for sign, side in ((-1, "L"), (1, "R")):
         shoulder, elbow, wrist = [at(side + suffix) for suffix in ("_Up_arm", "_ForeArm", "_Hand")]
-        field.chain([s3 + Y * .055, at(side + "_Clavicle"), shoulder], [.100, .067, .066], k=.034)
+        field.chain([s3 + Y * .055, at(side + "_Clavicle"), shoulder], [.095, .060, .058], k=.030)
         field.chain([shoulder, shoulder.lerp(elbow, .45), elbow, elbow.lerp(wrist, .55), wrist],
-                    [.065, .060, .043, .039, .028], k=.023)
+                    [.059, .061, .043, .035, .028], k=.023)
+        # A flattened deltoid follows the humerus rather than swelling into a
+        # shoulder ball. Keep the fitted bodice, native joints and arm pose.
+        axis = (elbow-shoulder).normalized()
+        across = axis.cross(Z).normalized()
+        depth = across.cross(axis).normalized()
+        field.ellipsoid(shoulder.lerp(elbow,.18), (.059,.080,.049),
+                        axes=(across,axis,depth), k=.016)
         digits = [at(side + "_Toe_%d_01" % d) for d in (1, 2, 3)]
         palm = (sum(digits, Vector()) / 3 + wrist) / 2
         field.cone(wrist, palm, .031, .039, k=.018)

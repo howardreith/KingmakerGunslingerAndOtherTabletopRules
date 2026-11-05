@@ -1,4 +1,17 @@
-## Current owner visual-overhaul revision
+## PR 96 review correction
+
+The larger beveled canine skull and visible swept horns carry its head silhouette. The smaller arms root higher and extend forward and laterally into negative space beside the waist, with larger hands; their chest-driven limitation remains. The pincer arms stay on the actual two native arm/digit chains. Calf/metatarsal forms and broad separated toes replace the rod/disc lower legs.
+
+The scoped `sprint36-demons/anatomy_planes.py` authoring helper supplies original beveled jaw/forefoot masses and elongated muscle forms around the unchanged measured joints. No new driver, native geometry, animation, attack or rule is introduced. Raw capture authority remains `6443b580c8019d2a32de616ef610df3c2aa851c7c998044b56e0c29b4494e65d`.
+
+Regeneration uses the existing generator/arguments and the seam-safe `outsider_surface.py`. All regenerated triangles stay inside a single atlas region; all components are closed, consistently wound and outward. Exact front/side/party renders and 240-pixel party views were inspected. These are offline shape and export observations; native material/motion and owner aesthetic approval remain separate. Reports/previews live in ignored `artifacts/summon-overhaul-review/demons`.
+
+| Current export | Vertices / triangles | SHA-256 |
+| --- | --- | --- |
+| `glabrezu-mesh.json` | 5424 / 10660 | `2122716bb703ebd1bef27723c2d2d4cb370786bc3930588ebdff4d1f21111ac6` |
+| `glabrezu-albedo.png` | - | `e13ab445694f3e1680b6ab3db03fb2d834d5096dbc0ed69817e8c413f2523187` |
+
+## Initial owner visual-overhaul revision (retained record)
 
 The November 2026 owner mission brings the previously deferred cosmetic work into scope. The current exports use opt-in `continuous-bodies/outsider_surface.py` to unite organic skin and blend the existing two-influence weights. Individual teeth, horns, feather vanes and membranes retain intentional ownership. The original rig articulation limits remain. No mechanical profile, attack, route, GUID, icon or save identity changed.
 

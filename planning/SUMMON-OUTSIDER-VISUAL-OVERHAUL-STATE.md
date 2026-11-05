@@ -1,5 +1,46 @@
 # Summoned creature visual overhaul: active checkpoint
 
+## PR #96 review correction continuation
+
+Owner-authorized additional validation allowance: 30 minutes beyond the retained
+26.80-minute initial ledger below; planning target 15 minutes. PR remains draft.
+This selects focused review corrections and native acceptance, not release qualification.
+
+The reviewed source is `3611f921ddeb4c2af65a7f095e9b140527bea26c`.
+Reproduced atlas crossings: Nalfeshnee 545 and Bone Devil 176 triangles. The
+corrected remesher assigns a whole face to one atlas tile and splits UV seams
+while retaining identical smooth normals and weights. All nine affected atlas
+exports now have zero crossings or seam normal/weight mismatches. A deliberately
+poisoned triangle proves the checker rejects valid-corner/interior-crossing UVs.
+The Kyton link basis is perpendicular with a stable vertical fallback: all 64
+hanging links have a 0.027 minimum opening semi-axis versus 0.010 tube radius;
+four owned regions retain their runtime ownership. The five retained scale
+entries now reject module-OFF before touching or marking a view.
+
+Art refinements strengthen Hezrou jaw/brow and planted legs, Glabrezu head and
+separated four-arm silhouette, Bone Devil skeletal joints/pelvis/feet/membranes,
+and Kyton clothing/asymmetric chain arrangement. Nalfeshnee retains the heavy
+head/trunk with larger hands, tapered calves and planted toes. Vrock retains
+feather masses with less regular primaries. Babau, Barbed Devil, Bearded Devil
+and Lillend receive scoped anatomical transitions. Protected Satyr, Shadow Demon
+and Invisible Stalker exports are unchanged. Offline inspection is not native
+acceptance or owner aesthetic approval.
+
+Pre-candidate focused production compilation and 78 selected domain tests PASS
+(26.52 seconds). Exact OFF-admission positives/14 negatives and existing 285
+orchestration assertions PASS. Three chain regression tests PASS. These checks
+and asset checks conservatively reserve 0.60 minute of the new allowance.
+
+Plan: freeze this source/asset/observer batch; build one immutable development
+candidate with exact updated pins; use four guarded fresh processes for indoor,
+daylight/motions/colliders/module-ON reconstruction, Wall formation/obstruction/
+destruction/original-deadline controlled expiry, then actual module-OFF view
+reconstruction. Native statuses remain NOT RUN until receipts exist. Source
+contains observations, not an unproven Wall mechanical repair. Preserve actual
+installed intake, all save bytes/metadata and native settings transactionally.
+Expected build 7–8 minutes; native work reserved approximately 15–20 minutes.
+
+
 Owner mission: `C:/Dev/KingmakerGunslingerLab/Codex mission for summoned creature visual overhaul.md`.
 Branch: `codex/summon-outsider-visual-overhaul`. Baseline fetched from approved
 origin: `ffb1f8bf2c0014ee6bb5465103252195f75e449b`; latest published release

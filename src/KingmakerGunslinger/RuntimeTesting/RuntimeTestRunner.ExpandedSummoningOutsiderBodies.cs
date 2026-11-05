@@ -271,7 +271,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string token = name.Substring(prefix.Length);
             if (!new[] { "Nalfeshnee", "Glabrezu", "Vrock", "Babau", "Hezrou",
                 "BarbedDevil", "BoneDevil", "BeardedDevil", "KytonChainDevil",
-                "InvisibleStalker", "ShadowDemon" }.Contains(token)) return;
+                "LillendAzata", "InvisibleStalker", "ShadowDemon" }.Contains(token)) return;
             string stem = "overhaul-" + token.ToLowerInvariant() + "-" + unit.UniqueId;
             var skins = unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true);
             var row = new JObject {
@@ -283,6 +283,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["nativeSizeScale"] = unit.View.GetSizeScale(),
                 ["viewLocalScale"] = SurveyVector(unit.View.transform.localScale),
                 ["viewLossyScale"] = SurveyVector(unit.View.transform.lossyScale),
+                ["shapeHierarchy"] = Cleanup2ShapeHierarchy(unit),
                 ["attachment"] = ExpandedSummoningPteranodonViewPatch.DescribeView(unit.View),
                 ["renderers"] = new JArray(skins.Select(skin => new JObject {
                     ["name"] = skin.name, ["enabled"] = skin.enabled,

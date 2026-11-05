@@ -30,6 +30,7 @@ import generate_theropods as donor
 import paint_snake_albedo as paint
 sys.path.insert(0, str(args.pipeline_root / 'continuous-bodies'))
 from outsider_surface import consolidate_skin
+import continuous_body as surface
 
 SIDE, UP, FRONT = Vector((1, 0, 0)), Vector((0, 0, 1)), Vector((0, 1, 0))
 TORSO = ('Torso_Lower', 'Torso_Upper', 'neck', 'neck1', 'Head')
@@ -96,16 +97,21 @@ def build_body(bm, weights, uvs, rig, kind):
         arm = [side + '_' + name for name in ARMS[:3]]
         shoulder, elbow, palm = [at(name) for name in arm]
         if barbed:
-            mass(shoulder, (.13, .125, .12), arm[0], 'body')
+            mass(shoulder-UP*.035, (.118, .155, .105), arm[0], 'body')
             tube([upper+UP*.20, shoulder, elbow, palm],
                  [.125, .112, .083, .05],
                  ['Torso_Upper', *arm], 'body', 12)
         else:
-            mass(shoulder, (.075, .08, .08), arm[0], 'shell')
-            mass(elbow, (.065, .06, .065), arm[1], 'shell')
+            # Flared scapular/acromion and trochlear plates cover bone ends;
+            # a round knob at every measured joint made the old cadaver a toy.
+            mass(shoulder+UP*.010, (.085, .037, .060), arm[0], 'bone')
+            mass(elbow+FRONT*.014, (.057, .030, .044), arm[1], 'bone')
             tube([upper+UP*.23, shoulder, elbow, palm],
-                 [.071, .060, .043, .031],
+                 [.060, .047, .033, .024],
                  ['Torso_Upper', *arm], 'bone', 9)
+            for offset in (-.018,.018):
+                tube([elbow+SIDE*offset,palm+SIDE*offset*.6],
+                     [.020,.013],[arm[1],arm[2]],'bone',9)
         mass(palm, (.055 if barbed else .035, .075 if barbed else .05,
                     .045 if barbed else .027), arm[2], 'shell')
         for digit in ('finger', 'Bfinger'):
@@ -124,17 +130,47 @@ def build_body(bm, weights, uvs, rig, kind):
         leg_names = [side + '_' + name for name in LEGS]
         leg_points = [at(name) for name in leg_names]
         if barbed:
-            tube([pelvis, *leg_points], [.145, .13, .105, .065, .038],
-                 ['Torso_Lower', *leg_names], 'body', 12)
+            hip,knee,ankle,toe=leg_points
+            common.sweep(bm,weights,uvs,
+                [pelvis,hip,hip.lerp(knee,.42)+FRONT*.015,knee,
+                 knee.lerp(ankle,.25)-FRONT*.025,knee.lerp(ankle,.67),ankle,
+                 ankle.lerp(toe,.45)-FRONT*.02,toe],
+                [.153,.141,.131,.082,.095,.073,.068,.065,.072],
+                [.114,.120,.123,.066,.093,.067,.062,.060,.055],
+                ['Torso_Lower',leg_names[0],leg_names[0],leg_names[1],
+                 leg_names[1],leg_names[1],leg_names[2],leg_names[2],leg_names[3]],
+                up=FRONT,forward=UP,steps=3,sides=14)
         else:
-            tube([pelvis, *leg_points], [.09, .073, .047, .035, .025],
-                 ['Torso_Lower', *leg_names], 'bone', 9)
-            for point, bone, radius in zip(leg_points[:3], leg_names[:3],
-                                           (.08, .07, .055)):
-                mass(point, (radius, radius * .8, radius), bone, 'shell', 8, 12)
-        mass(leg_points[-1] + FRONT * .05,
-             (.08 if barbed else .055, .045 if barbed else .025,
-              .15 if barbed else .11), leg_names[-1], 'claw')
+            hip,knee,ankle,toe=leg_points
+            # Femur and tibia taper between broad, flatter condyles. Paired
+            # lower shafts and the heel/three toes read as a skeleton's foot.
+            common.sweep(bm,weights,uvs,
+                [pelvis,hip,hip.lerp(knee,.22),hip.lerp(knee,.65),knee,
+                 knee.lerp(ankle,.27),knee.lerp(ankle,.7),ankle,toe],
+                [.095,.069,.047,.039,.058,.036,.029,.040,.047],
+                [.064,.056,.035,.032,.044,.026,.021,.029,.029],
+                ['Torso_Lower',leg_names[0],leg_names[0],leg_names[0],leg_names[1],
+                 leg_names[1],leg_names[1],leg_names[2],leg_names[3]],
+                region=ATLAS_REGION['bone'],up=FRONT,forward=UP,steps=3,sides=12)
+            mass(knee+FRONT*.026,(.058,.033,.042),leg_names[1],'bone',8,12)
+            tube([knee+SIDE*.023,ankle+SIDE*.022], [.018,.014],
+                 [leg_names[1],leg_names[2]],'bone',9)
+        foot=leg_points[-1]+FRONT*.045
+        mass(leg_points[2]+FRONT*.015-UP*.01,
+             (.052 if barbed else .038,.043 if barbed else .029,.068),
+             leg_names[2],'body' if barbed else 'bone',8,14)
+        mass(foot,(.095 if barbed else .082,.038 if barbed else .026,.105),
+             leg_names[-1],'body' if barbed else 'bone',8,14)
+        for digit in range(3):
+            spread=(digit-1)*(.054 if barbed else .050)
+            tube([foot+SIDE*spread*.55,
+                  foot+SIDE*spread+FRONT*.095,
+                  foot+SIDE*spread*1.08+FRONT*.145-UP*.009],
+                 [.028 if barbed else .018,.023 if barbed else .014,.007],
+                 [leg_names[-1]]*3,'body' if barbed else 'bone',9)
+            tube([foot+SIDE*spread+FRONT*.105,
+                  foot+SIDE*spread*1.09+FRONT*.177-UP*.018],
+                 [.013,.0015],[leg_names[-1]]*2,'claw',7)
 
     # Only the connected skin/bone scaffold is fused. Armour, individual ribs,
     # eyes and weapon-like claws remain deliberate attached solids.
@@ -210,8 +246,13 @@ def build_body(bm, weights, uvs, rig, kind):
         tube([upper+UP*.32+FRONT*.12,upper+UP*.035+FRONT*.10],
              [.027,.018],['Torso_Upper']*2,'shell',10)
         for sign in (-1,1):
-            mass(pelvis+SIDE*sign*.105+UP*.01,(.075,.085,.055),
-                 'Torso_Lower','shell',9,14)
+            # Swept iliac crests have an anatomical basin, rather than two
+            # hip balls. Their anterior spine joins the narrowed femoral neck.
+            tube([pelvis+SIDE*sign*.04+UP*.085-FRONT*.02,
+                  pelvis+SIDE*sign*.115+UP*.07+FRONT*.015,
+                  pelvis+SIDE*sign*.15+UP*.015+FRONT*.055,
+                  pelvis+SIDE*sign*.09-UP*.04+FRONT*.045],
+                 [.037,.045,.034,.025],['Torso_Lower']*4,'shell',10)
         # Crown horns and open mandibular hooks make the skull insectile.
         for sign in (-1, 1):
             tube([head + SIDE * sign * .055 + UP * .07,
@@ -220,22 +261,35 @@ def build_body(bm, weights, uvs, rig, kind):
             tube([head + SIDE * sign * .045 + FRONT * .10 - UP * .035,
                   head + SIDE * sign * .11 + FRONT * .18 - UP * .10],
                  [.025, .002], ['Head'] * 2, 'horn', 8)
-        # Thin overlapping insectile wing vanes are rooted into the scapulae;
-        # their closed flattened solids replace isolated bare spokes.
+        # One thin insectile membrane grows from each scapula. Its broad
+        # continuous leaf and sparse veins replace the old shoulder spike fan.
         for sign in (-1, 1):
             root = upper + SIDE * sign * .10 - FRONT * .075 + UP * .25
-            mass(root,(.065,.075,.045),'Torso_Upper','shell',8,12)
-            for vane in range(7):
-                u=vane/6
-                tip=root+SIDE*sign*(.32+.17*math.sin(u*math.pi))-FRONT*(.14+.06*u)+UP*(.32-.48*u)
-                before_vane=set(bm.verts)
-                tube([root,root.lerp(tip,.6),tip],[.042,.045,.004],
-                     ['Torso_Upper']*3,'wing',10)
-                # The vein-bearing wing is a thin plate, not another row of
-                # round thorns. Positive-axis flattening preserves orientation.
-                for vertex in bm.verts:
-                    if vertex not in before_vane:
-                        vertex.co.y=root.y+(vertex.co.y-root.y)*.22
+            tip=root+SIDE*sign*.54-FRONT*.19+UP*.33
+            grid=[]
+            for column in range(11):
+                t=column/10
+                center=root.lerp(tip,t)-FRONT*(.04*math.sin(t*math.pi))
+                width=.008+.16*math.sin(t*math.pi)**.8
+                grid.append([center+Vector((0,.22,-1)).normalized()*((row/4-.5)*2*width)
+                             for row in range(5)])
+            sheet,origin=surface.sheet('BoneDevilWing',grid,.003)
+            added=[bm.verts.new(v.co) for v in sheet.data.vertices]
+            for vertex,(column,row) in zip(added,origin):
+                weights[vertex]=[('Torso_Upper',1)]
+                uvs[vertex]=common.shared.region_uv(ATLAS_REGION['wing'],.02+.96*column/10,.02+.96*row/4)
+            for face in sheet.data.polygons:
+                bm.faces.new([added[i] for i in face.vertices])
+            data=sheet.data
+            bpy.data.objects.remove(sheet,do_unlink=True)
+            bpy.data.meshes.remove(data)
+            tube([root,root.lerp(tip,.5)-FRONT*.04,tip],[.021,.012,.002],
+                 ['Torso_Upper']*3,'shell',9)
+            for column in (3,6,8):
+                t=column/10
+                center=grid[column][2]
+                tube([root,center,grid[column][-1]], [.014,.010,.002],
+                     ['Torso_Upper']*3,'shell',8)
         # One segmented, up-curved stinging tail. All tail vertices use one
         # measured pelvis bone so the private view can deform only this region
         # toward the real target at the native sting event.
@@ -246,11 +300,12 @@ def build_body(bm, weights, uvs, rig, kind):
                   pelvis - FRONT * .62 + UP * .45,
                   pelvis - FRONT * .48 + UP * .64]
         before = set(bm.verts)
-        tube(points, [.07, .068, .06, .05, .035, .018],
-             ['Torso_Lower'] * len(points), 'tail', 12)
+        common.sweep(bm,weights,uvs,points,[.07,.062,.053,.042,.031,.018],
+                     [.062,.053,.045,.036,.025,.014],['Torso_Lower']*len(points),
+                     region=ATLAS_REGION['tail'],up=FRONT,forward=UP,steps=4,sides=14)
         for index, point in enumerate(points[1:-1], 1):
-            mass(point, (.075 - index * .007, .075 - index * .007,
-                         .065 - index * .006), 'Torso_Lower', 'shell', 8, 12)
+            mass(point, (.062-index*.008,.036-index*.004,.048-index*.005),
+                 'Torso_Lower','shell',7,12)
         tip = points[-1] + FRONT * .09 + UP * .12
         tube([points[-1], tip], [.045, .002],
              ['Torso_Lower'] * 2, 'stinger', 10)
@@ -272,7 +327,7 @@ def write_albedo(path):
         'bone-devil': {
             'body': (.38, .34, .26), 'crest': (.76, .70, .54),
             'limbs': (.66, .61, .47), 'beak': (.13, .105, .07),
-            'membrane': (.42, .39, .29)}}[args.kind]
+            'membrane': (.54, .56, .49)}}[args.kind]
     for region in sorted(paint.shared.ATLAS):
         (y0, y1, x0, x1), u, v = paint.shared.region_canvas(size, region)
         base = np.array(palette.get(region, palette['body']))

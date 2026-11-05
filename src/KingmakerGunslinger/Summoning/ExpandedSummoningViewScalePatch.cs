@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using Harmony12;
 using Kingmaker.View;
+using KingmakerGunslinger.Bootstrap;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
@@ -18,9 +19,13 @@ namespace KingmakerGunslinger.Summoning
         {
             if (__instance == null || __instance.EntityData == null ||
                 __instance.EntityData.Blueprint == null) return;
-            float multiplier;
-            if (!SummonViewScaleCatalog.TryGetMultiplier(
-                    __instance.EntityData.Blueprint.name, out multiplier)) return;
+            ModContext context;
+            bool enabled = ModContext.TryGet(out context) &&
+                context.FeatureModules?.Active?.ExpandedSummoning == true;
+            SummonViewScaleSpec spec;
+            if (!SummonViewScaleCatalog.TryGetApplicableSpec(
+                    __instance.EntityData.Blueprint.name, enabled, out spec)) return;
+            float multiplier = spec.Multiplier;
             lock (Applied)
             {
                 AppliedMarker ignored;
@@ -30,9 +35,6 @@ namespace KingmakerGunslinger.Summoning
                     current.z <= 0f) throw new InvalidOperationException(
                         "KMG summon view has an invalid pre-scale transform: " +
                         __instance.EntityData.Blueprint.name + ".");
-                var spec = System.Linq.Enumerable.Single(
-                    SummonViewScaleCatalog.All, value => value.BlueprintName ==
-                        __instance.EntityData.Blueprint.name);
                 if (spec.RetainNativeScale)
                 {
                     // Exact 2.1.7b UnitEntityView.Update writes localScale =

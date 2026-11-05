@@ -1,4 +1,17 @@
-## Current owner visual-overhaul revision
+## PR 96 review correction
+
+The overlapping wing masses are preserved with pointed, unequal-length primaries in interleaving groups instead of equal rounded slabs. The thorax has a keel, thighs taper under overlapping coverts, and hock/metatarsal tendons continue into branched talons. Wings remain chest-driven.
+
+The scoped `sprint36-demons/anatomy_planes.py` authoring helper supplies original beveled jaw/forefoot masses and elongated muscle forms around the unchanged measured joints. No new driver, native geometry, animation, attack or rule is introduced. Raw capture authority remains `6443b580c8019d2a32de616ef610df3c2aa851c7c998044b56e0c29b4494e65d`.
+
+Regeneration uses the existing generator/arguments and the seam-safe `outsider_surface.py`. All regenerated triangles stay inside a single atlas region; all components are closed, consistently wound and outward. Exact front/side/party renders and 240-pixel party views were inspected. These are offline shape and export observations; native material/motion and owner aesthetic approval remain separate. Reports/previews live in ignored `artifacts/summon-overhaul-review/demons`.
+
+| Current export | Vertices / triangles | SHA-256 |
+| --- | --- | --- |
+| `vrock-mesh.json` | 7070 / 13900 | `0f403569543e6c7d56f42d2e2fa002e48e9734039b676b3917bba330e308c100` |
+| `vrock-albedo.png` | - | `fa38da0fe883df8fac27d52c74cc0bca56e0e738054b6ee7b7cfa34ec922f4ff` |
+
+## Initial owner visual-overhaul revision (retained record)
 
 The November 2026 owner mission brings the previously deferred cosmetic work into scope. The current exports use opt-in `continuous-bodies/outsider_surface.py` to unite organic skin and blend the existing two-influence weights. Individual teeth, horns, feather vanes and membranes retain intentional ownership. The original rig articulation limits remain. No mechanical profile, attack, route, GUID, icon or save identity changed.
 

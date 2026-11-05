@@ -8,7 +8,7 @@ namespace KingmakerGunslinger.Summoning
     internal static class LillendHumanBindingPolicy
     {
         internal const string BodyName = "Renderer_Character_Diffuse_Cutout";
-        internal const string AssetHash = "7485c6e414747bad1b39df10ac9762c89ec242b026bf0bf2528e80b5ef37395f";
+        internal const string AssetHash = "12d2f82f0051b9933ab541c1e8d8c8050961d1335f0fc3a9cca7b394143c54b7";
         internal static bool IsReviewedAuxiliary(string renderer, string mesh, int bones)
         {
             return renderer == "Cape_Red_M(Clone)" && mesh == "CP_Cape2Sided_M_Any" && bones == 0;

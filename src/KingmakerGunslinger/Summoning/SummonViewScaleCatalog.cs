@@ -107,6 +107,19 @@ namespace KingmakerGunslinger.Summoning
             return match != null;
         }
 
+        internal static bool TryGetApplicableSpec(string blueprintName,
+            bool moduleEnabled, out SummonViewScaleSpec spec)
+        {
+            spec = Values.SingleOrDefault(value => string.Equals(
+                value.BlueprintName, blueprintName, StringComparison.Ordinal));
+            // The five retained outsider adjustments accompany their original
+            // bodies. A disabled module renders its native donor fallback.
+            // Refuse before the view's idempotence marker or scale is changed.
+            if (spec != null && spec.RetainNativeScale && !moduleEnabled)
+                spec = null;
+            return spec != null;
+        }
+
         internal static void Validate()
         {
             if (Values.Length != 23 || Values.Any(value => value.Multiplier <
