@@ -1158,8 +1158,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!original || lifetime == null || claimsBefore <= 0 ||
                 !InfernalEarlyWallObstructs35(before, whilePresent))
                 throw new InvalidOperationException("Controlled expiry lacks original 36HP/720s and actual obstruction prerequisites.");
-            string image = WriteExpandedSummoningOverheadStrikeCapture(section, section,
-                _request.EvidenceDirectory, "s35-wall-before-controlled-expiry.png", 13f);
+            foreach (int frame in SummonOverhaulSettlePartyCamera(section)) yield return frame;
+            string image = WriteExpandedSummoningPartyCameraCapture(section,
+                _request.EvidenceDirectory, "s35-wall-before-controlled-expiry.png");
             JObject expiry = InfernalWallOriginalDeadlineExpiry35(section, lifetime);
             JObject after = InfernalEarlyPath35(fixture.Caster, destination);
             DateTime finished = DateTime.UtcNow.AddSeconds(15);
@@ -1224,6 +1225,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             var mover = fixture.Caster;
             mover.Commands.InterruptAll(true); mover.Commands.RemoveFinishedAndUpdateQueue();
             PlaceExpandedSummoningUnit(mover, start);
+            int quiet = 0; Vector3 settledPrevious = mover.Position;
+            foreach (int frame in WaitPresentation32(mode, () => quiet >= 3, 8, () => {
+                bool stable = mover.Commands.Empty && mover.View.MovementAgent.Velocity.sqrMagnitude < .0001f &&
+                    Vector3.Distance(settledPrevious, mover.Position) < .01f && mover.Descriptor.State.CanAct;
+                quiet = stable ? quiet + 1 : 0; settledPrevious = mover.Position;
+            })) yield return frame;
+            Vector3 supported; JObject ground;
+            if (!Cleanup2CreatureNativeGroundRoot(mover, mover.Position, out supported, out ground) ||
+                Vector3.Distance(supported, mover.Position) >= .02f)
+                throw new InvalidOperationException("Wall movement witness lacks settled native ground support.");
+            start = mover.Position;
             var move = new UnitMoveTo(destination, .5f); move.Init(mover);
             if (!move.CanStart) throw new InvalidOperationException("Wall movement witness command refused.");
             var samples = new JArray(); float maximumDeviation = 0f, distance = 0f;
@@ -1245,6 +1257,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     InfernalWallNavmesh35.ActiveGridClaimCount > 0 : maximumDeviation < .8f &&
                     distance <= Vector3.Distance(start, destination) + .8f && InfernalWallNavmesh35.ActiveGridClaimCount == 0);
             check("wall-native-mover-" + label, pass, new JObject { ["mover"] = mover.UniqueId, ["wallPresent"] = wallPresent,
+                ["settledFrames"] = quiet, ["ground"] = ground,
                 ["command"] = Sprint27AiCommand(move), ["start"] = SurveyVector(start), ["goal"] = SurveyVector(destination),
                 ["wallMidpoint"] = SurveyVector(midpoint), ["end"] = SurveyVector(mover.Position),
                 ["actualDistance"] = distance, ["formerDirectDistance"] = Vector3.Distance(start, destination),

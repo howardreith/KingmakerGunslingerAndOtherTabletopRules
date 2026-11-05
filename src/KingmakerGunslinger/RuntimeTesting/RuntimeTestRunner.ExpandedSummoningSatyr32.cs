@@ -38,6 +38,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
                 if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulWallPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulDaylightPhase ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulMotionPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulOffPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalHealingPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalAiPhase ||
@@ -104,9 +105,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulIndoorPhase ||
                 phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulDaylightPhase ||
+                phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulMotionPhase ||
                 phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulOffPhase)
             {
-                if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulDaylightPhase)
+                if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulDaylightPhase ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulMotionPhase)
                     CreateSprint32TurnHostile(fixture);
                 foreach (int frame in ReviewSummonOverhaul(fixture, phase)) yield return frame;
                 yield break;
