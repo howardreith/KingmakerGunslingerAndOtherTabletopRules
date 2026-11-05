@@ -1,6 +1,6 @@
 # Sprint 40 — Ice Devil (Gelugon)
 
-IN PROGRESS. No Ice Devil registration, native qualification or release yet.
+IN PROGRESS. Ice Devil registered hidden; no native gameplay qualification or release yet.
 Owner mission selects completion through exact-artifact stable publication,
 public downloads, restoration and merged records. Stop before Sprint 41.
 
@@ -8,8 +8,9 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 - Owner: active native Goal, HOWARD-LAPTOP. Branch
   `codex/expanded-summoning-sprint40-ice-devil`, root `C:/Dev/KingmakerGunslingerLab/wt/s40`.
-  Last committed observer source `40068f9a7203a6401509f63d27dbadebf441c305`;
-  current production hit-rider/bite-policy and original art additions follow it.
+  Last committed source `d9ad7f331b519dc151480fc71d8a7ca11a2bb39d`;
+  current hidden builder, shared parameterization, package/view wiring and
+  focused native command observer follow it in one coherent batch.
 - Prior intake, Nalfeshnee-only range fix and branch policy are preserved.
   No quota/context/tool refusal was surfaced; previous capacity-stop cause is
   unknown. CLI `0.166.0`; native Goal active, no update required.
@@ -18,17 +19,31 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   Cold spells, native Slow and regeneration graphs are identified below.
 - Persistent Image OMITTED with explicit owner approval in this thread after
   the bounded native finding; no substitute, no impossibility claim.
-- Implemented/unregistered: exact-owner spear/tail hit predicate and Fort DC,
-  native failed-save branch hook, duplicate-event protection, narrow secondary
-  bite Strength correction. Production compiled and 2/2 S40 tests passed
-  (2812 registered); observer preflight previously 1193 PASS.
+- Implemented/hidden: profile, exact owner equipment/routine, native Slow
+  failed-save/haste branch with Fort/live Constitution and native 1d6 rounds,
+  CL13 cold spell corrections, shared wall with own 39 HP/130 rounds/1d6+13,
+  fear, good-only regeneration and conservative native-shape AI. Bone and
+  Kyton defaults retained. Thirty-two identities appended once (26 private,
+  unit/root, four deterministic adapters); one SM IX root suppressed.
+- Production compiled; affected S34/S35/S40 focused checks passed 20/20 before
+  adding the native slice. Current slice compilation/checks recorded below.
+  Closed S39 publisher/refusal tests passed 87/87 at its reviewed merge,
+  with unchanged publisher/refusal files; no retrospective requalification.
 - Art: original painted source and real 128px export inspected; original
   insectile body generated/previewed on the verified measured rig. Model,
-  icon, gameplay and public route are NOT yet bound in bootstrap or native-tested.
-- NEXT: complete the exact-owned builder, wall CL13 parameterization, native
-  failed-save/haste branch and attack fallback, cold spell clone corrections,
-  fear/regeneration/AI; append dependencies once and keep ice-devil suppressed.
-  Complete loader/package dependencies before any hidden-bootstrap launch.
+  icon, original body, loader/view and strict package dependencies are now
+  bound. Re-export after allocation passed 148 sources/exports and canonical
+  catalog validation. In-game attachment is NOT yet demonstrated.
+- NEXT: finish focused native slice preflight and coherent commit, build one
+  purpose-specific development package and run actual attack/Slow, cold-cast
+  and wall-obstruction/source-cleanup cases. Inspect failures before repair.
+  Final scope, persistence, native range carry-forward and publisher still remain.
+- Selected condition lifetime: native finite recipient Slow keeps its rolled
+  deadline independently of owner removal/module OFF; no permanent/portable
+  carrier or implicit cure. Native Ice Storm terrain retains its finite
+  spell lifetime on source removal; module OFF ends its exact owned area.
+  Wall remains source-owned and cleans on removal/OFF; ON saved continuation
+  and OFF cleanup still need their final fresh-process evidence.
 - Deployment/save/lease: game exited; no lock. Original intake comparison
   passed after restoring nine byte-identical mod-file timestamps and two Unity
   session settings. All 118 save bytes/metadata unchanged. Working was never loaded.
@@ -72,7 +87,8 @@ These describe requirements, not installed-engine capabilities.
 The primary creature entry prints bite 2d6+6 and tail 3d6+3 alongside the
 manufactured spear routine; this needs explicit native role verification.
 The rider is a hit-triggered supernatural effect, not an injury poison.
-Persistent Image disposition is pending inspection and owner decision if needed.
+Persistent Image is omitted with explicit owner approval after bounded native
+inspection. No substitute is provided. This does not assert engine impossibility.
 
 ## Qualification limits
 
@@ -175,8 +191,14 @@ Exact captured consumers:
   AC/Reflex/attack penalties. Extract the native spell's failed-save/haste
   counter branch, not its cast targeting/Will/SR; initialize native 1d6 rounds.
 - Daze condition `9934fedff1b14994ea90205d189c8759`: native Dazed with no
-  repeat save. S39 wording correction is now evidenced but metadata edit and
-  current documentation reconciliation are still outstanding.
+  repeat save. S39 wording correction is complete: only the public Nimbus sentence changed
+  from Blindness to Daze. Tag target/name and all three asset records compare
+  equal before/after; Heal blindness text was preserved. Current resume is
+  corrected and S39 status has an erratum without rewriting dated observations.
+  Notes-file newline conversion was detected on readback and corrected using
+  exact original body bytes plus the single replacement. Final body hashes:
+  `73444fa73abf1f2daf7de9932330b9eade0b85367bf9d209490cf2fa55108a0f` before;
+  `e1920a41c649249a7acb4b02d9908847ac68b422e4231637bfe6f9e9e7e95c9c` after.
 - `RegenerationGood5` `a05cc46208707ce41bda909f02e86a8e` has Heal5 but only Holy
   energy cancellation in the captured graph. Verify good weapon/spell suppression
   through the established S34 native consumer; do not blindly clone its qualifiers.
@@ -191,3 +213,20 @@ The runtime Ice Devil PNG is `7e9bb0ac14c7b6d19b6673559596725869faeb7132eae2dc84
 The first private body preview hid its tail; it was retained as `preview-v1.png`
 and corrected in the authoring script. Revised preview shows the segmented tail.
 No owner aesthetic approval or in-game model attachment is claimed.
+
+Hidden implementation slice, 2026-11-05 UTC: `Invoke-KmgGate.ps1 -Filter
+expanded-summoning.sprint40` compiled production and passed 4/4 selected of
+2814 tests (production 26.7s, tests 0.8s; actual timing file authoritative).
+Observer compile initially referenced nonexistent AbilityData.CasterLevel/DC;
+fixed to diagnostic CalculateParams and retained the failing log. No game ran.
+Runtime orchestration suite passed 287 assertions with explicit ScriptRoot,
+including S40 phase admission/refusal. The first direct invocation omitted
+that explicit root and failed parameter binding; no runtime mutation occurred.
+Manifest validates foundation2790, active7860/reserved7/total7867 and
+4073 adapters. Icon catalog validates after binding the unit/root consumers.
+The early native slice uses a temporary native Frightened immunity counter on
+its disposable recipient (paired removal) to isolate routine/Slow from fear;
+this provides no fear qualification. All rolls/effects remain native.
+Current model mesh uses canonical LF bytes, SHA-256
+`3c6e0a8ecfd17f50c3996a1ecf6813112e4248da2f5599571b0f27d10cabf753`;
+texture `6d24aafc619ba435899f348444a311ac8072e0d389ea950df83ccad5569cec83`.

@@ -18,6 +18,7 @@ using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using AbilityDeliverProjectile = Kingmaker.UnitLogic.Abilities.Components.AbilityDeliverProjectile;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
@@ -25,6 +26,7 @@ using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
+using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Bootstrap;
 
@@ -185,6 +187,7 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintUnit OwningBlueprint;
         public BlueprintBuff Frightened;
         public BlueprintBuff SourceMemory;
+        public int HitDice = InfernalRules35.BoneHitDice;
 
         private void Expose(MechanicsContext context, AreaEffectEntityData area,
             UnitEntityData victim)
@@ -197,7 +200,7 @@ namespace KingmakerGunslinger.Summoning
                 victim.Descriptor.State.IsDead || area == null || area.IsEnded ||
                 ContextActionArchonMenace.HasSource(victim, SourceMemory, source))
                 return;
-            int dc = InfernalRules35.FearDc(InfernalRules35.BoneHitDice,
+            int dc = InfernalRules35.FearDc(HitDice,
                 source.Stats.Charisma.Bonus,
                 InfernalRules35.BoneFearRacialDcBonus);
             var effect = new MechanicsContext(source, victim.Descriptor,
@@ -389,6 +392,9 @@ namespace KingmakerGunslinger.Summoning
         public bool TargetSelf;
         public bool TargetEnemy = true;
         public bool AvoidFriendlyArea;
+        public bool NoAlignmentExemption;
+        public bool UseNativeProjectileShape;
+        public bool AvoidColdImmuneTarget;
         public bool ChaoticExemptFriendlyArea;
         public bool RequireAffectedEnemyArea;
         public int MaximumAffectedHitDice;
@@ -445,22 +451,38 @@ namespace KingmakerGunslinger.Summoning
             if (owner == null || TargetSelf && target != null &&
                     !ReferenceEquals(owner, target) || TargetEnemy &&
                     (target == null || !owner.IsEnemy(target))) return false;
+            if (AvoidColdImmuneTarget && target != null &&
+                target.Descriptor.Progression.Features.Enumerable.Cast<Fact>()
+                    .Concat(target.Descriptor.Buffs.Enumerable)
+                    .Where(fact => fact != null && fact.IsTurnedOn)
+                    .SelectMany(fact => fact.SelectComponents<AddEnergyDamageImmunity>())
+                    .Any(immunity => immunity.EnergyType == DamageEnergyType.Cold))
+                return false;
             if (AvoidFriendlyArea)
             {
                 if (target == null || AreaRadiusFeet <= 0 ||
-                    !TargetSelf && target.Descriptor.Alignment.Value.HasComponent(
+                    !NoAlignmentExemption && !TargetSelf && target.Descriptor.Alignment.Value.HasComponent(
                         ChaoticExemptFriendlyArea ? AlignmentComponent.Chaotic :
                             AlignmentComponent.Evil) ||
                     Game.Instance?.State?.Units?.All == null) return false;
                 float radius = new Feet(AreaRadiusFeet).Meters;
+                var projectile = UseNativeProjectileShape ?
+                    Ability?.GetComponent<AbilityDeliverProjectile>() : null;
+                var granted = UseNativeProjectileShape ?
+                    owner.Descriptor.Abilities.GetAbility(Ability) : null;
+                var data = granted == null ? null : new AbilityData(granted);
+                if (UseNativeProjectileShape && (projectile == null || data == null))
+                    return false;
                 if (Game.Instance.State.Units.All.Any(unit =>
                     unit != null && !unit.Destroyed && unit.IsInState &&
-                    !ReferenceEquals(unit, owner) && !owner.IsEnemy(unit) &&
-                    !unit.Descriptor.Alignment.Value.HasComponent(
+                    (NoAlignmentExemption || !ReferenceEquals(unit, owner)) && !owner.IsEnemy(unit) &&
+                    (NoAlignmentExemption || !unit.Descriptor.Alignment.Value.HasComponent(
                         ChaoticExemptFriendlyArea ? AlignmentComponent.Chaotic :
-                            AlignmentComponent.Evil) &&
-                    (unit.Position - target.Position).magnitude <=
-                        radius + unit.Corpulence)) return false;
+                            AlignmentComponent.Evil)) &&
+                    (UseNativeProjectileShape ?
+                        projectile.WouldTargetUnit(data, target.Position, unit) :
+                        (unit.Position - target.Position).magnitude <=
+                            radius + unit.Corpulence))) return false;
             }
             if (RequireAffectedEnemyArea)
             {
