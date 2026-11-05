@@ -190,7 +190,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owned.Add(barbed); owned.Add(bone); owned.Add(reach);
                 foreach (var actor in owned)
                 {
-                    Sprint28SetBrainActivePreservingActions(actor, false);
+                    if (RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulWallPhase)
+                        SetExpandedSummoningBrainActive(actor, false);
+                    else Sprint28SetBrainActivePreservingActions(actor, false);
                     actor.Commands.InterruptAll(true);
                     actor.Commands.RemoveFinishedAndUpdateQueue();
                     foreach (int frame in Outsider30NativeAppearance(actor,
@@ -486,15 +488,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException(
                     "No direct native floor lane for the early wall candidate: " +
                     laneAttempts.ToString(Formatting.None));
+            bool correction = RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulWallPhase;
+            if (correction)
+            {
+                SetExpandedSummoningBrainActive(fixture.Caster, false);
+                fixture.Caster.View.MovementAgent.Stop();
+                foreach (var actor in owned.Where(value => value != null && !value.Destroyed))
+                    actor.View.MovementAgent.Stop();
+            }
             PlaceExpandedSummoningUnit(fixture.Caster, start);
             foreach (UnitEntityData actor in owned.Where(value =>
                 value != null && !value.Destroyed &&
                 !ReferenceEquals(value, bone)))
                 PlaceExpandedSummoningUnit(actor, casterPoint);
             PlaceExpandedSummoningUnit(bone, casterPoint);
-            bool correction = RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulWallPhase;
             if (correction)
-                foreach (int frame in InfernalWallSettleWitness35(fixture.Caster, "initial-path")) yield return frame;
+                foreach (int frame in InfernalWallSettleWitness35(fixture.Caster, "initial-path", start)) yield return frame;
             var before = InfernalEarlyPath35(fixture.Caster, destination);
             if (correction)
                 foreach (int frame in InfernalEarlyWallMove35(fixture, start, destination, midpoint, false, "baseline", check)) yield return frame;
@@ -717,8 +726,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new UnitCombatJoinController().Tick();
                 new UnitCombatPrepareController().Tick();
                 if (correction)
+                {
+                    // Prepare combat before placing this stationary witness.
+                    // A prepared actor was observed back at its old position,
+                    // 17.92m from the section, despite being idle on valid floor.
+                    attacker.View.MovementAgent.Stop();
+                    PlaceExpandedSummoningUnit(attacker, attackPoint);
                     foreach (int frame in InfernalWallSettleWitness35(attacker,
-                        "physical-breach")) yield return frame;
+                        "physical-breach", attackPoint)) yield return frame;
+                }
                 else for (int frame = 0; frame < 3; frame++) yield return 0;
                 physicalGreenNpcGuard = Kingmaker.Designers.GameHelper
                     .IsAttackingGreenNPC(attacker, section);
@@ -1319,7 +1335,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return supported;
         }
 
-        private IEnumerable<int> InfernalWallSettleWitness35(UnitEntityData actor, string label)
+        private IEnumerable<int> InfernalWallSettleWitness35(UnitEntityData actor, string label, Vector3? expectedPosition = null)
         {
             var mode = _cleanup2NativeDefaultOwner;
             if (mode == null || !mode.Current) throw new InvalidOperationException("Wall witness requires its native Default lease.");
@@ -1331,9 +1347,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             })) yield return frame;
             Vector3 supported; JObject ground;
             bool pass = Cleanup2CreatureNativeGroundRoot(actor, actor.Position, out supported, out ground) &&
-                Vector3.Distance(supported, actor.Position) < .02f;
+                Vector3.Distance(supported, actor.Position) < .02f &&
+                (!expectedPosition.HasValue || InfernalEarlyDistanceToSegment35(actor.Position,
+                    expectedPosition.Value, expectedPosition.Value) < .05f);
             Sprint25Check("wall-settled-witness-" + label, pass, new JObject {
-                ["unit"] = actor.UniqueId, ["quietFrames"] = quiet, ["position"] = SurveyVector(actor.Position), ["ground"] = ground },
+                ["unit"] = actor.UniqueId, ["quietFrames"] = quiet, ["position"] = SurveyVector(actor.Position), ["ground"] = ground,
+                ["expectedPosition"] = expectedPosition.HasValue ? SurveyVector(expectedPosition.Value) : null },
                 "The exact disposable witness is idle and supported on native floor before its command or path observation.");
             if (!pass) throw new InvalidOperationException("Wall witness failed native support: " + label);
         }

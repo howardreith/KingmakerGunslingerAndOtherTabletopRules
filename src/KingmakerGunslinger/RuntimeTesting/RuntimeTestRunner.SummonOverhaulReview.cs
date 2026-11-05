@@ -72,7 +72,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["referenceDistanceMeters"] = owner.DistanceTo(fixture.Caster),
                         ["originalScale"] = SurveyVector(owner.View.OriginalScale), ["rootScale"] = SurveyVector(owner.View.transform.localScale) };
                     rows.Add(row);
-                    if (!(bool)row["selection"]["selectionSurface"] || !(bool)row["selectionRays"]["bothHit"] || !(bool)row["body"]["finite"])
+                    // A non-convex core mesh need not intersect the single ray
+                    // toward its AABB centre. Retain that diagnostic verbatim;
+                    // it is not admission for an unrelated locomotion command
+                    // or a claim about comfortable player selection.
+                    if (!(bool)row["selection"]["selectionSurface"] || !(bool)row["body"]["finite"])
                         throw new InvalidOperationException("Native body or selection surface unavailable.");
                     if (!indoor)
                     {
