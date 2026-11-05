@@ -472,6 +472,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["hiddenDonorRenderers"] = binding?.HiddenDonorRendererCount,
                 ["donorRendererSuppressions"] = binding?.DonorRendererSuppressions,
                 ["visibleDonorRenderers"] = binding?.VisibleDonorRendererCount(),
+                ["sectionBloodType"] = section == null ? null : section.BloodType.ToString(),
                 ["casterIsPlayerFaction"] = bone.IsPlayerFaction,
                 ["sectionIsPlayersEnemy"] = section?.IsPlayersEnemy,
                 ["difficultyStatsAdjustments"] = Game.Instance.Player.Difficulty.StatsAdjustmentsType.ToString(),
@@ -510,6 +511,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 wallRenderer != null && wallRenderer.enabled && visualBottomGap < .02f && groundGap < .15f &&
                 Math.Abs(wallBounds.Value.size.y - InfernalWallNavmesh35.SectionHeightMeters) < .25f &&
                 binding.VisibleDonorRendererCount() == 0 && laneAlignment >= .9f && faceAlignment >= .9f &&
+                InfernalRules35.WallSectionShowsNoBlood((int)section.BloodType) &&
                 cut != null && ReferenceEquals(binding.Owner, section) &&
                 cut.type == Pathfinding.NavmeshCut.MeshType.Rectangle && Pathfinding.NavmeshCut.GetAll().Contains(cut) &&
                 binding.GridApplyCompleted && binding.GridFailure == null && binding.GridNodesClaimed > 0 &&
@@ -677,6 +679,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var commands = new JArray();
             Vector3 attackerStart = attacker.Position;
             float attackerTravel = 0f;
+            var attackerEffects = new JArray();
             using (var damage = new InfernalWallDamageObservation35(section))
             {
                 for (int index = 0; index < 24 && !section.Destroyed && !section.Descriptor.State.IsDead; index++)
@@ -687,9 +690,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     attacker.Commands.Run(attack);
                     foreach (int frame in WaitInfernalCommand34(attack, () => true, 25)) yield return frame;
                     attackerTravel = Math.Max(attackerTravel, Vector3.Distance(attackerStart, attacker.Position));
+                    var ownedEffects = new JArray(section.Buffs.Enumerable.Where(value =>
+                        ReferenceEquals(value.Context?.MaybeCaster, attacker)).Select(value => new JObject {
+                            ["blueprint"] = value.Blueprint.AssetGuid, ["name"] = value.Blueprint.name }));
+                    foreach (JObject effect in ownedEffects)
+                        if (!attackerEffects.Any(value => (string)value["blueprint"] == (string)effect["blueprint"]))
+                            attackerEffects.Add(effect.DeepClone());
                     commands.Add(new JObject { ["index"] = index, ["reference"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(attack),
                         ["command"] = Sprint27AiCommand(attack), ["plannedAttacks"] = attack.AllAttacks.Count,
-                        ["sectionDamageAfter"] = section.Damage, ["sectionDead"] = section.Descriptor.State.IsDead });
+                        ["sectionDamageAfter"] = section.Damage, ["sectionDead"] = section.Descriptor.State.IsDead,
+                        ["attackerOwnedSectionEffects"] = ownedEffects });
                     InfernalWallPersist35(run, "physical-commands", commands);
                 }
                 DateTime settled = DateTime.UtcNow.AddSeconds(10);
@@ -711,13 +721,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int[] before = damageRows.Select(value => (int?)value["before"] ?? -1).ToArray();
                 int[] after = damageRows.Select(value => (int?)value["after"] ?? -1).ToArray();
                 bool destroyedInSequence = InfernalRules35.WallDamageSequenceDestroys(before, after, InfernalRules35.WallOfIceSectionHitPoints);
-                bool allFromAttacker = damageRows.Length > 0 && damageRows.All(value =>
-                    (string)value["initiator"] == attacker.UniqueId && (bool?)value["hasAttackRoll"] == true &&
-                    !string.IsNullOrEmpty((string)value["weapon"]));
+                // Weapon hits carry an attack roll and the attacker's weapon. A
+                // weapon rider such as the Bearded Devil's infernal-wound bleed
+                // ticks as attacker-owned damage without a roll; it is admitted
+                // only alongside an attacker-owned effect on the section.
+                var weaponRows = damageRows.Where(value => (string)value["initiator"] == attacker.UniqueId &&
+                    (bool?)value["hasAttackRoll"] == true && !string.IsNullOrEmpty((string)value["weapon"])).ToArray();
+                var secondaryRows = damageRows.Except(weaponRows).ToArray();
+                bool secondaryOwned = secondaryRows.All(value => (string)value["initiator"] == attacker.UniqueId &&
+                    (bool?)value["hasAttackRoll"] != true) && (secondaryRows.Length == 0 || attackerEffects.Count > 0);
+                bool killingBlowIsWeaponHit = damageRows.Length > 0 && weaponRows.Contains(damageRows.Last());
+                int weaponDamage = weaponRows.Sum(value => (int?)value["ruleDamage"] ?? 0);
+                bool allFromAttacker = weaponRows.Length >= 2 && secondaryOwned && killingBlowIsWeaponHit;
                 bool allHalved = damageRows.Length > 0 && damageRows.All(value => value["packets"] != null &&
                     value["packets"].Any() && value["packets"].All(packet => (bool?)packet["half"] == true));
                 bool retired = section.Destroyed || !section.IsInState || section.Descriptor.State.IsDead;
-                bool autoHits = rollRows.Length >= damageRows.Length && rollRows.All(value => (bool?)value["hit"] == true && (bool?)value["autoHit"] == true);
+                bool autoHits = rollRows.Length >= weaponRows.Length && rollRows.All(value => (bool?)value["hit"] == true && (bool?)value["autoHit"] == true);
                 double lifetimeSeconds = TimeSpan.FromTicks(formed.LifetimeEndTicks).TotalSeconds;
                 double breachSeconds = damageRows.Length == 0 ? 0d : (double?)damageRows.Last()["gameSeconds"] ?? 0d;
                 double residualSeconds = residual == null ? 0d : Sprint29AreaDuration(residual);
@@ -728,6 +747,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["attackImage"] = attackImage, ["commands"] = commands, ["attackEvents"] = new JArray(attackRows),
                     ["attackRolls"] = new JArray(rollRows), ["damageRows"] = new JArray(damageRows),
                     ["damagingHits"] = damageRows.Length, ["hitPointSequenceDestroys"] = destroyedInSequence,
+                    ["weaponHits"] = weaponRows.Length, ["weaponDamage"] = weaponDamage,
+                    ["secondaryAttackerRows"] = secondaryRows.Length, ["secondaryOwnedByAttacker"] = secondaryOwned,
+                    ["attackerOwnedSectionEffects"] = attackerEffects, ["killingBlowIsWeaponHit"] = killingBlowIsWeaponHit,
                     ["allDamageFromAttackerWeapon"] = allFromAttacker, ["allPacketsObjectHalved"] = allHalved,
                     ["allRollsAutomaticHits"] = autoHits, ["attackerTravelDuringAttacks"] = attackerTravel,
                     ["sectionDamage"] = section.Damage, ["sectionDead"] = section.Descriptor.State.IsDead,
@@ -738,8 +760,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["steamArea"] = fog?.UniqueId, ["removalPresentation"] = presentation,
                     ["forcedRolls"] = 0, ["positionWritesDuringAttacks"] = 0 };
                 InfernalWallPersist35(run, "physical-destruction", row);
-                run.Check("wall-physical-destruction", damageRows.Length >= 2 && destroyedInSequence && allFromAttacker &&
-                    allHalved && autoHits && attackRows.Length >= damageRows.Length && retired &&
+                run.Check("wall-physical-destruction", weaponRows.Length >= 2 && destroyedInSequence && allFromAttacker &&
+                    allHalved && autoHits && attackRows.Length >= weaponRows.Length && retired &&
                     residualOwned && residualLifetime && fog == null && attackerTravel < .25f &&
                     (bool)presentation["pass"], row,
                     "Repeated ordinary native weapon attacks auto-hit, deal object-halved damage tracked hit by hit, and destroy the section, which leaves its owned cold residual for the remaining duration, no steam, and no donor body.");

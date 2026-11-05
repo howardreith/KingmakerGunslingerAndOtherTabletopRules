@@ -179,6 +179,16 @@ namespace KingmakerGunslinger.Summoning
             bool bodyMesh)
         { return !wallVisual && bodyMesh; }
 
+        // Ice does not bleed. Installed 2.1.7b BloodType: Common = 0 (red
+        // blood), Stone = 9 (the chips native petrification uses). Hit FX,
+        // death puddles and the bleeding face all read this per blueprint.
+        internal const int NativeCommonBloodType = 0;
+        internal const int NativeStoneBloodType = 9;
+        internal const int WallSectionBloodType = NativeStoneBloodType;
+
+        internal static bool WallSectionShowsNoBlood(int bloodType)
+        { return bloodType != NativeCommonBloodType && bloodType == WallSectionBloodType; }
+
         // Consecutive native hits on one section: each continues from the last
         // recorded total and adds damage, and the final total reaches its HP.
         internal static bool WallDamageSequenceDestroys(int[] before,

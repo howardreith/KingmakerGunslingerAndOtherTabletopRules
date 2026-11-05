@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
@@ -945,6 +946,21 @@ namespace KingmakerGunslinger.Blueprints
                 library, TheropodVisualPolicy.DonorGuid,
                 "temporary wall section standing-corpulence carrier");
             unit.Prefab = donor.Prefab;
+            // Ice does not bleed. Unit shells may share a nested visual record,
+            // so copy it before choosing non-blood hit and death effects.
+            var visual = new UnitVisualParams();
+            if (unit.Visual != null)
+                foreach (FieldInfo field in typeof(UnitVisualParams).GetFields(
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+                {
+                    if (field.IsInitOnly) continue;
+                    object value = field.GetValue(unit.Visual);
+                    var array = value as Array;
+                    field.SetValue(visual, array == null ? value : array.Clone());
+                }
+            visual.BloodType = (Kingmaker.Visual.HitSystem.BloodType)
+                InfernalRules35.WallSectionBloodType;
+            unit.Visual = visual;
             ConfigureUnitCore(unit, "BoneDevilWallSection",
                 "Wall of Ice Section", Alignment.TrueNeutral, Size.Large,
                 10, 1, 10, 0, 10, 1, 0);
