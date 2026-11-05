@@ -26,6 +26,10 @@ for name in ('sprint17-serpents', 'sprint24-theropods'):
 import generate_snakes as common
 import generate_theropods as donor
 import paint_snake_albedo as paint
+sys.path.insert(0, str(args.pipeline_root / 'sprint34-infernal-outsiders'))
+from chain_geometry import perpendicular_axes
+sys.path.insert(0, str(args.pipeline_root / 'continuous-bodies'))
+from outsider_surface import consolidate_skin
 
 SIDE, UP, FRONT = Vector((1, 0, 0)), Vector((0, 0, 1)), Vector((0, 1, 0))
 TORSO = ('Torso_Lower', 'Torso_Upper', 'neck', 'neck1', 'Head')
@@ -43,20 +47,36 @@ def body(bm, weights, uvs, rig, kind):
     def tube(points, radii, names, region='body', sides=12):
         common.tube(bm, weights, uvs, points, radii, names, region, sides)
     torso = [at(n) for n in TORSO[:-1]]
-    common.sweep(bm, weights, uvs, torso, [.17, .25 if barbazu else .205, .09, .075],
-                 [.12, .15, .08, .065], list(TORSO[:-1]), up=FRONT, forward=UP)
+    common.sweep(bm, weights, uvs, torso, [.17, .205, .13, .075],
+                 [.135, .145, .10, .065], list(TORSO[:-1]), up=FRONT, forward=UP)
     pelvis = at('Torso_Lower')
-    mass(pelvis - UP * .06, (.19, .16, .13), 'Torso_Lower', 'beak')
+    upper = at('Torso_Upper')
+    # Connected weight-bearing hips, obliques and pectoral planes; the
+    # neck/limbs are fused below before armour, beard or chains are added.
+    mass(pelvis + UP*.055, (.19, .16, .13), 'Torso_Lower')
+    for sign in (-1, 1):
+        mass(upper + SIDE*sign*.10 + FRONT*.035 + UP*.20,
+             (.145, .145, .12), 'Torso_Upper')
+        mass(pelvis + SIDE*sign*.09 + UP*.19,
+             (.105,.165,.10),'Torso_Lower')
+    mass(pelvis + UP*.17 + FRONT*.018, (.155,.17,.125), 'Torso_Lower')
     head = at('Head') + UP * .05 + FRONT * .025
-    mass(head, (.11, .15, .105), 'Head')
-    mass(head + FRONT * .095 - UP * .005, (.025, .05, .04), 'Head')
-    mass(head + FRONT * .075 - UP * .09, (.075, .043, .062), 'Head')
+    tube([at('neck1'),head-UP*.065],[.074,.070],['neck1','Head'],'body',12)
+    mass(head, (.105, .143, .092), 'Head')
+    mass(head + FRONT * .080 - UP * .005, (.027, .055, .039), 'Head')
+    mass(head + FRONT * .050 - UP * .075, (.083, .056, .065), 'Head')
+    for sign in (-1,1):
+        mass(head + SIDE*sign*.057 + FRONT*.063 + UP*.04,
+             (.063,.025,.046),'Head')
+        mass(head + SIDE*sign*.066 + FRONT*.055 - UP*.030,
+             (.041,.042,.045),'Head')
     for side, sign in (('L', 1), ('R', -1)):
         upper, lower, palm = [side + '_' + name for name in ARMS[:3]]
         shoulder = at(upper)
-        mass(shoulder, (.10, .12, .105), upper)
-        tube([at('Torso_Upper'), shoulder, at(lower), at(palm)],
-             [.10, .09, .06, .042], ['Torso_Upper', upper, lower, palm])
+        # Deltoid drapes down the humerus; it is not a ball sitting on a rod.
+        mass(shoulder-UP*.035, (.094, .135, .082), upper)
+        tube([at('Torso_Upper')+UP*.20, shoulder, at(lower), at(palm)],
+             [.125, .102, .067, .045], ['Torso_Upper', upper, lower, palm])
         mass(at(palm), (.05, .07, .045), palm)
         for digit in ('finger', 'Bfinger'):
             first, second = side + '_' + digit + '1', side + '_' + digit + '2'
@@ -68,11 +88,29 @@ def body(bm, weights, uvs, rig, kind):
                      [.016, .017, .012, .003], [palm, first, second, second],
                      'body' if not barbazu else 'limbs', 8)
         leg = [side + '_' + name for name in LEGS]
-        tube([pelvis, *(at(n) for n in leg)], [.13, .12, .09, .055, .035],
-             ['Torso_Lower', *leg])
-        mass(at(leg[-1]) + FRONT * .045, (.075, .043, .13), leg[-1], 'body')
+        hip,knee,ankle,toe = [at(n) for n in leg]
+        # A quadriceps taper into the patella; the high calf then narrows
+        # toward an Achilles/ankle before spreading into a planted forefoot.
+        points=[pelvis,hip,hip.lerp(knee,.42)+FRONT*.018,knee,
+                knee.lerp(ankle,.27)-FRONT*.025,knee.lerp(ankle,.67),ankle,
+                ankle.lerp(toe,.45)-FRONT*.018,toe]
+        common.sweep(bm,weights,uvs,points,
+            [.145,.133,.123,.073,.087,.068,.066,.062,.070],
+            [.105,.110,.114,.063,.090,.065,.058,.058,.056],
+            ['Torso_Lower',leg[0],leg[0],leg[1],leg[1],leg[1],leg[2],leg[2],leg[3]],
+            up=FRONT,forward=UP,steps=3,sides=14)
+        mass(knee+FRONT*.025,(.071,.048,.047),leg[1])
+        foot=toe+FRONT*.042
+        mass(ankle+FRONT*.018-UP*.010,(.052,.046,.075),leg[2])
+        mass(foot,(.093,.039,.128),leg[3])
+        for digit in range(3):
+            spread=(digit-1)*.055
+            tube([foot+SIDE*spread*.65,
+                  foot+SIDE*spread+FRONT*.085,
+                  foot+SIDE*spread+FRONT*.130-UP*.008],
+                 [.027,.021,.006],[leg[3]]*3,'body',9)
         mass(head + SIDE * sign * .046 + FRONT * .103 + UP * .035,
-             (.025, .009, .012), 'Head', 'crest')
+             (.019, .008, .009), 'Head', 'crest')
         # Pointed ears and unmistakable broad beard belong only to Barbazu.
         if barbazu:
             tube([head + SIDE*sign*.09, head + SIDE*sign*.20 + UP*.09],
@@ -81,62 +119,137 @@ def body(bm, weights, uvs, rig, kind):
                   head + SIDE*sign*.13 + UP*.22 - FRONT*.03,
                   head + SIDE*sign*.10 + UP*.31 + FRONT*.04],
                  [.045, .027, .002], ['Head']*3, 'limbs', 12)
+    consolidate_skin(bm, weights, uvs, common.shared.ATLAS, regions=('body',), voxel=.009,
+                     triangles=6500)
+    # A shaped leather skirt covers hips and upper thighs. A torso jerkin on
+    # Kyton supplies an infernal warden's clothing instead of an exposed
+    # pale mannequin with an isolated groin patch and crossing straps.
+    common.sweep(bm,weights,uvs,
+        [pelvis-UP*.23+FRONT*.06,pelvis-UP*.10+FRONT*.06,pelvis+UP*.035+FRONT*.05],
+        [.33,.32,.255],[.185,.175,.155],['Torso_Lower']*3,
+        region='beak',up=FRONT,forward=UP,steps=2,sides=18)
+    if not barbazu:
+        common.sweep(bm,weights,uvs,
+            [pelvis+UP*.02+FRONT*.07,pelvis+UP*.22+FRONT*.08,
+             pelvis+UP*.42+FRONT*.08,pelvis+UP*.61+FRONT*.075],
+            [.255,.235,.275,.224],[.158,.175,.190,.150],
+            ['Torso_Lower','Torso_Lower','Torso_Upper','Torso_Upper'],
+            region='beak',up=FRONT,forward=UP,steps=3,sides=18)
+        # One asymmetric shoulder plate keeps the stance directional.
+        mass(at('L_Arm_Upper')+UP*.025,(.13,.064,.115),'L_Arm_Upper','limbs')
+        for side in ('L','R'):
+            ankle,toe=at(side+'_Foot0'),at(side+'_toe')
+            common.sweep(bm,weights,uvs,
+                [ankle+UP*.012,ankle.lerp(toe,.40)-FRONT*.015,toe+FRONT*.035+UP*.008],
+                [.083,.078,.100],[.073,.070,.120],
+                [side+'_Foot0',side+'_Foot0',side+'_toe'],region='beak',
+                up=FRONT,forward=UP,steps=3,sides=14)
     if barbazu:
+        # Beard grows through the jawline, not from floating root beads.
+        # Several tapered curved locks leave the mouth and native glaive clear.
         for strand in range(11):
-            x = (strand - 5) * .017
-            origin = head + SIDE*x + FRONT*.10 - UP*.085
+            x = (strand - 5) * .015
+            origin = head + SIDE*x + FRONT*(.09+.023*(1-abs(x)/.09)) - UP*.075
             bend = (strand % 3 - 1)*.025
-            tube([origin, origin + SIDE*bend + FRONT*.06 - UP*.16,
-                  origin - SIDE*bend + FRONT*.08 - UP*(.37 + .025*(5-abs(strand-5)))],
-                 [.026, .024, .003], ['Head']*3, 'membrane', 10)
+            length=.21+.07*(1-abs(x)/.09)
+            tube([origin,origin+SIDE*bend+FRONT*(.045+.015*(strand%2))-UP*.10,
+                  origin+SIDE*bend*.5+FRONT*.08-UP*(length*.75),
+                  origin-SIDE*bend+FRONT*.065-UP*length],
+                 [.023,.022,.015,.002],['Head']*4,'membrane',10)
     else:
         def link(center, axis_a, axis_b, bone, radius=.009):
+            axis_a,axis_b=(Vector(v) for v in perpendicular_axes(axis_a,axis_b))
+            before=set(bm.verts)
             points = [center + axis_a * (.045*math.cos(i*math.tau/12)) +
                       axis_b * (.027*math.sin(i*math.tau/12)) for i in range(13)]
             tube(points, [radius]*13, [bone]*13, 'limbs', 6)
-        # Iron loops wrap the torso and cross the shoulders. They follow the
-        # same measured skin weights as the body; no rope solver is involved.
-        for height, bone in ((.0,'Torso_Lower'),(.25,'Torso_Upper'),(.45,'Torso_Upper')):
-            for i in range(18):
-                t = i*math.tau/18
-                center = pelvis + UP*height + SIDE*(.22*math.cos(t)) + FRONT*(.165*math.sin(t))
-                tangent = -SIDE*math.sin(t) + FRONT*math.cos(t)
+            return dict(center=list(center),basisA=list(axis_a),basisB=list(axis_b),
+                        majorRadius=.045,minorRadius=.027,tubeRadius=radius,
+                        vertices=[v for v in bm.verts if v not in before])
+        # Fitted chains follow the actual chest and hip sections. Their root
+        # manacles enclose each palm: previous branches began .12 m clear of
+        # the hand and visually floated even in the unposed shipped mesh.
+        for height, width, depth, bone in ((.015,.277,.193,'Torso_Lower'),
+                (.24,.255,.202,'Torso_Upper'),(.50,.274,.208,'Torso_Upper')):
+            for i in range(22):
+                t = i*math.tau/22
+                center = pelvis + UP*height + SIDE*(width*math.cos(t)) + FRONT*(.075+depth*math.sin(t))
+                tangent = -SIDE*width*math.sin(t) + FRONT*depth*math.cos(t)
                 link(center, tangent, UP if i%2 else SIDE*math.cos(t)+FRONT*math.sin(t), bone)
+        def garment_front(x,z):
+            sections=((.02,.255,.158,.07),(.22,.235,.175,.08),
+                      (.42,.275,.190,.08),(.61,.224,.150,.075))
+            h=z-pelvis.z
+            for first,second in zip(sections,sections[1:]):
+                if h<=second[0]:
+                    t=max(0,min(1,(h-first[0])/(second[0]-first[0])))
+                    rx=first[1]+(second[1]-first[1])*t
+                    ry=first[2]+(second[2]-first[2])*t
+                    center=pelvis.y+first[3]+(second[3]-first[3])*t
+                    return center+ry*math.sqrt(max(.02,1-(x/rx)**2))+.009
+            return pelvis.y+.15
+        for sign in (1,):
+            start=at('Torso_Upper')+SIDE*sign*.20+UP*.32+FRONT*.15
+            end=pelvis-SIDE*sign*.10+UP*.045+FRONT*.165
+            axis=(end-start).normalized()
+            for i in range(15):
+                t=i/14
+                center=start.lerp(end,t)
+                center.y=garment_front(center.x,center.z)
+                link(center,axis,SIDE if i%2 else FRONT,
+                     'Torso_Upper' if t<.55 else 'Torso_Lower')
+        # An asymmetric short catenary crosses the lower breastplate and
+        # terminates at its belt, instead of a second mirrored harness strap.
+        for i in range(15):
+            t=i/14
+            center=pelvis+UP*(.30-.10*math.sin(t*math.pi))+SIDE*(-.19+.38*t)+FRONT*.187
+            center.y=garment_front(center.x,center.z)
+            direction=SIDE*.38-UP*(.10*math.pi*math.cos(t*math.pi))
+            link(center,direction,FRONT if i%2 else UP,'Torso_Upper')
         for side, sign in (('L',1),('R',-1)):
             palm = side+'_Palm'
+            for i in range(8):
+                t = i*math.tau/8
+                center = at(palm) + SIDE*(.052*math.cos(t)) + FRONT*(.047*math.sin(t))
+                link(center, -SIDE*math.sin(t)+FRONT*math.cos(t), UP, palm,.011)
             for branch in (-1,1):
                 points = []
-                for i in range(18):
-                    t = i/17
-                    points.append(at(palm) + SIDE*sign*(.05+.95*t) +
-                                  FRONT*(branch*.11 + .25*math.sin(t*4)) + UP*(.12*math.sin(t*6)-.32*t))
+                for i in range(16):
+                    t = i/15
+                    points.append(at(palm) + SIDE*sign*(.026+.24*t + .075*math.sin(t*math.pi)) +
+                                  FRONT*(branch*(.018+.12*t) + .06*math.sin(t*math.pi)) -
+                                  UP*(.70*t-.04*math.sin(t*math.pi)))
                 old = set(bm.verts)
+                links=[]
                 for i, center in enumerate(points):
-                    tangent = (points[min(i+1,17)]-points[max(0,i-1)]).normalized()
+                    tangent = (points[min(i+1,15)]-points[max(0,i-1)]).normalized()
                     cross = tangent.cross(UP).normalized()
-                    link(center, tangent, UP if i%2 else cross, palm, .010)
+                    links.append(link(center, tangent, UP if i%2 else cross, palm, .010))
                     if i%4 == 3:
                         for direction in (-1,1):
                             tube([center,center+UP*direction*.075-SIDE*sign*.025],
                                  [.018,.002],[palm]*2,'limbs',6)
                 CHAINS.append(dict(bone=palm, origin=list(points[0]), tip=list(points[-1]),
-                                   vertices=[v for v in bm.verts if v not in old]))
+                                   vertices=[v for v in bm.verts if v not in old],links=links))
     bm.verts.index_update()
     for chain in CHAINS:
         chain['vertices'] = [v.index for v in chain['vertices']]
+        for link in chain['links']:
+            link['vertices']=[v.index for v in link['vertices']]
 
 
 def albedo(path):
     size=512; image=np.zeros((size,size,3),dtype=np.float64)
     for region in sorted(paint.shared.ATLAS):
         (y0,y1,x0,x1),u,v=paint.shared.region_canvas(size,region)
-        base=np.array((.25,.34,.16) if args.kind=='bearded-devil' else (.64,.61,.59))
-        if region=='limbs':base=np.array((.25,.20,.12) if args.kind=='bearded-devil' else (.16,.18,.20))
-        if region=='membrane':base=np.array((.035,.045,.028))
-        if region=='beak':base=np.array((.16,.12,.10))
+        base=np.array((.34,.405,.21) if args.kind=='bearded-devil' else (.43,.39,.36))
+        if region=='limbs':base=np.array((.30,.25,.16) if args.kind=='bearded-devil' else (.27,.285,.30))
+        if region=='membrane':base=np.array((.105,.125,.075))
+        if region=='beak':base=np.array((.145,.105,.085) if args.kind=='bearded-devil' else (.19,.075,.065))
         if region=='crest':base=np.array((.85,.33,.06) if args.kind=='bearded-devil' else (.24,.08,.07))
         pixels=np.broadcast_to(base,(*u.shape,3)).copy()
-        pixels *= (.82+.12*np.sin(u*math.pi*10)*np.cos(v*math.pi*7)+.08*v)[...,None]
+        pixels *= (.89+.075*np.sin(u*math.pi*6)*np.cos(v*math.pi*5)+.08*v)[...,None]
+        pixels *= (1+.022*np.sin(u*math.pi*71)*np.cos(v*math.pi*53))[...,None]
         if args.kind=='kyton-chain-devil' and region=='limbs':
             pixels += (.22*np.maximum(0,np.sin(u*math.pi*6))**12)[...,None]
         image[y0:y1,x0:x1]=np.clip(pixels,0,1)

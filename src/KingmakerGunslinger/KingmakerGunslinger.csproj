@@ -76,6 +76,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEvents34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEarly34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEarly35.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalWallFixture35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBarbed35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint36Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint37Inputs.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalPersistence35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalPersistence36.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBodies34.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonOverhaulReview.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalMechanics34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCombat34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalAi34.cs" />

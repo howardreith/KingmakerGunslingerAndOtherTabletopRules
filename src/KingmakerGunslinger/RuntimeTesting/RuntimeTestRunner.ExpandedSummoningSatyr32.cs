@@ -36,7 +36,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
-                if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalHealingPhase ||
+                if (ExpandedSummoningNativeProfilePolicy.WallFixturePhase(phase) ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulDaylightPhase ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulMotionPhase ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulOffPhase ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalHealingPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalAiPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalEffectsPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalLifetimePhase ||
@@ -92,6 +96,24 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ReviewSprint32Core(ExpandedSummoningCorrectionFixture fixture)
         {
             string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
+            if (ExpandedSummoningNativeProfilePolicy.WallFixturePhase(phase))
+            {
+                CreateSprint32TurnHostile(fixture);
+                using (var mode = Cleanup2EnterNativeDefault(fixture, phase))
+                    foreach (int frame in ReviewInfernalEarly35(fixture)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulIndoorPhase ||
+                phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulDaylightPhase ||
+                phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulMotionPhase ||
+                phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulOffPhase)
+            {
+                if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulDaylightPhase ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulMotionPhase)
+                    CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewSummonOverhaul(fixture, phase)) yield return frame;
+                yield break;
+            }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalHealingPhase)
             {
                 foreach (int frame in ReviewInfernalHealing34(fixture)) yield return frame;

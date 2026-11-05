@@ -1,3 +1,35 @@
+## PR 96 review correction
+
+Babau now has elongated upper-arm/forearm and calf/metatarsal masses, tapered tendons, shaped palms and separate planted toes. Hezrou now has beveled skull/jaw/brow planes, a straight inset mouth, a weight-bearing digitigrade lower limb and broad toe-bearing feet. The high Foot0 joint is a hock: extending anatomical form only to that joint leaves the last 0.34 m as the peg seen in the prior review; the new surface continues to the toe joint.
+
+The scoped `sprint36-demons/anatomy_planes.py` authoring helper supplies original beveled jaw/forefoot masses and elongated muscle forms around the unchanged measured joints. No new driver, native geometry, animation, attack or rule is introduced. Raw capture authority remains `6443b580c8019d2a32de616ef610df3c2aa851c7c998044b56e0c29b4494e65d`.
+
+Regeneration uses the existing generator/arguments and the seam-safe `outsider_surface.py`. All regenerated triangles stay inside a single atlas region; all components are closed, consistently wound and outward. Exact front/side/party renders and 240-pixel party views were inspected. These are offline shape and export observations; native material/motion and owner aesthetic approval remain separate. Reports/previews live in ignored `artifacts/summon-overhaul-review/demons`.
+
+| Current export | Vertices / triangles | SHA-256 |
+| --- | --- | --- |
+| `babau-mesh.json` | 4584 / 9116 | `6c8888b4b4c6b36d3e76a42c743a8f29e6fdbc95f55a43fce53203d05bc533fb` |
+| `babau-albedo.png` | - | `cbc8efb3a1488d4a71efbef98f257d810b7b2bf0046d0c5b7824e1ae51611006` |
+| `hezrou-mesh.json` | 4653 / 9198 | `5cc1136f822ba7a3d48fe215c166fa0b1dc7ce0d94f13e8a008d721bd7f1579e` |
+| `hezrou-albedo.png` | - | `f9196f5340b80cd40b1535c1ec15ba36937495cb0174f2a50aaf81be5e107386` |
+
+## Initial owner visual-overhaul revision (retained record)
+
+The November 2026 owner mission brings the previously deferred cosmetic work into scope. The current exports use opt-in `continuous-bodies/outsider_surface.py` to unite organic skin and blend the existing two-influence weights. Individual teeth, horns, feather vanes and membranes retain intentional ownership. The original rig articulation limits remain. No mechanical profile, attack, route, GUID, icon or save identity changed.
+
+Raw geometry-free input capture SHA-256 is `6443b580c8019d2a32de616ef610df3c2aa851c7c998044b56e0c29b4494e65d`. Before revision, this locally retained capture regenerated the released Nalfeshnee geometry blob and albedo manifest byte-for-byte. New exports truthfully name this capture; the historical `727645...ad7a4` authority is retained separately. Both are an explicit closed loader allowlist.
+
+Normal regeneration uses the existing generator/arguments below. Blender 4.5.10 and the existing pipeline are retained; private captures, blends, reports and previews stay out of Git/packages. Exact exported front, side and party-angle previews have been inspected offline. Native lighting, motion, measured world-space scale and owner aesthetic approval remain separate and unverified until the [active checkpoint](../../../planning/SUMMON-OUTSIDER-VISUAL-OVERHAUL-STATE.md) records actual observations.
+
+| Current export | Vertices / triangles | SHA-256 |
+| --- | --- | --- |
+| `babau-mesh.json` | 4875 / 9690 | `0c25a363b466c46d76610a48358a3b3dd934f77abfa6ffa132c60a5c54d0f5c7` |
+| `babau-albedo.png` | - | `cbc8efb3a1488d4a71efbef98f257d810b7b2bf0046d0c5b7824e1ae51611006` |
+| `hezrou-mesh.json` | 5018 / 9944 | `833989f1ea873af21e2e7684d5692177a74964d28be2a4f962b99412b651eae3` |
+| `hezrou-albedo.png` | - | `f9196f5340b80cd40b1535c1ec15ba36937495cb0174f2a50aaf81be5e107386` |
+
+## Earlier authoring record
+
 # Sprint 36 original demon bodies
 
 Babau and Hezrou use distinct original procedural geometry and albedos authored

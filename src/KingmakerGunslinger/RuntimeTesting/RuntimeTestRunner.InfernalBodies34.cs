@@ -78,7 +78,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Sprint25Check("sprint34-private-pair-" + key, independent, new JObject { ["independent"] = independent },
                             "Repeated owners hold separate mutable mesh/material instances.");
                         if (!independent) throw new InvalidOperationException("Shared mutable original body.");
+                        var siblingChains = owners[1].View.GetComponent<KytonChainVisual34>();
+                        int siblingContacts = siblingChains == null ? 0 : siblingChains.Contacts;
+                        bool siblingControlled = InfernalMartialProfile34.For(owners[1]).ControlsOwnChains(owners[1]);
                         foreach (int frame in ReviewInfernalMotion34(fixture, owners[0], key, trace, receipt)) yield return frame;
+                        if (siblingChains != null)
+                        {
+                            bool isolated = siblingChains.Contacts == siblingContacts && siblingChains.Resting &&
+                                InfernalMartialProfile34.For(owners[1]).ControlsOwnChains(owners[1]) == siblingControlled;
+                            Sprint25Check("sprint34-chain-motion-sibling-isolation", isolated, new JObject {
+                                ["movingOwner"] = owners[0].UniqueId, ["idleSibling"] = owners[1].UniqueId,
+                                ["contactsBefore"] = siblingContacts, ["contactsAfter"] = siblingChains.Contacts,
+                                ["resting"] = siblingChains.Resting, ["controlledBefore"] = siblingControlled,
+                                ["controlledAfter"] = InfernalMartialProfile34.For(owners[1]).ControlsOwnChains(owners[1]) },
+                                "Two simultaneous Kytons retain independent chain contacts and control during the first owner's movement and attacks.");
+                            if (!isolated) throw new InvalidOperationException("Sibling chain ownership changed during motion.");
+                        }
                     } finally {
                         foreach (var owner in owners.Where(value => !value.Destroyed)) {
                             owner.Commands.InterruptAll(command => true); owner.Commands.RemoveFinishedAndUpdateQueue();
@@ -152,7 +167,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             string key, InfernalEvents34 trace, JObject receipt)
         {
             var target = fixture.Hostile;
-            var mode = Cleanup2EnterNativeDefault(fixture, ExpandedSummoningNativeProfilePolicy.Sprint32InfernalBodiesPhase);
+            string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
+            if (phase != ExpandedSummoningNativeProfilePolicy.Sprint32InfernalBodiesPhase &&
+                phase != ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulMotionPhase)
+                throw new InvalidOperationException("Infernal motion requires its exact owned presentation phase.");
+            var mode = Cleanup2EnterNativeDefault(fixture, phase);
             var observer = new Sprint16RuleObserver { Owner = owner, Target = target };
             var contacts = new JArray(); receipt[key + "-contacts"] = contacts;
             var errors = new JArray(); receipt[key + "-capture-errors"] = errors;

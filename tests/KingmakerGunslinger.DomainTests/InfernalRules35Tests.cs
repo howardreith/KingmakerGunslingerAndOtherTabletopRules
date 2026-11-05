@@ -383,7 +383,7 @@ namespace KingmakerGunslinger.DomainTests
                     "Both bodies retain the exact measured rig order.");
                 if (key == InfernalVisualPolicy35.Barbed)
                 {
-                    Assertions.Equal(20, (int)payload["visibleSpines"],
+                    Assertions.Equal(34, (int)payload["visibleSpines"],
                         "Barbed has a materially spined authored body.");
                     Assertions.True(payload["tail"].Type == JTokenType.Null,
                         "Barbed does not acquire the Bone tail receipt.");

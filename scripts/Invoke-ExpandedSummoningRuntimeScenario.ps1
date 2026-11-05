@@ -71,11 +71,9 @@ if ($PackagePath -and $SaveName -ceq 'KMG_AUTOMATION_WORKING' -and $ScenarioPara
     return
 }
 
-if ($ExpandedSummoningDisabled -and
-    ($Scenario.Count -ne 1 -or
-        $Scenario[0] -cne 'working-save-expanded-summoning-verify-cleanup' -or
-        $SaveName -cne 'KMG_AUTOMATION_WORKING')) {
-    throw 'The temporary module-off setting is allowed only for the exact working-save Expanded Summoning verify/cleanup stage.'
+if ($ExpandedSummoningDisabled -and !(Test-KmgTemporaryExpandedSummoningOffScope -Scenario $Scenario -SaveName $SaveName `
+    -ScenarioParameters $ScenarioParameters -ScenarioParameterMap $ScenarioParameterMap -DevelopmentPurpose $DevelopmentPurpose)) {
+    throw 'The temporary module-off setting requires exact working cleanup or the purpose-bound save-free summon-overhaul-off review.'
 }
 
 foreach ($name in $Scenario) {

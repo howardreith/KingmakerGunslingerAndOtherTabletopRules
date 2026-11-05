@@ -25,6 +25,7 @@ using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
 using Kingmaker.View;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Diagnostics;
 using Newtonsoft.Json;
 using Pathfinding;
 using UnityEngine;
@@ -283,9 +284,14 @@ namespace KingmakerGunslinger.Summoning
             UnitEntityData caster = Context?.MaybeCaster;
             InfernalWallPlacement35 placement;
             if (caster?.Blueprint == null || OwningBlueprint == null ||
-                !ReferenceEquals(caster.Blueprint, OwningBlueprint) ||
-                !InfernalWallPlacementRuntime35.TryResolve(caster, Target,
-                    WallSection, out placement)) return;
+                !ReferenceEquals(caster.Blueprint, OwningBlueprint)) return;
+            if (!InfernalWallPlacementRuntime35.TryResolve(caster, Target,
+                    WallSection, out placement))
+            {
+                FormationFeedback(caster, "placement-changed",
+                    "Wall of Ice could not form: its location is no longer clear, walkable ground.");
+                return;
+            }
             int dc = InfernalRules35.WallOfIceFormationDc(
                 caster.Stats.Charisma.ModifiedValue);
             Context.Params.CasterLevel = InfernalRules35.SpellLikeCasterLevel;
@@ -297,11 +303,20 @@ namespace KingmakerGunslinger.Summoning
                 var resistance = Context.TriggerRule(
                     new RuleSpellResistanceCheck(Context, unit));
                 if (resistance.TargetIsImmune || resistance.IsSpellResisted)
+                {
+                    FormationFeedback(caster, "resisted",
+                        "A nearby creature's spell resistance or immunity disrupted Wall of Ice formation.");
                     return;
+                }
                 var save = new RuleSavingThrow(unit, SavingThrowType.Reflex,
                     dc) { Reason = Context };
                 Context.TriggerRule(save);
-                if (save.IsPassed) return;
+                if (save.IsPassed)
+                {
+                    FormationFeedback(caster, "reflex-disruption",
+                        "A nearby creature disrupted Wall of Ice formation with a successful Reflex save.");
+                    return;
+                }
             }
 
             var summon = new RuleSummonUnit(caster, WallSection,
@@ -314,7 +329,12 @@ namespace KingmakerGunslinger.Summoning
                 };
             Context.TriggerRule(summon);
             UnitEntityData section = summon.SummonedUnit;
-            if (section == null) return;
+            if (section == null)
+            {
+                FormationFeedback(caster, "section-not-created",
+                    "Wall of Ice failed to create its ice section.");
+                return;
+            }
             float orientation = Quaternion.LookRotation(placement.Forward,
                 Vector3.up).eulerAngles.y;
             section.Orientation = orientation;
@@ -322,6 +342,18 @@ namespace KingmakerGunslinger.Summoning
             var binding = section.View == null ? null : section.View
                 .GetComponent<InfernalWallNavmesh35>();
             if (binding != null) binding.Reorient(orientation);
+        }
+
+        private static void FormationFeedback(UnitEntityData caster,
+            string outcome, string message)
+        {
+            // CanTarget is queried while aiming: keep it side-effect free.
+            // Report only an executed player's cast, after the actual native
+            // formation decision. A missing log view must not change that
+            // decision, which the existing publication service guarantees.
+            if (caster == null || !caster.IsPlayerFaction) return;
+            NativeCombatLog.Publish("expanded-summoning",
+                "wall-formation.feedback-unavailable", message, outcome);
         }
     }
 

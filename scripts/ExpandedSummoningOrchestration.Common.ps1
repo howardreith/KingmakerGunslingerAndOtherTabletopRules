@@ -21,6 +21,24 @@ branch without a runtime lease, a deployment, or a launch.
 
 Set-StrictMode -Version Latest
 
+# Temporary OFF remains closed to the released working cleanup route and one
+# save-free review correction. No arbitrary phase or mixed batch can borrow it.
+function Test-KmgTemporaryExpandedSummoningOffScope {
+    param([string[]]$Scenario, [AllowNull()][AllowEmptyString()][string]$SaveName,
+        [hashtable]$ScenarioParameters = @{}, [hashtable]$ScenarioParameterMap = @{},
+        [AllowNull()][AllowEmptyString()][string]$DevelopmentPurpose)
+    if ($Scenario.Count -ne 1) { return $false }
+    if ($Scenario[0] -ceq 'working-save-expanded-summoning-verify-cleanup' -and
+        $SaveName -ceq 'KMG_AUTOMATION_WORKING') { return $true }
+    return $Scenario[0] -ceq 'disposable-expanded-summoning-sprint32-native-review' -and
+        [string]::IsNullOrEmpty($SaveName) -and
+        $DevelopmentPurpose -ceq 'summon-outsider-review-corrections' -and
+        $ScenarioParameterMap.Count -eq 0 -and $ScenarioParameters.Count -eq 1 -and
+        @($ScenarioParameters.Keys) -ccontains 'reviewPhase' -and
+        $ScenarioParameters.reviewPhase -is [string] -and
+        $ScenarioParameters.reviewPhase -ceq 'summon-overhaul-off'
+}
+
 # The two owned boundaries must each get a restoration attempt. Callers first
 # establish that the native process is gone; this helper never bypasses that
 # guard or suppresses either failure.
