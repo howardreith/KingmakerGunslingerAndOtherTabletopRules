@@ -9,8 +9,9 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 - RECOVERY PENDING / APPROVAL BOUNDARY. HOWARD-LAPTOP, root
   `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
-  `codex/expanded-summoning-sprint40-ice-devil`; product/package source and last
-  pushed `acaa508a51c4cd2a821f7066526c0e71c2bfdbee`. This records-only update is
+  `codex/expanded-summoning-sprint40-ice-devil`; product/package source
+  `acaa508a51c4cd2a821f7066526c0e71c2bfdbee`; prior records checkpoint
+  `a3b4f7cc7f113b5f6ea8c8b56c301016367c2533`. This records-only update is
   the enclosing HEAD. Draft PR97. Sprint40 is not released; public route hidden.
 - No game or deployment transaction/lease active. Wrapper restored the exact KMG
   tree SHA216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
@@ -29,6 +30,13 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   Favored Class subsequently reports missing dictionary keys and regenerates its
   inventory incompletely. No Ice gameplay/presentation proof on acaa. No unchanged
   relaunch. Error is an owned dependency-completeness miss, not an engine limitation.
+- Recovery revalidated2026-11-05T12:07Z: same single differing inventory, clean
+  source worktree and no game process. Eight other startup-written peer files
+  now have verified exact-intake-hash backup copies at
+  `sprint40-intake-20261105T002300Z/verified-peer-originals-20261105T120726Z/manifest.json`.
+  Differing Favored Class inventory explicitly excluded; original target unchanged.
+  Specific source-repair exception still unanswered; automatic Goal continuation
+  is not an approval response. No product edit/native launch performed.
 - Proposed narrow repair: add BlueprintWeaponEnchantment factory registration in
   `ExpandedSummoningBlueprints.Register` beside the existing item/type cases,
   production compile/affected checks/build; use existing guarded settings-observation
