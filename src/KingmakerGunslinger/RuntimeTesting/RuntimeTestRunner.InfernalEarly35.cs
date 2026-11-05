@@ -1047,7 +1047,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool InfernalEarlyWallLane35(
             ExpandedSummoningCorrectionFixture fixture, out Vector3 start,
             out Vector3 midpoint, out Vector3 destination,
-            out Vector3 casterPoint, out JArray attempts)
+            out Vector3 casterPoint, out JArray attempts,
+            Func<Vector3, Vector3, bool> admit = null)
         {
             attempts = new JArray();
             start = midpoint = destination = casterPoint = Vector3.zero;
@@ -1132,6 +1133,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Vector3.Distance(traced, to.clampedPosition) : -1f
                 });
                 if (!direct || !caster) continue;
+                if (admit != null && !admit(middle, offLane.clampedPosition)) continue;
                 start = from.clampedPosition;
                 destination = to.clampedPosition;
                 midpoint = middle;

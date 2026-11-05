@@ -30,6 +30,10 @@ namespace KingmakerGunslinger.Summoning
             bool exactInitiator, bool spear, bool tail, bool hit)
         { return exactOwner && exactInitiator && (spear || tail) && hit; }
 
+        internal static bool RetainBiteAttack(bool primaryIsBite,
+            bool attackIsBite, bool primaryHand, bool seenBite)
+        { return !primaryIsBite || !attackIsBite || primaryHand || !seenBite; }
+
         // Preserve the printed bite's full positive Strength contribution
         // while retaining its native secondary attack role and attack penalty.
         // The tail keeps the native half contribution. Already-correct native

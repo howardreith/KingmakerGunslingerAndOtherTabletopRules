@@ -8,8 +8,8 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 - Owner: active native Goal, HOWARD-LAPTOP. Branch
   `codex/expanded-summoning-sprint40-ice-devil`, root `C:/Dev/KingmakerGunslingerLab/wt/s40`.
-  Current product head `4db0661bd0ad4490538979e1fe649cf96913620c`.
-  Hidden implementation and repaired footprint/package dependencies are pushed.
+  Last pushed checkpoint `419b65aa5bbf527850a9c2afbabcc1153539f05b`.
+  Following batch adds wall/rider observations and narrow profile/hand repairs.
 - Prior intake, Nalfeshnee-only range fix and branch policy are preserved.
   No quota/context/tool refusal was surfaced; previous capacity-stop cause is
   unknown. CLI `0.166.0`; native Goal active, no update required.
@@ -57,6 +57,26 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   30/30 PASS of2814; orchestration293 assertions PASS. Logs:
   `artifacts/s40-grouped-observers-compile.log` and
   `artifacts/s40-grouped-observers-preflight.log`.
+- Following batch now compiles: two Ice plus Bone wall claims, fire/object
+  damage and actual residual crossing; native Holy Smite suppression/fatal
+  regeneration through the extracted established S34 helper; rider zero final
+  damage/cold immunity/live DC25/duplicate real-event notification/miss/native
+  Haste counter and real impaired movement. All new rows are UNRUN natively.
+- Source review found two narrow defects before final freeze: repeated primary
+  bites from native Haste were wrongly deduplicated, and the shared +2 Alertness
+  plus the Ice-only +4 doubled its Perception contribution. Hand policy now
+  retains repeat primary attacks and removes only the duplicate additional limb;
+  shared defenses accept Ice's own +4 once, omit redundant cold resistance,
+  and no longer duplicate acid resistance. Bone defaults remain unchanged.
+  Ice-only Intimidate uses the existing exact-check consumer with +14 trained
+  contribution (printed +19 at Cha20); other Persuasion remains unboosted.
+- Failing production-predicate reproduction retained in
+  `artifacts/s40-haste-predicate-before.log`:1 selected/1 FAIL, native-Haste
+  same-primary-hand retention. Repaired production+S34/S35/S39/S40 checks:
+  31/31 of2815 PASS, production26.3s/tests5.5s. Preflight297 assertions PASS.
+  Current live-total observer additionally requires HP161,AC32,15/14/12 saves,
+  Perception27,Stealth18,Mobility22. Native confirmation remains required.
+  The rider now also checks the actual weapon entity's owner.
 - Selected condition lifetime: native finite recipient Slow keeps its rolled
   deadline independently of owner removal/module OFF; no permanent/portable
   carrier or implicit cure. Native Ice Storm terrain retains its finite
