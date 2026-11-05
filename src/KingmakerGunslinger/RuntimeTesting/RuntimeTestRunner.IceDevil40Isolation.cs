@@ -31,6 +31,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var remoteCompanions = Game.Instance.Player.RemoteCompanions.ToArray();
                 bool casterInGame = fixture.Caster.IsInGame;
                 bool casterLent = false, observerFearIsolation = false;
+                UnitEntityData quietAnchor = null; bool anchorBrain = false;
                 try
                 {
                     var placement = new JObject(); receipt["placement"] = placement;
@@ -48,6 +49,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!Game.Instance.Player.PartyCharacters.Contains(fixture.Caster) ||
                         !Game.Instance.Player.ControllableCharacters.Contains(fixture.Caster))
                         throw new InvalidOperationException("Native companion admission did not supply the disposable observer caster.");
+                    quietAnchor = Sprint32OwnedQuietAnchor(fixture, "sprint40-fixture");
+                    anchorBrain = quietAnchor.IsBrainActive;
+                    Sprint28SetBrainActivePreservingActions(quietAnchor, false);
+                    placement["exactOwnedProfileAnchorQuiesced"] = quietAnchor.UniqueId;
                     camera.ScrollToImmediately(fixture.Caster.Position);
                     placement["nativePartyVisionCaster"] = fixture.Caster.UniqueId;
                     placement["nativeCameraTarget"] = Vec(camera.GetPosition());
@@ -89,6 +94,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 finally
                 {
+                    if (quietAnchor != null && !quietAnchor.Destroyed && !Cleanup2NativeDefaultPending)
+                        Sprint28SetBrainActivePreservingActions(quietAnchor, anchorBrain);
                     if (observerFearIsolation)
                         fixture.Caster.Descriptor.State.RemoveConditionImmunity(UnitCondition.Frightened);
                     if (casterLent)
@@ -174,6 +181,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             private readonly ExpandedSummoningCorrectionFixture fixture;
             private readonly HashSet<UnitEntityData> protectedUnits;
+            private readonly Dictionary<UnitEntityData, Vector3> protectedPositions;
             private readonly HashSet<UnitEntityData> ownedSources = new HashSet<UnitEntityData>();
             private readonly JArray violations = new JArray();
             internal int OwnedEvents { get; private set; }
@@ -181,6 +189,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 fixture = value; protectedUnits = new HashSet<UnitEntityData>(value.UnitsBefore.OfType<UnitEntityData>());
                 if (protectedUnits.Count == 0) throw new InvalidOperationException("Empty protected intake.");
+                protectedPositions = protectedUnits.ToDictionary(x => x, x => x.Position);
                 EventBus.Subscribe(this);
             }
             private void Observe(string kind, UnitEntityData source, UnitEntityData target)
@@ -196,9 +205,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             internal void Validate()
             {
-                if (violations.Count != 0) throw new InvalidOperationException("Owned effect reached protected actor: " + violations);
+                foreach (var pair in protectedPositions)
+                {
+                    Vector3 delta = pair.Key.Position - pair.Value; delta.y = 0;
+                    if (delta.magnitude > .05f && !violations.OfType<JObject>().Any(x =>
+                        (string)x["kind"] == "protected-moved" && (string)x["target"] == pair.Key.UniqueId))
+                        violations.Add(new JObject { ["kind"] = "protected-moved", ["target"] = pair.Key.UniqueId,
+                            ["original"] = Vec(pair.Value), ["current"] = Vec(pair.Key.Position),
+                            ["horizontalTravel"] = delta.magnitude });
+                }
+                if (violations.Count != 0) throw new InvalidOperationException("Protected fixture actor moved or received an owned effect: " + violations);
             }
             internal JObject Describe() { return new JObject { ["protectedActors"] = protectedUnits.Count,
+                ["protectedHorizontalPositionsUnchanged"] = protectedPositions.All(x => !x.Key.Destroyed &&
+                    Vector3.ProjectOnPlane(x.Key.Position - x.Value, Vector3.up).magnitude <= .05f),
                 ["ownedEvents"] = OwnedEvents, ["violations"] = violations }; }
             public void OnEventAboutToTrigger(RuleSavingThrow evt) { }
             public void OnEventDidTrigger(RuleSavingThrow evt) { Observe("save", evt.Reason?.Context?.MaybeCaster, evt.Initiator); }
