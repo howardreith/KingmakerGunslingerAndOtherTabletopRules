@@ -75,6 +75,10 @@ namespace KingmakerGunslinger.Summoning
         internal bool GridApplyCompleted { get; private set; }
         internal bool GridRestoreQueued { get; private set; }
         internal bool GridRestoreCompleted { get; private set; }
+        // Whether the native combat controller had applied this cut's grid
+        // DynamicBlocked block, and whether its revert was queued on release.
+        internal bool CutGridBlockAppliedAtRelease { get; private set; }
+        internal bool CutGridRevertQueued { get; private set; }
         internal string GridFailure { get; private set; }
         internal static int ActiveGridClaimCount { get { return Claims.Count; } }
 
@@ -351,12 +355,36 @@ namespace KingmakerGunslinger.Summoning
             }));
         }
 
+        // Installed 2.1.7b TurnBased.Controllers.CombatController
+        // .UpdateNavigationGrid applies each listed NavmeshCut to grid graph
+        // mask 2 as DynamicBlocked counters and reverts that block only while
+        // the cut is still listed. NavmeshCut.OnDestroy removes the cut without
+        // a grid revert, so destroying it first strands the counters and the
+        // footprint stays unwalkable. Queue the native revert object exactly
+        // as the controller does, then destroy the cut.
+        private const int NativeCombatGridMask = 2;
+
+        private void RevertCutGridBlock()
+        {
+            CutGridBlockAppliedAtRelease = _cut != null && _cut.gridGuoApplied;
+            if (!CutGridBlockAppliedAtRelease || AstarPath.active == null) return;
+            bool enabled;
+            NavmeshCut.UpdateObjectPair pair = _cut.GetUpdateObjectForGrid(
+                out enabled, NativeCombatGridMask);
+            if (pair.revertGuo == null || pair.revertGuo.updating) return;
+            pair.revertGuo.updating = true;
+            AstarPath.active.UpdateGraphs(pair.revertGuo);
+            _cut.gridGuoApplied = false;
+            CutGridRevertQueued = true;
+        }
+
         internal void Release()
         {
             if (_released) return;
             _released = true;
             if (_cut != null)
             {
+                RevertCutGridBlock();
                 UnityEngine.Object.DestroyImmediate(_cut);
                 if (_tileHandler != null &&
                     _tileHandler.isActiveAndEnabled &&
