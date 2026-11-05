@@ -58,15 +58,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { Game.Instance.IsPaused = false; yield return 0; }
                 var live = Game.Instance.State.Units.All.Where(x => x != null && !x.Destroyed && x.IsInState).ToArray();
                 var gear = new JArray(items.Select(x => OutsiderEscapeItemState(x, owner, live)));
-                check("native-expiry-gear-and-resources", queued && Sprints3031SourceAbsent(owner) &&
-                    pending.IsFinished && economy.Count(pending) == 0 && resources.All(x => x == null) &&
-                    gear.All(x => (bool)x["safe"]) && siblingResources.All(x => x != null) &&
-                    Sprint28InventoryExact(sibling.Descriptor.Inventory, siblingItems, siblingCounts) &&
-                    Sprint28PartyInventoryExact(party, partyCounts) &&
-                    !trace.Rows.Skip(first).Any(x => (string)x["owner"] == owner.UniqueId &&
-                        ((string)x["event"] == "attack" || (string)x["event"] == "save" || (string)x["event"] == "damage")),
+                bool sourceAbsent = Sprints3031SourceAbsent(owner);
+                int pendingCosts = economy.Count(pending);
+                bool resourcesAbsent = resources.All(x => x == null);
+                bool gearSafe = gear.All(x => (bool)x["safe"]);
+                bool siblingResourcesAlive = siblingResources.All(x => x != null);
+                bool siblingInventoryExact = Sprint28InventoryExact(
+                    sibling.Descriptor.Inventory, siblingItems, siblingCounts);
+                bool partyInventoryExact = Sprint28PartyInventoryExact(party, partyCounts);
+                bool ownerEventsAbsent = !trace.Rows.Skip(first).Any(x =>
+                    (string)x["owner"] == owner.UniqueId &&
+                    ((string)x["event"] == "attack" || (string)x["event"] == "save" ||
+                     (string)x["event"] == "damage"));
+                check("native-expiry-gear-and-resources", queued && sourceAbsent &&
+                    pending.IsFinished && pendingCosts == 0 && resourcesAbsent &&
+                    gearSafe && siblingResourcesAlive && siblingInventoryExact &&
+                    partyInventoryExact && ownerEventsAbsent,
                     new JObject { ["expiry"] = expiry, ["queued"] = queued,
                         ["command"] = Sprint27AiCommand(pending), ["costs"] = costs,
+                        ["sourceAbsent"] = sourceAbsent,
+                        ["pendingFinished"] = pending.IsFinished,
+                        ["pendingCostCount"] = pendingCosts,
+                        ["privateResourcesAbsent"] = resourcesAbsent,
+                        ["gearSafe"] = gearSafe,
+                        ["siblingResourcesAlive"] = siblingResourcesAlive,
+                        ["siblingInventoryExact"] = siblingInventoryExact,
+                        ["partyInventoryExact"] = partyInventoryExact,
+                        ["ownerAttackSaveDamageEventsAbsent"] = ownerEventsAbsent,
                         ["gear"] = gear, ["fixtureDisposalsBeforeAssertion"] = 0,
                         ["fixtureInterruptsAfterExpiry"] = 0 },
                     "Native expiry cancels the real queued command without spending, retires exact gear/private resources without escaped loot, and preserves the other owner and party inventory.");

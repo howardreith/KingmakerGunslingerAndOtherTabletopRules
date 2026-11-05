@@ -128,11 +128,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var coneData = new AbilityData(owner.Descriptor.Abilities.GetAbility(cone.Ability));
                 var coneDecision = new DecisionContext { Unit = owner, Target = decision.Target, Ability = coneData };
                 if (suffix != "ConeOfCold")
+                {
+                    var coldFact = target.Descriptor.GetFact(cold);
+                    var progressionMatches = target.Descriptor.Progression.Features.Enumerable
+                        .Where(fact => ReferenceEquals(fact.Blueprint, cold)).ToArray();
+                    var blueprintImmunities = cold.ComponentsArray
+                        .OfType<Kingmaker.UnitLogic.FactLogic.AddEnergyDamageImmunity>().ToArray();
+                    var runtimeImmunities = coldFact == null ?
+                        Array.Empty<Kingmaker.UnitLogic.FactLogic.AddEnergyDamageImmunity>() :
+                        coldFact.SelectComponents<Kingmaker.UnitLogic.FactLogic.AddEnergyDamageImmunity>().ToArray();
                     check(id + "-cold-immunity-selection", !cone.IsTargetValid(coneDecision) &&
                         coneData.IsAvailable,
                         new JObject { ["nativeImmunity"] = cold.AssetGuid, ["playerConeStillAvailable"] = coneData.IsAvailable,
-                            ["nativePlayerCanTarget"] = coneData.CanTarget(new TargetWrapper(target)) },
+                            ["nativePlayerCanTarget"] = coneData.CanTarget(new TargetWrapper(target)),
+                            ["descriptorHasFact"] = target.Descriptor.HasFact(cold),
+                            ["runtimeFactPresent"] = coldFact != null,
+                            ["runtimeFactTurnedOn"] = coldFact?.IsTurnedOn,
+                            ["progressionMatchCount"] = progressionMatches.Length,
+                            ["progressionTurnedOn"] = new JArray(progressionMatches.Select(x => x.IsTurnedOn)),
+                            ["blueprintImmunityComponents"] = blueprintImmunities.Length,
+                            ["runtimeImmunityComponents"] = runtimeImmunities.Length,
+                            ["runtimeImmunityTypes"] = new JArray(runtimeImmunities.Select(x => x.EnergyType.ToString())) },
                         "AI declines cold-only offense against native cold immunity without removing the player's at-will ability.");
+                }
                 // Save-free private-faction seam used by the hostile witness,
                 // with no attack relations. No registered/persisted listener
                 // faction or intake group is changed for this friendly control.
