@@ -37,6 +37,12 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   Differing Favored Class inventory explicitly excluded; original target unchanged.
   Specific source-repair exception still unanswered; automatic Goal continuation
   is not an approval response. No product edit/native launch performed.
+- Third consecutive goal-turn audit2026-11-05T12:09Z confirms the same boundary.
+  `sprint40-intake-20261105T002300Z/registration-recovery-20261105T120913Z/recovery.json`
+  again proves references/settings/all118 saves exact, no game, and only the
+  generated Favored Class inventory differs. No exception response received.
+  Persistent Goal is being marked BLOCKED; objective remains incomplete. Resume
+  requires the specific bounded repair exception or verified original-file recovery.
 - Proposed narrow repair: add BlueprintWeaponEnchantment factory registration in
   `ExpandedSummoningBlueprints.Register` beside the existing item/type cases,
   production compile/affected checks/build; use existing guarded settings-observation
@@ -51,7 +57,7 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   paused; only independent safety restoration and this durable record performed.
   Once authorized and restored, continue focused presentation/AI/Slow-TB proof,
   persistence/publisher, final public candidate/fresh qualification/six-process
-  ON+OFF, exact release/public downloads/restoration/final-records merge. Goal active.
+  ON+OFF, exact release/public downloads/restoration/final-records merge.
 - acaa dev ZIP `c739656a8b38b76f8974c0f1a245323089a87dbd8c1f2b870fa3959eeff45b57`,
   DLL `964bb0fee783c75c217393a113df04857fc776b8ee46f83052b30188d389f66f`,
   MVID `59350f76-9ca2-4229-a9a6-e307e0099a9e`; build31/31 tests, strict/reader PASS,
