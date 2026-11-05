@@ -36,7 +36,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
-                if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulWallPhase ||
+                if (ExpandedSummoningNativeProfilePolicy.WallFixturePhase(phase) ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulDaylightPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulMotionPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulOffPhase ||
@@ -96,7 +96,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ReviewSprint32Core(ExpandedSummoningCorrectionFixture fixture)
         {
             string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
-            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulWallPhase)
+            if (ExpandedSummoningNativeProfilePolicy.WallFixturePhase(phase))
             {
                 CreateSprint32TurnHostile(fixture);
                 using (var mode = Cleanup2EnterNativeDefault(fixture, phase))

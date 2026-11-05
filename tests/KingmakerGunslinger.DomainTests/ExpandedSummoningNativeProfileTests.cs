@@ -9,7 +9,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview;
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultPhase("sprint35-infernal-early"), "Historical early phase retains its established admission.");
-            foreach (string phase in new[] { "summon-overhaul-indoor", "summon-overhaul-daylight", "summon-overhaul-motion", "summon-overhaul-wall", "summon-overhaul-off" })
+            foreach (string phase in new[] { "summon-overhaul-indoor", "summon-overhaul-daylight", "summon-overhaul-motion", "summon-overhaul-wall", "summon-overhaul-off", "summon-wall-placement-preflight" })
             {
                 Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Exact fresh overhaul phase admitted.");
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 1, 0, 0, false, false, false, false, true), "Overhaul cannot replace a live world.");
@@ -17,6 +17,20 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase(phase), "Overhaul grants no player input.");
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 1, phase + " "), "Malformed overhaul phase refused.");
                 Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, phase) == (phase != "summon-overhaul-indoor"), "Only exact outdoor phases use Default; indoor remains static.");
+            }
+            foreach (string phase in new[] { "summon-overhaul-wall", "summon-wall-placement-preflight" })
+            {
+                Assertions.True(ExpandedSummoningNativeProfilePolicy.WallFixturePhase(phase), "Both exact routes share Wall fixture preparation.");
+                Assertions.True(ExpandedSummoningNativeProfilePolicy.WallPlacementPreflightPhase(phase) == (phase == "summon-wall-placement-preflight"), "Only explicit preflight stops before casting.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview, 1, phase), "Wall route cannot borrow another scenario.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Wall fixture requires automatic exit.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, true, false, true), "Wall fixture cannot import a save.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, false), "Wall fixture requires its idle menu owner.");
+            }
+            foreach (string phase in new[] { null, "all", "summon-wall-placement-preflight ", "Summon-wall-placement-preflight", "summon-overhaul-motion" })
+            {
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.WallFixturePhase(phase), "Unselected route cannot acquire Wall preparation.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.WallPlacementPreflightPhase(phase), "Unselected route cannot acquire preflight terminal.");
             }
             foreach (string phase in new[] { "satyr-control", "lillend-support", "satyr-turn", "lillend-turn", "optional-suggestion", "suggestion-terminals", "satyr-routes", "lillend-routes", "support-lifecycle", "druid-input", "wizard-input", "sorcerer-input", "lillend-performance", "lillend-cantrips", "lillend-fascinate", "lillend-bardic-suggestion", "satyr-atwill", "satyr-atwill-turn", "lillend-hold", "lillend-hold-turn", "lillend-controls", "lillend-controls-turn", "lillend-grab", "technical-presentation" })
             {

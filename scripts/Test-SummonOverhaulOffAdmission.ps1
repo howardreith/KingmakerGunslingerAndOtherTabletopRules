@@ -15,6 +15,7 @@ $cases = @(
     @{Scenario=@('Disposable-expanded-summoning-sprint32-native-review')},
     @{SaveName='KMG_AUTOMATION_WORKING'}, @{SaveName='KMG_AUTOMATION_BASELINE'},
     @{ScenarioParameters=@{reviewPhase='summon-overhaul-daylight'}},
+    @{ScenarioParameters=@{reviewPhase='summon-wall-placement-preflight'}},
     @{ScenarioParameters=@{reviewPhase='summon-overhaul-off '}},
     @{ScenarioParameters=@{reviewPhase='summon-overhaul-off'; extra='x'}},
     @{ScenarioParameters=@{}}, @{ScenarioParameterMap=@{'x'=@{reviewPhase='summon-overhaul-off'}}},
@@ -26,7 +27,7 @@ foreach ($change in $cases) {
     $probe=$good.Clone(); foreach ($name in $change.Keys) {$probe[$name]=$change[$name]}
     if (Test-KmgTemporaryExpandedSummoningOffScope @probe) { throw ('Foreign OFF request admitted: '+($change|ConvertTo-Json -Compress)) }
 }
-foreach ($phase in @('summon-overhaul-indoor','summon-overhaul-daylight','summon-overhaul-motion','summon-overhaul-wall','summon-overhaul-off')) {
+foreach ($phase in @('summon-overhaul-indoor','summon-overhaul-daylight','summon-overhaul-motion','summon-overhaul-wall','summon-overhaul-off','summon-wall-placement-preflight')) {
     if (!(Test-KmgSprint32ReviewPhaseScope -Scenario 'disposable-expanded-summoning-sprint32-native-review' -Parameters @{reviewPhase=$phase})) { throw "Exact phase rejected: $phase" }
 }
-Write-Host 'PASS: exact OFF and released cleanup admitted; fourteen foreign OFF requests rejected; five exact phases recognized. No runtime launch.'
+Write-Host 'PASS: exact OFF and released cleanup admitted; fifteen foreign OFF requests rejected; six exact phases recognized. No runtime launch.'
