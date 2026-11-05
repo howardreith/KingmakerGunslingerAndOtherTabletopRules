@@ -5,6 +5,9 @@ using System.Linq;
 using Kingmaker;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.View;
+using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
+using KingmakerGunslinger.Blueprints;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -39,11 +42,28 @@ namespace KingmakerGunslinger.RuntimeTesting
         // Used by the full Wall phase and its explicit placement preflight.
         // Neither path can bypass the same initial/movement/return checkpoint.
         private IEnumerable<int> InfernalWallFixturePrerequisite35(
-            ExpandedSummoningCorrectionFixture fixture, IList<UnitEntityData> owned,
+            ExpandedSummoningCorrectionFixture fixture, UnitEntityData bone, IList<UnitEntityData> owned,
             InfernalWallFixturePlan35 plan, Action<string, bool, JObject, string> check)
         {
             foreach (var actor in owned)
                 PlaceExpandedSummoningUnit(actor, plan.CastingPoint);
+            // A real failed DC19 setup exposure was followed by the native
+            // fear controller's new Move, even with this witness brain off.
+            // Isolate that unrelated source-owned effect; keep its natural
+            // repeat memory during area membership retirement. No fear flag,
+            // roll, immunity, source aura or production blueprint is changed.
+            var frightened = (BlueprintBuff)ExpandedSummoningBlueprints.Registered.BySymbol[
+                ExpandedSummoningSpecialBuilder.Bone35Prefix + "FearFrightened"];
+            var beforeFear = InfernalWallActorState35(fixture.Caster);
+            InfernalBoneRemoveEffects35(fixture.Caster, new[] { bone }, frightened);
+            check("wall-fixture-setup-fear-isolation", InfernalBoneBuff35(fixture.Caster, frightened, bone) == null,
+                new JObject { ["source"] = bone.UniqueId, ["before"] = beforeFear,
+                    ["afterRemoval"] = InfernalWallActorState35(fixture.Caster),
+                    ["removedBlueprint"] = frightened.AssetGuid,
+                    ["naturalSourceMemoryPreserved"] = true,
+                    ["sourceDistanceFromPlannedLane"] = InfernalEarlyDistanceToSegment35(bone.Position, plan.Start, plan.Destination),
+                    ["scope"] = "Only exact owned Bone-source setup frightened buff removed from the disposable witness through the established helper; native panic retirement is observed across ordinary placement frames." },
+                "A clear-lane movement fixture retires its unrelated, naturally applied source-owned setup fear without overriding any movement result.");
             foreach (int frame in InfernalWallPlaceAndSettle35(fixture.Caster,
                 plan.Start, plan, "initial-path")) yield return frame;
             foreach (int frame in InfernalEarlyWallMove35(fixture, plan.Start,
@@ -82,6 +102,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["agentIsExactNativeViewAgent"] = agent != null && agent.Unit == view && ReferenceEquals(view.MovementAgent, agent),
                 ["nativeCoordinateContract"] = "Entity/view/agent transform positions are world coordinates. AgentASP is on the view GameObject; no independent agent Position exists. Native Translocate synchronously grounds Y/FlyHeight and preserves XZ.",
                 ["commandsEmpty"] = actor.Commands.Empty, ["brainActive"] = actor.IsBrainActive,
+                ["panicked"] = actor.Descriptor.State.IsPanicked,
+                ["frightened"] = actor.Descriptor.State.HasCondition(UnitCondition.Frightened),
+                ["fearEffects"] = new JArray(actor.Buffs.Enumerable.Where(value =>
+                    value.Blueprint.name.Contains("Fear") || value.Blueprint.name.Contains("Frightened")).Select(value => new JObject {
+                        ["blueprint"] = value.Blueprint.AssetGuid, ["name"] = value.Blueprint.name,
+                        ["source"] = value.Context?.MaybeCaster?.UniqueId, ["active"] = value.IsTurnedOn,
+                        ["endTime"] = value.EndTime.ToString() })),
                 ["activeCommands"] = new JArray(actor.Commands.Raw.Where(value => value != null).Select(command)),
                 ["queuedCommands"] = new JArray(actor.Commands.Queue.Where(value => value != null).Select(command)),
                 ["velocity"] = SurveyVector(view.MovementAgent.Velocity),
@@ -141,7 +168,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool intended = InfernalEarlyDistanceToSegment35(actor.Position, requested, requested) < .05f &&
                         Vector3.Distance(actor.Position, expected) < .02f &&
                         Vector3.Distance(actor.View.transform.position, actor.Position) <= .01f;
-                    bool stable = intended && actor.Commands.Empty && actor.View.MovementAgent.Velocity.sqrMagnitude < .0001f &&
+                    bool stable = intended && !actor.Descriptor.State.IsPanicked &&
+                        !actor.Descriptor.State.HasCondition(UnitCondition.Frightened) &&
+                        actor.Commands.Empty && actor.View.MovementAgent.Velocity.sqrMagnitude < .0001f &&
                         Vector3.Distance(previous, actor.Position) < .01f && actor.Descriptor.State.CanAct;
                     quiet = stable ? quiet + 1 : 0; previous = actor.Position;
                     row["observedNativeFrames"] = observed; row["quietFrames"] = quiet;

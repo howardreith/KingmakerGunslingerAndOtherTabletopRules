@@ -507,7 +507,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var fixturePlan = new InfernalWallFixturePlan35(start, destination, midpoint, casterPoint, laneSurvey);
             if (correction)
             {
-                foreach (int frame in InfernalWallFixturePrerequisite35(fixture, owned, fixturePlan, check)) yield return frame;
+                foreach (int frame in InfernalWallFixturePrerequisite35(fixture, bone, owned, fixturePlan, check)) yield return frame;
                 if (ExpandedSummoningNativeProfilePolicy.WallPlacementPreflightPhase(
                     RuntimeTestRequestParser.Sprint32ReviewPhase(_request))) yield break;
             }
