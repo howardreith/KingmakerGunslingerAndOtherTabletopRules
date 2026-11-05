@@ -274,7 +274,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 Vector3 side = (plan.CastingPoint - plan.Midpoint); side.y = 0f; side.Normalize();
-                Vector3 place = InfernalWallGroundWitness35(adjacent, plan.Midpoint - side * 1.2f);
+                Vector3 farSide = plan.Midpoint - side * 1.2f;
+                Vector3 place = InfernalWallGroundWitness35(adjacent, farSide);
                 InfernalBoneRemoveEffects35(adjacent, new[] { bone }, run.Frightened);
                 foreach (int frame in InfernalWallPlaceAndSettle35(adjacent, place, plan, "feedback-adjacent")) yield return frame;
                 // Reflex first; a natural 1 still fails, so retry it boundedly.
@@ -294,16 +295,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "An ordinary command disrupted by an adjacent creature's successful Reflex save forms nothing and tells the player why.");
                 adjacent.Stats.SaveReflex.BaseValue = oldReflex;
 
-                resistance = adjacent.Ensure<UnitPartSpellResistance>();
+                // Spell resistance is exercised by a creature that is actually
+                // hostile to the Bone Devil. The installed KingmakerBugfixes
+                // quality-of-life postfix on RuleSpellResistanceCheck.HasResistanceRoll
+                // waives the roll out of combat between non-enemies, so an allied
+                // witness measures that third-party rule rather than this Wall.
+                // The ally leaves adjacency first so only the hostile is tested.
+                foreach (int frame in InfernalWallPlaceAndSettle35(adjacent, plan.Start, plan, "feedback-ally-clear")) yield return frame;
+                Vector3 hostilePlace = InfernalWallGroundWitness35(witness, farSide);
+                foreach (int frame in InfernalWallPlaceAndSettle35(witness, hostilePlace, plan, "feedback-hostile-adjacent")) yield return frame;
+                bool witnessIsEnemy = bone.Group != null && witness.Group != null && bone.Group.IsEnemy(witness.Group);
+                bool inCombatBefore = Game.Instance.Player.IsInCombat;
+                resistance = witness.Ensure<UnitPartSpellResistance>();
                 resistanceId = resistance.AddResistance(1000, null, null);
                 resistanceAdded = true;
                 foreach (int frame in InfernalWallFeedbackCommand35(run, plan, "spell-resistance", cases, row)) yield return frame;
                 var resisted = (JObject)cases.Last;
-                run.Check("wall-feedback-spell-resistance", (int?)resisted["newSections"] == 0 &&
+                resisted["resistingWitness"] = witness.UniqueId;
+                resisted["witnessIsEnemyOfCaster"] = witnessIsEnemy;
+                resisted["partyInCombatBefore"] = inCombatBefore;
+                resisted["allyClearOfAdjacency"] = InfernalEarlyDistanceToSegment35(adjacent.Position, plan.Midpoint, plan.Midpoint) >
+                    InfernalRules35.WallOfIceAdjacencyMeters + InfernalRules35.WallOfIceSectionLengthMeters * .5f;
+                resisted["controlledSetup"] = "A hostile disposable witness adjacent to the planned section carries SR 1000; no allied unit is adjacent.";
+                InfernalWallPersist35(run, "feedback", row);
+                run.Check("wall-feedback-spell-resistance", witnessIsEnemy && (bool)resisted["allyClearOfAdjacency"] &&
+                    (int?)resisted["newSections"] == 0 &&
                     (string)resisted["lastMessage"] == ContextActionFormInfernalWall35.ResistedMessage &&
                     (long?)resisted["attemptsDelta"] == 1 && resisted["saves"].Count() == 0 &&
-                    resisted["spellResistance"].Any(value => (bool?)value["resisted"] == true), resisted,
-                    "An ordinary command disrupted by adjacent spell resistance forms nothing and tells the player why.");
+                    resisted["spellResistance"].Any(value => (string)value["target"] == witness.UniqueId &&
+                        (bool?)value["rollRequired"] == true && (bool?)value["resisted"] == true), resisted,
+                    "An ordinary command disrupted by an adjacent hostile creature's spell resistance forms nothing and tells the player why.");
             }
             finally
             {
@@ -311,6 +332,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (resistanceAdded) resistance.Remove(resistanceId);
             }
             PlaceExpandedSummoningUnit(witness, witnessHome);
+            for (int frame = 0; frame < 20; frame++) { Game.Instance.IsPaused = false; yield return 0; }
         }
 
         private IEnumerable<int> InfernalWallFeedbackCommand35(InfernalWallRun35 run,
