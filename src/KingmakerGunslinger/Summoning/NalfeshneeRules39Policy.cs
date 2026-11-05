@@ -288,8 +288,9 @@ namespace KingmakerGunslinger.Summoning
 
         /// <summary>
         /// The printed medium range at a given caster level: 100 feet plus 10
-        /// feet per caster level. Feeblemind, greater dispel magic and slow
-        /// are all medium-range. Derived so a configured distance follows the
+        /// feet per caster level. Feeblemind and greater dispel magic
+        /// are medium-range; Slow has its own close-range consumer. Derived so a
+        /// configured distance follows the
         /// selected spell-like caster level rather than being written down a
         /// second time, and so the ability does not silently inherit a fixed
         /// range category that does not read a caster level at all.
@@ -297,6 +298,12 @@ namespace KingmakerGunslinger.Summoning
         internal static int MediumRangeFeet(int casterLevel)
         {
             return 100 + 10 * casterLevel;
+        }
+
+        /// <summary>Printed Slow close range, including completed two-level steps.</summary>
+        internal static int SlowRangeFeet(int casterLevel)
+        {
+            return 25 + 5 * (casterLevel / 2);
         }
 
         /// <summary>

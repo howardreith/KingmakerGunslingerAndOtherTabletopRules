@@ -3,7 +3,7 @@
     "authority": "owner 2026-10-11",
     "document": "docs/VALIDATION-POLICY.md",
     "default": "Focused development/review",
-    "activeTask": "Sprint32 released as stable Latest v0.0.169; public assets and protected intake verified. Owner waived remaining release reproducibility. Sole active record planning/SPRINT32-STATUS.md. STOP; no Sprint33.",
+    "activeTask": "Sprint40 selected by owner mission: Ice Devil only plus narrow Sprint39 Nimbus wording verification and Nalfeshnee Slow range correction. Sprint39 remains released at v0.0.177. Active record planning/SPRINT40-STATUS.md; final endpoint release, public downloads, restoration and merged records. Sprint41 not selected.",
     "historicalFields": "All earlier mission/status/next-action fields retain their original dated meaning; they do not select current work.",
     "archive": "docs/history/EXPANDED-SUMMONING-PROGRAM-STATE-before-workflow-reset-2026-10-11.json"
   },
