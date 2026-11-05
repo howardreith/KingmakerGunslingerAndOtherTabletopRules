@@ -9,6 +9,7 @@ namespace KingmakerGunslinger.Summoning
         internal const string WallSectionSymbol = "KMG.Summoning.Infernal.IceDevil.WallSectionUnit";
         internal const string WallSectionGuid = "225850056cb944c687748bef47310c23";
         internal const string WallSectionName = "KMG_Summoning_Infernal_IceDevil_WallSectionUnit";
+        internal const int PrivateIdentityCount = 27;
         internal const int HitDice = 14;
         internal const int SpellLikeCasterLevel = 13;
         internal const int Strength = 23, Dexterity = 21, Constitution = 22;
