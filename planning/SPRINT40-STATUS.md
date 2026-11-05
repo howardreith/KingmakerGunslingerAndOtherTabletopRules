@@ -8,11 +8,11 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 ## Current continuation state
 
 - Owner/root: HOWARD-LAPTOP, `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
-  `codex/expanded-summoning-sprint40-ice-devil`. Last pushed `d10f9db2fb76c60a994148ede3a70b9d16b2e0e0`;
-  following vision repair is identified by its enclosing commit/HEAD.
+  `codex/expanded-summoning-sprint40-ice-devil`. Last pushed `829051dcc16a181b503cd6f09e46faaf25324eff`;
+  following native companion repair is identified by its enclosing commit/HEAD.
 - No game/deployment/lease. Original118 saves never loaded/written; full exact
-  audit `sprint40-intake-20261105T002300Z/post-early-20261105T082524Z/restoration.json`
-  passed Mods/references/settings/saves. Log `artifacts/s40-d10-early-restoration-audit.log`.
+  audit `sprint40-intake-20261105T002300Z/post-early-20261105T084343Z/restoration.json`
+  passed Mods/references/settings/saves. Log `artifacts/s40-829-early-restoration-audit.log`.
 - Hidden creature graph, original body/icon, early mechanics, Nalfeshnee55-foot
   source correction and Nimbus Daze wording are implemented. Persistent Image
   omission explicitly approved/no substitute. No unresolved gameplay decision.
@@ -26,7 +26,16 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   no original party actor moves and no visibility/fader/renderer is forced.
   Quiet-anchor admission requires the exact original anchor plus this caster
   only for the authoritative S40 phases; old phases retain one anchor.
-- NEXT: coherent commit/build of vision repair, native Slow/isolation proof;
+- Native829 `20261105T0840071324745Z-disposable-expanded-summoning-sprint32-native-review`
+  FAIL appearance with actual FOWtrue/ViewVisiblefalse/SummonerInPartyfalse;
+  protected events7/zero violations, observer party restored, world restored.
+  Installed Player.get_Party rebuilds its cached list from PartyCharacters;
+  direct Party.Add is not durable native companion admission. Corrected to
+  native AddCompanion, requiring actual PartyCharacters/ControllableCharacters
+  admission, native RemoveCompanion then exact removal of only its new remote
+  entry/cache invalidation; assert original party/remote lists restored.
+  Compilation and22/22 neighbor checks PASS (`artifacts/s40-native-companion-compile.log`).
+- NEXT: coherent commit/build of native companion repair, native Slow/isolation proof;
   then range/body/AI/Slow-turn and remaining rider cases. Body/public/AI/lifetime
   observers exist but are unqualified. One SM IX route remains suppressed.
   Persistence/publisher wiring, final public artifact, fresh final qualification,
@@ -46,6 +55,10 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   with added native visibility receipt fields. Logs `artifacts/s40-isolation-vision-neighbors.log`
   and `artifacts/s40-isolation-visibility-receipt-compile.log`. Rejected CameraRig
   TargetPosition compile retained; fixed to existing native GetPosition API.
+- 829 package/independent reader/strict validation PASS, ZIP
+  `c91d44df7a5c44dd0cc6ddc841e864aaaf271a9cab12a3948ebcbccaad3bbbd9`, DLL
+  `f18ed62b96de4643352b9b1f4b10b6cf7044da4aa51e2dece2964a3c97117829`,
+  MVID `a30f447f-f848-463b-a0c5-17c93f5f46be`.
 
 ## Development chronology through source0d and isolation repair
 

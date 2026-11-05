@@ -26,6 +26,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var camera = TeleportationCastingCamera();
                 Vector3 cameraPosition = camera.transform.position, cameraTarget = camera.GetPosition();
                 Quaternion cameraRotation = camera.transform.rotation;
+                var partyCharacters = Game.Instance.Player.PartyCharacters.ToArray();
+                var remoteCompanions = Game.Instance.Player.RemoteCompanions.ToArray();
+                bool casterInGame = fixture.Caster.IsInGame;
                 bool casterLent = false;
                 try
                 {
@@ -34,9 +37,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // Native party vision and the real camera follow only this
                     // disposable observer caster. Do not force the unit's FOW,
                     // fader, renderer or dissolve state, or move an intake actor.
-                    if (Game.Instance.Player.Party.Contains(fixture.Caster))
+                    if (Game.Instance.Player.Party.Contains(fixture.Caster) ||
+                        Game.Instance.Player.PartyCharacters.Contains(fixture.Caster) ||
+                        Game.Instance.Player.RemoteCompanions.Contains(fixture.Caster))
                         throw new InvalidOperationException("Disposable observer caster unexpectedly already in party.");
-                    Game.Instance.Player.Party.Add(fixture.Caster); casterLent = true;
+                    Game.Instance.Player.AddCompanion(fixture.Caster); casterLent = true;
+                    if (!Game.Instance.Player.PartyCharacters.Contains(fixture.Caster) ||
+                        !Game.Instance.Player.ControllableCharacters.Contains(fixture.Caster))
+                        throw new InvalidOperationException("Native companion admission did not supply the disposable observer caster.");
                     camera.ScrollToImmediately(fixture.Caster.Position);
                     placement["nativePartyVisionCaster"] = fixture.Caster.UniqueId;
                     placement["nativeCameraTarget"] = Vec(camera.GetPosition());
@@ -78,15 +86,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 finally
                 {
-                    if (casterLent) Game.Instance.Player.Party.Remove(fixture.Caster);
+                    if (casterLent)
+                    {
+                        Game.Instance.Player.RemoveCompanion(fixture.Caster, false);
+                        Game.Instance.Player.RemoteCompanions.Remove(fixture.Caster);
+                        Game.Instance.Player.InvalidateCharacterLists();
+                        fixture.Caster.IsInGame = casterInGame;
+                    }
                     camera.ScrollToImmediately(cameraTarget); camera.transform.position = cameraPosition;
                     camera.transform.rotation = cameraRotation;
                     typeof(CameraRig).GetField("m_TargetPosition", BindingFlags.Instance | BindingFlags.NonPublic)
                         .SetValue(camera, cameraTarget);
                     receipt["events"] = isolation.Describe();
-                    receipt["observerPartyRestored"] = !Game.Instance.Player.Party.Contains(fixture.Caster);
+                    bool partyRestored = !Game.Instance.Player.Party.Contains(fixture.Caster) &&
+                        partyCharacters.SequenceEqual(Game.Instance.Player.PartyCharacters) &&
+                        remoteCompanions.SequenceEqual(Game.Instance.Player.RemoteCompanions);
+                    receipt["observerPartyRestored"] = partyRestored;
                     RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory,
                         "sprint40-fixture-isolation.json"), receipt.ToString(Formatting.Indented));
+                    if (!partyRestored) throw new InvalidOperationException("Exact native observer party lists were not restored.");
                 }
             }
         }
