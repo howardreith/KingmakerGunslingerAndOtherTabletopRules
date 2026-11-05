@@ -1,3 +1,12 @@
+# Sprint 40 ? IN PROGRESS
+
+Owner mission selects Ice Devil and the narrow Sprint 39 carry-forwards through
+verified release and merged final records. Active worktree: `C:/Dev/KingmakerGunslingerLab/wt/s40`;
+branch: `codex/expanded-summoning-sprint40-ice-devil`.
+See [Sprint 40 status](planning/SPRINT40-STATUS.md) for the reuse map, current
+checks and precise remaining work. No Ice Devil release or native PASS is claimed.
+Sprint 39 remains released; historical stop directions below do not select work.
+
 # Sprint 39 — v0.0.177 RELEASED / STOP
 
 Stable [v0.0.177](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.177)
