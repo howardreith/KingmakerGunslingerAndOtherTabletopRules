@@ -55,6 +55,8 @@ namespace KingmakerGunslinger.Summoning
         private readonly Dictionary<GraphNode, bool> _nodeOriginals =
             new Dictionary<GraphNode, bool>();
         private bool _released;
+        private bool _restoreReconcileQueued;
+        private int _restoreExactFrames;
 
         internal NavmeshCut Cut { get { return _cut; } }
         internal UnitEntityData Owner { get { return _owner; } }
@@ -301,18 +303,72 @@ namespace KingmakerGunslinger.Summoning
                 NodeClaim claim;
                 if (!Claims.TryGetValue(node, out claim) ||
                     !claim.Owners.Remove(this)) continue;
-                if (claim.Owners.Count != 0) continue;
-                if (restoreWalkability && node.Walkable !=
-                    claim.OriginalWalkable)
+                bool remainingOwner = claim.Owners.Count != 0;
+                bool desired = InfernalRules35
+                    .WallNodeWalkableAfterOwnerRelease(
+                        claim.OriginalWalkable, remainingOwner);
+                if (restoreWalkability && node.Walkable != desired)
                 {
-                    node.Walkable = claim.OriginalWalkable;
+                    node.Walkable = desired;
                     GridNodesRestored++;
                     changed = true;
                 }
+                if (remainingOwner) continue;
                 Claims.Remove(node);
             }
             _claimedNodes.Clear();
             return changed;
+        }
+
+        private bool ReleasedGridIsExact()
+        {
+            return _nodeOriginals.All(pair =>
+            {
+                NodeClaim claim;
+                bool remainingOwner = Claims.TryGetValue(pair.Key,
+                    out claim) && claim.Owners.Count > 0;
+                bool desired = InfernalRules35
+                    .WallNodeWalkableAfterOwnerRelease(pair.Value,
+                        remainingOwner);
+                return pair.Key.Walkable == desired;
+            });
+        }
+
+        private void QueueReleasedGridReconcile()
+        {
+            if (_restoreReconcileQueued || _nodeOriginals.Count == 0 ||
+                _astar == null || !ReferenceEquals(AstarPath.active, _astar))
+                return;
+            _restoreReconcileQueued = true;
+            _astar.AddWorkItem(new AstarPath.AstarWorkItem(force =>
+            {
+                bool changed = false;
+                try
+                {
+                    foreach (var pair in _nodeOriginals)
+                    {
+                        NodeClaim claim;
+                        bool remainingOwner = Claims.TryGetValue(pair.Key,
+                            out claim) && claim.Owners.Count > 0;
+                        bool desired = InfernalRules35
+                            .WallNodeWalkableAfterOwnerRelease(pair.Value,
+                                remainingOwner);
+                        if (pair.Key.Walkable == desired) continue;
+                        pair.Key.Walkable = desired;
+                        GridNodesRestored++;
+                        changed = true;
+                    }
+                    if (changed) _astar.QueueWorkItemFloodFill();
+                }
+                catch (Exception error)
+                {
+                    GridFailure = error.GetType().Name + ": " +
+                        error.Message;
+                    Debug.LogException(error);
+                }
+                finally { _restoreReconcileQueued = false; }
+                return true;
+            }));
         }
 
         private void QueueGridRestore()
@@ -346,7 +402,6 @@ namespace KingmakerGunslinger.Summoning
         {
             if (_released) return;
             _released = true;
-            enabled = false;
             if (_cut != null)
             {
                 UnityEngine.Object.DestroyImmediate(_cut);
@@ -373,7 +428,18 @@ namespace KingmakerGunslinger.Summoning
 
         private void Update()
         {
-            if (_released) return;
+            if (_released)
+            {
+                if (!GridRestoreCompleted || _restoreReconcileQueued) return;
+                if (!ReleasedGridIsExact())
+                {
+                    _restoreExactFrames = 0;
+                    QueueReleasedGridReconcile();
+                    return;
+                }
+                if (++_restoreExactFrames >= 2) enabled = false;
+                return;
+            }
             ModContext context;
             if (!ModContext.TryGet(out context) ||
                 context.FeatureModules?.Active?.ExpandedSummoning != true)
@@ -384,7 +450,11 @@ namespace KingmakerGunslinger.Summoning
             }
         }
 
-        private void OnDestroy() { Release(); }
+        private void OnDestroy()
+        {
+            if (!_released) Release();
+            QueueReleasedGridReconcile();
+        }
     }
 
     [HarmonyPatch(typeof(UnitEntityView), "OnDataAttached")]

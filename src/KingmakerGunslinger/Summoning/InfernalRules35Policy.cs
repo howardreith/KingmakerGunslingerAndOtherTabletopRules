@@ -246,6 +246,10 @@ namespace KingmakerGunslinger.Summoning
                     halfThicknessMeters + cellProjection;
         }
 
+        internal static bool WallNodeWalkableAfterOwnerRelease(
+            bool originalWalkable, bool hasRemainingWallOwner)
+        { return hasRemainingWallOwner ? false : originalWalkable; }
+
         internal static void Validate()
         {
             if (AppendedCatalogIdentityCount != 54 ||
