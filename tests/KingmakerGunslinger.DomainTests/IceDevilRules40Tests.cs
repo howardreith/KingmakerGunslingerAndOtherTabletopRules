@@ -22,6 +22,10 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(26, dependencies.Length, "Complete owned private graph.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase(
                 ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilEarlyPhase), "Real focused dispatch admission.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase(
+                ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilCombatPhase), "Real combat dispatch admission.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase(
+                ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilCombatPhase + "-extra"), "No expanded phase suffix.");
         }
         internal static void HitAdmission()
         {

@@ -263,13 +263,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ?.SelectComponents<KytonRegeneration34>().SingleOrDefault();
 
         private IEnumerable<int> ObserveInfernalRegenerationRecovery34(UnitEntityData owner, InfernalEvents34 trace,
-            Action<string, bool, JObject, string> check, string label, bool suppressed, JObject row)
+            Action<string, bool, JObject, string> check, string label, bool suppressed, JObject row,
+            KytonRegeneration34 selectedRegeneration = null, string assertionOwner = "kyton")
         {
-            var regeneration = InfernalRegeneration34(owner);
+            var regeneration = selectedRegeneration ?? InfernalRegeneration34(owner);
             bool halved = (bool)typeof(AddEffectRegeneration).GetProperty("IsHalved",
                 System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public |
                 System.Reflection.BindingFlags.NonPublic).GetValue(regeneration, null);
-            int expectedHeal = halved ? 1 : 2, start = trace.Rows.Count, after = owner.Damage;
+            int expectedHeal = halved ? Math.Max(1, regeneration.Heal / 2) : regeneration.Heal;
+            int start = trace.Rows.Count, after = owner.Damage;
             double began = Game.Instance.TimeController.GameTime.TotalSeconds;
             var rounds = new JArray(); int last = -1; bool following = false, noEarlyHeal = true;
             DateTime deadline = DateTime.UtcNow.AddSeconds(24);
@@ -295,7 +297,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["roundTransitions"] = rounds; row["noHealingThroughoutSuppressedFollowingRound"] = noEarlyHeal;
             row["heals"] = new JArray(actualHeals); row["damageAfterNativeHealing"] = owner.Damage;
             row["elapsedGameSeconds"] = Game.Instance.TimeController.GameTime.TotalSeconds - began;
-            check("kyton-regeneration-" + label, exact, row,
+            check(assertionOwner + "-regeneration-" + label, exact, row,
                 "Native round callbacks and actual healing: bypass suppresses the following round, then native regeneration resumes; no observer round invocation.");
         }
 

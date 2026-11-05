@@ -53,6 +53,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["native"] = Sprint27AiCommand(command);
                 row["commandReference"] = RuntimeHelpers.GetHashCode(command);
                 row["ability"] = (command as UnitUseAbility)?.Spell?.Blueprint?.AssetGuid;
+                if (command.Executor != null && command.TargetUnit != null)
+                {
+                    row["centerDistance"] = UnityEngine.Vector3.Distance(
+                        command.Executor.Position, command.TargetUnit.Position);
+                    row["nativeApproachRadius"] = command.ApproachRadius;
+                    row["nativeEnoughClose"] = command.IsUnitEnoughClose;
+                    row["ownerCorpulence"] = command.Executor.Corpulence;
+                    row["targetCorpulence"] = command.TargetUnit.Corpulence;
+                }
                 row["nativeCommandType"] = ReadExpandedSummoningOptionalMember(command, "Type")?.ToString();
                 row["ignoreCooldown"] = command.IsIgnoreCooldown;
                 if (phase == "command-end" && command.Result == UnitCommand.ResultType.Interrupt)

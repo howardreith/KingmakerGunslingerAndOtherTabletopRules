@@ -8,9 +8,8 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 - Owner: active native Goal, HOWARD-LAPTOP. Branch
   `codex/expanded-summoning-sprint40-ice-devil`, root `C:/Dev/KingmakerGunslingerLab/wt/s40`.
-  Last committed hidden implementation `eb11c662c1d543c457edc68c4bb6003eeaa2256d`.
-  Current repair adds pre-cast owned-footprint guards and completes the
-  deterministic package inventory for the two newly declared body files.
+  Current product head `4db0661bd0ad4490538979e1fe649cf96913620c`.
+  Hidden implementation and repaired footprint/package dependencies are pushed.
 - Prior intake, Nalfeshnee-only range fix and branch policy are preserved.
   No quota/context/tool refusal was surfaced; previous capacity-stop cause is
   unknown. CLI `0.166.0`; native Goal active, no update required.
@@ -34,10 +33,30 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   icon, original body, loader/view and strict package dependencies are now
   bound. Re-export after allocation passed 148 sources/exports and canonical
   catalog validation. In-game attachment is NOT yet demonstrated.
-- NEXT: finish focused native slice preflight and coherent commit, build one
-  purpose-specific development package and run actual attack/Slow, cold-cast
-  and wall-obstruction/source-cleanup cases. Inspect failures before repair.
-  Final scope, persistence, native range carry-forward and publisher still remain.
+- Early native slice PASS 19/19 on the development artifact below: real
+  spear iteratives plus bite/tail; native printed weapon contributions;
+  Fort/Slow application and native action flags; CL13 cold packets and real
+  casts; 39 HP movement wall and exact-source removal restoring the path.
+  This is development evidence, not final artifact qualification.
+- NEXT: extend grouped mechanics for standard/charge/AoO/Cleave/disarm, rider
+  negatives/live DC/expiry/haste/immunity and actual recipient actions/movement;
+  two-owner/cross-species wall ownership/breach, fear/regeneration and AI;
+  narrow Nalfeshnee native range boundary. Finish authoritative persistence,
+  body/presentation/public-route and publisher scopes before final freeze.
+- Current observer batch: combat (ordinary commands, Power Attack, native
+  disarm/retained gear/fallback and an actual bite-hit negative), effects
+  (native regeneration/silver exclusion/recovery, energy damage consumers,
+  fear/source-specific memory/live DC), and the narrow Nalfeshnee boundary
+  observer are now implemented and compile. They have NOT run natively.
+  Reused Cleave helper now has an explicit ordinary selection; its exact
+  disposable Ice-test recipients get paired native fear immunity counters.
+  Regeneration recovery helper accepts the actual selected component/heal
+  amount; original Kyton defaults remain unchanged. Native command receipts
+  now record approach radius, actual distance and both footprints.
+  Focused S34/S35/S39/S40: production26.6s; tests9.3s including rebuild,
+  30/30 PASS of2814; orchestration293 assertions PASS. Logs:
+  `artifacts/s40-grouped-observers-compile.log` and
+  `artifacts/s40-grouped-observers-preflight.log`.
 - Selected condition lifetime: native finite recipient Slow keeps its rolled
   deadline independently of owner removal/module OFF; no permanent/portable
   carrier or implicit cure. Native Ice Storm terrain retains its finite
@@ -45,8 +64,9 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   Wall remains source-owned and cleans on removal/OFF; ON saved continuation
   and OFF cleanup still need their final fresh-process evidence.
 - Deployment/save/lease: game exited; no lock. Original intake comparison
-  passed after restoring nine byte-identical mod-file timestamps and two Unity
-  session settings. All 118 save bytes/metadata unchanged. Working was never loaded.
+  passed against original intake after this native slice: Mods/references,
+  native settings and all 118 save bytes/metadata exact; nine byte-identical
+  mod timestamps restored. Working was never loaded. No active deployment/lease.
 
 ## Intake
 
@@ -242,3 +262,36 @@ protected-actor footprint guard; it now surveys a clear connected lane,
 checks actual native cone membership (conservative storm radius/footprints),
 and refuses before any cast unless only the exact disposable target is in it.
 Storm aims at its native ground point. Product effects remain unchanged.
+
+## Early native mechanics PASS (development only)
+
+- Source `4db0661bd0ad4490538979e1fe649cf96913620c`; package
+  `artifacts/development-candidates/sprint40-early-mechanics/4db0661bd0ad/KingmakerGunslinger-0.0.177-development-sprint40-early-mechanics-4db0661bd0ad.zip`.
+  ZIP `48cec0cdddc4dbf5baaecc028e72b206d228d77d4cf9173f181dc9c1ea1f1b56`;
+  DLL `1310c15a5bc35b9b4902eb3b27bc7f029be8c74639903d77b687349d83d3c10e`;
+  MVID `3f457735-1b34-473d-8b35-8a7944a7e087`. Independent receipt reader and
+  strict package validation passed; loaded runtime identities matched.
+- Build: repository wrapper/closed refusal suites, production and 21/21
+  selected tests of2814 passed; two new body files reconcile to458 staged files.
+- Guarded scenario `disposable-expanded-summoning-sprint32-native-review`,
+  `reviewPhase=sprint40-ice-devil-early`; one fresh save-free process, configured
+  process/completion timeout600 seconds. PASS19/19;14 substantive S40 cells.
+  Native run03:40:22Z to03:44:03Z on2026-11-05.
+- Evidence `C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261105T0340228216131Z-disposable-expanded-summoning-sprint32-native-review`.
+  Spear +21,2d6+10; bite +14,2d6+6; tail +14,3d6+3. Native full plan has
+  spear penalties0/5/10 and one bite/one tail. Real Fort saves and finite
+  native Slow; Slowed/Staggered flags observed, no synthetic rolls. Actual
+  movement/action-command consequences still need their final cells.
+  Cone13d6; Storm2d6 cold and3d6 physical packets, actual at-will casts.
+  Original body attached:27 bones/4546 vertices/512px albedo; live HP161/speed60.
+  Actual UI pixels/movement/death/presentation still remain.
+- Transaction restored pre-run live KMG hash
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+  Dedicated restoration receipt
+  `expanded-summoning-restoration/20261105T0344077825835Z-disposable-expanded-summoning-sprint32-native-review.json`.
+  Full original-intake audit
+  `sprint40-intake-20261105T002300Z/post-early-20261105T034518Z/restoration.json`:
+  Mods/references/settings/saves exact,118 saves, game absent. Lease exited.
+  Local audit helper `artifacts/s40-restore-audit.ps1` refuses changed mod/save
+  bytes; only restores byte-identical mod timestamps and original typed registry
+  values via the existing settings restore helper. No save mutation occurred.
