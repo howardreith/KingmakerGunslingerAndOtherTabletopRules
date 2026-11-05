@@ -645,6 +645,63 @@ namespace KingmakerGunslinger.RuntimeTesting
                 AstarPath.active.graphs.Length ? null :
                 AstarPath.active.graphs[graphIndex]?.GetType().FullName;
 
+            // Persist the already-collected navigation state before either
+            // the live mover or physical eligibility can abort this cell.
+            // This is a partial observation, not a navigation PASS.
+            var navigationBeforeBreach = new JObject {
+                ["stage"] = "before-live-mover-and-physical-breach",
+                ["frame"] = Time.frameCount,
+                ["gameSeconds"] = Game.Instance.TimeController.GameTime.TotalSeconds,
+                ["creation"] = wallCreation,
+                ["section"] = section?.UniqueId,
+                ["sectionPosition"] = section == null ? null : Vec(section.Position),
+                ["sectionLaneAlignment"] = sectionLaneAlignment,
+                ["wallVisualPresent"] = wallVisualPresent,
+                ["wallVisualEnabled"] = wallVisualEnabled,
+                ["wallImage"] = wallImage,
+                ["navmeshCutExactOwner"] = cutExactOwner,
+                ["navmeshCutPresent"] = cutPresent,
+                ["navmeshCutType"] = cutType,
+                ["navmeshCutRectangle"] = cutRectangle,
+                ["navmeshCutHeight"] = cutHeight,
+                ["navmeshCutRotation"] = cutRotation,
+                ["navmeshCutAddedGeometry"] = cutAddedGeometry,
+                ["navmeshCutBounds"] = cutBounds == null ? null : new JObject {
+                    ["center"] = Vec(cutBounds.Value.center),
+                    ["size"] = Vec(cutBounds.Value.size) },
+                ["navmeshCutRegistered"] = cutRegistered,
+                ["recastUpdatePending"] = recastUpdatePending,
+                ["productionUpdateRoute"] = productionUpdateRoute,
+                ["productionRecastApplyRequests"] = productionRecastApplyRequests,
+                ["gridGraphIndex"] = gridGraphIndex,
+                ["gridNodesConsidered"] = gridNodesConsidered,
+                ["gridNodesClaimed"] = gridNodesClaimed,
+                ["gridNodesChanged"] = gridNodesChanged,
+                ["gridApplyQueued"] = gridApplyQueued,
+                ["gridApplyCompleted"] = gridApplyCompleted,
+                ["gridFailure"] = gridFailure,
+                ["gridOriginalWalkability"] = new JArray(gridSnapshot.Select(value => value.Value)),
+                ["gridClaimsBeforeRelease"] = gridClaimsBeforeRelease,
+                ["pathGraphIndex"] = graphIndex,
+                ["pathGraphType"] = graphType,
+                ["activeGraphs"] = new JArray(AstarPath.active.graphs.Select((value, index) => new JObject {
+                    ["index"] = index, ["type"] = value?.GetType().FullName })),
+                ["tileHandlers"] = new JArray(tileHandlers.Select(value => new JObject {
+                    ["name"] = value.name, ["enabled"] = value.enabled,
+                    ["active"] = value.gameObject.activeInHierarchy,
+                    ["updateInterval"] = value.updateInterval })),
+                ["pathBefore"] = before,
+                ["pathWithWall"] = withWall,
+                ["wallPathSamples"] = wallSamples,
+                ["movementObstructionObserved"] = obstruction,
+                ["lineOfSightObstacleBefore"] = losBefore,
+                ["lineOfSightObstacleWithWall"] = losWith
+            };
+            if (correction)
+                File.WriteAllText(Path.Combine(_request.EvidenceDirectory,
+                    "s35-wall-navigation-before-breach.json"),
+                    navigationBeforeBreach.ToString(Formatting.Indented));
+
             if (correction && obstruction && wallVisualEnabled)
                 foreach (int frame in InfernalEarlyWallMove35(fixture, start, destination, midpoint, true, "live", check)) yield return frame;
 
@@ -752,9 +809,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Vector3 approach = breachAttack.ApproachPoint;
                     float distanceSquared = GeometryUtils.SqrMechanicsDistance(
                         approach, attacker.Position);
+                    int targetLosObjectId = breachAttack.GetTargetLOSObjectId();
                     bool losBlocked = breachAttack.NeedLoS &&
                         Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance.HasObstacle(
-                            attacker.EyePosition, approach, breachAttack.GetTargetLOSObjectId());
+                            attacker.EyePosition, approach, targetLosObjectId);
                     bool eligible = breachAttack.IsUnitEnoughClose;
                     Sprint25Check("wall-physical-native-eligibility", eligible,
                         new JObject {
@@ -766,7 +824,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["approachRadius"] = breachAttack.ApproachRadius,
                             ["distanceAdmitted"] = distanceSquared <= breachAttack.ApproachRadius * breachAttack.ApproachRadius,
                             ["needLoS"] = breachAttack.NeedLoS,
+                            ["targetLosObjectId"] = targetLosObjectId,
                             ["losBlocked"] = losBlocked,
+                            ["navigationBeforeBreach"] = navigationBeforeBreach.DeepClone(),
                             ["command"] = Sprint27AiCommand(breachAttack),
                             ["creation"] = wallCreation,
                             ["wallImage"] = wallImage,
