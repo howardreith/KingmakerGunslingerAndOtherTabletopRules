@@ -8,8 +8,8 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 ## Current continuation state
 
 - HOWARD-LAPTOP, root `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
-  `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Reviewed merged
-  pre-version product head `13867399d4681f8953f24fa181d240e6f18d2d44`. No game,
+  `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Reviewed candidate
+  product head `63e552820652d643ebf807f04a219b38d9819752`. No game,
   deployment, staging or lease is active; the live KMG tree is restored to
   SHA256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 - Recovery is CLOSED EXACTLY. The typed `BlueprintWeaponEnchantment` factory
@@ -89,8 +89,9 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   missing Ice Devil weapon-visual audit rows. It also exposed one C# 7.3 local-name
   shadow at the merged PR96/Sprint40 presentation seam before a later focused
   compile. The one-name source repair plus the six directly affected tests now
-  PASS together (6/6) after real production compilation. No package, deployment,
-  game or save mutation occurred in the failed gate.
+  PASS together (6/6) after real production compilation. Commit `63e55282`
+  contains the reviewed repair; the exact-product validator is repinned to it.
+  No package, deployment, game or save mutation occurred in the failed gate.
 - Native Goal tool still reports the superseded recovery boundary as BLOCKED and
   exposes no resume mutation in this session; explicit owner continuation authority
   controls and work continues without another permission request.
