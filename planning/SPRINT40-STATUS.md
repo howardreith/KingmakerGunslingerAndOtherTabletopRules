@@ -34,6 +34,10 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   positive1d6 spear packet and real bite/tail hits without Cold.
 - Current repair production27.2s/31 selected tests PASS;
   `artifacts/s40-frost-polearm-compile2.log`. Native proof pending.
+- First320f development package refused before deployment: icon catalog registry
+  SHA still described7867 entries after exact append7868. Catalog hash and narrow
+  authorization note refreshed; no art/assignment or guard change. Failure retained
+  in `artifacts/s40-mechanics-build-320fefb3.log`.
 - NEXT: coherent repair build; native presentation/gear lifetime, AI and Slow-TB.
   Then persistence/publisher wiring, final public artifact/fresh qualification,
   six-process ON+OFF, exact stable publication/public downloads/restoration/records.
