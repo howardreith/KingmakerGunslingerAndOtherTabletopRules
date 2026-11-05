@@ -50,6 +50,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     try {
                         for (int instance = 0; instance < 2; instance++) {
                             var owner = CastExpandedSummoningOwnTier(fixture, key); owners.Add(owner);
+                            if (iceDevil) owner.Descriptor.State.AddConditionImmunity(UnitCondition.Frightened);
                             Sprint28SetBrainActivePreservingActions(owner, false);
                             owner.Commands.InterruptAll(command => true); owner.Commands.RemoveFinishedAndUpdateQueue();
                             bool waiting = _sprint25WaitingForUnityAppearance;

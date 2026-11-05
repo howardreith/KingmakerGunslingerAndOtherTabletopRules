@@ -7,6 +7,43 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 ## Current continuation state
 
+- HOWARD-LAPTOP, `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
+  `codex/expanded-summoning-sprint40-ice-devil`; last pushed
+  `a8a5c9aab7a8af3d9bc9d2bd12f6a320398671b0`. Following anchor repair is this
+  enclosing commit/HEAD. Draft product PR [97](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/97).
+- No game/deployment/lease. Exact full intake audit
+  `sprint40-intake-20261105T002300Z/post-early-20261105T092737Z/restoration.json`
+  passed Mods/references/settings/all118 saves; Working/baseline never loaded/written.
+  Log `artifacts/s40-a8-slow-restoration-audit.log`.
+- Latest native `20261105T0921440424459Z-disposable-expanded-summoning-sprint32-native-review`
+  FAIL: Slow positives/movement/Haste/immunity and both two-owner lanes PASS,
+  then strict isolation caught57 owned events/five protected-recipient violations.
+  Raw trace proves the protected profile anchor AI issued UnitAttack commands
+  against disposable recipients and approached the sources. World/party/remote
+  lists restored. No remaining-owner/expiry proof and no final qualification.
+- Reuse existing exact-owned quiet-anchor and preserving-actions brain suspension
+  for the whole S40 scope; restore the prior flag afterward. Never move the
+  anchor. Guard now stops at protected horizontal movement over0.05m, before
+  aura contact; source/effect guard remains strict. Ice-only presentation witnesses
+  use explicit native fear immunity as a non-fear test boundary; Slow-turn already
+  has this setup. Fear mechanics itself is unchanged.
+- Current compilation26.7s and22/22 related checks PASS
+  (`artifacts/s40-anchor-presentation-compile.log`); initial anchor-only14/14 PASS
+  (`artifacts/s40-anchor-quiescence-compile.log`). Native repair proof pending.
+- Hidden Ice graph/body/icon implemented; Persistent Image omission approved,
+  no substitute/no unresolved design choice. Nimbus wording corrected, Nalf55-foot
+  source correction implemented; its new geometry/cast observer remains UNRUN.
+- NEXT: commit/build this coherent batch; Slow/isolation, range, body/AI/Slow-turn.
+  Then persistence/publisher wiring, final public artifact/fresh qualification,
+  six-process ON/OFF, exact release/downloads/restoration/final records. One SM IX
+  route remains suppressed. Goal active/no hard refusal; no milestone completion.
+- a8 dev ZIP `ace10c881b3632b20bf153c40ca5f2939c91115ef949c938471961532b71b6fe`,
+  DLL `1853e0bd477df5b4f5c4538125fe5fb8b0b8f164e058010147de9964a1f47129`,
+  MVID `5208b750-dcab-46f1-a2a2-9783aa103319`; strict package/independent reader PASS,
+ 14/14 tests. Log `artifacts/s40-mechanics-build-a8a5c9aa.log`.
+
+## Historical development through nativeacd and a8 repairs
+
 - HOWARD-LAPTOP, root `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
   `codex/expanded-summoning-sprint40-ice-devil`. Last pushed
   `acd7d449b66844aa79b68a3f6c6bf82d96a38c44`; repair batch follows in enclosing HEAD.
