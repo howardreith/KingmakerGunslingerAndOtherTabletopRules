@@ -105,6 +105,29 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 - Native Goal tool still reports the superseded recovery boundary as BLOCKED and
   exposes no resume mutation in this session; explicit owner continuation authority
   controls and work continues without another permission request.
+- Candidate `08f17e95a70a767654da18e3b76046f6ab9c97ea` passed the complete
+  2,816/2,816 Sprint gate and strict package validation: ZIP SHA256
+  `43c357c374ef64de62f088af73f387b350b00606fb55430f11d27253842602ad`,
+  DLL SHA256 `79f1514e2d3af3362ccd3941e9ea8482e776e4146a0c0d10b21194410b5a0ec7`,
+  MVID `88143dd2-b49b-42b7-ad3f-8bd1e806cdd2`. Compiled parser admission and
+  33 refusal checks passed. Fresh final presentation PASS is
+  `20261105T2035448923263Z-disposable-expanded-summoning-sprint32-native-review`;
+  it includes the required body/private-pair/lifetime rows and exact restoration.
+- The subsequent final `sprint40-ice-devil-early` run is retained as FAIL at
+  `20261105T2040287006996Z-disposable-expanded-summoning-sprint32-native-review`.
+  The dependency observer expected the pre-factory count 26; the actual complete
+  graph has 27 because the authorized private spear enchantment was appended.
+  Its native FAIL result arrived after the outer 600-second wait, then Kingmaker
+  exited normally. No process termination occurred. Exact orphaned-lease recovery
+  used snapshot `runtime-backups/live-mod/20261105T2039583823376Z`; receipt
+  `expanded-summoning-restoration/20261105T2054-timeout-recovery-20261105T2056386363703Z/timeout-recovery.json`
+  verifies live hash `216A9DC2...`, all nine peer files, intake settings and all
+  118 saves. Independent audit `post-early-20261105T205650Z/restoration.json`
+  passes Mods/references/settings/saves with no active game or lease. The narrow
+  repair centralizes the 27-private-identity boundary in production and shares it
+  with the real catalog test. Production compilation and all five focused
+  Sprint40 checks pass. NEXT: review/commit/push, rebuild once, then rerun the
+  early phase on the new exact candidate.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 

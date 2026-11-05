@@ -65,7 +65,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }).Select(x => x.Symbol).ToArray();
                 var routes = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Where(x => x.Creature.Key == IceDevilVisualPolicy40.Key).ToArray();
-                check("dependencies", planned.Length == 26 && missing.Length == 0 &&
+                check("dependencies", planned.Length ==
+                    IceDevilRules40Policy.PrivateIdentityCount &&
+                    missing.Length == 0 &&
                     routes.Length == 1 && routes[0].ParentTier == 9 &&
                     routes[0].Multiplicity == SummonMultiplicity.One,
                     new JObject { ["privateIdentities"] = planned.Length,
