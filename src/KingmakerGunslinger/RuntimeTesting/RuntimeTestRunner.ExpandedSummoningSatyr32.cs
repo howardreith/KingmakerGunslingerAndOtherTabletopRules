@@ -407,61 +407,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ReviewNalfeshneePublic39(fixture);
                 yield break;
             }
-            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilEarlyPhase)
+            if (ExpandedSummoningNativeProfilePolicy.Sprint40Phase(phase))
             {
-                CreateSprint32TurnHostile(fixture);
-                foreach (int frame in ReviewIceDevilEarly40(fixture)) yield return frame;
-                yield break;
-            }
-            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilPresentationPhase)
-            {
-                CreateSprint32TurnHostile(fixture);
-                foreach (int frame in ReviewInfernalBodies34(fixture, iceDevil: true)) yield return frame;
-                yield break;
-            }
-            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilPublicPhase)
-            {
-                ReviewIceDevilPublic40(fixture);
-                yield break;
-            }
-            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilAiPhase)
-            {
-                foreach (int frame in ReviewIceDevilAi40(fixture)) yield return frame;
-                yield break;
-            }
-            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilSlowTurnPhase)
-            {
-                foreach (int frame in ReviewIceDevilSlowTurn40(fixture)) yield return frame;
-                yield break;
-            }
-            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilCombatPhase)
-            {
-                CreateSprint32TurnHostile(fixture);
-                foreach (int frame in ReviewIceDevilCombat40(fixture)) yield return frame;
-                yield break;
-            }
-            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilEffectsPhase)
-            {
-                CreateSprint32TurnHostile(fixture);
-                foreach (int frame in ReviewIceDevilEffects40(fixture)) yield return frame;
-                yield break;
-            }
-            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint40NalfeshneeRangePhase)
-            {
-                CreateSprint32TurnHostile(fixture);
-                foreach (int frame in ReviewNalfeshneeSlowRange40(fixture)) yield return frame;
-                yield break;
-            }
-            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilWallsPhase)
-            {
-                CreateSprint32TurnHostile(fixture);
-                foreach (int frame in ReviewIceDevilWalls40(fixture)) yield return frame;
-                yield break;
-            }
-            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilSlowPhase)
-            {
-                CreateSprint32TurnHostile(fixture);
-                foreach (int frame in ReviewIceDevilSlow40(fixture)) yield return frame;
+                foreach (int frame in ReviewIceDevilScope40(fixture, phase)) yield return frame;
                 yield break;
             }
             if (phase == ExpandedSummoningNativeProfilePolicy

@@ -35,16 +35,23 @@ namespace KingmakerGunslinger.DomainTests
                 ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilCombatPhase), "Real combat dispatch admission.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase(
                 ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilCombatPhase + "-extra"), "No expanded phase suffix.");
-            foreach (string phase in new[] { ExpandedSummoningNativeProfilePolicy.Sprint40NalfeshneeRangePhase,
+            foreach (string phase in new[] { ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilEarlyPhase,
+                ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilCombatPhase,
+                ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilEffectsPhase,
+                ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilWallsPhase,
+                ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilSlowPhase,
+                ExpandedSummoningNativeProfilePolicy.Sprint40NalfeshneeRangePhase,
                 ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilPresentationPhase,
                 ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilAiPhase,
                 ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilSlowTurnPhase,
                 ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilPublicPhase })
             {
                 Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase(phase), "Exact native phase admission.");
+                Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint40Phase(phase), "One exact Sprint40 declaration predicate.");
                 Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(
                     RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview, phase), "Existing outdoor fixture admission.");
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase(phase + "-extra"), "No phase suffix expansion.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint40Phase(phase.ToUpperInvariant()), "No case-folded phase alias.");
             }
         }
         internal static void HitAdmission()

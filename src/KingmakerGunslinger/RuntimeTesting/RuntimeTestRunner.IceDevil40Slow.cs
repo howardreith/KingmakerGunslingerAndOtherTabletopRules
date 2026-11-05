@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
@@ -130,13 +131,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Vector3 position = target.Position;
                 Vector3 away = (target.Position - owner.Position).normalized;
                 var destination = ObstacleAnalyzer.GetNearestNode(position + away).clampedPosition;
-                var move = new UnitMoveTo(destination, .1f); target.Commands.Run(move);
-                foreach (int frame in WaitInfernalCommand34(move, () => true, 15)) yield return frame;
-                check("slow-recipient-real-move", move.Result == UnitCommand.ResultType.Success &&
-                    Vector3.Distance(position, target.Position) > .3f,
+                var move = new UnitMoveTo(destination, .1f); int moveStart = trace.Rows.Count;
+                target.Commands.Run(move);
+                float velocity = 0; bool slowedWhileMoving = false; int movementFrames = 0;
+                DateTime movementDeadline = DateTime.UtcNow.AddSeconds(15);
+                while (!move.IsFinished && DateTime.UtcNow < movementDeadline)
+                {
+                    float current = target.View.MovementAgent.Velocity.magnitude;
+                    velocity = Math.Max(velocity, current); movementFrames++;
+                    if (current > .01f && target.Descriptor.State.HasCondition(UnitCondition.Slowed)) slowedWhileMoving = true;
+                    Game.Instance.IsPaused = false; yield return 0;
+                }
+                float gap = Vector3.Distance(destination, target.Position);
+                var moveEnds = trace.Rows.Skip(moveStart).Where(x => (string)x["event"] == "command-end" &&
+                    (int?)x["commandReference"] == RuntimeHelpers.GetHashCode(move)).ToArray();
+                bool nativeArrivalInterrupt = move.Result == UnitCommand.ResultType.Interrupt &&
+                    moveEnds.Any(x => ((string)x["interruptionCaller"] ?? "").Contains("UnitMovementAgent.CompleteMovement"));
+                check("slow-recipient-real-move", move.IsFinished &&
+                    (move.Result == UnitCommand.ResultType.Success || nativeArrivalInterrupt) &&
+                    Vector3.Distance(position, target.Position) > .3f && gap <= .2f &&
+                    velocity > .01f && slowedWhileMoving,
                     new JObject { ["travel"] = Vector3.Distance(position, target.Position),
+                        ["goalGap"] = gap, ["maxNativeVelocity"] = velocity, ["movementFrames"] = movementFrames,
+                        ["slowedWhileMoving"] = slowedWhileMoving, ["nativeEnds"] = new JArray(moveEnds),
                         ["command"] = Sprint27AiCommand(move), ["observedSlowedCombatMps"] = slowedSpeed },
-                    "The affected disposable recipient executes actual directed native movement at the measured impaired speed.");
+                    "The affected disposable recipient reaches the directed goal with actual native velocity while slowed. Native arrival/CompleteMovement interruption is recorded; unrelated interruption cannot pass.");
                 owner.Commands.InterruptAll(true); owner.Commands.RemoveFinishedAndUpdateQueue();
                 InfernalCombatLane34(fixture, owner, target, 3);
                 target.Stats.AC.BaseValue = 100;

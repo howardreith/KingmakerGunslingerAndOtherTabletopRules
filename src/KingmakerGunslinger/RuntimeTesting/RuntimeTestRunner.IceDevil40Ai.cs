@@ -18,6 +18,7 @@ using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.Utility;
+using Kingmaker.View;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
@@ -58,7 +59,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             string id = "ai-" + suffix + (turnBased ? "-turn" : "-rtwp");
             CreateSprint32TurnHostile(fixture);
-            UnitEntityData owner = null; var target = fixture.Hostile;
+            UnitEntityData owner = null, friend = null; var target = fixture.Hostile;
             var anchor = Sprint32OwnedQuietAnchor(fixture, id);
             BlueprintFeature cold = null; bool addedCold = false, isolatedFear = false;
             var commands = new Lillend32CommandStarts();
@@ -128,32 +129,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                         new JObject { ["nativeImmunity"] = cold.AssetGuid, ["playerConeStillAvailable"] = coneData.IsAvailable,
                             ["nativePlayerCanTarget"] = coneData.CanTarget(new TargetWrapper(target)) },
                         "AI declines cold-only offense against native cold immunity without removing the player's at-will ability.");
-                Vector3 anchorPosition = anchor.Position;
-                var anchorAlignment = anchor.Descriptor.Alignment.Value;
+                var friendFaction = SelectSprint32ListenerFaction(fixture.Caster, new[] { owner },
+                    Game.Instance.Player.Party.ToArray(), fixture.UnitsBefore.OfType<UnitEntityData>().ToArray());
+                Vector3 friendPosition = ObstacleAnalyzer.GetNearestNode(origin + Vector3.right * 14f).clampedPosition;
+                friend = Game.Instance.EntityCreator.SpawnUnit(Kingmaker.Blueprints.Root.BlueprintRoot.Instance.DefaultPlayerCharacter,
+                    friendPosition, Quaternion.identity, fixture.Scene);
+                fixture.Created.Add(friend); Game.Instance.EntityCreator.Tick();
+                friend.GroupId = friend.UniqueId; friend.Descriptor.SwitchFactions(friendFaction, true);
+                friend.AttackFactions.Match(Array.Empty<BlueprintFaction>());
+                friend.Group.ResetFactionSet(); friend.Group.UpdateAttackFactionsCache();
+                Sprint28SetBrainActivePreservingActions(friend, false);
+                friend.Descriptor.Alignment.Set(Alignment.LawfulEvil);
                 try
                 {
-                    anchor.Descriptor.Alignment.Set(Alignment.LawfulEvil);
                     if (suffix == "WallOfIce")
                     {
                         InfernalWallPlacement35 placement;
                         if (!InfernalWallPlacementRuntime35.TryPlanAi(owner, target, ai.WallSection, out placement))
                             throw new InvalidOperationException("Useful wall placement disappeared before refusal control.");
-                        PlaceExpandedSummoningUnit(anchor, placement.Center);
+                        PlaceExpandedSummoningUnit(friend, placement.Center);
                     }
-                    else PlaceExpandedSummoningUnit(anchor, target.Position);
-                    check(id + "-friendly-refusal", !owner.IsEnemy(anchor) && !ai.IsTargetValid(decision),
-                        new JObject { ["ownedFriend"] = anchor.UniqueId, ["friendPosition"] = Vec(anchor.Position),
-                            ["realProductionPredicate"] = true },
+                    else PlaceExpandedSummoningUnit(friend, target.Position);
+                    check(id + "-friendly-refusal", !owner.IsEnemy(friend) && !friend.IsEnemy(owner) &&
+                        !Game.Instance.Player.Party.Contains(friend) && !friend.Group.IsPlayerParty &&
+                        !ai.IsTargetValid(decision),
+                        new JObject { ["ownedFriend"] = friend.UniqueId, ["friendPosition"] = Vec(friend.Position),
+                            ["realProductionPredicate"] = true, ["partyActorsMoved"] = 0 },
                         "The actual native shape/occupied-wall checks refuse a friendly actor in the affected footprint; no party actor is moved.");
                 }
                 finally
                 {
-                    anchor.Descriptor.Alignment.Set(anchorAlignment);
-                    PlaceExpandedSummoningUnit(anchor, anchorPosition);
+                    PlaceExpandedSummoningUnit(friend, friendPosition);
                 }
 
                 var admission = new JObject(); var passedTurns = new JArray();
-                var idle = new[] { fixture.Caster, target, anchor };
+                var idle = new[] { fixture.Caster, target, anchor, friend };
                 if (turnBased)
                 {
                     foreach (int frame in Sprint22EnrollTurnBasedOwners(new[] { owner }, target, admission)) yield return frame;
@@ -276,6 +286,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (var area in Sprint29OwnedAreas(owner, stormArea)) area.ForceEnd();
                     DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
                 }
+                if (friend != null) DisposeExpandedSummoningUnits(fixture.Created, new[] { friend });
                 if (addedCold) target.Descriptor.RemoveFact(cold);
                 if (isolatedFear) target.Descriptor.State.RemoveConditionImmunity(UnitCondition.Frightened);
                 if (anchor != null && !anchor.Destroyed && anchor.IsInCombat) anchor.LeaveCombat();

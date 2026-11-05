@@ -9,11 +9,11 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 - Branch `codex/expanded-summoning-sprint40-ice-devil`, root
   `C:/Dev/KingmakerGunslingerLab/wt/s40`, HOWARD-LAPTOP. Last pushed/source-tested
-  checkpoint `76b294ef7c5ce1f730e43e64322cd47fd171bd13`; following repair batch
+  checkpoint `0d1973a94907b540c5a3a2f7abfc96c65bde2249`; following repair batch
   is identified by this commit and `git rev-parse HEAD` after commit.
 - No active game/deployment/lease; original118 saves were never loaded/written.
   Latest full exact intake audit:
-  `sprint40-intake-20261105T002300Z/post-early-20261105T062345Z/restoration.json`.
+  `sprint40-intake-20261105T002300Z/post-early-20261105T072740Z/restoration.json`.
   Mods/references/settings/saves exact; game absent. Native Goal remains active.
 - Completed: hidden graph/art dependencies, early development mechanics,
   Nalfeshnee55-foot source correction and Nimbus Daze wording correction.
@@ -36,11 +36,26 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 - Focused repaired batch: production27.1s,31/31 related tests of2815 PASS,
   tests9.7s including rebuild. Log `artifacts/s40-native-repairs-compile-fixed.log`.
   Missing namespace compile failure retained in `artifacts/s40-native-repairs-compile.log`.
-- NEXT: commit this compiled observer batch, run the real clean-tree outer
-  WhatIf admission checks, then package once for changed native cases.
+- NEXT: resolve the concrete disposable-world isolation issue below before any
+  further native launch; use the existing outdoor fixture, keep protected actors
+  outside the aura footprint and record/assert protected-target event isolation.
+  Correct movement proof using arrival/velocity and the actual completion stack.
+  Do not change the selected fear eligibility or weaken targeting to fix fixtures.
   Complete persistence/publisher scopes,
   final public artifact and six-process envelopes, exact release/downloads/closure.
   No development probe is final-artifact qualification.
+- Isolation repair batch compiles;40/40 related S32/34/35/39/40 checks PASS
+  (`artifacts/s40-isolation-neighbors.log`), orchestration297 assertions PASS
+  (`artifacts/s40-isolation-preflight.log`). Earlier broadened check exposed an
+  S32 historical-surface selector missing Ice from its later-creature exclusions;
+  its1150 historical expectation is unchanged. Failure retained in
+  `artifacts/s40-isolation-repair-compile-fixed.log`.
+  Exact S40 phases now share the authoritative phase predicate and existing
+  outdoor fixture. Before any summon, a bounded native walkable survey requires
+  a disposable-caster location60m from protected scene actors; no intake actor
+  moves. Actual global rule events must exercise the isolation listener with
+  zero protected recipients. Friendly AI refusal uses a fresh disposable NPC.
+  Native proof remains pending; the survey refuses if no safe point exists.
 - Following batch now includes exact outdoor admission for Nalfeshnee range,
   body/public, AI and Slow-turn observations; presentation reuses the S34
   measured-rig movement/contact/private-pair path with Ice's own five attacks.
@@ -68,6 +83,37 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   corrected full related checks31/31 PASS, production26.5s/tests5.3s.
   Latest isolated AI change5/5 PASS, production26.6s/tests0.9s, log
   `artifacts/s40-ai-formation-precondition-compile.log`.
+
+### Current isolation finding, 2026-11-05 UTC
+
+- Source0d clean-tree WhatIf accepted all5 new/moved phases and refused the
+  undeclared `sprint40-ice-devil-ai-extra`; ordinary guarded push completed.
+  New development ZIP `b5bfcde0217fde8467a0b3938d21fd046bfac40bece69a24b1c3849e616cc10e`,
+  DLL `0ef6357cc1341c7906e3600c16d57488df6f6b4778a7a3b5bdbb342e5c3d60a0`,
+  MVID `122b7aed-c014-4a2c-be61-1e2901fc0b4e`;31/31 build tests/strict458-file
+  package and independent reader passed. Purpose remains `sprint40-mechanics`.
+- `20261105T0710297866438Z-disposable-expanded-summoning-sprint32-native-review`:
+  Slow FAIL after corrected native quarter-speed PASS. Recipient moved0.9708m,
+  but manual UnitMoveTo ended Interrupt before start/act. Raw interruption stack
+  reaches `UnitMovementAgent.CompleteMovement` through `OnMovementInterrupted`.
+  Need actual goal-gap/velocity sampling, not a guessed enum interpretation.
+  Native ResultType3 is **Success**,2 is Interrupt; an earlier conversational
+  interpretation of OnAction's literal3 as Interrupt was wrong and corrected.
+- Raw events also show the aura applying to protected pre-existing prologue
+  actor `Tertuccio_StartPrologue` (`eff09a06-7cd0-4cd0-8de2-1f1f81414888`).
+  This is a real fixture-isolation failure. Earlier mechanical development PASS
+  rows remain attributed as observed; they do not establish final isolation.
+  The selected S35 aura contract does not authorize adding an enemy-only
+  exemption. Current intake protections and original save bytes remain exact.
+- `20261105T0717065084289Z-disposable-expanded-summoning-sprint32-native-review`:
+  wall pair sequence PASS20/20: two Ice claims, native physical half/fire breach,
+  actual residual crossing, first-source cleanup, simultaneous Ice/Bone claims,
+  cross-species cleanup and every recorded original node bit restored.
+  Its walk returned native Success, further disproving a blanket manual-move
+  Interrupt assumption. No source edit or subsequent native launch occurred.
+- Full original-intake audit `post-early-20261105T072740Z/restoration.json` passed
+  exact Mods/references/settings/118 saves, game absent, lease released. Working
+  and baseline never loaded/written. Log `artifacts/s40-0d-early-restoration-audit.log`.
 
 ## Historical development notes preceding the native6ef repairs
 
