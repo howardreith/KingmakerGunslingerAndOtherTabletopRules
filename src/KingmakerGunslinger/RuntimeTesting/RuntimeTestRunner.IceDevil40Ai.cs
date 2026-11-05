@@ -59,6 +59,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             string id = "ai-" + suffix + (turnBased ? "-turn" : "-rtwp");
             CreateSprint32TurnHostile(fixture);
+            int activeWallClaimsBefore = InfernalWallNavmesh35.ActiveGridClaimCount;
             UnitEntityData owner = null, friend = null; var target = fixture.Hostile;
             var anchor = Sprint32OwnedQuietAnchor(fixture, id);
             BlueprintFeature cold = null; bool addedCold = false, isolatedFear = false;
@@ -275,6 +276,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         trace.Rows.Any(row => (string)row["event"] == "effect-application" &&
                             (string)row["target"] == wall.UniqueId &&
                             (string)row["blueprint"] == "c98d765d063f57a49a03f13d4f697c33") &&
+                        binding.GridRestoreCompleted &&
+                        InfernalWallNavmesh35.ActiveGridClaimCount == activeWallClaimsBefore &&
                         originalNodes.All(node => node.Key.Walkable == node.Value);
                     while (DateTime.UtcNow < retirementDeadline && !retired())
                     { Game.Instance.IsPaused = false; yield return 0; }
@@ -292,6 +295,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["current"] = node.Key.Walkable
                         }).ToArray();
                     check(id + "-source-removal", wallLifetime == null && nativeRetirement &&
+                        binding.GridRestoreCompleted &&
+                        InfernalWallNavmesh35.ActiveGridClaimCount == activeWallClaimsBefore &&
                         originalNodes.Length > 0 && nodeMismatches.Length == 0,
                         new JObject { ["sourceDestroyed"] = owner.Destroyed,
                             ["sectionDestroyed"] = wall.Destroyed, ["sectionDead"] = wall.Descriptor.State.IsDead,
@@ -303,6 +308,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["bindingClaims"] = binding?.GridNodesClaimed,
                             ["reconcileRequests"] = binding?.GridReconcileRequests,
                             ["reconcileCompleted"] = binding?.GridReconcileCompleted,
+                            ["activeClaimsBefore"] = activeWallClaimsBefore,
                             ["activeClaims"] = InfernalWallNavmesh35.ActiveGridClaimCount,
                             ["nodes"] = originalNodes.Length,
                             ["allOriginalBitsRestored"] = nodeMismatches.Length == 0,
