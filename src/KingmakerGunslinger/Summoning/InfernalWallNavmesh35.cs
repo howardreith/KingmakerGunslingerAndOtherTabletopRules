@@ -76,6 +76,7 @@ namespace KingmakerGunslinger.Summoning
         internal bool GridRestoreCompleted { get; private set; }
         internal int GridReconcileRequests { get; private set; }
         internal int GridReconcileCompleted { get; private set; }
+        internal bool NativeMovementAgentDisabled { get; private set; }
         internal string GridFailure { get; private set; }
         internal static int ActiveGridClaimCount { get { return Claims.Count; } }
 
@@ -103,6 +104,16 @@ namespace KingmakerGunslinger.Summoning
                     "Wall section donor unexpectedly already owns a navmesh cut.");
             _view = view;
             _owner = view.EntityData as UnitEntityData;
+            if (view.AgentASP == null)
+                throw new InvalidOperationException(
+                    "Wall section requires its private native movement agent.");
+            // The private section never moves. Its navigation authority is
+            // the exact-owned claim set below; leaving the donor's movement
+            // agent active creates a second six-node footprint which can
+            // survive the wall claim during native death presentation.
+            view.AgentASP.Stop();
+            view.AgentASP.enabled = false;
+            NativeMovementAgentDisabled = !view.AgentASP.enabled;
             CreateWallVisual();
             _cut = view.gameObject.AddComponent<NavmeshCut>();
             _cut.type = NavmeshCut.MeshType.Rectangle;

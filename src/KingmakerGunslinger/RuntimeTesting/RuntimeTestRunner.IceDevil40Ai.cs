@@ -259,9 +259,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(x.Get<Kingmaker.UnitLogic.Parts.UnitPartSummonedMonster>()?.Summoner, owner));
                     var binding = wall?.View?.GetComponent<InfernalWallNavmesh35>();
                     if (binding != null) foreach (int frame in InfernalBoneWaitUntil35(() => binding.GridApplyCompleted, 10)) yield return frame;
-                    check(id + "-actual-owned-wall", wall != null && binding != null && binding.GridNodesClaimed > 0 &&
+                    check(id + "-actual-owned-wall", wall != null && binding != null &&
+                        binding.NativeMovementAgentDisabled && binding.GridNodesClaimed > 0 &&
                         !ai.IsTargetValid(decision), new JObject { ["section"] = wall?.UniqueId,
-                            ["claims"] = binding?.GridNodesClaimed, ["aiRefusesRedundantPlacement"] = !ai.IsTargetValid(decision) },
+                            ["claims"] = binding?.GridNodesClaimed,
+                            ["privateNativeMovementAgentDisabled"] = binding?.NativeMovementAgentDisabled,
+                            ["aiRefusesRedundantPlacement"] = !ai.IsTargetValid(decision) },
                         "The brain's legal placement creates an actual owned navigation wall; its production redundancy filter then declines another wall at that lane.");
                     var originalNodes = binding.GridNodeSnapshot().ToArray();
                     DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
