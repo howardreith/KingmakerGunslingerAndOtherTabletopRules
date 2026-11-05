@@ -210,7 +210,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var spell = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol[prefix + "WallOfIce"];
             var sectionBp = (BlueprintUnit)ExpandedSummoningBlueprints.Registered.BySymbol[prefix + "WallSectionUnit"];
             var data = new AbilityData(source.Descriptor.Abilities.GetAbility(spell));
-            Vector3 start, middle, end, casterPoint; JArray attempts;
+            Vector3 start, middle, end, casterPoint; JArray attempts; JObject survey;
             int admittedCandidates = 0, availableCandidates = 0, legalCandidates = 0;
             Func<Vector3, Vector3, bool> admit = (point, offLane) => {
                 for (int index = 0; index < actors.Count; index++)
@@ -224,14 +224,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (legal) legalCandidates++;
                 return legal;
             };
-            bool found = InfernalEarlyWallLane35(fixture, out start, out middle, out end,
-                out casterPoint, out attempts, admit, surveyCenter);
+            bool found = InfernalEarlyWallLane35(fixture, actors, out start, out middle, out end,
+                out casterPoint, out attempts, out survey, admit, surveyCenter);
             check("wall-survey-" + label, found && legalCandidates > 0,
                 new JObject { ["source"] = source.UniqueId, ["surveyCenter"] = Vec(surveyCenter),
                     ["sourcePosition"] = Vec(source.Position), ["sourceCanAct"] = source.Descriptor.State.CanAct,
                     ["nativeAvailable"] = data.IsAvailable, ["geometryCandidates"] = admittedCandidates,
                     ["availableCandidates"] = availableCandidates, ["legalCandidates"] = legalCandidates,
-                    ["boundedSurvey"] = attempts },
+                    ["boundedSurvey"] = attempts, ["nativeSurvey"] = survey },
                 "Existing bounded survey retains native availability/targeting; refusal records the actual admission boundary rather than forcing a placement.");
             PlaceExpandedSummoningUnit(fixture.Caster, start);
             var prior = new HashSet<string>(Game.Instance.State.Units.Select(x => x.UniqueId));

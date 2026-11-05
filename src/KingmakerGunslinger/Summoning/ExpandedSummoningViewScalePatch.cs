@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using Harmony12;
 using Kingmaker.View;
+using KingmakerGunslinger.Bootstrap;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
@@ -18,9 +19,13 @@ namespace KingmakerGunslinger.Summoning
         {
             if (__instance == null || __instance.EntityData == null ||
                 __instance.EntityData.Blueprint == null) return;
-            float multiplier;
-            if (!SummonViewScaleCatalog.TryGetMultiplier(
-                    __instance.EntityData.Blueprint.name, out multiplier)) return;
+            ModContext context;
+            bool enabled = ModContext.TryGet(out context) &&
+                context.FeatureModules?.Active?.ExpandedSummoning == true;
+            SummonViewScaleSpec spec;
+            if (!SummonViewScaleCatalog.TryGetApplicableSpec(
+                    __instance.EntityData.Blueprint.name, enabled, out spec)) return;
+            float multiplier = spec.Multiplier;
             lock (Applied)
             {
                 AppliedMarker ignored;
@@ -30,6 +35,20 @@ namespace KingmakerGunslinger.Summoning
                     current.z <= 0f) throw new InvalidOperationException(
                         "KMG summon view has an invalid pre-scale transform: " +
                         __instance.EntityData.Blueprint.name + ".");
+                if (spec.RetainNativeScale)
+                {
+                    // Exact 2.1.7b UnitEntityView.Update writes localScale =
+                    // m_OriginalScale * m_Scale every frame. A one-time root
+                    // transform edit is erased. Change only this live view's
+                    // native baseline, once; prefab/blueprint size stay intact.
+                    var baseline = AccessTools.Field(typeof(UnitEntityView), "m_OriginalScale");
+                    if (baseline == null || baseline.FieldType != typeof(Vector3))
+                        throw new InvalidOperationException("Native view-scale baseline is unavailable.");
+                    Vector3 original = __instance.OriginalScale;
+                    if (!Finite(original) || original.x <= 0 || original.y <= 0 || original.z <= 0)
+                        throw new InvalidOperationException("Native view-scale baseline is invalid.");
+                    baseline.SetValue(__instance, original * multiplier);
+                }
                 __instance.transform.localScale = current * multiplier;
                 Applied.Add(__instance, new AppliedMarker());
             }

@@ -250,9 +250,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData owner, List<UnitEntityData> owned,
             Action<string, bool, JObject, string> check)
         {
-            Vector3 start, middle, end, casterPoint; JArray attempts;
-            if (!InfernalEarlyWallLane35(fixture, out start, out middle, out end,
-                out casterPoint, out attempts))
+            Vector3 start, middle, end, casterPoint; JArray attempts; JObject survey;
+            if (!InfernalEarlyWallLane35(fixture, owned, out start, out middle, out end,
+                out casterPoint, out attempts, out survey))
                 throw new InvalidOperationException("No native floor lane for Ice wall: " + attempts);
             owner.Commands.InterruptAll(true); owner.Commands.RemoveFinishedAndUpdateQueue();
             PlaceExpandedSummoningUnit(fixture.Caster, start);

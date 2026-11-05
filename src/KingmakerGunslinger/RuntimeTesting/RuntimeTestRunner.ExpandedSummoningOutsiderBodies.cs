@@ -263,6 +263,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["fadedIn"] = fadedIn, ["dissolve"] = dissolve },
                 "Native appearance prerequisites and finite intact material dissolve settle near the party before observation or isolated placement; no renderer, fader or material state is forced.");
             if (!ready) throw new InvalidOperationException("Native outsider appearance did not settle: " + key);
+            CaptureSummonOverhaulAppearance(unit);
+        }
+
+        // Supporting art evidence in the existing save-free, owner-scoped
+        // native fixtures. No material, size, animation or renderer is forced.
+        private void CaptureSummonOverhaulAppearance(UnitEntityData unit)
+        {
+            string prefix = "KMG_Summoning_Unit_";
+            string name = unit?.Blueprint?.name;
+            if (name == null || !name.StartsWith(prefix, StringComparison.Ordinal)) return;
+            string token = name.Substring(prefix.Length);
+            if (!new[] { "Nalfeshnee", "Glabrezu", "Vrock", "Babau", "Hezrou",
+                "BarbedDevil", "BoneDevil", "BeardedDevil", "KytonChainDevil",
+                "LillendAzata", "InvisibleStalker", "ShadowDemon" }.Contains(token)) return;
+            string stem = "overhaul-" + token.ToLowerInvariant() + "-" + unit.UniqueId;
+            var skins = unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+            var row = new JObject {
+                ["unit"] = unit.UniqueId, ["blueprint"] = name,
+                ["originalSize"] = unit.Descriptor.OriginalSize.ToString(),
+                ["currentSize"] = unit.Descriptor.State.Size.ToString(),
+                ["corpulence"] = unit.Corpulence,
+                ["nativeOriginalScale"] = SurveyVector(unit.View.OriginalScale),
+                ["nativeSizeScale"] = unit.View.GetSizeScale(),
+                ["viewLocalScale"] = SurveyVector(unit.View.transform.localScale),
+                ["viewLossyScale"] = SurveyVector(unit.View.transform.lossyScale),
+                ["shapeHierarchy"] = Cleanup2ShapeHierarchy(unit),
+                ["attachment"] = ExpandedSummoningPteranodonViewPatch.DescribeView(unit.View),
+                ["renderers"] = new JArray(skins.Select(skin => new JObject {
+                    ["name"] = skin.name, ["enabled"] = skin.enabled,
+                    ["mesh"] = skin.sharedMesh?.name,
+                    ["transformDeterminant"] = skin.transform.localToWorldMatrix.determinant,
+                    ["localBounds"] = SurveyVector(skin.localBounds.size),
+                    ["worldBounds"] = SurveyVector(skin.bounds.size),
+                    ["materials"] = new JArray(skin.sharedMaterials.Select(Cleanup2Material)) })),
+                ["captureScope"] = "Metadata only: settled live materials and actual bounds. No camera movement or render; ordinary-camera images are captured separately."
+            };
+            RuntimeTestResultWriter.WriteAtomic(System.IO.Path.Combine(
+                _request.EvidenceDirectory, stem + ".json"), row.ToString());
         }
     }
 }
