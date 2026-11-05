@@ -61,38 +61,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // UnitUseAbility. Do not enlarge anyone's vision or waive the
                 // spell's native eligibility/range checks.
                 var survey = new JArray(); receipt["rangeSurvey"] = survey;
-                Vector3 origin = Vector3.zero, outside = Vector3.zero;
-                bool found = false;
-                var anchor = AstarPath.active.GetNearest(fixture.Caster.Position);
-                foreach (var direction in CompassOffsets)
-                {
-                    Vector3 requestedSource = fixture.Caster.Position - direction * ((nativeRadius + .75f) * .5f);
-                    Vector3 requestedTarget = fixture.Caster.Position + direction * ((nativeRadius + .75f) * .5f);
-                    var from = AstarPath.active.GetNearest(requestedSource);
-                    var to = AstarPath.active.GetNearest(requestedTarget);
-                    Vector3 sourceProjection = requestedSource - from.clampedPosition; sourceProjection.y = 0;
-                    Vector3 targetProjection = requestedTarget - to.clampedPosition; targetProjection.y = 0;
-                    bool connected = anchor.node != null && from.node != null && to.node != null &&
-                        from.node.Walkable && to.node.Walkable && from.node.Area == anchor.node.Area &&
-                        to.node.Area == anchor.node.Area && from.node.GraphIndex == anchor.node.GraphIndex &&
-                        to.node.GraphIndex == anchor.node.GraphIndex && sourceProjection.magnitude <= .6f &&
-                        targetProjection.magnitude <= .6f;
-                    bool clear = connected && !LineOfSightGeometry.Instance.HasObstacle(
-                        from.clampedPosition + Vector3.up * 1.2f, to.clampedPosition + Vector3.up * 1.2f, 0);
-                    float projectedDistance = Vector3.Distance(from.clampedPosition, to.clampedPosition);
-                    var candidate = new JObject { ["source"] = Vec(from.clampedPosition), ["target"] = Vec(to.clampedPosition),
-                        ["connectedNativeGraph"] = connected, ["clearNativeGeometry"] = clear,
-                        ["projectedDistance"] = projectedDistance };
-                    survey.Add(candidate);
-                    if (!clear || projectedDistance < nativeRadius + .5f) continue;
-                    PlaceExpandedSummoningUnit(owner, from.clampedPosition);
-                    PlaceExpandedSummoningUnit(recipient, to.clampedPosition);
-                    bool observerSeesBoth = fixture.Caster.HasLOS(owner) && fixture.Caster.HasLOS(recipient);
-                    candidate["stationaryObserverNativeSightBoth"] = observerSeesBoth;
-                    if (!observerSeesBoth) continue;
-                    origin = from.clampedPosition; outside = to.clampedPosition; found = true; break;
-                }
-                if (!found) throw new InvalidOperationException("No bounded native Slow range geometry around the stationary observer.");
+                Vector3 origin, outside;
+                var constraint = Sprint40WalkingConstraint(fixture.Caster);
+                var anchor = AstarPath.active.GetNearest(fixture.Caster.Position, constraint);
+                if (anchor.node == null) throw new InvalidOperationException("No native range observer walking origin.");
+                constraint.SetStart(anchor.node); constraint.constrainArea = true;
+                if (!TryNalfeshneeRangeSpan40(fixture.Caster, nativeRadius + .75f, constraint, survey, out origin, out outside))
+                    throw new InvalidOperationException("No bounded native Slow range geometry around the stationary observer.");
                 string lane = "Native connected graph/clear geometry; stationary observer at midpoint; actual player-cast consumers follow.";
                 Vector3 axis = (outside - origin).normalized;
                 PlaceExpandedSummoningUnit(owner, origin);
@@ -150,6 +125,48 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory,
                     "sprint40-nalfeshnee-slow-range.json"), receipt.ToString(Formatting.Indented));
             }
+        }
+
+        // The same small span is required before choosing this fixture's
+        // position and after observing the real command boundary. No actor's
+        // sight or the spell's targeting/range consumer is altered.
+        private static bool TryNalfeshneeRangeSpan40(UnitEntityData observer, float span,
+            Pathfinding.PathNNConstraint constraint, JArray survey, out Vector3 origin, out Vector3 target)
+        {
+            origin = Vector3.zero; target = Vector3.zero;
+            var anchor = AstarPath.active.GetNearest(observer.Position, constraint);
+            if (anchor.node == null) return false;
+            var graph = AstarPath.active.graphs[anchor.node.GraphIndex] as Pathfinding.IRaycastableGraph;
+            if (graph == null) return false;
+            for (int angle = 0; angle < 24; angle++)
+            {
+                Vector3 axis = Quaternion.Euler(0, angle * 15f, 0) * Vector3.forward;
+                Vector3 requestedSource = observer.Position - axis * (span * .5f);
+                Vector3 requestedTarget = observer.Position + axis * (span * .5f);
+                var from = AstarPath.active.GetNearest(requestedSource, constraint);
+                var to = AstarPath.active.GetNearest(requestedTarget, constraint);
+                Vector3 sourceProjection = requestedSource - from.clampedPosition; sourceProjection.y = 0;
+                Vector3 targetProjection = requestedTarget - to.clampedPosition; targetProjection.y = 0;
+                bool connected = from.node != null && to.node != null && from.node.Walkable && to.node.Walkable &&
+                    from.node.Area == anchor.node.Area && to.node.Area == anchor.node.Area &&
+                    from.node.GraphIndex == anchor.node.GraphIndex && to.node.GraphIndex == anchor.node.GraphIndex &&
+                    sourceProjection.magnitude <= .6f && targetProjection.magnitude <= .6f;
+                Pathfinding.GraphHitInfo hit;
+                bool clear = connected && !graph.Linecast(from.clampedPosition, to.clampedPosition, from.node,
+                    out hit, new List<Pathfinding.GraphNode>()) && !LineOfSightGeometry.Instance.HasObstacle(
+                        from.clampedPosition + Vector3.up * 1.2f, to.clampedPosition + Vector3.up * 1.2f, 0);
+                bool sight = clear && observer.HasLOS(from.clampedPosition) && observer.HasLOS(to.clampedPosition);
+                float distance = Vector3.Distance(from.clampedPosition, to.clampedPosition);
+                survey.Add(new JObject { ["source"] = Vec(from.clampedPosition), ["target"] = Vec(to.clampedPosition),
+                    ["connectedNativeGraph"] = connected, ["clearNativeGeometry"] = clear,
+                    ["stationaryObserverNativeSightBoth"] = sight, ["projectedDistance"] = distance,
+                    ["sourceWalkable"] = from.node != null && from.node.Walkable,
+                    ["targetWalkable"] = to.node != null && to.node.Walkable,
+                    ["sourceHorizontalClamp"] = sourceProjection.magnitude, ["targetHorizontalClamp"] = targetProjection.magnitude });
+                if (!sight || distance < span - .25f) continue;
+                origin = from.clampedPosition; target = to.clampedPosition; return true;
+            }
+            return false;
         }
     }
 }

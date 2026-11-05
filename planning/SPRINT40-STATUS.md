@@ -9,6 +9,48 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 - HOWARD-LAPTOP, `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
   `codex/expanded-summoning-sprint40-ice-devil`; last pushed
+  `ab3f14c2bf3151dd00c6da0fb312949d63d76156`. Current repair is the enclosing HEAD.
+  Draft [product PR97](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/97).
+- No active game/deployment/lease. Exact full audit
+  `sprint40-intake-20261105T002300Z/post-early-20261105T100334Z/restoration.json`
+  passed Mods/references/settings/all118 saves; Working/baseline never loaded/written.
+  Log `artifacts/s40-ab3-presentation-restoration-audit.log`.
+- Native ab3 Slow PASS24/24:
+  `20261105T0945488673719Z-disposable-expanded-summoning-sprint32-native-review`.
+  Actual zero-damage/cold-immunity hit, live DC, movement, miss, Haste, descriptor
+  immunity, two independent owners, finite survival after source removal and
+  native expiry.63 owned events/zero violations/protected positions unchanged;
+  exact party/remote restoration. Native Slow's observed quarter combat getter
+  remains inherited engine behavior, not a claim of printed half speed.
+- Native ab3 range FAIL:
+  `20261105T0950572105393Z-disposable-expanded-summoning-sprint32-native-review`.
+  Real range18.164m confirmed; all8 unconstrained nearest-node pairs failed graph
+  admission. No cast proof. Guard remained clean; native world restored.
+- Native ab3 presentation FAIL:
+  `20261105T0956546873097Z-disposable-expanded-summoning-sprint32-native-review`.
+  Two original bodies/private pair/selection/actual pixels PASS; motion lost native
+  Default to Pause and disposal correctly refused. Inspected body PNG: original
+  insectile mesh is visible, but fixture was on a roof. Motion/lifetime unproven.
+- Current repair reuses qualified S32 native walking graph/traversal tags and
+  direct linecast. Ice scopes keep60m protected gap; Nalf range scope uses40m,
+  with a20m clear/native-visible span checked before any summon. Same span helper
+  serves actual measured range; CanTarget/native commands remain mandatory.
+  S34's scoped engagement-pause setting is now reused/restored, guard unchanged.
+  Production26.8s and31/31 related checks PASS (`artifacts/s40-walking-envelope-compile.log`).
+- NEXT: coherent commit/build; repaired range and body/lifetime, AI and Slow-turn.
+  Hidden Ice graph/art implemented; Persistent Image omission approved/no substitute.
+  Nimbus wording and Nalf55 source correction done; public SM IX route suppressed.
+  Persistence/publisher wiring, final public artifact/fresh qualification/six-process
+  ON+OFF, exact release/public downloads/restoration/records remain. Goal active.
+- ab3 dev ZIP `7011cd77b44328e84706dd37dc2c510ffea5a0212b6b1bbc02226a58cefb4a72`,
+  DLL `68af7f6812202442b7a78e413e9a21915ec55c6ed26dff9de7a538ed85006840`,
+  MVID `e10bae82-4972-4e90-9650-4c8b386f810c`; strict/independent reader PASS,
+  22/22 tests. Log `artifacts/s40-mechanics-build-ab3f14c2.log`.
+
+## Historical development through a8 and anchor repair
+
+- HOWARD-LAPTOP, `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
+  `codex/expanded-summoning-sprint40-ice-devil`; last pushed
   `a8a5c9aab7a8af3d9bc9d2bd12f6a320398671b0`. Following anchor repair is this
   enclosing commit/HEAD. Draft product PR [97](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/97).
 - No game/deployment/lease. Exact full intake audit
