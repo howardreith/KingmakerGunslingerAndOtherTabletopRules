@@ -1,10 +1,10 @@
 Set-StrictMode -Version Latest
 
 function Assert-KmgQualifiedCandidateInvocationMode {
-    param([switch]$PreflightOnly,[switch]$Sprint25GiantBodies,[switch]$Sprint26MagicalBeasts,[switch]$Sprint27Griffon,[switch]$Sprint28Giants,[switch]$Sprint29Giants,[switch]$Sprints3031,[switch]$Sprint33ShadowOutsiders,[switch]$Sprint34InfernalOutsiders,[switch]$Sprint35InfernalReach,[switch]$Sprint36InfernalDemons,[switch]$Sprint37Vrock,[switch]$Sprint38Glabrezu,[switch]$Sprint39Nalfeshnee,[switch]$Publish,
+    param([switch]$PreflightOnly,[switch]$Sprint25GiantBodies,[switch]$Sprint26MagicalBeasts,[switch]$Sprint27Griffon,[switch]$Sprint28Giants,[switch]$Sprint29Giants,[switch]$Sprints3031,[switch]$Sprint33ShadowOutsiders,[switch]$Sprint34InfernalOutsiders,[switch]$Sprint35InfernalReach,[switch]$Sprint36InfernalDemons,[switch]$Sprint37Vrock,[switch]$Sprint38Glabrezu,[switch]$Sprint39Nalfeshnee,[switch]$Sprint40IceDevil,[switch]$Publish,
         [switch]$ConfirmReleaseReady,[string]$MergedReleaseCommit,[string]$ExpectedBaseCommit)
     if($PreflightOnly) {
-        if(@($Sprint25GiantBodies,$Sprint26MagicalBeasts,$Sprint27Griffon,$Sprint28Giants,$Sprint29Giants,$Sprints3031,$Sprint33ShadowOutsiders,$Sprint34InfernalOutsiders,$Sprint35InfernalReach,$Sprint36InfernalDemons,$Sprint37Vrock,$Sprint38Glabrezu,$Sprint39Nalfeshnee | Where-Object {$_}).Count -ne 1 -or $Publish -or $ConfirmReleaseReady -or $MergedReleaseCommit -or
+        if(@($Sprint25GiantBodies,$Sprint26MagicalBeasts,$Sprint27Griffon,$Sprint28Giants,$Sprint29Giants,$Sprints3031,$Sprint33ShadowOutsiders,$Sprint34InfernalOutsiders,$Sprint35InfernalReach,$Sprint36InfernalDemons,$Sprint37Vrock,$Sprint38Glabrezu,$Sprint39Nalfeshnee,$Sprint40IceDevil | Where-Object {$_}).Count -ne 1 -or $Publish -or $ConfirmReleaseReady -or $MergedReleaseCommit -or
             $ExpectedBaseCommit -cnotmatch '^[0-9a-f]{40}$') {
             throw 'PreflightOnly requires one supported sprint and its pinned base, and forbids publication, confirmation or a claimed merge.'
         }
@@ -162,7 +162,7 @@ function Assert-KmgReportingLineage {
 }
 
 function Assert-KmgClosureProofFiles {
-    param([Parameter(Mandatory=$true)]$Ledger,[switch]$Sprints3031,[switch]$Sprint33ShadowOutsiders,[switch]$Sprint34InfernalOutsiders,[switch]$Sprint35InfernalReach,[switch]$Sprint36InfernalDemons,[switch]$Sprint37Vrock,[switch]$Sprint38Glabrezu,[switch]$Sprint39Nalfeshnee,$Candidate)
+    param([Parameter(Mandatory=$true)]$Ledger,[switch]$Sprints3031,[switch]$Sprint33ShadowOutsiders,[switch]$Sprint34InfernalOutsiders,[switch]$Sprint35InfernalReach,[switch]$Sprint36InfernalDemons,[switch]$Sprint37Vrock,[switch]$Sprint38Glabrezu,[switch]$Sprint39Nalfeshnee,[switch]$Sprint40IceDevil,$Candidate)
     if($Sprints3031 -and ($Ledger.mission -cne 'Sprints3031OutsiderCelestialPilot' -or $null -eq $Candidate)) {
         throw 'Named S30-31 context and actual final candidate are required.'
     }
@@ -173,6 +173,7 @@ function Assert-KmgClosureProofFiles {
     if($Sprint37Vrock -and ($Ledger.mission -cne 'Sprint37Vrock' -or $null -eq $Candidate)){throw 'Named Sprint37 context and final candidate required.'}
     if($Sprint38Glabrezu -and ($Ledger.mission -cne 'Sprint38Glabrezu' -or $null -eq $Candidate)){throw 'Named Sprint38 context and final candidate required.'}
     if($Sprint39Nalfeshnee -and ($Ledger.mission -cne 'Sprint39Nalfeshnee' -or $null -eq $Candidate)){throw 'Named Sprint39 context and final candidate required.'}
+    if($Sprint40IceDevil -and ($Ledger.mission -cne 'Sprint40IceDevil' -or $null -eq $Candidate)){throw 'Named Sprint40 context and final candidate required.'}
     foreach($row in $Ledger.coverage) {
         if($Sprint35InfernalReach -and $row.result -ceq 'REUSED_PASS'){throw 'Sprint35 requires fresh final-candidate proof for every mandatory row.'}
         # Sprint37 registers a new creature, so nothing may be reused:
@@ -185,6 +186,7 @@ function Assert-KmgClosureProofFiles {
         # no development evidence can reach it through the allowance below.
         if($Sprint38Glabrezu -and $row.result -ceq 'REUSED_PASS'){throw 'Sprint38 requires fresh final-candidate proof for every mandatory row.'}
         if($Sprint39Nalfeshnee -and $row.result -ceq 'REUSED_PASS'){throw 'Sprint39 requires fresh final-candidate proof for every mandatory row.'}
+        if($Sprint40IceDevil -and $row.result -ceq 'REUSED_PASS'){throw 'Sprint40 requires fresh final-candidate proof for every mandatory row.'}
         if($Sprint36InfernalDemons -and $row.result -ceq 'REUSED_PASS'){Assert-KmgSprint36Reuse $row $Candidate}
         if($Sprint34InfernalOutsiders -and $row.result -ceq 'REUSED_PASS'){Assert-KmgSprint34Reuse $row $Candidate}
         if($Sprint33ShadowOutsiders -and $row.result -ceq 'REUSED_PASS'){Assert-KmgSprint33Reuse $row $Candidate}

@@ -103,7 +103,9 @@ namespace KingmakerGunslinger.DomainTests
         // candidate is green on live units in both combat modes, so removing
         // its name here is the whole of publishing it - every dependent count
         // in this file derives rather than being pinned a second time.
-        internal static readonly string[] WithheldKeys = new[] { "ice-devil" };
+        // Empty again after Sprint 40 publication: the Ice Devil contributes
+        // exactly one qualified untemplated SM IX route.
+        internal static readonly string[] WithheldKeys = Array.Empty<string>();
         internal static bool IsWithheld(string key) { return Array.IndexOf(WithheldKeys, key) >= 0; }
     }
 

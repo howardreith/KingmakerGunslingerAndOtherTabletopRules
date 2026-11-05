@@ -117,6 +117,7 @@ if ($activeVersion -in @('0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', 
 
 & (Join-Path $PSScriptRoot 'Test-Sprint40BlueprintFactory.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint40StartupFiles.ps1')
+& (Join-Path $PSScriptRoot 'Test-Sprint40Release.ps1')
 
 & (Join-Path $PSScriptRoot 'Test-IconOverhaulAssets.ps1') `
     -RepositoryRoot $repositoryRoot
