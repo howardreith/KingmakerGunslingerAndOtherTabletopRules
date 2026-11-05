@@ -57,6 +57,8 @@
     <Compile Include="Summoning\GlabrezuRules38Policy.cs" />
     <Compile Include="Summoning\NalfeshneeRules39Policy.cs" />
     <Compile Include="Summoning\NalfeshneeRules39.cs" />
+    <Compile Include="Summoning\IceDevilRules40.cs" />
+    <Compile Include="Summoning\IceDevilRules40Policy.cs" />
     <Compile Include="Summoning\NalfeshneeVisualPolicy39.cs" />
     <Compile Include="Summoning\GlabrezuRules38.cs" />
     <Compile Include="Summoning\GlabrezuVisualPolicy38.cs" />

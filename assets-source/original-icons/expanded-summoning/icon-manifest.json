@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "provenance": "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, Phase 2 original creature/action paintings, and Sprint 24 original theropod paintings; no copied game or third-party pixels.",
   "generator": "tools/New-ExpandedSummoningIcons.ps1",
-  "count": 147,
+  "count": 148,
   "icons": [
     {
       "key": "air-mephit",
@@ -4078,6 +4078,19 @@
       "productionFile": "assets/game/icons/expanded-summoning/nalfeshnee.png",
       "sourceSha256": "487b96fb88f360ad06a506cc7b145215c58c98cb0ae8efb138cb744943290fa8",
       "outputSha256": "e7dbde2cf744d56b265a0ae79b286843ef8f2a2c555917eb01dba5dda1aed73a",
+      "width": 128,
+      "height": 128,
+      "format": "RGBA PNG",
+      "scope": "kmg-catalog",
+      "blueprintSymbols": []
+    },
+    {
+      "key": "ice-devil",
+      "displayName": "Ice Devil (Gelugon)",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/ice-devil.png",
+      "productionFile": "assets/game/icons/expanded-summoning/ice-devil.png",
+      "sourceSha256": "c200f2133856ee789d3fe359a069dc1bbb7348109b629a8c9ad916011e4d2682",
+      "outputSha256": "7e9bb0ac14c7b6d19b6673559596725869faeb7132eae2dc84ed7d80d090f98c",
       "width": 128,
       "height": 128,
       "format": "RGBA PNG",
