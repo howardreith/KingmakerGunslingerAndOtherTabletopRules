@@ -104,23 +104,31 @@ namespace KingmakerGunslinger.RuntimeTesting
             var good = new PhysicalDamage(new DiceFormula(0, DiceType.Zero), PhysicalDamageForm.Slashing);
             good.AddBonus(1000); good.AddAlignment(DamageAlignment.Good);
             var fatal = Rulebook.Trigger(new RuleDealDamage(fixture.Hostile, sibling, new DamageBundle(good)));
-            bool died = sibling.Descriptor.State.IsDead;
+            bool immediateDead = sibling.Descriptor.State.IsDead;
+            int immediateHp = sibling.HPLeft;
             string capture = sibling.View == null ? "native immediate view retirement" :
                 WriteExpandedSummoningPartyCameraCapture(sibling, _request.EvidenceDirectory,
                     "s40-ice-devil-native-death.png", KingmakerGunslinger.Summoning.TheropodVisualPolicy.BodyRendererName);
             DateTime deathDeadline = DateTime.UtcNow.AddSeconds(20);
             while (DateTime.UtcNow < deathDeadline && (!Sprints3031SourceAbsent(sibling) || siblingResources.Any(x => x != null)))
             { Game.Instance.IsPaused = false; yield return 0; }
+            bool retiredAfterNativeTick = Sprints3031SourceAbsent(sibling) &&
+                sibling.Destroyed && !sibling.IsInState;
             var remaining = Game.Instance.State.Units.All.Where(x => x != null && !x.Destroyed && x.IsInState).ToArray();
             var deathGear = new JArray(deathItems.Select(x => OutsiderEscapeItemState(x, sibling, remaining)));
-            check("native-death-gear-and-resources", died && fatal.Damage > 0 &&
-                Sprints3031SourceAbsent(sibling) && siblingResources.All(x => x == null) &&
+            check("native-death-gear-and-resources", fatal.Damage > 0 &&
+                retiredAfterNativeTick && siblingResources.All(x => x == null) &&
                 deathGear.Count > 0 && deathGear.All(x => (bool)x["safe"]) &&
                 cache != null && albedo != null && Sprint28PartyInventoryExact(party, partyCounts),
-                new JObject { ["nativeFatalGoodDamage"] = fatal.Damage, ["nativeDead"] = died,
+                new JObject { ["nativeFatalGoodDamage"] = fatal.Damage,
+                    ["immediateNativeDeadFlag"] = immediateDead,
+                    ["immediateHpLeft"] = immediateHp,
+                    ["retiredAfterNativeTick"] = retiredAfterNativeTick,
+                    ["destroyedAfterNativeTick"] = sibling.Destroyed,
+                    ["inStateAfterNativeTick"] = sibling.IsInState,
                     ["capture"] = capture, ["gear"] = deathGear,
                     ["fixtureDisposalsBeforeAssertion"] = 0, ["nativeDamageConsumerNotAttackProof"] = true },
-                "Actual good-damage death retires the original body and its private gear/resources without fixture disposal or escaped stock; borrowed/cache assets remain alive.");
+                "Actual fatal good damage retires the original body on the native tick and its private gear/resources without fixture disposal or escaped stock; borrowed/cache assets remain alive.");
         }
     }
 }

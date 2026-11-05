@@ -275,11 +275,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (string)x["type"] == "PhysicalDamage") &&
                         packetsSeen.Any(x => (string)x["dice"] == "2d6" && (string)x["energy"] == "Cold") &&
                         results.Any(x => (string)x["type"] == "PhysicalDamage" && (int?)x["actual"] > 0) &&
-                        results.Any(x => (string)x["energy"] == "Cold") &&
-                        results.Where(x => (string)x["energy"] == "Cold").All(x => (int?)x["actual"] == 0) &&
+                        damage.Where(x => ((JArray)x["packets"]).Any(packet =>
+                            (string)packet["energy"] == "Cold")).All(x =>
+                                (int?)x["actual"] == 0 && (int?)x["before"] == (int?)x["after"] &&
+                                ((JArray)x["results"]).Any(result =>
+                                    (string)result["energy"] == "Cold" && (bool?)result["immune"] == true)) &&
                         !trace.Rows.Skip(first).Any(x => (string)x["event"] == "save" && (string)x["owner"] == owner.UniqueId);
                     check(id + "-actual-damage", packets, new JObject { ["damage"] = new JArray(damage) },
-                        "Actual native damage retains CL13 cone dice, or Storm's physical injury through cold immunity with zero cold damage and no save.");
+                        "Actual native damage retains CL13 cone dice, or Storm's physical injury through native immunity with zero applied cold damage and no save.");
                     if (suffix == "IceStorm")
                     {
                         int initial = damage.Length;
