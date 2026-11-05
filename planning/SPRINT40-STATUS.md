@@ -8,8 +8,9 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 ## Current continuation state
 
 - HOWARD-LAPTOP, root `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
-  `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Reviewed candidate
-  product head `8c5772b2b2435d9c17bf80fba565853ecb7a8057`. No game,
+  `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Current product
+  source `333540708d18e68ecc3a06a516b8ec7520de6243`; its reporting pin is the
+  pending enclosing commit. No game,
   deployment, staging or lease is active; the live KMG tree is restored to
   SHA256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 - Recovery is CLOSED EXACTLY. The typed `BlueprintWeaponEnchantment` factory
@@ -148,6 +149,23 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   gameplay. Focused production compilation and all five Sprint40 checks pass;
   product repair commit `8c5772b2` is pushed and the exact validator is repinned.
   NEXT: commit/push the reporting pin, then rebuild once.
+- Reporting head `2868a1f3bd6da0c406330e432c786b72b533e2b3` passed the complete
+  2,816/2,816 Sprint gate and strict packaging: ZIP SHA256 `d9a42ccd...`, DLL
+  SHA256 `7da56bfd...`, MVID `f02214e9-346b-475c-a075-a3c458cbcb72`.
+  Compiled persistence admission/refusals passed 33/33. Fresh final early proof
+  PASS is `20261105T2138188594766Z-disposable-expanded-summoning-sprint32-native-review`.
+  Combat then retained a FAIL at
+  `20261105T2142199082304Z-disposable-expanded-summoning-sprint32-native-review`:
+  all earlier rows passed, but the observer reused a nearly expired one-round
+  Disarm after a real RTWP full attack; it expired before the hasted command
+  planned, so the spear correctly returned. Restoration receipt
+  `expanded-summoning-restoration/20261105T2145488047172Z-disposable-expanded-summoning-sprint32-native-review.json`
+  restores live hash `216A9DC2...` exactly. Product source `33354070` begins the
+  Haste case independently: it removes only the previous fixture effect, obtains
+  a fresh Disarm through the real native maneuver, and still observes the real
+  hasted full command. Focused production compilation and all five Sprint40 tests
+  pass. NEXT: commit/push this reporting pin, rebuild the coherent candidate once,
+  and rerun final-artifact native qualification from the required fresh boundary.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 
