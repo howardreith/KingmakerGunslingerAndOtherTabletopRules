@@ -445,6 +445,16 @@ namespace KingmakerGunslinger.DomainTests
                 "Particle effects on the section view are not body meshes.");
         }
 
+        internal static void WallSectionUsesNonBloodHitEffects()
+        {
+            Assertions.True(InfernalRules35.WallSectionShowsNoBlood(InfernalRules35.WallSectionBloodType),
+                "The section's configured hit and death effects are not blood.");
+            Assertions.False(InfernalRules35.WallSectionShowsNoBlood(InfernalRules35.NativeCommonBloodType),
+                "The native default red blood is rejected for an ice section.");
+            Assertions.True(InfernalRules35.WallSectionBloodType == 9,
+                "Stone chips are the installed BloodType.Stone value 9.");
+        }
+
         internal static void WallDamageSequenceRequiresContinuousLethalHits()
         {
             Assertions.True(InfernalRules35.WallDamageSequenceDestroys(
