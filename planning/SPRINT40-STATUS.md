@@ -7,6 +7,51 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 ## Current continuation state
 
+- HOWARD-LAPTOP, `C:/Dev/KingmakerGunslingerLab/wt/s40`, product branch
+  `codex/expanded-summoning-sprint40-ice-devil`; last pushed
+  `944b499685bd7f4d7b2faff151d1fb60ddf7c73f`. Diagnostic repair is enclosing HEAD.
+  Draft [product PR97](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/97).
+- No active game/deployment/lease. Full exact audit
+  `sprint40-intake-20261105T002300Z/post-early-20261105T110507Z/restoration.json`
+  passed Mods/references/settings/all118 saves; Working/baseline never loaded/written.
+  Log `artifacts/s40-944-slow-turn-restoration-audit.log`.
+- Native944 Nalf range PASS12/12, `20261105T1030438863450Z-disposable-expanded-summoning-sprint32-native-review`:
+  actual55feet plus real footprints, inside cast/no approach, outside native
+  immediate refusal then0.7253m approach/one cast. Protected positions unchanged.
+  Native ab3 Slow PASS24/24 remains development evidence, not final-artifact proof.
+- Native944 presentation FAIL, `20261105T1037413917084Z-disposable-expanded-summoning-sprint32-native-review`:
+  two original private bodies/selection/native movement PASS; actual five contacts
+  and3spear+bite+tail emitted. Native command ended Interrupt from UnitAttack.OnTick;
+  diagnostic now records terminal attack index/planned-attack state rather than
+  assuming Success. Real bite and tail both carried extra1d6 Cold: unresolved owned
+  gameplay discrepancy. Stock Frost's exact-item consumer and cleared blueprint
+  natural enchantments are established; runtime item/stat provenance remains needed.
+  Actual body/contact PNGs inspected: original insectile mesh visible, framing and
+  weapon visibility still need review. Lifecycle proof not reached.
+- Native944 AI FAIL before actions (`20261105T1047115487517Z-...`):9m survey
+  preceded NPC combat enrollment, while native noncombat sight is8.5m. Repair joins
+  actual combat before survey; no vision or CanTarget override.
+  Native944 Slow-turn FAIL before rider (`20261105T1056063354743Z-...`): reflected
+  NonPublic-only lookup missed public CreateFullAttack; now uses verified direct API.
+- Current diagnostics record real runtime enchantments/owners, weapon stats/list and
+  packet references, native Frost graph and four bounded consumer patch receipts.
+  Contact assertion keeps actual Interrupt and requires exhausted native plan;
+  natural Cold assertion requires real hits on both naturals and rejects any Cold.
+  Production27.3s/31 related tests PASS (`artifacts/s40-native-consumer-diagnostics-compile2.log`).
+  Initial compile's missing imports retained in preceding diagnostics compile log.
+- NEXT: commit/build diagnostic batch; focused presentation to discriminate Cold
+  cause and actual terminal state, plus AI/Slow-turn repairs on unchanged package.
+  Then concrete product correction, body/lifetime, persistence/publisher wiring,
+  final public artifact/fresh qualification/six-process ON+OFF, exact publication,
+  public downloads/restoration/merged records. One SM IX route remains suppressed.
+  Persistent Image omission approved/no substitute. Goal ACTIVE/no hard refusal.
+-944 dev ZIP `5537c1759bc183e301f0666f1b451b1767b70838c758e67d8f4182e3bc41da57`,
+  DLL `ae64a4e8266b68d82906083308aff957195f097db9c60c53c899a8730175b6db`,
+  MVID `8b8c6d93-7234-49b5-8b4b-bb3cea815b1e`; strict/reader PASS,31/31 tests.
+  Log `artifacts/s40-mechanics-build-944b4996.log`. All results development only.
+
+## Historical development through ab3 and walking repair
+
 - HOWARD-LAPTOP, `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
   `codex/expanded-summoning-sprint40-ice-devil`; last pushed
   `ab3f14c2bf3151dd00c6da0fb312949d63d76156`. Current repair is the enclosing HEAD.
