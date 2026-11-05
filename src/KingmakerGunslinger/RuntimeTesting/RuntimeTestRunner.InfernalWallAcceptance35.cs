@@ -63,6 +63,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 JObject row;
                 if (!_open.TryGetValue(evt, out row)) return;
                 row["after"] = _section.Damage; row["ruleDamage"] = evt.Damage;
+                // Installed ApplyDifficultyModifiers scales all damage a
+                // player's enemy deals by GameDifficulty.DamageToParty.
+                row["damageBeforeDifficulty"] = evt.DamageBeforeDifficulty;
+                row["difficultyModifier"] = evt.DifficultyModifier;
+                row["initiatorIsPlayersEnemy"] = evt.Initiator != null && evt.Initiator.IsPlayersEnemy;
                 row["weapon"] = evt.DamageBundle.Weapon?.Blueprint?.AssetGuid;
                 row["hasAttackRoll"] = evt.AttackRoll != null;
                 row["sectionIsPlayersEnemy"] = _section.IsPlayersEnemy;
@@ -837,9 +842,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 JObject presentation = null;
                 foreach (int frame in InfernalWallRemovalPresentation35(run, formed, run.Fixture.Caster, "fire", value => presentation = value)) yield return frame;
                 var rows = damage.Rows.OfType<JObject>().ToArray();
-                bool measuredFull = rows.Length == 2 && (int?)rows[0]["before"] == 0 && afterMeasured == 6 &&
+                // Fire is full against ice: the packet is not halved and the
+                // rule's pre-difficulty total is the whole 6. The native
+                // difficulty modifier then applies as to any enemy damage.
+                int expectedAfterDifficulty = rows.Length == 0 ? -1 : Math.Max(1,
+                    (int)(6f * ((float?)rows[0]["difficultyModifier"] ?? 1f)));
+                bool measuredFull = rows.Length == 2 && (int?)rows[0]["before"] == 0 &&
                     rows[0]["packets"].Count() == 1 && (string)rows[0]["packets"][0]["energy"] == DamageEnergyType.Fire.ToString() &&
-                    (bool?)rows[0]["packets"][0]["half"] == false && (int?)rows[0]["packets"][0]["final"] == 6;
+                    (bool?)rows[0]["packets"][0]["half"] == false && (int?)rows[0]["packets"][0]["final"] == 6 &&
+                    (int?)rows[0]["damageBeforeDifficulty"] == 6 && afterMeasured == expectedAfterDifficulty;
                 double lifetimeSeconds = TimeSpan.FromTicks(formed.LifetimeEndTicks).TotalSeconds;
                 double breachSeconds = rows.Length == 0 ? 0d : (double?)rows.Last()["gameSeconds"] ?? 0d;
                 double residualSeconds = residual == null ? 0d : Sprint29AreaDuration(residual);
@@ -853,6 +864,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["controlledSource"] = "Controlled native RuleDealDamage fire packets from the disposable hostile; no direct hit-point write.",
                     ["greenNpcGuard"] = greenGuard, ["damageRows"] = new JArray(rows), ["damageAfterMeasuredFire"] = afterMeasured,
                     ["aliveAfterMeasuredFire"] = aliveAfterMeasured, ["measuredFireFull"] = measuredFull,
+                    ["expectedDamageAfterNativeDifficulty"] = expectedAfterDifficulty,
                     ["stillObstructingAfterMeasuredFire"] = stillObstructing, ["sectionDead"] = section.Descriptor.State.IsDead,
                     ["residualArea"] = residual?.UniqueId, ["residualDurationSeconds"] = residualSeconds,
                     ["remainingWallSecondsAtBreach"] = lifetimeSeconds - breachSeconds, ["residualLifetimeMatches"] = residualLifetime,
