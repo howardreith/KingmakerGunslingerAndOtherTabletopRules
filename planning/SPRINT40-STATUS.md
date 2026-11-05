@@ -9,7 +9,7 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 - HOWARD-LAPTOP, root `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
   `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Current product
-  source `c7c29f83c885a59940f6c86e1271e48b62b07ecb`; its reporting pin is the
+  source `553b598ebda71bf2cf04d56cd0f79f53e8dc744c`; its reporting pin is the
   pending enclosing commit. No game,
   deployment, staging or lease is active; the live KMG tree is restored to
   SHA256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
@@ -183,6 +183,22 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   and only then follows the naturally moving recipient for the independent-source
   save. Focused production compilation and all five Sprint40 checks pass. NEXT:
   commit/push the reporting pin and freeze one replacement candidate.
+- Reporting head `0fc54d0ee9aafb3c8c9eaec9c3a77891b11d9de9` passed 2,816/2,816 and
+  strict packaging: ZIP SHA256 `73273fbb...`, DLL SHA256 `4f0c5cdb...`, MVID
+  `60098f3c-6e1f-471e-bda5-735fe13fce03`. Fresh final early PASS is
+  `20261105T2224324770481Z-disposable-expanded-summoning-sprint32-native-review`;
+  combat PASS is `20261105T2228324557031Z-disposable-expanded-summoning-sprint32-native-review`.
+  Effects `20261105T2233114788169Z-disposable-expanded-summoning-sprint32-native-review`
+  proves all regeneration/energy/fear rows, including legal walkable owner-two
+  parking and an actual failed DC24 independent-source save, then retains FAIL:
+  the third reused Holy Smite support command was queued behind its real action
+  cooldown and `UnitCombatLeaveController` interrupted it before it acted.
+  Restoration receipt `expanded-summoning-restoration/20261105T2237013031547Z-disposable-expanded-summoning-sprint32-native-review.json`
+  is exact. Product source `553b598e` adds an Ice-only option that naturally
+  waits for the cooldown, rejoins the two disposable support actors immediately
+  before casting, and records normal action cost; it never clears/ignores cost or
+  forces a roll, and S34's default path is unchanged. Focused production compile
+  and all five Sprint40 tests pass. NEXT: pin/push and freeze one replacement.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 
