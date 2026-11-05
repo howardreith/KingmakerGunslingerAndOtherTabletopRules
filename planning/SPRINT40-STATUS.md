@@ -8,8 +8,8 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 ## Current continuation state
 
 - HOWARD-LAPTOP, root `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
-  `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Current pushed
-  product head `f1695aa01305b37e7a7c74df7ca63782b2ed12b2`. No game,
+  `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Current product
+  head `8c2be5e8f5b7377f6ec17a530e3eb35ac94b22c8`. No game,
   deployment, staging or lease is active; the live KMG tree is restored to
   SHA256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 - Recovery is CLOSED EXACTLY. The typed `BlueprintWeaponEnchantment` factory
@@ -47,10 +47,20 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   is now explicitly reverted before component destruction; the final row records
   native revert queued, adapter restore complete, active claims 0-to-0 and all24
   original node bits exact. Fixture and protected live-tree restoration PASS.
+- The authoritative roster-persistence policy now admits exactly two Ice Devil
+  owners under named scope `ice-devil`. Commit `8c2be5e8` adds one shared real
+  S35/S40 native wall-cast seam plus S40 observations for exact spear-hit Slow
+  deadline/source, CL13 wall lifetime/navigation ownership, good-only
+  regeneration suppression, constant carriers, exact nontransferable spear/bite/
+  tail items, private visual resources and source cleanup. Temporary owner/
+  recipient hostility restores exact groups, factions, attack lists, party and
+  combat state before save. Production compilation and 26 affected policy/
+  S35/S39/S40 tests PASS; no native persistence process has run on these bytes.
 - No material gameplay decision remains. Public route is still suppressed and
-  Sprint40 remains unreleased. NEXT: extend the existing authoritative persistence
-  and publisher scopes for Ice Devil, prove nonempty assertion/resource contracts,
-  then freeze one coherent public candidate and run the selected fresh mechanics,
+  Sprint40 remains unreleased. NEXT: extend the existing authoritative publisher
+  scopes for Ice Devil and prove nonempty assertion/resource contracts, then run
+  the focused ON persistence development envelope, repair concrete defects, freeze
+  one coherent public candidate and run the selected fresh mechanics,
   route/integration and six-process ON/OFF persistence campaign before exact-byte
   publication, public-download verification, closing restoration and final records.
 - Native Goal tool still reports the superseded recovery boundary as BLOCKED and
