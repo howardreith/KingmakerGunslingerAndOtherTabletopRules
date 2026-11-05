@@ -88,6 +88,9 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint39Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint40Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.IceDevil40Early.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.IceDevil40Combat.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.IceDevil40Effects.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.Sprint40SlowRange.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.Nalfeshnee39Core.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.Nalfeshnee39Integration.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.Nalfeshnee39Nimbus.cs" />
