@@ -8,6 +8,7 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
+using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Parts;
 using Kingmaker.View;
 using Newtonsoft.Json;
@@ -29,11 +30,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var partyCharacters = Game.Instance.Player.PartyCharacters.ToArray();
                 var remoteCompanions = Game.Instance.Player.RemoteCompanions.ToArray();
                 bool casterInGame = fixture.Caster.IsInGame;
-                bool casterLent = false;
+                bool casterLent = false, observerFearIsolation = false;
                 try
                 {
                     var placement = new JObject(); receipt["placement"] = placement;
                     PrepareIceDevilQuietCaster40(fixture, placement);
+                    fixture.Caster.Descriptor.State.AddConditionImmunity(UnitCondition.Frightened);
+                    observerFearIsolation = true; placement["observerNativeFearImmunity"] = true;
                     // Native party vision and the real camera follow only this
                     // disposable observer caster. Do not force the unit's FOW,
                     // fader, renderer or dissolve state, or move an intake actor.
@@ -86,6 +89,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 finally
                 {
+                    if (observerFearIsolation)
+                        fixture.Caster.Descriptor.State.RemoveConditionImmunity(UnitCondition.Frightened);
                     if (casterLent)
                     {
                         Game.Instance.Player.RemoveCompanion(fixture.Caster, false);

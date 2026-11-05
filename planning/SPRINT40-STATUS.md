@@ -7,6 +7,44 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 ## Current continuation state
 
+- HOWARD-LAPTOP, root `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
+  `codex/expanded-summoning-sprint40-ice-devil`. Last pushed
+  `acd7d449b66844aa79b68a3f6c6bf82d96a38c44`; repair batch follows in enclosing HEAD.
+- No game/deployment/lease. Full exact audit
+  `sprint40-intake-20261105T002300Z/post-early-20261105T090423Z/restoration.json`
+  passed Mods/references/settings/all118 saves. Working/baseline never loaded/written.
+  Log `artifacts/s40-acd-range-restoration-audit.log`.
+- Hidden graph/body/icon implemented; Persistent Image omission approved/no
+  substitute, no pending gameplay choice. Nimbus wording corrected; Nalfeshnee
+  source55-foot correction implemented. One public SM IX route still suppressed.
+- Native acd Slow `20261105T0855261637730Z-disposable-expanded-summoning-sprint32-native-review`: appearance,
+  zero-damage/cold-immune liveDC25 rider, actual movement, duplicate prevention,
+  real miss, Haste counter and descriptor immunity PASS; then two-owner lane FAIL.
+  Raw trace proves observer caster was frightened and moved;35 owned events,
+  zero protected recipients, exact native party/remote restoration.
+- Native acd range `20261105T0900125319708Z-disposable-expanded-summoning-sprint32-native-review`: correct
+  native18.164m boundary/hostility/appearance PASS; LOS survey FAIL, no cast proof.
+  Installed unit HasLOSBetweenPoints uses VisionRangeMeters (11.7m here), below
+  the measured spell boundary. Replace AI sight admission with bounded native
+  connected graph/geometry around stationary party observer; actual native
+  visibility, CanTarget, range and commands remain mandatory. No vision override.
+- Current repair uses native fear immunity only on disposable observer caster
+  and Slow-phase source witnesses, preserving selected fear product behavior.
+  Focused14/14 checks and production PASS (`artifacts/s40-fear-range-consumers-compile.log`);
+  final geometry refinement14/14 PASS, production26.5s/tests0.9s
+  (`artifacts/s40-fear-range-geometry-compile.log`). Native remains pending.
+- NEXT: commit/build coherent repairs; complete Slow owners/expiry and actual
+  Nalfeshnee inside/outside casts, then body/AI/Slow-turn. Persistence/publisher
+  wiring, final public artifact/fresh qualification/six-process ON+OFF, exact
+  release/downloads/restoration/merged records remain. Goal active/no hard refusal.
+  Stop only RELEASED or concrete safely restored boundary; no milestone completion.
+- acd development artifact: ZIP `9361b29d72283990119c8b2d4718aae000ca0ccc49ffb480cb5ebca5046cc497`,
+  DLL `a42bb8d909b4877135c7485f69bfc728860966651f37a45663ed7894f6e5a3f5`,
+  MVID `cbb2f7b4-0322-4644-809e-b03106fe55f0`; independent reader/strict package PASS,
+  22/22 tests. Log `artifacts/s40-mechanics-build-acd7d449.log`.
+
+## Historical development chronology through native829
+
 - Owner/root: HOWARD-LAPTOP, `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
   `codex/expanded-summoning-sprint40-ice-devil`. Last pushed `829051dcc16a181b503cd6f09e46faaf25324eff`;
   following native companion repair is identified by its enclosing commit/HEAD.

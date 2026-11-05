@@ -57,6 +57,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Stats.SaveFortitude.BaseValue = -100;
                 var owner = CastExpandedSummoningOwnTier(fixture, IceDevilVisualPolicy40.Key);
                 owned.Add(owner); Sprint28SetBrainActivePreservingActions(owner, false);
+                owner.Descriptor.State.AddConditionImmunity(UnitCondition.Frightened);
                 foreach (int frame in Outsider30NativeAppearance(owner, owner.Blueprint.name)) yield return frame;
                 var live = owner.Descriptor.Progression.Features.Enumerable.SelectMany(x =>
                     x.SelectComponents<IceDevilSlowOnHit40>()).Single();
@@ -231,6 +232,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 var second = CastExpandedSummoningOwnTier(fixture, IceDevilVisualPolicy40.Key);
                 owned.Add(second); Sprint28SetBrainActivePreservingActions(second, false);
+                second.Descriptor.State.AddConditionImmunity(UnitCondition.Frightened);
                 foreach (int frame in Outsider30NativeAppearance(second, second.Blueprint.name)) yield return frame;
                 var secondTarget = Game.Instance.EntityCreator.SpawnUnit(
                     BlueprintRoot.Instance.DefaultPlayerCharacter, target.Position,

@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Kingmaker;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.Utility;
+using Kingmaker.Visual.FogOfWar;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
@@ -53,29 +55,73 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["ownerCorpulence"] = owner.Corpulence, ["targetCorpulence"] = recipient.Corpulence,
                         ["nativeRadiusMinusPrinted"] = nativeRadius - printed },
                     "Actual command approach radius is the printed CL12 close range with the engine's real footprint allowance, far below220 feet.");
-                Vector3 outside; string lane, direction;
-                Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner, recipient,
-                    nativeRadius + .75f, out outside, out lane, out direction,
-                    originSearchRadiusMeters: 30);
+                // Unit HasLOS is an AI sight-range consumer (11.7m here),
+                // shorter than this printed cast boundary. Use real geometry
+                // and stationary native party vision, then actual CanTarget/
+                // UnitUseAbility. Do not enlarge anyone's vision or waive the
+                // spell's native eligibility/range checks.
+                var survey = new JArray(); receipt["rangeSurvey"] = survey;
+                Vector3 origin = Vector3.zero, outside = Vector3.zero;
+                bool found = false;
+                var anchor = AstarPath.active.GetNearest(fixture.Caster.Position);
+                foreach (var direction in CompassOffsets)
+                {
+                    Vector3 requestedSource = fixture.Caster.Position - direction * ((nativeRadius + .75f) * .5f);
+                    Vector3 requestedTarget = fixture.Caster.Position + direction * ((nativeRadius + .75f) * .5f);
+                    var from = AstarPath.active.GetNearest(requestedSource);
+                    var to = AstarPath.active.GetNearest(requestedTarget);
+                    Vector3 sourceProjection = requestedSource - from.clampedPosition; sourceProjection.y = 0;
+                    Vector3 targetProjection = requestedTarget - to.clampedPosition; targetProjection.y = 0;
+                    bool connected = anchor.node != null && from.node != null && to.node != null &&
+                        from.node.Walkable && to.node.Walkable && from.node.Area == anchor.node.Area &&
+                        to.node.Area == anchor.node.Area && from.node.GraphIndex == anchor.node.GraphIndex &&
+                        to.node.GraphIndex == anchor.node.GraphIndex && sourceProjection.magnitude <= .6f &&
+                        targetProjection.magnitude <= .6f;
+                    bool clear = connected && !LineOfSightGeometry.Instance.HasObstacle(
+                        from.clampedPosition + Vector3.up * 1.2f, to.clampedPosition + Vector3.up * 1.2f, 0);
+                    float projectedDistance = Vector3.Distance(from.clampedPosition, to.clampedPosition);
+                    var candidate = new JObject { ["source"] = Vec(from.clampedPosition), ["target"] = Vec(to.clampedPosition),
+                        ["connectedNativeGraph"] = connected, ["clearNativeGeometry"] = clear,
+                        ["projectedDistance"] = projectedDistance };
+                    survey.Add(candidate);
+                    if (!clear || projectedDistance < nativeRadius + .5f) continue;
+                    PlaceExpandedSummoningUnit(owner, from.clampedPosition);
+                    PlaceExpandedSummoningUnit(recipient, to.clampedPosition);
+                    bool observerSeesBoth = fixture.Caster.HasLOS(owner) && fixture.Caster.HasLOS(recipient);
+                    candidate["stationaryObserverNativeSightBoth"] = observerSeesBoth;
+                    if (!observerSeesBoth) continue;
+                    origin = from.clampedPosition; outside = to.clampedPosition; found = true; break;
+                }
+                if (!found) throw new InvalidOperationException("No bounded native Slow range geometry around the stationary observer.");
+                string lane = "Native connected graph/clear geometry; stationary observer at midpoint; actual player-cast consumers follow.";
                 Vector3 axis = (outside - origin).normalized;
                 PlaceExpandedSummoningUnit(owner, origin);
                 PlaceExpandedSummoningUnit(recipient, origin + axis * (nativeRadius - .75f));
+                DateTime visibleDeadline = DateTime.UtcNow.AddSeconds(10);
+                while ((!owner.IsVisibleForPlayer || !recipient.IsVisibleForPlayer) && DateTime.UtcNow < visibleDeadline)
+                { Game.Instance.IsPaused = false; yield return 0; }
                 var insideProbe = new UnitUseAbility(data, new TargetWrapper(recipient)); insideProbe.Init(owner);
                 bool insideLegal = data.IsAvailable && data.CanTarget(new TargetWrapper(recipient)) &&
-                    insideProbe.IsUnitEnoughClose;
+                    insideProbe.IsUnitEnoughClose && owner.IsVisibleForPlayer && recipient.IsVisibleForPlayer;
                 check("nalfeshnee-slow-inside-targeting", insideLegal,
                     new JObject { ["lane"] = lane, ["centerDistance"] = Vector3.Distance(owner.Position, recipient.Position),
                         ["nativeEnoughClose"] = insideProbe.IsUnitEnoughClose,
+                        ["ownerNativeVisionMeters"] = owner.VisionRangeMeters,
+                        ["ownerNativeUnitSight"] = owner.HasLOS(recipient),
+                        ["recipientVisibleForPlayer"] = recipient.IsVisibleForPlayer,
                         ["nativeApproachRadius"] = insideProbe.ApproachRadius },
                     "Real native targeting accepts the recipient just inside its measured command boundary.");
                 int start = trace.Rows.Count;
+                Vector3 insideStart = owner.Position;
                 var inside = new UnitUseAbility(data, new TargetWrapper(recipient)); owner.Commands.Run(inside);
                 foreach (int frame in WaitInfernalCommand34(inside, () => true, 25)) yield return frame;
                 var insideActs = trace.Rows.Skip(start).Where(x => (string)x["event"] == "command-act" &&
                     (string)x["owner"] == owner.UniqueId && (string)x["ability"] == spell.AssetGuid).ToArray();
                 check("nalfeshnee-slow-inside-cast", inside.Result == UnitCommand.ResultType.Success &&
                     insideActs.Length == 1 && (bool)insideActs[0]["nativeEnoughClose"],
-                    new JObject { ["command"] = Sprint27AiCommand(inside), ["acts"] = new JArray(insideActs) },
+                    new JObject { ["command"] = Sprint27AiCommand(inside), ["acts"] = new JArray(insideActs),
+                        ["actualTravel"] = Vector3.Distance(insideStart, owner.Position),
+                        ["actualCastCenterDistance"] = Vector3.Distance(owner.Position, recipient.Position) },
                     "A real owned Slow command completes inside the correct close range.");
                 PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(recipient, outside);
                 var outsideProbe = new UnitUseAbility(data, new TargetWrapper(recipient)); outsideProbe.Init(owner);
