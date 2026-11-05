@@ -221,6 +221,23 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   wall code is unchanged. Production compilation and all five focused Sprint40
   tests pass. NEXT: commit/push, rebuild the changed test DLL, and run the
   discriminating wall phase before restarting final-artifact qualification.
+- Reporting head `44b61882c3037335e76b065d228e7799cd06a5d8` passed 2,816/2,816
+  and strict packaging: ZIP SHA256 `f63055db62fcd87178918e57ae9c97965322eaf486118f6ad1eb0a99fe887008`,
+  DLL SHA256 `12e36f449781910a9abf61c371c9b79c6839e01863417325236aef159cd839ac`,
+  MVID `ebda77fc-e7c2-4fd1-833d-6033fec238c9`; compiled persistence admission/
+  refusals pass33/33. Discriminating wall run
+  `20261105T2330039531311Z-disposable-expanded-summoning-sprint32-native-review`
+  proved the replacement point was connected, walkable and within1.17m of the
+  bounded request, then retained a different setup FAIL: the second owner was
+  parked16m away in native fog before its material dissolve completed, so its
+  body correctly remained hidden. Restoration receipt
+  `expanded-summoning-restoration/20261105T2333095253418Z-disposable-expanded-summoning-sprint32-native-review.json`
+  is exact. The observer now follows the already-successful effects pattern:
+  complete native materialization at the ordinary visible summon point, then
+  move the settled exact owner to the recorded connected parking node. Wall
+  gameplay remains unchanged. Production compilation and all five focused
+  Sprint40 checks pass. NEXT: commit/push, repin and rebuild once, then rerun
+  the wall phase as the discriminating native check.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 

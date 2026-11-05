@@ -37,10 +37,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool recipientFearIsolation = false;
             int baselineClaims = InfernalWallNavmesh35.ActiveGridClaimCount;
             Vector3 surveyCenter = fixture.Caster.Position;
-            var appearancePlacements = new JArray();
+            var ownerParking = new JArray();
             var receipt = new JObject { ["cells"] = cells, ["events"] = trace.Rows,
                 ["fixtureFearIsolation"] = true, ["baselineClaims"] = baselineClaims,
-                ["appearancePlacements"] = appearancePlacements,
+                ["ownerParking"] = ownerParking,
                 ["phase"] = ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilWallsPhase };
             Action<string, bool, JObject, string> check = (id, pass, row, why) => {
                 row["cell"] = id; cells.Add(row); Sprint25Check("sprint40-" + id, pass, row, why);
@@ -55,10 +55,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var actor = CastExpandedSummoningOwnTier(fixture, key); actors.Add(actor);
                     actor.Descriptor.State.AddConditionImmunity(UnitCondition.Frightened);
                     Sprint28SetBrainActivePreservingActions(actor, false);
-                    // Park each source on the real connected walking graph
-                    // before asking the ordinary appearance gate. An arbitrary
-                    // transform offset can land on a blocked or roof node and
-                    // is not a native placement precondition.
+                    // Finish native materialization at the ordinary summon
+                    // point while it is visible to the party, then park the
+                    // settled source on the real connected walking graph. A
+                    // remote fogged point cannot satisfy the appearance gate.
+                    foreach (int frame in Outsider30NativeAppearance(actor, actor.Blueprint.name)) yield return frame;
                     var walking = Sprint40WalkingConstraint(actor);
                     var anchor = AstarPath.active.GetNearest(fixture.Caster.Position, walking);
                     if (anchor.node == null || !anchor.node.Walkable)
@@ -82,7 +83,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 return gap.magnitude < 3f;
                             })) continue;
                         PlaceExpandedSummoningUnit(actor, point.clampedPosition);
-                        appearancePlacements.Add(new JObject {
+                        ownerParking.Add(new JObject {
                             ["actor"] = actor.UniqueId, ["requested"] = Vec(requested),
                             ["clamped"] = Vec(point.clampedPosition), ["radius"] = radius,
                             ["angleDegrees"] = angle * 22.5f,
@@ -91,8 +92,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         parked = true;
                     }
                     if (!parked) throw new InvalidOperationException(
-                        "No bounded connected wall-owner appearance placement.");
-                    foreach (int frame in Outsider30NativeAppearance(actor, actor.Blueprint.name)) yield return frame;
+                        "No bounded connected wall-owner parking point.");
                 }
                 // Test the two required owner pairs sequentially. Three
                 // simultaneous legal sections are not a wall contract.
