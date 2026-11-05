@@ -60,11 +60,21 @@ namespace KingmakerGunslinger.Blueprints
             var spear = Sprint29Weapon(library, symbols, p + "Spear", p + "SpearType",
                 ElvenBranchedSpearBlueprints.NativeLongspearItemGuid, Size.Large,
                 2, DiceType.D6, IceDevilRules40Policy.ReachFeet, 20, spearType);
+            var nativeFrost = BlueprintLibraryLookup.RequireExact<BlueprintWeaponEnchantment>(library,
+                EasternWeaponNamedBlueprints.FrostGuid, "native frost packet");
+            var nativeFrostPacket = nativeFrost.GetComponent<WeaponEnergyDamageDice>();
+            if (nativeFrostPacket == null) throw new InvalidOperationException("Native Frost packet absent.");
+            var frost = Require<BlueprintWeaponEnchantment>(symbols, p + "SpearFrost");
+            CopyFields(nativeFrost, frost); frost.name = InternalName(p + "SpearFrost");
+            var frostPacket = ScriptableObject.CreateInstance<IceDevilSpearFrost40>();
+            frostPacket.OwningWeapon = spear;
+            frostPacket.DamageDice = nativeFrostPacket.EnergyDamageDice;
+            frostPacket.Element = nativeFrostPacket.Element;
+            frost.ComponentsArray = new BlueprintComponent[] { frostPacket };
             SetField(spear, "m_Enchantments", new[] {
                 BlueprintLibraryLookup.RequireExact<BlueprintWeaponEnchantment>(library,
                     MagicFirearmBlueprints.Enhancement1Guid, "native +1 enhancement"),
-                BlueprintLibraryLookup.RequireExact<BlueprintWeaponEnchantment>(library,
-                    EasternWeaponNamedBlueprints.FrostGuid, "native frost packet") });
+                frost });
             BindBarbazuNativeHand34(unit, spear);
             var bite = Sprint29Weapon(library, symbols, p + "Bite", p + "BiteType",
                 NativeBite1d6Guid, Size.Large, 2, DiceType.D6,

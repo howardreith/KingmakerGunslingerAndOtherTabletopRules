@@ -62,6 +62,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData owner = null, friend = null; var target = fixture.Hostile;
             var anchor = Sprint32OwnedQuietAnchor(fixture, id);
             BlueprintFeature cold = null; bool addedCold = false, isolatedFear = false;
+            BlueprintFaction friendFaction = null;
             var commands = new Lillend32CommandStarts();
             string p = ExpandedSummoningSpecialBuilder.IceDevil40Prefix;
             var stormArea = (BlueprintAbilityAreaEffect)ExpandedSummoningBlueprints.Registered.BySymbol[p + "IceStormArea"];
@@ -132,8 +133,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         new JObject { ["nativeImmunity"] = cold.AssetGuid, ["playerConeStillAvailable"] = coneData.IsAvailable,
                             ["nativePlayerCanTarget"] = coneData.CanTarget(new TargetWrapper(target)) },
                         "AI declines cold-only offense against native cold immunity without removing the player's at-will ability.");
-                var friendFaction = SelectSprint32ListenerFaction(fixture.Caster, new[] { owner },
-                    Game.Instance.Player.Party.ToArray(), fixture.UnitsBefore.OfType<UnitEntityData>().ToArray());
+                // Save-free private-faction seam used by the hostile witness,
+                // with no attack relations. No registered/persisted listener
+                // faction or intake group is changed for this friendly control.
+                friendFaction = UnityEngine.Object.Instantiate(fixture.Caster.Blueprint.Faction);
+                friendFaction.name = "KMG_Runtime_Sprint40_FriendlyWitnessFaction";
+                friendFaction.Peaceful = friendFaction.Neutral = true;
+                friendFaction.AlwaysEnemy = friendFaction.IsDirectlyControllable = false;
+                friendFaction.Dummy = null;
+                friendFaction.AttackFactions = Array.Empty<BlueprintFaction>();
                 Vector3 friendPosition = ObstacleAnalyzer.GetNearestNode(origin + Vector3.right * 14f).clampedPosition;
                 friend = Game.Instance.EntityCreator.SpawnUnit(Kingmaker.Blueprints.Root.BlueprintRoot.Instance.DefaultPlayerCharacter,
                     friendPosition, Quaternion.identity, fixture.Scene);
@@ -142,6 +150,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 friend.AttackFactions.Match(Array.Empty<BlueprintFaction>());
                 friend.Group.ResetFactionSet(); friend.Group.UpdateAttackFactionsCache();
                 Sprint28SetBrainActivePreservingActions(friend, false);
+                friend.Descriptor.State.AddConditionImmunity(UnitCondition.Frightened);
                 friend.Descriptor.Alignment.Set(Alignment.LawfulEvil);
                 try
                 {
@@ -290,6 +299,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
                 }
                 if (friend != null) DisposeExpandedSummoningUnits(fixture.Created, new[] { friend });
+                if (friendFaction != null) UnityEngine.Object.Destroy(friendFaction);
                 if (addedCold) target.Descriptor.RemoveFact(cold);
                 if (isolatedFear) target.Descriptor.State.RemoveConditionImmunity(UnitCondition.Frightened);
                 if (anchor != null && !anchor.Destroyed && anchor.IsInCombat) anchor.LeaveCombat();

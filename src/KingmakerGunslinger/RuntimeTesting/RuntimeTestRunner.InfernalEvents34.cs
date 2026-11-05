@@ -16,6 +16,18 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        // Native UnitAttack.OnTick ends an exhausted ordinary routine with
+        // Interrupt on this installed stack. Keep that result and require the
+        // observed terminal index/no-next-attack boundary, never any interrupt.
+        private static bool Sprint40NativeExhaustedAttack(UnitAttack attack,
+            IEnumerable<JToken> commandEnds, int expected)
+        {
+            return expected > 0 && attack.IsFinished && attack.AllAttacks.Count == expected &&
+                attack.Result == UnitCommand.ResultType.Interrupt && commandEnds.Any(row =>
+                    (int?)row["attackIndex"] == expected && (bool?)row["plannedAttackPresent"] == false &&
+                    ((string)row["interruptionCaller"] ?? "").Contains("UnitAttack.OnTick"));
+        }
+
         // Subscribed only inside the bounded disposable Sprint34 cell. Record
         // all recipients; filtering to the intended patient would conceal a
         // dispatch error. This observer never changes a rule or game state.

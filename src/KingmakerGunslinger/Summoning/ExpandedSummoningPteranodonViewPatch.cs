@@ -797,10 +797,12 @@ namespace KingmakerGunslinger.Summoning
                     attachment.HoundSword.Configure(view, donor);
                 }
 
-                if (attachment.VisualKey == InfernalVisualPolicy34.Barbazu)
+                if (attachment.VisualKey == InfernalVisualPolicy34.Barbazu ||
+                    IceDevilVisualPolicy40.Handles(attachment.VisualKey))
                 {
                     attachment.BarbazuGlaive = view.gameObject.AddComponent<BarbazuGlaiveView34>();
-                    attachment.BarbazuGlaive.Configure(view, donor);
+                    attachment.BarbazuGlaive.Configure(view, donor,
+                        IceDevilVisualPolicy40.Handles(attachment.VisualKey));
                 }
 
                 if (attachment.VisualKey == InfernalVisualPolicy34.Kyton)

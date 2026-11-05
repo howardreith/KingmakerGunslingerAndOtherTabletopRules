@@ -316,13 +316,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         int expected = iceDevil ? 5 : key == InfernalVisualPolicy34.Kyton ? 4 : 2;
                         var ends = trace.Rows.Skip(start).Where(x => (string)x["event"] == "command-end" &&
                             (int?)x["commandReference"] == System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(attack)).ToArray();
-                        bool nativeExhausted = iceDevil && attack.Result == UnitCommand.ResultType.Interrupt && ends.Any(x =>
-                            (int?)x["attackIndex"] == expected && (bool?)x["plannedAttackPresent"] == false &&
-                            ((string)x["interruptionCaller"] ?? "").Contains("UnitAttack.OnTick"));
+                        bool nativeExhausted = iceDevil && Sprint40NativeExhaustedAttack(attack, ends, expected);
                         bool correct = attack.IsFinished && (attack.Result == UnitCommand.ResultType.Success || nativeExhausted) && rows.Length == expected &&
                             observed.Length == expected && errors.Count == 0 && observed.All(row => (bool)row["animationStarted"] && !string.IsNullOrEmpty((string)row["nativeClip"])) &&
                             (key != InfernalVisualPolicy34.Kyton || observed.All(row => (float)row["chainContactGap"] < .15f)) &&
-                            (key != InfernalVisualPolicy34.Barbazu || observed.All(row => (bool)row["glaiveVisible"] == !alternate));
+                            (key != InfernalVisualPolicy34.Barbazu && !iceDevil || observed.All(row => (bool)row["glaiveVisible"] == !alternate));
                         var cell = new JObject { ["owner"] = owner.UniqueId, ["alternate"] = alternate, ["command"] = Sprint27AiCommand(attack),
                             ["nativePlan"] = attack.AllAttacks.Count, ["nativeExhausted"] = nativeExhausted,
                             ["nativeEnds"] = new JArray(ends), ["attacks"] = new JArray(rows), ["contacts"] = new JArray(observed), ["costs"] = costs };
@@ -337,13 +335,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                                  (string)x["weapon"] == profile40.Tail.AssetGuid)).ToArray();
                             var coldNaturalHits = naturalHits.Where(x => ((JArray)x["damagePackets"])
                                 .Any(packet => (string)packet["energy"] == "Cold")).ToArray();
+                            var spearHits = rows.Where(x => (bool?)x["hit"] == true &&
+                                (string)x["weapon"] == profile40.Spear.AssetGuid).ToArray();
+                            bool spearFrost = spearHits.Length > 0 && spearHits.All(x =>
+                                ((JArray)x["damagePackets"]).Count(packet =>
+                                    (string)packet["energy"] == "Cold" && (string)packet["dice"] == "1d6") == 1);
                             bool witnessedBoth = naturalHits.Any(x => (string)x["weapon"] == profile40.Bite.AssetGuid) &&
                                 naturalHits.Any(x => (string)x["weapon"] == profile40.Tail.AssetGuid);
                             var packetRow = new JObject { ["nativeHitsBothNaturals"] = witnessedBoth,
+                                ["nativeSpearHits"] = spearHits.Length, ["spearSingleFrostPacket"] = spearFrost,
                                 ["coldNaturalHits"] = new JArray(coldNaturalHits), ["attacks"] = new JArray(rows),
                                 ["classification"] = coldNaturalHits.Length > 0 ? "rules-failure" :
                                     witnessedBoth ? "observed-native-outcome" : "missing-stochastic-precondition" };
-                            bool packetsCorrect = witnessedBoth && coldNaturalHits.Length == 0;
+                            bool packetsCorrect = witnessedBoth && coldNaturalHits.Length == 0 && spearFrost;
                             Sprint25Check("sprint40-natural-cold-packets", packetsCorrect, packetRow,
                                 "Actual bite and tail hits carry physical damage only; spear frost is a separate weapon packet. Missing real hits cannot pass vacuously.");
                             if (!packetsCorrect) throw new InvalidOperationException("Ice natural cold packets: " + packetRow["classification"]);

@@ -58,7 +58,7 @@ namespace KingmakerGunslinger.DomainTests
         internal const int Sprint39CatalogIdentityCount =
             Sprint39CreatureIdentityCount + Sprint39RootIdentityCount +
             Sprint39PrivateIdentityCount;
-        internal const int Sprint40PrivateIdentityCount = 26;
+        internal const int Sprint40PrivateIdentityCount = 27;
         internal const int Sprint40CatalogIdentityCount = 1 + 1 + Sprint40PrivateIdentityCount;
         internal const int AppendedCatalogIdentityCount =
             Sprint26MagicalBeastRules.AppendedCatalogIdentityCount +

@@ -62943,6 +62943,14 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.SpearFrost",
+      "guid": "724a4bd231534a90a60429646f47f31d",
+      "plannedType": "BlueprintWeaponEnchantment",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     }
   ]
 }
