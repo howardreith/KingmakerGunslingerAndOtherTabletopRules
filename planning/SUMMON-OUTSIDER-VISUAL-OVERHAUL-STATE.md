@@ -1,5 +1,25 @@
 # Summoned creature visual overhaul: active checkpoint
 
+## Sprint 2 complete — Wall of Ice and Bone Devil tail natively accepted
+
+See [the Sprint 2 checkpoint](WALL-OF-ICE-SPRINT2.md). Branch
+`codex/wall-of-ice-sprint2` from merged PR #96. Executable source
+`36e44513d3fa7e9a670245a2d1bfe39153058702` (0.0.177, ZIP SHA-256
+`ae2f5c88d56049dc4826c0eca0542fed0402e88ae6dea426c9702b5a006b25b3`) passed the
+guarded `summon-overhaul-wall` phase: PASS, 95 assertions, evidence directory
+`20261105T2213068225716Z-disposable-expanded-summoning-sprint32-native-review`.
+Six earlier failed runs on intermediate candidates are retained and explained.
+
+Four production Wall repairs landed (donor body hidden, player-linked feedback,
+non-blood ice effects, native grid-block revert on release). Accepted creature
+work and the Sprint 1 fixture were preserved, not rerun separately; the
+accepted run exercises the fixture prerequisite three times (one per lane).
+Every run restored v0.0.140, settings and protected saves exactly.
+
+Retained ledger 117.319233 min; additional 93.992 min; cumulative 211.311 min.
+Open owner decisions are listed in the checkpoint. The new PR stays draft and
+unmerged; no installation or release. Dated records below are historical.
+
 ## Sprint 1 complete — shared Wall fixture prerequisite verified twice
 
 See [the concise implementation/evidence checkpoint](WALL-FIXTURE-SPRINT1.md).
