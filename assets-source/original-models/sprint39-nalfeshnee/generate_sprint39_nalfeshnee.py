@@ -20,6 +20,9 @@ articulate independently. That is the same accepted shape the released Sprint
 37 Vrock's wings take, and it is a recorded limitation rather than a claim of
 wing articulation.
 """
+# Owner visual overhaul: continuous organic skin, revised anatomy and albedo.
+# Rig/wing articulation limits above remain; native aesthetic review is separate.
+
 import argparse
 import json
 import math
@@ -27,6 +30,7 @@ from pathlib import Path
 import sys
 
 import bpy
+import bmesh
 import numpy as np
 from mathutils import Vector
 
@@ -47,6 +51,10 @@ for name in ('sprint17-serpents', 'sprint24-theropods'):
 import generate_snakes as common
 import generate_theropods as donor
 import paint_snake_albedo as paint
+
+sys.path.insert(0, str(args.pipeline_root / 'continuous-bodies'))
+from outsider_surface import consolidate_skin
+import continuous_body as surface
 
 SIDE, UP, FRONT = Vector((1, 0, 0)), Vector((0, 0, 1)), Vector((0, 1, 0))
 TORSO = ('Torso_Lower', 'Torso_Upper', 'neck', 'neck1', 'Head')
@@ -84,21 +92,25 @@ def build_body(bm, weights, uvs, rig, kind):
     # the gut is the widest thing in the figure and the shoulders are
     # comparatively small, and that single proportion is the creature.
     common.sweep(bm, weights, uvs, [at(n) for n in TORSO[:-1]],
-                 [.300, .246, .098, .076], [.268, .212, .086, .070],
+                 [.365, .310, .125, .110], [.300, .260, .110, .100],
                  list(TORSO[:-1]), up=FRONT, forward=UP)
     # The belly itself, hung forward and low so it overhangs the legs rather
     # than sitting as a barrel between them. Built as one mass that overlaps
     # the trunk sweep generously: an earlier arrangement with a separate
     # belly ball left a visible waist crease where the two surfaces met,
     # which read as a belt rather than as fat.
-    mass(pelvis - UP * .030 + FRONT * .070, (.300, .286, .250),
+    mass(pelvis - UP * .030 + FRONT * .070, (.405, .345, .340),
          'Torso_Lower', 'belly')
-    mass(pelvis + UP * .095 + FRONT * .060, (.292, .272, .236),
+    mass(pelvis + UP * .095 + FRONT * .060, (.390, .325, .315),
          'Torso_Lower', 'belly')
-    mass(upper - UP * .035 + FRONT * .040, (.250, .226, .196),
+    mass(upper - UP * .035 + FRONT * .040, (.335, .265, .260),
          'Torso_Upper', 'belly')
     # Shoulders, deliberately modest against that gut.
-    mass(upper + UP * .060 + FRONT * .005, (.178, .150, .128), 'Torso_Upper')
+    mass(upper + UP * .060 + FRONT * .005, (.255, .205, .190), 'Torso_Upper')
+
+    # Thorax and trapezius bridge the low abdominal control to the actual shoulders.
+    mass(upper + UP*.245 + FRONT*.025, (.290,.245,.235), 'Torso_Upper')
+    mass(upper + UP*.360 - FRONT*.035, (.205,.185,.195), 'neck')
 
     # A short thick neck. It has to clear the shoulder mass or the head reads
     # as a growth on the chest.
@@ -108,40 +120,40 @@ def build_body(bm, weights, uvs, rig, kind):
 
     # THE BOAR HEAD: a broad low skull, a blunt snout that ends in a disc
     # rather than a taper, a heavy lower jaw, and the tusks.
-    head = head_bone + FRONT * .058 + UP * .026
-    mass(head, (.124, .116, .104), 'Head')
+    head = head_bone + FRONT * .115 - UP * .080
+    mass(head, (.162, .151, .146), 'Head')
     tube([head + FRONT * .068 - UP * .014,
           head + FRONT * .142 - UP * .030],
-         [.082, .066], ['Head'] * 2, 'hide', 12)
+         [.105, .085], ['Head'] * 2, 'hide', 12)
     # The snout disc. A boar's muzzle is cut off flat; a taper would read
     # canine and this creature already shares a rig with one.
-    mass(head + FRONT * .176 - UP * .036, (.064, .026, .056), 'Head',
+    mass(head + FRONT * .176 - UP * .036, (.083, .039, .066), 'Head',
          'snout', 8, 14)
     # The heavy lower jaw, set back and below.
     tube([head + FRONT * .062 - UP * .066,
           head + FRONT * .150 - UP * .072],
-         [.062, .044], ['Head'] * 2, 'hide', 10)
+         [.084, .063], ['Head'] * 2, 'hide', 10)
     tusks = 0
     ears = 0
     for sign in (-1, 1):
         # THE TUSKS. The long pair comes up out of the LOWER jaw and curves
         # past the snout line, which is the half a viewer actually reads at
         # distance; a shorter upper pair sits behind it.
-        tube([head + SIDE * sign * .046 + FRONT * .128 - UP * .070,
-              head + SIDE * sign * .056 + FRONT * .176 - UP * .020,
-              head + SIDE * sign * .062 + FRONT * .186 + UP * .044],
-             [.018, .013, .002], ['Head'] * 3, 'tusk', 8)
+        tube([head + SIDE * sign * .076 + FRONT * .142 - UP * .070,
+              head + SIDE * sign * .092 + FRONT * .215 - UP * .012,
+              head + SIDE * sign * .096 + FRONT * .228 + UP * .065],
+             [.026, .019, .003], ['Head'] * 3, 'tusk', 8)
         tube([head + SIDE * sign * .042 + FRONT * .150 - UP * .028,
               head + SIDE * sign * .048 + FRONT * .160 - UP * .072],
              [.013, .002], ['Head'] * 2, 'tusk', 7)
         tusks += 2
         # Small eyes set wide on the brow, which is what keeps a skull this
         # broad reading as a boar rather than as a dog.
-        mass(head + SIDE * sign * .074 + FRONT * .066 + UP * .040,
-             (.020, .018, .020), 'Head', 'eye', 7, 12)
+        mass(head + SIDE * sign * .126 + FRONT * .095 + UP * .048,
+             (.014, .012, .012), 'Head', 'eye', 7, 12)
         # Small ears swept back against the skull.
-        mass(head + SIDE * sign * .092 - FRONT * .030 + UP * .062,
-             (.018, .044, .052), 'Head', 'hide', 7, 12)
+        mass(head + SIDE * sign * .144 - FRONT * .030 + UP * .090,
+             (.033, .055, .065), 'Head', 'hide', 7, 12)
         ears += 1
 
     # THE WINGS, small and tucked. Project geometry weighted to Torso_Upper:
@@ -171,14 +183,23 @@ def build_body(bm, weights, uvs, rig, kind):
         # is exactly what the first pass produced and what the Sprint 37
         # Vrock docstring warns about. Tubes are continuous surfaces, and
         # neighbouring ones overlap enough that the sheet closes.
-        panels = 9
-        for index in range(panels):
-            u = index / float(panels - 1)
+        grid = []
+        for index in range(13):
+            u = index / 12.0
             base = edge_at(u)
-            drop = .120 + .165 * math.sin(u * math.pi * 0.86 + 0.18)
+            drop = .105 + .18 * math.sin(u * math.pi * .86 + .18)
             tip = base + Vector((sign * .055 * u, .034 + .030 * u, -drop))
-            tube([base, base.lerp(tip, .55), tip],
-                 [.046, .036, .012], ['Torso_Upper'] * 3, 'wing', 8)
+            grid.append([base.lerp(tip, j/3) for j in range(4)])
+        sheet, _ = surface.sheet('NalfeshneeWing', grid, .004)
+        new = [bm.verts.new(v.co) for v in sheet.data.vertices]
+        for v in new:
+            weights[v] = [('Torso_Upper', 1)]
+            uvs[v] = common.shared.region_uv('membrane', .5, .5)
+        for face in sheet.data.polygons:
+            bm.faces.new([new[i] for i in face.vertices])
+        data = sheet.data
+        bpy.data.objects.remove(sheet, do_unlink=True)
+        bpy.data.meshes.remove(data)
         wing_panels += 1
 
     arms = 0
@@ -190,12 +211,12 @@ def build_body(bm, weights, uvs, rig, kind):
 
         # The arms, on the rig's real animated chains. Short and thick, and
         # held out from the gut because they cannot hang against it.
-        tube([upper, shoulder, elbow, palm], [.112, .104, .084, .058],
+        tube([upper, shoulder, elbow, palm], [.154, .139, .104, .065],
              ['Torso_Upper', *arm], 'hide', 12)
-        mass(shoulder, (.102, .096, .098), arm[0])
+        mass(shoulder, (.132, .126, .138), arm[0])
         mass(elbow, (.074, .078, .074), arm[1])
         hand = palm + FRONT * .018
-        mass(hand, (.050, .058, .040), arm[2], 'belly', 9, 14)
+        mass(hand, (.065, .076, .050), arm[2], 'belly', 9, 14)
         # The three claws ride the rig's two real digit chains plus the palm,
         # so the native grip animation still opens and closes the hand and
         # every measured bone carries geometry, which the exporter requires.
@@ -227,12 +248,15 @@ def build_body(bm, weights, uvs, rig, kind):
         tube([points[1], points[2], points[3]], [.096, .062, .042],
              [leg[1], leg[2], leg[3]], 'hide', 10)
         foot = points[-1] + FRONT * .024
-        mass(foot, (.058, .070, .034), leg[-1], 'belly', 8, 14)
+        mass(foot, (.090, .045, .120), leg[-1], 'belly', 8, 14)
         for index in range(3):
             spread = (index - 1) * .042
             tube([foot + SIDE * spread * .4,
                   foot + SIDE * spread + FRONT * .078 - UP * .010],
                  [.016, .003], [leg[-1]] * 2, 'claw', 7)
+
+    consolidate_skin(bm, weights, uvs, common.shared.ATLAS,
+                     voxel=.009, triangles=9500)
 
     DETAIL_COUNTS.update(wings=wing_panels, arms=arms, handClaws=claws,
                          tusks=tusks, ears=ears)
@@ -246,9 +270,9 @@ def write_albedo(path):
     # Nothing repeats the Vrock's grey-green plumage, the Glabrezu's near
     # black chitin, the Babau's slime green-black or the Hezrou's olive.
     palette = {
-        'body': (.252, .132, .092), 'crest': (.150, .082, .060),
-        'beak': (.470, .432, .346), 'limbs': (.318, .186, .128),
-        'membrane': (.168, .082, .072)}
+        'body': (.47, .285, .210), 'crest': (.235, .125, .095),
+        'beak': (.80, .73, .56), 'limbs': (.47, .285, .210),
+        'membrane': (.29, .14, .12)}
     for region in sorted(paint.shared.ATLAS):
         (y0, y1, x0, x1), u, v = paint.shared.region_canvas(size, region)
         base = np.array(palette.get(region, palette['body']))

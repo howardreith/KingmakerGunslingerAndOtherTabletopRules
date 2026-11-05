@@ -1,0 +1,145 @@
+# Summoned creature visual overhaul: active checkpoint
+
+Owner mission: `C:/Dev/KingmakerGunslingerLab/Codex mission for summoned creature visual overhaul.md`.
+Branch: `codex/summon-outsider-visual-overhaul`. Baseline fetched from approved
+origin: `ffb1f8bf2c0014ee6bb5465103252195f75e449b`; latest published release
+independently checked as v0.0.177, ZIP SHA-256
+`47ef6ee375164ab367ee8e8a7ecf178e60aa7344e3983127938abb18957014e4`.
+The actual local installation reports v0.0.140. It is protected intake, not a
+license to leave a development build installed. No release, merge or next
+roster sprint is selected.
+
+**Status: reviewable development work; mission acceptance incomplete.**
+Technical validation, native visual review and owner aesthetic approval remain
+separate. The twelve named November 5 screenshots were not found in the
+assigned lab; their location was requested. The illustrated report therefore
+uses actual exported v0.0.177 bodies as its explicitly labeled offline baseline.
+
+## Current per-creature disposition
+
+| Creature | Substantive change or preservation | Native review | Owner approval |
+| --- | --- | --- | --- |
+| Nalfeshnee | Continuous heavy trunk/thorax, boar face/tusks, broad hands/feet, closed small membranes; 2.10 display step | NOT RUN | pending |
+| Glabrezu | High supporting thorax, dominant larger pincers, forward smaller arms, connected skin; 2.20 display step | NOT RUN | pending |
+| Vrock | Overlapping flattened vanes/covert row, coherent thorax, skin/beak/plumage values; 1.45 display step | NOT RUN | pending |
+| Babau | Lean connected anatomy, ribs/iliac relief, cheeks/inset eyes, more readable dark skin | NOT RUN | pending |
+| Hezrou | High broad thorax/mandible, restrained eyes, shallow mouth/teeth, varied olive hide; 1.45 display step | NOT RUN | pending |
+| Barbed Devil | Connected body, 34 rooted shoulder/back/limb thorns and visual tail | NOT RUN | pending |
+| Bone Devil | Ivory skull/ribs/pelvis, neck bridge, thin wing plates, rooted stinger; 1.45 display step | NOT RUN | pending |
+| Bearded Devil | Connected soldier anatomy, face and jaw-rooted beard; native glaive retained | NOT RUN | pending |
+| Chain Devil | Fitted body chains/leather/cuffs, four cuff-rooted drapes, regenerated owned vertex receipts | NOT RUN | pending |
+| Lillend | Fitted closed bodice/peplum, blended fabric weights, refined shoulders/arms/neck/face | NOT RUN | pending |
+| Invisible Stalker | Preserve exported bytes after offline geometry/source inspection; its special material path is intentionally airy | invisible/selected/revealed NOT RUN | pending |
+| Shadow Demon | Preserve exported bytes, bat-winged identity and intentionally dark native material path | transparency/motion NOT RUN | pending |
+| Satyr | Protected accepted appearance: no source, export, binding, material or scale-entry changes | regression observation NOT RUN | prior owner acceptance preserved |
+
+Glabrezu's smaller arms and Vrock/Nalfeshnee wings retain chest ownership on
+the measured two-arm carrier. They do not gain independent articulation or
+attacks. Glaive grip, chains through movement/turn/contact/removal and two-owner
+isolation, Bone tail contact, Lillend equipment/spell poses, view reconstruction,
+matched indoor/outdoor lineups and mixed-group performance remain native review
+requirements until specifically recorded below.
+
+## Darkness diagnosis and bounded authoring repair
+
+The exact baseline Nalfeshnee audit found 64/64 closed, consistently outward
+components and no normals opposing their triangles. An exact-byte studio
+render reproduces dark surfaces and visible primitive seams. Another blanket
+winding flip is unsupported and was not applied. Source paint is very dark
+red/brown (body .252/.132/.092 before its modulation); much anatomy was separate
+rigid tube/ellipsoid shells, including ribbed tube membranes.
+
+The correction is opt-in original authoring: voxel union and relaxation of
+selected organic atlas regions, existing outward checks, nearest-surface UV/
+weight transfer and blended maximum-two influences. Discrete teeth, horns,
+feathers, chains and wings retain intentional ownership. Revised paint lifts
+surface values with local creature-specific separation. No shared shader,
+global brightness, emission or original material asset is changed. This proves
+an offline authoring improvement, **not** a complete native lighting root cause.
+The existing native appearance observer now records settled material properties,
+parameter texture bindings, local keywords, transform determinant, actual
+renderer bounds and a live image for the affected outsider identities.
+
+`outsider_surface.py` is imported only by the revised outsider generators.
+The locally retained geometry-free capture has SHA-256
+`6443b580c8019d2a32de616ef610df3c2aa851c7c998044b56e0c29b4494e65d`.
+Running the unchanged Nalfeshnee generator with it regenerated the released
+position/normal/UV/index/weight blob and albedo manifest byte-for-byte. The
+historical capture hash `727645...ad7a4` is preserved; loaders admit exactly
+these two reviewed receipts, while new exports truthfully name their input.
+No native mesh, pixels or animation curves were exported or committed.
+
+## Scale and attachment diagnosis
+
+Installed Assembly-CSharp SHA-256 is
+`3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb`,
+MVID `07fa1e4d-8618-41b3-9b8d-faa17d3b26f7`, matching the inspected local IL.
+`UnitEntityView.GetSizeScale` returns 1 when current size equals original
+blueprint size; it does not compare a Huge creature to its Medium donor rig.
+The original outsider bodies are about humanoid height in authored units.
+`UnitEntityView.Update` also writes `localScale = m_OriginalScale * m_Scale`
+each frame, erasing a one-time local transform adjustment.
+
+Five named display corrections therefore update only each live view's native
+scale baseline once, with the existing weak-table idempotence guard. The
+catalog's unrelated entries and original bounds remain unchanged. Their
+approximate intended body heights are 4.1/4.3 units for Nalfeshnee/Glabrezu,
+2.7-2.9 for the three revised Large outsiders. These are source-derived display
+targets; matched native humanoid/Large/Huge bounds, selection/collision,
+navigation, attack contact and reconstruction stability remain unverified.
+Correct original Huge/Large mechanics, reach and movement rules are unchanged.
+Lillend keeps the same serpent/wing footprint and 1.0 display step; its revised
+upper bound is 4 mm lower, with X/Z bounds and original tail rest/slap unchanged.
+
+Kyton's old authored origins sat roughly .121 units from the palm; the new
+.032-unit roots sit inside modeled wrist cuffs. Four disjoint, fully palm-owned
+attack regions and their native weapon timing remain. Inspection did not
+demonstrate faulty runtime skin-space math, so that math was preserved.
+
+## Validation and artifact record
+
+Baseline attempts and genuine tooling failures are retained in the separate
+[Wall investigation](SUMMON-OVERHAUL-WALL-OF-ICE.md). They consumed 661.01 s,
+plus approximately four seconds of exact-current-reference export. No baseline
+native process was launched. No historical PASS was relabeled.
+
+Changed-worktree focused gate: **PASS**, production compilation 15.3 s,
+68/68 selected tests (2,810 registered), 24.959 s total. Command:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Invoke-KmgGate.ps1 -Filter 'expanded-summoning.sprint3;expanded-summoning.sna-naming-scale;expanded-summoning.sprint16-view-scale;expanded-summoning.sprint17-snake-production-body-identity;mission.combat-log-publication'
+```
+
+Lillend export checks passed 3/3 in 6.456 s; all 132 parts closed/outward.
+Other changed meshes receive the existing orientation audit during report
+generation. Exact final mesh/albedo hashes, triangle/vertex counts and audit
+results are written in the local `review-manifest.json`.
+
+The final development package, exact source commit, actual build/native
+durations/results and cumulative selected validation time will be appended
+after the single final guarded attempt. Full suite, compatibility, persistence,
+release reproducibility and qualification remain deferred by owner policy.
+Wall's functional defect and original expiry demonstration remain open.
+
+## Regeneration and illustrated review
+
+Run the respective existing Blender 4.5.10 generator with the measured capture,
+the exact asset basenames, and private report/blend/preview paths. The revised
+sources keep their normal `--kind`, `--capture`, `--albedo`, `--mesh-data`,
+`--report`, `--blend-out`, `--preview` interfaces. Lillend keeps its existing
+human-bind capture and direct `generate_lillend.py` pipeline; see its README.
+
+```powershell
+& '<Blender bundled Python>' scripts/Export-SummonOutsiderVisualReview.py --blender '<Blender executable>' --before-ref ffb1f8bf2c0014ee6bb5465103252195f75e449b
+```
+
+Review document: `artifacts/summon-overhaul/review/Summoned-Creature-Visual-Review.html`.
+It embeds images of the actual before/after exports, explicitly labeled as
+offline previews, and an owner checklist. Raw machine-local captures, exported
+private inputs, models' blend scenes, report images and packages stay ignored.
+Shape references are credited in the report to Roman Kurbanov's verified WotR
+Vrock and Babau production-art pages; no third-party artwork is embedded.
+
+Next action remains bounded native observation of this coherent candidate,
+then record the exact remaining gaps and open the requested draft PR. An
+incomplete native handoff is not mission acceptance or owner art approval.

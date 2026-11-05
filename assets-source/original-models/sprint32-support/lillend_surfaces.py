@@ -53,12 +53,15 @@ def build_body(bm, weights, uvs, rig, kind, common, rest, native, tail):
     upper = heads.max(axis=0) + (.17, .26, .24)
     field = sd.Field(lower, upper, .0045)
     p, s1, s2, s3, neck, head = [at(name) for name in native[:6]]
-    field.chain([p, s1, s2, s3], [.14, .115, .13, .135], k=.045)
+    # A ribcage and waist, rather than a round column inside an oversized
+    # garment. The neck and shoulders remain on their measured native joints.
+    field.chain([p, s1, s2, s3], [.14, .120, .128, .136], k=.038)
+    field.ellipsoid(s3 + Y * .033 + Z * .010, (.155, .125, .090), k=.025)
     for sign, side in ((-1, "L"), (1, "R")):
         shoulder, elbow, wrist = [at(side + suffix) for suffix in ("_Up_arm", "_ForeArm", "_Hand")]
-        field.chain([s3, at(side + "_Clavicle"), shoulder], [.125, .085, .078], k=.045)
+        field.chain([s3 + Y * .055, at(side + "_Clavicle"), shoulder], [.100, .067, .066], k=.034)
         field.chain([shoulder, shoulder.lerp(elbow, .45), elbow, elbow.lerp(wrist, .55), wrist],
-                    [.075, .068, .047, .043, .030], k=.025)
+                    [.065, .060, .043, .039, .028], k=.023)
         digits = [at(side + "_Toe_%d_01" % d) for d in (1, 2, 3)]
         palm = (sum(digits, Vector()) / 3 + wrist) / 2
         field.cone(wrist, palm, .031, .039, k=.018)
@@ -75,13 +78,13 @@ def build_body(bm, weights, uvs, rig, kind, common, rest, native, tail):
                     a, b = first + lateral * spread, second + lateral * spread
                     field.chain([palm, a, b, b + direction * .018],
                                 [.019, .0075, .0065, .004], k=.004)
-    field.chain([s3, neck, head + Y * .035], [.083, .061, .057], k=.035)
-    field.ellipsoid(head + Y * .090 + Z * .008, (.092, .126, .084), k=.028)
-    field.ellipsoid(head + Y * .034 + Z * .053, (.076, .076, .062), k=.018)
-    field.ellipsoid(head - Y * .014 + Z * .077, (.041, .026, .030), k=.012)
+    field.chain([s3 + Y * .055, neck, head + Y * .035], [.085, .052, .052], k=.028)
+    field.ellipsoid(head + Y * .090 + Z * .008, (.086, .123, .082), k=.025)
+    field.ellipsoid(head + Y * .034 + Z * .053, (.070, .072, .057), k=.017)
+    field.ellipsoid(head - Y * .011 + Z * .077, (.036, .025, .027), k=.012)
     for sign in (-1, 1):
         field.ellipsoid(head + X * sign * .052 + Y * .064 + Z * .080,
-                        (.031, .039, .029), k=.018)
+                        (.027, .035, .026), k=.016)
         # Adult orbital recess, brow and lower eyelid, not a painted dot.
         eye = head + X * sign * .038 + Y * .088 + Z * .104
         field.ellipsoid(eye, (.027, .013, .019), op="cut", k=.004)
@@ -138,74 +141,102 @@ def build_body(bm, weights, uvs, rig, kind, common, rest, native, tail):
                      [.021, .025, .0015], [.036, .022, .0015], ["Head"] * 3,
                      region="limbs", steps=3, sides=10, up=Y, forward=Z)
 
-    # Real short garment shell with a shaped neckline, layered hem and folds.
-    # Its rings interpolate the same torso drivers as the covered skin.
+    # Fitted bard's blouse and bodice. Closely spaced fabric rings follow the
+    # ribcage/waist instead of hiding them in a cylinder. The closed inner
+    # surface and folded hems keep the collar substantial at grazing angles.
     waist = p.y * .5 + s2.y * .5
     rings = [
-        (p.y - .19, .253, .190, "Pelvis", "beak", .76),
-        (p.y + .015, .225, .172, "Pelvis", "beak", .78),
-        (waist, .178, .150, "Spine_1", "beak", .76),
-        (s2.y + .05, .216, .177, "Spine_2", "beak", .76),
-        (s3.y + .14, .242, .190, "Spine_3", "beak", .76),
-        (neck.y - .045, .090, .078, "Neck", "beak", .76)]
+        (p.y - .17, .231, .174, "Pelvis", "beak", .76),
+        (p.y + .015, .220, .178, "Pelvis", "beak", .78),
+        (waist, .151, .127, "Spine_1", "beak", .76),
+        (s2.y + .05, .175, .144, "Spine_2", "beak", .76),
+        (s3.y + .12, .188, .143, "Spine_3", "beak", .76),
+        (neck.y - .078, .101, .079, "Neck", "beak", .76)]
+
+    def fabric_weights(height):
+        # Blend across the native spine controls; fabric and underlying skin
+        # therefore do not hinge along separate hard horizontal bands.
+        names = ("Pelvis", "Spine_1", "Spine_2", "Spine_3", "Neck")
+        if height <= at(names[0]).y:
+            return [(names[0], 1)]
+        for a, b in zip(names, names[1:]):
+            if height <= at(b).y:
+                t = max(0, min(1, (height - at(a).y) / (at(b).y - at(a).y)))
+                return [(n, w) for n, w in ((a, 1 - t), (b, t)) if w > 1e-7]
+        return [(names[-1], 1)]
+
     def garment(rows, colour_u, folds):
-        built = []
-        for i, (height, width, depth, bone, region, material_v) in enumerate(rows):
-            ring = []
+        samples = []
+        for a, b in zip(rows, rows[1:]):
+            for step in range(4):
+                t = step / 4
+                samples.append(tuple(a[n] * (1-t) + b[n] * t for n in range(3)) +
+                               (a[3], a[4], a[5] * (1-t) + b[5] * t))
+        samples.append(rows[-1])
+        layers = [[], []]
+        for i, (height, width, depth, bone, region, material_v) in enumerate(samples):
+            progress = i / max(1, len(samples) - 1)
+            centre = sum((at(name) * weight for name, weight in fabric_weights(height)), Vector())
+            rings_here = [[], []]
             for j in range(48):
                 angle = j * math.tau / 48
                 front = max(0, math.sin(angle))
-                fold = folds * math.sin(7 * angle + i * .30) * (1 - i / max(1, len(rows) - 1))
-                y = height - (.038 * front ** 3 if i == len(rows) - 1 else 0)
-                centre = at(bone)
-                v = bm.verts.new(Vector((centre.x + math.cos(angle) * (width + fold), y,
-                                         centre.z + math.sin(angle) * (depth + fold))))
-                ring.append(v); weights[v] = [(bone, 1)]
-                uvs[v] = uv(region, colour_u, material_v + .025 * math.cos(7 * angle))
-            if built:
-                for j in range(48):
-                    bm.faces.new((built[-1][j], built[-1][(j + 1) % 48], ring[(j + 1) % 48], ring[j]))
-            built.append(ring)
-        # Fold the rim inward so the shell has a visible hem instead of a
-        # paper-thin silhouette. The body underneath closes the garment view.
-        for ring in (built[0], built[-1]):
-            inner = []
-            for v in ring:
-                p0 = v.co.copy(); p0.x *= .97; p0.z *= .97
-                w = bm.verts.new(p0); weights[w] = weights[v][:]; uvs[w] = uv("beak", .94, .5); inner.append(w)
+                fold = folds * math.sin(7 * angle + progress * .8) * (1 - .65 * progress)
+                y = height - .034 * front ** 3 * progress ** 8
+                y += .008 * math.cos(4 * angle) * (1 - progress) ** 8
+                for layer in range(2):
+                    thickness = .004 * layer
+                    vertex = bm.verts.new(Vector((centre.x + math.cos(angle) * (width + fold - thickness), y,
+                                                  centre.z + math.sin(angle) * (depth + fold - thickness))))
+                    rings_here[layer].append(vertex)
+                    weights[vertex] = fabric_weights(y)
+                    uvs[vertex] = uv(region, colour_u, material_v + .025 * math.cos(7 * angle))
+            for layer in range(2):
+                ring = rings_here[layer]
+                if layers[layer]:
+                    previous = layers[layer][-1]
+                    for j in range(48):
+                        face = (previous[j], previous[(j + 1) % 48], ring[(j + 1) % 48], ring[j])
+                        bm.faces.new(face if layer == 0 else tuple(reversed(face)))
+                layers[layer].append(ring)
+        for endpoint in (0, -1):
+            ring, inner = layers[0][endpoint], layers[1][endpoint]
             for j in range(48):
-                bm.faces.new((ring[j], ring[(j + 1) % 48], inner[(j + 1) % 48], inner[j]))
-        return built
-    garment(rings, .76, .008)
-    # Teal fitted bodice and overskirt, with ivory visible between split panels.
-    garment([(p.y - .17, .260, .198, "Pelvis", "beak", .48),
-             (p.y + .02, .235, .184, "Pelvis", "beak", .46),
-             (waist, .186, .158, "Spine_1", "beak", .45),
-             (s2.y + .05, .224, .185, "Spine_2", "beak", .48),
-             (s3.y + .10, .248, .200, "Spine_3", "beak", .48)], .30, .010)
+                face = (ring[j], ring[(j + 1) % 48], inner[(j + 1) % 48], inner[j])
+                bm.faces.new(face if endpoint == -1 else tuple(reversed(face)))
+        return layers[0]
+
+    garment(rings, .76, .004)
+    # Teal fitted bodice/peplum with a curved neckline and short tapered hem.
+    garment([(p.y - .145, .238, .181, "Pelvis", "beak", .48),
+             (p.y + .02, .230, .187, "Pelvis", "beak", .46),
+             (waist, .160, .135, "Spine_1", "beak", .45),
+             (s2.y + .05, .184, .152, "Spine_2", "beak", .48),
+             (s3.y + .085, .195, .153, "Spine_3", "beak", .48)], .30, .005)
     # A narrow gold belt is modeled once, not periodically painted stripes.
-    garment([(waist - .013, .204, .178, "Spine_1", "beak", .5),
-             (waist + .013, .204, .178, "Spine_1", "beak", .5)], .94, .0)
+    garment([(waist - .010, .168, .143, "Spine_1", "beak", .5),
+             (waist + .010, .168, .143, "Spine_1", "beak", .5)], .94, .0)
     # Paired narrow seams connect the bodice construction to its belt.
     for sign in (-1, 1):
         before = set(bm.verts)
         common.tube(bm, weights, uvs,
-                    [Vector((sign*.19, s3.y+.08, .155)), Vector((sign*.105, s2.y+.04, .171)),
-                     Vector((sign*.095, waist+.015, .164))], [.003,.003,.003],
+                    [Vector((sign*.140, s3.y+.068, .113)), Vector((sign*.095, s2.y+.04, .135)),
+                     Vector((sign*.075, waist+.015, .126))], [.0025,.0025,.0025],
                     ['Spine_3','Spine_2','Spine_1'], 'beak', 6)
         for vertex in set(bm.verts)-before: uvs[vertex] = uv('beak', .94, .5)
     for side in ('L', 'R'):
         shoulder, elbow = at(side + '_Up_arm'), at(side + '_ForeArm')
+        before = set(bm.verts)
         common.sweep(bm, weights, uvs,
                      [shoulder, shoulder.lerp(elbow, .23), shoulder.lerp(elbow, .45)],
-                     [.081, .086, .079], [.081, .086, .079],
+                     [.070, .073, .065], [.070, .073, .065],
                      [side + '_Up_arm'] * 3, region='beak', steps=3, sides=20, up=Z, forward=Y)
         # Remap the last sleeve's vertices to ivory fabric.
-        for vertex in list(bm.verts)[-((2*3+1)*20+2):]:
+        for vertex in set(bm.verts) - before:
             uvs[vertex] = uv('beak', .76, .5)
 
     # Auburn cap and irregular, flattened locks with tapered ends and curls.
-    mass(head + Y * .143 - Z * .010, (.105, .080, .097), "Head", "crest", .45)
+    mass(head + Y * .149 - Z * .010, (.097, .070, .091), "Head", "crest", .45)
     for lock in range(9):
         t = lock / 8
         sign = -1 if lock < 4 else 1

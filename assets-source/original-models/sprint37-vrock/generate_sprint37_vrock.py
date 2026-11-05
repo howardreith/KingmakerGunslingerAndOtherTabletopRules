@@ -8,6 +8,9 @@ weighted to the upper torso: they move with the chest and do not articulate.
 That is a deliberate, recorded limitation rather than a claim of flight
 animation.
 """
+# Owner visual overhaul: continuous organic skin, revised anatomy and albedo.
+# Rig/wing articulation limits above remain; native aesthetic review is separate.
+
 import argparse
 import json
 import math
@@ -35,6 +38,9 @@ for name in ('sprint17-serpents', 'sprint24-theropods'):
 import generate_snakes as common
 import generate_theropods as donor
 import paint_snake_albedo as paint
+
+sys.path.insert(0, str(args.pipeline_root / 'continuous-bodies'))
+from outsider_surface import consolidate_skin
 
 SIDE, UP, FRONT = Vector((1, 0, 0)), Vector((0, 0, 1)), Vector((0, 1, 0))
 TORSO = ('Torso_Lower', 'Torso_Upper', 'neck', 'neck1', 'Head')
@@ -76,6 +82,8 @@ def build_body(bm, weights, uvs, rig, kind):
          'Torso_Lower')
     mass(upper + FRONT * .020, (.225, .170, .180), 'Torso_Upper')
 
+    mass(upper + UP*.235 + FRONT*.010, (.225,.225,.190), 'Torso_Upper')
+
     # The bare neck: a long thin bridge in bare-skin colour, which with the
     # beak is what makes this a vulture rather than a bird of prey.
     tube([neck - UP * .030, neck + FRONT * .030 + UP * .060,
@@ -116,18 +124,26 @@ def build_body(bm, weights, uvs, rig, kind):
         wrist = elbow + SIDE * sign * .390 - FRONT * .050 + UP * .060
         tube([root, elbow, wrist], [.062, .044, .022],
              ['Torso_Upper'] * 3, 'wing', 10)
-        # Seven primaries, long enough that the span rather than the torso
-        # carries the silhouette. The first pass dropped five of them a
-        # tenth of a unit from a short leading edge and the wings read as
-        # shoulder spikes rather than as wings.
-        for index in range(7):
-            t = index / 6.0
-            base = root.lerp(elbow, t * 2.0) if t <= .5 else (
-                elbow.lerp(wrist, (t - .5) * 2.0))
-            drop = .230 + .300 * math.sin(math.pi * (0.22 + 0.62 * t))
-            tip = base + Vector((sign * .070 * t, -.060 - .045 * t, -drop))
-            tube([base, base.lerp(tip, .55), tip],
-                 [.050, .038, .011], ['Torso_Upper'] * 3, 'wing', 8)
+        # Connected layered feather vanes; rigid chest ownership is retained.
+        tube([root, elbow, wrist], [.115,.130,.055],
+             ['Torso_Upper']*3, 'wing', 14)
+        for index in range(9):
+            t = index/8.0
+            base = root.lerp(elbow, min(1,t*2)) if t<=.5 else elbow.lerp(wrist,(t-.5)*2)
+            drop = .18 + .31*math.sin(math.pi*(.18+.68*t))
+            tip = base + Vector((sign*(.04+.13*t), -.055-.045*t, -drop))
+            axis = (tip-base).normalized()
+            across = Vector((1,0,0))
+            depth = axis.cross(across).normalized()
+            common.ellipsoid(bm, weights, uvs, base.lerp(tip,.43),
+                             across, axis, depth,
+                             (.074, drop*.57, .012), 'Torso_Upper',
+                             ATLAS_REGION['wing'], 10, 12)
+            # Shorter overlapping covert row over the vane roots.
+            common.ellipsoid(bm, weights, uvs, base.lerp(tip,.17)+depth*.015,
+                             across, axis, depth,
+                             (.082, drop*.30, .018), 'Torso_Upper',
+                             ATLAS_REGION['feather'], 8, 12)
             primaries += 1
 
     for side in ('L', 'R'):
@@ -167,6 +183,9 @@ def build_body(bm, weights, uvs, rig, kind):
 
     DETAIL_COUNTS.update(wings=2, primaries=primaries, talons=2)
 
+    consolidate_skin(bm, weights, uvs, common.shared.ATLAS,
+                     regions=('body',), voxel=.007, triangles=8000)
+
 
 def write_albedo(path):
     size = 512
@@ -175,9 +194,9 @@ def write_albedo(path):
     # Nothing here repeats the Babau's slime green-black or the Hezrou's
     # olive-brown warts.
     palette = {
-        'body': (.165, .185, .145), 'crest': (.105, .118, .095),
-        'beak': (.50, .44, .30), 'limbs': (.355, .205, .185),
-        'membrane': (.205, .225, .175)}
+        'body': (.32, .345, .29), 'crest': (.18, .17, .13),
+        'beak': (.74, .64, .44), 'limbs': (.46, .295, .255),
+        'membrane': (.40, .42, .34)}
     for region in sorted(paint.shared.ATLAS):
         (y0, y1, x0, x1), u, v = paint.shared.region_canvas(size, region)
         base = np.array(palette.get(region, palette['body']))

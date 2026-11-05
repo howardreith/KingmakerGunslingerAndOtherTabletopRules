@@ -1,3 +1,20 @@
+## Current owner visual-overhaul revision
+
+The November 2026 owner mission brings the previously deferred cosmetic work into scope. The current exports use opt-in `continuous-bodies/outsider_surface.py` to unite organic skin and blend the existing two-influence weights. Individual teeth, horns, feather vanes and membranes retain intentional ownership. The original rig articulation limits remain. No mechanical profile, attack, route, GUID, icon or save identity changed.
+
+Raw geometry-free input capture SHA-256 is `6443b580c8019d2a32de616ef610df3c2aa851c7c998044b56e0c29b4494e65d`. Before revision, this locally retained capture regenerated the released Nalfeshnee geometry blob and albedo manifest byte-for-byte. New exports truthfully name this capture; the historical `727645...ad7a4` authority is retained separately. Both are an explicit closed loader allowlist.
+
+Normal regeneration uses the existing generator/arguments below. Blender 4.5.10 and the existing pipeline are retained; private captures, blends, reports and previews stay out of Git/packages. Exact exported front, side and party-angle previews have been inspected offline. Native lighting, motion, measured world-space scale and owner aesthetic approval remain separate and unverified until the [active checkpoint](../../../planning/SUMMON-OUTSIDER-VISUAL-OVERHAUL-STATE.md) records actual observations.
+
+| Current export | Vertices / triangles | SHA-256 |
+| --- | --- | --- |
+| `babau-mesh.json` | 4875 / 9690 | `0c25a363b466c46d76610a48358a3b3dd934f77abfa6ffa132c60a5c54d0f5c7` |
+| `babau-albedo.png` | - | `cbc8efb3a1488d4a71efbef98f257d810b7b2bf0046d0c5b7824e1ae51611006` |
+| `hezrou-mesh.json` | 5018 / 9944 | `833989f1ea873af21e2e7684d5692177a74964d28be2a4f962b99412b651eae3` |
+| `hezrou-albedo.png` | - | `f9196f5340b80cd40b1535c1ec15ba36937495cb0174f2a50aaf81be5e107386` |
+
+## Earlier authoring record
+
 # Sprint 36 original demon bodies
 
 Babau and Hezrou use distinct original procedural geometry and albedos authored

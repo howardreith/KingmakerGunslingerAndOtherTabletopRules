@@ -13,6 +13,9 @@ four-armed Girallon and Xill take on a two-armed rig, and the same one the
 Sprint 37 Vrock's wings take; it is a recorded limitation, not a claim of
 four-limb articulation.
 """
+# Owner visual overhaul: continuous organic skin, revised anatomy and albedo.
+# Rig/wing articulation limits above remain; native aesthetic review is separate.
+
 import argparse
 import json
 import math
@@ -40,6 +43,9 @@ for name in ('sprint17-serpents', 'sprint24-theropods'):
 import generate_snakes as common
 import generate_theropods as donor
 import paint_snake_albedo as paint
+
+sys.path.insert(0, str(args.pipeline_root / 'continuous-bodies'))
+from outsider_surface import consolidate_skin
 
 SIDE, UP, FRONT = Vector((1, 0, 0)), Vector((0, 0, 1)), Vector((0, 1, 0))
 TORSO = ('Torso_Lower', 'Torso_Upper', 'neck', 'neck1', 'Head')
@@ -75,16 +81,18 @@ def build_body(bm, weights, uvs, rig, kind):
     # pincer arms have a root. Deliberately bulkier than the Vrock's
     # deep-chested bird trunk and than the Babau's lean skirmisher.
     common.sweep(bm, weights, uvs, [at(n) for n in TORSO[:-1]],
-                 [.205, .250, .105, .080], [.175, .215, .090, .072],
+                 [.265, .335, .125, .100], [.210, .265, .115, .090],
                  list(TORSO[:-1]), up=FRONT, forward=UP)
-    mass(pelvis - UP * .045 + FRONT * .010, (.195, .168, .165),
+    mass(pelvis - UP * .045 + FRONT * .010, (.245, .195, .200),
          'Torso_Lower')
-    mass(upper + FRONT * .015, (.262, .196, .205), 'Torso_Upper')
+    mass(upper + FRONT * .015, (.345, .245, .260), 'Torso_Upper')
     # Shoulder plates over the pincer roots, in the harder plate tone, so the
     # arms separate from the chest in a silhouette.
     for sign in (-1, 1):
         mass(upper + SIDE * sign * .175 + UP * .055 - FRONT * .010,
              (.108, .098, .062), 'Torso_Upper', 'plate', 8, 14)
+
+    mass(upper + UP*.255 + FRONT*.010, (.330,.250,.245), 'Torso_Upper')
 
     # A short thick neck carrying a canine head well clear of the shoulders.
     tube([neck - UP * .020, neck + FRONT * .025 + UP * .045,
@@ -95,7 +103,7 @@ def build_body(bm, weights, uvs, rig, kind):
     # the longest feature, which is what keeps it canine rather than the
     # Girallon's flat ape face or the Vrock's beak.
     head = head_bone + FRONT * .055 + UP * .018
-    mass(head, (.108, .112, .100), 'Head')
+    mass(head, (.128, .140, .120), 'Head')
     tube([head + FRONT * .070 - UP * .010,
           head + FRONT * .150 - UP * .030,
           head + FRONT * .205 - UP * .044],
@@ -115,8 +123,8 @@ def build_body(bm, weights, uvs, rig, kind):
              [.011, .002], ['Head'] * 2, 'claw', 7)
         fangs += 2
         # Eyes.
-        mass(head + SIDE * sign * .062 + FRONT * .072 + UP * .030,
-             (.022, .020, .022), 'Head', 'eye', 7, 12)
+        mass(head + SIDE * sign * .098 + FRONT * .092 + UP * .044,
+             (.014, .012, .012), 'Head', 'eye', 7, 12)
     horns = 0
     for sign in (-1, 1):
         # One long swept horn and a shorter one behind it.
@@ -140,9 +148,9 @@ def build_body(bm, weights, uvs, rig, kind):
         # THE PINCER ARMS, on the rig's real animated chains. Thicker than
         # anything the released outsiders put on these bones, because the
         # printed creature carries its mass in these two limbs.
-        tube([upper, shoulder, elbow, palm], [.126, .120, .092, .060],
+        tube([upper, shoulder, elbow, palm], [.165, .155, .125, .085],
              ['Torso_Upper', *arm], 'hide', 12)
-        mass(shoulder, (.118, .110, .114), arm[0])
+        mass(shoulder, (.155, .145, .155), arm[0])
         mass(elbow, (.080, .086, .080), arm[1])
 
         # The claw itself: a wrist boss and two jaws, in the harder chitin
@@ -166,8 +174,8 @@ def build_body(bm, weights, uvs, rig, kind):
             # girth, reaching well past the last joint.
             tube([boss + UP * lift * .4, root + UP * lift,
                   tip + UP * lift * .8,
-                  tip + direction * .105 + UP * lift * .5],
-                 [.044, .040, .029, .008],
+                  tip + direction * .175 + UP * lift * .5],
+                 [.072, .067, .051, .010],
                  [arm[2], first, second, second], 'chitin', 10)
             # Inner teeth on the biting edge, pointing across the gap, so the
             # opening reads as a grasping claw rather than two spikes.
@@ -184,7 +192,7 @@ def build_body(bm, weights, uvs, rig, kind):
         # move with the chest and do not articulate. Short enough that the
         # hands sit inside the pincer span, which is what makes them read as
         # a second pair on the chest rather than as four equal arms.
-        root = upper + SIDE * sign * .090 + FRONT * .110 - UP * .055
+        root = upper + SIDE * sign * .135 + FRONT * .235 - UP * .055
         mid = root + SIDE * sign * .120 + FRONT * .080 - UP * .105
         wrist = mid + SIDE * sign * .038 + FRONT * .060 - UP * .120
         tube([root, mid, wrist], [.052, .042, .030],
@@ -218,6 +226,9 @@ def build_body(bm, weights, uvs, rig, kind):
                          smallClaws=claws, horns=horns, fangs=fangs,
                          pincerTeeth=jaw_teeth * 2)
 
+    consolidate_skin(bm, weights, uvs, common.shared.ATLAS,
+                     regions=('body',), voxel=.007, triangles=8000)
+
 
 def write_albedo(path):
     size = 512
@@ -226,9 +237,9 @@ def write_albedo(path):
     # pale horn. Nothing repeats the Vrock's grey-green plumage, the Babau's
     # slime green-black or the Hezrou's olive warts.
     palette = {
-        'body': (.230, .118, .098), 'crest': (.150, .080, .070),
-        'beak': (.430, .385, .310), 'limbs': (.285, .150, .128),
-        'membrane': (.120, .098, .095)}
+        'body': (.39, .22, .17), 'crest': (.28, .15, .105),
+        'beak': (.72, .63, .46), 'limbs': (.44, .25, .18),
+        'membrane': (.26, .24, .22)}
     for region in sorted(paint.shared.ATLAS):
         (y0, y1, x0, x1), u, v = paint.shared.region_canvas(size, region)
         base = np.array(palette.get(region, palette['body']))

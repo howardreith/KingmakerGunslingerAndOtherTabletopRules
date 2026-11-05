@@ -55,7 +55,7 @@ namespace KingmakerGunslinger.Assets
                 var payload = JObject.Parse(json);
                 if ((string)payload["creature"] != key ||
                     !System.Linq.Enumerable.SequenceEqual(payload["bones"].Values<string>(), InfernalVisualPolicy34.Bones) ||
-                    (string)payload["rigSha256"] != InfernalVisualPolicy34.RigSha256 ||
+                    !InfernalVisualPolicy36.IsReviewedRig((string)payload["rigSha256"]) ||
                     (string)payload["nativeDonor"] != TheropodVisualPolicy.DonorGuid ||
                     (string)payload["nativePrefab"] != TheropodVisualPolicy.DonorPrefabGuid ||
                     (string)payload["bodyRenderer"] != TheropodVisualPolicy.BodyRendererName ||

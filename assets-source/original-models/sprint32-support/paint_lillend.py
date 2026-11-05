@@ -28,9 +28,11 @@ for region in sorted(common.shared.ATLAS):
         scute = .94 + .06 * np.cos(u * 52 * np.pi)
         pixels = mix(pixels, colour((.76, .75, .55)) * scute[..., None], underside)
     elif region == 'limbs':
-        pixels = mix(colour((.68, .43, .32)), colour((.96, .77, .61)), v)
+        # Warm skin values retain facial planes under scene light without
+        # turning the exposed shoulders into an ivory garment highlight.
+        pixels = mix(colour((.64, .405, .305)), colour((.88, .70, .56)), v)
         pixels = mix(pixels, colour((.49, .20, .17)), smooth(.66, .69, v) * (1-smooth(.75, .78, v)))
-        pixels = mix(pixels, colour((.78, .79, .67)), smooth(.79, .80, v) * (1-smooth(.86, .88, v)))
+        pixels = mix(pixels, colour((.68, .70, .63)), smooth(.79, .80, v) * (1-smooth(.86, .88, v)))
         pixels = mix(pixels, colour((.10, .17, .11)), smooth(.89, .90, v))
     elif region == 'crest':
         strands = (.5 + .5 * np.sin(v * 54 * np.pi + np.sin(u * 7))) ** 2
