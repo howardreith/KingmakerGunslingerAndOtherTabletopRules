@@ -77,6 +77,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "The actual native damage consumer grants fire/cold immunity and acid10, without fire vulnerability or donor electrical protection.");
                 }
 
+                // Settle the independent source before the recipient becomes
+                // hostile or frightened, then park it on a surveyed connected
+                // walking node outside the first aura. An arbitrary transform
+                // offset is not evidence of a legal native placement.
+                var second = CastExpandedSummoningOwnTier(fixture, IceDevilVisualPolicy40.Key);
+                owned.Add(second); Sprint28SetBrainActivePreservingActions(second, false);
+                foreach (int frame in Outsider30NativeAppearance(second, second.Blueprint.name)) yield return frame;
+                second.Stats.Charisma.BaseValue += 4;
+                var parkingConstraint = Sprint40WalkingConstraint(second);
+                var parkingAnchor = AstarPath.active.GetNearest(owner.Position, parkingConstraint);
+                if (parkingAnchor.node == null || !parkingAnchor.node.Walkable)
+                    throw new InvalidOperationException("No native second-owner parking anchor.");
+                parkingConstraint.SetStart(parkingAnchor.node); parkingConstraint.constrainArea = true;
+                Vector3 secondParking = Vector3.zero; bool parkingFound = false;
+                for (int radius = 12; radius <= 18 && !parkingFound; radius += 3)
+                for (int angle = 0; angle < 16 && !parkingFound; angle++)
+                {
+                    Vector3 requested = owner.Position +
+                        Quaternion.Euler(0, angle * 22.5f, 0) * Vector3.forward * radius;
+                    var point = AstarPath.active.GetNearest(requested, parkingConstraint);
+                    Vector3 projection = requested - point.clampedPosition; projection.y = 0;
+                    if (point.node == null || !point.node.Walkable ||
+                        !parkingConstraint.Suitable(point.node) || projection.magnitude > 1.5f ||
+                        Vector3.Distance(owner.Position, point.clampedPosition) < 10f) continue;
+                    secondParking = point.clampedPosition; parkingFound = true;
+                }
+                if (!parkingFound) throw new InvalidOperationException(
+                    "No bounded walkable second-owner parking point outside the first aura.");
+                PlaceExpandedSummoningUnit(second, secondParking);
+
                 // The recipient begins outside the aura. Native exposure and
                 // source-specific repeat memory, not an observer apply, own it.
                 target.Stats.SaveWill.BaseValue = -100;
@@ -104,16 +134,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["frightened"] = target.Descriptor.State.HasCondition(UnitCondition.Frightened),
                         ["end"] = frightened?.EndTime.ToString(), ["forcedRolls"] = 0 },
                     "One native Will DC22 exposure installs source-specific memory and, on an actual failure, the native frightened condition.");
-                var second = CastExpandedSummoningOwnTier(fixture, IceDevilVisualPolicy40.Key);
-                owned.Add(second); Sprint28SetBrainActivePreservingActions(second, false);
-                PlaceExpandedSummoningUnit(second, owner.Position + Vector3.forward * 15f);
-                foreach (int frame in Outsider30NativeAppearance(second, second.Blueprint.name)) yield return frame;
-                second.Stats.Charisma.BaseValue += 4;
                 int secondStart = trace.Rows.Count;
                 // A real failed first save leaves the recipient frightened and
-                // moving while this second body's appearance settles. Follow
-                // that current recipient position so the independent-source
-                // check observes the second aura instead of an obsolete point.
+                // moving. Follow its current position with the already-settled
+                // second body so this independent-source check observes the
+                // second aura instead of an obsolete point.
                 PlaceExpandedSummoningUnit(second, target.Position);
                 foreach (int frame in InfernalBoneWaitUntil35(() => trace.Rows.Skip(secondStart).Any(x =>
                     (string)x["event"] == "save" && (string)x["owner"] == second.UniqueId &&
@@ -128,6 +153,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (observedFailure || secondRows.Any(x => !(bool)x["passed"]) && secondApplied),
                     new JObject { ["firstSource"] = owner.UniqueId, ["secondSource"] = second.UniqueId,
                         ["secondSaves"] = new JArray(secondRows), ["liveCharisma"] = second.Stats.Charisma.ModifiedValue,
+                        ["walkableParking"] = SurveyVector(secondParking),
                         ["firstFailureActuallyApplied"] = observedFailure,
                         ["secondNativeCondition"] = secondApplied, ["forcedRolls"] = 0 },
                     "Second source ignores the first source's repeat memory; live +4 Charisma changes DC22 to24. At least one real failed save must actually apply native fear.");
