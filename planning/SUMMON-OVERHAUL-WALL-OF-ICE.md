@@ -1,5 +1,40 @@
 # Summon visual overhaul: Wall of Ice investigation
 
+## Current second-review result: actual formation/obstruction, incomplete cleanup acceptance
+
+Candidate `162d089e2636`, ZIP SHA-256
+`2eb94b4d3569aa5eb190bff739ff02cbc782e08dc17addc289a7b2594493f16f`,
+reached a legal ordinary cast in exact phase `summon-overhaul-wall`. Evidence
+timestamp `20261105T0517083304769Z-disposable-expanded-summoning-sprint32-native-review`.
+Result FAIL, 17 assertions total; result SHA-256
+`615c066745059ed752566fd139ede37e2318d6e978bb03aaefe91b9c16abe3ed`.
+
+Observed: native cast Success, one original 36-HP/720-second section, enabled
+visible plane renderer, native cut and 16 GridGraph claims. Baseline and live
+actual mover both passed with three stable grounded starting frames; the live
+wall caused a measured detour. Controlled native fire damage destroyed the
+wall and the Recast route returned. This is substantive functional evidence,
+not a complete Wall PASS or a claim to have reproduced the owner's exact trigger.
+
+The full viability cell failed: the physical attack did not start; the observer
+required GridGraph index 1 to equal active path RecastGraph index 0; and final
+snapshot walkability differed while adjacent test witnesses remained nearby.
+Expiry and Bone tail were not reached. No gameplay repair is selected from
+these observer failures. All protected intake/settings/saves were restored.
+
+Follow-up `fa457ca668cfed7affd4347a18a98a40070fc012` grounds/settles exact
+witnesses, clears witness occupancy before bare-grid inspection, recognizes
+both supported path backends, retains strict physical/grid restoration checks,
+adds diagnostic restoration rows and captures the formed wall early using the
+ordinary camera. It compiles but has no candidate/native execution yet.
+Controlled original-deadline expiry remains explicitly unrun and cannot be
+described as a twelve-minute real-time soak.
+
+Current review validation 27.04/30 minutes; prior ledgers retained. Additional
+20-minute allocation request is pending before a new build/native sequence.
+See the active overhaul state for exact commands, package/DLL identities,
+four phase results and the illustrated evidence. PR remains draft.
+
 ## Latest continuation: observer failed before casting
 
 The immutable development candidate `1dda3428e72f`, ZIP SHA-256

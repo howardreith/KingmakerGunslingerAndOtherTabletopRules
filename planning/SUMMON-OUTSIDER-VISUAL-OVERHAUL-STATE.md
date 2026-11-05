@@ -1,5 +1,88 @@
 # Summoned creature visual overhaul: active checkpoint
 
+## Current handoff: code corrections compiled; extra native allowance pending
+
+The second-review camera defect is fixed. Appearance collection is metadata
+only, matched views and Lillend casting use the ordinary party camera, and
+the Default lease remains authoritative over manual clock pulses. Model and
+albedo exports are unchanged from reviewed `b2f65d53`; all twenty exact hashes
+were rechecked. No speculative art or scale-logic revision was made. The three
+previous defects remain closed, with the earlier OFF evidence credited.
+
+Candidate `162d089e2636` produced sharp inspected indoor and daylight images,
+successful Nalfeshnee movement and ON reconstruction, and successful movement
+for six more revised creatures. Its longer phases exposed additional observer
+setup failures; they remain failures, as described in the following section.
+The Wall did form and alter actual movement, but its full acceptance is open.
+
+Compiled follow-up source: `fa457ca668cfed7affd4347a18a98a40070fc012` (includes
+`caf42be67556292aaeae9c880679aed4a7d4b8e4`). It removes the hostile-witness
+overlap, uses supported/settled Wall witnesses, clears witness occupancy before
+bare-grid inspection, supports the actual Recast backend, records grid cleanup
+diagnostics, keeps the humanoid reference near the movement lane for ordinary
+vision, and captures the formed Wall before later checks. Strict physical
+damage and walkability-restoration predicates remain. No material, fog,
+brightness or depth-of-field override is supplied. These corrections are
+**unpackaged and native NOT RUN**; no mechanical Wall repair is claimed.
+
+### Exact current native results
+
+All four runs used candidate `162d089e2636`, the exact ZIP/DLL identities in
+the next section, and restored installed v0.0.140, native settings and every
+protected save byte/length/mtime exactly. No save was loaded or mutated.
+
+| Phase | Status / assertion total | Runtime-result SHA-256 |
+| --- | --- | --- |
+| indoor | PASS / 4 | `ac319c288f287d4e4670c69ed82b6558f174f9ce3a5323f6470d827a3cc1fbba` |
+| daylight | PASS / 11 | `c608ca658f2882b144b8b9498a850b35180f9c44855b83865da3da02460e023f` |
+| motion | FAIL / 33 | `8bd55768c6dbe2e641e3cd09f6eb850ac2a15f5a0be33ce9810872ad8a619a0c` |
+| Wall | FAIL / 17 | `615c066745059ed752566fd139ede37e2318d6e978bb03aaefe91b9c16abe3ed` |
+
+The motion failure remains Lillend's interrupted/unstarted supplied command;
+translation alone is not success. Its later frame also reaches the ordinary
+fog edge and cannot establish casting/deformation quality. Glaive/Kyton pairs
+were not reached. The Wall run proves original 36 HP/720-second creation,
+baseline/live mover and detour, controlled native fire destruction and returned
+Recast route. Physical breach and exact grid checks failed; expiry/tail were
+not reached. Witness/graph corrections require native confirmation. Selection
+surfaces/rays and open-lane movement do not prove comfortable crowded clicking
+or confined-space movement; those remain manual playtest observations.
+
+### Current validation accounting and next action
+
+Measured seconds: initial focused compile/28 tests 36.35; one development build
+681.87; indoor 171.57; daylight 163.13; motion 201.07; Wall 212.41; narrowed
+setup compile/26 tests 29.48; Wall capture compile/18 tests 22.51; final reference
+helper compile 16.56 FAIL (missing namespace, retained); corrected compile/10
+tests 21.34 PASS. Report QA/text checks conservatively reserve 66 seconds.
+**This continuation: 27.04/30 minutes. Prior 26.80 and 28.10 retained;
+cumulative 81.94 minutes.** Authoring/investigation time is separate.
+
+The source corrections are concrete and compiled. A new candidate build plus
+remaining motion/Wall runs exceed the 2.96-minute balance. An explicit request
+for **20 additional validation minutes is pending** under validation policy
+section 7. No dependent build/launch is authorized by elapsed time. If granted,
+freeze this corrected source, build once, and select only corrected motion and
+Wall checks. Indoor/daylight and OFF remain credited to their exact candidates
+unless affected evidence must be refreshed. No release/full matrix is selected.
+
+All invocations/logs/exact timers and `validation-ledger.json` are under
+`artifacts/summon-overhaul-final`. The prepared guarded launcher is `run-native.ps1`
+there; it preserves the prior installation/settings/save envelope. All four
+native transactions used one exact phase, same candidate/purpose and fresh
+process. The build used `scripts/Build-Local.ps1 -DevelopmentPurpose
+summon-outsider-review-corrections -DevelopmentTestFilter
+'expanded-summoning.native-profile;expanded-summoning.sna-naming-scale;expanded-summoning.overhaul;expanded-summoning.sprint35;expanded-summoning.sprint34'
+-ReferenceBundleDir artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references`.
+
+Illustrated review with 17 actual native frames, retained failure details,
+unchanged-model comparisons and owner reference images:
+`artifacts/summon-overhaul-final/illustrated-review/Summoned-Creature-Acceptance-Review.html`.
+SHA-256 `6c516bfa0b4a3bd8521af0dc65d9d8c1591bf39a6badf916f052e4abd786e241`.
+Browser layout inspected. Native captures and packages stay outside Git.
+Owner aesthetic approval and full mission acceptance remain pending; PR #96
+stays draft. Earlier records below retain their original provenance.
+
 ## Second-review native progress and narrowed follow-up
 
 Candidate `162d089e2636c5a5ab81e9d677c2c8a9a909f3ed` passed exact build/package
