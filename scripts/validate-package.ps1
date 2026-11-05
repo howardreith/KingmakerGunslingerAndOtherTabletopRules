@@ -248,9 +248,11 @@ try {
     }
     }
     Assert-KmgProtectedBodyExports -ModDirectory $modDirectory
+    # Owner visual overhaul: fixed reviewed pins for the ten revised bodies.
+    # Unrelated protected exports and the preserved shadow outsiders stay pinned.
     $lillendExports = @{
-        'lillend-mesh.json'='11ad83a0858d95c72627f63c131a713de26c1e9bc83c3c79a84000b9816a8dd7'
-        'lillend-albedo.png'='5148b79042d0e09010269155936c984613c4992b28302999f6caba7779a962d7'
+        'lillend-mesh.json'='7485c6e414747bad1b39df10ac9762c89ec242b026bf0bf2528e80b5ef37395f'
+        'lillend-albedo.png'='f8538166f01434f5522e15bc8bd70be601154ea7ae2878fa0fd489859114c7de'
     }
     foreach ($entry in $lillendExports.GetEnumerator()) {
         if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint32-support\'+$entry.Key))) -cne $entry.Value) {
@@ -269,10 +271,10 @@ try {
         }
     }
     $infernalExports = @{
-        'bearded-devil-mesh.json'='e636ee491240107f1c1db79c4747934e69ad9b4cda539cc0619b5dc47c664ad5'
-        'bearded-devil-albedo.png'='46daca8e0c0a0617fc59d41ed7a1a469b5face79ffa5b6c30baf4cff8cab0701'
-        'kyton-chain-devil-mesh.json'='f76800cef1783dd901839a8df4935556c95dec3cb6b1b72ac76cfa995d8f0428'
-        'kyton-chain-devil-albedo.png'='ce678ab9daa274de2b63a0aa2e90590b7f293500f066e2a718b9ede3f5095882'
+        'bearded-devil-mesh.json'='058b0b40f6a09949faca459e917896210d1dd922da0704be387754efb2f97bec'
+        'bearded-devil-albedo.png'='fd61649a0caf17e9ccd8d66e55092d2c1d98df88509295de98958c5b78d4c888'
+        'kyton-chain-devil-mesh.json'='fcb2b0082bcdabeee453d3aa1128acb1c939f2394940db023d769dcdb4bbdc80'
+        'kyton-chain-devil-albedo.png'='06bdc66deefd1d573953d8422f4b71573e8a4d8d9171f1394537dd33ac12941d'
     }
     foreach ($entry in $infernalExports.GetEnumerator()) {
         if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint34-infernal-outsiders\'+$entry.Key))) -cne $entry.Value) {
@@ -280,10 +282,10 @@ try {
         }
     }
     $infernal35Exports = @{
-        'barbed-devil-mesh.json'='890456e59f973eb0383197a9eed4ee50628b5314114f315acb15321326e63a28'
-        'barbed-devil-albedo.png'='2614201dd25653c2b86f719ce48bab479ecf8151103a068ae468335ef3a3ac8d'
-        'bone-devil-mesh.json'='b94c51a20680a5f4d747f3c8acc16e417a96278cee8b01c3398e5225792a4c40'
-        'bone-devil-albedo.png'='98cea77b72fa5540df7127f29444110dded90233d951fd04b6d66ac28f053c77'
+        'barbed-devil-mesh.json'='2d4e45ad81659ebdfb6f5a299360e2f2910f8cd4214bbb6edf776d52c602e393'
+        'barbed-devil-albedo.png'='ee6d695aa052562c72a2fa2018546f1a6da0fef2ea9cea85d8416f536da1bc79'
+        'bone-devil-mesh.json'='008f22be80cfc7a93202d09ede66398e213550ddfb0da9f0290967056dbcae62'
+        'bone-devil-albedo.png'='0e66a075029f433f5f0dec35aa0c5950b878d86f579e3150f449dd1e1f3e62d8'
     }
     foreach ($entry in $infernal35Exports.GetEnumerator()) {
         if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint35-infernal-reach\'+$entry.Key))) -cne $entry.Value) {
@@ -291,10 +293,10 @@ try {
         }
     }
     $infernal36Exports = @{
-        'babau-mesh.json'='28ba1364c18d55e6faa3177d6997876d99cc6fdb5a8054eb2e9f27a54e8bc6a5'
-        'babau-albedo.png'='58df38b5aedc7e39d2a4b7f656b928f8dd4e039bb1ea6f1ebf674b11b0e9f291'
-        'hezrou-mesh.json'='3471e456c83613a9d6e4ea591cd226a8083542294c9ccb7c8175a29e244394f6'
-        'hezrou-albedo.png'='3310b12ac022145767d8390a348a7199c6c21a6b5215c70cec24e4ab6e860c0a'
+        'babau-mesh.json'='0c25a363b466c46d76610a48358a3b3dd934f77abfa6ffa132c60a5c54d0f5c7'
+        'babau-albedo.png'='cbc8efb3a1488d4a71efbef98f257d810b7b2bf0046d0c5b7824e1ae51611006'
+        'hezrou-mesh.json'='833989f1ea873af21e2e7684d5692177a74964d28be2a4f962b99412b651eae3'
+        'hezrou-albedo.png'='f9196f5340b80cd40b1535c1ec15ba36937495cb0174f2a50aaf81be5e107386'
     }
     foreach ($entry in $infernal36Exports.GetEnumerator()) {
         if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint36-demons\'+$entry.Key))) -cne $entry.Value) {
@@ -302,8 +304,8 @@ try {
         }
     }
     $vrock37Exports = @{
-        'vrock-mesh.json'='559dc4c33f34b21c3bc65b07ad5a563719b0611f8ae19c59295f0d18c3db203c'
-        'vrock-albedo.png'='66a8f91bb08ac7e1e429434042b5822f849bd967b28a950748c34ac0cb4a93bf'
+        'vrock-mesh.json'='7fb5c8d54f7bda5f25986f92719a0c1b34098137d59988cce5276c1774c4687e'
+        'vrock-albedo.png'='fa38da0fe883df8fac27d52c74cc0bca56e0e738054b6ee7b7cfa34ec922f4ff'
     }
     foreach ($entry in $vrock37Exports.GetEnumerator()) {
         if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint37-vrock\'+$entry.Key))) -cne $entry.Value) {
@@ -311,8 +313,8 @@ try {
         }
     }
     $glabrezu38Exports = @{
-        'glabrezu-mesh.json'='5162a8614cd2d31dc98f0233962f79f035aae7c848cd249a51358bafea1d3b95'
-        'glabrezu-albedo.png'='564cc4a54289535f67c296ae44b24111afa6f09ef24394e79d649a9c14d376fd'
+        'glabrezu-mesh.json'='47777aa2c7076d4a0d1c38b09b982d93e77666fc5115827be6e42a42be06db1b'
+        'glabrezu-albedo.png'='e13ab445694f3e1680b6ab3db03fb2d834d5096dbc0ed69817e8c413f2523187'
     }
     foreach ($entry in $glabrezu38Exports.GetEnumerator()) {
         if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint38-glabrezu\'+$entry.Key))) -cne $entry.Value) {
@@ -320,8 +322,8 @@ try {
         }
     }
     $nalfeshnee39Exports = @{
-        'nalfeshnee-mesh.json'='7231b45fc8577bab8df73bf1833d001e367251f809a1f86ebc939a4237e01af0'
-        'nalfeshnee-albedo.png'='1390e4b6e3c6e4781e6e2f67c1bdb3e275492488d33da9dfc26ed7c9c036391e'
+        'nalfeshnee-mesh.json'='c1bf459faea87029ea28c803cba9ad1e9081133f7db05c45199bfe7c87adc435'
+        'nalfeshnee-albedo.png'='3fa71ffd8161700f69464b6aaf3da936d16826a418b0de6f00612847f9a40b84'
     }
     foreach ($entry in $nalfeshnee39Exports.GetEnumerator()) {
         if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint39-nalfeshnee\'+$entry.Key))) -cne $entry.Value) {

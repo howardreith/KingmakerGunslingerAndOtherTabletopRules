@@ -27,6 +27,9 @@ MODELS = [
     ('kyton-chain-devil', 'Chain Devil', 'sprint34-infernal-outsiders', 'Fitted chain coverage, leather and wrist cuffs; four resting chains begin inside their cuffs.', '1.00'),
     ('lillend', 'Lillend Azata', 'sprint32-support', 'Fitted closed bodice and peplum, natural shoulder/arm/neck/face contours, blended fabric weights.', '1.00'),
 ]
+OWNER_TIMES = dict(zip([row[0] for row in MODELS],
+    ['08_51_46', '08_52_01', '08_52_04', '08_52_08', '08_52_10',
+     '08_52_14', '08_52_19', '08_52_21', '08_52_24', '08_52_31']))
 
 
 def run(command):
@@ -42,6 +45,7 @@ def main():
     parser.add_argument('--before-ref', required=True)
     parser.add_argument('--output', type=Path, default=ROOT/'artifacts/summon-overhaul/review')
     parser.add_argument('--skip-render', action='store_true')
+    parser.add_argument('--owner-reference-dir', type=Path)
     args = parser.parse_args()
     args.output = args.output.resolve()
     if not args.output.is_relative_to(ROOT/'artifacts'):
@@ -58,6 +62,14 @@ def main():
     def picture(path, caption):
         data = base64.b64encode(path.read_bytes()).decode()
         return f'<figure><img alt="{html.escape(caption)}" src="data:image/png;base64,{data}"><figcaption>{html.escape(caption)}</figcaption></figure>'
+
+    def owner_reference(clock, title):
+        if args.owner_reference_dir is None:
+            return '', None
+        path = args.owner_reference_dir/f'ChatGPT Image Nov 4, 2026, {clock} PM.png'
+        block = '<details><summary>Supplied in-game reference</summary>' + picture(path,
+            f'{title}: {path.name}. Original game capture; lighting and camera differ from the offline previews.') + '</details>'
+        return block, {'file': path.name, 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
 
     for key, title, family, change, scale in MODELS:
         images, receipt = [], {'key': key, 'change': change, 'viewMultiplier': scale}
@@ -88,12 +100,18 @@ def main():
                 images.append(picture(directory/f'{key}-shipped-front.png', 'Revised exported body: front'))
                 images.append(picture(directory/f'{key}-shipped-party.png', 'Revised exported body: party-camera angle'))
         a,b=receipt['before'],receipt['after']
+        reference, receipt['ownerReference'] = owner_reference(OWNER_TIMES[key], title)
         cards.append(f'''<section class="creature"><p class="eyebrow">MODEL REVIEW</p><h2>{title}</h2><p>{html.escape(change)}</p>
             <div class="images">{''.join(images)}</div><p class="caption">Offline albedo previews under identical studio lighting, independently framed to each body. These images show shape and painting; they do not compare world-space size or reproduce Kingmaker materials.</p>
             <p>Triangles: {a['triangles']:,} → {b['triangles']:,}. View multiplier: {scale}. Native lighting, motion and owner approval: see the current checkpoint record.</p>
-            <p class="identity">Revised mesh SHA-256: {b['sha256']}</p></section>''')
+            <p class="identity">Revised mesh SHA-256: {b['sha256']}</p>{reference}</section>''')
         receipts.append(receipt)
         print(f"{key}: {b['triangles']} triangles; outward={b['closedOutwardConsistent']}", flush=True)
+    controls = ''
+    for title, clock in [('Invisible Stalker', '08_52_27'), ('Shadow Demon', '08_52_29')]:
+        reference, _ = owner_reference(clock, title)
+        if reference:
+            controls += f'<section><h2>{title}: preserved</h2><p>Original exported bytes retained after source, geometry and supplied-image inspection. Native state and motion review remain open.</p>{reference}</section>'
     (args.output/'review-manifest.json').write_text(json.dumps({'beforeCommit':before_ref,'sourceHead':after_ref,'sourceDirty':source_dirty,'models':receipts},indent=2)+'\n')
     document=f'''<!doctype html><html lang="en"><meta charset="utf-8"><title>Summoned Creature Visual Overhaul</title><style>
         *{{box-sizing:border-box}} body{{font:16px/1.45 system-ui,sans-serif;margin:0;color:#17201f;background:#e9eeeb}} main{{max-width:1300px;margin:auto}}
@@ -102,12 +120,12 @@ def main():
         .status{{padding:14px 18px;background:#fff1d6;border-left:4px solid #a56a12}}a{{color:#27624f}}@page{{size:A4 landscape;margin:10mm}}@media print{{body{{background:white;font-size:11px}}section{{margin:0;padding:10px 12px;border-radius:0;break-after:page}}h1{{font-size:30px}}h2{{font-size:22px}}.images img{{max-height:135mm;object-fit:contain}}.identity{{font-size:9px}}.caption{{font-size:10px}}}}</style><main>
         <section><p class="eyebrow">TABLETOP ADDED RULES · DEVELOPMENT REVIEW</p><h1>Summoned Creature<br>Visual Overhaul</h1><p>Ten revised original models for Howie's review.</p>
         <p class="status">Development review material. Owner aesthetic approval has not been granted. Wall of Ice's reported functional failure remains open until native formation, obstruction and cleanup are demonstrated.</p>
-        <p>The following pages compare the genuine v0.0.177 exported assets with the revised assets. No concept illustration is presented as an in-game model. Exact source, validation, native results and remaining checks are recorded in planning/SUMMON-OUTSIDER-VISUAL-OVERHAUL-STATE.md.</p>
+        <p>The following pages compare the genuine v0.0.177 exported assets with the revised assets. Supplied original game screenshots appear in expandable reference panels when provided. No concept illustration is presented as an in-game model. Exact source, validation, native results and remaining checks are recorded in planning/SUMMON-OUTSIDER-VISUAL-OVERHAUL-STATE.md.</p>
         <p>Invisible Stalker and Shadow Demon retain their exported bytes after offline inspection; their native invisible/revealed and shadow-material states remain a required review. Satyr's accepted source and runtime appearance paths are preserved.</p>
         <p>Four-arm and wing limits remain explicit: Glabrezu's smaller arms and Vrock/Nalfeshnee wings follow the chest; the native carrier has two arm chains. Visual appendages create no attacks.</p>
         <p class="identity">Before: {before_ref}<br>Review generation HEAD: {after_ref}<br>Uncommitted source changes: {source_dirty}</p>
         <p>Shape references: <a href="https://kurbanovarts.artstation.com/projects/Vyoa5n">Roman Kurbanov's WotR Vrock</a> (layered feather masses and bare head/neck separation); <a href="https://kurbanovarts.artstation.com/projects/qQLvxy">his WotR Babau production art</a> (lean silhouette and pronounced anatomical planes). The project meshes and pixels are original procedural work; third-party artwork is not embedded.</p></section>
-        {''.join(cards)}<section><h2>Owner in-game checklist</h2><ol><li>Compare the revised group with a normal humanoid outdoors and indoors at ordinary camera distance and brightness.</li><li>Walk, turn and attack with Glabrezu, Vrock, Bone Devil, Chain Devil, Bearded Devil and Lillend. Check roots, grip, seams and contact.</li><li>Summon two Chain Devils, dismiss one and check that the other keeps its own chains. Rebuild a representative view and check size and materials.</li><li>Check Stalker's invisible, selected and legitimately revealed states; Shadow Demon's deliberate darkness; Satyr as the unchanged control.</li><li>Cast Wall of Ice into a legal empty lane. Check visible grounded wall, actual obstruction, 36 HP, 12-minute game-time duration and obstruction removal. Rejection feedback alone does not prove this defect fixed.</li></ol><p>Release, merge, further roster additions and owner aesthetic approval remain outside this development checkpoint.</p></section></main></html>'''
+        {''.join(cards)}{controls}<section><h2>Owner in-game checklist</h2><ol><li>Compare the revised group with a normal humanoid outdoors and indoors at ordinary camera distance and brightness.</li><li>Walk, turn and attack with Glabrezu, Vrock, Bone Devil, Chain Devil, Bearded Devil and Lillend. Check roots, grip, seams and contact.</li><li>Summon two Chain Devils, dismiss one and check that the other keeps its own chains. Rebuild a representative view and check size and materials.</li><li>Check Stalker's invisible, selected and legitimately revealed states; Shadow Demon's deliberate darkness; Satyr as the unchanged control.</li><li>Cast Wall of Ice into a legal empty lane. Check visible grounded wall, actual obstruction, 36 HP, 12-minute game-time duration and obstruction removal. Rejection feedback alone does not prove this defect fixed.</li></ol><p>Release, merge, further roster additions and owner aesthetic approval remain outside this development checkpoint.</p></section></main></html>'''
     (args.output/'Summoned-Creature-Visual-Review.html').write_text(document,encoding='utf-8')
 
 
