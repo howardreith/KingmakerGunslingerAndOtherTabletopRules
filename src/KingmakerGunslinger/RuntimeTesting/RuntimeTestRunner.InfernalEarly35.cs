@@ -575,6 +575,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool wallVisualPresent = binding?.WallVisual != null;
             bool wallVisualEnabled = wallVisualPresent &&
                 binding.WallVisual.GetComponent<Renderer>()?.enabled == true;
+            string wallImage = null;
+            if (correction && wallVisualEnabled)
+            {
+                foreach (int frame in SummonOverhaulSettlePartyCamera(section)) yield return frame;
+                wallImage = WriteExpandedSummoningPartyCameraCapture(section,
+                    _request.EvidenceDirectory, "s35-wall-formed.png");
+            }
             int hiddenDonorRenderers = bindingPresent ?
                 binding.HiddenDonorRendererCount : 0;
             Vector3 laneDirection = (destination - start).normalized;
@@ -960,6 +967,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["navmeshCutBinding"] = bindingPresent,
                 ["wallVisualPresent"] = wallVisualPresent,
                 ["wallVisualEnabled"] = wallVisualEnabled,
+                ["wallImage"] = wallImage,
                 ["hiddenDonorRenderers"] = hiddenDonorRenderers,
                 ["sectionOrientation"] = section?.Orientation,
                 ["sectionForward"] = section == null ? null :
