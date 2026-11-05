@@ -267,20 +267,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
                     sourceRetired = true;
                     foreach (int frame in InfernalBoneWaitUntil35(() =>
-                        (wall.Destroyed || wall.Descriptor.State.IsDead || !wall.IsInGame) &&
+                        wall.Buffs.GetBuff(Kingmaker.Blueprints.Root.BlueprintRoot.Instance
+                            .SystemMechanics.SummonedUnitBuff) == null &&
+                        trace.Rows.Any(row => (string)row["event"] == "effect-application" &&
+                            (string)row["target"] == wall.UniqueId &&
+                            (string)row["blueprint"] == "c98d765d063f57a49a03f13d4f697c33") &&
                         originalNodes.All(node => node.Key.Walkable == node.Value), 12))
                         yield return frame;
                     var wallLifetime = wall.Buffs.GetBuff(
                         Kingmaker.Blueprints.Root.BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff);
-                    check(id + "-source-removal", (wall.Destroyed || wall.Descriptor.State.IsDead || !wall.IsInGame) &&
-                        wallLifetime == null && originalNodes.Length > 0 &&
+                    bool nativeRetirement = trace.Rows.Any(row =>
+                        (string)row["event"] == "effect-application" &&
+                        (string)row["target"] == wall.UniqueId &&
+                        (string)row["blueprint"] == "c98d765d063f57a49a03f13d4f697c33");
+                    check(id + "-source-removal", wallLifetime == null && nativeRetirement &&
+                        originalNodes.Length > 0 &&
                         originalNodes.All(node => node.Key.Walkable == node.Value),
                         new JObject { ["sourceDestroyed"] = owner.Destroyed,
                             ["sectionDestroyed"] = wall.Destroyed, ["sectionDead"] = wall.Descriptor.State.IsDead,
                             ["sectionInGame"] = wall.IsInGame, ["lifetimeRemoved"] = wallLifetime == null,
+                            ["nativeDismembermentTransition"] = nativeRetirement,
                             ["nodes"] = originalNodes.Length,
                             ["allOriginalBitsRestored"] = originalNodes.All(node => node.Key.Walkable == node.Value) },
-                        "Actual source removal retires its still-forming wall through the native dead/not-in-game boundary and restores every claimed navigation bit before fixture teardown.");
+                        "Actual source removal removes the wall lifetime, enters the native dismemberment transition and restores every claimed navigation bit before fixture teardown.");
                     // The production contract above has completed. Remove its
                     // request-owned native corpse only to keep the shared
                     // fixture's global reference census exact.
