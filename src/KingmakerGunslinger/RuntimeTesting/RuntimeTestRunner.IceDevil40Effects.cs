@@ -127,6 +127,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["firstFailureActuallyApplied"] = observedFailure,
                         ["secondNativeCondition"] = secondApplied, ["forcedRolls"] = 0 },
                     "Second source ignores the first source's repeat memory; live +4 Charisma changes DC22 to24. At least one real failed save must actually apply native fear.");
+                foreach (int frame in ReviewInfernalRegenerationSpellAndDeath34(fixture,
+                    owner, trace, check, recipientKey: IceDevilVisualPolicy40.Key,
+                    assertionOwner: "ice-devil", getRegeneration: unit =>
+                        unit.Buffs.GetBuff(regenBp).SelectComponents<KytonRegeneration34>().Single(),
+                    isolateFear: true)) yield return frame;
             }
             finally
             {

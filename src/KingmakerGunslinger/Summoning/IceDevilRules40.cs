@@ -67,11 +67,12 @@ namespace KingmakerGunslinger.Summoning
             if (profile?.Bite == null || __result == null) return;
             bool seen = false;
             __result.RemoveAll(attack => {
-                if (!ReferenceEquals(attack?.Hand?.MaybeWeapon?.Blueprint,
-                    profile.Bite)) return false;
-                if (seen) return true;
-                seen = true;
-                return false;
+                bool bite = ReferenceEquals(attack?.Hand?.MaybeWeapon?.Blueprint, profile.Bite);
+                bool keep = IceDevilRules40Policy.RetainBiteAttack(
+                    ReferenceEquals(__instance.Executor.Body.PrimaryHand.MaybeWeapon?.Blueprint, profile.Bite),
+                    bite, ReferenceEquals(attack?.Hand, __instance.Executor.Body.PrimaryHand), seen);
+                if (bite) seen = true;
+                return !keep;
             });
         }
     }
@@ -108,7 +109,8 @@ namespace KingmakerGunslinger.Summoning
                 target == null || target.Destroyed || target.Descriptor.State.IsDead ||
                 Slowed == null || OnFailedSave == null ||
                 !IceDevilRules40Policy.QualifiesForSlow(
-                    OwningBlueprint != null && ReferenceEquals(owner.Blueprint, OwningBlueprint),
+                    OwningBlueprint != null && ReferenceEquals(owner.Blueprint, OwningBlueprint) &&
+                        ReferenceEquals(evt.Weapon?.Owner, owner.Descriptor),
                     ReferenceEquals(evt.Initiator, owner),
                     Spear != null && ReferenceEquals(weapon, Spear),
                     Tail != null && ReferenceEquals(weapon, Tail),

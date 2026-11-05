@@ -1179,6 +1179,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint38-rend-round-stamp", GlabrezuRules38Tests.RendAllowanceReturnsOnTheGameRoundStamp),
             Case("expanded-summoning.sprint40-hidden-graph", IceDevilRules40Tests.HiddenRouteAndDependencies),
             Case("expanded-summoning.sprint40-slow-hit-admission", IceDevilRules40Tests.HitAdmission),
+            Case("expanded-summoning.sprint40-native-haste-fallback-hands", IceDevilRules40Tests.NativeHasteAndFallbackHands),
             Case("expanded-summoning.sprint40-bite-strength", IceDevilRules40Tests.BiteStrength),
             Case("expanded-summoning.sprint40-wall-parameters", IceDevilRules40Tests.WallParameters),
             Case("expanded-summoning.sprint39-printed-contract", NalfeshneeRules39Tests.PrintedContractDerivesRatherThanPins),

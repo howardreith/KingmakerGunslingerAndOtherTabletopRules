@@ -131,7 +131,8 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static List<BlueprintComponent> InfernalDefenses35(
-            BlueprintUnit unit, int naturalArmor, int spellResistance)
+            BlueprintUnit unit, int naturalArmor, int spellResistance,
+            int alertnessBonus = 2, bool coldResistance = true)
         {
             var dr = ScriptableObject.CreateInstance<
                 AddDamageResistancePhysical>();
@@ -166,7 +167,7 @@ namespace KingmakerGunslinger.Blueprints
             evil.Alignment = DamageAlignment.Evil;
             var alertness = ScriptableObject.CreateInstance<AddStatBonus>();
             alertness.Stat = StatType.SkillPerception;
-            alertness.Value = 2;
+            alertness.Value = alertnessBonus;
             alertness.Descriptor = ModifierDescriptor.UntypedStackable;
             var lifetime = ScriptableObject.CreateInstance<
                 InfernalSourceLifetime34>();
@@ -174,10 +175,12 @@ namespace KingmakerGunslinger.Blueprints
             var commands = ScriptableObject.CreateInstance<
                 OutsiderLifetimeBoundary>();
             commands.OwningBlueprint = unit;
-            return new List<BlueprintComponent> { dr, armor, sr, poison,
+            var result = new List<BlueprintComponent> { dr, armor, sr, poison,
                 poisonSpells, lawful, evil, alertness,
                 Energy(DamageEnergyType.Acid, 10),
-                Energy(DamageEnergyType.Cold, 10), lifetime, commands };
+                lifetime, commands };
+            if (coldResistance) result.Insert(result.Count - 2, Energy(DamageEnergyType.Cold, 10));
+            return result;
         }
 
         private static void BindInfernalTraits35(BlueprintFeature traits,

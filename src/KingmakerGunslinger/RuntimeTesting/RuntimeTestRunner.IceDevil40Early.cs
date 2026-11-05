@@ -5,6 +5,7 @@ using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
@@ -87,6 +88,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["speed"] = owner.Stats.Speed.ModifiedValue, ["view"] = view,
                         ["loader"] = status, ["vertices"] = mesh?.vertexCount },
                     "Live profile and original attached geometry, not successful donor fallback.");
+                check("profile-live-totals", owner.Stats.HitPoints.ModifiedValue == 161 &&
+                    owner.Stats.AC.ModifiedValue == 32 && owner.Stats.SaveFortitude.ModifiedValue == 15 &&
+                    owner.Stats.SaveReflex.ModifiedValue == 14 && owner.Stats.SaveWill.ModifiedValue == 12 &&
+                    owner.Stats.GetStat(StatType.SkillPerception).ModifiedValue == 27 &&
+                    owner.Stats.GetStat(StatType.SkillStealth).ModifiedValue == 18 &&
+                    owner.Stats.GetStat(StatType.SkillMobility).ModifiedValue == 22,
+                    new JObject { ["hpTotal"] = owner.Stats.HitPoints.ModifiedValue,
+                        ["ac"] = owner.Stats.AC.ModifiedValue, ["fort"] = owner.Stats.SaveFortitude.ModifiedValue,
+                        ["reflex"] = owner.Stats.SaveReflex.ModifiedValue, ["will"] = owner.Stats.SaveWill.ModifiedValue,
+                        ["perception"] = owner.Stats.GetStat(StatType.SkillPerception).ModifiedValue,
+                        ["stealth"] = owner.Stats.GetStat(StatType.SkillStealth).ModifiedValue,
+                        ["mobility"] = owner.Stats.GetStat(StatType.SkillMobility).ModifiedValue },
+                    "Actual adult totals include feats/class skills once, with no double Constitution HP or inherited Alertness contribution.");
                 foreach (int frame in Sprint22SetPowerAttack(owner, false)) yield return frame;
                 var weapons = new[] { owner.Body.PrimaryHand.MaybeWeapon }
                     .Concat(owner.Body.AdditionalLimbs.Select(x => x.MaybeWeapon))

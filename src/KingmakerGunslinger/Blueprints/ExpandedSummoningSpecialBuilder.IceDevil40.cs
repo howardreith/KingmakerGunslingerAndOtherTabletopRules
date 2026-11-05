@@ -95,8 +95,7 @@ namespace KingmakerGunslinger.Blueprints
             unit.ComponentsArray = unit.ComponentsArray.Concat(new BlueprintComponent[] { profile }).ToArray();
 
             var parts = InfernalDefenses35(unit, IceDevilRules40Policy.NaturalArmor,
-                IceDevilRules40Policy.SpellResistance);
-            parts.Add(Energy(DamageEnergyType.Acid, 10));
+                IceDevilRules40Policy.SpellResistance, alertnessBonus: 4, coldResistance: false);
             var focus = ScriptableObject.CreateInstance<WeaponFocus>();
             focus.WeaponType = spear.Type; focus.AttackBonus = 1;
             var proficiency = ScriptableObject.CreateInstance<AddProficiencies>();
@@ -107,18 +106,17 @@ namespace KingmakerGunslinger.Blueprints
             ownership.GreatWeapon = spear; ownership.Slam = bite; ownership.Rock = tail;
             var biteStrength = ScriptableObject.CreateInstance<IceDevilBiteStrength40>();
             biteStrength.OwningBlueprint = unit; biteStrength.Bite = bite;
-            // Alertness at fourteen ranks supplies +4 Perception. Sense Motive
-            // has no separate native skill consumer and is not approximated.
-            var alertness = ScriptableObject.CreateInstance<AddStatBonus>();
-            alertness.Stat = StatType.SkillPerception;
-            alertness.Value = 4; alertness.Descriptor = ModifierDescriptor.UntypedStackable;
+            // Alertness's +4 Perception comes from the shared helper's own
+            // parameter, once. Sense Motive has no separate native consumer.
+            var intimidate = ScriptableObject.CreateInstance<InfernalIntimidate34>();
+            intimidate.OwningBlueprint = unit; intimidate.TrainedContribution = 14;
             var rider = ScriptableObject.CreateInstance<IceDevilSlowOnHit40>();
             rider.OwningBlueprint = unit; rider.Spear = spear; rider.Tail = tail;
             rider.Slowed = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
                 library, NativeSlow36, "native Slow condition");
             rider.OnFailedSave = IceDevilSlowBranch40(library, rider.Slowed);
             parts.AddRange(new BlueprintComponent[] {
-                focus, proficiency, ownership, biteStrength, alertness, rider });
+                focus, proficiency, ownership, biteStrength, intimidate, rider });
 
             var cone = ConfigureIceDevilColdSpell40(library, symbols, "ConeOfCold",
                 NativeConeOfCold40, "Cone of Cold", 5);

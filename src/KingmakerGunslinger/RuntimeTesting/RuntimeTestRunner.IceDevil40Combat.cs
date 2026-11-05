@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Kingmaker;
+using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.RuleSystem;
@@ -10,6 +11,10 @@ using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.Designers.EventConditionActionSystem.Actions;
+using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Mechanics.Actions;
+using Kingmaker.Utility;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -114,6 +119,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new JObject { ["attacks"] = new JArray(fallbackEvents),
                         ["command"] = Sprint27AiCommand(full) },
                     "Disarmed native full attack retains one bite and one tail, without spear iteratives or a duplicate fallback bite.");
+                // Native Haste supplies its own extra attack. This is effect
+                // setup, not a claimed Haste casting/action-cost observation.
+                var rider = owner.Blueprint.AddFacts.SelectMany(x => x.GetComponents<IceDevilSlowOnHit40>()).Single();
+                var conditional = rider.OnFailedSave.Actions.OfType<Conditional>().Single();
+                var haste = conditional.IfTrue.Actions.Concat(conditional.IfFalse.Actions)
+                    .OfType<ContextActionRemoveBuff>().Single().Buff;
+                if (!ReferenceEquals(owner.Body.PrimaryHand.MaybeWeapon?.Blueprint, profile.Bite))
+                    throw new InvalidOperationException("Unobserved precondition: native Disarm expired before Haste fallback case.");
+                var context = new MechanicsContext(owner, owner.Descriptor, haste, null, new TargetWrapper(owner));
+                context.Params.CasterLevel = 13; context.Params.SpellLevel = 3;
+                var hasted = owner.Buffs.AddBuff(haste, context, TimeSpan.FromSeconds(30));
+                try
+                {
+                    first = trace.Rows.Count;
+                    var hastedFull = new UnitAttack(target) { IsSingleAttack = false, ForceFullAttack = true };
+                    owner.Commands.Run(hastedFull);
+                    foreach (int frame in WaitInfernalCommand34(hastedFull, () => true, 25)) yield return frame;
+                    var hasteEvents = trace.Rows.Skip(first).Where(x => (string)x["event"] == "attack" &&
+                        (string)x["owner"] == owner.UniqueId).ToArray();
+                    check("native-haste-disarmed-fallback", hasted?.IsTurnedOn == true && hasteEvents.Length == 3 &&
+                        hasteEvents.Count(x => (string)x["weapon"] == profile.Bite.AssetGuid) == 2 &&
+                        hasteEvents.Count(x => (string)x["weapon"] == profile.Tail.AssetGuid) == 1,
+                        new JObject { ["attacks"] = new JArray(hasteEvents),
+                            ["nativeHasteBuff"] = haste.AssetGuid, ["observerExtraAttacks"] = 0,
+                            ["nativeBuffSetupNotCastProof"] = true },
+                        "Native Haste legitimately repeats the primary bite; deduplication removes only the separate duplicate limb and preserves the real extra attack.");
+                }
+                finally { hasted?.Remove(); }
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
             }
             finally

@@ -6,6 +6,15 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class IceDevilRules40Tests
     {
+        internal static void NativeHasteAndFallbackHands()
+        {
+            Assertions.True(IceDevilRules40Policy.RetainBiteAttack(true, true, true, false), "First primary fallback bite remains.");
+            Assertions.True(IceDevilRules40Policy.RetainBiteAttack(true, true, true, true), "Native Haste repeats the same primary hand; retain its legitimate extra attack.");
+            Assertions.False(IceDevilRules40Policy.RetainBiteAttack(true, true, false, true), "Only the separately enumerated duplicate bite limb is suppressed.");
+            Assertions.True(IceDevilRules40Policy.RetainBiteAttack(true, true, false, false), "If the native plan omitted the primary hand, preserve its sole additional bite.");
+            Assertions.True(IceDevilRules40Policy.RetainBiteAttack(false, true, false, false), "Armed additional bite remains.");
+            Assertions.True(IceDevilRules40Policy.RetainBiteAttack(true, false, false, true), "Tail and other weapon identities remain.");
+        }
         internal static void HiddenRouteAndDependencies()
         {
             var routes = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
