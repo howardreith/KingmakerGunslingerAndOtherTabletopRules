@@ -8,10 +8,20 @@ Normal regeneration uses the existing generator/arguments below. Blender 4.5.10 
 
 | Current export | Vertices / triangles | SHA-256 |
 | --- | --- | --- |
-| `nalfeshnee-mesh.json` | 5520 / 10952 | `c1bf459faea87029ea28c803cba9ad1e9081133f7db05c45199bfe7c87adc435` |
+| `nalfeshnee-mesh.json` | 5919 / 10864 | `1caa91e1f79f40ec7c1a0ee251783665ad6b0ff0cbb2ea6fad7ff9ce2ef2fc2e` |
 | `nalfeshnee-albedo.png` | - | `3fa71ffd8161700f69464b6aaf3da936d16826a418b0de6f00612847f9a40b84` |
 
 ## Earlier authoring record
+
+PR #96 review correction retains the heavy boar head/trunk, enlarges beveled
+palms and flesh digits, shortens ivory claws, raises brow planes clear of the
+eyes, and replaces peg-like hocks/feet with tapered calves and planted toes.
+The corrected surface exporter assigns each whole face to one atlas tile and
+duplicates UV seams with identical smooth normals/weights. The previous 545
+cross-tile faces are now zero; all 443 duplicated seam positions have matching
+normals/weights. This establishes texture correctness, not owner art approval.
+Current native limitations are in the active checkpoint; historical export
+identities below describe the original release.
 
 # Sprint 39 original Nalfeshnee body
 

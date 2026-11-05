@@ -1,5 +1,30 @@
 # Summon visual overhaul: Wall of Ice investigation
 
+## Latest continuation: observer failed before casting
+
+The immutable development candidate `1dda3428e72f`, ZIP SHA-256
+`bb9de770a6465286b86942471203e151340909ede3a5fcbd09f42414dc9ee24d`,
+ran exact save-free phase `summon-overhaul-wall`. Evidence timestamp
+`20261105T0329350156477Z-disposable-expanded-summoning-sprint32-native-review`
+is under the assigned lab's runtime-evidence. Result FAIL: native Default was
+admitted, then a nested setup wait reset its local waiting flag. The outer
+poller attempted a forbidden manual clock pulse. **No Wall cast was reached.**
+Result SHA-256: `c67de1a082f5880bb440d823edde49377fa1784b26969b7cdef214b4597826f2`.
+The installation, native settings and protected saves were restored exactly.
+
+Observer correction `45c90e2ac519b6c56f9d35d79457863be6edf393` prevents
+manual pulses throughout an owned Default lease. Production compilation and
+10 focused neighbors pass, but a new candidate/native execution is required.
+The observer contains actual movement controls and original-720s-deadline
+controlled expiry; neither executed. No gameplay repair is selected from an
+observer failure, and feedback messages are not a Wall PASS.
+
+The additional allowance used 28.10/30 minutes, retaining the earlier 26.80.
+Another approximately 11-minute build plus native execution exceeds the
+remaining 1.90 minutes. See the active overhaul state for all commands,
+durations, exact identities and remaining acceptance. Earlier investigation
+below is historical and does not override this failed result.
+
 Active investigation for the owner-requested summoned creature visual overhaul.
 This record does not amend Sprint 35's historical qualification or release.
 

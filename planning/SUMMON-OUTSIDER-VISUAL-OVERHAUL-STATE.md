@@ -1,5 +1,111 @@
 # Summoned creature visual overhaul: active checkpoint
 
+## Latest review correction outcome: mission acceptance remains open
+
+The three demonstrated defects and ten further art revisions are implemented
+in `1dda3428e72ff926684402590f0fafc6fd75ddd4`. PR #96 stays draft. Owner
+aesthetic approval remains pending. Older notes and the 26.80-minute ledger
+below are historical evidence, not current acceptance.
+
+One immutable development candidate served all four fresh native processes:
+
+- Purpose `summon-outsider-review-corrections`, version `0.0.177`.
+- ZIP: `artifacts/development-candidates/summon-outsider-review-corrections/1dda3428e72f/KingmakerGunslinger-0.0.177-development-summon-outsider-review-corrections-1dda3428e72f.zip`.
+- ZIP SHA-256 `bb9de770a6465286b86942471203e151340909ede3a5fcbd09f42414dc9ee24d`.
+- DLL SHA-256 `87ac3cc5bf6757442931df488ea2ee0e10cf41dc02a2d989813e2691cec43596`.
+- DLL MVID `17fd2bcf-ef78-499e-95cc-ed14c2dd1a00`.
+- Source fingerprint `6b163067c2238c94bef9d8ab22b45100474d28eb3df07617ac4e2977a5adc3ca`.
+
+### Actual native observations
+
+Directories are under the assigned lab's `runtime-evidence`; timestamp suffix
+is `-disposable-expanded-summoning-sprint32-native-review` in every row.
+
+| Phase / timestamp | Result | Meaning and limits |
+| --- | --- | --- |
+| indoor / `20261105T0326114862116Z` | PASS, 4 assertions | Nalfeshnee custom body/albedo and root/original scale 2.10 observed; actual collider rays hit. Image blurred, so no indoor material/art acceptance. |
+| Wall / `20261105T0329350156477Z` | FAIL, 9 assertions total | Default admitted; nested setup reset its wait flag and the outer poller requested a forbidden manual pulse. Stopped before casting. No formation, obstruction, destruction or expiry result. |
+| daylight / `20261105T0334347226844Z` | FAIL, 9 assertions total | Nalfeshnee body/collider/reference captured. Move finished `Interrupt`, `started=false`, `acted=false`, without horizontal travel. Later bodies/motions and ON reconstruction not reached. Image blurred. |
+| module OFF / `20261105T0340447645602Z` | PASS, 16 assertions | All five identities retain donor visuals and root/original scale 1.0. Same-identity Nalfeshnee native view reconstruction retains 1.0. No save serialization/cold-load claim. |
+
+Native result SHA-256, in row order:
+`b2a75a6702318d85911a646dcc29871326063c98ca830ea0d8c42547ed022be6`,
+`c67de1a082f5880bb440d823edde49377fa1784b26969b7cdef214b4597826f2`,
+`9d79fe4370593ebe5567b3782b89b7e10baf946f42402a7c56508cec3efcc7bd`,
+`d7d50e442017d3f3b6e0df0ef666e699137d3448f78125cc4541b0c967104e22`.
+
+Measured indoor Nalfeshnee renderer AABB: 4.270 × 5.112 × 5.234 m;
+soft collider 4.924 × 5.032 × 4.957 m; core collider 3.967 × 1.480 × 3.967 m.
+Native reference body: 0.871 × 1.949 × 0.708 m. Both collider rays hit.
+Selection geometry **is enlarged**; preserved size enum/corpulence does not
+establish unchanged selection geometry. Movement clearance/UI usability remain
+unaccepted. Reconstruction used native `AttachToViewOnLoad(null)`, not a disk load.
+
+All four transactions exited and restored installed v0.0.140, native settings
+and protected save bytes/lengths/mtime exactly. Original live-tree fingerprint
+`23d713cd130b43a1fbbd970006d2eda73083a6fa3a9867a14e0b78cb846b6b59`.
+Restoration receipts: `artifacts/summon-outsider-overhaul/review-corrections/native-review`.
+No save was loaded or mutated. Raw evidence/private inputs remain outside Git.
+
+### Follow-up observer corrections: compiled, native unrun
+
+`45c90e2ac519b6c56f9d35d79457863be6edf393` changes observers only. Polling
+respects a Default lease independently of nested waiting flags. Movement uses
+the existing infernal observer's three stable native frames and ground-support
+check. Review images use the native party camera after twelve presentation
+frames instead of immediate artificial overhead framing; brightness,
+depth-of-field and materials are not forced. Production compilation and 10
+focused neighbors pass. These changes are **not in the tested ZIP and have
+not run natively**. They are proposed observer corrections, not proven
+material/movement repairs. No Wall mechanic was changed without a demonstrated
+mechanical failure path.
+
+### Additional validation ledger
+
+| Invocation | Seconds | Result |
+| --- | ---: | --- |
+| Pre-candidate focused compile/78 tests, atlas/link/admission/orchestration | 36.00 reserved | PASS; measured gate 26.52s |
+| One immutable development build | 669.08 | PASS; 78/78, exact references and strict package pins |
+| Indoor process including restoration | 189.11 | structural PASS; image insufficient |
+| Wall process including restoration | 158.04 | FAIL before cast |
+| Daylight process including restoration | 320.70 | FAIL at first move |
+| Module-OFF process including restoration | 220.71 | PASS |
+| Observer correction compile/10 tests | 26.32 | PASS; native unrun |
+| Report audit/layout and final text checks | 66.00 reserved | conservative reserve |
+
+**Additional total 28.10/30 minutes; previous 26.80 retained; combined 54.90.**
+Model authoring time is separate. Remaining 1.90 minutes cannot cover another
+approximately 11-minute build plus missing native checks. Current validation
+policy §7 prevents selecting that over-ceiling continuation.
+
+Build command: `scripts/Build-Local.ps1 -DevelopmentPurpose
+summon-outsider-review-corrections -DevelopmentTestFilter
+'expanded-summoning.sprint3;expanded-summoning.overhaul;expanded-summoning.native-profile;expanded-summoning.sna-naming-scale;expanded-summoning.sprint16-view-scale;expanded-summoning.sprint17-snake-production-body-identity;mission.combat-log-publication'
+-ReferenceBundleDir artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references`.
+Each native invocation used `artifacts/summon-overhaul-baseline/run-review-corrections-native.ps1`
+with the exact ZIP/version and one phase, ordered indoor, Wall, daylight, OFF.
+Final gate: `scripts/Invoke-KmgGate.ps1 -Filter
+'expanded-summoning.native-profile;expanded-summoning.sna-naming-scale'`.
+Logs, exact timers and `continuation-validation-ledger.json` remain under
+`artifacts/summon-overhaul-review`.
+
+Illustrated document:
+`artifacts/summon-overhaul-review/illustrated-review/Summoned-Creature-Visual-Review.html`.
+Document SHA-256: `add3eb6c01d6504a84893c73c430b1daefb91582ac10f81cf309b9722a941ded`.
+It compares reviewed PR exports at `3611f921ddeb` with corrected exports,
+includes all twelve owner references, and embeds actual native evidence with
+failure/blur limits. Technical validation, native observation and owner
+aesthetic approval remain separate. Earlier artifacts/receipts are preserved.
+
+Required continuation needs a new allowance: freeze the observer corrections
+into a new candidate; first establish sharp ordinary-camera indoor/daylight
+images and grounded movement, then finish remaining bodies/motions,
+two-Kyton ownership and ON reconstruction. Run the corrected Wall observer
+through legal formation, actual obstruction, destruction and original-deadline
+controlled expiry before choosing any mechanical repair. Keep the 10-foot
+plane/36 HP/720 seconds and installation/save safeguards. Full compatibility,
+release and merge remain deferred.
+
 ## PR #96 review correction continuation
 
 Owner-authorized additional validation allowance: 30 minutes beyond the retained
