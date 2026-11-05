@@ -1,5 +1,29 @@
 # Summon visual overhaul: Wall of Ice investigation
 
+## Sprint 2 complete — full native Wall acceptance and tail contact
+
+[Sprint 2 checkpoint](WALL-OF-ICE-SPRINT2.md): exact executable source
+`36e44513d3fa7e9a670245a2d1bfe39153058702` passed phase `summon-overhaul-wall`
+in one fresh guarded process, **95 assertions**, run
+`20261105T2213068465724Z-afd04aeb8dcf441bafaf72b5dce04b7f`.
+
+Production repairs: donor body stays hidden through formation and removal;
+rejection feedback reaches a player's summoned Bone Devil; ice uses native
+Stone hit/death effects instead of red blood; a retiring section reverts its
+cut's native grid `DynamicBlocked` block before the cut is destroyed.
+
+Every item under "Remaining acceptance" below is now natively observed:
+formation (36 HP, 720 s, grounded), player feedback without polling spam, live
+obstruction, unmodified attack eligibility, repeated-attack and fire
+destruction, owned residual cold and steam, controlled original-deadline
+expiry, exact two-layer navigation restoration after each retirement, and
+correlated tail contact. The historical attack refusal was the installed
+ProperFlanking2 reach dead zone, not distance or a Wall LOS defect. Open owner
+decisions (stone chips, bleed on ice, invisible residual, fire embers/steam
+visibility, natural reach vs ProperFlanking2) are listed in the checkpoint.
+Validation 93.99 min added; cumulative 211.31 min. Dated records below are
+historical.
+
 ## Sprint 1 complete — fixture prerequisite verified; full Wall acceptance pending
 
 [Sprint 1 checkpoint](WALL-FIXTURE-SPRINT1.md) records the implemented shared
