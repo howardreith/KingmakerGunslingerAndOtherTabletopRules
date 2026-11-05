@@ -129,9 +129,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                             var command = new UnitMoveTo(destination, .5f); command.Init(owner);
                             if (!command.CanStart) throw new InvalidOperationException("Native movement command refused.");
                             owner.Commands.Run(command);
-                            bool captured = false;
+                            bool captured = false; int activeFrames = 0;
+                            float activeTravel = 0f, peakVelocity = 0f;
                             foreach (int frame in WaitPresentation32(mode, () => command.IsFinished && owner.Commands.Empty, 16, () => {
-                                if (!captured && Vector3.Distance(start, owner.Position) > .5f) {
+                                // Match the qualified presentation observer:
+                                // native approach can move before Start and a
+                                // partial path may retire with Interrupt. Only
+                                // samples owned by this exact active command
+                                // can supply locomotion evidence.
+                                bool exactActive = ReferenceEquals(owner.Commands.Move, command) && !command.IsFinished;
+                                float velocity = owner.View.MovementAgent.Velocity.magnitude;
+                                if (!exactActive || velocity <= .05f) return;
+                                activeFrames++; peakVelocity = Math.Max(peakVelocity, velocity);
+                                activeTravel = Math.Max(activeTravel, Vector3.Distance(start, owner.Position));
+                                if (!captured && activeTravel > 4f) {
                                     row["movingPose"] = Presentation32Pose(owner, key == "lillend-azata");
                                     row["movingImage"] = WriteExpandedSummoningPartyCameraCapture(owner, _request.EvidenceDirectory,
                                         "overhaul-" + key + "-moving.png", key == "lillend-azata" ?
@@ -139,10 +150,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                                             TheropodVisualPolicy.BodyRendererName); captured = true;
                                 }
                             })) yield return frame;
-                            bool moved = command.IsFinished && command.IsActed && Vector3.Distance(start, owner.Position) > 2f;
+                            bool moved = command.IsFinished && activeFrames >= 3 && activeTravel > 4f && peakVelocity > .05f;
                             row["movement"] = new JObject { ["command"] = Sprint27AiCommand(command), ["lane"] = lane,
                                 ["direction"] = direction, ["start"] = SurveyVector(start), ["destination"] = SurveyVector(destination),
                                 ["end"] = SurveyVector(owner.Position), ["moved"] = moved, ["captured"] = captured,
+                                ["exactActiveFrames"] = activeFrames, ["activeTravelMeters"] = activeTravel,
+                                ["peakNativeVelocity"] = peakVelocity, ["preciseArrivalClaimed"] = false,
                                 ["shapesAfterMovement"] = Cleanup2ShapeHierarchy(owner) };
                             if (!moved || !captured) throw new InvalidOperationException("Actual native movement/clearance incomplete.");
                             if (key == "lillend-azata")
