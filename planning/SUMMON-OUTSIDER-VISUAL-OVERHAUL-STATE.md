@@ -1,5 +1,103 @@
 # Summoned creature visual overhaul: active checkpoint
 
+## Latest approved extension: motion PASS; Wall native eligibility still blocks acceptance
+
+Owner approved “Yes finish those checks”, raising the same continuation ceiling
+from 50 to **70 minutes**, retaining 48.75874597166667. Earlier separate ledgers
+26.80 and 28.10 remain preserved. **Current total: 69.34/70 minutes.**
+
+One immutable development candidate was built from clean source
+`59603558d754c0fe3c8aa5767430030b218daa2b`, version 0.0.177:
+
+- ZIP `artifacts/development-candidates/summon-outsider-review-corrections/59603558d754/KingmakerGunslinger-0.0.177-development-summon-outsider-review-corrections-59603558d754.zip`.
+- ZIP SHA-256 `01a33a806b43c6689bb46e478f6bb5675fb3c8c04a6b5440695dc1eee6faaea9`.
+- DLL SHA-256 `70388f8470318ce2005640ba358bb5a3214dac10391f23ca8bc3dc15726d2ae6`.
+- DLL MVID `92f3e4e3-b337-471c-9839-122deb3388e4`.
+- Source fingerprint `951909abf6fef0e36f47bbbcefdf00e656982341c7dc8fa5dc80dbefcbbfe95d`.
+- Exact-reference compilation, 28 selected tests and strict package validation PASS.
+  All twenty model/albedo pins match the preserved exports. Scale logic unchanged.
+
+### Native results on that exact candidate
+
+Directories use the assigned lab runtime-evidence root and suffix
+`-disposable-expanded-summoning-sprint32-native-review`.
+
+| Phase / timestamp | Result | Observed scope |
+| --- | --- | --- |
+| `summon-overhaul-wall` / `20261105T1450190511141Z` | FAIL / 18 assertions total | Baseline native movement and supported exact-position settling passed. Visible plane captured. Physical attacker remained at its intended point, but native attack eligibility refused at distance 2.5 / approach radius 4.848. Physical breach, cleanup, expiry and tail not reached. No live-mover detour assertion recorded in this run. |
+| `summon-overhaul-motion` / `20261105T1454564587308Z` | PASS / 62 | All seven generic movers, Lillend real healing cast/slot debit, Bearded Devil movement/glaive contacts, Kyton movement/contacts/rendered follow-through and two-owner isolation/cleanup. |
+
+Result SHA-256 in row order:
+`58ff9a8575c112f1c6f6d7086aeba1e127c36b3699ffcf90e935b5dbbc7aaf4d`,
+`dc1f559313ecb03f04aa59428d6a4ea16cecb668c9011a0538fa07de2eb08aac`.
+
+Glabrezu/Vrock/Babau/Hezrou/Barbed/Bone/Lillend exact active-command movement
+covered 5.949 / 5.933 / 5.918 / 5.918 / 5.917 / 5.946 / 5.902 metres over
+57 / 49 / 70 / 70 / 70 / 45 / 68 positive-velocity samples. All seven terminal
+results were Success; precise arrival remains unclaimed. Lillend's acted cast
+healed fixture damage and consumed one real spontaneous slot. Its ordinary-camera
+cast image and the review layout were inspected. Earlier Nalfeshnee indoor,
+daylight, movement and ON reconstruction remain credited to 162d089e; OFF stays
+credited to 1dda3428. No rerun of those completed phases was selected.
+
+The Wall drift correction is now native-observed: exact intended horizontal
+position and three grounded quiet frames passed. Its subsequent failure is
+**native distance/LOS eligibility**, not a proven distance-only failure. Actual
+2.1.7b IL `UnitCommand.get_IsUnitEnoughClose` first checks
+`GeometryUtils.SqrMechanicsDistance` against radius squared, then (if NeedLoS)
+queries `LineOfSightGeometry.HasObstacle` from the executor eye to ApproachPoint.
+The old exception did not record those separate inputs. No gameplay repair is
+inferred from that incomplete evidence, and no native predicate is overridden.
+
+Compiled correction `c40c2d552e4b4b92873caf661ece79a18839d508` records those
+exact inputs before the unchanged eligibility refusal, together with section
+position, original creation receipt, path observations and grid claims. It fixes
+the misleading reach-only classification. Production compilation and 10 focused
+neighbors PASS. **This diagnostic is not in the tested ZIP; native NOT RUN.**
+It is not a physical-damage or Wall-functional repair. Earlier actual detour/fire
+destruction results retain their original candidate identities.
+
+Both new transactions restored the current intake installation v0.0.140 exactly,
+live-tree fingerprint `5c3e4ad499dc5116d2024d06260d11700087379937b96b7372c821628cb9bfbb`.
+Native settings and all protected save bytes/length/mtime match their per-run
+intake. The current fingerprint differs from earlier intake; no old installation
+snapshot was substituted. No save load or mutation was selected.
+
+### Accounting and review artifacts
+
+`artifacts/summon-overhaul-closeout/validation-ledger.json` retains prior entries.
+New seconds: candidate build 557.684; Wall 223.020; motion 333.965; diagnostic
+focused gate 30.371; evidence/report visual QA and final identity checks reserve
+90. Total **69.342727505 minutes**. The remaining 0.66 minutes cannot fit another
+candidate build/native phase; policy §7 prevents automatically starting one.
+Authoring/investigation time is separate from validation accounting.
+
+Commands: `scripts/Build-Local.ps1 -DevelopmentPurpose summon-outsider-review-corrections`
+with the same 28-test named filter/private reference bundle recorded below;
+`artifacts/summon-overhaul-closeout/run-native.ps1` separately selected Wall then
+motion with the exact ZIP/version/purpose, leases and fresh processes;
+`scripts/Invoke-KmgGate.ps1 -Filter 'expanded-summoning.sprint35;expanded-summoning.overhaul'`
+compiled the diagnostic and ran 10 related tests. Logs/timers remain beside the
+new ledger. No unchanged failed phase was repeated.
+
+Updated self-contained illustrated review: **65 actual native frames**, retained
+offline model/owner-reference comparisons, exact result identities and failures:
+`artifacts/summon-overhaul-closeout/illustrated-review/Summoned-Creature-Acceptance-Review.html`.
+SHA-256 `19b3d8857b6146f68259f864333cad2e3496a45098f7fdb4404b1c1cecc8dc8e`.
+Report layout rendered and inspected; raw PNG hashes remain in its manifest.
+Packages, screenshots and machine-local evidence are uncommitted.
+
+PR #96 remains draft. All ten revised creatures have scoped native locomotion
+evidence; final owner aesthetic approval, crowded selection and confined-space
+usability remain manual. Full mission acceptance remains **OPEN**: identify the
+Wall native eligibility failure on a new candidate, then complete physical
+damage, exact grid/claim cleanup, controlled original-deadline expiry,
+post-removal movement and later Bone Devil tail observation. The original exact
+“does nothing” trigger remains unreproduced. No release/full compatibility is claimed.
+
+The dated checkpoints below are preserved historical evidence, not current
+pending-approval requests or permission to repeat their campaigns.
+
 ## Current extension outcome: creature presentation observed; Wall acceptance open
 
 Owner explicitly raised this continuation's ceiling from 30 to **50 minutes**,

@@ -1,5 +1,43 @@
 # Summon visual overhaul: Wall of Ice investigation
 
+## Latest approved 70-minute checkpoint: drift fixed; native attack eligibility unresolved
+
+Candidate source `59603558d754c0fe3c8aa5767430030b218daa2b`, ZIP SHA-256
+`01a33a806b43c6689bb46e478f6bb5675fb3c8c04a6b5440695dc1eee6faaea9`,
+ran Wall at `20261105T1450190511141Z-disposable-expanded-summoning-sprint32-native-review`.
+FAIL / 18 assertions total; result SHA-256
+`58ff9a8575c112f1c6f6d7086aeba1e127c36b3699ffcf90e935b5dbbc7aaf4d`.
+
+Baseline actual movement passed, and the visible plane was captured. The physical
+witness now remained at its intended point through three supported quiet frames:
+the previous 17.92m drift was corrected. Its native UnitAttack eligibility still
+refused at reported separation 2.5m / approach radius 4.848. This run recorded no
+live-mover detour assertion. Physical damage, exact grid restoration, controlled
+expiry, post-removal movement and the later tail check were not reached. Earlier
+actual-detour and controlled fire-destruction results remain credited to their
+own candidates; they are not relabeled as results on this binary.
+
+Actual 2.1.7b IL shows IsUnitEnoughClose includes distance **and LOS**. The prior
+exception incorrectly called every refusal “outside native attack reach”.
+Compiled source `c40c2d552e4b4b92873caf661ece79a18839d508` records the separate
+mechanics distance, radius, native LOS query, eye/target/approach positions,
+creation receipt, path state and claims before retaining the same refusal.
+Production compilation / 10 focused tests PASS; diagnostic native **NOT RUN**
+and absent from the tested package. No mechanical fix or Wall acceptance claimed.
+
+The same candidate's corrected motion phase passed 62 assertions, including all
+seven generic movers, Lillend casting, Bearded Devil contacts and two-Kyton
+isolation. Both transactions restored exact current v0.0.140 installation,
+native settings and protected saves. No save loading/mutation occurred.
+
+Owner approved ceiling 50 to 70, retaining 48.76; total now **69.34/70 minutes**.
+Another build/native run does not fit the remaining allowance. The active overhaul
+state records commands, durations, exact identities and the 65-frame illustrated
+review. Next runtime work must first distinguish native distance from LOS on
+a corrected candidate; do not override either guard or weaken the retained
+damage/navigation/expiry assertions. PR #96 stays draft and Wall acceptance OPEN.
+Earlier dated budget requests below are historical, not current approval state.
+
 ## Current 50-minute continuation: formed wall observed; witness drift blocks remainder
 
 One candidate `55a6bd27dd40`, ZIP SHA-256
