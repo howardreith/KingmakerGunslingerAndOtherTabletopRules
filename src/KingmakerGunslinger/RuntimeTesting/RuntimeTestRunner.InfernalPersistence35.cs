@@ -222,36 +222,50 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData caster, UnitEntityData bone,
             UnitEntityData[] sources, Action<UnitEntityData> assign)
         {
-            BlueprintAbility wallBlueprint =
-                InfernalSavedBlueprint35<BlueprintAbility>(true,
-                    "WallOfIce");
-            BlueprintUnit sectionBlueprint =
-                InfernalSavedBlueprint35<BlueprintUnit>(true,
-                    "WallSectionUnit");
+            foreach (int frame in PrepareInfernalWallPersistence35(caster,
+                bone, sources, ExpandedSummoningSpecialBuilder.Bone35Prefix,
+                "Sprint35", assign))
+                yield return frame;
+        }
+
+        // One actual native wall command path shared by the two bounded wall
+        // consumers. Species-specific blueprints and parameters remain in
+        // their own registered prefix; this helper only owns fixture casting.
+        private IEnumerable<int> PrepareInfernalWallPersistence35(
+            UnitEntityData caster, UnitEntityData source,
+            UnitEntityData[] sources, string prefix, string label,
+            Action<UnitEntityData> assign)
+        {
+            BlueprintAbility wallBlueprint = (BlueprintAbility)
+                ExpandedSummoningBlueprints.Registered.BySymbol[
+                    prefix + "WallOfIce"];
+            BlueprintUnit sectionBlueprint = (BlueprintUnit)
+                ExpandedSummoningBlueprints.Registered.BySymbol[
+                    prefix + "WallSectionUnit"];
             AbilityData data = new AbilityData(
-                bone.Descriptor.Abilities.GetAbility(wallBlueprint));
+                source.Descriptor.Abilities.GetAbility(wallBlueprint));
             DateTime readyDeadline = DateTime.UtcNow.AddSeconds(15);
             while (DateTime.UtcNow < readyDeadline &&
-                (bone.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics
+                (source.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics
                         .SummonedUnitAppearBuff) != null ||
-                 !bone.Descriptor.State.CanAct ||
-                 bone.Commands.Raw.Any(value => value != null &&
+                 !source.Descriptor.State.CanAct ||
+                 source.Commands.Raw.Any(value => value != null &&
                      !value.IsFinished)))
             {
                 Game.Instance.IsPaused = false;
                 yield return 0;
             }
             Game.Instance.IsPaused = true;
-            int activeCommands = bone.Commands.Raw.Count(value =>
+            int activeCommands = source.Commands.Raw.Count(value =>
                 value != null && !value.IsFinished);
-            bool appearanceActive = bone.Buffs.GetBuff(BlueprintRoot.Instance
+            bool appearanceActive = source.Buffs.GetBuff(BlueprintRoot.Instance
                 .SystemMechanics.SummonedUnitAppearBuff) != null;
-            if (appearanceActive || !bone.Descriptor.State.CanAct ||
+            if (appearanceActive || !source.Descriptor.State.CanAct ||
                 activeCommands != 0)
                 throw new InvalidOperationException(
-                    "Sprint35 persistence wall owner never became command-ready: " +
+                    label + " persistence wall owner never became command-ready: " +
                     "appearance=" + appearanceActive + ";canAct=" +
-                    bone.Descriptor.State.CanAct + ";activeCommands=" +
+                    source.Descriptor.State.CanAct + ";activeCommands=" +
                     activeCommands + ".");
             Vector3[] directions = {
                 Vector3.forward, Vector3.right, Vector3.back, Vector3.left,
@@ -266,7 +280,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (Vector3 direction in directions)
             {
                 Vector3 point = ObstacleAnalyzer.GetNearestNode(
-                    bone.Position + direction * distance).clampedPosition;
+                    source.Position + direction * distance).clampedPosition;
                 if (Game.Instance.State.Units.All.Any(unit => unit != null &&
                         !unit.Destroyed && !sources.Contains(unit) &&
                         !ReferenceEquals(unit, caster) &&
@@ -284,18 +298,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (selected == null || command == null)
                 throw new InvalidOperationException(
-                    "No command-ready bounded Sprint35 persistence wall point: " +
+                    "No command-ready bounded " + label + " persistence wall point: " +
                     "available=" + data.IsAvailable + ";canAct=" +
-                    bone.Descriptor.State.CanAct + ";activeCommands=" +
+                    source.Descriptor.State.CanAct + ";activeCommands=" +
                     activeCommands + ".");
             var prior = new HashSet<string>(Game.Instance.State.Units.All
                 .Where(unit => ReferenceEquals(unit.Blueprint,
                     sectionBlueprint)).Select(unit => unit.UniqueId));
             UnitEntityData section = null;
-            SetExpandedSummoningBrainActive(bone, true);
+            SetExpandedSummoningBrainActive(source, true);
             try
             {
-                bone.Commands.Run(command);
+                source.Commands.Run(command);
                 DateTime deadline = DateTime.UtcNow.AddSeconds(30);
                 while (DateTime.UtcNow < deadline &&
                     (!command.IsFinished || section == null))
@@ -311,16 +325,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 Game.Instance.IsPaused = true;
-                SetExpandedSummoningBrainActive(bone, false);
+                SetExpandedSummoningBrainActive(source, false);
             }
             if (command.Result != UnitCommand.ResultType.Success ||
                 section == null)
                 throw new InvalidOperationException(
-                    "Native Sprint35 persistence wall command failed: " +
+                    "Native " + label + " persistence wall command failed: " +
                     command.Result + ";started=" + command.IsStarted +
                     ";acted=" + command.IsActed + ";finished=" +
                     command.IsFinished + ";canStart=" + command.CanStart +
-                    ";queued=" + bone.Commands.Raw.Contains(command) + ".");
+                    ";queued=" + source.Commands.Raw.Contains(command) + ".");
             DateTime claimsDeadline = DateTime.UtcNow.AddSeconds(15);
             while (DateTime.UtcNow < claimsDeadline &&
                 (section.View?.GetComponent<InfernalWallNavmesh35>()?

@@ -102,6 +102,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.Nalfeshnee39Integration.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.Nalfeshnee39Nimbus.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.Nalfeshnee39Persistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.IceDevil40Persistence.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.Nalfeshnee39Public.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.Nalfeshnee39Spells.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBarbedCombat35.cs" />
