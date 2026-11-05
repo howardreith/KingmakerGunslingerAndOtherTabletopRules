@@ -74,6 +74,8 @@ namespace KingmakerGunslinger.Summoning
         internal bool GridApplyCompleted { get; private set; }
         internal bool GridRestoreQueued { get; private set; }
         internal bool GridRestoreCompleted { get; private set; }
+        internal int GridReconcileRequests { get; private set; }
+        internal int GridReconcileCompleted { get; private set; }
         internal string GridFailure { get; private set; }
         internal static int ActiveGridClaimCount { get { return Claims.Count; } }
 
@@ -340,6 +342,7 @@ namespace KingmakerGunslinger.Summoning
                 _astar == null || !ReferenceEquals(AstarPath.active, _astar))
                 return;
             _restoreReconcileQueued = true;
+            GridReconcileRequests++;
             _astar.AddWorkItem(new AstarPath.AstarWorkItem(force =>
             {
                 bool changed = false;
@@ -366,9 +369,19 @@ namespace KingmakerGunslinger.Summoning
                         error.Message;
                     Debug.LogException(error);
                 }
-                finally { _restoreReconcileQueued = false; }
+                finally
+                {
+                    GridReconcileCompleted++;
+                    _restoreReconcileQueued = false;
+                }
                 return true;
             }));
+        }
+
+        internal void ReconcileAfterNativeRetirement()
+        {
+            if (!_released) Release();
+            QueueReleasedGridReconcile();
         }
 
         private void QueueGridRestore()
