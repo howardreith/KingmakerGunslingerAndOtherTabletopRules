@@ -10,6 +10,7 @@ using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Parts;
+using Kingmaker.UI.SettingsUI;
 using Kingmaker.View;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -30,12 +31,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var partyCharacters = Game.Instance.Player.PartyCharacters.ToArray();
                 var remoteCompanions = Game.Instance.Player.RemoteCompanions.ToArray();
                 bool casterInGame = fixture.Caster.IsInGame;
+                bool engagementPause = SettingsRoot.Instance.PauseOnEngagement.CurrentValue;
                 bool casterLent = false, observerFearIsolation = false;
                 UnitEntityData quietAnchor = null; bool anchorBrain = false;
                 try
                 {
+                    SettingsRoot.Instance.PauseOnEngagement.CurrentValue = false;
+                    receipt["engagementPauseAtIntake"] = engagementPause;
                     var placement = new JObject(); receipt["placement"] = placement;
-                    PrepareIceDevilQuietCaster40(fixture, placement);
+                    PrepareIceDevilQuietCaster40(fixture, placement, phase);
                     fixture.Caster.Descriptor.State.AddConditionImmunity(UnitCondition.Frightened);
                     observerFearIsolation = true; placement["observerNativeFearImmunity"] = true;
                     // Native party vision and the real camera follow only this
@@ -94,6 +98,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 finally
                 {
+                    SettingsRoot.Instance.PauseOnEngagement.CurrentValue = engagementPause;
                     if (quietAnchor != null && !quietAnchor.Destroyed && !Cleanup2NativeDefaultPending)
                         Sprint28SetBrainActivePreservingActions(quietAnchor, anchorBrain);
                     if (observerFearIsolation)
@@ -121,45 +126,76 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private void PrepareIceDevilQuietCaster40(ExpandedSummoningCorrectionFixture fixture, JObject receipt)
+        private static Pathfinding.PathNNConstraint Sprint40WalkingConstraint(UnitEntityData actor)
+        {
+            var agent = actor.View?.AgentASP;
+            if (agent == null || AstarPath.active == null)
+                throw new InvalidOperationException("No native Sprint40 walking agent/graph.");
+            var constructTags = agent.GetType().GetMethod("ConstructTags", Cleanup2Fields);
+            if (constructTags == null) throw new MissingMethodException("Native walking ConstructTags.");
+            // Same native static walking query as the qualified S32 listener
+            // survey. Unconstrained nearest queries can select roof/blocked nodes.
+            return new Pathfinding.PathNNConstraint { graphMask = 1,
+                constrainWalkability = true, walkable = true, constrainArea = false,
+                constrainTags = true, tags = (int)constructTags.Invoke(agent, null),
+                constrainDistance = true, distanceXZ = false, distanceXZkeepY = false };
+        }
+
+        private void PrepareIceDevilQuietCaster40(ExpandedSummoningCorrectionFixture fixture, JObject receipt, string phase)
         {
             var protectedUnits = fixture.UnitsBefore.OfType<UnitEntityData>().Where(x =>
                 x != null && !x.Destroyed && x.IsInGame && ReferenceEquals(x.HoldingState, fixture.Scene)).ToArray();
             if (protectedUnits.Length == 0) throw new InvalidOperationException("No nonempty protected scene intake.");
             Vector3 origin = fixture.Caster.Position;
+            var constraint = Sprint40WalkingConstraint(fixture.Caster);
+            var ground = AstarPath.active.GetNearest(origin, constraint);
+            if (ground.node == null || !ground.node.Walkable)
+                throw new InvalidOperationException("No qualified native walking origin.");
+            constraint.SetStart(ground.node); constraint.constrainArea = true;
+            bool rangeOnly = phase == ExpandedSummoningNativeProfilePolicy.Sprint40NalfeshneeRangePhase;
+            float minimumGap = rangeOnly ? 40f : 60f;
+            int[] radii = rangeOnly ? new[] { 42, 48, 56, 62, 64, 72, 80, 88, 96 } :
+                new[] { 62, 64, 72, 80, 88, 96 };
+            receipt["minimumProtectedGapMeters"] = minimumGap;
+            receipt["nativeWalkingGraph"] = ground.node.GraphIndex;
+            receipt["nativeTraversalTags"] = constraint.tags;
             var candidates = new JArray(); receipt["candidates"] = candidates;
             receipt["origin"] = Vec(origin);
             receipt["protectedActors"] = new JArray(protectedUnits.Select(x => new JObject {
                 ["unit"] = x.UniqueId, ["position"] = Vec(x.Position), ["corpulence"] = x.Corpulence }));
             int surveyed = 0;
-            for (int radius = 64; radius <= 128; radius += 8)
-            foreach (Vector3 direction in CompassOffsets)
+            foreach (int radius in radii)
+            for (int angle = 0; angle < 24; angle++)
             {
                 surveyed++;
+                Vector3 direction = Quaternion.Euler(0, angle * 15f, 0) * Vector3.forward;
                 Vector3 requested = origin + direction.normalized * radius;
-                var node = ObstacleAnalyzer.GetNearestNode(requested);
+                var node = AstarPath.active.GetNearest(requested, constraint);
                 Vector3 projection = requested - node.clampedPosition; projection.y = 0;
                 var candidate = new JObject { ["requested"] = Vec(requested),
                     ["clamped"] = Vec(node.clampedPosition), ["node"] = node.node != null,
                     ["walkable"] = node.node != null && node.node.Walkable,
                     ["horizontalProjectionGap"] = projection.magnitude };
                 candidates.Add(candidate);
-                if (node.node == null || !node.node.Walkable || projection.magnitude > 1.5f)
+                if (node.node == null || !node.node.Walkable || !constraint.Suitable(node.node) || projection.magnitude > 1.5f)
                     continue;
                 Vector3 point = node.clampedPosition;
                 float separation = protectedUnits.Min(x => {
                     Vector3 delta = x.Position - point; delta.y = 0; return delta.magnitude - x.Corpulence;
                 });
                 candidate["protectedGapMeters"] = separation;
-                if (separation < 60f) continue;
+                if (separation < minimumGap) continue;
+                var graph = AstarPath.active.graphs[node.node.GraphIndex] as Pathfinding.IRaycastableGraph;
+                if (graph == null) continue;
                 bool localRoute = false;
                 foreach (var localDirection in CompassOffsets.Take(4))
                 {
                     Vector3 requestedEnd = point + localDirection * 5f;
-                    var end = ObstacleAnalyzer.GetNearestNode(requestedEnd);
+                    var end = AstarPath.active.GetNearest(requestedEnd, constraint);
                     Vector3 endProjection = requestedEnd - end.clampedPosition; endProjection.y = 0;
+                    Pathfinding.GraphHitInfo hit;
                     if (end.node != null && end.node.Walkable && endProjection.magnitude <= 1.5f &&
-                        Vector3.Distance(ObstacleAnalyzer.TraceAlongNavmesh(point, end.clampedPosition), end.clampedPosition) <= .15f)
+                        !graph.Linecast(point, end.clampedPosition, node.node, out hit, new List<Pathfinding.GraphNode>()))
                     { localRoute = true; break; }
                 }
                 candidate["localNativeRoute"] = localRoute;
@@ -167,12 +203,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // Only the disposable caster moves. The original party anchor
                 // and every other intake actor remain at their exact positions.
                 PlaceExpandedSummoningUnit(fixture.Caster, point);
+                if (rangeOnly)
+                {
+                    var spans = new JArray(); candidate["rangeRoomSurvey"] = spans;
+                    Vector3 spanStart, spanEnd;
+                    if (!TryNalfeshneeRangeSpan40(fixture.Caster, 20f, constraint, spans, out spanStart, out spanEnd))
+                        continue;
+                }
                 receipt["caster"] = fixture.Caster.UniqueId; receipt["point"] = Vec(point);
                 receipt["nearestProtectedGapMeters"] = separation; receipt["surveyed"] = surveyed;
                 receipt["scene"] = "existing Oleg outdoor fixture"; receipt["intakeActorsMoved"] = 0;
                 return;
             }
-            throw new InvalidOperationException("No bounded native quiet caster position60m from protected intake; no summon created.");
+            throw new InvalidOperationException("No bounded native walking fixture with protected separation/room; no summon created.");
         }
 
         private sealed class IceDevilFixtureIsolation40 : IDisposable,
