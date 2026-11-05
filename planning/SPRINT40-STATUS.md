@@ -9,7 +9,7 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 - HOWARD-LAPTOP, root `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
   `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Reviewed candidate
-  product head `6317ab958b3a3345949cf1271bd204672e9176fe`. No game,
+  product head `93674ebb14ef5e7e2cf458171048f582909b02e8`. No game,
   deployment, staging or lease is active; the live KMG tree is restored to
   SHA256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 - Recovery is CLOSED EXACTLY. The typed `BlueprintWeaponEnchantment` factory
@@ -126,8 +126,9 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   passes Mods/references/settings/saves with no active game or lease. The narrow
   repair centralizes the 27-private-identity boundary in production and shares it
   with the real catalog test. Production compilation and all five focused
-  Sprint40 checks pass. NEXT: review/commit/push, rebuild once, then rerun the
-  early phase on the new exact candidate.
+  Sprint40 checks pass; product repair commit `93674ebb` is pushed. The exact
+  product validator is repinned to that reviewed source. NEXT: commit/push the
+  reporting pin, rebuild once, then rerun the early phase on the new exact candidate.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 
