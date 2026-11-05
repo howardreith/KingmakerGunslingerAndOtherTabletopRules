@@ -71,8 +71,13 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   and releases. PR97 is draft and will be refreshed after the next guarded push.
 - The v0.0.178 version-only metadata, exact-product validator/static record,
   regenerated roster ledger and stable notes are prepared; direct and dispatched
-  repository validation PASS. No material gameplay decision remains. Sprint40
-  remains unreleased. NEXT: run the complete clean source/build/package gate,
+  repository validation PASS. The first full-gate attempt stopped before product
+  compilation because the disposable Sprint40 startup-file fixture still passed
+  literal version 0.0.177 to the current-version guard; its positive request now
+  derives the active Info version while historical negative cases remain pinned.
+  No game, deployment or save was touched. No material gameplay decision remains.
+  Sprint40 remains unreleased. NEXT: run the affected startup fixture, commit its
+  repair, then rerun the complete clean source/build/package gate,
   then execute fresh mechanics,
   route/integration and six-process ON/OFF persistence campaign before exact-byte
   publication, public-download verification, closing restoration and final records.
