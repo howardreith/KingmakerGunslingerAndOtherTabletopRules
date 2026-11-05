@@ -425,6 +425,45 @@ namespace KingmakerGunslinger.DomainTests
                 "Bone cannot cross-bind the Barbed body.");
         }
 
+        internal static void WallFeedbackReachesAPlayersSummonedBoneDevil()
+        {
+            Assertions.True(InfernalRules35.WallFeedbackVisibleToPlayer(false, true),
+                "A player's Bone Devil carries the Summoned faction, so its summoner must reveal the message.");
+            Assertions.True(InfernalRules35.WallFeedbackVisibleToPlayer(true, false),
+                "A directly player-faction caster also sees the message.");
+            Assertions.False(InfernalRules35.WallFeedbackVisibleToPlayer(false, false),
+                "A caster with no player link publishes nothing to the player's log.");
+        }
+
+        internal static void WallSectionHidesOnlyItsDonorBodyMeshes()
+        {
+            Assertions.True(InfernalRules35.WallSuppressesRenderer(false, true),
+                "A native donor mesh on the section view stays hidden.");
+            Assertions.False(InfernalRules35.WallSuppressesRenderer(true, true),
+                "The private ice plane stays drawn.");
+            Assertions.False(InfernalRules35.WallSuppressesRenderer(false, false),
+                "Particle effects on the section view are not body meshes.");
+        }
+
+        internal static void WallDamageSequenceRequiresContinuousLethalHits()
+        {
+            Assertions.True(InfernalRules35.WallDamageSequenceDestroys(
+                new[] { 0, 5, 12, 20, 29 }, new[] { 5, 12, 20, 29, 37 }, 36),
+                "Consecutive native hits reaching 36 destroy the section.");
+            Assertions.False(InfernalRules35.WallDamageSequenceDestroys(
+                new[] { 0, 5 }, new[] { 5, 12 }, 36),
+                "A section still standing has no destruction proof.");
+            Assertions.False(InfernalRules35.WallDamageSequenceDestroys(
+                new[] { 0, 9 }, new[] { 5, 40 }, 36),
+                "An unexplained jump between hits is not one correlated sequence.");
+            Assertions.False(InfernalRules35.WallDamageSequenceDestroys(
+                new[] { 3 }, new[] { 40 }, 36),
+                "Damage the sequence never observed cannot be credited to it.");
+            Assertions.False(InfernalRules35.WallDamageSequenceDestroys(
+                new int[0], new int[0], 36),
+                "No damage observed is no destruction.");
+        }
+
         internal static void WallOfIceKeepsFormationAndBreachRulesDistinct()
         {
             Assertions.Equal(18,
