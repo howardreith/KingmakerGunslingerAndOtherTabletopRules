@@ -297,6 +297,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["nativeDismembermentTransition"] = nativeRetirement,
                             ["bindingRestoreCompleted"] = binding == null || binding.GridRestoreCompleted,
                             ["bindingClaims"] = binding?.GridNodesClaimed,
+                            ["reconcileRequests"] = binding?.GridReconcileRequests,
+                            ["reconcileCompleted"] = binding?.GridReconcileCompleted,
                             ["activeClaims"] = InfernalWallNavmesh35.ActiveGridClaimCount,
                             ["nodes"] = originalNodes.Length,
                             ["allOriginalBitsRestored"] = nodeMismatches.Length == 0,

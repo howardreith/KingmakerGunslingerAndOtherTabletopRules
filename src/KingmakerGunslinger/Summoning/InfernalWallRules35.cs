@@ -392,7 +392,13 @@ namespace KingmakerGunslinger.Summoning
 
         public void HandleUnitSpawned(UnitEntityData unit) { }
         public void HandleUnitDestroyed(UnitEntityData unit)
-        { HandleUnitDeath(unit); }
+        {
+            HandleUnitDeath(unit);
+            var binding = unit?.View == null ? null :
+                unit.View.GetComponent<InfernalWallNavmesh35>();
+            if (binding != null && ExactOwner(unit))
+                binding.ReconcileAfterNativeRetirement();
+        }
 
         public void HandleUnitDeath(UnitEntityData unit)
         {
