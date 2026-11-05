@@ -11,13 +11,14 @@ from expanded_summoning_manifest import parsed_creatures, suppressed_keys
 import validate_development_candidate as identities
 import expanded_summoning_manifest as manifest
 
-# Exact merged product before the version-only release metadata change, and the
-# tested product source of the latest reviewed stable v0.0.177.
-PRODUCT = "13867399d4681f8953f24fa181d240e6f18d2d44"
+# Exact reviewed product after the focused full-gate contract repair, and the
+# tested product source of the latest reviewed stable v0.0.177. The reviewed
+# product already carries final version metadata, so metadata must remain exact.
+PRODUCT = "63e552820652d643ebf807f04a219b38d9819752"
 RELEASED = "d1365d621295cf63c7b646247d6bf604edb208da"
 VERSION = "0.0.178"
 INFORMATIONAL = VERSION + "-expanded-summoning-ice-devil"
-OLD_INFORMATIONAL = "0.0.177-expanded-summoning-nalfeshnee"
+OLD_INFORMATIONAL = INFORMATIONAL
 ASSEMBLY = "src/KingmakerGunslinger/Properties/AssemblyInfo.cs"
 ROOTS = ("src/KingmakerGunslinger", "assets", "assets-source", "blueprints")
 RECORD_KEY = "expandedSummoningSprint40Release178"
