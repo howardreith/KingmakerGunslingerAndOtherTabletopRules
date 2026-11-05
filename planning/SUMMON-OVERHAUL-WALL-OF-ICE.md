@@ -14,6 +14,16 @@ This record does not amend Sprint 35's historical qualification or release.
 - No native execution, cast, save access or installation mutation has been
   performed by this investigation.
 
+Final visual candidate `0ecccbf2c601c33ce250ac285bca1d3a529accb1` compiled and
+passed strict development package validation. Its ZIP SHA-256 is
+`56bef143018617b63943b5316019e47edacd8ba35220c5c5afa14dadfd540238`.
+The cumulative instrumented validation reached 26.80 min; the next existing
+native sequence was deferred because its additional 6-10 min would exceed the
+30-minute owner policy ceiling. Consequently no Wall reproduction, functional
+repair, actual obstruction or native expiry is claimed. See the
+[active candidate record](SUMMON-OUTSIDER-VISUAL-OVERHAUL-STATE.md) for exact
+artifact identities, complete timings and the prepared unrun guarded driver.
+
 ## Baseline build preparation
 
 - Initial direct script invocation was refused by the machine's execution
