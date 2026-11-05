@@ -165,12 +165,12 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(batchAdditions.All(key => ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                     .Count(value => value.StartsWith(key + "<", StringComparison.Ordinal)) == 1),
                 "Each selected new body retains its actual borrowed-rig disclosure.");
-            // Sprint 39's Nalfeshnee rides the same measured free-hands rig
-            // as every released Sprint 34-38 outsider while its own original
-            // body is authored, so it counts here exactly as the Glabrezu and
-            // Vrock do: the trailing term moves from three to four.
+            // Sprint 39's Nalfeshnee and Sprint 40's Ice Devil ride the same
+            // measured free-hands rig as the released Sprint 34-38 outsiders
+            // while retaining their own original bodies. They therefore move
+            // the trailing term from three to five.
             Assertions.Equal(43 + TheropodRulesPolicy.AppendedCreatureCount +
-                    GiantBodyRulesPolicy.AppendedCreatureCount + 1 + GiantHumanoidRulesPolicy.BorrowedVisualCount + 4,
+                    GiantBodyRulesPolicy.AppendedCreatureCount + 1 + GiantHumanoidRulesPolicy.BorrowedVisualCount + 5,
                 ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count(value => !value.StartsWith("griffon<", StringComparison.Ordinal) &&
                     !batchAdditions.Any(key => value.StartsWith(key + "<", StringComparison.Ordinal))),
                 "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, including both Sprint 23 dinosaurs whose project-owned bodies bind to their measured native animation donors.");

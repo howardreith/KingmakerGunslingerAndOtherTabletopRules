@@ -583,7 +583,10 @@ namespace KingmakerGunslinger.DomainTests
                     "The authoritative boundary runtime matrix contract is missing: " + token);
             string common = File.ReadAllText(Path.Combine(root, "scripts",
                 "RuntimeAutomation.Common.ps1"));
-            Assertions.True(common.Contains("$Parameters.Count -ne 13") &&
+            Assertions.True(common.Contains(
+                    "$Parameters.Count -ne $(if($sprint40Recovery){14}else{13})") &&
+                common.Contains(
+                    "$sprint40Recovery = $Parameters.ContainsKey('sprint40DiagnosticRecovery')") &&
                 common.Contains("expandedSummoning = [bool]$Parameters.expandedSummoning") &&
                 common.Contains("elvenBranchedSpears = [bool]$Parameters.elvenBranchedSpears") &&
                 common.Contains("easternWeapons = [bool]$Parameters.easternWeapons") &&
@@ -615,7 +618,8 @@ namespace KingmakerGunslinger.DomainTests
                 "KingmakerGunslinger", "RuntimeTesting",
                 "RuntimeTestRequest.cs")).Replace("\r\n", "\n");
             Assertions.True(request.Contains(
-                "request.Parameters.Count != 13") && request.Contains(
+                "request.Parameters.Count != (diagnosticRecovery ? 14 : 13)") &&
+                request.Contains("Property(\"sprint40DiagnosticRecovery\")") && request.Contains(
                     "Property(\"elvenBranchedSpears\")") && request.Contains(
                     "request.Parameters[\"elvenBranchedSpears\"]") && request.Contains(
                     "request.Parameters[\"easternWeapons\"]") && request.Contains(
