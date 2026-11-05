@@ -312,7 +312,8 @@ namespace KingmakerGunslinger.DomainTests
                     "No scale mutation of ordinary Crocodile or native donor: " + name);
             Assertions.True(SummonViewScaleCatalog.All.Where(value =>
                 value.CreatureKey != "dire-crocodile" &&
-                value.CreatureKey != TheropodRulesPolicy.TyrannosaurusKey)
+                value.CreatureKey != TheropodRulesPolicy.TyrannosaurusKey &&
+                !SummonViewScaleCatalog.IsRevisedOutsider(value.CreatureKey))
                 .All(value =>
                     value.Multiplier >= .20f && value.Multiplier <= 1.25f),
                 "No general widening of existing creature scale bounds.");

@@ -384,8 +384,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(payload["bones"].Values<string>()
                 .SequenceEqual(InfernalVisualPolicy36.Bones),
                 "The body rides the same measured rig order the released outsiders use.");
-            Assertions.Equal(InfernalVisualPolicy36.RigSha256,
-                (string)payload["rigSha256"],
+            Assertions.True(InfernalVisualPolicy36.IsReviewedRig(
+                (string)payload["rigSha256"]),
                 "The exact measured capture behind the released bodies is the one used here.");
             var albedo = payload["albedo"];
             using (var hash = SHA256.Create())
@@ -405,7 +405,7 @@ namespace KingmakerGunslinger.DomainTests
                 (bool)payload["hookedBeak"] &&
                 (int)payload["visibleWings"] == 2 &&
                 (int)payload["visibleTalons"] == 2 &&
-                (int)payload["visiblePrimaries"] == 14,
+                (int)payload["visiblePrimaries"] == 18,
                 "The body carries its vulture head, hooked beak, two wings and taloned feet.");
             Assertions.True((bool)payload["rigidWings"] &&
                 !(bool)payload["articulatedWingBones"],

@@ -159,7 +159,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(SummonViewScaleCatalog.TryGetMultiplier(
                     "KMG_Summoning_Unit_Eagle", out eagle) && eagle == 0.30f,
                 "Eagle view-only scale changed.");
-            Assertions.True(SummonViewScaleCatalog.All.All(value =>
+            Assertions.True(SummonViewScaleCatalog.All.Where(value =>
+                    !SummonViewScaleCatalog.IsRevisedOutsider(value.CreatureKey)).All(value =>
                     value.Multiplier >= 0.20f &&
                     (value.CreatureKey == "dire-crocodile" ||
                         value.CreatureKey ==
@@ -167,6 +168,45 @@ namespace KingmakerGunslinger.DomainTests
                         ? value.Multiplier == 2.0f :
                         value.Multiplier <= 1.25f)),
                 "Only the two reviewed Gargantuan original bodies have an explicit 2x view step.");
+            foreach (string token in new[] { "Satyr", "Babau", "BeardedDevil",
+                "KytonChainDevil", "BarbedDevil", "LillendAzata" })
+            {
+                float unchanged;
+                Assertions.False(SummonViewScaleCatalog.TryGetMultiplier(
+                    "KMG_Summoning_Unit_" + token, out unchanged),
+                    "The scoped size correction preserves " + token + ".");
+                Assertions.Equal(1f, unchanged, "Unlisted identities retain their authored scale.");
+            }
+            float huge, large;
+            Assertions.True(SummonViewScaleCatalog.TryGetMultiplier(
+                "KMG_Summoning_Unit_Nalfeshnee", out huge) &&
+                SummonViewScaleCatalog.TryGetMultiplier(
+                "KMG_Summoning_Unit_Vrock", out large) && huge > large && large > 1f,
+                "Measured original Huge bodies gain a larger display correction than Large bodies.");
+            Assertions.True(SummonViewScaleCatalog.All.Where(value =>
+                SummonViewScaleCatalog.IsRevisedOutsider(value.CreatureKey))
+                .All(value => value.RetainNativeScale),
+                "The five new corrections survive the native per-frame scale assignment.");
+            foreach (string token in new[] { "Nalfeshnee", "Glabrezu", "Vrock", "Hezrou", "BoneDevil" })
+            {
+                SummonViewScaleSpec permitted;
+                string name = "KMG_Summoning_Unit_" + token;
+                Assertions.False(SummonViewScaleCatalog.TryGetApplicableSpec(name, false, out permitted),
+                    "Module OFF must refuse the retained donor enlargement: " + token);
+                Assertions.True(permitted == null, "An OFF refusal leaks no applicable spec.");
+                Assertions.True(SummonViewScaleCatalog.TryGetApplicableSpec(name, true, out permitted) &&
+                    permitted.RetainNativeScale && permitted.Multiplier > 1,
+                    "An OFF refusal must not consume the later ON application: " + token);
+            }
+            SummonViewScaleSpec legacy;
+            Assertions.True(SummonViewScaleCatalog.TryGetApplicableSpec(
+                "KMG_Summoning_Unit_Eagle", false, out legacy) && legacy.Multiplier == .30f,
+                "The review correction preserves the older scale policy.");
+            Assertions.True(InfernalVisualPolicy36.IsReviewedRig(InfernalVisualPolicy36.RigSha256) &&
+                InfernalVisualPolicy36.IsReviewedRig(InfernalVisualPolicy36.EquivalentRigSha256) &&
+                !InfernalVisualPolicy36.IsReviewedRig(null) &&
+                !InfernalVisualPolicy36.IsReviewedRig(new string('0', 64)),
+                "Only the historical and geometry-equivalent raw capture receipts are admitted.");
             string runtime = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestRunner.cs"));

@@ -1,3 +1,28 @@
+## Current owner visual-overhaul revision
+
+The November 2026 owner mission brings the previously deferred cosmetic work into scope. The current exports use opt-in `continuous-bodies/outsider_surface.py` to unite organic skin and blend the existing two-influence weights. Individual teeth, horns, feather vanes and membranes retain intentional ownership. The original rig articulation limits remain. No mechanical profile, attack, route, GUID, icon or save identity changed.
+
+Raw geometry-free input capture SHA-256 is `6443b580c8019d2a32de616ef610df3c2aa851c7c998044b56e0c29b4494e65d`. Before revision, this locally retained capture regenerated the released Nalfeshnee geometry blob and albedo manifest byte-for-byte. New exports truthfully name this capture; the historical `727645...ad7a4` authority is retained separately. Both are an explicit closed loader allowlist.
+
+Normal regeneration uses the existing generator/arguments below. Blender 4.5.10 and the existing pipeline are retained; private captures, blends, reports and previews stay out of Git/packages. Exact exported front, side and party-angle previews have been inspected offline. Native lighting, motion, measured world-space scale and owner aesthetic approval remain separate and unverified until the [active checkpoint](../../../planning/SUMMON-OUTSIDER-VISUAL-OVERHAUL-STATE.md) records actual observations.
+
+| Current export | Vertices / triangles | SHA-256 |
+| --- | --- | --- |
+| `nalfeshnee-mesh.json` | 5919 / 10864 | `1caa91e1f79f40ec7c1a0ee251783665ad6b0ff0cbb2ea6fad7ff9ce2ef2fc2e` |
+| `nalfeshnee-albedo.png` | - | `3fa71ffd8161700f69464b6aaf3da936d16826a418b0de6f00612847f9a40b84` |
+
+## Earlier authoring record
+
+PR #96 review correction retains the heavy boar head/trunk, enlarges beveled
+palms and flesh digits, shortens ivory claws, raises brow planes clear of the
+eyes, and replaces peg-like hocks/feet with tapered calves and planted toes.
+The corrected surface exporter assigns each whole face to one atlas tile and
+duplicates UV seams with identical smooth normals/weights. The previous 545
+cross-tile faces are now zero; all 443 duplicated seam positions have matching
+normals/weights. This establishes texture correctness, not owner art approval.
+Current native limitations are in the active checkpoint; historical export
+identities below describe the original release.
+
 # Sprint 39 original Nalfeshnee body
 
 The Nalfeshnee uses distinct original procedural geometry and an original
@@ -8,12 +33,12 @@ animation clips. The native rig remains a runtime dependency.
 
 The Sprint 39 installed-library observation
 (`20261104T0415356825476Z-observe-expanded-summoning-sprint39-native-inputs`)
-found **no installed Kingmaker Nalfeshnee** — zero units and zero name matches
-of any type — so none is reused. The mechanical donor, the animation donor and
+found **no installed Kingmaker Nalfeshnee** â€” zero units and zero name matches
+of any type â€” so none is reused. The mechanical donor, the animation donor and
 the rendered mesh are three different things and are recorded separately here:
 
 - animation carrier: native donor `a8cbd4cdb0feaf64eab1452257c3c971`, prefab
-  `d6db6ba3b2c459a48ba0730beef0bac8` — the same measured free-hands rig the
+  `d6db6ba3b2c459a48ba0730beef0bac8` â€” the same measured free-hands rig the
   released Sprint 34 to 38 outsiders ride;
 - rendered mesh: this project's own geometry, below;
 - mechanics: the Sprint 39 builder, which shares nothing with the rig.
@@ -71,11 +96,11 @@ required separately.
 Recorded because the second was a real defect rather than polish.
 
 1. The wings were first rooted at `UP .070 / FRONT -.050` and sank into the
-   shoulder mass — present in the mesh, invisible in a render. They were
+   shoulder mass â€” present in the mesh, invisible in a render. They were
    lifted and pushed back until the membrane clears the torso silhouette.
 2. The membrane was first filled with a grid of `mass()` ellipsoids, copying
    the icon renderer's approach. That renderer uses **metaballs**, which merge;
-   this exporter has no merge, so the vane rendered as a string of beads —
+   this exporter has no merge, so the vane rendered as a string of beads â€”
    exactly the failure the Sprint 37 Vrock docstring warns about. The membrane
    is now built from overlapping wide tapering **tubes**, which are continuous
    surfaces, as the Vrock's primaries are.

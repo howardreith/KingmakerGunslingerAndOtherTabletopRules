@@ -72,8 +72,7 @@ namespace KingmakerGunslinger.Assets
                         NalfeshneeVisualPolicy39.Nalfeshnee ||
                     !Enumerable.SequenceEqual(payload["bones"].Values<string>(),
                         InfernalVisualPolicy36.Bones) ||
-                    (string)payload["rigSha256"] !=
-                        InfernalVisualPolicy36.RigSha256 ||
+                    !InfernalVisualPolicy36.IsReviewedRig((string)payload["rigSha256"]) ||
                     (string)payload["nativeDonor"] !=
                         TheropodVisualPolicy.DonorGuid ||
                     (string)payload["nativePrefab"] !=

@@ -1,3 +1,79 @@
+## PR 96 review correction: original devil surfaces
+
+The review found and this revision reproduces 20 collapsed Kyton hanging links out of 64: minimum old short ellipse semi-axis 0.001627759 units against a 0.010 tube radius. The central link builder now projects the minor axis perpendicular to the chain tangent and selects a stable least-aligned fallback when necessary. All corrected centreline ellipses retain the authored 0.027 minor radius (0.017 clear opening after the tube). Four palm-owned attack regions and the native runtime contact/deformation logic are unchanged. New per-link vertex receipts permit checks of actual exported openings in addition to the existing ownership checks.
+
+Kyton now has a shaped dark red-brown leather jerkin/skirt, asymmetric shoulder plate, boots, one diagonal chain and shorter front catenary. Body chains are placed against the authored garment surface; cuffs still own the four hanging drapes. Barbazu keeps its glaive/native hand carrier and green infernal identity, with staggered beard locks, flatter shoulders, filled lower-leg/hock transitions and articulated broad toes.
+
+The shared reviewed skin helper preserves atlas seams per face. All four final meshes have zero triangles spanning atlas regions in `tools/check_original_mesh_atlas.py`. Link regression tests pass 3/3; combined link+four-asset atlas check wall duration 0.462 seconds. Front and elevated views of all four, plus Bone side, were inspected as offline shape evidence. Native material/motion, selection/contact/clearance and owner aesthetic approval remain separate and pending. Raw capture provenance remains the previously reviewed `.6443...e65d` geometry-free input.
+
+| Current export | Vertices / triangles | SHA-256 |
+| --- | --- | --- |
+| `bearded-devil-mesh.json` | 4439 / 8778 | `22b4482f197f2d550cf583878ac8ad3072d74ff0baf1f1f899cf2f3a2e4b9b75` |
+| `bearded-devil-albedo.png` | - | `fd61649a0caf17e9ccd8d66e55092d2c1d98df88509295de98958c5b78d4c888` |
+| `kyton-chain-devil-mesh.json` | 18330 / 35796 | `43822d0ac8c2633940fca537ab57ce9014cdce5602a22657e25c26734b2d266e` |
+| `kyton-chain-devil-albedo.png` | - | `0aa0b99b66dc92bd602e204f26c61c214b50dcc360390c39d77c15dadee97e3e` |
+
+## Earlier visual-overhaul record
+
+## Owner visual overhaul, November 2026 (development draft)
+
+The current Barbazu and Kyton exports supersede the original surface treatment
+described below. They remain original authored geometry; native meshes, clips,
+materials and textures remain runtime references and are not copied.
+
+Both bodies now opt into `continuous-bodies/outsider_surface.py`: a voxel union
+of the selected organic surfaces, with transferred and smoothed two-influence
+skin weights. Eyes, horns, beard, clothing and chains stay intentional separate
+solids. The measured `Torso_Upper` joint is at the abdomen, below the shoulder
+joints; new pectoral and clavicle masses therefore sit above that joint. The
+neck explicitly connects to the skull. Revised brows, cheeks, hips and fitted
+ragged leather replace the unbroken mannequin surface.
+
+Barbazu retains its original native glaive dependency, grip transform and weapon
+ownership. Its beard is a shorter arrangement of curved locks rooted through
+the jawline, leaving the mouth, chest and glaive lane clear. Beard geometry
+follows Head; no independent beard simulation or new attack exists.
+
+Kyton's previous first chain centre was approximately 0.121 renderer units
+from its palm centre before posing. Each new branch starts approximately 0.032
+units from that same centre, within the hand/manacle volume. Root manacles,
+fitted torso loops and crossed shoulder chains establish credible attachments;
+the four attack chains drape down from the wrists at rest. Their four disjoint
+vertex receipts are regenerated after the body union, and every attack-chain
+vertex remains rigidly weighted to its declared palm. The runtime's actual
+`bone.localToWorldMatrix * bindpose` path and private mesh cloning are preserved;
+this revision does not invent a coordinate-space fix. Native attack identities,
+contact timing, extension and follow-through remain unchanged.
+
+The available geometry-free native capture has SHA-256
+`6443b580c8019d2a32de616ef610df3c2aa851c7c998044b56e0c29b4494e65d`, rather
+than the historical raw capture `727645...` below. A no-edit Nalfeshnee
+regeneration from this available capture reproduced the released base64 mesh
+payload and albedo exactly. The capture has the same measured donor geometry,
+but is recorded under its real raw-file hash. The runtime permits only the
+two reviewed capture identities; no old hash is stamped onto new input bytes.
+
+Regenerate with Blender 4.5.10, the existing CLI below, this reviewed capture,
+and the checked-in opt-in helper. No other creature generator is selected by
+these commands. Put reports, `.blend` files and previews under ignored artifacts.
+
+| Export | SHA-256 | Vertices / triangles |
+| --- | --- | --- |
+| bearded-devil mesh | `058b0b40f6a09949faca459e917896210d1dd922da0704be387754efb2f97bec` | 4,389 / 8,678 |
+| bearded-devil albedo | `fd61649a0caf17e9ccd8d66e55092d2c1d98df88509295de98958c5b78d4c888` | 512 x 512 |
+| kyton-chain-devil mesh | `fcb2b0082bcdabeee453d3aa1128acb1c939f2394940db023d769dcdb4bbdc80` | 17,904 / 34,952 |
+| kyton-chain-devil albedo | `06bdc66deefd1d573953d8422f4b71573e8a4d8d9171f1394537dd33ac12941d` | 512 x 512 |
+
+Exact-export front, party-camera and side previews were inspected offline.
+The orientation audit found 25 closed outward Barbazu parts and 214 closed
+outward Kyton parts, with no inconsistent shared edge or inward component.
+These facts do not prove in-game lighting, glaive contact, second-instance
+chain isolation, motion, view reconstruction or removal. Those native checks
+and owner aesthetic approval remain separate and unclaimed. The older native
+PASS records below belong to their original bytes. Kyton has more triangles
+than the released body, so mixed-group native rendering cost remains a check.
+
+
 # Sprint 34 original bodies
 
 Original procedural geometry and albedos authored for this mission using

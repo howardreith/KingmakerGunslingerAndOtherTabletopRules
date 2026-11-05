@@ -1462,6 +1462,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.compatibility-working-save-scope", ExpandedSummoningCompatibilityMatrixTests.MechanicalScenarioRunsOnlyWhereSavesAreAllowed),
             Case("expanded-summoning.compatibility-unattended-only", ExpandedSummoningCompatibilityMatrixTests.AutomatedMatrixNeverSchedulesSupervisedScenarios),
             Case("pteranodon.mesh-data-well-formed", PteranodonMeshDataTests.ShippedMeshDataIsWellFormed),
+            Case("expanded-summoning.overhaul-atlas-seams", PteranodonMeshDataTests.RevisedOutsiderAtlasFacesDoNotCrossTiles),
             Case("pteranodon.mesh-data-payload", PteranodonMeshDataTests.ShippedMeshDataPayloadIsConsistent),
             Case("pteranodon.albedo-manifest", PteranodonMeshDataTests.ShippedAlbedoMatchesItsManifest),
             Case("expanded-summoning.merge-idempotent", SummonPublicationPolicyTests.MergePreservesOrderAndIsIdempotent),
