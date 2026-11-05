@@ -267,16 +267,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
                     sourceRetired = true;
                     foreach (int frame in InfernalBoneWaitUntil35(() =>
-                        (wall.Destroyed || !wall.IsInState) &&
+                        (wall.Destroyed || wall.Descriptor.State.IsDead || !wall.IsInGame) &&
                         originalNodes.All(node => node.Key.Walkable == node.Value), 12))
                         yield return frame;
-                    check(id + "-source-removal", (wall.Destroyed || !wall.IsInState) &&
-                        originalNodes.Length > 0 && originalNodes.All(node => node.Key.Walkable == node.Value),
+                    var wallLifetime = wall.Buffs.GetBuff(
+                        Kingmaker.Blueprints.Root.BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff);
+                    check(id + "-source-removal", (wall.Destroyed || wall.Descriptor.State.IsDead || !wall.IsInGame) &&
+                        wallLifetime == null && originalNodes.Length > 0 &&
+                        originalNodes.All(node => node.Key.Walkable == node.Value),
                         new JObject { ["sourceDestroyed"] = owner.Destroyed,
-                            ["sectionDestroyed"] = wall.Destroyed, ["sectionInState"] = wall.IsInState,
+                            ["sectionDestroyed"] = wall.Destroyed, ["sectionDead"] = wall.Descriptor.State.IsDead,
+                            ["sectionInGame"] = wall.IsInGame, ["lifetimeRemoved"] = wallLifetime == null,
                             ["nodes"] = originalNodes.Length,
                             ["allOriginalBitsRestored"] = originalNodes.All(node => node.Key.Walkable == node.Value) },
-                        "Actual source removal retires its still-forming wall and restores every claimed navigation bit before fixture teardown.");
+                        "Actual source removal retires its still-forming wall through the native dead/not-in-game boundary and restores every claimed navigation bit before fixture teardown.");
+                    // The production contract above has completed. Remove its
+                    // request-owned native corpse only to keep the shared
+                    // fixture's global reference census exact.
+                    if (!wall.Destroyed)
+                        DisposeExpandedSummoningUnits(fixture.Created, new[] { wall });
                 }
                 else
                 {
