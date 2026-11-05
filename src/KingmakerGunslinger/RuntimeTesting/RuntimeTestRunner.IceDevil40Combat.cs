@@ -121,10 +121,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Disarmed native full attack retains one bite and one tail, without spear iteratives or a duplicate fallback bite.");
                 // Native Haste supplies its own extra attack. This is effect
                 // setup, not a claimed Haste casting/action-cost observation.
-                var rider = owner.Blueprint.AddFacts.SelectMany(x => x.GetComponents<IceDevilSlowOnHit40>()).Single();
-                var conditional = rider.OnFailedSave.Actions.OfType<Conditional>().Single();
-                var haste = conditional.IfTrue.Actions.Concat(conditional.IfFalse.Actions)
-                    .OfType<ContextActionRemoveBuff>().Single().Buff;
+                var haste = IceDevilNativeHaste40();
                 if (!ReferenceEquals(owner.Body.PrimaryHand.MaybeWeapon?.Blueprint, profile.Bite))
                     throw new InvalidOperationException("Unobserved precondition: native Disarm expired before Haste fallback case.");
                 var context = new MechanicsContext(owner, owner.Descriptor, haste, null, new TargetWrapper(owner));

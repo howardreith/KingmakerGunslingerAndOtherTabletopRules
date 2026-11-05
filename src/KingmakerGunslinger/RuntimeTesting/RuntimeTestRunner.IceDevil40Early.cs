@@ -81,7 +81,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool loaded = PteranodonAssetRuntime.TryGetIceDevilVisual40(
                     IceDevilVisualPolicy40.Key, out mesh, out bones, out paint, out status);
                 string view = ExpandedSummoningPteranodonViewPatch.DescribeView(owner.View);
-                check("profile-and-body", martial != null && owner.Stats.HitPoints.BaseValue == 161 &&
+                check("profile-and-body", martial != null && owner.Stats.HitPoints.BaseValue ==
+                    IceDevilRules40Policy.RacialBaseHitPoints &&
                     owner.Stats.Speed.ModifiedValue == 60 && loaded && mesh != null && paint != null &&
                     view.StartsWith("visual:attached;", StringComparison.Ordinal),
                     new JObject { ["unit"] = owner.UniqueId, ["hp"] = owner.Stats.HitPoints.BaseValue,

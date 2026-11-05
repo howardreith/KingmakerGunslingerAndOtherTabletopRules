@@ -36,6 +36,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var cells = new JArray(); var trace = new InfernalEvents34();
             bool recipientFearIsolation = false;
             int baselineClaims = InfernalWallNavmesh35.ActiveGridClaimCount;
+            Vector3 surveyCenter = fixture.Caster.Position;
             var receipt = new JObject { ["cells"] = cells, ["events"] = trace.Rows,
                 ["fixtureFearIsolation"] = true, ["baselineClaims"] = baselineClaims,
                 ["phase"] = ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilWallsPhase };
@@ -61,7 +62,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int index = 0; index < actors.Count; index++)
                 {
                     UnitEntityData section = null;
-                    foreach (int frame in IceDevilCastWall40(fixture, actors[index], actors,
+                    foreach (int frame in IceDevilCastWall40(fixture, actors[index], actors, surveyCenter,
                         value => section = value, check, "owner-" + index)) yield return frame;
                     sections.Add(section);
                     var binding = section.View.GetComponent<InfernalWallNavmesh35>(); bindings.Add(binding);
@@ -180,7 +181,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> IceDevilCastWall40(ExpandedSummoningCorrectionFixture fixture,
-            UnitEntityData source, List<UnitEntityData> actors, Action<UnitEntityData> capture,
+            UnitEntityData source, List<UnitEntityData> actors, Vector3 surveyCenter, Action<UnitEntityData> capture,
             Action<string, bool, JObject, string> check, string label)
         {
             bool ice = IceDevilMartialProfile40.For(source) != null;
@@ -198,7 +199,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return data.IsAvailable && data.CanTarget(new TargetWrapper(point));
             };
             if (!InfernalEarlyWallLane35(fixture, out start, out middle, out end,
-                out casterPoint, out attempts, admit))
+                out casterPoint, out attempts, admit, surveyCenter))
                 throw new InvalidOperationException("No legal native wall lane for " + label + ": " + attempts);
             PlaceExpandedSummoningUnit(fixture.Caster, start);
             var prior = new HashSet<string>(Game.Instance.State.Units.Select(x => x.UniqueId));

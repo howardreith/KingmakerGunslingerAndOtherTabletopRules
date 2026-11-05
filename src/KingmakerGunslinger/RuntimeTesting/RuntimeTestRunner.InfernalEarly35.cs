@@ -1048,11 +1048,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningCorrectionFixture fixture, out Vector3 start,
             out Vector3 midpoint, out Vector3 destination,
             out Vector3 casterPoint, out JArray attempts,
-            Func<Vector3, Vector3, bool> admit = null)
+            Func<Vector3, Vector3, bool> admit = null, Vector3? searchCenter = null)
         {
             attempts = new JArray();
             start = midpoint = destination = casterPoint = Vector3.zero;
-            var anchor = AstarPath.active.GetNearest(fixture.Caster.Position);
+            var anchor = AstarPath.active.GetNearest(searchCenter ?? fixture.Caster.Position);
             if (anchor.node == null || !anchor.node.Walkable) return false;
             UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
                 value != null && value.IsInGame).ToArray();
