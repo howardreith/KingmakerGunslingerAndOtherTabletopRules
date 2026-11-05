@@ -70,7 +70,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _sprint25Steps = (IsSprint32Review ? ReviewSprint32(_sprint25Fixture) : IsSprints30And31Review ? ReviewSprints30And31(_sprint25Fixture) : IsSummonCleanup2Review ? ReviewSummonCleanup2(_sprint25Fixture) : IsSprint29Review ? ReviewSprint29(_sprint25Fixture) : IsSprint28Review ? ReviewSprint28(_sprint25Fixture) : IsSprint27Review ? ReviewSprint27(_sprint25Fixture) : _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview
                         ? ReviewSprint26(_sprint25Fixture) : ReviewSprint25(_sprint25Fixture)).GetEnumerator();
                 }
-                if (!_sprint25WaitingForUnityAppearance) _sprint25Clock.Pulse();
+                // Nested appearance/setup waits can restore their own waiting
+                // flag while an outer native Default scope still owns time.
+                // That lease, rather than a local wait flag, forbids pulses.
+                if (!_sprint25WaitingForUnityAppearance && !Cleanup2NativeDefaultPending)
+                    _sprint25Clock.Pulse();
                 if (_sprint25Steps.MoveNext()) return false;
             }
             catch (Exception error)

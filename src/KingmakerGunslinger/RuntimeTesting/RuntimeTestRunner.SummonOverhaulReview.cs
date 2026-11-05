@@ -57,14 +57,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (off == owner.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                         .Any(value => value.enabled && value.sharedMesh != null && value.sharedMesh.name.StartsWith("KMG_", StringComparison.Ordinal)))
                         throw new InvalidOperationException("Actual module state and original-body presentation disagree.");
+                    foreach (int frame in SummonOverhaulSettlePartyCamera(owner)) yield return frame;
                     CaptureSummonOverhaulAppearance(owner);
                     var row = new JObject { ["key"] = key, ["unit"] = owner.UniqueId, ["moduleEnabled"] = !off,
                         ["selection"] = Sprint22SelectionSurface(owner), ["body"] = Presentation32Pose(owner, key == "lillend-azata"),
                         ["selectionRays"] = SummonOverhaulSelectionRays(owner),
                         ["shapes"] = Cleanup2ShapeHierarchy(owner), ["reference"] = Cleanup2ShapeHierarchy(fixture.Caster),
                         ["referenceBlueprint"] = fixture.Caster.Blueprint.name, ["referenceBody"] = Presentation32Pose(fixture.Caster, false),
-                        ["matchedImage"] = WriteExpandedSummoningOverheadStrikeCapture(owner, fixture.Caster,
-                            _request.EvidenceDirectory, "overhaul-" + key + (off ? "-off" : indoor ? "-indoor" : "-daylight") + "-reference.png", 13f),
+                        ["matchedImage"] = WriteExpandedSummoningPartyCameraCapture(owner,
+                            _request.EvidenceDirectory, "overhaul-" + key + (off ? "-off" : indoor ? "-indoor" : "-daylight") + "-reference.png"),
+                        ["cameraScope"] = "Native party camera after scroll and twelve Unity presentation frames; no overhead pose, depth-of-field, brightness or material override.",
                         ["referenceDistanceMeters"] = owner.DistanceTo(fixture.Caster),
                         ["originalScale"] = SurveyVector(owner.View.OriginalScale), ["rootScale"] = SurveyVector(owner.View.transform.localScale) };
                     rows.Add(row);
@@ -78,6 +80,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                             var start = Sprint24AiCombatLane(fixture.Caster, owner, fixture.Hostile ?? fixture.Caster,
                                 6f, out destination, out lane, out direction);
                             PlaceExpandedSummoningUnit(owner, start);
+                            int quiet = 0; Vector3 previous = owner.Position;
+                            foreach (int frame in WaitPresentation32(mode, () => quiet >= 3, 8, () => {
+                                bool stable = owner.Commands.Empty && owner.View.MovementAgent.Velocity.sqrMagnitude < .0001f &&
+                                    Vector3.Distance(previous, owner.Position) < .01f && owner.Descriptor.State.CanAct;
+                                quiet = stable ? quiet + 1 : 0; previous = owner.Position;
+                            })) yield return frame;
+                            Vector3 supported; JObject ground;
+                            if (!Cleanup2CreatureNativeGroundRoot(owner, owner.Position, out supported, out ground) ||
+                                Vector3.Distance(supported, owner.Position) >= .02f)
+                                throw new InvalidOperationException("Overhaul movement lacks settled native ground support.");
+                            row["movementGround"] = ground;
+                            start = owner.Position;
                             var command = new UnitMoveTo(destination, .5f); command.Init(owner);
                             if (!command.CanStart) throw new InvalidOperationException("Native movement command refused.");
                             owner.Commands.Run(command);
@@ -151,6 +165,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory, phase + ".json"),
                     new JObject { ["phase"] = phase, ["moduleEnabled"] = !off, ["bodies"] = rows }.ToString(Formatting.Indented));
             }
+        }
+
+        private IEnumerable<int> SummonOverhaulSettlePartyCamera(UnitEntityData owner)
+        {
+            var rig = TeleportationCastingCamera();
+            if (rig == null) throw new InvalidOperationException("Native party camera missing.");
+            bool waiting = _sprint25WaitingForUnityAppearance;
+            try
+            {
+                _sprint25WaitingForUnityAppearance = true;
+                rig.ScrollToImmediately(owner.Position);
+                for (int frame = 0; frame < 12; frame++) yield return 0;
+            }
+            finally { _sprint25WaitingForUnityAppearance = waiting; }
         }
 
         private static JObject SummonOverhaulSelectionRays(UnitEntityData owner)
