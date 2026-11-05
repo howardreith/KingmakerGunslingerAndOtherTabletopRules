@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.177-expanded-summoning-nalfeshnee",
+  "milestone": "0.0.178-expanded-summoning-ice-devil",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.177",
+  "version": "0.0.178",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2831,6 +2831,32 @@
     },
     "harnessIdentityNote": "Tool and fixture identity for the orchestration that produced the native rows, recorded separately from the compiled product identity. These paths lie outside the validator's guarded product roots, so they are pinned here rather than by the product diff. The validator file itself cannot carry its own digest; its provenance is the reviewed product commit.",
     "installedStackFixtureChecks": 52,
+    "compiledRequestAdmissionChecks": 33
+  },
+  "expandedSummoningSprint40Release178": {
+    "releaseVersion": "0.0.178",
+    "releaseInformationalVersion": "0.0.178-expanded-summoning-ice-devil",
+    "baseStableVersion": "0.0.177",
+    "reviewedProductSource": "13867399d4681f8953f24fa181d240e6f18d2d44",
+    "appendedIdentities": 33,
+    "releasedIdentityChanges": 0,
+    "change": "Ice Devil, one untemplated Summon Monster IX route, its armed iterative frost-spear plus bite and tail routine, exact-owner supernatural Slow, at-will Cone of Cold, Ice Storm and bounded Wall of Ice, fear, regeneration, area-control AI and a distinct original insectile body/icon; also corrects only the Nalfeshnee-owned Slow range and its Nimbus release wording",
+    "nativeEvidence": "Final exact package requires fresh grouped proof for every mandatory Ice Devil row, the affected Nalfeshnee range boundary and six unique mixed ON/OFF persistence processes; development-candidate receipts cannot qualify this release",
+    "ownerPublicationAuthority": "Sprint40 Ice Devil Fresh Codex Completion Mission, its continuity amendment and factory recovery/completion authorization, together with the owner decision approving omission of Persistent Image with disclosure and no substitute; the selected Wall of Ice is the S35 bounded single grounded 10-foot movement-obstruction adaptation with no line-of-effect claim, greater teleport and nested summoning remain excluded, effective movement is the printed 60-foot fly with the separate 40-foot land mode unmodeled, Nimbus is documented as Daze rather than Blindness, and the Nalfeshnee-owned Slow is corrected to its printed CL12 close range of 55 feet",
+    "harnessIdentity": {
+      "scripts/Deploy-Local.ps1": "713cceb319c2850d5f440139ebedc5468501d5b9c458e4d418d944cce98d9353",
+      "scripts/Invoke-ExpandedSummoningRuntimeScenario.ps1": "9d17b2a451534d2dbcbc9e453b9c8bed40460d10bdec14cc8c3e30447ad685d1",
+      "scripts/Invoke-KingmakerRuntimeTest.ps1": "406db39f0e0a262548de62845d603c123c1babcb2e96cabb3586185bdd250146",
+      "scripts/Invoke-Sprint22InstalledStack.ps1": "67521fab76cb4752e9de14c7830ebd4dba59dbda3badcf39ce7acf4e283f35ff",
+      "scripts/RuntimeAutomation.Common.ps1": "8e208622b7b767b0c484fab11be46406cac568020c4a66c9f2973d9e3efc16b1",
+      "scripts/RuntimeHarness.Common.ps1": "f8c67bb58e84b677e377d4a8a93472ecfefffe38fa2b5b778186209d6f7aadb2",
+      "scripts/Sprint40QualifiedRelease.Common.ps1": "d6f0310ba4c3466f62186f7c169919e8103e241ba7b4590d5a53ab2287fb08f4",
+      "scripts/Test-Sprint22InstalledStack.ps1": "222f8dba9ac74f8006a29cd0e0da9c4c2a576121e2ee647b5b5a198989a099b3",
+      "scripts/Test-Sprint32NativePersistenceRequest.ps1": "d841bf7a970af04dfb5db8344354e72cad2c3582ef8a48368dbff5ea3c8ff34",
+      "scripts/Test-Sprint40Release.ps1": "4390e1bc2fa427cf4db2cdf7b9383336857f93c306ccfb55a867a9203c2543e3"
+    },
+    "harnessIdentityNote": "Tool and fixture identity for the orchestration that produces the native rows, recorded separately from the compiled product identity. These paths lie outside the validator's guarded product roots, so they are pinned here rather than by the product diff. The validator file itself cannot carry its own digest; its provenance is the reviewed release commit.",
+    "installedStackFixtureChecks": 57,
     "compiledRequestAdmissionChecks": 33
   }
 }
