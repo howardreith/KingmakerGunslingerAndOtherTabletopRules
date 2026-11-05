@@ -435,6 +435,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             var anchor = Game.Instance.Player.MainCharacter.Value;
             var party = Game.Instance.Player.Party.ToArray();
+            bool scopedVisionCaster = ExpandedSummoningNativeProfilePolicy.Sprint40Phase(
+                RuntimeTestRequestParser.Sprint32ReviewPhase(_request));
             var predicates = new JObject {
                 ["actorPresent"] = anchor != null && _summoningProfileActor != null,
                 ["actorBlueprintExact"] = anchor != null && ReferenceEquals(anchor.Blueprint, _summoningProfileActor),
@@ -442,7 +444,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["originalDistinct"] = _summoningProfileOriginal != null && !ReferenceEquals(_summoningProfileOriginal.PlayerCharacter, _summoningProfileActor),
                 ["actorNameExact"] = _summoningProfileActor?.name == "KMG_Runtime_Summoning_Profile_Anchor",
                 ["saveGuardOwned"] = _summoningProfileSaveGuard != null, ["scenesOwned"] = _summoningProfileScenes != null,
-                ["onlyPartyAnchor"] = party.Length == 1 && ReferenceEquals(party[0], anchor),
+                ["ownedPartyExact"] = party.Length == (scopedVisionCaster ? 2 : 1) &&
+                    ReferenceEquals(party[0], anchor) &&
+                    (!scopedVisionCaster || ReferenceEquals(party[1], fixture.Caster)),
                 ["anchorCommandsEmpty"] = anchor != null && anchor.Commands.Empty && anchor.Commands.Queue.Count == 0,
                 ["casterCommandsEmpty"] = fixture.Caster.Commands.Empty && fixture.Caster.Commands.Queue.Count == 0,
                 ["casterBrainDisabled"] = !fixture.Caster.IsBrainActive };

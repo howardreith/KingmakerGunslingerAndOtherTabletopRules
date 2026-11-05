@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Kingmaker;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
@@ -22,10 +23,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             using (var isolation = new IceDevilFixtureIsolation40(fixture))
             {
                 var receipt = new JObject { ["phase"] = phase };
+                var camera = TeleportationCastingCamera();
+                Vector3 cameraPosition = camera.transform.position, cameraTarget = camera.GetPosition();
+                Quaternion cameraRotation = camera.transform.rotation;
+                bool casterLent = false;
                 try
                 {
                     var placement = new JObject(); receipt["placement"] = placement;
                     PrepareIceDevilQuietCaster40(fixture, placement);
+                    // Native party vision and the real camera follow only this
+                    // disposable observer caster. Do not force the unit's FOW,
+                    // fader, renderer or dissolve state, or move an intake actor.
+                    if (Game.Instance.Player.Party.Contains(fixture.Caster))
+                        throw new InvalidOperationException("Disposable observer caster unexpectedly already in party.");
+                    Game.Instance.Player.Party.Add(fixture.Caster); casterLent = true;
+                    camera.ScrollToImmediately(fixture.Caster.Position);
+                    placement["nativePartyVisionCaster"] = fixture.Caster.UniqueId;
+                    placement["nativeCameraTarget"] = Vec(camera.GetPosition());
                     IEnumerable<int> run;
                     switch (phase)
                     {
@@ -64,7 +78,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 finally
                 {
+                    if (casterLent) Game.Instance.Player.Party.Remove(fixture.Caster);
+                    camera.ScrollToImmediately(cameraTarget); camera.transform.position = cameraPosition;
+                    camera.transform.rotation = cameraRotation;
+                    typeof(CameraRig).GetField("m_TargetPosition", BindingFlags.Instance | BindingFlags.NonPublic)
+                        .SetValue(camera, cameraTarget);
                     receipt["events"] = isolation.Describe();
+                    receipt["observerPartyRestored"] = !Game.Instance.Player.Party.Contains(fixture.Caster);
                     RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory,
                         "sprint40-fixture-isolation.json"), receipt.ToString(Formatting.Indented));
                 }
