@@ -26,6 +26,7 @@ namespace KingmakerGunslinger.Summoning
         private UnitEntityView _view;
         private UnitEntityData _owner;
         private GameObject _model;
+        private string _weaponGuid = GlaiveGuid;
         internal GameObject Model { get { return _model; } }
         internal string Status { get; private set; }
         internal int LateUpdates { get; private set; }
@@ -34,23 +35,33 @@ namespace KingmakerGunslinger.Summoning
         internal int LastRefreshUnityFrame { get; private set; }
 
 
-        internal void Configure(UnitEntityView view, SkinnedMeshRenderer body)
+        internal void Configure(UnitEntityView view, SkinnedMeshRenderer body, bool iceDevil = false)
         {
             _owner = view.EntityData as UnitEntityData;
-            if (_owner == null || _owner.Blueprint.AssetGuid != "182032f380314a7581d0016c443945a2" ||
-                _owner.Blueprint.name != "KMG_Summoning_Unit_BeardedDevil" ||
-                _owner.Blueprint.Prefab?.AssetId != TheropodVisualPolicy.DonorPrefabGuid)
-                throw new InvalidOperationException("Owned Barbazu glaive view identity mismatch.");
+            bool exactIce = _owner != null && IceDevilVisualPolicy40.IsExactIdentity(
+                IceDevilVisualPolicy40.Key, _owner.Blueprint.AssetGuid, _owner.Blueprint.name,
+                _owner.Blueprint.Prefab?.AssetId);
+            bool exactBarbazu = _owner != null && _owner.Blueprint.AssetGuid == "182032f380314a7581d0016c443945a2" &&
+                _owner.Blueprint.name == "KMG_Summoning_Unit_BeardedDevil" &&
+                _owner.Blueprint.Prefab?.AssetId == TheropodVisualPolicy.DonorPrefabGuid;
+            if (iceDevil ? !exactIce : !exactBarbazu)
+                throw new InvalidOperationException("Owned infernal polearm view identity mismatch.");
+            var profile = iceDevil ? IceDevilMartialProfile40.For(_owner) : null;
+            if (iceDevil && profile?.Spear == null)
+                throw new InvalidOperationException("Owned Ice spear profile absent.");
+            _weaponGuid = iceDevil ? profile.Spear.AssetGuid : GlaiveGuid;
+            // Preserve the qualified Barbazu grip and native hand animation;
+            // Ice uses the same measured palm with its own native spear mesh.
             // The blueprint default, rather than the current item, also works
             // on a cold load in natural/disarmed mode. No item is created here.
             var glaive = _owner.Blueprint.Body.PrimaryHand as BlueprintItemWeapon;
-            if (glaive == null || glaive.AssetGuid != GlaiveGuid || glaive.VisualParameters.Model == null)
+            if (glaive == null || glaive.AssetGuid != _weaponGuid || glaive.VisualParameters.Model == null)
                 throw new InvalidOperationException("Owned Barbazu glaive native model dependency absent.");
             var palm = body.bones.Single(value => value.name == "R_Palm");
             _view = view;
             _model = UnityEngine.Object.Instantiate(glaive.VisualParameters.Model);
             if (_model == null) throw new InvalidOperationException("Owned Barbazu native glaive model did not instantiate.");
-            _model.name = "KMG_BarbazuOwnedGlaive";
+            _model.name = iceDevil ? "KMG_IceDevilOwnedSpear" : "KMG_BarbazuOwnedGlaive";
             _model.transform.SetParent(palm, false);
             _model.transform.localPosition = GripPosition;
             _model.transform.localRotation = GripRotation;
@@ -69,7 +80,7 @@ namespace KingmakerGunslinger.Summoning
             if (_model == null) return;
             var weapon = _owner == null || _owner.Destroyed ? null : _owner.Body.PrimaryHand.MaybeWeapon;
             bool visible = _view != null && _owner != null && !_owner.Destroyed && _owner.IsInState &&
-                weapon != null && weapon.Blueprint.AssetGuid == GlaiveGuid && weapon.Wielder != null &&
+                weapon != null && weapon.Blueprint.AssetGuid == _weaponGuid && weapon.Wielder != null &&
                 ReferenceEquals(weapon.Wielder.Unit, _owner) && weapon.HoldingSlot != null &&
                 ReferenceEquals(weapon.HoldingSlot.MaybeItem, weapon) && !weapon.IsLootable;
             ObservedEquipmentSet = _owner == null || _owner.Destroyed ? -1 : _owner.Body.CurrentHandEquipmentSetIndex;

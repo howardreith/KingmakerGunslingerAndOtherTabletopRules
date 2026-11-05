@@ -8,47 +8,72 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 ## Current continuation state
 
 - HOWARD-LAPTOP, `C:/Dev/KingmakerGunslingerLab/wt/s40`, product branch
-  `codex/expanded-summoning-sprint40-ice-devil`; last pushed
-  `944b499685bd7f4d7b2faff151d1fb60ddf7c73f`. Diagnostic repair is enclosing HEAD.
-  Draft [product PR97](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/97).
+  `codex/expanded-summoning-sprint40-ice-devil`; last pushed `cd7ff165207f792c74e64e0a373496a79c29a8da`.
+  Current repair is enclosing HEAD. Draft [product PR97](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/97).
 - No active game/deployment/lease. Full exact audit
-  `sprint40-intake-20261105T002300Z/post-early-20261105T110507Z/restoration.json`
+  `sprint40-intake-20261105T002300Z/post-early-20261105T114144Z/restoration.json`
   passed Mods/references/settings/all118 saves; Working/baseline never loaded/written.
-  Log `artifacts/s40-944-slow-turn-restoration-audit.log`.
-- Native944 Nalf range PASS12/12, `20261105T1030438863450Z-disposable-expanded-summoning-sprint32-native-review`:
-  actual55feet plus real footprints, inside cast/no approach, outside native
-  immediate refusal then0.7253m approach/one cast. Protected positions unchanged.
-  Native ab3 Slow PASS24/24 remains development evidence, not final-artifact proof.
-- Native944 presentation FAIL, `20261105T1037413917084Z-disposable-expanded-summoning-sprint32-native-review`:
-  two original private bodies/selection/native movement PASS; actual five contacts
-  and3spear+bite+tail emitted. Native command ended Interrupt from UnitAttack.OnTick;
-  diagnostic now records terminal attack index/planned-attack state rather than
-  assuming Success. Real bite and tail both carried extra1d6 Cold: unresolved owned
-  gameplay discrepancy. Stock Frost's exact-item consumer and cleared blueprint
-  natural enchantments are established; runtime item/stat provenance remains needed.
-  Actual body/contact PNGs inspected: original insectile mesh visible, framing and
-  weapon visibility still need review. Lifecycle proof not reached.
-- Native944 AI FAIL before actions (`20261105T1047115487517Z-...`):9m survey
-  preceded NPC combat enrollment, while native noncombat sight is8.5m. Repair joins
-  actual combat before survey; no vision or CanTarget override.
-  Native944 Slow-turn FAIL before rider (`20261105T1056063354743Z-...`): reflected
-  NonPublic-only lookup missed public CreateFullAttack; now uses verified direct API.
-- Current diagnostics record real runtime enchantments/owners, weapon stats/list and
-  packet references, native Frost graph and four bounded consumer patch receipts.
-  Contact assertion keeps actual Interrupt and requires exhausted native plan;
-  natural Cold assertion requires real hits on both naturals and rejects any Cold.
-  Production27.3s/31 related tests PASS (`artifacts/s40-native-consumer-diagnostics-compile2.log`).
-  Initial compile's missing imports retained in preceding diagnostics compile log.
-- NEXT: commit/build diagnostic batch; focused presentation to discriminate Cold
-  cause and actual terminal state, plus AI/Slow-turn repairs on unchanged package.
-  Then concrete product correction, body/lifetime, persistence/publisher wiring,
-  final public artifact/fresh qualification/six-process ON+OFF, exact publication,
-  public downloads/restoration/merged records. One SM IX route remains suppressed.
-  Persistent Image omission approved/no substitute. Goal ACTIVE/no hard refusal.
--944 dev ZIP `5537c1759bc183e301f0666f1b451b1767b70838c758e67d8f4182e3bc41da57`,
+  Log `artifacts/s40-cd7-slow-turn-restoration-audit.log`.
+- Completed development proof:76b profile/combat/effects,0d walls,ab3 Slow24/24,
+  944 Nalf range12/12. These do not qualify the changed/final artifact. Native Slow
+  quarter combat getter is inherited installed behavior, not claimed printed half.
+- cd7 presentation reproduced natural Cold and established exact exhausted command;
+  installed Craft Magic Items prefix demonstrably adds spear Frost to any natural
+  or unarmed weapon. No runtime enchantments on bite/tail, no shared damage lists.
+  Repair adds one private SpearFrost consumer using the retained native dice/element
+  and exact item/blueprint; stock Frost and all other users unchanged. Existing7867
+  manifest entries remain exact; append724a4bd231534a90a60429646f47f31d once.
+  Current private dependencies27, foundation2791, active7861/reserved7/total7868.
+- Missing Ice spear display is fixed through existing exact-owned polearm view,
+  preserving Barbazu defaults. Real spear visibility/contact/cleanup remain UNRUN.
+  AI's friendly witness now uses the existing save-free private-faction seam rather
+  than a persistent-listener selector. No AI gameplay/CanTarget weakening.
+- Shared observer completion classification requires actual finished Interrupt,
+  exhausted native plan/index and no next attack from UnitAttack.OnTick. Both
+  body and Slow-TB retain the native result. Real packet assertion requires a
+  positive1d6 spear packet and real bite/tail hits without Cold.
+- Current repair production27.2s/31 selected tests PASS;
+  `artifacts/s40-frost-polearm-compile2.log`. Native proof pending.
+- NEXT: coherent repair build; native presentation/gear lifetime, AI and Slow-TB.
+  Then persistence/publisher wiring, final public artifact/fresh qualification,
+  six-process ON+OFF, exact stable publication/public downloads/restoration/records.
+  One SM IX route suppressed. Persistent Image omission approved/no substitute.
+  Nimbus wording/Nalf55 source correction done. Goal ACTIVE/no surfaced hard refusal.
+
+## Development cd7 observations and owned repairs (2026-11-05)
+
+- Dev source `cd7ff165207f792c74e64e0a373496a79c29a8da`,31/31 selected checks,
+  strict/independent reader PASS; build `artifacts/s40-mechanics-build-cd7ff165.log`.
+  ZIP `c37ea6c051bf3e4523ca9f6aa096c25b5239d23c902edd2887f325d7c45b44e1`,
+  DLL `dfa01e7c3225e0b7239031914743f27d62292428236bbaac452402f5f8c645a8`,
+  MVID `c9533c69-97a8-46a8-b837-b16320d9592b`. Development only, never release.
+- Presentation `20261105T1128411084197Z-disposable-expanded-summoning-sprint32-native-review`
+  FAIL natural Cold. Actual5 contacts and exhausted full-round plan PASS: native
+  Interrupt/index5/no planned attack/OnTick. Frost graph remains native1d6Cold;
+  CMI prefix receipt and bounded installed-handler inspection establish its natural/
+  unarmed predicate. No byte/condition repair was supplied by the observer.
+  Full exact audit113211; log `artifacts/s40-cd7-presentation-restoration-audit.log`.
+- AI `20261105T1133599173210Z-disposable-expanded-summoning-sprint32-native-review`
+  FAIL before cast: native9m sight/hostility/production available and target-valid/
+  exact-actor refusal PASS. Incorrect persistent-listener selector safely refused
+  a friendly control before spawn. Full exact audit113720;
+  `artifacts/s40-cd7-ai-restoration-audit.log`. No actual AI cast proof.
+- Slow-TB `20261105T1138194466565Z-disposable-expanded-summoning-sprint32-native-review`
+  FAIL at Success-only assertion: real hit/failed save/native Slow, five-attack
+  baseline, actual TB turn, one ordinary attack/one native standard cost observed.
+  Actual Interrupt/index1/no next attack/OnTick; repair reuses the bounded body
+  completion classification. Full exact audit114144 (current above).
+- All three guards/world/party/remote restores passed with no protected movement
+  or recipient violation. Initial frost repair compiled but hidden-graph test
+  expected26/actual27; stale local pin replaced by authoritative Sprint40 count.
+  `artifacts/s40-frost-polearm-compile.log` preserves that failure.
+- Prior944 dev ZIP `5537c1759bc183e301f0666f1b451b1767b70838c758e67d8f4182e3bc41da57`,
   DLL `ae64a4e8266b68d82906083308aff957195f097db9c60c53c899a8730175b6db`,
-  MVID `8b8c6d93-7234-49b5-8b4b-bb3cea815b1e`; strict/reader PASS,31/31 tests.
-  Log `artifacts/s40-mechanics-build-944b4996.log`. All results development only.
+  MVID `8b8c6d93-7234-49b5-8b4b-bb3cea815b1e`. Range PASS12/12 on
+  `20261105T1030438863450Z-disposable-expanded-summoning-sprint32-native-review`:
+  55feet plus footprint native boundary, inside no approach, outside immediate
+  enough-close refusal then0.7253m approach/one cast. Other944 failures preserved
+  in their raw receipts/logs: presentation103741, AI104711, Slow-turn105606.
 
 ## Historical development through ab3 and walking repair
 

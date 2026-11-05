@@ -28,7 +28,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(SummonDemonIdentityCatalog.IsDemonKey("ice-devil"), "Devil is not a demon.");
             var dependencies = ExpandedSummoningIdentityCatalog.Build().Where(x =>
                 x.Symbol.StartsWith("KMG.Summoning.Infernal.IceDevil.")).ToArray();
-            Assertions.Equal(26, dependencies.Length, "Complete owned private graph.");
+            Assertions.Equal(SummoningCurrentSurface.Sprint40PrivateIdentityCount, dependencies.Length, "Complete owned private graph.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase(
                 ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilEarlyPhase), "Real focused dispatch admission.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase(

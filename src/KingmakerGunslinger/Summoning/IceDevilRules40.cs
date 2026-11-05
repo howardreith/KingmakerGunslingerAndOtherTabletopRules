@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Blueprints.Items.Ecnchantments;
+using Kingmaker.Enums.Damage;
+using Kingmaker.PubSubSystem;
+using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.ElementsSystem;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
@@ -20,6 +25,29 @@ using Kingmaker.Items;
 
 namespace KingmakerGunslinger.Summoning
 {
+    // The installed Craft Magic Items prefix broadens the stock Frost
+    // handler to every natural/unarmed attack. This private enchantment keeps
+    // the native packet and exact item boundary without changing that mod or
+    // any other Frost consumer. The supernatural Slow remains on the creature.
+    [Serializable]
+    public sealed class IceDevilSpearFrost40 : WeaponEnchantmentLogic,
+        IInitiatorRulebookHandler<RuleCalculateWeaponStats>
+    {
+        public BlueprintItemWeapon OwningWeapon;
+        public DiceFormula DamageDice;
+        public DamageEnergyType Element;
+        public void OnEventAboutToTrigger(RuleCalculateWeaponStats evt)
+        {
+            if (evt?.Weapon == null || !ReferenceEquals(evt.Weapon, Owner) ||
+                !ReferenceEquals(evt.Weapon.Blueprint, OwningWeapon)) return;
+            evt.DamageDescription.Add(new DamageDescription {
+                TypeDescription = new DamageTypeDescription {
+                    Type = DamageType.Energy, Energy = Element },
+                Dice = DamageDice });
+        }
+        public void OnEventDidTrigger(RuleCalculateWeaponStats evt) { }
+    }
+
     /// <summary>Native terrain lifetime continues normally; module OFF ends only this owned area.</summary>
     [Serializable]
     public sealed class IceDevilStormModuleLifetime40 : AbilityAreaEffectLogic

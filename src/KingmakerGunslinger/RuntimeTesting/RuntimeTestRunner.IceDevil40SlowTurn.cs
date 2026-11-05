@@ -104,12 +104,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in WaitInfernalCommand34(command, () => true, 25)) yield return frame;
                     var attacks = trace.Rows.Skip(first).Where(x => (string)x["event"] == "attack" &&
                         (string)x["owner"] == victim.UniqueId).ToArray();
+                    var ends = trace.Rows.Skip(first).Where(x => (string)x["event"] == "command-end" &&
+                        (int?)x["commandReference"] == System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(command)).ToArray();
+                    bool nativeExhausted = Sprint40NativeExhaustedAttack(command, ends, 1);
                     check("slow-turn-native-single-action", attacks.Length == 1 && command.AllAttacks.Count == 1 &&
-                        victim.Buffs.GetBuff(slow) != null && command.Result == Kingmaker.UnitLogic.Commands.Base.UnitCommand.ResultType.Success &&
+                        victim.Buffs.GetBuff(slow) != null && (command.Result == Kingmaker.UnitLogic.Commands.Base.UnitCommand.ResultType.Success || nativeExhausted) &&
                         economy.Count(command) == 1 && economy.Exact(command, true),
                         new JObject { ["ordinaryCommand"] = Sprint27AiCommand(command), ["attacks"] = new JArray(attacks),
                             ["costs"] = costs, ["nativeUnrestrictedPlan"] = nativeUnrestrictedPlan,
                             ["nativeSlowedPlan"] = command.AllAttacks.Count, ["idleTurnsPassed"] = passed,
+                            ["nativeExhausted"] = nativeExhausted, ["nativeEnds"] = new JArray(ends),
                             ["forcedSingleAttack"] = false, ["fixtureExtraAttacks"] = 0 },
                         "Native Slow/Staggered limits the real armed iterative recipient to one ordinary attack on its actual TB turn, paying its native action cost.");
                 }
