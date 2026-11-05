@@ -397,6 +397,8 @@
     <Compile Include="Summoning\ContextActionSuccubusDominate.cs" />
     <Compile Include="Summoning\ExpandedSummoningDonorCatalog.cs" />
     <Compile Include="Blueprints\ExpandedSummoningBlueprints.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningBlueprints.Shells.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.Sprint40Diagnostic.cs" />
     <Compile Include="Blueprints\ExpandedSummoningAlignmentModeBlueprints.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Infernal34.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.InfernalWound34.cs" />

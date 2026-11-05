@@ -43,6 +43,9 @@ param(
     [hashtable]$ScenarioParameterMap = @{},
     [switch]$AllowDirtyGit,
     [switch]$ExpandedSummoningDisabled,
+    # One no-save original-configuration recovery; preserves only the native
+    # Favored Class dump proven complete by the actual producer observer.
+    [switch]$Sprint40DiagnosticRecovery,
     [ValidateRange(5, 1800)]
     [int]$TimeoutSeconds = 120,
     [ValidateRange(5, 600)]
@@ -84,6 +87,30 @@ foreach ($name in $Scenario) {
 }
 Assert-KmgNotRunning
 
+$sprint40PeerProtection=$DevelopmentPurpose -ceq 'sprint40-mechanics' -or
+    ($ScenarioParameters.ContainsKey('reviewPhase') -and $ScenarioParameters.reviewPhase -cmatch '^sprint40-') -or
+    ($ScenarioParameters.ContainsKey('persistenceScope') -and $ScenarioParameters.persistenceScope -ceq 'ice-devil')
+$startupPeerScope=$null; $startupPeerSnapshot=$null; $startupPeerCatalog=$null; $startupGameSettings=$null
+$startupRestorationFailed=$false
+if($sprint40PeerProtection -or $Sprint40DiagnosticRecovery){
+    . (Join-Path $PSScriptRoot 'Sprint40StartupFiles.Common.ps1')
+    . (Join-Path $PSScriptRoot 'TeleportationPersistence.Common.ps1')
+    if($env:COMPUTERNAME -ine 'HOWARD-LAPTOP' -or
+        -not [IO.Path]::GetFullPath($LiveModDirectory).Equals('C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Mods\KingmakerGunslinger',[StringComparison]::OrdinalIgnoreCase)){
+        throw 'Sprint40 peer protection requires the assigned host and exact captured game installation.'
+    }
+}
+if($Sprint40DiagnosticRecovery){
+    . (Join-Path $PSScriptRoot 'FeatureModuleCatalog.ps1')
+    $originalModules=Get-Content -LiteralPath (Join-Path $LiveModDirectory 'FeatureModules.json') -Raw | ConvertFrom-Json
+    Assert-KmgSprint40DiagnosticRecoveryRequest -Scenarios $Scenario -Purpose $DevelopmentPurpose -SaveName $SaveName `
+        -ModuleDisabled ([bool]$ExpandedSummoningDisabled) -Parameters $ScenarioParameters `
+        -OriginalParameters (Get-KmgOriginalModuleRuntimeParameters $originalModules)
+    if(-not $PackagePath -or $ScenarioParameterMap.Count -ne 0){throw 'Recovery requires one explicit source-bound package and no alternate parameter map.'}
+}
+if($sprint40PeerProtection -and -not $PSCmdlet.ShouldProcess('exact HOWARD-LAPTOP installation and nine startup-written peer files',
+    'guarded source-bound startup with byte/metadata backup and restoration')){return}
+
 $before = Get-KmgTreeFingerprint -Directory $LiveModDirectory
 Write-Host "Pre-run live tree: files=$($before.Files) sha256=$($before.Sha256)"
 
@@ -116,6 +143,15 @@ if (-not [string]::IsNullOrEmpty($DevelopmentPurpose)) {
 }
 
 try {
+    if($sprint40PeerProtection){
+        $startupPeerScope=Enter-KmgRuntimeLease -Purpose 'Sprint40 startup file protection'
+        $startupEvidence=Join-Path 'C:/Dev/KingmakerGunslingerLab/runtime-evidence' ('sprint40-startup-files-'+[DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ'))
+        $startupPeerSnapshot=Backup-KmgSprint40StartupFiles -ModsRoot (Split-Path $LiveModDirectory -Parent) -EvidenceDirectory $startupEvidence
+        $record.startupPeerSnapshot=$startupPeerSnapshot
+        if(-not $SaveName){$startupPeerCatalog=Open-KmgProtectedSaveCatalog -EvidenceDirectory $startupEvidence}
+        $key=[Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Software\Owlcat Games\Pathfinder Kingmaker',$false)
+        try{$startupGameSettings=@(Get-KmgFlatGameSettingsValues $key)}finally{$key.Dispose()}
+    }
     if ($ExpandedSummoningDisabled) {
         $settingsPath = Join-Path $LiveModDirectory 'FeatureModules.json'
         if (-not (Test-Path -LiteralPath $settingsPath -PathType Leaf)) {
@@ -144,6 +180,7 @@ try {
         # package without any of them rebuilding it.
         $reusePackage = (Resolve-Path -LiteralPath $PackagePath).Path
         $deployArguments = @{ PackagePath = $reusePackage; Confirm = $false; PassThru = $true }
+        if($startupPeerScope){$deployArguments.RuntimeLease=$startupPeerScope.Lease}
         if (-not [string]::IsNullOrEmpty($DevelopmentPurpose)) {
             $deployArguments.DevelopmentPurpose = $DevelopmentPurpose
         }
@@ -185,7 +222,7 @@ try {
             # the same ownership rule the restoration below applies - never a
             # lock this batch did not create, never while the game runs.
             $betweenLock = 'C:\Dev\KingmakerGunslingerLab\compatibility-state\compatibility.lock'
-            if (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -eq 0 -and
+            if (-not $startupPeerScope -and @(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -eq 0 -and
                 (Test-Path -LiteralPath $betweenLock -PathType Leaf)) {
                 $betweenOwner = (Get-Content -LiteralPath $betweenLock -Raw).Trim()
                 if (Test-KmgCompatibilityLockOwned -LockOwner $betweenOwner `
@@ -218,6 +255,7 @@ try {
             if ($SaveName) { $arguments.SaveName = $SaveName }
             if ($PackagePath) { $arguments.PassThru = $true }
             if ($DevelopmentPurpose) { $arguments.DevelopmentPurpose = $DevelopmentPurpose }
+            if ($startupPeerScope) { $arguments.RuntimeLease = $startupPeerScope.Lease }
             # An explicit package was deployed once above, so every scenario
             # reuses it. Without one, only the first scenario builds and
             # deploys and the rest run against what it installed. Reuse is
@@ -354,7 +392,7 @@ finally {
             # lock behind. Release it only when this batch owns it; the helper
             # throws if the recorded owner differs.
             $compatibilityLock = 'C:\Dev\KingmakerGunslingerLab\compatibility-state\compatibility.lock'
-            if (Test-Path -LiteralPath $compatibilityLock -PathType Leaf) {
+            if (-not $startupPeerScope -and (Test-Path -LiteralPath $compatibilityLock -PathType Leaf)) {
                 $lockOwner = (Get-Content -LiteralPath $compatibilityLock -Raw).Trim()
                 if (Test-KmgCompatibilityLockOwned -LockOwner $lockOwner `
                     -BatchStartedUtc ([DateTime]$record.startedAtUtc)) {
@@ -367,9 +405,9 @@ finally {
             }
 
             Assert-KmgNotRunning
-            & (Join-Path $PSScriptRoot 'Restore-Live-Mod.ps1') `
-                -BackupDirectory $snapshot.Destination `
-                -LiveModDirectory $LiveModDirectory -Confirm:$false | Out-Null
+            $restoreArguments=@{BackupDirectory=$snapshot.Destination;LiveModDirectory=$LiveModDirectory;Confirm=$false}
+            if($startupPeerScope){$restoreArguments.RuntimeLease=$startupPeerScope.Lease}
+            & (Join-Path $PSScriptRoot 'Restore-Live-Mod.ps1') @restoreArguments | Out-Null
             $after = Get-KmgTreeFingerprint -Directory $LiveModDirectory
             $record.liveAfterRestore = [ordered]@{ files = $after.Files; sha256 = $after.Sha256 }
             $record.restoration = Resolve-KmgRestorationResult `
@@ -387,6 +425,34 @@ finally {
         }
     }
 
+    if($startupPeerScope){
+        try {
+            Assert-KmgNotRunning
+            $nativeDiagnostic=$null
+            if($Sprint40DiagnosticRecovery -and $record.runs.Count -eq 1 -and $record.runs[0].scenarioStatus -ceq 'PASS'){
+                $nativeDiagnostic=Join-Path $record.runs[0].exactEvidenceDirectory 'sprint40-generated-diagnostic.json'
+            }
+            $boundary=Invoke-KmgIndependentBoundaryRestoration -RestoreSettings {
+                if($startupGameSettings){
+                    $key=[Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Software\Owlcat Games\Pathfinder Kingmaker',$true)
+                    try{Restore-KmgFlatGameSettingsValues -Key $key -Snapshot $startupGameSettings}finally{$key.Dispose()}
+                }
+            } -RestoreInstallation {
+                if($startupPeerSnapshot){Restore-KmgSprint40StartupFiles -Snapshot $startupPeerSnapshot -RegeneratedDiagnosticReceipt $nativeDiagnostic}
+            }
+            $record.startupPeerRestoration=$boundary.transaction
+            if($startupPeerCatalog){$record.startupSavePreservation=Assert-KmgProtectedSaveCatalog $startupPeerCatalog}
+            if($boundary.settingsError){throw $boundary.settingsError}
+            if($boundary.installationError){throw $boundary.installationError}
+        } catch {
+            $startupRestorationFailed=$true
+            $record.startupPeerRestoration=[ordered]@{disposition='FAILED';error=$_.Exception.Message}
+            Write-Warning ('Sprint40 startup restoration failed: '+$_.Exception.Message)
+        } finally {
+            if($startupPeerCatalog){Close-KmgProtectedSaveCatalog $startupPeerCatalog}
+            Exit-KmgRuntimeLease $startupPeerScope
+        }
+    }
     $record.completedAtUtc = [DateTime]::UtcNow.ToString('o')
     if (-not (Test-Path -LiteralPath $RestorationRecordRoot -PathType Container)) {
         New-Item -ItemType Directory -Path $RestorationRecordRoot -Force | Out-Null
@@ -397,3 +463,4 @@ finally {
     ($record | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath $recordPath -Encoding utf8
     Write-Host "Restoration record: $recordPath"
 }
+if($startupRestorationFailed){throw 'Sprint40 startup restoration failed; inspect the exact restoration receipt before any further dispatch.'}

@@ -15716,6 +15716,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             ObserveTeleportationSpellPublication(assertions);
             var iconEvidenceFiles = new List<string>();
             FirearmMonogramEvidence.Exercise(_request, assertions, iconEvidenceFiles);
+            ObserveSprint40GeneratedDiagnostic(assertions, iconEvidenceFiles);
             var result = CreateResult(assertions.All(value => value.Status == "PASS") ?
                 "PASS" : "FAIL", assertions, null);
             result.EvidenceFiles = iconEvidenceFiles;
