@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
@@ -65,10 +64,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // AllAttacks is empty until native initialization. Ask the
                 // verified native enumeration directly for this diagnostic
                 // baseline; this queues or emits no attack.
-                var enumerate = typeof(UnitAttack).GetMethod("CreateFullAttack",
-                    BindingFlags.Instance | BindingFlags.NonPublic);
-                if (enumerate == null) throw new InvalidOperationException("Native full-attack enumerator absent.");
-                int nativeUnrestrictedPlan = ((List<AttackHandInfo>)enumerate.Invoke(baseline, null)).Count;
+                int nativeUnrestrictedPlan = baseline.CreateFullAttack().Count;
                 var rider = source.Descriptor.Progression.Features.Enumerable.SelectMany(x =>
                     x.SelectComponents<IceDevilSlowOnHit40>()).Single();
                 BlueprintBuff slow = rider.Slowed;

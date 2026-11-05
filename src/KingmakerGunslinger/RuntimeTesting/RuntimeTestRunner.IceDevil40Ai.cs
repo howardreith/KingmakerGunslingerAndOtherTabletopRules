@@ -82,6 +82,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         BlueprintBootstrap.Library, "9ae23798a9284e044ad2716a772a410e", "native cold immunity AI recipient boundary");
                     if (!target.Descriptor.HasFact(cold)) { target.Descriptor.AddFact(cold); addedCold = true; }
                 }
+                // The private NPC's native sight expands from8.5m to11.7m
+                // in combat. Establish the real combat state before the9m
+                // mutual-sight survey, not after a survey that cannot pass.
+                owner.JoinCombat(); target.JoinCombat(); Game.Instance.Player.UpdateIsInCombat();
+                new UnitCombatJoinController().Tick(); new UnitCombatPrepareController().Tick();
                 Vector3 far; string lane, direction;
                 Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner, target,
                     suffix == "WallOfIce" ? 5.5f : 9f, out far, out lane, out direction,
@@ -94,8 +99,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 owner.Memory.Add(target).Visible = owner.HasLOS(target);
                 target.Memory.Add(owner).Visible = target.HasLOS(owner);
-                owner.JoinCombat(); target.JoinCombat(); Game.Instance.Player.UpdateIsInCombat();
-                new UnitCombatJoinController().Tick(); new UnitCombatPrepareController().Tick();
                 var spell = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol[p + suffix];
                 var ai = (InfernalSpellAi35)ExpandedSummoningBlueprints.Registered.BySymbol[p + suffix + "Ai"];
                 var data = new AbilityData(owner.Descriptor.Abilities.GetAbility(spell));

@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
@@ -13,6 +15,7 @@ using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Assets;
+using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -34,6 +37,28 @@ namespace KingmakerGunslinger.RuntimeTesting
             var bodies = new JArray(); receipt["bodies"] = bodies;
             if (iceDevil) fixture.Hostile.Descriptor.State.AddConditionImmunity(UnitCondition.Frightened);
             try {
+                if (iceDevil)
+                {
+                    var frost = fixture.Blueprints.OfType<BlueprintWeaponEnchantment>().Single(x =>
+                        x.AssetGuid == EasternWeaponNamedBlueprints.FrostGuid);
+                    receipt["nativeFrostGraph"] = DescribeGraph(frost, 0,
+                        new HashSet<object>(NativeDonorReferenceComparer.Instance), 4);
+                    var patches = new JArray(); receipt["coldPacketConsumerPatches"] = patches;
+                    foreach (var type in new[] { typeof(RuleCalculateWeaponStats), typeof(RuleAttackRoll),
+                        typeof(RuleAttackWithWeapon), typeof(Kingmaker.Designers.Mechanics.Facts.WeaponEnergyDamageDice) })
+                    {
+                        string methodName = type == typeof(Kingmaker.Designers.Mechanics.Facts.WeaponEnergyDamageDice)
+                            ? "OnEventAboutToTrigger" : "OnTrigger";
+                        var method = type.GetMethod(methodName, System.Reflection.BindingFlags.Instance |
+                            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+                        if (method == null) throw new MissingMethodException(type.FullName, methodName);
+                        var info = _context.Harmony.GetPatchInfo(method);
+                        patches.Add(new JObject { ["consumer"] = type.FullName + "." + methodName,
+                            ["patches"] = info == null ? new JArray() : new JArray(info.Prefixes.Concat(info.Postfixes)
+                                .Concat(info.Transpilers).Select(x => new JObject { ["owner"] = x.owner,
+                                    ["method"] = x.patch?.DeclaringType?.FullName + "." + x.patch?.Name })) });
+                    }
+                }
                 foreach (string key in iceDevil ? new[] { IceDevilVisualPolicy40.Key } :
                     new[] { InfernalVisualPolicy34.Barbazu, InfernalVisualPolicy34.Kyton }) {
                     var owners = new List<UnitEntityData>(); var resources = new List<UnityEngine.Object>();
@@ -289,15 +314,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var rows = trace.Rows.Skip(start).Where(row => (string)row["event"] == "attack" && (string)row["owner"] == owner.UniqueId).ToArray();
                         var observed = contacts.Skip(contactStart).ToArray();
                         int expected = iceDevil ? 5 : key == InfernalVisualPolicy34.Kyton ? 4 : 2;
-                        bool correct = attack.IsFinished && attack.Result == UnitCommand.ResultType.Success && rows.Length == expected &&
+                        var ends = trace.Rows.Skip(start).Where(x => (string)x["event"] == "command-end" &&
+                            (int?)x["commandReference"] == System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(attack)).ToArray();
+                        bool nativeExhausted = iceDevil && attack.Result == UnitCommand.ResultType.Interrupt && ends.Any(x =>
+                            (int?)x["attackIndex"] == expected && (bool?)x["plannedAttackPresent"] == false &&
+                            ((string)x["interruptionCaller"] ?? "").Contains("UnitAttack.OnTick"));
+                        bool correct = attack.IsFinished && (attack.Result == UnitCommand.ResultType.Success || nativeExhausted) && rows.Length == expected &&
                             observed.Length == expected && errors.Count == 0 && observed.All(row => (bool)row["animationStarted"] && !string.IsNullOrEmpty((string)row["nativeClip"])) &&
                             (key != InfernalVisualPolicy34.Kyton || observed.All(row => (float)row["chainContactGap"] < .15f)) &&
                             (key != InfernalVisualPolicy34.Barbazu || observed.All(row => (bool)row["glaiveVisible"] == !alternate));
                         var cell = new JObject { ["owner"] = owner.UniqueId, ["alternate"] = alternate, ["command"] = Sprint27AiCommand(attack),
-                            ["nativePlan"] = attack.AllAttacks.Count, ["attacks"] = new JArray(rows), ["contacts"] = new JArray(observed), ["costs"] = costs };
+                            ["nativePlan"] = attack.AllAttacks.Count, ["nativeExhausted"] = nativeExhausted,
+                            ["nativeEnds"] = new JArray(ends), ["attacks"] = new JArray(rows), ["contacts"] = new JArray(observed), ["costs"] = costs };
                         Sprint25Check(assertionPrefix + "-native-contact-" + key + "-" + alternate, correct, cell,
                             "One native full attack uses the correct alternative routine with actual animation/contact and no extra attacks.");
                         if (!correct) throw new InvalidOperationException("Infernal routine or live contact mismatch.");
+                        if (iceDevil)
+                        {
+                            var profile40 = IceDevilMartialProfile40.For(owner);
+                            var naturalHits = rows.Where(x => (bool?)x["hit"] == true &&
+                                ((string)x["weapon"] == profile40.Bite.AssetGuid ||
+                                 (string)x["weapon"] == profile40.Tail.AssetGuid)).ToArray();
+                            var coldNaturalHits = naturalHits.Where(x => ((JArray)x["damagePackets"])
+                                .Any(packet => (string)packet["energy"] == "Cold")).ToArray();
+                            bool witnessedBoth = naturalHits.Any(x => (string)x["weapon"] == profile40.Bite.AssetGuid) &&
+                                naturalHits.Any(x => (string)x["weapon"] == profile40.Tail.AssetGuid);
+                            var packetRow = new JObject { ["nativeHitsBothNaturals"] = witnessedBoth,
+                                ["coldNaturalHits"] = new JArray(coldNaturalHits), ["attacks"] = new JArray(rows),
+                                ["classification"] = coldNaturalHits.Length > 0 ? "rules-failure" :
+                                    witnessedBoth ? "observed-native-outcome" : "missing-stochastic-precondition" };
+                            bool packetsCorrect = witnessedBoth && coldNaturalHits.Length == 0;
+                            Sprint25Check("sprint40-natural-cold-packets", packetsCorrect, packetRow,
+                                "Actual bite and tail hits carry physical damage only; spear frost is a separate weapon packet. Missing real hits cannot pass vacuously.");
+                            if (!packetsCorrect) throw new InvalidOperationException("Ice natural cold packets: " + packetRow["classification"]);
+                        }
                         if (key == InfernalVisualPolicy34.Kyton) {
                             var frames = renderedFrames.Where(row => (int)row["contactIndex"] >= contactStart).ToArray();
                             bool followThrough = frames.Any(row => !(bool)row["chainResting"]);

@@ -70,6 +70,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if ((bool)row["turnBased"])
                     row["turn"] = Sprint22TurnState(command.Executor, command.TargetUnit);
                 var attack = command as UnitAttack;
+                if (attack != null)
+                {
+                    row["attackIndex"] = ReadExpandedSummoningOptionalMember(attack, "m_AttackIndex") == null ?
+                        (int?)null : Convert.ToInt32(ReadExpandedSummoningOptionalMember(attack, "m_AttackIndex"));
+                    row["plannedAttackPresent"] = ReadExpandedSummoningOptionalMember(attack, "PlannedAttack") != null;
+                }
                 if (attack != null) row["plan"] = new JArray(attack.AllAttacks.Select(info => new JObject {
                     ["weapon"] = info.Hand?.MaybeWeapon?.Blueprint?.AssetGuid,
                     ["itemReference"] = ReferenceId(info.Hand?.MaybeWeapon),
@@ -120,10 +126,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !value.Source.Immune && value.FinalValue > 0)
                         .Sum(value => value.FinalValue);
                 row["rangeFeet"] = evt.Weapon?.AttackRange.Value;
+                row["statsWeapon"] = evt.AttackRoll?.WeaponStats?.Weapon?.Blueprint?.AssetGuid;
+                row["statsDamageListReference"] = evt.AttackRoll?.WeaponStats?.DamageDescription == null ?
+                    (int?)null : RuntimeHelpers.GetHashCode(evt.AttackRoll.WeaponStats.DamageDescription);
+                row["damageDescriptionValueType"] = typeof(DamageDescription).IsValueType;
+                row["blueprintEnchantments"] = evt.Weapon == null ? null : new JArray(
+                    evt.Weapon.Blueprint.Enchantments.Select(x => x.AssetGuid));
+                row["itemEnchantments"] = evt.Weapon == null ? null : new JArray(evt.Weapon.Enchantments.Select(x =>
+                    new JObject { ["blueprint"] = x.Blueprint?.AssetGuid, ["name"] = x.Blueprint?.name,
+                        ["ownerBlueprint"] = x.Owner?.Blueprint?.AssetGuid, ["ownerReference"] = ReferenceId(x.Owner),
+                        ["components"] = x.Blueprint == null ? null : new JArray(x.Blueprint.ComponentsArray.Select(c => c.GetType().FullName)) }));
                 row["weaponDamage"] = evt.AttackRoll?.WeaponStats == null ? null : new JArray(evt.AttackRoll.WeaponStats.DamageDescription.Select(value =>
-                    new JObject { ["dice"] = value.Dice.ToString(), ["bonus"] = value.Bonus }));
+                    new JObject { ["dice"] = value.Dice.ToString(), ["bonus"] = value.Bonus,
+                        ["descriptionReference"] = typeof(DamageDescription).IsValueType ?
+                            (int?)null : ReferenceId(value) }));
                 row["damagePackets"] = evt.MeleeDamage == null ? null : new JArray(evt.MeleeDamage.DamageBundle.Select(value =>
                     new JObject { ["type"] = value.GetType().Name, ["dice"] = value.Dice.ToString(), ["bonus"] = value.Bonus,
+                        ["energy"] = (value as EnergyDamage)?.EnergyType.ToString(),
                         ["criticalModifier"] = ReadExpandedSummoningOptionalMember(value, "CriticalModifier")?.ToString() }));
                 row["attackCommand"] = evt.Initiator.Commands.Attack == null ? (int?)null :
                     RuntimeHelpers.GetHashCode(evt.Initiator.Commands.Attack);
