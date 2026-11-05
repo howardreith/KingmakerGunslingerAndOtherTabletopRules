@@ -864,7 +864,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.LoadEntryTimeoutSeconds != 0 ||
                     request.FingerprintTimeoutSeconds != 0)
                     return "scenario-timeouts-not-allowed";
-                if (request.Parameters == null || request.Parameters.Count != 13 ||
+                bool diagnosticRecovery = request.Parameters != null &&
+                    request.Parameters.Property("sprint40DiagnosticRecovery") != null;
+                if (request.Parameters == null ||
+                    request.Parameters.Count != (diagnosticRecovery ? 14 : 13) ||
+                    (diagnosticRecovery &&
+                        (request.Parameters["sprint40DiagnosticRecovery"].Type !=
+                            JTokenType.Boolean ||
+                         !(bool)request.Parameters["sprint40DiagnosticRecovery"])) ||
                     request.Parameters.Property("gunslinger") == null ||
                     request.Parameters["gunslinger"].Type != JTokenType.Boolean ||
                     request.Parameters.Property("acadamaeGraduate") == null ||

@@ -2704,7 +2704,10 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
     }
     elseif ($Scenario -ceq 'observe-feature-module-settings') {
-        if ($Parameters.Count -ne 13 -or
+        $sprint40Recovery = $Parameters.ContainsKey('sprint40DiagnosticRecovery')
+        if ($Parameters.Count -ne $(if($sprint40Recovery){14}else{13}) -or
+            ($sprint40Recovery -and ($Parameters.sprint40DiagnosticRecovery -isnot [bool] -or
+                $Parameters.sprint40DiagnosticRecovery -ne $true)) -or
             -not $Parameters.ContainsKey('gunslinger') -or
             $Parameters.gunslinger -isnot [bool] -or
             -not $Parameters.ContainsKey('acadamaeGraduate') -or
@@ -2978,7 +2981,7 @@ function New-KmgRuntimeRequest {
         } elseif ($Scenario -ceq 'observe-optional-mod-compatibility') {
             [ordered]@{ profileId = [string]$Parameters.profileId }
         } elseif ($Scenario -ceq 'observe-feature-module-settings') {
-            [ordered]@{
+            $moduleParameters = [ordered]@{
                 gunslinger = [bool]$Parameters.gunslinger
                 acadamaeGraduate = [bool]$Parameters.acadamaeGraduate
                 shieldOther = [bool]$Parameters.shieldOther
@@ -2994,6 +2997,10 @@ function New-KmgRuntimeRequest {
                 teleportationSpells = [bool]$Parameters.teleportationSpells
                 magicCircleSpells = [bool]$Parameters.magicCircleSpells
             }
+            if($Parameters.ContainsKey('sprint40DiagnosticRecovery')){
+                $moduleParameters.sprint40DiagnosticRecovery = $true
+            }
+            $moduleParameters
         } elseif ($Scenario -ceq 'observe-expanded-summoning-module-boundary') {
             [ordered]@{ expandedSummoning = [bool]$Parameters.expandedSummoning }
         } elseif ($Scenario -cin @(

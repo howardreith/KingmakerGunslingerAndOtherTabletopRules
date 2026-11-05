@@ -240,11 +240,16 @@ try {
         Write-Host "=== scenario: $name ==="
         $run = [ordered]@{ scenario = $name; startedAtUtc = [DateTime]::UtcNow.ToString('o') }
         try {
+            $nativeParameters = Resolve-KmgBatchScenarioParameters -Scenarios $Scenario -CurrentScenario $name `
+                -DefaultParameters $ScenarioParameters -ParameterMap $ScenarioParameterMap
+            if($Sprint40DiagnosticRecovery){
+                $nativeParameters=$nativeParameters.Clone()
+                $nativeParameters.sprint40DiagnosticRecovery=$true
+            }
             $arguments = @{
                 Scenario = $name
                 ExpectedVersion = $ExpectedVersion
-                Parameters = (Resolve-KmgBatchScenarioParameters -Scenarios $Scenario -CurrentScenario $name `
-                    -DefaultParameters $ScenarioParameters -ParameterMap $ScenarioParameterMap)
+                Parameters = $nativeParameters
                 TimeoutSeconds = $TimeoutSeconds
                 ObserverStartupTimeoutSeconds = $ObserverStartupTimeoutSeconds
                 CompletionTimeoutSeconds = $CompletionTimeoutSeconds
@@ -429,8 +434,15 @@ finally {
         try {
             Assert-KmgNotRunning
             $nativeDiagnostic=$null
-            if($Sprint40DiagnosticRecovery -and $record.runs.Count -eq 1 -and $record.runs[0].scenarioStatus -ceq 'PASS'){
-                $nativeDiagnostic=Join-Path $record.runs[0].exactEvidenceDirectory 'sprint40-generated-diagnostic.json'
+            if($Sprint40DiagnosticRecovery){
+                $record.postStartupDiagnosticCapture=Save-KmgSprint40GeneratedDiagnosticEvidence -Snapshot $startupPeerSnapshot
+                if($record.runs.Count -eq 1 -and $record.runs[0].Contains('exactEvidenceDirectory')){
+                    $candidateDiagnostic=Join-Path $record.runs[0].exactEvidenceDirectory 'sprint40-generated-diagnostic.json'
+                    if(Test-Path -LiteralPath $candidateDiagnostic -PathType Leaf){
+                        $targeted=Read-KmgCompatibilityJson $candidateDiagnostic
+                        if($targeted.exactOriginalRegeneration -eq $true){$nativeDiagnostic=$candidateDiagnostic}
+                    }
+                }
             }
             $boundary=Invoke-KmgIndependentBoundaryRestoration -RestoreSettings {
                 if($startupGameSettings){

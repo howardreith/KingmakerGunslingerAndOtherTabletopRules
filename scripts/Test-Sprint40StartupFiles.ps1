@@ -1,6 +1,7 @@
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'RuntimeCoordination.Common.ps1')
 . (Join-Path $PSScriptRoot 'Sprint40StartupFiles.Common.ps1')
+. (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
 $fixture=Join-Path (Split-Path $PSScriptRoot -Parent) ('artifacts/fixtures/s40-peer-'+[Guid]::NewGuid().ToString('N'))
 $mods=Join-Path $fixture 'Mods'; [void][IO.Directory]::CreateDirectory($mods)
 $checks=0
@@ -22,6 +23,25 @@ foreach($mode in @('gameplay','wrong-purpose','save-load','module-off','changed-
  $refused=$false;try{Assert-KmgSprint40DiagnosticRecoveryRequest @request}catch{$refused=$true}
  Check $refused ('Recovery request refuses '+$mode)
 }
+$modules=@{gunslinger=$true;acadamaeGraduate=$true;shieldOther=$true;expandedSummoning=$true;
+ elvenBranchedSpears=$true;easternWeapons=$true;brownFurTransmuter=$true;urbanBarbarian=$true;
+ bodyguardFeats=$true;protectionFromAlignmentControlImmunity=$true;elementalRaces=$true;
+ teleportationSpells=$true;magicCircleSpells=$true}
+$requestBase=@{Scenario='observe-feature-module-settings';ExpectedVersion='0.0.177';TimeoutSeconds=120;
+ ExitAfterCompletion=$true;EvidenceDirectory=('C:/Dev/KingmakerGunslingerLab/runtime-evidence/test-s40-request-'+[Guid]::NewGuid().ToString('N'))}
+$ordinary=New-KmgRuntimeRequest @requestBase -Parameters $modules
+Check ($ordinary.parameters.Count -eq 13 -and -not $ordinary.parameters.Contains('sprint40DiagnosticRecovery')) 'Ordinary settings request remains unchanged.'
+$recovery=$modules.Clone();$recovery.sprint40DiagnosticRecovery=$true
+$recoveryRequest=New-KmgRuntimeRequest @requestBase -Parameters $recovery
+Check ($recoveryRequest.parameters.Count -eq 14 -and $recoveryRequest.parameters.sprint40DiagnosticRecovery -eq $true) 'Exact-true recovery metadata reaches the native request.'
+foreach($mode in @('false','string','unknown')){
+ $bad=$modules.Clone()
+ if($mode -ceq 'false'){$bad.sprint40DiagnosticRecovery=$false}
+ elseif($mode -ceq 'string'){$bad.sprint40DiagnosticRecovery='true'}
+ else{$bad.foreignRecovery=$true}
+ $refused=$false;try{$null=New-KmgRuntimeRequest @requestBase -Parameters $bad}catch{$refused=$true}
+ Check $refused ('Runtime request refuses recovery metadata '+$mode)
+}
 foreach($relative in Get-KmgSprint40StartupFiles){
  $path=Join-Path $mods $relative;[void][IO.Directory]::CreateDirectory((Split-Path $path -Parent))
  [IO.File]::WriteAllText($path,'original '+$relative)
@@ -34,19 +54,25 @@ $result=Restore-KmgSprint40StartupFiles $snapshot
 Check ($result.restored.Count -eq 9 -and $null -eq $result.preservedNativeDiagnostic) 'All nine original byte/metadata records restored.'
 $favored=Join-Path $mods 'ZFavoredClass\loaded_blueprints.txt'
 [IO.File]::WriteAllText($favored,'native fresh output')
+$capture=Save-KmgSprint40GeneratedDiagnosticEvidence -Snapshot $snapshot
+Check ((Get-KmgCompatibilitySha256 $capture.copyPath) -ceq (Get-KmgCompatibilitySha256 $favored)) 'Post-startup bytes are captured before restoration disposition.'
 $native=Join-Path $fixture 'native.json'
+$nativeCopy=Join-Path $fixture 'sprint40-generated-diagnostic.txt';Copy-Item -LiteralPath $favored -Destination $nativeCopy
+$nativeHash=Get-KmgCompatibilitySha256 $favored;$nativeLength=(Get-Item $favored).Length
 Write-KmgCompatibilityJsonAtomic $native ([ordered]@{scenario='observe-feature-module-settings';path=$favored;
- allNativeRowsExact=$true;expectedNativeRows=1;actualRows=1;sha256=(Get-KmgCompatibilitySha256 $favored);length=(Get-Item $favored).Length})
-$result=Restore-KmgSprint40StartupFiles $snapshot -RegeneratedDiagnosticReceipt $native
-Check ($result.restored.Count -eq 8 -and $result.preservedNativeDiagnostic -ceq 'ZFavoredClass\loaded_blueprints.txt' -and
- [IO.File]::ReadAllText($favored) -ceq 'native fresh output') 'Native recovery preserves only the one regenerated diagnostic.'
-foreach($mode in @('wrong-path','failed-producer','stale-bytes')){
+ exactOriginalRegeneration=$true;bootstrapInitialized=$true;freshNativeWrite=$true;structuralRowsValid=$true;
+ allRowsResolveLive=$true;actualRows=1;resolvedLiveRows=1;sha256=$nativeHash;length=$nativeLength;
+ evidenceCopyPath=$nativeCopy;evidenceCopySha256=$nativeHash})
+$null=Assert-KmgSprint40GeneratedDiagnosticReceipt -ReceiptPath $native -ExpectedPath $favored -ExpectedSha256 $nativeHash -ExpectedLength $nativeLength
+Check $true 'Native recovery receipt validates actual current bytes and its captured evidence copy.'
+foreach($mode in @('wrong-path','failed-producer','stale-bytes','missing-copy')){
  $bad=Read-KmgCompatibilityJson $native
  if($mode -ceq 'wrong-path'){$bad.path=Join-Path $mods 'CallOfTheWild\loaded_blueprints.txt'}
- if($mode -ceq 'failed-producer'){$bad.allNativeRowsExact=$false}
+ if($mode -ceq 'failed-producer'){$bad.exactOriginalRegeneration=$false}
  if($mode -ceq 'stale-bytes'){$bad.sha256='0'*64}
+ if($mode -ceq 'missing-copy'){$bad.evidenceCopyPath=Join-Path $fixture 'other.txt'}
  $badPath=Join-Path $fixture ($mode+'.json');Write-KmgCompatibilityJsonAtomic $badPath $bad
- $refused=$false;try{Restore-KmgSprint40StartupFiles $snapshot -RegeneratedDiagnosticReceipt $badPath|Out-Null}catch{$refused=$true}
+ $refused=$false;try{Assert-KmgSprint40GeneratedDiagnosticReceipt -ReceiptPath $badPath -ExpectedPath $favored -ExpectedSha256 $nativeHash -ExpectedLength $nativeLength|Out-Null}catch{$refused=$true}
  Check $refused ('Refuses '+$mode)
 }
 $first=Join-Path (Split-Path $snapshot.receiptPath -Parent) 'BagOfTricks\Favourites\Functions.xml'

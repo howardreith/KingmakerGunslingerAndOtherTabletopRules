@@ -46,6 +46,47 @@ function Backup-KmgSprint40StartupFiles {
  [pscustomobject]@{receiptPath=$receipt;sha256=(Get-KmgCompatibilitySha256 $receipt)}
 }
 
+function Save-KmgSprint40GeneratedDiagnosticEvidence {
+ param([Parameter(Mandatory=$true)]$Snapshot)
+ if((Get-KmgCompatibilitySha256 $Snapshot.receiptPath) -cne $Snapshot.sha256){throw 'Startup snapshot receipt changed before diagnostic capture.'}
+ $saved=Read-KmgCompatibilityJson $Snapshot.receiptPath
+ $source=Join-Path $saved.modsRoot 'ZFavoredClass\loaded_blueprints.txt'
+ $root=Split-Path $Snapshot.receiptPath -Parent
+ $copy=Join-Path $root 'post-startup-loaded_blueprints.txt'
+ $receipt=Join-Path $root 'post-startup-loaded_blueprints.json'
+ if((Test-Path -LiteralPath $copy) -or (Test-Path -LiteralPath $receipt)){throw 'Post-startup diagnostic evidence already exists.'}
+ $item=Get-Item -LiteralPath $source -Force
+ if($item.PSIsContainer -or ($item.Attributes -band [IO.FileAttributes]::ReparsePoint)){throw 'Generated diagnostic is not an ordinary file.'}
+ $hash=Get-KmgCompatibilitySha256 $source
+ Copy-Item -LiteralPath $source -Destination $copy
+ if((Get-KmgCompatibilitySha256 $copy) -cne $hash -or (Get-KmgCompatibilitySha256 $source) -cne $hash){throw 'Generated diagnostic changed during evidence capture.'}
+ Write-KmgCompatibilityJsonAtomic $receipt ([ordered]@{schemaVersion=1;path=$source;copyPath=$copy;sha256=$hash;
+  length=$item.Length;creationUtcTicks=$item.CreationTimeUtc.Ticks;writeUtcTicks=$item.LastWriteTimeUtc.Ticks;attributes=[int]$item.Attributes})
+ [pscustomobject]@{receiptPath=$receipt;copyPath=$copy;sha256=$hash;length=$item.Length}
+}
+
+function Assert-KmgSprint40GeneratedDiagnosticReceipt {
+ param([Parameter(Mandatory=$true)][string]$ReceiptPath,
+       [Parameter(Mandatory=$true)][string]$ExpectedPath,
+       [Parameter(Mandatory=$true)][string]$ExpectedSha256,
+       [Parameter(Mandatory=$true)][long]$ExpectedLength)
+ $native=Read-KmgCompatibilityJson $ReceiptPath
+ $nativeCopy=Join-Path (Split-Path $ReceiptPath -Parent) 'sprint40-generated-diagnostic.txt'
+ if($native.scenario -cne 'observe-feature-module-settings' -or $native.exactOriginalRegeneration -ne $true -or
+   $native.bootstrapInitialized -ne $true -or $native.freshNativeWrite -ne $true -or
+   $native.structuralRowsValid -ne $true -or $native.allRowsResolveLive -ne $true -or
+   $native.actualRows -le 0 -or $native.resolvedLiveRows -ne $native.actualRows -or
+   $native.sha256 -cne $ExpectedSha256 -or $native.length -ne $ExpectedLength -or
+   -not [IO.Path]::GetFullPath($native.path).Equals([IO.Path]::GetFullPath($ExpectedPath),[StringComparison]::OrdinalIgnoreCase) -or
+   (Get-KmgCompatibilitySha256 $ExpectedPath) -cne $native.sha256 -or
+   (Get-Item -LiteralPath $ExpectedPath).Length -ne $native.length -or
+   -not [IO.Path]::GetFullPath($native.evidenceCopyPath).Equals([IO.Path]::GetFullPath($nativeCopy),[StringComparison]::OrdinalIgnoreCase) -or
+   -not (Test-Path -LiteralPath $nativeCopy -PathType Leaf) -or
+   (Get-KmgCompatibilitySha256 $nativeCopy) -cne $native.sha256 -or
+   $native.evidenceCopySha256 -cne $native.sha256){throw 'Regenerated diagnostic lacks exact current native producer evidence.'}
+ $native
+}
+
 function Restore-KmgSprint40StartupFiles {
  param([Parameter(Mandatory=$true)]$Snapshot,
        [string]$RegeneratedDiagnosticReceipt)
@@ -62,13 +103,9 @@ function Restore-KmgSprint40StartupFiles {
  }
  $preserve=$null
  if($RegeneratedDiagnosticReceipt){
-  $native=Read-KmgCompatibilityJson $RegeneratedDiagnosticReceipt
   $expected=Join-Path $saved.modsRoot 'ZFavoredClass\loaded_blueprints.txt'
-  if($native.scenario -cne 'observe-feature-module-settings' -or $native.allNativeRowsExact -ne $true -or
-    $native.expectedNativeRows -le 0 -or $native.actualRows -ne $native.expectedNativeRows -or
-    -not [IO.Path]::GetFullPath($native.path).Equals([IO.Path]::GetFullPath($expected),[StringComparison]::OrdinalIgnoreCase) -or
-    (Get-KmgCompatibilitySha256 $expected) -cne $native.sha256 -or
-    (Get-Item -LiteralPath $expected).Length -ne $native.length){throw 'Regenerated diagnostic lacks exact current native producer evidence.'}
+  $null=Assert-KmgSprint40GeneratedDiagnosticReceipt -ReceiptPath $RegeneratedDiagnosticReceipt -ExpectedPath $expected `
+   -ExpectedSha256 '590ca0e2f5400097d215aeb3764072e4f4da56058a5820588d510751d3a64123' -ExpectedLength 135399
   $preserve='ZFavoredClass\loaded_blueprints.txt'
  }
  $restored=@()
