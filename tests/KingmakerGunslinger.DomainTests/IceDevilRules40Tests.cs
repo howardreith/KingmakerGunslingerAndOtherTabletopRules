@@ -15,14 +15,14 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(IceDevilRules40Policy.RetainBiteAttack(false, true, false, false), "Armed additional bite remains.");
             Assertions.True(IceDevilRules40Policy.RetainBiteAttack(true, false, false, true), "Tail and other weapon identities remain.");
         }
-        internal static void HiddenRouteAndDependencies()
+        internal static void PublicRouteAndDependencies()
         {
             var routes = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                 .Where(x => x.Creature.Key == "ice-devil").ToArray();
             Assertions.Equal(1, routes.Length, "One route only.");
             Assertions.Equal(9, routes[0].ParentTier, "SM IX.");
             Assertions.Equal(SummonMultiplicity.One, routes[0].Multiplicity, "One adult.");
-            Assertions.False(SummonVisibilityCatalog.IsPublished(routes[0]), "Development root stays hidden.");
+            Assertions.True(SummonVisibilityCatalog.IsPublished(routes[0]), "The qualified SM IX root is public.");
             Assertions.False(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly)
                 .Any(x => x.Creature.Key == "ice-devil"), "No Nature route.");
             Assertions.False(SummonDemonIdentityCatalog.IsDemonKey("ice-devil"), "Devil is not a demon.");
