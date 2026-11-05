@@ -4,6 +4,11 @@ namespace KingmakerGunslinger.Summoning
 {
     internal static class IceDevilRules40Policy
     {
+        internal const string UnitSymbol = "KMG.Summoning.Unit.IceDevil";
+        internal const string UnitGuid = "6b5b789a08584fab84a00e7da42e1d2c";
+        internal const string WallSectionSymbol = "KMG.Summoning.Infernal.IceDevil.WallSectionUnit";
+        internal const string WallSectionGuid = "225850056cb944c687748bef47310c23";
+        internal const string WallSectionName = "KMG_Summoning_Infernal_IceDevil_WallSectionUnit";
         internal const int HitDice = 14;
         internal const int SpellLikeCasterLevel = 13;
         internal const int Strength = 23, Dexterity = 21, Constitution = 22;
@@ -32,12 +37,13 @@ namespace KingmakerGunslinger.Summoning
         internal static int BiteStrengthCorrection(int strengthBonus,
             float nativeMultiplier, bool secondary)
         {
+            if (!secondary && strengthBonus > 0 &&
+                Math.Abs(nativeMultiplier - 1.5f) < .001f)
+                return strengthBonus - (int)(strengthBonus * nativeMultiplier);
             return secondary && strengthBonus > 0 &&
                 Math.Abs(nativeMultiplier - .5f) < .001f ?
                 strengthBonus - (int)(strengthBonus * nativeMultiplier) : 0;
         }
 
-        internal static int WallHitPoints(int casterLevel) { return 3 * casterLevel; }
-        internal static int WallDurationRounds(int casterLevel) { return 10 * casterLevel; }
     }
 }

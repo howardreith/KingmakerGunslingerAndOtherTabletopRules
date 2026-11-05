@@ -83,8 +83,10 @@ namespace KingmakerGunslinger.Summoning
             UnitEntityData owner = view == null ? null :
                 view.EntityData as UnitEntityData;
             return owner != null && owner.Blueprint != null &&
-                owner.Blueprint.AssetGuid == InfernalRules35.WallSectionUnitGuid &&
-                owner.Blueprint.name == InfernalRules35.WallSectionUnitName;
+                (owner.Blueprint.AssetGuid == InfernalRules35.WallSectionUnitGuid &&
+                    owner.Blueprint.name == InfernalRules35.WallSectionUnitName ||
+                 owner.Blueprint.AssetGuid == IceDevilRules40Policy.WallSectionGuid &&
+                    owner.Blueprint.name == IceDevilRules40Policy.WallSectionName);
         }
 
         internal void Configure(UnitEntityView view)

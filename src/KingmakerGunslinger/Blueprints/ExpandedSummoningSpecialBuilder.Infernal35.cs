@@ -836,16 +836,21 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static BlueprintAbility ConfigureWallAbility35(
-            IDictionary<string, BlueprintScriptableObject> symbols)
+            IDictionary<string, BlueprintScriptableObject> symbols,
+            string prefix = Bone35Prefix, string key = "bone-devil",
+            string ownerSymbol = InfernalRules35.BoneUnitSymbol,
+            int casterLevel = InfernalRules35.SpellLikeCasterLevel,
+            int customRangeFeet = 0)
         {
-            string symbol = Bone35Prefix + "WallOfIce";
+            string symbol = prefix + "WallOfIce";
             var ability = Require<BlueprintAbility>(symbols, symbol);
             ability.name = InternalName(symbol);
             ability.Type = AbilityType.SpellLike;
             ability.Parent = null;
             ability.ActionType = UnitCommand.CommandType.Standard;
             ability.SetIsFullRoundAction(false);
-            ability.Range = AbilityRange.Medium;
+            ability.Range = customRangeFeet > 0 ? AbilityRange.Custom : AbilityRange.Medium;
+            if (customRangeFeet > 0) ability.CustomRange = new Feet(customRangeFeet);
             ability.CanTargetEnemies = false;
             ability.CanTargetFriends = false;
             ability.CanTargetSelf = false;
@@ -857,9 +862,9 @@ namespace KingmakerGunslinger.Blueprints
             ability.MaterialComponent = new BlueprintAbility.MaterialComponentData();
             ability.ResourceAssetIds = Array.Empty<string>();
             var owner = Require<BlueprintUnit>(symbols,
-                "KMG.Summoning.Unit.BoneDevil");
+                ownerSymbol);
             var section = Require<BlueprintUnit>(symbols,
-                Bone35Prefix + "WallSectionUnit");
+                prefix + "WallSectionUnit");
             var placement = ScriptableObject.CreateInstance<
                 InfernalWallTarget35>();
             placement.OwningBlueprint = owner;
@@ -867,6 +872,7 @@ namespace KingmakerGunslinger.Blueprints
             var form = ScriptableObject.CreateInstance<
                 ContextActionFormInfernalWall35>();
             form.OwningBlueprint = owner;
+            form.CasterLevel = casterLevel;
             form.WallSection = section;
             var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
             // Installed 2.1.7b AbilityEffectRunAction.Apply returns before
@@ -882,7 +888,7 @@ namespace KingmakerGunslinger.Blueprints
                 ContextCalculateAbilityParams>();
             parameters.StatType = StatType.Charisma;
             parameters.ReplaceCasterLevel = true;
-            parameters.CasterLevel = Simple(12);
+            parameters.CasterLevel = Simple(casterLevel);
             parameters.ReplaceSpellLevel = true;
             parameters.SpellLevel = Simple(
                 InfernalRules35.WallOfIceSpellLevel);
@@ -901,10 +907,10 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create(symbol + ".Name",
                     "Wall of Ice"),
                 LocalizationService.Create(symbol + ".Description",
-                    "At will as a standard action, form one grounded 10-foot planar ice section at medium range for 12 minutes. Occupied or obstructed placement is illegal. Adjacent creatures may resist the spell and attempt a Reflex save to disrupt formation. The section has 36 hit points, is hit automatically, takes normal object half damage except from fire, blocks movement, and creates a 1d6+12 cold breach for the remaining duration when destroyed. Fire destruction also creates obscuring steam for 10 minutes. This bounded planar form has no hemisphere, Strength-break command, or line-of-effect blocking."),
-                ExpandedSummoningProjectIcons.Require("bone-devil"));
+                    $"At will as a standard action, form one grounded 10-foot planar ice section at medium range for {casterLevel} minutes. Occupied or obstructed placement is illegal. Adjacent creatures may resist the spell and attempt a Reflex save to disrupt formation. The section has {InfernalRules35.WallSectionHitPoints(casterLevel)} hit points, is hit automatically, takes normal object half damage except from fire, blocks movement, and creates a 1d6+{casterLevel} cold breach for the remaining duration when destroyed. Fire destruction also creates obscuring steam for 10 minutes. This bounded planar form has no hemisphere, Strength-break command, or line-of-effect blocking."),
+                ExpandedSummoningProjectIcons.Require(key));
             ability.LocalizedDuration = LocalizationService.Create(
-                symbol + ".Duration", "12 minutes");
+                symbol + ".Duration", casterLevel + " minutes");
             ability.LocalizedSavingThrow = LocalizationService.Create(
                 symbol + ".Save", "Reflex negates formation; see text");
             return ability;
@@ -912,9 +918,13 @@ namespace KingmakerGunslinger.Blueprints
 
         private static void ConfigureWallPrototype35(
             LibraryScriptableObject library,
-            IDictionary<string, BlueprintScriptableObject> symbols)
+            IDictionary<string, BlueprintScriptableObject> symbols,
+            string prefix = Bone35Prefix, string key = "bone-devil",
+            string ownerSymbol = InfernalRules35.BoneUnitSymbol,
+            int casterLevel = InfernalRules35.SpellLikeCasterLevel)
         {
-            string p = Bone35Prefix;
+            string p = prefix;
+            string ownerName = key == "bone-devil" ? "Bone Devil" : "Ice Devil";
             var unit = Require<BlueprintUnit>(symbols, p + "WallSectionUnit");
             var type = Require<BlueprintUnitType>(symbols,
                 p + "WallSectionUnitType");
@@ -923,8 +933,8 @@ namespace KingmakerGunslinger.Blueprints
                 p + "WallSectionUnitType.Name", "Wall of Ice Section");
             type.Description = LocalizationService.Create(
                 p + "WallSectionUnitType.Description",
-                "One grounded, attackable section of a Bone Devil's Wall of Ice.");
-            type.Image = ExpandedSummoningProjectIcons.Require("bone-devil");
+                "One grounded, attackable section of a " + ownerName + "'s Wall of Ice.");
+            type.Image = ExpandedSummoningProjectIcons.Require(key);
             type.KnowledgeStat = StatType.SkillKnowledgeArcana;
             type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
             var levels = OutsiderLevels(library, 1);
@@ -933,7 +943,7 @@ namespace KingmakerGunslinger.Blueprints
                 SummonGiantRacialProfile>();
             racial.OwningBlueprint = unit;
             racial.BaseRacialHitPoints =
-                InfernalRules35.WallOfIceSectionHitPoints;
+                InfernalRules35.WallSectionHitPoints(casterLevel);
             racial.BaseFortitude = 0;
             racial.BaseReflex = 0;
             racial.BaseWill = 0;
@@ -945,7 +955,7 @@ namespace KingmakerGunslinger.Blueprints
                 library, TheropodVisualPolicy.DonorGuid,
                 "temporary wall section standing-corpulence carrier");
             unit.Prefab = donor.Prefab;
-            ConfigureUnitCore(unit, "BoneDevilWallSection",
+            ConfigureUnitCore(unit, ExpandedSummoningIdentityCatalog.CreatureToken(key) + "WallSection",
                 "Wall of Ice Section", Alignment.TrueNeutral, Size.Large,
                 10, 1, 10, 0, 10, 1, 0);
             unit.Body = NaturalBody(null, Array.Empty<BlueprintItemWeapon>(),
@@ -956,7 +966,7 @@ namespace KingmakerGunslinger.Blueprints
                 InfernalWallSection35>();
             sectionRules.OwningBlueprint = unit;
             sectionRules.SourceBlueprint = Require<BlueprintUnit>(symbols,
-                "KMG.Summoning.Unit.BoneDevil");
+                ownerSymbol);
             sectionRules.WallAbility = Require<BlueprintAbility>(symbols,
                 p + "WallOfIce");
             sectionRules.ResidualArea = Require<BlueprintAbilityAreaEffect>(
@@ -977,7 +987,7 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create(p + "WallSectionTraits.Name",
                     "Ice Section"),
                 LocalizationService.Create(p + "WallSectionTraits.Description",
-                    "Stationary, 36 hit points, automatically hit, and linked to the casting Bone Devil's temporary spell duration."), null);
+                    $"Stationary, {InfernalRules35.WallSectionHitPoints(casterLevel)} hit points, automatically hit, and linked to the casting {ownerName}'s temporary spell duration."), null);
             unit.AddFacts = new BlueprintUnitFact[] { traits };
             var brainDonor = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
                 library, DumbBrainGuid, "inert wall section brain donor");
@@ -1004,7 +1014,7 @@ namespace KingmakerGunslinger.Blueprints
             var residualCold = ScriptableObject.CreateInstance<
                 InfernalWallResidual35>();
             residualCold.SourceBlueprint = Require<BlueprintUnit>(symbols,
-                "KMG.Summoning.Unit.BoneDevil");
+                ownerSymbol);
             residualCold.name = "$KMG_S35_WallResidualCold";
             residual.ComponentsArray = new BlueprintComponent[] {
                 residualCold };

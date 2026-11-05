@@ -4095,7 +4095,10 @@
       "height": 128,
       "format": "RGBA PNG",
       "scope": "kmg-catalog",
-      "blueprintSymbols": []
+      "blueprintSymbols": [
+        "KMG.Summoning.Ability.SM.Tier9.IceDevil.One",
+        "KMG.Summoning.Unit.IceDevil"
+      ]
     }
   ]
 }

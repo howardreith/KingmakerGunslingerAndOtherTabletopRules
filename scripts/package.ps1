@@ -251,6 +251,12 @@ $nalfeshnee39Files = @('nalfeshnee-mesh.json','nalfeshnee-albedo.png')
 foreach ($file in $nalfeshnee39Files) {
     Copy-Item -LiteralPath (Join-Path $outputDirectory ('assets\sprint39-nalfeshnee\'+$file)) -Destination $nalfeshnee39Destination
 }
+$iceDevil40Destination = Join-Path $modDirectory 'assets\sprint40-ice-devil'
+New-Item -ItemType Directory -Path $iceDevil40Destination -Force | Out-Null
+$iceDevil40Files = @('ice-devil-mesh.json','ice-devil-albedo.png')
+foreach ($file in $iceDevil40Files) {
+    Copy-Item -LiteralPath (Join-Path $outputDirectory ('assets\sprint40-ice-devil\'+$file)) -Destination $iceDevil40Destination
+}
 $shadowOutsiderDestination = Join-Path $modDirectory 'assets\sprint33-shadow-outsiders'
 New-Item -ItemType Directory -Path $shadowOutsiderDestination -Force | Out-Null
 $shadowOutsiderFiles = @('invisible-stalker-mesh.json','invisible-stalker-albedo.png','shadow-demon-mesh.json','shadow-demon-albedo.png')

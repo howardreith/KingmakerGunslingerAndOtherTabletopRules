@@ -152,7 +152,8 @@ namespace KingmakerGunslinger.Summoning
                 // the Sprint 37 Vrock's do, so they move with the torso and
                 // do not articulate independently - a recorded limitation,
                 // not a claim of wing articulation.
-                "nalfeshnee|a8cbd4cdb0feaf64eab1452257c3c971|0"
+                "nalfeshnee|a8cbd4cdb0feaf64eab1452257c3c971|0",
+                "ice-devil|a8cbd4cdb0feaf64eab1452257c3c971|0"
             });
         }
 

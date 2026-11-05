@@ -20,11 +20,11 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 133;
+        internal const int UnitCount = 134;
         // One logical summon ability per generated placement. Sprint 39's
         // Nalfeshnee is registered at Monster tier 9, so GenerateVariants
         // admits it for parent 9 alone and this moves by exactly one.
-        internal const int LogicalAbilityCount = 1187;
+        internal const int LogicalAbilityCount = 1188;
         internal const int TemplatedPlacementCount = 319;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -99,7 +99,7 @@ namespace KingmakerGunslinger.Summoning
         // moves from 737 by exactly that, and the derived
         // FoundationIdentityCount follows. It is not fitted to whatever the
         // builder happened to produce.
-        internal const int SpecialIdentityCount = 762;
+        internal const int SpecialIdentityCount = 788;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -1111,6 +1111,33 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.GreaterDispelAi", "BabauDispelAi36"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.CallLightningAi", "InfernalSpellAi35"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Demon.Nalfeshnee.SlowAi", "InfernalSpellAi35"));
+            // Sprint40: one Ice Devil and its exact private dependencies.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.Spear", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.SpearType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.Bite", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.BiteType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.Tail", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.TailType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.ConeOfCold", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.IceStorm", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.WallOfIce", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.FearArea", "BlueprintAbilityAreaEffect"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.FearCarrier", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.FearFrightened", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.FearImmunity", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.Regeneration", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.ConeOfColdAi", "InfernalSpellAi35"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.IceStormAi", "InfernalSpellAi35"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.WallOfIceAi", "InfernalSpellAi35"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.WallSectionUnit", "BlueprintUnit"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.WallSectionTraits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.WallSectionBrain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.WallResidualArea", "BlueprintAbilityAreaEffect"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.WallSectionUnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.IceStormArea", "BlueprintAbilityAreaEffect"));
             Validate(result);
             return result.AsReadOnly();
         }

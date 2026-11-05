@@ -395,7 +395,8 @@ Assert-True (-not (Test-KmgSprint32ReviewPhaseScope `
     -Parameters @{ reviewPhase = 'sprint36-infernal-core-extra' })) `
     'the Sprint 36 request preflight refuses a broader suffix'
 foreach ($s36Phase in @('sprint36-infernal-combat',
-        'sprint36-infernal-turns', 'sprint36-infernal-public')) {
+        'sprint36-infernal-turns', 'sprint36-infernal-public',
+        'sprint40-ice-devil-early')) {
     Assert-True (Test-KmgSprint32ReviewPhaseScope `
         -Scenario 'disposable-expanded-summoning-sprint32-native-review' `
         -Parameters @{ reviewPhase = $s36Phase }) `

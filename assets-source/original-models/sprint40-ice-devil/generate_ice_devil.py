@@ -175,7 +175,7 @@ payload.update(creature='ice-devil', nativeDonor=donor.DONOR_GUID,
     distinctSilhouette='insectile-compound-eyed-segmented-gelugon',
     compoundEyes=2, antennae=2, mandibles=4, tail=TAIL,
     tailArticulatesIndependently=False, spearBakedIntoBody=False)
-path.write_text(json.dumps(payload, separators=(',', ':'))+'\n', encoding='utf-8')
+path.write_bytes((json.dumps(payload, separators=(',', ':'))+'\n').encode('utf-8'))
 
 # Use the established private Blender preview path, not extracted game art.
 bpy.ops.wm.save_as_mainfile(filepath=args.blend_out)

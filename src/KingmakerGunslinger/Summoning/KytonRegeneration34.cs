@@ -10,6 +10,7 @@ using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Components;
 using Newtonsoft.Json;
+using KingmakerGunslinger.Bootstrap;
 
 namespace KingmakerGunslinger.Summoning
 {
@@ -20,6 +21,11 @@ namespace KingmakerGunslinger.Summoning
     public sealed class KytonRegeneration34 : AddEffectRegeneration,
         ITickEachRound, ITargetRulebookHandler<RuleDealDamage>
     {
+        // Existing Kyton blueprints keep the released null/false defaults.
+        // Ice Devil binds its exact blueprint and excludes silver as required
+        // by its own entry while sharing the verified native callback carrier.
+        public BlueprintUnit OwningBlueprint;
+        public bool GoodOnly;
         // 0 active; 1 waiting for the following round; 2 inside that round.
         // Both suppressed states survive save hydration.
         [JsonProperty] private int suppressionRound;
@@ -38,7 +44,19 @@ namespace KingmakerGunslinger.Summoning
                     .Single(method => method.Name == "OnEventDidTrigger").DeclaringType != typeof(KytonRegeneration34))
                 throw new InvalidOperationException("Installed Kyton regeneration callback contract differs.");
         }
-        private bool EnabledForOwner => Owner?.Unit != null && InfernalMartialProfile34.For(Owner.Unit)?.Chain != null;
+        private bool EnabledForOwner
+        {
+            get
+            {
+                if (Owner?.Unit == null) return false;
+                if (OwningBlueprint == null)
+                    return InfernalMartialProfile34.For(Owner.Unit)?.Chain != null;
+                ModContext mod;
+                return ReferenceEquals(Owner.Unit.Blueprint, OwningBlueprint) &&
+                    ModContext.TryGet(out mod) &&
+                    mod.FeatureModules?.Active?.ExpandedSummoning == true;
+            }
+        }
         private void SetNative(bool active) { SetActive.Invoke(this, new object[] { active }); }
         private void SuppressNative() { SetNative(false); }
 
@@ -74,7 +92,7 @@ namespace KingmakerGunslinger.Summoning
             base.OnEventDidTrigger(evt);
             bool typed = evt.ResultDamage != null && evt.ResultDamage.Any(result => result.FinalValue > 0 &&
                 (result.Source.Alignments.Contains(DamageAlignment.Good) ||
-                 (result.Source as PhysicalDamage)?.Materials.Contains(PhysicalDamageMaterial.Silver) == true));
+                 !GoodOnly && (result.Source as PhysicalDamage)?.Materials.Contains(PhysicalDamageMaterial.Silver) == true));
             var ability = evt.SourceAbility ?? evt.Reason?.Ability?.Blueprint ?? evt.Reason?.Context?.SourceAbility;
             bool goodSpell = ability != null && (ability.Type == AbilityType.Spell || ability.Type == AbilityType.SpellLike) &&
                 (ability.GetComponent<SpellDescriptorComponent>()?.Descriptor & SpellDescriptor.Good) == SpellDescriptor.Good;

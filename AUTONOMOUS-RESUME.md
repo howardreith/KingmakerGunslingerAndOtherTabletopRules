@@ -26,7 +26,7 @@ creatures and 1,215 choices to 133 and 1,216 — this one route and nothing
 else.
 
 Unholy Nimbus arms a delayed burst one round later rather than resolving on
-activation, rolls 1d10 rounds of blindness at the burst, catches a latecomer
+activation, rolls 1d10 rounds of daze at the burst, catches a latecomer
 and spares a departer, and allows at most one pending activation per creature,
 where a refusal spends no use and adds no cooldown. The constant Unholy Aura
 is an exact-source self effect with no ally grant. Feeblemind imposes a real

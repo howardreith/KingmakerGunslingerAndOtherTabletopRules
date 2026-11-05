@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Weapons;
@@ -9,11 +10,72 @@ using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Bootstrap;
+using Harmony12;
+using Kingmaker.UnitLogic.Commands;
+using Kingmaker.Items;
 
 namespace KingmakerGunslinger.Summoning
 {
+    /// <summary>Native terrain lifetime continues normally; module OFF ends only this owned area.</summary>
+    [Serializable]
+    public sealed class IceDevilStormModuleLifetime40 : AbilityAreaEffectLogic
+    {
+        public BlueprintAbility OwningSpell;
+        protected override void OnTick(MechanicsContext context, AreaEffectEntityData area)
+        {
+            ModContext mod;
+            if (area != null && !area.IsEnded && OwningSpell != null &&
+                ReferenceEquals(context?.SourceAbility, OwningSpell) &&
+                ModContext.TryGet(out mod) &&
+                mod.FeatureModules?.Active?.ExpandedSummoning != true)
+                area.ForceEnd();
+        }
+        protected override void OnUnitEnter(MechanicsContext context, AreaEffectEntityData area, UnitEntityData unit) { }
+        protected override void OnUnitExit(MechanicsContext context, AreaEffectEntityData area, UnitEntityData unit) { }
+        protected override void OnUnitMove(MechanicsContext context, AreaEffectEntityData area, UnitEntityData unit) { }
+    }
+
+    public sealed class IceDevilMartialProfile40 : BlueprintComponent
+    {
+        public BlueprintUnit OwningBlueprint;
+        public BlueprintItemWeapon Spear, Bite, Tail;
+        internal static IceDevilMartialProfile40 For(UnitEntityData owner)
+        {
+            ModContext mod;
+            if (owner?.Blueprint == null || !ModContext.TryGet(out mod) ||
+                mod.FeatureModules?.Active?.ExpandedSummoning != true) return null;
+            var profile = owner.Blueprint.GetComponent<IceDevilMartialProfile40>();
+            return profile != null && ReferenceEquals(profile.OwningBlueprint,
+                owner.Blueprint) ? profile : null;
+        }
+    }
+
+    // Native empty-hand fallback uses the bite so standard/charge/AoO keep
+    // a legal natural weapon after disarm. If native full-attack enumeration
+    // also visits that same bite through its additional slot, retain it once.
+    // Spear iteratives are never deduplicated and no attack is manufactured.
+    [HarmonyPatch(typeof(UnitAttack), "CreateFullAttack")]
+    internal static class IceDevilNaturalRoutine40
+    {
+        private static void Postfix(UnitAttack __instance, List<AttackHandInfo> __result)
+        {
+            var profile = IceDevilMartialProfile40.For(__instance?.Executor);
+            if (profile?.Bite == null || __result == null) return;
+            bool seen = false;
+            __result.RemoveAll(attack => {
+                if (!ReferenceEquals(attack?.Hand?.MaybeWeapon?.Blueprint,
+                    profile.Bite)) return false;
+                if (seen) return true;
+                seen = true;
+                return false;
+            });
+        }
+    }
+
     /// <summary>One exact owner's hit rider; never a weapon enchantment.</summary>
     [Serializable]
     public sealed class IceDevilSlowOnHit40 :

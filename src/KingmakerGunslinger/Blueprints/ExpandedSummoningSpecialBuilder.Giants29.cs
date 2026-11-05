@@ -653,15 +653,16 @@ namespace KingmakerGunslinger.Blueprints
             IDictionary<string, BlueprintScriptableObject> bySymbol,
             string symbol, string typeSymbol, string donorGuid, Size size,
             int dice, DiceType die, int rangeFeet,
-            int criticalRollEdge = 0)
+            int criticalRollEdge = 0, BlueprintWeaponType typeDonor = null)
         {
             BlueprintItemWeapon donor = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, donorGuid, symbol + " donor");
             BlueprintWeaponType type = Require<BlueprintWeaponType>(bySymbol,
                 typeSymbol);
-            CopyFields(donor.Type, type);
+            BlueprintWeaponType sourceType = typeDonor ?? donor.Type;
+            CopyFields(sourceType, type);
             type.name = InternalName(typeSymbol);
-            type.ComponentsArray = (donor.Type.ComponentsArray ??
+            type.ComponentsArray = (sourceType.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).Select(
                     ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
             if (rangeFeet > 0)

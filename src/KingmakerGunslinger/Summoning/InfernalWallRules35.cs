@@ -274,6 +274,10 @@ namespace KingmakerGunslinger.Summoning
     {
         public BlueprintUnit OwningBlueprint;
         public BlueprintUnit WallSection;
+        // Bone retains its released default. Other owners bind their own
+        // spell-like level explicitly; the resulting context follows every
+        // section, its deadline and its breach area.
+        public int CasterLevel = InfernalRules35.SpellLikeCasterLevel;
 
         public override string GetCaption()
         { return "Form one grounded Wall of Ice section"; }
@@ -288,7 +292,7 @@ namespace KingmakerGunslinger.Summoning
                     WallSection, out placement)) return;
             int dc = InfernalRules35.WallOfIceFormationDc(
                 caster.Stats.Charisma.ModifiedValue);
-            Context.Params.CasterLevel = InfernalRules35.SpellLikeCasterLevel;
+            Context.Params.CasterLevel = CasterLevel;
             Context.Params.SpellLevel = InfernalRules35.WallOfIceSpellLevel;
             Context.Params.DC = dc;
             foreach (UnitEntityData unit in
@@ -306,7 +310,7 @@ namespace KingmakerGunslinger.Summoning
 
             var summon = new RuleSummonUnit(caster, WallSection,
                 placement.Center,
-                InfernalRules35.WallOfIceDurationRounds.Rounds(), 0) {
+                InfernalRules35.WallDurationRounds(CasterLevel).Rounds(), 0) {
                     Context = Context,
                     Reason = Context,
                     DoNotLinkToCaster = false,
@@ -531,7 +535,7 @@ namespace KingmakerGunslinger.Summoning
             var cold = new EnergyDamage(new DiceFormula(
                 InfernalRules35.WallOfIceResidualDiceCount, DiceType.D6),
                 DamageEnergyType.Cold);
-            cold.AddBonus(InfernalRules35.WallOfIceResidualBonus);
+            cold.AddBonus(context.Params.CasterLevel);
             var rule = new RuleDealDamage(source, unit,
                 new DamageBundle(cold)) {
                     Reason = context,
