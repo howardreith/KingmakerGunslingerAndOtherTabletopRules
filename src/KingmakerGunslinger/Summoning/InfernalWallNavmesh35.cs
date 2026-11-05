@@ -77,6 +77,7 @@ namespace KingmakerGunslinger.Summoning
         internal int GridReconcileRequests { get; private set; }
         internal int GridReconcileCompleted { get; private set; }
         internal bool NativeCutDisabledBeforeDestroy { get; private set; }
+        internal bool NativeGridCutRevertQueued { get; private set; }
         internal string GridFailure { get; private set; }
         internal static int ActiveGridClaimCount { get { return Claims.Count; } }
 
@@ -415,21 +416,47 @@ namespace KingmakerGunslinger.Summoning
         internal void Release()
         {
             if (_released) return;
-            _released = true;
             if (_cut != null)
             {
-                // Let the native consumer observe the cut's disabled state
-                // before the Unity component disappears. Destroying first
-                // leaves the last six-cell rectangle cached in the active
-                // grid and races the exact node-claim restoration below.
+                // Kingmaker's turn-based navigation consumer applies a
+                // separate GridGraph update object for each native cut. Once
+                // the component is destroyed it leaves that consumer's list,
+                // so submit the paired revert object while the exact cut is
+                // still available. The owned 24-node claims below remain the
+                // cross-owner authority; this only retires the native six-node
+                // footprint observed for this same component.
                 _cut.enabled = false;
                 NativeCutDisabledBeforeDestroy = !_cut.enabled;
+                if (_cut.gridGuoApplied)
+                {
+                    if (_astar == null ||
+                        !ReferenceEquals(AstarPath.active, _astar) ||
+                        GridGraphIndex < 0 || GridGraphIndex >= 31)
+                        throw new InvalidOperationException(
+                            "Wall native grid-cut revert has no exact active graph.");
+                    bool cutEnabled;
+                    NavmeshCut.UpdateObjectPair pair =
+                        _cut.GetUpdateObjectForGrid(out cutEnabled,
+                            1 << GridGraphIndex);
+                    if (pair.guo.updating || pair.revertGuo.updating)
+                        throw new InvalidOperationException(
+                            "Wall native grid-cut update is still in flight.");
+                    pair.revertGuo.updating = true;
+                    _astar.UpdateGraphs(pair.revertGuo);
+                    _cut.gridGuoApplied = false;
+                    _cut.NotifyUpdatedForGrid();
+                    NativeGridCutRevertQueued = true;
+                }
+                UnityEngine.Object.DestroyImmediate(_cut);
+                // OnDestroy queues the exact old recast bounds with the
+                // installed TileHandlerHelper, so process that queue only
+                // after the callback has run.
                 if (_tileHandler != null &&
                     _tileHandler.isActiveAndEnabled &&
                     RecastApplyRequests > 0)
                     _tileHandler.ForceUpdate();
-                UnityEngine.Object.DestroyImmediate(_cut);
             }
+            _released = true;
             if (_wallVisual != null)
                 UnityEngine.Object.DestroyImmediate(_wallVisual);
             if (_wallMaterial != null)
