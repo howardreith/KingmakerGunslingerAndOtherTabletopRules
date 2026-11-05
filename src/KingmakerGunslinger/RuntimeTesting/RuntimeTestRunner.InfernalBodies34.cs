@@ -138,7 +138,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             owner.Commands.InterruptAll(command => true); owner.Commands.RemoveFinishedAndUpdateQueue();
                             if (owner.IsInCombat) owner.LeaveCombat();
                         }
-                        DisposeExpandedSummoningUnits(fixture.Created, owners.ToArray());
+                        DisposeExpandedSummoningUnits(fixture.Created, owners.Where(value =>
+                            value != null && !value.Destroyed && value.IsInState).ToArray());
                     }
                     for (int frame = 0; frame < 16; frame++) yield return 0;
                     bool clean = owners.All(value => value.Destroyed && !value.IsInState) && resources.All(value => value == null) &&
