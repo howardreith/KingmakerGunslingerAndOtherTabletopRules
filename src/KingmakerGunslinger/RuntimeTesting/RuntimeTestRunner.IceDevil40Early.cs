@@ -182,15 +182,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var grant = owner.Descriptor.Abilities.GetAbility(bp);
                 var data = new AbilityData(grant);
                 var preview = data.CalculateParams();
+                Vector3 end; string lane, direction;
+                Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner,
+                    target, 9f, out end, out lane, out direction,
+                    new Feet(20).Meters + 2f, null, 30);
+                PlaceExpandedSummoningUnit(owner, origin);
+                PlaceExpandedSummoningUnit(target, end);
+                owner.Memory.Add(target).Visible = true;
+                target.Memory.Add(owner).Visible = true;
+                var delivery = bp.GetComponent<Kingmaker.UnitLogic.Abilities.Components.
+                    AbilityDeliverProjectile>();
+                var footprint = Game.Instance.State.Units.All.Where(x => x != null &&
+                    !x.Destroyed && x.IsInGame &&
+                    (suffix == "ConeOfCold" ? delivery.WouldTargetUnit(data, target.Position, x) :
+                        Vector3.Distance(x.Position, target.Position) <= new Feet(20).Meters + x.Corpulence))
+                    .ToArray();
+                bool ownedOnly = footprint.Contains(target) && footprint.All(x =>
+                    ReferenceEquals(x, target));
+                check("cold-owned-footprint-" + suffix, ownedOnly,
+                    new JObject { ["lane"] = lane,
+                        ["nativeConeDelivery"] = suffix == "ConeOfCold",
+                        ["footprint"] = new JArray(footprint.Select(x => new JObject {
+                            ["unit"] = x.UniqueId, ["blueprint"] = x.Blueprint.name,
+                            ["exactDisposableRecipient"] = ReferenceEquals(x, target) })) },
+                    "Before casting, native cone membership or conservative storm footprint contains only the exact disposable recipient; protected actors are excluded.");
+                var aim = suffix == "IceStorm" ? new TargetWrapper(target.Position) :
+                    new TargetWrapper(target);
                 int start = trace.Rows.Count;
-                bool legal = data.IsAvailable && data.CanTarget(new TargetWrapper(target));
+                bool legal = data.IsAvailable && data.CanTarget(aim);
                 check("cold-target-" + suffix, legal, new JObject {
                     ["available"] = data.IsAvailable, ["canTarget"] = legal,
                     ["ability"] = bp.AssetGuid, ["preContextCasterLevel"] = preview.CasterLevel,
                     ["preContextSpellLevel"] = data.SpellLevel,
                     ["preContextDc"] = preview.DC },
                     "Real native availability and targeting for the owned at-will SLA.");
-                var command = new UnitUseAbility(data, new TargetWrapper(target));
+                var command = new UnitUseAbility(data, aim);
                 owner.Commands.Run(command);
                 foreach (int frame in WaitInfernalCommand34(command, () =>
                     trace.Rows.Skip(start).Any(x => (string)x["event"] == "damage" &&
@@ -263,7 +289,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.EntityDestroyer.Tick(); yield return 0;
                 after = InfernalEarlyPath35(fixture.Caster, end);
                 restored = (section.Destroyed || !section.IsInGame) &&
-                    !InfernalEarlyWallObstructs35(before, after);
+                    InfernalEarlyWallRestored35(before, after);
             }
             check("wall-source-removal-restores", restored,
                 new JObject { ["after"] = after, ["sourceDestroyed"] = owner.Destroyed,

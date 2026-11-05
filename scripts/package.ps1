@@ -365,7 +365,8 @@ $summonManifest = Get-KmgSummonIconManifest -RepositoryRoot $repositoryRoot
 $basePackageFileCount = 278 + @($summonManifest.icons).Count +
     $s3031OriginalBodyParts.Count + $shadowOutsiderFiles.Count +
     $infernalFiles.Count + $infernal35Files.Count + $infernal36Files.Count +
-    $vrock37Files.Count + $glabrezu38Files.Count + $nalfeshnee39Files.Count
+    $vrock37Files.Count + $glabrezu38Files.Count + $nalfeshnee39Files.Count +
+    $iceDevil40Files.Count
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {
