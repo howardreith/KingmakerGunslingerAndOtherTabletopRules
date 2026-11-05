@@ -110,7 +110,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in Outsider30NativeAppearance(second, second.Blueprint.name)) yield return frame;
                 second.Stats.Charisma.BaseValue += 4;
                 int secondStart = trace.Rows.Count;
-                PlaceExpandedSummoningUnit(second, owner.Position);
+                // A real failed first save leaves the recipient frightened and
+                // moving while this second body's appearance settles. Follow
+                // that current recipient position so the independent-source
+                // check observes the second aura instead of an obsolete point.
+                PlaceExpandedSummoningUnit(second, target.Position);
                 foreach (int frame in InfernalBoneWaitUntil35(() => trace.Rows.Skip(secondStart).Any(x =>
                     (string)x["event"] == "save" && (string)x["owner"] == second.UniqueId &&
                     (string)x["target"] == target.UniqueId && (int?)x["dc"] == 24), 12)) yield return frame;
