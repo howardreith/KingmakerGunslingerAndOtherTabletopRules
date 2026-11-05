@@ -538,29 +538,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "s35-wall-live-mover-" + formed.Label + ".png")) yield return frame;
         }
 
-        // Native eligibility is exactly mechanics distance and NeedLoS. The
-        // historical far-face point is evaluated first, so its verdict is kept.
+        // Native eligibility is mechanics distance and NeedLoS. A reach weapon
+        // also cannot strike an adjacent creature (tabletop; the installed
+        // ProperFlanking2 reach dead zone moves UnitAttack's approach point
+        // away from such a target), so a reach witness stands inside reach and
+        // outside five feet. The historical 2.5 m point is evaluated first so
+        // its verdict is kept.
         private static bool InfernalWallAttackWitnessSurvey35(UnitEntityData attacker, UnitEntityData bone,
             UnitEntityData section, out Vector3 selected, out JObject survey)
         {
             Vector3 forward = section.OrientationDirection; forward.y = 0f; forward.Normalize();
             Vector3 along = Vector3.Cross(Vector3.up, forward).normalized;
-            float halfLength = InfernalRules35.WallOfIceSectionLengthMeters * .5f;
-            float beyondEnd = halfLength + attacker.Corpulence + .4f;
-            var candidates = new[] {
-                new KeyValuePair<string, Vector3>("historic-far-face-2.5m", forward * 2.5f),
-                new KeyValuePair<string, Vector3>("caster-face-2.5m", -forward * 2.5f),
-                new KeyValuePair<string, Vector3>("far-face-1.8m", forward * 1.8f),
-                new KeyValuePair<string, Vector3>("caster-face-1.8m", -forward * 1.8f),
-                new KeyValuePair<string, Vector3>("end-a", along * beyondEnd),
-                new KeyValuePair<string, Vector3>("end-b", -along * beyondEnd),
-                new KeyValuePair<string, Vector3>("far-diagonal-a", forward * 2f + along * 1.5f),
-                new KeyValuePair<string, Vector3>("far-diagonal-b", forward * 2f - along * 1.5f),
-                new KeyValuePair<string, Vector3>("far-face-3.5m", forward * 3.5f),
-                new KeyValuePair<string, Vector3>("caster-face-3.5m", -forward * 3.5f)
-            };
             var probe = new UnitAttack(section); probe.Init(attacker);
             int losObjectId = probe.GetTargetLOSObjectId();
+            var weapon = attacker.Body.PrimaryHand.MaybeWeapon;
+            bool reachWeapon = weapon != null && weapon.Blueprint.IsMelee &&
+                weapon.Blueprint.Type.AttackRange > GameConsts.MinWeaponRange;
+            float bodies = attacker.View.Corpulence + section.View.Corpulence;
+            float deadZone = reachWeapon ? GameConsts.MinWeaponRange.Meters : 0f;
+            // Middle of the legal band [bodies + dead zone, approach radius].
+            float standoff = (bodies + deadZone + probe.ApproachRadius) * .5f;
+            float nearStandoff = Math.Max(bodies + deadZone + .25f, standoff - .35f);
+            var candidates = new[] {
+                new KeyValuePair<string, Vector3>("historic-far-face-2.5m", forward * 2.5f),
+                new KeyValuePair<string, Vector3>("far-face-standoff", forward * standoff),
+                new KeyValuePair<string, Vector3>("caster-face-standoff", -forward * standoff),
+                new KeyValuePair<string, Vector3>("far-face-near-standoff", forward * nearStandoff),
+                new KeyValuePair<string, Vector3>("caster-face-near-standoff", -forward * nearStandoff),
+                new KeyValuePair<string, Vector3>("far-diagonal-a", (forward * 2f + along).normalized * standoff),
+                new KeyValuePair<string, Vector3>("far-diagonal-b", (forward * 2f - along).normalized * standoff),
+                new KeyValuePair<string, Vector3>("caster-diagonal-a", (-forward * 2f + along).normalized * standoff),
+                new KeyValuePair<string, Vector3>("caster-diagonal-b", (-forward * 2f - along).normalized * standoff)
+            };
             Vector3 eyeShift = attacker.EyePosition - attacker.Position;
             var rows = new JArray(); bool found = false; selected = Vector3.zero;
             foreach (var candidate in candidates)
@@ -573,14 +582,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Vector3.Distance(near.clampedPosition, position) <= .6f;
                 float distanceSquared = GeometryUtils.SqrMechanicsDistance(section.Position, position);
                 bool distanceAdmitted = distanceSquared <= probe.ApproachRadius * probe.ApproachRadius;
+                float edgeGap = (float)Math.Sqrt(distanceSquared) - bodies;
+                bool outsideDeadZone = edgeGap >= deadZone + .1f;
                 bool losBlocked = probe.NeedLoS && Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance
                     .HasObstacle(position + eyeShift, section.Position, losObjectId);
                 float boneGap = Vector3.Distance(position, bone.Position);
                 bool clearOfAura = boneGap >= InfernalRules35.WallOfIceAdjacencyMeters + bone.Corpulence + attacker.Corpulence + .5f;
-                bool selectable = supported && walkable && distanceAdmitted && !losBlocked && clearOfAura;
+                bool selectable = supported && walkable && distanceAdmitted && outsideDeadZone && !losBlocked && clearOfAura;
                 rows.Add(new JObject { ["name"] = candidate.Key, ["position"] = SurveyVector(position),
                     ["nativeGroundSupported"] = supported, ["walkable"] = walkable,
                     ["mechanicsDistanceSquared"] = distanceSquared, ["approachRadius"] = probe.ApproachRadius,
+                    ["edgeGap"] = edgeGap, ["outsideReachDeadZone"] = outsideDeadZone,
                     ["distanceAdmitted"] = distanceAdmitted, ["needLoS"] = probe.NeedLoS,
                     ["targetLosObjectId"] = losObjectId, ["eyePosition"] = SurveyVector(position + eyeShift),
                     ["losBlocked"] = losBlocked, ["boneDistance"] = boneGap, ["clearOfSourceAura"] = clearOfAura,
@@ -592,6 +604,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["weapon"] = attacker.Body.PrimaryHand.MaybeWeapon?.Blueprint?.AssetGuid,
                 ["weaponReachFeet"] = attacker.Body.PrimaryHand.MaybeWeapon?.AttackRange.Value,
                 ["approachPoint"] = SurveyVector(probe.ApproachPoint), ["candidates"] = rows,
+                ["reachWeapon"] = reachWeapon, ["bodiesMeters"] = bodies, ["reachDeadZoneMeters"] = deadZone,
+                ["standoffMeters"] = standoff,
                 ["contract"] = "Installed UnitCommand.IsUnitEnoughClose: SqrMechanicsDistance(ApproachPoint, Executor.Position) <= ApproachRadius^2 and, when NeedLoS, !LineOfSightGeometry.HasObstacle(Executor.EyePosition, ApproachPoint, GetTargetLOSObjectId()). UnitAttack does not override the LOS object ID (0)." };
             return found;
         }
@@ -642,6 +656,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var eligibility = new JObject { ["attacker"] = attacker.UniqueId, ["attackerPosition"] = SurveyVector(attacker.Position),
                 ["attackerEye"] = SurveyVector(attacker.EyePosition), ["sectionPosition"] = SurveyVector(section.Position),
                 ["approachPoint"] = SurveyVector(approach), ["mechanicsDistanceSquared"] = distanceSquared,
+                ["approachPointIsTarget"] = Vector3.Distance(approach, section.Position) < .01f,
                 ["approachRadius"] = probe.ApproachRadius,
                 ["distanceAdmitted"] = distanceSquared <= probe.ApproachRadius * probe.ApproachRadius,
                 ["needLoS"] = probe.NeedLoS, ["targetLosObjectId"] = losObjectId, ["losBlocked"] = losBlocked,
