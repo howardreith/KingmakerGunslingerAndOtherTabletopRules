@@ -62,6 +62,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData owner = null, friend = null; var target = fixture.Hostile;
             var anchor = Sprint32OwnedQuietAnchor(fixture, id);
             BlueprintFeature cold = null; bool addedCold = false, isolatedFear = false;
+            bool sourceRetired = false;
             BlueprintFaction friendFaction = null;
             var commands = new Lillend32CommandStarts();
             string p = ExpandedSummoningSpecialBuilder.IceDevil40Prefix;
@@ -262,6 +263,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !ai.IsTargetValid(decision), new JObject { ["section"] = wall?.UniqueId,
                             ["claims"] = binding?.GridNodesClaimed, ["aiRefusesRedundantPlacement"] = !ai.IsTargetValid(decision) },
                         "The brain's legal placement creates an actual owned navigation wall; its production redundancy filter then declines another wall at that lane.");
+                    var originalNodes = binding.GridNodeSnapshot().ToArray();
+                    DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
+                    sourceRetired = true;
+                    foreach (int frame in InfernalBoneWaitUntil35(() =>
+                        (wall.Destroyed || !wall.IsInState) &&
+                        originalNodes.All(node => node.Key.Walkable == node.Value), 12))
+                        yield return frame;
+                    check(id + "-source-removal", (wall.Destroyed || !wall.IsInState) &&
+                        originalNodes.Length > 0 && originalNodes.All(node => node.Key.Walkable == node.Value),
+                        new JObject { ["sourceDestroyed"] = owner.Destroyed,
+                            ["sectionDestroyed"] = wall.Destroyed, ["sectionInState"] = wall.IsInState,
+                            ["nodes"] = originalNodes.Length,
+                            ["allOriginalBitsRestored"] = originalNodes.All(node => node.Key.Walkable == node.Value) },
+                        "Actual source removal retires its still-forming wall and restores every claimed navigation bit before fixture teardown.");
                 }
                 else
                 {
@@ -313,7 +328,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint28SetBrainActivePreservingActions(actor, false); actor.Commands.InterruptAll(true);
                     if (actor.IsInCombat) actor.LeaveCombat();
                 }
-                if (owner != null)
+                if (owner != null && !sourceRetired)
                 {
                     // Isolated fixture cleanup only; normal source removal is
                     // allowed to leave Storm for its native finite duration.
