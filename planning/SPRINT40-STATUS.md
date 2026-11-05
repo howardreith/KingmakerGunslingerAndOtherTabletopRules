@@ -1,6 +1,6 @@
 # Sprint 40 — Ice Devil (Gelugon)
 
-IN PROGRESS. Ice Devil registered hidden; development native proof exists;
+IN PROGRESS. Ice Devil public-candidate route registered; development native proof exists;
 final qualification and release remain incomplete.
 Owner mission selects completion through exact-artifact stable publication,
 public downloads, restoration and merged records. Stop before Sprint 41.
@@ -8,8 +8,8 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 ## Current continuation state
 
 - HOWARD-LAPTOP, root `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
-  `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Current product
-  head `8c2be5e8f5b7377f6ec17a530e3eb35ac94b22c8`. No game,
+  `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Reviewed merged
+  pre-version product head `13867399d4681f8953f24fa181d240e6f18d2d44`. No game,
   deployment, staging or lease is active; the live KMG tree is restored to
   SHA256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 - Recovery is CLOSED EXACTLY. The typed `BlueprintWeaponEnchantment` factory
@@ -21,7 +21,8 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   and audit `post-early-20261105T145039Z/restoration.json` preserve exact bytes,
   metadata and peer restoration. The conditional
   `OWNER_ACCEPTED_GENERATED_DIAGNOSTIC_REFRESH` fallback was not used.
-- Coherent Ice Devil implementation remains hidden behind exactly one SMIX route:
+- Coherent Ice Devil implementation now exposes exactly one SMIX route for the
+  final-candidate phase:
   profile/equipment/five-attack routine, owner spear/tail Slow, faithful cold
   spells, bounded CL13 wall, fear/regeneration, AI, distinct original body/icon
   and exact-owned gear. Persistent Image is the owner-approved disclosed omission
@@ -56,11 +57,23 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   recipient hostility restores exact groups, factions, attack lists, party and
   combat state before save. Production compilation and 26 affected policy/
   S35/S39/S40 tests PASS; no native persistence process has run on these bytes.
-- No material gameplay decision remains. Public route is still suppressed and
-  Sprint40 remains unreleased. NEXT: extend the existing authoritative publisher
-  scopes for Ice Devil and prove nonempty assertion/resource contracts, then run
-  the focused ON persistence development envelope, repair concrete defects, freeze
-  one coherent public candidate and run the selected fresh mechanics,
+- The exact `ice-devil` installed-stack/persistence scope and Sprint40 publisher
+  contract are complete. The publisher derives134 creatures, Monster112/600,
+  Nature105/588 and1,188 roots+29 wrappers=1,217 choices; requires the real SMIX
+  route assertion, named mechanics rows and six unique ON/OFF process identities,
+  and refuses reuse/development receipts, broadened omissions and un-restored
+  evidence. PowerShell parsing,23 publisher checks,57 installed-stack checks,
+  42/23 launcher admissions/refusals,33/308 persistence request roundtrips/refusals
+  and18 focused post-merge domain checks pass. Commits `eea62200` and `13867399`
+  also preserve the legitimate newer PR96 outsider visual/wall descendant from
+  current `origin/master`; the three overlapping phase/body/wall-survey seams were
+  unioned and compiled rather than reset. v0.0.178 remains absent from remote tags
+  and releases. PR97 is draft and will be refreshed after the next guarded push.
+- The v0.0.178 version-only metadata, exact-product validator/static record,
+  regenerated roster ledger and stable notes are prepared; direct and dispatched
+  repository validation PASS. No material gameplay decision remains. Sprint40
+  remains unreleased. NEXT: run the complete clean source/build/package gate,
+  then execute fresh mechanics,
   route/integration and six-process ON/OFF persistence campaign before exact-byte
   publication, public-download verification, closing restoration and final records.
 - Native Goal tool still reports the superseded recovery boundary as BLOCKED and
