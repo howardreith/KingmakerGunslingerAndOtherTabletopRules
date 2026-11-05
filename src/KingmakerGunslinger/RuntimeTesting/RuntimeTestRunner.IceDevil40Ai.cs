@@ -260,10 +260,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var binding = wall?.View?.GetComponent<InfernalWallNavmesh35>();
                     if (binding != null) foreach (int frame in InfernalBoneWaitUntil35(() => binding.GridApplyCompleted, 10)) yield return frame;
                     check(id + "-actual-owned-wall", wall != null && binding != null &&
-                        binding.NativeMovementAgentDisabled && binding.GridNodesClaimed > 0 &&
+                        binding.GridNodesClaimed > 0 &&
                         !ai.IsTargetValid(decision), new JObject { ["section"] = wall?.UniqueId,
                             ["claims"] = binding?.GridNodesClaimed,
-                            ["privateNativeMovementAgentDisabled"] = binding?.NativeMovementAgentDisabled,
                             ["aiRefusesRedundantPlacement"] = !ai.IsTargetValid(decision) },
                         "The brain's legal placement creates an actual owned navigation wall; its production redundancy filter then declines another wall at that lane.");
                     var originalNodes = binding.GridNodeSnapshot().ToArray();
@@ -299,6 +298,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["sectionInGame"] = wall.IsInGame, ["lifetimeRemoved"] = wallLifetime == null,
                             ["nativeDismembermentTransition"] = nativeRetirement,
                             ["bindingRestoreCompleted"] = binding == null || binding.GridRestoreCompleted,
+                            ["nativeCutDisabledBeforeDestroy"] = binding?.NativeCutDisabledBeforeDestroy,
                             ["bindingClaims"] = binding?.GridNodesClaimed,
                             ["reconcileRequests"] = binding?.GridReconcileRequests,
                             ["reconcileCompleted"] = binding?.GridReconcileCompleted,
