@@ -9,7 +9,7 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 - HOWARD-LAPTOP, root `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
   `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Current product
-  source `333540708d18e68ecc3a06a516b8ec7520de6243`; its reporting pin is the
+  source `c7c29f83c885a59940f6c86e1271e48b62b07ecb`; its reporting pin is the
   pending enclosing commit. No game,
   deployment, staging or lease is active; the live KMG tree is restored to
   SHA256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
@@ -166,6 +166,23 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   hasted full command. Focused production compilation and all five Sprint40 tests
   pass. NEXT: commit/push this reporting pin, rebuild the coherent candidate once,
   and rerun final-artifact native qualification from the required fresh boundary.
+- Reporting head `d858901372888e3043b5056b33cf8350a90eaa22` passed 2,816/2,816 and
+  strict packaging: ZIP SHA256 `ebb5502a...`, DLL SHA256 `9ed1e54c...`, MVID
+  `cf81f0a1-655c-4062-8046-ecb06a59a11e`. Fresh early PASS is
+  `20261105T2158489911705Z-disposable-expanded-summoning-sprint32-native-review`;
+  repaired combat PASS is
+  `20261105T2202529056848Z-disposable-expanded-summoning-sprint32-native-review`.
+  Effects retained a new fixture FAIL at
+  `20261105T2207381570570Z-disposable-expanded-summoning-sprint32-native-review`:
+  regeneration, all energy defenses and the first real failed DC22 fear save
+  passed, then the observer's arbitrary 15-meter second-owner offset had no
+  walkable native node. Restoration receipt
+  `expanded-summoning-restoration/20261105T2210421677677Z-disposable-expanded-summoning-sprint32-native-review.json`
+  is exact. Product source `c7c29f83` now settles owner two before hostility,
+  parks it on a bounded surveyed connected walking node outside the first aura,
+  and only then follows the naturally moving recipient for the independent-source
+  save. Focused production compilation and all five Sprint40 checks pass. NEXT:
+  commit/push the reporting pin and freeze one replacement candidate.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 
