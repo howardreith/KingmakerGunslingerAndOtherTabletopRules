@@ -1,3 +1,18 @@
+## PR 96 review correction: original devil surfaces
+
+Bone retains the recognizable ivory skull and exposed ribs. Its revision replaces round joint knobs with flatter flared condyles, tapered/paired shafts, swept iliac crests and clawed feet. Two closed insectile membrane sheets with veins replace the shoulder spike fans. The tail uses the original six landmarks and tip/ownership contract with a smooth sweep and shallow plates. Barbed retains its 34 rooted thorns, with tapered calves/hocks and substantial clawed feet. No mechanical profile, attack timing, stable identity or donor animation is changed.
+
+The shared reviewed skin helper preserves atlas seams per face. All four final meshes have zero triangles spanning atlas regions in `tools/check_original_mesh_atlas.py`. Link regression tests pass 3/3; combined link+four-asset atlas check wall duration 0.462 seconds. Front and elevated views of all four, plus Bone side, were inspected as offline shape evidence. Native material/motion, selection/contact/clearance and owner aesthetic approval remain separate and pending. Raw capture provenance remains the previously reviewed `.6443...e65d` geometry-free input.
+
+| Current export | Vertices / triangles | SHA-256 |
+| --- | --- | --- |
+| `barbed-devil-mesh.json` | 6861 / 13410 | `93aa5740103861bc692714363c738d57fd1fc1818e58141af2c5f4cc257abda3` |
+| `barbed-devil-albedo.png` | - | `ee6d695aa052562c72a2fa2018546f1a6da0fef2ea9cea85d8416f536da1bc79` |
+| `bone-devil-mesh.json` | 5911 / 11440 | `286d75dbd83d9299fe52094d1ed8d30c02fdc362b55a0c10b62d8c58670e141a` |
+| `bone-devil-albedo.png` | - | `908e53eb79b80ea1fb817c1ae9d87fabf032304d0174767fa1b91d51a2e636df` |
+
+## Earlier visual-overhaul record
+
 ## Owner visual overhaul, November 2026 (development draft)
 
 The current Barbed and Bone Devil exports supersede the original coarse bodies

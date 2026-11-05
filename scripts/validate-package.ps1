@@ -251,7 +251,7 @@ try {
     # Owner visual overhaul: fixed reviewed pins for the ten revised bodies.
     # Unrelated protected exports and the preserved shadow outsiders stay pinned.
     $lillendExports = @{
-        'lillend-mesh.json'='7485c6e414747bad1b39df10ac9762c89ec242b026bf0bf2528e80b5ef37395f'
+        'lillend-mesh.json'='12d2f82f0051b9933ab541c1e8d8c8050961d1335f0fc3a9cca7b394143c54b7'
         'lillend-albedo.png'='f8538166f01434f5522e15bc8bd70be601154ea7ae2878fa0fd489859114c7de'
     }
     foreach ($entry in $lillendExports.GetEnumerator()) {
@@ -271,10 +271,10 @@ try {
         }
     }
     $infernalExports = @{
-        'bearded-devil-mesh.json'='058b0b40f6a09949faca459e917896210d1dd922da0704be387754efb2f97bec'
+        'bearded-devil-mesh.json'='22b4482f197f2d550cf583878ac8ad3072d74ff0baf1f1f899cf2f3a2e4b9b75'
         'bearded-devil-albedo.png'='fd61649a0caf17e9ccd8d66e55092d2c1d98df88509295de98958c5b78d4c888'
-        'kyton-chain-devil-mesh.json'='fcb2b0082bcdabeee453d3aa1128acb1c939f2394940db023d769dcdb4bbdc80'
-        'kyton-chain-devil-albedo.png'='06bdc66deefd1d573953d8422f4b71573e8a4d8d9171f1394537dd33ac12941d'
+        'kyton-chain-devil-mesh.json'='43822d0ac8c2633940fca537ab57ce9014cdce5602a22657e25c26734b2d266e'
+        'kyton-chain-devil-albedo.png'='0aa0b99b66dc92bd602e204f26c61c214b50dcc360390c39d77c15dadee97e3e'
     }
     foreach ($entry in $infernalExports.GetEnumerator()) {
         if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint34-infernal-outsiders\'+$entry.Key))) -cne $entry.Value) {
@@ -282,10 +282,10 @@ try {
         }
     }
     $infernal35Exports = @{
-        'barbed-devil-mesh.json'='2d4e45ad81659ebdfb6f5a299360e2f2910f8cd4214bbb6edf776d52c602e393'
+        'barbed-devil-mesh.json'='93aa5740103861bc692714363c738d57fd1fc1818e58141af2c5f4cc257abda3'
         'barbed-devil-albedo.png'='ee6d695aa052562c72a2fa2018546f1a6da0fef2ea9cea85d8416f536da1bc79'
-        'bone-devil-mesh.json'='008f22be80cfc7a93202d09ede66398e213550ddfb0da9f0290967056dbcae62'
-        'bone-devil-albedo.png'='0e66a075029f433f5f0dec35aa0c5950b878d86f579e3150f449dd1e1f3e62d8'
+        'bone-devil-mesh.json'='286d75dbd83d9299fe52094d1ed8d30c02fdc362b55a0c10b62d8c58670e141a'
+        'bone-devil-albedo.png'='908e53eb79b80ea1fb817c1ae9d87fabf032304d0174767fa1b91d51a2e636df'
     }
     foreach ($entry in $infernal35Exports.GetEnumerator()) {
         if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint35-infernal-reach\'+$entry.Key))) -cne $entry.Value) {
@@ -293,9 +293,9 @@ try {
         }
     }
     $infernal36Exports = @{
-        'babau-mesh.json'='0c25a363b466c46d76610a48358a3b3dd934f77abfa6ffa132c60a5c54d0f5c7'
+        'babau-mesh.json'='6c8888b4b4c6b36d3e76a42c743a8f29e6fdbc95f55a43fce53203d05bc533fb'
         'babau-albedo.png'='cbc8efb3a1488d4a71efbef98f257d810b7b2bf0046d0c5b7824e1ae51611006'
-        'hezrou-mesh.json'='833989f1ea873af21e2e7684d5692177a74964d28be2a4f962b99412b651eae3'
+        'hezrou-mesh.json'='5cc1136f822ba7a3d48fe215c166fa0b1dc7ce0d94f13e8a008d721bd7f1579e'
         'hezrou-albedo.png'='f9196f5340b80cd40b1535c1ec15ba36937495cb0174f2a50aaf81be5e107386'
     }
     foreach ($entry in $infernal36Exports.GetEnumerator()) {
@@ -304,7 +304,7 @@ try {
         }
     }
     $vrock37Exports = @{
-        'vrock-mesh.json'='7fb5c8d54f7bda5f25986f92719a0c1b34098137d59988cce5276c1774c4687e'
+        'vrock-mesh.json'='0f403569543e6c7d56f42d2e2fa002e48e9734039b676b3917bba330e308c100'
         'vrock-albedo.png'='fa38da0fe883df8fac27d52c74cc0bca56e0e738054b6ee7b7cfa34ec922f4ff'
     }
     foreach ($entry in $vrock37Exports.GetEnumerator()) {
@@ -313,7 +313,7 @@ try {
         }
     }
     $glabrezu38Exports = @{
-        'glabrezu-mesh.json'='47777aa2c7076d4a0d1c38b09b982d93e77666fc5115827be6e42a42be06db1b'
+        'glabrezu-mesh.json'='2122716bb703ebd1bef27723c2d2d4cb370786bc3930588ebdff4d1f21111ac6'
         'glabrezu-albedo.png'='e13ab445694f3e1680b6ab3db03fb2d834d5096dbc0ed69817e8c413f2523187'
     }
     foreach ($entry in $glabrezu38Exports.GetEnumerator()) {
@@ -322,7 +322,7 @@ try {
         }
     }
     $nalfeshnee39Exports = @{
-        'nalfeshnee-mesh.json'='c1bf459faea87029ea28c803cba9ad1e9081133f7db05c45199bfe7c87adc435'
+        'nalfeshnee-mesh.json'='1caa91e1f79f40ec7c1a0ee251783665ad6b0ff0cbb2ea6fad7ff9ce2ef2fc2e'
         'nalfeshnee-albedo.png'='3fa71ffd8161700f69464b6aaf3da936d16826a418b0de6f00612847f9a40b84'
     }
     foreach ($entry in $nalfeshnee39Exports.GetEnumerator()) {

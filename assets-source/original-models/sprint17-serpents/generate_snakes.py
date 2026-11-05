@@ -252,7 +252,13 @@ def write_prototype(args, rig_data, rig, rig_hash, builder, allowed_bones,
     bm = bmesh.new()
     weights, uvs = {}, {}
     builder(bm, weights, uvs, rig, args.kind)
-    bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+    skin_normals = bm.verts.layers.float_vector.get('KMG_ContinuousSkinNormal')
+    # UV seams split the continuous surface into open topological patches.
+    # Their orientation was already established on the closed voxel union;
+    # recalculating each open patch can guess its side incorrectly.
+    recalc = [face for face in bm.faces if skin_normals is None or
+              not any(v[skin_normals].length_squared > .5 for v in face.verts)]
+    bmesh.ops.recalc_face_normals(bm, faces=recalc)
     bm.normal_update()
     bm.to_mesh(mesh)
     indexed = {v.index: row for v, row in weights.items()}

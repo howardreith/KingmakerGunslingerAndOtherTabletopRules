@@ -91,6 +91,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var trace = new InfernalEvents34();
             var receipt = new JObject {
                 ["phase"] = ExpandedSummoningNativeProfilePolicy.Sprint35InfernalEarlyPhase,
+                ["requestPhase"] = RuntimeTestRequestParser.Sprint32ReviewPhase(_request),
                 ["finalQualification"] = false,
                 ["cells"] = cells,
                 ["events"] = trace.Rows
@@ -492,6 +493,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PlaceExpandedSummoningUnit(actor, casterPoint);
             PlaceExpandedSummoningUnit(bone, casterPoint);
             var before = InfernalEarlyPath35(fixture.Caster, destination);
+            bool correction = RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulWallPhase;
+            if (correction)
+                foreach (int frame in InfernalEarlyWallMove35(fixture, start, destination, midpoint, false, "baseline", check)) yield return frame;
             bool losBefore = Kingmaker.Visual.FogOfWar.LineOfSightGeometry
                 .Instance.HasObstacle(start, destination, 0);
 
@@ -622,6 +626,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             string graphType = graphIndex < 0 || graphIndex >=
                 AstarPath.active.graphs.Length ? null :
                 AstarPath.active.graphs[graphIndex]?.GetType().FullName;
+
+            if (correction && obstruction && wallVisualEnabled)
+                foreach (int frame in InfernalEarlyWallMove35(fixture, start, destination, midpoint, true, "live", check)) yield return frame;
 
             bool hadSummonBuff = false;
             UnitAttack breachAttack = null;
@@ -1086,6 +1093,167 @@ namespace KingmakerGunslinger.RuntimeTesting
                 obstruction && restored && gridNodeStateRestored &&
                 gridClaimsAfterRelease == 0, row,
                 "A real hidden cast forms one oriented visible section, disrupts legal formation through native SR/save ordering, auto-hits and object-halves a native weapon attack, takes full fire, transitions to owned breach cold/steam, and restores exact navigation; targeting/LoS remains separately disclosed.");
+            if (correction)
+            {
+                foreach (int frame in InfernalEarlyWallMove35(fixture, start, destination, midpoint, false, "destroyed", check)) yield return frame;
+                foreach (int frame in InfernalEarlyWallExpiry35(fixture, bone,
+                    owned, data, sectionBlueprint, start, midpoint, destination,
+                    casterPoint, check)) yield return frame;
+            }
+        }
+
+        private IEnumerable<int> InfernalEarlyWallExpiry35(
+            ExpandedSummoningCorrectionFixture fixture, UnitEntityData bone,
+            List<UnitEntityData> owned, AbilityData data,
+            BlueprintUnit sectionBlueprint, Vector3 start, Vector3 midpoint,
+            Vector3 destination, Vector3 casterPoint,
+            Action<string, bool, JObject, string> check)
+        {
+            if (InfernalWallNavmesh35.ActiveGridClaimCount != 0)
+                throw new InvalidOperationException("Prior wall grid claims remain before expiry observation.");
+            foreach (var actor in owned.Where(value => value != null &&
+                !value.Destroyed && value.IsInState &&
+                !value.Descriptor.State.IsDead))
+                PlaceExpandedSummoningUnit(actor, casterPoint);
+            PlaceExpandedSummoningUnit(fixture.Caster, start);
+            if (!data.IsAvailable)
+                foreach (int frame in InfernalBoneWaitGame35(6.2, 15)) yield return frame;
+            var target = new TargetWrapper(midpoint);
+            if (!data.IsAvailable || !data.CanTarget(target))
+                throw new InvalidOperationException("Controlled expiry requires another legal empty-ground wall cast.");
+            var before = InfernalEarlyPath35(fixture.Caster, destination);
+            var prior = new HashSet<string>(Game.Instance.State.Units.Where(value =>
+                ReferenceEquals(value.Blueprint, sectionBlueprint)).Select(value => value.UniqueId));
+            var command = new UnitUseAbility(data, target);
+            UnitEntityData section = null;
+            JObject creationRow;
+            using (var creation = new InfernalWallCreationObservation35(bone, sectionBlueprint))
+            {
+                bone.Commands.Run(command);
+                DateTime deadline = DateTime.UtcNow.AddSeconds(25);
+                while (DateTime.UtcNow < deadline && (!command.IsFinished || section == null))
+                {
+                    Game.Instance.IsPaused = false; yield return 0;
+                    section = Game.Instance.State.Units.FirstOrDefault(value =>
+                        ReferenceEquals(value.Blueprint, sectionBlueprint) && !prior.Contains(value.UniqueId));
+                }
+                creationRow = (JObject)creation.Receipt.DeepClone();
+            }
+            if (section == null || command.Result != UnitCommand.ResultType.Success)
+                throw new InvalidOperationException("Controlled expiry cast produced no wall section.");
+            owned.Add(section);
+            Buff lifetime = section.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff);
+            var whilePresent = InfernalEarlyPath35(fixture.Caster, destination);
+            DateTime ready = DateTime.UtcNow.AddSeconds(12);
+            while (DateTime.UtcNow < ready &&
+                (InfernalWallNavmesh35.ActiveGridClaimCount == 0 || !InfernalEarlyWallObstructs35(before, whilePresent)))
+            {
+                Game.Instance.IsPaused = false; yield return 0;
+                whilePresent = InfernalEarlyPath35(fixture.Caster, destination);
+            }
+            int claimsBefore = InfernalWallNavmesh35.ActiveGridClaimCount;
+            bool original = (int?)creationRow["hitPointsAtCreation"] == 36 &&
+                (double?)creationRow["nativeRuleDurationSeconds"] == 720d &&
+                Math.Abs(((double?)creationRow["nativeLifetimeSecondsAtCreation"] ?? -1d) - 720d) < .01d;
+            if (!original || lifetime == null || claimsBefore <= 0 ||
+                !InfernalEarlyWallObstructs35(before, whilePresent))
+                throw new InvalidOperationException("Controlled expiry lacks original 36HP/720s and actual obstruction prerequisites.");
+            string image = WriteExpandedSummoningOverheadStrikeCapture(section, section,
+                _request.EvidenceDirectory, "s35-wall-before-controlled-expiry.png", 13f);
+            JObject expiry = InfernalWallOriginalDeadlineExpiry35(section, lifetime);
+            JObject after = InfernalEarlyPath35(fixture.Caster, destination);
+            DateTime finished = DateTime.UtcNow.AddSeconds(15);
+            while (DateTime.UtcNow < finished &&
+                (InfernalWallNavmesh35.ActiveGridClaimCount != 0 || !InfernalEarlyWallRestored35(before, after)))
+            {
+                Game.Instance.IsPaused = false; yield return 0;
+                after = InfernalEarlyPath35(fixture.Caster, destination);
+            }
+            bool pass = InfernalWallNavmesh35.ActiveGridClaimCount == 0 &&
+                InfernalEarlyWallRestored35(before, after) &&
+                !section.Buffs.Enumerable.Any(value => ReferenceEquals(value, lifetime)) &&
+                (section.Destroyed || !section.IsInState || section.Descriptor.State.IsDead);
+            check("wall-controlled-expiry-restores-navigation", pass, new JObject {
+                ["section"] = section.UniqueId, ["originalCreation"] = creationRow,
+                ["command"] = Sprint27AiCommand(command), ["image"] = image,
+                ["pathBefore"] = before, ["pathWhilePresent"] = whilePresent,
+                ["claimsBefore"] = claimsBefore, ["expiry"] = expiry,
+                ["pathAfter"] = after, ["claimsAfter"] = InfernalWallNavmesh35.ActiveGridClaimCount,
+                ["controlledExpiryObserved"] = pass, ["original720SecondRealTimeWait"] = false,
+                ["scope"] = "Established Player.GameTime controlled-clock seam advances synchronously past the original wall deadline, ticks only the owned wall's native buff scheduler, then restores the exact clock before yielding. Deadline is not shortened. No direct section, collider or grid removal supplies this verdict."
+            }, "A second legal wall obstructs movement and its native scheduled expiry retires the section and restores navigation.");
+            if (pass)
+                foreach (int frame in InfernalEarlyWallMove35(fixture, start, destination, midpoint, false, "expired", check)) yield return frame;
+        }
+
+        private static JObject InfernalWallOriginalDeadlineExpiry35(UnitEntityData section, Buff lifetime)
+        {
+            if (section == null || lifetime == null || !ReferenceEquals(lifetime.Owner.Unit, section) ||
+                TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+                throw new InvalidOperationException("Exact owned RTWP wall lifetime required.");
+            var game = Game.Instance;
+            TimeSpan clock = game.TimeController.GameTime, deadline = lifetime.EndTime;
+            TimeSpan due = deadline + TimeSpan.FromMilliseconds(1);
+            if (deadline <= clock || due - clock > TimeSpan.FromSeconds(721))
+                throw new InvalidOperationException("Wall original expiry is outside bounded controlled-time scope.");
+            bool removed;
+            try
+            {
+                game.Player.GameTime = due;
+                if (game.TimeController.GameTime != due || lifetime.EndTime != deadline)
+                    throw new InvalidOperationException("Native controlled clock or original deadline differs.");
+                section.Buffs.UpdateNextEvent(); section.Buffs.Tick();
+                removed = !section.Buffs.Enumerable.Any(value => ReferenceEquals(value, lifetime));
+            }
+            finally { game.Player.GameTime = clock; }
+            if (game.TimeController.GameTime != clock) throw new InvalidOperationException("Controlled wall expiry did not restore exact clock.");
+            return new JObject { ["section"] = section.UniqueId, ["originalClockTicks"] = clock.Ticks,
+                ["originalDeadlineTicks"] = deadline.Ticks, ["observedClockTicks"] = due.Ticks,
+                ["advanceSeconds"] = (due - clock).TotalSeconds, ["deadlineShortened"] = false,
+                ["clockRestored"] = true, ["removedByNativeScheduler"] = removed,
+                ["scope"] = "Synchronous exact-owner BuffCollection.UpdateNextEvent/Tick under established Player.GameTime seam; no world-controller tick or yield during clock advance." };
+        }
+
+        private IEnumerable<int> InfernalEarlyWallMove35(
+            ExpandedSummoningCorrectionFixture fixture, Vector3 start,
+            Vector3 destination, Vector3 midpoint, bool wallPresent, string label,
+            Action<string, bool, JObject, string> check)
+        {
+            var mode = _cleanup2NativeDefaultOwner;
+            if (mode == null || !mode.Current) throw new InvalidOperationException("Actual wall movement requires exact owned native Default.");
+            var mover = fixture.Caster;
+            mover.Commands.InterruptAll(true); mover.Commands.RemoveFinishedAndUpdateQueue();
+            PlaceExpandedSummoningUnit(mover, start);
+            var move = new UnitMoveTo(destination, .5f); move.Init(mover);
+            if (!move.CanStart) throw new InvalidOperationException("Wall movement witness command refused.");
+            var samples = new JArray(); float maximumDeviation = 0f, distance = 0f;
+            Vector3 previous = mover.Position; int sampledFrame = -1;
+            mover.Commands.Run(move);
+            foreach (int frame in WaitPresentation32(mode, () => move.IsFinished && mover.Commands.Empty, 22, () => {
+                distance += Vector3.Distance(previous, mover.Position); previous = mover.Position;
+                float deviation = InfernalEarlyDistanceToSegment35(mover.Position, start, destination);
+                maximumDeviation = Math.Max(maximumDeviation, deviation);
+                if (Time.frameCount - sampledFrame >= 6 && samples.Count < 180) {
+                    samples.Add(new JObject { ["frame"] = Time.frameCount, ["position"] = SurveyVector(mover.Position),
+                        ["deviationFromFormerDirectRoute"] = deviation, ["velocity"] = mover.View.MovementAgent.Velocity.magnitude });
+                    sampledFrame = Time.frameCount;
+                }
+            })) yield return frame;
+            bool pass = move.Result == UnitCommand.ResultType.Success && Vector3.Distance(mover.Position, destination) <= 1f &&
+                distance > Vector3.Distance(start, destination) - 1f &&
+                (wallPresent ? distance > Vector3.Distance(start, destination) + .15f && maximumDeviation > .35f &&
+                    InfernalWallNavmesh35.ActiveGridClaimCount > 0 : maximumDeviation < .8f &&
+                    distance <= Vector3.Distance(start, destination) + .8f && InfernalWallNavmesh35.ActiveGridClaimCount == 0);
+            check("wall-native-mover-" + label, pass, new JObject { ["mover"] = mover.UniqueId, ["wallPresent"] = wallPresent,
+                ["command"] = Sprint27AiCommand(move), ["start"] = SurveyVector(start), ["goal"] = SurveyVector(destination),
+                ["wallMidpoint"] = SurveyVector(midpoint), ["end"] = SurveyVector(mover.Position),
+                ["actualDistance"] = distance, ["formerDirectDistance"] = Vector3.Distance(start, destination),
+                ["maximumDeviation"] = maximumDeviation, ["positions"] = samples,
+                ["claimsWhileMoving"] = InfernalWallNavmesh35.ActiveGridClaimCount,
+                ["scope"] = "A real native UnitMoveTo under owned Default traverses around the live wall; no transform writes while this command runs." },
+                wallPresent ? "The live wall changes an actual mover's route before destruction; path queries alone do not supply this verdict." :
+                    "An actual native mover follows the direct lane with no live wall obstruction.");
+            PlaceExpandedSummoningUnit(mover, start);
         }
 
         private static bool InfernalEarlyWallObstructs35(JObject before,

@@ -187,6 +187,21 @@ namespace KingmakerGunslinger.DomainTests
                 SummonViewScaleCatalog.IsRevisedOutsider(value.CreatureKey))
                 .All(value => value.RetainNativeScale),
                 "The five new corrections survive the native per-frame scale assignment.");
+            foreach (string token in new[] { "Nalfeshnee", "Glabrezu", "Vrock", "Hezrou", "BoneDevil" })
+            {
+                SummonViewScaleSpec permitted;
+                string name = "KMG_Summoning_Unit_" + token;
+                Assertions.False(SummonViewScaleCatalog.TryGetApplicableSpec(name, false, out permitted),
+                    "Module OFF must refuse the retained donor enlargement: " + token);
+                Assertions.True(permitted == null, "An OFF refusal leaks no applicable spec.");
+                Assertions.True(SummonViewScaleCatalog.TryGetApplicableSpec(name, true, out permitted) &&
+                    permitted.RetainNativeScale && permitted.Multiplier > 1,
+                    "An OFF refusal must not consume the later ON application: " + token);
+            }
+            SummonViewScaleSpec legacy;
+            Assertions.True(SummonViewScaleCatalog.TryGetApplicableSpec(
+                "KMG_Summoning_Unit_Eagle", false, out legacy) && legacy.Multiplier == .30f,
+                "The review correction preserves the older scale policy.");
             Assertions.True(InfernalVisualPolicy36.IsReviewedRig(InfernalVisualPolicy36.RigSha256) &&
                 InfernalVisualPolicy36.IsReviewedRig(InfernalVisualPolicy36.EquivalentRigSha256) &&
                 !InfernalVisualPolicy36.IsReviewedRig(null) &&

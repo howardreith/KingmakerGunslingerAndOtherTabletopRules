@@ -75,6 +75,59 @@ namespace KingmakerGunslinger.DomainTests
             return JObject.Parse(File.ReadAllText(path));
         }
 
+        private static int AtlasCrossingTriangles(JObject document, byte[] raw)
+        {
+            int n = (int)document["vertexCount"], t = (int)document["triangleCount"];
+            var regions = ((JObject)document["uvAtlas"]).Properties()
+                .Select(p => p.Value.Values<float>().ToArray()).ToArray();
+            int crossing = 0;
+            for (int triangle = 0; triangle < t; triangle++)
+            {
+                var corners = Enumerable.Range(0, 3).Select(corner => {
+                    int vertex = BitConverter.ToInt32(raw, 32*n+12*triangle+4*corner);
+                    return new[] { BitConverter.ToSingle(raw,24*n+8*vertex),
+                        BitConverter.ToSingle(raw,24*n+8*vertex+4) };
+                }).ToArray();
+                // A rectangle is convex. Containing all three corners in the
+                // SAME tile proves containment of the whole interpolated face.
+                if (!regions.Any(r => corners.All(uv => uv[0] >= r[0]-1e-7 &&
+                    uv[0] <= r[2]+1e-7 && uv[1] >= r[1]-1e-7 && uv[1] <= r[3]+1e-7)))
+                    crossing++;
+            }
+            return crossing;
+        }
+
+        internal static void RevisedOutsiderAtlasFacesDoNotCrossTiles()
+        {
+            var models = new[] {
+                "sprint34-infernal-outsiders/bearded-devil", "sprint34-infernal-outsiders/kyton-chain-devil",
+                "sprint35-infernal-reach/barbed-devil", "sprint35-infernal-reach/bone-devil",
+                "sprint36-demons/babau", "sprint36-demons/hezrou", "sprint37-vrock/vrock",
+                "sprint38-glabrezu/glabrezu", "sprint39-nalfeshnee/nalfeshnee" };
+            foreach (string model in models)
+            {
+                var document = JObject.Parse(File.ReadAllText(Resolve("assets/"+model+"-mesh.json")));
+                byte[] raw = Convert.FromBase64String((string)document["data"]);
+                Assertions.Equal(0, AtlasCrossingTriangles(document,raw),
+                    "Every actual exported face stays inside one atlas tile: " + model);
+                if (model.EndsWith("/nalfeshnee", StringComparison.Ordinal))
+                {
+                    int n = (int)document["vertexCount"];
+                    // All corners remain valid atlas points, but their face
+                    // crosses a third tile. This is the reviewed failure mode.
+                    float[][] bad = { new[] {.20f,.30f}, new[] {.70f,.10f}, new[] {.30f,.40f} };
+                    for (int corner=0; corner<3; corner++)
+                    {
+                        int vertex = BitConverter.ToInt32(raw,32*n+4*corner);
+                        for (int axis=0; axis<2; axis++)
+                            Array.Copy(BitConverter.GetBytes(bad[corner][axis]),0,raw,24*n+8*vertex+4*axis,4);
+                    }
+                    Assertions.True(AtlasCrossingTriangles(document,raw)>0,
+                        "Valid UV corners must not conceal an atlas-crossing triangle interior.");
+                }
+            }
+        }
+
         internal static void ShippedMeshDataIsWellFormed()
         {
             JObject document = Document();

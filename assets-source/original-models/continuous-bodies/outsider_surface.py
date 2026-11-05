@@ -5,7 +5,6 @@ metadata remains input-only. Teeth, eyes, feathers, chains and other chosen
 atlas regions remain separate solids; no other generator imports this module.
 """
 from collections import defaultdict
-import math
 import bpy
 import bmesh
 from mathutils import Vector
@@ -21,6 +20,13 @@ def consolidate_skin(bm, weights, uvs, atlas, regions=('body', 'limbs'),
     positions = [v.co.copy() for v in verts]
     old_weights = {v.index: list(weights[v]) for v in verts}
     old_uv = {v.index: tuple(uvs[v]) for v in verts}
+
+    def tile(pair):
+        matches = [name for name, r in atlas.items()
+                   if r[0] < pair[0] < r[2] and r[1] < pair[1] < r[3]]
+        if len(matches) != 1:
+            raise ValueError('original UV must lie inside exactly one atlas tile')
+        return matches[0]
 
     def skin(v):
         u, v = old_uv[v.index]
@@ -51,6 +57,12 @@ def consolidate_skin(bm, weights, uvs, atlas, regions=('body', 'limbs'),
 
     source.calc_loop_triangles()
     faces = [tuple(f.vertices) for f in source.loop_triangles]
+    face_tiles = []
+    for face in faces:
+        names = {tile(old_uv[i]) for i in face}
+        if len(names) != 1:
+            raise ValueError('source skin triangle already crosses atlas tiles')
+        face_tiles.append(names.pop())
     tree = BVHTree.FromPolygons(positions, faces, all_triangles=True)
     rows, paint = {}, {}
     for vertex in obj.data.vertices:
@@ -73,24 +85,49 @@ def consolidate_skin(bm, weights, uvs, atlas, regions=('body', 'limbs'),
             for bone, influence in old_weights[original]:
                 row[bone] += influence*fraction
         rows[vertex.index] = sorted(row.items(), key=lambda r: (-r[1],r[0]))
-        paint[vertex.index] = tuple(sum(old_uv[i][k]*f for i,f in zip(ids,bary))
-                                    for k in (0,1))
+        original_uv = tuple(sum(old_uv[i][k]*f for i,f in zip(ids,bary))
+                            for k in (0,1))
+        rect = atlas[face_tiles[index]]
+        # Transfer tile-LOCAL coordinates. A fused face chooses one material
+        # region as a whole below; its corners can never interpolate across
+        # unrelated rectangles. Keep the original padding at tile boundaries.
+        paint[vertex.index] = tuple(max(.02, min(.98,
+            (original_uv[k]-rect[k])/(rect[k+2]-rect[k]))) for k in (0,1))
     rows = surface.smooth_weights(obj, rows, iterations=3, factor=.35)
     for index, row in rows.items():
         row = sorted(row, key=lambda r: (-r[1],r[0]))[:2]
         total = sum(w for _,w in row)
         rows[index] = [(name,w/total) for name,w in row]
 
-    # Preserve index ownership explicitly. The legacy exporter keys by BMesh
-    # vertex identity, so reconstruct both dictionaries along with the mesh.
+    # Split UV seams by FACE region, retaining identical position, smooth
+    # normal and skin weights on each duplicate. The schema already supports
+    # split vertices. Only the opt-in normal layer changes legacy export;
+    # unsplit/discrete geometry continues using its ordinary vertex normal.
     bm.clear()
-    bm.from_mesh(obj.data)
-    bm.verts.index_update()
     weights.clear()
     uvs.clear()
-    for v in bm.verts:
-        weights[v] = rows[v.index]
-        uvs[v] = paint[v.index]
+    normal_layer = bm.verts.layers.float_vector.get('KMG_ContinuousSkinNormal')
+    if normal_layer is None:
+        normal_layer = bm.verts.layers.float_vector.new('KMG_ContinuousSkinNormal')
+    skin_vertices = {}
+    for face in obj.data.polygons:
+        centre = sum((obj.data.vertices[i].co for i in face.vertices), Vector()) / len(face.vertices)
+        _, _, nearest, _ = tree.find_nearest(centre)
+        region = face_tiles[nearest]
+        rect = atlas[region]
+        corners = []
+        for index in face.vertices:
+            key = (index, region)
+            if key not in skin_vertices:
+                original = obj.data.vertices[index]
+                v = bm.verts.new(original.co)
+                v[normal_layer] = original.normal
+                weights[v] = rows[index]
+                uvs[v] = tuple(rect[k] + paint[index][k]*(rect[k+2]-rect[k])
+                               for k in (0,1))
+                skin_vertices[key] = v
+            corners.append(skin_vertices[key])
+        bm.faces.new(corners)
     copied = {}
     for face in discrete:
         for index in face:

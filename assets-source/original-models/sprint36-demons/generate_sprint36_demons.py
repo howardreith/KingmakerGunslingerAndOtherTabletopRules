@@ -34,6 +34,8 @@ import paint_snake_albedo as paint
 
 sys.path.insert(0, str(args.pipeline_root / 'continuous-bodies'))
 from outsider_surface import consolidate_skin
+sys.path.insert(0, str(args.pipeline_root / 'sprint36-demons'))
+from anatomy_planes import muscle, bevel_mass
 
 SIDE, UP, FRONT = Vector((1, 0, 0)), Vector((0, 0, 1)), Vector((0, 1, 0))
 TORSO = ('Torso_Lower', 'Torso_Upper', 'neck', 'neck1', 'Head')
@@ -75,7 +77,12 @@ def build_body(bm, weights, uvs, rig, kind):
         mass(pelvis - UP * .045, (.13, .10, .105), 'Torso_Lower')
         mass(upper + UP*.240 + FRONT*.005, (.155,.180,.115), 'Torso_Upper')
         head = head_bone + FRONT * .070 + UP * .025
+        tube([at('neck'),at('neck1')+FRONT*.030,
+              head-FRONT*.025-UP*.045], [.055,.052,.055],
+             ['neck','neck1','Head'],'hide',12)
         mass(head, (.105, .145, .095), 'Head')
+        bevel_mass(common,bm,weights,uvs,head+FRONT*.025-UP*.075,
+                   (.065,.043,.073),'Head','body',.75)
         mass(head + FRONT * .103 - UP * .060, (.060, .035, .034),
              'Head', 'mouth')
         for sign in (-1, 1):
@@ -89,10 +96,17 @@ def build_body(bm, weights, uvs, rig, kind):
         for side in ('L', 'R'):
             arm = [side + '_' + name for name in ARMS[:3]]
             shoulder, elbow, palm = [at(name) for name in arm]
-            tube([upper, shoulder, elbow, palm], [.070, .067, .042, .026],
-                 ['Torso_Upper', *arm], 'hide', 10)
-            mass(shoulder, (.067, .087, .054), arm[0])
-            mass(palm, (.038, .058, .026), arm[2])
+            tube([upper+UP*.19, shoulder, shoulder.lerp(elbow,.45), elbow,
+                  elbow.lerp(palm,.30)-FRONT*.012, palm],
+                 [.060,.057,.061,.040,.050,.026],
+                 ['Torso_Upper',arm[0],arm[0],arm[1],arm[1],arm[2]], 'hide', 12)
+            muscle(common,bm,weights,uvs,shoulder,elbow,.061,.047,arm[0],'body')
+            muscle(common,bm,weights,uvs,elbow.lerp(palm,.15),palm,.039,.030,arm[1],'body')
+            mass(shoulder+UP*.012, (.055, .075, .044), arm[0])
+            tube([elbow+FRONT*.018,palm+FRONT*.016], [.017,.010],
+                 [arm[1],arm[2]],'hide',7)
+            tube([palm-UP*.035,palm,palm+FRONT*.045], [.024,.041,.030],
+                 [arm[2]]*3,'hide',10)
             for digit in ('finger', 'Bfinger'):
                 first, second = side + '_' + digit + '1', side + '_' + digit + '2'
                 direction = (at(second) - at(first)).normalized()
@@ -105,10 +119,23 @@ def build_body(bm, weights, uvs, rig, kind):
 
             leg = [side + '_' + name for name in LEGS]
             points = [at(name) for name in leg]
-            tube([pelvis, *points], [.085, .080, .052, .030, .020],
-                 ['Torso_Lower', *leg], 'hide', 10)
-            mass(points[-1] + FRONT * .045, (.055, .035, .125),
-                 leg[-1], 'claw')
+            thigh,knee,ankle,toe=points
+            tube([pelvis,thigh,thigh.lerp(knee,.50),knee],
+                 [.092,.083,.075,.045],['Torso_Lower',leg[0],leg[0],leg[1]],'hide',12)
+            tube([knee,knee.lerp(ankle,.30)-FRONT*.014,ankle,
+                  ankle.lerp(toe,.40)+FRONT*.015,toe],
+                 [.043,.063,.034,.045,.028],
+                 [leg[1],leg[1],leg[2],leg[2],leg[3]],'hide',12)
+            tube([knee+FRONT*.027,ankle+FRONT*.018,toe+FRONT*.045],
+                 [.014,.012,.007],[leg[1],leg[2],leg[3]],'hide',7)
+            foot=toe+UP*.020+FRONT*.045
+            bevel_mass(common,bm,weights,uvs,foot,(.057,.032,.085),leg[-1],'body')
+            for digit in range(3):
+                spread=(digit-1)*.037
+                base=foot+SIDE*spread*.6+FRONT*.032
+                tip=foot+SIDE*spread+FRONT*(.15-.018*abs(digit-1))-UP*.012
+                tube([base,base.lerp(tip,.60),tip],[.018,.014,.003],
+                     [leg[-1]]*3,'hide',8)
 
         for sign in (-1, 1):
             for index in range(4):
@@ -141,25 +168,35 @@ def build_body(bm, weights, uvs, rig, kind):
         mass(upper + FRONT * .025, (.310, .235, .245),
              'Torso_Upper', 'hide', 12, 20)
         mass(upper + UP*.250 - FRONT*.025, (.335,.265,.255), 'Torso_Upper')
-        head = head_bone + FRONT * .115 - UP * .105
-        mass(head, (.265, .190, .200), 'Head', 'hide', 12, 20)
-        mass(head-UP*.095+FRONT*.070, (.255,.095,.185), 'Head', 'hide', 12, 20)
-        mass(head + FRONT * .175 - UP * .055, (.180, .025, .030),
-             'Head', 'mouth', 10, 18)
+        head = head_bone + FRONT * .110 - UP * .120
+        # The blunt skull, jutting mandible and sloped brow are deliberately
+        # planar masses. A rounded head and oval black lip read as a toy frog.
+        bevel_mass(common,bm,weights,uvs,head,(.255,.145,.185),'Head','body')
+        bevel_mass(common,bm,weights,uvs,head-UP*.100+FRONT*.100,
+                   (.275,.070,.205),'Head','body',.96)
+        bevel_mass(common,bm,weights,uvs,head+FRONT*.282-UP*.040,
+                   (.192,.018,.014),'Head','beak',.95)
         for sign in (-1, 1):
-            mass(head + SIDE * sign * .184 + FRONT * .127 + UP * .080,
-                 (.038, .029, .031), 'Head', 'eye', 9, 14)
-            mass(head + SIDE * sign * .155 + FRONT * .105 - UP * .070,
-                 (.095, .080, .075), 'Head', 'belly', 8, 14)
+            bevel_mass(common,bm,weights,uvs,
+                       head+SIDE*sign*.155+FRONT*.112+UP*.095,
+                       (.105,.045,.105),'Head','body')
+            mass(head + SIDE * sign * .180 + FRONT * .208 + UP * .045,
+                 (.027, .017, .018), 'Head', 'eye', 8, 12)
+            muscle(common,bm,weights,uvs,
+                   head+SIDE*sign*.215-FRONT*.020-UP*.030,
+                   head+SIDE*sign*.200+FRONT*.170-UP*.080,
+                   .075,.065,'Head','body')
 
         for side in ('L', 'R'):
             arm = [side + '_' + name for name in ARMS[:3]]
             shoulder, elbow, palm = [at(name) for name in arm]
-            mass(shoulder, (.150, .135, .150), arm[0])
-            mass(elbow, (.125, .110, .125), arm[1])
-            tube([upper, shoulder, elbow, palm], [.145, .140, .105, .065],
-                 ['Torso_Upper', *arm], 'hide', 13)
-            mass(palm, (.090, .105, .065), arm[2])
+            tube([upper+UP*.18,shoulder,shoulder.lerp(elbow,.45),elbow,
+                  elbow.lerp(palm,.28),palm], [.130,.123,.145,.090,.115,.070],
+                 ['Torso_Upper',arm[0],arm[0],arm[1],arm[1],arm[2]],'hide',14)
+            muscle(common,bm,weights,uvs,shoulder,elbow,.140,.108,arm[0],'body')
+            muscle(common,bm,weights,uvs,elbow.lerp(palm,.05),palm,.098,.075,arm[1],'body')
+            bevel_mass(common,bm,weights,uvs,palm+FRONT*.015,
+                       (.084,.068,.070),arm[2],'body')
             for digit in ('finger', 'Bfinger'):
                 first, second = side + '_' + digit + '1', side + '_' + digit + '2'
                 direction = (at(second) - at(first)).normalized()
@@ -172,17 +209,31 @@ def build_body(bm, weights, uvs, rig, kind):
 
             leg = [side + '_' + name for name in LEGS]
             points = [at(name) for name in leg]
-            mass(points[0], (.165, .145, .160), leg[0])
-            mass(points[1], (.135, .125, .135), leg[1])
-            tube([pelvis, *points], [.175, .165, .125, .080, .050],
-                 ['Torso_Lower', *leg], 'hide', 13)
-            mass(points[-1] + FRONT * .035, (.115, .085, .145),
-                 leg[-1], 'claw', 9, 16)
+            thigh,knee,ankle,toe=points
+            tube([pelvis,thigh,thigh.lerp(knee,.4),knee],
+                 [.165,.150,.145,.105],['Torso_Lower',leg[0],leg[0],leg[1]],'hide',14)
+            muscle(common,bm,weights,uvs,thigh,knee,.153,.130,leg[0],'body')
+            # A weight-bearing calf/Achilles rather than a thick thigh
+            # ending abruptly in a straight stick and dark round foot.
+            tube([knee,knee.lerp(ankle,.30)-FRONT*.028,ankle,
+                  ankle.lerp(toe,.42)+FRONT*.035,toe],
+                 [.103,.128,.090,.108,.078],
+                 [leg[1],leg[1],leg[2],leg[2],leg[3]],'hide',14)
+            foot=toe+UP*.035+FRONT*.065
+            bevel_mass(common,bm,weights,uvs,foot,(.120,.055,.130),leg[-1],'body',.98)
+            for digit in range(3):
+                spread=(digit-1)*.085
+                base=foot+SIDE*spread*.65+FRONT*.045
+                tip=foot+SIDE*spread+FRONT*(.190-.025*abs(digit-1))-UP*.018
+                tube([base,base.lerp(tip,.65),tip],[.041,.034,.012],
+                     [leg[-1]]*3,'hide',10)
+                tube([tip-FRONT*.018,tip+FRONT*.045-UP*.006],
+                     [.017,.002],[leg[-1]]*2,'claw',7)
 
         for index in range(9):
             x=(index-4)*.039
-            tube([head + SIDE*x + FRONT*.199 - UP*.065,
-                  head + SIDE*x + FRONT*.213 - UP*(.030 if index%2 else .035)],
+            tube([head + SIDE*x + FRONT*.291 - UP*.068,
+                  head + SIDE*x + FRONT*.300 - UP*(.026 if index%2 else .036)],
                  [.010,.001], ['Head']*2, 'horn', 6)
         # Broad, shallow dorsal glands and lateral jaw creases.
         for sign in (-1,1):

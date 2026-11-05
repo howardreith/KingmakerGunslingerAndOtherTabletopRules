@@ -55,6 +55,8 @@ import paint_snake_albedo as paint
 sys.path.insert(0, str(args.pipeline_root / 'continuous-bodies'))
 from outsider_surface import consolidate_skin
 import continuous_body as surface
+sys.path.insert(0, str(args.pipeline_root / 'sprint36-demons'))
+from anatomy_planes import bevel_mass
 
 SIDE, UP, FRONT = Vector((1, 0, 0)), Vector((0, 0, 1)), Vector((0, 1, 0))
 TORSO = ('Torso_Lower', 'Torso_Upper', 'neck', 'neck1', 'Head')
@@ -136,6 +138,11 @@ def build_body(bm, weights, uvs, rig, kind):
     tusks = 0
     ears = 0
     for sign in (-1, 1):
+        # Broad brow/cheek planes root into the skull; keep the accepted short
+        # head-to-thorax relationship rather than stretching the native neck.
+        bevel_mass(common, bm, weights, uvs,
+                   head + SIDE*sign*.105 + FRONT*.045 + UP*.090,
+                   (.075,.027,.045), 'Head', 'body')
         # THE TUSKS. The long pair comes up out of the LOWER jaw and curves
         # past the snout line, which is the half a viewer actually reads at
         # distance; a shorter upper pair sits behind it.
@@ -213,10 +220,11 @@ def build_body(bm, weights, uvs, rig, kind):
         # held out from the gut because they cannot hang against it.
         tube([upper, shoulder, elbow, palm], [.154, .139, .104, .065],
              ['Torso_Upper', *arm], 'hide', 12)
-        mass(shoulder, (.132, .126, .138), arm[0])
-        mass(elbow, (.074, .078, .074), arm[1])
+        mass(shoulder, (.132, .160, .105), arm[0])
+        mass(elbow, (.064, .078, .057), arm[1])
         hand = palm + FRONT * .018
-        mass(hand, (.065, .076, .050), arm[2], 'belly', 9, 14)
+        bevel_mass(common, bm, weights, uvs, hand,
+                   (.086,.057,.092), arm[2], 'limbs')
         # The three claws ride the rig's two real digit chains plus the palm,
         # so the native grip animation still opens and closes the hand and
         # every measured bone carries geometry, which the exporter requires.
@@ -224,17 +232,19 @@ def build_body(bm, weights, uvs, rig, kind):
             first, second = side + '_' + digit + '1', side + '_' + digit + '2'
             root, tip = at(first), at(second)
             direction = (tip - root).normalized()
-            tube([hand + UP * lift * .4, root + UP * lift,
-                  tip + UP * lift * .7,
-                  tip + direction * .062 + UP * lift * .4],
-                 [.026, .022, .014, .003],
-                 [arm[2], first, second, second], 'claw', 8)
+            flesh_tip = tip + UP*lift*.7
+            tube([hand + UP*lift*.4, root + UP*lift, flesh_tip],
+                 [.036,.029,.020], [arm[2],first,second], 'hide', 10)
+            tube([flesh_tip-direction*.012,
+                  flesh_tip+direction*.035-UP*.012],
+                 [.019,.003], [second,second], 'claw', 8)
             claws += 1
         # A third claw on the palm itself, so the printed three-clawed hand
         # reads even though the rig offers only two digit chains.
-        tube([hand + FRONT * .016,
-              hand + FRONT * .070 - UP * .030],
-             [.013, .002], [arm[2]] * 2, 'claw', 6)
+        thumb = hand + SIDE*sign*.065 + FRONT*.045-UP*.015
+        tube([hand,thumb], [.035,.025], [arm[2]]*2, 'hide', 9)
+        tube([thumb,thumb+FRONT*.032-UP*.018],
+             [.018,.003], [arm[2]]*2, 'claw', 8)
         claws += 1
         arms += 1
 
@@ -245,15 +255,24 @@ def build_body(bm, weights, uvs, rig, kind):
         points = [at(name) for name in leg]
         tube([pelvis, points[0], points[1]], [.168, .158, .104],
              ['Torso_Lower', leg[0], leg[1]], 'hide', 11)
-        tube([points[1], points[2], points[3]], [.096, .062, .042],
-             [leg[1], leg[2], leg[3]], 'hide', 10)
-        foot = points[-1] + FRONT * .024
-        mass(foot, (.090, .045, .120), leg[-1], 'belly', 8, 14)
+        knee, ankle, toe = points[1:]
+        tube([knee, knee.lerp(ankle,.30)+FRONT*.018,
+              knee.lerp(ankle,.72)-FRONT*.010, ankle,
+              ankle.lerp(toe,.45)+FRONT*.010, toe+UP*.030],
+             [.105,.118,.100,.105,.090,.080],
+             [leg[1],leg[1],leg[1],leg[2],leg[2],leg[3]], 'hide', 12)
+        mass(ankle.lerp(toe,.40)-FRONT*.012,
+             (.116,.176,.096), leg[2], 'hide', 10, 16)
+        foot = toe + FRONT*.045 + UP*.015
+        bevel_mass(common, bm, weights, uvs, foot,
+                   (.112,.048,.145), leg[-1], 'limbs')
         for index in range(3):
-            spread = (index - 1) * .042
-            tube([foot + SIDE * spread * .4,
-                  foot + SIDE * spread + FRONT * .078 - UP * .010],
-                 [.016, .003], [leg[-1]] * 2, 'claw', 7)
+            spread = (index - 1) * .062
+            toe_base = foot+SIDE*spread+FRONT*.080-UP*.010
+            tube([foot+SIDE*spread*.6,toe_base+FRONT*.055],
+                 [.040,.028], [leg[-1]]*2, 'hide', 10)
+            tube([toe_base+FRONT*.035,toe_base+FRONT*.095-UP*.010],
+                 [.025,.003], [leg[-1]]*2, 'claw', 8)
 
     consolidate_skin(bm, weights, uvs, common.shared.ATLAS,
                      voxel=.009, triangles=9500)

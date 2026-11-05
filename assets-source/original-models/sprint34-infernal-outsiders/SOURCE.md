@@ -1,3 +1,20 @@
+## PR 96 review correction: original devil surfaces
+
+The review found and this revision reproduces 20 collapsed Kyton hanging links out of 64: minimum old short ellipse semi-axis 0.001627759 units against a 0.010 tube radius. The central link builder now projects the minor axis perpendicular to the chain tangent and selects a stable least-aligned fallback when necessary. All corrected centreline ellipses retain the authored 0.027 minor radius (0.017 clear opening after the tube). Four palm-owned attack regions and the native runtime contact/deformation logic are unchanged. New per-link vertex receipts permit checks of actual exported openings in addition to the existing ownership checks.
+
+Kyton now has a shaped dark red-brown leather jerkin/skirt, asymmetric shoulder plate, boots, one diagonal chain and shorter front catenary. Body chains are placed against the authored garment surface; cuffs still own the four hanging drapes. Barbazu keeps its glaive/native hand carrier and green infernal identity, with staggered beard locks, flatter shoulders, filled lower-leg/hock transitions and articulated broad toes.
+
+The shared reviewed skin helper preserves atlas seams per face. All four final meshes have zero triangles spanning atlas regions in `tools/check_original_mesh_atlas.py`. Link regression tests pass 3/3; combined link+four-asset atlas check wall duration 0.462 seconds. Front and elevated views of all four, plus Bone side, were inspected as offline shape evidence. Native material/motion, selection/contact/clearance and owner aesthetic approval remain separate and pending. Raw capture provenance remains the previously reviewed `.6443...e65d` geometry-free input.
+
+| Current export | Vertices / triangles | SHA-256 |
+| --- | --- | --- |
+| `bearded-devil-mesh.json` | 4439 / 8778 | `22b4482f197f2d550cf583878ac8ad3072d74ff0baf1f1f899cf2f3a2e4b9b75` |
+| `bearded-devil-albedo.png` | - | `fd61649a0caf17e9ccd8d66e55092d2c1d98df88509295de98958c5b78d4c888` |
+| `kyton-chain-devil-mesh.json` | 18330 / 35796 | `43822d0ac8c2633940fca537ab57ce9014cdce5602a22657e25c26734b2d266e` |
+| `kyton-chain-devil-albedo.png` | - | `0aa0b99b66dc92bd602e204f26c61c214b50dcc360390c39d77c15dadee97e3e` |
+
+## Earlier visual-overhaul record
+
 ## Owner visual overhaul, November 2026 (development draft)
 
 The current Barbazu and Kyton exports supersede the original surface treatment

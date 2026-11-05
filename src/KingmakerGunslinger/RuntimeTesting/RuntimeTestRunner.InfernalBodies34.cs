@@ -152,7 +152,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             string key, InfernalEvents34 trace, JObject receipt)
         {
             var target = fixture.Hostile;
-            var mode = Cleanup2EnterNativeDefault(fixture, ExpandedSummoningNativeProfilePolicy.Sprint32InfernalBodiesPhase);
+            string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
+            if (phase != ExpandedSummoningNativeProfilePolicy.Sprint32InfernalBodiesPhase &&
+                phase != ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulDaylightPhase)
+                throw new InvalidOperationException("Infernal motion requires its exact owned presentation phase.");
+            var mode = Cleanup2EnterNativeDefault(fixture, phase);
             var observer = new Sprint16RuleObserver { Owner = owner, Target = target };
             var contacts = new JArray(); receipt[key + "-contacts"] = contacts;
             var errors = new JArray(); receipt[key + "-capture-errors"] = errors;
