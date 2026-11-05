@@ -1,5 +1,35 @@
 # Summoned creature visual overhaul: active checkpoint
 
+## Sprint 1 complete — shared Wall fixture prerequisite verified twice
+
+See [the concise implementation/evidence checkpoint](WALL-FIXTURE-SPRINT1.md).
+Final executable candidate `8c9ccb761c4742ba1da9aa1e028064df883f806b` passed
+two fresh-process `summon-wall-placement-preflight` runs, **21 assertions each**,
+using the same immutable package. Initial and returned native-supported
+positions matched immediately and across three quiet frames; real baseline
+UnitMoveTo returned Success with positive native velocity/travel. Both stopped
+before Wall casting and tail acceptance and restored exact protected intake.
+
+The confirmed unconstrained survey inconsistency and planned-start substitution
+are corrected. An initial candidate's failed fresh repeat was examined: correct
+immediate placement was followed by a new move while Bone-source setup fear was
+active. The exact-source setup-fear isolation correction preserves production
+mechanics and natural source memory. Neither final pass required a nonempty
+fear removal; that branch was not separately reproduced. The historical
+nineteen-metre causal chain remains unproven. Earlier failure records remain.
+
+Accepted run directory timestamps: `20261105T1709110604156Z` and
+`20261105T1713072453582Z`, under the assigned lab runtime-evidence root with
+suffix `-disposable-expanded-summoning-sprint32-native-review`.
+ZIP SHA-256 `ffa890ea2c6825b08deaad429d74c3514c4e9acd7802abbc4431db8a9f6bae34`.
+Prior 84.86-minute ledger retained; owner superseded its ceiling for Sprint 1.
+Additional validation **32.46 minutes**, cumulative **117.32 minutes**.
+
+Stop this sprint. Full Wall casting/obstruction/breach/cleanup/expiry and tail
+acceptance remain for the next sprint. The accepted creature checks remain
+credited without routine reruns. Models/scale and production Wall mechanics
+are fixed; PR #96 remains draft/unmerged. Dated records below are historical.
+
 ## Wall-only diagnostic continuation: P2 corrected; run refused before casting
 
 Owner accepted the motion checkpoint and explicitly authorized a **15-minute
