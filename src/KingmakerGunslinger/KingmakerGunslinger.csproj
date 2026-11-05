@@ -81,6 +81,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint37Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint38Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint39Inputs.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint40Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.Nalfeshnee39Core.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.Nalfeshnee39Integration.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.Nalfeshnee39Nimbus.cs" />

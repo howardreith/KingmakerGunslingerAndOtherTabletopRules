@@ -4,6 +4,25 @@ IN PROGRESS. No Ice Devil registration, native qualification or release yet.
 Owner mission selects completion through exact-artifact stable publication,
 public downloads, restoration and merged records. Stop before Sprint 41.
 
+## Current continuation state
+
+- Product owner: this native Goal; branch `codex/expanded-summoning-sprint40-ice-devil`,
+  root `C:/Dev/KingmakerGunslingerLab/wt/s40`; reviewed parent `29b9f539`.
+- CLI reports `0.166.0`. No surfaced capacity/quota/tool refusal was present;
+  the previous capacity-stop cause is unknown. Native Goal is now active.
+- Completed: prior intake/range correction/branch additions preserved. Added
+  one bounded Sprint40 metadata observer using the existing research scenario,
+  graph/view readers, admission and restoration paths. No Ice Devil registered.
+- Checks: production compiled; 9/9 selected S39 domain tests; runtime preflight
+  1193 checks passed. This is observer admission proof, not creature gameplay.
+- Next: freeze this observer commit, build one version-gated development
+  package, run its single guarded native-input query, inspect the actual
+  cold/Slow/Daze graphs and body/Persistent Image results, then implement.
+- Pending owner decision: Persistent Image disposition only if no faithful
+  bounded graph is established; the earlier proposal was not approved.
+- Deployment/save state: no game or active transaction; original captured
+  intake and Working remain the authority. No new intake campaign is selected.
+
 ## Intake
 
 - HOWARD-LAPTOP, unelevated HOWARD-LAPTOP\Howard; no Kingmaker process at intake.
