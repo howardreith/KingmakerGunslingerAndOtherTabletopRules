@@ -1177,6 +1177,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint38-rend-once-per-round", GlabrezuRules38Tests.RendIsOncePerRoundAndNotPerCommand),
             Case("expanded-summoning.sprint38-released-tracker-contrast", GlabrezuRules38Tests.ReleasedTrackerReopensOnACommandChangeAndIsUnchanged),
             Case("expanded-summoning.sprint38-rend-round-stamp", GlabrezuRules38Tests.RendAllowanceReturnsOnTheGameRoundStamp),
+            Case("expanded-summoning.sprint40-slow-hit-admission", IceDevilRules40Tests.HitAdmission),
+            Case("expanded-summoning.sprint40-bite-strength", IceDevilRules40Tests.BiteStrength),
             Case("expanded-summoning.sprint39-printed-contract", NalfeshneeRules39Tests.PrintedContractDerivesRatherThanPins),
             Case("expanded-summoning.sprint39-aura-not-double-counted", NalfeshneeRules39Tests.ConstantAuraIsNotCountedTwice),
             Case("expanded-summoning.sprint39-spell-resistance-separation", NalfeshneeRules39Tests.GeneralAndConditionalSpellResistanceStaySeparate),

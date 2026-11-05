@@ -6,22 +6,32 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 ## Current continuation state
 
-- Product owner: this native Goal; branch `codex/expanded-summoning-sprint40-ice-devil`,
-  root `C:/Dev/KingmakerGunslingerLab/wt/s40`; reviewed parent `29b9f539`.
-- CLI reports `0.166.0`. No surfaced capacity/quota/tool refusal was present;
-  the previous capacity-stop cause is unknown. Native Goal is now active.
-- Completed: prior intake/range correction/branch additions preserved. Added
-  one bounded Sprint40 metadata observer using the existing research scenario,
-  graph/view readers, admission and restoration paths. No Ice Devil registered.
-- Checks: production compiled; 9/9 selected S39 domain tests; runtime preflight
-  1193 checks passed. This is observer admission proof, not creature gameplay.
-- Next: freeze this observer commit, build one version-gated development
-  package, run its single guarded native-input query, inspect the actual
-  cold/Slow/Daze graphs and body/Persistent Image results, then implement.
-- Pending owner decision: Persistent Image disposition only if no faithful
-  bounded graph is established; the earlier proposal was not approved.
-- Deployment/save state: no game or active transaction; original captured
-  intake and Working remain the authority. No new intake campaign is selected.
+- Owner: active native Goal, HOWARD-LAPTOP. Branch
+  `codex/expanded-summoning-sprint40-ice-devil`, root `C:/Dev/KingmakerGunslingerLab/wt/s40`.
+  Last committed observer source `40068f9a7203a6401509f63d27dbadebf441c305`;
+  current production hit-rider/bite-policy and original art additions follow it.
+- Prior intake, Nalfeshnee-only range fix and branch policy are preserved.
+  No quota/context/tool refusal was surfaced; previous capacity-stop cause is
+  unknown. CLI `0.166.0`; native Goal active, no update required.
+- Native metadata captured once: no installed Ice Devil/Gelugon; exact Daze
+  carrier applies `BuffStatusCondition.Condition=Dazed`, not Blindness.
+  Cold spells, native Slow and regeneration graphs are identified below.
+- Persistent Image OMITTED with explicit owner approval in this thread after
+  the bounded native finding; no substitute, no impossibility claim.
+- Implemented/unregistered: exact-owner spear/tail hit predicate and Fort DC,
+  native failed-save branch hook, duplicate-event protection, narrow secondary
+  bite Strength correction. Production compiled and 2/2 S40 tests passed
+  (2812 registered); observer preflight previously 1193 PASS.
+- Art: original painted source and real 128px export inspected; original
+  insectile body generated/previewed on the verified measured rig. Model,
+  icon, gameplay and public route are NOT yet bound in bootstrap or native-tested.
+- NEXT: complete the exact-owned builder, wall CL13 parameterization, native
+  failed-save/haste branch and attack fallback, cold spell clone corrections,
+  fear/regeneration/AI; append dependencies once and keep ice-devil suppressed.
+  Complete loader/package dependencies before any hidden-bootstrap launch.
+- Deployment/save/lease: game exited; no lock. Original intake comparison
+  passed after restoring nine byte-identical mod-file timestamps and two Unity
+  session settings. All 118 save bytes/metadata unchanged. Working was never loaded.
 
 ## Intake
 
@@ -32,8 +42,8 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 - v0.0.177 remains released; its immutable evidence is
   [SPRINT39-RELEASE-EVIDENCE.json](SPRINT39-RELEASE-EVIDENCE.json).
 - v0.0.178 is expected, not reserved or verified free at publication.
-- No game/save/deployment mutation has occurred. A current protected intake
-  snapshot is required before the first runtime transaction.
+- Original intake preceded the one metadata-only native transaction recorded
+  below. Its captured bytes and metadata remain the restoration authority.
 
 ## Compact reuse / gap / patch / proof map
 
@@ -111,7 +121,7 @@ mandatory new Ice Devil row requires fresh final-artifact execution.
   `closing/comparison.json`. Kingmaker absent; no shared lock remains. No
   installation or save restoration write was needed because none was changed.
 
-## Remaining work and boundaries
+## Historical checkpoint 29b9f539 remaining work and boundaries
 
 No Ice Devil body/icon or mechanics are registered. Continue with the compact
 map above, complete dependencies before hidden bootstrap, and inspect the
@@ -125,3 +135,59 @@ The Ice Devil implementation, affected Nalfeshnee native range observation,
 final-artifact qualification, all six persistence processes, product merge,
 publication/download verification and records merge remain outstanding.
 There is no qualified package, MVID, tag or public Ice Devil route yet.
+
+## Continuation evidence, 2026-11-05 UTC
+
+One bounded metadata run:
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261105T0214415072809Z-observe-expanded-summoning-sprint40-native-inputs`.
+Outer orchestration is **ERROR/TIMEOUT**, retained unmodified. The native capture
+completed late with its own PASS and normal process exit; use its metadata as
+research, never as a passing final gameplay/qualification execution. No unchanged
+relaunch was made. The wrapper restored the exact live KMG tree in
+`expanded-summoning-restoration/20261105T0217177802121Z-observe-expanded-summoning-sprint40-native-inputs.json`.
+Post-probe full Mods/settings/save comparison is
+`sprint40-intake-20261105T002300Z/post-probe/restoration.json`: all exact.
+Sound-bank staging was Skipped with hash parity; its creation predates the run.
+JSON-restored Binary registry values initially needed explicit byte-array typing;
+the failed type/scoping attempts were inspected, corrected before source work,
+and followed by the successful exact comparison. No save restoration write.
+
+Development-only package (not a final candidate): source `40068f9a7203`,
+ZIP SHA-256 `319fedcb1870761c3fa8cabc065f65a90e14daab1863985b172ac80ef6cb6e25`,
+DLL SHA-256 `692d26f5f1514341cca8ee4b6d2a35f3ea143edf920da2a45acc35978bd58c10`,
+MVID `fff94fc6-e246-43d5-a305-75085f3f4e32`.
+Build log `artifacts/s40-input-build.log` retained the outer shell code 1 from
+Python test-progress stderr despite a completed valid receipt. The existing
+receipt reader and independent strict package validator subsequently passed;
+no rebuild or receipt rewrite was used. Runtime verified the deployed identity.
+
+Exact captured consumers:
+
+- Cone of Cold `e7c530f8137630f4d9d7ee1aa7b1edc0`: native cone projectile,
+  Reflex half, caster-level rank cap15; installed graph uses D8 and a third-party
+  Intensified Spell reference. The owned clone must supply PF1 D6/cap15 and own
+  CL13/Charisma consumers without mutating other spell users.
+- Ice Storm `fcb028205a71ee64d98175ff39a0abf9`: no-save cold2d8 plus physical
+  bludgeoning3d8 in the installed graph; its native area has no Round action,
+  applies Perception -4 and DifficultTerrain, and removes them on exit. The
+  owned clone must retain native delivery/area behavior with PF1 D6 packets.
+- Slow condition `0bc608c3f2b548b44b7146b7530613ac`: native Staggered/Slowed,
+  AC/Reflex/attack penalties. Extract the native spell's failed-save/haste
+  counter branch, not its cast targeting/Will/SR; initialize native 1d6 rounds.
+- Daze condition `9934fedff1b14994ea90205d189c8759`: native Dazed with no
+  repeat save. S39 wording correction is now evidenced but metadata edit and
+  current documentation reconciliation are still outstanding.
+- `RegenerationGood5` `a05cc46208707ce41bda909f02e86a8e` has Heal5 but only Holy
+  energy cancellation in the captured graph. Verify good weapon/spell suppression
+  through the established S34 native consumer; do not blindly clone its qualifiers.
+
+S40 source check: `Invoke-KmgGate.ps1 -Filter expanded-summoning.sprint40`,
+production26.3s, tests4.2s, 2/2 PASS. No native rider or routine PASS yet.
+Icon exporter initially re-derived Nalfeshnee's old provenance consumer row;
+that unrelated delta was removed. `OnlyKeys` now verifies and reuses every
+unselected protected source/export row. Actual selected export rerun passed
+148 sources/exports in4.4s; all147 prior provenance/runtime rows compare equal.
+The runtime Ice Devil PNG is `7e9bb0ac14c7b6d19b6673559596725869faeb7132eae2dc84ed7d80d090f98c`.
+The first private body preview hid its tail; it was retained as `preview-v1.png`
+and corrected in the authoring script. Revised preview shows the segmented tail.
+No owner aesthetic approval or in-game model attachment is claimed.
