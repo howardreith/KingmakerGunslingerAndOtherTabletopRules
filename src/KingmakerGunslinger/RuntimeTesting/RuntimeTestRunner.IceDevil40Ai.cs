@@ -141,6 +141,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         coneData.IsAvailable,
                         new JObject { ["nativeImmunity"] = cold.AssetGuid, ["playerConeStillAvailable"] = coneData.IsAvailable,
                             ["nativePlayerCanTarget"] = coneData.CanTarget(new TargetWrapper(target)),
+                            ["productionImmunityFact"] = cone.ColdImmunityFact?.AssetGuid,
                             ["descriptorHasFact"] = target.Descriptor.HasFact(cold),
                             ["runtimeFactPresent"] = coldFact != null,
                             ["runtimeFactTurnedOn"] = coldFact?.IsTurnedOn,

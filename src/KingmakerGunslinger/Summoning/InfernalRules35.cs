@@ -395,6 +395,7 @@ namespace KingmakerGunslinger.Summoning
         public bool NoAlignmentExemption;
         public bool UseNativeProjectileShape;
         public bool AvoidColdImmuneTarget;
+        public BlueprintUnitFact ColdImmunityFact;
         public bool ChaoticExemptFriendlyArea;
         public bool RequireAffectedEnemyArea;
         public int MaximumAffectedHitDice;
@@ -452,11 +453,13 @@ namespace KingmakerGunslinger.Summoning
                     !ReferenceEquals(owner, target) || TargetEnemy &&
                     (target == null || !owner.IsEnemy(target))) return false;
             if (AvoidColdImmuneTarget && target != null &&
+                (ColdImmunityFact != null && target.Descriptor.HasFact(
+                    ColdImmunityFact) ||
                 target.Descriptor.Progression.Features.Enumerable.Cast<Fact>()
                     .Concat(target.Descriptor.Buffs.Enumerable)
                     .Where(fact => fact != null && fact.IsTurnedOn)
                     .SelectMany(fact => fact.SelectComponents<AddEnergyDamageImmunity>())
-                    .Any(immunity => immunity.EnergyType == DamageEnergyType.Cold))
+                    .Any(immunity => immunity.EnergyType == DamageEnergyType.Cold)))
                 return false;
             if (AvoidFriendlyArea)
             {

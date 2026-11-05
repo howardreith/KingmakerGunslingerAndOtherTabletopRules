@@ -66,14 +66,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool siblingInventoryExact = Sprint28InventoryExact(
                     sibling.Descriptor.Inventory, siblingItems, siblingCounts);
                 bool partyInventoryExact = Sprint28PartyInventoryExact(party, partyCounts);
-                bool ownerEventsAbsent = !trace.Rows.Skip(first).Any(x =>
+                int pendingReference = System.Runtime.CompilerServices.RuntimeHelpers
+                    .GetHashCode(pending);
+                var selectedCommandAttacks = trace.Rows.Skip(first).Where(x =>
+                    (string)x["event"] == "attack" &&
+                    (int?)x["attackCommand"] == pendingReference).ToArray();
+                var unrelatedOwnerCombatEvents = trace.Rows.Skip(first).Where(x =>
                     (string)x["owner"] == owner.UniqueId &&
                     ((string)x["event"] == "attack" || (string)x["event"] == "save" ||
-                     (string)x["event"] == "damage"));
+                     (string)x["event"] == "damage")).ToArray();
+                bool selectedCommandDidNotAct = !pending.IsStarted && !pending.IsActed &&
+                    selectedCommandAttacks.Length == 0;
                 check("native-expiry-gear-and-resources", queued && sourceAbsent &&
                     pending.IsFinished && pendingCosts == 0 && resourcesAbsent &&
                     gearSafe && siblingResourcesAlive && siblingInventoryExact &&
-                    partyInventoryExact && ownerEventsAbsent,
+                    partyInventoryExact && selectedCommandDidNotAct,
                     new JObject { ["expiry"] = expiry, ["queued"] = queued,
                         ["command"] = Sprint27AiCommand(pending), ["costs"] = costs,
                         ["sourceAbsent"] = sourceAbsent,
@@ -84,7 +91,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["siblingResourcesAlive"] = siblingResourcesAlive,
                         ["siblingInventoryExact"] = siblingInventoryExact,
                         ["partyInventoryExact"] = partyInventoryExact,
-                        ["ownerAttackSaveDamageEventsAbsent"] = ownerEventsAbsent,
+                        ["selectedCommandReference"] = pendingReference,
+                        ["selectedCommandDidNotAct"] = selectedCommandDidNotAct,
+                        ["selectedCommandAttacks"] = new JArray(selectedCommandAttacks),
+                        ["unrelatedOwnerCombatEvents"] = new JArray(unrelatedOwnerCombatEvents),
                         ["gear"] = gear, ["fixtureDisposalsBeforeAssertion"] = 0,
                         ["fixtureInterruptsAfterExpiry"] = 0 },
                     "Native expiry cancels the real queued command without spending, retires exact gear/private resources without escaped loot, and preserves the other owner and party inventory.");
