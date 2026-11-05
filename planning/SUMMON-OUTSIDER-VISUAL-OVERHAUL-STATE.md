@@ -132,11 +132,54 @@ positive validation and a valid-JSON tampered-Lillend negative fixture are
 recorded separately before the corrected candidate build. No package from
 this failed attempt is deployed or presented as a qualified candidate.
 
-The final development package, exact source commit, actual build/native
-durations/results and cumulative selected validation time will be appended
-after the single final guarded attempt. Full suite, compatibility, persistence,
-release reproducibility and qualification remain deferred by owner policy.
-Wall's functional defect and original expiry demonstration remain open.
+Corrected immutable development candidate: **PASS**, 450.449 s, source
+`0ecccbf2c601c33ce250ac285bca1d3a529accb1`. The command was the existing
+`scripts/Build-Local.ps1 -DevelopmentPurpose summon-outsider-overhaul
+-DevelopmentTestFilter '<same focused filter above>' -ReferenceBundleDir
+artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references`.
+It ran the development repository wrapper, 68/68 selected tests (7.4 s runner),
+exact-reference production compilation, supply-icon checks, 37 native-contract
+companion assertions, archive assembly and strict standalone validation. The
+archive has a successful development receipt, `releaseQualification=false`.
+
+| Candidate identity | Value |
+| --- | --- |
+| ZIP | `artifacts/development-candidates/summon-outsider-overhaul/0ecccbf2c601/KingmakerGunslinger-0.0.177-development-summon-outsider-overhaul-0ecccbf2c601.zip` |
+| ZIP SHA-256 | `56bef143018617b63943b5316019e47edacd8ba35220c5c5afa14dadfd540238` |
+| DLL SHA-256 | `cf24da87b7d4f3718e52ba724506bb3392d52794709edb02b96fd4c5ce847250` |
+| DLL MVID | `ecfa329f-954c-4361-b89b-9530e9a12470` |
+| source-state SHA-256 | `da26f56855a57fc1249bc3b4981ccb9164285cdd323e3463a750fe220dedd822` |
+| receipt | the ZIP path plus `.development-receipt.json` |
+| build log / wall duration | `artifacts/summon-overhaul/corrected-candidate-build.log` / `corrected-candidate-duration.txt` |
+
+The packaging-pin reproduction passed on the retained archive, and a second
+archive containing a valid-JSON Lillend mesh with changed bytes was refused by
+the exact hash check: positive exit 0, negative exit 1, 19.715 s combined.
+No failed archive received a successful receipt. The original failed verdict,
+the corrected-reader result and the new candidate result are distinct.
+
+**Cumulative instrumented validation: 1,608.19 s (26.80 min)**, including
+baseline prerequisite/failure attempts, approximately four seconds of reference
+export, the 24.959 s focused gate, Lillend's 6.456 s checks, the 19.715 s pin
+reproduction, the 441.604 s failed candidate and the 450.449 s corrected one.
+Authoring/render iterations were separate; their uninstrumented review time
+does not supply native qualification. The existing early35/core39 native
+sequence is expected to take another 6-10 min and would exceed the owner's
+30-minute validation ceiling, so it was **not launched**. No scene, save,
+installation, native game setting or Steam authentication was mutated by this
+work. The actual installed Info still reads 0.0.140 and no Kingmaker process is
+running at handoff.
+
+All ten revised exports have closed/outward/consistent components. The
+manifest retains normal/triangle-corner disagreement statistics (including the
+older chain/tail cases); this is not proof of settled native shading. Final
+darkness diagnosis, matched indoor/outdoor size and material comparisons,
+motion/contact/second-owner/reconstruction/mixed-group evidence and every
+native disposition in the table remain open. Wall's actual formation,
+obstruction, destruction/expiry cleanup and original 720 s expiry demonstration
+remain open. The feedback change does not close the functional defect.
+Full suite, compatibility, persistence, release reproducibility and qualification
+remain deferred by policy.
 
 ## Regeneration and illustrated review
 
@@ -157,6 +200,20 @@ private inputs, models' blend scenes, report images and packages stay ignored.
 Shape references are credited in the report to Roman Kurbanov's verified WotR
 Vrock and Babau production-art pages; no third-party artwork is embedded.
 
-Next action remains bounded native observation of this coherent candidate,
-then record the exact remaining gaps and open the requested draft PR. An
-incomplete native handoff is not mission acceptance or owner art approval.
+Draft PR: [#96](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/96).
+The branch was pushed through the approved policy script. The report's cover
+and model-card layout were checked with an isolated headless browser; all
+reference images and representative exact-export front/party views were inspected,
+with side views used for attachment questions. Its embedded game
+references use scaled JPEG review copies with raw source hashes retained in a
+local manifest; the original supplied images are unchanged.
+
+Next action, after a further native validation allocation is selected, is the
+existing save-free early35 phase and a representative Nalfeshnee/core39
+material comparison, followed by the other exact affected phases. The prepared
+unrun driver is `artifacts/summon-overhaul-baseline/run-final-native-review.ps1`.
+Keep the candidate unchanged and satisfy its exact source/root receipt guards:
+use source `0ecccbf2c601` clean in its original root on a separate codex branch,
+preserving this PR branch and its records, rather than attributing the binary
+to this documentation-only handoff HEAD. Do not rebuild merely to stamp docs.
+An incomplete native handoff is not mission acceptance or owner art approval.
