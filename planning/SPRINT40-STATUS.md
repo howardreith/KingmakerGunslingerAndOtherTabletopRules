@@ -7,6 +7,52 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 ## Current continuation state
 
+- RECOVERY PENDING / APPROVAL BOUNDARY. HOWARD-LAPTOP, root
+  `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
+  `codex/expanded-summoning-sprint40-ice-devil`; product/package source and last
+  pushed `acaa508a51c4cd2a821f7066526c0e71c2bfdbee`. This records-only update is
+  the enclosing HEAD. Draft PR97. Sprint40 is not released; public route hidden.
+- No game or deployment transaction/lease active. Wrapper restored the exact KMG
+  tree SHA216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+  Independent check confirms all118 original saves including Working/baseline,
+  private references and native settings exact. Working/baseline never loaded/written.
+- One protected peer diagnostic remains different: `Mods/ZFavoredClass/loaded_blueprints.txt`.
+  Original135399 bytes/SHA590ca0e2f5400097d215aeb3764072e4f4da56058a5820588d510751d3a64123;
+  current134137/SHA92993ecfcf66b4e77f00035fbc505435dd85506760da4c9ecf7a9ba4d3fc8bcb.
+  Full Mods audit remains FAIL. No other file differs; never waive this hash.
+  Recovery receipt: `sprint40-intake-20261105T002300Z/registration-recovery-20261105T120416Z/recovery.json`.
+  Failed inventory and initialization log are preserved beside it. No verified
+  original inventory copy found in bounded assigned-lab backup/reference checks.
+- acaa presentation startup FAIL before scenario: `20261105T1156478669966Z-disposable-expanded-summoning-sprint32-native-review`.
+  Registration factory omitted support for newly appended BlueprintWeaponEnchantment;
+  native log reports Unsupported planned type and rolls3160 registrations back.
+  Favored Class subsequently reports missing dictionary keys and regenerates its
+  inventory incompletely. No Ice gameplay/presentation proof on acaa. No unchanged
+  relaunch. Error is an owned dependency-completeness miss, not an engine limitation.
+- Proposed narrow repair: add BlueprintWeaponEnchantment factory registration in
+  `ExpandedSummoningBlueprints.Register` beside the existing item/type cases,
+  production compile/affected checks/build; use existing guarded settings-observation
+  startup under original module configuration to regenerate the peer diagnostic;
+  require original intake hash and full restoration before continuing. Existing
+  `Invoke-TeleportationHardeningQualification.ps1` original-configuration restoration
+  startup documents natural regeneration as a sanctioned pattern. Current source/
+  artifact guard prevents launching a stale artifact; do not alter/evade it.
+- Owner exception requested asynchronously: permit that bounded source repair
+  before generated-inventory restoration, because mission otherwise requires exact
+  restoration before source work. No response yet. Product edits/native launches
+  paused; only independent safety restoration and this durable record performed.
+  Once authorized and restored, continue focused presentation/AI/Slow-TB proof,
+  persistence/publisher, final public candidate/fresh qualification/six-process
+  ON+OFF, exact release/public downloads/restoration/final-records merge. Goal active.
+- acaa dev ZIP `c739656a8b38b76f8974c0f1a245323089a87dbd8c1f2b870fa3959eeff45b57`,
+  DLL `964bb0fee783c75c217393a113df04857fc776b8ee46f83052b30188d389f66f`,
+  MVID `59350f76-9ca2-4229-a9a6-e307e0099a9e`; build31/31 tests, strict/reader PASS,
+  bootstrap FAIL as above. Logs `artifacts/s40-mechanics-build-acaa508a.log`,
+  `artifacts/s40-mechanics-native-presentation-acaa508a.log`,
+  `artifacts/s40-acaa-independent-restoration.log`. No final qualification/release.
+
+## Prior coherent frost/view repair state
+
 - HOWARD-LAPTOP, `C:/Dev/KingmakerGunslingerLab/wt/s40`, product branch
   `codex/expanded-summoning-sprint40-ice-devil`; last pushed `cd7ff165207f792c74e64e0a373496a79c29a8da`.
   Current repair is enclosing HEAD. Draft [product PR97](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/97).
