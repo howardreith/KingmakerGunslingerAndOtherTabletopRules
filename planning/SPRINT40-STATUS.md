@@ -129,6 +129,23 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   Sprint40 checks pass; product repair commit `93674ebb` is pushed. The exact
   product validator is repinned to that reviewed source. NEXT: commit/push the
   reporting pin, rebuild once, then rerun the early phase on the new exact candidate.
+- Replacement reporting head `045a13d473237382ece00646c6233a23f68f6628`
+  passed the complete 2,816/2,816 gate and strict packaging: ZIP SHA256
+  `0f37245cecdcc84ebe52b6f666f579e7f78cbd3494b930bf5a629dfcfeb87a5b`,
+  DLL SHA256 `3dbb1c44cd53536f692a57bb2cddf08e42b927f2d4839565f303f9b07b7f591f`,
+  MVID `98369002-d977-4309-a9fe-4a2713154ca0`. Repaired early phase PASS22/22 is
+  `20261105T2112115803910Z-disposable-expanded-summoning-sprint32-native-review`;
+  combat PASS is `20261105T2116439710230Z-disposable-expanded-summoning-sprint32-native-review`.
+  Effects then retained a FAIL at
+  `20261105T2120544677481Z-disposable-expanded-summoning-sprint32-native-review`:
+  all regeneration, energy and first native fear rows passed, including a real
+  failed DC22 save; that Frightened recipient moved while the second owner settled,
+  but the observer placed owner two at owner one's obsolete position and never
+  received its DC24 exposure. Restoration receipt
+  `expanded-summoning-restoration/20261105T2124139295063Z-disposable-expanded-summoning-sprint32-native-review.json`
+  verifies live hash, nine peer files and all 118 saves exact. The narrow fixture
+  repair follows the recipient's current position without removing fear or changing
+  gameplay. NEXT: focused compile/tests, review/commit/push, repin and rebuild.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 
