@@ -1,5 +1,107 @@
 # Summoned creature visual overhaul: active checkpoint
 
+## Current extension outcome: creature presentation observed; Wall acceptance open
+
+Owner explicitly raised this continuation's ceiling from 30 to **50 minutes**,
+retaining the 27.04 already spent. The extension did not reset that ledger.
+One new immutable candidate was built from reviewed clean source
+`55a6bd27dd40ca845d9cd7c6f35505f86a0bb947`:
+
+- ZIP `artifacts/development-candidates/summon-outsider-review-corrections/55a6bd27dd40/KingmakerGunslinger-0.0.177-development-summon-outsider-review-corrections-55a6bd27dd40.zip`.
+- ZIP SHA-256 `7f68ceef848c2d7bd914d80e8ec20102d93859e38fa66e729e1dc754a0582822`.
+- DLL SHA-256 `0e68897bea59b63b1561af37e6a73221f230f43eee29dab18909254c8de2f747`.
+- DLL MVID `f0bad522-552a-4a24-a45d-5dc3a2587e86`.
+- Source fingerprint `efe368b047609c9e071f24cfdd9edcde6a0dfaf98a13c7abc3ff2d1ec8444d11`.
+- Exact-reference build, strict package validation, 28 selected tests PASS.
+  All twenty model/albedo identities remain fixed. Scale logic is unchanged.
+
+### Actual new native results
+
+All directories below are under the assigned lab's runtime-evidence and use
+suffix `-disposable-expanded-summoning-sprint32-native-review`.
+
+| Exact phase / timestamp | Result | Meaning |
+| --- | --- | --- |
+| `summon-overhaul-motion` / `20261105T1343436863672Z` | FAIL / 18 assertions total | Glabrezu/Vrock/Babau moved. Hezrou body finite and selection surfaces enabled; soft ray hit, single core-centre ray missed. The generic prerequisite stopped before later creatures. No player selection defect established by this single diagnostic. |
+| `summon-overhaul-wall` / `20261105T1347234912998Z` | FAIL / 20 assertions total | Visible original wall and actual baseline/live detour again observed. Physical witness settled 17.92196 m from the section rather than its intended point; native reach guard refused the attack. Cleanup/expiry/tail not reached. |
+| Existing `sprint34-infernal-bodies` / `20261105T1355593745906Z` | PASS / 33 | Independently selected after generic probe failure. Native Bearded Devil movement/glaive/claw contacts, Kyton movement/contacts/rendered follow-through, two simultaneous Kytons' independent contacts/control, private-resource cleanup. |
+| Existing `technical-presentation` / `20261105T1400235807046Z` | PASS / 53 | Independently selected for Lillend with unchanged Satyr control. Exact-command positive-velocity locomotion, healing cast and actual slot debit, finite casting/performance poses, contacts and lifecycle. |
+
+Result SHA-256 in row order:
+`9420e887e18543d1af0c0b0f6b93c2aab04a382e548433769ca5131426287e39`,
+`294051eaf92b78b4b74021cf8edc8fc109a19a48307303c3177e020b0ba9ced9`,
+`c4089f8f4dc31af552e73a0f7d2aeca52dd89b2c81e46d06069d22f06945defa`,
+`305a8a982dd6d28630031d0d4ea401bc1310ea37a18f7f20c8b6b64fb10cabd7`.
+
+Lillend's exact active move samples cover 7.907/7.871 m at peak 3.048 m/s,
+131/111 active frames; terminal results both Success, with the established
+observer deliberately making no precise-arrival claim. Native self-cure
+reduced fixture damage 5 to 0 and spontaneous L1 slots 5 to 4. Its cast and
+performance images were inspected sharp. Kyton sibling contacts remained
+0 to 0, resting true, control false to false while the first owner moved and
+attacked. The contact frames and paired bodies were visually inspected.
+
+All ten revised creatures now have scoped native locomotion evidence across
+the credited candidates. Earlier indoor/daylight/ON evidence stays bound to
+162d089e; OFF stays bound to 1dda3428 and was not repeated. Neither failed
+generic phase is relabeled PASS. Crowded selection, confined-space usability
+and aesthetic approval remain the owner's manual playtest judgments.
+
+All four new transactions restored installed v0.0.140, original live-tree
+fingerprint `23d713cd130b43a1fbbd970006d2eda73083a6fa3a9867a14e0b78cb846b6b59`,
+native settings and protected save bytes/length/mtime exactly. No save load or
+mutation occurred. Both additional subphases were existing closed selectors,
+narrowed after specific failures, not new selection infrastructure or a full
+compatibility campaign. They reused the same candidate.
+
+### Further corrections: compiled, not native-qualified
+
+`1994b436af4c5e0234beaddde8f4942001875801` includes
+`09752d6ba3f9e39861e1133c53e77ed649a8b115`. The optional core-centre ray stays
+recorded but no longer gates unrelated locomotion; finite body and real
+selection-surface admission remain. The generic mover now reuses the qualified
+presentation contract: exact active command, positive native velocity, at least
+three active samples and over four metres travel; terminal results are retained
+and precise arrival is not claimed. This does not make mere displacement PASS.
+
+The Wall fixture now fully quiets only disposable actors, stops pending native
+movement, places the physical witness after combat preparation, and checks it
+remains within 5 cm horizontally of the intended point as well as on native
+floor. The same exact-position admission protects the initial path witness.
+Strict physical halving, fire, grid restoration and expiry checks remain.
+These observer corrections compile and focused checks pass, but are **absent
+from the tested ZIP and native NOT RUN**. No gameplay Wall repair is claimed.
+
+### Retained budget and pending next selection
+
+Extension seconds: candidate build 465.76; generic motion 159.73; Wall 139.67;
+infernal subphase 204.43; presentation subphase 232.25; correction gates
+18.06 / 16.25 / 15.98 (18 / 18 / 10 selected tests respectively). New illustrated
+review QA and final text checks conservatively reserve 51 seconds.
+**27.04 retained + 21.72 extension accounting = 48.76/50 minutes.**
+The earlier separate 26.80 and 28.10 ledgers remain preserved.
+
+A further **20-minute extension, ceiling 50 to 70, is requested and pending**
+for one corrected candidate and affected motion/Wall checks. The 1.24-minute
+balance cannot fit that build/sequence. Elapsed time is not approval. Retain
+the current results if the owner chooses to hand off the remaining Wall work.
+No release or merge is selected; PR #96 stays draft.
+
+Commands, exact timers and `validation-ledger.json` are in
+`artifacts/summon-overhaul-extension`. The build used the same named 28-test
+filter/reference bundle as the prior continuation, one invocation. The prepared
+`run-native.ps1` used the exact ZIP/version/purpose and fresh processes for each
+listed phase, with strict package validation, runtime lease and protected
+installation/settings/save restoration. No unchanged failed phase was repeated.
+
+Updated illustrated review contains 39 actual native frames plus model and
+owner-reference comparisons:
+`artifacts/summon-overhaul-extension/illustrated-review/Summoned-Creature-Acceptance-Review.html`.
+SHA-256 `d24410fe17b05c41ce3a7a1dca66b99cad5f047ea90eff9318d915eca2a207c6`.
+Browser layout checked. Raw evidence/packages remain uncommitted. Wall physical
+breach, exact cleanup, controlled original-deadline expiry/post-removal movement,
+and the later Bone Devil tail check still prevent full mission acceptance.
+
 ## Current handoff: code corrections compiled; extra native allowance pending
 
 The second-review camera defect is fixed. Appearance collection is metadata

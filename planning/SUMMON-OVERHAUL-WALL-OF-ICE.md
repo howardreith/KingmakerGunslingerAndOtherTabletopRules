@@ -1,5 +1,35 @@
 # Summon visual overhaul: Wall of Ice investigation
 
+## Current 50-minute continuation: formed wall observed; witness drift blocks remainder
+
+One candidate `55a6bd27dd40`, ZIP SHA-256
+`7f68ceef848c2d7bd914d80e8ec20102d93859e38fa66e729e1dc754a0582822`,
+ran corrected phase `summon-overhaul-wall` at
+`20261105T1347234912998Z-disposable-expanded-summoning-sprint32-native-review`.
+Result FAIL (20 assertions total), SHA-256
+`294051eaf92b78b4b74021cf8edc8fc109a19a48307303c3177e020b0ba9ced9`.
+
+The ordinary-camera formed-wall image was inspected: one visible plane.
+Baseline/live native movers and actual detour passed again. The physical
+witness was then observed at its old/other position, 17.92196m from the section,
+despite idle/support predicates; native reach admission correctly refused an
+attack. This run does not prove physical breach, exact cleanup, expiry or tail.
+Original 36 HP/720-second creation and earlier controlled fire destruction /
+return of Recast route remain credited to their original receipts.
+
+The new compiled observer correction (included in 1994b436af / 09752d6ba3)
+fully quiets disposable witnesses, stops pending native movement, places the
+attacker after combat preparation and requires expected horizontal position
+within 5cm as well as support. This is fixture preparation, not a mechanical
+Wall repair or a new PASS. It requires a new candidate/native run. Strict
+damage, grid and original-deadline controlled-expiry assertions are retained.
+
+All protected installation/settings/saves were restored exactly. The approved
+continuation used 48.76/50 minutes including conservative report QA. A further
+20-minute allocation (50 to 70) is requested and pending. See active overhaul
+state for exact commands, candidate identities, all four native results and
+the 39-frame illustrated review. PR remains draft; full Wall acceptance open.
+
 ## Current second-review result: actual formation/obstruction, incomplete cleanup acceptance
 
 Candidate `162d089e2636`, ZIP SHA-256
