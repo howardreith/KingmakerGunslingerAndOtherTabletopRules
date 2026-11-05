@@ -344,6 +344,15 @@ namespace KingmakerGunslinger.DomainTests
                 InfernalRules35.WallNodeIntersects(0, 0, float.NaN, .5f,
                     .5f),
                 "A non-finite wall footprint is rejected.");
+            Assertions.True(InfernalRules35
+                    .WallNodeWalkableAfterOwnerRelease(true, false),
+                "The final wall owner restores an originally walkable node.");
+            Assertions.False(InfernalRules35
+                    .WallNodeWalkableAfterOwnerRelease(false, false),
+                "The final wall owner preserves an originally blocked node.");
+            Assertions.False(InfernalRules35
+                    .WallNodeWalkableAfterOwnerRelease(true, true),
+                "An overlapping remaining wall owner keeps the node blocked.");
         }
 
         internal static void OwnedBodiesDecodeAndTailIsIsolated()
