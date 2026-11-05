@@ -332,12 +332,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         })) yield return frame;
                         var rows = trace.Rows.Skip(start).Where(row => (string)row["event"] == "attack" && (string)row["owner"] == owner.UniqueId).ToArray();
                         var observed = contacts.Skip(contactStart).ToArray();
-                        int expected = iceDevil ? 5 : key == InfernalVisualPolicy34.Kyton ? 4 : 2;
+                        int expectedAttacks = iceDevil ? 5 : key == InfernalVisualPolicy34.Kyton ? 4 : 2;
                         var ends = trace.Rows.Skip(start).Where(x => (string)x["event"] == "command-end" &&
                             (int?)x["commandReference"] == System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(attack)).ToArray();
-                        bool nativeExhausted = iceDevil && Sprint40NativeExhaustedAttack(attack, ends, expected);
-                        bool correct = attack.IsFinished && (attack.Result == UnitCommand.ResultType.Success || nativeExhausted) && rows.Length == expected &&
-                            observed.Length == expected && errors.Count == 0 && observed.All(row => (bool)row["animationStarted"] && !string.IsNullOrEmpty((string)row["nativeClip"])) &&
+                        bool nativeExhausted = iceDevil && Sprint40NativeExhaustedAttack(attack, ends, expectedAttacks);
+                        bool correct = attack.IsFinished && (attack.Result == UnitCommand.ResultType.Success || nativeExhausted) && rows.Length == expectedAttacks &&
+                            observed.Length == expectedAttacks && errors.Count == 0 && observed.All(row => (bool)row["animationStarted"] && !string.IsNullOrEmpty((string)row["nativeClip"])) &&
                             (key != InfernalVisualPolicy34.Kyton || observed.All(row => (float)row["chainContactGap"] < .15f)) &&
                             (key != InfernalVisualPolicy34.Barbazu && !iceDevil || observed.All(row => (bool)row["glaiveVisible"] == !alternate));
                         var cell = new JObject { ["owner"] = owner.UniqueId, ["alternate"] = alternate, ["command"] = Sprint27AiCommand(attack),

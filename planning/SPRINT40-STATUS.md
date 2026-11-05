@@ -76,11 +76,21 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   literal version 0.0.177 to the current-version guard; its positive request now
   derives the active Info version while historical negative cases remain pinned.
   No game, deployment or save was touched. No material gameplay decision remains.
-  Sprint40 remains unreleased. NEXT: run the affected startup fixture, commit its
-  repair, then rerun the complete clean source/build/package gate,
-  then execute fresh mechanics,
+  Sprint40 remains unreleased. The startup-fixture repair is committed as
+  `48014aa4`; NEXT: commit the complete-suite repair, repin the exact-product
+  validator to it, and rerun the complete clean source/build/package gate, then
+  execute fresh mechanics,
   route/integration and six-process ON/OFF persistence campaign before exact-byte
   publication, public-download verification, closing restoration and final records.
+- The first complete-suite pass on `48014aa4` reached all 2,816 tests and found
+  six finite candidate-contract failures: two new unit/route census increments,
+  the extracted enchantment-shell source boundary, the guarded 13/14-parameter
+  diagnostic-recovery distinction in two older source-contract tests, and three
+  missing Ice Devil weapon-visual audit rows. It also exposed one C# 7.3 local-name
+  shadow at the merged PR96/Sprint40 presentation seam before a later focused
+  compile. The one-name source repair plus the six directly affected tests now
+  PASS together (6/6) after real production compilation. No package, deployment,
+  game or save mutation occurred in the failed gate.
 - Native Goal tool still reports the superseded recovery boundary as BLOCKED and
   exposes no resume mutation in this session; explicit owner continuation authority
   controls and work continues without another permission request.
