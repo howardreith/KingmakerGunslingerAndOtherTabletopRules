@@ -9,7 +9,7 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 - HOWARD-LAPTOP, root `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
   `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Current product
-  source `553b598ebda71bf2cf04d56cd0f79f53e8dc744c`; its reporting pin is the
+  source `6ba93e83077a91da3dd9fce12727b6c644bb1b19`; its reporting pin is the
   pending enclosing commit. No game,
   deployment, staging or lease is active; the live KMG tree is restored to
   SHA256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
