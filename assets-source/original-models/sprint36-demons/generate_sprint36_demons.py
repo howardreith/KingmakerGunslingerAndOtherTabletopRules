@@ -3,6 +3,9 @@
 Only measured bone names and project-authored geometry are exported. Native
 meshes, materials, textures, and animation clips remain runtime dependencies.
 """
+# Owner visual overhaul: continuous organic skin, revised anatomy and albedo.
+# Rig/wing articulation limits above remain; native aesthetic review is separate.
+
 import argparse
 import json
 import math
@@ -29,6 +32,9 @@ import generate_snakes as common
 import generate_theropods as donor
 import paint_snake_albedo as paint
 
+sys.path.insert(0, str(args.pipeline_root / 'continuous-bodies'))
+from outsider_surface import consolidate_skin
+
 SIDE, UP, FRONT = Vector((1, 0, 0)), Vector((0, 0, 1)), Vector((0, 1, 0))
 TORSO = ('Torso_Lower', 'Torso_Upper', 'neck', 'neck1', 'Head')
 ARMS = ('Arm_Upper', 'Arm_Lower', 'Palm', 'finger1', 'finger2',
@@ -37,7 +43,7 @@ LEGS = ('Leg0_Upper', 'Leg0_Lower', 'Foot0', 'toe')
 BONES = TORSO + tuple(side + '_' + part for side in ('L', 'R')
                       for part in ARMS + LEGS)
 ATLAS_REGION = {
-    'hide': 'body', 'slime': 'membrane', 'belly': 'body', 'wart': 'crest',
+    'hide': 'body', 'slime': 'membrane', 'belly': 'body', 'wart': 'body',
     'claw': 'beak', 'horn': 'crest', 'mouth': 'beak', 'eye': 'limbs'
 }
 DETAIL_COUNTS = {}
@@ -67,11 +73,14 @@ def build_body(bm, weights, uvs, rig, kind):
                      [.115, .145, .078, .060], [.085, .105, .060, .050],
                      list(TORSO[:-1]), up=FRONT, forward=UP)
         mass(pelvis - UP * .045, (.13, .10, .105), 'Torso_Lower')
+        mass(upper + UP*.240 + FRONT*.005, (.155,.180,.115), 'Torso_Upper')
         head = head_bone + FRONT * .070 + UP * .025
         mass(head, (.105, .145, .095), 'Head')
-        mass(head + FRONT * .125 - UP * .025, (.072, .092, .052),
+        mass(head + FRONT * .103 - UP * .060, (.060, .035, .034),
              'Head', 'mouth')
         for sign in (-1, 1):
+            mass(head + SIDE*sign*.067 + FRONT*.080 + UP*.040, (.012,.009,.009), 'Head', 'eye', 6, 10)
+            mass(head + SIDE*sign*.060 + FRONT*.055 - UP*.014, (.033,.040,.040), 'Head')
             tube([head + SIDE * sign * .055 + UP * .060,
                   head + SIDE * sign * .115 - FRONT * .035 + UP * .165,
                   head + SIDE * sign * .145 - FRONT * .105 + UP * .205],
@@ -82,7 +91,7 @@ def build_body(bm, weights, uvs, rig, kind):
             shoulder, elbow, palm = [at(name) for name in arm]
             tube([upper, shoulder, elbow, palm], [.070, .067, .042, .026],
                  ['Torso_Upper', *arm], 'hide', 10)
-            mass(shoulder, (.076, .070, .075), arm[0])
+            mass(shoulder, (.067, .087, .054), arm[0])
             mass(palm, (.038, .058, .026), arm[2])
             for digit in ('finger', 'Bfinger'):
                 first, second = side + '_' + digit + '1', side + '_' + digit + '2'
@@ -100,6 +109,15 @@ def build_body(bm, weights, uvs, rig, kind):
                  ['Torso_Lower', *leg], 'hide', 10)
             mass(points[-1] + FRONT * .045, (.055, .035, .125),
                  leg[-1], 'claw')
+
+        for sign in (-1, 1):
+            for index in range(4):
+                z = .025 + index*.040
+                tube([upper + UP*.260 + SIDE*sign*.025 + FRONT*.095 - UP*z,
+                      upper + UP*.260 + SIDE*sign*.105 + FRONT*.105 - UP*(z+.025),
+                      upper + UP*.260 + SIDE*sign*.135 + FRONT*.045 - UP*(z+.045)],
+                     [.014,.016,.009], ['Torso_Upper']*3, 'hide', 8)
+            mass(pelvis+SIDE*sign*.095+FRONT*.055, (.065,.070,.045), 'Torso_Lower')
 
         slime_anchors = [
             (upper + SIDE * -.105 + FRONT * .070, 'Torso_Upper', .085),
@@ -122,13 +140,15 @@ def build_body(bm, weights, uvs, rig, kind):
              'Torso_Lower', 'belly', 12, 20)
         mass(upper + FRONT * .025, (.310, .235, .245),
              'Torso_Upper', 'hide', 12, 20)
-        head = head_bone + FRONT * .095 - UP * .015
-        mass(head, (.245, .205, .175), 'Head', 'hide', 12, 20)
-        mass(head + FRONT * .175 - UP * .055, (.220, .125, .090),
+        mass(upper + UP*.250 - FRONT*.025, (.335,.265,.255), 'Torso_Upper')
+        head = head_bone + FRONT * .115 - UP * .105
+        mass(head, (.265, .190, .200), 'Head', 'hide', 12, 20)
+        mass(head-UP*.095+FRONT*.070, (.255,.095,.185), 'Head', 'hide', 12, 20)
+        mass(head + FRONT * .175 - UP * .055, (.180, .025, .030),
              'Head', 'mouth', 10, 18)
         for sign in (-1, 1):
-            mass(head + SIDE * sign * .145 + FRONT * .055 + UP * .125,
-                 (.070, .065, .070), 'Head', 'eye', 9, 14)
+            mass(head + SIDE * sign * .184 + FRONT * .127 + UP * .080,
+                 (.038, .029, .031), 'Head', 'eye', 9, 14)
             mass(head + SIDE * sign * .155 + FRONT * .105 - UP * .070,
                  (.095, .080, .075), 'Head', 'belly', 8, 14)
 
@@ -159,6 +179,14 @@ def build_body(bm, weights, uvs, rig, kind):
             mass(points[-1] + FRONT * .035, (.115, .085, .145),
                  leg[-1], 'claw', 9, 16)
 
+        for index in range(9):
+            x=(index-4)*.039
+            tube([head + SIDE*x + FRONT*.199 - UP*.065,
+                  head + SIDE*x + FRONT*.213 - UP*(.030 if index%2 else .035)],
+                 [.010,.001], ['Head']*2, 'horn', 6)
+        # Broad, shallow dorsal glands and lateral jaw creases.
+        for sign in (-1,1):
+            mass(upper + SIDE*sign*.15 - FRONT*.17 + UP*.08, (.11,.14,.08), 'Torso_Upper')
         wart_anchors = [
             (upper + SIDE * -.20 + FRONT * .12 + UP * .11, 'Torso_Upper'),
             (upper + SIDE * .16 - FRONT * .15 + UP * .06, 'Torso_Upper'),
@@ -172,18 +200,21 @@ def build_body(bm, weights, uvs, rig, kind):
             mass(origin, (.030, .026, .025), bone, 'wart', 6, 10)
         DETAIL_COUNTS.update(horns=0, slimeLobes=0, warts=len(wart_anchors))
 
+    consolidate_skin(bm, weights, uvs, common.shared.ATLAS,
+                     regions=('body',), voxel=.007, triangles=8000)
+
 
 def write_albedo(path):
     size = 512
     image = np.zeros((size, size, 3), dtype=np.float64)
     palette = {
         'babau': {
-            'body': (.085, .12, .115), 'crest': (.055, .045, .035),
-            'beak': (.025, .030, .028), 'limbs': (.22, .25, .17),
-            'membrane': (.19, .32, .24)},
+            'body': (.255, .17, .16), 'crest': (.38, .295, .225),
+            'beak': (.13, .095, .085), 'limbs': (.42, .29, .18),
+            'membrane': (.24, .28, .22)},
         'hezrou': {
-            'body': (.19, .245, .11), 'crest': (.34, .29, .095),
-            'limbs': (.47, .42, .15), 'beak': (.075, .055, .025),
+            'body': (.36, .405, .235), 'crest': (.45, .38, .19),
+            'limbs': (.63, .50, .25), 'beak': (.155, .105, .060),
             'membrane': (.14, .17, .07)}}[args.kind]
     for region in sorted(paint.shared.ATLAS):
         (y0, y1, x0, x1), u, v = paint.shared.region_canvas(size, region)

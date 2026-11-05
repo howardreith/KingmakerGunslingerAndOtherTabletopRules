@@ -1,3 +1,18 @@
+## Current owner visual-overhaul revision
+
+The November 2026 owner mission brings the previously deferred cosmetic work into scope. The current exports use opt-in `continuous-bodies/outsider_surface.py` to unite organic skin and blend the existing two-influence weights. Individual teeth, horns, feather vanes and membranes retain intentional ownership. The original rig articulation limits remain. No mechanical profile, attack, route, GUID, icon or save identity changed.
+
+Raw geometry-free input capture SHA-256 is `6443b580c8019d2a32de616ef610df3c2aa851c7c998044b56e0c29b4494e65d`. Before revision, this locally retained capture regenerated the released Nalfeshnee geometry blob and albedo manifest byte-for-byte. New exports truthfully name this capture; the historical `727645...ad7a4` authority is retained separately. Both are an explicit closed loader allowlist.
+
+Normal regeneration uses the existing generator/arguments below. Blender 4.5.10 and the existing pipeline are retained; private captures, blends, reports and previews stay out of Git/packages. Exact exported front, side and party-angle previews have been inspected offline. Native lighting, motion, measured world-space scale and owner aesthetic approval remain separate and unverified until the [active checkpoint](../../../planning/SUMMON-OUTSIDER-VISUAL-OVERHAUL-STATE.md) records actual observations.
+
+| Current export | Vertices / triangles | SHA-256 |
+| --- | --- | --- |
+| `vrock-mesh.json` | 7638 / 15068 | `7fb5c8d54f7bda5f25986f92719a0c1b34098137d59988cce5276c1774c4687e` |
+| `vrock-albedo.png` | - | `fa38da0fe883df8fac27d52c74cc0bca56e0e738054b6ee7b7cfa34ec922f4ff` |
+
+## Earlier authoring record
+
 # Sprint 37 original Vrock body
 
 The Vrock uses distinct original procedural geometry and an original albedo
@@ -11,7 +26,7 @@ donor and the rendered mesh are three different things and are recorded
 separately here:
 
 - animation carrier: native donor `a8cbd4cdb0feaf64eab1452257c3c971`, prefab
-  `d6db6ba3b2c459a48ba0730beef0bac8` — the same measured free-hands rig the
+  `d6db6ba3b2c459a48ba0730beef0bac8` â€” the same measured free-hands rig the
   released Sprint 34, 35 and 36 outsiders ride;
 - rendered mesh: this project's own geometry, below;
 - mechanics: the Sprint 37 builder, which shares nothing with the rig.

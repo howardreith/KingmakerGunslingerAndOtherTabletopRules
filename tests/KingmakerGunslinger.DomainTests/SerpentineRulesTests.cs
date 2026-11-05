@@ -728,7 +728,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(.2f, SerpentineVisualPolicy.SnakeViewMultiplier,
                 "Same view-only scale as the measured native snake bite research, pending production proof.");
             Assertions.Equal(17, SummonViewScaleCatalog.All.Count(value =>
-                    value.CreatureKey != TheropodRulesPolicy.TyrannosaurusKey),
+                    value.CreatureKey != TheropodRulesPolicy.TyrannosaurusKey &&
+                    !SummonViewScaleCatalog.IsRevisedOutsider(value.CreatureKey)),
                 "All prior production view steps remain unchanged.");
         }
 

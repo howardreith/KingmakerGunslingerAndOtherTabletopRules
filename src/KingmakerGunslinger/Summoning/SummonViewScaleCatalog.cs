@@ -6,10 +6,13 @@ namespace KingmakerGunslinger.Summoning
 {
     internal sealed class SummonViewScaleSpec
     {
-        internal SummonViewScaleSpec(string creatureKey, float multiplier)
-        { CreatureKey = creatureKey; Multiplier = multiplier; }
+        internal SummonViewScaleSpec(string creatureKey, float multiplier,
+            bool retainNativeScale = false)
+        { CreatureKey = creatureKey; Multiplier = multiplier;
+            RetainNativeScale = retainNativeScale; }
         internal string CreatureKey { get; private set; }
         internal float Multiplier { get; private set; }
+        internal bool RetainNativeScale { get; private set; }
         internal string BlueprintName { get { return
             "KMG_Summoning_Unit_" + Token(CreatureKey); } }
 
@@ -76,7 +79,19 @@ namespace KingmakerGunslinger.Summoning
             // view-only step gives the large skull/countertail a distinct
             // party-camera footprint without touching reach, collision or
             // locomotion cadence. Native footprint review remains mandatory.
-            S("tyrannosaurus", 2.0f)
+            S("tyrannosaurus", 2.0f),
+            // Owner-requested outsider revision. The measured free-hands
+            // meshes are roughly humanoid-height (1.9-2.0 local units).
+            // Native GetSizeScale compares current size to ORIGINAL unit
+            // size, not to the animation donor, so original Huge/Large does
+            // not enlarge these authored bodies. Approximate resulting body
+            // heights are 4.1/4.3 and 2.7-2.9 units. Native matched reference,
+            // contact/navigation and aesthetic acceptance remain separate.
+            S("nalfeshnee", 2.10f, true),
+            S("glabrezu", 2.20f, true),
+            S("vrock", 1.45f, true),
+            S("hezrou", 1.45f, true),
+            S("bone-devil", 1.45f, true)
         };
 
         internal static IReadOnlyList<SummonViewScaleSpec> All
@@ -94,10 +109,9 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 18 || Values.Any(value => value.Multiplier <
-                    0.20f || value.Multiplier >
-                    (value.CreatureKey == "dire-crocodile" ||
-                     value.CreatureKey == "tyrannosaurus" ? 2.0f : 1.25f)) ||
+            if (Values.Length != 23 || Values.Any(value => value.Multiplier <
+                    0.20f || value.Multiplier > Maximum(value.CreatureKey) ||
+                    value.RetainNativeScale != IsRevisedOutsider(value.CreatureKey)) ||
                 Values.Select(value => value.CreatureKey).Distinct(
                     StringComparer.Ordinal).Count() != Values.Length ||
                 Values.Any(value => !ExpandedSummoningCatalog.All.Any(
@@ -106,7 +120,19 @@ namespace KingmakerGunslinger.Summoning
                     "Summon view-scale catalog is malformed.");
         }
 
-        private static SummonViewScaleSpec S(string key, float multiplier)
-        { return new SummonViewScaleSpec(key, multiplier); }
+        internal static bool IsRevisedOutsider(string key)
+        { return key == "nalfeshnee" || key == "glabrezu" || key == "vrock" ||
+            key == "hezrou" || key == "bone-devil"; }
+
+        private static float Maximum(string key)
+        {
+            if (key == "nalfeshnee" || key == "glabrezu") return 2.5f;
+            if (IsRevisedOutsider(key)) return 1.5f;
+            return key == "dire-crocodile" || key == "tyrannosaurus" ? 2f : 1.25f;
+        }
+
+        private static SummonViewScaleSpec S(string key, float multiplier,
+            bool retainNativeScale = false)
+        { return new SummonViewScaleSpec(key, multiplier, retainNativeScale); }
     }
 }

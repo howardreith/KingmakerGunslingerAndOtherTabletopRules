@@ -26,6 +26,8 @@ for name in ('sprint17-serpents', 'sprint24-theropods'):
 import generate_snakes as common
 import generate_theropods as donor
 import paint_snake_albedo as paint
+sys.path.insert(0, str(args.pipeline_root / 'continuous-bodies'))
+from outsider_surface import consolidate_skin
 
 SIDE, UP, FRONT = Vector((1, 0, 0)), Vector((0, 0, 1)), Vector((0, 1, 0))
 TORSO = ('Torso_Lower', 'Torso_Upper', 'neck', 'neck1', 'Head')
@@ -43,20 +45,35 @@ def body(bm, weights, uvs, rig, kind):
     def tube(points, radii, names, region='body', sides=12):
         common.tube(bm, weights, uvs, points, radii, names, region, sides)
     torso = [at(n) for n in TORSO[:-1]]
-    common.sweep(bm, weights, uvs, torso, [.17, .25 if barbazu else .205, .09, .075],
-                 [.12, .15, .08, .065], list(TORSO[:-1]), up=FRONT, forward=UP)
+    common.sweep(bm, weights, uvs, torso, [.17, .205, .13, .075],
+                 [.135, .145, .10, .065], list(TORSO[:-1]), up=FRONT, forward=UP)
     pelvis = at('Torso_Lower')
-    mass(pelvis - UP * .06, (.19, .16, .13), 'Torso_Lower', 'beak')
+    upper = at('Torso_Upper')
+    # Connected weight-bearing hips, obliques and pectoral planes; the
+    # neck/limbs are fused below before armour, beard or chains are added.
+    mass(pelvis + UP*.055, (.19, .16, .13), 'Torso_Lower')
+    for sign in (-1, 1):
+        mass(upper + SIDE*sign*.10 + FRONT*.035 + UP*.20,
+             (.145, .145, .12), 'Torso_Upper')
+        mass(pelvis + SIDE*sign*.09 + UP*.19,
+             (.105,.165,.10),'Torso_Lower')
+    mass(pelvis + UP*.17 + FRONT*.018, (.155,.17,.125), 'Torso_Lower')
     head = at('Head') + UP * .05 + FRONT * .025
-    mass(head, (.11, .15, .105), 'Head')
-    mass(head + FRONT * .095 - UP * .005, (.025, .05, .04), 'Head')
-    mass(head + FRONT * .075 - UP * .09, (.075, .043, .062), 'Head')
+    tube([at('neck1'),head-UP*.065],[.074,.070],['neck1','Head'],'body',12)
+    mass(head, (.105, .143, .092), 'Head')
+    mass(head + FRONT * .080 - UP * .005, (.027, .055, .039), 'Head')
+    mass(head + FRONT * .050 - UP * .075, (.083, .056, .065), 'Head')
+    for sign in (-1,1):
+        mass(head + SIDE*sign*.057 + FRONT*.063 + UP*.04,
+             (.063,.025,.046),'Head')
+        mass(head + SIDE*sign*.066 + FRONT*.055 - UP*.030,
+             (.041,.042,.045),'Head')
     for side, sign in (('L', 1), ('R', -1)):
         upper, lower, palm = [side + '_' + name for name in ARMS[:3]]
         shoulder = at(upper)
-        mass(shoulder, (.10, .12, .105), upper)
-        tube([at('Torso_Upper'), shoulder, at(lower), at(palm)],
-             [.10, .09, .06, .042], ['Torso_Upper', upper, lower, palm])
+        mass(shoulder, (.108, .108, .101), upper)
+        tube([at('Torso_Upper')+UP*.20, shoulder, at(lower), at(palm)],
+             [.125, .102, .067, .045], ['Torso_Upper', upper, lower, palm])
         mass(at(palm), (.05, .07, .045), palm)
         for digit in ('finger', 'Bfinger'):
             first, second = side + '_' + digit + '1', side + '_' + digit + '2'
@@ -68,11 +85,11 @@ def body(bm, weights, uvs, rig, kind):
                      [.016, .017, .012, .003], [palm, first, second, second],
                      'body' if not barbazu else 'limbs', 8)
         leg = [side + '_' + name for name in LEGS]
-        tube([pelvis, *(at(n) for n in leg)], [.13, .12, .09, .055, .035],
+        tube([pelvis, *(at(n) for n in leg)], [.15, .135, .087, .059, .044],
              ['Torso_Lower', *leg])
-        mass(at(leg[-1]) + FRONT * .045, (.075, .043, .13), leg[-1], 'body')
+        mass(at(leg[-1]) + FRONT * .045, (.069, .042, .12), leg[-1], 'body')
         mass(head + SIDE * sign * .046 + FRONT * .103 + UP * .035,
-             (.025, .009, .012), 'Head', 'crest')
+             (.019, .008, .009), 'Head', 'crest')
         # Pointed ears and unmistakable broad beard belong only to Barbazu.
         if barbazu:
             tube([head + SIDE*sign*.09, head + SIDE*sign*.20 + UP*.09],
@@ -81,38 +98,66 @@ def body(bm, weights, uvs, rig, kind):
                   head + SIDE*sign*.13 + UP*.22 - FRONT*.03,
                   head + SIDE*sign*.10 + UP*.31 + FRONT*.04],
                  [.045, .027, .002], ['Head']*3, 'limbs', 12)
+    consolidate_skin(bm, weights, uvs, common.shared.ATLAS, regions=('body',), voxel=.009,
+                     triangles=6500)
+    # Fitted, ragged infernal leather across the hip and clavicles breaks
+    # the featureless mannequin without obscuring the readable anatomy.
+    mass(pelvis - UP*.07 + FRONT*.015, (.18,.15,.125), 'Torso_Lower', 'beak')
+    for sign in (-1,1):
+        tube([pelvis + SIDE*sign*.15 + FRONT*.04,
+              pelvis + SIDE*sign*.13 + FRONT*.06 - UP*.27,
+              pelvis + SIDE*sign*.06 + FRONT*.05 - UP*.34],
+             [.07,.065,.003], ['Torso_Lower']*3,'beak',8)
     if barbazu:
-        for strand in range(11):
-            x = (strand - 5) * .017
-            origin = head + SIDE*x + FRONT*.10 - UP*.085
-            bend = (strand % 3 - 1)*.025
+        # Beard grows through the jawline, not from floating root beads.
+        # Several tapered curved locks leave the mouth and native glaive clear.
+        for strand in range(9):
+            x = (strand - 4) * .017
+            origin = head + SIDE*x + FRONT*.097 - UP*.07
+            bend = (strand % 3 - 1)*.018
             tube([origin, origin + SIDE*bend + FRONT*.06 - UP*.16,
-                  origin - SIDE*bend + FRONT*.08 - UP*(.37 + .025*(5-abs(strand-5)))],
-                 [.026, .024, .003], ['Head']*3, 'membrane', 10)
+                  origin - SIDE*bend + FRONT*.07 - UP*(.27 + .025*(4-abs(strand-4)))],
+                 [.025, .020, .002], ['Head']*3, 'membrane', 10)
     else:
         def link(center, axis_a, axis_b, bone, radius=.009):
             points = [center + axis_a * (.045*math.cos(i*math.tau/12)) +
                       axis_b * (.027*math.sin(i*math.tau/12)) for i in range(13)]
             tube(points, [radius]*13, [bone]*13, 'limbs', 6)
-        # Iron loops wrap the torso and cross the shoulders. They follow the
-        # same measured skin weights as the body; no rope solver is involved.
-        for height, bone in ((.0,'Torso_Lower'),(.25,'Torso_Upper'),(.45,'Torso_Upper')):
-            for i in range(18):
-                t = i*math.tau/18
-                center = pelvis + UP*height + SIDE*(.22*math.cos(t)) + FRONT*(.165*math.sin(t))
+        # Fitted chains follow the actual chest and hip sections. Their root
+        # manacles enclose each palm: previous branches began .12 m clear of
+        # the hand and visually floated even in the unposed shipped mesh.
+        for height, width, depth, bone in ((-.015,.18,.155,'Torso_Lower'),
+                (.21,.215,.17,'Torso_Upper'),(.50,.25,.195,'Torso_Upper')):
+            for i in range(22):
+                t = i*math.tau/22
+                center = pelvis + UP*height + SIDE*(width*math.cos(t)) + FRONT*(depth*math.sin(t))
                 tangent = -SIDE*math.sin(t) + FRONT*math.cos(t)
                 link(center, tangent, UP if i%2 else SIDE*math.cos(t)+FRONT*math.sin(t), bone)
+        for sign in (-1,1):
+            start=at('Torso_Upper')+SIDE*sign*.20+UP*.30+FRONT*.14
+            end=pelvis-SIDE*sign*.13-UP*.015+FRONT*.16
+            axis=(end-start).normalized()
+            for i in range(15):
+                t=i/14
+                center=start.lerp(end,t)+FRONT*(.025*math.sin(t*math.pi))
+                link(center,axis,SIDE if i%2 else FRONT,
+                     'Torso_Upper' if t<.55 else 'Torso_Lower')
         for side, sign in (('L',1),('R',-1)):
             palm = side+'_Palm'
+            for i in range(8):
+                t = i*math.tau/8
+                center = at(palm) + SIDE*(.052*math.cos(t)) + FRONT*(.047*math.sin(t))
+                link(center, -SIDE*math.sin(t)+FRONT*math.cos(t), UP, palm,.011)
             for branch in (-1,1):
                 points = []
-                for i in range(18):
-                    t = i/17
-                    points.append(at(palm) + SIDE*sign*(.05+.95*t) +
-                                  FRONT*(branch*.11 + .25*math.sin(t*4)) + UP*(.12*math.sin(t*6)-.32*t))
+                for i in range(16):
+                    t = i/15
+                    points.append(at(palm) + SIDE*sign*(.026+.24*t + .075*math.sin(t*math.pi)) +
+                                  FRONT*(branch*(.018+.12*t) + .06*math.sin(t*math.pi)) -
+                                  UP*(.70*t-.04*math.sin(t*math.pi)))
                 old = set(bm.verts)
                 for i, center in enumerate(points):
-                    tangent = (points[min(i+1,17)]-points[max(0,i-1)]).normalized()
+                    tangent = (points[min(i+1,15)]-points[max(0,i-1)]).normalized()
                     cross = tangent.cross(UP).normalized()
                     link(center, tangent, UP if i%2 else cross, palm, .010)
                     if i%4 == 3:
@@ -130,13 +175,14 @@ def albedo(path):
     size=512; image=np.zeros((size,size,3),dtype=np.float64)
     for region in sorted(paint.shared.ATLAS):
         (y0,y1,x0,x1),u,v=paint.shared.region_canvas(size,region)
-        base=np.array((.25,.34,.16) if args.kind=='bearded-devil' else (.64,.61,.59))
-        if region=='limbs':base=np.array((.25,.20,.12) if args.kind=='bearded-devil' else (.16,.18,.20))
-        if region=='membrane':base=np.array((.035,.045,.028))
-        if region=='beak':base=np.array((.16,.12,.10))
+        base=np.array((.34,.405,.21) if args.kind=='bearded-devil' else (.56,.49,.45))
+        if region=='limbs':base=np.array((.30,.25,.16) if args.kind=='bearded-devil' else (.27,.285,.30))
+        if region=='membrane':base=np.array((.105,.125,.075))
+        if region=='beak':base=np.array((.145,.105,.085))
         if region=='crest':base=np.array((.85,.33,.06) if args.kind=='bearded-devil' else (.24,.08,.07))
         pixels=np.broadcast_to(base,(*u.shape,3)).copy()
-        pixels *= (.82+.12*np.sin(u*math.pi*10)*np.cos(v*math.pi*7)+.08*v)[...,None]
+        pixels *= (.89+.075*np.sin(u*math.pi*6)*np.cos(v*math.pi*5)+.08*v)[...,None]
+        pixels *= (1+.022*np.sin(u*math.pi*71)*np.cos(v*math.pi*53))[...,None]
         if args.kind=='kyton-chain-devil' and region=='limbs':
             pixels += (.22*np.maximum(0,np.sin(u*math.pi*6))**12)[...,None]
         image[y0:y1,x0:x1]=np.clip(pixels,0,1)

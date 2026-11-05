@@ -82,8 +82,7 @@ namespace KingmakerGunslinger.Assets
                 if ((string)payload["creature"] != key ||
                     !Enumerable.SequenceEqual(payload["bones"].Values<string>(),
                         InfernalVisualPolicy35.Bones) ||
-                    (string)payload["rigSha256"] !=
-                        InfernalVisualPolicy35.RigSha256 ||
+                    !InfernalVisualPolicy36.IsReviewedRig((string)payload["rigSha256"]) ||
                     (string)payload["nativeDonor"] !=
                         TheropodVisualPolicy.DonorGuid ||
                     (string)payload["nativePrefab"] !=
@@ -96,7 +95,7 @@ namespace KingmakerGunslinger.Assets
                     (int?)payload["visibleArms"] != 2 ||
                     (int?)payload["visibleLegs"] != 2 ||
                     (bool?)payload["humanoidBody"] != true ||
-                    (int?)payload["visibleSpines"] != (bone ? 0 : 20) ||
+                    (int?)payload["visibleSpines"] != (bone ? 0 : 34) ||
                     (bool?)payload["segmentedStingingTail"] != bone ||
                     (int?)payload["visibleWings"] != (bone ? 2 : 0) ||
                     (bone ? payload["tail"] == null ||
