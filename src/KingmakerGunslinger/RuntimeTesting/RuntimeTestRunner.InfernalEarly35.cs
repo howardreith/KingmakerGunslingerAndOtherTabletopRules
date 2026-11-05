@@ -178,8 +178,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     wrongTypes.Length == 0, bootstrap,
                     "Both dependency-complete roots resolve while exactly five qualified routes are public.");
 
-                receipt["nativeSpellCensus"] = InfernalNativeSpellCensus35(
-                    fixture.Blueprints);
+                if (!ExpandedSummoningNativeProfilePolicy.WallPlacementPreflightPhase(
+                    RuntimeTestRequestParser.Sprint32ReviewPhase(_request)))
+                    receipt["nativeSpellCensus"] = InfernalNativeSpellCensus35(fixture.Blueprints);
 
                 var barbed = CastExpandedSummoningOwnTier(fixture,
                     "barbed-devil");
@@ -190,7 +191,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owned.Add(barbed); owned.Add(bone); owned.Add(reach);
                 foreach (var actor in owned)
                 {
-                    if (RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulWallPhase)
+                    if (ExpandedSummoningNativeProfilePolicy.WallFixturePhase(RuntimeTestRequestParser.Sprint32ReviewPhase(_request)))
                         SetExpandedSummoningBrainActive(actor, false);
                     else Sprint28SetBrainActivePreservingActions(actor, false);
                     actor.Commands.InterruptAll(true);
@@ -282,6 +283,18 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 foreach (int frame in InfernalEarlyWall35(fixture, bone,
                     owned, trace, check)) yield return frame;
+
+                if (ExpandedSummoningNativeProfilePolicy.WallPlacementPreflightPhase(
+                    RuntimeTestRequestParser.Sprint32ReviewPhase(_request)))
+                {
+                    int sections = Game.Instance.State.Units.Count(value =>
+                        value.Blueprint?.AssetGuid == InfernalRules35.WallSectionUnitGuid);
+                    check("wall-placement-preflight-boundary", sections == 0 && InfernalWallNavmesh35.ActiveGridClaimCount == 0,
+                        new JObject { ["wallSections"] = sections, ["wallClaims"] = InfernalWallNavmesh35.ActiveGridClaimCount,
+                            ["wallAbilityLookupReached"] = false, ["wallCastReached"] = false, ["tailReached"] = false },
+                        "Explicit placement preflight exits after the shared fixture checkpoint, before Wall ability lookup/casting and tail acceptance.");
+                    yield break;
+                }
 
                 foreach (int frame in InfernalEarlyTail35(fixture, bone,
                     reach, trace, check)) yield return frame;
@@ -481,32 +494,29 @@ namespace KingmakerGunslinger.RuntimeTesting
             InfernalEvents34 trace,
             Action<string, bool, JObject, string> check)
         {
+            bool correction = ExpandedSummoningNativeProfilePolicy.WallFixturePhase(RuntimeTestRequestParser.Sprint32ReviewPhase(_request));
+            if (correction)
+                foreach (var actor in owned.Concat(new[] { fixture.Caster })) InfernalWallPrepareActor35(actor);
             Vector3 start, midpoint, destination, casterPoint;
-            JArray laneAttempts;
-            if (!InfernalEarlyWallLane35(fixture, out start, out midpoint,
-                    out destination, out casterPoint, out laneAttempts))
+            JArray laneAttempts; JObject laneSurvey;
+            if (!InfernalEarlyWallLane35(fixture, owned, out start, out midpoint,
+                    out destination, out casterPoint, out laneAttempts, out laneSurvey))
                 throw new InvalidOperationException(
                     "No direct native floor lane for the early wall candidate: " +
                     laneAttempts.ToString(Formatting.None));
-            bool correction = RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulWallPhase;
+            var fixturePlan = new InfernalWallFixturePlan35(start, destination, midpoint, casterPoint, laneSurvey);
             if (correction)
             {
-                SetExpandedSummoningBrainActive(fixture.Caster, false);
-                fixture.Caster.View.MovementAgent.Stop();
-                foreach (var actor in owned.Where(value => value != null && !value.Destroyed))
-                    actor.View.MovementAgent.Stop();
+                foreach (int frame in InfernalWallFixturePrerequisite35(fixture, owned, fixturePlan, check)) yield return frame;
+                if (ExpandedSummoningNativeProfilePolicy.WallPlacementPreflightPhase(
+                    RuntimeTestRequestParser.Sprint32ReviewPhase(_request))) yield break;
             }
-            PlaceExpandedSummoningUnit(fixture.Caster, start);
-            foreach (UnitEntityData actor in owned.Where(value =>
-                value != null && !value.Destroyed &&
-                !ReferenceEquals(value, bone)))
-                PlaceExpandedSummoningUnit(actor, casterPoint);
-            PlaceExpandedSummoningUnit(bone, casterPoint);
-            if (correction)
-                foreach (int frame in InfernalWallSettleWitness35(fixture.Caster, "initial-path", start)) yield return frame;
+            else
+            {
+                PlaceExpandedSummoningUnit(fixture.Caster, start);
+                foreach (var actor in owned) PlaceExpandedSummoningUnit(actor, casterPoint);
+            }
             var before = InfernalEarlyPath35(fixture.Caster, destination);
-            if (correction)
-                foreach (int frame in InfernalEarlyWallMove35(fixture, start, destination, midpoint, false, "baseline", check)) yield return frame;
             bool losBefore = Kingmaker.Visual.FogOfWar.LineOfSightGeometry
                 .Instance.HasObstacle(start, destination, 0);
 
@@ -1366,30 +1376,32 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> InfernalEarlyWallMove35(
             ExpandedSummoningCorrectionFixture fixture, Vector3 start,
             Vector3 destination, Vector3 midpoint, bool wallPresent, string label,
-            Action<string, bool, JObject, string> check)
+            Action<string, bool, JObject, string> check,
+            InfernalWallFixturePlan35 plan = null, bool alreadyAtStart = false)
         {
             var mode = _cleanup2NativeDefaultOwner;
             if (mode == null || !mode.Current) throw new InvalidOperationException("Actual wall movement requires exact owned native Default.");
             var mover = fixture.Caster;
-            mover.Commands.InterruptAll(true); mover.Commands.RemoveFinishedAndUpdateQueue();
-            PlaceExpandedSummoningUnit(mover, start);
-            int quiet = 0; Vector3 settledPrevious = mover.Position;
-            foreach (int frame in WaitPresentation32(mode, () => quiet >= 3, 8, () => {
-                bool stable = mover.Commands.Empty && mover.View.MovementAgent.Velocity.sqrMagnitude < .0001f &&
-                    Vector3.Distance(settledPrevious, mover.Position) < .01f && mover.Descriptor.State.CanAct;
-                quiet = stable ? quiet + 1 : 0; settledPrevious = mover.Position;
-            })) yield return frame;
+            if (plan == null) plan = new InfernalWallFixturePlan35(start, destination, midpoint, start, new JObject());
+            if (!alreadyAtStart)
+                foreach (int frame in InfernalWallPlaceAndSettle35(mover, start, plan, "before-move-" + label)) yield return frame;
             Vector3 supported; JObject ground;
             if (!Cleanup2CreatureNativeGroundRoot(mover, mover.Position, out supported, out ground) ||
-                Vector3.Distance(supported, mover.Position) >= .02f)
+                Vector3.Distance(supported, mover.Position) >= .02f ||
+                InfernalEarlyDistanceToSegment35(mover.Position, start, start) >= .05f)
                 throw new InvalidOperationException("Wall movement witness lacks settled native ground support.");
-            start = mover.Position;
             var move = new UnitMoveTo(destination, .5f); move.Init(mover);
             if (!move.CanStart) throw new InvalidOperationException("Wall movement witness command refused.");
             var samples = new JArray(); float maximumDeviation = 0f, distance = 0f;
-            Vector3 previous = mover.Position; int sampledFrame = -1;
+            Vector3 previous = mover.Position; int sampledFrame = -1, activeFrames = 0;
+            float activeTravel = 0f, peakVelocity = 0f;
             mover.Commands.Run(move);
             foreach (int frame in WaitPresentation32(mode, () => move.IsFinished && mover.Commands.Empty, 22, () => {
+                float velocity = mover.View.MovementAgent.Velocity.magnitude;
+                if (ReferenceEquals(mover.Commands.Move, move) && !move.IsFinished && velocity > .05f) {
+                    activeFrames++; peakVelocity = Math.Max(peakVelocity, velocity);
+                    activeTravel = Math.Max(activeTravel, Vector3.Distance(start, mover.Position));
+                }
                 distance += Vector3.Distance(previous, mover.Position); previous = mover.Position;
                 float deviation = InfernalEarlyDistanceToSegment35(mover.Position, start, destination);
                 maximumDeviation = Math.Max(maximumDeviation, deviation);
@@ -1399,13 +1411,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     sampledFrame = Time.frameCount;
                 }
             })) yield return frame;
-            bool pass = move.Result == UnitCommand.ResultType.Success && Vector3.Distance(mover.Position, destination) <= 1f &&
+            bool pass = activeFrames >= 3 && activeTravel > 4f && peakVelocity > .05f &&
+                move.Result == UnitCommand.ResultType.Success && Vector3.Distance(mover.Position, destination) <= 1f &&
                 distance > Vector3.Distance(start, destination) - 1f &&
                 (wallPresent ? distance > Vector3.Distance(start, destination) + .15f && maximumDeviation > .35f &&
                     InfernalWallNavmesh35.ActiveGridClaimCount > 0 : maximumDeviation < .8f &&
                     distance <= Vector3.Distance(start, destination) + .8f && InfernalWallNavmesh35.ActiveGridClaimCount == 0);
             check("wall-native-mover-" + label, pass, new JObject { ["mover"] = mover.UniqueId, ["wallPresent"] = wallPresent,
-                ["settledFrames"] = quiet, ["ground"] = ground,
+                ["ground"] = ground, ["plan"] = plan.Document(),
+                ["exactActiveFrames"] = activeFrames, ["exactActiveTravel"] = activeTravel, ["peakNativeVelocity"] = peakVelocity,
                 ["command"] = Sprint27AiCommand(move), ["start"] = SurveyVector(start), ["goal"] = SurveyVector(destination),
                 ["wallMidpoint"] = SurveyVector(midpoint), ["end"] = SurveyVector(mover.Position),
                 ["actualDistance"] = distance, ["formerDirectDistance"] = Vector3.Distance(start, destination),
@@ -1414,8 +1428,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["scope"] = "A real native UnitMoveTo under owned Default traverses around the live wall; no transform writes while this command runs." },
                 wallPresent ? "The live wall changes an actual mover's route before destruction; path queries alone do not supply this verdict." :
                     "An actual native mover follows the direct lane with no live wall obstruction.");
-            PlaceExpandedSummoningUnit(mover, start);
-            foreach (int frame in InfernalWallSettleWitness35(mover, "post-move-" + label)) yield return frame;
+            foreach (int frame in InfernalWallPlaceAndSettle35(mover, start, plan, "post-move-" + label)) yield return frame;
         }
 
         private static Vector3 InfernalWallGroundWitness35(UnitEntityData actor, Vector3 desired)
@@ -1471,14 +1484,49 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private bool InfernalEarlyWallLane35(
-            ExpandedSummoningCorrectionFixture fixture, out Vector3 start,
+            ExpandedSummoningCorrectionFixture fixture, IList<UnitEntityData> owned, out Vector3 start,
             out Vector3 midpoint, out Vector3 destination,
-            out Vector3 casterPoint, out JArray attempts)
+            out Vector3 casterPoint, out JArray attempts, out JObject survey)
         {
             attempts = new JArray();
             start = midpoint = destination = casterPoint = Vector3.zero;
-            var anchor = AstarPath.active.GetNearest(fixture.Caster.Position);
-            if (anchor.node == null || !anchor.node.Walkable) return false;
+            bool turnBased = TurnBased.Controllers.CombatController.IsInTurnBasedCombat();
+            int nativeMask = turnBased ? 2 : 1, commonTags = -1;
+            var actors = new JArray();
+            foreach (var actor in owned.Concat(new[] { fixture.Caster }))
+            {
+                var agent = actor.View.AgentASP;
+                if (agent == null || agent.Unit != actor.View || !ReferenceEquals(actor.View.MovementAgent, agent))
+                    throw new InvalidOperationException("Wall survey requires the exact native walking agent.");
+                var constructTags = agent.GetType().GetMethod("ConstructTags", Cleanup2Fields);
+                if (constructTags == null || constructTags.ReturnType != typeof(int) || constructTags.GetParameters().Length != 0)
+                    throw new MissingMethodException("Installed native ConstructTags contract unavailable.");
+                int tags = (int)constructTags.Invoke(agent, null); commonTags &= tags;
+                actors.Add(new JObject { ["actor"] = actor.UniqueId, ["nativeConstructTags"] = tags,
+                    ["agent"] = agent.GetInstanceID(), ["position"] = Vec(actor.Position) });
+            }
+            var constraint = new Pathfinding.PathNNConstraint { graphMask = nativeMask,
+                constrainWalkability = true, walkable = true, constrainArea = false,
+                constrainTags = true, tags = commonTags, constrainDistance = true,
+                distanceXZ = false, distanceXZkeepY = false };
+            var anchor = AstarPath.active.GetNearest(fixture.Caster.Position, constraint);
+            survey = new JObject { ["turnBased"] = turnBased, ["nativeGraphMask"] = nativeMask,
+                ["nativeTags"] = commonTags, ["actors"] = actors,
+                ["graphs"] = new JArray(AstarPath.active.graphs.Select((value, index) => new JObject {
+                    ["index"] = index, ["type"] = value?.GetType().FullName,
+                    ["selectedByMask"] = value != null && constraint.SuitableGraph(index, value) })),
+                ["contract"] = "Installed PathTo060018A3 selects mask1 RTWP/mask2 TB; native ConstructTags060018C3; query-owned walkability/tag/connected-area constraint, no graph or seeker writes." };
+            if (turnBased || anchor.node == null || !anchor.node.Walkable || !constraint.Suitable(anchor.node)) return false;
+            constraint.SetStart(anchor.node); constraint.constrainArea = true;
+            var graph = AstarPath.active.graphs[anchor.node.GraphIndex] as Pathfinding.IRaycastableGraph;
+            if (graph == null) return false;
+            survey["selectedGraphIndex"] = anchor.node.GraphIndex;
+            survey["selectedGraphType"] = graph.GetType().FullName;
+            survey["connectedArea"] = anchor.node.Area;
+            Func<Pathfinding.NNInfo, Vector3, bool> connected = (point, requested) =>
+                point.node != null && point.node.Walkable && constraint.Suitable(point.node) &&
+                point.node.Area == anchor.node.Area && point.node.GraphIndex == anchor.node.GraphIndex &&
+                Cleanup2Finite(point.clampedPosition) && Vector3.Distance(point.clampedPosition, requested) <= .6f;
             UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
                 value != null && value.IsInGame).ToArray();
             // Four metres on each side keeps the path witness outside the
@@ -1492,24 +1540,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Vector3 requestedStart = anchor.clampedPosition +
                     new Vector3(dx, 0f, dz);
                 Vector3 direction = CompassOffsets[index];
-                var from = AstarPath.active.GetNearest(requestedStart);
+                var from = AstarPath.active.GetNearest(requestedStart, constraint);
                 Vector3 requestedEnd = from.clampedPosition +
                     direction * laneLength;
-                var to = AstarPath.active.GetNearest(requestedEnd);
-                bool nodes = from.node != null && to.node != null &&
-                    from.node.Walkable && to.node.Walkable &&
-                    from.node.Area == anchor.node.Area &&
-                    to.node.Area == anchor.node.Area &&
-                    from.node.GraphIndex == anchor.node.GraphIndex &&
-                    to.node.GraphIndex == anchor.node.GraphIndex &&
-                    Vector3.Distance(from.clampedPosition,
-                        requestedStart) <= .6f &&
-                    Vector3.Distance(to.clampedPosition,
-                        requestedEnd) <= .6f;
-                Vector3 traced = nodes ? ObstacleAnalyzer.TraceAlongNavmesh(
-                    from.clampedPosition, to.clampedPosition) : Vector3.zero;
-                bool direct = nodes && Vector3.Distance(traced,
-                    to.clampedPosition) < .1f;
+                var to = AstarPath.active.GetNearest(requestedEnd, constraint);
+                bool nodes = connected(from, requestedStart) && connected(to, requestedEnd);
+                Pathfinding.GraphHitInfo hit;
+                bool direct = nodes && !graph.Linecast(from.clampedPosition, to.clampedPosition,
+                    from.node, out hit, new List<Pathfinding.GraphNode>());
                 Vector3 middle = nodes ? (from.clampedPosition +
                     to.clampedPosition) * .5f : Vector3.zero;
                 Vector3 side = new Vector3(-direction.z, 0f, direction.x);
@@ -1519,13 +1557,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     Vector3 requestedCaster = middle + side * sign * 4f;
                     var candidate = AstarPath.active.GetNearest(
-                        requestedCaster);
-                    bool exact = candidate.node != null &&
-                        candidate.node.Walkable &&
-                        candidate.node.Area == anchor.node.Area &&
-                        candidate.node.GraphIndex == anchor.node.GraphIndex &&
-                        Vector3.Distance(candidate.clampedPosition,
-                            requestedCaster) <= .6f &&
+                        requestedCaster, constraint);
+                    bool exact = connected(candidate, requestedCaster) &&
                         !Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance
                             .HasObstacle(candidate.clampedPosition +
                                 Vector3.up * 1.2f,
@@ -1554,14 +1587,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["to"] = nodes ? Vec(to.clampedPosition) : null,
                     ["casterPoint"] = caster ?
                         Vec(offLane.clampedPosition) : null,
-                    ["traceGap"] = nodes ?
-                        Vector3.Distance(traced, to.clampedPosition) : -1f
+                    ["nativeGraphLinecastClear"] = direct
                 });
                 if (!direct || !caster) continue;
                 start = from.clampedPosition;
                 destination = to.clampedPosition;
                 midpoint = middle;
                 casterPoint = offLane.clampedPosition;
+                survey["plannedStart"] = Vec(start); survey["plannedDestination"] = Vec(destination);
+                survey["plannedMidpoint"] = Vec(midpoint); survey["plannedCastingPoint"] = Vec(casterPoint);
+                survey["attempts"] = attempts;
+                RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory,
+                    "s35-wall-native-lane-survey.json"), survey.ToString(Formatting.Indented));
                 return true;
             }
             return false;
