@@ -339,7 +339,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 InfernalBoneRemoveEffects35(target, new[] { bone },
                     (BlueprintBuff)ExpandedSummoningBlueprints.Registered.BySymbol[
                         ExpandedSummoningSpecialBuilder.Bone35Prefix + "FearFrightened"]);
-            InfernalCombatLane34(fixture, bone, target, 3);
+            // The Bone Devil's natural weapons carry a 9-foot type range for
+            // its Large reach. The installed ProperFlanking2 reach dead zone
+            // ((size reach + 1) ft x 0.5 beyond both bodies, about 0.91 m for
+            // Large) moves UnitAttack's approach point away from a target 3 ft
+            // beyond the bodies, so the tail lane stands 5 ft beyond them:
+            // inside natural reach and outside that dead zone. The tail
+            // visual reaches the actual target surface at any legal distance.
+            InfernalCombatLane34(fixture, bone, target, 5);
             if (wallPhase)
                 foreach (int frame in SummonOverhaulSettlePartyCamera(bone)) yield return frame;
             int before = tail.Contacts;
