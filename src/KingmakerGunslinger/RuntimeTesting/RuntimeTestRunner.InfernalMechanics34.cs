@@ -330,7 +330,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             InfernalEvents34 trace, Action<string, bool, JObject, string> check,
             string recipientKey = "kyton-chain-devil", string assertionOwner = "kyton",
             Func<UnitEntityData, KytonRegeneration34> getRegeneration = null,
-            bool isolateFear = false)
+            bool isolateFear = false, bool stabilizeGoodSpellCombat = false)
         {
             var regenerationFor = getRegeneration ??
                 new Func<UnitEntityData, KytonRegeneration34>(InfernalRegeneration34);
@@ -386,6 +386,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     recipient.Stats.HitPoints.BaseValue = 10000;
                     bool injured = false;
                     for (int attempt = 0; attempt < 8 && !injured; attempt++) {
+                        int cooldownFrames = 0;
+                        if (stabilizeGoodSpellCombat)
+                        {
+                            DateTime cooldownDeadline = DateTime.UtcNow.AddSeconds(10);
+                            while (caster.CombatState.Cooldown.StandardAction > 0f &&
+                                cooldownFrames < 1200 && DateTime.UtcNow < cooldownDeadline)
+                            {
+                                cooldownFrames++; Game.Instance.IsPaused = false; yield return 0;
+                            }
+                            if (caster.CombatState.Cooldown.StandardAction > 0f)
+                                throw new InvalidOperationException("Natural Holy Smite cooldown did not clear.");
+                            // Keep these disposable support actors in native
+                            // combat long enough for the immediately available
+                            // command to finish. Do not clear or ignore cost.
+                            caster.JoinCombat(); recipient.JoinCombat();
+                        }
                         int first = trace.Rows.Count; var costs = new JArray(); UnitUseAbility command = null;
                         using (var economy = new FirearmReviewCosts(caster, costs)) {
                             foreach (int frame in Sprint26Cast(caster, spell, new TargetWrapper(far), value => command = value)) yield return frame;
@@ -400,7 +416,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         (string)row["event"] == "heal" && (string)row["target"] == recipient.UniqueId));
                             check(assertionOwner + "-good-spell-command-" + attempt, exact, new JObject { ["source"] = caster.UniqueId,
                                 ["target"] = recipient.UniqueId, ["ability"] = spell.AssetGuid, ["command"] = command == null ? null : Sprint27AiCommand(command),
-                                ["costs"] = costs, ["events"] = new JArray(trace.Rows.Skip(first)), ["positiveNativeInjury"] = injured },
+                                ["costs"] = costs, ["events"] = new JArray(trace.Rows.Skip(first)),
+                                ["naturalCooldownFrames"] = cooldownFrames,
+                                ["combatLeaveIsolation"] = stabilizeGoodSpellCombat,
+                                ["positiveNativeInjury"] = injured },
                                 "Real Holy Smite command and normal cost; positive good-spell injury disables only the recipient's regeneration, without forced SR or saves.");
                         }
                     }
