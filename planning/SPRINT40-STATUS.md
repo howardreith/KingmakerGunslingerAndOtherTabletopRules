@@ -9,7 +9,7 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 - HOWARD-LAPTOP, root `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
   `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Reviewed candidate
-  product head `45f67a7e3eff86748c17e19ce02d450b8d0bc0fe`. No game,
+  product head `6317ab958b3a3345949cf1271bd204672e9176fe`. No game,
   deployment, staging or lease is active; the live KMG tree is restored to
   SHA256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 - Recovery is CLOSED EXACTLY. The typed `BlueprintWeaponEnchantment` factory
@@ -81,7 +81,14 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   `20261105T2003174741769Z-disposable-expanded-summoning-sprint32-native-review`;
   restoration receipt `expanded-summoning-restoration/20261105T2006204260315Z-disposable-expanded-summoning-sprint32-native-review.json`
   verifies the exact live-tree hash, nine startup-written peer files and all 118
-  protected saves. Commit `45f67a7e` applies only the live-owner teardown filter;
+  protected saves. Commit `45f67a7e` applies only the live-owner teardown filter.
+  Its rebuilt candidate `fe7bfc82` again passed 2,816/2,816 and exact packaging,
+  but the discriminating presentation rerun then exposed the earlier point of the
+  same shared S34 seam: after both body rows and private-pair isolation passed, an
+  unconditional Kyton chain-control lookup asked the S34 catalog for the Ice Devil.
+  Evidence `20261105T2019097552472Z-disposable-expanded-summoning-sprint32-native-review`
+  preserves that FAIL; restoration receipt `expanded-summoning-restoration/20261105T2022103706984Z-disposable-expanded-summoning-sprint32-native-review.json`
+  is exact. Product commit `6317ab95` scopes that lookup to a real chain component;
   production compilation and five focused Sprint40 checks PASS. NEXT: rebuild the
   coherent candidate, rerun presentation once, then execute the remaining fresh
   mechanics, public route, affected integration and six-process ON/OFF campaign.
