@@ -1,4 +1,4 @@
-# Wall of Ice Sprint 2 — complete (closeout below)
+# Wall of Ice Sprint 2 — complete (navigation continuation and closeout below)
 
 The Bone Devil Wall of Ice passed full native acceptance in one fresh guarded
 Kingmaker process on exact executable source
@@ -8,6 +8,258 @@ fire destruction, residual cold and steam, controlled original-deadline expiry,
 exact navigation restoration after every retirement, and Bone Devil tail
 contact. Six earlier guarded runs on intermediate candidates failed; each was
 inspected before the next correction and all are retained below.
+
+## Navigation continuation (development candidate; PR #98 stays draft and unmerged)
+
+This continuation resolves the navigation acceptance issue left by the
+closeout below. Where it disagrees with the closeout, this section is
+current. Bleed on ice and natural reach are not part of it.
+
+**Accepted candidate.** Executable source `4aa27dcfea3220b1c87fa2a73a7c7ebe061985cc` passed the guarded
+`summon-overhaul-wall` phase in one fresh process: **PASS, 155 assertions**.
+
+| Identity | Value |
+| --- | --- |
+| Product source | unchanged since `865ce2f881`; later commits change only the observer and fixture |
+| Executable source (compiled observer and fixture included) | `4aa27dcfea3220b1c87fa2a73a7c7ebe061985cc`, source state `7f352bd4eceb6116c5ece2946ae174eeddf4b6e140448719b44565d0438e0ea7` |
+| Package / DLL / MVID | ZIP `e9abfcc07d5e43a66e88a0e15381b155c650f8956c964c4408ee1e7166801d68`; DLL `e21c1ce4cb9f09f4535c2fb64b32385ab4580fef502510bb782e014c38623837`; MVID `818561cd-e8b1-4633-9ce8-c6363cd3e9ab` |
+| Run | `20261106T1642352570083Z-384c0780508b46ab889275a3ada550d7`, evidence `20261106T1642352420114Z-disposable-expanded-summoning-sprint32-native-review`, result SHA-256 `5aa5d0cc57b359c6d6328f8228e22e9c10c330cfba40229955899157f89e66c9` |
+| Environment | installed intake mod 0.0.140 before and after; settings `6e24b278…5d0`; live tree `5C3E4AD4…BFBB` (254 files) restored; protected saves unchanged |
+
+The 152-assertion credit stays with `24a1b93583` and the 95-assertion credit
+with `36e44513d3`. Neither is claimed for the new candidate.
+
+### 1. Placement survey matches production legality
+
+The closeout survey rejected any footprint cell Wall A still claimed
+(`ClaimOwnerCount(node) > 0`), and its formation verdict required
+`doubleOwned == 0`. Production `InfernalWallPlacementRuntime35.TryResolve`
+has no such rule. It requires only walkable footprint cells and no
+occupying unit. Native grid updates had reopened Wall A's claimed cells
+(close27), so the survey could not show that legal placement never shares
+claims. Its old wording ("legal placement never lets two claims share a
+node") was wrong.
+
+Now the lattice pre-filter mirrors the production footprint rule only, and
+shared-claim candidates are probed first. Every probe decides legality with
+production `TryResolve` and the second Bone Devil's `AbilityData.CanTarget`.
+Fixture constraints stay explicit and recorded:
+
+- clear of lane A
+- a fog-revealed caster point
+- a crossing route
+- no adjacent creature that would roll a formation save
+
+The search is bounded:
+
+- **Lattice:** 0.25 m steps, 4.5 m along and 3.5 m across Wall A, at 45, -45, 0 and 90 degrees.
+- **Evaluated:** up to 3 shared-claim, 4 cut-box and 2 independent candidates, at most 400.
+
+**Genuine shared custom claims were reached under the closeout's
+production** (nav1, `c5b69c8c13`, PASS 152). 59 lattice footprints were
+legal shared-claim candidates, 6 were viable, and the first probe was legal
+by `TryResolve` and `CanTarget`. Wall B claimed 3 cells Wall A still owned,
+and every one carried exactly 2 owners.
+
+| Order | Retirement result |
+| --- | --- |
+| a-first and b-first | Survivor kept sole ownership of the 3 shared cells, its cut, its own counter contribution and every blocked ice-centre cell. The retired Wall's only-cells and 627 unrelated cells were at baseline. |
+| Final restoration | All 676 cells equal baseline in flags, counters, claims, connections and tags. |
+
+**Under the selected design, shared claims are unreachable by legal
+placement.** Durable claims keep every claimed cell unwalkable, and
+production placement requires walkable footprint cells. Bounded results:
+
+| Run | Clear footprints (shared / cut-box / independent) | Placement used |
+| --- | --- | --- |
+| nav5 | 0 / 0 / 745 | 0°, independent |
+| nav9 | 0 / 3 / 729 | -45°, cut-box: Wall B's native counter covers 4 of Wall A's claimed cells (both orders) |
+
+The reference-counted owner path stays as defence against load ordering.
+
+Also retained, as its own observation: close27's legal diagonal Wall B,
+whose native counter covered 4 of Wall A's claimed cells, both orders.
+
+### 2. Gameplay effect of the reopened cells (turn-based)
+
+**Installed contract**, read from the decompiled 2.1.7b assemblies:
+
+| Layer | Behaviour |
+| --- | --- |
+| Recast navmesh cuts | Graph mask 1; real-time movement. |
+| Grid graph | Mask 2; used only in turn-based combat (`UnitMovementAgent.PathTo`). Agent `FindPath` without a mask selects any graph, so real-time ground-click previews, AI action paths and fear flight can route on the grid. |
+| Native turn-based counters | `CombatController.UpdateNavigationGrid` adds +1 `DynamicBlocked` to every node whose centre lies in a cut's bounding box. It runs whenever the player is in combat. |
+| Custom static claims | Cells whose square touches the ice. |
+| `GraphNode.Walkable` | The static flag AND `DynamicBlocked == 0`. The setter writes only the static flag. |
+| `GridGraph.UpdateArea` | With `updateErosion` and `erodeIterations` 10, resets the static flag from the pre-erosion flag for every node within twice the erosion reach (about 10 m). Recalculates connections, then re-erodes tags, only when the update changes walkability. |
+| Turn-based routing | `ABPathWithClearance` admits a node within the start clearance box (`Corpulence * 2`) on its static flag alone, ignoring counters. `ConstructTags` excludes erosion tags by creature size. |
+| Movement | Neither turn-based nor real-time movement clamps to the navmesh (`UnitMovementAgentBase.Move` only grounds the step). Turn-based mode skips avoidance. |
+
+**Observed under the closeout's production:**
+
+- **nav1** (lane Wall, ice centres in 2 rows): in turn-based combat all 11 claimed ring cells were statically reopened. The native turn-based routes went around the Wall ends through reopened claimed end cells, grazing the ice (gap 0.0 to 0.10 m).
+- **nav4** (a legal grid-row placement, one ice row): turn-based entry erased every claim, 18 of 18 ring cells and 6 of 6 ice cells; the ice row was held only by native counters. All four native routes from the claimed cells beside the ice went around the ends, so none crossed through the Wall's length.
+- **nav4, ordinary native turn-based move.** The move used the native precomputed path, as player turn-based movement and the fear controller do. Route and movement agreed, and both **cut the ice's end corner**: the mover's centre passed about 0.23 m inside the footprint through a reopened end cell, then finished on the far side.
+- **No through-length crossing observed.** A crossing through the start-clearance exemption follows from the installed code for a one-row counter block, but it was not observed in these geometries. It is not claimed.
+
+**Classification:** the reopened cells allow incorrect boundary and corner
+movement (a turn-based unit passing through the ice's end), not a passage
+through the Wall's length. Invalid destinations inside the ice were not
+observed: routes to a ring cell ended 0.13–0.59 m outside the ice.
+
+### 3. Selected blocking design and why it is sufficient
+
+Custom claims do provide necessary blocking. Native counters cover only cell
+centres inside the cut's box, and the start-clearance exemption ignores
+counters, so durable static claims are the turn-based obstruction. The
+smallest correct implementation:
+
+1. **Durable claims.** A claim holds both static layers (`WallClaimNode`)
+   and records the node's own static and pre-erosion flags. Combined
+   walkability would fold in other cuts' and units' counters. The last owner
+   restores both layers (`WallRestoreNode`); other owners and unrelated
+   blockers are untouched.
+2. **Native recalculation after the section's own writes.** The section
+   recalculates the grid connections of the written cells and their
+   neighbours. It then re-erodes tags over the native reach (twice
+   `erodeIterations`, only where the grid erodes into tags), and flood-fills,
+   exactly what `UpdateArea` does after changing walkability.
+   - **close28, inspected.** The earlier attempt `4bb14d17f4` pinned both
+     layers without this step. Its failing route was a grid path: every
+     detour vertex sits on a cell corner of the 8×3 claimed block (node
+     ±0.25 m), not on the recast cut's corners. The restored cells were
+     walkable but kept the connections a native update computed while they
+     were claimed.
+   - **Guard.** The physical-lane route-restoration check is retained, and
+     the final restoration now requires grid connections at baseline. Both
+     reject that regression.
+3. **Stationary sections.** A section carries native `CantMove` alongside
+   `CantAct`. In nav4, installed `SummonedUnitsController.TickUnitFollowMaster`
+   issued `UnitMoveTo` commands to Wall sections, because the player was out
+   of combat and the source Bone Devil was more than 11.7 m away. Wall A
+   walked about 2.8 m: its recast cut left the formation footprint while its
+   claims stayed, and a real-time mover walked straight through the old
+   footprint. This is a concrete mechanism for the closeout's "displacement"
+   (the original report's cause remains unproven).
+
+**Native evidence for the selected design (nav5, `015f50a5db`, PASS 155, and
+`4aa27dcfea3220b1c87fa2a73a7c7ebe061985cc`, PASS, 155 assertions):**
+
+- **Turn-based entry:** 0 claimed cells statically reopened.
+- **Routes:** all four native turn-based routes went around the ends, at 0.12–0.13 m from the ice.
+- **Ordinary turn-based move:** went around with a minimum gap of 0.124 m and never entered the ice.
+- **Two Walls:** the survivor kept every claim blocked in both layers and did not move (0.0 m).
+- **Physical lane:** returned its exact pre-Wall route (2 points, 8.006 m) after all 24 cells were restored.
+- **close27's defect, corrected (nav9):** in the legal diagonal geometry, Wall B's native counter covered 4 of Wall A's claimed cells in both orders. Retiring either Wall left 0 of the survivor's claimed cells reopened. Final restoration equalled baseline in flags, counters, claims, connections and every erosion tag (0 differing).
+
+**Erosion tags.** nav5 left 357–387 cells with tags computed while the claims
+stood, so tag re-erosion was added. nav7 and nav8 then left 3 cells 10–11
+cells from the claims differing (10→0, 10→0, 9→10). Native `ConstructTags`
+excludes only tags 1–9, so 0 and 10+ restrict no creature, and these
+differences only loosen. Restoration requires baseline restriction levels
+within the erosion reach and no cell more restrictive anywhere; looser tags
+beyond the reach are recorded.
+
+### 4. Survivor assertions
+
+| Before | Now |
+| --- | --- |
+| Checked only that ice-centre cells did not newly open. | Ice-centre cells stay blocked. |
+| Its label claimed every layer of every survivor cell was unchanged. | The survivor's own counter contribution is preserved (a combined counter may fall). |
+| — | The retired Wall's contribution, and only it, is removed. |
+| — | The survivor keeps sole ownership of every claim, with every claimed cell blocked in both static layers, and its section has not moved. |
+| — | Retired-only and unrelated cells equal the original baseline. |
+
+Static, pre-erosion and counter changes on the survivor's own cells are
+recorded separately.
+
+### 5. Steam lifecycle
+
+Installed `FxHelper.SpawnFxOnGameObject` claims the kineticist steam prefab
+from `GameObjectsPool`. Native area teardown (`AreaEffectView.OnDestroy` →
+`FxHelper.Destroy` → `FxFadeOut`, 1.5 s → `GameObjectsPool.Release`) returns
+it. The prefab carries an enabled `PooledFx`, and `PooledFx.OnClaim` and
+`OnRelease` reset particles, sorting, snap and deactivatable components, but
+not `Renderer.enabled`.
+
+**The leak is proven natively** (nav2, and nav4 through the source Bone
+Devil's retirement route). The Wall's own cloud was released to the pool
+with its 16 flame renderers off. The next ordinary native claim of the
+prefab returned that same instance, with 16 renderers differing from the
+prefab.
+
+**Fix:** the presentation records exactly the renderers it switched off
+(each was enabled) for the owned instance. A `GameObjectsPool.Release`
+prefix, following the performance-ring precedent, switches them back on and
+clears ownership.
+
+**Reuse check `wall-steam-pool-reuse`** (nav5 and nav9): the cloud is
+released with 0 renderers off. The native claim reuses the same instance,
+matching the prefab on all 38 renderers, and 0 owned clouds remain.
+
+### 6. Fixture corrections in this continuation (observer only)
+
+| Run | Failure | Correction |
+| --- | --- | --- |
+| nav1 (PASS) | Turn-based move never issued: a directly controllable unit's turn stays `Preparing` until it receives a command. | Move issued once the mover's turn is current. |
+| nav1 | Steam probe found no live area. | Probe follows a live cloud. |
+| nav2 | Expiry-lane restored mover frightened mid-walk: the Bone Devil was stacked with the other witnesses on the casting point, shoved, and its aura reached the lane (failed DC 19 Will, native `UnitFearController`). | The restoration step parks the aura source 2.5 m beyond the casting point. |
+| nav3 | Pool probe ended the steam area that the source-retirement check proves. | Probe no longer ends any area; it follows the source retirement. |
+| nav4 | Real-time mover through Wall A. | Production `CantMove` (section 3). |
+| nav6 | Tail full attack interrupted at native `UpdateTarget` with the target alive; the hostile tail witness had joined combat and was acting. | Target prepared like every fixture actor before the command; displacement recorded. |
+| nav7, nav8 | Tag comparisons. | Section 3. |
+
+### Runs
+
+| Run | Executable source | Product change | Result | Seconds (build / native) |
+| --- | --- | --- | --- | --- |
+| nav1 | `c5b69c8c13` | none | PASS 152 | 343.76 / 367.14 |
+| nav2 | `12a10ff99f` | none | FAIL 91 (fear, fixture) | 330.45 / 221.39 |
+| nav3 | `b55bad5334` | none | FAIL 97 (own probe ended steam area) | 325.95 / 234.58 |
+| nav4 | `93839fcbdb` | none | FAIL 111 (section walked) | 326.52 / 328.17 |
+| nav5 | `015f50a5db` | durable claims, connections, `CantMove`, steam restore | PASS 155 | 325.22 / 344.00 |
+| nav6 | `865ce2f881` | + tag re-erosion | FAIL 95 (tail target acted) | 330.70 / 314.69 |
+| nav7 | `ab51a4e733` | none | FAIL 128 (3 tags) | 328.20 / 300.72 |
+| nav8 | `baa74c310a` | none | FAIL 128 (1 tag at 10 cells) | 326.94 / 301.89 |
+| nav9 | `4aa27dcfea` | none | PASS, 155 assertions | 325.15 / 343.86 |
+
+Every run restored the installed intake exactly: mod 0.0.140 read before and
+after, settings restored, protected saves unchanged, live tree restored
+(restoration records in `artifacts/wall-sprint2/native-review/*nav*`).
+KMG_AUTOMATION_BASELINE was not touched.
+
+### Retained versus newly executed acceptance
+
+| Evidence | Status |
+| --- | --- |
+| Whole Wall phase on `4aa27dcfea3220b1c87fa2a73a7c7ebe061985cc` | **Newly executed:** single-Wall lanes, feedback, steam presentation, tail sequence, two-Wall pairs, turn-based boundary, pool reuse. |
+| Shared-claim (double-owner) observation | **Retained** from nav1, under the closeout's production. |
+| Turn-based crossing and corner observations | **Retained** from nav1 and nav4, under the closeout's production. |
+| close27 cut-box overlap | **Retained** from close27. |
+| Earlier credits | The 95 and 152 credits remain with their own candidates. |
+| Not re-executed | A real-time soak of expiry; any daytime steam frame. |
+
+### Ledger (lower bound)
+
+| Item | Count | Seconds |
+| --- | --- | --- |
+| Focused gates | 9 | 124.80 |
+| Builds | 9 | 2962.90 |
+| Guarded native runs | 9 | 2756.44 |
+
+Continuation total ≥ 97.402 min; cumulative ≥ 592.006 min. Not
+counted: decompilation, evidence reading and documentation.
+
+### Remaining follow-ups
+
+- **P1: Bleed on ice.** Infernal Wound bleed applies to Wall sections.
+- **P1: Natural reach vs ProperFlanking2.** Adjacent natural attacks under the dead zone.
+- **P2: Residual cold presentation.**
+- **P3: Fire-death embers and sparks.**
+- **P3: Fear-aura saves on Wall sections.** They are still rolled (nav4); with `CantMove` they can no longer move a section, and their other combat effects are unexamined.
+- **P3: Further tail choreography.**
+- **Unproven: the original "Wall did nothing" report.** Native summon follow moving an out-of-combat section is now a demonstrated mechanism, not a proven cause.
+- **Not observed:** a through-length turn-based crossing via the start-clearance exemption. It is not claimed, and with durable claims the exemption cannot open a claimed cell.
 
 ## Closeout (development candidate; PR #98 stays draft and unmerged)
 
@@ -23,9 +275,10 @@ one fresh process: **PASS, 152 assertions**. The phase includes:
 
 The 95-assertion credit above remains the credit for its own candidate
 (`36e44513d3`). The 152 result is credit for `24a1b93583` only. Commits after
-`24a1b93583` change documentation, or are reverts that return `src`, `tests`
-and `scripts` byte-for-byte to `24a1b93583` (`git diff 24a1b93583 HEAD --
-src tests scripts` is empty).
+`24a1b93583`, up to the closeout head `776fa46dec`, change documentation, or
+are reverts that return `src`, `tests` and `scripts` byte-for-byte to
+`24a1b93583`. The navigation continuation above changes `src` and `tests`
+after `776fa46dec`.
 
 | Item | Value |
 | --- | --- |
@@ -125,9 +378,11 @@ cut instance `-598398`. It was chosen from:
 - 15 evaluated for a caster point and crossing route
 - 6 viable, 3 of them sharing
 
-Legal placement never lets two claims share a node, because Wall B's
-footprint must be walkable. The overlap that does exist natively is Wall A's
-claimed cells inside Wall B's native cut box.
+Correction (navigation continuation): this survey excluded cells Wall A
+still claimed, which production placement does not. The statement that legal
+placement never shares claims was wrong: nav1 reached legal shared claims.
+The overlap exercised here is Wall A's claimed cells inside Wall B's native
+cut box.
 
 **Grid.** Graph index 1, node size 0.5 m, `erodeIterations` 10,
 `erosionUseTags` true. The region is ±6.5 m, 676 nodes: baseline
@@ -284,9 +539,9 @@ restored through their runners. close4 was restored manually as above.
 | Invisible residual cold | Tracked presentation debt (P2) |
 | Fire-death embers | Tracked polish (P3); steam readability finished here |
 | ProperFlanking2 vs adjacent natural attacks | Compatibility defect, tracked separately (P1). The mod was not disabled and eligibility was not overridden. Moving to a legal attack distance does not resolve adjacent natural attacks. |
-| Claims overwritten by native grid updates | Proven natively; fix attempted and reverted; engineering follow-up (P1) |
+| Claims overwritten by native grid updates | Corrected in the navigation continuation: durable claims plus native connection and tag refresh (nav5, nav9) |
 | Section receives Bone Devil fear-aura buffs (close21) | Observed; unexamined; P3 |
-| Cause of the original "Wall did nothing" report; any display cause | Unproven |
+| Cause of the original "Wall did nothing" report; any display cause | Unproven. The continuation proves one displacement mechanism (native summon follow walked a section, nav4), now prevented by `CantMove` |
 
 ### Validation ledger
 
@@ -317,9 +572,8 @@ Raw evidence and packages are not committed.
 2. **P1: Natural reach vs ProperFlanking2.** KMG natural reach (9-ft weapon
    type) under the ProperFlanking2 dead zone prevents adjacent natural
    attacks.
-3. **P1: Claim durability.** Make Wall claims durable under native grid
-   updates, or retire them in favour of the native cut counters. Reproduce the
-   close28 route-restoration failure before re-applying `4bb14d17f4`.
+3. ~~P1: Claim durability.~~ Done in the navigation continuation (durable
+   claims, native connection and tag refresh; close28 explained and guarded).
 4. **P2: Residual cold presentation.**
 5. **P3: Fire-death embers and the orange sparks at the steam site.**
 6. **P3: Fear-aura buffs on Wall sections**, and their combat side effects.
@@ -373,8 +627,9 @@ experiences:
 - Kingmaker's pathfinding fork defines `GraphNode.Walkable` as static flag AND
   `DynamicBlocked == 0`; native grid updates restore claimed flags from their
   pre-erosion state while the wall stands. Restoration acceptance checks both
-  layers per node. The closeout shows this reopens claimed ring cells while a
-  Wall stands; the ice footprint stays blocked by the cut's own native counter.
+  layers per node. The closeout showed this reopened claimed ring cells while
+  a Wall stood. The navigation continuation makes claims hold both layers and
+  refresh connections and tags natively.
 
 ## Accepted native run
 

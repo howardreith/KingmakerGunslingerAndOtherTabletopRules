@@ -1,5 +1,46 @@
 # Summoned creature visual overhaul: active checkpoint
 
+## Sprint 2 navigation continuation — durable claims, stationary sections, pooled steam
+
+[Navigation continuation in the Sprint 2 checkpoint](WALL-OF-ICE-SPRINT2.md#navigation-continuation-development-candidate-pr-98-stays-draft-and-unmerged).
+Current; supersedes the closeout's navigation finding below.
+
+- **Result.** Executable source `4aa27dcfea3220b1c87fa2a73a7c7ebe061985cc`
+  passed the guarded `summon-overhaul-wall` phase: **PASS, 155 assertions**.
+  - Run `20261106T1642352570083Z-384c0780508b46ab889275a3ada550d7`; ZIP
+    SHA-256 `e9abfcc07d5e43a66e88a0e15381b155c650f8956c964c4408ee1e7166801d68`;
+    DLL MVID `818561cd-e8b1-4633-9ce8-c6363cd3e9ab`.
+  - Product source unchanged since `865ce2f881`. The 152 and 95 credits stay
+    with their own candidates.
+- **Placement survey** now uses production legality: no claim-owner
+  exclusion, and `TryResolve` with `CanTarget` deciding. Under the closeout's
+  production it reached genuine shared claims (nav1: 3 cells with both
+  owners, both orders, exact restoration). Under the selected design they are
+  unreachable by construction.
+- **Turn-based effect of the reopened cells** (closeout production):
+  - Turn-based entry erased every claim.
+  - Native turn-based routes and an ordinary turn-based move cut the ice's
+    end corner, with the centre about 0.23 m inside the footprint (nav4).
+  - No crossing through the Wall's length was observed.
+- **Production.**
+  - Claims hold both static layers.
+  - The section refreshes grid connections and erosion tags natively after
+    its own writes. That refresh is the cause of close28 that was missing.
+  - Wall sections carry `CantMove`: native summon follow had walked a section
+    about 2.8 m (nav4).
+  - The steam cloud's flame renderers are restored at
+    `GameObjectsPool.Release`: the Wall's released cloud had been reused by a
+    native claim with 16 renderers off (nav2, nav4).
+- **Evidence for the selected design** (nav5, nav9):
+  - Claims held in turn-based mode, and routes and the move stayed 0.12 m or
+    more from the ice.
+  - The diagonal two-Wall geometry kept the survivor's claims in both orders.
+  - Final restoration exact (connections and tags included).
+  - The physical-lane route was restored; steam pool reuse matched the prefab.
+- **Restoration.** All nine runs restored the intake (mod 0.0.140), settings
+  and protected saves exactly.
+- **Ledger.** Continuation ≥ 97.40 min; cumulative ≥ 592.01 min. Lower bounds.
+
 ## Sprint 2 closeout — two-Wall navigation, delivered feedback, steam and tail
 
 [Closeout in the Sprint 2 checkpoint](WALL-OF-ICE-SPRINT2.md#closeout-development-candidate-pr-98-stays-draft-and-unmerged).
@@ -24,8 +65,8 @@
 - **Finding.** Native grid updates (`erodeIterations` 10) overwrite Wall
   claims while a Wall stands. Retiring Wall B reopened 4 cells that Wall A
   still claimed; the ice footprint stays blocked by each cut's own counter.
-  A narrow fix failed native acceptance (close28) and is reverted (P1
-  follow-up).
+  A narrow fix failed native acceptance (close28) and was reverted; the
+  navigation continuation above resolves it.
 - **Restoration.** Every run restored v0.0.140, settings and protected saves
   exactly; close4 was restored manually after the host stopped it.
 - **Ledger.** Additional ≥ 283.29 min; cumulative ≥ 494.60 min. Lower bounds.
