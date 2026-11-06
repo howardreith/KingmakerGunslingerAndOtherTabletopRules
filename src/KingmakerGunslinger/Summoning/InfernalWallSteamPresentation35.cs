@@ -16,7 +16,9 @@ namespace KingmakerGunslinger.Summoning
     /// invisible. For the Wall's own steam only, after the native spawn
     /// attempt (on creation and after load), the view adopts the native
     /// 20-foot kineticist steam cloud as its spawned effect, so native
-    /// LateUpdate follows the area and native OnDestroy removes it.
+    /// LateUpdate follows the area and native OnDestroy removes it. The
+    /// cloud's burning-ground and glow layers are switched off: Wall steam
+    /// deals no fire, so it must not look like it burns.
     /// </summary>
     [HarmonyPatch(typeof(AreaEffectView), "SpawnFxs")]
     internal static class InfernalWallSteamPresentation35
@@ -39,8 +41,13 @@ namespace KingmakerGunslinger.Summoning
                     return;
                 GameObject prefab = Steam.Load(true);
                 if (prefab == null) return;
-                SpawnedFx.SetValue(__instance,
-                    FxHelper.SpawnFxOnGameObject(prefab, __instance.gameObject));
+                GameObject cloud = FxHelper.SpawnFxOnGameObject(prefab, __instance.gameObject);
+                if (cloud != null)
+                    foreach (Transform layer in cloud.GetComponentsInChildren<Transform>(true))
+                        if (layer != cloud.transform &&
+                                InfernalRules35.WallSteamHidesLayer(layer.name))
+                            layer.gameObject.SetActive(false);
+                SpawnedFx.SetValue(__instance, cloud);
             }
             catch (Exception)
             {

@@ -1059,8 +1059,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             run.Check("wall-steam-presentation", fog != null && (bool?)settledFx["fxPresent"] == true &&
                 ((string)settledFx["spawnedFx"] ?? "").StartsWith(InfernalRules35.WallSteamFxPrefabName, StringComparison.Ordinal) &&
                 (bool?)settledFx["fxActive"] == true && ((int?)settledFx["aliveParticles"] ?? 0) > 0 &&
-                ((int?)settledFx["visibleRenderers"] ?? 0) > 0, presentation,
-                "The Wall's steam area draws a live native steam cloud at its own position; the native Obscuring Mist link that draws nothing is not relied on.");
+                ((int?)settledFx["visibleRenderers"] ?? 0) > 0 &&
+                ((int?)settledFx["flameLayers"] ?? 0) > 0 &&
+                ((JArray)settledFx["flameLayersDrawing"])?.Count == 0, presentation,
+                "The Wall's steam area draws a live native steam cloud at its own position, with the cloud's burning-ground and glow layers off (the steam deals no fire); the native Obscuring Mist link that draws nothing is not relied on.");
             Vector3 mid = formed.Plan.Midpoint;
             Vector3 outside = Vector3.Distance(outsidePlan.Start, mid) >= Vector3.Distance(outsidePlan.Destination, mid) ?
                 outsidePlan.Start : outsidePlan.Destination;

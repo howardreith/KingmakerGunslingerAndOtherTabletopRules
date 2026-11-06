@@ -152,6 +152,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.sharedMaterial.GetColor("_Color").ToString() : null,
                 ["boundsSize"] = SurveyVector(value.bounds.size) }));
             row["visibleRenderers"] = renderers.Count(value => value != null && value.enabled && value.isVisible);
+            Renderer[] flames = renderers.Where(value => value != null &&
+                InfernalRules35.WallSteamHidesLayer(value.name)).ToArray();
+            row["flameLayers"] = flames.Length;
+            row["flameLayersDrawing"] = new JArray(flames.Where(value => value.enabled &&
+                value.gameObject.activeInHierarchy).Select(value => value.name));
             return row;
         }
 
