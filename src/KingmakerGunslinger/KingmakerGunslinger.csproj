@@ -78,6 +78,9 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEarly35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalWallFixture35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalWallAcceptance35.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalWallShared35.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalWallVisual35.cs" />
+    <Compile Include="RuntimeTesting\InfernalWallFeedbackPolicy35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBarbed35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint36Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint37Inputs.cs" />

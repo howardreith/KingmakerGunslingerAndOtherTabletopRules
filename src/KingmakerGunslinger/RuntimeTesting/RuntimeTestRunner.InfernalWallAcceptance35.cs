@@ -149,6 +149,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     InfernalMartialProfile34.For(value)?.Glaive != null)
             };
             if (run.Attacker == null) throw new InvalidOperationException("No exact Glaive-armed physical attack witness.");
+            _infernalWallRun35 = run;
+            _infernalWallPlans35.Clear();
+            _infernalWallPlans35.Add(physicalPlan);
+            _infernalWallExpiryPlan35 = null;
             InfernalWallPersist35(run, "scope", new JObject {
                 ["phase"] = RuntimeTestRequestParser.Sprint32ReviewPhase(_request),
                 ["controlledSetup"] = new JArray(
@@ -170,6 +174,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             // Fire destruction, steam and residual on a second clear lane.
             var firePlan = InfernalWallNextLane35(run, "fire", new[] { physicalPlan });
+            _infernalWallPlans35.Add(firePlan);
             foreach (int frame in InfernalWallFixturePrerequisite35(fixture, bone, owned, firePlan, check, "fire")) yield return frame;
             var fire = new InfernalWallFormed35 { Label = "fire", Plan = firePlan };
             foreach (int frame in InfernalWallCast35(run, fire)) yield return frame;
@@ -183,6 +188,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             // Original-deadline controlled expiry on a third clear lane.
             var expiryPlan = InfernalWallNextLane35(run, "expiry", new[] { physicalPlan, firePlan });
+            _infernalWallPlans35.Add(expiryPlan);
+            _infernalWallExpiryPlan35 = expiryPlan;
             foreach (int frame in InfernalWallFixturePrerequisite35(fixture, bone, owned, expiryPlan, check, "expiry")) yield return frame;
             var expiry = new InfernalWallFormed35 { Label = "expiry", Plan = expiryPlan };
             foreach (int frame in InfernalWallCast35(run, expiry)) yield return frame;
@@ -216,6 +223,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["faultsDelta"] = NativeCombatLog.Faults - faults,
                 ["lastMessage"] = NativeCombatLog.LastMessage,
                 ["nativeLogViewPresent"] = Game.Instance.UI?.BattleLogManager?.LogView != null };
+        }
+
+        // A logged attempt is not delivery: the observed log view must exist
+        // and the publication must have succeeded once, without a fault.
+        private static bool InfernalWallFeedbackDelivered35(JObject state, string expected)
+        {
+            return state != null && (bool?)state["nativeLogViewPresent"] == true &&
+                InfernalWallFeedbackPolicy35.Delivered((long?)state["attemptsDelta"] ?? -1L,
+                    (long?)state["publishedDelta"] ?? -1L, (long?)state["faultsDelta"] ?? -1L,
+                    (string)state["lastMessage"], expected);
         }
 
         private IEnumerable<int> InfernalWallFeedback35(InfernalWallRun35 run, InfernalWallFixturePlan35 plan)
@@ -266,10 +283,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             changed["newSections"] = sectionsAfterChanged;
             changed["controlledSetup"] = "Native RuleCastSpell executes the Wall effect at a point a disposable witness occupies.";
             cases.Add(changed); InfernalWallPersist35(run, "feedback", row);
-            run.Check("wall-feedback-placement-changed", NativeCombatLog.Attempts == attempts + 1 &&
-                NativeCombatLog.LastMessage == ContextActionFormInfernalWall35.PlacementChangedMessage &&
+            run.Check("wall-feedback-placement-changed", InfernalWallFeedbackDelivered35(changed,
+                    ContextActionFormInfernalWall35.PlacementChangedMessage) &&
                 sectionsAfterChanged == 0, changed,
-                "A cast whose point is no longer clear forms nothing and tells the player why, exactly once.");
+                "A cast whose point is no longer clear forms nothing and delivers its reason to the native combat log exactly once, with no publication fault.");
 
             // Ordinary commands disrupted by a real adjacent creature.
             var adjacent = fixture.Caster;
@@ -293,8 +310,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     reflexPassed = (int?)reflexCase["newSections"] == 0;
                 }
                 run.Check("wall-feedback-reflex-disruption", reflexPassed &&
-                    (string)reflexCase["lastMessage"] == ContextActionFormInfernalWall35.ReflexDisruptionMessage &&
-                    (long?)reflexCase["attemptsDelta"] == 1 && (string)reflexCase["command"]["result"] ==
+                    InfernalWallFeedbackDelivered35(reflexCase, ContextActionFormInfernalWall35.ReflexDisruptionMessage) &&
+                    (string)reflexCase["command"]["result"] ==
                         UnitCommand.ResultType.Success.ToString() &&
                     reflexCase["saves"].Count() == 1 && (bool?)reflexCase["saves"][0]["passed"] == true, reflexCase,
                     "An ordinary command disrupted by an adjacent creature's successful Reflex save forms nothing and tells the player why.");
@@ -325,8 +342,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 InfernalWallPersist35(run, "feedback", row);
                 run.Check("wall-feedback-spell-resistance", witnessIsEnemy && (bool)resisted["allyClearOfAdjacency"] &&
                     (int?)resisted["newSections"] == 0 &&
-                    (string)resisted["lastMessage"] == ContextActionFormInfernalWall35.ResistedMessage &&
-                    (long?)resisted["attemptsDelta"] == 1 && resisted["saves"].Count() == 0 &&
+                    InfernalWallFeedbackDelivered35(resisted, ContextActionFormInfernalWall35.ResistedMessage) &&
+                    resisted["saves"].Count() == 0 &&
                     resisted["spellResistance"].Any(value => (string)value["target"] == witness.UniqueId &&
                         (bool?)value["rollRequired"] == true && (bool?)value["resisted"] == true), resisted,
                     "An ordinary command disrupted by an adjacent hostile creature's spell resistance forms nothing and tells the player why.");
@@ -991,6 +1008,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             string insideGuid = inside?.Blueprint?.AssetGuid;
             foreach (int frame in SummonOverhaulSettlePartyCamera(mover)) yield return frame;
             string image = WriteExpandedSummoningPartyCameraCapture(mover, _request.EvidenceDirectory, "s35-wall-steam.png");
+            // Presentation evidence: whether the native area spawned a live
+            // effect, an ordinary capture centred on the area, and one frame
+            // under a labelled inspection light. Recorded, judged by review.
+            JObject steamFx = InfernalWallAreaFx35(fog);
+            JObject ordinaryCapture = null, inspectionCapture = null;
+            if (fog != null)
+            {
+                foreach (int frame in InfernalWallSettleCameraAt35(fog.Position)) yield return frame;
+                ordinaryCapture = InfernalWallCaptureAt35(fog.Position, "s35-wall-steam-area-ordinary.png");
+                steamFx["afterCameraSettle"] = InfernalWallAreaFx35(fog);
+                inspectionCapture = InfernalWallInspectionCaptureAt35(fog.Position, "s35-wall-steam-area-inspection-light.png");
+            }
             Vector3 mid = formed.Plan.Midpoint;
             Vector3 outside = Vector3.Distance(outsidePlan.Start, mid) >= Vector3.Distance(outsidePlan.Destination, mid) ?
                 outsidePlan.Start : outsidePlan.Destination;
@@ -1004,7 +1033,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["image"] = image, ["areaOwnerSource"] = fog?.Context?.MaybeCaster?.UniqueId,
                 ["moverDistanceInside"] = insideGap, ["effectInside"] = inside != null, ["effectAfterExit"] = afterExit,
                 ["moverDistanceAfterExit"] = InfernalEarlyDistanceToSegment35(mover.Position, mid, mid),
-                ["areaStillLive"] = fog != null && !fog.IsEnded };
+                ["areaStillLive"] = fog != null && !fog.IsEnded,
+                ["steamFx"] = steamFx, ["steamOrdinaryCapture"] = ordinaryCapture,
+                ["steamInspectionCapture"] = inspectionCapture };
             InfernalWallPersist35(run, "steam-consumer", row);
             run.Check("wall-steam-consumer", fog != null && inside != null && !afterExit && !fog.IsEnded &&
                 (configured == null || insideGuid == configured.AssetGuid), row,
