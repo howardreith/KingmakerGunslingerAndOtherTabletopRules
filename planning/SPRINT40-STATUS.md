@@ -291,6 +291,21 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   with production compilation and all five focused Sprint40 checks passing.
   NEXT: commit/push and rebuild the changed observer once, then rerun only the
   wall phase for the discriminating observation; do not repeat the prior artifact.
+- Reporting head `5d6cc177891e44e77463410bbd05fbc428c7ba02` passed 2,816/2,816
+  and strict packaging: ZIP SHA256 `9c368c867a85db18f29cf6b728d3c9a7d43d3af10eeed6c4331edcba0deebe85`,
+  DLL SHA256 `be4d02f90d3a2d122d51b0af1a15318bae7a1579991f44507fba7b6218a72eb8`,
+  MVID `50025818-28a5-40f9-8185-3e6ec4567792`. Wall run
+  `20261106T0038375820751Z-disposable-expanded-summoning-sprint32-native-review`
+  retained FAIL but discriminates the command boundary: the exact source and
+  target remain fixed, availability stays true, and `CanTarget` changes true to
+  false on frame4902 as the command interrupts, recovers on4919, changes false
+  again on4926, and recovers on4941. Restoration receipt
+  `expanded-summoning-restoration/20261106T0042089046118Z-disposable-expanded-summoning-sprint32-native-review.json`
+  is exact. The observer now samples the production wall placement predicate,
+  concentration flag and live unit footprint distances only at state transitions,
+  while bounding the trace after command completion. Production compilation and
+  all five focused Sprint40 checks pass. NEXT: commit/push, rebuild once and rerun
+  only the wall phase to identify the moving obstruction or non-placement gate.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 

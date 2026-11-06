@@ -294,22 +294,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             var prior = new HashSet<string>(Game.Instance.State.Units.Select(x => x.UniqueId));
             var command = new UnitUseAbility(data, new TargetWrapper(middle)); source.Commands.Run(command);
             var targetTrace = new JArray();
-            bool lastCanTarget = data.CanTarget(command.Target);
-            targetTrace.Add(new JObject { ["phase"] = "after-run", ["frame"] = Time.frameCount,
-                ["sourcePosition"] = Vec(source.Position), ["commandTarget"] = Vec(command.Target.Point),
-                ["available"] = data.IsAvailable, ["canTarget"] = lastCanTarget,
-                ["command"] = Sprint27AiCommand(command) });
+            bool lastCanTarget, lastPlacementLegal;
+            targetTrace.Add(IceDevilWallTargetSample40(source, data, command,
+                sectionBp, "after-run", out lastCanTarget, out lastPlacementLegal));
+            bool lastFinished = command.IsFinished;
             UnitEntityData section = null; DateTime deadline = DateTime.UtcNow.AddSeconds(25);
             while (DateTime.UtcNow < deadline && (!command.IsFinished || section == null))
             {
                 Game.Instance.IsPaused = false; yield return 0;
-                bool canTarget = data.CanTarget(command.Target);
-                if (canTarget != lastCanTarget || command.IsFinished || targetTrace.Count < 8)
-                    targetTrace.Add(new JObject { ["phase"] = "after-frame", ["frame"] = Time.frameCount,
-                        ["sourcePosition"] = Vec(source.Position), ["commandTarget"] = Vec(command.Target.Point),
-                        ["available"] = data.IsAvailable, ["canTarget"] = canTarget,
-                        ["command"] = Sprint27AiCommand(command) });
-                lastCanTarget = canTarget;
+                bool canTarget, placementLegal;
+                JObject sample = IceDevilWallTargetSample40(source, data, command,
+                    sectionBp, "after-frame", out canTarget, out placementLegal);
+                bool finished = command.IsFinished;
+                if (canTarget != lastCanTarget || placementLegal != lastPlacementLegal ||
+                    finished != lastFinished || targetTrace.Count < 8) targetTrace.Add(sample);
+                lastCanTarget = canTarget; lastPlacementLegal = placementLegal;
+                lastFinished = finished;
                 section = Game.Instance.State.Units.FirstOrDefault(x => !prior.Contains(x.UniqueId) &&
                     ReferenceEquals(x.Blueprint, sectionBp));
             }
@@ -332,6 +332,47 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["nodeClaims"] = binding?.GridNodesClaimed, ["command"] = Sprint27AiCommand(command),
                     ["targetTrace"] = targetTrace },
                 "Actual cast retains its own source/context/CL,3 HP per CL and10 rounds per CL; Bone's released parameters remain12/36/120 rounds.");
+        }
+
+        private JObject IceDevilWallTargetSample40(UnitEntityData source,
+            AbilityData data, UnitUseAbility command, BlueprintUnit wallSection,
+            string phase, out bool canTarget, out bool placementLegal)
+        {
+            InfernalWallPlacement35 placement;
+            placementLegal = InfernalWallPlacementRuntime35.TryResolve(source,
+                command.Target, wallSection, out placement);
+            canTarget = data.CanTarget(command.Target);
+            var row = new JObject { ["phase"] = phase, ["frame"] = Time.frameCount,
+                ["sourcePosition"] = Vec(source.Position),
+                ["commandTarget"] = Vec(command.Target.Point),
+                ["available"] = data.IsAvailable, ["canTarget"] = canTarget,
+                ["placementLegal"] = placementLegal,
+                ["concentrationFailed"] = command.ConcentrationCheckFailed,
+                ["command"] = Sprint27AiCommand(command) };
+            if (placementLegal || Game.Instance?.State?.Units?.All == null) return row;
+
+            Vector3 center = command.Target.Point;
+            Vector3 forward = center - source.Position; forward.y = 0f;
+            if (forward.sqrMagnitude < .0625f) forward = source.OrientationDirection;
+            forward.y = 0f;
+            if (forward.sqrMagnitude < .0625f) forward = Vector3.forward;
+            forward.Normalize();
+            Vector3 along = Vector3.Cross(Vector3.up, forward).normalized;
+            row["liveUnits"] = new JArray(Game.Instance.State.Units.All
+                .Where(unit => unit != null && !unit.Destroyed && unit.IsInState &&
+                    !unit.Descriptor.State.IsDead)
+                .Select(unit => {
+                    float distance = InfernalWallPlacementRuntime35.DistanceToFootprint(
+                        unit.Position, center, along, forward);
+                    float corpulence = Math.Max(.05f, unit.Corpulence);
+                    return new JObject { ["unit"] = unit.UniqueId,
+                        ["blueprint"] = unit.Blueprint?.AssetGuid,
+                        ["position"] = Vec(unit.Position), ["distance"] = distance,
+                        ["corpulence"] = corpulence,
+                        ["occupied"] = InfernalRules35.WallPlacementOccupied(
+                            distance, corpulence) };
+                }).OrderBy(unit => (float)unit["distance"]));
+            return row;
         }
     }
 }
