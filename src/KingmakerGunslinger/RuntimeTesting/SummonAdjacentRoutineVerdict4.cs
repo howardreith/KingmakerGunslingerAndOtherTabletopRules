@@ -14,10 +14,15 @@ namespace KingmakerGunslinger.RuntimeTesting
     /// - the native plan equals the expected multiset;
     /// - every planned slot resolves, hit or miss, against the exact target
     ///   under the exact command;
-    /// - the command ends Success, or with the installed stack's
-    ///   exhausted-routine Interrupt: a command-end row for this command and
-    ///   actor at the final index, with no next planned attack, raised by
-    ///   UnitAttack.OnTick;
+    /// - the command ends Success, or with an Interrupt at the exhausted
+    ///   routine: a command-end row for this command and actor at the final
+    ///   index with no next planned attack, raised either by
+    ///   UnitAttack.OnTick (the installed stack's ordinary end) or by the
+    ///   routine's own terminal grab. A terminal grab needs evidence: the
+    ///   attacker gained the grapple hold and the target became grappled
+    ///   during the command (neither before), the end came at the final
+    ///   act's instant, and the final attack was a hit with an expected
+    ///   weapon. Any other interruption fails;
     /// - the attacker keeps its summon lifetime and is alive;
     /// - ProperFlanking2 is loaded, active, patched, and its live
     ///   reach_weapons_dead_zone is true;
@@ -55,9 +60,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var ends = (record["commandEnds"] as JArray ?? new JArray()).OfType<JObject>().Where(row =>
                     (string)row["owner"] == owner && (int?)row["commandReference"] == reference).ToList();
+                bool grab = TerminalGrab(record["terminalGrab"] as JObject, expected);
                 if (!ends.Any(row => (int?)row["attackIndex"] == plan.Count &&
                         (bool?)row["plannedAttackPresent"] == false &&
-                        ((string)row["interruptionCaller"] ?? "").Contains("UnitAttack.OnTick")))
+                        (((string)row["interruptionCaller"] ?? "").Contains("UnitAttack.OnTick") || grab)))
                     return "interrupted-without-native-exhaustion";
             }
             else if (result != "Success") return "command-result-" + (result ?? "missing");
@@ -76,6 +82,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ((double?)record["targetTravel"] ?? 99d) >= MaximumTravelMeters)
                 return "unit-moved";
             return null;
+        }
+
+        private static bool TerminalGrab(JObject evidence, List<string> expected)
+        {
+            return evidence != null && (bool?)evidence["attackerHoldBefore"] == false &&
+                (bool?)evidence["attackerHoldAfter"] == true && (bool?)evidence["targetGrappledBefore"] == false &&
+                (bool?)evidence["targetGrappledAfter"] == true && (bool?)evidence["endAtFinalAct"] == true &&
+                (bool?)evidence["finalAttackHit"] == true && expected.Contains((string)evidence["finalAttackWeapon"]);
         }
 
         private static bool SameMultiset(List<string> left, List<string> right)

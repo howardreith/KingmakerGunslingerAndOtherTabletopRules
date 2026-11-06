@@ -46,6 +46,33 @@ namespace KingmakerGunslinger.DomainTests
             exhausted["commandEnds"][0]["interruptionCaller"] = "  at Kingmaker.UnitLogic.Commands.UnitAttack.OnTick ()";
             Assertions.Equal<string>(null, SummonAdjacentRoutineVerdict4.Failure(exhausted), "The exhausted-routine Interrupt passes.");
 
+            // s4d Salamander: the final tail hit grabbed, the grapple made the
+            // attacker unable to act, and UnitActionController interrupted the
+            // exhausted command in the same instant.
+            var grab = Complete();
+            grab["commandResult"] = "Interrupt";
+            grab["commandEnds"][0]["interruptionCaller"] = "  at Kingmaker.Controllers.Units.UnitActionController.TickCommand ()";
+            grab["terminalGrab"] = new JObject { ["attackerHoldBefore"] = false, ["attackerHoldAfter"] = true,
+                ["targetGrappledBefore"] = false, ["targetGrappledAfter"] = true, ["endAtFinalAct"] = true,
+                ["finalAttackHit"] = true, ["finalAttackWeapon"] = Tail };
+            Assertions.Equal<string>(null, SummonAdjacentRoutineVerdict4.Failure(grab),
+                "A terminal grab after every slot resolved is a native completion boundary.");
+            foreach (string missing in new[] { "attackerHoldAfter", "targetGrappledAfter", "endAtFinalAct", "finalAttackHit" })
+            {
+                var weak = (JObject)grab.DeepClone();
+                weak["terminalGrab"][missing] = false;
+                Fails(weak, "interrupted-without-native-exhaustion", "A terminal grab without " + missing + " fails.");
+            }
+            var preexisting = (JObject)grab.DeepClone();
+            preexisting["terminalGrab"]["attackerHoldBefore"] = true;
+            Fails(preexisting, "interrupted-without-native-exhaustion", "A grapple held before the command is not this routine's grab.");
+            var otherWeapon = (JObject)grab.DeepClone();
+            otherWeapon["terminalGrab"]["finalAttackWeapon"] = "unexpected";
+            Fails(otherWeapon, "interrupted-without-native-exhaustion", "The grabbing hit must be an expected slot.");
+            var earlyGrab = (JObject)grab.DeepClone();
+            earlyGrab["commandEnds"][0]["attackIndex"] = 2; earlyGrab["commandEnds"][0]["plannedAttackPresent"] = true;
+            Fails(earlyGrab, "interrupted-without-native-exhaustion", "A grab before the routine is exhausted cannot pass.");
+
             var partial = Complete();
             partial["attacks"] = new JArray(Attack(Spear, true), Attack(Tail, true));
             Fails(partial, "planned-slot-unresolved", "A partial routine fails even though it hit.");

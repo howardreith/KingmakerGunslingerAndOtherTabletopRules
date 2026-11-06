@@ -92,7 +92,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int frame = 0; frame < 2; frame++) { Game.Instance.IsPaused = false; yield return 0; }
                 }
                 JObject verdict = SummonReachProbeVerdict4(probe);
-                check("threat-" + key, verdict["failure"].Type == JTokenType.Null, verdict,
+                check("threat-" + key, (string)verdict["failure"] == null, verdict,
                     "Each wielded weapon threatens exactly as the installed contract predicts at the adjacent distance, just inside and just beyond its own range; converted rows keep their pre-Sprint-4 live range and are legal adjacent; genuine reach weapons keep their dead zone.");
             }
             var routines = new JArray();
@@ -437,7 +437,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (JObject sample in threat)
                 {
                     bool modelled = (bool)sample["nativeExpected"] && !(bool)sample["insideProperFlanking2DeadZone"];
-                    if (sample["error"].Type != JTokenType.Null || (bool)sample["lineOfSight"] != true)
+                    if ((string)sample["error"] != null || (bool)sample["lineOfSight"] != true)
                         failure = failure ?? ("probe-unusable-" + slot["itemName"] + "-" + sample["distance"]);
                     else if ((bool)sample["isReach"] != modelled)
                         failure = failure ?? ("contract-mismatch-" + slot["itemName"] + "-" + sample["distance"]);
@@ -588,6 +588,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["ownerLifetimePresentAfter"] = unit.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff) != null;
             row["ownerAliveAfter"] = !unit.Destroyed && unit.IsInGame && !unit.Descriptor.State.IsDead;
             row["after"] = InfernalAdjacentActors35(unit, target);
+            // Every row the attacker produced from the command to its end,
+            // whatever command it names, so an unresolved slot is explained.
+            double issued = (double)row["commandIssuedGameSeconds"];
+            double ended = ends.Length == 0 ? double.MaxValue : ends.Max(value => (double?)value["gameSeconds"] ?? 0d) + .5d;
+            row["windowRows"] = new JArray(trace.Rows.OfType<JObject>().Where(value =>
+                    (string)value["owner"] == unit.UniqueId && ((double?)value["gameSeconds"] ?? 0d) >= issued &&
+                    ((double?)value["gameSeconds"] ?? 0d) <= ended)
+                .Select(value => new JObject { ["event"] = value["event"], ["gameSeconds"] = value["gameSeconds"],
+                    ["target"] = value["target"], ["weapon"] = value["weapon"], ["hit"] = value["hit"],
+                    ["d20"] = value["d20"], ["hpDamage"] = value["hpDamage"], ["attackCommand"] = value["attackCommand"],
+                    ["commandReference"] = value["commandReference"], ["attackIndex"] = value["attackIndex"],
+                    ["nativeCommandType"] = value["nativeCommandType"] }));
+            // A grab rider on the final slot (the Salamander tail) grapples at
+            // once; the native grapple then makes the attacker unable to act,
+            // and UnitActionController interrupts the exhausted command.
+            Func<JObject, string, string, bool> has = (actors, who, buff) =>
+                ((JArray)actors[who]["buffs"]).Any(value => (string)value == buff);
+            var acts = commandRows.Where(value => (string)value["event"] == "command-act").ToArray();
+            JObject finalAttack = attackRows.OrderBy(value => (double?)value["gameSeconds"] ?? 0d).LastOrDefault();
+            row["terminalGrab"] = new JObject {
+                ["attackerHoldBefore"] = has((JObject)row["prerequisites"], "attacker", "KMG_Summoning_Special_Grapple_Hold"),
+                ["attackerHoldAfter"] = has((JObject)row["after"], "attacker", "KMG_Summoning_Special_Grapple_Hold"),
+                ["targetGrappledBefore"] = has((JObject)row["prerequisites"], "target", "KMG_Summoning_Special_Grapple_Grappled"),
+                ["targetGrappledAfter"] = has((JObject)row["after"], "target", "KMG_Summoning_Special_Grapple_Grappled"),
+                ["endAtFinalAct"] = ends.Length > 0 && acts.Length > 0 &&
+                    Math.Abs(((double?)ends.Last()["gameSeconds"] ?? -1d) - ((double?)acts.Last()["gameSeconds"] ?? -2d)) < .001d,
+                ["finalAttackHit"] = finalAttack != null && (bool?)finalAttack["hit"] == true,
+                ["finalAttackWeapon"] = finalAttack?["weapon"] };
             row["forcedRolls"] = 0; row["observerWritesDuringCommand"] = 0;
             string failure = SummonAdjacentRoutineVerdict4.Failure(row);
             row["verdictFailure"] = failure;
