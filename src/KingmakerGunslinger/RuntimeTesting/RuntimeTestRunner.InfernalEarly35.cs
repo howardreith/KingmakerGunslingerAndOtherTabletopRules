@@ -352,6 +352,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             // inside natural reach and outside that dead zone. The tail
             // visual reaches the actual target surface at any legal distance.
             var laneReceipt = new JObject();
+            // The fixture's reach witness has also been the physical Wall
+            // attacker; in close15 its view was gone by the tail step (native
+            // JoinCombat dereferenced a null view). A gone target is recorded
+            // and replaced by the nearest live creature hostile to the Bone
+            // Devil; the tail rule is unchanged.
+            if (target == null || target.View == null || target.Destroyed || !target.IsInGame ||
+                target.Descriptor.State.IsDead)
+            {
+                laneReceipt["originalTarget"] = new JObject { ["unit"] = target?.UniqueId,
+                    ["viewPresent"] = target?.View != null, ["destroyed"] = target?.Destroyed,
+                    ["isInGame"] = target?.IsInGame, ["dead"] = target?.Descriptor.State.IsDead,
+                    ["summonLifetimePresent"] = target?.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff) != null };
+                target = Game.Instance.State.Units.All.Where(value => value != null && value != bone &&
+                        value.View != null && !value.Destroyed && value.IsInGame && !value.Descriptor.State.IsDead &&
+                        bone.IsEnemy(value) && value.Blueprint?.AssetGuid != InfernalRules35.WallSectionUnitGuid)
+                    .OrderBy(value => value.DistanceTo(bone)).FirstOrDefault();
+                if (target == null) throw new InvalidOperationException("Tail target is gone and no live hostile creature remains: " +
+                    laneReceipt["originalTarget"].ToString(Formatting.None));
+                laneReceipt["replacementTarget"] = target.UniqueId;
+                laneReceipt["replacementBlueprint"] = target.Blueprint?.name;
+            }
             if (wallPhase)
             {
                 // The earlier fixture lane put a palisade between the party
