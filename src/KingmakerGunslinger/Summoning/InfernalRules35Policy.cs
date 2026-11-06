@@ -250,6 +250,66 @@ namespace KingmakerGunslinger.Summoning
             bool originalWalkable, bool hasRemainingWallOwner)
         { return hasRemainingWallOwner ? false : originalWalkable; }
 
+        /// <summary>What one wall-retirement attempt may do with the native
+        /// grid cut this component applied.</summary>
+        internal enum WallRetirementStep
+        {
+            /// <summary>Submit the paired revert object for the exact graph.</summary>
+            RevertNativeCut,
+            /// <summary>Complete retirement without a native revert, because
+            /// nothing of ours survives on the captured graph.</summary>
+            SkipNativeCut,
+            /// <summary>Leave retirement pending and retry on a later frame.</summary>
+            Defer
+        }
+
+        /// <summary>
+        /// Decides one step of wall retirement.
+        ///
+        /// The installed engine makes exactly one of these states transient.
+        /// <c>Pathfinding.GridGraph.UpdateArea</c> clears
+        /// <c>GraphUpdateObject.updating</c> as its final act, so an update in
+        /// flight is queued-not-yet-processed and the pathfinder resolves it
+        /// itself: the correct response is to retry on a later frame, never to
+        /// abandon retirement and never to block the Unity thread waiting.
+        ///
+        /// A replaced graph is terminal instead. The captured graph is gone, so
+        /// no cut of ours survives on it, and its restoration data must never
+        /// reach the replacement. Retirement completes without a native revert.
+        ///
+        /// Destruction and an exhausted defer budget both force completion:
+        /// leaking owned navigation claims is worse than skipping a revert on
+        /// a graph that is being torn down anyway.
+        /// </summary>
+        internal static WallRetirementStep PlanWallRetirement(
+            bool gridCutApplied, bool graphExact, bool updateInFlight,
+            bool forced, int deferredFrames, int deferFrameBudget)
+        {
+            if (deferredFrames < 0 || deferFrameBudget < 0)
+                throw new ArgumentOutOfRangeException("deferredFrames");
+            if (!gridCutApplied) return WallRetirementStep.SkipNativeCut;
+            if (!graphExact) return WallRetirementStep.SkipNativeCut;
+            if (!updateInFlight) return WallRetirementStep.RevertNativeCut;
+            return forced || deferredFrames >= deferFrameBudget
+                ? WallRetirementStep.SkipNativeCut
+                : WallRetirementStep.Defer;
+        }
+
+        /// <summary>The recorded reason a retirement skipped its native
+        /// revert, or null when it did not skip one.</summary>
+        internal static string WallRetirementSkipReason(
+            bool gridCutApplied, bool graphExact, bool updateInFlight,
+            bool forced, int deferredFrames, int deferFrameBudget)
+        {
+            if (PlanWallRetirement(gridCutApplied, graphExact, updateInFlight,
+                    forced, deferredFrames, deferFrameBudget) !=
+                WallRetirementStep.SkipNativeCut) return null;
+            if (!gridCutApplied) return "no-native-cut-applied";
+            if (!graphExact) return "captured-graph-replaced";
+            return forced ? "forced-while-update-in-flight"
+                : "update-in-flight-defer-budget-exhausted";
+        }
+
         internal static void Validate()
         {
             if (AppendedCatalogIdentityCount != 54 ||

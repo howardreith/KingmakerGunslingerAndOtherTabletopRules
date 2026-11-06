@@ -1152,6 +1152,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint35-bone-invisibility-identity", InfernalRules35Tests.BoneInvisibilityOwnsItsAppendedEffectIdentity),
             Case("expanded-summoning.sprint35-private-wall-unit-donor", InfernalRules35Tests.PrivateWallUnitHasBoundedShellDonor),
             Case("expanded-summoning.sprint35-wall-formation-breach", InfernalRules35Tests.WallOfIceKeepsFormationAndBreachRulesDistinct),
+            Case("expanded-summoning.sprint35-wall-retirement-resumable", InfernalRules35Tests.WallRetirementResumesAndNeverStrandsClaims),
             Case("expanded-summoning.sprint35-original-models", InfernalRules35Tests.OwnedBodiesDecodeAndTailIsIsolated),
             Case("expanded-summoning.sprint36-live-dcs", InfernalRules36Tests.PrintedDcsDeriveFromLiveAbilityScores),
             Case("expanded-summoning.sprint36-public-routes", InfernalRules36Tests.PublicRoutesHaveExactScopeAndQuantity),

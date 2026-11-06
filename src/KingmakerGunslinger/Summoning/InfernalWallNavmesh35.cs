@@ -58,6 +58,14 @@ namespace KingmakerGunslinger.Summoning
         private bool _liveReconcileQueued;
         private bool _restoreReconcileQueued;
         private int _restoreExactFrames;
+        private bool _retirePending;
+        private int _retireDeferredFrames;
+
+        // One frame is enough for the pathfinder to run GridGraph.UpdateArea
+        // in the ordinary case. This bound only stops an indefinitely stalled
+        // update from leaking owned claims; it is a safety valve, not a
+        // scheduling policy.
+        internal const int RetireDeferFrameBudget = 120;
 
         internal NavmeshCut Cut { get { return _cut; } }
         internal UnitEntityData Owner { get { return _owner; } }
@@ -81,6 +89,10 @@ namespace KingmakerGunslinger.Summoning
         internal int GridLiveReconcileCompleted { get; private set; }
         internal bool NativeCutDisabledBeforeDestroy { get; private set; }
         internal bool NativeGridCutRevertQueued { get; private set; }
+        internal int RetireDeferrals { get; private set; }
+        internal string NativeGridCutRevertSkipReason { get; private set; }
+        internal bool ReleaseCompleted { get { return _released; } }
+        internal bool RetirePending { get { return _retirePending && !_released; } }
         internal string GridFailure { get; private set; }
         internal static int ActiveGridClaimCount { get { return Claims.Count; } }
 
@@ -466,9 +478,27 @@ namespace KingmakerGunslinger.Summoning
             }));
         }
 
-        internal void Release()
+        internal void Release() { Release(false); }
+
+        /// <summary>
+        /// Retires this wall's navigation ownership, visuals and native cut.
+        ///
+        /// Retirement is resumable and idempotent. Previously this threw
+        /// between disabling the native cut and the terminal work, so an
+        /// interrupted call left the cut disabled, the owned claims held, the
+        /// visuals up and <c>_released</c> false, while callers had already
+        /// set their one-way breach/retire flags and would refuse to retry.
+        ///
+        /// Now a transient in-flight grid update leaves retirement pending and
+        /// retries from <c>Update</c>, and a replaced graph completes without a
+        /// native revert instead of aborting. <paramref name="force"/> is used
+        /// by destruction, where no later frame exists to resume on.
+        /// </summary>
+        /// <returns>True when retirement completed; false when it is pending
+        /// and will resume on a later frame.</returns>
+        internal bool Release(bool force)
         {
-            if (_released) return;
+            if (_released) return true;
             if (_cut != null)
             {
                 // Kingmaker's turn-based navigation consumer applies a
@@ -480,22 +510,58 @@ namespace KingmakerGunslinger.Summoning
                 // footprint observed for this same component.
                 _cut.enabled = false;
                 NativeCutDisabledBeforeDestroy = !_cut.enabled;
-                if (_cut.gridGuoApplied)
+                bool graphExact = _astar != null &&
+                    ReferenceEquals(AstarPath.active, _astar) &&
+                    GridGraphIndex >= 0 && GridGraphIndex < 31;
+                bool updateInFlight = false;
+                bool cutApplied = _cut.gridGuoApplied;
+                NavmeshCut.UpdateObjectPair updatePair =
+                    default(NavmeshCut.UpdateObjectPair);
+                if (cutApplied && graphExact)
                 {
-                    if (_astar == null ||
-                        !ReferenceEquals(AstarPath.active, _astar) ||
-                        GridGraphIndex < 0 || GridGraphIndex >= 31)
-                        throw new InvalidOperationException(
-                            "Wall native grid-cut revert has no exact active graph.");
                     bool cutEnabled;
-                    NavmeshCut.UpdateObjectPair pair =
-                        _cut.GetUpdateObjectForGrid(out cutEnabled,
-                            1 << GridGraphIndex);
-                    if (pair.guo.updating || pair.revertGuo.updating)
-                        throw new InvalidOperationException(
-                            "Wall native grid-cut update is still in flight.");
-                    pair.revertGuo.updating = true;
-                    _astar.UpdateGraphs(pair.revertGuo);
+                    updatePair = _cut.GetUpdateObjectForGrid(out cutEnabled,
+                        1 << GridGraphIndex);
+                    if (updatePair.guo == null || updatePair.revertGuo == null)
+                        // The engine holds no paired revert object for this
+                        // cut, so there is nothing of ours to submit. That is
+                        // terminal, not an update worth waiting for.
+                        cutApplied = false;
+                    else
+                        updateInFlight = updatePair.guo.updating ||
+                            updatePair.revertGuo.updating;
+                }
+                var step = InfernalRules35.PlanWallRetirement(
+                    cutApplied, graphExact, updateInFlight, force,
+                    _retireDeferredFrames, RetireDeferFrameBudget);
+                if (step == InfernalRules35.WallRetirementStep.Defer)
+                {
+                    // Queued-not-yet-processed. Leave the cut disabled, keep
+                    // every claim and reference intact, and resume on a later
+                    // frame; never spin the Unity thread waiting here.
+                    _retirePending = true;
+                    _retireDeferredFrames++;
+                    RetireDeferrals++;
+                    enabled = true;
+                    return false;
+                }
+                if (step == InfernalRules35.WallRetirementStep.SkipNativeCut)
+                {
+                    NativeGridCutRevertSkipReason =
+                        InfernalRules35.WallRetirementSkipReason(
+                            cutApplied, graphExact, updateInFlight,
+                            force, _retireDeferredFrames,
+                            RetireDeferFrameBudget);
+                    // Only the bookkeeping is cleared. No restoration data is
+                    // applied, so nothing of ours can reach a replacement
+                    // graph; QueueGridRestore below enforces the same rule for
+                    // the owned claims.
+                    _cut.gridGuoApplied = false;
+                }
+                else
+                {
+                    updatePair.revertGuo.updating = true;
+                    _astar.UpdateGraphs(updatePair.revertGuo);
                     _cut.gridGuoApplied = false;
                     _cut.NotifyUpdatedForGrid();
                     NativeGridCutRevertQueued = true;
@@ -510,6 +576,7 @@ namespace KingmakerGunslinger.Summoning
                     _tileHandler.ForceUpdate();
             }
             _released = true;
+            _retirePending = false;
             if (_wallVisual != null)
                 UnityEngine.Object.DestroyImmediate(_wallVisual);
             if (_wallMaterial != null)
@@ -524,10 +591,14 @@ namespace KingmakerGunslinger.Summoning
             _tileHandler = null;
             _owner = null;
             _view = null;
+            return true;
         }
 
         private void Update()
         {
+            // A deferred retirement resumes here, on a later frame, once the
+            // pathfinder has run GridGraph.UpdateArea for the in-flight update.
+            if (!_released && _retirePending && !Release(false)) return;
             if (_released)
             {
                 if (!GridRestoreCompleted || _restoreReconcileQueued) return;
@@ -558,7 +629,9 @@ namespace KingmakerGunslinger.Summoning
 
         private void OnDestroy()
         {
-            if (!_released) Release();
+            // Destruction has no later frame to resume a deferred retirement
+            // on, so force completion rather than leak owned claims.
+            if (!_released) Release(true);
             QueueReleasedGridReconcile();
         }
     }
@@ -585,7 +658,8 @@ namespace KingmakerGunslinger.Summoning
             try { owned.Configure(__instance); }
             catch (Exception error)
             {
-                owned.Release();
+                // The component is being abandoned, so force completion.
+                owned.Release(true);
                 Debug.LogException(error);
             }
         }
@@ -599,7 +673,9 @@ namespace KingmakerGunslinger.Summoning
             var owned = __instance == null ? null :
                 __instance.GetComponent<InfernalWallNavmesh35>();
             if (owned == null) return;
-            try { owned.Release(); }
+            // The view is going away, so this retirement cannot be resumed
+            // on a later frame either.
+            try { owned.Release(true); }
             catch (Exception)
             {
                 // Never prevent the native view destruction path.

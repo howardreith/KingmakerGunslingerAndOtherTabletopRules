@@ -447,18 +447,29 @@ namespace KingmakerGunslinger.Summoning
             MechanicsContext context = lifetime?.Context;
             TimeSpan remaining = lifetime == null ? TimeSpan.Zero :
                 lifetime.TimeLeft;
-            ReleaseNavigation();
-            if (context?.MaybeCaster == null ||
-                !ReferenceEquals(context.SourceAbility, WallAbility) ||
-                remaining <= TimeSpan.Zero ||
-                !InfernalEffectLifetime34.SourceIsLive(context.MaybeCaster))
-                return;
-            if (ResidualArea != null)
-                AreaEffectsController.Spawn(context, ResidualArea,
-                    new TargetWrapper(unit.Position), remaining);
-            if (fire && FogArea != null)
-                AreaEffectsController.Spawn(context, FogArea,
-                    new TargetWrapper(unit.Position), TimeSpan.FromMinutes(10));
+            // _breached is one-way, so the breach consequences must not sit
+            // behind navigation release: if that release were interrupted,
+            // every later call would refuse to retry and the residual cold and
+            // fire fog would never be created at all. Navigation retirement is
+            // resumable and idempotent on its own component, so request it and
+            // then create the consequences exactly once regardless.
+            try { ReleaseNavigation(); }
+            finally
+            {
+                if (context?.MaybeCaster != null &&
+                    ReferenceEquals(context.SourceAbility, WallAbility) &&
+                    remaining > TimeSpan.Zero &&
+                    InfernalEffectLifetime34.SourceIsLive(context.MaybeCaster))
+                {
+                    if (ResidualArea != null)
+                        AreaEffectsController.Spawn(context, ResidualArea,
+                            new TargetWrapper(unit.Position), remaining);
+                    if (fire && FogArea != null)
+                        AreaEffectsController.Spawn(context, FogArea,
+                            new TargetWrapper(unit.Position),
+                            TimeSpan.FromMinutes(10));
+                }
+            }
         }
 
         public void HandleBuffDidAdded(Buff buff) { }
@@ -500,10 +511,17 @@ namespace KingmakerGunslinger.Summoning
         {
             if (_retiring) return;
             _retiring = true;
-            ReleaseNavigation();
-            Buff lifetime = Owner?.Buffs?.GetBuff(
-                BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff);
-            if (lifetime != null && !lifetime.IsDisposed) lifetime.Remove();
+            // _retiring is one-way for the same reason, so lifetime removal
+            // must not sit behind navigation release either; an interrupted
+            // release would otherwise leave the section's lifetime buff in
+            // place forever with every retry refused.
+            try { ReleaseNavigation(); }
+            finally
+            {
+                Buff lifetime = Owner?.Buffs?.GetBuff(
+                    BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff);
+                if (lifetime != null && !lifetime.IsDisposed) lifetime.Remove();
+            }
         }
 
         internal static void Retire(UnitEntityData section)
