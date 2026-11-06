@@ -37,7 +37,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
                 if (ExpandedSummoningNativeProfilePolicy.WallFixturePhase(phase) ||
-                    phase == ExpandedSummoningNativeProfilePolicy.Sprint4SummonReachPhase ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulReachPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulDaylightPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulMotionPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulOffPhase ||
@@ -104,7 +104,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in ReviewInfernalEarly35(fixture)) yield return frame;
                 yield break;
             }
-            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint4SummonReachPhase)
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulReachPhase)
             {
                 CreateSprint32TurnHostile(fixture);
                 using (var mode = Cleanup2EnterNativeDefault(fixture, phase))
