@@ -66,22 +66,22 @@ project-owned catalog and so hid eleven of them.
 
 | Unit identity | Creatures | Meaning |
 |---|---|---|
-| Project-owned | 111 | A summon-safe unit in ExpandedSummoningCatalog |
+| Project-owned | 134 | A summon-safe unit in ExpandedSummoningCatalog |
 | Retained native wrapper | 11 | A native unit exposed through a preserved wrapper |
-| None yet | 23 | In the ideal roster; no unit identity exists |
+| None yet | 0 | In the ideal roster; no unit identity exists |
 
 | Family placement | Summon Monster | Nature's Ally |
 |---|---|---|
-| Published | 104 | 103 |
+| Published | 120 | 110 |
 | Registered | 0 | 0 |
-| Planned | 16 | 7 |
+| Planned | 0 | 0 |
 | NotOffered | 25 | 35 |
 
-Represented today: **122** creatures (122 published somewhere, 0 registered but hidden).
+Represented today: **145** creatures (145 published somewhere, 0 registered but hidden).
 
 Frost Giant has one retained native unit identity and published Summon Monster and Nature's Ally wrappers in both families.
 
-Identity reuse: 122 existing creature identities are reused in place (charter decision D-01, one creature one identity); 23 new identities remain to be allocated.
+Identity reuse: 145 existing creature identities are reused in place (charter decision D-01, one creature one identity); 0 new identities remain to be allocated.
 
 ## Creatures
 
@@ -90,22 +90,22 @@ Identity reuse: 122 existing creature identities are reused in place (charter de
 | Air Mephit | 4 | 4 | complete | Strong | - | ProjectOwned | Published | Published | Mephit family |
 | Ankylosaurus | 5 | 5 | S22 | Essential | High | ProjectOwned | Published | Published | Armored dinosaurs |
 | Ape | 3 | 3 | S18 | Strong | High | ProjectOwned | Published | Published | Primate rig family |
-| Astral Deva | 9 | - | S31 | Essential | Medium | None | Planned | NotOffered | Outsiders |
+| Astral Deva | 9 | - | S31 | Essential | Medium | ProjectOwned | Published | NotOffered | Outsiders |
 | Aurochs | 3 | 3 | S11 | Essential | Medium | ProjectOwned | Published | Published | Equines & ungulates |
 | Axiomite | 6 | - | complete | Variety | - | NativeWrapper | Published | NotOffered | Outsiders |
-| Babau | 5 | - | S36 | Strong | High | None | Planned | NotOffered | Outsiders |
-| Barbed Devil | 8 | - | S35 | Strong | High | None | Planned | NotOffered | Outsiders |
-| Bearded Devil | 5 | - | S34 | Strong | High | None | Planned | NotOffered | Outsiders |
+| Babau | 5 | - | S36 | Strong | High | ProjectOwned | Published | NotOffered | Outsiders |
+| Barbed Devil | 8 | - | S35 | Strong | High | ProjectOwned | Published | NotOffered | Outsiders |
+| Bearded Devil | 5 | - | S34 | Strong | High | ProjectOwned | Published | NotOffered | Outsiders |
 | Bebelith | 7 | - | S21 | Strong | High | ProjectOwned | Published | NotOffered | Arachnids & scorpion |
 | Bison | 4 | 4 | S11 | Strong | Medium | ProjectOwned | Published | Published | Equines & ungulates |
 | Boar | 3 | 3 | complete | Variety | - | ProjectOwned | Published | Published | Boar family |
 | Bogeyman | 7 | - | complete | Strong | - | NativeWrapper | Published | NotOffered | Fey |
-| Bone Devil | 7 | - | S35 | Strong | VeryHigh | None | Planned | NotOffered | Outsiders |
+| Bone Devil | 7 | - | S35 | Strong | VeryHigh | ProjectOwned | Published | NotOffered | Outsiders |
 | Brachiosaurus | 7 | 7 | S25 | Essential | High | ProjectOwned | Published | Published | Sauropod dinosaur |
 | Bralani Azata | 5 | - | complete | Essential | - | ProjectOwned | Published | NotOffered | Outsiders |
 | Bulette | - | 6 | S26 | Strong | High | ProjectOwned | NotOffered | Published | Burrowers & huge monsters |
 | Cheetah | 3 | 3 | S8 | Strong | Medium | ProjectOwned | Published | Published | Big-cat family |
-| Cloud Giant | - | 8 | S29 | Strong | Medium | None | NotOffered | Planned | Giant humanoids |
+| Cloud Giant | - | 8 | S29 | Strong | Medium | ProjectOwned | NotOffered | Published | Giant humanoids |
 | Constrictor Snake | 3 | 3 | S17 | Strong | High | ProjectOwned | Published | Published | Snake rig family |
 | Crocodile | 3 | 3 | S16 | Strong | High | ProjectOwned | Published | Published | Crocodilian rig family |
 | Cyclops | - | 5 | S3 | Essential | Low | ProjectOwned | NotOffered | Published | Giant humanoids |
@@ -120,7 +120,7 @@ Identity reuse: 122 existing creature identities are reused in place (charter de
 | Dire Tiger (Smilodon) | 6 | 6 | S7 | Essential | Medium | ProjectOwned | Published | Published | Big-cat family |
 | Dire Wolf | 4 | 4 | complete | Strong | - | ProjectOwned | Published | Published | Canines & small quadrupeds |
 | Dog | 1 | 1 | S12 | Variety | Medium | ProjectOwned | Published | Published | Canines & small quadrupeds |
-| Dretch | 3 | - | S30 | Strong | Medium | None | Planned | NotOffered | Outsiders |
+| Dretch | 3 | - | S30 | Strong | Medium | ProjectOwned | Published | NotOffered | Outsiders |
 | Dust Mephit | 4 | 4 | S5 | Strong | Low | ProjectOwned | Published | Published | Mephit family |
 | Eagle | 1 | 1 | S9 | Essential | Medium | ProjectOwned | Published | Published | Flying creature rigs |
 | Earth Mephit | 4 | 4 | complete | Strong | - | ProjectOwned | Published | Published | Mephit family |
@@ -130,9 +130,9 @@ Identity reuse: 122 existing creature identities are reused in place (charter de
 | Elder Water Elemental | 8 | 8 | complete | Variety | - | ProjectOwned | Published | Published | Classic elementals |
 | Elephant | 6 | 6 | S25 | Strong | Medium | ProjectOwned | Published | Published | Proboscideans |
 | Erinyes Devil | 6 | - | complete | Strong | - | ProjectOwned | Published | NotOffered | Outsiders |
-| Ettin | - | 5 | S29 | Strong | High | None | NotOffered | Planned | Individual creature |
+| Ettin | - | 5 | S29 | Strong | High | ProjectOwned | NotOffered | Published | Individual creature |
 | Fire Beetle | 1 | 1 | S14 | Variety | High | ProjectOwned | Published | Published | Insect rig family |
-| Fire Giant | - | 7 | S28 | Essential | Medium | None | NotOffered | Planned | Giant humanoids |
+| Fire Giant | - | 7 | S28 | Essential | Medium | ProjectOwned | NotOffered | Published | Giant humanoids |
 | Fire Mephit | 4 | 4 | complete | Strong | - | ProjectOwned | Published | Published | Mephit family |
 | Frost Giant | 8 | 7 | S3 | Strong | Low | NativeWrapper | Published | Published | Giant humanoids |
 | Ghaele Azata | 9 | - | complete | Essential | - | ProjectOwned | Published | NotOffered | Outsiders |
@@ -148,7 +148,7 @@ Identity reuse: 122 existing creature identities are reused in place (charter de
 | Giant Stag Beetle | - | 4 | S15 | Strong | Medium | ProjectOwned | NotOffered | Published | Insect rig family |
 | Giant Wasp | 4 | 4 | S10 | Strong | High | ProjectOwned | Published | Published | Flying creature rigs |
 | Girallon | - | 5 | S19 | Essential | VeryHigh | ProjectOwned | NotOffered | Published | Primate rig family |
-| Glabrezu | 9 | - | S38 | Essential | VeryHigh | None | Planned | NotOffered | Outsiders |
+| Glabrezu | 9 | - | S38 | Essential | VeryHigh | ProjectOwned | Published | NotOffered | Outsiders |
 | Goblin Dog | 2 | 2 | S12 | Variety | Medium | ProjectOwned | Published | Published | Canines & small quadrupeds |
 | Gorgon | 8 | - | S26 | Essential | High | ProjectOwned | Published | NotOffered | Armored magical beast |
 | Greater Air Elemental | 7 | 7 | complete | Strong | - | ProjectOwned | Published | Published | Classic elementals |
@@ -159,27 +159,27 @@ Identity reuse: 122 existing creature identities are reused in place (charter de
 | Grizzly Bear | 4 | 4 | S6 | Strong | Low | ProjectOwned | Published | Published | Individual creature |
 | Hamadryad | - | 9 | complete | Strong | - | NativeWrapper | NotOffered | Published | Fey |
 | Hell Hound | 4 | - | complete | Strong | - | ProjectOwned | Published | NotOffered | Outsiders |
-| Hezrou | 8 | - | S36 | Strong | High | None | Planned | NotOffered | Outsiders |
-| Hill Giant | - | 6 | S28 | Variety | Medium | None | NotOffered | Planned | Giant humanoids |
+| Hezrou | 8 | - | S36 | Strong | High | ProjectOwned | Published | NotOffered | Outsiders |
+| Hill Giant | - | 6 | S28 | Variety | Medium | ProjectOwned | NotOffered | Published | Giant humanoids |
 | Horse | 2 | 2 | S3 | Variety | Low | ProjectOwned | Published | Published | Equines & ungulates |
-| Hound Archon | 4 | - | S30 | Essential | High | None | Planned | NotOffered | Outsiders |
+| Hound Archon | 4 | - | S30 | Essential | High | ProjectOwned | Published | NotOffered | Outsiders |
 | Huge Air Elemental | 6 | 6 | complete | Strong | - | ProjectOwned | Published | Published | Classic elementals |
 | Huge Earth Elemental | 6 | 6 | complete | Strong | - | ProjectOwned | Published | Published | Classic elementals |
 | Huge Fire Elemental | 6 | 6 | complete | Variety | - | ProjectOwned | Published | Published | Classic elementals |
 | Huge Water Elemental | 6 | 6 | complete | Variety | - | ProjectOwned | Published | Published | Classic elementals |
 | Hyena | 2 | 2 | S12 | Strong | Medium | ProjectOwned | Published | Published | Canines & small quadrupeds |
-| Ice Devil | 9 | - | S40 | Strong | VeryHigh | None | Planned | NotOffered | Outsiders |
+| Ice Devil | 9 | - | S40 | Strong | VeryHigh | ProjectOwned | Published | NotOffered | Outsiders |
 | Ice Mephit | 4 | 4 | S5 | Variety | Low | ProjectOwned | Published | Published | Mephit family |
 | Invisible Stalker | 6 | - | S33 | Strong | Medium | ProjectOwned | Published | NotOffered | Outsiders |
-| Kyton (Chain Devil) | 5 | - | S34 | Strong | High | None | Planned | NotOffered | Outsiders |
+| Kyton (Chain Devil) | 5 | - | S34 | Strong | High | ProjectOwned | Published | NotOffered | Outsiders |
 | Lantern Archon | 3 | - | S31 | Essential | Medium | ProjectOwned | Published | NotOffered | Outsiders |
 | Large Air Elemental | 5 | 5 | complete | Strong | - | ProjectOwned | Published | Published | Classic elementals |
 | Large Earth Elemental | 5 | 5 | complete | Essential | - | ProjectOwned | Published | Published | Classic elementals |
 | Large Fire Elemental | 5 | 5 | complete | Variety | - | ProjectOwned | Published | Published | Classic elementals |
 | Large Water Elemental | 5 | 5 | complete | Variety | - | ProjectOwned | Published | Published | Classic elementals |
-| Lemure | 2 | - | S30 | Essential | Medium | None | Planned | NotOffered | Outsiders |
+| Lemure | 2 | - | S30 | Essential | Medium | ProjectOwned | Published | NotOffered | Outsiders |
 | Leopard | 3 | 3 | S7 | Essential | Medium | ProjectOwned | Published | Published | Big-cat family |
-| Lillend Azata | 6 | - | S32 | Essential | VeryHigh | None | Planned | NotOffered | Outsiders |
+| Lillend Azata | 6 | - | S32 | Essential | VeryHigh | ProjectOwned | Published | NotOffered | Outsiders |
 | Lion | 4 | 4 | S7 | Essential | Medium | ProjectOwned | Published | Published | Big-cat family |
 | Magma Mephit | 4 | 4 | S5 | Variety | Low | ProjectOwned | Published | Published | Mephit family |
 | Manticore | - | 5 | complete | Essential | - | NativeWrapper | NotOffered | Published | Hybrid magical beasts |
@@ -191,7 +191,7 @@ Identity reuse: 122 existing creature identities are reused in place (charter de
 | Mite | - | 1 | complete | Strong | - | NativeWrapper | NotOffered | Published | Fey |
 | Monitor Lizard | 3 | 3 | S6 | Strong | Low | ProjectOwned | Published | Published | Individual creature |
 | Movanic Deva | 8 | - | complete | Essential | - | NativeWrapper | Published | NotOffered | Outsiders |
-| Nalfeshnee | 9 | - | S39 | Essential | VeryHigh | None | Planned | NotOffered | Outsiders |
+| Nalfeshnee | 9 | - | S39 | Essential | VeryHigh | ProjectOwned | Published | NotOffered | Outsiders |
 | Nereid | - | 8 | complete | Variety | - | NativeWrapper | NotOffered | Published | Fey |
 | Ooze Mephit | 4 | 4 | S5 | Essential | Low | ProjectOwned | Published | Published | Mephit family |
 | Owlbear | - | 4 | S3 | Strong | Low | ProjectOwned | NotOffered | Published | Hybrid magical beasts |
@@ -205,7 +205,7 @@ Identity reuse: 122 existing creature identities are reused in place (charter de
 | Roc | 7 | 7 | complete | Essential | - | ProjectOwned | Published | Published | Flying creature rigs |
 | Salamander | 5 | - | S17 | Strong | High | ProjectOwned | Published | NotOffered | Outsiders |
 | Salt Mephit | 4 | 4 | S5 | Essential | Low | ProjectOwned | Published | Published | Mephit family |
-| Satyr | - | 4 | S32 | Essential | Medium | None | NotOffered | Planned | Fey |
+| Satyr | - | 4 | S32 | Essential | Medium | ProjectOwned | NotOffered | Published | Fey |
 | Shadow Demon | 6 | - | S33 | Essential | High | ProjectOwned | Published | NotOffered | Outsiders |
 | Shadow Mastiff | 6 | - | S13 | Strong | Medium | ProjectOwned | Published | NotOffered | Canines & small quadrupeds |
 | Shambling Mound | - | 6 | S4 | Strong | Low | ProjectOwned | NotOffered | Published | Native plant summons |
@@ -217,16 +217,16 @@ Identity reuse: 122 existing creature identities are reused in place (charter de
 | Steam Mephit | 4 | 4 | S5 | Strong | Low | ProjectOwned | Published | Published | Mephit family |
 | Stegosaurus | - | 6 | S23 | Strong | High | ProjectOwned | NotOffered | Published | Armored dinosaurs |
 | Stirge | - | 1 | S10 | Strong | High | ProjectOwned | NotOffered | Published | Flying creature rigs |
-| Stone Giant | - | 6 | S28 | Essential | Medium | None | NotOffered | Planned | Giant humanoids |
-| Storm Giant | - | 9 | S29 | Essential | Medium | None | NotOffered | Planned | Giant humanoids |
+| Stone Giant | - | 6 | S28 | Essential | Medium | ProjectOwned | NotOffered | Published | Giant humanoids |
+| Storm Giant | - | 9 | S29 | Essential | Medium | ProjectOwned | NotOffered | Published | Giant humanoids |
 | Succubus | 6 | - | S33 | Strong | Medium | ProjectOwned | Published | NotOffered | Outsiders |
 | Thanadaemon | 9 | - | complete | Strong | - | NativeWrapper | Published | NotOffered | Outsiders |
 | Tiger | - | 4 | S8 | Essential | Medium | ProjectOwned | NotOffered | Published | Big-cat family |
 | Triceratops | 6 | 6 | S23 | Essential | High | ProjectOwned | Published | Published | Armored dinosaurs |
-| Trumpet Archon | 9 | - | S31 | Strong | High | None | Planned | NotOffered | Outsiders |
+| Trumpet Archon | 9 | - | S31 | Strong | High | ProjectOwned | Published | NotOffered | Outsiders |
 | Tyrannosaurus | 7 | 7 | S24 | Essential | High | ProjectOwned | Published | Published | Theropod dinosaurs |
 | Viper | 1 | 1 | S17 | Variety | High | ProjectOwned | Published | Published | Snake rig family |
-| Vrock | 7 | - | S37 | Essential | VeryHigh | None | Planned | NotOffered | Outsiders |
+| Vrock | 7 | - | S37 | Essential | VeryHigh | ProjectOwned | Published | NotOffered | Outsiders |
 | Water Mephit | 4 | 4 | complete | Strong | - | ProjectOwned | Published | Published | Mephit family |
 | Wolf | 2 | 2 | complete | Strong | - | ProjectOwned | Published | Published | Canines & small quadrupeds |
 | Wolverine | 3 | 3 | S13 | Variety | Medium | ProjectOwned | Published | Published | Canines & small quadrupeds |
