@@ -646,7 +646,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["size"] = SurveyVector(formed.CutBounds.size) },
                 ["gridGraphIndex"] = binding?.GridGraphIndex, ["gridNodesClaimed"] = binding?.GridNodesClaimed,
                 ["gridNodesChanged"] = binding?.GridNodesChanged, ["gridFailure"] = binding?.GridFailure,
-                ["feedbackAttemptsDelta"] = NativeCombatLog.Attempts - feedbackAttempts });
+                ["feedbackAttemptsDelta"] = NativeCombatLog.Attempts - feedbackAttempts,
+                ["feedbackMessage"] = NativeCombatLog.Attempts != feedbackAttempts ? NativeCombatLog.LastMessage : null });
         }
 
         private IEnumerable<int> InfernalWallSharedRetire35(InfernalWallSharedSection35 formed,
@@ -808,6 +809,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             InfernalWallPlacementRuntime35.DistanceToFootprint(value, centerA, alongA, forwardA) < 1.5f ||
                             Vector3.Distance(value, planA.CastingPoint) < 1.5f ||
                             InfernalEarlyDistanceToSegment35(value, planA.Start, planA.Destination) < 1.5f ||
+                            // Wall A stands between a far-side caster and its
+                            // target: the cast's own execution refuses it
+                            // (close13), though CanTarget accepted the point.
+                            InfernalWallSegmentToFootprint35(value, center, centerA, alongA, forwardA) < .3f ||
                             Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance.HasObstacle(value + Vector3.up * 1.2f,
                                 center + Vector3.up * 1.2f, 0)) continue;
                         caster = value;
