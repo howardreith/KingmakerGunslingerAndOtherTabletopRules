@@ -184,9 +184,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         // LineOfSightGeometry obstacle between the two points raised by the
         // fog's ShadowCullingHeightOffset. Lanes are chosen at least 3.5 m
         // from the party, so the mover's side can be outside every reveal.
-        // The point is walkable native floor level with that party member,
-        // 3-6 m from it (well inside reveal range), clear of other units by
-        // 1.5 m. Every rejected candidate is recorded.
+        // The point is walkable native floor 3-6 m from that party member
+        // (well inside reveal range), clear of other units by 1.5 m, with the
+        // smallest floor step from the party member found (at most 1 m; the
+        // 0.25 m limit first used rejected every point on a sloped area).
+        // Every rejected candidate is recorded.
         private static JObject InfernalWallSharedSourcePoint35(UnitEntityData mover, UnitEntityData self, List<int> used)
         {
             float lift = 0f;
@@ -201,6 +203,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     unit.View != null && unit.IsViewActive && !unit.Descriptor.State.IsDead && unit.IsPlayerFaction)
                 .OrderBy(unit => Vector3.Distance(unit.Position, mover.Position)).ToArray();
             var rejected = new JArray();
+            JObject best = null; float bestStep = float.PositiveInfinity; int bestKey = 0;
             foreach (UnitEntityData revealer in revealers)
                 foreach (float distance in new[] { 3f, 4.5f, 6f })
                     for (int index = 0; index < CompassOffsets.Length; index++)
@@ -224,24 +227,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                             }
                             catch (Exception) { revealed = false; }
                             if (flat.magnitude > .3f) reason = "node-off-candidate";
-                            else if (Mathf.Abs(floor.y - revealer.Position.y) > .25f) reason = "floor-step";
+                            else if (Mathf.Abs(floor.y - revealer.Position.y) > 1f) reason = "floor-step";
                             else if (!revealed) reason = "fog-line-blocked";
                             else if (Game.Instance.State.Units.All.Any(unit => unit != self && unit.IsInGame &&
                                 !unit.Descriptor.State.IsFinallyDead && Vector3.Distance(unit.Position, floor) < 1.5f))
                                 reason = "occupied";
-                            if (reason == null)
+                            float step = Mathf.Abs(floor.y - revealer.Position.y);
+                            if (reason == null && step < bestStep)
                             {
-                                used.Add(key.GetHashCode());
-                                return new JObject { ["point"] = SurveyVector(floor), ["revealer"] = revealer.UniqueId,
+                                bestStep = step; bestKey = key.GetHashCode();
+                                best = new JObject { ["point"] = SurveyVector(floor), ["revealer"] = revealer.UniqueId,
                                     ["revealerPosition"] = SurveyVector(revealer.Position),
                                     ["revealerDistance"] = Vector3.Distance(revealer.Position, floor),
                                     ["fogHeightOffset"] = lift, ["direction"] = index, ["distance"] = distance,
-                                    ["moverDistance"] = Vector3.Distance(mover.Position, floor), ["rejected"] = rejected };
+                                    ["moverDistance"] = Vector3.Distance(mover.Position, floor), ["floorStep"] = step,
+                                    ["rejected"] = rejected };
                             }
+                            if (reason == null) continue;
+                            rejected.Add(new JObject { ["revealer"] = revealer.UniqueId, ["direction"] = index,
+                                ["distance"] = distance, ["reason"] = reason, ["floorStep"] = step });
+                            continue;
                         }
                         rejected.Add(new JObject { ["revealer"] = revealer.UniqueId, ["direction"] = index,
                             ["distance"] = distance, ["reason"] = reason });
                     }
+            if (best != null) { used.Add(bestKey); return best; }
             throw new InvalidOperationException("No fog-revealed level floor beside a party member for a Wall source: " +
                 "revealers=" + revealers.Length + ";" + rejected.ToString(Formatting.None));
         }
