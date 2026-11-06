@@ -728,6 +728,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             return row;
         }
 
+        // The summoner's place for a cast: behind the casting source, within
+        // the native 11.7 m follow distance, outside every standing section's
+        // formation band.
+        private static JObject InfernalWallSummonerBeside35(InfernalWallRun35 run, Vector3 casterPoint, Vector3 targetPoint)
+        {
+            var summoner = run.Fixture.Caster;
+            Vector3 back = casterPoint - targetPoint; back.y = 0f;
+            if (back.sqrMagnitude < .01f) back = Vector3.back;
+            back.Normalize();
+            Vector3 side = Vector3.Cross(Vector3.up, back);
+            var sections = Game.Instance.State.Units.All.Where(value => value != null && !value.Destroyed && value.IsInState &&
+                value.Blueprint?.AssetGuid == InfernalRules35.WallSectionUnitGuid).ToArray();
+            foreach (Vector3 offset in new[] { back * 3.5f, back * 3.5f + side * 2f, back * 3.5f - side * 2f, back * 5f })
+            {
+                var nearest = AstarPath.active.GetNearest(casterPoint + offset);
+                if (nearest.node == null || !nearest.node.Walkable) continue;
+                Vector3 spot = nearest.clampedPosition;
+                if (Vector3.Distance(spot, casterPoint + offset) > .5f) continue;
+                if (sections.Any(section => InfernalWallPlacementRuntime35.DistanceToFootprint(spot, section.Position,
+                        Vector3.Cross(Vector3.up, section.OrientationDirection).normalized, section.OrientationDirection) < 2.5f)) continue;
+                InfernalWallPrepareActor35(summoner);
+                PlaceExpandedSummoningUnit(summoner, spot);
+                return new JObject { ["point"] = SurveyVector(summoner.Position), ["distanceToCaster"] = Vector3.Distance(summoner.Position, casterPoint) };
+            }
+            return new JObject { ["point"] = null, ["reason"] = "no clear spot behind the caster; summoner left in place",
+                ["distanceToCaster"] = Vector3.Distance(summoner.Position, casterPoint) };
+        }
+
         private IEnumerable<int> InfernalWallSharedCast35(InfernalWallRun35 run, InfernalWallSharedSection35 formed,
             AbilityData data, Vector3 casterPoint, Vector3 point, UnitEntityData[] sources,
             ICollection<Pathfinding.GraphNode> region, Action<JObject> result)
@@ -737,6 +765,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             caster.Commands.InterruptAll(true);
             caster.Commands.RemoveFinishedAndUpdateQueue();
             if (Vector3.Distance(caster.Position, casterPoint) > .05f) PlaceExpandedSummoningUnit(caster, casterPoint);
+            // Installed SummonedUnitsController walks an out-of-combat summon
+            // back toward its summoner once it is more than 11.7 m away; that
+            // native UnitMoveTo interrupted every cast while the summoner was
+            // parked 12 m off (close26). The summoner stands 3.5 m behind the
+            // casting source instead, clear of every standing section.
+            JObject summonerSpot = InfernalWallSummonerBeside35(run, casterPoint, point);
             InfernalBoneRemoveEffects35(run.Fixture.Caster, sources, run.Frightened);
             InfernalBoneRemoveEffects35(caster, sources, run.Frightened);
             var target = new TargetWrapper(point);
@@ -761,7 +795,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         caster.Commands.InterruptAll(true);
                         caster.Commands.RemoveFinishedAndUpdateQueue();
                         if (Vector3.Distance(caster.Position, casterPoint) > .05f) PlaceExpandedSummoningUnit(caster, casterPoint);
+                        InfernalWallSummonerBeside35(run, casterPoint, point);
                         InfernalBoneRemoveEffects35(caster, sources, run.Frightened);
+                        InfernalBoneRemoveEffects35(run.Fixture.Caster, sources, run.Frightened);
                     }
                     long attemptFeedback = NativeCombatLog.Attempts;
                     command = new UnitUseAbility(data, target);
@@ -814,7 +850,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["gridGraphIndex"] = binding?.GridGraphIndex, ["gridNodesClaimed"] = binding?.GridNodesClaimed,
                 ["gridNodesChanged"] = binding?.GridNodesChanged, ["gridFailure"] = binding?.GridFailure,
                 ["feedbackAttemptsDelta"] = NativeCombatLog.Attempts - feedbackAttempts,
-                ["commandAttempts"] = attempts,
+                ["commandAttempts"] = attempts, ["summonerSpot"] = summonerSpot,
                 ["feedbackMessage"] = NativeCombatLog.Attempts != feedbackAttempts ? NativeCombatLog.LastMessage : null });
         }
 
