@@ -247,7 +247,7 @@ namespace KingmakerGunslinger.Blueprints
                 Size.Medium, 23, 23, 22, 12, 15, 18, 30);
             var claw = Sprint29Weapon(library, symbols, p + "Claw",
                 p + "ClawType", NativeClaw1d4Guid, Size.Medium, 2,
-                DiceType.D8, 9);
+                DiceType.D8, SummonReachRepresentation4.StoredRawFeet);
             if (claw.Type.CriticalRollEdge !=
                 InfernalRules35.BarbedBaseCriticalThreatMinimum)
                 throw new InvalidOperationException(

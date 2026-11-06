@@ -38,6 +38,7 @@
     <Compile Include="InfernalRules34Tests.cs" />
     <Compile Include="InfernalRules35Tests.cs" />
     <Compile Include="InfernalAdjacentRoutineVerdict35Tests.cs" />
+    <Compile Include="SummonReach4Tests.cs" />
     <Compile Include="InfernalRules36Tests.cs" />
     <Compile Include="VrockRules37Tests.cs" />
     <Compile Include="GlabrezuRules38Tests.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GlabrezuVisualPolicy38.cs"><Link>Summoning\GlabrezuVisualPolicy38.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\NalfeshneeVisualPolicy39.cs"><Link>Summoning\NalfeshneeVisualPolicy39.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InfernalRules35Policy.cs"><Link>Summoning\InfernalRules35Policy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonReachRepresentation4Policy.cs"><Link>Summoning\SummonReachRepresentation4Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\InfernalWallFeedbackPolicy35.cs"><Link>RuntimeTesting\InfernalWallFeedbackPolicy35.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\InfernalWallSteamPoolVerdict35.cs"><Link>RuntimeTesting\InfernalWallSteamPoolVerdict35.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\InfernalAdjacentRoutineVerdict35.cs"><Link>RuntimeTesting\InfernalAdjacentRoutineVerdict35.cs</Link></Compile>

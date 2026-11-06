@@ -145,7 +145,7 @@ namespace KingmakerGunslinger.Blueprints
                 "f83415c0e7ea1994d8a7f3dec8f5a861", Size.Medium, 1, DiceType.D10, 10);
             BindBarbazuNativeHand34(unit, glaive);
             var claw = Sprint29Weapon(library, symbols, p + "Claw", p + "ClawType",
-                NativeClaw1d4Guid, Size.Medium, 1, DiceType.D6, 9);
+                NativeClaw1d4Guid, Size.Medium, 1, DiceType.D6, SummonReachRepresentation4.StoredRawFeet);
             unit.Body = NaturalBody(glaive, new[] { claw }, Array.Empty<BlueprintItemWeapon>());
             unit.Body.PrimaryHandAlternative1 = claw; unit.Body.EmptyHandWeapon = null;
             var disease = Require<BlueprintBuff>(symbols, p + "DevilChills");
@@ -224,8 +224,12 @@ namespace KingmakerGunslinger.Blueprints
             var unit = InfernalProfile34(library, symbols, "KytonChainDevil", p, "Kyton (Chain Devil)", 8, 44, 6, 8, 0, 8);
             ConfigureUnitCore(unit, "KytonChainDevil", "Kyton (Chain Devil)", Alignment.LawfulEvil,
                 Size.Medium, 15, 17, 14, 11, 12, 12, 30);
+            // Sprint 4: "Reach 5 ft. (10 ft. with chains)" is a natural
+            // per-attack extension, not a reach weapon. The type stores the
+            // ordinary five feet; SummonReachRange4 restores the four feet it
+            // lost, beside InfernalWeaponReach34's existing chain correction.
             var chain = Sprint29Weapon(library, symbols, p + "Chain", p + "ChainType", NativeClaw1d4Guid,
-                Size.Medium, 2, DiceType.D4, 10);
+                Size.Medium, 2, DiceType.D4, SummonReachRepresentation4.StoredRawFeet);
             SetField(chain.Type, "m_TypeNameText", LocalizationService.Create(p + "ChainType.Name", "Chain"));
             BlueprintItemAccess.Resolve().Configure(chain, LocalizationService.Create(p + "Chain.Name", "Kyton Chain"),
                 LocalizationService.Create(p + "Chain.Description", "One of this kyton's four controlled, nontransferable chains."),

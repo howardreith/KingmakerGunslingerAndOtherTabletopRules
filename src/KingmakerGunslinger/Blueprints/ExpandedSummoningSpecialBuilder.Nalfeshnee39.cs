@@ -130,12 +130,12 @@ namespace KingmakerGunslinger.Blueprints
             var bite = Sprint29Weapon(library, symbols, p + "Bite",
                 p + "BiteType", NativeBite1d6Guid, Size.Huge,
                 NalfeshneeRules39Policy.BiteDiceCount, DiceType.D8,
-                NalfeshneeRules39Policy.ReachFeet,
+                SummonReachRepresentation4.StoredRawFeet,
                 NalfeshneeRules39Policy.BiteCriticalRollEdge);
             var claw = Sprint29Weapon(library, symbols, p + "Claw",
                 p + "ClawType", NativeClaw1d4Guid, Size.Huge,
                 NalfeshneeRules39Policy.ClawDiceCount, DiceType.D6,
-                NalfeshneeRules39Policy.ReachFeet);
+                SummonReachRepresentation4.StoredRawFeet);
             // One bite in the primary hand and two claws as additional limbs.
             // There is no rend here and so no limb-ORDER contract of the kind
             // Sprint 38 needed: nothing reads the additional-limb index.
