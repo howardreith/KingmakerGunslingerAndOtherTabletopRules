@@ -410,7 +410,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (bool?)exit["cameraScrollRestored"] == true && (bool?)exit["inTurnBasedCombat"] == false &&
                 restoration != null && (int?)restoration["nodesNotAtBaseline"] == 0 &&
                 (int?)restoration["nodesWithConnectionsNotAtBaseline"] == 0 &&
-                (int?)restoration["tags"]?["tagsDifferingWithinReach"] == 0 && (int?)restoration["claimsAfter"] == 0,
+                (int?)restoration["tags"]?["tagsDifferingWithinReach"] == 0 &&
+                (int?)restoration["tags"]?["tagsMoreRestrictive"] == 0 && (int?)restoration["claimsAfter"] == 0,
                 restoration ?? new JObject(),
                 "Leaving turn-based mode restores its setting and camera preference, and retiring the probe Wall returns every region cell, including grid connections, to its pre-Wall baseline, with no stale erosion tag within the Wall's native erosion reach.");
         }

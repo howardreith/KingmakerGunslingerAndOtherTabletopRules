@@ -177,7 +177,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         // erodeIterations of them have every obstacle that sets their tag
         // inside that window. Cells beyond it get the native update's own
         // approximation (and turn-based mode re-erodes the whole graph at
-        // each turn), so a stale tag there is recorded, not required.
+        // each turn), so a differing tag there is recorded, not required.
+        // Installed UnitMovementAgent.ConstructTags excludes only tags
+        // erosionFirstTag .. erosionFirstTag + sizeInCells - 2, with
+        // sizeInCells capped at erodeIterations: tag 0 and every tag from
+        // erosionFirstTag + erodeIterations - 1 up restrict no creature, so
+        // they compare as one unrestricted level. Anywhere in the region, a
+        // cell more restrictive than its baseline would be stale obstruction.
         private static JObject InfernalWallTagComparison35(Pathfinding.GridGraph grid,
             IEnumerable<Pathfinding.GraphNode> claimed, ICollection<Pathfinding.GraphNode> region,
             Dictionary<Pathfinding.GraphNode, InfernalWallNodeState35> baseline,
@@ -192,10 +198,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int[] at = cell(node);
                 if (at == null || cells.Length == 0) return int.MaxValue;
                 return cells.Min(value => Math.Max(Math.Abs(value[0] - at[0]), Math.Abs(value[1] - at[1]))); };
+            int first = grid.erosionFirstTag;
+            Func<uint, int> level = tag => tag == 0 || tag >= first + reach - 1 ? int.MaxValue : (int)tag;
             var differing = region.Where(node => after[node].Tag != baseline[node].Tag).ToArray();
-            var inReach = differing.Where(node => distance(node) <= reach).ToArray();
-            return new JObject { ["erodeIterations"] = reach, ["claimedCells"] = cells.Length,
+            var inReach = differing.Where(node => distance(node) <= reach &&
+                level(after[node].Tag) != level(baseline[node].Tag)).ToArray();
+            var tighter = differing.Where(node => level(after[node].Tag) < level(baseline[node].Tag)).ToArray();
+            return new JObject { ["erodeIterations"] = reach, ["erosionFirstTag"] = first, ["claimedCells"] = cells.Length,
                 ["tagsDiffering"] = differing.Length, ["tagsDifferingWithinReach"] = inReach.Length,
+                ["tagsMoreRestrictive"] = tighter.Length,
                 ["rows"] = new JArray(differing.Take(40).Select(node => {
                     var row = InfernalWallNodeIdentity35(node);
                     row["baselineTag"] = baseline[node].Tag; row["afterTag"] = after[node].Tag;
@@ -815,12 +826,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["claimsAfter"] = InfernalWallNavmesh35.ActiveGridClaimCount,
                     ["foreignCutsAfter"] = foreignAfter,
                     ["foreignCutsUnchanged"] = JToken.DeepEquals(foreignAfter, foreignCutsBefore),
-                    ["comparison"] = "Required: every region node's static flag, pre-erosion flag, DynamicBlocked counter, combined walkability, claim count and grid connection bits equal its pre-Wall baseline (close28 left restored cells walkable but disconnected), and every cell within one erodeIterations of either Wall's claimed cells has its baseline erosion tag (nav5 left stale tags). Recorded: tags beyond that reach, which the installed regional erosion approximates." };
+                    ["comparison"] = "Required: every region node's static flag, pre-erosion flag, DynamicBlocked counter, combined walkability, claim count and grid connection bits equal its pre-Wall baseline (close28 left restored cells walkable but disconnected), every cell within one erodeIterations of either Wall's claimed cells has its baseline erosion restriction, and no region cell is more restrictive than its baseline (nav5 left stale tags). Recorded: looser tags beyond that reach, which the installed regional erosion approximates; tag 0 and tags at or past the erosion depth restrict no creature under native ConstructTags and compare as equal." };
                 pairRow["afterBothRetired"] = restoredRow;
                 persist();
                 check("wall-shared-baseline-restored-" + pair, notBaseline.Length == 0 &&
                     region.All(node => afterBoth[node].Connections == baseline[node].Connections) &&
                     (int)restoredRow["tags"]["tagsDifferingWithinReach"] == 0 &&
+                    (int)restoredRow["tags"]["tagsMoreRestrictive"] == 0 &&
                     InfernalWallNavmesh35.ActiveGridClaimCount == 0 && (bool)restoredRow["foreignCutsUnchanged"],
                     restoredRow, "Retiring the second Wall returns every affected and unrelated cell, including its grid connections, to its recorded baseline, with no stale erosion tag within the Walls' native erosion reach.");
                 parkSources(); // 5-ft fear aura beside a lane (close24)
