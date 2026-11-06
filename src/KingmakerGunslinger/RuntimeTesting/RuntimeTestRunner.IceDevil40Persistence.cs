@@ -240,6 +240,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData source = devils[0];
             UnitEntityData target = devils[1];
 
+            // Select the listener faction before anything is spawned, which is
+            // what the shared Sprint 32 contract says and what Sprint 35 does.
+            // Its safety predicate refuses when any intake group's cached
+            // faction set already contains the caster's faction, and the
+            // source-owned wall section below is a summoned unit that joins
+            // its summoner's group: forming the wall first put the caster's
+            // own faction into the observed intake relations, and the shared
+            // selection correctly refused rather than editing intake groups.
+            BlueprintFaction hostileFaction = SelectSprint32ListenerFaction(
+                caster, sources, Game.Instance.Player.Party.ToArray(),
+                Game.Instance.State.Units.All.Where(unit => unit != null &&
+                    !sources.Contains(unit) &&
+                    !Game.Instance.Player.Party.Contains(unit)).ToArray());
+
             UnitEntityData wall = null;
             foreach (int frame in PrepareInfernalWallPersistence35(caster,
                 source, sources,
@@ -259,11 +273,6 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             BlueprintBuff slowBlueprint =
                 IceDevilSlowConsumer40(source).Slowed;
-            BlueprintFaction hostileFaction = SelectSprint32ListenerFaction(
-                caster, sources, Game.Instance.Player.Party.ToArray(),
-                Game.Instance.State.Units.All.Where(unit => unit != null &&
-                    !sources.Contains(unit) &&
-                    !Game.Instance.Player.Party.Contains(unit)).ToArray());
             string sourceGroup = source.GroupId;
             string targetGroup = target.GroupId;
             BlueprintFaction sourceFaction = source.Faction;
