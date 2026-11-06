@@ -344,34 +344,90 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (key != InfernalVisualPolicy34.Barbazu && !iceDevil || observed.All(row => (bool)row["glaiveVisible"] == !alternate));
                         var cell = new JObject { ["owner"] = owner.UniqueId, ["alternate"] = alternate, ["command"] = Sprint27AiCommand(attack),
                             ["nativePlan"] = attack.AllAttacks.Count, ["nativeExhausted"] = nativeExhausted,
-                            ["nativeEnds"] = new JArray(ends), ["attacks"] = new JArray(rows), ["contacts"] = new JArray(observed), ["costs"] = costs };
+                            ["nativeEnds"] = new JArray(ends), ["attacks"] = new JArray(rows), ["contacts"] = new JArray(observed),
+                            ["costs"] = new JArray(costs.Select(value => value.DeepClone())) };
                         Sprint25Check(assertionPrefix + "-native-contact-" + key + "-" + alternate, correct, cell,
                             "One native full attack uses the correct alternative routine with actual animation/contact and no extra attacks.");
                         if (!correct) throw new InvalidOperationException("Infernal routine or live contact mismatch.");
                         if (iceDevil)
                         {
                             var profile40 = IceDevilMartialProfile40.For(owner);
-                            var naturalHits = rows.Where(x => (bool?)x["hit"] == true &&
-                                ((string)x["weapon"] == profile40.Bite.AssetGuid ||
-                                 (string)x["weapon"] == profile40.Tail.AssetGuid)).ToArray();
-                            var coldNaturalHits = naturalHits.Where(x => ((JArray)x["damagePackets"])
-                                .Any(packet => (string)packet["energy"] == "Cold")).ToArray();
-                            var spearHits = rows.Where(x => (bool?)x["hit"] == true &&
-                                (string)x["weapon"] == profile40.Spear.AssetGuid).ToArray();
-                            bool spearFrost = spearHits.Length > 0 && spearHits.All(x =>
-                                ((JArray)x["damagePackets"]).Count(packet =>
-                                    (string)packet["energy"] == "Cold" && (string)packet["dice"] == "1d6") == 1);
-                            bool witnessedBoth = naturalHits.Any(x => (string)x["weapon"] == profile40.Bite.AssetGuid) &&
-                                naturalHits.Any(x => (string)x["weapon"] == profile40.Tail.AssetGuid);
-                            var packetRow = new JObject { ["nativeHitsBothNaturals"] = witnessedBoth,
-                                ["nativeSpearHits"] = spearHits.Length, ["spearSingleFrostPacket"] = spearFrost,
-                                ["coldNaturalHits"] = new JArray(coldNaturalHits), ["attacks"] = new JArray(rows),
-                                ["classification"] = coldNaturalHits.Length > 0 ? "rules-failure" :
-                                    witnessedBoth ? "observed-native-outcome" : "missing-stochastic-precondition" };
-                            bool packetsCorrect = witnessedBoth && coldNaturalHits.Length == 0 && spearFrost;
-                            Sprint25Check("sprint40-natural-cold-packets", packetsCorrect, packetRow,
-                                "Actual bite and tail hits carry physical damage only; spear frost is a separate weapon packet. Missing real hits cannot pass vacuously.");
-                            if (!packetsCorrect) throw new InvalidOperationException("Ice natural cold packets: " + packetRow["classification"]);
+                            var packetAttacks = rows.ToList();
+                            var packetAttempts = new JArray();
+                            int recordedPacketAttacks = 0;
+                            for (int packetAttempt = 1; packetAttempt <= 4; packetAttempt++)
+                            {
+                                var attemptAttacks = packetAttacks.Skip(recordedPacketAttacks).ToArray();
+                                recordedPacketAttacks = packetAttacks.Count;
+                                var naturalHits = packetAttacks.Where(x => (bool?)x["hit"] == true &&
+                                    ((string)x["weapon"] == profile40.Bite.AssetGuid ||
+                                     (string)x["weapon"] == profile40.Tail.AssetGuid)).ToArray();
+                                var coldNaturalHits = naturalHits.Where(x => ((JArray)x["damagePackets"])
+                                    .Any(packet => (string)packet["energy"] == "Cold")).ToArray();
+                                var spearHits = packetAttacks.Where(x => (bool?)x["hit"] == true &&
+                                    (string)x["weapon"] == profile40.Spear.AssetGuid).ToArray();
+                                bool spearFrost = spearHits.Length > 0 && spearHits.All(x =>
+                                    ((JArray)x["damagePackets"]).Count(packet =>
+                                        (string)packet["energy"] == "Cold" && (string)packet["dice"] == "1d6") == 1);
+                                bool witnessedBoth = naturalHits.Any(x => (string)x["weapon"] == profile40.Bite.AssetGuid) &&
+                                    naturalHits.Any(x => (string)x["weapon"] == profile40.Tail.AssetGuid);
+                                packetAttempts.Add(new JObject {
+                                    ["attempt"] = packetAttempt, ["attacks"] = new JArray(attemptAttacks),
+                                    ["biteHitObserved"] = naturalHits.Any(x => (string)x["weapon"] == profile40.Bite.AssetGuid),
+                                    ["tailHitObserved"] = naturalHits.Any(x => (string)x["weapon"] == profile40.Tail.AssetGuid),
+                                    ["coldNaturalPackets"] = coldNaturalHits.Length });
+                                bool terminal = witnessedBoth || coldNaturalHits.Length > 0 || packetAttempt == 4;
+                                if (terminal)
+                                {
+                                    var packetRow = new JObject { ["nativeHitsBothNaturals"] = witnessedBoth,
+                                        ["nativeSpearHits"] = spearHits.Length, ["spearSingleFrostPacket"] = spearFrost,
+                                        ["coldNaturalHits"] = new JArray(coldNaturalHits), ["attempts"] = packetAttempts,
+                                        ["attacks"] = new JArray(packetAttacks),
+                                        ["classification"] = coldNaturalHits.Length > 0 ? "rules-failure" :
+                                            witnessedBoth ? "observed-native-outcome" : "missing-stochastic-precondition" };
+                                    bool packetsCorrect = witnessedBoth && coldNaturalHits.Length == 0 && spearFrost;
+                                    Sprint25Check("sprint40-natural-cold-packets", packetsCorrect, packetRow,
+                                        "Bounded real full attacks witness actual bite and tail hits carrying physical damage only; spear frost remains a separate weapon packet. Missing real hits cannot pass vacuously.");
+                                    if (!packetsCorrect) throw new InvalidOperationException("Ice natural cold packets: " + packetRow["classification"]);
+                                    break;
+                                }
+
+                                int cooldownFrames = 0;
+                                DateTime cooldownDeadline = DateTime.UtcNow.AddSeconds(10);
+                                while (owner.CombatState.Cooldown.StandardAction > 0f && cooldownFrames < 1200 &&
+                                    DateTime.UtcNow < cooldownDeadline)
+                                {
+                                    cooldownFrames++; Game.Instance.IsPaused = false; yield return 0;
+                                }
+                                if (owner.CombatState.Cooldown.StandardAction > 0f)
+                                    throw new InvalidOperationException("Natural packet retry cooldown did not clear.");
+                                owner.Commands.RemoveFinishedAndUpdateQueue();
+                                int retryStart = trace.Rows.Count, retryContactStart = contacts.Count;
+                                var retry = new UnitAttack(target) { ForceFullAttack = true, IsSingleAttack = false };
+                                retry.Init(owner);
+                                if (!retry.CanStart) throw new InvalidOperationException("Natural packet retry attack refused.");
+                                var retryCosts = new JArray();
+                                using (var retryCost = new FirearmReviewCosts(owner, retryCosts))
+                                {
+                                    owner.Commands.Run(retry);
+                                    foreach (int frame in WaitPresentation32(mode, () => retry.IsFinished, 35)) yield return frame;
+                                }
+                                var retryRows = trace.Rows.Skip(retryStart).Where(row =>
+                                    (string)row["event"] == "attack" && (string)row["owner"] == owner.UniqueId).ToArray();
+                                var retryContacts = contacts.Skip(retryContactStart).ToArray();
+                                var retryEnds = trace.Rows.Skip(retryStart).Where(x => (string)x["event"] == "command-end" &&
+                                    (int?)x["commandReference"] == System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(retry)).ToArray();
+                                bool retryExhausted = Sprint40NativeExhaustedAttack(retry, retryEnds, expectedAttacks);
+                                bool retryExact = retry.IsFinished && (retry.Result == UnitCommand.ResultType.Success || retryExhausted) &&
+                                    retryRows.Length == expectedAttacks && retryContacts.Length == expectedAttacks && errors.Count == 0;
+                                packetAttempts.Add(new JObject { ["retryAfterAttempt"] = packetAttempt,
+                                    ["cooldownFrames"] = cooldownFrames, ["command"] = Sprint27AiCommand(retry),
+                                    ["nativeExhausted"] = retryExhausted, ["attacks"] = new JArray(retryRows),
+                                    ["contacts"] = new JArray(retryContacts), ["costs"] = retryCosts,
+                                    ["exactFullRoutine"] = retryExact });
+                                if (!retryExact) throw new InvalidOperationException("Natural packet retry routine mismatch.");
+                                packetAttacks.AddRange(retryRows);
+                            }
                         }
                         if (key == InfernalVisualPolicy34.Kyton) {
                             var frames = renderedFrames.Where(row => (int)row["contactIndex"] >= contactStart).ToArray();
