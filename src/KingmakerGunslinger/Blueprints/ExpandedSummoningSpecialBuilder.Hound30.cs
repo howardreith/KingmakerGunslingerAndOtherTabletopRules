@@ -40,13 +40,13 @@ namespace KingmakerGunslinger.Blueprints
             var traits = Require<BlueprintFeature>(bySymbol, Hound30Prefix + "Traits");
             traits.name = InternalName(Hound30Prefix + "Traits"); traits.HideInUI = true; traits.IsClassFeature = false;
             var sword = Sprint29Weapon(library, bySymbol, Hound30Prefix + "Greatsword2d6",
-                Hound30Prefix + "GreatswordType", NativeGreatsword, Size.Medium, 2, DiceType.D6, 9);
+                Hound30Prefix + "GreatswordType", NativeGreatsword, Size.Medium, 2, DiceType.D6, SummonReachRepresentation4.StoredRawFeet);
             SetField(sword, "m_Enchantments", new[] { BlueprintLibraryLookup.RequireExact<BlueprintWeaponEnchantment>(
                 library, EasternWeaponBlueprints.NativeMasterworkGuid, "Hound masterwork greatsword accuracy") });
             var bite = Sprint29Weapon(library, bySymbol, Hound30Prefix + "Bite1d8",
-                Hound30Prefix + "BiteType", NativeBite1d6Guid, Size.Medium, 1, DiceType.D8, 9);
+                Hound30Prefix + "BiteType", NativeBite1d6Guid, Size.Medium, 1, DiceType.D8, SummonReachRepresentation4.StoredRawFeet);
             var slam = Sprint29Weapon(library, bySymbol, Hound30Prefix + "Slam1d4",
-                Hound30Prefix + "SlamType", NativeSlam, Size.Medium, 1, DiceType.D4, 9);
+                Hound30Prefix + "SlamType", NativeSlam, Size.Medium, 1, DiceType.D4, SummonReachRepresentation4.StoredRawFeet);
             var levels = ScriptableObject.CreateInstance<AddClassLevels>();
             levels.CharacterClass = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(library, OutsiderClassGuid, "Hound outsider racial HD");
             levels.Levels = 6; levels.RaceStat = StatType.Constitution; levels.LevelsStat = StatType.Unknown;

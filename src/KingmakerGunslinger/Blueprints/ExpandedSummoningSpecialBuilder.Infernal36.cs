@@ -202,10 +202,10 @@ namespace KingmakerGunslinger.Blueprints
                 30);
             var bite = Sprint29Weapon(library, symbols, p + "Bite",
                 p + "BiteType", NativeBite1d6Guid, Size.Medium, 1,
-                DiceType.D6, 9);
+                DiceType.D6, SummonReachRepresentation4.StoredRawFeet);
             var claw = Sprint29Weapon(library, symbols, p + "Claw",
                 p + "ClawType", NativeClaw1d4Guid, Size.Medium, 1,
-                DiceType.D6, 9);
+                DiceType.D6, SummonReachRepresentation4.StoredRawFeet);
             var spear = Sprint29Weapon(library, symbols, p + "Longspear",
                 p + "LongspearType",
                 ElvenBranchedSpearBlueprints.NativeLongspearItemGuid,
@@ -345,10 +345,10 @@ namespace KingmakerGunslinger.Blueprints
                 30);
             var bite = Sprint29Weapon(library, symbols, p + "Bite",
                 p + "BiteType", NativeBite1d6Guid, Size.Large, 4,
-                DiceType.D4, 10);
+                DiceType.D4, SummonReachRepresentation4.StoredRawFeet);
             var claw = Sprint29Weapon(library, symbols, p + "Claw",
                 p + "ClawType", NativeClaw1d4Guid, Size.Large, 1,
-                DiceType.D8, 10);
+                DiceType.D8, SummonReachRepresentation4.StoredRawFeet);
             unit.Body = NaturalBody(bite, new[] { claw, claw },
                 Array.Empty<BlueprintItemWeapon>());
             var profile = ScriptableObject.CreateInstance<

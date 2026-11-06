@@ -74,12 +74,15 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintWeaponType native = tail.Type;
             CopyFields(native, target);
             target.name = InternalName(AnkylosaurusRulesPolicy.TailTypeSymbol);
-            SetField(target, "m_AttackRange", new Feet(
-                AnkylosaurusRulesPolicy.TailTypeStoredRangeFeet));
+            // Sprint 4: the type stores the ordinary five feet (two native,
+            // not a ProperFlanking2 reach weapon); SummonReachRange4 restores
+            // the three feet the former TailTypeStoredRangeFeet gave.
+            SetField(target, "m_AttackRange", new Feet(SummonReachRepresentation4.StoredRawFeet));
             SetField(tail, "m_Type", target);
-            if (target.AttackRange.Value != 5 || !ReferenceEquals(tail.Type, target))
+            if (target.AttackRange.Value != SummonReachRepresentation4.NativeMinWeaponRangeFeet ||
+                !ReferenceEquals(tail.Type, target))
                 throw new InvalidOperationException(
-                    "Ankylosaurus private tail type did not expose five feet before body reach.");
+                    "Ankylosaurus private tail type did not expose the native minimum before body reach.");
         }
 
         private static void ConfigureAnkylosaurusChassis(

@@ -110,16 +110,16 @@ namespace KingmakerGunslinger.Blueprints
             var pincer = Sprint29Weapon(library, symbols, p + "Pincer",
                 p + "PincerType", Claw2d4Guid, Size.Huge,
                 GlabrezuRules38Policy.PincerDiceCount, DiceType.D8,
-                GlabrezuRules38Policy.ReachFeet,
+                SummonReachRepresentation4.StoredRawFeet,
                 GlabrezuRules38Policy.PincerCriticalRollEdge);
             var claw = Sprint29Weapon(library, symbols, p + "Claw",
                 p + "ClawType", NativeClaw1d4Guid, Size.Huge,
                 GlabrezuRules38Policy.ClawDiceCount, DiceType.D6,
-                GlabrezuRules38Policy.ReachFeet);
+                SummonReachRepresentation4.StoredRawFeet);
             var bite = Sprint29Weapon(library, symbols, p + "Bite",
                 p + "BiteType", NativeBite1d6Guid, Size.Huge,
                 GlabrezuRules38Policy.BiteDiceCount, DiceType.D8,
-                GlabrezuRules38Policy.ReachFeet);
+                SummonReachRepresentation4.StoredRawFeet);
             // The limb ORDER is load-bearing, not cosmetic. The released rend
             // gate asks SummonLimbs.Classify for an Additional limb whose
             // index is below its claw count, so the two pincers have to be
