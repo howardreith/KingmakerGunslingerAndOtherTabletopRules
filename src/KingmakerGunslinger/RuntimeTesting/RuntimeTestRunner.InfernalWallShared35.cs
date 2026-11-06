@@ -419,6 +419,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (bool aFirst in new[] { true, false })
             {
                 string pair = aFirst ? "a-first" : "b-first";
+                // Short tag for move and placement receipt names: the full
+                // pair name pushed a receipt's temporary path past the
+                // Windows 260-character limit (close23).
+                string tag = aFirst ? "af" : "bf";
                 var pairRow = new JObject();
                 receipt[pair] = pairRow;
                 var start = InfernalWallSnapshot35(region);
@@ -428,6 +432,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // the Wall B survey (close20: at lane A's start it was adjacent
                 // to every candidate); live movers place it on their lanes.
                 park(mover);
+                // Source B's casting point may lie in Wall A's formation band;
+                // it waits in the parking area until its own cast.
+                park(sourceB);
                 clearFear();
                 var a = new InfernalWallSharedSection35 { Label = pair + "-a", Source = sourceA };
                 JObject castA = null;
@@ -464,7 +471,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
 
                 clearFear();
-                foreach (int frame in InfernalWallPlaceAndSettle35(sourceB, geometry.CasterB, planB, "shared-b-caster-" + pair)) yield return frame;
+                foreach (int frame in InfernalWallPlaceAndSettle35(sourceB, geometry.CasterB, planB, "shared-bcast-" + tag)) yield return frame;
                 var b = new InfernalWallSharedSection35 { Label = pair + "-b", Source = sourceB };
                 JObject castB = null;
                 foreach (int frame in InfernalWallSharedCast35(run, b, dataB, geometry.CasterB, geometry.CenterB, sources, region, value => castB = value)) yield return frame;
@@ -571,10 +578,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     clearFear();
                     foreach (int frame in InfernalEarlyWallMove35(fixture, plan.Start, plan.Destination, plan.Midpoint,
-                        true, "shared-" + pair + "-both-a", check, plan, false, a.Section)) yield return frame;
+                        true, "shared-" + tag + "-both-a", check, plan, false, a.Section)) yield return frame;
                     clearFear();
                     foreach (int frame in InfernalEarlyWallMove35(fixture, planB.Start, planB.Destination, planB.Midpoint,
-                        true, "shared-" + pair + "-both-b", check, planB, false, b.Section)) yield return frame;
+                        true, "shared-" + tag + "-both-b", check, planB, false, b.Section)) yield return frame;
                 }
 
                 var first = aFirst ? a : b;
@@ -667,7 +674,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Retiring one Wall returns only its own cells to their baseline and leaves the other Wall's cut, claims, every layer of its cells and unrelated cells exactly as they were immediately before the retirement.");
                 clearFear();
                 foreach (int frame in InfernalEarlyWallMove35(fixture, survivorPlan.Start, survivorPlan.Destination,
-                    survivorPlan.Midpoint, true, "shared-" + pair + "-survivor-" + (aFirst ? "b" : "a"), check,
+                    survivorPlan.Midpoint, true, "shared-" + tag + "-survivor-" + (aFirst ? "b" : "a"), check,
                     survivorPlan, false, survivor.Section)) yield return frame;
 
                 JObject secondRetirement = null;
@@ -696,10 +703,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     restoredRow, "Retiring the second Wall returns every affected and unrelated cell to its recorded baseline.");
                 clearFear();
                 foreach (int frame in InfernalEarlyWallMove35(fixture, plan.Start, plan.Destination, plan.Midpoint,
-                    false, "shared-" + pair + "-restored-a", check, plan)) yield return frame;
+                    false, "shared-" + tag + "-restored-a", check, plan)) yield return frame;
                 clearFear();
                 foreach (int frame in InfernalEarlyWallMove35(fixture, planB.Start, planB.Destination, planB.Midpoint,
-                    false, "shared-" + pair + "-restored-b", check, planB)) yield return frame;
+                    false, "shared-" + tag + "-restored-b", check, planB)) yield return frame;
             }
         }
 
