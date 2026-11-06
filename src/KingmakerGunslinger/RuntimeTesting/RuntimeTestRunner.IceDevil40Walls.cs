@@ -291,6 +291,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int index = 0; index < liveActors.Count; index++)
                     PlaceExpandedSummoningUnit(liveActors[index],
                         offLane + Vector3.forward * ((index + 1) * 4f));
+                // This exact disposable recipient crossed the earlier breach.
+                // Keep it outside the printed formation-save band while the
+                // bounded survey selects a success lane; the separate S35
+                // observation already proves legal adjacent disruption.
+                PlaceExpandedSummoningUnit(fixture.Hostile, offLane +
+                    Vector3.forward * ((liveActors.Count + 1) * 4f));
                 PlaceExpandedSummoningUnit(source, offLane);
                 admittedCandidates++;
                 bool available = data.IsAvailable;
@@ -343,21 +349,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                      CircleOriginalCasterId(buff.Context))))));
             foreach (var actor in liveActors)
                 InfernalWallPrepareActor35(actor);
+            InfernalWallPrepareActor35(fixture.Hostile);
             float sourceCastingGap = InfernalEarlyDistanceToSegment35(
                 source.Position, casterPoint, casterPoint);
             bool nativeAvailable = data.IsAvailable;
             bool nativeCanTarget = nativeAvailable && data.CanTarget(new TargetWrapper(middle));
+            InfernalWallPlacement35 readinessPlacement;
+            bool readinessPlacementLegal = InfernalWallPlacementRuntime35.TryResolve(
+                source, new TargetWrapper(middle), sectionBp,
+                out readinessPlacement);
+            UnitEntityData[] formationAdjacent = readinessPlacementLegal ?
+                InfernalWallPlacementRuntime35.AdjacentUnits(
+                    readinessPlacement).ToArray() : new UnitEntityData[0];
             bool ready = liveActors.All(actor =>
                 actor.Commands.Empty && actor.Commands.Queue.Count == 0 &&
                 !actor.View.MovementAgent.IsReallyMoving &&
                 actor.View.MovementAgent.Velocity.sqrMagnitude < .0001f &&
                 actor.Descriptor.State.CanAct) &&
-                sourceCastingGap < .1f && nativeCanTarget && ownedFearRemaining == 0;
+                sourceCastingGap < .1f && nativeCanTarget &&
+                readinessPlacementLegal && formationAdjacent.Length == 0 &&
+                ownedFearRemaining == 0;
             check("wall-cast-readiness-" + label, ready,
                 new JObject { ["source"] = source.UniqueId,
                     ["castingPoint"] = Vec(casterPoint), ["sourcePosition"] = Vec(source.Position),
                     ["horizontalCastingGap"] = sourceCastingGap,
                     ["nativeAvailable"] = nativeAvailable, ["nativeCanTarget"] = nativeCanTarget,
+                    ["readinessPlacementLegal"] = readinessPlacementLegal,
+                    ["formationAdjacent"] = new JArray(formationAdjacent.Select(actor =>
+                        new JObject { ["actor"] = actor.UniqueId,
+                            ["position"] = Vec(actor.Position) })),
                     ["ownedSetupFearRemaining"] = ownedFearRemaining,
                     ["nativeFormationRestore"] = formationRestore,
                     ["isolatedFearBlueprints"] = new JArray(fearBlueprints.Select(value => value.AssetGuid)),
