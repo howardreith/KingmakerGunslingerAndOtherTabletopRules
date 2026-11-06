@@ -195,12 +195,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { actors[0] });
                 foreach (int frame in InfernalBoneWaitUntil35(() =>
                     Sprint29OwnedAreas(actors[0], residualBp).Length == 0 &&
-                    fog.All(x => x.IsEnded), 12)) yield return frame;
+                    fog.All(x => x.IsEnded) && bindings.Skip(1).All(x =>
+                        x.GridNodeSnapshot().All(n => !n.Key.Walkable)), 12)) yield return frame;
+                var secondWalkable = bindings[1].GridNodeSnapshot().Where(x =>
+                    x.Key.Walkable).Select(x => new JObject {
+                        ["node"] = x.Key.position.ToString(),
+                        ["graph"] = x.Key.GraphIndex,
+                        ["original"] = x.Value
+                    }).ToArray();
                 check("wall-first-source-cleanup-isolated", sections.Skip(1).All(x =>
                     !x.Destroyed && !x.Descriptor.State.IsDead) &&
-                    bindings.Skip(1).All(x => x.GridNodeSnapshot().All(n => !n.Key.Walkable)),
+                    bindings.Skip(1).All(x => x.GridNodeSnapshot().All(n => !n.Key.Walkable)) &&
+                    InfernalWallNavmesh35.ActiveGridClaimCount > baselineClaims,
                     new JObject { ["firstSourceDestroyed"] = actors[0].Destroyed,
-                        ["secondIceAlive"] = !sections[1].Destroyed },
+                        ["secondIceAlive"] = !sections[1].Destroyed,
+                        ["secondIceClaims"] = bindings[1].GridNodesClaimed,
+                        ["activeClaims"] = InfernalWallNavmesh35.ActiveGridClaimCount,
+                        ["liveReconcileRequests"] = bindings[1].GridLiveReconcileRequests,
+                        ["liveReconcileCompleted"] = bindings[1].GridLiveReconcileCompleted,
+                        ["walkableClaimedNodes"] = new JArray(secondWalkable),
+                        ["gridFailure"] = bindings[1].GridFailure },
                     "First exact source removal cleans its residual and fog without releasing the second Ice source's movement claims.");
                 UnitEntityData boneSection = null;
                 foreach (int frame in IceDevilCastWall40(fixture, actors[2], actors,
