@@ -1030,7 +1030,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.Key.Walkable == value.Value);
             deadline = DateTime.UtcNow.AddSeconds(15);
             nextSampleFrame = Time.frameCount;
-            while (section != null && DateTime.UtcNow < deadline &&
+            // Wait for the native recast tile update whether or not the
+            // retired section reference survives (close28: a dead section's
+            // reference was gone, the wait was skipped, and the route was
+            // queried before the queued tile update had run).
+            while (DateTime.UtcNow < deadline &&
                 (!restored || !gridNodeStateRestored))
             {
                 Game.Instance.IsPaused = false;
