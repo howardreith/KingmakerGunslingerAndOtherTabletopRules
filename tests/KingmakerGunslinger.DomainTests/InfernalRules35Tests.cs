@@ -485,6 +485,64 @@ namespace KingmakerGunslinger.DomainTests
                 "Only the exact section identity is excluded.");
         }
 
+        internal static void WallClaimSurvivesAnotherWallsGridUpdate()
+        {
+            var baseline = new InfernalRules35.WallGridNodeLayers { Static = true, Erosion = true, Dynamic = 0 };
+            foreach (bool aRetiresFirst in new[] { true, false })
+            {
+                // Wall A claims a ring cell outside its own cut; Wall B's
+                // diagonal cut box covers it and applies its native update.
+                var node = InfernalRules35.WallClaimNode(baseline);
+                node = InfernalRules35.NativeGridUpdate(node, 1);
+                Assertions.False(node.Walkable, "Wall B's native update leaves Wall A's claimed cell blocked.");
+                Assertions.False(node.Static, "Wall A's claim survives Wall B's update.");
+                if (aRetiresFirst)
+                {
+                    node = InfernalRules35.WallRestoreNode(node, baseline.Static, baseline.Erosion);
+                    Assertions.False(node.Walkable, "Wall B still blocks after Wall A retires.");
+                    node = InfernalRules35.NativeGridUpdate(node, -1);
+                }
+                else
+                {
+                    // close27 b-first: Wall B's revert ran while Wall A stood.
+                    node = InfernalRules35.NativeGridUpdate(node, -1);
+                    Assertions.False(node.Walkable, "Wall B's retirement does not reopen Wall A's standing claim.");
+                    node = InfernalRules35.WallRestoreNode(node, baseline.Static, baseline.Erosion);
+                }
+                Assertions.True(node.Walkable && node.Static == baseline.Static && node.Erosion == baseline.Erosion &&
+                    node.Dynamic == baseline.Dynamic, "Both retirement orders restore the cell's exact baseline layers.");
+            }
+            // A turn-based unit block beside a standing Wall (its own native
+            // update and revert) does not reopen the claim either.
+            var held = InfernalRules35.NativeGridUpdate(InfernalRules35.WallClaimNode(baseline), 1);
+            held = InfernalRules35.NativeGridUpdate(held, -1);
+            Assertions.False(held.Walkable || held.Static, "A turn-based unit's block and revert leave the claim blocked.");
+            // The old static-only claim fails: a native update rewrites the
+            // static flag from the untouched pre-erosion flag.
+            var oldClaim = baseline; oldClaim.Static = false;
+            oldClaim = InfernalRules35.NativeGridUpdate(oldClaim, 1);
+            oldClaim = InfernalRules35.NativeGridUpdate(oldClaim, -1);
+            Assertions.True(oldClaim.Walkable, "Model check: a static-only claim is erased by another cut's update and revert.");
+            // A cell already blocked by a foreign counter at claim time keeps
+            // its own static layers on restore, not the combined value.
+            var foreign = new InfernalRules35.WallGridNodeLayers { Static = true, Erosion = true, Dynamic = 1 };
+            var restored = InfernalRules35.WallRestoreNode(InfernalRules35.WallClaimNode(foreign), foreign.Static, foreign.Erosion);
+            Assertions.True(restored.Static && restored.Erosion && restored.Dynamic == 1,
+                "A foreign counter is never folded into the restored static layer.");
+            // A statically blocked baseline cell stays blocked after release.
+            var wall = new InfernalRules35.WallGridNodeLayers { Static = false, Erosion = false, Dynamic = 0 };
+            var kept = InfernalRules35.WallRestoreNode(InfernalRules35.WallClaimNode(wall), wall.Static, wall.Erosion);
+            Assertions.False(kept.Static || kept.Erosion, "A pre-existing static block is restored as blocked.");
+        }
+
+        internal static void WallSectionIsStationary()
+        {
+            // nav4: native summon follow walked a standing section toward its
+            // Bone Devil; only a movement-blocking condition stops it.
+            Assertions.Equal("CantMove", InfernalRules35.WallSectionStationaryCondition,
+                "A Wall of Ice section carries the native CantMove condition, not only CantAct.");
+        }
+
         internal static void WallSteamHidesOnlyTheCloudsFlameLayers()
         {
             foreach (string flame in new[] { "GroundFireBig", "GroundFireBig (1)", "Fire_Top (2)", "FireTiny", "Glow", "Glow (1)" })

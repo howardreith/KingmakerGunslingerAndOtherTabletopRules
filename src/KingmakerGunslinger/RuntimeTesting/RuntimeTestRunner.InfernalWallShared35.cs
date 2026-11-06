@@ -437,9 +437,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             persist();
 
             // Turn-based boundary of one standing Wall, before the pairs.
+            JObject turnBoundary = null;
             foreach (int frame in InfernalWallTurnBoundary35(run, sourceA, sourceB, dataA, plan, sources, region, baseline,
-                park, clearFear, persist, value => receipt["turnBoundary"] = value)) yield return frame;
+                park, clearFear, persist, value => { receipt["turnBoundary"] = value; turnBoundary = value; })) yield return frame;
             persist();
+            InfernalWallTurnBoundaryVerdict35(turnBoundary, check);
             // The pairs measure their Walls against the state they start
             // from; any turn-based residue is recorded above, not inherited.
             var afterTurnBoundary = InfernalWallRegion35(grid, gridIndex, plan.Midpoint, 6.5f);
@@ -589,6 +591,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     row["afterAB"] = InfernalWallNodeDocument35(afterAB[node]);
                     return row; }));
                 bool bothBlocked = iceNodes.Length > 0 && iceNodes.All(node => !afterAB[node].Walkable);
+                // Selected contract: a claim holds both static layers, so every
+                // claimed cell stays blocked under native grid updates.
+                var claimedOpen = a.Claimed.Concat(b.Claimed).Distinct().Where(node => afterAB[node].Walkable || afterAB[node].Static).ToArray();
+                pairRow["claimedCellsOpen"] = new JArray(claimedOpen.Take(40).Select(node => {
+                    var row = InfernalWallNodeIdentity35(node);
+                    row["afterAB"] = InfernalWallNodeDocument35(afterAB[node]);
+                    return row; }));
+                Vector3 aFormedAt = a.Section.Position, bFormedAt = b.Section.Position;
                 // Two kinds of overlap are recorded. Shared claims: Wall B's
                 // legal footprint (walkable nodes) can include cells Wall A
                 // claims once a native grid update has reopened them, so both
@@ -622,8 +632,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (string)castB["summonerOfSection"] == sourceB.UniqueId &&
                     a.Claimed.Count > 0 && b.Claimed.Count > 0 && !claimsOutsideRegion &&
                     (!geometry.DoubleOwnedReachable || doubleOwned > 0) && doubleOwnedExact &&
-                    bothBlocked && (!geometry.SharedReachable || crossSurface > 0),
-                    pairRow, "Two ordinary commands from separate Bone Devils form two independently owned sections, each with its own registered cut and claims, and every cell whose centre lies in either section's ice is blocked. Where the legal placement shares claimed cells, each shared cell is owned by exactly both sections; where it places one Wall's claimed cells inside the other Wall's native cut box, that overlap is present.");
+                    bothBlocked && claimedOpen.Length == 0 && (!geometry.SharedReachable || crossSurface > 0),
+                    pairRow, "Two ordinary commands from separate Bone Devils form two independently owned sections, each with its own registered cut and claims; every cell whose centre lies in either section's ice is blocked, and every claimed cell holds both static layers blocked. Where the legal placement shares claimed cells, each shared cell is owned by exactly both sections; where it places one Wall's claimed cells inside the other Wall's native cut box, that overlap is present.");
 
                 if (aFirst)
                 {
@@ -713,6 +723,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["survivorCounterContributionLost"] = rows(survivorCounterLost),
                     ["retiredCounterContributionNotExactlyRemoved"] = rows(retiredCounterNotExact),
                     ["survivorClaimedCellsStaticWalkableAfter"] = survivor.Claimed.Count(node => afterFirst[node].Static),
+                    ["survivorMovedMeters"] = Vector3.Distance(survivor.Section.Position, aFirst ? bFormedAt : aFormedAt),
                     ["survivorClaimedCellsWalkableAfter"] = survivor.Claimed.Count(node => afterFirst[node].Walkable),
                     ["sharedClaimsAfterRetirement"] = rows(doubleOwnedNodes),
                     ["survivorIceNodes"] = survivorIce.Length,
@@ -733,11 +744,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 persist();
                 check("wall-shared-survivor-preserved-" + pair, survivorCutLive && firstCutGone &&
                     survivorClaimLost.Length == 0 && survivorIceOpen.Length == 0 &&
+                    survivor.Claimed.All(node => !afterFirst[node].Walkable && !afterFirst[node].Static) &&
+                    Vector3.Distance(survivor.Section.Position, aFirst ? bFormedAt : aFormedAt) < .05f &&
                     survivorCounterLost.Length == 0 && retiredCounterNotExact.Length == 0 &&
                     firstNotRestored.Length == 0 && unrelatedChanged.Length == 0 &&
                     InfernalWallNavmesh35.ActiveGridClaimCount == survivor.Binding.GridNodeSnapshot().Length &&
                     (bool)survivorRow["foreignCutsUnchanged"], survivorRow,
-                    "Retiring one Wall removes exactly its own native counter contribution and claims; the survivor keeps its registered live cut, its own counter contribution and sole ownership of every claim it held, and every cell whose centre lies in its ice stays blocked; cells only the retired Wall affected and all unrelated cells equal their pre-Wall baseline in static, pre-erosion, counter, walkability and claim count. Static and pre-erosion changes on the survivor's own cells are recorded, not required.");
+                    "Retiring one Wall removes exactly its own native counter contribution and claims; the survivor keeps its registered live cut, its own counter contribution and sole ownership of every claim it held, with every claimed cell still blocked in both static layers, and its section has not moved; cells only the retired Wall affected and all unrelated cells equal their pre-Wall baseline in static, pre-erosion, counter, walkability and claim count. Counter changes the retirement's native update makes on the survivor's own cells are recorded.");
                 parkSources(); // 5-ft fear aura beside a lane (close24)
                 foreach (int frame in InfernalEarlyWallMove35(fixture, survivorPlan.Start, survivorPlan.Destination,
                     survivorPlan.Midpoint, true, "shared-" + tag + "-survivor-" + (aFirst ? "b" : "a"), check,
@@ -769,12 +782,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["claimsAfter"] = InfernalWallNavmesh35.ActiveGridClaimCount,
                     ["foreignCutsAfter"] = foreignAfter,
                     ["foreignCutsUnchanged"] = JToken.DeepEquals(foreignAfter, foreignCutsBefore),
-                    ["comparison"] = "Required: every region node's static flag, pre-erosion flag, DynamicBlocked counter, combined walkability and claim count equals its pre-Wall baseline. Recorded: grid connection bits and erosion tags against the same baseline." };
+                    ["comparison"] = "Required: every region node's static flag, pre-erosion flag, DynamicBlocked counter, combined walkability, claim count and grid connection bits equal its pre-Wall baseline (close28 left restored cells walkable but disconnected). Recorded: erosion tags." };
                 pairRow["afterBothRetired"] = restoredRow;
                 persist();
                 check("wall-shared-baseline-restored-" + pair, notBaseline.Length == 0 &&
+                    region.All(node => afterBoth[node].Connections == baseline[node].Connections) &&
                     InfernalWallNavmesh35.ActiveGridClaimCount == 0 && (bool)restoredRow["foreignCutsUnchanged"],
-                    restoredRow, "Retiring the second Wall returns every affected and unrelated cell to its recorded baseline.");
+                    restoredRow, "Retiring the second Wall returns every affected and unrelated cell, including its grid connections, to its recorded baseline.");
                 parkSources(); // 5-ft fear aura beside a lane (close24)
                 foreach (int frame in InfernalEarlyWallMove35(fixture, plan.Start, plan.Destination, plan.Midpoint,
                     false, "shared-" + tag + "-restored-a", check, plan)) yield return frame;

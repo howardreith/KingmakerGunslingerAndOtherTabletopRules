@@ -381,6 +381,38 @@ namespace KingmakerGunslinger.RuntimeTesting
             result(row);
         }
 
+        // Selected contract: claims hold both static layers, so turn-based
+        // entry and every native unit block leave the claimed cells blocked;
+        // no native turn-based route or ordinary turn-based move takes the
+        // mover's centre into or through the ice; leaving turn-based mode and
+        // retiring the Wall restore the region exactly.
+        private static void InfernalWallTurnBoundaryVerdict35(JObject row, Action<string, bool, JObject, string> check)
+        {
+            var cells = row?["cellsInTurnBased"] as JObject;
+            var routes = row?["routes"] as JArray;
+            var actual = row?["actualMove"] as JObject;
+            var restoration = row?["restoration"] as JObject;
+            var exit = row?["exit"] as JObject;
+            bool claimsHeld = cells != null && (int?)cells["claimedRingStaticWalkable"] == 0 &&
+                (int?)cells["iceCentreStaticWalkable"] == 0 && (int?)cells["claimedRingWalkable"] == 0 &&
+                (int?)cells["iceCentreBlocked"] == (int?)cells["iceCentre"];
+            bool routesClear = routes != null && routes.Count > 0 && routes.OfType<JObject>().All(value =>
+                (bool?)value["toFarSide"]?["error"] == false && (bool?)value["toFarSide"]?["throughIce"] == false &&
+                (bool?)value["toRingCellFromSameSide"]?["throughIce"] == false);
+            bool moveClear = (bool?)row?["moverTurnReached"] == true && actual != null &&
+                (bool?)actual["forcedPathError"] == false && (string)actual["result"] == "Success" &&
+                (bool?)actual["centreEnteredIce"] == false && (bool?)actual["crossedInsideLength"] == false;
+            check("wall-turn-boundary", (bool?)row?["turnBasedEntered"] == true && claimsHeld && routesClear && moveClear,
+                row ?? new JObject(),
+                "In native turn-based combat every cell the standing Wall claims stays blocked in both static layers; native turn-based routes from the claimed cells beside the ice, to the far side and back to the ring, and one ordinary native turn-based move along the native route never take the mover's centre into or through the ice.");
+            check("wall-turn-boundary-restored", exit != null && (bool?)exit["turnBasedSettingRestored"] == true &&
+                (bool?)exit["cameraScrollRestored"] == true && (bool?)exit["inTurnBasedCombat"] == false &&
+                restoration != null && (int?)restoration["nodesNotAtBaseline"] == 0 &&
+                (int?)restoration["nodesWithConnectionsNotAtBaseline"] == 0 && (int?)restoration["claimsAfter"] == 0,
+                restoration ?? new JObject(),
+                "Leaving turn-based mode restores its setting and camera preference, and retiring the probe Wall returns every region cell, including grid connections, to its pre-Wall baseline.");
+        }
+
         // One native route request through the mover's own agent; under
         // turn-based combat this is the installed StartPathWithClerance on
         // grid mask 2. Records the path's nodes against the section.
