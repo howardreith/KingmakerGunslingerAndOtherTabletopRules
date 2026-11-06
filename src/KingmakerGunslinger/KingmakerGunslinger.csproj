@@ -62,6 +62,7 @@
     <Compile Include="Summoning\GlabrezuVisualPolicy38.cs" />
     <Compile Include="Summoning\BoneDevilTailVisual35.cs" />
     <Compile Include="Summoning\InfernalWallNavmesh35.cs" />
+    <Compile Include="Summoning\InfernalWallSteamPresentation35.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.Infernal35.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.Infernal36.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.Vrock37.cs" />

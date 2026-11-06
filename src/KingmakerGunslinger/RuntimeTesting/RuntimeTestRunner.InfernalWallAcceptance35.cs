@@ -1020,8 +1020,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 steamFx["afterCameraSettle"] = InfernalWallAreaFx35(fog);
                 inspectionCapture = InfernalWallInspectionCaptureAt35(fog.Position, "s35-wall-steam-area-inspection-light.png");
             }
-            var fxProbe = new JObject();
-            foreach (int frame in InfernalWallSteamFxProbe35(run, fog, fxProbe)) yield return frame;
+            bool nativeLinkLoads = run.Fog.Fx != null && !string.IsNullOrEmpty(run.Fog.Fx.AssetId) &&
+                run.Fog.Fx.Load(true) != null;
+            JObject settledFx = (JObject)steamFx["afterCameraSettle"] ?? steamFx;
+            var presentation = new JObject { ["areaFx"] = steamFx,
+                ["nativeObscuringMistLinkAssetId"] = run.Fog.Fx?.AssetId,
+                ["nativeObscuringMistLinkLoads"] = nativeLinkLoads,
+                ["expectedPrefab"] = InfernalRules35.WallSteamFxPrefabName,
+                ["ordinaryCapture"] = ordinaryCapture, ["inspectionCapture"] = inspectionCapture,
+                ["scope"] = "Structured presence of the Wall steam's spawned native effect; readability is judged from the ordinary and inspection captures." };
+            run.Check("wall-steam-presentation", fog != null && (bool?)settledFx["fxPresent"] == true &&
+                ((string)settledFx["spawnedFx"] ?? "").StartsWith(InfernalRules35.WallSteamFxPrefabName, StringComparison.Ordinal) &&
+                (bool?)settledFx["fxActive"] == true && ((int?)settledFx["aliveParticles"] ?? 0) > 0 &&
+                ((int?)settledFx["visibleRenderers"] ?? 0) > 0, presentation,
+                "The Wall's steam area draws a live native steam cloud at its own position; the native Obscuring Mist link that draws nothing is not relied on.");
             Vector3 mid = formed.Plan.Midpoint;
             Vector3 outside = Vector3.Distance(outsidePlan.Start, mid) >= Vector3.Distance(outsidePlan.Destination, mid) ?
                 outsidePlan.Start : outsidePlan.Destination;
@@ -1037,7 +1049,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["moverDistanceAfterExit"] = InfernalEarlyDistanceToSegment35(mover.Position, mid, mid),
                 ["areaStillLive"] = fog != null && !fog.IsEnded,
                 ["steamFx"] = steamFx, ["steamOrdinaryCapture"] = ordinaryCapture,
-                ["steamInspectionCapture"] = inspectionCapture, ["steamFxProbe"] = fxProbe };
+                ["steamInspectionCapture"] = inspectionCapture, ["steamPresentation"] = presentation };
             InfernalWallPersist35(run, "steam-consumer", row);
             run.Check("wall-steam-consumer", fog != null && inside != null && !afterExit && !fog.IsEnded &&
                 (configured == null || insideGuid == configured.AssetGuid), row,

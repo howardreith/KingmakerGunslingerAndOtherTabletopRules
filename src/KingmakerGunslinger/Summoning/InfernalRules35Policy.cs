@@ -45,6 +45,32 @@ namespace KingmakerGunslinger.Summoning
         internal const float WallOfIceSectionLengthMeters = 3.05f;
         internal const float WallOfIceSectionThicknessMeters = .75f;
         internal const float WallOfIceAdjacencyMeters = 1.524f;
+        internal const string WallAbilityName =
+            "KMG_Summoning_Infernal_BoneDevil_WallOfIce";
+        // Installed 2.1.7b native Obscuring Mist area and its effect link,
+        // which resolves to no prefab in this installation: the area spawns
+        // nothing visible. Wall steam keeps this native area for mechanics
+        // and draws the native 20-foot kineticist steam cloud instead.
+        internal const string NativeObscuringMistAreaGuid =
+            "e09010a73354a794293ebc7b33c2d130";
+        internal const string NativeObscuringMistFxAssetId =
+            "e19d6ede75196c244b1dc481aed96d70";
+        internal const string WallSteamFxAssetId =
+            "f5677ddc969727746af75ab89a26167e";
+        internal const string WallSteamFxPrefabName =
+            "Kinetic_SteamAoe00_20Feet_Aoe_Cycle";
+
+        // Only the Wall's own steam area, and only when the native view
+        // spawned no effect of its own.
+        internal static bool WallSteamNeedsPresentation(
+            bool nativeEffectSpawned, string areaGuid, string sourceAbilityName)
+        {
+            return !nativeEffectSpawned &&
+                String.Equals(areaGuid, NativeObscuringMistAreaGuid,
+                    StringComparison.Ordinal) &&
+                String.Equals(sourceAbilityName, WallAbilityName,
+                    StringComparison.Ordinal);
+        }
 
         internal static bool QualifiesForBarbedDefense(bool hit, bool melee,
             bool manufactured, float rawWeaponReachFeet,
