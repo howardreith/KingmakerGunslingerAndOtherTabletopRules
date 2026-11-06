@@ -100,7 +100,21 @@ Coverage:
 - Byte reproducibility: an independent recompilation produced an identical
   archive, assembly and MVID.
 - `Assert-KmgSprint40Qualification`, `Assert-KmgClosureProofFiles` and
-  `Get-KmgClosurePublicCoverage` all pass against the released ledger.
+  `Get-KmgClosurePublicCoverage` all pass against the retained
+  **publication-input** ledger `qualification-ledger.merged.json`, SHA-256
+  `d67cf196aa3865ac0b7ec8e1386b9cf2b3d200adfa1a91c51531dfb96c116fca` — the
+  ledger the publisher actually consumed, and whose digest the published
+  manifest records as `closureLedgerSha256`.
+
+  They are **not** all satisfied by the post-publication `released` ledger, and
+  that is by design rather than a defect. Measured against it,
+  `Assert-KmgSprint40Qualification` refuses with `Exact Sprint40 restoration
+  incomplete.`: the assertion requires `restoration.current` to read exactly
+  `EXACT_INTAKE_VERIFIED`, and publication advances that marker to
+  `EXACT_INTAKE_VERIFIED_AFTER_PUBLICATION`. `Assert-KmgClosureProofFiles` and
+  `Get-KmgClosurePublicCoverage` pass against both. The two ledgers are
+  therefore not interchangeable, and an earlier revision of this line named the
+  wrong one.
 
 ### Evidence scope, preserved
 
