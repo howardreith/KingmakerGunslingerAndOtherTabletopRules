@@ -1,5 +1,30 @@
 # Summon visual overhaul: Wall of Ice investigation
 
+## Integration validated natively on merged master
+
+[Integration validation in the Sprint 2 checkpoint](WALL-OF-ICE-SPRINT2.md#integration-validation-on-merged-master-development-candidate-draft-follow-up-pr).
+Current. PR #98 is merged as `710ac76b7e`; `v0.0.178` is published.
+
+- **Result.** `6ead656525` (product source equal to master plus one fixture
+  correction) passed the guarded `summon-overhaul-wall` phase: **PASS, 155
+  assertions**.
+  - Run `20261106T1842105331157Z-0194b4d2ba934de7b840502cf1ef6041`; ZIP
+    `63c09a42…9baa`; MVID `0be2ad10-aaa9-48fc-915a-c2da2547b7ee`.
+  - Restoration exact (intake mod 0.0.140).
+- **Established:**
+  - claims durable in both layers through turn-based updates on the executed
+    `ABPathWithClearance` grid path
+  - survivors preserved in both orders
+  - flags, counters, claims and connections restored exactly; tags exact or
+    equivalent, one looser beyond reach
+  - the physical route restored
+  - strict steam same-instance reuse with a complete renderer comparison
+- **Not on this host.** `sprint40-ice-devil-walls` (interrupted retirement,
+  cross-species isolation) is restricted to `HOWARD-LAPTOP`.
+- **Not reached.** The diagonal overlap was not reached by this run's
+  geometry (still evidenced by pre-integration nav9).
+- **Ledger.** ≥ 23.18 min this continuation; cumulative ≥ 615.19 min.
+
 ## Integration with master — conflict-free; native validation blocked
 
 [Integration closeout in the Sprint 2 checkpoint](WALL-OF-ICE-SPRINT2.md#integration-closeout-with-master-development-candidate-blocked-before-packaging).
