@@ -371,19 +371,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             var parked = new JArray();
             int nextSlot = 0;
             var slots = new Dictionary<UnitEntityData, Vector3>();
-            // Park keeps one slot per unit, 1.5 m apart, on native floor.
+            // Park keeps one slot per unit, 3 m apart (outside a 5-ft aura), on native floor.
             Action<UnitEntityData> park = unit => {
                 Vector3 slot;
                 if (!slots.TryGetValue(unit, out slot))
                 {
                     int index = nextSlot++;
-                    float offset = ((index + 1) / 2) * 1.5f * (index % 2 == 0 ? 1f : -1f);
+                    float offset = ((index + 1) / 2) * 3f * (index % 2 == 0 ? 1f : -1f);
                     slot = AstarPath.active.GetNearest(parkingCentre + parkingSide * offset).clampedPosition;
                     slots[unit] = slot;
                 }
                 InfernalWallPrepareActor35(unit);
                 PlaceExpandedSummoningUnit(unit, slot);
             };
+            // Both sources have cast by the time a live walk starts; their
+            // 5-ft fear auras stand clear of every lane for the walk.
+            Action parkSources = () => { park(sourceA); park(sourceB); clearFear(); };
             Vector3 parking = AstarPath.active.GetNearest(parkingCentre).clampedPosition;
             foreach (var bystander in owned.Where(value => value != null && !value.Destroyed && value.IsInState &&
                     !value.Descriptor.State.IsDead && value != sourceA && value != sourceB && value != mover &&
@@ -576,10 +579,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 if (aFirst)
                 {
-                    clearFear();
+                    parkSources(); // 5-ft fear aura beside a lane (close24)
                     foreach (int frame in InfernalEarlyWallMove35(fixture, plan.Start, plan.Destination, plan.Midpoint,
                         true, "shared-" + tag + "-both-a", check, plan, false, a.Section)) yield return frame;
-                    clearFear();
+                    parkSources(); // 5-ft fear aura beside a lane (close24)
                     foreach (int frame in InfernalEarlyWallMove35(fixture, planB.Start, planB.Destination, planB.Midpoint,
                         true, "shared-" + tag + "-both-b", check, planB, false, b.Section)) yield return frame;
                 }
@@ -672,7 +675,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     InfernalWallNavmesh35.ActiveGridClaimCount == survivor.Binding.GridNodeSnapshot().Length &&
                     (bool)survivorRow["foreignCutsUnchanged"], survivorRow,
                     "Retiring one Wall returns only its own cells to their baseline and leaves the other Wall's cut, claims, every layer of its cells and unrelated cells exactly as they were immediately before the retirement.");
-                clearFear();
+                parkSources(); // 5-ft fear aura beside a lane (close24)
                 foreach (int frame in InfernalEarlyWallMove35(fixture, survivorPlan.Start, survivorPlan.Destination,
                     survivorPlan.Midpoint, true, "shared-" + tag + "-survivor-" + (aFirst ? "b" : "a"), check,
                     survivorPlan, false, survivor.Section)) yield return frame;
@@ -701,10 +704,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 check("wall-shared-baseline-restored-" + pair, notBaseline.Length == 0 &&
                     InfernalWallNavmesh35.ActiveGridClaimCount == 0 && (bool)restoredRow["foreignCutsUnchanged"],
                     restoredRow, "Retiring the second Wall returns every affected and unrelated cell to its recorded baseline.");
-                clearFear();
+                parkSources(); // 5-ft fear aura beside a lane (close24)
                 foreach (int frame in InfernalEarlyWallMove35(fixture, plan.Start, plan.Destination, plan.Midpoint,
                     false, "shared-" + tag + "-restored-a", check, plan)) yield return frame;
-                clearFear();
+                parkSources(); // 5-ft fear aura beside a lane (close24)
                 foreach (int frame in InfernalEarlyWallMove35(fixture, planB.Start, planB.Destination, planB.Midpoint,
                     false, "shared-" + tag + "-restored-b", check, planB)) yield return frame;
             }
