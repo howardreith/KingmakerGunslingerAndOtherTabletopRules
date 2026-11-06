@@ -203,6 +203,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value != null && !value.IsFinished) + ".");
         }
 
+        // Joining combat is not the same as being able to act in it. A unit
+        // that has just joined waits for initiative, and the wall cast this
+        // prepare performs first leaves the caster a standard-action cooldown.
+        // The combat join and prepare controllers only settle that while the
+        // game is actually advancing, so wait on the engine's own readiness
+        // before dispatching the spear rather than queueing a command the
+        // engine will not start.
+        private IEnumerable<int> IceDevilCombatReady40(UnitEntityData[] owners)
+        {
+            Func<UnitEntityData, bool> pending = unit =>
+                !unit.CombatState.IsInCombat ||
+                unit.CombatState.IsWaitingInitiative ||
+                !unit.CombatState.CanActInCombat ||
+                unit.CombatState.Cooldown.StandardAction > 0f ||
+                unit.Commands.Raw.Any(value => value != null &&
+                    !value.IsFinished);
+            DateTime deadline = DateTime.UtcNow.AddSeconds(30);
+            while (DateTime.UtcNow < deadline && owners.Any(pending))
+            {
+                Game.Instance.IsPaused = false;
+                yield return 0;
+            }
+            Game.Instance.IsPaused = true;
+            UnitEntityData unready = owners.FirstOrDefault(pending);
+            if (unready != null) throw new InvalidOperationException(
+                "Sprint40 persistence owner never became combat-ready: " +
+                unready.UniqueId +
+                ";inCombat=" + unready.CombatState.IsInCombat +
+                ";waitingInitiative=" + unready.CombatState.IsWaitingInitiative +
+                ";canActInCombat=" + unready.CombatState.CanActInCombat +
+                ";standardCooldown=" + unready.CombatState.Cooldown.StandardAction +
+                ";initiativeCooldown=" + unready.CombatState.Cooldown.Initiative +
+                ";activeCommands=" + unready.Commands.Raw.Count(value =>
+                    value != null && !value.IsFinished) + ".");
+        }
+
         private static void IceDevilMeleeLane40(UnitEntityData caster,
             UnitEntityData[] sources, UnitEntityData owner,
             UnitEntityData target)
@@ -370,6 +406,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Stats.AC.BaseValue = -100;
                 target.Stats.HitPoints.BaseValue = 100000;
                 IceDevilMeleeLane40(caster, sources, source, target);
+                foreach (int frame in IceDevilCombatReady40(
+                    new[] { source, target })) yield return frame;
                 foreach (int frame in IceDevilSpearUntil40(source, target,
                     () => target.Buffs.GetBuff(slowBlueprint) != null))
                     yield return frame;

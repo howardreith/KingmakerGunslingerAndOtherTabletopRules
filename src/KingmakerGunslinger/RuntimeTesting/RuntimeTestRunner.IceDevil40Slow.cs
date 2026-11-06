@@ -341,6 +341,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ",brain=" + owner.IsBrainActive +
                     ",combat=" + owner.IsInCombat + "/" + target.IsInCombat +
                     ",canAct=" + owner.Descriptor.State.CanAct +
+                    ",canActInCombat=" + owner.CombatState.CanActInCombat +
+                    ",waitingInitiative=" + owner.CombatState.IsWaitingInitiative +
+                    ",standardCooldown=" + owner.CombatState.Cooldown.StandardAction +
+                    ",paused=" + Game.Instance.IsPaused +
                     ",appearing=" + (owner.Buffs.GetBuff(BlueprintRoot.Instance
                         .SystemMechanics.SummonedUnitAppearBuff) != null) + "/" +
                         (target.Buffs.GetBuff(BlueprintRoot.Instance
