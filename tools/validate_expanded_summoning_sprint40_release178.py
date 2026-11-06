@@ -14,7 +14,7 @@ import expanded_summoning_manifest as manifest
 # Exact reviewed product after the focused full-gate contract repair, and the
 # tested product source of the latest reviewed stable v0.0.177. The reviewed
 # product already carries final version metadata, so metadata must remain exact.
-PRODUCT = "c8a7ffc160520df1f3e1eefb848526c31af59dd8"
+PRODUCT = "4246d491dec3d300f13bc804b69200aa30ebcc85"
 RELEASED = "d1365d621295cf63c7b646247d6bf604edb208da"
 VERSION = "0.0.178"
 INFORMATIONAL = VERSION + "-expanded-summoning-ice-devil"
