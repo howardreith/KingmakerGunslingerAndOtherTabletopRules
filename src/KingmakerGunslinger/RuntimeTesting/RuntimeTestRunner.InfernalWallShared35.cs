@@ -524,14 +524,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 pairRow["bNodes"] = new JArray(bAffected.Where(node => !aAffected.Contains(node)).Select(node =>
                     InfernalWallSharedNodeRow35(node, a, b, baseline, afterAB)));
                 persist();
-                // The ice itself: every grid node whose centre lies inside a
-                // section's footprint must be blocked. Claimed ring nodes
-                // (centre outside, square touching) can be rewritten by any
-                // native grid update while the Wall stands: installed
-                // GridGraph.UpdateArea with updateErosion and erodeIterations
-                // 10 resets static walkability from the pre-erosion flag
-                // within ~10 m (close21: in combat, 12 of Wall A's 24 claimed
-                // nodes). That is recorded, not treated as formation failure.
+                // Every grid node whose centre lies inside a section's footprint
+                // and every claimed node must be blocked. Before the claim held
+                // both static layers, any native grid update (installed
+                // GridGraph.UpdateArea, updateErosion, erodeIterations 10)
+                // reset claimed nodes from the pre-erosion flag within ~10 m
+                // (close21/close27: up to 16 claimed nodes walkable with the
+                // Wall standing; close27 b-first: retiring Wall B opened 4
+                // cells Wall A still claimed). Ring rewrites are still listed.
                 Func<InfernalWallSharedSection35, Pathfinding.GraphNode, bool> insideIce = (wall, node) =>
                     wall.Section != null && InfernalWallPlacementRuntime35.DistanceToFootprint((Vector3)node.position,
                         wall.Section.Position, Vector3.Cross(Vector3.up, wall.Section.OrientationDirection).normalized,
@@ -544,7 +544,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var row = InfernalWallNodeIdentity35(node);
                     row["afterAB"] = InfernalWallNodeDocument35(afterAB[node]);
                     return row; }));
-                bool bothBlocked = iceNodes.Length > 0 && iceNodes.All(node => !afterAB[node].Walkable);
+                var claimedOpen = a.Claimed.Concat(b.Claimed).Where(node => afterAB[node].Walkable).ToArray();
+                pairRow["claimedNodesWalkable"] = claimedOpen.Length;
+                bool bothBlocked = iceNodes.Length > 0 && iceNodes.All(node => !afterAB[node].Walkable) && claimedOpen.Length == 0;
                 // Legal placement never lets two claims share a node (the
                 // second footprint must be walkable), and outside turn-based
                 // combat no cut writes grid counters. The overlap that exists
@@ -609,7 +611,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var survivorClaimLost = survivor.Claimed.Where(node => !InfernalWallNavmesh35.ClaimOwnedBy(node, survivor.Binding) ||
                     afterFirst[node].Owners != 1).ToArray();
                 var survivorIce = survivorAffected.Where(node => insideIce(survivor, node)).ToArray();
-                var survivorUnblocked = survivorIce.Where(node => !beforeFirst[node].Walkable && afterFirst[node].Walkable).ToArray();
+                var survivorUnblocked = survivorIce.Concat(survivor.Claimed).Distinct().Where(node => afterFirst[node].Walkable).ToArray();
                 // A retiring Wall's own native counter may overlap the survivor's
                 // ice (diagonal cut box) and is released with it; the survivor
                 // keeps its static block, claim and blocked state.
