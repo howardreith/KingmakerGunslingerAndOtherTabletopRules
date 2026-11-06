@@ -1,12 +1,63 @@
-# Sprint 40 ? IN PROGRESS
+# Sprint 40 — v0.0.178 RELEASED / STOP
 
-Owner mission selects Ice Devil and the narrow Sprint 39 carry-forwards through
-verified release and merged final records. Active worktree: `C:/Dev/KingmakerGunslingerLab/wt/s40`;
-branch: `codex/expanded-summoning-sprint40-ice-devil`.
-See [Sprint 40 status](planning/SPRINT40-STATUS.md) for the reuse map, current
-checks and precise remaining work. The early development native slice passed
-19 assertions; final qualification and release remain incomplete.
-Sprint 39 remains released; historical stop directions below do not select work.
+Stable [v0.0.178](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.178)
+is published and publicly verified. One adult, untemplated Ice Devil (Gelugon)
+is functional through exactly one Summon Monster IX route. The public surface
+goes from 133 creatures and 1,216 choices to 134 and 1,217 — this one route and
+nothing else.
+
+Tested source `b2be3ebe805f58f53acd3120f75479aa19a634f9` merged at
+`839204cac36e2c2079377269b8024f8a76d4c4f6` through product
+[PR #99](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/99);
+the tested head is a direct parent of that merge and its product paths are
+identical to it. Publication promoted the exact qualified ZIP without
+rebuilding. The downloaded ZIP SHA-256 is
+`4d6e262181e5abd461a537380efe1c05781b55e25bd492821f2bb911482dbe25`; DLL SHA-256
+`c6bb7377b89e73bee89c9f747d7b1e0877af45318bfe8ea97d7e970794f4fda6`; MVID
+`1b273dc4-236e-4f85-9395-af2ec00fae95`. The annotated tag peels to the product
+merge and the release is stable, non-draft, non-prerelease and Latest.
+
+The 2,817/2,817 unfiltered gate, exact byte reproducibility, ten fresh native
+executions, six distinct ON/OFF persistence processes, the public download
+check and exact laptop/Working restoration all passed.
+
+[PR #97](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/97)
+merged an earlier head, `1e7a9663f63dbb3f5458165e56c78ae17cece4ef`, which was
+**not** published: a reviewed P2 wall-retirement exception-safety finding was
+unresolved in those bytes. PR #99 carries the repair and is the released
+candidate.
+
+Wall retirement is now resumable and idempotent. An in-flight native grid
+update defers and resumes once the pathfinder settles it, a replaced navigation
+graph completes without applying stale restoration data to the replacement,
+destruction forces completion rather than stranding ownership, and the residual
+cold, the fire fog and the lifetime removal happen exactly once instead of
+being skipped behind a one-way flag. Covered by
+`expanded-summoning.sprint35-wall-retirement-resumable` and by the controlled
+native regression `sprint32-sprint40-wall-interrupted-retirement-resumes`, in
+which the fixture supplies and then clears the engine updating flag while the
+production retirement code executes natively: 3 deferrals, 28 claims held while
+pending, retirement completed, lifetime retired, claim count back to its
+baseline of 0, 48 original node bits restored, no grid failure. That is a
+fixture-induced precondition, not an observed natural engine race.
+
+The Slow carried in the persistence envelopes is effect-only preparation: it
+establishes the real production Slow state for cold-load testing and is not
+attack, save, eligibility or action-cost proof. Those remain supplied by the
+separate real-time and turn-based native combat runs on this same artifact.
+
+Persistent Image is an owner-approved omission with no substitute and no
+engine-impossibility claim; greater teleport and nested summoning remain
+excluded; effective movement is the printed 60-foot fly with the separate
+40-foot land mode unmodeled. The Nalfeshnee-owned Slow is corrected to its
+printed CL12 close range of 55 feet and Unholy Nimbus is documented as Daze
+rather than Blindness. Owner aesthetic approval of the model and icon is not
+claimed.
+
+Sprint 41 — the core ideal-roster release audit — is authorized next and is not
+a release. Cleric alignment restrictions and alphabetical summon-list ordering
+remain deferred implementation work after that audit. Variant elementals remain
+excluded.
 
 # Sprint 39 — v0.0.177 RELEASED / STOP
 
