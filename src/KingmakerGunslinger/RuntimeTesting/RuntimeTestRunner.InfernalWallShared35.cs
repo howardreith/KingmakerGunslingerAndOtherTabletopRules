@@ -7,10 +7,12 @@ using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
+using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Diagnostics;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
@@ -323,6 +325,37 @@ namespace KingmakerGunslinger.RuntimeTesting
             receipt["sources"] = new JObject { ["a"] = sourceA.UniqueId, ["b"] = sourceB.UniqueId,
                 ["aSummoner"] = sourceA.Get<UnitPartSummonedMonster>()?.Summoner?.UniqueId,
                 ["bSummoner"] = sourceB.Get<UnitPartSummonedMonster>()?.Summoner?.UniqueId };
+            persist();
+
+            // The lane prerequisite stands every owned actor, both new sources
+            // included, at the casting point and isolates only its given
+            // source's fear. A first exposure to the other source's aura then
+            // landed mid-walk (close18: failed DC 19 Will save, the mover fled,
+            // its move was interrupted). The native aura grants its per-source
+            // repeat immunity with that first exposure, as it already has for
+            // the original Bone Devil. Let that exposure happen here, beside
+            // each new source, then clear only the resulting fright.
+            var immunity = (BlueprintBuff)ExpandedSummoningBlueprints.Registered.BySymbol[
+                ExpandedSummoningSpecialBuilder.Bone35Prefix + "FearImmunity"];
+            var exposures = new JArray();
+            foreach (var source in new[] { sourceA, sourceB })
+            {
+                var exposure = new JObject { ["source"] = source.UniqueId,
+                    ["immuneBefore"] = InfernalBoneBuff35(mover, immunity, source) != null };
+                if (!(bool)exposure["immuneBefore"])
+                {
+                    Vector3 side = Vector3.Cross(Vector3.up, source.OrientationDirection); side.y = 0f;
+                    if (side.sqrMagnitude < .01f) side = Vector3.right;
+                    PlaceExpandedSummoningUnit(mover, source.Position + side.normalized * 1.2f);
+                    DateTime until = DateTime.UtcNow.AddSeconds(12);
+                    while (DateTime.UtcNow < until && InfernalBoneBuff35(mover, immunity, source) == null)
+                    { Game.Instance.IsPaused = false; yield return 0; }
+                }
+                exposure["immuneAfter"] = InfernalBoneBuff35(mover, immunity, source) != null;
+                exposures.Add(exposure);
+                clearFear();
+            }
+            receipt["moverAuraExposures"] = exposures;
             persist();
 
             var plan = InfernalWallNextLane35(run, "shared", _infernalWallPlans35.ToArray());
