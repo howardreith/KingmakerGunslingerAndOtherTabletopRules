@@ -177,6 +177,50 @@ namespace KingmakerGunslinger.RuntimeTesting
         // Two independently sourced sections. Wall B is placed only where its
         // own ordinary target check passes; the survey looks for legal places
         // whose native cut box overlaps Wall A's affected cells.
+        // A standing point for a new Wall source: walkable native floor at the
+        // mover's level, a clear sight line from the mover, and clear of
+        // every other live unit by 1.5 m. Records each candidate it rejects.
+        private static JObject InfernalWallSharedSourcePoint35(UnitEntityData mover, UnitEntityData self, List<int> used)
+        {
+            var rejected = new JArray();
+            foreach (float distance in new[] { 2.5f, 3.5f, 4.5f })
+                for (int index = 0; index < CompassOffsets.Length; index++)
+                {
+                    if (used.Contains(index)) continue;
+                    Vector3 candidate = mover.Position + CompassOffsets[index] * distance;
+                    var nearest = AstarPath.active == null ? default(Pathfinding.NNInfo) : AstarPath.active.GetNearest(candidate);
+                    string reason = null;
+                    if (nearest.node == null || !nearest.node.Walkable) reason = "no-walkable-node";
+                    else
+                    {
+                        Vector3 floor = nearest.clampedPosition;
+                        Vector3 flat = floor - candidate; flat.y = 0f;
+                        bool sightClear;
+                        try
+                        {
+                            sightClear = Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance != null &&
+                                !Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance.HasObstacle(mover.Position, floor, 0);
+                        }
+                        catch (Exception) { sightClear = false; }
+                        if (flat.magnitude > .3f) reason = "node-off-candidate";
+                        else if (Mathf.Abs(floor.y - mover.Position.y) > .25f) reason = "floor-step";
+                        else if (!sightClear) reason = "sight-blocked";
+                        else if (Game.Instance.State.Units.All.Any(unit => unit != mover && unit != self && unit.IsInGame &&
+                            !unit.Descriptor.State.IsFinallyDead && Vector3.Distance(unit.Position, floor) < 1.5f))
+                            reason = "occupied";
+                        if (reason == null)
+                        {
+                            used.Add(index);
+                            return new JObject { ["point"] = SurveyVector(floor), ["direction"] = index,
+                                ["distance"] = distance, ["floorStep"] = floor.y - mover.Position.y,
+                                ["rejected"] = rejected };
+                        }
+                    }
+                    rejected.Add(new JObject { ["direction"] = index, ["distance"] = distance, ["reason"] = reason });
+                }
+            throw new InvalidOperationException("No visible level floor beside the mover for a Wall source: " + rejected.ToString(Formatting.None));
+        }
+
         private IEnumerable<int> InfernalWallShared35(ExpandedSummoningCorrectionFixture fixture,
             List<UnitEntityData> owned, Action<string, bool, JObject, string> check)
         {
@@ -191,16 +235,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             var sourceB = CastExpandedSummoningOwnTier(fixture, "bone-devil");
             owned.Add(sourceA); owned.Add(sourceB);
             // The fixture summon appears at its own spawn point; the native
-            // fader only reveals a body inside party sight (the first attempt
-            // left a body faded out 11 m from the party). Stand each new source
-            // beside the party, outside its five-foot fear emanation.
-            Vector3 side = Vector3.Cross(Vector3.up, mover.OrientationDirection); side.y = 0f;
-            if (side.sqrMagnitude < .01f) side = Vector3.right;
-            side.Normalize();
-            PlaceExpandedSummoningUnit(sourceA, mover.Position + side * 2.5f);
-            PlaceExpandedSummoningUnit(sourceB, mover.Position - side * 2.5f);
+            // fader only reveals a body inside party sight. Fixed side offsets
+            // failed twice (11 m away; then 2.5 m beside the mover but across
+            // a 0.46 m floor step, still faded out). Each source now stands on
+            // a walkable native floor node at the mover's level whose line
+            // from the mover is clear in the game's own sight geometry.
+            var usedDirections = new List<int>();
+            var placements = new JArray();
+            foreach (var source in new[] { sourceA, sourceB })
+            {
+                JObject placement = InfernalWallSharedSourcePoint35(mover, source, usedDirections);
+                Vector3 point = new Vector3((float)placement["point"][0], (float)placement["point"][1], (float)placement["point"][2]);
+                PlaceExpandedSummoningUnit(source, point);
+                placement["source"] = source.UniqueId;
+                placement["placed"] = SurveyVector(source.Position);
+                placements.Add(placement);
+            }
             receipt["sourcesPlacedBesideParty"] = new JObject { ["mover"] = SurveyVector(mover.Position),
-                ["a"] = SurveyVector(sourceA.Position), ["b"] = SurveyVector(sourceB.Position) };
+                ["moverInFog"] = mover.IsInFogOfWar, ["placements"] = placements };
+            persist();
             foreach (var source in new[] { sourceA, sourceB })
             {
                 InfernalWallPrepareActor35(source);
