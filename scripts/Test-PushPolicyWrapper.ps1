@@ -499,6 +499,13 @@ try {
     }
     else {
     # --- Historical allow-list wrapper fixtures ---
+    foreach ($branch40 in @(
+        'codex/expanded-summoning-sprint40-ice-devil',
+        'codex/expanded-summoning-sprint40-release-records')) {
+        Invoke-Case -Name ("sprint40 exact branch " + $branch40) -Scenario @{ branch = $branch40 } -Expect push -ExpectedPushCalls 1
+        Invoke-Case -Name ("sprint40 case variant " + $branch40) -Scenario @{ branch = $branch40.Replace('sprint40', 'Sprint40') } -Expect refuse -ExpectedPushCalls 0 -ExpectMessage 'Refusing to push non-allowlisted branch'
+        Invoke-Case -Name ("sprint40 suffix refusal " + $branch40) -Scenario @{ branch = $branch40 + '-extra' } -Expect refuse -ExpectedPushCalls 0 -ExpectMessage 'Refusing to push non-allowlisted branch'
+    }
     foreach ($branch34 in @(
         'codex/expanded-summoning-sprint34-bearded-devil-kyton',
         'codex/expanded-summoning-sprint34-release-records')) {

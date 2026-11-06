@@ -1434,6 +1434,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningCorrectionFixture fixture, IList<UnitEntityData> owned, out Vector3 start,
             out Vector3 midpoint, out Vector3 destination,
             out Vector3 casterPoint, out JArray attempts, out JObject survey,
+            Func<Vector3, Vector3, bool> admit = null, Vector3? searchCenter = null,
             IList<KeyValuePair<Vector3, float>> avoid = null,
             string surveyFile = "s35-wall-native-lane-survey.json")
         {
@@ -1458,7 +1459,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 constrainWalkability = true, walkable = true, constrainArea = false,
                 constrainTags = true, tags = commonTags, constrainDistance = true,
                 distanceXZ = false, distanceXZkeepY = false };
-            var anchor = AstarPath.active.GetNearest(fixture.Caster.Position, constraint);
+            var anchor = AstarPath.active.GetNearest(searchCenter ?? fixture.Caster.Position, constraint);
             survey = new JObject { ["turnBased"] = turnBased, ["nativeGraphMask"] = nativeMask,
                 ["nativeTags"] = commonTags, ["actors"] = actors,
                 ["graphs"] = new JArray(AstarPath.active.graphs.Select((value, index) => new JObject {
@@ -1541,6 +1542,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["nativeGraphLinecastClear"] = direct
                 });
                 if (!direct || !caster) continue;
+                if (admit != null && !admit(middle, offLane.clampedPosition)) continue;
                 start = from.clampedPosition;
                 destination = to.clampedPosition;
                 midpoint = middle;

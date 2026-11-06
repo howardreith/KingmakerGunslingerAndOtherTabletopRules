@@ -196,6 +196,7 @@ $expected = @(
         'observe-expanded-summoning-sprint37-native-inputs',
         'observe-expanded-summoning-sprint38-native-inputs',
         'observe-expanded-summoning-sprint39-native-inputs',
+        'observe-expanded-summoning-sprint40-native-inputs',
     'observe-alternate-summoning-sources',
     'observe-alternate-summoning-blocked-family',
     'disposable-alternate-summoning-contracts',

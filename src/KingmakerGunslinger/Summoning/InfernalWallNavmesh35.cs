@@ -61,7 +61,25 @@ namespace KingmakerGunslinger.Summoning
             new List<GraphNode>();
         private readonly Dictionary<GraphNode, bool> _nodeOriginals =
             new Dictionary<GraphNode, bool>();
+        // Each node this section claimed and the claim record holding its
+        // original static and pre-erosion flags; kept after release so a
+        // reconcile can still restore both layers once the shared claim
+        // entry is gone.
+        private readonly Dictionary<GraphNode, NodeClaim> _nodeRecords =
+            new Dictionary<GraphNode, NodeClaim>();
         private bool _released;
+        private bool _liveReconcileQueued;
+        private bool _restoreReconcileQueued;
+        private int _restoreExactFrames;
+        private bool _retirePending;
+        private int _retireDeferredFrames;
+        private bool _restoreSettled;
+
+        // One frame is enough for the pathfinder to run GridGraph.UpdateArea
+        // in the ordinary case. This bound only stops an indefinitely stalled
+        // update from leaking owned claims; it is a safety valve, not a
+        // scheduling policy.
+        internal const int RetireDeferFrameBudget = 120;
 
         internal NavmeshCut Cut { get { return _cut; } }
         internal UnitEntityData Owner { get { return _owner; } }
@@ -81,9 +99,20 @@ namespace KingmakerGunslinger.Summoning
         internal bool GridRestoreQueued { get; private set; }
         internal bool GridRestoreCompleted { get; private set; }
         // Whether the native combat controller had applied this cut's grid
-        // DynamicBlocked block, and whether its revert was queued on release.
+        // DynamicBlocked block at release, and whether its paired revert was
+        // submitted (exactly once, by Release).
         internal bool CutGridBlockAppliedAtRelease { get; private set; }
-        internal bool CutGridRevertQueued { get; private set; }
+        internal bool CutGridRevertQueued { get { return NativeGridCutRevertQueued; } }
+        internal int GridReconcileRequests { get; private set; }
+        internal int GridReconcileCompleted { get; private set; }
+        internal int GridLiveReconcileRequests { get; private set; }
+        internal int GridLiveReconcileCompleted { get; private set; }
+        internal bool NativeCutDisabledBeforeDestroy { get; private set; }
+        internal bool NativeGridCutRevertQueued { get; private set; }
+        internal int RetireDeferrals { get; private set; }
+        internal string NativeGridCutRevertSkipReason { get; private set; }
+        internal bool ReleaseCompleted { get { return _released; } }
+        internal bool RetirePending { get { return _retirePending && !_released; } }
         internal string GridFailure { get; private set; }
         // Native connection recalculations after this section's own writes.
         internal int GridConnectionRefreshes { get; private set; }
@@ -120,8 +149,10 @@ namespace KingmakerGunslinger.Summoning
             UnitEntityData owner = view == null ? null :
                 view.EntityData as UnitEntityData;
             return owner != null && owner.Blueprint != null &&
-                owner.Blueprint.AssetGuid == InfernalRules35.WallSectionUnitGuid &&
-                owner.Blueprint.name == InfernalRules35.WallSectionUnitName;
+                (owner.Blueprint.AssetGuid == InfernalRules35.WallSectionUnitGuid &&
+                    owner.Blueprint.name == InfernalRules35.WallSectionUnitName ||
+                 owner.Blueprint.AssetGuid == IceDevilRules40Policy.WallSectionGuid &&
+                    owner.Blueprint.name == IceDevilRules40Policy.WallSectionName);
         }
 
         internal void Configure(UnitEntityView view)
@@ -240,6 +271,7 @@ namespace KingmakerGunslinger.Summoning
                     {
                         changed = ReleaseClaims(true, written);
                         _nodeOriginals.Clear();
+                        _nodeRecords.Clear();
                         GridNodesConsidered = 0;
                         GridNodesClaimed = 0;
                         GridNodesChanged = 0;
@@ -277,6 +309,7 @@ namespace KingmakerGunslinger.Summoning
                         if (!claim.Owners.Add(this)) continue;
                         _claimedNodes.Add(node);
                         _nodeOriginals[node] = claim.OriginalWalkable;
+                        _nodeRecords[node] = claim;
                         GridNodesClaimed++;
                         bool wasWalkable = node.Walkable;
                         if (ApplyLayers(node, InfernalRules35.WallClaimNode(
@@ -338,19 +371,35 @@ namespace KingmakerGunslinger.Summoning
                 NodeClaim claim;
                 if (!Claims.TryGetValue(node, out claim) ||
                     !claim.Owners.Remove(this)) continue;
-                if (claim.Owners.Count != 0) continue;
+                bool remainingOwner = claim.Owners.Count != 0;
                 if (restoreWalkability && ApplyLayers(node,
-                        InfernalRules35.WallRestoreNode(LayersOf(node),
-                            claim.OriginalWalkable, claim.OriginalErosion)))
+                        DesiredLayers(node, claim, remainingOwner)))
                 {
                     GridNodesRestored++;
                     if (written != null) written.Add(node);
                     changed = true;
                 }
+                if (remainingOwner) continue;
                 Claims.Remove(node);
             }
             _claimedNodes.Clear();
             return changed;
+        }
+
+        // The static layers a node must hold once this section no longer
+        // owns it: still blocked in both layers while another section owns
+        // it, otherwise exactly the static and pre-erosion flags recorded
+        // before the first claim. DynamicBlocked counters are never written:
+        // they belong to the native cuts and turn-based units.
+        private static InfernalRules35.WallGridNodeLayers DesiredLayers(
+            GraphNode node, NodeClaim claim, bool remainingOwner)
+        {
+            var layers = LayersOf(node);
+            return remainingOwner ? InfernalRules35.WallClaimNode(layers) :
+                InfernalRules35.WallRestoreNode(layers,
+                    InfernalRules35.WallNodeWalkableAfterOwnerRelease(
+                        claim.OriginalWalkable, false),
+                    claim.OriginalErosion);
         }
 
         private static InfernalRules35.WallGridNodeLayers LayersOf(GraphNode node)
@@ -360,6 +409,14 @@ namespace KingmakerGunslinger.Summoning
                 Static = node.StaticWalkable,
                 Erosion = grid != null ? grid.WalkableErosion : node.StaticWalkable,
                 Dynamic = node.DynamicBlocked };
+        }
+
+        private static bool SameLayers(GraphNode node,
+            InfernalRules35.WallGridNodeLayers layers)
+        {
+            var grid = node as GridNode;
+            return node.StaticWalkable == layers.Static &&
+                (grid == null || grid.WalkableErosion == layers.Erosion);
         }
 
         // Writes only the static layers that differ; reports any write.
@@ -394,10 +451,13 @@ namespace KingmakerGunslinger.Summoning
         // alone left those tags stale (nav5: 357-387 of 676 region cells).
         // Tag erosion is only run where the grid erodes into tags; with
         // erosion into walkability it would compound. Runs inside a
-        // pathfinding work item.
+        // pathfinding work item, and only on the graph the claims were
+        // captured on.
         private void RefreshGrid(List<GraphNode> written)
         {
             GridGraph grid = _grid;
+            if (_astar == null || !ReferenceEquals(AstarPath.active, _astar))
+                return;
             if (grid != null && grid.nodes != null &&
                 grid.nodes.Length == grid.width * grid.depth)
             {
@@ -438,6 +498,129 @@ namespace KingmakerGunslinger.Summoning
             _astar.QueueWorkItemFloodFill();
         }
 
+        // Every node this released section recorded holds its desired static
+        // layers (DesiredLayers), whoever still owns it.
+        private bool ReleasedGridIsExact()
+        {
+            return _nodeRecords.All(pair =>
+            {
+                NodeClaim claim;
+                bool remainingOwner = Claims.TryGetValue(pair.Key,
+                    out claim) && claim.Owners.Count > 0;
+                return SameLayers(pair.Key, ReleasedLayers(pair.Key,
+                    pair.Value, remainingOwner));
+            });
+        }
+
+        private static InfernalRules35.WallGridNodeLayers ReleasedLayers(
+            GraphNode node, NodeClaim recorded, bool remainingOwner)
+        {
+            return DesiredLayers(node, recorded, remainingOwner);
+        }
+
+        // Every live claim is still owned by this section and blocked in
+        // both static layers.
+        private bool LiveGridIsExact()
+        {
+            return _claimedNodes.All(node =>
+            {
+                NodeClaim claim;
+                return Claims.TryGetValue(node, out claim) &&
+                    claim.Owners.Contains(this) &&
+                    SameLayers(node, InfernalRules35.WallClaimNode(LayersOf(node)));
+            });
+        }
+
+        private void QueueLiveGridReconcile()
+        {
+            if (_liveReconcileQueued || _released ||
+                _claimedNodes.Count == 0 || _astar == null ||
+                !ReferenceEquals(AstarPath.active, _astar)) return;
+            _liveReconcileQueued = true;
+            GridLiveReconcileRequests++;
+            _astar.AddWorkItem(new AstarPath.AstarWorkItem(force =>
+            {
+                var written = new List<GraphNode>();
+                try
+                {
+                    if (_released || !ReferenceEquals(AstarPath.active, _astar))
+                        return true;
+                    foreach (GraphNode node in _claimedNodes)
+                    {
+                        NodeClaim claim;
+                        if (!Claims.TryGetValue(node, out claim) ||
+                            !claim.Owners.Contains(this)) continue;
+                        bool wasWalkable = node.Walkable;
+                        if (!ApplyLayers(node,
+                                InfernalRules35.WallClaimNode(LayersOf(node))))
+                            continue;
+                        written.Add(node);
+                        if (wasWalkable) GridNodesChanged++;
+                    }
+                    if (written.Count > 0) RefreshGrid(written);
+                }
+                catch (Exception error)
+                {
+                    GridFailure = error.GetType().Name + ": " +
+                        error.Message;
+                    Debug.LogException(error);
+                }
+                finally
+                {
+                    GridLiveReconcileCompleted++;
+                    _liveReconcileQueued = false;
+                }
+                return true;
+            }));
+        }
+
+        private void QueueReleasedGridReconcile()
+        {
+            if (_restoreReconcileQueued || _nodeRecords.Count == 0 ||
+                _astar == null || !ReferenceEquals(AstarPath.active, _astar))
+                return;
+            _restoreReconcileQueued = true;
+            GridReconcileRequests++;
+            _astar.AddWorkItem(new AstarPath.AstarWorkItem(force =>
+            {
+                var written = new List<GraphNode>();
+                try
+                {
+                    // Restoration data never reaches a replacement graph.
+                    if (!ReferenceEquals(AstarPath.active, _astar)) return true;
+                    foreach (var pair in _nodeRecords)
+                    {
+                        NodeClaim claim;
+                        bool remainingOwner = Claims.TryGetValue(pair.Key,
+                            out claim) && claim.Owners.Count > 0;
+                        if (!ApplyLayers(pair.Key, ReleasedLayers(pair.Key,
+                                pair.Value, remainingOwner))) continue;
+                        GridNodesRestored++;
+                        written.Add(pair.Key);
+                    }
+                    if (written.Count > 0) RefreshGrid(written);
+                }
+                catch (Exception error)
+                {
+                    GridFailure = error.GetType().Name + ": " +
+                        error.Message;
+                    Debug.LogException(error);
+                }
+                finally
+                {
+                    GridReconcileCompleted++;
+                    _restoreReconcileQueued = false;
+                }
+                return true;
+            }));
+        }
+
+        internal void ReconcileAfterNativeRetirement()
+        {
+            if (!_released) Release();
+            QueueReleasedGridReconcile();
+        }
+
         private void QueueGridRestore()
         {
             if (GridRestoreQueued) return;
@@ -453,7 +636,9 @@ namespace KingmakerGunslinger.Summoning
                 try
                 {
                     var written = new List<GraphNode>();
-                    if (ReleaseClaims(true, written))
+                    if (!ReferenceEquals(AstarPath.active, _astar))
+                        ReleaseClaims(false, null);
+                    else if (ReleaseClaims(true, written))
                         RefreshGrid(written);
                     GridRestoreCompleted = true;
                 }
@@ -466,49 +651,108 @@ namespace KingmakerGunslinger.Summoning
             }));
         }
 
-        // Installed 2.1.7b TurnBased.Controllers.CombatController
-        // .UpdateNavigationGrid applies each listed NavmeshCut to grid graph
-        // mask 2 as DynamicBlocked counters and reverts that block only while
-        // the cut is still listed. NavmeshCut.OnDestroy removes the cut without
-        // a grid revert, so destroying it first strands the counters and the
-        // footprint stays unwalkable. Queue the native revert object exactly
-        // as the controller does, then destroy the cut.
-        private const int NativeCombatGridMask = 2;
+        internal void Release() { Release(false); }
 
-        private void RevertCutGridBlock()
+        /// <summary>
+        /// Retires this wall's navigation ownership, visuals and native cut.
+        ///
+        /// Retirement is resumable and idempotent. A transient in-flight
+        /// native grid update leaves retirement pending (cut disabled, every
+        /// claim and reference intact) and retries from <c>Update</c>; a
+        /// replaced graph completes without a native revert; the paired
+        /// native revert is submitted at most once, on the exact captured
+        /// graph. <paramref name="force"/> is used by destruction, where no
+        /// later frame exists to resume on.
+        /// </summary>
+        /// <returns>True when retirement completed; false when it is pending
+        /// and will resume on a later frame.</returns>
+        internal bool Release(bool force)
         {
-            CutGridBlockAppliedAtRelease = _cut != null && _cut.gridGuoApplied;
-            if (!CutGridBlockAppliedAtRelease || AstarPath.active == null) return;
-            bool enabled;
-            NavmeshCut.UpdateObjectPair pair = _cut.GetUpdateObjectForGrid(
-                out enabled, NativeCombatGridMask);
-            if (pair.revertGuo == null || pair.revertGuo.updating) return;
-            pair.revertGuo.updating = true;
-            AstarPath.active.UpdateGraphs(pair.revertGuo);
-            _cut.gridGuoApplied = false;
-            CutGridRevertQueued = true;
-        }
-
-        internal void Release()
-        {
-            if (_released) return;
-            _released = true;
+            if (_released) return true;
             if (_cut != null)
             {
-                RevertCutGridBlock();
+                // Kingmaker's combat navigation consumer applies a separate
+                // GridGraph update object (DynamicBlocked counters) for each
+                // native cut, and reverts it only while the cut is listed.
+                // Submit the paired revert while this exact cut is still
+                // available; the owned claims remain the cross-owner static
+                // authority and are released by QueueGridRestore below.
+                _cut.enabled = false;
+                NativeCutDisabledBeforeDestroy = !_cut.enabled;
+                bool graphExact = _astar != null &&
+                    ReferenceEquals(AstarPath.active, _astar) &&
+                    GridGraphIndex >= 0 && GridGraphIndex < 31;
+                bool updateInFlight = false;
+                bool cutApplied = _cut.gridGuoApplied;
+                CutGridBlockAppliedAtRelease = cutApplied;
+                NavmeshCut.UpdateObjectPair updatePair =
+                    default(NavmeshCut.UpdateObjectPair);
+                if (cutApplied && graphExact)
+                {
+                    bool cutEnabled;
+                    updatePair = _cut.GetUpdateObjectForGrid(out cutEnabled,
+                        1 << GridGraphIndex);
+                    if (updatePair.guo == null || updatePair.revertGuo == null)
+                        // The engine holds no paired revert object for this
+                        // cut, so there is nothing of ours to submit.
+                        cutApplied = false;
+                    else
+                        updateInFlight = updatePair.guo.updating ||
+                            updatePair.revertGuo.updating;
+                }
+                var step = InfernalRules35.PlanWallRetirement(
+                    cutApplied, graphExact, updateInFlight, force,
+                    _retireDeferredFrames, RetireDeferFrameBudget);
+                if (step == InfernalRules35.WallRetirementStep.Defer)
+                {
+                    // Queued-not-yet-processed. Leave the cut disabled, keep
+                    // every claim and reference intact, and resume on a later
+                    // frame; never spin the Unity thread waiting here.
+                    _retirePending = true;
+                    _retireDeferredFrames++;
+                    RetireDeferrals++;
+                    enabled = true;
+                    return false;
+                }
+                if (step == InfernalRules35.WallRetirementStep.SkipNativeCut)
+                {
+                    NativeGridCutRevertSkipReason =
+                        InfernalRules35.WallRetirementSkipReason(
+                            cutApplied, graphExact, updateInFlight,
+                            force, _retireDeferredFrames,
+                            RetireDeferFrameBudget);
+                    // Only the bookkeeping is cleared. No restoration data is
+                    // applied, so nothing of ours can reach a replacement
+                    // graph; QueueGridRestore enforces the same rule for the
+                    // owned claims.
+                    _cut.gridGuoApplied = false;
+                }
+                else
+                {
+                    updatePair.revertGuo.updating = true;
+                    _astar.UpdateGraphs(updatePair.revertGuo);
+                    _cut.gridGuoApplied = false;
+                    _cut.NotifyUpdatedForGrid();
+                    NativeGridCutRevertQueued = true;
+                }
                 UnityEngine.Object.DestroyImmediate(_cut);
+                // OnDestroy queues the exact old recast bounds with the
+                // installed TileHandlerHelper, so process that queue only
+                // after the callback has run.
                 if (_tileHandler != null &&
                     _tileHandler.isActiveAndEnabled &&
                     RecastApplyRequests > 0)
                     _tileHandler.ForceUpdate();
             }
+            _released = true;
+            _retirePending = false;
             if (_wallVisual != null)
                 UnityEngine.Object.DestroyImmediate(_wallVisual);
             if (_wallMaterial != null)
                 UnityEngine.Object.DestroyImmediate(_wallMaterial);
             // The donor body never returns: a retiring section is dead or
-            // leaving the world, and this component keeps it hidden until the
-            // native view is destroyed.
+            // leaving the world, and this component stays enabled to keep it
+            // hidden (LateUpdate) until the native view is destroyed.
             QueueGridRestore();
             _cut = null;
             _wallVisual = null;
@@ -516,11 +760,35 @@ namespace KingmakerGunslinger.Summoning
             _tileHandler = null;
             _owner = null;
             _view = null;
+            return true;
         }
 
         private void Update()
         {
-            if (_released) return;
+            // A deferred retirement resumes here, on a later frame, once the
+            // pathfinder has run GridGraph.UpdateArea for the in-flight update.
+            if (!_released && _retirePending && !Release(false)) return;
+            if (_released)
+            {
+                if (_restoreSettled || !GridRestoreCompleted ||
+                    _restoreReconcileQueued) return;
+                if (!ReleasedGridIsExact())
+                {
+                    _restoreExactFrames = 0;
+                    QueueReleasedGridReconcile();
+                    return;
+                }
+                // The component stays enabled for donor suppression; only
+                // the restoration watch settles.
+                if (++_restoreExactFrames >= 2) _restoreSettled = true;
+                return;
+            }
+            if (GridApplyCompleted && !_liveReconcileQueued &&
+                !LiveGridIsExact())
+            {
+                QueueLiveGridReconcile();
+                return;
+            }
             ModContext context;
             if (!ModContext.TryGet(out context) ||
                 context.FeatureModules?.Active?.ExpandedSummoning != true)
@@ -557,7 +825,13 @@ namespace KingmakerGunslinger.Summoning
             }
         }
 
-        private void OnDestroy() { Release(); }
+        private void OnDestroy()
+        {
+            // Destruction has no later frame to resume a deferred retirement
+            // on, so force completion rather than leak owned claims.
+            if (!_released) Release(true);
+            QueueReleasedGridReconcile();
+        }
     }
 
     [HarmonyPatch(typeof(UnitEntityView), "OnDataAttached")]
@@ -582,7 +856,8 @@ namespace KingmakerGunslinger.Summoning
             try { owned.Configure(__instance); }
             catch (Exception error)
             {
-                owned.Release();
+                // The component is being abandoned, so force completion.
+                owned.Release(true);
                 Debug.LogException(error);
             }
         }
@@ -596,7 +871,9 @@ namespace KingmakerGunslinger.Summoning
             var owned = __instance == null ? null :
                 __instance.GetComponent<InfernalWallNavmesh35>();
             if (owned == null) return;
-            try { owned.Release(); }
+            // The view is going away, so this retirement cannot be resumed
+            // on a later frame either.
+            try { owned.Release(true); }
             catch (Exception)
             {
                 // Never prevent the native view destruction path.

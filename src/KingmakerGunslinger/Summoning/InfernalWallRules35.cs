@@ -284,6 +284,10 @@ namespace KingmakerGunslinger.Summoning
 
         public BlueprintUnit OwningBlueprint;
         public BlueprintUnit WallSection;
+        // Bone retains its released default. Other owners bind their own
+        // spell-like level explicitly; the resulting context follows every
+        // section, its deadline and its breach area.
+        public int CasterLevel = InfernalRules35.SpellLikeCasterLevel;
 
         public override string GetCaption()
         { return "Form one grounded Wall of Ice section"; }
@@ -303,7 +307,7 @@ namespace KingmakerGunslinger.Summoning
             }
             int dc = InfernalRules35.WallOfIceFormationDc(
                 caster.Stats.Charisma.ModifiedValue);
-            Context.Params.CasterLevel = InfernalRules35.SpellLikeCasterLevel;
+            Context.Params.CasterLevel = CasterLevel;
             Context.Params.SpellLevel = InfernalRules35.WallOfIceSpellLevel;
             Context.Params.DC = dc;
             foreach (UnitEntityData unit in
@@ -329,7 +333,7 @@ namespace KingmakerGunslinger.Summoning
 
             var summon = new RuleSummonUnit(caster, WallSection,
                 placement.Center,
-                InfernalRules35.WallOfIceDurationRounds.Rounds(), 0) {
+                InfernalRules35.WallDurationRounds(CasterLevel).Rounds(), 0) {
                     Context = Context,
                     Reason = Context,
                     DoNotLinkToCaster = false,
@@ -433,7 +437,13 @@ namespace KingmakerGunslinger.Summoning
 
         public void HandleUnitSpawned(UnitEntityData unit) { }
         public void HandleUnitDestroyed(UnitEntityData unit)
-        { HandleUnitDeath(unit); }
+        {
+            HandleUnitDeath(unit);
+            var binding = unit?.View == null ? null :
+                unit.View.GetComponent<InfernalWallNavmesh35>();
+            if (binding != null && ExactOwner(unit))
+                binding.ReconcileAfterNativeRetirement();
+        }
 
         public void HandleUnitDeath(UnitEntityData unit)
         {
@@ -450,18 +460,29 @@ namespace KingmakerGunslinger.Summoning
             MechanicsContext context = lifetime?.Context;
             TimeSpan remaining = lifetime == null ? TimeSpan.Zero :
                 lifetime.TimeLeft;
-            ReleaseNavigation();
-            if (context?.MaybeCaster == null ||
-                !ReferenceEquals(context.SourceAbility, WallAbility) ||
-                remaining <= TimeSpan.Zero ||
-                !InfernalEffectLifetime34.SourceIsLive(context.MaybeCaster))
-                return;
-            if (ResidualArea != null)
-                AreaEffectsController.Spawn(context, ResidualArea,
-                    new TargetWrapper(unit.Position), remaining);
-            if (fire && FogArea != null)
-                AreaEffectsController.Spawn(context, FogArea,
-                    new TargetWrapper(unit.Position), TimeSpan.FromMinutes(10));
+            // _breached is one-way, so the breach consequences must not sit
+            // behind navigation release: if that release were interrupted,
+            // every later call would refuse to retry and the residual cold and
+            // fire fog would never be created at all. Navigation retirement is
+            // resumable and idempotent on its own component, so request it and
+            // then create the consequences exactly once regardless.
+            try { ReleaseNavigation(); }
+            finally
+            {
+                if (context?.MaybeCaster != null &&
+                    ReferenceEquals(context.SourceAbility, WallAbility) &&
+                    remaining > TimeSpan.Zero &&
+                    InfernalEffectLifetime34.SourceIsLive(context.MaybeCaster))
+                {
+                    if (ResidualArea != null)
+                        AreaEffectsController.Spawn(context, ResidualArea,
+                            new TargetWrapper(unit.Position), remaining);
+                    if (fire && FogArea != null)
+                        AreaEffectsController.Spawn(context, FogArea,
+                            new TargetWrapper(unit.Position),
+                            TimeSpan.FromMinutes(10));
+                }
+            }
         }
 
         public void HandleBuffDidAdded(Buff buff) { }
@@ -503,10 +524,17 @@ namespace KingmakerGunslinger.Summoning
         {
             if (_retiring) return;
             _retiring = true;
-            ReleaseNavigation();
-            Buff lifetime = Owner?.Buffs?.GetBuff(
-                BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff);
-            if (lifetime != null && !lifetime.IsDisposed) lifetime.Remove();
+            // _retiring is one-way for the same reason, so lifetime removal
+            // must not sit behind navigation release either; an interrupted
+            // release would otherwise leave the section's lifetime buff in
+            // place forever with every retry refused.
+            try { ReleaseNavigation(); }
+            finally
+            {
+                Buff lifetime = Owner?.Buffs?.GetBuff(
+                    BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff);
+                if (lifetime != null && !lifetime.IsDisposed) lifetime.Remove();
+            }
         }
 
         internal static void Retire(UnitEntityData section)
@@ -576,7 +604,7 @@ namespace KingmakerGunslinger.Summoning
             var cold = new EnergyDamage(new DiceFormula(
                 InfernalRules35.WallOfIceResidualDiceCount, DiceType.D6),
                 DamageEnergyType.Cold);
-            cold.AddBonus(InfernalRules35.WallOfIceResidualBonus);
+            cold.AddBonus(context.Params.CasterLevel);
             var rule = new RuleDealDamage(source, unit,
                 new DamageBundle(cold)) {
                     Reason = context,

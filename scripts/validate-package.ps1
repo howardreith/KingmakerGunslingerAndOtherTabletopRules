@@ -161,6 +161,8 @@ try {
         'assets\sprint38-glabrezu\glabrezu-albedo.png',
         'assets\sprint39-nalfeshnee\nalfeshnee-mesh.json',
         'assets\sprint39-nalfeshnee\nalfeshnee-albedo.png',
+    'assets\sprint40-ice-devil\ice-devil-mesh.json',
+    'assets\sprint40-ice-devil\ice-devil-albedo.png',
         'assets\sprint18-primates\ape-mesh.json',
         'assets\sprint18-primates\ape-albedo.png',
         'assets\sprint18-primates\dire-ape-mesh.json',
@@ -328,6 +330,15 @@ try {
     foreach ($entry in $nalfeshnee39Exports.GetEnumerator()) {
         if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint39-nalfeshnee\'+$entry.Key))) -cne $entry.Value) {
             throw 'Packaged Sprint 39 original export differs from its exact candidate input.'
+        }
+    }
+    $iceDevil40Exports = @{
+        'ice-devil-mesh.json'='3c6e0a8ecfd17f50c3996a1ecf6813112e4248da2f5599571b0f27d10cabf753'
+        'ice-devil-albedo.png'='6d24aafc619ba435899f348444a311ac8072e0d389ea950df83ccad5569cec83'
+    }
+    foreach ($entry in $iceDevil40Exports.GetEnumerator()) {
+        if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint40-ice-devil\'+$entry.Key))) -cne $entry.Value) {
+            throw 'Packaged Sprint 40 original export differs from its exact candidate input.'
         }
     }
     $humanMesh = Join-Path $modDirectory 'assets\sprint17-serpents\salamander-human-mesh.json'

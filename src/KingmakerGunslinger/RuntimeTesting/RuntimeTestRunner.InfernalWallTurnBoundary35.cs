@@ -118,6 +118,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             float halfThickness = InfernalRules35.WallOfIceSectionThicknessMeters * .5f;
             int gridIndex;
             GridGraph grid = InfernalWallClaimGrid35(centre, out gridIndex);
+            row["gridGraphIndex"] = gridIndex;
             float nodeSize = grid.nodeSize;
             Func<Vector3, float> alongOf = point => Vector3.Dot(point - centre, along);
             Func<Vector3, float> acrossOf = point => Vector3.Dot(point - centre, forward);
@@ -256,6 +257,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["cellsInTurnBased"] = new JObject {
                     ["claimedRingWalkable"] = ring.Count(node => turnState[node].Walkable),
                     ["claimedRingStaticWalkable"] = ring.Count(node => turnState[node].Static),
+                    ["claimedRingErosionWalkable"] = ring.Count(node => turnState[node].Erosion),
+                    ["iceCentreErosionWalkable"] = wall.Claimed.Where(inIce).Count(node => turnState[node].Erosion),
                     ["iceCentreBlocked"] = wall.Claimed.Where(inIce).Count(node => !turnState[node].Walkable),
                     ["iceCentreStaticWalkable"] = wall.Claimed.Where(inIce).Count(node => turnState[node].Static),
                     ["iceCentre"] = wall.Claimed.Count(inIce),
@@ -296,13 +299,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                     PlaceExpandedSummoningUnit(mover, chosen.Start);
                     for (int frame = 0; frame < 3; frame++) { Game.Instance.IsPaused = false; yield return 0; }
                     var move = new UnitMoveTo(chosen.Destination, .3f);
+                    bool generatedInTurnBased = CombatController.IsInTurnBasedCombat();
                     Path forced = agent.FindPath(move.ApproachPoint, delegate { }, move.ApproachRadius);
                     if (forced != null) AstarPath.WaitForPath(forced);
                     if (forced != null && !forced.error) move.ForcedPath = forced;
+                    // The executed path's identity, against the installed
+                    // turn-based movement contract: UnitMovementAgent.FindPath
+                    // in turn-based combat calls StartPathWithClerance with
+                    // graph mask 2 (the grid), native ConstructTags and
+                    // clearance Corpulence * 2; UnitCommand then follows the
+                    // command's ForcedPath (FollowPrecomputedPath).
+                    var forcedAb = forced as ABPath;
+                    var forcedSeeker = agent.GetType().GetField("m_Seeker", System.Reflection.BindingFlags.Instance |
+                        System.Reflection.BindingFlags.NonPublic)?.GetValue(agent) as Kingmaker.TurnBasedMode.Pathfinding.SeekerWithClearance;
+                    var constructTags = agent.GetType().GetMethod("ConstructTags", System.Reflection.BindingFlags.Instance |
+                        System.Reflection.BindingFlags.NonPublic);
+                    var forcedGraphs = forced == null || forced.path == null ? new JArray() :
+                        new JArray(forced.path.Select(node => (int)node.GraphIndex).Distinct());
+                    var executedPath = new JObject { ["generatedInTurnBased"] = generatedInTurnBased,
+                        ["pathType"] = forced == null ? null : forced.GetType().Name,
+                        ["graphMask"] = forced == null || forced.nnConstraint == null ? (int?)null : forced.nnConstraint.graphMask,
+                        ["startNodeGraph"] = forcedAb == null || forcedAb.startNode == null ? (int?)null : (int)forcedAb.startNode.GraphIndex,
+                        ["endNodeGraph"] = forcedAb == null || forcedAb.endNode == null ? (int?)null : (int)forcedAb.endNode.GraphIndex,
+                        ["nodeGraphs"] = forcedGraphs, ["nodes"] = forced == null || forced.path == null ? 0 : forced.path.Count,
+                        ["expectedGridGraph"] = gridIndex,
+                        ["gridGraphType"] = AstarPath.active.graphs[gridIndex] == null ? null : AstarPath.active.graphs[gridIndex].GetType().Name,
+                        ["clearance"] = forcedSeeker == null ? null : SurveyVector(forcedSeeker.clearance),
+                        ["expectedClearance"] = mover.Corpulence * 2f,
+                        ["enabledTags"] = forced == null ? (int?)null : forced.enabledTags,
+                        ["nativeConstructTags"] = constructTags == null ? (int?)null : (int)constructTags.Invoke(agent, null),
+                        ["commandForcedPathIsGenerated"] = forced != null && ReferenceEquals(move.ForcedPath, forced),
+                        ["moverInCombat"] = mover.IsInCombat };
                     actual = new JObject { ["cell"] = InfernalWallNodeIdentity35(chosen.Cell), ["side"] = chosen.Side,
                         ["start"] = SurveyVector(mover.Position), ["destination"] = SurveyVector(chosen.Destination),
                         ["forcedPath"] = forced == null ? null : new JArray(forced.vectorPath.Select(SurveyVector)),
-                        ["forcedPathError"] = forced == null || forced.error };
+                        ["forcedPathError"] = forced == null || forced.error, ["executedPath"] = executedPath };
                     mover.Commands.Run(move);
                     var samples = new JArray();
                     float minimumGap = float.PositiveInfinity, travelled = 0f;
@@ -395,17 +426,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             var restoration = row?["restoration"] as JObject;
             var exit = row?["exit"] as JObject;
             bool claimsHeld = cells != null && (int?)cells["claimedRingStaticWalkable"] == 0 &&
-                (int?)cells["iceCentreStaticWalkable"] == 0 && (int?)cells["claimedRingWalkable"] == 0 &&
+                (int?)cells["iceCentreStaticWalkable"] == 0 && (int?)cells["claimedRingErosionWalkable"] == 0 &&
+                (int?)cells["iceCentreErosionWalkable"] == 0 && (int?)cells["claimedRingWalkable"] == 0 &&
                 (int?)cells["iceCentreBlocked"] == (int?)cells["iceCentre"];
-            bool routesClear = routes != null && routes.Count > 0 && routes.OfType<JObject>().All(value =>
+            int grid = (int?)row?["gridGraphIndex"] ?? -1;
+            Func<JToken, bool> onGrid = path => path != null && (string)path["pathType"] == "ABPathWithClearance" &&
+                path["nodeGraphs"] is JArray && ((JArray)path["nodeGraphs"]).Count == 1 &&
+                (int)((JArray)path["nodeGraphs"])[0] == grid;
+            bool routesClear = grid >= 0 && routes != null && routes.Count > 0 && routes.OfType<JObject>().All(value =>
                 (bool?)value["toFarSide"]?["error"] == false && (bool?)value["toFarSide"]?["throughIce"] == false &&
-                (bool?)value["toRingCellFromSameSide"]?["throughIce"] == false);
-            bool moveClear = (bool?)row?["moverTurnReached"] == true && actual != null &&
+                onGrid(value["toFarSide"]) && (bool?)value["toRingCellFromSameSide"]?["throughIce"] == false &&
+                onGrid(value["toRingCellFromSameSide"]));
+            var executed = actual == null ? null : actual["executedPath"] as JObject;
+            bool executedOnGrid = executed != null && (bool?)executed["generatedInTurnBased"] == true &&
+                (string)executed["pathType"] == "ABPathWithClearance" && (string)executed["gridGraphType"] == "GridGraph" &&
+                (int?)executed["startNodeGraph"] == grid && (int?)executed["endNodeGraph"] == grid &&
+                executed["nodeGraphs"] is JArray && ((JArray)executed["nodeGraphs"]).Count == 1 &&
+                (int)((JArray)executed["nodeGraphs"])[0] == grid &&
+                (int?)executed["enabledTags"] == (int?)executed["nativeConstructTags"] &&
+                executed["clearance"] is JArray &&
+                Math.Abs((float)executed["clearance"][0] - (float)executed["expectedClearance"]) < .001f &&
+                Math.Abs((float)executed["clearance"][2] - (float)executed["expectedClearance"]) < .001f &&
+                (bool?)executed["commandForcedPathIsGenerated"] == true && (bool?)executed["moverInCombat"] == true;
+            bool moveClear = (bool?)row?["moverTurnReached"] == true && actual != null && executedOnGrid &&
                 (bool?)actual["forcedPathError"] == false && (string)actual["result"] == "Success" &&
                 (bool?)actual["centreEnteredIce"] == false && (bool?)actual["crossedInsideLength"] == false;
             check("wall-turn-boundary", (bool?)row?["turnBasedEntered"] == true && claimsHeld && routesClear && moveClear,
                 row ?? new JObject(),
-                "In native turn-based combat every cell the standing Wall claims stays blocked in both static layers; native turn-based routes from the claimed cells beside the ice, to the far side and back to the ring, and one ordinary native turn-based move along the native route never take the mover's centre into or through the ice.");
+                "In native turn-based combat every cell the standing Wall claims stays blocked in both static layers (StaticWalkable and WalkableErosion read directly); native ABPathWithClearance routes on the claim grid, from the claimed cells beside the ice to the far side and back to the ring, and one ordinary native turn-based move whose executed path is that turn-based grid path (generated by the mover's own agent in turn-based combat with native clearance and ConstructTags, and carried as the command's ForcedPath) never take the mover's centre into or through the ice.");
             check("wall-turn-boundary-restored", exit != null && (bool?)exit["turnBasedSettingRestored"] == true &&
                 (bool?)exit["cameraScrollRestored"] == true && (bool?)exit["inTurnBasedCombat"] == false &&
                 restoration != null && (int?)restoration["nodesNotAtBaseline"] == 0 &&
@@ -435,6 +483,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 System.Reflection.BindingFlags.NonPublic)?.GetValue(agent) as Kingmaker.TurnBasedMode.Pathfinding.SeekerWithClearance;
             row["clearance"] = clearance == null ? null : SurveyVector(clearance.clearance);
             row["enabledTags"] = path.enabledTags;
+            row["graphMask"] = path.nnConstraint == null ? (int?)null : path.nnConstraint.graphMask;
+            row["nodeGraphs"] = path.path == null ? new JArray() : new JArray(path.path.Select(node => (int)node.GraphIndex).Distinct());
             HashSet<GraphNode> exempt = new HashSet<GraphNode>();
             if (ab != null && ab.startNode != null && clearance != null)
             {

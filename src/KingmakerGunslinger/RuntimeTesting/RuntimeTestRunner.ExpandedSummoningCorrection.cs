@@ -80,6 +80,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal readonly List<UnitEntityData> Created = new List<UnitEntityData>();
             internal readonly ExpandedSummoningMechanicalEvidence Evidence =
                 new ExpandedSummoningMechanicalEvidence();
+            internal JObject CleanupReceipt;
             internal UnitEntityData Hostile;
             internal BlueprintUnit HostileBlueprint;
             internal BlueprintFaction OwnedHostileFaction;
@@ -313,11 +314,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnityEngine.Object.Destroy(fixture.OwnedHostileFaction);
                 if (fixture.CasterBlueprint != null)
                     UnityEngine.Object.Destroy(fixture.CasterBlueprint);
-                cleaned = cpuReleaseError == null && SameReferences(fixture.UnitsBefore, SnapshotReferences(fixture.AllUnits)) &&
-                    SameReferences(fixture.PartyBefore, SnapshotReferences(fixture.Party)) &&
-                    fixture.OriginalAreas.All(pair => !pair.Key.Destroyed &&
-                        ReferenceEquals(pair.Key.HoldingState, pair.Value)) &&
-                    (fixture.Caster == null || !ContainsReference(fixture.AllUnits, fixture.Caster));
+                object[] unitsAfter = SnapshotReferences(fixture.AllUnits);
+                object[] partyAfter = SnapshotReferences(fixture.Party);
+                bool unitsExact = SameReferences(fixture.UnitsBefore, unitsAfter);
+                bool partyExact = SameReferences(fixture.PartyBefore, partyAfter);
+                var areaChanges = fixture.OriginalAreas.Where(pair => pair.Key.Destroyed ||
+                    !ReferenceEquals(pair.Key.HoldingState, pair.Value)).Select(pair =>
+                        pair.Key.UniqueId + ":destroyed=" + pair.Key.Destroyed +
+                        ":before=" + (pair.Value == null ? "<null>" : pair.Value.ToString()) +
+                        ":after=" + (pair.Key.HoldingState == null ? "<null>" : pair.Key.HoldingState.ToString()))
+                    .ToArray();
+                fixture.CleanupReceipt = new JObject {
+                    ["unitsBefore"] = fixture.UnitsBefore.Length,
+                    ["unitsAfter"] = unitsAfter.Length,
+                    ["unitsExact"] = unitsExact,
+                    ["missingUnits"] = DescribeExpandedSummoningReferences(fixture.UnitsBefore.Where(value =>
+                        !unitsAfter.Any(after => ReferenceEquals(after, value)))),
+                    ["extraUnits"] = DescribeExpandedSummoningReferences(unitsAfter.Where(value =>
+                        !fixture.UnitsBefore.Any(before => ReferenceEquals(before, value)))),
+                    ["partyBefore"] = fixture.PartyBefore.Length,
+                    ["partyAfter"] = partyAfter.Length,
+                    ["partyExact"] = partyExact,
+                    ["areaChanges"] = new JArray(areaChanges),
+                    ["casterAbsent"] = fixture.Caster == null || !ContainsReference(fixture.AllUnits, fixture.Caster)
+                };
+                cleaned = cpuReleaseError == null && unitsExact && partyExact &&
+                    areaChanges.Length == 0 &&
+                    (bool)fixture.CleanupReceipt["casterAbsent"];
                 if (cpuReleaseError != null)
                     throw new InvalidOperationException("Exact CPU-reference lease teardown failed.", cpuReleaseError);
             }

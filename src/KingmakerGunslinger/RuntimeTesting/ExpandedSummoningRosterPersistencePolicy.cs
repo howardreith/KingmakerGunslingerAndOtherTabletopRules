@@ -283,6 +283,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static string[] NalfeshneeKeys
         { get { return new[] { NalfeshneeVisualPolicy39.Nalfeshnee,
             NalfeshneeVisualPolicy39.Nalfeshnee }; } }
+        internal const string IceDevilScope = "ice-devil";
+        // Two exact owners let the envelope carry a real owner-to-recipient
+        // supernatural Slow while the first owner's CL13 wall and suppressed
+        // regeneration remain independently attributable. No disposable
+        // party actor or foreign creature has to cross the save boundary.
+        internal static string[] IceDevilKeys
+        { get { return new[] { IceDevilScope, IceDevilScope }; } }
         internal const string ShadowOutsidersScope = "shadow-outsiders";
         internal static string[] ShadowOutsiderKeys
         { get { return new[] { "succubus", "invisible-stalker", "shadow-demon" }; } }
@@ -348,6 +355,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 case "kyton-chain-devil":
                 case "barbed-devil":
                 case "bone-devil":
+                case "ice-devil":
                 case "hell-hound":
                 case "erinyes-devil":
                 case "shadow-demon":
@@ -430,6 +438,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == VrockScope ? VrockKeys :
                 scope == GlabrezuScope ? GlabrezuKeys :
                 scope == NalfeshneeScope ? NalfeshneeKeys :
+                scope == IceDevilScope ? IceDevilKeys :
                 scope == ShadowOutsidersScope ? ShadowOutsiderKeys :
                 scope == Scope ? Keys : new string[0];
         }
@@ -505,7 +514,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == InfernalOutsidersScope ||
                 scope == InfernalReachTwoScope ||
                 scope == InfernalDemonsScope || scope == VrockScope ||
-                scope == GlabrezuScope || scope == NalfeshneeScope;
+                scope == GlabrezuScope || scope == NalfeshneeScope ||
+                scope == IceDevilScope;
         }
 
         /// <summary>

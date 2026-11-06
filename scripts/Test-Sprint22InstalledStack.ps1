@@ -180,6 +180,38 @@ Assert-StackThrows {
         -PackagePath (Join-Path $fixture 'missing-vrock.zip') -ExpectedVersion '0.0.175' `
         -PersistenceScope 'vrock' -ExpandedSummoningDisabled -Confirm:$false
 } 'Module OFF is restricted'
+# Sprint 40 extends the same exact frozen-candidate seam. Exercise the shipped
+# construction and all three pre-transaction refusals rather than copying the
+# request logic into a test-only helper.
+$fixedDispelUi=$false;$PersistenceScope='ice-devil';$DevelopmentPurpose=''
+foreach($expression in $construction){. $expression}
+Assert-Stack ($arguments.Parameters.Count -eq 1 -and
+    $arguments.Parameters.persistenceScope -ceq 'ice-devil' -and
+    $arguments.SaveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    $arguments.ExitAfterCompletion -and
+    $arguments.CompletionTimeoutSeconds -eq 600 -and
+    $arguments.RuntimeLease -eq $lease -and
+    $arguments.ReuseInstalledArtifact -and
+    $arguments.PackagePath -ceq $candidate.packagePath -and
+    $arguments.DeploymentManifestPath -ceq $deployment -and
+    [string]::IsNullOrEmpty($arguments.DevelopmentPurpose)) 'Sprint40 persistence forwards exactly its scope, Working save, native budget, lease and exact package/deployment identities'
+$scopeNodes=@($entryAst.FindAll({param($node) $node -is [Management.Automation.Language.StringConstantExpressionAst] -and $node.Value -ceq 'ice-devil'},$true))
+Assert-Stack ($scopeNodes.Count -ge 2) 'the shipped installed stack names the Sprint40 scope for its case guard and release-only branch'
+Assert-StackThrows {
+    & $uiEntry -Scenario working-save-expanded-summoning-prepare -SaveName KMG_AUTOMATION_WORKING `
+        -PackagePath (Join-Path $fixture 'missing-ice-devil.zip') -ExpectedVersion '0.0.178' `
+        -PersistenceScope 'Ice-Devil' -Confirm:$false
+} 'case-sensitive'
+Assert-StackThrows {
+    & $uiEntry -Scenario working-save-expanded-summoning-prepare -SaveName KMG_AUTOMATION_WORKING `
+        -PackagePath (Join-Path $fixture 'missing-ice-devil.zip') -ExpectedVersion '0.0.178' `
+        -PersistenceScope 'ice-devil' -DevelopmentPurpose 'sprint40-persistence' -Confirm:$false
+} 'final frozen release candidate'
+Assert-StackThrows {
+    & $uiEntry -Scenario working-save-expanded-summoning-prepare -SaveName KMG_AUTOMATION_WORKING `
+        -PackagePath (Join-Path $fixture 'missing-ice-devil.zip') -ExpectedVersion '0.0.178' `
+        -PersistenceScope 'ice-devil' -ExpandedSummoningDisabled -Confirm:$false
+} 'Module OFF is restricted'
 $receiptNodes=@($entryAst.FindAll({param($node) $node -is [Management.Automation.Language.IfStatementAst] -and $node.Extent.Text.Contains('NotePropertyName installedStackRecordPath')},$true))
 if($receiptNodes.Count -ne 1){throw 'Fixed UI installed-stack receipt binding is absent or ambiguous.'}
 $receiptBinding=[scriptblock]::Create($receiptNodes[0].Extent.Text)

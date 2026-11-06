@@ -160,7 +160,8 @@ namespace KingmakerGunslinger.Summoning
                 { GlabrezuVisualPolicy38.BlueprintName,
                     GlabrezuVisualPolicy38.Glabrezu },
                 { NalfeshneeVisualPolicy39.BlueprintName,
-                    NalfeshneeVisualPolicy39.Nalfeshnee }
+                    NalfeshneeVisualPolicy39.Nalfeshnee },
+                { IceDevilVisualPolicy40.BlueprintName, IceDevilVisualPolicy40.Key }
             };
         private static readonly HashSet<string> UngulateKeys =
             new HashSet<string>(StringComparer.Ordinal)
@@ -383,6 +384,10 @@ namespace KingmakerGunslinger.Summoning
                 !NalfeshneeVisualPolicy39.IsExactIdentity(visualKey,
                     __instance.EntityData.Blueprint.AssetGuid, blueprintName,
                     __instance.EntityData.Blueprint.Prefab?.AssetId)) return;
+            if (IceDevilVisualPolicy40.Handles(visualKey) &&
+                !IceDevilVisualPolicy40.IsExactIdentity(visualKey,
+                    __instance.EntityData.Blueprint.AssetGuid, blueprintName,
+                    __instance.EntityData.Blueprint.Prefab?.AssetId)) return;
             if (ShadowOutsiderVisualPolicy.Handles(visualKey) &&
                 !ShadowOutsiderVisualPolicy.IsExactIdentity(visualKey, __instance.EntityData.Blueprint.AssetGuid,
                     blueprintName, __instance.EntityData.Blueprint.Prefab == null ? null :
@@ -462,6 +467,13 @@ namespace KingmakerGunslinger.Summoning
             {
                 string status;
                 if (!PteranodonAssetRuntime.TryGetNalfeshneeVisual39(
+                    attachment.VisualKey, out source, out boneNames,
+                    out albedo, out status)) return Fallback(status);
+            }
+            else if (IceDevilVisualPolicy40.Handles(attachment.VisualKey))
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetIceDevilVisual40(
                     attachment.VisualKey, out source, out boneNames,
                     out albedo, out status)) return Fallback(status);
             }
@@ -785,10 +797,12 @@ namespace KingmakerGunslinger.Summoning
                     attachment.HoundSword.Configure(view, donor);
                 }
 
-                if (attachment.VisualKey == InfernalVisualPolicy34.Barbazu)
+                if (attachment.VisualKey == InfernalVisualPolicy34.Barbazu ||
+                    IceDevilVisualPolicy40.Handles(attachment.VisualKey))
                 {
                     attachment.BarbazuGlaive = view.gameObject.AddComponent<BarbazuGlaiveView34>();
-                    attachment.BarbazuGlaive.Configure(view, donor);
+                    attachment.BarbazuGlaive.Configure(view, donor,
+                        IceDevilVisualPolicy40.Handles(attachment.VisualKey));
                 }
 
                 if (attachment.VisualKey == InfernalVisualPolicy34.Kyton)
@@ -919,6 +933,7 @@ namespace KingmakerGunslinger.Summoning
                     // the rollback family rather than tidy it.
                     GlabrezuVisualPolicy38.Handles(attachment.VisualKey) ||
                     NalfeshneeVisualPolicy39.Handles(attachment.VisualKey) ||
+                    IceDevilVisualPolicy40.Handles(attachment.VisualKey) ||
                     (GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key)))
                 {
                     string ownedName = "KMG_" + attachment.VisualKey + "_Original";
@@ -1366,6 +1381,7 @@ namespace KingmakerGunslinger.Summoning
                 VrockVisualPolicy37.Handles(visualKey) ||
                 GlabrezuVisualPolicy38.Handles(visualKey) ||
                 NalfeshneeVisualPolicy39.Handles(visualKey) ||
+                IceDevilVisualPolicy40.Handles(visualKey) ||
                 visualKey == HoundArchonVisualPolicy.Key;
         }
 

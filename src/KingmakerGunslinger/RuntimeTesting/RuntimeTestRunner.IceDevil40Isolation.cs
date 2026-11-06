@@ -1,0 +1,277 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using Kingmaker;
+using Kingmaker.EntitySystem.Entities;
+using Kingmaker.PubSubSystem;
+using Kingmaker.RuleSystem.Rules;
+using Kingmaker.RuleSystem.Rules.Damage;
+using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Parts;
+using Kingmaker.UI.SettingsUI;
+using Kingmaker.View;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using UnityEngine;
+
+namespace KingmakerGunslinger.RuntimeTesting
+{
+    internal sealed partial class RuntimeTestRunner
+    {
+        private IEnumerable<int> ReviewIceDevilScope40(ExpandedSummoningCorrectionFixture fixture, string phase)
+        {
+            using (var isolation = new IceDevilFixtureIsolation40(fixture))
+            {
+                var receipt = new JObject { ["phase"] = phase };
+                var camera = TeleportationCastingCamera();
+                Vector3 cameraPosition = camera.transform.position, cameraTarget = camera.GetPosition();
+                Quaternion cameraRotation = camera.transform.rotation;
+                var partyCharacters = Game.Instance.Player.PartyCharacters.ToArray();
+                var remoteCompanions = Game.Instance.Player.RemoteCompanions.ToArray();
+                bool casterInGame = fixture.Caster.IsInGame;
+                bool engagementPause = SettingsRoot.Instance.PauseOnEngagement.CurrentValue;
+                bool casterLent = false, observerFearIsolation = false;
+                UnitEntityData quietAnchor = null; bool anchorBrain = false;
+                try
+                {
+                    SettingsRoot.Instance.PauseOnEngagement.CurrentValue = false;
+                    receipt["engagementPauseAtIntake"] = engagementPause;
+                    var placement = new JObject(); receipt["placement"] = placement;
+                    PrepareIceDevilQuietCaster40(fixture, placement, phase);
+                    fixture.Caster.Descriptor.State.AddConditionImmunity(UnitCondition.Frightened);
+                    observerFearIsolation = true; placement["observerNativeFearImmunity"] = true;
+                    // Native party vision and the real camera follow only this
+                    // disposable observer caster. Do not force the unit's FOW,
+                    // fader, renderer or dissolve state, or move an intake actor.
+                    if (Game.Instance.Player.Party.Contains(fixture.Caster) ||
+                        Game.Instance.Player.PartyCharacters.Contains(fixture.Caster) ||
+                        Game.Instance.Player.RemoteCompanions.Contains(fixture.Caster))
+                        throw new InvalidOperationException("Disposable observer caster unexpectedly already in party.");
+                    Game.Instance.Player.AddCompanion(fixture.Caster); casterLent = true;
+                    if (!Game.Instance.Player.PartyCharacters.Contains(fixture.Caster) ||
+                        !Game.Instance.Player.ControllableCharacters.Contains(fixture.Caster))
+                        throw new InvalidOperationException("Native companion admission did not supply the disposable observer caster.");
+                    quietAnchor = Sprint32OwnedQuietAnchor(fixture, "sprint40-fixture");
+                    anchorBrain = quietAnchor.IsBrainActive;
+                    Sprint28SetBrainActivePreservingActions(quietAnchor, false);
+                    placement["exactOwnedProfileAnchorQuiesced"] = quietAnchor.UniqueId;
+                    camera.ScrollToImmediately(fixture.Caster.Position);
+                    placement["nativePartyVisionCaster"] = fixture.Caster.UniqueId;
+                    placement["nativeCameraTarget"] = Vec(camera.GetPosition());
+                    IEnumerable<int> run;
+                    switch (phase)
+                    {
+                        case ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilEarlyPhase:
+                            CreateSprint32TurnHostile(fixture); run = ReviewIceDevilEarly40(fixture); break;
+                        case ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilCombatPhase:
+                            CreateSprint32TurnHostile(fixture); run = ReviewIceDevilCombat40(fixture); break;
+                        case ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilEffectsPhase:
+                            CreateSprint32TurnHostile(fixture); run = ReviewIceDevilEffects40(fixture); break;
+                        case ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilWallsPhase:
+                            CreateSprint32TurnHostile(fixture); run = ReviewIceDevilWalls40(fixture); break;
+                        case ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilSlowPhase:
+                            CreateSprint32TurnHostile(fixture); run = ReviewIceDevilSlow40(fixture); break;
+                        case ExpandedSummoningNativeProfilePolicy.Sprint40NalfeshneeRangePhase:
+                            CreateSprint32TurnHostile(fixture); run = ReviewNalfeshneeSlowRange40(fixture); break;
+                        case ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilPresentationPhase:
+                            CreateSprint32TurnHostile(fixture); run = ReviewInfernalBodies34(fixture, iceDevil: true); break;
+                        case ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilAiPhase:
+                            run = ReviewIceDevilAi40(fixture); break;
+                        case ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilSlowTurnPhase:
+                            run = ReviewIceDevilSlowTurn40(fixture); break;
+                        case ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilPublicPhase:
+                            ReviewIceDevilPublic40(fixture); run = Enumerable.Empty<int>(); break;
+                        default: throw new InvalidOperationException("Unknown exact Sprint40 native scope.");
+                    }
+                    foreach (int frame in run)
+                    {
+                        isolation.Validate(); yield return frame;
+                        isolation.Validate();
+                    }
+                    isolation.Validate();
+                    bool observed = isolation.OwnedEvents > 0;
+                    Sprint25Check("sprint40-protected-targets", observed, isolation.Describe(),
+                        "A nonempty protected intake and observed owned effects exercise the actual global listener; no owned save/damage/heal/application reaches a protected actor.");
+                    if (!observed) throw new InvalidOperationException("Sprint40 isolation listener had no owned events.");
+                }
+                finally
+                {
+                    SettingsRoot.Instance.PauseOnEngagement.CurrentValue = engagementPause;
+                    if (quietAnchor != null && !quietAnchor.Destroyed && !Cleanup2NativeDefaultPending)
+                        Sprint28SetBrainActivePreservingActions(quietAnchor, anchorBrain);
+                    if (observerFearIsolation)
+                        fixture.Caster.Descriptor.State.RemoveConditionImmunity(UnitCondition.Frightened);
+                    if (casterLent)
+                    {
+                        Game.Instance.Player.RemoveCompanion(fixture.Caster, false);
+                        Game.Instance.Player.RemoteCompanions.Remove(fixture.Caster);
+                        Game.Instance.Player.InvalidateCharacterLists();
+                        fixture.Caster.IsInGame = casterInGame;
+                    }
+                    camera.ScrollToImmediately(cameraTarget); camera.transform.position = cameraPosition;
+                    camera.transform.rotation = cameraRotation;
+                    typeof(CameraRig).GetField("m_TargetPosition", BindingFlags.Instance | BindingFlags.NonPublic)
+                        .SetValue(camera, cameraTarget);
+                    receipt["events"] = isolation.Describe();
+                    bool partyRestored = !Game.Instance.Player.Party.Contains(fixture.Caster) &&
+                        partyCharacters.SequenceEqual(Game.Instance.Player.PartyCharacters) &&
+                        remoteCompanions.SequenceEqual(Game.Instance.Player.RemoteCompanions);
+                    receipt["observerPartyRestored"] = partyRestored;
+                    RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory,
+                        "sprint40-fixture-isolation.json"), receipt.ToString(Formatting.Indented));
+                    if (!partyRestored) throw new InvalidOperationException("Exact native observer party lists were not restored.");
+                }
+            }
+        }
+
+        private static Pathfinding.PathNNConstraint Sprint40WalkingConstraint(UnitEntityData actor)
+        {
+            var agent = actor.View?.AgentASP;
+            if (agent == null || AstarPath.active == null)
+                throw new InvalidOperationException("No native Sprint40 walking agent/graph.");
+            var constructTags = agent.GetType().GetMethod("ConstructTags", Cleanup2Fields);
+            if (constructTags == null) throw new MissingMethodException("Native walking ConstructTags.");
+            // Same native static walking query as the qualified S32 listener
+            // survey. Unconstrained nearest queries can select roof/blocked nodes.
+            return new Pathfinding.PathNNConstraint { graphMask = 1,
+                constrainWalkability = true, walkable = true, constrainArea = false,
+                constrainTags = true, tags = (int)constructTags.Invoke(agent, null),
+                constrainDistance = true, distanceXZ = false, distanceXZkeepY = false };
+        }
+
+        private void PrepareIceDevilQuietCaster40(ExpandedSummoningCorrectionFixture fixture, JObject receipt, string phase)
+        {
+            var protectedUnits = fixture.UnitsBefore.OfType<UnitEntityData>().Where(x =>
+                x != null && !x.Destroyed && x.IsInGame && ReferenceEquals(x.HoldingState, fixture.Scene)).ToArray();
+            if (protectedUnits.Length == 0) throw new InvalidOperationException("No nonempty protected scene intake.");
+            Vector3 origin = fixture.Caster.Position;
+            var constraint = Sprint40WalkingConstraint(fixture.Caster);
+            var ground = AstarPath.active.GetNearest(origin, constraint);
+            if (ground.node == null || !ground.node.Walkable)
+                throw new InvalidOperationException("No qualified native walking origin.");
+            constraint.SetStart(ground.node); constraint.constrainArea = true;
+            bool rangeOnly = phase == ExpandedSummoningNativeProfilePolicy.Sprint40NalfeshneeRangePhase;
+            float minimumGap = rangeOnly ? 40f : 60f;
+            int[] radii = rangeOnly ? new[] { 42, 48, 56, 62, 64, 72, 80, 88, 96 } :
+                new[] { 62, 64, 72, 80, 88, 96 };
+            receipt["minimumProtectedGapMeters"] = minimumGap;
+            receipt["nativeWalkingGraph"] = ground.node.GraphIndex;
+            receipt["nativeTraversalTags"] = constraint.tags;
+            var candidates = new JArray(); receipt["candidates"] = candidates;
+            receipt["origin"] = Vec(origin);
+            receipt["protectedActors"] = new JArray(protectedUnits.Select(x => new JObject {
+                ["unit"] = x.UniqueId, ["position"] = Vec(x.Position), ["corpulence"] = x.Corpulence }));
+            int surveyed = 0;
+            foreach (int radius in radii)
+            for (int angle = 0; angle < 24; angle++)
+            {
+                surveyed++;
+                Vector3 direction = Quaternion.Euler(0, angle * 15f, 0) * Vector3.forward;
+                Vector3 requested = origin + direction.normalized * radius;
+                var node = AstarPath.active.GetNearest(requested, constraint);
+                Vector3 projection = requested - node.clampedPosition; projection.y = 0;
+                var candidate = new JObject { ["requested"] = Vec(requested),
+                    ["clamped"] = Vec(node.clampedPosition), ["node"] = node.node != null,
+                    ["walkable"] = node.node != null && node.node.Walkable,
+                    ["horizontalProjectionGap"] = projection.magnitude };
+                candidates.Add(candidate);
+                if (node.node == null || !node.node.Walkable || !constraint.Suitable(node.node) || projection.magnitude > 1.5f)
+                    continue;
+                Vector3 point = node.clampedPosition;
+                float separation = protectedUnits.Min(x => {
+                    Vector3 delta = x.Position - point; delta.y = 0; return delta.magnitude - x.Corpulence;
+                });
+                candidate["protectedGapMeters"] = separation;
+                if (separation < minimumGap) continue;
+                var graph = AstarPath.active.graphs[node.node.GraphIndex] as Pathfinding.IRaycastableGraph;
+                if (graph == null) continue;
+                bool localRoute = false;
+                foreach (var localDirection in CompassOffsets.Take(4))
+                {
+                    Vector3 requestedEnd = point + localDirection * 5f;
+                    var end = AstarPath.active.GetNearest(requestedEnd, constraint);
+                    Vector3 endProjection = requestedEnd - end.clampedPosition; endProjection.y = 0;
+                    Pathfinding.GraphHitInfo hit;
+                    if (end.node != null && end.node.Walkable && endProjection.magnitude <= 1.5f &&
+                        !graph.Linecast(point, end.clampedPosition, node.node, out hit, new List<Pathfinding.GraphNode>()))
+                    { localRoute = true; break; }
+                }
+                candidate["localNativeRoute"] = localRoute;
+                if (!localRoute) continue;
+                // Only the disposable caster moves. The original party anchor
+                // and every other intake actor remain at their exact positions.
+                PlaceExpandedSummoningUnit(fixture.Caster, point);
+                if (rangeOnly)
+                {
+                    var spans = new JArray(); candidate["rangeRoomSurvey"] = spans;
+                    Vector3 spanStart, spanEnd;
+                    if (!TryNalfeshneeRangeSpan40(fixture.Caster, 20f, constraint, spans, out spanStart, out spanEnd))
+                        continue;
+                }
+                receipt["caster"] = fixture.Caster.UniqueId; receipt["point"] = Vec(point);
+                receipt["nearestProtectedGapMeters"] = separation; receipt["surveyed"] = surveyed;
+                receipt["scene"] = "existing Oleg outdoor fixture"; receipt["intakeActorsMoved"] = 0;
+                return;
+            }
+            throw new InvalidOperationException("No bounded native walking fixture with protected separation/room; no summon created.");
+        }
+
+        private sealed class IceDevilFixtureIsolation40 : IDisposable,
+            IGlobalRulebookHandler<RuleSavingThrow>, IGlobalRulebookHandler<RuleDealDamage>,
+            IGlobalRulebookHandler<RuleHealDamage>, IGlobalRulebookHandler<RuleApplyBuff>
+        {
+            private readonly ExpandedSummoningCorrectionFixture fixture;
+            private readonly HashSet<UnitEntityData> protectedUnits;
+            private readonly Dictionary<UnitEntityData, Vector3> protectedPositions;
+            private readonly HashSet<UnitEntityData> ownedSources = new HashSet<UnitEntityData>();
+            private readonly JArray violations = new JArray();
+            internal int OwnedEvents { get; private set; }
+            internal IceDevilFixtureIsolation40(ExpandedSummoningCorrectionFixture value)
+            {
+                fixture = value; protectedUnits = new HashSet<UnitEntityData>(value.UnitsBefore.OfType<UnitEntityData>());
+                if (protectedUnits.Count == 0) throw new InvalidOperationException("Empty protected intake.");
+                protectedPositions = protectedUnits.ToDictionary(x => x, x => x.Position);
+                EventBus.Subscribe(this);
+            }
+            private void Observe(string kind, UnitEntityData source, UnitEntityData target)
+            {
+                bool owned = source != null && (ReferenceEquals(source, fixture.Caster) || fixture.Created.Contains(source) ||
+                    ownedSources.Contains(source) || ReferenceEquals(source.Get<UnitPartSummonedMonster>()?.Summoner, fixture.Caster));
+                if (!owned) return;
+                ownedSources.Add(source);
+                OwnedEvents++;
+                if (target != null && protectedUnits.Contains(target)) violations.Add(new JObject {
+                    ["kind"] = kind, ["source"] = source.UniqueId, ["target"] = target.UniqueId,
+                    ["targetBlueprint"] = target.Blueprint?.name });
+            }
+            internal void Validate()
+            {
+                foreach (var pair in protectedPositions)
+                {
+                    Vector3 delta = pair.Key.Position - pair.Value; delta.y = 0;
+                    if (delta.magnitude > .05f && !violations.OfType<JObject>().Any(x =>
+                        (string)x["kind"] == "protected-moved" && (string)x["target"] == pair.Key.UniqueId))
+                        violations.Add(new JObject { ["kind"] = "protected-moved", ["target"] = pair.Key.UniqueId,
+                            ["original"] = Vec(pair.Value), ["current"] = Vec(pair.Key.Position),
+                            ["horizontalTravel"] = delta.magnitude });
+                }
+                if (violations.Count != 0) throw new InvalidOperationException("Protected fixture actor moved or received an owned effect: " + violations);
+            }
+            internal JObject Describe() { return new JObject { ["protectedActors"] = protectedUnits.Count,
+                ["protectedHorizontalPositionsUnchanged"] = protectedPositions.All(x => !x.Key.Destroyed &&
+                    Vector3.ProjectOnPlane(x.Key.Position - x.Value, Vector3.up).magnitude <= .05f),
+                ["ownedEvents"] = OwnedEvents, ["violations"] = violations }; }
+            public void OnEventAboutToTrigger(RuleSavingThrow evt) { }
+            public void OnEventDidTrigger(RuleSavingThrow evt) { Observe("save", evt.Reason?.Context?.MaybeCaster, evt.Initiator); }
+            public void OnEventAboutToTrigger(RuleDealDamage evt) { }
+            public void OnEventDidTrigger(RuleDealDamage evt) { Observe("damage", evt.Initiator, evt.Target); }
+            public void OnEventAboutToTrigger(RuleHealDamage evt) { }
+            public void OnEventDidTrigger(RuleHealDamage evt) { Observe("heal", evt.Initiator, evt.Target); }
+            public void OnEventAboutToTrigger(RuleApplyBuff evt) { }
+            public void OnEventDidTrigger(RuleApplyBuff evt) { Observe("buff", evt.Context?.MaybeCaster, evt.Initiator); }
+            public void Dispose() { EventBus.Unsubscribe(this); }
+        }
+    }
+}

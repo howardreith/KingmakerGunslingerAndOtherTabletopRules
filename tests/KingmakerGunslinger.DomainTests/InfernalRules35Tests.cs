@@ -344,6 +344,15 @@ namespace KingmakerGunslinger.DomainTests
                 InfernalRules35.WallNodeIntersects(0, 0, float.NaN, .5f,
                     .5f),
                 "A non-finite wall footprint is rejected.");
+            Assertions.True(InfernalRules35
+                    .WallNodeWalkableAfterOwnerRelease(true, false),
+                "The final wall owner restores an originally walkable node.");
+            Assertions.False(InfernalRules35
+                    .WallNodeWalkableAfterOwnerRelease(false, false),
+                "The final wall owner preserves an originally blocked node.");
+            Assertions.False(InfernalRules35
+                    .WallNodeWalkableAfterOwnerRelease(true, true),
+                "An overlapping remaining wall owner keeps the node blocked.");
         }
 
         internal static void OwnedBodiesDecodeAndTailIsIsolated()
@@ -477,6 +486,8 @@ namespace KingmakerGunslinger.DomainTests
         {
             Assertions.False(InfernalRules35.WallFormationSaveEligible(InfernalRules35.WallSectionUnitGuid),
                 "A standing Wall of Ice section is an object and cannot save to disrupt another Wall's formation.");
+            Assertions.False(InfernalRules35.WallFormationSaveEligible(IceDevilRules40Policy.WallSectionGuid),
+                "An Ice Devil Wall section is an object under the same shared formation rule.");
             Assertions.True(InfernalRules35.WallFormationSaveEligible("74652de839a94feba3c2fb67b536437c"),
                 "A creature adjacent to the forming wall keeps its Reflex save.");
             Assertions.True(InfernalRules35.WallFormationSaveEligible(null),
@@ -541,6 +552,67 @@ namespace KingmakerGunslinger.DomainTests
             // Bone Devil; only a movement-blocking condition stops it.
             Assertions.Equal("CantMove", InfernalRules35.WallSectionStationaryCondition,
                 "A Wall of Ice section carries the native CantMove condition, not only CantAct.");
+        }
+
+        private static JObject SteamPoolRecord(Action<JObject> change)
+        {
+            var record = JObject.Parse(@"{
+                ""probeRan"": true,
+                ""liveWallSteamAreas"": [ { ""area"": ""a"", ""cloud"": -587960, ""flameRenderersOff"": 16 } ],
+                ""releasedClouds"": [ { ""cloud"": -587960, ""destroyed"": false, ""inPool"": true } ],
+                ""claimed"": -587960,
+                ""prefabRenderers"": 38, ""prefabDuplicateRendererKeys"": 0,
+                ""claimedRenderersCompared"": 38, ""claimedDuplicateRendererKeys"": 0,
+                ""claimedMissingRendererKeys"": 0, ""claimedExtraRendererKeys"": 0,
+                ""claimedRenderersDifferingFromPrefab"": [],
+                ""ownedCloudsAfterRelease"": 0 }");
+            if (change != null) change(record);
+            return record;
+        }
+
+        internal static void WallSteamPoolReuseRequiresTheCapturedInstanceAndACompleteComparison()
+        {
+            Assertions.True(InfernalWallSteamPoolVerdict35.Reused(SteamPoolRecord(null)),
+                "A captured Wall-modified cloud released to the pool, reclaimed as the same instance, with a complete clean comparison and cleared ownership is reuse.");
+            Assertions.Equal("claim-did-not-reuse-a-captured-cloud", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record["claimed"] = -600000)),
+                "A different, pristine instance is not reuse of the Wall's cloud.");
+            Assertions.Equal("no-claimed-instance", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record.Remove("claimed"))),
+                "A missing reuse identity is not reuse.");
+            Assertions.Equal("captured-cloud-not-released-to-native-pool", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record["releasedClouds"][0]["inPool"] = false)),
+                "A cloud that never reached the native pool proves no reuse.");
+            Assertions.Equal("captured-cloud-not-released-to-native-pool", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => ((JObject)record["releasedClouds"][0]).Remove("cloud"))),
+                "A released row without the captured identity proves no reuse.");
+            Assertions.Equal("no-captured-wall-modified-cloud", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record["liveWallSteamAreas"][0]["flameRenderersOff"] = 0)),
+                "A captured cloud the Wall never modified cannot show the restore.");
+            Assertions.Equal("empty-expected-renderer-set", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => { record["prefabRenderers"] = 0; record["claimedRenderersCompared"] = 0; })),
+                "An empty comparison is not a comparison.");
+            Assertions.Equal("incomplete-renderer-comparison", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record["claimedRenderersCompared"] = 22)),
+                "A comparison that skipped renderers is incomplete.");
+            Assertions.Equal("claimed-renderers-missing", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record["claimedMissingRendererKeys"] = 2)),
+                "Equal counts cannot hide prefab renderers the claimed instance lacks.");
+            Assertions.Equal("expected-renderer-keys-not-unique", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record["prefabDuplicateRendererKeys"] = 1)),
+                "Duplicate comparison keys could conceal a renderer.");
+            Assertions.Equal("claimed-renderer-keys-not-unique", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record["claimedDuplicateRendererKeys"] = 1)),
+                "Duplicate claimed keys could conceal a renderer.");
+            Assertions.Equal("expected-renderer-keys-not-unique", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record.Remove("prefabDuplicateRendererKeys"))),
+                "An unrecorded key check is not a complete comparison.");
+            Assertions.Equal("renderer-state-differs", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => ((JArray)record["claimedRenderersDifferingFromPrefab"]).Add(new JObject { ["renderer"] = "Root/GroundFireBig#ParticleSystemRenderer" }))),
+                "A reused cloud with a flame layer still off is the leak.");
+            Assertions.Equal("wall-ownership-not-cleared", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record["ownedCloudsAfterRelease"] = 1)),
+                "The Wall must not keep ownership of a released cloud.");
         }
 
         internal static void WallSteamHidesOnlyTheCloudsFlameLayers()
@@ -642,6 +714,83 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(InfernalRules35.WallDamageSequenceDestroys(
                 new int[0], new int[0], 36),
                 "No damage observed is no destruction.");
+        }
+
+        internal static void WallRetirementResumesAndNeverStrandsClaims()
+        {
+            const int budget = 120;
+
+            // An in-flight grid update is the one transient state: the
+            // pathfinder clears GraphUpdateObject.updating inside
+            // GridGraph.UpdateArea, so retirement defers and retries rather
+            // than aborting between disabling the cut and releasing claims.
+            Assertions.Equal(InfernalRules35.WallRetirementStep.Defer,
+                InfernalRules35.PlanWallRetirement(true, true, true, false, 0,
+                    budget),
+                "An in-flight native grid update defers retirement.");
+            Assertions.Equal(InfernalRules35.WallRetirementStep.Defer,
+                InfernalRules35.PlanWallRetirement(true, true, true, false,
+                    budget - 1, budget),
+                "Retirement keeps retrying while the defer budget remains.");
+            Assertions.True(InfernalRules35.WallRetirementSkipReason(
+                    true, true, true, false, 0, budget) == null,
+                "A deferral is not a skipped native revert.");
+
+            // Once the update is processed the paired revert goes out against
+            // the exact captured graph, as before.
+            Assertions.Equal(InfernalRules35.WallRetirementStep.RevertNativeCut,
+                InfernalRules35.PlanWallRetirement(true, true, false, false, 0,
+                    budget),
+                "A settled update reverts the native cut on the exact graph.");
+            Assertions.True(InfernalRules35.WallRetirementSkipReason(
+                    true, true, false, false, 0, budget) == null,
+                "A normal revert records no skip reason.");
+
+            // A replaced graph is terminal, not transient: nothing of ours
+            // survives on it and its restoration data must never reach the
+            // replacement, so retirement completes instead of throwing.
+            Assertions.Equal(InfernalRules35.WallRetirementStep.SkipNativeCut,
+                InfernalRules35.PlanWallRetirement(true, false, false, false, 0,
+                    budget),
+                "A replaced graph completes retirement without a native revert.");
+            Assertions.Equal("captured-graph-replaced",
+                InfernalRules35.WallRetirementSkipReason(true, false, true,
+                    false, 0, budget),
+                "Graph replacement is recorded ahead of any in-flight update.");
+
+            Assertions.Equal(InfernalRules35.WallRetirementStep.SkipNativeCut,
+                InfernalRules35.PlanWallRetirement(false, true, false, false, 0,
+                    budget),
+                "An unapplied cut needs no native revert.");
+            Assertions.Equal("no-native-cut-applied",
+                InfernalRules35.WallRetirementSkipReason(false, true, false,
+                    false, 0, budget),
+                "An unapplied cut records why it skipped.");
+
+            // Destruction has no later frame, and an indefinitely stalled
+            // update must not strand owned claims. Both force completion and
+            // record it, rather than deferring forever.
+            Assertions.Equal(InfernalRules35.WallRetirementStep.SkipNativeCut,
+                InfernalRules35.PlanWallRetirement(true, true, true, true, 0,
+                    budget),
+                "Destruction forces completion instead of deferring.");
+            Assertions.Equal("forced-while-update-in-flight",
+                InfernalRules35.WallRetirementSkipReason(true, true, true, true,
+                    0, budget),
+                "A forced completion records that the revert was skipped.");
+            Assertions.Equal(InfernalRules35.WallRetirementStep.SkipNativeCut,
+                InfernalRules35.PlanWallRetirement(true, true, true, false,
+                    budget, budget),
+                "An exhausted defer budget completes rather than leaking claims.");
+            Assertions.Equal("update-in-flight-defer-budget-exhausted",
+                InfernalRules35.WallRetirementSkipReason(true, true, true,
+                    false, budget, budget),
+                "Budget exhaustion is recorded distinctly from destruction.");
+
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                InfernalRules35.PlanWallRetirement(true, true, true, false, -1,
+                    budget),
+                "A negative deferral count is rejected.");
         }
 
         internal static void WallOfIceKeepsFormationAndBreachRulesDistinct()

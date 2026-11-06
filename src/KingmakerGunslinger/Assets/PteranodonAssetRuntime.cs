@@ -637,6 +637,7 @@ namespace KingmakerGunslinger.Assets
             ConfigureVrockVisual37(context);
             ConfigureGlabrezuVisual38(context);
             ConfigureNalfeshneeVisual39(context);
+            ConfigureIceDevilVisual40(context);
             ConfigureGiantBodyVisuals(context);
             ConfigureGriffonVisual(context);
         }
