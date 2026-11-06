@@ -225,10 +225,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool exact = all.Length == 5 && identities.Length == 3 &&
                 pincers.Length == GlabrezuRules38Policy.RendPincerCount &&
                 others.Length == 3 &&
+                // Sprint 4: every limb type is the native minimum (not a
+                // ProperFlanking2 reach weapon), and SummonReachRange4 keeps
+                // the one shared live reach the Sprint 38 record observed.
                 all.All(value => value.Blueprint.Type != null &&
                     value.Blueprint.Type.AttackRange.Value ==
-                        GlabrezuRules38Policy.ReachFeet) &&
+                        SummonReachRepresentation4.NativeMinWeaponRangeFeet) &&
                 equipped.Distinct().Count() == 1 &&
+                all.All(value => SummonReachRepresentation4.Find(glabrezu.Blueprint.AssetGuid,
+                    value.Blueprint.AssetGuid)?.LiveRangeAfterFeet == value.AttackRange.Value) &&
                 others.All(value => value.Blueprint.Type == null ||
                     value.Blueprint.Type.CriticalRollEdge == 20) &&
                 grab == null && absentRoutines.Length == 0 &&
@@ -248,7 +253,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["bodyReachFeet"] = glabrezu.Stats.Reach.ModifiedValue,
                 ["printedReachFeet"] = GlabrezuRules38Policy.ReachFeet,
                 ["reachMeaning"] =
-                    "The printed 15 feet is the weapon type's configured attack range. The live equipped value is larger on a Huge body, which the released Sprint 29 Huge giants record the same way; what matters here is that every limb carries the printed configuration and that all five share one live reach, so no limb is short.",
+                    "Sprint 38 recorded a live equipped 22 feet against the printed 15 feet. Sprint 4 keeps that live value exactly (an open owner question, not adjusted here) while every limb type is the native minimum, so ProperFlanking2 no longer gives these natural attacks a reach-weapon dead zone. All five limbs share one live reach, so no limb is short.",
                 ["pincerCount"] = pincers.Length,
                 ["printedPincerCount"] =
                     GlabrezuRules38Policy.RendPincerCount,

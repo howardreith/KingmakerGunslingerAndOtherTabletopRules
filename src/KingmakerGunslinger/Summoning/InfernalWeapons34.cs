@@ -55,7 +55,7 @@ namespace KingmakerGunslinger.Summoning
             if (profile.Glaive != null && ReferenceEquals(__instance.Blueprint, profile.Glaive))
                 __result = new Feet(__result.Value + 4);
             else if (profile.Claw != null && ReferenceEquals(__instance.Blueprint, profile.Claw))
-                return; // Private raw range 9 already yields five feet.
+                return; // Sprint 4: SummonReachRange4 restores the claw's five feet.
             else if (profile.Chain != null && ReferenceEquals(__instance.Blueprint, profile.Chain))
                 __result = new Feet(__result.Value + 4 + (profile.ControlsOwnChains(owner) ?
                     InfernalRules34.ControlledChainReachFeet - InfernalRules34.ChainReachFeet : 0));

@@ -18,6 +18,15 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 1, phase + " "), "Malformed overhaul phase refused.");
                 Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, phase) == (phase != "summon-overhaul-indoor"), "Only exact outdoor phases use Default; indoor remains static.");
             }
+            // Sprint 4 reach census: an exact fresh, save-free outdoor Default
+            // phase that never acquires Wall preparation or player input.
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-reach-sprint4", 0, 0, 0, false, false, false, false, true), "Exact fresh reach phase admitted.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-reach-sprint4", 1, 0, 0, false, false, false, false, true), "Reach phase cannot replace a live world.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-reach-sprint4", 0, 0, 0, false, false, true, false, true), "Reach phase cannot import a save.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 1, "summon-reach-sprint4 "), "Malformed reach phase refused.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "summon-reach-sprint4"), "Reach phase uses outdoor native Default.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.WallFixturePhase("summon-reach-sprint4"), "Reach phase never acquires Wall preparation.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-reach-sprint4"), "Reach phase is not a designated-host Ice Devil phase.");
             foreach (string phase in new[] { "summon-overhaul-wall", "summon-wall-placement-preflight" })
             {
                 Assertions.True(ExpandedSummoningNativeProfilePolicy.WallFixturePhase(phase), "Both exact routes share Wall fixture preparation.");

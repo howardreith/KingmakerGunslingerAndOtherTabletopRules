@@ -50,7 +50,7 @@ namespace KingmakerGunslinger.Blueprints
             var traits = Require<BlueprintFeature>(bySymbol, Trumpet31Prefix + "Traits");
             traits.name = InternalName(Trumpet31Prefix + "Traits"); traits.HideInUI = true;
             var sword = Sprint29Weapon(library, bySymbol, Trumpet31Prefix + "Greatsword2d6",
-                Trumpet31Prefix + "GreatswordType", NativeGreatsword, Size.Medium, 2, DiceType.D6, 9);
+                Trumpet31Prefix + "GreatswordType", NativeGreatsword, Size.Medium, 2, DiceType.D6, SummonReachRepresentation4.StoredRawFeet);
             SetField(sword, "m_Enchantments", new[] { BlueprintLibraryLookup.RequireExact<BlueprintWeaponEnchantment>(
                 library, MagicFirearmBlueprints.Enhancement4Guid, "Trumpet native +4 enhancement") });
             unit.Body = new BlueprintUnit.UnitBody { PrimaryHand = sword,

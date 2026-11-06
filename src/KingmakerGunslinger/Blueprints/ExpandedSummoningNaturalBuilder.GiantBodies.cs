@@ -53,7 +53,7 @@ namespace KingmakerGunslinger.Blueprints
                 Require<BlueprintWeaponType>(bySymbol,
                     GiantBodyRulesPolicy.BrachiosaurusTailTypeSymbol),
                 GiantBodyRulesPolicy.BrachiosaurusTailTypeSymbol,
-                GiantBodyRulesPolicy.BrachiosaurusTailTypeStoredRangeFeet);
+                SummonReachRepresentation4.StoredRawFeet);
 
             ConfigureBrachiosaurusChassis(library,
                 Require<BlueprintUnit>(bySymbol, "KMG.Summoning.Unit.Brachiosaurus"),

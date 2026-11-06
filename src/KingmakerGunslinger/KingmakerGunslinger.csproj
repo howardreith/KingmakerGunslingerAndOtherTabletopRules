@@ -42,6 +42,8 @@
   <ItemGroup>
     <Compile Include="Summoning\InfernalRules35.cs" />
     <Compile Include="Summoning\InfernalRules35Policy.cs" />
+    <Compile Include="Summoning\SummonReachRepresentation4Policy.cs" />
+    <Compile Include="Summoning\SummonReachRange4.cs" />
     <Compile Include="Summoning\InfernalWallRules35.cs" />
     <Compile Include="Summoning\InfernalVisualPolicy35.cs" />
     <Compile Include="Summoning\InfernalVisualPolicy36.cs" />
@@ -92,6 +94,9 @@
     <Compile Include="RuntimeTesting\InfernalWallFeedbackPolicy35.cs" />
     <Compile Include="RuntimeTesting\InfernalWallSteamPoolVerdict35.cs" />
     <Compile Include="RuntimeTesting\InfernalAdjacentRoutineVerdict35.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonReach4.cs" />
+    <Compile Include="RuntimeTesting\SummonReachProbePolicy4.cs" />
+    <Compile Include="RuntimeTesting\SummonAdjacentRoutineVerdict4.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBarbed35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint36Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint37Inputs.cs" />

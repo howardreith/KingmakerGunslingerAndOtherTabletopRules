@@ -85,13 +85,13 @@ namespace KingmakerGunslinger.Blueprints
             // 10-foot attack range matches the released Hezrou contract.
             var claw = Sprint29Weapon(library, symbols, p + "Claw",
                 p + "ClawType", Claw2d4Guid, Size.Large, 2,
-                DiceType.D6, VrockRules37Policy.ReachFeet);
+                DiceType.D6, SummonReachRepresentation4.StoredRawFeet);
             var bite = Sprint29Weapon(library, symbols, p + "Bite",
                 p + "BiteType", NativeBite1d6Guid, Size.Large, 1,
-                DiceType.D8, VrockRules37Policy.ReachFeet);
+                DiceType.D8, SummonReachRepresentation4.StoredRawFeet);
             var talon = Sprint29Weapon(library, symbols, p + "Talon",
                 p + "TalonType", NativeClaw1d4Guid, Size.Large, 1,
-                DiceType.D6, VrockRules37Policy.ReachFeet);
+                DiceType.D6, SummonReachRepresentation4.StoredRawFeet);
             unit.Body = NaturalBody(bite, new[] { claw, claw, talon, talon },
                 Array.Empty<BlueprintItemWeapon>());
 

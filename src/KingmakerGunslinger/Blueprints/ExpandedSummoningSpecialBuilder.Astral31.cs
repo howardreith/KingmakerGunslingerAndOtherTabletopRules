@@ -55,7 +55,7 @@ namespace KingmakerGunslinger.Blueprints
 
             var hammer = Sprint29Weapon(library, bySymbol, Astral31Prefix + "Warhammer1d8",
                 Astral31Prefix + "WarhammerType", "3f35d5c01e11d564daa59938dec3db4b",
-                Size.Medium, 1, DiceType.D8, 9);
+                Size.Medium, 1, DiceType.D8, SummonReachRepresentation4.StoredRawFeet);
             SetField(hammer.Type, "m_IsTwoHanded", true);
             SetField(hammer, "m_Enchantments", new[] {
                 BlueprintLibraryLookup.RequireExact<BlueprintWeaponEnchantment>(library,
@@ -63,7 +63,7 @@ namespace KingmakerGunslinger.Blueprints
                 BlueprintLibraryLookup.RequireExact<BlueprintWeaponEnchantment>(library,
                     "0f20d79b7049c0f4ca54ca3d1ea44baa", "native disruption enchantment") });
             var slam = Sprint29Weapon(library, bySymbol, Astral31Prefix + "Slam1d8",
-                Astral31Prefix + "SlamType", NativeSlam, Size.Medium, 1, DiceType.D8, 9);
+                Astral31Prefix + "SlamType", NativeSlam, Size.Medium, 1, DiceType.D8, SummonReachRepresentation4.StoredRawFeet);
             unit.Body = new BlueprintUnit.UnitBody {
                 PrimaryHand = hammer, PrimaryHandAlternative1 = slam,
                 EmptyHandWeapon = null,

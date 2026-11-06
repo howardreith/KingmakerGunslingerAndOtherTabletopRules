@@ -332,3 +332,33 @@ Classify every published summon weapon into three separate categories:
   dead zone.
 
 Ice Devil native validation needs HOWARD-LAPTOP.
+
+## Follow-up note (Sprint 4, 2026-11-06): corrections to the guidance above
+
+The Sprint 3 results, the s3a/s3b/s3c runs and their identities above are
+unchanged. These parts of the census and next-sprint guidance were wrong.
+
+1. **"The dead zone is about 0.15 m beyond the bodies"** (Small and Medium).
+   ProperFlanking2's dead range is `(size reach + 1) ft x 0.5`. For
+   Small/Medium that is **0.914 m** beyond both bodies, not 0.15 m.
+2. **"Manufactured raw 10-ft weapons (Glaives, Giant flails) are correct
+   reach weapons"**, and the guidance listing **whip** and **Giant flail**
+   among genuine reach weapons. Only the glaive is a reach weapon there.
+   - The Ettin's flails are ordinary flails (Pathfinder: flail and heavy
+     flail are not reach weapons).
+   - The giants' greatclubs, greatswords and morningstars are ordinary
+     weapons wielded with creature reach.
+   - The whip is a reach weapon with its own adjacent-foe exception, and
+     the roster has no whip.
+3. **"Natural reach should be a 2-ft native type plus ReachRange"** as a
+   universal recipe. An owner-wide Reach bonus also moves ranged weapons
+   and cannot express unequal per-attack reach. Sprint 4 instead keeps each
+   row's live range with an exact-owner, exact-item correction
+   (`SummonReachRange4`), and keeps the Bone Devil's accepted Reach-stat
+   representation.
+4. **The census list was incomplete.** The installed-blueprint census found
+   45 false reach-weapon rows on 26 creatures, including the Hill, Stone,
+   Fire, Cloud and Storm Giants, Glabrezu, Nalfeshnee, Vrock, Hezrou,
+   Babau, Kyton and the Bearded Devil claw.
+
+See `planning/SUMMON-REACH-SPRINT4.md`.
