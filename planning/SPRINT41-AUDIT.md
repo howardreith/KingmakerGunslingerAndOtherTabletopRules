@@ -1,6 +1,6 @@
 # Sprint 41 — Core Ideal Roster Release Audit
 
-**IN PROGRESS. This is an audit, not a release.** No merge, tag, release or
+**FINDINGS RECORDED; PUBLICATION BLOCKED (A-10). This is an audit, not a release.** No merge, tag, release or
 product repair is performed under it. Findings are recorded and queued; nothing
 is patched to make a check pass.
 
@@ -85,8 +85,8 @@ the same commit.
 | Deep module-OFF sanitization sweep | **UNAVAILABLE by design** — A-13 |
 | Feature-module boundary (settings / publication gates) | **PASS 47/47** with Summoning ON and 47/47 with it OFF |
 | Persistence matrix at roster scale | NOT RUN |
-| Visual acceptance at roster scale | NOT RUN |
-| Performance against the 693-choice baseline | NOT RUN |
+| Visual acceptance at roster scale | **NOT PERFORMED** — A-16 |
+| Performance measurement | NOT RUN (scale now pinned: 1,217 choices, worst menu 116) |
 
 **The audit found two release blockers: A-8, the red repository gate, and
 A-15, a wall review phase that passes only 1 run in 5 and so cannot qualify or
@@ -111,6 +111,7 @@ clear that area in either direction.** Neither is repaired here.
 | A-13 | info | coverage | Deep module-OFF sweep is reserved to one named purpose | OPEN |
 | A-14 | medium (instance of A-15) | review code | NRE in InfernalWallShared35, 1 of 5 runs | OPEN |
 | **A-15** | **P2-high** | **nondeterministic verification** | **Wall review phase passes 1 run in 5, four distinct failure modes** | **OPEN** |
+| A-16 | info | coverage | Visual acceptance not performed; the sheets=9 check validates an index, not images | NOT PERFORMED |
 
 ### A-15 — the wall review phase is nondeterministic *(primary wall finding)*
 
@@ -553,6 +554,33 @@ Ordered by severity. Nothing here is repaired under this audit.
    charter's 1,232 as 1,217 met by native reuse.
 8. **W-1 … W-5** — carried from PR #98, each still to be verified on a
    candidate.
+
+## A-16 — what was *not* done, stated so it cannot be misread
+
+**Visual acceptance at roster scale was not performed.** The
+`expanded-summoning-menu-contact-sheets` assertion passes with `sheets=9`, but it
+validates the **index** — the live menu choices with their sprite keys and
+textures in exact display order — not any rendered image. No composited sheet
+exists: the index names files like `sm-3-menu-contact-sheet.png` and no such file
+exists anywhere under the lab, because
+`tools/New-ExpandedSummoningMenuContactSheets.ps1` was not run.
+
+What *is* verified is structural: `misordered=0`, `missingIcons=0`,
+`badQuantityNames=0`, `categoryDistinct=True`. Every choice has an icon and sits
+in the right place. That says nothing about whether any icon or model **looks**
+right. About 1,314 PNG frames were written across today's native runs, but they
+are per-creature review and motion frames, not roster-scale menu visuals, and
+none was inspected. **Owner aesthetic approval is not claimed for anything.**
+
+Also not done, and not partially covered by anything above:
+
+- **Persistence matrix at roster scale.** Sprint 40 proved per-creature ON/OFF
+  persistence for the Ice Devil across six distinct processes; no roster-scale
+  sweep was run here.
+- **Performance measurement.** No timing was taken. What is now pinned exactly is
+  the scale a run must be sized against: 1,217 live choices across 18 menus,
+  worst single menu 116, against a native baseline of 48.
+- **W-1 … W-5.** All still unverified on this candidate, W-5 especially.
 
 ## Preserved scope decisions
 
