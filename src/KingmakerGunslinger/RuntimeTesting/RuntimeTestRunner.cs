@@ -16115,9 +16115,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             ContextActionDealDamage[] lanternDamage =
                 ExpandedSummoningObjects<ContextActionDealDamage>(
                     lanternRay.ComponentsArray).ToArray();
-            bool lanternAuraAvailable = all.Any(value => value != null &&
-                value.AssetGuid == "1ce4878b5e714f659d0854a12f4b3cf2" &&
-                value.GetType() == typeof(BlueprintBuff));
+            // The former lanternAuraAvailable probe is gone with the clause that
+            // used it: whether the native Aura of Menace buff exists in the live
+            // set no longer changes what the archon must carry, because the
+            // product strips that buff unconditionally. See the clause list.
             // Sprint 41 (A-12): this was one conjunction of twenty-six
             // conditions reported as a single "exact"/"mismatch" string, so a
             // failure under a compatibility profile named no cause and could
@@ -16146,20 +16147,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new KeyValuePair<string, bool>("kmgDefencesFact=1",
                     lantern.AddFacts.Count(value => value != null && value.name ==
                         "KMG_Summoning_Special_LanternArchon_Defenses") == 1),
-                // A-12: report the counts, not just the comparison. "available"
-                // is read from the scanned live set; the product grants the
-                // buff from library.BlueprintsByAssetId at registration time,
-                // so the two can disagree and the numbers say which way.
-                new KeyValuePair<string, bool>("nativeAuraFact(granted=" +
+                // Sprint 41 (A-12). This clause used to require the NATIVE Aura
+                // of Menace buff on the archon whenever that buff existed in
+                // the live set. That expectation was superseded by the Sprint
+                // 30/31 archon work and never updated: ConfigureArchon30And31
+                // deliberately strips the native buff and substitutes the
+                // KMG-owned MenaceCarrier, which is the functional aura (20ft
+                // cylinder, save, -2 attacks/AC/saves, per-archon immunity,
+                // cleanup on death). So the native count is unconditionally 0.
+                //
+                // The old clause therefore passed only by luck - standalone,
+                // the native buff is not in the scanned set, so 0 == 0. Call of
+                // the Wild ships the Archon Subdomain, which brings that buff
+                // into the library, and the clause then demanded a fact the
+                // product intentionally removes. Measured on one instrumented
+                // candidate: standalone exact; Call of the Wild
+                // granted=0, available=1, inLibrary=1.
+                //
+                // Both replacements are profile-independent, and together they
+                // assert what the old clause never did - that the archon
+                // actually carries its aura.
+                new KeyValuePair<string, bool>("nativeAuraFactRemoved",
                     lantern.AddFacts.Count(value => value != null && value.AssetGuid ==
-                        "1ce4878b5e714f659d0854a12f4b3cf2").ToString() +
-                    ",available=" + (lanternAuraAvailable ? "1" : "0") +
-                    ",inLibrary=" + (BlueprintBootstrap.Library != null &&
-                        BlueprintBootstrap.Library.BlueprintsByAssetId != null &&
-                        BlueprintBootstrap.Library.BlueprintsByAssetId.ContainsKey(
-                            "1ce4878b5e714f659d0854a12f4b3cf2") ? "1" : "0") + ")",
-                    lantern.AddFacts.Count(value => value != null && value.AssetGuid ==
-                        "1ce4878b5e714f659d0854a12f4b3cf2") == (lanternAuraAvailable ? 1 : 0)),
+                        "1ce4878b5e714f659d0854a12f4b3cf2") == 0),
+                new KeyValuePair<string, bool>("kmgMenaceCarrier=1",
+                    lantern.AddFacts.Count(value => value != null && value.name ==
+                        "KMG_Summoning_OutsiderCelestial_Archon_MenaceCarrier") == 1),
                 new KeyValuePair<string, bool>("ray.range=Custom", lanternRay.Range == AbilityRange.Custom),
                 new KeyValuePair<string, bool>("ray.action=Standard",
                     lanternRay.ActionType == UnitCommand.CommandType.Standard),
