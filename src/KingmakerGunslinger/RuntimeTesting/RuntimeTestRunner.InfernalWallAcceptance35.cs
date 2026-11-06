@@ -949,6 +949,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 actor.Commands.RemoveFinishedAndUpdateQueue();
                 PlaceExpandedSummoningUnit(actor, plan.CastingPoint);
             }
+            // The Bone Devil's 5-ft fear aura source stands apart, beyond the
+            // casting point and away from the lane: stacked with the other
+            // witnesses it was shoved by avoidance and frightened the mover
+            // mid-walk (nav2: failed DC 19 Will, native UnitFearController
+            // interrupted the restored move).
+            Vector3 boneAway = plan.CastingPoint - plan.Midpoint; boneAway.y = 0f;
+            if (boneAway.sqrMagnitude > .01f)
+            {
+                var boneSpot = AstarPath.active.GetNearest(plan.CastingPoint + boneAway.normalized * 2.5f);
+                if (boneSpot.node != null && boneSpot.node.Walkable &&
+                    Vector3.Distance(boneSpot.clampedPosition, plan.CastingPoint + boneAway.normalized * 2.5f) < .75f)
+                    PlaceExpandedSummoningUnit(run.Bone, boneSpot.clampedPosition);
+            }
             InfernalBoneRemoveEffects35(mover, new[] { run.Bone }, run.Frightened);
             foreach (int frame in InfernalWallPlaceAndSettle35(mover, plan.Start, plan, "restoration-" + label)) yield return frame;
             var after = InfernalEarlyPath35(mover, plan.Destination);
