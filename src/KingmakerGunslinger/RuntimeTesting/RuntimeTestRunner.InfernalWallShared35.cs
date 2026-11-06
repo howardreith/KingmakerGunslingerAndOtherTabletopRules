@@ -449,8 +449,56 @@ namespace KingmakerGunslinger.RuntimeTesting
             int nextSlot = 0;
             var slots = new Dictionary<UnitEntityData, Vector3>();
             // Park keeps one slot per unit, 3 m apart (outside a 5-ft aura), on native floor.
+            InfernalWallFixturePlan35 planB = null;
+            // The two source Bone Devils are summons of the mover (the fixture
+            // caster). Installed SummonedUnitsController walks an out-of-combat
+            // summon back toward its summoner once it is over 11.7 m away; a
+            // source parked about 12 m off walked toward the mover at lane A's
+            // end and its 5-ft aura frightened it (int2, failed settle). Each
+            // source stands on native floor at least 3.5 m from every known
+            // lane and 4.5 m from each Wall midpoint, within 10 m of every lane
+            // end, and 3 m from the other source. Recorded per placement.
+            var sourceSpots = new JArray();
+            Func<UnitEntityData, Vector3?> sourceSpot = source => {
+                var lanes = new List<InfernalWallFixturePlan35> { plan };
+                if (planB != null) lanes.Add(planB);
+                var ends = lanes.SelectMany(lane => new[] { lane.Start, lane.Destination }).ToArray();
+                UnitEntityData other = ReferenceEquals(source, sourceA) ? sourceB : sourceA;
+                Vector3 hub = ends.Aggregate(Vector3.zero, (sum, value) => sum + value) / ends.Length;
+                foreach (float radius in new[] { 6f, 5f, 7f, 4f, 8f })
+                for (int step = 0; step < 24; step++)
+                {
+                    Vector3 wanted = hub + Quaternion.Euler(0f, step * 15f, 0f) * Vector3.forward * radius;
+                    Pathfinding.NNInfo recast = Kingmaker.View.ObstacleAnalyzer.GetNearestNode(wanted);
+                    if (recast.node == null || Vector3.Distance(recast.clampedPosition, wanted) > .3f) continue;
+                    var gridNear = AstarPath.active.GetNearest(recast.clampedPosition);
+                    if (gridNear.node == null || !gridNear.node.Walkable) continue;
+                    Vector3 point = recast.clampedPosition;
+                    if (lanes.Any(lane => InfernalEarlyDistanceToSegment35(point, lane.Start, lane.Destination) < 3.5f ||
+                            Vector3.Distance(point, lane.Midpoint) < 4.5f)) continue;
+                    if (ends.Any(end => Vector3.Distance(point, end) > 10f)) continue;
+                    Vector3 otherSpot;
+                    if (other != null && slots.TryGetValue(other, out otherSpot) && Vector3.Distance(point, otherSpot) < 3f) continue;
+                    return point;
+                }
+                return null;
+            };
             Action<UnitEntityData> park = unit => {
                 Vector3 slot;
+                if (ReferenceEquals(unit, sourceA) || ReferenceEquals(unit, sourceB))
+                {
+                    Vector3? spot = sourceSpot(unit);
+                    if (spot != null)
+                    {
+                        slots[unit] = spot.Value;
+                        if (sourceSpots.Count < 40)
+                            sourceSpots.Add(new JObject { ["source"] = unit.UniqueId, ["spot"] = SurveyVector(spot.Value),
+                                ["lanes"] = planB == null ? 1 : 2 });
+                        InfernalWallPrepareActor35(unit);
+                        PlaceExpandedSummoningUnit(unit, spot.Value);
+                        return;
+                    }
+                }
                 if (!slots.TryGetValue(unit, out slot))
                 {
                     int index = nextSlot++;
@@ -472,6 +520,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 park(bystander);
                 parked.Add(new JObject { ["unit"] = bystander.UniqueId, ["position"] = SurveyVector(bystander.Position) });
             }
+            receipt["sourceSpots"] = sourceSpots;
             receipt["bystandersParked"] = new JObject { ["point"] = SurveyVector(parking),
                 ["distanceFromWallA"] = Vector3.Distance(parking, plan.Midpoint), ["units"] = parked };
             persist();
@@ -510,7 +559,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             persist();
 
             InfernalWallSharedGeometry35 geometry = null;
-            InfernalWallFixturePlan35 planB = null;
             foreach (bool aFirst in new[] { true, false })
             {
                 string pair = aFirst ? "a-first" : "b-first";
