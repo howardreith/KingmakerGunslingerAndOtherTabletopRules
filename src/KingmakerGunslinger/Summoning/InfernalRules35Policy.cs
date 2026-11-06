@@ -72,6 +72,18 @@ namespace KingmakerGunslinger.Summoning
                     StringComparison.Ordinal);
         }
 
+        // The native kineticist steam cloud also draws burning ground
+        // (GroundFireBig, Fire_Top, FireTiny) and its warm Glow. Wall steam
+        // only conceals and deals no fire, so those layers are hidden; the
+        // smoke, cold vapour, droplets and puddles stay.
+        internal static bool WallSteamHidesLayer(string layerName)
+        {
+            if (layerName == null) return false;
+            return layerName.StartsWith("GroundFire", StringComparison.Ordinal) ||
+                layerName.StartsWith("Fire", StringComparison.Ordinal) ||
+                layerName.StartsWith("Glow", StringComparison.Ordinal);
+        }
+
         internal static bool QualifiesForBarbedDefense(bool hit, bool melee,
             bool manufactured, float rawWeaponReachFeet,
             float ordinaryReachFeet)

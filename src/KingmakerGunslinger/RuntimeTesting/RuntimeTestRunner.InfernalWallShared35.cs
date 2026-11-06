@@ -177,48 +177,73 @@ namespace KingmakerGunslinger.RuntimeTesting
         // Two independently sourced sections. Wall B is placed only where its
         // own ordinary target check passes; the survey looks for legal places
         // whose native cut box overlaps Wall A's affected cells.
-        // A standing point for a new Wall source: walkable native floor at the
-        // mover's level, a clear sight line from the mover, and clear of
-        // every other live unit by 1.5 m. Records each candidate it rejects.
+        // A standing point for a new Wall source that the native fog of war
+        // reveals. Installed FogOfWarController.Tick reveals a non-party unit
+        // only within 11.7 m of a living party member (its revealers; the
+        // fixture mover is a spawned caster, not one of them) with no
+        // LineOfSightGeometry obstacle between the two points raised by the
+        // fog's ShadowCullingHeightOffset. Lanes are chosen at least 3.5 m
+        // from the party, so the mover's side can be outside every reveal.
+        // The point is walkable native floor level with that party member,
+        // 3-6 m from it (well inside reveal range), clear of other units by
+        // 1.5 m. Every rejected candidate is recorded.
         private static JObject InfernalWallSharedSourcePoint35(UnitEntityData mover, UnitEntityData self, List<int> used)
         {
+            float lift = 0f;
+            try
+            {
+                var mask = Kingmaker.Visual.LocationMaskRenderer.Instance;
+                if (mask != null && mask.FogOfWar != null) lift = mask.FogOfWar.ShadowCullingHeightOffset;
+            }
+            catch (Exception) { lift = 0f; }
+            Vector3 raise = Vector3.up * lift;
+            UnitEntityData[] revealers = Game.Instance.Player.Party.Where(unit => unit != null &&
+                    unit.View != null && unit.IsViewActive && !unit.Descriptor.State.IsDead && unit.IsPlayerFaction)
+                .OrderBy(unit => Vector3.Distance(unit.Position, mover.Position)).ToArray();
             var rejected = new JArray();
-            foreach (float distance in new[] { 2.5f, 3.5f, 4.5f })
-                for (int index = 0; index < CompassOffsets.Length; index++)
-                {
-                    if (used.Contains(index)) continue;
-                    Vector3 candidate = mover.Position + CompassOffsets[index] * distance;
-                    var nearest = AstarPath.active == null ? default(Pathfinding.NNInfo) : AstarPath.active.GetNearest(candidate);
-                    string reason = null;
-                    if (nearest.node == null || !nearest.node.Walkable) reason = "no-walkable-node";
-                    else
+            foreach (UnitEntityData revealer in revealers)
+                foreach (float distance in new[] { 3f, 4.5f, 6f })
+                    for (int index = 0; index < CompassOffsets.Length; index++)
                     {
-                        Vector3 floor = nearest.clampedPosition;
-                        Vector3 flat = floor - candidate; flat.y = 0f;
-                        bool sightClear;
-                        try
+                        string key = revealer.UniqueId + "/" + index;
+                        if (used.Contains(key.GetHashCode())) continue;
+                        Vector3 candidate = revealer.Position + CompassOffsets[index] * distance;
+                        var nearest = AstarPath.active == null ? default(Pathfinding.NNInfo) : AstarPath.active.GetNearest(candidate);
+                        string reason = null;
+                        if (nearest.node == null || !nearest.node.Walkable) reason = "no-walkable-node";
+                        else
                         {
-                            sightClear = Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance != null &&
-                                !Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance.HasObstacle(mover.Position, floor, 0);
+                            Vector3 floor = nearest.clampedPosition;
+                            Vector3 flat = floor - candidate; flat.y = 0f;
+                            bool revealed;
+                            try
+                            {
+                                revealed = Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance != null &&
+                                    !Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance.HasObstacle(
+                                        revealer.View.transform.position + raise, floor + raise, 0);
+                            }
+                            catch (Exception) { revealed = false; }
+                            if (flat.magnitude > .3f) reason = "node-off-candidate";
+                            else if (Mathf.Abs(floor.y - revealer.Position.y) > .25f) reason = "floor-step";
+                            else if (!revealed) reason = "fog-line-blocked";
+                            else if (Game.Instance.State.Units.All.Any(unit => unit != self && unit.IsInGame &&
+                                !unit.Descriptor.State.IsFinallyDead && Vector3.Distance(unit.Position, floor) < 1.5f))
+                                reason = "occupied";
+                            if (reason == null)
+                            {
+                                used.Add(key.GetHashCode());
+                                return new JObject { ["point"] = SurveyVector(floor), ["revealer"] = revealer.UniqueId,
+                                    ["revealerPosition"] = SurveyVector(revealer.Position),
+                                    ["revealerDistance"] = Vector3.Distance(revealer.Position, floor),
+                                    ["fogHeightOffset"] = lift, ["direction"] = index, ["distance"] = distance,
+                                    ["moverDistance"] = Vector3.Distance(mover.Position, floor), ["rejected"] = rejected };
+                            }
                         }
-                        catch (Exception) { sightClear = false; }
-                        if (flat.magnitude > .3f) reason = "node-off-candidate";
-                        else if (Mathf.Abs(floor.y - mover.Position.y) > .25f) reason = "floor-step";
-                        else if (!sightClear) reason = "sight-blocked";
-                        else if (Game.Instance.State.Units.All.Any(unit => unit != mover && unit != self && unit.IsInGame &&
-                            !unit.Descriptor.State.IsFinallyDead && Vector3.Distance(unit.Position, floor) < 1.5f))
-                            reason = "occupied";
-                        if (reason == null)
-                        {
-                            used.Add(index);
-                            return new JObject { ["point"] = SurveyVector(floor), ["direction"] = index,
-                                ["distance"] = distance, ["floorStep"] = floor.y - mover.Position.y,
-                                ["rejected"] = rejected };
-                        }
+                        rejected.Add(new JObject { ["revealer"] = revealer.UniqueId, ["direction"] = index,
+                            ["distance"] = distance, ["reason"] = reason });
                     }
-                    rejected.Add(new JObject { ["direction"] = index, ["distance"] = distance, ["reason"] = reason });
-                }
-            throw new InvalidOperationException("No visible level floor beside the mover for a Wall source: " + rejected.ToString(Formatting.None));
+            throw new InvalidOperationException("No fog-revealed level floor beside a party member for a Wall source: " +
+                "revealers=" + revealers.Length + ";" + rejected.ToString(Formatting.None));
         }
 
         private IEnumerable<int> InfernalWallShared35(ExpandedSummoningCorrectionFixture fixture,
@@ -235,11 +260,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             var sourceB = CastExpandedSummoningOwnTier(fixture, "bone-devil");
             owned.Add(sourceA); owned.Add(sourceB);
             // The fixture summon appears at its own spawn point; the native
-            // fader only reveals a body inside party sight. Fixed side offsets
-            // failed twice (11 m away; then 2.5 m beside the mover but across
-            // a 0.46 m floor step, still faded out). Each source now stands on
-            // a walkable native floor node at the mover's level whose line
-            // from the mover is clear in the game's own sight geometry.
+            // fader shows a non-party body only where the fog of war reveals
+            // it. Three attempts beside the mover stayed faded out (11 m away;
+            // 2.5 m across a floor step; 2.5 m on level, clear-sight floor):
+            // the mover is not a fog revealer. Each source now stands where a
+            // living party member's native reveal reaches it; the Wall
+            // prerequisite and cast steps place it on its lane afterwards.
             var usedDirections = new List<int>();
             var placements = new JArray();
             foreach (var source in new[] { sourceA, sourceB })
@@ -253,6 +279,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             receipt["sourcesPlacedBesideParty"] = new JObject { ["mover"] = SurveyVector(mover.Position),
                 ["moverInFog"] = mover.IsInFogOfWar, ["placements"] = placements };
+            persist();
+            yield return 0;
+            foreach (JObject placement in placements)
+            {
+                var source = (string)placement["source"] == sourceA.UniqueId ? sourceA : sourceB;
+                placement["inFogAfterFrame"] = source.IsInFogOfWar;
+                placement["nativeVisibleAfterFrame"] = Kingmaker.Controllers.EntityVisibilityForPlayerController.IsVisible(source);
+            }
             persist();
             foreach (var source in new[] { sourceA, sourceB })
             {

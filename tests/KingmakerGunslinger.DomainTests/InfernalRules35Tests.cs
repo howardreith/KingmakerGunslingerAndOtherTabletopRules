@@ -473,6 +473,17 @@ namespace KingmakerGunslinger.DomainTests
                 "The steam cloud is a different, well-formed native asset identity.");
         }
 
+        internal static void WallSteamHidesOnlyTheCloudsFlameLayers()
+        {
+            foreach (string flame in new[] { "GroundFireBig", "GroundFireBig (1)", "Fire_Top (2)", "FireTiny", "Glow", "Glow (1)" })
+                Assertions.True(InfernalRules35.WallSteamHidesLayer(flame),
+                    "Steam that deals no fire hides the burning layer " + flame + ".");
+            foreach (string vapour in new[] { "ColdEnergy", "Smoke (2)", "Bubbles", "DropsSmall", "Puddles",
+                    "Splash", "Puddles_OverDistance", "DropsWithTrail (1)", "PuddleTiny", "ProjectorDecal (1)_Start (2)", null, "" })
+                Assertions.False(InfernalRules35.WallSteamHidesLayer(vapour),
+                    "The steam's own vapour layer " + (vapour ?? "<null>") + " stays visible.");
+        }
+
         private sealed class FeedbackSink : KingmakerGunslinger.Diagnostics.IPlayerCombatLogSink
         {
             internal bool Throw;
