@@ -304,8 +304,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // shouldApproach false and enoughClose true, so require
                     // the same here rather than queueing an approach this
                     // save-bound fixture never drives.
-                    if (candidate.CanStart && !candidate.ShouldUnitApproach &&
-                        candidate.IsUnitEnoughClose) {
+                    //
+                    // Closeness is only defined once a command has an
+                    // executor, so measure it on a separate initialized probe
+                    // exactly as the existing melee lanes do, and leave the
+                    // command that actually runs untouched.
+                    var reach = new UnitUseAbility(data, target);
+                    reach.Init(source);
+                    if (candidate.CanStart && !reach.ShouldUnitApproach &&
+                        reach.IsUnitEnoughClose) {
                         selected = target;
                         command = candidate;
                         break;
