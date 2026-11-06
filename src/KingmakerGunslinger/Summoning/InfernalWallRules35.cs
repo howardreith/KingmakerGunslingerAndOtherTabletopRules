@@ -206,6 +206,8 @@ namespace KingmakerGunslinger.Summoning
             return Game.Instance.State.Units.All.Where(unit =>
                 unit != null && !unit.Destroyed && unit.IsInState &&
                 !unit.Descriptor.State.IsDead &&
+                InfernalRules35.WallFormationSaveEligible(
+                    unit.Blueprint?.AssetGuid) &&
                 InfernalRules35.WallFormationAdjacent(
                     DistanceToFootprint(unit.Position, placement.Center,
                         placement.Along, placement.Forward),

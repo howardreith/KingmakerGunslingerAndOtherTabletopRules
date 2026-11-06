@@ -188,6 +188,16 @@ namespace KingmakerGunslinger.Summoning
             return footprintDistance <= creatureRadius;
         }
 
+        // Wall of Ice: only a creature adjacent to the forming wall may save
+        // to disrupt it. A standing Wall of Ice section is an object, not a
+        // creature (natively it rolled Reflex, natural 20, and stopped an
+        // adjacent second Wall from forming).
+        internal static bool WallFormationSaveEligible(string unitBlueprintGuid)
+        {
+            return !String.Equals(unitBlueprintGuid, WallSectionUnitGuid,
+                StringComparison.Ordinal);
+        }
+
         internal static bool WallFormationAdjacent(float footprintDistance,
             float creatureRadius)
         {

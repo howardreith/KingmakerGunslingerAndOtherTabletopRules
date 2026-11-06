@@ -473,6 +473,18 @@ namespace KingmakerGunslinger.DomainTests
                 "The steam cloud is a different, well-formed native asset identity.");
         }
 
+        internal static void WallSectionIsNotAFormationSaveCreature()
+        {
+            Assertions.False(InfernalRules35.WallFormationSaveEligible(InfernalRules35.WallSectionUnitGuid),
+                "A standing Wall of Ice section is an object and cannot save to disrupt another Wall's formation.");
+            Assertions.True(InfernalRules35.WallFormationSaveEligible("74652de839a94feba3c2fb67b536437c"),
+                "A creature adjacent to the forming wall keeps its Reflex save.");
+            Assertions.True(InfernalRules35.WallFormationSaveEligible(null),
+                "A unit without a blueprint identity is not silently excluded.");
+            Assertions.True(InfernalRules35.WallFormationSaveEligible(InfernalRules35.WallSectionUnitGuid.ToUpperInvariant()),
+                "Only the exact section identity is excluded.");
+        }
+
         internal static void WallSteamHidesOnlyTheCloudsFlameLayers()
         {
             foreach (string flame in new[] { "GroundFireBig", "GroundFireBig (1)", "Fire_Top (2)", "FireTiny", "Glow", "Glow (1)" })
