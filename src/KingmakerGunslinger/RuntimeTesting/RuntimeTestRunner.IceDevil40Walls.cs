@@ -293,10 +293,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Only request-owned sources retire unrelated formation movement through the qualified S35 fixture seam; the exact source remains naturally available and legal at the surveyed casting point.");
             var prior = new HashSet<string>(Game.Instance.State.Units.Select(x => x.UniqueId));
             var command = new UnitUseAbility(data, new TargetWrapper(middle)); source.Commands.Run(command);
+            var targetTrace = new JArray();
+            bool lastCanTarget = data.CanTarget(command.Target);
+            targetTrace.Add(new JObject { ["phase"] = "after-run", ["frame"] = Time.frameCount,
+                ["sourcePosition"] = Vec(source.Position), ["commandTarget"] = Vec(command.Target.Point),
+                ["available"] = data.IsAvailable, ["canTarget"] = lastCanTarget,
+                ["command"] = Sprint27AiCommand(command) });
             UnitEntityData section = null; DateTime deadline = DateTime.UtcNow.AddSeconds(25);
             while (DateTime.UtcNow < deadline && (!command.IsFinished || section == null))
             {
                 Game.Instance.IsPaused = false; yield return 0;
+                bool canTarget = data.CanTarget(command.Target);
+                if (canTarget != lastCanTarget || command.IsFinished || targetTrace.Count < 8)
+                    targetTrace.Add(new JObject { ["phase"] = "after-frame", ["frame"] = Time.frameCount,
+                        ["sourcePosition"] = Vec(source.Position), ["commandTarget"] = Vec(command.Target.Point),
+                        ["available"] = data.IsAvailable, ["canTarget"] = canTarget,
+                        ["command"] = Sprint27AiCommand(command) });
+                lastCanTarget = canTarget;
                 section = Game.Instance.State.Units.FirstOrDefault(x => !prior.Contains(x.UniqueId) &&
                     ReferenceEquals(x.Blueprint, sectionBp));
             }
@@ -316,7 +329,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["hp"] = section?.Stats.HitPoints.BaseValue,
                     ["cl"] = lifetime?.Context?.Params.CasterLevel,
                     ["remainingSeconds"] = lifetime?.TimeLeft.TotalSeconds,
-                    ["nodeClaims"] = binding?.GridNodesClaimed, ["command"] = Sprint27AiCommand(command) },
+                    ["nodeClaims"] = binding?.GridNodesClaimed, ["command"] = Sprint27AiCommand(command),
+                    ["targetTrace"] = targetTrace },
                 "Actual cast retains its own source/context/CL,3 HP per CL and10 rounds per CL; Bone's released parameters remain12/36/120 rounds.");
         }
     }
