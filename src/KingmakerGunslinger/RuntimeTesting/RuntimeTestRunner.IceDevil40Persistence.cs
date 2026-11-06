@@ -8,6 +8,7 @@ using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Root;
+using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums.Damage;
 using Kingmaker.Items;
@@ -220,13 +221,31 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             owner.Memory.Add(target).Visible = true;
             target.Memory.Add(owner).Visible = true;
+            // Enter combat the same way the proven Sprint 34 lane does, which
+            // is also the lane the qualified Sprint 40 Slow phase uses. A
+            // queued UnitAttack for units that are not in combat never
+            // resolves, and the enclosing prepare already captures and
+            // restores both combat flags, so joining here is what it expects.
+            owner.JoinCombat();
+            target.JoinCombat();
+            Game.Instance.Player.UpdateIsInCombat();
+            new UnitCombatJoinController().Tick();
+            new UnitCombatPrepareController().Tick();
             var probe = new UnitAttack(target);
             probe.Init(owner);
             if (!owner.Descriptor.State.CanAct || !owner.IsEnemy(target) ||
                 !target.IsEnemy(owner) || !owner.HasLOS(target) ||
+                !owner.IsInCombat || !target.IsInCombat ||
                 !probe.IsUnitEnoughClose)
                 throw new InvalidOperationException(
-                    "Exact Ice Devil melee lane is not command-ready.");
+                    "Exact Ice Devil melee lane is not command-ready: " +
+                    "canAct=" + owner.Descriptor.State.CanAct +
+                    ";mutualHostility=" + (owner.IsEnemy(target) &&
+                        target.IsEnemy(owner)) +
+                    ";los=" + owner.HasLOS(target) +
+                    ";ownerInCombat=" + owner.IsInCombat +
+                    ";targetInCombat=" + target.IsInCombat +
+                    ";enoughClose=" + probe.IsUnitEnoughClose + ".");
         }
 
         private IEnumerable<int> PrepareIceDevilSaved40(
