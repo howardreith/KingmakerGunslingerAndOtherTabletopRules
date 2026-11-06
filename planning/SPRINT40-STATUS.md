@@ -9,7 +9,7 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 - HOWARD-LAPTOP, root `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
   `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Current product
-  source `37dbd61de2daa5576bedd71192d0007a0f99b8f8`; its reporting pin is the
+  source `a2c732e5d88f37ce578a0a2afaa858ee857e1913`; its reporting pin is the
   pending enclosing commit. No game,
   deployment, staging or lease is active; the live KMG tree is restored to
   SHA256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
@@ -365,6 +365,26 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   it does not suppress auto-pause, change movement or apply residual damage.
   Production compiled and all five focused Sprint40 checks pass. NEXT: commit/push,
   repin, rebuild once and rerun only the wall phase.
+- Reporting head `6eeab1a673ab54e2e079ca690288c56e6882ddcc` passed 2,816/2,816
+  and strict packaging: ZIP SHA256
+  `32d11624f7bb5fc3fc07f86028f131586a3f4fee46f098c83ccd6baacea720d9`,
+  DLL SHA256 `2ad899448786bdf48ea1ad219a03d8e605337f1a5c0e14d0ec7bfe8d0797c8cb`,
+  MVID `02b754ce-4bcc-45ef-9692-65046e087211`, source-state
+  `3dba848ca1cfdd332249102927bff79ce63a1ca18f78a5a8859a69226e5aedb2`.
+  Wall run `20261106T0147502208271Z-disposable-expanded-summoning-sprint32-native-review`
+  proves both Ice casts, shared claims, object/fire behavior and the real residual
+  crossing with native movement and actual cold damage. It then retains FAIL at
+  first-source cleanup: the second live wall remained alive, but at least one of
+  its already-owned nodes became walkable after the real combat/navigation update.
+  Restoration receipt
+  `expanded-summoning-restoration/20261106T0151024394855Z-disposable-expanded-summoning-sprint32-native-review.json`
+  verifies the live hash, all nine startup peers and all118 saves exact. Production
+  source `a2c732e5` adds only a live exact-claim reconciliation work item to the
+  shared private Ice/Bone adapter; it neither creates claims nor changes placement,
+  ownership or parameters. The observer waits for and records that production
+  reconciliation. Production compiles and all five focused Sprint40 checks pass.
+  NEXT: commit/push this reporting pin, rebuild once, then rerun only the wall phase
+  as the discriminating native check.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 
