@@ -16146,7 +16146,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new KeyValuePair<string, bool>("kmgDefencesFact=1",
                     lantern.AddFacts.Count(value => value != null && value.name ==
                         "KMG_Summoning_Special_LanternArchon_Defenses") == 1),
-                new KeyValuePair<string, bool>("nativeAuraFact=" + (lanternAuraAvailable ? "1" : "0"),
+                // A-12: report the counts, not just the comparison. "available"
+                // is read from the scanned live set; the product grants the
+                // buff from library.BlueprintsByAssetId at registration time,
+                // so the two can disagree and the numbers say which way.
+                new KeyValuePair<string, bool>("nativeAuraFact(granted=" +
+                    lantern.AddFacts.Count(value => value != null && value.AssetGuid ==
+                        "1ce4878b5e714f659d0854a12f4b3cf2").ToString() +
+                    ",available=" + (lanternAuraAvailable ? "1" : "0") +
+                    ",inLibrary=" + (BlueprintBootstrap.Library != null &&
+                        BlueprintBootstrap.Library.BlueprintsByAssetId != null &&
+                        BlueprintBootstrap.Library.BlueprintsByAssetId.ContainsKey(
+                            "1ce4878b5e714f659d0854a12f4b3cf2") ? "1" : "0") + ")",
                     lantern.AddFacts.Count(value => value != null && value.AssetGuid ==
                         "1ce4878b5e714f659d0854a12f4b3cf2") == (lanternAuraAvailable ? 1 : 0)),
                 new KeyValuePair<string, bool>("ray.range=Custom", lanternRay.Range == AbilityRange.Custom),
