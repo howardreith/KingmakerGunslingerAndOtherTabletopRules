@@ -155,6 +155,70 @@ namespace KingmakerGunslinger.RuntimeTesting
             return row;
         }
 
+        // Steam presentation diagnosis. The native area spawned no effect, so
+        // record whether its effect link resolves, which native mist/fog/cloud
+        // area effects in this installation do resolve, and capture a few
+        // loadable candidates at the steam point. Diagnostic only: each probe
+        // effect is destroyed before the next and nothing is attached to the
+        // Wall's area.
+        private IEnumerable<int> InfernalWallSteamFxProbe35(InfernalWallRun35 run, AreaEffectEntityData fog,
+            JObject receipt)
+        {
+            Func<Kingmaker.ResourceLinks.PrefabLink, JObject> link = value => {
+                var row = new JObject { ["assetId"] = value?.AssetId };
+                GameObject prefab = null;
+                try { prefab = value == null || string.IsNullOrEmpty(value.AssetId) ? null : value.Load(true); }
+                catch (Exception error) { row["error"] = error.GetType().Name + ": " + error.Message; }
+                row["loads"] = prefab != null;
+                row["prefab"] = prefab == null ? null : prefab.name;
+                if (prefab != null)
+                {
+                    row["particleSystems"] = prefab.GetComponentsInChildren<Component>(true).Count(component =>
+                        component != null && component.GetType().Name == "ParticleSystem");
+                    row["shaders"] = new JArray(prefab.GetComponentsInChildren<Renderer>(true).Where(renderer =>
+                        renderer != null && renderer.sharedMaterial != null && renderer.sharedMaterial.shader != null)
+                        .Select(renderer => renderer.sharedMaterial.shader.name).Distinct().Take(6));
+                }
+                return row; };
+            receipt["wallSteamAreaFx"] = link(run.Fog.Fx);
+            string[] wanted = { "Mist", "Fog", "Cloud", "Steam", "Smoke", "Vapor" };
+            string[] harmful = { "Stinking", "Acid", "Kill", "Incendiary", "Poison", "Toxic", "Death", "Mind", "Insect", "Fire", "Ice" };
+            var natives = run.Fixture.Blueprints.OfType<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbilityAreaEffect>()
+                .Where(value => value != null && value.name != null && !value.name.StartsWith("KMG_", StringComparison.Ordinal) &&
+                    wanted.Any(word => value.name.IndexOf(word, StringComparison.OrdinalIgnoreCase) >= 0))
+                .OrderBy(value => value.name, StringComparer.Ordinal).Take(40).ToArray();
+            var rows = new JArray();
+            var loadable = new List<KeyValuePair<string, GameObject>>();
+            foreach (var area in natives)
+            {
+                JObject row = link(area.Fx);
+                row["area"] = area.name; row["guid"] = area.AssetGuid;
+                rows.Add(row);
+                bool benign = !harmful.Any(word => area.name.IndexOf(word, StringComparison.OrdinalIgnoreCase) >= 0);
+                if ((bool)row["loads"] && benign && loadable.All(value => value.Key != (string)row["assetId"]))
+                    loadable.Add(new KeyValuePair<string, GameObject>((string)row["assetId"], area.Fx.Load(true)));
+            }
+            receipt["nativeMistFogCloudAreas"] = rows;
+            var probes = new JArray();
+            receipt["candidateCaptures"] = probes;
+            if (fog == null) yield break;
+            foreach (var candidate in loadable.Take(4))
+            {
+                GameObject spawned = null;
+                try { spawned = Kingmaker.Visual.Particles.FxHelper.SpawnFxOnPoint(candidate.Value, fog.Position); }
+                catch (Exception error) { probes.Add(new JObject { ["assetId"] = candidate.Key, ["error"] = error.Message }); }
+                if (spawned == null) continue;
+                for (int frame = 0; frame < 45; frame++) { Game.Instance.IsPaused = false; yield return 0; }
+                JObject capture = InfernalWallCaptureAt35(fog.Position, "s35-wall-steam-candidate-" + probes.Count + ".png");
+                capture["assetId"] = candidate.Key;
+                capture["prefab"] = candidate.Value.name;
+                capture["label"] = "Diagnostic candidate effect at the steam point; not attached to the Wall area.";
+                probes.Add(capture);
+                Kingmaker.Visual.Particles.FxHelper.Destroy(spawned);
+                for (int frame = 0; frame < 5; frame++) yield return 0;
+            }
+        }
+
         // Scenery between the ordinary party camera and a body: physics hits
         // and tall non-creature renderer bounds on the camera ray. Creature
         // views and particle effects are not scenery.
@@ -292,12 +356,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             string stage, string fileName)
         {
             string image = WriteExpandedSummoningPartyCameraCapture(owner, _request.EvidenceDirectory, fileName);
-            var clip = command?.Animation?.ActiveAnimation?.GetPlayableClip();
+            // A command that has not started has no attack plan yet; its
+            // native getters throw rather than return null.
+            string planned = null, clipName = null;
+            try
+            {
+                if (command != null && command.IsStarted)
+                {
+                    planned = command.PlannedAttack?.Hand?.MaybeWeapon?.Blueprint?.name;
+                    clipName = command.Animation?.ActiveAnimation?.GetPlayableClip()?.name;
+                }
+            }
+            catch (Exception error) { planned = "unavailable:" + error.GetType().Name; }
             return new JObject { ["stage"] = stage, ["frame"] = Time.frameCount,
                 ["gameSeconds"] = Game.Instance.TimeController.GameTime.TotalSeconds.ToString("0.###", CultureInfo.InvariantCulture),
                 ["image"] = image, ["tailResting"] = tail.Resting, ["contacts"] = tail.Contacts,
-                ["plannedWeapon"] = command?.PlannedAttack?.Hand?.MaybeWeapon?.Blueprint?.name,
-                ["animationClip"] = clip == null ? null : clip.name,
+                ["plannedWeapon"] = planned,
+                ["animationClip"] = clipName,
                 ["ownerToTarget"] = owner.DistanceTo(target),
                 ["occlusion"] = InfernalTailOcclusion35(owner, target) };
         }
