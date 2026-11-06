@@ -272,6 +272,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 JObject placement = InfernalWallSharedSourcePoint35(mover, source, usedDirections);
                 Vector3 point = new Vector3((float)placement["point"][0], (float)placement["point"][1], (float)placement["point"][2]);
+                // Both sources stop their own AI at once: the second source
+                // otherwise walked ~19 m out of reveal range during the first
+                // source's appearance wait (close9).
+                InfernalWallPrepareActor35(source);
                 PlaceExpandedSummoningUnit(source, point);
                 placement["source"] = source.UniqueId;
                 placement["placed"] = SurveyVector(source.Position);
@@ -286,6 +290,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var source = (string)placement["source"] == sourceA.UniqueId ? sourceA : sourceB;
                 placement["inFogAfterFrame"] = source.IsInFogOfWar;
                 placement["nativeVisibleAfterFrame"] = Kingmaker.Controllers.EntityVisibilityForPlayerController.IsVisible(source);
+                placement["positionAfterFrame"] = SurveyVector(source.Position);
             }
             persist();
             foreach (var source in new[] { sourceA, sourceB })
