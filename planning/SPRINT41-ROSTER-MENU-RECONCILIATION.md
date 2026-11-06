@@ -165,6 +165,46 @@ charter-figure discrepancy, not as a code defect. **Owner disposition:** author
 the missing wrapper rows, or restate the 1,232 figure as 1,217 met by native
 reuse with 15 placements consciously unoffered.
 
+## Per-menu scale, and the real scalability gate
+
+The charter is explicit that 1,232 "is an aggregate across eighteen parent
+spells, never one menu", and that "the scalability gate is the largest single
+parent spell". So the performance-relevant figure is not the total but the
+largest single menu. Measured on the shipped surface:
+
+| Family | Parent | Ideal | Generated | Wrapper | Offered | Shortfall |
+|---|---|---|---|---|---|---|
+| Summon Monster | I | 7 | 7 | 0 | **7** | — |
+| Summon Monster | II | 20 | 20 | 0 | **20** | — |
+| Summon Monster | III | 33 | 33 | 0 | **33** | — |
+| Summon Monster | IV | 61 | 61 | 0 | **61** | — |
+| Summon Monster | V | 75 | 74 | 1 | **75** | — |
+| Summon Monster | VI | 91 | 88 | 3 | **91** | — |
+| Summon Monster | VII | 104 | 99 | 4 | **103** | 1 |
+| Summon Monster | VIII | 113 | 106 | 5 | **111** | 2 |
+| Summon Monster | IX | 120 | 112 | 4 | **116** | 4 |
+| Nature's Ally | I | 10 | 9 | 1 | **10** | — |
+| Nature's Ally | II | 21 | 20 | 1 | **21** | — |
+| Nature's Ally | III | 33 | 32 | 1 | **33** | — |
+| Nature's Ally | IV | 64 | 63 | 0 | **63** | 1 |
+| Nature's Ally | V | 75 | 73 | 1 | **74** | 1 |
+| Nature's Ally | VI | 88 | 86 | 1 | **87** | 1 |
+| Nature's Ally | VII | 100 | 97 | 2 | **99** | 1 |
+| Nature's Ally | VIII | 107 | 103 | 2 | **105** | 2 |
+| Nature's Ally | IX | 110 | 105 | 3 | **108** | 2 |
+
+**The scalability gate is Summon Monster IX at 116 offered choices in one
+menu**, against an ideal of 120. Nature's Ally IX is second at 108 of 110.
+
+These eighteen rows sum to **1,217**, independently reproducing the visible
+total above from a different direction, and the shortfall column sums to the
+same **15**. Every shortfall falls at parent VII and above except four in
+Nature's Ally IV-VII, which is the Mite and Manticore truncation reaching down
+the ladder.
+
+Performance has **not** been measured here; this establishes the figure that a
+performance run has to be sized against.
+
 ## The eleven wrapper-covered creatures, validated at their required placements
 
 134 project-owned identities + 11 wrapper-covered identities = 145, and no
@@ -205,6 +245,21 @@ clean sheet.
 Not repaired here, and deliberately so: the correct post-repair number depends on
 the A-5 disposition, so changing the tool now would bake in one of the two
 answers.
+
+A related point, stated carefully because the tool does **not** deserve blame for
+it. The generated document opens with a "Charter reconciliation" table whose
+second column is headed *Derived here*, and it closes with "Derived
+independently from the manifest; the delta against every charter figure is
+zero." Both are literally true: that column is re-derived from the frozen
+manifest, so it is a manifest self-consistency check and by construction cannot
+show a shipped-surface gap. It is not a false claim about the live menu.
+
+The one row worth relabelling is `Core visible quantity placements | 1,232 |
+1,232`, because the word *visible* invites exactly the reading the table does not
+support — the visible surface is 1,217. The defect to repair is `coverage()`,
+which really does read the shipped catalogs and really does mislabel
+Brachiosaurus; the reconciliation table only needs its row renamed to say
+*ideal* rather than *visible*.
 
 ## Scope of this document
 
