@@ -1,5 +1,35 @@
 # Summoned creature visual overhaul: active checkpoint
 
+## Integration with master — conflict-free; native validation blocked
+
+[Integration closeout in the Sprint 2 checkpoint](WALL-OF-ICE-SPRINT2.md#integration-closeout-with-master-development-candidate-blocked-before-packaging).
+Current; supersedes the continuation summary below for branch state.
+
+- **Merge.** `f31cccbe3d` merges master `839204cac3` (PR #97 Ice Devil, PR #99
+  retirement safety) into PR #98 without rewriting history. The branch is
+  conflict-free.
+- **One shared Wall lifecycle.** Durable two-layer claims with
+  last-owner restore and native connection/tag refresh, master's resumable
+  `Release(force)` as the only path (the native revert submitted at most
+  once), and both-layer reconciliation. Donor suppression stays active.
+  Ice Devil behaviour is kept, and both species' sections are excluded from
+  formation saves.
+- **Verdicts corrected (not yet native-executed):**
+  - Steam reuse now requires the captured instance and a complete renderer
+    comparison (new regression).
+  - The turn-based check requires the executed path's grid, type, clearance,
+    tags and `ForcedPath` identity.
+  - Both static layers are read directly.
+  - Clearance tags are classified as exact, equivalent, looser beyond reach
+    or more restrictive.
+- **Gates.** Focused gates pass (28 Wall/Sprint 40 tests; 631 Expanded
+  Summoning tests).
+- **Blocked.** Packaging is refused: master froze 0.0.178 without publishing
+  `v0.0.178`, and development candidates must extend a released tag. So
+  there is no native result for the integration; earlier credits stay with
+  their own candidates.
+- **Ledger.** ≥ 0.94 min more; cumulative ≥ 592.95 min (lower bounds).
+
 ## Sprint 2 navigation continuation — durable claims, stationary sections, pooled steam
 
 [Navigation continuation in the Sprint 2 checkpoint](WALL-OF-ICE-SPRINT2.md#navigation-continuation-development-candidate-pr-98-stays-draft-and-unmerged).
