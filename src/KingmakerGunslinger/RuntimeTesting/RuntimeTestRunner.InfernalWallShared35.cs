@@ -313,7 +313,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             JArray foreignCutsBefore = InfernalWallForeignCuts35();
             receipt["lane"] = plan.Document();
             receipt["grid"] = new JObject { ["index"] = gridIndex, ["nodeSize"] = grid.nodeSize,
-                ["erodeIterations"] = grid.erodeIterations, ["regionNodes"] = baseline.Count,
+                ["erodeIterations"] = grid.erodeIterations, ["erosionUseTags"] = grid.erosionUseTags,
+                ["regionNodes"] = baseline.Count,
                 ["regionHalfExtentMeters"] = 6.5f,
                 ["baselineUnwalkable"] = baseline.Values.Count(value => !value.Walkable),
                 ["baselineStaticUnwalkable"] = baseline.Values.Count(value => !value.Static),
@@ -410,14 +411,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                     InfernalWallSharedNodeRow35(node, a, b, baseline, afterAB)));
                 persist();
                 bool bothBlocked = aAffected.Concat(bAffected).All(node => !afterAB[node].Walkable);
+                // Legal placement never lets two claims share a node (the
+                // second footprint must be walkable), and outside turn-based
+                // combat no cut writes grid counters. The overlap that exists
+                // natively is one Wall's claimed nodes inside the other Wall's
+                // cut box: the box a native grid update rewrites.
+                Func<JObject, Bounds?> cutBox = cast => {
+                    var bounds = cast?["cutBounds"] as JObject;
+                    if (bounds == null) return null;
+                    return new Bounds(new Vector3((float)bounds["center"][0], 0f, (float)bounds["center"][2]),
+                        new Vector3((float)bounds["size"][0], 2f, (float)bounds["size"][2]));
+                };
+                Func<Bounds?, Pathfinding.GraphNode, bool> inBox = (box, node) => {
+                    if (box == null) return false;
+                    Vector3 point = (Vector3)node.position; point.y = 0f;
+                    return box.Value.Contains(point);
+                };
+                Bounds? boxA = cutBox(castA), boxB = cutBox(castB);
+                var aClaimsInBBox = a.Claimed.Where(node => inBox(boxB, node)).ToArray();
+                var bClaimsInABox = b.Claimed.Where(node => inBox(boxA, node)).ToArray();
+                pairRow["aClaimsInsideBCutBox"] = new JArray(aClaimsInBBox.Select(InfernalWallNodeIdentity35));
+                pairRow["bClaimsInsideACutBox"] = new JArray(bClaimsInABox.Select(InfernalWallNodeIdentity35));
+                pairRow["cutGridBlockApplied"] = new JObject { ["a"] = castA["cutGridBlockApplied"], ["b"] = castB["cutGridBlockApplied"] };
+                int crossSurface = aClaimsInBBox.Length + bClaimsInABox.Length;
+                pairRow["crossSurfaceNodes"] = crossSurface;
+                persist();
                 check("wall-shared-formation-" + pair, castA["section"] != null && castB["section"] != null &&
                     (bool?)castA["formed"] == true && (bool?)castB["formed"] == true &&
                     a.Section != b.Section && a.CutInstance != b.CutInstance &&
                     (string)castA["summonerOfSection"] == sourceA.UniqueId &&
                     (string)castB["summonerOfSection"] == sourceB.UniqueId &&
                     a.Claimed.Count > 0 && b.Claimed.Count > 0 && doubleOwned == 0 && !claimsOutsideRegion &&
-                    bothBlocked && (!geometry.SharedReachable || shared.Count > 0),
-                    pairRow, "Two ordinary commands from separate Bone Devils form two independently owned sections whose native cuts and claims block every affected cell.");
+                    bothBlocked && (!geometry.SharedReachable || crossSurface > 0),
+                    pairRow, "Two ordinary commands from separate Bone Devils form two independently owned sections whose native cuts and claims block every affected cell; where a legal placement reaches it, one Wall's claimed cells lie inside the other Wall's native cut box.");
 
                 if (aFirst)
                 {
@@ -432,6 +458,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var first = aFirst ? a : b;
                 var survivor = aFirst ? b : a;
                 var survivorPlan = aFirst ? planB : plan;
+                // The state the retirement starts from. Native grid updates
+                // between formation and retirement may already have rewritten
+                // claimed nodes; that is recorded, not attributed to the
+                // retirement.
+                var beforeFirst = InfernalWallSnapshot35(region);
                 JObject firstRetirement = null;
                 foreach (int frame in InfernalWallSharedRetire35(first, region, value => firstRetirement = value)) yield return frame;
                 pairRow["firstRetired"] = first.Label;
@@ -442,9 +473,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var unrelated = region.Where(node => !aAffected.Contains(node) && !bAffected.Contains(node)).ToArray();
                 var survivorClaimLost = survivor.Claimed.Where(node => !InfernalWallNavmesh35.ClaimOwnedBy(node, survivor.Binding) ||
                     afterFirst[node].Owners != 1).ToArray();
-                var survivorUnblocked = survivorAffected.Where(node => afterFirst[node].Walkable).ToArray();
-                var survivorDynamicChanged = survivor.Dynamic.Where(value =>
-                    afterFirst[value.Key].Dynamic != baseline[value.Key].Dynamic + value.Value).Select(value => value.Key).ToArray();
+                var survivorUnblocked = survivorAffected.Where(node => !beforeFirst[node].Walkable && afterFirst[node].Walkable).ToArray();
+                var survivorChangedByRetirement = survivorAffected.Where(node =>
+                    !afterFirst[node].SameNavigation(beforeFirst[node])).ToArray();
+                var survivorWalkableBeforeRetirement = survivorAffected.Where(node => beforeFirst[node].Walkable).ToArray();
+                var survivorDynamicChanged = survivorAffected.Where(node =>
+                    afterFirst[node].Dynamic != beforeFirst[node].Dynamic).ToArray();
                 var firstNotRestored = firstOnly.Where(node => !afterFirst[node].SameNavigation(baseline[node])).ToArray();
                 var unrelatedChanged = unrelated.Where(node => !afterFirst[node].SameNavigation(baseline[node])).ToArray();
                 bool survivorCutLive = survivor.Binding != null && survivor.Binding.Cut != null &&
@@ -457,6 +491,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var row = InfernalWallNodeIdentity35(node);
                     row["baseline"] = InfernalWallNodeDocument35(baseline[node]);
                     row["afterBoth"] = InfernalWallNodeDocument35(afterAB[node]);
+                    row["beforeFirstRetired"] = InfernalWallNodeDocument35(beforeFirst[node]);
                     row["afterFirstRetired"] = InfernalWallNodeDocument35(afterFirst[node]);
                     row["claimedBySurvivor"] = survivor.Claimed.Contains(node);
                     row["dynamicFromSurvivor"] = survivor.Dynamic.ContainsKey(node) ? survivor.Dynamic[node] : 0;
@@ -469,6 +504,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["survivorClaims"] = survivor.Claimed.Count,
                     ["survivorClaimsLost"] = rows(survivorClaimLost),
                     ["survivorNodesNowWalkable"] = rows(survivorUnblocked),
+                    ["survivorNodesChangedByRetirement"] = rows(survivorChangedByRetirement),
+                    ["survivorNodesWalkableBeforeRetirement"] = rows(survivorWalkableBeforeRetirement),
+                    ["survivorNodesWalkableBeforeRetirementCount"] = survivorWalkableBeforeRetirement.Length,
                     ["survivorDynamicChanged"] = rows(survivorDynamicChanged),
                     ["sharedNodesAfter"] = rows(shared),
                     ["retiredOnlyNodes"] = firstOnly.Length,
@@ -482,10 +520,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 persist();
                 check("wall-shared-survivor-preserved-" + pair, survivorCutLive && firstCutGone &&
                     survivorClaimLost.Length == 0 && survivorUnblocked.Length == 0 && survivorDynamicChanged.Length == 0 &&
+                    survivorChangedByRetirement.Length == 0 &&
                     firstNotRestored.Length == 0 && unrelatedChanged.Length == 0 &&
                     InfernalWallNavmesh35.ActiveGridClaimCount == survivor.Binding.GridNodeSnapshot().Length &&
                     (bool)survivorRow["foreignCutsUnchanged"], survivorRow,
-                    "Retiring one Wall returns only its own cells to their baseline and leaves the other Wall's cut, claims, native blocking and unrelated cells exactly as they were.");
+                    "Retiring one Wall returns only its own cells to their baseline and leaves the other Wall's cut, claims, every layer of its cells and unrelated cells exactly as they were immediately before the retirement.");
                 InfernalBoneRemoveEffects35(mover, sources, run.Frightened);
                 foreach (int frame in InfernalEarlyWallMove35(fixture, survivorPlan.Start, survivorPlan.Destination,
                     survivorPlan.Midpoint, true, "shared-" + pair + "-survivor-" + (aFirst ? "b" : "a"), check,
