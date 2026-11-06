@@ -398,6 +398,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        // The attacker's active buffs carrying ProperFlanking2's
+        // AttackReplacementWithCombatManeuver (read by type name; the mod is
+        // optional). Read-only.
+        private static JArray SummonReachAttackReplacements4(UnitEntityData unit)
+        {
+            var result = new JArray();
+            foreach (var buff in unit.Buffs.Enumerable)
+                foreach (var component in buff.Blueprint.ComponentsArray ?? new BlueprintComponent[0])
+                {
+                    if (component == null || component.GetType().Name != "AttackReplacementWithCombatManeuver") continue;
+                    Func<string, object> field = name => component.GetType().GetField(name,
+                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(component);
+                    result.Add(new JObject { ["buff"] = buff.Blueprint.name, ["active"] = buff.IsTurnedOn,
+                        ["maneuver"] = field("maneuver")?.ToString(), ["onlyFirstAttack"] = field("only_first_attack") as bool?,
+                        ["onlyFullAttack"] = field("only_full_attack") as bool?, ["onlyCharge"] = field("only_charge") as bool? });
+                }
+            return result;
+        }
+
         // A clear straight line for probes: the summon's own spot first, then
         // a ring around the summoner (within summon-follow range). Clear
         // means every point along the line has a walkable node within 0.3 m
@@ -600,6 +619,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CleanupExpandedSummoningUnit(unit); fixture.Created.Remove(unit);
                 yield break;
             }
+            row["attackReplacements"] = SummonReachAttackReplacements4(unit);
             Vector3 unitStart = unit.Position, targetStart = target.Position;
             var command = new UnitAttack(target) { IsSingleAttack = false, ForceFullAttack = true };
             int reference = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(command);
@@ -680,6 +700,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Math.Abs(((double?)ends.Last()["gameSeconds"] ?? -1d) - ((double?)acts.Last()["gameSeconds"] ?? -2d)) < .001d,
                 ["finalAttackHit"] = finalAttack != null && (bool?)finalAttack["hit"] == true,
                 ["finalAttackWeapon"] = finalAttack?["weapon"] };
+            // A planned slot the installed ProperFlanking2 attack replacement
+            // resolved as a combat maneuver: an act of this command with no
+            // weapon attack, and a standalone attack roll at that instant
+            // against this target with a planned weapon (s4f Storm Giant:
+            // Improved Sunder replaced the first iterative).
+            var replaced = new JArray();
+            foreach (JObject act in acts)
+            {
+                double at = (double?)act["gameSeconds"] ?? -1d;
+                if (attackRows.Any(value => Math.Abs(((double?)value["gameSeconds"] ?? -2d) - at) < .001d)) continue;
+                JObject roll = ((JArray)row["ruleRows"]).OfType<JObject>().FirstOrDefault(value =>
+                    (string)value["event"] == "roll-did" && value["outerWeaponRule"]?.Type == JTokenType.Null &&
+                    Math.Abs(((double?)value["gameSeconds"] ?? -2d) - at) < .001d);
+                if (roll == null) continue;
+                replaced.Add(new JObject { ["owner"] = unit.UniqueId, ["target"] = roll["target"],
+                    ["attackCommand"] = reference, ["attackIndex"] = act["attackIndex"], ["gameSeconds"] = at,
+                    ["weapon"] = roll["weapon"], ["standaloneRoll"] = true, ["rollResult"] = roll["result"] });
+            }
+            row["replacedSlots"] = replaced;
+            var before = ((JArray)((JObject)row["prerequisites"])["target"]["buffs"]).Select(value => (string)value).ToList();
+            row["targetEffectsGained"] = new JArray(((JArray)((JObject)row["after"])["target"]["buffs"])
+                .Select(value => (string)value).Where(value => !before.Contains(value)).Distinct());
             row["forcedRolls"] = 0; row["observerWritesDuringCommand"] = 0;
             string failure = SummonAdjacentRoutineVerdict4.Failure(row);
             row["verdictFailure"] = failure;

@@ -73,6 +73,36 @@ namespace KingmakerGunslinger.DomainTests
             earlyGrab["commandEnds"][0]["attackIndex"] = 2; earlyGrab["commandEnds"][0]["plannedAttackPresent"] = true;
             Fails(earlyGrab, "interrupted-without-native-exhaustion", "A grab before the routine is exhausted cannot pass.");
 
+            // s4f Storm Giant: ProperFlanking2's default-on Improved Sunder
+            // toggle replaced the first iterative with a sunder maneuver.
+            var sunder = Complete();
+            sunder["expected"] = new JArray(Spear, Spear, Spear); sunder["plan"] = new JArray(Spear, Spear, Spear);
+            sunder["attacks"] = new JArray(Attack(Spear, true), Attack(Spear, true));
+            sunder["replacedSlots"] = new JArray(new JObject { ["owner"] = Owner, ["target"] = Target,
+                ["attackCommand"] = Reference, ["weapon"] = Spear, ["standaloneRoll"] = true });
+            sunder["attackReplacements"] = new JArray(new JObject { ["buff"] = "SunderActionToggleBuff", ["active"] = true,
+                ["maneuver"] = "SunderArmor", ["onlyCharge"] = false });
+            Assertions.Equal<string>(null, SummonAdjacentRoutineVerdict4.Failure(sunder),
+                "A slot resolved by the installed maneuver replacement counts as resolved.");
+            var noToggle = (JObject)sunder.DeepClone();
+            noToggle["attackReplacements"] = new JArray();
+            Fails(noToggle, "replacement-without-installed-toggle", "A standalone roll without the installed toggle cannot fill a slot.");
+            var chargeOnly = (JObject)sunder.DeepClone();
+            chargeOnly["attackReplacements"][0]["onlyCharge"] = true;
+            Fails(chargeOnly, "replacement-without-installed-toggle", "A charge-only replacement cannot fill a full-attack slot.");
+            var inactive = (JObject)sunder.DeepClone();
+            inactive["attackReplacements"][0]["active"] = false;
+            Fails(inactive, "replacement-without-installed-toggle", "An inactive toggle cannot fill a slot.");
+            var foreignReplacement = (JObject)sunder.DeepClone();
+            foreignReplacement["replacedSlots"][0]["target"] = "another";
+            Fails(foreignReplacement, "attack-outside-measured-command", "A replaced slot must be against the exact target.");
+            var doubled = (JObject)sunder.DeepClone();
+            ((JArray)doubled["replacedSlots"]).Add(doubled["replacedSlots"][0].DeepClone());
+            Fails(doubled, "extra-attack", "Replacements cannot exceed the plan.");
+            var missingSlot = (JObject)sunder.DeepClone();
+            missingSlot["replacedSlots"] = new JArray();
+            Fails(missingSlot, "planned-slot-unresolved", "Without the replacement evidence the slot is unresolved.");
+
             var partial = Complete();
             partial["attacks"] = new JArray(Attack(Spear, true), Attack(Tail, true));
             Fails(partial, "planned-slot-unresolved", "A partial routine fails even though it hit.");

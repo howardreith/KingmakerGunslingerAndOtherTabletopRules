@@ -13,7 +13,11 @@ namespace KingmakerGunslinger.RuntimeTesting
     /// when all of the following hold:
     /// - the native plan equals the expected multiset;
     /// - every planned slot resolves, hit or miss, against the exact target
-    ///   under the exact command;
+    ///   under the exact command: as a weapon attack, or, only where the
+    ///   attacker held an active non-charge ProperFlanking2 attack-replacement
+    ///   toggle before the command, as that installed combat maneuver (a
+    ///   standalone roll with a planned weapon at an act with no weapon
+    ///   attack);
     /// - the command ends Success, or with an Interrupt at the exhausted
     ///   routine: a command-end row for this command and actor at the final
     ///   index with no next planned attack, raised either by
@@ -47,12 +51,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (string.IsNullOrEmpty(target) || string.IsNullOrEmpty(owner) || reference == null)
                 return "command-identity-missing";
             var attacks = (record["attacks"] as JArray ?? new JArray()).OfType<JObject>().ToList();
-            if (attacks.Any(row => (string)row["owner"] != owner || (string)row["target"] != target ||
+            var replaced = (record["replacedSlots"] as JArray ?? new JArray()).OfType<JObject>().ToList();
+            if (attacks.Concat(replaced).Any(row => (string)row["owner"] != owner || (string)row["target"] != target ||
                     (int?)row["attackCommand"] != reference))
                 return "attack-outside-measured-command";
-            if (attacks.Count < plan.Count) return "planned-slot-unresolved";
-            if (attacks.Count > plan.Count) return "extra-attack";
-            if (!SameMultiset(attacks.Select(row => (string)row["weapon"]).ToList(), plan))
+            if (replaced.Count > 0)
+            {
+                bool toggle = (record["attackReplacements"] as JArray ?? new JArray()).OfType<JObject>().Any(value =>
+                    (bool?)value["active"] == true && (bool?)value["onlyCharge"] != true && !string.IsNullOrEmpty((string)value["maneuver"]));
+                if (!toggle || replaced.Any(row => (bool?)row["standaloneRoll"] != true))
+                    return "replacement-without-installed-toggle";
+            }
+            int resolved = attacks.Count + replaced.Count;
+            if (resolved < plan.Count) return "planned-slot-unresolved";
+            if (resolved > plan.Count) return "extra-attack";
+            if (!SameMultiset(attacks.Concat(replaced).Select(row => (string)row["weapon"]).ToList(), plan))
                 return "resolved-slots-differ-from-plan";
             if ((bool?)record["commandFinished"] != true) return "command-not-finished";
             string result = (string)record["commandResult"];
