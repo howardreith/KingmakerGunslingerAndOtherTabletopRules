@@ -38,9 +38,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool recipientFearIsolation = false;
             int baselineClaims = InfernalWallNavmesh35.ActiveGridClaimCount;
             Vector3 surveyCenter = fixture.Caster.Position;
+            var formationPositions = new Dictionary<UnitEntityData, Vector3>();
+            var ownerFormationPositions = new JArray();
             var ownerParking = new JArray();
             var receipt = new JObject { ["cells"] = cells, ["events"] = trace.Rows,
                 ["fixtureFearIsolation"] = true, ["baselineClaims"] = baselineClaims,
+                ["ownerFormationPositions"] = ownerFormationPositions,
                 ["ownerParking"] = ownerParking,
                 ["phase"] = ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilWallsPhase };
             Action<string, bool, JObject, string> check = (id, pass, row, why) => {
@@ -61,6 +64,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // settled source on the real connected walking graph. A
                     // remote fogged point cannot satisfy the appearance gate.
                     foreach (int frame in Outsider30NativeAppearance(actor, actor.Blueprint.name)) yield return frame;
+                    formationPositions[actor] = actor.Position;
+                    ownerFormationPositions.Add(new JObject {
+                        ["actor"] = actor.UniqueId, ["position"] = Vec(actor.Position) });
                     var walking = Sprint40WalkingConstraint(actor);
                     var anchor = AstarPath.active.GetNearest(fixture.Caster.Position, walking);
                     if (anchor.node == null || !anchor.node.Walkable)
@@ -100,7 +106,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int index = 0; index < 2; index++)
                 {
                     UnitEntityData section = null;
-                    foreach (int frame in IceDevilCastWall40(fixture, actors[index], actors, surveyCenter,
+                    foreach (int frame in IceDevilCastWall40(fixture, actors[index], actors,
+                        formationPositions, surveyCenter,
                         value => section = value, check, "owner-" + index)) yield return frame;
                     sections.Add(section);
                     var binding = section.View.GetComponent<InfernalWallNavmesh35>(); bindings.Add(binding);
@@ -186,7 +193,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["secondIceAlive"] = !sections[1].Destroyed },
                     "First exact source removal cleans its residual and fog without releasing the second Ice source's movement claims.");
                 UnitEntityData boneSection = null;
-                foreach (int frame in IceDevilCastWall40(fixture, actors[2], actors, surveyCenter,
+                foreach (int frame in IceDevilCastWall40(fixture, actors[2], actors,
+                    formationPositions, surveyCenter,
                     value => boneSection = value, check, "bone-after-breach")) yield return frame;
                 sections.Add(boneSection);
                 var boneBinding = boneSection.View.GetComponent<InfernalWallNavmesh35>();
@@ -237,7 +245,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> IceDevilCastWall40(ExpandedSummoningCorrectionFixture fixture,
-            UnitEntityData source, List<UnitEntityData> actors, Vector3 surveyCenter, Action<UnitEntityData> capture,
+            UnitEntityData source, List<UnitEntityData> actors,
+            Dictionary<UnitEntityData, Vector3> formationPositions, Vector3 surveyCenter,
+            Action<UnitEntityData> capture,
             Action<string, bool, JObject, string> check, string label)
         {
             bool ice = IceDevilMartialProfile40.For(source) != null;
@@ -269,6 +279,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["availableCandidates"] = availableCandidates, ["legalCandidates"] = legalCandidates,
                     ["boundedSurvey"] = attempts, ["nativeSurvey"] = survey },
                 "Existing bounded survey retains native availability/targeting; refusal records the actual admission boundary rather than forcing a placement.");
+            var formationRestore = new JArray();
+            foreach (var actor in actors.Where(actor => !actor.Destroyed &&
+                !ReferenceEquals(actor, source)))
+            {
+                Vector3 position;
+                if (!formationPositions.TryGetValue(actor, out position))
+                    throw new InvalidOperationException("Missing native wall-owner formation position.");
+                PlaceExpandedSummoningUnit(actor, position);
+                formationRestore.Add(new JObject {
+                    ["actor"] = actor.UniqueId, ["position"] = Vec(position) });
+            }
             var readinessBefore = new JArray(actors.Where(actor => !actor.Destroyed)
                 .Select(InfernalWallActorState35));
             // The qualified S35 wall fixture established that an exact
@@ -309,6 +330,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["horizontalCastingGap"] = sourceCastingGap,
                     ["nativeAvailable"] = nativeAvailable, ["nativeCanTarget"] = nativeCanTarget,
                     ["ownedSetupFearRemaining"] = ownedFearRemaining,
+                    ["nativeFormationRestore"] = formationRestore,
                     ["isolatedFearBlueprints"] = new JArray(fearBlueprints.Select(value => value.AssetGuid)),
                     ["before"] = readinessBefore,
                     ["after"] = new JArray(actors.Where(actor => !actor.Destroyed)
