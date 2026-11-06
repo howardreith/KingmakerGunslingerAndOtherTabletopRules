@@ -36,8 +36,25 @@ namespace KingmakerGunslinger.DomainTests
                 "StoneGiant", "FireGiant", "Ettin", "CloudGiant", "StormGiant" };
             int laterRows = rows.Count(r => laterOwners.Any(owner =>
                 r[1] == "KMG_Summoning_Unit_" + owner));
+            // Sprint 41 (A-11). The outsider expansion of Sprints 30-40 never
+            // extended this table, so the inventory observer reported 101
+            // prohibited references in every compatibility profile, standalone
+            // included - which is how it was shown to be a project-side gap
+            // rather than a mod interaction. The rows are counted as their own
+            // tranche, exactly like the Sprint 25 and Sprints 26-29 groups
+            // above, so the released interpretation prefix through Sprint 24
+            // stays pinned at 53 and this change cannot quietly absorb a row
+            // belonging to an earlier, already-released tranche.
+            string[] outsiderOwners = { "AstralDeva", "Babau", "BarbedDevil",
+                "BeardedDevil", "BoneDevil", "Dretch", "Glabrezu", "Hezrou",
+                "HoundArchon", "IceDevil", "KytonChainDevil", "LanternArchon",
+                "Lemure", "LillendAzata", "Nalfeshnee", "Satyr", "TrumpetArchon",
+                "Vrock" };
+            int outsiderRows = rows.Count(r => outsiderOwners.Any(owner =>
+                r[1] == "KMG_Summoning_Unit_" + owner));
             Assertions.Equal(6, giantRows, "Only the four Brachiosaurus carriers and Elephant's exact Trample/chassis are admitted.");
-            Assertions.Equal(53, rows.Length - giantRows - laterRows, "The released interpretation prefix through Sprint 24 is preserved.");
+            Assertions.Equal(101, outsiderRows, "Exactly the measured Sprints 30-40 outsider owner/fact pairs are admitted.");
+            Assertions.Equal(53, rows.Length - giantRows - laterRows - outsiderRows, "The released interpretation prefix through Sprint 24 is preserved.");
             Assertions.Equal(rows.Length, rows.Select(r => string.Join("|", r)).Distinct().Count(), "No duplicate ownership rows.");
             var entries = (JArray)JObject.Parse(File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "blueprints", "blueprints.json")))["entries"];
             foreach (var r in rows)
