@@ -258,7 +258,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (int frame in PrepareInfernalWallPersistence35(caster,
                 source, sources,
                 ExpandedSummoningSpecialBuilder.IceDevil40Prefix,
-                "Sprint40", value => wall = value))
+                "Sprint40", value => wall = value, activateBrain: false))
                 yield return frame;
             if (wall == null) throw new InvalidOperationException(
                 "Sprint40 persistence wall did not form.");
