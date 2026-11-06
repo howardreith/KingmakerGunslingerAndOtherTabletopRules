@@ -1177,6 +1177,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.summon-reach4-shared-consumers-per-owner", SummonReach4Tests.SharedConsumersAreCorrectedPerOwner),
             Case("expanded-summoning.summon-reach4-correction-exact-stateless", SummonReach4Tests.CorrectionIsExactAndStateless),
             Case("expanded-summoning.summon-reach4-barbed-defense-boundary", SummonReach4Tests.BarbedDefenseFollowsTheSameReachWeaponBoundary),
+            Case("expanded-summoning.summon-reach4-adjacent-routine-verdict", SummonAdjacentRoutineVerdict4Tests.Cases),
             Case("expanded-summoning.sprint35-wall-retirement-resumable", InfernalRules35Tests.WallRetirementResumesAndNeverStrandsClaims),
             Case("expanded-summoning.sprint35-original-models", InfernalRules35Tests.OwnedBodiesDecodeAndTailIsIsolated),
             Case("expanded-summoning.sprint36-live-dcs", InfernalRules36Tests.PrintedDcsDeriveFromLiveAbilityScores),

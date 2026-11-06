@@ -9,12 +9,15 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Equipment;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
 using Kingmaker.Items;
 using Kingmaker.Items.Slots;
+using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
@@ -37,23 +40,35 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             var cells = new JArray();
             var receipt = new JObject { ["phase"] = ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulReachPhase,
-                ["cells"] = cells, ["scope"] = "Read-only summon weapon reach census and native threat probes." };
+                ["cells"] = cells, ["scope"] = "Summon weapon reach census, native threat probes and adjacent routines. Native commands only; no roll, position, eligibility or plan is written while a command runs." };
             string path = Path.Combine(_request.EvidenceDirectory, "s4-summon-reach.json");
             Action persist = () => RuntimeTestResultWriter.WriteAtomic(path, receipt.ToString(Formatting.Indented));
+            var failed = new List<string>();
+            // Cells record PASS/FAIL without stopping the phase, so one run
+            // reports every representative; the closing cell fails the
+            // phase if any cell failed.
             Action<string, bool, JObject, string> check = (id, pass, row, description) => {
                 row["cell"] = id; cells.Add(row); persist();
                 Sprint25Check("sprint4-" + id, pass, row, description);
-                if (!pass) throw new InvalidOperationException("Sprint 4 reach cell failed: " + id);
+                if (!pass) failed.Add(id);
             };
             JObject census = SummonReachCensus4();
             receipt["census"] = census;
-            receipt["properFlanking2"] = InfernalProperFlanking2State35();
+            JObject flanking = InfernalProperFlanking2State35();
+            receipt["properFlanking2"] = flanking;
             persist();
             check("reach-census", (int)census["creatureCount"] == ExpandedSummoningCatalog.All.Count &&
                 ((JArray)census["errors"]).Count == 0, new JObject {
                     ["creatureCount"] = census["creatureCount"], ["weaponRows"] = ((JArray)census["weapons"]).Count,
                     ["errors"] = census["errors"] },
                 "Every catalog creature's installed unit blueprint and weapon references are read.");
+            check("properflanking2-dead-zone-active", (bool?)flanking["assemblyLoaded"] == true &&
+                (bool?)flanking["modActive"] == true && (bool?)flanking["reachWeaponsDeadZone"] == true &&
+                (bool?)flanking["getTargetPointPatched"] == true && (bool?)flanking["isReachPatched"] == true,
+                (JObject)flanking.DeepClone(), "ProperFlanking2 is loaded, active, patched and its reach_weapons_dead_zone is enabled; nothing about it is changed.");
+            check("no-false-reach-weapons", SummonReachCensusVerdict4(census),
+                SummonReachCensusSummary4(census),
+                "After Sprint 4 every converted row's type is the native minimum, and the only melee weapons ProperFlanking2 still treats as reach weapons are the genuine glaive and longspear.");
             var probes = new JArray();
             receipt["probes"] = probes;
             foreach (string key in SummonReachProbePolicy4.ProbeKeys)
@@ -63,26 +78,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitEntityData unit = null;
                 try { unit = CastExpandedSummoningOwnTier(fixture, key); }
                 catch (Exception error) { probe["castError"] = error.GetType().Name + ": " + error.Message; }
-                if (unit == null) { persist(); continue; }
-                InfernalWallPrepareActor35(unit);
-                for (int frame = 0; frame < 3; frame++) { Game.Instance.IsPaused = false; yield return 0; }
-                InfernalWallPrepareActor35(unit);
-                try { SummonReachProbe4(fixture, unit, probe); }
-                catch (Exception error) { probe["probeError"] = error.GetType().Name + ": " + error.Message; }
-                persist();
-                InfernalWallPrepareActor35(fixture.Hostile);
-                CleanupExpandedSummoningUnit(unit);
-                fixture.Created.Remove(unit);
-                ResetExpandedSummoningHostile(fixture);
-                for (int frame = 0; frame < 2; frame++) { Game.Instance.IsPaused = false; yield return 0; }
+                if (unit != null)
+                {
+                    InfernalWallPrepareActor35(unit);
+                    for (int frame = 0; frame < 3; frame++) { Game.Instance.IsPaused = false; yield return 0; }
+                    InfernalWallPrepareActor35(unit);
+                    try { SummonReachProbe4(fixture, unit, probe); }
+                    catch (Exception error) { probe["probeError"] = error.GetType().Name + ": " + error.Message; }
+                    InfernalWallPrepareActor35(fixture.Hostile);
+                    CleanupExpandedSummoningUnit(unit);
+                    fixture.Created.Remove(unit);
+                    ResetExpandedSummoningHostile(fixture);
+                    for (int frame = 0; frame < 2; frame++) { Game.Instance.IsPaused = false; yield return 0; }
+                }
+                JObject verdict = SummonReachProbeVerdict4(probe);
+                check("threat-" + key, verdict["failure"].Type == JTokenType.Null, verdict,
+                    "Each wielded weapon threatens exactly as the installed contract predicts at the adjacent distance, just inside and just beyond its own range; converted rows keep their pre-Sprint-4 live range and are legal adjacent; genuine reach weapons keep their dead zone.");
             }
-            check("reach-probes-recorded", probes.OfType<JObject>().All(value => value["castError"] == null &&
-                    value["probeError"] == null && value["slots"] is JArray && ((JArray)value["slots"]).Count > 0),
-                new JObject { ["probes"] = probes.Count,
-                    ["failed"] = new JArray(probes.OfType<JObject>().Where(value => value["castError"] != null ||
-                        value["probeError"] != null).Select(value => value["creature"])) },
-                "Every representative is summoned and every wielded weapon's native threat is observed at the probe distances.");
+            var routines = new JArray();
+            receipt["routines"] = routines;
+            using (var trace = new InfernalEvents34())
+            {
+                foreach (string key in SummonReachProbePolicy4.RoutineKeys)
+                    foreach (int frame in SummonAdjacentRoutine4(fixture, key, trace, check, routines, flanking)) yield return frame;
+            }
             persist();
+            check("summon-reach-acceptance", failed.Count == 0, new JObject { ["failedCells"] = new JArray(failed) },
+                "Every Sprint 4 reach cell passed.");
+            if (failed.Count != 0) throw new InvalidOperationException("Sprint 4 reach cells failed: " + string.Join(", ", failed.ToArray()));
         }
 
         // Every catalog creature: its registered unit blueprint, size, reach
@@ -267,19 +290,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 distances.Add(new KeyValuePair<string, float>("inside-" + Math.Round(range / .3048f, 1) + "ft", corpulence + range - .10f));
                 distances.Add(new KeyValuePair<string, float>("beyond-" + Math.Round(range / .3048f, 1) + "ft", corpulence + range + .10f));
             }
-            Vector3 origin = unit.Position;
             float farthest = distances.Max(value => value.Value);
-            Vector3? direction = null;
-            for (int step = 0; step < 16 && direction == null; step++)
-            {
-                Vector3 candidate = Quaternion.Euler(0f, step * 22.5f, 0f) * Vector3.forward;
-                bool clear = distances.All(value => {
-                    var near = AstarPath.active.GetNearest(origin + candidate * value.Value);
-                    return near.node != null && near.node.Walkable && Vector3.Distance(near.clampedPosition, origin + candidate * value.Value) < .1f;
-                }) && AstarPath.active.GetNearest(origin + candidate * farthest).node != null;
-                if (clear) direction = candidate;
-            }
-            if (direction == null) throw new InvalidOperationException("No clear probe direction around the summon.");
+            JObject line = SummonReachClearLine4(fixture, unit, farthest);
+            probe["line"] = line;
+            if ((bool)line["found"] != true) throw new InvalidOperationException("No clear probe line near the summon or caster.");
+            Vector3 origin = unit.Position;
+            Vector3? direction = new Vector3((float)line["direction"][0], 0f, (float)line["direction"][2]);
             probe["direction"] = SurveyVector(direction.Value);
             var rows = new JArray();
             probe["slots"] = rows;
@@ -299,7 +315,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             foreach (var distance in distances)
             {
-                Vector3 point = AstarPath.active.GetNearest(origin + direction.Value * distance.Value).clampedPosition;
+                Vector3 wanted = origin + direction.Value * distance.Value;
+                Vector3 point = AstarPath.active.GetNearest(wanted).clampedPosition;
+                point = new Vector3(wanted.x, point.y, wanted.z);
                 PlaceExpandedSummoningUnit(target, point);
                 float centre = Vector3.Distance(unit.Position, target.Position);
                 float mechanics = unit.DistanceTo(target);
@@ -322,6 +340,263 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
             PlaceExpandedSummoningUnit(target, origin + direction.Value * (farthest + 3f));
+        }
+        // A clear straight line for probes: the summon's own spot first, then
+        // a ring around the summoner (within summon-follow range). Clear
+        // means every point along the line has a walkable node within 0.3 m
+        // horizontally. The summon is moved to the chosen origin.
+        private static JObject SummonReachClearLine4(ExpandedSummoningCorrectionFixture fixture, UnitEntityData unit, float length)
+        {
+            var origins = new List<Vector3> { unit.Position };
+            foreach (float radius in new[] { 4f, 7f, 10f })
+                for (int step = 0; step < 12; step++)
+                    origins.Add(fixture.Caster.Position + Quaternion.Euler(0f, step * 30f, 0f) * Vector3.forward * radius);
+            Func<Vector3, bool> clear = point => {
+                var near = AstarPath.active.GetNearest(point);
+                if (near.node == null || !near.node.Walkable) return false;
+                Vector3 delta = near.clampedPosition - point; delta.y = 0f;
+                return delta.magnitude < .3f;
+            };
+            int rejected = 0;
+            foreach (Vector3 origin in origins)
+            {
+                if (!clear(origin)) { rejected++; continue; }
+                for (int step = 0; step < 16; step++)
+                {
+                    Vector3 direction = Quaternion.Euler(0f, step * 22.5f, 0f) * Vector3.forward;
+                    bool ok = true;
+                    for (float along = .5f; along <= length + .6f && ok; along += .5f)
+                        ok = clear(origin + direction * along);
+                    if (!ok) { rejected++; continue; }
+                    if ((origin - unit.Position).sqrMagnitude > .01f)
+                        PlaceExpandedSummoningUnit(unit, AstarPath.active.GetNearest(origin).clampedPosition);
+                    InfernalWallPrepareActor35(unit);
+                    return new JObject { ["found"] = true, ["origin"] = SurveyVector(unit.Position),
+                        ["direction"] = SurveyVector(direction), ["movedFromSpawn"] = (origin - origins[0]).sqrMagnitude > .01f,
+                        ["rejectedCandidates"] = rejected, ["lengthMeters"] = length };
+                }
+            }
+            return new JObject { ["found"] = false, ["rejectedCandidates"] = rejected, ["lengthMeters"] = length };
+        }
+
+        private static bool SummonReachCensusVerdict4(JObject census)
+        {
+            var weapons = ((JArray)census["weapons"]).OfType<JObject>().ToList();
+            foreach (var row in SummonReachRepresentation4.Rows)
+            {
+                var match = weapons.FirstOrDefault(value => (string)value["owner"] == row.OwnerKey && (string)value["item"] == row.Item);
+                if (match == null || (float)match["rawTypeRangeFeet"] != SummonReachRepresentation4.StoredRawFeet ||
+                    (bool)match["properFlanking2ReachWeapon"]) return false;
+            }
+            var remaining = weapons.Where(value => (bool)value["melee"] && (bool)value["properFlanking2ReachWeapon"])
+                .Select(value => (string)value["item"]).Distinct().OrderBy(value => value).ToArray();
+            return remaining.SequenceEqual(SummonReachProbePolicy4.GenuineReachWeaponItems.OrderBy(value => value));
+        }
+
+        private static JObject SummonReachCensusSummary4(JObject census)
+        {
+            var weapons = ((JArray)census["weapons"]).OfType<JObject>().ToList();
+            return new JObject {
+                ["convertedRows"] = new JArray(SummonReachRepresentation4.Rows.Select(row => {
+                    var match = weapons.FirstOrDefault(value => (string)value["owner"] == row.OwnerKey && (string)value["item"] == row.Item);
+                    return new JObject { ["owner"] = row.OwnerKey, ["item"] = row.Item, ["itemName"] = row.ItemName,
+                        ["found"] = match != null, ["rawTypeRangeFeet"] = match?["rawTypeRangeFeet"],
+                        ["typeRangeFeet"] = match?["typeRangeFeet"], ["properFlanking2ReachWeapon"] = match?["properFlanking2ReachWeapon"],
+                        ["expectedLiveRangeFeet"] = row.LiveRangeAfterFeet, ["correctionFeet"] = row.CorrectionFeet };
+                })),
+                ["remainingReachWeapons"] = new JArray(weapons.Where(value => (bool)value["melee"] &&
+                    (bool)value["properFlanking2ReachWeapon"]).Select(value => new JObject { ["owner"] = value["owner"],
+                        ["item"] = value["item"], ["itemName"] = value["itemName"], ["typeRangeFeet"] = value["typeRangeFeet"] })) };
+        }
+
+        // Per slot and distance: the observed native IsReach must equal the
+        // installed contract (edge gap < live range, LOS, and ProperFlanking2's
+        // dead zone for a type range above 2 ft). Converted rows must also
+        // keep their recorded live range and be legal adjacent; genuine reach
+        // weapons must be refused adjacent and legal just inside their range.
+        private static JObject SummonReachProbeVerdict4(JObject probe)
+        {
+            var result = new JObject { ["creature"] = probe["creature"], ["unit"] = probe["unit"],
+                ["line"] = probe["line"], ["slots"] = new JArray() };
+            string failure = (string)probe["castError"] ?? (string)probe["probeError"];
+            var slots = probe["slots"] as JArray;
+            if (failure == null && (slots == null || slots.Count == 0)) failure = "no-wielded-weapon";
+            string owner = (string)probe["blueprint"];
+            foreach (JObject slot in (slots ?? new JArray()).OfType<JObject>())
+            {
+                var row = SummonReachRepresentation4.Find(owner, (string)slot["item"]);
+                bool genuine = SummonReachProbePolicy4.GenuineReachWeaponItems.Contains((string)slot["item"]);
+                var threat = ((JArray)slot["threat"]).OfType<JObject>().ToList();
+                var summary = new JObject { ["slot"] = slot["slot"], ["itemName"] = slot["itemName"],
+                    ["typeRangeFeet"] = slot["typeRangeFeet"], ["liveItemRangeFeet"] = slot["liveItemRangeFeet"],
+                    ["properFlanking2ReachWeapon"] = slot["properFlanking2ReachWeapon"],
+                    ["converted"] = row != null, ["genuineReachWeapon"] = genuine,
+                    ["expectedLiveRangeFeet"] = row == null ? null : (JToken)row.LiveRangeAfterFeet };
+                ((JArray)result["slots"]).Add(summary);
+                if (!(bool)slot["melee"]) continue;
+                foreach (JObject sample in threat)
+                {
+                    bool modelled = (bool)sample["nativeExpected"] && !(bool)sample["insideProperFlanking2DeadZone"];
+                    if (sample["error"].Type != JTokenType.Null || (bool)sample["lineOfSight"] != true)
+                        failure = failure ?? ("probe-unusable-" + slot["itemName"] + "-" + sample["distance"]);
+                    else if ((bool)sample["isReach"] != modelled)
+                        failure = failure ?? ("contract-mismatch-" + slot["itemName"] + "-" + sample["distance"]);
+                }
+                string live = Math.Round((double)slot["liveItemRangeFeet"], 1) + "ft";
+                Func<string, bool?> at = name => (bool?)threat.FirstOrDefault(value => (string)value["distance"] == name)?["isReach"];
+                if (row != null)
+                {
+                    if (Math.Abs((double)slot["liveItemRangeFeet"] - row.LiveRangeAfterFeet) > .01d)
+                        failure = failure ?? ("live-range-changed-" + slot["itemName"]);
+                    else if ((bool)slot["properFlanking2ReachWeapon"])
+                        failure = failure ?? ("still-reach-weapon-" + slot["itemName"]);
+                    else if (at("adjacent") != true || at("inside-" + live) != true || at("beyond-" + live) != false)
+                        failure = failure ?? ("adjacent-inside-beyond-" + slot["itemName"]);
+                }
+                if (genuine && (at("adjacent") != false || at("inside-" + live) != true || at("beyond-" + live) != false))
+                    failure = failure ?? ("genuine-reach-control-" + slot["itemName"]);
+            }
+            result["failure"] = failure;
+            return result;
+        }
+
+        // Independently expected full-attack routine from the body and the
+        // Pathfinder full-attack rules: a manufactured primary weapon makes
+        // its base-attack iteratives (one more at +6, +11 and +16), a
+        // natural primary one attack, and each additional limb one attack.
+        // An empty-hand weapon is not a wielded weapon.
+        private static List<string> SummonReachExpectedRoutine4(UnitEntityData unit, JObject row)
+        {
+            var expected = new List<string>();
+            int bab = unit.Stats.BaseAttackBonus.ModifiedValue;
+            int iteratives = Math.Max(1, Math.Min(4, 1 + (bab - 1) / 5));
+            row["baseAttackBonus"] = bab; row["expectedIteratives"] = iteratives;
+            ItemEntityWeapon primary = unit.Body.PrimaryHand.MaybeWeapon;
+            if (primary != null && !ReferenceEquals(primary, unit.Body.EmptyHandWeapon))
+                for (int count = primary.Blueprint.IsNatural ? 1 : iteratives; count > 0; count--)
+                    expected.Add(primary.Blueprint.AssetGuid);
+            ItemEntityWeapon secondary = unit.Body.SecondaryHand.MaybeWeapon;
+            if (secondary != null && !ReferenceEquals(secondary, unit.Body.EmptyHandWeapon) &&
+                !(primary != null && primary.Blueprint.IsTwoHanded))
+                expected.Add(secondary.Blueprint.AssetGuid);
+            foreach (WeaponSlot limb in unit.Body.AdditionalLimbs)
+                if (limb != null && limb.HasWeapon) expected.Add(limb.Weapon.Blueprint.AssetGuid);
+            return expected;
+        }
+
+        // A native full attack by a fresh representative on the adjacent
+        // durable hostile. Verdict: SummonAdjacentRoutineVerdict4.
+        private IEnumerable<int> SummonAdjacentRoutine4(ExpandedSummoningCorrectionFixture fixture, string key,
+            InfernalEvents34 trace, Action<string, bool, JObject, string> check, JArray routines, JObject flanking)
+        {
+            var row = new JObject { ["creature"] = key };
+            routines.Add(row);
+            UnitEntityData unit = null;
+            try { unit = CastExpandedSummoningOwnTier(fixture, key); }
+            catch (Exception error) { row["setupFailure"] = "cast: " + error.GetType().Name + ": " + error.Message; }
+            if (unit == null) { check("routine-" + key, false, row, "The representative must be summoned."); yield break; }
+            UnitEntityData target = fixture.Hostile;
+            InfernalWallPrepareActor35(unit);
+            for (int frame = 0; frame < 3; frame++) { Game.Instance.IsPaused = false; yield return 0; }
+            row["witnessReset"] = ResetExpandedSummoningHostile(fixture);
+            InfernalWallPrepareActor35(unit); InfernalWallPrepareActor35(target);
+            float corpulence = unit.View.Corpulence + target.View.Corpulence;
+            JObject line = SummonReachClearLine4(fixture, unit, corpulence + 1.5f);
+            row["line"] = line;
+            if ((bool)line["found"] != true)
+            {
+                row["setupFailure"] = "no clear line";
+                check("routine-" + key, false, row, "A clear adjacent placement is required.");
+                CleanupExpandedSummoningUnit(unit); fixture.Created.Remove(unit);
+                yield break;
+            }
+            Vector3 direction = new Vector3((float)line["direction"][0], 0f, (float)line["direction"][2]);
+            Vector3 wanted = unit.Position + direction * (corpulence + .15f);
+            Vector3 spot = AstarPath.active.GetNearest(wanted).clampedPosition;
+            PlaceExpandedSummoningUnit(target, new Vector3(wanted.x, spot.y, wanted.z));
+            InfernalWallPrepareActor35(unit); InfernalWallPrepareActor35(target);
+            // Settle before measuring; readiness is established before the
+            // observed command starts.
+            for (int frame = 0; frame < 6; frame++) { Game.Instance.IsPaused = false; yield return 0; }
+            InfernalWallPrepareActor35(unit); InfernalWallPrepareActor35(target);
+            var expected = SummonReachExpectedRoutine4(unit, row);
+            row["expected"] = new JArray(expected);
+            row["expectedNames"] = new JArray(expected.Select(guid => unit.Body.AllSlots.OfType<WeaponSlot>()
+                .Where(slot => slot.HasWeapon && slot.Weapon.Blueprint.AssetGuid == guid).Select(slot => slot.Weapon.Blueprint.name).FirstOrDefault()));
+            row["owner"] = unit.UniqueId; row["target"] = target.UniqueId;
+            row["properFlanking2"] = flanking.DeepClone();
+            row["prerequisites"] = InfernalAdjacentActors35(unit, target);
+            row["edgeGap"] = unit.DistanceTo(target) - corpulence;
+            row["centreDistance"] = Vector3.Distance(unit.Position, target.Position);
+            bool threatens = false;
+            try { threatens = unit.IsReach(target, unit.Body.PrimaryHand); }
+            catch (Exception error) { row["isReachError"] = error.GetType().Name; }
+            row["threatens"] = threatens;
+            Buff lifetimeBefore = unit.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff);
+            double remaining = lifetimeBefore == null ? 0d :
+                lifetimeBefore.EndTime.TotalSeconds - Game.Instance.TimeController.GameTime.TotalSeconds;
+            row["ownerLifetimeRemainingBeforeSeconds"] = remaining;
+            if (remaining < 30d)
+            {
+                row["setupFailure"] = "summon lifetime below 30 s before the command";
+                check("routine-" + key, false, row, "Sufficient summon lifetime is required before the command.");
+                CleanupExpandedSummoningUnit(unit); fixture.Created.Remove(unit);
+                yield break;
+            }
+            Vector3 unitStart = unit.Position, targetStart = target.Position;
+            var command = new UnitAttack(target) { IsSingleAttack = false, ForceFullAttack = true };
+            int reference = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(command);
+            row["commandReference"] = reference;
+            row["commandIssuedGameSeconds"] = Game.Instance.TimeController.GameTime.TotalSeconds;
+            unit.Commands.Run(command);
+            float unitTravel = 0f, targetTravel = 0f;
+            DateTime deadline = DateTime.UtcNow.AddSeconds(25);
+            int settled = 0;
+            while (DateTime.UtcNow < deadline && settled < 30)
+            {
+                Game.Instance.IsPaused = false; yield return 0;
+                unitTravel = Math.Max(unitTravel, Vector3.Distance(unitStart, unit.Position));
+                targetTravel = Math.Max(targetTravel, Vector3.Distance(targetStart, target.Position));
+                settled = command.IsFinished ? settled + 1 : 0;
+            }
+            var commandRows = trace.Rows.OfType<JObject>().Where(value => (string)value["owner"] == unit.UniqueId &&
+                (int?)value["commandReference"] == reference).ToArray();
+            var ends = commandRows.Where(value => (string)value["event"] == "command-end").ToArray();
+            JObject planRow = ends.LastOrDefault() ?? commandRows.LastOrDefault(value => value["plan"] != null);
+            var attackRows = trace.Rows.OfType<JObject>().Where(value => (string)value["event"] == "attack" &&
+                (string)value["owner"] == unit.UniqueId && (int?)value["attackCommand"] == reference).ToArray();
+            row["command"] = Sprint27AiCommand(command);
+            row["commandFinished"] = command.IsFinished;
+            row["commandResult"] = command.Result.ToString();
+            row["nativeExhaustedInterrupt"] = Sprint40NativeExhaustedAttack(command, ends, expected.Count);
+            row["plan"] = planRow?["plan"] is JArray ? new JArray(((JArray)planRow["plan"]).Select(slot => (string)slot["weapon"])) : new JArray();
+            row["commandEnds"] = new JArray(ends.Select(value => new JObject { ["owner"] = value["owner"],
+                ["target"] = value["target"], ["commandReference"] = value["commandReference"],
+                ["gameSeconds"] = value["gameSeconds"], ["attackIndex"] = value["attackIndex"],
+                ["plannedAttackPresent"] = value["plannedAttackPresent"], ["interruptionCaller"] = value["interruptionCaller"] }));
+            row["commandEvents"] = new JArray(commandRows.Select(value => new JObject { ["event"] = value["event"],
+                ["gameSeconds"] = value["gameSeconds"], ["attackIndex"] = value["attackIndex"],
+                ["plannedAttackPresent"] = value["plannedAttackPresent"] }));
+            row["attacks"] = new JArray(attackRows.Select(value => new JObject { ["owner"] = value["owner"],
+                ["target"] = value["target"], ["attackCommand"] = value["attackCommand"],
+                ["gameSeconds"] = value["gameSeconds"], ["weapon"] = value["weapon"], ["hit"] = value["hit"],
+                ["hpDamage"] = value["hpDamage"], ["rangeFeet"] = value["rangeFeet"] }));
+            row["attackCount"] = attackRows.Length;
+            row["hits"] = attackRows.Count(value => (bool?)value["hit"] == true);
+            row["misses"] = attackRows.Count(value => (bool?)value["hit"] != true);
+            row["ownerTravel"] = unitTravel; row["targetTravel"] = targetTravel;
+            row["ownerLifetimePresentAfter"] = unit.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff) != null;
+            row["ownerAliveAfter"] = !unit.Destroyed && unit.IsInGame && !unit.Descriptor.State.IsDead;
+            row["after"] = InfernalAdjacentActors35(unit, target);
+            row["forcedRolls"] = 0; row["observerWritesDuringCommand"] = 0;
+            string failure = SummonAdjacentRoutineVerdict4.Failure(row);
+            row["verdictFailure"] = failure;
+            check("routine-" + key, failure == null, row,
+                "A native full attack on the adjacent durable hostile plans the independently expected routine, resolves every slot against that target under that command, ends at a native completion boundary, keeps the summon's lifetime, and neither unit moves; ProperFlanking2's dead zone is active.");
+            InfernalWallPrepareActor35(unit); InfernalWallPrepareActor35(target);
+            CleanupExpandedSummoningUnit(unit); fixture.Created.Remove(unit);
+            ResetExpandedSummoningHostile(fixture);
+            for (int frame = 0; frame < 2; frame++) { Game.Instance.IsPaused = false; yield return 0; }
         }
     }
 }
