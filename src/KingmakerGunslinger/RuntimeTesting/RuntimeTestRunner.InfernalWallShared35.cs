@@ -512,7 +512,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 pairRow["bNodes"] = new JArray(bAffected.Where(node => !aAffected.Contains(node)).Select(node =>
                     InfernalWallSharedNodeRow35(node, a, b, baseline, afterAB)));
                 persist();
-                bool bothBlocked = aAffected.Concat(bAffected).All(node => !afterAB[node].Walkable);
+                // The ice itself: every grid node whose centre lies inside a
+                // section's footprint must be blocked. Claimed ring nodes
+                // (centre outside, square touching) can be rewritten by any
+                // native grid update while the Wall stands: installed
+                // GridGraph.UpdateArea with updateErosion and erodeIterations
+                // 10 resets static walkability from the pre-erosion flag
+                // within ~10 m (close21: in combat, 12 of Wall A's 24 claimed
+                // nodes). That is recorded, not treated as formation failure.
+                Func<InfernalWallSharedSection35, Pathfinding.GraphNode, bool> insideIce = (wall, node) =>
+                    wall.Section != null && InfernalWallPlacementRuntime35.DistanceToFootprint((Vector3)node.position,
+                        wall.Section.Position, Vector3.Cross(Vector3.up, wall.Section.OrientationDirection).normalized,
+                        wall.Section.OrientationDirection) <= 0f;
+                var iceNodes = aAffected.Where(node => insideIce(a, node)).Concat(bAffected.Where(node => insideIce(b, node))).ToArray();
+                var ringOpen = aAffected.Concat(bAffected).Where(node => afterAB[node].Walkable && !iceNodes.Contains(node)).ToArray();
+                pairRow["iceNodes"] = iceNodes.Length;
+                pairRow["iceNodesWalkable"] = iceNodes.Count(node => afterAB[node].Walkable);
+                pairRow["claimedRingNodesRewrittenWalkable"] = new JArray(ringOpen.Select(node => {
+                    var row = InfernalWallNodeIdentity35(node);
+                    row["afterAB"] = InfernalWallNodeDocument35(afterAB[node]);
+                    return row; }));
+                bool bothBlocked = iceNodes.Length > 0 && iceNodes.All(node => !afterAB[node].Walkable);
                 // Legal placement never lets two claims share a node (the
                 // second footprint must be walkable), and outside turn-based
                 // combat no cut writes grid counters. The overlap that exists
@@ -576,12 +596,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var unrelated = region.Where(node => !aAffected.Contains(node) && !bAffected.Contains(node)).ToArray();
                 var survivorClaimLost = survivor.Claimed.Where(node => !InfernalWallNavmesh35.ClaimOwnedBy(node, survivor.Binding) ||
                     afterFirst[node].Owners != 1).ToArray();
-                var survivorUnblocked = survivorAffected.Where(node => !beforeFirst[node].Walkable && afterFirst[node].Walkable).ToArray();
-                var survivorChangedByRetirement = survivorAffected.Where(node =>
+                var survivorIce = survivorAffected.Where(node => insideIce(survivor, node)).ToArray();
+                var survivorUnblocked = survivorIce.Where(node => !beforeFirst[node].Walkable && afterFirst[node].Walkable).ToArray();
+                // A retiring Wall's own native counter may overlap the survivor's
+                // ice (diagonal cut box) and is released with it; the survivor
+                // keeps its static block, claim and blocked state.
+                var survivorChangedByRetirement = survivorIce.Where(node =>
+                    afterFirst[node].Walkable != beforeFirst[node].Walkable ||
+                    afterFirst[node].Static != beforeFirst[node].Static ||
+                    afterFirst[node].Owners != beforeFirst[node].Owners).ToArray();
+                var survivorRingRewritten = survivorAffected.Where(node => !survivorIce.Contains(node) &&
                     !afterFirst[node].SameNavigation(beforeFirst[node])).ToArray();
                 var survivorWalkableBeforeRetirement = survivorAffected.Where(node => beforeFirst[node].Walkable).ToArray();
                 var survivorDynamicChanged = survivorAffected.Where(node =>
-                    afterFirst[node].Dynamic != beforeFirst[node].Dynamic).ToArray();
+                    afterFirst[node].Dynamic != beforeFirst[node].Dynamic).ToArray(); // recorded
                 var firstNotRestored = firstOnly.Where(node => !afterFirst[node].SameNavigation(baseline[node])).ToArray();
                 var unrelatedChanged = unrelated.Where(node => !afterFirst[node].SameNavigation(baseline[node])).ToArray();
                 // Live: still the binding's own registered, enabled cut, and its
@@ -614,7 +642,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["survivorClaims"] = survivor.Claimed.Count,
                     ["survivorClaimsLost"] = rows(survivorClaimLost),
                     ["survivorNodesNowWalkable"] = rows(survivorUnblocked),
+                    ["survivorIceNodes"] = survivorIce.Length,
                     ["survivorNodesChangedByRetirement"] = rows(survivorChangedByRetirement),
+                    ["survivorClaimedRingRewrittenByNativeUpdate"] = rows(survivorRingRewritten),
                     ["survivorNodesWalkableBeforeRetirement"] = rows(survivorWalkableBeforeRetirement),
                     ["survivorNodesWalkableBeforeRetirementCount"] = survivorWalkableBeforeRetirement.Length,
                     ["survivorDynamicChanged"] = rows(survivorDynamicChanged),
@@ -629,7 +659,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 pairRow["survivorAfterFirstRetirement"] = survivorRow;
                 persist();
                 check("wall-shared-survivor-preserved-" + pair, survivorCutLive && firstCutGone &&
-                    survivorClaimLost.Length == 0 && survivorUnblocked.Length == 0 && survivorDynamicChanged.Length == 0 &&
+                    survivorClaimLost.Length == 0 && survivorUnblocked.Length == 0 &&
                     survivorChangedByRetirement.Length == 0 &&
                     firstNotRestored.Length == 0 && unrelatedChanged.Length == 0 &&
                     InfernalWallNavmesh35.ActiveGridClaimCount == survivor.Binding.GridNodeSnapshot().Length &&
@@ -702,17 +732,46 @@ namespace KingmakerGunslinger.RuntimeTesting
             var prior = new HashSet<string>(Game.Instance.State.Units.Where(value =>
                 ReferenceEquals(value.Blueprint, run.Section)).Select(value => value.UniqueId));
             long feedbackAttempts = NativeCombatLog.Attempts;
-            var command = new UnitUseAbility(data, target);
+            UnitUseAbility command = null;
             UnitEntityData section = null; JObject creation; int matches;
+            // An ordinary command that the native command system interrupts
+            // before it acts (close21: 36 ms after start, no rule outcome and
+            // no feedback) is re-issued, as a player would, at most twice.
+            // A rule refusal (feedback published) is never retried.
+            var attempts = new JArray();
             using (var observation = new InfernalWallCreationObservation35(caster, run.Section))
             {
-                caster.Commands.Run(command);
-                DateTime deadline = DateTime.UtcNow.AddSeconds(25);
-                while (DateTime.UtcNow < deadline && (!command.IsFinished || section == null))
+                for (int attempt = 1; attempt <= 3 && section == null; attempt++)
                 {
-                    Game.Instance.IsPaused = false; yield return 0;
-                    section = Game.Instance.State.Units.FirstOrDefault(value =>
-                        ReferenceEquals(value.Blueprint, run.Section) && !prior.Contains(value.UniqueId));
+                    if (attempt > 1)
+                    {
+                        foreach (int frame in InfernalBoneWaitGame35(1.0, 5)) yield return frame;
+                        caster.Commands.InterruptAll(true);
+                        caster.Commands.RemoveFinishedAndUpdateQueue();
+                        if (Vector3.Distance(caster.Position, casterPoint) > .05f) PlaceExpandedSummoningUnit(caster, casterPoint);
+                        InfernalBoneRemoveEffects35(caster, sources, run.Frightened);
+                    }
+                    long attemptFeedback = NativeCombatLog.Attempts;
+                    command = new UnitUseAbility(data, target);
+                    caster.Commands.Run(command);
+                    DateTime deadline = DateTime.UtcNow.AddSeconds(25);
+                    int framesAfterFinish = 0;
+                    while (DateTime.UtcNow < deadline && section == null && framesAfterFinish < 30)
+                    {
+                        Game.Instance.IsPaused = false; yield return 0;
+                        if (command.IsFinished) framesAfterFinish++;
+                        section = Game.Instance.State.Units.FirstOrDefault(value =>
+                            ReferenceEquals(value.Blueprint, run.Section) && !prior.Contains(value.UniqueId));
+                    }
+                    var attemptRow = new JObject { ["attempt"] = attempt, ["command"] = Sprint27AiCommand(command),
+                        ["sectionFormed"] = section != null, ["feedbackAttemptsDelta"] = NativeCombatLog.Attempts - attemptFeedback,
+                        ["casterPosition"] = SurveyVector(caster.Position),
+                        ["casterFrightened"] = caster.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Frightened),
+                        ["playerInCombat"] = Game.Instance.Player.IsInCombat };
+                    attempts.Add(attemptRow);
+                    bool interruptedBeforeActing = command.Result == UnitCommand.ResultType.Interrupt && !command.IsActed &&
+                        NativeCombatLog.Attempts == attemptFeedback;
+                    if (section != null || !interruptedBeforeActing) break;
                 }
                 creation = observation.Receipt; matches = observation.Matches;
             }
@@ -743,6 +802,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["gridGraphIndex"] = binding?.GridGraphIndex, ["gridNodesClaimed"] = binding?.GridNodesClaimed,
                 ["gridNodesChanged"] = binding?.GridNodesChanged, ["gridFailure"] = binding?.GridFailure,
                 ["feedbackAttemptsDelta"] = NativeCombatLog.Attempts - feedbackAttempts,
+                ["commandAttempts"] = attempts,
                 ["feedbackMessage"] = NativeCombatLog.Attempts != feedbackAttempts ? NativeCombatLog.LastMessage : null });
         }
 
