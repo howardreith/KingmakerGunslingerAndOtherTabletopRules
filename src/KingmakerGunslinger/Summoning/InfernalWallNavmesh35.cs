@@ -27,7 +27,12 @@ namespace KingmakerGunslinger.Summoning
         {
             internal AstarPath Path;
             internal GridGraph Grid;
+            // The node's own static flag and pre-erosion flag before the
+            // first claim. Combined walkability is not recorded: it also
+            // folds in cuts' and turn-based units' DynamicBlocked counters,
+            // which the claim must never restore into the static layer.
             internal bool OriginalWalkable;
+            internal bool OriginalErosion;
             internal readonly HashSet<InfernalWallNavmesh35> Owners =
                 new HashSet<InfernalWallNavmesh35>();
         }
@@ -80,6 +85,8 @@ namespace KingmakerGunslinger.Summoning
         internal bool CutGridBlockAppliedAtRelease { get; private set; }
         internal bool CutGridRevertQueued { get; private set; }
         internal string GridFailure { get; private set; }
+        // Native connection recalculations after this section's own writes.
+        internal int GridConnectionRefreshes { get; private set; }
         internal static int ActiveGridClaimCount { get { return Claims.Count; } }
 
         internal KeyValuePair<GraphNode, bool>[] GridNodeSnapshot()
@@ -221,6 +228,7 @@ namespace KingmakerGunslinger.Summoning
             {
                 if (_released || generation != _gridGeneration) return true;
                 List<GraphNode> candidates = null;
+                var written = new List<GraphNode>();
                 bool changed = false;
                 try
                 {
@@ -229,7 +237,7 @@ namespace KingmakerGunslinger.Summoning
                             "Active path graph changed before wall admission.");
                     if (replacing)
                     {
-                        changed = ReleaseClaims(true);
+                        changed = ReleaseClaims(true, written);
                         _nodeOriginals.Clear();
                         GridNodesConsidered = 0;
                         GridNodesClaimed = 0;
@@ -253,9 +261,12 @@ namespace KingmakerGunslinger.Summoning
                         NodeClaim claim;
                         if (!Claims.TryGetValue(node, out claim))
                         {
+                            var gridNode = node as GridNode;
                             claim = new NodeClaim {
                                 Path = _astar, Grid = _grid,
-                                OriginalWalkable = node.Walkable };
+                                OriginalWalkable = node.StaticWalkable,
+                                OriginalErosion = gridNode != null ?
+                                    gridNode.WalkableErosion : node.StaticWalkable };
                             Claims.Add(node, claim);
                         }
                         else if (!ReferenceEquals(claim.Path, _astar) ||
@@ -266,25 +277,27 @@ namespace KingmakerGunslinger.Summoning
                         _claimedNodes.Add(node);
                         _nodeOriginals[node] = claim.OriginalWalkable;
                         GridNodesClaimed++;
-                        if (node.Walkable)
+                        bool wasWalkable = node.Walkable;
+                        if (ApplyLayers(node, InfernalRules35.WallClaimNode(
+                                LayersOf(node))))
                         {
-                            node.Walkable = false;
-                            GridNodesChanged++;
+                            written.Add(node);
+                            if (wasWalkable) GridNodesChanged++;
                             changed = true;
                         }
                     }
                     if (GridNodesClaimed == 0)
                         throw new InvalidOperationException(
                             "Wall footprint did not claim a grid node.");
-                    if (changed) _astar.QueueWorkItemFloodFill();
+                    if (changed) RefreshGrid(written);
                     GridApplyCompleted = true;
                     UpdateRoute = UpdateRoute + "+wall-grid-work-item";
                 }
                 catch (Exception error)
                 {
                     GridFailure = error.GetType().Name + ": " + error.Message;
-                    if (ReleaseClaims(true))
-                        _astar.QueueWorkItemFloodFill();
+                    if (ReleaseClaims(true, written) || written.Count > 0)
+                        RefreshGrid(written);
                     Debug.LogException(error);
                 }
                 finally
@@ -315,7 +328,8 @@ namespace KingmakerGunslinger.Summoning
             QueueGridBlock(true);
         }
 
-        private bool ReleaseClaims(bool restoreWalkability)
+        private bool ReleaseClaims(bool restoreWalkability,
+            List<GraphNode> written)
         {
             bool changed = false;
             foreach (GraphNode node in _claimedNodes.ToArray())
@@ -324,11 +338,12 @@ namespace KingmakerGunslinger.Summoning
                 if (!Claims.TryGetValue(node, out claim) ||
                     !claim.Owners.Remove(this)) continue;
                 if (claim.Owners.Count != 0) continue;
-                if (restoreWalkability && node.Walkable !=
-                    claim.OriginalWalkable)
+                if (restoreWalkability && ApplyLayers(node,
+                        InfernalRules35.WallRestoreNode(LayersOf(node),
+                            claim.OriginalWalkable, claim.OriginalErosion)))
                 {
-                    node.Walkable = claim.OriginalWalkable;
                     GridNodesRestored++;
+                    if (written != null) written.Add(node);
                     changed = true;
                 }
                 Claims.Remove(node);
@@ -337,13 +352,84 @@ namespace KingmakerGunslinger.Summoning
             return changed;
         }
 
+        private static InfernalRules35.WallGridNodeLayers LayersOf(GraphNode node)
+        {
+            var grid = node as GridNode;
+            return new InfernalRules35.WallGridNodeLayers {
+                Static = node.StaticWalkable,
+                Erosion = grid != null ? grid.WalkableErosion : node.StaticWalkable,
+                Dynamic = node.DynamicBlocked };
+        }
+
+        // Writes only the static layers that differ; reports any write.
+        private static bool ApplyLayers(GraphNode node,
+            InfernalRules35.WallGridNodeLayers layers)
+        {
+            bool wrote = false;
+            if (node.StaticWalkable != layers.Static)
+            {
+                node.Walkable = layers.Static;
+                wrote = true;
+            }
+            var grid = node as GridNode;
+            if (grid != null && grid.WalkableErosion != layers.Erosion)
+            {
+                grid.WalkableErosion = layers.Erosion;
+                wrote = true;
+            }
+            return wrote;
+        }
+
+        // Installed GridGraph.UpdateArea recalculates grid connections after
+        // it changes walkability, and a claim writes the flags directly, so
+        // it does the same for every node it wrote and their neighbours.
+        // Otherwise a node restored to walkable keeps the connections a
+        // native update computed while it was claimed (close28: after
+        // physical destruction the restored footprint stayed a detour on
+        // the grid). Erosion tags stay native: turn-based combat re-erodes
+        // the whole graph at each turn and grid update. Runs inside a
+        // pathfinding work item.
+        private void RefreshGrid(List<GraphNode> written)
+        {
+            GridGraph grid = _grid;
+            if (grid != null && grid.nodes != null &&
+                grid.nodes.Length == grid.width * grid.depth)
+            {
+                int xmin = int.MaxValue, zmin = int.MaxValue;
+                int xmax = int.MinValue, zmax = int.MinValue;
+                foreach (GraphNode node in written)
+                {
+                    var gridNode = node as GridNode;
+                    if (gridNode == null ||
+                        gridNode.GraphIndex != (uint)GridGraphIndex) continue;
+                    int x = gridNode.NodeInGridIndex % grid.width;
+                    int z = gridNode.NodeInGridIndex / grid.width;
+                    xmin = Math.Min(xmin, x); xmax = Math.Max(xmax, x);
+                    zmin = Math.Min(zmin, z); zmax = Math.Max(zmax, z);
+                }
+                if (xmin <= xmax)
+                {
+                    for (int z = Math.Max(0, zmin - 1);
+                        z <= Math.Min(grid.depth - 1, zmax + 1); z++)
+                        for (int x = Math.Max(0, xmin - 1);
+                            x <= Math.Min(grid.width - 1, xmax + 1); x++)
+                        {
+                            GridNode node = grid.nodes[z * grid.width + x];
+                            if (node != null) grid.CalculateConnections(x, z, node);
+                        }
+                    GridConnectionRefreshes++;
+                }
+            }
+            _astar.QueueWorkItemFloodFill();
+        }
+
         private void QueueGridRestore()
         {
             if (GridRestoreQueued) return;
             GridRestoreQueued = true;
             if (_astar == null || !ReferenceEquals(AstarPath.active, _astar))
             {
-                ReleaseClaims(false);
+                ReleaseClaims(false, null);
                 GridRestoreCompleted = true;
                 return;
             }
@@ -351,8 +437,9 @@ namespace KingmakerGunslinger.Summoning
             {
                 try
                 {
-                    if (ReleaseClaims(true))
-                        _astar.QueueWorkItemFloodFill();
+                    var written = new List<GraphNode>();
+                    if (ReleaseClaims(true, written))
+                        RefreshGrid(written);
                     GridRestoreCompleted = true;
                 }
                 catch (Exception error)

@@ -968,6 +968,10 @@ namespace KingmakerGunslinger.Blueprints
                 Array.Empty<BlueprintItemWeapon>());
             var immobile = ScriptableObject.CreateInstance<AddCondition>();
             immobile.Condition = UnitCondition.CantAct;
+            var stationary = ScriptableObject.CreateInstance<AddCondition>();
+            stationary.Condition = (UnitCondition)Enum.Parse(typeof(UnitCondition),
+                InfernalRules35.WallSectionStationaryCondition);
+            stationary.name = "$KMG_S35_WallSectionStationary";
             var sectionRules = ScriptableObject.CreateInstance<
                 InfernalWallSection35>();
             sectionRules.OwningBlueprint = unit;
@@ -988,7 +992,7 @@ namespace KingmakerGunslinger.Blueprints
             traits.HideInUI = true;
             traits.IsClassFeature = false;
             traits.ComponentsArray = new BlueprintComponent[] {
-                immobile, sectionRules };
+                immobile, stationary, sectionRules };
             BlueprintUnitFactAccess.Resolve().Configure(traits,
                 LocalizationService.Create(p + "WallSectionTraits.Name",
                     "Ice Section"),

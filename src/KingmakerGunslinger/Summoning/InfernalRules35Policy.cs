@@ -84,6 +84,59 @@ namespace KingmakerGunslinger.Summoning
                 layerName.StartsWith("Glow", StringComparison.Ordinal);
         }
 
+        // A Wall of Ice section is a summoned unit linked to its Bone Devil.
+        // Installed SummonedUnitsController.TickUnitFollowMaster walks any
+        // linked summon that is out of combat, CanMove and over 11.7 m from
+        // its summoner back toward it (nav4: a standing section walked about
+        // 2.8 m, carrying its recast cut and leaving its grid claims behind).
+        // CantAct alone leaves native CanMove true; this condition makes the
+        // section stationary for every native mover (follow, fear).
+        internal const string WallSectionStationaryCondition = "CantMove";
+
+        // A grid node's two static walkability layers and its dynamic block
+        // counter. Kingmaker's pathfinding fork reports Walkable as Static
+        // and no DynamicBlocked counter.
+        internal struct WallGridNodeLayers
+        {
+            internal bool Static;
+            internal bool Erosion;
+            internal int Dynamic;
+            internal bool Walkable { get { return Static && Dynamic == 0; } }
+        }
+
+        // Installed GridGraph.UpdateArea for every node in a graph update's
+        // erosion reach: static := pre-erosion flag, apply the update's
+        // dynamic delta, then pre-erosion flag := static. A claim that holds
+        // only the static flag is erased by any native grid update nearby
+        // (a cut's combat grid block, a turn-based unit block).
+        internal static WallGridNodeLayers NativeGridUpdate(WallGridNodeLayers node, int dynamicDelta)
+        {
+            node.Static = node.Erosion;
+            node.Dynamic += dynamicDelta;
+            node.Erosion = node.Static;
+            return node;
+        }
+
+        // A Wall claim blocks both static layers, so native grid updates keep
+        // the node blocked while the claim stands.
+        internal static WallGridNodeLayers WallClaimNode(WallGridNodeLayers node)
+        {
+            node.Static = false;
+            node.Erosion = false;
+            return node;
+        }
+
+        // The last claim owner restores both static layers to what they were
+        // before the first claim; the dynamic counter belongs to the cuts and
+        // turn-based units.
+        internal static WallGridNodeLayers WallRestoreNode(WallGridNodeLayers node,
+            bool originalStatic, bool originalErosion)
+        {
+            node.Static = originalStatic;
+            node.Erosion = originalErosion;
+            return node;
+        }
+
         internal static bool QualifiesForBarbedDefense(bool hit, bool melee,
             bool manufactured, float rawWeaponReachFeet,
             float ordinaryReachFeet)

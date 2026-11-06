@@ -1184,7 +1184,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 JObject pool = null;
                 foreach (int frame in InfernalWallSteamPool35(run, clouds, poolRow,
                     "source Bone Devil retirement (native summon lifetime removed)", value => pool = value)) yield return frame;
+                pool["ownedCloudsAfterRelease"] = InfernalWallSteamPresentation35.OwnedCloudCount;
                 InfernalWallPersist35(run, "steam-pool", pool);
+                check("wall-steam-pool-reuse", (bool?)pool["probeRan"] == true &&
+                    ((JArray)pool["claimedRenderersDifferingFromPrefab"]).Count == 0 &&
+                    (int?)pool["ownedCloudsAfterRelease"] == 0, pool,
+                    "After the source's retirement releases the Wall steam cloud to the native pool, an ordinary native claim of the same prefab draws every renderer as the prefab authors it; the Wall's ownership of that cloud is cleared.");
             }
         }
     }
