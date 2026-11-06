@@ -389,6 +389,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var start = InfernalWallSnapshot35(region);
                 pairRow["baselineMismatchesAtStart"] = region.Count(node => !start[node].SameNavigation(baseline[node]));
 
+                // Every cast starts with the mover parked at lane A's start,
+                // the position the Wall B survey screened for adjacency.
+                PlaceExpandedSummoningUnit(mover, plan.Start);
+                clearFear();
                 var a = new InfernalWallSharedSection35 { Label = pair + "-a", Source = sourceA };
                 JObject castA = null;
                 foreach (int frame in InfernalWallSharedCast35(run, a, dataA, plan.CastingPoint, plan.Midpoint, sources, region, value => castA = value)) yield return frame;
@@ -928,7 +932,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["resolvedCenter"] = resolved ? SurveyVector(placement.Center) : null,
                     ["resolvedForward"] = resolved ? SurveyVector(placement.Forward) : null,
                     ["resolvedPredictedShared"] = actual[0] });
-                if (!targetable || !resolved) continue;
+                // A creature adjacent to the forming wall may save to disrupt
+                // it (close19: the mover stood adjacent). Only Wall B's own
+                // source may stand there; the mover is parked at lane A's
+                // start for every cast, where it stands during this probe.
+                var adjacent = resolved ? InfernalWallPlacementRuntime35.AdjacentUnits(placement)
+                    .Where(value => !ReferenceEquals(value, sourceB)).Select(value => value.UniqueId).ToArray() : new string[0];
+                ((JObject)probes.Last)["adjacentCreatures"] = new JArray(adjacent);
+                if (!targetable || !resolved || adjacent.Length > 0) continue;
                 chosen = new InfernalWallSharedGeometry35 { CenterB = center, ForwardB = placement.Forward,
                     CasterB = caster, RouteStartB = candidate.Value[3], RouteEndB = candidate.Value[4],
                     AngleDegrees = candidate.Key[0], PredictedShared = actual[0], PredictedSharedClaimed = actual[1],
