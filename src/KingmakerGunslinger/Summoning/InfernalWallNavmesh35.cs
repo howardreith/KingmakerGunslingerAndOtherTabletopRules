@@ -27,7 +27,11 @@ namespace KingmakerGunslinger.Summoning
         {
             internal AstarPath Path;
             internal GridGraph Grid;
+            // The node's own static flag and pre-erosion flag before the first
+            // claim (not combined walkability, which also folds in other cuts'
+            // DynamicBlocked counters).
             internal bool OriginalWalkable;
+            internal bool OriginalErosion;
             internal readonly HashSet<InfernalWallNavmesh35> Owners =
                 new HashSet<InfernalWallNavmesh35>();
         }
@@ -253,9 +257,12 @@ namespace KingmakerGunslinger.Summoning
                         NodeClaim claim;
                         if (!Claims.TryGetValue(node, out claim))
                         {
+                            var gridNode = node as GridNode;
                             claim = new NodeClaim {
                                 Path = _astar, Grid = _grid,
-                                OriginalWalkable = node.Walkable };
+                                OriginalWalkable = node.StaticWalkable,
+                                OriginalErosion = gridNode != null ?
+                                    gridNode.WalkableErosion : node.StaticWalkable };
                             Claims.Add(node, claim);
                         }
                         else if (!ReferenceEquals(claim.Path, _astar) ||
@@ -266,9 +273,10 @@ namespace KingmakerGunslinger.Summoning
                         _claimedNodes.Add(node);
                         _nodeOriginals[node] = claim.OriginalWalkable;
                         GridNodesClaimed++;
-                        if (node.Walkable)
+                        bool wasWalkable = node.Walkable;
+                        if (ApplyLayers(node, InfernalRules35.WallClaimNode(
+                                LayersOf(node))) && wasWalkable)
                         {
-                            node.Walkable = false;
                             GridNodesChanged++;
                             changed = true;
                         }
@@ -324,17 +332,49 @@ namespace KingmakerGunslinger.Summoning
                 if (!Claims.TryGetValue(node, out claim) ||
                     !claim.Owners.Remove(this)) continue;
                 if (claim.Owners.Count != 0) continue;
-                if (restoreWalkability && node.Walkable !=
-                    claim.OriginalWalkable)
+                if (restoreWalkability)
                 {
-                    node.Walkable = claim.OriginalWalkable;
-                    GridNodesRestored++;
-                    changed = true;
+                    bool wasWalkable = node.Walkable;
+                    if (ApplyLayers(node, InfernalRules35.WallRestoreNode(
+                            LayersOf(node), claim.OriginalWalkable,
+                            claim.OriginalErosion)))
+                    {
+                        GridNodesRestored++;
+                        if (wasWalkable != node.Walkable) changed = true;
+                    }
                 }
                 Claims.Remove(node);
             }
             _claimedNodes.Clear();
             return changed;
+        }
+
+        private static InfernalRules35.WallGridNodeLayers LayersOf(GraphNode node)
+        {
+            var grid = node as GridNode;
+            return new InfernalRules35.WallGridNodeLayers {
+                Static = node.StaticWalkable,
+                Erosion = grid != null ? grid.WalkableErosion : node.StaticWalkable,
+                Dynamic = (int)node.DynamicBlocked };
+        }
+
+        // Writes only the static layers that differ; reports any write.
+        private static bool ApplyLayers(GraphNode node,
+            InfernalRules35.WallGridNodeLayers layers)
+        {
+            bool wrote = false;
+            if (node.StaticWalkable != layers.Static)
+            {
+                node.Walkable = layers.Static;
+                wrote = true;
+            }
+            var grid = node as GridNode;
+            if (grid != null && grid.WalkableErosion != layers.Erosion)
+            {
+                grid.WalkableErosion = layers.Erosion;
+                wrote = true;
+            }
+            return wrote;
         }
 
         private void QueueGridRestore()
