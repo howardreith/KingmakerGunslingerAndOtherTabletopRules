@@ -1357,7 +1357,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 distance > Vector3.Distance(start, destination) - 1f &&
                 (wallPresent ? InfernalWallNavmesh35.ActiveGridClaimCount > 0 && (sharedLane ? sharedObstructed :
                     distance > Vector3.Distance(start, destination) + .15f && maximumDeviation > .35f &&
-                    (footprintSection == null || minimumFootprintGap > 0f)) : maximumDeviation < .8f &&
+                    // A path along a cut edge can graze it by float/recast
+                    // precision (close16: 0.24 mm into a 0.2 m-cell navmesh);
+                    // around-not-through within one cell, not a zero gap.
+                    (footprintSection == null || (!crossedSection && recastCell > 0f &&
+                        maximumIntrusion <= recastCell))) : maximumDeviation < .8f &&
                     distance <= Vector3.Distance(start, destination) + .8f && InfernalWallNavmesh35.ActiveGridClaimCount == 0);
             check("wall-native-mover-" + label, pass, new JObject { ["mover"] = mover.UniqueId, ["wallPresent"] = wallPresent,
                 ["ground"] = ground, ["plan"] = plan.Document(),
