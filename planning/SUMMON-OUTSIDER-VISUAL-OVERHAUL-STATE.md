@@ -1,5 +1,35 @@
 # Summoned creature visual overhaul: active checkpoint
 
+## Sprint 2 closeout — two-Wall navigation, delivered feedback, steam and tail
+
+[Closeout in the Sprint 2 checkpoint](WALL-OF-ICE-SPRINT2.md#closeout-development-candidate-pr-98-stays-draft-and-unmerged).
+
+- **Result.** Executable source `24a1b935831a2376571d706d382c1db40a45ddfc`
+  passed the guarded `summon-overhaul-wall` phase: **PASS, 152 assertions**.
+  - Run `20261106T0745404351478Z-fee2167da95f4e00bdb23eb8c1b69a45`; ZIP
+    SHA-256 `ff4af5e181c4c11af4b65a9d7bf7742b0c4a53285a8f623ef44d9d80d33f1e22`;
+    DLL MVID `1942ad28-e1f6-4572-a112-73cf24d5b512`.
+  - The 95-assertion credit stays with its own candidate `36e44513d3`.
+- **Production.**
+  - The Wall's steam draws the native kineticist steam cloud, with its flame
+    renderers off. The native Obscuring Mist effect link loads nothing in this
+    install.
+  - A standing Wall section no longer counts as a creature that can save
+    against another Wall's formation.
+- **Observer.**
+  - Feedback passes only when delivered: one attempt, one publication,
+    0 faults, exact message.
+  - New: a two-Wall scenario in both retirement orders, an ordinary-camera
+    tail sequence, and steam presentation checks.
+- **Finding.** Native grid updates (`erodeIterations` 10) overwrite Wall
+  claims while a Wall stands. Retiring Wall B reopened 4 cells that Wall A
+  still claimed; the ice footprint stays blocked by each cut's own counter.
+  A narrow fix failed native acceptance (close28) and is reverted (P1
+  follow-up).
+- **Restoration.** Every run restored v0.0.140, settings and protected saves
+  exactly; close4 was restored manually after the host stopped it.
+- **Ledger.** Additional ≥ 283.29 min; cumulative ≥ 494.60 min. Lower bounds.
+
 ## Sprint 2 complete — Wall of Ice and Bone Devil tail natively accepted
 
 See [the Sprint 2 checkpoint](WALL-OF-ICE-SPRINT2.md). Branch
