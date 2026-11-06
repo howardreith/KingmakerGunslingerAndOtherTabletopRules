@@ -94,6 +94,7 @@ foreach ($line in $lines) {
     }
 }
 $worktreeGuardMode = $false
+$noBranchRestriction = $false
 if ($allowed.Count -eq 0) {
     # Select fixtures from the real script's parameter contract, then execute
     # its decisions below. Recognizing a contract never grants a PASS.
@@ -103,13 +104,25 @@ if ($allowed.Count -eq 0) {
         $parameterNames -contains 'AllowDefaultBranch') {
         $worktreeGuardMode = $true
     }
+    elseif ($parameterNames.Count -eq 0 -and
+        -not ([IO.File]::ReadAllText($policyFull) -match 'non-allowlisted')) {
+        # Owner decision 2026-11-06 (Sprint 41): the branch allow-list was
+        # removed from the wrapper, because it had to gain an entry before the
+        # branch of any new sprint could be pushed. Recognised here only when
+        # the wrapper has no parameters AND carries no allow-list refusal text
+        # at all, so a failed read of a list that still exists cannot be
+        # mistaken for a deliberately dropped restriction. Every remaining
+        # guard is asserted below exactly as before: dropping one check does
+        # not relax the others.
+        $noBranchRestriction = $true
+    }
     else { throw 'Could not identify the installed wrapper contract.' }
 }
 elseif ($allowed.Count -lt 2) { throw 'Could not read the wrapper allow-list.' }
 
 $sprint25 = @('codex/expanded-summoning-sprint25-brachiosaurus-elephant',
               'codex/expanded-summoning-sprint25-release-records')
-foreach ($name in $(if ($worktreeGuardMode) { @() } else { $sprint25 })) {
+foreach ($name in $(if ($worktreeGuardMode -or $noBranchRestriction) { @() } else { $sprint25 })) {
     if ($allowed -cnotcontains $name) {
         throw "Intended Sprint 25 branch missing from the allow-list: $name"
     }
@@ -133,6 +146,8 @@ if ($worktreeGuardMode) {
 }
 $defaultBranch = if ($worktreeGuardMode) {
     'codex/expanded-summoning-cleanup-iteration2'
+} elseif ($noBranchRestriction) {
+    'codex/expanded-summoning-sprint41-audit'
 } else { $sprint25[0] }
 $argvLog = Join-Path $root 'argv.jsonl'
 $scenarioPath = Join-Path $root 'scenario.json'
@@ -432,7 +447,64 @@ try {
         Write-Host 'Harness-negative control ran and passed: a push-before-refusal wrapper is rejected.'
         return
     }
-    if ($worktreeGuardMode) {
+    if ($noBranchRestriction) {
+        # --- Current wrapper: no branch allow-list ---
+        # Every spelling the old allow-list refused must now push, and every
+        # guard that was NOT dropped must still refuse before any mutation.
+        foreach ($branchName in @(
+            'codex/expanded-summoning-sprint41-audit',
+            'codex/expanded-summoning-sprint40-ice-devil',
+            'codex/not-authorized',
+            'codex/expanded-summoning-sprint25-brachiosaurus-elephant-extra',
+            'Codex/Expanded-Summoning-Sprint25-Brachiosaurus-Elephant',
+            'wip/anything',
+            'master')) {
+            Invoke-Case -Name ("no-restriction: pushes " + $branchName) `
+                -Scenario @{ branch = $branchName } -Expect push -ExpectedPushCalls 1
+        }
+        Invoke-Case -Name 'no-restriction: lab root repository is inside the boundary' `
+            -Scenario @{ toplevel = $labFull } -Expect push -ExpectedPushCalls 1
+
+        # --- Retained guards: refusal before mutation ---
+        Invoke-Case -Name 'no-restriction: detached HEAD' -Scenario @{ branch = '' } `
+            -Expect refuse -ExpectedPushCalls 0 `
+            -ExpectMessage 'Refusing to push from a detached HEAD'
+        Invoke-Case -Name 'no-restriction: repository outside the lab' `
+            -Scenario @{ toplevel = 'C:\Dev\SomeOtherRepository' } `
+            -Expect refuse -ExpectedPushCalls 0 `
+            -ExpectMessage 'Refusing to push a repository outside'
+        Invoke-Case -Name 'no-restriction: sibling sharing the lab name prefix' `
+            -Scenario @{ toplevel = $labFull + 'Evil' } `
+            -Expect refuse -ExpectedPushCalls 0 `
+            -ExpectMessage 'Refusing to push a repository outside'
+        Invoke-Case -Name 'no-restriction: unexpected origin remote' `
+            -Scenario @{ origin = 'git@github.com:someone-else/fork.git' } `
+            -Expect refuse -ExpectedPushCalls 0 `
+            -ExpectMessage 'Refusing unexpected origin'
+        Invoke-Case -Name 'no-restriction: qualified baseline object missing' `
+            -Scenario @{ catFileExit = 1 } `
+            -Expect refuse -ExpectedPushCalls 0 -ExpectMessage 'failed with exit code 1'
+        Invoke-Case -Name 'no-restriction: HEAD does not descend from the baseline' `
+            -Scenario @{ ancestorExit = 1 } `
+            -Expect refuse -ExpectedPushCalls 0 -ExpectMessage 'failed with exit code 1'
+        Invoke-Case -Name 'no-restriction: repository lookup fails' `
+            -Scenario @{ toplevelExit = 128 } `
+            -Expect refuse -ExpectedPushCalls 0 -ExpectMessage 'failed with exit code 128'
+        Invoke-Case -Name 'no-restriction: branch lookup fails' `
+            -Scenario @{ branchExit = 128 } `
+            -Expect refuse -ExpectedPushCalls 0 -ExpectMessage 'failed with exit code 128'
+
+        # --- Post-attempt: exactly one attempt, then an honest failure ---
+        Invoke-Case -Name 'no-restriction: upstream push rejected' -Scenario @{ pushExit = 1 } `
+            -Expect refuse -ExpectedPushCalls 1 -ExpectMessage 'failed with exit code 1'
+        Invoke-Case -Name 'no-restriction: upstream verification mismatch' `
+            -Scenario @{ upstream = '2222222222222222222222222222222222222222' } `
+            -Expect refuse -ExpectedPushCalls 1 -ExpectMessage 'upstream verification differs'
+        Invoke-Case -Name 'no-restriction: upstream read fails after push' `
+            -Scenario @{ upstreamExit = 128 } `
+            -Expect refuse -ExpectedPushCalls 1 -ExpectMessage 'failed with exit code 128'
+    }
+    elseif ($worktreeGuardMode) {
         Invoke-Case -Name 'current: exact review root and codex branch' `
             -Scenario @{} -Expect push -ExpectedPushCalls 1
         Invoke-Case -Name 'current: exact mixed-case refspec is preserved' `
@@ -640,6 +712,7 @@ Write-Host "Reviewed wrapper   : $policyFull"
 Write-Host "Reviewed SHA-256   : $reviewedHash"
 Write-Host "Parser errors      : 0; statements $($ast.EndBlock.Statements.Count)"
 if ($worktreeGuardMode) { Write-Host 'Wrapper contract   : exact worktree / codex namespace / clean tree / protected files / remote ancestry' }
+elseif ($noBranchRestriction) { Write-Host 'Wrapper contract   : no branch allow-list; lab root / approved origin / detached-HEAD / qualified-baseline guards retained' }
 else { Write-Host "Allow-list entries : $($allowed.Count); pattern entries 0" }
 Write-Host "Permitted root     : $permittedFull"
 Write-Host ''
