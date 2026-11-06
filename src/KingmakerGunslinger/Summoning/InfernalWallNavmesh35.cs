@@ -90,6 +90,15 @@ namespace KingmakerGunslinger.Summoning
             return node != null && Claims.TryGetValue(node, out claim) ?
                 claim.Owners.Count : 0;
         }
+        // Read-only: whether this exact section currently owns the node claim.
+        internal static bool ClaimOwnedBy(GraphNode node,
+            InfernalWallNavmesh35 owner)
+        {
+            NodeClaim claim;
+            return node != null && owner != null &&
+                Claims.TryGetValue(node, out claim) &&
+                claim.Owners.Contains(owner);
+        }
         // Read-only: a donor body the native renderer actually drew last frame.
         internal int VisibleDonorRendererCount()
         {

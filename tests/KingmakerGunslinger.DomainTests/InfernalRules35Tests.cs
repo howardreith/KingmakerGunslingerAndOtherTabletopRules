@@ -455,6 +455,77 @@ namespace KingmakerGunslinger.DomainTests
                 "Stone chips are the installed BloodType.Stone value 9.");
         }
 
+        private sealed class FeedbackSink : KingmakerGunslinger.Diagnostics.IPlayerCombatLogSink
+        {
+            internal bool Throw;
+            internal int Entries;
+
+            public void Add(string message)
+            {
+                if (Throw) throw new InvalidOperationException("log view unavailable");
+                Entries++;
+            }
+        }
+
+        // Mirrors NativeCombatLog: the last message is recorded before the
+        // real publication service runs, a fault counts as an attempt, and
+        // only a successful sink write counts as published.
+        private sealed class FeedbackCounters
+        {
+            private readonly KingmakerGunslinger.Diagnostics.PlayerCombatLogPublicationService _service;
+            internal long Published, Faults;
+            internal string LastMessage;
+            internal long Attempts { get { return Published + Faults; } }
+
+            internal FeedbackCounters(FeedbackSink sink)
+            { _service = new KingmakerGunslinger.Diagnostics.PlayerCombatLogPublicationService(sink); }
+
+            internal void Publish(string message)
+            {
+                LastMessage = message;
+                if (_service.Publish(message, error => Faults++)) Published++;
+            }
+        }
+
+        internal static void WallFeedbackVerdictRequiresSuccessfulPublication()
+        {
+            const string expected = "A nearby creature disrupted Wall of Ice formation with a successful Reflex save.";
+            var failingSink = new FeedbackSink { Throw = true };
+            var failing = new FeedbackCounters(failingSink);
+            failing.Publish(expected);
+            Assertions.True(failing.Attempts == 1 && failing.LastMessage == expected,
+                "Precondition: a failed publication still records one attempt and the expected message.");
+            Assertions.True(failing.Published == 0 && failing.Faults == 1 && failingSink.Entries == 0,
+                "The failed publication reached no log entry and recorded one fault.");
+            Assertions.False(InfernalWallFeedbackPolicy35.Delivered(failing.Attempts,
+                    failing.Published, failing.Faults, failing.LastMessage, expected),
+                "A failed publication cannot pass as delivered player feedback.");
+
+            var sink = new FeedbackSink();
+            var delivered = new FeedbackCounters(sink);
+            delivered.Publish(expected);
+            Assertions.True(InfernalWallFeedbackPolicy35.Delivered(delivered.Attempts,
+                    delivered.Published, delivered.Faults, delivered.LastMessage, expected) &&
+                sink.Entries == 1,
+                "One successful publication of the exact message is delivery.");
+            Assertions.False(InfernalWallFeedbackPolicy35.Delivered(delivered.Attempts,
+                    delivered.Published, delivered.Faults, delivered.LastMessage,
+                    "Wall of Ice could not form: its location is no longer clear, walkable ground."),
+                "A delivered message for a different outcome is not this case's feedback.");
+            delivered.Publish(expected);
+            Assertions.False(InfernalWallFeedbackPolicy35.Delivered(delivered.Attempts,
+                    delivered.Published, delivered.Faults, delivered.LastMessage, expected),
+                "A repeated publication is not exactly-once feedback.");
+            sink.Throw = true;
+            var mixed = new FeedbackCounters(sink);
+            mixed.Publish(expected);
+            sink.Throw = false;
+            mixed.Publish(expected);
+            Assertions.False(InfernalWallFeedbackPolicy35.Delivered(mixed.Attempts,
+                    mixed.Published, mixed.Faults, mixed.LastMessage, expected),
+                "A success that follows a fault for the same case is not fault-free delivery.");
+        }
+
         internal static void WallDamageSequenceRequiresContinuousLethalHits()
         {
             Assertions.True(InfernalRules35.WallDamageSequenceDestroys(

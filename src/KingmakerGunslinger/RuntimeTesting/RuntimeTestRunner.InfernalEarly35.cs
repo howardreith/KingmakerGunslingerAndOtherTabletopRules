@@ -301,7 +301,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     reach, trace, check)) yield return frame;
                 if (ExpandedSummoningNativeProfilePolicy.WallFixturePhase(
                     RuntimeTestRequestParser.Sprint32ReviewPhase(_request)))
+                {
                     foreach (int frame in InfernalWallSourceCleanup35(fixture, bone, check)) yield return frame;
+                    // Two independent Bone Devil sources, each with its own
+                    // Wall, after the single-section lanes are complete.
+                    foreach (int frame in InfernalWallShared35(fixture, owned, check)) yield return frame;
+                }
             }
             finally
             {
@@ -346,20 +351,70 @@ namespace KingmakerGunslinger.RuntimeTesting
             // beyond the bodies, so the tail lane stands 5 ft beyond them:
             // inside natural reach and outside that dead zone. The tail
             // visual reaches the actual target surface at any legal distance.
-            InfernalCombatLane34(fixture, bone, target, 5);
+            var laneReceipt = new JObject();
             if (wallPhase)
+            {
+                // The earlier fixture lane put a palisade between the party
+                // camera and the Bone Devil. The open lane is selected before
+                // the command; nothing is placed while the command runs.
+                foreach (int frame in InfernalTailOpenLane35(fixture, bone, target, 5, laneReceipt)) yield return frame;
                 foreach (int frame in SummonOverhaulSettlePartyCamera(bone)) yield return frame;
+            }
+            else InfernalCombatLane34(fixture, bone, target, 5);
             int before = tail.Contacts;
             string contactImage = null;
+            var sequence = new JArray();
             var command = new UnitAttack(target) {
                 IsSingleAttack = false, ForceFullAttack = true };
-            bone.Commands.Run(command);
-            foreach (int frame in WaitInfernalCommand34(command, () => {
-                if (wallPhase && contactImage == null && tail.Contacts > before)
-                    contactImage = WriteExpandedSummoningPartyCameraCapture(bone,
-                        _request.EvidenceDirectory, "s35-bone-tail-contact.png");
-                return tail.Contacts > before;
-            }, 30)) yield return frame;
+            if (wallPhase)
+            {
+                sequence.Add(InfernalTailFrame35(bone, target, command, tail, "ready", "s35-bone-tail-seq-0-ready.png"));
+                bone.Commands.Run(command);
+                // Ordinary frames only: sting anticipation (the tail leaves
+                // rest before contact), contact, follow-through and recovery.
+                int windup = -1, contact = -1, recovery = -1;
+                bool windupLate = false, follow = false, followLate = false, settled = false;
+                DateTime deadline = DateTime.UtcNow.AddSeconds(30);
+                int finishedFrame = -1;
+                while (DateTime.UtcNow < deadline)
+                {
+                    Game.Instance.IsPaused = false; yield return 0;
+                    int now = Time.frameCount;
+                    if (contact < 0 && tail.Contacts == before && !tail.Resting)
+                    {
+                        if (windup < 0) { windup = now; sequence.Add(InfernalTailFrame35(bone, target, command, tail, "anticipation", "s35-bone-tail-seq-1-anticipation.png")); }
+                        else if (!windupLate && now - windup >= 4) { windupLate = true; sequence.Add(InfernalTailFrame35(bone, target, command, tail, "anticipation-late", "s35-bone-tail-seq-2-anticipation-late.png")); }
+                    }
+                    if (contact < 0 && tail.Contacts > before)
+                    {
+                        contact = now;
+                        sequence.Add(InfernalTailFrame35(bone, target, command, tail, "contact", "s35-bone-tail-seq-3-contact.png"));
+                        contactImage = (string)sequence.Last["image"];
+                    }
+                    else if (contact >= 0 && !follow && now - contact >= 3) { follow = true; sequence.Add(InfernalTailFrame35(bone, target, command, tail, "follow-through", "s35-bone-tail-seq-4-follow-through.png")); }
+                    else if (contact >= 0 && follow && !followLate && now - contact >= 8) { followLate = true; sequence.Add(InfernalTailFrame35(bone, target, command, tail, "follow-through-late", "s35-bone-tail-seq-5-follow-through-late.png")); }
+                    if (contact >= 0 && recovery < 0 && now > contact && tail.Resting)
+                    { recovery = now; sequence.Add(InfernalTailFrame35(bone, target, command, tail, "recovery", "s35-bone-tail-seq-6-recovery.png")); }
+                    if (recovery >= 0 && !settled && now - recovery >= 20)
+                    { settled = true; sequence.Add(InfernalTailFrame35(bone, target, command, tail, "recovered", "s35-bone-tail-seq-7-recovered.png")); }
+                    if (command.IsFinished && finishedFrame < 0) finishedFrame = now;
+                    if (command.IsFinished && tail.Contacts > before && (settled ||
+                        (finishedFrame >= 0 && now - finishedFrame > 120))) break;
+                }
+                if (!command.IsFinished || tail.Contacts <= before)
+                    throw new InvalidOperationException("Native Sprint34 command/outcome timeout: " +
+                        command.GetType().Name + "; result=" + command.Result);
+                laneReceipt["sequence"] = sequence;
+                laneReceipt["anticipationFrame"] = windup; laneReceipt["contactFrame"] = contact;
+                laneReceipt["recoveryFrame"] = recovery;
+                RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory,
+                    "s35-bone-tail-sequence.json"), laneReceipt.ToString(Formatting.Indented));
+            }
+            else
+            {
+                bone.Commands.Run(command);
+                foreach (int frame in WaitInfernalCommand34(command, () => tail.Contacts > before, 30)) yield return frame;
+            }
             int commandReference = System.Runtime.CompilerServices
                 .RuntimeHelpers.GetHashCode(command);
             var attackRows = trace.Rows.Where(row =>
@@ -405,6 +460,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["restingAfterCommand"] = tail.Resting,
                     ["view"] = view,
                     ["contactImage"] = contactImage,
+                    ["openLane"] = wallPhase ? new JObject {
+                        ["selected"] = laneReceipt["selected"],
+                        ["selectedOccluders"] = laneReceipt["selectedOccluders"],
+                        ["fallback"] = laneReceipt["fallback"],
+                        ["sequenceStages"] = new JArray(sequence.Select(value => value["stage"])),
+                        ["sequenceFile"] = "s35-bone-tail-sequence.json" } : null,
                     ["forcedRolls"] = 0
                 },
                 "The exact native full attack advances Bone's owned sting, and only its private authored tail reaches the real target contact path.");
