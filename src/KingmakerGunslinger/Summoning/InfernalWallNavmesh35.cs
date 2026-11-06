@@ -27,7 +27,12 @@ namespace KingmakerGunslinger.Summoning
         {
             internal AstarPath Path;
             internal GridGraph Grid;
+            // The node's own static flag and pre-erosion flag before the
+            // first claim. Combined walkability is not recorded: it also
+            // folds in cuts' and turn-based units' DynamicBlocked counters,
+            // which the claim must never restore into the static layer.
             internal bool OriginalWalkable;
+            internal bool OriginalErosion;
             internal readonly HashSet<InfernalWallNavmesh35> Owners =
                 new HashSet<InfernalWallNavmesh35>();
         }
@@ -48,18 +53,27 @@ namespace KingmakerGunslinger.Summoning
         private int _gridGeneration;
         private GameObject _wallVisual;
         private Material _wallMaterial;
-        private readonly Dictionary<Renderer, bool> _hiddenRenderers =
-            new Dictionary<Renderer, bool>();
+        private readonly HashSet<Renderer> _hiddenRenderers =
+            new HashSet<Renderer>();
+        private readonly List<Renderer> _rendererScratch =
+            new List<Renderer>();
         private readonly List<GraphNode> _claimedNodes =
             new List<GraphNode>();
         private readonly Dictionary<GraphNode, bool> _nodeOriginals =
             new Dictionary<GraphNode, bool>();
+        // Each node this section claimed and the claim record holding its
+        // original static and pre-erosion flags; kept after release so a
+        // reconcile can still restore both layers once the shared claim
+        // entry is gone.
+        private readonly Dictionary<GraphNode, NodeClaim> _nodeRecords =
+            new Dictionary<GraphNode, NodeClaim>();
         private bool _released;
         private bool _liveReconcileQueued;
         private bool _restoreReconcileQueued;
         private int _restoreExactFrames;
         private bool _retirePending;
         private int _retireDeferredFrames;
+        private bool _restoreSettled;
 
         // One frame is enough for the pathfinder to run GridGraph.UpdateArea
         // in the ordinary case. This bound only stops an indefinitely stalled
@@ -72,6 +86,7 @@ namespace KingmakerGunslinger.Summoning
         internal GameObject WallVisual { get { return _wallVisual; } }
         internal int HiddenDonorRendererCount
         { get { return _hiddenRenderers.Count; } }
+        internal int DonorRendererSuppressions { get; private set; }
         internal string UpdateRoute { get; private set; }
         internal int RecastApplyRequests { get; private set; }
         internal int GridGraphIndex { get; private set; } = -1;
@@ -83,6 +98,11 @@ namespace KingmakerGunslinger.Summoning
         internal bool GridApplyCompleted { get; private set; }
         internal bool GridRestoreQueued { get; private set; }
         internal bool GridRestoreCompleted { get; private set; }
+        // Whether the native combat controller had applied this cut's grid
+        // DynamicBlocked block at release, and whether its paired revert was
+        // submitted (exactly once, by Release).
+        internal bool CutGridBlockAppliedAtRelease { get; private set; }
+        internal bool CutGridRevertQueued { get { return NativeGridCutRevertQueued; } }
         internal int GridReconcileRequests { get; private set; }
         internal int GridReconcileCompleted { get; private set; }
         internal int GridLiveReconcileRequests { get; private set; }
@@ -94,10 +114,35 @@ namespace KingmakerGunslinger.Summoning
         internal bool ReleaseCompleted { get { return _released; } }
         internal bool RetirePending { get { return _retirePending && !_released; } }
         internal string GridFailure { get; private set; }
+        // Native connection recalculations after this section's own writes.
+        internal int GridConnectionRefreshes { get; private set; }
+        internal int GridTagRefreshes { get; private set; }
         internal static int ActiveGridClaimCount { get { return Claims.Count; } }
 
         internal KeyValuePair<GraphNode, bool>[] GridNodeSnapshot()
         { return _nodeOriginals.ToArray(); }
+        internal static int ClaimOwnerCount(GraphNode node)
+        {
+            NodeClaim claim;
+            return node != null && Claims.TryGetValue(node, out claim) ?
+                claim.Owners.Count : 0;
+        }
+        // Read-only: whether this exact section currently owns the node claim.
+        internal static bool ClaimOwnedBy(GraphNode node,
+            InfernalWallNavmesh35 owner)
+        {
+            NodeClaim claim;
+            return node != null && owner != null &&
+                Claims.TryGetValue(node, out claim) &&
+                claim.Owners.Contains(owner);
+        }
+        // Read-only: a donor body the native renderer actually drew last frame.
+        internal int VisibleDonorRendererCount()
+        {
+            GetComponentsInChildren(true, _rendererScratch);
+            return _rendererScratch.Count(renderer => renderer != null &&
+                renderer.isVisible && SuppressesRenderer(renderer));
+        }
 
         internal static bool IsExactIdentity(UnitEntityView view)
         {
@@ -147,13 +192,8 @@ namespace KingmakerGunslinger.Summoning
 
         private void CreateWallVisual()
         {
-            foreach (Renderer renderer in _view.GetComponentsInChildren<
-                Renderer>(true))
-            {
-                if (renderer == null) continue;
-                _hiddenRenderers[renderer] = renderer.enabled;
-                renderer.enabled = false;
-            }
+            SuppressDonorRenderers();
+            DonorRendererSuppressions = 0;
             _wallVisual = GameObject.CreatePrimitive(PrimitiveType.Cube);
             _wallVisual.name = "KMG_S35_WallOfIceSection";
             _wallVisual.transform.SetParent(_view.transform, false);
@@ -220,6 +260,7 @@ namespace KingmakerGunslinger.Summoning
             {
                 if (_released || generation != _gridGeneration) return true;
                 List<GraphNode> candidates = null;
+                var written = new List<GraphNode>();
                 bool changed = false;
                 try
                 {
@@ -228,8 +269,9 @@ namespace KingmakerGunslinger.Summoning
                             "Active path graph changed before wall admission.");
                     if (replacing)
                     {
-                        changed = ReleaseClaims(true);
+                        changed = ReleaseClaims(true, written);
                         _nodeOriginals.Clear();
+                        _nodeRecords.Clear();
                         GridNodesConsidered = 0;
                         GridNodesClaimed = 0;
                         GridNodesChanged = 0;
@@ -252,9 +294,12 @@ namespace KingmakerGunslinger.Summoning
                         NodeClaim claim;
                         if (!Claims.TryGetValue(node, out claim))
                         {
+                            var gridNode = node as GridNode;
                             claim = new NodeClaim {
                                 Path = _astar, Grid = _grid,
-                                OriginalWalkable = node.Walkable };
+                                OriginalWalkable = node.StaticWalkable,
+                                OriginalErosion = gridNode != null ?
+                                    gridNode.WalkableErosion : node.StaticWalkable };
                             Claims.Add(node, claim);
                         }
                         else if (!ReferenceEquals(claim.Path, _astar) ||
@@ -264,26 +309,29 @@ namespace KingmakerGunslinger.Summoning
                         if (!claim.Owners.Add(this)) continue;
                         _claimedNodes.Add(node);
                         _nodeOriginals[node] = claim.OriginalWalkable;
+                        _nodeRecords[node] = claim;
                         GridNodesClaimed++;
-                        if (node.Walkable)
+                        bool wasWalkable = node.Walkable;
+                        if (ApplyLayers(node, InfernalRules35.WallClaimNode(
+                                LayersOf(node))))
                         {
-                            node.Walkable = false;
-                            GridNodesChanged++;
+                            written.Add(node);
+                            if (wasWalkable) GridNodesChanged++;
                             changed = true;
                         }
                     }
                     if (GridNodesClaimed == 0)
                         throw new InvalidOperationException(
                             "Wall footprint did not claim a grid node.");
-                    if (changed) _astar.QueueWorkItemFloodFill();
+                    if (changed) RefreshGrid(written);
                     GridApplyCompleted = true;
                     UpdateRoute = UpdateRoute + "+wall-grid-work-item";
                 }
                 catch (Exception error)
                 {
                     GridFailure = error.GetType().Name + ": " + error.Message;
-                    if (ReleaseClaims(true))
-                        _astar.QueueWorkItemFloodFill();
+                    if (ReleaseClaims(true, written) || written.Count > 0)
+                        RefreshGrid(written);
                     Debug.LogException(error);
                 }
                 finally
@@ -314,7 +362,8 @@ namespace KingmakerGunslinger.Summoning
             QueueGridBlock(true);
         }
 
-        private bool ReleaseClaims(bool restoreWalkability)
+        private bool ReleaseClaims(bool restoreWalkability,
+            List<GraphNode> written)
         {
             bool changed = false;
             foreach (GraphNode node in _claimedNodes.ToArray())
@@ -323,13 +372,11 @@ namespace KingmakerGunslinger.Summoning
                 if (!Claims.TryGetValue(node, out claim) ||
                     !claim.Owners.Remove(this)) continue;
                 bool remainingOwner = claim.Owners.Count != 0;
-                bool desired = InfernalRules35
-                    .WallNodeWalkableAfterOwnerRelease(
-                        claim.OriginalWalkable, remainingOwner);
-                if (restoreWalkability && node.Walkable != desired)
+                if (restoreWalkability && ApplyLayers(node,
+                        DesiredLayers(node, claim, remainingOwner)))
                 {
-                    node.Walkable = desired;
                     GridNodesRestored++;
+                    if (written != null) written.Add(node);
                     changed = true;
                 }
                 if (remainingOwner) continue;
@@ -339,27 +386,148 @@ namespace KingmakerGunslinger.Summoning
             return changed;
         }
 
+        // The static layers a node must hold once this section no longer
+        // owns it: still blocked in both layers while another section owns
+        // it, otherwise exactly the static and pre-erosion flags recorded
+        // before the first claim. DynamicBlocked counters are never written:
+        // they belong to the native cuts and turn-based units.
+        private static InfernalRules35.WallGridNodeLayers DesiredLayers(
+            GraphNode node, NodeClaim claim, bool remainingOwner)
+        {
+            var layers = LayersOf(node);
+            return remainingOwner ? InfernalRules35.WallClaimNode(layers) :
+                InfernalRules35.WallRestoreNode(layers,
+                    InfernalRules35.WallNodeWalkableAfterOwnerRelease(
+                        claim.OriginalWalkable, false),
+                    claim.OriginalErosion);
+        }
+
+        private static InfernalRules35.WallGridNodeLayers LayersOf(GraphNode node)
+        {
+            var grid = node as GridNode;
+            return new InfernalRules35.WallGridNodeLayers {
+                Static = node.StaticWalkable,
+                Erosion = grid != null ? grid.WalkableErosion : node.StaticWalkable,
+                Dynamic = node.DynamicBlocked };
+        }
+
+        private static bool SameLayers(GraphNode node,
+            InfernalRules35.WallGridNodeLayers layers)
+        {
+            var grid = node as GridNode;
+            return node.StaticWalkable == layers.Static &&
+                (grid == null || grid.WalkableErosion == layers.Erosion);
+        }
+
+        // Writes only the static layers that differ; reports any write.
+        private static bool ApplyLayers(GraphNode node,
+            InfernalRules35.WallGridNodeLayers layers)
+        {
+            bool wrote = false;
+            if (node.StaticWalkable != layers.Static)
+            {
+                node.Walkable = layers.Static;
+                wrote = true;
+            }
+            var grid = node as GridNode;
+            if (grid != null && grid.WalkableErosion != layers.Erosion)
+            {
+                grid.WalkableErosion = layers.Erosion;
+                wrote = true;
+            }
+            return wrote;
+        }
+
+        // Installed GridGraph.UpdateArea recalculates grid connections after
+        // it changes walkability, and a claim writes the flags directly, so
+        // it does the same for every node it wrote and their neighbours.
+        // Otherwise a node restored to walkable keeps the connections a
+        // native update computed while it was claimed (close28: after
+        // physical destruction the restored footprint stayed a detour on
+        // the grid). It then re-erodes the tags over the same reach the
+        // native update uses (written cells expanded twice by
+        // erodeIterations): a native update that ran while the claim stood
+        // tagged the surrounding cells around it, and restoring the flags
+        // alone left those tags stale (nav5: 357-387 of 676 region cells).
+        // Tag erosion is only run where the grid erodes into tags; with
+        // erosion into walkability it would compound. Runs inside a
+        // pathfinding work item, and only on the graph the claims were
+        // captured on.
+        private void RefreshGrid(List<GraphNode> written)
+        {
+            GridGraph grid = _grid;
+            if (_astar == null || !ReferenceEquals(AstarPath.active, _astar))
+                return;
+            if (grid != null && grid.nodes != null &&
+                grid.nodes.Length == grid.width * grid.depth)
+            {
+                int xmin = int.MaxValue, zmin = int.MaxValue;
+                int xmax = int.MinValue, zmax = int.MinValue;
+                foreach (GraphNode node in written)
+                {
+                    var gridNode = node as GridNode;
+                    if (gridNode == null ||
+                        gridNode.GraphIndex != (uint)GridGraphIndex) continue;
+                    int x = gridNode.NodeInGridIndex % grid.width;
+                    int z = gridNode.NodeInGridIndex / grid.width;
+                    xmin = Math.Min(xmin, x); xmax = Math.Max(xmax, x);
+                    zmin = Math.Min(zmin, z); zmax = Math.Max(zmax, z);
+                }
+                if (xmin <= xmax)
+                {
+                    for (int z = Math.Max(0, zmin - 1);
+                        z <= Math.Min(grid.depth - 1, zmax + 1); z++)
+                        for (int x = Math.Max(0, xmin - 1);
+                            x <= Math.Min(grid.width - 1, xmax + 1); x++)
+                        {
+                            GridNode node = grid.nodes[z * grid.width + x];
+                            if (node != null) grid.CalculateConnections(x, z, node);
+                        }
+                    GridConnectionRefreshes++;
+                    int reach = grid.erodeIterations;
+                    if (grid.erosionUseTags && reach > 0)
+                    {
+                        grid.ErodeWalkableArea(Math.Max(0, xmin - 2 * reach),
+                            Math.Max(0, zmin - 2 * reach),
+                            Math.Min(grid.width, xmax + 2 * reach + 1),
+                            Math.Min(grid.depth, zmax + 2 * reach + 1));
+                        GridTagRefreshes++;
+                    }
+                }
+            }
+            _astar.QueueWorkItemFloodFill();
+        }
+
+        // Every node this released section recorded holds its desired static
+        // layers (DesiredLayers), whoever still owns it.
         private bool ReleasedGridIsExact()
         {
-            return _nodeOriginals.All(pair =>
+            return _nodeRecords.All(pair =>
             {
                 NodeClaim claim;
                 bool remainingOwner = Claims.TryGetValue(pair.Key,
                     out claim) && claim.Owners.Count > 0;
-                bool desired = InfernalRules35
-                    .WallNodeWalkableAfterOwnerRelease(pair.Value,
-                        remainingOwner);
-                return pair.Key.Walkable == desired;
+                return SameLayers(pair.Key, ReleasedLayers(pair.Key,
+                    pair.Value, remainingOwner));
             });
         }
 
+        private static InfernalRules35.WallGridNodeLayers ReleasedLayers(
+            GraphNode node, NodeClaim recorded, bool remainingOwner)
+        {
+            return DesiredLayers(node, recorded, remainingOwner);
+        }
+
+        // Every live claim is still owned by this section and blocked in
+        // both static layers.
         private bool LiveGridIsExact()
         {
             return _claimedNodes.All(node =>
             {
                 NodeClaim claim;
                 return Claims.TryGetValue(node, out claim) &&
-                    claim.Owners.Contains(this) && !node.Walkable;
+                    claim.Owners.Contains(this) &&
+                    SameLayers(node, InfernalRules35.WallClaimNode(LayersOf(node)));
             });
         }
 
@@ -372,21 +540,24 @@ namespace KingmakerGunslinger.Summoning
             GridLiveReconcileRequests++;
             _astar.AddWorkItem(new AstarPath.AstarWorkItem(force =>
             {
-                bool changed = false;
+                var written = new List<GraphNode>();
                 try
                 {
-                    if (_released) return true;
+                    if (_released || !ReferenceEquals(AstarPath.active, _astar))
+                        return true;
                     foreach (GraphNode node in _claimedNodes)
                     {
                         NodeClaim claim;
                         if (!Claims.TryGetValue(node, out claim) ||
-                            !claim.Owners.Contains(this) || !node.Walkable)
+                            !claim.Owners.Contains(this)) continue;
+                        bool wasWalkable = node.Walkable;
+                        if (!ApplyLayers(node,
+                                InfernalRules35.WallClaimNode(LayersOf(node))))
                             continue;
-                        node.Walkable = false;
-                        GridNodesChanged++;
-                        changed = true;
+                        written.Add(node);
+                        if (wasWalkable) GridNodesChanged++;
                     }
-                    if (changed) _astar.QueueWorkItemFloodFill();
+                    if (written.Count > 0) RefreshGrid(written);
                 }
                 catch (Exception error)
                 {
@@ -405,30 +576,29 @@ namespace KingmakerGunslinger.Summoning
 
         private void QueueReleasedGridReconcile()
         {
-            if (_restoreReconcileQueued || _nodeOriginals.Count == 0 ||
+            if (_restoreReconcileQueued || _nodeRecords.Count == 0 ||
                 _astar == null || !ReferenceEquals(AstarPath.active, _astar))
                 return;
             _restoreReconcileQueued = true;
             GridReconcileRequests++;
             _astar.AddWorkItem(new AstarPath.AstarWorkItem(force =>
             {
-                bool changed = false;
+                var written = new List<GraphNode>();
                 try
                 {
-                    foreach (var pair in _nodeOriginals)
+                    // Restoration data never reaches a replacement graph.
+                    if (!ReferenceEquals(AstarPath.active, _astar)) return true;
+                    foreach (var pair in _nodeRecords)
                     {
                         NodeClaim claim;
                         bool remainingOwner = Claims.TryGetValue(pair.Key,
                             out claim) && claim.Owners.Count > 0;
-                        bool desired = InfernalRules35
-                            .WallNodeWalkableAfterOwnerRelease(pair.Value,
-                                remainingOwner);
-                        if (pair.Key.Walkable == desired) continue;
-                        pair.Key.Walkable = desired;
+                        if (!ApplyLayers(pair.Key, ReleasedLayers(pair.Key,
+                                pair.Value, remainingOwner))) continue;
                         GridNodesRestored++;
-                        changed = true;
+                        written.Add(pair.Key);
                     }
-                    if (changed) _astar.QueueWorkItemFloodFill();
+                    if (written.Count > 0) RefreshGrid(written);
                 }
                 catch (Exception error)
                 {
@@ -457,7 +627,7 @@ namespace KingmakerGunslinger.Summoning
             GridRestoreQueued = true;
             if (_astar == null || !ReferenceEquals(AstarPath.active, _astar))
             {
-                ReleaseClaims(false);
+                ReleaseClaims(false, null);
                 GridRestoreCompleted = true;
                 return;
             }
@@ -465,8 +635,11 @@ namespace KingmakerGunslinger.Summoning
             {
                 try
                 {
-                    if (ReleaseClaims(true))
-                        _astar.QueueWorkItemFloodFill();
+                    var written = new List<GraphNode>();
+                    if (!ReferenceEquals(AstarPath.active, _astar))
+                        ReleaseClaims(false, null);
+                    else if (ReleaseClaims(true, written))
+                        RefreshGrid(written);
                     GridRestoreCompleted = true;
                 }
                 catch (Exception error)
@@ -483,16 +656,13 @@ namespace KingmakerGunslinger.Summoning
         /// <summary>
         /// Retires this wall's navigation ownership, visuals and native cut.
         ///
-        /// Retirement is resumable and idempotent. Previously this threw
-        /// between disabling the native cut and the terminal work, so an
-        /// interrupted call left the cut disabled, the owned claims held, the
-        /// visuals up and <c>_released</c> false, while callers had already
-        /// set their one-way breach/retire flags and would refuse to retry.
-        ///
-        /// Now a transient in-flight grid update leaves retirement pending and
-        /// retries from <c>Update</c>, and a replaced graph completes without a
-        /// native revert instead of aborting. <paramref name="force"/> is used
-        /// by destruction, where no later frame exists to resume on.
+        /// Retirement is resumable and idempotent. A transient in-flight
+        /// native grid update leaves retirement pending (cut disabled, every
+        /// claim and reference intact) and retries from <c>Update</c>; a
+        /// replaced graph completes without a native revert; the paired
+        /// native revert is submitted at most once, on the exact captured
+        /// graph. <paramref name="force"/> is used by destruction, where no
+        /// later frame exists to resume on.
         /// </summary>
         /// <returns>True when retirement completed; false when it is pending
         /// and will resume on a later frame.</returns>
@@ -501,13 +671,12 @@ namespace KingmakerGunslinger.Summoning
             if (_released) return true;
             if (_cut != null)
             {
-                // Kingmaker's turn-based navigation consumer applies a
-                // separate GridGraph update object for each native cut. Once
-                // the component is destroyed it leaves that consumer's list,
-                // so submit the paired revert object while the exact cut is
-                // still available. The owned 24-node claims below remain the
-                // cross-owner authority; this only retires the native six-node
-                // footprint observed for this same component.
+                // Kingmaker's combat navigation consumer applies a separate
+                // GridGraph update object (DynamicBlocked counters) for each
+                // native cut, and reverts it only while the cut is listed.
+                // Submit the paired revert while this exact cut is still
+                // available; the owned claims remain the cross-owner static
+                // authority and are released by QueueGridRestore below.
                 _cut.enabled = false;
                 NativeCutDisabledBeforeDestroy = !_cut.enabled;
                 bool graphExact = _astar != null &&
@@ -515,6 +684,7 @@ namespace KingmakerGunslinger.Summoning
                     GridGraphIndex >= 0 && GridGraphIndex < 31;
                 bool updateInFlight = false;
                 bool cutApplied = _cut.gridGuoApplied;
+                CutGridBlockAppliedAtRelease = cutApplied;
                 NavmeshCut.UpdateObjectPair updatePair =
                     default(NavmeshCut.UpdateObjectPair);
                 if (cutApplied && graphExact)
@@ -524,8 +694,7 @@ namespace KingmakerGunslinger.Summoning
                         1 << GridGraphIndex);
                     if (updatePair.guo == null || updatePair.revertGuo == null)
                         // The engine holds no paired revert object for this
-                        // cut, so there is nothing of ours to submit. That is
-                        // terminal, not an update worth waiting for.
+                        // cut, so there is nothing of ours to submit.
                         cutApplied = false;
                     else
                         updateInFlight = updatePair.guo.updating ||
@@ -554,8 +723,8 @@ namespace KingmakerGunslinger.Summoning
                             RetireDeferFrameBudget);
                     // Only the bookkeeping is cleared. No restoration data is
                     // applied, so nothing of ours can reach a replacement
-                    // graph; QueueGridRestore below enforces the same rule for
-                    // the owned claims.
+                    // graph; QueueGridRestore enforces the same rule for the
+                    // owned claims.
                     _cut.gridGuoApplied = false;
                 }
                 else
@@ -581,9 +750,9 @@ namespace KingmakerGunslinger.Summoning
                 UnityEngine.Object.DestroyImmediate(_wallVisual);
             if (_wallMaterial != null)
                 UnityEngine.Object.DestroyImmediate(_wallMaterial);
-            foreach (var pair in _hiddenRenderers)
-                if (pair.Key != null) pair.Key.enabled = pair.Value;
-            _hiddenRenderers.Clear();
+            // The donor body never returns: a retiring section is dead or
+            // leaving the world, and this component stays enabled to keep it
+            // hidden (LateUpdate) until the native view is destroyed.
             QueueGridRestore();
             _cut = null;
             _wallVisual = null;
@@ -601,14 +770,17 @@ namespace KingmakerGunslinger.Summoning
             if (!_released && _retirePending && !Release(false)) return;
             if (_released)
             {
-                if (!GridRestoreCompleted || _restoreReconcileQueued) return;
+                if (_restoreSettled || !GridRestoreCompleted ||
+                    _restoreReconcileQueued) return;
                 if (!ReleasedGridIsExact())
                 {
                     _restoreExactFrames = 0;
                     QueueReleasedGridReconcile();
                     return;
                 }
-                if (++_restoreExactFrames >= 2) enabled = false;
+                // The component stays enabled for donor suppression; only
+                // the restoration watch settles.
+                if (++_restoreExactFrames >= 2) _restoreSettled = true;
                 return;
             }
             if (GridApplyCompleted && !_liveReconcileQueued &&
@@ -624,6 +796,32 @@ namespace KingmakerGunslinger.Summoning
                 UnitEntityData retiring = _owner;
                 Release();
                 InfernalWallSection35.Retire(retiring);
+            }
+        }
+
+        // Native fade/visibility controllers revisit every view renderer after
+        // attachment and would otherwise reveal the theropod donor inside the
+        // ice, or standing in its place after a breach.
+        private void LateUpdate() { SuppressDonorRenderers(); }
+
+        private bool SuppressesRenderer(Renderer renderer)
+        {
+            return InfernalRules35.WallSuppressesRenderer(
+                _wallVisual != null &&
+                    ReferenceEquals(renderer.gameObject, _wallVisual),
+                renderer is SkinnedMeshRenderer || renderer is MeshRenderer);
+        }
+
+        private void SuppressDonorRenderers()
+        {
+            GetComponentsInChildren(true, _rendererScratch);
+            foreach (Renderer renderer in _rendererScratch)
+            {
+                if (renderer == null || !SuppressesRenderer(renderer)) continue;
+                _hiddenRenderers.Add(renderer);
+                if (!renderer.enabled) continue;
+                renderer.enabled = false;
+                DonorRendererSuppressions++;
             }
         }
 

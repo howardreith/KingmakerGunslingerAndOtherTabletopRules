@@ -1,5 +1,126 @@
 # Summoned creature visual overhaul: active checkpoint
 
+## Integration with master — conflict-free; native validation blocked
+
+[Integration closeout in the Sprint 2 checkpoint](WALL-OF-ICE-SPRINT2.md#integration-closeout-with-master-development-candidate-blocked-before-packaging).
+Current; supersedes the continuation summary below for branch state.
+
+- **Merge.** `f31cccbe3d` merges master `839204cac3` (PR #97 Ice Devil, PR #99
+  retirement safety) into PR #98 without rewriting history. The branch is
+  conflict-free.
+- **One shared Wall lifecycle.** Durable two-layer claims with
+  last-owner restore and native connection/tag refresh, master's resumable
+  `Release(force)` as the only path (the native revert submitted at most
+  once), and both-layer reconciliation. Donor suppression stays active.
+  Ice Devil behaviour is kept, and both species' sections are excluded from
+  formation saves.
+- **Verdicts corrected (not yet native-executed):**
+  - Steam reuse now requires the captured instance and a complete renderer
+    comparison (new regression).
+  - The turn-based check requires the executed path's grid, type, clearance,
+    tags and `ForcedPath` identity.
+  - Both static layers are read directly.
+  - Clearance tags are classified as exact, equivalent, looser beyond reach
+    or more restrictive.
+- **Gates.** Focused gates pass (28 Wall/Sprint 40 tests; 631 Expanded
+  Summoning tests).
+- **Blocked.** Packaging is refused: master froze 0.0.178 without publishing
+  `v0.0.178`, and development candidates must extend a released tag. So
+  there is no native result for the integration; earlier credits stay with
+  their own candidates.
+- **Ledger.** ≥ 0.94 min more; cumulative ≥ 592.95 min (lower bounds).
+
+## Sprint 2 navigation continuation — durable claims, stationary sections, pooled steam
+
+[Navigation continuation in the Sprint 2 checkpoint](WALL-OF-ICE-SPRINT2.md#navigation-continuation-development-candidate-pr-98-stays-draft-and-unmerged).
+Current; supersedes the closeout's navigation finding below.
+
+- **Result.** Executable source `4aa27dcfea3220b1c87fa2a73a7c7ebe061985cc`
+  passed the guarded `summon-overhaul-wall` phase: **PASS, 155 assertions**.
+  - Run `20261106T1642352570083Z-384c0780508b46ab889275a3ada550d7`; ZIP
+    SHA-256 `e9abfcc07d5e43a66e88a0e15381b155c650f8956c964c4408ee1e7166801d68`;
+    DLL MVID `818561cd-e8b1-4633-9ce8-c6363cd3e9ab`.
+  - Product source unchanged since `865ce2f881`. The 152 and 95 credits stay
+    with their own candidates.
+- **Placement survey** now uses production legality: no claim-owner
+  exclusion, and `TryResolve` with `CanTarget` deciding. Under the closeout's
+  production it reached genuine shared claims (nav1: 3 cells with both
+  owners, both orders, exact restoration). Under the selected design they are
+  unreachable by construction.
+- **Turn-based effect of the reopened cells** (closeout production):
+  - Turn-based entry erased every claim.
+  - Native turn-based routes and an ordinary turn-based move cut the ice's
+    end corner, with the centre about 0.23 m inside the footprint (nav4).
+  - No crossing through the Wall's length was observed.
+- **Production.**
+  - Claims hold both static layers.
+  - The section refreshes grid connections and erosion tags natively after
+    its own writes. That refresh is the cause of close28 that was missing.
+  - Wall sections carry `CantMove`: native summon follow had walked a section
+    about 2.8 m (nav4).
+  - The steam cloud's flame renderers are restored at
+    `GameObjectsPool.Release`: the Wall's released cloud had been reused by a
+    native claim with 16 renderers off (nav2, nav4).
+- **Evidence for the selected design** (nav5, nav9):
+  - Claims held in turn-based mode, and routes and the move stayed 0.12 m or
+    more from the ice.
+  - The diagonal two-Wall geometry kept the survivor's claims in both orders.
+  - Final restoration exact (connections and tags included).
+  - The physical-lane route was restored; steam pool reuse matched the prefab.
+- **Restoration.** All nine runs restored the intake (mod 0.0.140), settings
+  and protected saves exactly.
+- **Ledger.** Continuation ≥ 97.40 min; cumulative ≥ 592.01 min. Lower bounds.
+
+## Sprint 2 closeout — two-Wall navigation, delivered feedback, steam and tail
+
+[Closeout in the Sprint 2 checkpoint](WALL-OF-ICE-SPRINT2.md#closeout-development-candidate-pr-98-stays-draft-and-unmerged).
+
+- **Result.** Executable source `24a1b935831a2376571d706d382c1db40a45ddfc`
+  passed the guarded `summon-overhaul-wall` phase: **PASS, 152 assertions**.
+  - Run `20261106T0745404351478Z-fee2167da95f4e00bdb23eb8c1b69a45`; ZIP
+    SHA-256 `ff4af5e181c4c11af4b65a9d7bf7742b0c4a53285a8f623ef44d9d80d33f1e22`;
+    DLL MVID `1942ad28-e1f6-4572-a112-73cf24d5b512`.
+  - The 95-assertion credit stays with its own candidate `36e44513d3`.
+- **Production.**
+  - The Wall's steam draws the native kineticist steam cloud, with its flame
+    renderers off. The native Obscuring Mist effect link loads nothing in this
+    install.
+  - A standing Wall section no longer counts as a creature that can save
+    against another Wall's formation.
+- **Observer.**
+  - Feedback passes only when delivered: one attempt, one publication,
+    0 faults, exact message.
+  - New: a two-Wall scenario in both retirement orders, an ordinary-camera
+    tail sequence, and steam presentation checks.
+- **Finding.** Native grid updates (`erodeIterations` 10) overwrite Wall
+  claims while a Wall stands. Retiring Wall B reopened 4 cells that Wall A
+  still claimed; the ice footprint stays blocked by each cut's own counter.
+  A narrow fix failed native acceptance (close28) and was reverted; the
+  navigation continuation above resolves it.
+- **Restoration.** Every run restored v0.0.140, settings and protected saves
+  exactly; close4 was restored manually after the host stopped it.
+- **Ledger.** Additional ≥ 283.29 min; cumulative ≥ 494.60 min. Lower bounds.
+
+## Sprint 2 complete — Wall of Ice and Bone Devil tail natively accepted
+
+See [the Sprint 2 checkpoint](WALL-OF-ICE-SPRINT2.md). Branch
+`codex/wall-of-ice-sprint2` from merged PR #96. Executable source
+`36e44513d3fa7e9a670245a2d1bfe39153058702` (0.0.177, ZIP SHA-256
+`ae2f5c88d56049dc4826c0eca0542fed0402e88ae6dea426c9702b5a006b25b3`) passed the
+guarded `summon-overhaul-wall` phase: PASS, 95 assertions, evidence directory
+`20261105T2213068225716Z-disposable-expanded-summoning-sprint32-native-review`.
+Six earlier failed runs on intermediate candidates are retained and explained.
+
+Four production Wall repairs landed (donor body hidden, player-linked feedback,
+non-blood ice effects, native grid-block revert on release). Accepted creature
+work and the Sprint 1 fixture were preserved, not rerun separately; the
+accepted run exercises the fixture prerequisite three times (one per lane).
+Every run restored v0.0.140, settings and protected saves exactly.
+
+Retained ledger 117.319233 min; additional 93.992 min; cumulative 211.311 min.
+Open owner decisions are listed in the checkpoint. The new PR stays draft and
+unmerged; no installation or release. Dated records below are historical.
+
 ## Sprint 1 complete — shared Wall fixture prerequisite verified twice
 
 See [the concise implementation/evidence checkpoint](WALL-FIXTURE-SPRINT1.md).
