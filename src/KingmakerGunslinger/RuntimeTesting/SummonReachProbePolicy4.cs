@@ -29,7 +29,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "hezrou",        // Large natural (bite, two claws)
             "hill-giant",    // Large ordinary manufactured weapon (greatclub)
             "salamander",    // mixed manufactured/natural, unequal reach (spear, tail)
-            "storm-giant"    // Huge manufactured weapon on the existing absolute range-override path
+            "storm-giant",   // Huge manufactured weapon on the existing absolute range-override path
+            "cloud-giant"    // the same override path; s4d/s4e Storm Giant first slot is under inspection
         };
 
         // Genuine reach weapons: the only melee weapons that must remain

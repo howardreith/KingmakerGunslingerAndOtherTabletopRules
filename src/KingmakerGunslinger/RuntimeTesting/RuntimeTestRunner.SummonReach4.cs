@@ -16,6 +16,9 @@ using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
 using Kingmaker.Items;
 using Kingmaker.Items.Slots;
+using Kingmaker.PubSubSystem;
+using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.FactLogic;
@@ -341,6 +344,60 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             PlaceExpandedSummoningUnit(target, origin + direction.Value * (farthest + 3f));
         }
+        // Read-only diagnostics for one attacker's weapon attacks during a
+        // measured command: the outer weapon rule before and after it
+        // triggers, and its attack roll's automatic and miss-chance outcome.
+        // Every handler is guarded; it never changes a rule.
+        private sealed class SummonReachRuleProbe4 : IDisposable,
+            IGlobalRulebookHandler<RuleAttackWithWeapon>, IGlobalRulebookHandler<RuleAttackRoll>
+        {
+            internal readonly JArray Rows = new JArray();
+            private readonly string _owner;
+            internal SummonReachRuleProbe4(UnitEntityData owner) { _owner = owner.UniqueId; EventBus.Subscribe(this); }
+            public void Dispose() { EventBus.Unsubscribe(this); }
+            private void Add(string kind, RulebookEvent evt, Action<JObject> fill)
+            {
+                try
+                {
+                    if (evt?.Initiator?.UniqueId != _owner) return;
+                    var row = new JObject { ["event"] = kind, ["gameSeconds"] = Game.Instance.TimeController.GameTime.TotalSeconds,
+                        ["rule"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(evt),
+                        ["target"] = evt.GetRuleTarget()?.UniqueId };
+                    fill(row);
+                    Rows.Add(row);
+                }
+                catch (Exception error)
+                {
+                    Rows.Add(new JObject { ["event"] = kind, ["observerError"] = error.GetType().Name + ": " + error.Message });
+                }
+            }
+            public void OnEventAboutToTrigger(RuleAttackWithWeapon evt)
+            {
+                Add("weapon-about", evt, row => { row["weapon"] = evt.Weapon?.Blueprint?.AssetGuid;
+                    row["attackNumber"] = evt.AttackNumber; row["fullAttack"] = evt.IsFullAttack; row["autoHit"] = evt.AutoHit; });
+            }
+            public void OnEventDidTrigger(RuleAttackWithWeapon evt)
+            {
+                Add("weapon-did", evt, row => { row["weapon"] = evt.Weapon?.Blueprint?.AssetGuid;
+                    row["hit"] = evt.AttackRoll?.IsHit; row["roll"] = evt.AttackRoll == null ? (int?)null : evt.AttackRoll.Roll.Value; });
+            }
+            public void OnEventAboutToTrigger(RuleAttackRoll evt)
+            {
+                Add("roll-about", evt, row => { row["autoHit"] = evt.AutoHit; row["autoMiss"] = evt.AutoMiss;
+                    row["outerWeaponRule"] = evt.RuleAttackWithWeapon == null ? (int?)null :
+                        System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(evt.RuleAttackWithWeapon); });
+            }
+            public void OnEventDidTrigger(RuleAttackRoll evt)
+            {
+                Add("roll-did", evt, row => { row["weapon"] = evt.Weapon?.Blueprint?.AssetGuid;
+                    row["attackType"] = evt.AttackType.ToString(); row["roll"] = evt.Roll.Value; row["result"] = evt.Result.ToString();
+                    row["hit"] = evt.IsHit; row["autoHit"] = evt.AutoHit; row["autoMiss"] = evt.AutoMiss;
+                    row["missChance"] = evt.MissChance; row["missChanceRoll"] = evt.MissChanceRoll;
+                    row["outerWeaponRule"] = evt.RuleAttackWithWeapon == null ? (int?)null :
+                        System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(evt.RuleAttackWithWeapon); });
+            }
+        }
+
         // A clear straight line for probes: the summon's own spot first, then
         // a ring around the summoner (within summon-follow range). Clear
         // means every point along the line has a walkable node within 0.3 m
@@ -548,17 +605,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             int reference = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(command);
             row["commandReference"] = reference;
             row["commandIssuedGameSeconds"] = Game.Instance.TimeController.GameTime.TotalSeconds;
-            unit.Commands.Run(command);
             float unitTravel = 0f, targetTravel = 0f;
-            DateTime deadline = DateTime.UtcNow.AddSeconds(25);
-            int settled = 0;
-            while (DateTime.UtcNow < deadline && settled < 30)
+            var rules = new SummonReachRuleProbe4(unit);
+            try
             {
-                Game.Instance.IsPaused = false; yield return 0;
-                unitTravel = Math.Max(unitTravel, Vector3.Distance(unitStart, unit.Position));
-                targetTravel = Math.Max(targetTravel, Vector3.Distance(targetStart, target.Position));
-                settled = command.IsFinished ? settled + 1 : 0;
+                unit.Commands.Run(command);
+                DateTime deadline = DateTime.UtcNow.AddSeconds(25);
+                int settled = 0;
+                while (DateTime.UtcNow < deadline && settled < 30)
+                {
+                    Game.Instance.IsPaused = false; yield return 0;
+                    unitTravel = Math.Max(unitTravel, Vector3.Distance(unitStart, unit.Position));
+                    targetTravel = Math.Max(targetTravel, Vector3.Distance(targetStart, target.Position));
+                    settled = command.IsFinished ? settled + 1 : 0;
+                }
             }
+            finally { rules.Dispose(); }
+            row["ruleRows"] = rules.Rows;
             var commandRows = trace.Rows.OfType<JObject>().Where(value => (string)value["owner"] == unit.UniqueId &&
                 (int?)value["commandReference"] == reference).ToArray();
             var ends = commandRows.Where(value => (string)value["event"] == "command-end").ToArray();
@@ -599,7 +662,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["target"] = value["target"], ["weapon"] = value["weapon"], ["hit"] = value["hit"],
                     ["d20"] = value["d20"], ["hpDamage"] = value["hpDamage"], ["attackCommand"] = value["attackCommand"],
                     ["commandReference"] = value["commandReference"], ["attackIndex"] = value["attackIndex"],
-                    ["nativeCommandType"] = value["nativeCommandType"] }));
+                    ["nativeCommandType"] = value["nativeCommandType"], ["autoHit"] = value["autoHit"],
+                    ["attackType"] = value["attackType"], ["bonus"] = value["bonus"], ["ac"] = value["ac"] }));
             // A grab rider on the final slot (the Salamander tail) grapples at
             // once; the native grapple then makes the attacker unable to act,
             // and UnitActionController interrupts the exhausted command.
