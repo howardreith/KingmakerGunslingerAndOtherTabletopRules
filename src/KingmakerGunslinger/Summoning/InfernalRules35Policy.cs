@@ -84,6 +84,49 @@ namespace KingmakerGunslinger.Summoning
                 layerName.StartsWith("Glow", StringComparison.Ordinal);
         }
 
+        // A grid node's two static walkability layers and its dynamic block
+        // counter. Kingmaker's pathfinding fork reports Walkable as Static
+        // and no DynamicBlocked counter.
+        internal struct WallGridNodeLayers
+        {
+            internal bool Static;
+            internal bool Erosion;
+            internal int Dynamic;
+            internal bool Walkable { get { return Static && Dynamic == 0; } }
+        }
+
+        // Installed GridGraph.UpdateArea for every node inside a graph
+        // update's bounds: static := pre-erosion flag, apply the update's
+        // dynamic delta, then pre-erosion flag := static. Any other cut's
+        // update over a claimed node therefore rewrites the claim unless the
+        // claim holds both layers.
+        internal static WallGridNodeLayers NativeGridUpdate(WallGridNodeLayers node, int dynamicDelta)
+        {
+            node.Static = node.Erosion;
+            node.Dynamic += dynamicDelta;
+            node.Erosion = node.Static;
+            return node;
+        }
+
+        // A Wall claim blocks both static layers so a native grid update
+        // from any cut keeps the node blocked while the claim stands.
+        internal static WallGridNodeLayers WallClaimNode(WallGridNodeLayers node)
+        {
+            node.Static = false;
+            node.Erosion = false;
+            return node;
+        }
+
+        // The last claim owner restores both static layers to what they were
+        // before the first claim; the dynamic counter belongs to the cuts.
+        internal static WallGridNodeLayers WallRestoreNode(WallGridNodeLayers node,
+            bool originalStatic, bool originalErosion)
+        {
+            node.Static = originalStatic;
+            node.Erosion = originalErosion;
+            return node;
+        }
+
         internal static bool QualifiesForBarbedDefense(bool hit, bool melee,
             bool manufactured, float rawWeaponReachFeet,
             float ordinaryReachFeet)

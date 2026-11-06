@@ -485,6 +485,47 @@ namespace KingmakerGunslinger.DomainTests
                 "Only the exact section identity is excluded.");
         }
 
+        internal static void WallClaimSurvivesAnotherWallsGridUpdate()
+        {
+            var baseline = new InfernalRules35.WallGridNodeLayers { Static = true, Erosion = true, Dynamic = 0 };
+            foreach (bool aRetiresFirst in new[] { true, false })
+            {
+                // Wall A claims a ring node outside its own cut; Wall B's
+                // diagonal cut box covers it and applies its native update.
+                var node = InfernalRules35.WallClaimNode(baseline);
+                node = InfernalRules35.NativeGridUpdate(node, 1);
+                Assertions.False(node.Walkable, "Wall B's native update leaves Wall A's claimed node blocked.");
+                Assertions.False(node.Static, "Wall A's claim survives Wall B's update.");
+                if (aRetiresFirst)
+                {
+                    // Wall A's last claim releases; Wall B's block remains.
+                    node = InfernalRules35.WallRestoreNode(node, baseline.Static, baseline.Erosion);
+                    Assertions.False(node.Walkable, "Wall B still blocks after Wall A retires.");
+                    node = InfernalRules35.NativeGridUpdate(node, -1);
+                }
+                else
+                {
+                    // Wall B's revert runs while Wall A stands.
+                    node = InfernalRules35.NativeGridUpdate(node, -1);
+                    Assertions.False(node.Walkable, "Wall B's retirement does not unblock Wall A's standing claim.");
+                    node = InfernalRules35.WallRestoreNode(node, baseline.Static, baseline.Erosion);
+                }
+                Assertions.True(node.Walkable && node.Static == baseline.Static && node.Erosion == baseline.Erosion &&
+                    node.Dynamic == baseline.Dynamic, "Both retirements restore the node's exact baseline layers.");
+            }
+            // The old single-layer claim fails this case: a native update
+            // rewrites static from the untouched pre-erosion flag.
+            var oldClaim = baseline; oldClaim.Static = false;
+            oldClaim = InfernalRules35.NativeGridUpdate(oldClaim, 1);
+            oldClaim = InfernalRules35.NativeGridUpdate(oldClaim, -1);
+            Assertions.True(oldClaim.Walkable, "Model check: a static-only claim is erased by another cut's update and revert.");
+            // A node already blocked by a foreign cut's counter restores its
+            // own static layers, not the combined value.
+            var foreign = new InfernalRules35.WallGridNodeLayers { Static = true, Erosion = true, Dynamic = 1 };
+            var held = InfernalRules35.WallRestoreNode(InfernalRules35.WallClaimNode(foreign), foreign.Static, foreign.Erosion);
+            Assertions.True(held.Static && held.Erosion && held.Dynamic == 1, "A foreign counter is never folded into the restored static layer.");
+        }
+
         internal static void WallSteamHidesOnlyTheCloudsFlameLayers()
         {
             foreach (string flame in new[] { "GroundFireBig", "GroundFireBig (1)", "Fire_Top (2)", "FireTiny", "Glow", "Glow (1)" })
