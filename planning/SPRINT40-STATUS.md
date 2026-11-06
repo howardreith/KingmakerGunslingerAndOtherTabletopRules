@@ -306,6 +306,26 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   while bounding the trace after command completion. Production compilation and
   all five focused Sprint40 checks pass. NEXT: commit/push, rebuild once and rerun
   only the wall phase to identify the moving obstruction or non-placement gate.
+- Reporting head `d1d7f56336cdcf81d77ebbc0c73da79d6e201d92` passed 2,816/2,816
+  and strict packaging: ZIP SHA256
+  `fcb97267a2e07453658da38c03c6044054b6747caf8b4dab56220f62f33453d9`,
+  DLL SHA256 `718c067791532377cf16b3fa7d40af71874949dc9e13724350559db891f7fb52`,
+  MVID `31425cc9-df22-44ea-b399-c23bfd640c46`. Wall run
+  `20261106T0056208452479Z-disposable-expanded-summoning-sprint32-native-review`
+  retained FAIL and identified the exact transient obstruction: while the first
+  real wall cast was pending, the other Ice Devil crossed within0.84m of its
+  footprint, then the Bone Devil crossed within0.82m. Each request-owned actor
+  carried the other creature's naturally applied setup Frightened rider; native
+  panic movement made the production placement predicate and `CanTarget` false,
+  and the real command correctly interrupted. Placement became legal again as
+  each actor moved away. Restoration receipt
+  `expanded-summoning-restoration/20261106T0059513343543Z-disposable-expanded-summoning-sprint32-native-review.json`
+  is exact. The observer now reuses the qualified S35 exact-source cleanup seam:
+  immediately after the legal survey it removes only request-owned Ice/Bone setup
+  Frightened riders, verifies none remain, then clears only their resulting moves.
+  Sources, aura memory and production fear remain unchanged. Production compiled
+  and all five focused Sprint40 checks pass. NEXT: commit/push the product repair,
+  pin it in a reporting commit, rebuild once, and rerun only the wall phase.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 
