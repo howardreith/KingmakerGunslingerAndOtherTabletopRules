@@ -474,7 +474,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
 
                 clearFear();
-                foreach (int frame in InfernalWallPlaceAndSettle35(sourceB, geometry.CasterB, planB, "shared-bcast-" + tag)) yield return frame;
+                // Source B is stood on its casting point by the cast helper,
+                // which first interrupts every command (close25: a stray
+                // native UnitMoveTo moved it off a settled-placement check).
                 var b = new InfernalWallSharedSection35 { Label = pair + "-b", Source = sourceB };
                 JObject castB = null;
                 foreach (int frame in InfernalWallSharedCast35(run, b, dataB, geometry.CasterB, geometry.CenterB, sources, region, value => castB = value)) yield return frame;
