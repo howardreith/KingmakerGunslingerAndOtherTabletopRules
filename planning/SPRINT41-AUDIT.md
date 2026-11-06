@@ -39,21 +39,35 @@ fingerprint.
 
 ### Candidate artifacts
 
-The audit spans two artifacts from the **identical source commit and source
-fingerprint**. They are not interchangeable and each result is attributed to the
-one that produced it.
+The audit spans **three** artifacts. Two are development candidates from the
+identical source commit and source fingerprint; the third is the released
+artifact at a different commit. They are not interchangeable and every result is
+attributed to the artifact that produced it.
 
-| | Development candidate | Released artifact |
-|---|---|---|
-| Purpose | native review phases, offline suite | compatibility substitute (see A-9) |
-| Package SHA-256 | `28a6aa41…` | `4d6e2621…` |
-| Assembly SHA-256 | `fc1d39ce…` | `c6bb7377…` |
-| Assembly MVID | `8a5dba57-b9df-4afc-87fa-ac69f89ca68f` | `1b273dc4-236e-4f85-9395-af2ec00fae95` |
-| Source commit | `710ac76b…` | `b2be3ebe…` |
+| | Dev candidate A | Dev candidate B | Released artifact |
+|---|---|---|---|
+| Built in | `wt/s41-audit` | `wt/s41-run` (pinned) | `wt/s40` |
+| Purpose | first native phases, offline suite | remaining native phases | compatibility substitute (A-9) |
+| Package SHA-256 | `28a6aa41…` | `286397cc…` | `4d6e2621…` |
+| Assembly SHA-256 | `fc1d39ce…` | `eed4252e…` | `c6bb7377…` |
+| Assembly MVID | `8a5dba57-…` | `d2500c0e-…` | `1b273dc4-…` |
+| Source commit | `710ac76b…` | `710ac76b…` | `b2be3ebe…` |
+| Source fingerprint | `9bfea8b8…` | `9bfea8b8…` | `58687230…` |
 
-Builds in this repository are known not to be byte-reproducible across roots, so
-differing package hashes are expected and are not evidence of a source
-difference.
+A and B differ in bytes at the **same commit and same source fingerprint**.
+Builds here are known not to be byte-reproducible across roots, so that is
+expected and is not evidence of a source difference — and it is what makes the
+A-3 comparison meaningful: the two runs differ in build bytes but not in source.
+
+Candidate B exists because the native review harness refused A with
+*"Development package is not at its exact development-only location and name."*
+That guard requires the package to sit under the invoking root's own
+development-only path. The package was **not** relocated or renamed to satisfy
+the check; a candidate was built in the pinned root instead, which is the
+designed way to satisfy it. B was produced through the sanctioned
+`-DevelopmentPurpose` route, the one route A-8 does not block, and its own
+complete suite ran **2,828/2,828** — a cross-root reproduction of that result at
+the same commit.
 
 ## Status summary
 
@@ -62,7 +76,7 @@ difference.
 | Complete offline suite, unfiltered | **2,828 / 2,828**, 0 failures |
 | Development-candidate source validation | PASS (validator unmodified) |
 | Native `sprint40-ice-devil-walls` | **PASS 26/26** |
-| Native `summon-overhaul-wall` | **FAIL 64/66** — A-3 |
+| Native `summon-overhaul-wall` | **FAIL 137/138** — A-3 (intermittent), A-14 |
 | Roster/menu reconciliation at placement level | **COMPLETE** — A-5, A-6, A-7 |
 | Repository release gate at the audit source | **FAIL** — A-8 |
 | Compatibility-profile matrix on the audit candidate | **BLOCKED** by A-8 — A-9 |
@@ -74,8 +88,8 @@ difference.
 | Visual acceptance at roster scale | NOT RUN |
 | Performance against the 693-choice baseline | NOT RUN |
 
-**The audit has found two independent release blockers (A-3, A-8).** Neither is
-repaired here.
+**The audit found one firm release blocker (A-8) and one intermittent product
+defect (A-3, seen once in two runs).** Neither is repaired here.
 
 ## Findings
 
@@ -83,8 +97,8 @@ repaired here.
 |---|---|---|---|---|
 | A-1 | low | documentation | Ideal-roster document stale against the frozen manifest | **RESOLVED** |
 | A-2 | none | environment | 23 suite failures from a missing gitignored derived input | **RESOLVED** (environment) |
-| A-3 | P2-high | product | Fire-destroyed Wall leaves the lane obstructed with no claims held | OPEN |
-| A-4 | info | coverage | Later wall cells never executed because the phase aborted at A-3 | OPEN |
+| A-3 | P2-high (intermittent) | product | Fire-destroyed Wall left the lane obstructed in 1 of 2 runs | OPEN |
+| A-4 | none | coverage | Cells blocked by A-3 have now all run and passed | **RESOLVED** |
 | A-5 | medium | content/charter | Brachiosaurus has no Summon Monster choice at any level | OPEN |
 | A-6 | medium | reporting | Roster tool reports family coverage from identity, not from a real choice | OPEN |
 | A-7 | low | structural | Wrapper ladders stop at tier+2, leaving 12 ideal placements unoffered | OPEN |
@@ -93,55 +107,91 @@ repaired here.
 | A-10 | info | delivery | Push wrapper refuses the audit branch, so the draft audit PR cannot be opened | OPEN |
 | A-11 | medium | assertion staleness | Two inventory assertions fail in every profile, masking compatibility signal | OPEN |
 | A-12 | medium | compatibility | Lantern Archon exactness fails under Call of the Wild only | OPEN |
+| A-13 | info | coverage | Deep module-OFF sweep is reserved to one named purpose | OPEN |
+| A-14 | medium | review code | NRE in InfernalWallShared35 keeps the wall phase red at 137/138 | OPEN |
 
-### A-3 — a fire-destroyed Wall of Ice leaves the lane obstructed
+### A-3 — a fire-destroyed Wall of Ice left the lane obstructed, **intermittently**
 
-Failing assertion `sprint32-sprint35-wall-native-mover-restored-fire` in
-`summon-overhaul-wall`, runId `20261106T1901224190003Z-dfbd14490f5248a48489c4a038d28ef5`.
+**Correction to an earlier revision of this report.** I first recorded this from
+a single run and presented it as a reproducible product defect. It does **not**
+reproduce reliably. The phase was re-run on a second artifact built from the
+identical source commit, and the same cell on the same lane restored perfectly.
+The classification is now **intermittent**, and the earlier release-blocker
+assertion is qualified accordingly.
 
-Three cells on one **identical** lane, start `[-5.252655, -4.8, 1.112009]` to
-goal `[2.747345, -4.8, 1.112009]`:
+Two runs, same source commit `710ac76b`, identical lane
+`[-5.252655, -4.8, 1.112009]` → `[2.747345, -4.8, 1.112009]`:
 
-| Cell | Wall present | Max deviation | Claims while moving | Result |
-|---|---|---|---|---|
-| baseline, before the wall | no | **0.0** | 0 | PASS |
-| live, wall standing | yes | 1.4033 | 24 | PASS |
-| restored, after fire destruction | **no** | **2.5452** | **0** | **FAIL** |
+| Cell | Run A — candidate `28a6aa41` | Run B — candidate `286397cc` |
+|---|---|---|
+| baseline-fire (no wall) | 2.38e-07, 0 claims, PASS | 2.38e-07, 0 claims, PASS |
+| live-fire (wall standing) | 1.4033, 24 claims, PASS | 1.4038, 24 claims, PASS |
+| **restored-fire (wall gone)** | **2.5452, dist 10.649, FAIL** | **2.38e-07, dist 7.972, PASS** |
+| restored-physical (control) | 3.93e-06, PASS | 5.72e-06, PASS |
+| phase reached | 66 assertions, aborted here | 138 assertions |
 
-After the wall is gone the mover still detours *further* than it did while the
-wall stood — actual path 10.649 against a direct 8.0 — while holding no
-navigation claims at all.
+Every control is stable across both runs. Only the fire-restoration cell moved,
+and it moved from the baseline value to roughly seven orders of magnitude above
+it and back again.
 
-What this establishes: the node-level assertion
-`wall-navigation-restored-fire` **passed** immediately before, so the node bits
-and claim counts it checks are restored while actual pathing is not; and the
-equivalent physical-destruction sequence returns its own identical lane to 0.0,
-so the two destruction routes genuinely differ. The mover pathed on
-`Pathfinding.RecastGraph`, not the GridGraph that carries the wall's 24 node
-claims.
+**What is now established**
 
-What it does not establish: how long the obstruction persists, whether an area
-transition or re-tiling clears it, and the mechanism. Incomplete recast-tile
-restoration specific to the fire route is the leading hypothesis from the graph
-selection and the physical-route contrast — it is not a confirmed cause.
+- Not caused by the build artifact: both runs share the source commit, differing
+  only in build bytes across roots.
+- Not a fixture-coordinate artifact: identical coordinates, and the controls
+  match to within a few parts in a million.
+- Not the claim logic: `claimsWhileMoving` is **0** in both the failing and the
+  passing run.
+- **It does not happen every run** — so any gate resting on a single execution of
+  this cell is unreliable in both directions.
 
-This is **not** the wall-retirement claim logic: claims are 0, and the Sprint 40
-interrupted-retirement and claim-restoration rows pass on this same candidate.
+**What is still not established:** the frequency, the trigger, whether it
+correlates with load or run ordering, and the mechanism. Incomplete recast-tile
+re-tiling on the fire route remains the hypothesis, now with the extra
+constraint that the same code path usually succeeds.
 
-Smallest acceptance check: that cell reaches the baseline 0.0 deviation with 0
-claims on the same lane.
+The single failing observation is not a tolerance artifact — 2.545 against the
+same run's own baseline of 2.38e-07, with no wall present and no claims held, is
+a genuine mis-restoration. An intermittent navigation corruption is in some ways
+a worse defect than a deterministic one, precisely because it will not reliably
+appear in a gate.
 
-### A-4 — what A-3 blocked
+**First repair step is characterisation, not a fix:** repeat the fire lane enough
+times to establish a failure rate, since one pass no longer demonstrates
+correctness and one failure no longer demonstrates a deterministic bug. That
+characterisation run is in progress and its result is recorded in the audit
+record.
 
-The phase aborted at the throw, so these never ran and are **BLOCKED**, not
-skipped by choice: `wall-steam-presentation`, `wall-steam-consumer`,
-`wall-steam-pool-reuse`, `wall-controlled-expiry`, `wall-no-breach-consumer-*`,
-`wall-source-retirement-cleanup`.
+### A-4 — RESOLVED: the previously blocked cells all ran and passed
 
-Ordering evidence: `RuntimeTestRunner.InfernalWallAcceptance35.cs` calls
-`InfernalWallRestored35(fire)` at line 184, before `InfernalWallSteamExit35`
-(187) and the controlled-expiry call (198); `wall-source-retirement-cleanup`
-(1175) and `wall-steam-pool-reuse` (1190) are later still.
+In run B the phase passed the restored-fire cell and reached **138** assertions,
+so every cell this finding recorded as BLOCKED has now executed and **PASSED**:
+`wall-steam-presentation`, `wall-steam-consumer`, `wall-steam-pool-reuse`,
+`wall-controlled-expiry`, `wall-no-breach-consumer-expiry` and
+`wall-source-retirement-cleanup` — plus `wall-turn-boundary` and
+`wall-turn-boundary-restored`. **137 of 138** assertions pass.
+
+That also closes two of PR #98's pending areas: the corrected steam-pool reuse,
+and durable claims through the executed turn-based path. The two **diagonal**
+two-Wall retirement orders remain only partially addressed: 36 shared two-Wall
+rows pass, but no cell is named for that specific pairing, so it is not
+demonstrated by name.
+
+### A-14 — a NullReferenceException keeps the wall phase red anyway
+
+Even with 137 of 138 assertions passing, the phase fails on `sprint32-execution`
+with `System.NullReferenceException` thrown from
+`RuntimeTestRunner.InfernalWallShared35` (via `ReviewInfernalEarly35` →
+`ReviewSprint32Core` → `ReviewSprint32` → `PollSprint25NativeReview`).
+
+It throws *after* all 36 shared two-Wall rows and all 137 substantive assertions
+have passed, so it sits at or near the end of `InfernalWallShared35` rather than
+inside its coverage. This is **review/fixture code**, not shipped product code,
+so it is not by itself a player-facing defect — but it prevents the phase from
+ever reporting a clean pass. Seen once only; run A never reached this point.
+
+Acceptance: `summon-overhaul-wall` reports PASS at 138/138 with no
+`sprint32-execution` failure.
 
 ### A-5, A-6, A-7 — the roster and menu surface
 
