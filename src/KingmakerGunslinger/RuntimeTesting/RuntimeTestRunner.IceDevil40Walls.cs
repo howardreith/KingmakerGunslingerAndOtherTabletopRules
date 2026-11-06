@@ -167,6 +167,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var from = ObstacleAnalyzer.GetNearestNode(center - forward * 3f);
                 var to = ObstacleAnalyzer.GetNearestNode(center + forward * 3f);
                 PlaceExpandedSummoningUnit(fixture.Hostile, from.clampedPosition);
+                // Settle the real combat transition before issuing the native
+                // crossing command. If combat starts while UnitMoveTo is
+                // active, the native auto-pause handler correctly interrupts
+                // it; that transition is unrelated to breach navigation.
+                fixture.Hostile.JoinCombat(); actors[0].JoinCombat();
+                Game.Instance.Player.UpdateIsInCombat();
+                new UnitCombatJoinController().Tick();
+                new UnitCombatPrepareController().Tick();
+                Game.Instance.IsPaused = false;
                 int crossingStart = trace.Rows.Count;
                 var walk = new UnitMoveTo(to.clampedPosition); fixture.Hostile.Commands.Run(walk);
                 foreach (int frame in WaitInfernalCommand34(walk, () => trace.Rows.Skip(crossingStart).Any(x =>
@@ -180,7 +189,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (string)packet["energy"] == "Cold" && (string)packet["dice"] == "1d6" &&
                         (int?)packet["bonus"] == 13)),
                     new JObject { ["command"] = Sprint27AiCommand(walk),
-                        ["events"] = new JArray(coldRows), ["directedNativeMovement"] = true },
+                        ["events"] = new JArray(coldRows), ["directedNativeMovement"] = true,
+                        ["combatSettledBeforeCommand"] = true },
                     "A real native move through the released breach emits its own source's1d6+13 cold damage; the observer never applies the residual effect.");
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { actors[0] });
                 foreach (int frame in InfernalBoneWaitUntil35(() =>

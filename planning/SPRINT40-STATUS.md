@@ -346,6 +346,25 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   caster stays at its surveyed point and normal placement/targeting remains the
   admission gate. Production compiled and all five focused Sprint40 checks pass.
   NEXT: commit/push, repin, rebuild once and rerun only the wall phase.
+- Reporting head `9441940897d557c073e8b88114e0163786e0f23f` passed 2,816/2,816
+  and strict packaging: ZIP SHA256
+  `6844087b4ffd21bd89d01d224d36127239e8a9e5605d518af601ea00cb300100`,
+  DLL SHA256 `809519e6532f6767111a363563c7306f7aaf25fb07ee68a986716c70271fb9f3`,
+  MVID `13d8ed50-3762-4af1-b49f-4866883cd586`, source-state
+  `d82f56f4aacd053d9fcbda31fcde46a7c29f0d84f4d64c744a481a123edc4482`.
+  Wall run `20261106T0131323772585Z-disposable-expanded-summoning-sprint32-native-review`
+  proves both real Ice casts,39 HP/CL13 lifetimes, two-owner claims, native
+  physical half damage, fire breach, residual/fog creation and survival of the
+  other source's claims. It then retains FAIL before the residual crossing row:
+  `AutoPauseController.HandlePartyCombatStateChanged` interrupted the recipient's
+  `UnitMoveTo` when native combat initialized after the command began. Restoration
+  receipt `expanded-summoning-restoration/20261106T0135052780620Z-disposable-expanded-summoning-sprint32-native-review.json`
+  verifies live hash, all nine startup peers and all118 saves exact. The observer
+  now settles the real owner/recipient combat transition through the established
+  JoinCombat/player-update/native-controller sequence before issuing the crossing;
+  it does not suppress auto-pause, change movement or apply residual damage.
+  Production compiled and all five focused Sprint40 checks pass. NEXT: commit/push,
+  repin, rebuild once and rerun only the wall phase.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 
