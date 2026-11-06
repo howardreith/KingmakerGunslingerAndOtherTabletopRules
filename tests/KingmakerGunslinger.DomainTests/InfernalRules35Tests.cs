@@ -434,6 +434,288 @@ namespace KingmakerGunslinger.DomainTests
                 "Bone cannot cross-bind the Barbed body.");
         }
 
+        internal static void WallFeedbackReachesAPlayersSummonedBoneDevil()
+        {
+            Assertions.True(InfernalRules35.WallFeedbackVisibleToPlayer(false, true),
+                "A player's Bone Devil carries the Summoned faction, so its summoner must reveal the message.");
+            Assertions.True(InfernalRules35.WallFeedbackVisibleToPlayer(true, false),
+                "A directly player-faction caster also sees the message.");
+            Assertions.False(InfernalRules35.WallFeedbackVisibleToPlayer(false, false),
+                "A caster with no player link publishes nothing to the player's log.");
+        }
+
+        internal static void WallSectionHidesOnlyItsDonorBodyMeshes()
+        {
+            Assertions.True(InfernalRules35.WallSuppressesRenderer(false, true),
+                "A native donor mesh on the section view stays hidden.");
+            Assertions.False(InfernalRules35.WallSuppressesRenderer(true, true),
+                "The private ice plane stays drawn.");
+            Assertions.False(InfernalRules35.WallSuppressesRenderer(false, false),
+                "Particle effects on the section view are not body meshes.");
+        }
+
+        internal static void WallSectionUsesNonBloodHitEffects()
+        {
+            Assertions.True(InfernalRules35.WallSectionShowsNoBlood(InfernalRules35.WallSectionBloodType),
+                "The section's configured hit and death effects are not blood.");
+            Assertions.False(InfernalRules35.WallSectionShowsNoBlood(InfernalRules35.NativeCommonBloodType),
+                "The native default red blood is rejected for an ice section.");
+            Assertions.True(InfernalRules35.WallSectionBloodType == 9,
+                "Stone chips are the installed BloodType.Stone value 9.");
+        }
+
+        internal static void WallSteamPresentationOnlyFillsTheWallsMissingEffect()
+        {
+            string mist = InfernalRules35.NativeObscuringMistAreaGuid;
+            Assertions.True(InfernalRules35.WallSteamNeedsPresentation(false, mist, InfernalRules35.WallAbilityName),
+                "The Wall's own steam with no native effect receives the steam cloud.");
+            Assertions.False(InfernalRules35.WallSteamNeedsPresentation(true, mist, InfernalRules35.WallAbilityName),
+                "A native effect that did spawn is never replaced or doubled.");
+            Assertions.False(InfernalRules35.WallSteamNeedsPresentation(false, mist, "KMG_Summoning_Giant_Sprint29_CloudObscuringMist"),
+                "Other users of native Obscuring Mist keep their native presentation.");
+            Assertions.False(InfernalRules35.WallSteamNeedsPresentation(false, mist, null),
+                "An area with no source ability is not Wall steam.");
+            Assertions.False(InfernalRules35.WallSteamNeedsPresentation(false, "6df1ac314d4e6e9418e34470b79f90d8", InfernalRules35.WallAbilityName),
+                "Only the steam area, not another area from the same ability, is changed.");
+            Assertions.True(InfernalRules35.WallSteamFxAssetId != InfernalRules35.NativeObscuringMistFxAssetId &&
+                InfernalRules35.WallSteamFxAssetId.Length == 32,
+                "The steam cloud is a different, well-formed native asset identity.");
+        }
+
+        internal static void WallSectionIsNotAFormationSaveCreature()
+        {
+            Assertions.False(InfernalRules35.WallFormationSaveEligible(InfernalRules35.WallSectionUnitGuid),
+                "A standing Wall of Ice section is an object and cannot save to disrupt another Wall's formation.");
+            Assertions.False(InfernalRules35.WallFormationSaveEligible(IceDevilRules40Policy.WallSectionGuid),
+                "An Ice Devil Wall section is an object under the same shared formation rule.");
+            Assertions.True(InfernalRules35.WallFormationSaveEligible("74652de839a94feba3c2fb67b536437c"),
+                "A creature adjacent to the forming wall keeps its Reflex save.");
+            Assertions.True(InfernalRules35.WallFormationSaveEligible(null),
+                "A unit without a blueprint identity is not silently excluded.");
+            Assertions.True(InfernalRules35.WallFormationSaveEligible(InfernalRules35.WallSectionUnitGuid.ToUpperInvariant()),
+                "Only the exact section identity is excluded.");
+        }
+
+        internal static void WallClaimSurvivesAnotherWallsGridUpdate()
+        {
+            var baseline = new InfernalRules35.WallGridNodeLayers { Static = true, Erosion = true, Dynamic = 0 };
+            foreach (bool aRetiresFirst in new[] { true, false })
+            {
+                // Wall A claims a ring cell outside its own cut; Wall B's
+                // diagonal cut box covers it and applies its native update.
+                var node = InfernalRules35.WallClaimNode(baseline);
+                node = InfernalRules35.NativeGridUpdate(node, 1);
+                Assertions.False(node.Walkable, "Wall B's native update leaves Wall A's claimed cell blocked.");
+                Assertions.False(node.Static, "Wall A's claim survives Wall B's update.");
+                if (aRetiresFirst)
+                {
+                    node = InfernalRules35.WallRestoreNode(node, baseline.Static, baseline.Erosion);
+                    Assertions.False(node.Walkable, "Wall B still blocks after Wall A retires.");
+                    node = InfernalRules35.NativeGridUpdate(node, -1);
+                }
+                else
+                {
+                    // close27 b-first: Wall B's revert ran while Wall A stood.
+                    node = InfernalRules35.NativeGridUpdate(node, -1);
+                    Assertions.False(node.Walkable, "Wall B's retirement does not reopen Wall A's standing claim.");
+                    node = InfernalRules35.WallRestoreNode(node, baseline.Static, baseline.Erosion);
+                }
+                Assertions.True(node.Walkable && node.Static == baseline.Static && node.Erosion == baseline.Erosion &&
+                    node.Dynamic == baseline.Dynamic, "Both retirement orders restore the cell's exact baseline layers.");
+            }
+            // A turn-based unit block beside a standing Wall (its own native
+            // update and revert) does not reopen the claim either.
+            var held = InfernalRules35.NativeGridUpdate(InfernalRules35.WallClaimNode(baseline), 1);
+            held = InfernalRules35.NativeGridUpdate(held, -1);
+            Assertions.False(held.Walkable || held.Static, "A turn-based unit's block and revert leave the claim blocked.");
+            // The old static-only claim fails: a native update rewrites the
+            // static flag from the untouched pre-erosion flag.
+            var oldClaim = baseline; oldClaim.Static = false;
+            oldClaim = InfernalRules35.NativeGridUpdate(oldClaim, 1);
+            oldClaim = InfernalRules35.NativeGridUpdate(oldClaim, -1);
+            Assertions.True(oldClaim.Walkable, "Model check: a static-only claim is erased by another cut's update and revert.");
+            // A cell already blocked by a foreign counter at claim time keeps
+            // its own static layers on restore, not the combined value.
+            var foreign = new InfernalRules35.WallGridNodeLayers { Static = true, Erosion = true, Dynamic = 1 };
+            var restored = InfernalRules35.WallRestoreNode(InfernalRules35.WallClaimNode(foreign), foreign.Static, foreign.Erosion);
+            Assertions.True(restored.Static && restored.Erosion && restored.Dynamic == 1,
+                "A foreign counter is never folded into the restored static layer.");
+            // A statically blocked baseline cell stays blocked after release.
+            var wall = new InfernalRules35.WallGridNodeLayers { Static = false, Erosion = false, Dynamic = 0 };
+            var kept = InfernalRules35.WallRestoreNode(InfernalRules35.WallClaimNode(wall), wall.Static, wall.Erosion);
+            Assertions.False(kept.Static || kept.Erosion, "A pre-existing static block is restored as blocked.");
+        }
+
+        internal static void WallSectionIsStationary()
+        {
+            // nav4: native summon follow walked a standing section toward its
+            // Bone Devil; only a movement-blocking condition stops it.
+            Assertions.Equal("CantMove", InfernalRules35.WallSectionStationaryCondition,
+                "A Wall of Ice section carries the native CantMove condition, not only CantAct.");
+        }
+
+        private static JObject SteamPoolRecord(Action<JObject> change)
+        {
+            var record = JObject.Parse(@"{
+                ""probeRan"": true,
+                ""liveWallSteamAreas"": [ { ""area"": ""a"", ""cloud"": -587960, ""flameRenderersOff"": 16 } ],
+                ""releasedClouds"": [ { ""cloud"": -587960, ""destroyed"": false, ""inPool"": true } ],
+                ""claimed"": -587960,
+                ""prefabRenderers"": 38, ""prefabDuplicateRendererKeys"": 0,
+                ""claimedRenderersCompared"": 38, ""claimedDuplicateRendererKeys"": 0,
+                ""claimedMissingRendererKeys"": 0, ""claimedExtraRendererKeys"": 0,
+                ""claimedRenderersDifferingFromPrefab"": [],
+                ""ownedCloudsAfterRelease"": 0 }");
+            if (change != null) change(record);
+            return record;
+        }
+
+        internal static void WallSteamPoolReuseRequiresTheCapturedInstanceAndACompleteComparison()
+        {
+            Assertions.True(InfernalWallSteamPoolVerdict35.Reused(SteamPoolRecord(null)),
+                "A captured Wall-modified cloud released to the pool, reclaimed as the same instance, with a complete clean comparison and cleared ownership is reuse.");
+            Assertions.Equal("claim-did-not-reuse-a-captured-cloud", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record["claimed"] = -600000)),
+                "A different, pristine instance is not reuse of the Wall's cloud.");
+            Assertions.Equal("no-claimed-instance", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record.Remove("claimed"))),
+                "A missing reuse identity is not reuse.");
+            Assertions.Equal("captured-cloud-not-released-to-native-pool", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record["releasedClouds"][0]["inPool"] = false)),
+                "A cloud that never reached the native pool proves no reuse.");
+            Assertions.Equal("captured-cloud-not-released-to-native-pool", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => ((JObject)record["releasedClouds"][0]).Remove("cloud"))),
+                "A released row without the captured identity proves no reuse.");
+            Assertions.Equal("no-captured-wall-modified-cloud", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record["liveWallSteamAreas"][0]["flameRenderersOff"] = 0)),
+                "A captured cloud the Wall never modified cannot show the restore.");
+            Assertions.Equal("empty-expected-renderer-set", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => { record["prefabRenderers"] = 0; record["claimedRenderersCompared"] = 0; })),
+                "An empty comparison is not a comparison.");
+            Assertions.Equal("incomplete-renderer-comparison", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record["claimedRenderersCompared"] = 22)),
+                "A comparison that skipped renderers is incomplete.");
+            Assertions.Equal("claimed-renderers-missing", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record["claimedMissingRendererKeys"] = 2)),
+                "Equal counts cannot hide prefab renderers the claimed instance lacks.");
+            Assertions.Equal("expected-renderer-keys-not-unique", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record["prefabDuplicateRendererKeys"] = 1)),
+                "Duplicate comparison keys could conceal a renderer.");
+            Assertions.Equal("claimed-renderer-keys-not-unique", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record["claimedDuplicateRendererKeys"] = 1)),
+                "Duplicate claimed keys could conceal a renderer.");
+            Assertions.Equal("expected-renderer-keys-not-unique", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record.Remove("prefabDuplicateRendererKeys"))),
+                "An unrecorded key check is not a complete comparison.");
+            Assertions.Equal("renderer-state-differs", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => ((JArray)record["claimedRenderersDifferingFromPrefab"]).Add(new JObject { ["renderer"] = "Root/GroundFireBig#ParticleSystemRenderer" }))),
+                "A reused cloud with a flame layer still off is the leak.");
+            Assertions.Equal("wall-ownership-not-cleared", InfernalWallSteamPoolVerdict35.Failure(
+                SteamPoolRecord(record => record["ownedCloudsAfterRelease"] = 1)),
+                "The Wall must not keep ownership of a released cloud.");
+        }
+
+        internal static void WallSteamHidesOnlyTheCloudsFlameLayers()
+        {
+            foreach (string flame in new[] { "GroundFireBig", "GroundFireBig (1)", "Fire_Top (2)", "FireTiny", "Glow", "Glow (1)" })
+                Assertions.True(InfernalRules35.WallSteamHidesLayer(flame),
+                    "Steam that deals no fire hides the burning layer " + flame + ".");
+            foreach (string vapour in new[] { "ColdEnergy", "Smoke (2)", "Bubbles", "DropsSmall", "Puddles",
+                    "Splash", "Puddles_OverDistance", "DropsWithTrail (1)", "PuddleTiny", "ProjectorDecal (1)_Start (2)", null, "" })
+                Assertions.False(InfernalRules35.WallSteamHidesLayer(vapour),
+                    "The steam's own vapour layer " + (vapour ?? "<null>") + " stays visible.");
+        }
+
+        private sealed class FeedbackSink : KingmakerGunslinger.Diagnostics.IPlayerCombatLogSink
+        {
+            internal bool Throw;
+            internal int Entries;
+
+            public void Add(string message)
+            {
+                if (Throw) throw new InvalidOperationException("log view unavailable");
+                Entries++;
+            }
+        }
+
+        // Mirrors NativeCombatLog: the last message is recorded before the
+        // real publication service runs, a fault counts as an attempt, and
+        // only a successful sink write counts as published.
+        private sealed class FeedbackCounters
+        {
+            private readonly KingmakerGunslinger.Diagnostics.PlayerCombatLogPublicationService _service;
+            internal long Published, Faults;
+            internal string LastMessage;
+            internal long Attempts { get { return Published + Faults; } }
+
+            internal FeedbackCounters(FeedbackSink sink)
+            { _service = new KingmakerGunslinger.Diagnostics.PlayerCombatLogPublicationService(sink); }
+
+            internal void Publish(string message)
+            {
+                LastMessage = message;
+                if (_service.Publish(message, error => Faults++)) Published++;
+            }
+        }
+
+        internal static void WallFeedbackVerdictRequiresSuccessfulPublication()
+        {
+            const string expected = "A nearby creature disrupted Wall of Ice formation with a successful Reflex save.";
+            var failingSink = new FeedbackSink { Throw = true };
+            var failing = new FeedbackCounters(failingSink);
+            failing.Publish(expected);
+            Assertions.True(failing.Attempts == 1 && failing.LastMessage == expected,
+                "Precondition: a failed publication still records one attempt and the expected message.");
+            Assertions.True(failing.Published == 0 && failing.Faults == 1 && failingSink.Entries == 0,
+                "The failed publication reached no log entry and recorded one fault.");
+            Assertions.False(InfernalWallFeedbackPolicy35.Delivered(failing.Attempts,
+                    failing.Published, failing.Faults, failing.LastMessage, expected),
+                "A failed publication cannot pass as delivered player feedback.");
+
+            var sink = new FeedbackSink();
+            var delivered = new FeedbackCounters(sink);
+            delivered.Publish(expected);
+            Assertions.True(InfernalWallFeedbackPolicy35.Delivered(delivered.Attempts,
+                    delivered.Published, delivered.Faults, delivered.LastMessage, expected) &&
+                sink.Entries == 1,
+                "One successful publication of the exact message is delivery.");
+            Assertions.False(InfernalWallFeedbackPolicy35.Delivered(delivered.Attempts,
+                    delivered.Published, delivered.Faults, delivered.LastMessage,
+                    "Wall of Ice could not form: its location is no longer clear, walkable ground."),
+                "A delivered message for a different outcome is not this case's feedback.");
+            delivered.Publish(expected);
+            Assertions.False(InfernalWallFeedbackPolicy35.Delivered(delivered.Attempts,
+                    delivered.Published, delivered.Faults, delivered.LastMessage, expected),
+                "A repeated publication is not exactly-once feedback.");
+            sink.Throw = true;
+            var mixed = new FeedbackCounters(sink);
+            mixed.Publish(expected);
+            sink.Throw = false;
+            mixed.Publish(expected);
+            Assertions.False(InfernalWallFeedbackPolicy35.Delivered(mixed.Attempts,
+                    mixed.Published, mixed.Faults, mixed.LastMessage, expected),
+                "A success that follows a fault for the same case is not fault-free delivery.");
+        }
+
+        internal static void WallDamageSequenceRequiresContinuousLethalHits()
+        {
+            Assertions.True(InfernalRules35.WallDamageSequenceDestroys(
+                new[] { 0, 5, 12, 20, 29 }, new[] { 5, 12, 20, 29, 37 }, 36),
+                "Consecutive native hits reaching 36 destroy the section.");
+            Assertions.False(InfernalRules35.WallDamageSequenceDestroys(
+                new[] { 0, 5 }, new[] { 5, 12 }, 36),
+                "A section still standing has no destruction proof.");
+            Assertions.False(InfernalRules35.WallDamageSequenceDestroys(
+                new[] { 0, 9 }, new[] { 5, 40 }, 36),
+                "An unexplained jump between hits is not one correlated sequence.");
+            Assertions.False(InfernalRules35.WallDamageSequenceDestroys(
+                new[] { 3 }, new[] { 40 }, 36),
+                "Damage the sequence never observed cannot be credited to it.");
+            Assertions.False(InfernalRules35.WallDamageSequenceDestroys(
+                new int[0], new int[0], 36),
+                "No damage observed is no destruction.");
+        }
+
         internal static void WallRetirementResumesAndNeverStrandsClaims()
         {
             const int budget = 120;

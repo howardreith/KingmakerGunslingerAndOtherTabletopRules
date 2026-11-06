@@ -45,6 +45,97 @@ namespace KingmakerGunslinger.Summoning
         internal const float WallOfIceSectionLengthMeters = 3.05f;
         internal const float WallOfIceSectionThicknessMeters = .75f;
         internal const float WallOfIceAdjacencyMeters = 1.524f;
+        internal const string WallAbilityName =
+            "KMG_Summoning_Infernal_BoneDevil_WallOfIce";
+        // Installed 2.1.7b native Obscuring Mist area and its effect link,
+        // which resolves to no prefab in this installation: the area spawns
+        // nothing visible. Wall steam keeps this native area for mechanics
+        // and draws the native 20-foot kineticist steam cloud instead.
+        internal const string NativeObscuringMistAreaGuid =
+            "e09010a73354a794293ebc7b33c2d130";
+        internal const string NativeObscuringMistFxAssetId =
+            "e19d6ede75196c244b1dc481aed96d70";
+        internal const string WallSteamFxAssetId =
+            "f5677ddc969727746af75ab89a26167e";
+        internal const string WallSteamFxPrefabName =
+            "Kinetic_SteamAoe00_20Feet_Aoe_Cycle";
+
+        // Only the Wall's own steam area, and only when the native view
+        // spawned no effect of its own.
+        internal static bool WallSteamNeedsPresentation(
+            bool nativeEffectSpawned, string areaGuid, string sourceAbilityName)
+        {
+            return !nativeEffectSpawned &&
+                String.Equals(areaGuid, NativeObscuringMistAreaGuid,
+                    StringComparison.Ordinal) &&
+                String.Equals(sourceAbilityName, WallAbilityName,
+                    StringComparison.Ordinal);
+        }
+
+        // The native kineticist steam cloud also draws burning ground
+        // (GroundFireBig, Fire_Top, FireTiny) and its warm Glow. Wall steam
+        // only conceals and deals no fire, so those layers are hidden; the
+        // smoke, cold vapour, droplets and puddles stay.
+        internal static bool WallSteamHidesLayer(string layerName)
+        {
+            if (layerName == null) return false;
+            return layerName.StartsWith("GroundFire", StringComparison.Ordinal) ||
+                layerName.StartsWith("Fire", StringComparison.Ordinal) ||
+                layerName.StartsWith("Glow", StringComparison.Ordinal);
+        }
+
+        // A Wall of Ice section is a summoned unit linked to its Bone Devil.
+        // Installed SummonedUnitsController.TickUnitFollowMaster walks any
+        // linked summon that is out of combat, CanMove and over 11.7 m from
+        // its summoner back toward it (nav4: a standing section walked about
+        // 2.8 m, carrying its recast cut and leaving its grid claims behind).
+        // CantAct alone leaves native CanMove true; this condition makes the
+        // section stationary for every native mover (follow, fear).
+        internal const string WallSectionStationaryCondition = "CantMove";
+
+        // A grid node's two static walkability layers and its dynamic block
+        // counter. Kingmaker's pathfinding fork reports Walkable as Static
+        // and no DynamicBlocked counter.
+        internal struct WallGridNodeLayers
+        {
+            internal bool Static;
+            internal bool Erosion;
+            internal int Dynamic;
+            internal bool Walkable { get { return Static && Dynamic == 0; } }
+        }
+
+        // Installed GridGraph.UpdateArea for every node in a graph update's
+        // erosion reach: static := pre-erosion flag, apply the update's
+        // dynamic delta, then pre-erosion flag := static. A claim that holds
+        // only the static flag is erased by any native grid update nearby
+        // (a cut's combat grid block, a turn-based unit block).
+        internal static WallGridNodeLayers NativeGridUpdate(WallGridNodeLayers node, int dynamicDelta)
+        {
+            node.Static = node.Erosion;
+            node.Dynamic += dynamicDelta;
+            node.Erosion = node.Static;
+            return node;
+        }
+
+        // A Wall claim blocks both static layers, so native grid updates keep
+        // the node blocked while the claim stands.
+        internal static WallGridNodeLayers WallClaimNode(WallGridNodeLayers node)
+        {
+            node.Static = false;
+            node.Erosion = false;
+            return node;
+        }
+
+        // The last claim owner restores both static layers to what they were
+        // before the first claim; the dynamic counter belongs to the cuts and
+        // turn-based units.
+        internal static WallGridNodeLayers WallRestoreNode(WallGridNodeLayers node,
+            bool originalStatic, bool originalErosion)
+        {
+            node.Static = originalStatic;
+            node.Erosion = originalErosion;
+            return node;
+        }
 
         internal static bool QualifiesForBarbedDefense(bool hit, bool melee,
             bool manufactured, float rawWeaponReachFeet,
@@ -162,6 +253,20 @@ namespace KingmakerGunslinger.Summoning
             return footprintDistance <= creatureRadius;
         }
 
+        // Wall of Ice: only a creature adjacent to the forming wall may save
+        // to disrupt it. A standing Wall of Ice section is an object, not a
+        // creature (natively it rolled Reflex, natural 20, and stopped an
+        // adjacent second Wall from forming).
+        internal static bool WallFormationSaveEligible(string unitBlueprintGuid)
+        {
+            // The shared formation rule serves the Bone Devil and Ice Devil
+            // Walls alike; neither species' private section is a creature.
+            return !String.Equals(unitBlueprintGuid, WallSectionUnitGuid,
+                    StringComparison.Ordinal) &&
+                !String.Equals(unitBlueprintGuid, IceDevilRules40Policy.WallSectionGuid,
+                    StringComparison.Ordinal);
+        }
+
         internal static bool WallFormationAdjacent(float footprintDistance,
             float creatureRadius)
         {
@@ -178,6 +283,45 @@ namespace KingmakerGunslinger.Summoning
 
         internal static bool WallDamageUsesObjectHalf(bool fireEnergy)
         { return !fireEnergy; }
+
+        // Expanded summons carry the native Summoned faction, so a player's
+        // Bone Devil is never IsPlayerFaction itself; its summoner decides.
+        internal static bool WallFeedbackVisibleToPlayer(
+            bool casterIsPlayerFaction, bool summonerIsPlayerFaction)
+        { return casterIsPlayerFaction || summonerIsPlayerFaction; }
+
+        // The section is drawn only by its private ice plane. Native body
+        // meshes stay hidden; particle effects such as hit FX stay untouched.
+        internal static bool WallSuppressesRenderer(bool wallVisual,
+            bool bodyMesh)
+        { return !wallVisual && bodyMesh; }
+
+        // Ice does not bleed. Installed 2.1.7b BloodType: Common = 0 (red
+        // blood), Stone = 9 (the chips native petrification uses). Hit FX,
+        // death puddles and the bleeding face all read this per blueprint.
+        internal const int NativeCommonBloodType = 0;
+        internal const int NativeStoneBloodType = 9;
+        internal const int WallSectionBloodType = NativeStoneBloodType;
+
+        internal static bool WallSectionShowsNoBlood(int bloodType)
+        { return bloodType != NativeCommonBloodType && bloodType == WallSectionBloodType; }
+
+        // Consecutive native hits on one section: each continues from the last
+        // recorded total and adds damage, and the final total reaches its HP.
+        internal static bool WallDamageSequenceDestroys(int[] before,
+            int[] after, int hitPoints)
+        {
+            if (before == null || after == null || hitPoints <= 0 ||
+                before.Length != after.Length || before.Length == 0 ||
+                before[0] != 0) return false;
+            for (int index = 0; index < before.Length; index++)
+            {
+                if (after[index] <= before[index]) return false;
+                if (index > 0 && before[index] != after[index - 1])
+                    return false;
+            }
+            return after[after.Length - 1] >= hitPoints;
+        }
 
         internal static int UnholyBlightDiceCount(bool goodOutsider)
         {

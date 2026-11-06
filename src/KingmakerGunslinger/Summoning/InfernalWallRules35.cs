@@ -206,6 +206,8 @@ namespace KingmakerGunslinger.Summoning
             return Game.Instance.State.Units.All.Where(unit =>
                 unit != null && !unit.Destroyed && unit.IsInState &&
                 !unit.Descriptor.State.IsDead &&
+                InfernalRules35.WallFormationSaveEligible(
+                    unit.Blueprint?.AssetGuid) &&
                 InfernalRules35.WallFormationAdjacent(
                     DistanceToFootprint(unit.Position, placement.Center,
                         placement.Along, placement.Forward),
@@ -273,6 +275,13 @@ namespace KingmakerGunslinger.Summoning
     [Serializable]
     public sealed class ContextActionFormInfernalWall35 : ContextAction
     {
+        internal const string PlacementChangedMessage =
+            "Wall of Ice could not form: its location is no longer clear, walkable ground.";
+        internal const string ResistedMessage =
+            "A nearby creature's spell resistance or immunity disrupted Wall of Ice formation.";
+        internal const string ReflexDisruptionMessage =
+            "A nearby creature disrupted Wall of Ice formation with a successful Reflex save.";
+
         public BlueprintUnit OwningBlueprint;
         public BlueprintUnit WallSection;
         // Bone retains its released default. Other owners bind their own
@@ -293,7 +302,7 @@ namespace KingmakerGunslinger.Summoning
                     WallSection, out placement))
             {
                 FormationFeedback(caster, "placement-changed",
-                    "Wall of Ice could not form: its location is no longer clear, walkable ground.");
+                    PlacementChangedMessage);
                 return;
             }
             int dc = InfernalRules35.WallOfIceFormationDc(
@@ -308,8 +317,7 @@ namespace KingmakerGunslinger.Summoning
                     new RuleSpellResistanceCheck(Context, unit));
                 if (resistance.TargetIsImmune || resistance.IsSpellResisted)
                 {
-                    FormationFeedback(caster, "resisted",
-                        "A nearby creature's spell resistance or immunity disrupted Wall of Ice formation.");
+                    FormationFeedback(caster, "resisted", ResistedMessage);
                     return;
                 }
                 var save = new RuleSavingThrow(unit, SavingThrowType.Reflex,
@@ -318,7 +326,7 @@ namespace KingmakerGunslinger.Summoning
                 if (save.IsPassed)
                 {
                     FormationFeedback(caster, "reflex-disruption",
-                        "A nearby creature disrupted Wall of Ice formation with a successful Reflex save.");
+                        ReflexDisruptionMessage);
                     return;
                 }
             }
@@ -355,7 +363,12 @@ namespace KingmakerGunslinger.Summoning
             // Report only an executed player's cast, after the actual native
             // formation decision. A missing log view must not change that
             // decision, which the existing publication service guarantees.
-            if (caster == null || !caster.IsPlayerFaction) return;
+            if (caster == null) return;
+            UnitEntityData summoner = caster.Get<UnitPartSummonedMonster>()?
+                .Summoner;
+            if (!InfernalRules35.WallFeedbackVisibleToPlayer(
+                    caster.IsPlayerFaction,
+                    summoner != null && summoner.IsPlayerFaction)) return;
             NativeCombatLog.Publish("expanded-summoning",
                 "wall-formation.feedback-unavailable", message, outcome);
         }
