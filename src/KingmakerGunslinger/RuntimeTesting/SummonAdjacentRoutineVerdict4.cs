@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
@@ -61,6 +62,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (bool?)value["active"] == true && (bool?)value["onlyCharge"] != true && !string.IsNullOrEmpty((string)value["maneuver"]));
                 if (!toggle || replaced.Any(row => (bool?)row["standaloneRoll"] != true))
                     return "replacement-without-installed-toggle";
+                // Each substitution consumes its own planned slot: a distinct
+                // slot index within the plan and a distinct instant, with no
+                // credited weapon attack at that instant (no reused roll, no
+                // double-counted slot). Success of the maneuver is not needed.
+                var indices = replaced.Select(row => (int?)row["attackIndex"]).ToList();
+                var instants = replaced.Select(row => (double?)row["gameSeconds"]).ToList();
+                if (indices.Any(index => index == null || index < 1 || index > plan.Count) ||
+                    indices.Distinct().Count() != indices.Count || instants.Any(at => at == null) ||
+                    instants.Distinct().Count() != instants.Count ||
+                    attacks.Any(row => instants.Any(at => Math.Abs(((double?)row["gameSeconds"] ?? -1d) - at.Value) < .001d)))
+                    return "replacement-slot-not-unique";
             }
             int resolved = attacks.Count + replaced.Count;
             if (resolved < plan.Count) return "planned-slot-unresolved";
