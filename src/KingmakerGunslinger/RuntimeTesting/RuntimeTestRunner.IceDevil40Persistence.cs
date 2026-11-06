@@ -18,6 +18,7 @@ using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
@@ -203,117 +204,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value != null && !value.IsFinished) + ".");
         }
 
-        // Joining combat is not the same as being able to act in it. A unit
-        // that has just joined waits for initiative, and the wall cast this
-        // prepare performs first leaves the caster a standard-action cooldown.
-        // The combat join and prepare controllers only settle that while the
-        // game is actually advancing, so wait on the engine's own readiness
-        // before dispatching the spear rather than queueing a command the
-        // engine will not start.
-        private IEnumerable<int> IceDevilCombatReady40(UnitEntityData[] owners)
+        // Arm the saved Slow the way Sprints 34 and 35 arm their saved
+        // conditions: through a real native effect rather than a real attack.
+        //
+        // This is stronger than their hand-rolled RuleApplyBuff, because it
+        // runs the production rider's own failed-save action list under its
+        // own exact-owner context and live Constitution difficulty class, so
+        // the saved buff carries the real duration, caster and identity the
+        // cold rows then read back. What it deliberately does not do is roll
+        // the attack or the save - that is what the Slow real-time and
+        // turn-based rows prove on this same artifact.
+        //
+        // The envelope cannot drive a real attack: this fixture runs inside
+        // the Working save, where a unit that has only just joined combat
+        // holds Cooldowns.Initiative and CanActInCombat stays false, so a
+        // queued UnitAttack is never started. Sprint 40 is the first
+        // persistence fixture in the series to try, which is why no earlier
+        // envelope met it.
+        private static bool IceDevilArmSavedSlow40(UnitEntityData source,
+            UnitEntityData target, IceDevilSlowOnHit40 live)
         {
-            Func<UnitEntityData, bool> pending = unit =>
-                !unit.CombatState.IsInCombat ||
-                unit.CombatState.IsWaitingInitiative ||
-                !unit.CombatState.CanActInCombat ||
-                unit.CombatState.Cooldown.StandardAction > 0f ||
-                unit.Commands.Raw.Any(value => value != null &&
-                    !value.IsFinished);
-            DateTime deadline = DateTime.UtcNow.AddSeconds(30);
-            while (DateTime.UtcNow < deadline && owners.Any(pending))
-            {
-                Game.Instance.IsPaused = false;
-                yield return 0;
-            }
-            Game.Instance.IsPaused = true;
-            UnitEntityData unready = owners.FirstOrDefault(pending);
-            if (unready != null) throw new InvalidOperationException(
-                "Sprint40 persistence owner never became combat-ready: " +
-                unready.UniqueId +
-                ";inCombat=" + unready.CombatState.IsInCombat +
-                ";waitingInitiative=" + unready.CombatState.IsWaitingInitiative +
-                ";canActInCombat=" + unready.CombatState.CanActInCombat +
-                ";standardCooldown=" + unready.CombatState.Cooldown.StandardAction +
-                ";initiativeCooldown=" + unready.CombatState.Cooldown.Initiative +
-                ";activeCommands=" + unready.Commands.Raw.Count(value =>
-                    value != null && !value.IsFinished) + ".");
-        }
-
-        private static void IceDevilMeleeLane40(UnitEntityData caster,
-            UnitEntityData[] sources, UnitEntityData owner,
-            UnitEntityData target)
-        {
-            Vector3[] directions = {
-                Vector3.forward, Vector3.right, Vector3.back, Vector3.left,
-                (Vector3.forward + Vector3.right).normalized,
-                (Vector3.forward + Vector3.left).normalized,
-                (Vector3.back + Vector3.right).normalized,
-                (Vector3.back + Vector3.left).normalized
-            };
-            Vector3 selectedOwner = Vector3.zero;
-            Vector3 selectedTarget = Vector3.zero;
-            bool selected = false;
-            float separation = owner.Corpulence + target.Corpulence +
-                new Feet(2).Meters;
-            foreach (float distance in new[] { 6f, 8f, 10f, 12f })
-            foreach (Vector3 direction in directions)
-            {
-                Vector3 origin = ObstacleAnalyzer.GetNearestNode(
-                    caster.Position + direction * distance).clampedPosition;
-                Vector3 across = Vector3.Cross(Vector3.up, direction)
-                    .normalized;
-                Vector3 endpoint = ObstacleAnalyzer.GetNearestNode(origin +
-                    across * separation).clampedPosition;
-                if (Vector3.Distance(origin, endpoint) < separation * .7f ||
-                    Game.Instance.State.Units.All.Any(unit => unit != null &&
-                        !unit.Destroyed && !sources.Contains(unit) &&
-                        !ReferenceEquals(unit, caster) &&
-                        (Vector3.Distance(unit.Position, origin) < 3f ||
-                         Vector3.Distance(unit.Position, endpoint) < 3f)))
-                    continue;
-                selectedOwner = origin;
-                selectedTarget = endpoint;
-                selected = true;
-                break;
-            }
-            if (!selected) throw new InvalidOperationException(
-                "No bounded private Ice Devil melee lane is available.");
-            PlaceExpandedSummoningUnit(owner, selectedOwner);
-            PlaceExpandedSummoningUnit(target, selectedTarget);
-            foreach (UnitEntityData unit in new[] { owner, target })
-            {
-                unit.Wake(0f);
-                if (!Game.Instance.State.AwakeUnits.Contains(unit))
-                    Game.Instance.State.AwakeUnits.Add(unit);
-                unit.SightCache.ClearIfNeeded();
-            }
-            owner.Memory.Add(target).Visible = true;
-            target.Memory.Add(owner).Visible = true;
-            // Enter combat the same way the proven Sprint 34 lane does, which
-            // is also the lane the qualified Sprint 40 Slow phase uses. A
-            // queued UnitAttack for units that are not in combat never
-            // resolves, and the enclosing prepare already captures and
-            // restores both combat flags, so joining here is what it expects.
-            owner.JoinCombat();
-            target.JoinCombat();
-            Game.Instance.Player.UpdateIsInCombat();
-            new UnitCombatJoinController().Tick();
-            new UnitCombatPrepareController().Tick();
-            var probe = new UnitAttack(target);
-            probe.Init(owner);
-            if (!owner.Descriptor.State.CanAct || !owner.IsEnemy(target) ||
-                !target.IsEnemy(owner) || !owner.HasLOS(target) ||
-                !owner.IsInCombat || !target.IsInCombat ||
-                !probe.IsUnitEnoughClose)
-                throw new InvalidOperationException(
-                    "Exact Ice Devil melee lane is not command-ready: " +
-                    "canAct=" + owner.Descriptor.State.CanAct +
-                    ";mutualHostility=" + (owner.IsEnemy(target) &&
-                        target.IsEnemy(owner)) +
-                    ";los=" + owner.HasLOS(target) +
-                    ";ownerInCombat=" + owner.IsInCombat +
-                    ";targetInCombat=" + target.IsInCombat +
-                    ";enoughClose=" + probe.IsUnitEnoughClose + ".");
+            if (live == null || live.Slowed == null ||
+                live.OnFailedSave == null) return false;
+            int dc = IceDevilRules40Policy.SlowDc(
+                source.Stats.Constitution.Bonus);
+            var context = new MechanicsContext(source, target.Descriptor,
+                live.Slowed, null, new TargetWrapper(target));
+            context.Params.DC = dc;
+            using (context.GetDataScope(new TargetWrapper(target)))
+                live.OnFailedSave.Run();
+            Buff applied = target.Buffs.GetBuff(live.Slowed);
+            return applied != null && applied.Active && !applied.IsDisposed &&
+                applied.TimeLeft > TimeSpan.Zero &&
+                ReferenceEquals(applied.Context?.MaybeCaster, source);
         }
 
         private IEnumerable<int> PrepareIceDevilSaved40(
@@ -329,20 +252,6 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             foreach (int frame in IceDevilSettleOwners40(new[] { source, target }))
                 yield return frame;
-
-            // Select the listener faction before anything is spawned, which is
-            // what the shared Sprint 32 contract says and what Sprint 35 does.
-            // Its safety predicate refuses when any intake group's cached
-            // faction set already contains the caster's faction, and the
-            // source-owned wall section below is a summoned unit that joins
-            // its summoner's group: forming the wall first put the caster's
-            // own faction into the observed intake relations, and the shared
-            // selection correctly refused rather than editing intake groups.
-            BlueprintFaction hostileFaction = SelectSprint32ListenerFaction(
-                caster, sources, Game.Instance.Player.Party.ToArray(),
-                Game.Instance.State.Units.All.Where(unit => unit != null &&
-                    !sources.Contains(unit) &&
-                    !Game.Instance.Player.Party.Contains(unit)).ToArray());
 
             UnitEntityData wall = null;
             foreach (int frame in PrepareInfernalWallPersistence35(caster,
@@ -378,7 +287,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool sourceInParty = Game.Instance.Player.Party.Contains(source);
             bool targetInParty = Game.Instance.Player.Party.Contains(target);
             bool relationsChanged = false;
-            bool hostile = false;
+            bool armed = false;
             bool restored = false;
             try
             {
@@ -386,31 +295,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnitCondition.Frightened);
                 target.Descriptor.State.AddConditionImmunity(
                     UnitCondition.Frightened);
-                source.GroupId = source.UniqueId;
-                target.GroupId = target.UniqueId;
-                relationsChanged = true;
-                target.Descriptor.SwitchFactions(hostileFaction, true);
-                source.AttackFactions.Match(new[] { hostileFaction });
-                target.AttackFactions.Match(new[] { sourceFaction });
-                foreach (UnitEntityData unit in new[] { source, target })
-                {
-                    unit.Group.ResetFactionSet();
-                    unit.Group.UpdateAttackFactionsCache();
-                }
-                hostile = source.IsEnemy(target) && target.IsEnemy(source) &&
-                    !ReferenceEquals(source.Group, target.Group) &&
-                    source.Group.Count == 1 && target.Group.Count == 1;
-                if (!hostile) throw new InvalidOperationException(
-                    "Private Ice Devil owners are not mutually hostile.");
-                target.Stats.SaveFortitude.BaseValue = -100;
-                target.Stats.AC.BaseValue = -100;
-                target.Stats.HitPoints.BaseValue = 100000;
-                IceDevilMeleeLane40(caster, sources, source, target);
-                foreach (int frame in IceDevilCombatReady40(
-                    new[] { source, target })) yield return frame;
-                foreach (int frame in IceDevilSpearUntil40(source, target,
-                    () => target.Buffs.GetBuff(slowBlueprint) != null))
-                    yield return frame;
+                armed = IceDevilArmSavedSlow40(source, target,
+                    IceDevilSlowConsumer40(source));
+                if (!armed) throw new InvalidOperationException(
+                    "Sprint40 saved Slow precondition was not armed.");
             }
             finally
             {
@@ -470,22 +358,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Descriptor.State.HasCondition(UnitCondition.Slowed) &&
                 target.Descriptor.State.CanAct &&
                 target.Descriptor.State.CanMove;
-            RosterPersistenceCheck("s40-slow-prepared", hostile && restored &&
+            RosterPersistenceCheck("s40-slow-prepared", armed && restored &&
                     slowExact,
                 new JObject {
                     ["source"] = source.UniqueId,
                     ["target"] = target.UniqueId,
-                    ["hostileDuringAttack"] = hostile,
-                    ["relationsRestored"] = restored,
+                    ["armedThroughProductionFailedSaveActions"] = armed,
+                    ["relationsUndisturbed"] = restored,
                     ["slowPresent"] = slow != null,
                     ["slowSource"] = slow?.Context?.MaybeCaster?.UniqueId,
                     ["slowEndTicks"] = slow?.EndTime.Ticks,
+                    ["slowDc"] = IceDevilRules40Policy.SlowDc(
+                        source.Stats.Constitution.Bonus),
                     ["targetCanAct"] = target.Descriptor.State.CanAct,
                     ["targetCanMove"] = target.Descriptor.State.CanMove,
                     ["forcedRolls"] = 0,
-                    ["actualNativeAttack"] = true
-                }, "A real exact-owner spear hit and natural failed Fortitude save leave finite native Slow on the second owned Ice Devil; the temporary private hostility, groups, factions and combat state are restored before save.");
-            if (!(hostile && restored && slowExact))
+                    ["actualNativeAttack"] = false,
+                    ["effectOnlyPreparation"] = true
+                }, "Effect-only preparation, disclosed: the saved finite native Slow is armed by running the production rider's own failed-save actions under its own exact-owner context and live Constitution difficulty class, not by a spear hit. It is a saved precondition and is not attack, save or action-cost proof - those are the Slow real-time and turn-based rows. Groups, factions, attack lists and combat state are left undisturbed.");
+            if (!(armed && restored && slowExact))
                 throw new InvalidOperationException(
                     "Sprint40 Slow save precondition did not prepare cleanly.");
 
