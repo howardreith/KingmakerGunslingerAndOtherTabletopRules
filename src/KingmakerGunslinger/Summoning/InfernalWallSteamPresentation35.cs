@@ -17,7 +17,7 @@ namespace KingmakerGunslinger.Summoning
     /// attempt (on creation and after load), the view adopts the native
     /// 20-foot kineticist steam cloud as its spawned effect, so native
     /// LateUpdate follows the area and native OnDestroy removes it. The
-    /// cloud's burning-ground and glow layers are switched off: Wall steam
+    /// cloud's burning-ground and glow renderers are switched off: Wall steam
     /// deals no fire, so it must not look like it burns.
     /// </summary>
     [HarmonyPatch(typeof(AreaEffectView), "SpawnFxs")]
@@ -42,11 +42,15 @@ namespace KingmakerGunslinger.Summoning
                 GameObject prefab = Steam.Load(true);
                 if (prefab == null) return;
                 GameObject cloud = FxHelper.SpawnFxOnGameObject(prefab, __instance.gameObject);
+                // Only the flame layers' own renderers are switched off. Their
+                // GameObjects stay active: the vapour systems are nested under
+                // them, and deactivating a flame object stopped the whole
+                // cloud natively (0 playing systems, 0 particles).
                 if (cloud != null)
-                    foreach (Transform layer in cloud.GetComponentsInChildren<Transform>(true))
-                        if (layer != cloud.transform &&
+                    foreach (Renderer layer in cloud.GetComponentsInChildren<Renderer>(true))
+                        if (layer != null &&
                                 InfernalRules35.WallSteamHidesLayer(layer.name))
-                            layer.gameObject.SetActive(false);
+                            layer.enabled = false;
                 SpawnedFx.SetValue(__instance, cloud);
             }
             catch (Exception)
