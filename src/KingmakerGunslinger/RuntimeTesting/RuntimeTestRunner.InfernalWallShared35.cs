@@ -310,7 +310,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 InfernalWallPrepareActor35(source);
             }
             var sources = new[] { run.Bone, sourceA, sourceB };
-            InfernalBoneRemoveEffects35(mover, sources, run.Frightened);
+            // Each source's fear aura also frightens the other source (close17:
+            // source B carried source A's Frightened and never settled). The
+            // established fixture clears that exact effect from the mover; the
+            // two sources get the same exact-source, exact-blueprint clearing.
+            Action clearFear = () => {
+                foreach (var victim in new[] { mover, sourceA, sourceB })
+                    InfernalBoneRemoveEffects35(victim, sources, run.Frightened);
+            };
+            clearFear();
             AbilityData dataA = InfernalWallSharedAbility35(run, sourceA), dataB = InfernalWallSharedAbility35(run, sourceB);
             receipt["sources"] = new JObject { ["a"] = sourceA.UniqueId, ["b"] = sourceB.UniqueId,
                 ["aSummoner"] = sourceA.Get<UnitPartSummonedMonster>()?.Summoner?.UniqueId,
@@ -319,7 +327,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             var plan = InfernalWallNextLane35(run, "shared", _infernalWallPlans35.ToArray());
             foreach (int frame in InfernalWallFixturePrerequisite35(fixture, sourceA, owned, plan, check, "shared")) yield return frame;
-            InfernalBoneRemoveEffects35(mover, sources, run.Frightened);
+            clearFear();
 
             int gridIndex;
             Pathfinding.GridGraph grid = InfernalWallClaimGrid35(plan.Midpoint, out gridIndex);
@@ -377,6 +385,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "No legal placement shares affected grid cells; the nearest legal independent placement is used and the limit is recorded.");
                 }
 
+                clearFear();
                 foreach (int frame in InfernalWallPlaceAndSettle35(sourceB, geometry.CasterB, planB, "shared-b-caster-" + pair)) yield return frame;
                 var b = new InfernalWallSharedSection35 { Label = pair + "-b", Source = sourceB };
                 JObject castB = null;
@@ -462,10 +471,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 if (aFirst)
                 {
-                    InfernalBoneRemoveEffects35(mover, sources, run.Frightened);
+                    clearFear();
                     foreach (int frame in InfernalEarlyWallMove35(fixture, plan.Start, plan.Destination, plan.Midpoint,
                         true, "shared-" + pair + "-both-a", check, plan, false, a.Section)) yield return frame;
-                    InfernalBoneRemoveEffects35(mover, sources, run.Frightened);
+                    clearFear();
                     foreach (int frame in InfernalEarlyWallMove35(fixture, planB.Start, planB.Destination, planB.Midpoint,
                         true, "shared-" + pair + "-both-b", check, planB, false, b.Section)) yield return frame;
                 }
@@ -548,7 +557,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     InfernalWallNavmesh35.ActiveGridClaimCount == survivor.Binding.GridNodeSnapshot().Length &&
                     (bool)survivorRow["foreignCutsUnchanged"], survivorRow,
                     "Retiring one Wall returns only its own cells to their baseline and leaves the other Wall's cut, claims, every layer of its cells and unrelated cells exactly as they were immediately before the retirement.");
-                InfernalBoneRemoveEffects35(mover, sources, run.Frightened);
+                clearFear();
                 foreach (int frame in InfernalEarlyWallMove35(fixture, survivorPlan.Start, survivorPlan.Destination,
                     survivorPlan.Midpoint, true, "shared-" + pair + "-survivor-" + (aFirst ? "b" : "a"), check,
                     survivorPlan, false, survivor.Section)) yield return frame;
@@ -577,10 +586,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 check("wall-shared-baseline-restored-" + pair, notBaseline.Length == 0 &&
                     InfernalWallNavmesh35.ActiveGridClaimCount == 0 && (bool)restoredRow["foreignCutsUnchanged"],
                     restoredRow, "Retiring the second Wall returns every affected and unrelated cell to its recorded baseline.");
-                InfernalBoneRemoveEffects35(mover, sources, run.Frightened);
+                clearFear();
                 foreach (int frame in InfernalEarlyWallMove35(fixture, plan.Start, plan.Destination, plan.Midpoint,
                     false, "shared-" + pair + "-restored-a", check, plan)) yield return frame;
-                InfernalBoneRemoveEffects35(mover, sources, run.Frightened);
+                clearFear();
                 foreach (int frame in InfernalEarlyWallMove35(fixture, planB.Start, planB.Destination, planB.Midpoint,
                     false, "shared-" + pair + "-restored-b", check, planB)) yield return frame;
             }
@@ -609,6 +618,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             caster.Commands.RemoveFinishedAndUpdateQueue();
             if (Vector3.Distance(caster.Position, casterPoint) > .05f) PlaceExpandedSummoningUnit(caster, casterPoint);
             InfernalBoneRemoveEffects35(run.Fixture.Caster, sources, run.Frightened);
+            InfernalBoneRemoveEffects35(caster, sources, run.Frightened);
             var target = new TargetWrapper(point);
             bool targetable = data.IsAvailable && data.CanTarget(target);
             var prior = new HashSet<string>(Game.Instance.State.Units.Where(value =>
