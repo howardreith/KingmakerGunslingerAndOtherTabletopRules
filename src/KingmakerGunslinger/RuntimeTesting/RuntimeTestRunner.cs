@@ -16118,38 +16118,80 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool lanternAuraAvailable = all.Any(value => value != null &&
                 value.AssetGuid == "1ce4878b5e714f659d0854a12f4b3cf2" &&
                 value.GetType() == typeof(BlueprintBuff));
-            bool lanternExact = lanternLevels.Levels == 2 &&
-                lantern.Size == Size.Small && lantern.Alignment == Alignment.LawfulGood &&
-                lantern.Strength == 1 && lantern.Dexterity == 11 &&
-                lantern.Constitution == 12 && lantern.Intelligence == 6 &&
-                lantern.Wisdom == 11 && lantern.Charisma == 10 &&
-                lantern.ComponentsArray.OfType<AddAbilityToCharacterComponent>()
-                    .Single().Abilities.SequenceEqual(new[] { lanternRay,
-                        lanternFullRay }) &&
-                lantern.Body.AdditionalLimbs.Length == 0 &&
-                lantern.Body.AdditionalSecondaryLimbs.Length == 0 &&
-                lantern.StartingInventory.Length == 0 &&
-                lantern.AddFacts.Count(value => value != null && value.name ==
-                    "KMG_Summoning_Special_LanternArchon_Defenses") == 1 &&
-                lantern.AddFacts.Count(value => value != null && value.AssetGuid ==
-                    "1ce4878b5e714f659d0854a12f4b3cf2") ==
-                        (lanternAuraAvailable ? 1 : 0) &&
-                lanternRay.Range == AbilityRange.Custom &&
-                lanternRay.ActionType == UnitCommand.CommandType.Standard &&
-                !lanternRay.IsFullRoundAction &&
-                lanternDelivery.NeedAttackRoll &&
-                lanternDelivery.Projectiles.Length == 1 &&
-                lanternFullRay.Range == AbilityRange.Custom &&
-                lanternFullRay.ActionType == UnitCommand.CommandType.Standard &&
-                lanternFullRay.IsFullRoundAction &&
-                lanternFullDelivery.NeedAttackRoll &&
-                lanternFullDelivery.Projectiles.Length == 2 &&
-                lanternDamage.Length == 1 &&
-                lanternDamage[0].DamageType.Type == DamageType.Direct &&
-                lanternDamage[0].Value.DiceType == DiceType.D6 &&
-                lanternDamage[0].Value.DiceCountValue.ValueType ==
-                    ContextValueType.Simple &&
-                lanternDamage[0].Value.DiceCountValue.Value == 1;
+            // Sprint 41 (A-12): this was one conjunction of twenty-six
+            // conditions reported as a single "exact"/"mismatch" string, so a
+            // failure under a compatibility profile named no cause and could
+            // not be diagnosed without a rebuild. The conditions are unchanged
+            // and so is the verdict - every clause must still hold - but each
+            // now carries its name, and the observed value lists exactly the
+            // clauses that failed.
+            var lanternClauses = new[]
+            {
+                new KeyValuePair<string, bool>("levels=2", lanternLevels.Levels == 2),
+                new KeyValuePair<string, bool>("size=Small", lantern.Size == Size.Small),
+                new KeyValuePair<string, bool>("alignment=LG", lantern.Alignment == Alignment.LawfulGood),
+                new KeyValuePair<string, bool>("str=1", lantern.Strength == 1),
+                new KeyValuePair<string, bool>("dex=11", lantern.Dexterity == 11),
+                new KeyValuePair<string, bool>("con=12", lantern.Constitution == 12),
+                new KeyValuePair<string, bool>("int=6", lantern.Intelligence == 6),
+                new KeyValuePair<string, bool>("wis=11", lantern.Wisdom == 11),
+                new KeyValuePair<string, bool>("cha=10", lantern.Charisma == 10),
+                new KeyValuePair<string, bool>("granted-abilities=[ray,fullRay]",
+                    lantern.ComponentsArray.OfType<AddAbilityToCharacterComponent>()
+                        .Single().Abilities.SequenceEqual(new[] { lanternRay, lanternFullRay })),
+                new KeyValuePair<string, bool>("additionalLimbs=0", lantern.Body.AdditionalLimbs.Length == 0),
+                new KeyValuePair<string, bool>("additionalSecondaryLimbs=0",
+                    lantern.Body.AdditionalSecondaryLimbs.Length == 0),
+                new KeyValuePair<string, bool>("startingInventory=0", lantern.StartingInventory.Length == 0),
+                new KeyValuePair<string, bool>("kmgDefencesFact=1",
+                    lantern.AddFacts.Count(value => value != null && value.name ==
+                        "KMG_Summoning_Special_LanternArchon_Defenses") == 1),
+                new KeyValuePair<string, bool>("nativeAuraFact=" + (lanternAuraAvailable ? "1" : "0"),
+                    lantern.AddFacts.Count(value => value != null && value.AssetGuid ==
+                        "1ce4878b5e714f659d0854a12f4b3cf2") == (lanternAuraAvailable ? 1 : 0)),
+                new KeyValuePair<string, bool>("ray.range=Custom", lanternRay.Range == AbilityRange.Custom),
+                new KeyValuePair<string, bool>("ray.action=Standard",
+                    lanternRay.ActionType == UnitCommand.CommandType.Standard),
+                new KeyValuePair<string, bool>("ray.notFullRound", !lanternRay.IsFullRoundAction),
+                new KeyValuePair<string, bool>("ray.needAttackRoll", lanternDelivery.NeedAttackRoll),
+                new KeyValuePair<string, bool>("ray.projectiles=1", lanternDelivery.Projectiles.Length == 1),
+                new KeyValuePair<string, bool>("fullRay.range=Custom", lanternFullRay.Range == AbilityRange.Custom),
+                new KeyValuePair<string, bool>("fullRay.action=Standard",
+                    lanternFullRay.ActionType == UnitCommand.CommandType.Standard),
+                new KeyValuePair<string, bool>("fullRay.isFullRound", lanternFullRay.IsFullRoundAction),
+                new KeyValuePair<string, bool>("fullRay.needAttackRoll", lanternFullDelivery.NeedAttackRoll),
+                new KeyValuePair<string, bool>("fullRay.projectiles=2", lanternFullDelivery.Projectiles.Length == 2),
+                new KeyValuePair<string, bool>("damageActions=1", lanternDamage.Length == 1),
+            };
+            bool lanternExact = lanternClauses.All(value => value.Value);
+            // The dice clauses read lanternDamage[0], so they are only safe to
+            // evaluate once damageActions=1 holds.
+            string lanternDamageDetail = string.Empty;
+            if (lanternDamage.Length == 1)
+            {
+                var lanternDamageClauses = new[]
+                {
+                    new KeyValuePair<string, bool>("damage.type=Direct",
+                        lanternDamage[0].DamageType.Type == DamageType.Direct),
+                    new KeyValuePair<string, bool>("damage.dice=D6",
+                        lanternDamage[0].Value.DiceType == DiceType.D6),
+                    new KeyValuePair<string, bool>("damage.countType=Simple",
+                        lanternDamage[0].Value.DiceCountValue.ValueType == ContextValueType.Simple),
+                    new KeyValuePair<string, bool>("damage.count=1",
+                        lanternDamage[0].Value.DiceCountValue.Value == 1),
+                };
+                lanternExact = lanternExact && lanternDamageClauses.All(value => value.Value);
+                lanternDamageDetail = string.Join(",", lanternDamageClauses
+                    .Where(value => !value.Value).Select(value => value.Key).ToArray());
+            }
+            string lanternFailed = string.Join(",", lanternClauses
+                .Where(value => !value.Value).Select(value => value.Key).ToArray());
+            if (lanternDamageDetail.Length != 0)
+            {
+                lanternFailed = lanternFailed.Length == 0 ? lanternDamageDetail
+                    : lanternFailed + "," + lanternDamageDetail;
+            }
+            string lanternDetail = lanternExact ? "exact" : "mismatch:" + lanternFailed;
             BlueprintUnit invisibleStalker = all.OfType<BlueprintUnit>().Single(
                 value => value.name == "KMG_Summoning_Unit_InvisibleStalker");
             AddClassLevels invisibleStalkerLevels = invisibleStalker.ComponentsArray
@@ -16686,7 +16728,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     stirgeTouchExact,
                     "live Stirge body and exact project weapon blueprint"),
                 Assertion("expanded-summoning-lantern-archon", "exact",
-                    lanternExact ? "exact" : "mismatch", lanternExact,
+                    lanternDetail, lanternExact,
                     "2-HD Small LG Will-o'-Wisp view, bounded dual 1d6 touch rays, native aura, and KMG defenses"),
                 Assertion("expanded-summoning-invisible-stalker", "exact",
                     invisibleStalkerExact ? "exact" : "mismatch",
