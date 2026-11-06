@@ -73,6 +73,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             { Game.Instance.IsPaused = false; yield return 0; }
             row["releasedClouds"] = new JArray(clouds.Select(cloud => new JObject {
                 ["destroyed"] = cloud == null, ["inPool"] = cloud != null && GameObjectsPool.IsInPool(cloud),
+                ["activeSelf"] = cloud != null && cloud.activeSelf,
                 ["flameRenderersOffInPool"] = cloud == null ? 0 : cloud.GetComponentsInChildren<Renderer>(true).Count(value =>
                     value != null && InfernalRules35.WallSteamHidesLayer(value.name) && !value.enabled) }));
 

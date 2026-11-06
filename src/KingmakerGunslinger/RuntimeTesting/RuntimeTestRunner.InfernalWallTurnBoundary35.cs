@@ -6,6 +6,7 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Commands;
+using Kingmaker.Utility;
 using Kingmaker.View;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
@@ -48,9 +49,54 @@ namespace KingmakerGunslinger.RuntimeTesting
             var row = new JObject { ["scope"] = "One Wall section from an ordinary command; native turn-based route queries and one native turn-based move; the observer writes no graph state." };
             result(row);
             park(mover); park(sourceB); clearFear();
+            // A legal ordinary placement centred on a grid row, cast along a
+            // grid axis: the native cut's counter block is then a single row
+            // of cells (close27 Wall A; nav1's lane Wall covered two rows).
+            // Falls back to the lane placement when that is not legal.
+            Vector3 castFrom = plan.CastingPoint, castAt = plan.Midpoint;
+            var placementRow = new JObject { ["lanePoint"] = SurveyVector(plan.Midpoint), ["laneCaster"] = SurveyVector(plan.CastingPoint) };
+            {
+                int laneGridIndex;
+                GridGraph laneGrid = InfernalWallClaimGrid35(plan.Midpoint, out laneGridIndex);
+                Vector3 axis = plan.Midpoint - plan.CastingPoint; axis.y = 0f; axis.Normalize();
+                bool alongX = Math.Abs(axis.x) >= .999f, alongZ = Math.Abs(axis.z) >= .999f;
+                placementRow["laneAxisAligned"] = alongX || alongZ;
+                NNInfo row0 = laneGrid.GetNearest(plan.Midpoint, NNConstraint.None);
+                if ((alongX || alongZ) && row0.node != null)
+                {
+                    Vector3 snapped = plan.Midpoint;
+                    Vector3 nodePosition = (Vector3)row0.node.position;
+                    if (alongZ) snapped.z = nodePosition.z; else snapped.x = nodePosition.x;
+                    Vector3 shift = snapped - plan.Midpoint; shift.y = 0f;
+                    Vector3 casterWanted = plan.CastingPoint + shift;
+                    NNInfo casterNode = Kingmaker.View.ObstacleAnalyzer.GetNearestNode(casterWanted);
+                    NNInfo targetNode = Kingmaker.View.ObstacleAnalyzer.GetNearestNode(snapped);
+                    if (casterNode.node != null && targetNode.node != null &&
+                        Vector3.Distance(casterNode.clampedPosition, casterWanted) < .3f &&
+                        Vector3.Distance(targetNode.clampedPosition, snapped) < .3f)
+                    {
+                        Vector3 aligned = targetNode.clampedPosition;
+                        Vector3 alignedCaster = casterNode.clampedPosition;
+                        Vector3 before = sourceA.Position;
+                        PlaceExpandedSummoningUnit(sourceA, alignedCaster);
+                        yield return 0;
+                        InfernalWallPlacement35 trial;
+                        var target = new TargetWrapper(aligned);
+                        bool resolved = InfernalWallPlacementRuntime35.TryResolve(sourceA, target, run.Section, out trial);
+                        bool targetable = dataA.IsAvailable && dataA.CanTarget(target);
+                        placementRow["gridRowTarget"] = SurveyVector(aligned);
+                        placementRow["gridRowCaster"] = SurveyVector(alignedCaster);
+                        placementRow["gridRowResolved"] = resolved; placementRow["gridRowTargetable"] = targetable;
+                        if (resolved && targetable) { castFrom = alignedCaster; castAt = aligned; }
+                        else PlaceExpandedSummoningUnit(sourceA, before);
+                    }
+                }
+            }
+            placementRow["usedGridRowPlacement"] = castAt != plan.Midpoint;
+            row["placement"] = placementRow;
             var wall = new InfernalWallSharedSection35 { Label = "tb-a", Source = sourceA };
             JObject cast = null;
-            foreach (int frame in InfernalWallSharedCast35(run, wall, dataA, plan.CastingPoint, plan.Midpoint, sources, region,
+            foreach (int frame in InfernalWallSharedCast35(run, wall, dataA, castFrom, castAt, sources, region,
                 value => cast = value)) yield return frame;
             row["cast"] = cast;
             park(sourceA); clearFear();
@@ -79,6 +125,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             Func<GraphNode, bool> inIce = node => gap((Vector3)node.position) <= 0f;
             var ring = wall.Claimed.Where(node => !inIce(node)).ToArray();
             row["cells"] = new JObject { ["claimed"] = wall.Claimed.Count, ["iceCentre"] = wall.Claimed.Count(inIce),
+                ["counterRowsAcross"] = wall.Dynamic.Keys.Select(node => Math.Round(acrossOf((Vector3)node.position) / nodeSize))
+                    .Distinct().Count(),
+                ["iceCentreRowsAcross"] = wall.Claimed.Where(inIce).Select(node => Math.Round(acrossOf((Vector3)node.position) / nodeSize))
+                    .Distinct().Count(),
                 ["dynamicNodes"] = wall.Dynamic.Count,
                 ["claimedRingWalkableAfterFormation"] = ring.Count(node => formed[node].Walkable),
                 ["claimedRingStaticWalkableAfterFormation"] = ring.Count(node => formed[node].Static),
@@ -144,6 +194,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var turnLog = new JArray();
             var routes = new JArray();
             JObject actual = null;
+            var statusLog = new JArray();
             row["entry"] = new JObject { ["playerInCombat"] = Game.Instance.Player.IsInCombat, ["moverInCombat"] = moverWasInCombat,
                 ["turnBasedSettingBefore"] = oldMode, ["cameraScrollBefore"] = oldScroll,
                 ["moverAvoidanceDisabled"] = mover.View.AgentASP.AvoidanceDisabled, ["moverCorpulence"] = mover.Corpulence };
@@ -162,18 +213,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                 while (DateTime.UtcNow < entryDeadline && !CombatController.IsInTurnBasedCombat())
                 { Game.Instance.IsPaused = false; yield return 0; }
                 row["turnBasedEntered"] = CombatController.IsInTurnBasedCombat();
-                // Reach the mover's own acting turn; every other unit's turn
-                // is ended natively (as its end-turn control does).
+                row["moverEnrolled"] = controller.SortedUnits != null && controller.SortedUnits.Contains(mover);
+                // Reach the mover's own turn; every other unit's turn is ended
+                // natively (as its end-turn control does). A directly
+                // controllable unit's turn stays Preparing until it is given a
+                // command, which moves it to Acting (installed TurnController
+                // .Tick), so the mover's turn is current in either status
+                // (nav1 waited for Acting and never issued the move).
                 DateTime turnDeadline = DateTime.UtcNow.AddSeconds(40);
                 bool moverActing = false;
+                string lastStatus = null;
                 while (CombatController.IsInTurnBasedCombat() && DateTime.UtcNow < turnDeadline)
                 {
                     Game.Instance.IsPaused = false; yield return 0;
                     TurnController turn = controller.CurrentTurn;
+                    string status = turn == null ? "none" : turn.Unit.UniqueId + ":" + turn.Status;
+                    if (status != lastStatus && statusLog.Count < 80)
+                        statusLog.Add(new JObject { ["turn"] = status, ["waitingForUi"] = (bool)controller.WaitingForUI,
+                            ["round"] = controller.RoundNumber, ["moverIsCurrent"] = turn != null && ReferenceEquals(turn.Unit, mover) });
+                    lastStatus = status;
                     if (turn == null) continue;
                     if (ReferenceEquals(turn.Unit, mover))
                     {
-                        if (turn.Status == TurnController.TurnStatus.Acting) { moverActing = true; break; }
+                        if (turn.Status == TurnController.TurnStatus.Preparing ||
+                            turn.Status == TurnController.TurnStatus.Acting) { moverActing = true; break; }
                         continue;
                     }
                     if (turn.Status == TurnController.TurnStatus.Preparing || turn.Status == TurnController.TurnStatus.Acting)
@@ -186,6 +249,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 row["moverTurnReached"] = moverActing;
                 row["foreignTurnsEnded"] = turnLog;
+                row["turnStatusLog"] = statusLog;
                 // Native grid state once turn-based navigation has updated.
                 foreach (int frame in InfernalWallRegionSettle35(region, () => true)) yield return frame;
                 var turnState = InfernalWallSnapshot35(region);
@@ -259,6 +323,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (samples.Count < 200) samples.Add(SurveyVector(position));
                         quiet = move.IsFinished && !agent.IsReallyMoving ? quiet + 1 : 0;
                     }
+                    TurnController during = controller.CurrentTurn;
+                    actual["turnStatusAfterMove"] = during == null ? "none" : during.Status.ToString();
+                    actual["moverStillCurrent"] = during != null && ReferenceEquals(during.Unit, mover);
                     actual["result"] = move.Result.ToString();
                     actual["finished"] = move.IsFinished;
                     actual["end"] = SurveyVector(mover.Position);
@@ -376,7 +443,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["minimumIceGap"] = float.IsInfinity(minimumGap) ? (float?)null : minimumGap;
             row["crossesInsideLength"] = crossed;
             row["routeNodeInsideIce"] = iceNode;
-            row["throughIce"] = !path.error && (crossed || iceNode || minimumGap <= 0f);
+            // Through: the route crosses the section inside its length or
+            // uses a cell whose centre lies in the ice. Boundary: the route's
+            // centre line touches the ice footprint (a corner or face graze)
+            // without crossing it.
+            row["throughIce"] = !path.error && (crossed || iceNode);
+            row["touchesIceBoundary"] = !path.error && !crossed && !iceNode && minimumGap <= .05f;
+            row["claimedCellsOnRoute"] = nodes.Count(node => InfernalWallNavmesh35.ClaimOwnedBy(node, wall.Binding));
             row["throughIceViaStartExemption"] = !path.error && nodes.Any(node => gap((Vector3)node.position) <= 0f &&
                 exempt.Contains(node) && !node.Walkable);
             return row;

@@ -286,12 +286,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             string receiptPath = Path.Combine(_request.EvidenceDirectory, "s35-wall-shared.json");
             Action persist = () => RuntimeTestResultWriter.WriteAtomic(receiptPath, receipt.ToString(Formatting.Indented));
             var mover = fixture.Caster;
-            // Before this scenario's own Walls: whether a Wall steam cloud with
-            // its flame renderers switched off returns to the native pool.
-            JObject steamPool = null;
-            foreach (int frame in InfernalWallSteamPool35(run, value => steamPool = value)) yield return frame;
-            receipt["steamPool"] = steamPool;
-            persist();
 
             var sourceA = CastExpandedSummoningOwnTier(fixture, "bone-devil");
             var sourceB = CastExpandedSummoningOwnTier(fixture, "bone-devil");

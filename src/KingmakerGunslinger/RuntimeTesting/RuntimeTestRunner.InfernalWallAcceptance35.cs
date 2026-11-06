@@ -1095,6 +1095,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             run.Check("wall-steam-consumer", fog != null && inside != null && !afterExit && !fog.IsEnded &&
                 (configured == null || insideGuid == configured.AssetGuid), row,
                 "A creature inside the steam carries its owned native effect, which ends on leaving while the area continues.");
+            // The live area's own cloud through the native end and release,
+            // then an ordinary native claim of the same prefab.
+            JObject pool = null;
+            foreach (int frame in InfernalWallSteamPool35(run, value => pool = value)) yield return frame;
+            InfernalWallPersist35(run, "steam-pool", pool);
         }
 
         private IEnumerable<int> InfernalWallControlledExpiry35(InfernalWallRun35 run, InfernalWallFormed35 formed)
