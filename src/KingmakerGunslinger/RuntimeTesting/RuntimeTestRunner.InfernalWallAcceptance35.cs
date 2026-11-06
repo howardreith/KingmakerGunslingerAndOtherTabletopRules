@@ -1020,6 +1020,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 steamFx["afterCameraSettle"] = InfernalWallAreaFx35(fog);
                 inspectionCapture = InfernalWallInspectionCaptureAt35(fog.Position, "s35-wall-steam-area-inspection-light.png");
             }
+            var fxProbe = new JObject();
+            foreach (int frame in InfernalWallSteamFxProbe35(run, fog, fxProbe)) yield return frame;
             Vector3 mid = formed.Plan.Midpoint;
             Vector3 outside = Vector3.Distance(outsidePlan.Start, mid) >= Vector3.Distance(outsidePlan.Destination, mid) ?
                 outsidePlan.Start : outsidePlan.Destination;
@@ -1035,7 +1037,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["moverDistanceAfterExit"] = InfernalEarlyDistanceToSegment35(mover.Position, mid, mid),
                 ["areaStillLive"] = fog != null && !fog.IsEnded,
                 ["steamFx"] = steamFx, ["steamOrdinaryCapture"] = ordinaryCapture,
-                ["steamInspectionCapture"] = inspectionCapture };
+                ["steamInspectionCapture"] = inspectionCapture, ["steamFxProbe"] = fxProbe };
             InfernalWallPersist35(run, "steam-consumer", row);
             run.Check("wall-steam-consumer", fog != null && inside != null && !afterExit && !fog.IsEnded &&
                 (configured == null || insideGuid == configured.AssetGuid), row,
