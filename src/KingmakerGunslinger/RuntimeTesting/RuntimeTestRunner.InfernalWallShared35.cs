@@ -478,6 +478,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // claimed nodes; that is recorded, not attributed to the
                 // retirement.
                 var beforeFirst = InfernalWallSnapshot35(region);
+                bool survivorGridBlockBefore = survivor.Cut != null && survivor.Cut.gridGuoApplied;
                 JObject firstRetirement = null;
                 foreach (int frame in InfernalWallSharedRetire35(first, region, value => firstRetirement = value)) yield return frame;
                 pairRow["firstRetired"] = first.Label;
@@ -496,9 +497,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     afterFirst[node].Dynamic != beforeFirst[node].Dynamic).ToArray();
                 var firstNotRestored = firstOnly.Where(node => !afterFirst[node].SameNavigation(baseline[node])).ToArray();
                 var unrelatedChanged = unrelated.Where(node => !afterFirst[node].SameNavigation(baseline[node])).ToArray();
+                // Live: still the binding's own registered, enabled cut, and its
+                // turn-based grid block state unchanged by the retirement (that
+                // block is applied only by the turn-based combat controller, so
+                // in real-time play it is legitimately absent).
                 bool survivorCutLive = survivor.Binding != null && survivor.Binding.Cut != null &&
-                    ReferenceEquals(survivor.Binding.Cut, survivor.Cut) &&
-                    Pathfinding.NavmeshCut.GetAll().Contains(survivor.Cut) && survivor.Cut.gridGuoApplied;
+                    ReferenceEquals(survivor.Binding.Cut, survivor.Cut) && survivor.Cut.enabled &&
+                    Pathfinding.NavmeshCut.GetAll().Contains(survivor.Cut) &&
+                    survivor.Cut.gridGuoApplied == survivorGridBlockBefore;
                 bool firstCutGone = !Pathfinding.NavmeshCut.GetAll().Any(value => value != null &&
                     value.GetInstanceID() == first.CutInstance);
                 JArray foreignAfterFirst = InfernalWallForeignCuts35();
@@ -514,6 +520,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return row; }));
                 var survivorRow = new JObject { ["survivor"] = survivor.Label, ["survivorSection"] = survivor.Section.UniqueId,
                     ["survivorCutInstance"] = survivor.CutInstance, ["survivorCutLive"] = survivorCutLive,
+                    ["survivorCutGridBlockBefore"] = survivorGridBlockBefore,
+                    ["survivorCutGridBlockAfter"] = survivor.Cut != null && survivor.Cut.gridGuoApplied,
                     ["retiredCutGone"] = firstCutGone,
                     ["claimsAfter"] = InfernalWallNavmesh35.ActiveGridClaimCount,
                     ["survivorClaims"] = survivor.Claimed.Count,
