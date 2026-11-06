@@ -9,7 +9,7 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 - HOWARD-LAPTOP, root `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
   `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Current product
-  source `71bb0cd3980dad5b18c655e6e54f5bdbd46a7de9`; its reporting pin is the
+  source `fde1d57b3871235280f326be2b529205be016b6f`; its reporting pin is the
   pending enclosing commit. No game,
   deployment, staging or lease is active; the live KMG tree is restored to
   SHA256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
@@ -404,6 +404,24 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   gameplay is unchanged. Production compiles and all five focused Sprint40 checks
   pass. NEXT: commit/push the reporting pin, rebuild once and rerun only the wall
   phase from a fresh process.
+- Reporting head `894faa87164cb79c0ce6b61b3c5794f005191866` passed 2,816/2,816
+  and strict packaging: ZIP SHA256
+  `21c56c732421fa69eb1e44ace4d81143642c29687bc7d796e2332c1fbd273211`,
+  DLL SHA256 `c6de41dc04a9d01ece4f0223aad608b728fa2cdbde60a8ef72a602597c131c88`,
+  MVID `883afd91-9b12-45c6-a635-5eb123cc2f53`, source-state
+  `8e6dc1c22932bd3ea49903cfb8951a304ab7de15956460fc5a6fc96ed1f94264`.
+  Wall run `20261106T0222153755777Z-disposable-expanded-summoning-sprint32-native-review`
+  passes the live claim repair and retired-owner survey, then retains FAIL at the
+  real Bone command: the survey/readiness and native command succeeded, but the
+  disposable hostile remained in the printed formation band and rolled a natural19
+  Reflex save against DC18, correctly disrupting section creation. Restoration
+  receipt `expanded-summoning-restoration/20261106T0225516738775Z-disposable-expanded-summoning-sprint32-native-review.json`
+  verifies the live hash, all nine startup peers and all118 saves exact. Product
+  source `fde1d57b` parks that exact request-owned witness with the surveyed actors
+  and requires the real production adjacency query to be empty before this success
+  cast; the existing S35 adjacent-disruption proof and all gameplay are unchanged.
+  Production compiles and all five focused Sprint40 checks pass. NEXT: commit/push,
+  rebuild once and rerun only the wall phase from a fresh process.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 
