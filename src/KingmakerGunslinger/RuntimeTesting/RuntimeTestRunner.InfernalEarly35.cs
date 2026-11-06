@@ -1277,6 +1277,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             Vector3 previous = mover.Position; int sampledFrame = -1, activeFrames = 0;
             float activeTravel = 0f, peakVelocity = 0f;
             float minimumFootprintGap = float.PositiveInfinity;
+            // Two-Wall lanes: how far the mover's centre entered the cut
+            // rectangle, and whether it crossed the section's centre plane
+            // inside its length (passing through rather than around it).
+            float maximumIntrusion = 0f; int lastFaceSide = 0; bool crossedSection = false;
+            float halfLength = InfernalRules35.WallOfIceSectionLengthMeters * .5f;
+            float halfThickness = InfernalRules35.WallOfIceSectionThicknessMeters * .5f;
             Vector3 footprintForward = footprintSection == null ? Vector3.forward : footprintSection.OrientationDirection;
             Vector3 footprintAlong = Vector3.Cross(Vector3.up, footprintForward).normalized;
             string liveImage = null;
@@ -1295,6 +1301,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     float gap = InfernalWallPlacementRuntime35.DistanceToFootprint(mover.Position,
                         footprintSection.Position, footprintAlong, footprintForward);
                     minimumFootprintGap = Math.Min(minimumFootprintGap, gap);
+                    Vector3 local = mover.Position - footprintSection.Position; local.y = 0f;
+                    float along = Vector3.Dot(local, footprintAlong), across = Vector3.Dot(local, footprintForward);
+                    if (Math.Abs(along) < halfLength)
+                    {
+                        if (Math.Abs(across) < halfThickness)
+                            maximumIntrusion = Math.Max(maximumIntrusion, Math.Min(halfLength - Math.Abs(along), halfThickness - Math.Abs(across)));
+                        int side = across > 0f ? 1 : across < 0f ? -1 : 0;
+                        if (side != 0 && lastFaceSide != 0 && side != lastFaceSide) crossedSection = true;
+                        if (side != 0) lastFaceSide = side;
+                    }
                     if (captureFile != null && liveImage == null && gap < 1f)
                         liveImage = WriteExpandedSummoningPartyCameraCapture(mover, _request.EvidenceDirectory, captureFile);
                 }
@@ -1304,12 +1320,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     sampledFrame = Time.frameCount;
                 }
             })) yield return frame;
+            // Native recast resolution bounds how exactly a path can follow a
+            // cut edge. Two Walls side by side leave a corridor the mover
+            // follows along one face, so the single-Wall detour length and
+            // zero-gap tests do not describe obstruction there; the shared
+            // lanes require going around (never crossing the centre plane
+            // within the span) with any edge intrusion within one recast cell.
+            var recast = AstarPath.active == null ? null : AstarPath.active.graphs.OfType<Pathfinding.RecastGraph>().FirstOrDefault();
+            float recastCell = recast == null ? 0f : recast.cellSize;
+            bool sharedLane = label.StartsWith("shared-", StringComparison.Ordinal) && footprintSection != null;
+            bool sharedObstructed = sharedLane && !crossedSection && maximumDeviation > halfThickness &&
+                recastCell > 0f && maximumIntrusion <= recastCell;
             bool pass = activeFrames >= 3 && activeTravel > 4f && peakVelocity > .05f &&
                 move.Result == UnitCommand.ResultType.Success && Vector3.Distance(mover.Position, destination) <= 1f &&
                 distance > Vector3.Distance(start, destination) - 1f &&
-                (wallPresent ? distance > Vector3.Distance(start, destination) + .15f && maximumDeviation > .35f &&
-                    InfernalWallNavmesh35.ActiveGridClaimCount > 0 &&
-                    (footprintSection == null || minimumFootprintGap > 0f) : maximumDeviation < .8f &&
+                (wallPresent ? InfernalWallNavmesh35.ActiveGridClaimCount > 0 && (sharedLane ? sharedObstructed :
+                    distance > Vector3.Distance(start, destination) + .15f && maximumDeviation > .35f &&
+                    (footprintSection == null || minimumFootprintGap > 0f)) : maximumDeviation < .8f &&
                     distance <= Vector3.Distance(start, destination) + .8f && InfernalWallNavmesh35.ActiveGridClaimCount == 0);
             check("wall-native-mover-" + label, pass, new JObject { ["mover"] = mover.UniqueId, ["wallPresent"] = wallPresent,
                 ["ground"] = ground, ["plan"] = plan.Document(),
@@ -1320,6 +1347,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["maximumDeviation"] = maximumDeviation, ["positions"] = samples,
                 ["claimsWhileMoving"] = InfernalWallNavmesh35.ActiveGridClaimCount,
                 ["minimumFootprintGap"] = footprintSection == null ? (float?)null : minimumFootprintGap,
+                ["maximumFootprintIntrusion"] = footprintSection == null ? (float?)null : maximumIntrusion,
+                ["crossedSectionCentrePlane"] = footprintSection == null ? (bool?)null : crossedSection,
+                ["recastCellSize"] = recastCell,
+                ["verdictRule"] = !wallPresent ? "direct" : sharedLane ? "two-wall-around-not-through" : "single-wall-detour",
                 ["liveImage"] = liveImage,
                 ["scope"] = "A real native UnitMoveTo under owned Default traverses around the live wall; no transform writes while this command runs." },
                 wallPresent ? "The live wall changes an actual mover's route before destruction; path queries alone do not supply this verdict." :
