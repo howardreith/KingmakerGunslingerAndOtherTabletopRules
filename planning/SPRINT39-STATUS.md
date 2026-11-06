@@ -19,6 +19,18 @@ mixed ON and OFF envelopes, an actual public download, and byte-exact
 restoration of the one authorized disposable working save with the immutable
 baseline never written.
 
+### Sprint 40 wording erratum, 2026-11-05 UTC
+
+The public v0.0.177 Nimbus sentence said "Blindness". The bounded Sprint40
+installed capture at `20261105T0214415072809Z-observe-expanded-summoning-sprint40-native-inputs`
+reads retained native carrier `9934fedff1b14994ea90205d189c8759` and its actual
+`BuffStatusCondition.Condition=Dazed`, `SaveEachRound=False`. The released
+builder clones those components unchanged and adds only its source-lifetime
+carrier. Public notes now say "Daze". Heal's separate blindness cures remain
+described unchanged. This is metadata-only: tag target, three assets, released
+DLL and dated observations were not changed. The outer Sprint40 timeout remains
+ERROR; its complete late capture is component research, not gameplay proof.
+
 ### What the last repair was
 
 The final defect was mine, not the creature's. The integration group's

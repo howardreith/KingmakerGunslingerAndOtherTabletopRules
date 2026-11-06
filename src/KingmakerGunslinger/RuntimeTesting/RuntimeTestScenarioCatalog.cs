@@ -202,6 +202,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// A name search establishes its own results and not a universal
         /// absence. Research only; it creates no actor and loads no save.
         /// </summary>
+        internal const string ObserveExpandedSummoningSprint40Inputs =
+            "observe-expanded-summoning-sprint40-native-inputs";
         internal const string ObserveExpandedSummoningSprint39Inputs =
             "observe-expanded-summoning-sprint39-native-inputs";
         internal const string ObserveExpandedSummoningSprint32Inputs =
@@ -998,6 +1000,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningSprint37Inputs,
                 ObserveExpandedSummoningSprint38Inputs,
                 ObserveExpandedSummoningSprint39Inputs,
+                ObserveExpandedSummoningSprint40Inputs,
                 DisposableExpandedSummoningSprint18Review,
                 DisposableExpandedSummoningSprint19Review,
                 DisposableExpandedSummoningSprint20Review,

@@ -115,6 +115,10 @@ if ($activeVersion -in @('0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', 
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 27 corruption fixtures failed.' }
 }
 
+& (Join-Path $PSScriptRoot 'Test-Sprint40BlueprintFactory.ps1')
+& (Join-Path $PSScriptRoot 'Test-Sprint40StartupFiles.ps1')
+& (Join-Path $PSScriptRoot 'Test-Sprint40Release.ps1')
+
 & (Join-Path $PSScriptRoot 'Test-IconOverhaulAssets.ps1') `
     -RepositoryRoot $repositoryRoot
 & (Join-Path $PSScriptRoot 'Test-IconPolishRound2Assets.ps1') `
@@ -275,10 +279,6 @@ if ($LASTEXITCODE -ne 0) { throw 'Sprint37 publisher tests failed.' }
 # 1,186 and 1,215 while the census does not.
 & (Join-Path $PSScriptRoot 'Test-ClosedSprint38Release.ps1')
 if ($LASTEXITCODE -ne 0) { throw 'Sprint38 publisher tests failed.' }
-# Sprint 39 is the open sprint, so its suite runs against the current source:
-# the census it pins - 133 creatures, 111 Monster entries, 599 Monster
-# placements, 1,187 published roots and 1,216 visible choices - is the census
-# this tree derives. It becomes a closed sprint, and gains its own isolation
-# wrapper, when Sprint 40 opens.
-& (Join-Path $PSScriptRoot 'Test-Sprint39Release.ps1')
+# Sprint 39's publisher contracts remain frozen at its reviewed product merge.
+& (Join-Path $PSScriptRoot 'Test-ClosedSprint39Release.ps1')
 if ($LASTEXITCODE -ne 0) { throw 'Sprint39 publisher tests failed.' }

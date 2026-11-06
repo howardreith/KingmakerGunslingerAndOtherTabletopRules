@@ -1397,6 +1397,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunExpandedSummoningSprint39Inputs());
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveExpandedSummoningSprint40Inputs)
+                {
+                    Complete(RunExpandedSummoningSprint40Inputs());
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveExpandedSummoningSprint32Inputs)
                 {
                     Complete(RunExpandedSummoningSprint32Inputs());
@@ -15711,6 +15716,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             ObserveTeleportationSpellPublication(assertions);
             var iconEvidenceFiles = new List<string>();
             FirearmMonogramEvidence.Exercise(_request, assertions, iconEvidenceFiles);
+            ObserveSprint40GeneratedDiagnostic(assertions, iconEvidenceFiles);
             var result = CreateResult(assertions.All(value => value.Status == "PASS") ?
                 "PASS" : "FAIL", assertions, null);
             result.EvidenceFiles = iconEvidenceFiles;

@@ -210,7 +210,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.IsInState && !value.Descriptor.State.IsDead &&
                     value.Blueprint?.AssetGuid != InfernalRules35.WallSectionUnitGuid).ToList(),
                     out start, out midpoint, out destination, out casterPoint, out attempts, out survey,
-                    avoid, "s35-wall-native-lane-survey-" + label + ".json"))
+                    avoid: avoid, surveyFile: "s35-wall-native-lane-survey-" + label + ".json"))
                 throw new InvalidOperationException("No separate native lane for the " + label + " Wall section: " + attempts.ToString(Formatting.None));
             return new InfernalWallFixturePlan35(start, destination, midpoint, casterPoint, survey);
         }
@@ -1186,10 +1186,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "source Bone Devil retirement (native summon lifetime removed)", value => pool = value)) yield return frame;
                 pool["ownedCloudsAfterRelease"] = InfernalWallSteamPresentation35.OwnedCloudCount;
                 InfernalWallPersist35(run, "steam-pool", pool);
-                check("wall-steam-pool-reuse", (bool?)pool["probeRan"] == true &&
-                    ((JArray)pool["claimedRenderersDifferingFromPrefab"]).Count == 0 &&
-                    (int?)pool["ownedCloudsAfterRelease"] == 0, pool,
-                    "After the source's retirement releases the Wall steam cloud to the native pool, an ordinary native claim of the same prefab draws every renderer as the prefab authors it; the Wall's ownership of that cloud is cleared.");
+                pool["verdictFailure"] = InfernalWallSteamPoolVerdict35.Failure(pool);
+                check("wall-steam-pool-reuse", InfernalWallSteamPoolVerdict35.Reused(pool), pool,
+                    "A Wall-modified steam cloud captured from the live area reaches the native pool through the source's retirement; the next ordinary native claim of the prefab returns that same instance, and a complete, duplicate-free comparison of every prefab renderer shows no difference; the Wall holds no cloud ownership afterwards.");
             }
         }
     }

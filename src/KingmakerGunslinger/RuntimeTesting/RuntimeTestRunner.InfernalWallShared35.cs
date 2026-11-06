@@ -177,13 +177,20 @@ namespace KingmakerGunslinger.RuntimeTesting
         // erodeIterations of them have every obstacle that sets their tag
         // inside that window. Cells beyond it get the native update's own
         // approximation (and turn-based mode re-erodes the whole graph at
-        // each turn), so a differing tag there is recorded, not required.
+        // each turn).
         // Installed UnitMovementAgent.ConstructTags excludes only tags
         // erosionFirstTag .. erosionFirstTag + sizeInCells - 2, with
-        // sizeInCells capped at erodeIterations: tag 0 and every tag from
-        // erosionFirstTag + erodeIterations - 1 up restrict no creature, so
-        // they compare as one unrestricted level. Anywhere in the region, a
-        // cell more restrictive than its baseline would be stale obstruction.
+        // sizeInCells capped at erodeIterations. Tag 0 and every tag from
+        // erosionFirstTag + erodeIterations - 1 up are therefore excluded for
+        // no creature size, so two such values carry the same native
+        // restriction. Each differing tag is classified:
+        // - equivalent: a different value with the same native restriction
+        //   (both unrestricted, as above);
+        // - looser: excluded for fewer creature sizes than its baseline (for
+        //   example 9 -> 10: tag 9 is excluded for a creature ten cells wide);
+        //   permitted only beyond the declared reach;
+        // - tighter: excluded for more creature sizes; stale obstruction,
+        //   never permitted.
         private static JObject InfernalWallTagComparison35(Pathfinding.GridGraph grid,
             IEnumerable<Pathfinding.GraphNode> claimed, ICollection<Pathfinding.GraphNode> region,
             Dictionary<Pathfinding.GraphNode, InfernalWallNodeState35> baseline,
@@ -201,16 +208,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             int first = grid.erosionFirstTag;
             Func<uint, int> level = tag => tag == 0 || tag >= first + reach - 1 ? int.MaxValue : (int)tag;
             var differing = region.Where(node => after[node].Tag != baseline[node].Tag).ToArray();
-            var inReach = differing.Where(node => distance(node) <= reach &&
-                level(after[node].Tag) != level(baseline[node].Tag)).ToArray();
+            var equivalent = differing.Where(node => level(after[node].Tag) == level(baseline[node].Tag)).ToArray();
+            var looser = differing.Where(node => level(after[node].Tag) > level(baseline[node].Tag)).ToArray();
             var tighter = differing.Where(node => level(after[node].Tag) < level(baseline[node].Tag)).ToArray();
+            var looserInReach = looser.Where(node => distance(node) <= reach).ToArray();
             return new JObject { ["erodeIterations"] = reach, ["erosionFirstTag"] = first, ["claimedCells"] = cells.Length,
-                ["tagsDiffering"] = differing.Length, ["tagsDifferingWithinReach"] = inReach.Length,
+                ["regionCells"] = region.Count, ["tagsExact"] = region.Count - differing.Length,
+                ["tagsDiffering"] = differing.Length,
+                ["tagsEquivalentRestriction"] = equivalent.Length,
+                ["tagsLooserBeyondReach"] = looser.Length - looserInReach.Length,
+                ["tagsDifferingWithinReach"] = looserInReach.Length + tighter.Count(node => distance(node) <= reach),
                 ["tagsMoreRestrictive"] = tighter.Length,
                 ["rows"] = new JArray(differing.Take(40).Select(node => {
                     var row = InfernalWallNodeIdentity35(node);
                     row["baselineTag"] = baseline[node].Tag; row["afterTag"] = after[node].Tag;
                     row["cellsFromClaims"] = distance(node);
+                    row["outcome"] = level(after[node].Tag) == level(baseline[node].Tag) ? "equivalent-restriction" :
+                        level(after[node].Tag) > level(baseline[node].Tag) ?
+                            (distance(node) <= reach ? "looser-within-reach" : "looser-beyond-reach") : "more-restrictive";
                     return row; })) };
         }
 
@@ -636,7 +651,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool bothBlocked = iceNodes.Length > 0 && iceNodes.All(node => !afterAB[node].Walkable);
                 // Selected contract: a claim holds both static layers, so every
                 // claimed cell stays blocked under native grid updates.
-                var claimedOpen = a.Claimed.Concat(b.Claimed).Distinct().Where(node => afterAB[node].Walkable || afterAB[node].Static).ToArray();
+                var claimedOpen = a.Claimed.Concat(b.Claimed).Distinct().Where(node => afterAB[node].Walkable ||
+                    afterAB[node].Static || afterAB[node].Erosion).ToArray();
                 pairRow["claimedCellsOpen"] = new JArray(claimedOpen.Take(40).Select(node => {
                     var row = InfernalWallNodeIdentity35(node);
                     row["afterAB"] = InfernalWallNodeDocument35(afterAB[node]);
@@ -766,6 +782,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["survivorCounterContributionLost"] = rows(survivorCounterLost),
                     ["retiredCounterContributionNotExactlyRemoved"] = rows(retiredCounterNotExact),
                     ["survivorClaimedCellsStaticWalkableAfter"] = survivor.Claimed.Count(node => afterFirst[node].Static),
+                    ["survivorClaimedCellsErosionWalkableAfter"] = survivor.Claimed.Count(node => afterFirst[node].Erosion),
                     ["survivorMovedMeters"] = Vector3.Distance(survivor.Section.Position, aFirst ? bFormedAt : aFormedAt),
                     ["survivorClaimedCellsWalkableAfter"] = survivor.Claimed.Count(node => afterFirst[node].Walkable),
                     ["sharedClaimsAfterRetirement"] = rows(doubleOwnedNodes),
@@ -787,7 +804,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 persist();
                 check("wall-shared-survivor-preserved-" + pair, survivorCutLive && firstCutGone &&
                     survivorClaimLost.Length == 0 && survivorIceOpen.Length == 0 &&
-                    survivor.Claimed.All(node => !afterFirst[node].Walkable && !afterFirst[node].Static) &&
+                    survivor.Claimed.All(node => !afterFirst[node].Walkable && !afterFirst[node].Static &&
+                        !afterFirst[node].Erosion) &&
                     Vector3.Distance(survivor.Section.Position, aFirst ? bFormedAt : aFormedAt) < .05f &&
                     survivorCounterLost.Length == 0 && retiredCounterNotExact.Length == 0 &&
                     firstNotRestored.Length == 0 && unrelatedChanged.Length == 0 &&
@@ -826,7 +844,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["claimsAfter"] = InfernalWallNavmesh35.ActiveGridClaimCount,
                     ["foreignCutsAfter"] = foreignAfter,
                     ["foreignCutsUnchanged"] = JToken.DeepEquals(foreignAfter, foreignCutsBefore),
-                    ["comparison"] = "Required: every region node's static flag, pre-erosion flag, DynamicBlocked counter, combined walkability, claim count and grid connection bits equal its pre-Wall baseline (close28 left restored cells walkable but disconnected), every cell within one erodeIterations of either Wall's claimed cells has its baseline erosion restriction, and no region cell is more restrictive than its baseline (nav5 left stale tags). Recorded: looser tags beyond that reach, which the installed regional erosion approximates; tag 0 and tags at or past the erosion depth restrict no creature under native ConstructTags and compare as equal." };
+                    ["comparison"] = "Required: every region node's static flag, pre-erosion flag, DynamicBlocked counter, combined walkability, claim count and grid connection bits equal its pre-Wall baseline (close28 left restored cells walkable but disconnected), no erosion tag within one erodeIterations of either Wall's claimed cells is looser or more restrictive than its baseline, and no region cell is more restrictive anywhere (nav5 left stale tags). Recorded with each cell's classification: tags restored exactly, tags with a different value but the same native ConstructTags restriction, and looser tags beyond that reach, which the installed regional erosion approximates." };
                 pairRow["afterBothRetired"] = restoredRow;
                 persist();
                 check("wall-shared-baseline-restored-" + pair, notBaseline.Length == 0 &&

@@ -254,7 +254,7 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void FixtureAlignmentRespectsEveryVariantAndNativeBranch()
         {
-            var lawfulEvil = new[] { "lemure", "hell-hound", "erinyes-devil", "shadow-demon", "succubus", "salamander", "bebelith", "bearded-devil", "kyton-chain-devil", "barbed-devil", "bone-devil" };
+            var lawfulEvil = new[] { "lemure", "hell-hound", "erinyes-devil", "shadow-demon", "succubus", "salamander", "bebelith", "bearded-devil", "kyton-chain-devil", "barbed-devil", "bone-devil", "ice-devil" };
             var chaoticEvil = new[] { "dretch", "babau", "hezrou" };
             var good = new[] { "astral-deva", "lantern-archon", "bralani-azata", "ghaele-azata", "lillend-azata" };
             foreach (var variant in ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
@@ -366,6 +366,10 @@ namespace KingmakerGunslinger.DomainTests
                 (string)field.GetRawConstantValue() ==
                 ExpandedSummoningRosterPersistencePolicy.NalfeshneeScope),
                 "The Sprint 39 scope is one of the declared constants.");
+            Assertions.True(declared.Any(field =>
+                (string)field.GetRawConstantValue() ==
+                ExpandedSummoningRosterPersistencePolicy.IceDevilScope),
+                "The Sprint 40 scope is one of the declared constants.");
             // The same bug twice over: a scope can reach the observation and
             // still have no creatures of its own, because the selection used
             // to be a separate list. A scope that falls through to the whole
@@ -422,7 +426,8 @@ namespace KingmakerGunslinger.DomainTests
             }
             foreach (string invalid in new[] { null, "", "Vrock", "vrock ",
                 "vrocks", "Glabrezu", "glabrezu ", "glabrezus",
-                "Nalfeshnee", "nalfeshnee ", "nalfeshnees" })
+                "Nalfeshnee", "nalfeshnee ", "nalfeshnees",
+                "Ice-Devil", "ice-devil ", "ice-devils" })
                 Assertions.Equal(0, ExpandedSummoningRosterPersistencePolicy
                     .SelectedKeys(invalid).Length,
                     "An unadmitted scope selects nothing, never the whole roster.");
@@ -439,13 +444,15 @@ namespace KingmakerGunslinger.DomainTests
                         field.Name);
             }
             foreach (string invalid in new[] { null, "", "Vrock", "vrocks",
-                "Glabrezu", "glabrezus", "Nalfeshnee", "nalfeshnees" })
+                "Glabrezu", "glabrezus", "Nalfeshnee", "nalfeshnees",
+                "Ice-Devil", "ice-devils" })
                 Assertions.False(ExpandedSummoningRosterPersistencePolicy
                     .IsTargetedSubsetScope(invalid),
                     "An unadmitted scope is not a targeted subset either.");
             foreach (string invalid in new[] { null, "", "Vrock", "vrock ",
                 "vrocks", "Glabrezu", "glabrezu ", "glabrezus",
                 "Nalfeshnee", "nalfeshnee ", "nalfeshnees",
+                "Ice-Devil", "ice-devil ", "ice-devils",
                 "KMG_Release143_WholeRoster_v1", "retained" })
                 Assertions.False(ExpandedSummoningRosterPersistencePolicy
                     .IsRosterPersistenceScope(invalid),

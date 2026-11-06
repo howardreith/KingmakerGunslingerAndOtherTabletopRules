@@ -253,6 +253,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["nativeGroundPosition"] = SurveyVector(ground.clampedPosition),
                     ["gameSecondsDuringWait"] = Game.Instance.Player.GameTime.TotalSeconds - before,
                     ["bodyPresent"] = body != null, ["bodyEnabled"] = body != null && body.enabled,
+                    ["nativeVisibleForPlayer"] = unit.IsVisibleForPlayer,
+                    ["nativeFogOfWar"] = unit.IsInFogOfWar,
+                    ["nativeViewVisible"] = unit.View != null && unit.View.IsVisible,
+                    ["nativeSummonerInParty"] = Game.Instance.Player.Party.Contains(
+                        unit.Get<UnitPartSummonedMonster>()?.Summoner),
                     ["appearanceBuffAbsent"] = appearanceBuffAbsent,
                     ["canAct"] = canAct, ["canMove"] = canMove,
                     ["fadedIn"] = fadedIn, ["dissolve"] = dissolve },

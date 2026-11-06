@@ -66,20 +66,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["prefabPoolComponentEnabled"] = pooled != null && pooled.enabled;
             row["poolDisabled"] = GameObjectsPool.Disabled;
             row["prefabFadeOut"] = prefab.GetComponent<FxFadeOut>() == null ? (float?)null : prefab.GetComponent<FxFadeOut>().Duration;
+            // Renderers are matched by hierarchy path and type. A duplicate
+            // key on either side would let a comparison skip a renderer, so
+            // duplicates, missing and extra keys are counted, not ignored.
             var authored = new Dictionary<string, bool>();
+            int prefabDuplicates = 0;
             foreach (Renderer renderer in prefab.GetComponentsInChildren<Renderer>(true))
             {
                 if (renderer == null) continue;
                 string key = InfernalWallRelativePath35(prefab.transform, renderer.transform) + "#" + renderer.GetType().Name;
-                if (!authored.ContainsKey(key)) authored.Add(key, renderer.enabled);
+                if (authored.ContainsKey(key)) prefabDuplicates++;
+                else authored.Add(key, renderer.enabled);
             }
             row["prefabRenderers"] = authored.Count;
+            row["prefabDuplicateRendererKeys"] = prefabDuplicates;
             row["prefabRenderersDisabled"] = new JArray(authored.Where(value => !value.Value).Select(value => value.Key));
 
             DateTime releaseDeadline = DateTime.UtcNow.AddSeconds(12);
             while (DateTime.UtcNow < releaseDeadline && clouds.Any(cloud => cloud != null && !GameObjectsPool.IsInPool(cloud)))
             { Game.Instance.IsPaused = false; yield return 0; }
             row["releasedClouds"] = new JArray(clouds.Select(cloud => new JObject {
+                ["cloud"] = ReferenceEquals(cloud, null) ? (int?)null : cloud.GetInstanceID(),
                 ["destroyed"] = cloud == null, ["inPool"] = cloud != null && GameObjectsPool.IsInPool(cloud),
                 ["activeSelf"] = cloud != null && cloud.activeSelf,
                 ["flameRenderersOffInPool"] = cloud == null ? 0 : cloud.GetComponentsInChildren<Renderer>(true).Count(value =>
@@ -94,19 +101,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["claimed"] = claimed == null ? (int?)null : claimed.GetInstanceID();
                 row["claimedReusedWallCloud"] = claimed != null && clouds.Any(cloud => cloud != null && ReferenceEquals(cloud, claimed));
                 var differing = new JArray();
-                int compared = 0;
+                var seen = new HashSet<string>();
+                int compared = 0, claimedDuplicates = 0, extra = 0;
                 if (claimed != null)
                     foreach (Renderer renderer in claimed.GetComponentsInChildren<Renderer>(true))
                     {
                         if (renderer == null) continue;
                         string key = InfernalWallRelativePath35(claimed.transform, renderer.transform) + "#" + renderer.GetType().Name;
+                        if (!seen.Add(key)) { claimedDuplicates++; continue; }
                         bool expected;
-                        if (!authored.TryGetValue(key, out expected)) continue;
+                        if (!authored.TryGetValue(key, out expected)) { extra++; continue; }
                         compared++;
                         if (renderer.enabled != expected)
                             differing.Add(new JObject { ["renderer"] = key, ["enabled"] = renderer.enabled, ["prefab"] = expected });
                     }
                 row["claimedRenderersCompared"] = compared;
+                row["claimedDuplicateRendererKeys"] = claimedDuplicates;
+                row["claimedExtraRendererKeys"] = extra;
+                row["claimedMissingRendererKeys"] = authored.Keys.Count(key => !seen.Contains(key));
                 row["claimedRenderersDifferingFromPrefab"] = differing;
                 row["probeRan"] = claimed != null;
             }

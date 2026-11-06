@@ -429,6 +429,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ReviewNalfeshneePublic39(fixture);
                 yield break;
             }
+            if (ExpandedSummoningNativeProfilePolicy.Sprint40Phase(phase))
+            {
+                foreach (int frame in ReviewIceDevilScope40(fixture, phase)) yield return frame;
+                yield break;
+            }
             if (phase == ExpandedSummoningNativeProfilePolicy
                     .Sprint39NalfeshneeCorePhase)
             {

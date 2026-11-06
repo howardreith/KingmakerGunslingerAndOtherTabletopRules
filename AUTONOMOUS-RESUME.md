@@ -1,3 +1,13 @@
+# Sprint 40 ? IN PROGRESS
+
+Owner mission selects Ice Devil and the narrow Sprint 39 carry-forwards through
+verified release and merged final records. Active worktree: `C:/Dev/KingmakerGunslingerLab/wt/s40`;
+branch: `codex/expanded-summoning-sprint40-ice-devil`.
+See [Sprint 40 status](planning/SPRINT40-STATUS.md) for the reuse map, current
+checks and precise remaining work. The early development native slice passed
+19 assertions; final qualification and release remain incomplete.
+Sprint 39 remains released; historical stop directions below do not select work.
+
 # Sprint 39 — v0.0.177 RELEASED / STOP
 
 Stable [v0.0.177](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.177)
@@ -17,7 +27,7 @@ creatures and 1,215 choices to 133 and 1,216 — this one route and nothing
 else.
 
 Unholy Nimbus arms a delayed burst one round later rather than resolving on
-activation, rolls 1d10 rounds of blindness at the burst, catches a latecomer
+activation, rolls 1d10 rounds of daze at the burst, catches a latecomer
 and spares a departer, and allows at most one pending activation per creature,
 where a refusal spends no use and adds no cooldown. The constant Unholy Aura
 is an exact-source self effect with no ally grant. Feeblemind imposes a real
