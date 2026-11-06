@@ -435,6 +435,66 @@ namespace KingmakerGunslinger.RuntimeTesting
             receipt["moverAuraExposures"] = exposures;
             persist();
 
+            // Sprint 3: natural reach against an adjacent creature under the
+            // installed ProperFlanking2 dead zone. The attacker is the fresh
+            // source Bone Devil (s3b: the original's summon lifetime ended
+            // 7 ms before its attack command was interrupted). The witness is
+            // the fixture's own hostile: not a summon, so it has no lifetime
+            // to lose, hostile to the party's summons, its brain off and its
+            // hit points far above one routine's damage. The Glaive witness
+            // used before is a summon with its own lifetime. The hostile is
+            // reset, then takes the established per-source fear-aura exposure
+            // beside the source, and only the resulting fright is cleared, so
+            // the native fear controller cannot move it during the attack.
+            var witness = fixture.Hostile;
+            var adjacency = new JObject { ["source"] = sourceA.UniqueId, ["witness"] = witness?.UniqueId,
+                ["witnessKind"] = "fixture-hostile" };
+            receipt["adjacentNaturalAttack"] = adjacency;
+            if (witness == null || witness.Destroyed || !witness.IsInState || witness.Descriptor.State.IsDead ||
+                !sourceA.IsEnemy(witness))
+            {
+                adjacency["setupFailure"] = "no live fixture hostile that is an enemy of the source Bone Devil";
+                check("bone-adjacent-natural-attack", false, adjacency,
+                    "A live hostile witness is required for the adjacent natural attack.");
+            }
+            else
+            {
+                adjacency["witnessReset"] = ResetExpandedSummoningHostile(fixture);
+                InfernalWallPrepareActor35(witness);
+                var fear = new JObject { ["immuneBefore"] = InfernalBoneBuff35(witness, immunity, sourceA) != null };
+                adjacency["fearPreparation"] = fear;
+                if (!(bool)fear["immuneBefore"])
+                {
+                    Vector3 side = Vector3.Cross(Vector3.up, sourceA.OrientationDirection); side.y = 0f;
+                    if (side.sqrMagnitude < .01f) side = Vector3.right;
+                    PlaceExpandedSummoningUnit(witness, sourceA.Position - side.normalized * 1.2f);
+                    DateTime until = DateTime.UtcNow.AddSeconds(12);
+                    while (DateTime.UtcNow < until && InfernalBoneBuff35(witness, immunity, sourceA) == null)
+                    { Game.Instance.IsPaused = false; yield return 0; }
+                }
+                fear["immuneAfter"] = InfernalBoneBuff35(witness, immunity, sourceA) != null;
+                InfernalBoneRemoveEffects35(witness, sources, run.Frightened);
+                clearFear();
+                fear["frightenedAfterClearing"] = witness.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Frightened);
+                fear["sourceFrightenedAfterClearing"] = sourceA.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Frightened);
+                if (!(bool)fear["immuneAfter"])
+                {
+                    adjacency["setupFailure"] = "the witness never gained the source's fear-aura immunity";
+                    check("bone-adjacent-natural-attack", false, adjacency,
+                        "The witness must hold the source's per-source fear-aura immunity before the attack.");
+                }
+                else
+                {
+                    foreach (int frame in InfernalAdjacentNatural35(sourceA, witness, run.Trace, check, adjacency)) yield return frame;
+                }
+                InfernalWallPrepareActor35(sourceA);
+                InfernalWallPrepareActor35(witness);
+                InfernalBoneRemoveEffects35(witness, sources, run.Frightened);
+                clearFear();
+                adjacency["witnessResetAfter"] = ResetExpandedSummoningHostile(fixture);
+            }
+            persist();
+
             var plan = InfernalWallNextLane35(run, "shared", _infernalWallPlans35.ToArray());
             foreach (int frame in InfernalWallFixturePrerequisite35(fixture, sourceA, owned, plan, check, "shared")) yield return frame;
             // The prerequisite stands every owned actor at Wall A's casting
@@ -705,7 +765,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var row = InfernalWallNodeIdentity35(node);
                     row["afterAB"] = InfernalWallNodeDocument35(afterAB[node]);
                     return row; }));
-                Vector3 aFormedAt = a.Section.Position, bFormedAt = b.Section.Position;
+                // A section that never formed fails the formation verdict
+                // below with its receipt; it must not end the scenario here.
+                Vector3 aFormedAt = a.Section == null ? Vector3.zero : a.Section.Position;
+                Vector3 bFormedAt = b.Section == null ? Vector3.zero : b.Section.Position;
                 // Two kinds of overlap are recorded. Shared claims: Wall B's
                 // legal footprint (walkable nodes) can include cells Wall A
                 // claims once a native grid update has reopened them, so both
@@ -935,12 +998,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             Vector3 side = Vector3.Cross(Vector3.up, back);
             var sections = Game.Instance.State.Units.All.Where(value => value != null && !value.Destroyed && value.IsInState &&
                 value.Blueprint?.AssetGuid == InfernalRules35.WallSectionUnitGuid).ToArray();
-            foreach (Vector3 offset in new[] { back * 3.5f, back * 3.5f + side * 2f, back * 3.5f - side * 2f, back * 5f })
+            // The four spots directly behind the caster come first. When a
+            // standing section or the floor rules all of them out (s3a: a
+            // second Wall's caster stood beside Wall A, so the summoner was
+            // left 12.9 m away and native summon follow interrupted all three
+            // casts), the search widens to a ring around the caster, behind
+            // first, within the 11.7 m follow distance. Every spot stays
+            // 2.5 m from standing sections and 3.5 m from the forming
+            // Wall's target point (outside its adjacency band).
+            var offsets = new List<Vector3> { back * 3.5f, back * 3.5f + side * 2f, back * 3.5f - side * 2f, back * 5f };
+            foreach (float radius in new[] { 3f, 4.5f, 6f })
+                foreach (int step in Enumerable.Range(0, 16).OrderBy(index =>
+                        -Vector3.Dot(Quaternion.Euler(0f, index * 22.5f, 0f) * back, back)))
+                    offsets.Add(Quaternion.Euler(0f, step * 22.5f, 0f) * back * radius);
+            foreach (Vector3 offset in offsets)
             {
                 var nearest = AstarPath.active.GetNearest(casterPoint + offset);
                 if (nearest.node == null || !nearest.node.Walkable) continue;
                 Vector3 spot = nearest.clampedPosition;
                 if (Vector3.Distance(spot, casterPoint + offset) > .5f) continue;
+                if (Vector3.Distance(spot, targetPoint) < 3.5f || Vector3.Distance(spot, casterPoint) < 1.5f) continue;
                 if (sections.Any(section => InfernalWallPlacementRuntime35.DistanceToFootprint(spot, section.Position,
                         Vector3.Cross(Vector3.up, section.OrientationDirection).normalized, section.OrientationDirection) < 2.5f)) continue;
                 InfernalWallPrepareActor35(summoner);
@@ -966,6 +1043,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             // parked 12 m off (close26). The summoner stands 3.5 m behind the
             // casting source instead, clear of every standing section.
             JObject summonerSpot = InfernalWallSummonerBeside35(run, casterPoint, point);
+            // Without a spot inside the follow distance native summon follow
+            // interrupts every cast (s3a): fail the setup now, with the
+            // search evidence, instead of casting into that interruption.
+            if (summonerSpot["point"] == null || summonerSpot["point"].Type == JTokenType.Null)
+            {
+                formed.Section = null;
+                result(new JObject { ["label"] = formed.Label, ["source"] = caster.UniqueId,
+                    ["castingPoint"] = SurveyVector(caster.Position), ["targetPoint"] = SurveyVector(point),
+                    ["formed"] = false, ["setupFailure"] = "no-summoner-spot", ["summonerSpot"] = summonerSpot,
+                    ["commandAttempts"] = new JArray() });
+                yield break;
+            }
             InfernalBoneRemoveEffects35(run.Fixture.Caster, sources, run.Frightened);
             InfernalBoneRemoveEffects35(caster, sources, run.Frightened);
             var target = new TargetWrapper(point);
