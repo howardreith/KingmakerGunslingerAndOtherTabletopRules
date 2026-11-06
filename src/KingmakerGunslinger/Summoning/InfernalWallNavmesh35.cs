@@ -55,6 +55,7 @@ namespace KingmakerGunslinger.Summoning
         private readonly Dictionary<GraphNode, bool> _nodeOriginals =
             new Dictionary<GraphNode, bool>();
         private bool _released;
+        private bool _liveReconcileQueued;
         private bool _restoreReconcileQueued;
         private int _restoreExactFrames;
 
@@ -76,6 +77,8 @@ namespace KingmakerGunslinger.Summoning
         internal bool GridRestoreCompleted { get; private set; }
         internal int GridReconcileRequests { get; private set; }
         internal int GridReconcileCompleted { get; private set; }
+        internal int GridLiveReconcileRequests { get; private set; }
+        internal int GridLiveReconcileCompleted { get; private set; }
         internal bool NativeCutDisabledBeforeDestroy { get; private set; }
         internal bool NativeGridCutRevertQueued { get; private set; }
         internal string GridFailure { get; private set; }
@@ -338,6 +341,56 @@ namespace KingmakerGunslinger.Summoning
             });
         }
 
+        private bool LiveGridIsExact()
+        {
+            return _claimedNodes.All(node =>
+            {
+                NodeClaim claim;
+                return Claims.TryGetValue(node, out claim) &&
+                    claim.Owners.Contains(this) && !node.Walkable;
+            });
+        }
+
+        private void QueueLiveGridReconcile()
+        {
+            if (_liveReconcileQueued || _released ||
+                _claimedNodes.Count == 0 || _astar == null ||
+                !ReferenceEquals(AstarPath.active, _astar)) return;
+            _liveReconcileQueued = true;
+            GridLiveReconcileRequests++;
+            _astar.AddWorkItem(new AstarPath.AstarWorkItem(force =>
+            {
+                bool changed = false;
+                try
+                {
+                    if (_released) return true;
+                    foreach (GraphNode node in _claimedNodes)
+                    {
+                        NodeClaim claim;
+                        if (!Claims.TryGetValue(node, out claim) ||
+                            !claim.Owners.Contains(this) || !node.Walkable)
+                            continue;
+                        node.Walkable = false;
+                        GridNodesChanged++;
+                        changed = true;
+                    }
+                    if (changed) _astar.QueueWorkItemFloodFill();
+                }
+                catch (Exception error)
+                {
+                    GridFailure = error.GetType().Name + ": " +
+                        error.Message;
+                    Debug.LogException(error);
+                }
+                finally
+                {
+                    GridLiveReconcileCompleted++;
+                    _liveReconcileQueued = false;
+                }
+                return true;
+            }));
+        }
+
         private void QueueReleasedGridReconcile()
         {
             if (_restoreReconcileQueued || _nodeOriginals.Count == 0 ||
@@ -485,6 +538,12 @@ namespace KingmakerGunslinger.Summoning
                     return;
                 }
                 if (++_restoreExactFrames >= 2) enabled = false;
+                return;
+            }
+            if (GridApplyCompleted && !_liveReconcileQueued &&
+                !LiveGridIsExact())
+            {
+                QueueLiveGridReconcile();
                 return;
             }
             ModContext context;
