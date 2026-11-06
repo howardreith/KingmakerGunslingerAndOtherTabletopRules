@@ -387,8 +387,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             var sequence = new JArray();
             var command = new UnitAttack(target) {
                 IsSingleAttack = false, ForceFullAttack = true };
+            Vector3 targetStart = target.Position;
             if (wallPhase)
             {
+                // The lane joins both bodies to combat; the target, a hostile
+                // fixture witness, must not act or move during the measured
+                // full attack (nav6: alive, it applied its own effect and the
+                // native UnitAttack interrupted itself at UpdateTarget after
+                // the second hit, before the sting).
+                InfernalWallPrepareActor35(target);
                 sequence.Add(InfernalTailFrame35(bone, target, command, tail, "ready", "s35-bone-tail-seq-0-ready.png"));
                 bone.Commands.Run(command);
                 // Ordinary frames only: sting anticipation (the tail leaves
@@ -448,7 +455,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (!command.IsFinished || tail.Contacts <= before)
                     throw new InvalidOperationException("Native Sprint34 command/outcome timeout: " +
-                        command.GetType().Name + "; result=" + command.Result);
+                        command.GetType().Name + "; result=" + command.Result + "; targetMoved=" +
+                        Vector3.Distance(targetStart, target.Position).ToString("F3") + "; targetDistance=" +
+                        Vector3.Distance(bone.Position, target.Position).ToString("F3") + "; targetDead=" +
+                        target.Descriptor.State.IsDead + "; targetConscious=" + target.Descriptor.State.IsConscious);
+                laneReceipt["targetMovedDuringAttack"] = Vector3.Distance(targetStart, target.Position);
                 laneReceipt["sequence"] = sequence;
                 laneReceipt["anticipationFrame"] = windup; laneReceipt["contactFrame"] = contact;
                 laneReceipt["recoveryFrame"] = recovery;
