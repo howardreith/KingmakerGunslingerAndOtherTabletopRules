@@ -205,6 +205,57 @@ the ladder.
 Performance has **not** been measured here; this establishes the figure that a
 performance run has to be sized against.
 
+## Confirmed against the live menus, not only against source
+
+Everything above is derived from reading catalogs. It has now been checked
+against the **running game**: the `expanded-summoning-menu-counts` assertion in
+`observe-expanded-summoning-inventory` reports, per parent spell, the live menu
+size and its One / 1d3 / 1d4+1 breakdown.
+
+Measured on the released artifact `b2be3ebe`, whose roster catalogs are
+byte-identical to the audit source:
+
+| Menu | native before | live | source-derived | One | 1d3 | 1d4+1 | foreign |
+|---|---|---|---|---|---|---|---|
+| SM I | 1 | 7 | 7 | 7 | 0 | 0 | 0 |
+| SM II | 2 | 20 | 20 | 13 | 7 | 0 | 0 |
+| SM III | 3 | 33 | 33 | 13 | 13 | 7 | 0 |
+| SM IV | 3 | 61 | 61 | 28 | 13 | 20 | 0 |
+| SM V | 3 | 75 | 75 | 14 | 28 | 33 | 0 |
+| SM VI | 3 | 91 | 91 | 16 | 14 | 61 | 0 |
+| SM VII | 3 | 103 | 103 | 12 | 16 | 75 | 0 |
+| SM VIII | 3 | 111 | 111 | 9 | 12 | 90 | 0 |
+| **SM IX** | 3 | **116** | **116** | 7 | 9 | 100 | 0 |
+| SNA I | 1 | 10 | 10 | 10 | 0 | 0 | 0 |
+| SNA II | 2 | 21 | 21 | 11 | 10 | 0 | 0 |
+| SNA III | 3 | 33 | 33 | 12 | 11 | 10 | 0 |
+| SNA IV | 3 | 63 | 63 | 31 | 12 | 20 | 0 |
+| SNA V | 3 | 74 | 74 | 11 | 31 | 32 | 0 |
+| SNA VI | 3 | 87 | 87 | 13 | 11 | 63 | 0 |
+| SNA VII | 3 | 99 | 99 | 12 | 13 | 74 | 0 |
+| SNA VIII | 3 | 105 | 105 | 7 | 12 | 86 | 0 |
+| SNA IX | 3 | 108 | 108 | 3 | 7 | 98 | 0 |
+| **Total** | **48** | **1,217** | **1,217** | | | | **0** |
+
+**Every menu matches exactly**, the breakdown sums to each menu's size, and
+`foreign` is 0 everywhere. So the 1,217 total, the 15-placement shortfall and
+the Summon Monster IX scalability gate at 116 are **observations from the
+running game**, not inferences from reading catalogs — which is what turns A-5
+and A-7 from source analysis into measured findings. The per-menu shortfalls
+line up one for one: SM VII 103 against an ideal 104, SM VIII 111 against 113,
+SM IX 116 against 120, SNA IV 63 against 64, and so on.
+
+Three supporting assertions passed in the same run:
+`expanded-summoning-menu-reconciliation` with `kmgMissingOrDuplicate=0`,
+`uniqueMissing=0` and `registeredMissing=0`;
+`expanded-summoning-menu-order-and-icons` with `misordered=0`,
+`missingIcons=0`, `badQuantityNames=0` and `categoryDistinct=True`; and
+`expanded-summoning-menu-contact-sheets` with `sheets=9`.
+
+For scale, the native pre-KMG surface is **48** choices across the same 18
+menus. Performance was **not** measured; this establishes that a performance run
+has to be sized against 1,217 total choices with a worst single menu of 116.
+
 ## The eleven wrapper-covered creatures, validated at their required placements
 
 134 project-owned identities + 11 wrapper-covered identities = 145, and no

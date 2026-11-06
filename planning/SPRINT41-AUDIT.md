@@ -67,7 +67,10 @@ difference.
 | Repository release gate at the audit source | **FAIL** — A-8 |
 | Compatibility-profile matrix on the audit candidate | **BLOCKED** by A-8 — A-9 |
 | Compatibility-profile matrix on the released artifact (bounded substitute) | **EXECUTED** — A-11, A-12 |
-| Gameplay / lifecycle / sanitization / persistence matrix | NOT RUN |
+| Roster-scale gameplay / lifecycle phases | **PASS** — indoor 4/4, daylight 11/11, motion 62/62, wall preflight 21/21 |
+| Deep module-OFF sanitization sweep | **UNAVAILABLE by design** — A-13 |
+| Feature-module boundary (settings / publication gates) | **PASS 47/47** with Summoning ON and 47/47 with it OFF |
+| Persistence matrix at roster scale | NOT RUN |
 | Visual acceptance at roster scale | NOT RUN |
 | Performance against the 693-choice baseline | NOT RUN |
 
@@ -273,6 +276,62 @@ exactly `EXACT_INTAKE_VERIFIED`, and publication advances that marker to
 `EXACT_INTAKE_VERIFIED_AFTER_PUBLICATION`. The ledgers are not interchangeable
 and the old line named the wrong one. No assertion, ledger, published artifact,
 tag or release was touched, and the v0.0.178 verdict is unchanged.
+
+### Roster-scale native phases on the audit candidate
+
+Run against the development candidate `286397cc` built in the pinned runtime
+root at the audit source, `loadedModVersion 0.0.178`, `gitCommit 710ac76b`. The
+live mod tree was restored to
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3` after every
+one of them.
+
+| Phase | Result |
+|---|---|
+| `summon-overhaul-indoor` | **PASS 4/4** |
+| `summon-overhaul-daylight` | **PASS 11/11** |
+| `summon-overhaul-motion` | **PASS 62/62** |
+| `summon-wall-placement-preflight` | **PASS 21/21** |
+| `summon-overhaul-off` | FAIL 3/4 — refused by design (A-13) |
+| `summon-overhaul-wall` | FAIL 64/66 — A-3 |
+
+`daylight` is the substantive lifecycle row: hostile-faction turn, settled
+summons, native default admission / enter / restored, reconstruction-on, plus
+fixture and native-profile restoration. `motion` at 62/62 is the largest clean
+phase. Assertion names are recorded per phase in the audit record so the
+coverage claim is checkable rather than asserted.
+
+#### A-13 — the deep module-OFF sweep is reserved, not broken
+
+`summon-overhaul-off` refused with `InvalidOperationException: Exact fresh
+overhaul fixture and actual startup module state required.` The cause is
+deliberate: `Test-KmgTemporaryExpandedSummoningOffScope` in
+`scripts/ExpandedSummoningOrchestration.Common.ps1` admits that phase **only**
+when `DevelopmentPurpose` is exactly `summon-outsider-review-corrections`. Under
+`sprint41-audit` it is not admitted, the Summoning module stays ON at startup,
+and the phase correctly refuses. Its own comment is explicit: *"Temporary OFF
+remains closed to the released working cleanup route and one save-free review
+correction. No arbitrary phase or mixed batch can borrow it."*
+
+The reserved purpose was **not** borrowed, the scope predicate was **not**
+edited, and the refusal is **not** recorded as a product defect. Passing that
+purpose would have satisfied the predicate while misrepresenting this audit as
+that review correction — the exact thing the reservation prevents. Note the run
+still passed 3 of 4, including `sprint32-fixture-restored` and
+`expanded-summoning-native-profile-restored`, so it reached its group-quiet
+anchor and restored cleanly; this is a precondition boundary, not a fault in the
+phase.
+
+**Sanctioned coverage obtained instead**, through the matrix's feature-module
+boundary steps on the released artifact: **47/47 PASS** with the Summoning
+module ON and **47/47 PASS** with it OFF, the module flag being the only
+difference between the two runs. Every publication gate holds with Summoning
+off and legacy firearm proficiency reads `catalogReferences=0`.
+
+What that does not cover, stated plainly: it is settings and publication-gate
+level. The deep in-world module-OFF cleanup sweep — retiring live summons,
+releasing navigation claims, freeing private views — **remains uncovered** for
+this audit. Closing it needs either owner authorization to run under the
+reserved purpose, or a harness change admitting an audit purpose to that scope.
 
 ### Compatibility matrix results — A-11 and A-12
 
