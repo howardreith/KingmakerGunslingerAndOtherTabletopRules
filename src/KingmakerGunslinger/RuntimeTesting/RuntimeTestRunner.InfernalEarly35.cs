@@ -1304,6 +1304,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             float maximumIntrusion = 0f; int lastFaceSide = 0; bool crossedSection = false;
             float halfLength = InfernalRules35.WallOfIceSectionLengthMeters * .5f;
             float halfThickness = InfernalRules35.WallOfIceSectionThicknessMeters * .5f;
+            var recastForEnds = AstarPath.active == null ? null : AstarPath.active.graphs.OfType<Pathfinding.RecastGraph>().FirstOrDefault();
+            float endTolerance = recastForEnds == null ? .2f : recastForEnds.cellSize;
             Vector3 footprintForward = footprintSection == null ? Vector3.forward : footprintSection.OrientationDirection;
             Vector3 footprintAlong = Vector3.Cross(Vector3.up, footprintForward).normalized;
             string liveImage = null;
@@ -1328,8 +1330,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         if (Math.Abs(across) < halfThickness)
                             maximumIntrusion = Math.Max(maximumIntrusion, Math.Min(halfLength - Math.Abs(along), halfThickness - Math.Abs(across)));
+                        // Rounding an end switches sides at the tip (close22:
+                        // |along| 1.51 of 1.525 m); passing through the ice
+                        // switches sides inside the span by more than a cell.
                         int side = across > 0f ? 1 : across < 0f ? -1 : 0;
-                        if (side != 0 && lastFaceSide != 0 && side != lastFaceSide) crossedSection = true;
+                        if (side != 0 && lastFaceSide != 0 && side != lastFaceSide &&
+                            Math.Abs(along) < halfLength - endTolerance) crossedSection = true;
                         if (side != 0) lastFaceSide = side;
                     }
                     if (captureFile != null && liveImage == null && gap < 1f)
