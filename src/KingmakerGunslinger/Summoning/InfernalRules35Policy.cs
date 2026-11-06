@@ -93,6 +93,38 @@ namespace KingmakerGunslinger.Summoning
         // section stationary for every native mover (follow, fear).
         internal const string WallSectionStationaryCondition = "CantMove";
 
+        // Bone Devil natural reach. Installed BlueprintWeaponType.AttackRange
+        // returns max(2, raw - 4) feet for raw ranges at or below ten, and
+        // UnitDescriptor.GetWeaponRange adds the unit's ReachRange stat. The
+        // installed ProperFlanking2 treats a melee weapon whose type range
+        // exceeds GameConsts.MinWeaponRange (2 ft) as a reach weapon with a
+        // dead zone beside the wielder, which a manufactured reach weapon has
+        // but natural reach does not (a Large creature's natural reach
+        // threatens adjacent squares). The Bone Devil's 10-foot natural reach
+        // is therefore expressed natively through ReachRange: the natural
+        // types keep the ordinary raw five feet (two feet native, not a
+        // reach weapon) and the unit gains three feet of ReachRange, exactly
+        // the three feet the earlier raw nine-foot types contributed.
+        internal const int BoneNaturalTypeStoredRangeFeet = 5;
+        internal const int BoneNaturalReachBonusFeet = 3;
+        internal const int PreviousBoneNaturalTypeStoredRangeFeet = 9;
+        internal const int NativeMinWeaponRangeFeet = 2;
+
+        internal static int NativeWeaponTypeRangeFeet(int storedRangeFeet)
+        {
+            if (storedRangeFeet < 0) throw new ArgumentOutOfRangeException("storedRangeFeet");
+            return storedRangeFeet > 10 ? storedRangeFeet :
+                Math.Max(NativeMinWeaponRangeFeet, storedRangeFeet - 4);
+        }
+
+        // ProperFlanking2's reach-weapon test (Patch_UnitCommand__GetTargetPoint,
+        // Patch_UnitEngagementExtension__IsReach): melee and type range above
+        // GameConsts.MinWeaponRange.
+        internal static bool ProperFlanking2TreatsAsReachWeapon(bool melee, int nativeTypeRangeFeet)
+        {
+            return melee && nativeTypeRangeFeet > NativeMinWeaponRangeFeet;
+        }
+
         // A grid node's two static walkability layers and its dynamic block
         // counter. Kingmaker's pathfinding fork reports Walkable as Static
         // and no DynamicBlocked counter.
@@ -261,10 +293,26 @@ namespace KingmakerGunslinger.Summoning
         {
             // The shared formation rule serves the Bone Devil and Ice Devil
             // Walls alike; neither species' private section is a creature.
-            return !String.Equals(unitBlueprintGuid, WallSectionUnitGuid,
-                    StringComparison.Ordinal) &&
-                !String.Equals(unitBlueprintGuid, IceDevilRules40Policy.WallSectionGuid,
+            return !IsWallSection(unitBlueprintGuid);
+        }
+
+        // A Wall of Ice section of either species: an object, not a creature.
+        internal static bool IsWallSection(string unitBlueprintGuid)
+        {
+            return String.Equals(unitBlueprintGuid, WallSectionUnitGuid,
+                    StringComparison.Ordinal) ||
+                String.Equals(unitBlueprintGuid, IceDevilRules40Policy.WallSectionGuid,
                     StringComparison.Ordinal);
+        }
+
+        // Pathfinder bleed is a condition a creature takes at the start of its
+        // turn. A Wall of Ice section is an object (Wall of Ice: hit points per
+        // inch of ice; the section is not a creature, as for formation saves),
+        // so an attacker's Infernal Wound persistent-bleed marker never
+        // applies to it. The weapon damage itself still applies.
+        internal static bool InfernalWoundExcludesTarget(string unitBlueprintGuid)
+        {
+            return IsWallSection(unitBlueprintGuid);
         }
 
         internal static bool WallFormationAdjacent(float footprintDistance,

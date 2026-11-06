@@ -792,7 +792,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool killingBlowIsOwnedRider = damageRows.Length > 0 && !killingBlowIsWeaponHit &&
                     secondaryRows.Contains(damageRows.Last()) && secondaryOwned && attackerEffects.Count > 0;
                 string killingBlowSource = killingBlowIsWeaponHit ? "weapon-hit" :
-                    killingBlowIsOwnedRider ? "attacker-owned-infernal-wound-bleed (tracked bleed-on-ice defect)" : "other";
+                    killingBlowIsOwnedRider ? "attacker-owned-infernal-wound-bleed" : "other";
                 bool allFromAttacker = weaponRows.Length >= 2 && secondaryOwned &&
                     (killingBlowIsWeaponHit || killingBlowIsOwnedRider);
                 bool allHalved = damageRows.Length > 0 && damageRows.All(value => value["packets"] != null &&
@@ -823,11 +823,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["steamArea"] = fog?.UniqueId, ["removalPresentation"] = presentation,
                     ["forcedRolls"] = 0, ["positionWritesDuringAttacks"] = 0 };
                 InfernalWallPersist35(run, "physical-destruction", row);
+                // Sprint 3: the attacker's Infernal Wound never applies to a
+                // Wall section (an object), so every damage row is a weapon
+                // hit, the killing blow is a weapon hit, and the attacker
+                // leaves no effect on the section.
+                row["noInfernalWoundOnSection"] = secondaryRows.Length == 0 && attackerEffects.Count == 0;
                 run.Check("wall-physical-destruction", weaponRows.Length >= 2 && destroyedInSequence && allFromAttacker &&
+                    killingBlowIsWeaponHit && secondaryRows.Length == 0 && attackerEffects.Count == 0 &&
                     allHalved && autoHits && attackRows.Length >= weaponRows.Length && retired &&
                     residualOwned && residualLifetime && fog == null && attackerTravel < .25f &&
                     (bool)presentation["pass"], row,
-                    "Repeated ordinary native weapon attacks auto-hit, deal object-halved damage tracked hit by hit, and destroy the section (a final point from the attacker's own Infernal Wound bleed, the tracked bleed-on-ice defect, is recorded as such), which leaves its owned cold residual for the remaining duration, no steam, and no donor body.");
+                    "Repeated ordinary native Glaive attacks auto-hit, deal object-halved damage tracked hit by hit, and destroy the section with a weapon hit; the attacker's Infernal Wound leaves no bleed row or effect on the ice (an object); the breach leaves its owned cold residual for the remaining duration, no steam, and no donor body.");
             }
         }
 

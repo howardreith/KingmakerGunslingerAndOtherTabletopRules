@@ -456,15 +456,18 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureUnitCore(unit, "BoneDevil", "Bone Devil (Osyluth)",
                 Alignment.LawfulEvil, Size.Large, 21, 21, 20, 16, 15, 18,
                 60);
+            // Natural reach is native ReachRange (see InfernalRules35
+            // BoneNaturalReachBonusFeet), so the natural types stay ordinary
+            // five-foot (raw) weapons and are not reach weapons.
             var bite = Sprint29Weapon(library, symbols, p + "Bite",
                 p + "BiteType", NativeBite1d6Guid, Size.Large, 1,
-                DiceType.D8, 9);
+                DiceType.D8, InfernalRules35.BoneNaturalTypeStoredRangeFeet);
             var claw = Sprint29Weapon(library, symbols, p + "Claw",
                 p + "ClawType", NativeClaw1d4Guid, Size.Large, 1,
-                DiceType.D6, 9);
+                DiceType.D6, InfernalRules35.BoneNaturalTypeStoredRangeFeet);
             var sting = Sprint29Weapon(library, symbols, p + "Sting",
                 p + "StingType", LargeTailGuid, Size.Large, 3,
-                DiceType.D4, 9);
+                DiceType.D4, InfernalRules35.BoneNaturalTypeStoredRangeFeet);
             SetField(sting.Type, "m_TypeNameText",
                 LocalizationService.Create(p + "StingType.Name", "Sting"));
             unit.Body = NaturalBody(bite, new[] { claw, claw, sting },
@@ -597,6 +600,12 @@ namespace KingmakerGunslinger.Blueprints
             parameters.SpellLevels = new[] { 2, 2, 4 };
             parameters.CasterLevel = 12;
             parts.Add(parameters);
+            var naturalReach = ScriptableObject.CreateInstance<AddStatBonus>();
+            naturalReach.Stat = StatType.Reach;
+            naturalReach.Value = InfernalRules35.BoneNaturalReachBonusFeet;
+            naturalReach.Descriptor = ModifierDescriptor.UntypedStackable;
+            naturalReach.name = "$KMG_S35_BoneNaturalReach";
+            parts.Add(naturalReach);
             var traits = Require<BlueprintFeature>(symbols, p + "Traits");
             BindInfernalTraits35(traits, p, "Osyluth",
                 "DR10/good; fire and poison immunity; acid/cold resistance 10; SR20. Bite, two claws, and sting are primary attacks. A wounding sting delivers finite Strength poison. Its 5-foot fear aura and ordinary attack-breaking invisibility retain separate native consumers.",
