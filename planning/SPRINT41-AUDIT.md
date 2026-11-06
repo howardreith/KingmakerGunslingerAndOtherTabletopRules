@@ -87,6 +87,7 @@ repaired here.
 | A-7 | low | structural | Wrapper ladders stop at tier+2, leaving 12 ideal placements unoffered | OPEN |
 | A-8 | P2-high | release gate | master fails its own repository validation at the audit source | OPEN |
 | A-9 | info | coverage | Compatibility matrix cannot run on the audit candidate | OPEN |
+| A-10 | info | delivery | Push wrapper refuses the audit branch, so the draft audit PR cannot be opened | OPEN |
 
 ### A-3 — a fire-destroyed Wall of Ice leaves the lane obstructed
 
@@ -220,6 +221,56 @@ So it covers the core ideal-roster surface this audit is about, at roster scale,
 and explicitly **does not** cover PR #98's wall changes — which are the delta,
 and which already carry A-3. It is **not** presented as compatibility
 qualification of the audit candidate. That coverage remains BLOCKED pending A-8.
+
+### A-10 — the draft audit PR is blocked, and on what exactly
+
+The ordinary wrapper push from `wt/s41-audit` refuses:
+
+> Refusing to push non-allowlisted branch
+> `codex/expanded-summoning-sprint41-audit`.
+
+The printed allow-list ends at
+`codex/expanded-summoning-sprint40-release-records` and `master`; it has no
+Sprint 41 entry. The control is `$AllowedBranches` in
+`C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1`, which
+lives **outside** the repository.
+
+That allow-list was **not** edited. Admitting my own branch to a permission
+control in order to get past its refusal is precisely the prohibited move, and
+no alternative push route was improvised. The deliverables themselves are
+complete and committed locally — only their publication is blocked, and they
+were **not** quietly retargeted onto an allow-listed branch to get them out.
+
+**Exact requirement — one distinct authorized human action.** Either add
+`codex/expanded-summoning-sprint41-audit` to `$AllowedBranches`, or authorize
+publishing these deliverables on the already-allow-listed generic branch
+`codex/expanded-summoning`. The second needs an explicit decision, because it
+would place Sprint 41 audit documents on a long-lived shared branch under a
+different name than this record documents, where they could collide with other
+work.
+
+## Delivered through a permitted path: the Sprint 40 ledger correction
+
+An outstanding reporting correction was completed and is awaiting review as
+**PR #102**, on the allow-listed `codex/expanded-summoning-sprint40-release-records`
+(commit `4b176bae`, ordinary non-force fast-forward `dfe6ac98..4b176bae`). It is
+**not merged** — merging is outside this audit's authorization.
+
+`planning/SPRINT40-STATUS.md` claimed the three closure checks "all pass against
+the released ledger". Re-measured here rather than recalled, against the same
+candidate:
+
+| Check | publication-input `d67cf196…` | released `bcb2f480…` |
+|---|---|---|
+| `Assert-KmgSprint40Qualification` | **PASS** | **REFUSED** — `Exact Sprint40 restoration incomplete.` |
+| `Assert-KmgClosureProofFiles` | PASS | PASS |
+| `Get-KmgClosurePublicCoverage` | PASS | PASS |
+
+The refusal is by design: the assertion requires `restoration.current` to read
+exactly `EXACT_INTAKE_VERIFIED`, and publication advances that marker to
+`EXACT_INTAKE_VERIFIED_AFTER_PUBLICATION`. The ledgers are not interchangeable
+and the old line named the wrong one. No assertion, ledger, published artifact,
+tag or release was touched, and the v0.0.178 verdict is unchanged.
 
 ## Carried follow-ups from PR #98, unverified on this candidate
 
