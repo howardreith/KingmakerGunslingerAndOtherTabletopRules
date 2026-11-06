@@ -772,10 +772,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int[] before = damageRows.Select(value => (int?)value["before"] ?? -1).ToArray();
                 int[] after = damageRows.Select(value => (int?)value["after"] ?? -1).ToArray();
                 bool destroyedInSequence = InfernalRules35.WallDamageSequenceDestroys(before, after, InfernalRules35.WallOfIceSectionHitPoints);
-                // Weapon hits carry an attack roll and the attacker's weapon. A
-                // weapon rider such as the Bearded Devil's infernal-wound bleed
-                // ticks as attacker-owned damage without a roll; it is admitted
-                // only alongside an attacker-owned effect on the section.
+                // Weapon hits carry an attack roll and the attacker's weapon.
+                // Any other row is secondary. Since Sprint 3 the Bearded
+                // Devil's Infernal Wound never applies to a Wall section (an
+                // object, not a creature), so the acceptance below requires no
+                // secondary row and no attacker-owned effect; these figures
+                // only classify a regression.
                 var weaponRows = damageRows.Where(value => (string)value["initiator"] == attacker.UniqueId &&
                     (bool?)value["hasAttackRoll"] == true && !string.IsNullOrEmpty((string)value["weapon"])).ToArray();
                 var secondaryRows = damageRows.Except(weaponRows).ToArray();
@@ -783,12 +785,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (bool?)value["hasAttackRoll"] != true) && (secondaryRows.Length == 0 || attackerEffects.Count > 0);
                 bool killingBlowIsWeaponHit = damageRows.Length > 0 && weaponRows.Contains(damageRows.Last());
                 int weaponDamage = weaponRows.Sum(value => (int?)value["ruleDamage"] ?? 0);
-                // The attacker's own Infernal Wound bleed applying to an ice
-                // section is the tracked bleed-on-ice defect (separate
-                // correction). Its tick timing decides whether the last point
-                // comes from a weapon hit (accepted run, close4-close11) or the
-                // bleed (close12, 34 weapon damage of 36). The verdict records
-                // which; it does not pass or fail on tick timing.
+                // Before Sprint 3 the attacker's Infernal Wound bled the
+                // section, and its tick timing decided the killing blow
+                // (close12: the bleed, 34 weapon damage of 36). That bleed is
+                // now a defect: the label below names it if it returns, and
+                // the acceptance fails on anything but a weapon-hit killing
+                // blow.
                 bool killingBlowIsOwnedRider = damageRows.Length > 0 && !killingBlowIsWeaponHit &&
                     secondaryRows.Contains(damageRows.Last()) && secondaryOwned && attackerEffects.Count > 0;
                 string killingBlowSource = killingBlowIsWeaponHit ? "weapon-hit" :
