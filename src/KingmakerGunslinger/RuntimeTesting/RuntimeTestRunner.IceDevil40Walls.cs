@@ -272,16 +272,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Select(InfernalWallActorState35));
             foreach (var actor in actors.Where(actor => !actor.Destroyed))
                 InfernalWallPrepareActor35(actor);
+            float sourceCastingGap = InfernalEarlyDistanceToSegment35(
+                source.Position, casterPoint, casterPoint);
+            bool nativeAvailable = data.IsAvailable;
+            bool nativeCanTarget = nativeAvailable && data.CanTarget(new TargetWrapper(middle));
             bool ready = actors.Where(actor => !actor.Destroyed).All(actor =>
                 actor.Commands.Empty && actor.Commands.Queue.Count == 0 &&
                 !actor.View.MovementAgent.IsReallyMoving &&
                 actor.View.MovementAgent.Velocity.sqrMagnitude < .0001f &&
                 actor.Descriptor.State.CanAct) &&
-                Vector3.Distance(source.Position, casterPoint) < .1f &&
-                data.IsAvailable && data.CanTarget(new TargetWrapper(middle));
+                sourceCastingGap < .1f && nativeCanTarget;
             check("wall-cast-readiness-" + label, ready,
                 new JObject { ["source"] = source.UniqueId,
                     ["castingPoint"] = Vec(casterPoint), ["sourcePosition"] = Vec(source.Position),
+                    ["horizontalCastingGap"] = sourceCastingGap,
+                    ["nativeAvailable"] = nativeAvailable, ["nativeCanTarget"] = nativeCanTarget,
                     ["before"] = readinessBefore,
                     ["after"] = new JArray(actors.Where(actor => !actor.Destroyed)
                         .Select(InfernalWallActorState35)) },

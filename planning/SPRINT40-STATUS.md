@@ -257,6 +257,24 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   unchanged. Production compilation and all five focused Sprint40 checks pass.
   NEXT: build one supported development artifact and rerun only the wall phase;
   freeze another full public candidate only after that affected proof is green.
+- Reporting head `9ca9d78a15b065ba1c54d6a09bd6bfef4669376e` passed 2,816/2,816
+  and strict packaging: ZIP SHA256 `15ba259c6f90a2a9f3d70953d0dd095e313d91d3c02e8a730b0da467b96b56ed`,
+  DLL SHA256 `5660603467bdcd4b5c96bfef9bb13acafabab37ab9761938e596141716022b5a`,
+  MVID `d58701fe-7b0a-4a60-9583-613d6aa5d698`; compiled persistence admission/
+  refusals pass33/33. The supported development-candidate route refused before
+  build because active0.0.178 has no released tag; no metadata/guard bypass was
+  attempted. Wall run
+  `20261106T0003470584974Z-disposable-expanded-summoning-sprint32-native-review`
+  proves the S35 seam retired the one remaining interrupted move: after-state has
+  all three owned command queues empty, zero velocity, no native movement and
+  every actor able. The readiness assertion alone then rejected the source's
+  exact horizontal casting point because native grounding/FlyHeight differed by
+  0.20m vertically. Restoration receipt
+  `expanded-summoning-restoration/20261106T0006523801928Z-disposable-expanded-summoning-sprint32-native-review.json`
+  is exact. The observer now uses the wall survey's existing horizontal distance
+  helper and records native availability/targetability; no readiness or gameplay
+  condition changed. Production compilation and all five focused Sprint40 checks
+  pass. NEXT: commit/push, repin, rebuild and rerun only the wall phase.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 
