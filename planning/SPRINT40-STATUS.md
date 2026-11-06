@@ -1,11 +1,178 @@
 # Sprint 40 — Ice Devil (Gelugon)
 
-IN PROGRESS. Ice Devil public-candidate route registered; development native proof exists;
-final qualification and release remain incomplete.
-Owner mission selects completion through exact-artifact stable publication,
-public downloads, restoration and merged records. Stop before Sprint 41.
+**RELEASED / STOP.** Stable `v0.0.178` is published and publicly verified. Stop
+before Sprint 41; Sprint 41 is a separate authorized audit and not a release.
 
-## Current continuation state
+## Released identity
+
+| | |
+|---|---|
+| Tag | [v0.0.178](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.178) |
+| Product PR | [#99](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/99) |
+| Product merge | `839204cac36e2c2079377269b8024f8a76d4c4f6` |
+| Tested source | `b2be3ebe805f58f53acd3120f75479aa19a634f9` (a direct parent of that merge) |
+| Package SHA-256 | `4d6e262181e5abd461a537380efe1c05781b55e25bd492821f2bb911482dbe25` |
+| Assembly SHA-256 | `c6bb7377b89e73bee89c9f747d7b1e0877af45318bfe8ea97d7e970794f4fda6` |
+| Assembly MVID | `1b273dc4-236e-4f85-9395-af2ec00fae95` |
+| Source fingerprint | `586872307c10bcad20d9d4beeb79b4f8a9183cab2042b702fb70afa62c481d4d` |
+| Published asset | `KingmakerGunslinger-0.0.178-expanded-summoning-ice-devil.zip` |
+| Annotated tag object / peeled | `9b150e43fd3c43e288b1f24f8855f29f9112daf1` / `839204ca…` |
+
+Publication promoted the retained qualified archive without rebuilding
+(`exactArtifactPromotion` true, `rebuiltForPublication` false). The release is
+stable, non-draft, non-prerelease and Latest. The unauthenticated public
+download reproduced the archive digest, the assembly digest inside it, that
+assembly's MVID and `Info.json` version `0.0.178`, and matched the published
+`SHA256SUMS.txt` line.
+
+## Product history, stated plainly
+
+- **PR #97** merged `1e7a9663f63dbb3f5458165e56c78ae17cece4ef` at
+  `3e5ae0c60c2362c40a687647375f7d9bf7dcf605`. Those bytes were **never
+  published**: the reviewed P2 wall-retirement exception-safety finding was
+  unresolved in them.
+- **PR #99** merged the repaired candidate `b2be3ebe…` at `839204ca…`. That is
+  the released candidate. Its product paths are identical to the merge.
+
+## Review finding P2 — wall-retirement exception safety: REPAIRED
+
+`InfernalWallNavmesh35.Release()` disabled the native grid cut and then threw,
+before `_released`, visual cleanup, `QueueGridRestore` and reference cleanup.
+Both `InfernalWallRules35` callers set a one-way flag first — `Breach` sets
+`_breached` before `ReleaseNavigation` and creates the residual cold and fire
+fog after it; `RetireWithoutBreach` sets `_retiring` before it and removes the
+section lifetime after it. So an interrupted release left the cut disabled, the
+owned navigation claims held, the visuals up and the lifetime in place, while
+every later call refused to retry and the breach consequences never happened at
+all. `Update` had no pending-retirement continuation and view destruction
+recovered neither.
+
+Reachability was **not** refuted: `HandlePartyLeaveArea` retires on area
+transition, exactly when `AstarPath.active` can already have been replaced.
+
+The installed engine decides which state is transient.
+`Pathfinding.GridGraph.UpdateArea` clears `GraphUpdateObject.updating` as its
+final act, so an in-flight update is queued-not-yet-processed and the pathfinder
+resolves it; a replaced graph is terminal, and its restoration data must never
+reach the replacement — the rule `QueueGridRestore` already encoded for the
+owned claims.
+
+Retirement now plans one step at a time: defer and resume from `Update` for an
+in-flight update, complete without a native revert for a replaced graph or an
+absent revert pair, otherwise submit the paired revert as before. Destruction,
+an abandoned `Configure` and the view-teardown patch force completion because no
+later frame exists; a bounded defer budget prevents an indefinitely stalled
+update from stranding claims; re-entry is idempotent. Both callers complete
+their consequences in a `finally`, so the residual cold, the fire fog and the
+lifetime removal happen exactly once. The exception is not merely swallowed, no
+terminal flag was moved and no other owner's claims are cleared.
+
+Coverage:
+
+- Offline regression `expanded-summoning.sprint35-wall-retirement-resumable`
+  over the production policy (deferral, retry, settled revert, graph
+  replacement, nothing applied, forced destruction, budget exhaustion, each with
+  its recorded reason). Suite 2,816 → 2,817.
+- **Controlled** native regression
+  `sprint32-sprint40-wall-interrupted-retirement-resumes`, runId
+  `20261106T1602257986414Z-ea74a8a9056b4e9da0dee3a015398b2e`. The fixture
+  supplies the engine `updating` flag and then clears it in place of
+  `GridGraph.UpdateArea`; the deferral, resumption and all cleanup observed are
+  the production retirement code executing natively. Observed: 3 deferrals, 28
+  claims held while pending, retirement completed, lifetime retired, claim count
+  returned to its baseline of 0, 48 original node bits restored, no grid
+  failure. **This is a fixture-induced precondition, not an observation of a
+  naturally occurring engine race.**
+
+## Qualification on the released candidate
+
+- Complete unfiltered suite **2,817/2,817**, exact-reference Release build,
+  packaging and strict validation.
+- **Ten** native executions, all PASS on first execution for this candidate,
+  each bound to the exact commit, package hash, assembly hash and MVID, each
+  restoring the live mod tree to its pre-run hash.
+- **Six** distinct ON/OFF persistence processes and runIds. ON cold reproduces
+  the exact Slow deadline and source, good-damage regeneration suppression, the
+  constant fear/regeneration carriers and the CL13 wall with live navigation
+  claims; module-OFF cleanup keeps the saved deadline while retiring the wall to
+  zero claims with no private view allocations; a fresh process shows none of it
+  remains.
+- Byte reproducibility: an independent recompilation produced an identical
+  archive, assembly and MVID.
+- `Assert-KmgSprint40Qualification`, `Assert-KmgClosureProofFiles` and
+  `Get-KmgClosurePublicCoverage` all pass against the released ledger.
+
+### Evidence scope, preserved
+
+The persistence Slow is **effect-only preparation**: it establishes the real
+production Slow state for cold-load testing by running the creature's own
+production failed-save actions under its own exact-owner context and live
+Constitution difficulty class. It is **not** attack, save, target-eligibility or
+action-cost proof; those are supplied by the separate real-time and turn-based
+native combat runs on this same artifact. The earlier unsuccessful attempt to
+drive a real attack inside the Working-save fixture is a measured limitation of
+that fixture and environment — a freshly combat-joined summon holds
+`Cooldowns.Initiative` with `CanActInCombat` false there — and **not** a claim
+of universal engine incapability.
+
+### Historical failures, retained
+
+Two final-phase attempts against the earlier `1e7a9663` candidate failed and
+remain FAIL; they are recorded, not relabelled, and the coverage rows cite the
+separate passing re-executions:
+
+- `sprint40-ice-devil-presentation`, runId
+  `20261106T0716502213396Z-f715218c6c9342a8ab43581e13dfea86`,
+  `sprint32-execution`: `InvalidOperationException: Nested native cost
+  observation` in `ReviewInfernalMotion34`.
+- `sprint40-ice-devil-effects`, runId
+  `20261106T0729009071883Z-05cef5a5093846d0aae2ff11ddfccd8a`,
+  `sprint32-execution`: `InvalidOperationException: Native ability did not finish
+  without fixture animation events:
+  KMG_Summoning_OutsiderCelestial_AstralDeva_HolySmite` in `Sprint26Cast`.
+
+Both sit in shared Sprint 34 review code that none of this sprint's changed
+product files executes. That is the concrete classification; unchanged files
+alone are not offered as proof of harmlessness. The released candidate's own ten
+executions each passed on first execution.
+
+The Favored Class incident remains closed by **exact recovery**:
+`EXACT_ORIGINAL_BYTES_REGENERATED_AND_METADATA_RESTORED`,
+`acceptedGeneratedRefresh` false, live file `590ca0e2…` / 135,399 bytes. The
+previously authorized diagnostic-refresh fallback was **not** used.
+
+## Protected state after publication
+
+Exact against the captured intake
+`runtime-evidence/sprint40-intake-20261105T002300Z`: installed Mods manifest
+equal; 16/16 private reference assemblies match the qualified build manifest;
+sound bank `0e9f88c5…` matches; 83/83 registry settings identical; 118 saves,
+none changed or missing; Working and the immutable `KMG_AUTOMATION_BASELINE`
+exact in bytes, length, creation ticks, write ticks and attributes; live KMG
+tree `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`. No
+owned game, lease, lock, staging or restoration debt. Steam left running and
+untouched.
+
+## Preserved scope decisions
+
+One adult untemplated Ice Devil at Summon Monster IX. Persistent Image is the
+owner-approved omission with no substitute and no engine-impossibility claim.
+Greater teleport and nested summoning remain excluded. Effective movement is the
+printed 60-foot fly with the separate 40-foot land mode unmodeled. The wall is
+the S35 bounded single grounded 10-foot movement-obstruction adaptation with no
+line-of-effect claim, parameterized from CL13. The Nalfeshnee-owned Slow is
+corrected to its printed CL12 close range of 55 feet and Unholy Nimbus is
+documented as Daze rather than Blindness. Owner aesthetic approval of the model
+and icon is **not** claimed.
+
+## Deferred, recorded, not implemented here
+
+Cleric alignment restrictions and alphabetical summon-list ordering are
+prerelease work scheduled **after** the Sprint 41 audit. Variant elementals
+remain excluded; the classic Air, Earth, Fire and Water elementals stay in core
+scope.
+
+## Historical pre-release continuation state (superseded by the release above)
 
 - HOWARD-LAPTOP, root `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
   `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Current product
