@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  147,
+    "count":  148,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -1320,6 +1320,15 @@
                       "key":  "nalfeshnee",
                       "file":  "nalfeshnee.png",
                       "sha256":  "e7dbde2cf744d56b265a0ae79b286843ef8f2a2c555917eb01dba5dda1aed73a",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "ice-devil",
+                      "file":  "ice-devil.png",
+                      "sha256":  "7e9bb0ac14c7b6d19b6673559596725869faeb7132eae2dc84ed7d80d090f98c",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

@@ -4,14 +4,18 @@ using System.IO;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
+using Kingmaker.RuleSystem.Rules;
+using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Assets;
+using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -21,17 +25,48 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
-        private IEnumerable<int> ReviewInfernalBodies34(ExpandedSummoningCorrectionFixture fixture)
+        private IEnumerable<int> ReviewInfernalBodies34(ExpandedSummoningCorrectionFixture fixture, bool iceDevil = false)
         {
+            string phase = iceDevil ? ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilPresentationPhase :
+                ExpandedSummoningNativeProfilePolicy.Sprint32InfernalBodiesPhase;
+            string assertionPrefix = iceDevil ? "sprint40" : "sprint34";
+            string capturePrefix = iceDevil ? "s40-" : "s34-";
             var trace = new InfernalEvents34();
-            var receipt = new JObject { ["phase"] = ExpandedSummoningNativeProfilePolicy.Sprint32InfernalBodiesPhase,
+            var receipt = new JObject { ["phase"] = phase,
                 ["events"] = trace.Rows };
             var bodies = new JArray(); receipt["bodies"] = bodies;
+            if (iceDevil) fixture.Hostile.Descriptor.State.AddConditionImmunity(UnitCondition.Frightened);
             try {
-                foreach (string key in new[] { InfernalVisualPolicy34.Barbazu, InfernalVisualPolicy34.Kyton }) {
+                if (iceDevil)
+                {
+                    var frost = fixture.Blueprints.OfType<BlueprintWeaponEnchantment>().Single(x =>
+                        x.AssetGuid == EasternWeaponNamedBlueprints.FrostGuid);
+                    receipt["nativeFrostGraph"] = DescribeGraph(frost, 0,
+                        new HashSet<object>(NativeDonorReferenceComparer.Instance), 4);
+                    var patches = new JArray(); receipt["coldPacketConsumerPatches"] = patches;
+                    foreach (var type in new[] { typeof(RuleCalculateWeaponStats), typeof(RuleAttackRoll),
+                        typeof(RuleAttackWithWeapon), typeof(Kingmaker.Designers.Mechanics.Facts.WeaponEnergyDamageDice) })
+                    {
+                        string methodName = type == typeof(Kingmaker.Designers.Mechanics.Facts.WeaponEnergyDamageDice)
+                            ? "OnEventAboutToTrigger" : "OnTrigger";
+                        var method = type.GetMethod(methodName, System.Reflection.BindingFlags.Instance |
+                            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+                        if (method == null) throw new MissingMethodException(type.FullName, methodName);
+                        var info = _context.Harmony.GetPatchInfo(method);
+                        patches.Add(new JObject { ["consumer"] = type.FullName + "." + methodName,
+                            ["patches"] = info == null ? new JArray() : new JArray(info.Prefixes.Concat(info.Postfixes)
+                                .Concat(info.Transpilers).Select(x => new JObject { ["owner"] = x.owner,
+                                    ["method"] = x.patch?.DeclaringType?.FullName + "." + x.patch?.Name })) });
+                    }
+                }
+                foreach (string key in iceDevil ? new[] { IceDevilVisualPolicy40.Key } :
+                    new[] { InfernalVisualPolicy34.Barbazu, InfernalVisualPolicy34.Kyton }) {
                     var owners = new List<UnitEntityData>(); var resources = new List<UnityEngine.Object>();
                     Mesh cache; Texture2D albedo; string[] bones; string status;
-                    if (!PteranodonAssetRuntime.TryGetInfernalVisual34(key, out cache, out bones, out albedo, out status))
+                    bool loaded = iceDevil ?
+                        PteranodonAssetRuntime.TryGetIceDevilVisual40(key, out cache, out bones, out albedo, out status) :
+                        PteranodonAssetRuntime.TryGetInfernalVisual34(key, out cache, out bones, out albedo, out status);
+                    if (!loaded)
                         throw new InvalidOperationException(key + " original asset absent: " + status);
                     var donor = fixture.Blueprints.OfType<BlueprintUnit>().Single(value => value.AssetGuid == TheropodVisualPolicy.DonorGuid).Prefab.Load(false);
                     var renderers = donor.GetComponentsInChildren<SkinnedMeshRenderer>(true);
@@ -40,6 +75,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     try {
                         for (int instance = 0; instance < 2; instance++) {
                             var owner = CastExpandedSummoningOwnTier(fixture, key); owners.Add(owner);
+                            if (iceDevil) owner.Descriptor.State.AddConditionImmunity(UnitCondition.Frightened);
                             Sprint28SetBrainActivePreservingActions(owner, false);
                             owner.Commands.InterruptAll(command => true); owner.Commands.RemoveFinishedAndUpdateQueue();
                             bool waiting = _sprint25WaitingForUnityAppearance;
@@ -58,7 +94,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             var vertices = Sprint17OriginalWorldVertices(body);
                             var selection = Sprint22SelectionSurface(owner);
                             string capture = WriteExpandedSummoningPartyCameraCapture(owner, _request.EvidenceDirectory,
-                                "s34-" + key + "-body-" + instance + ".png", body.name);
+                                capturePrefix + key + "-body-" + instance + ".png", body.name);
                             bool pass = body.sharedMesh != cache && body.sharedMesh.name == "KMG_" + key + "_Original" &&
                                 vertices.Length == cache.vertexCount && vertices.All(Astral31Finite) && body.enabled && EntityFadedIn(owner) &&
                                 DissolveAmount(owner) <= MotionReviewIntactDissolve && (bool)selection["selectionSurface"] &&
@@ -68,20 +104,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["selection"] = selection, ["capture"] = capture, ["bounds"] = body.bounds.ToString(),
                                 ["glaive"] = owner.View.GetComponent<BarbazuGlaiveView34>()?.Status,
                                 ["chainComponent"] = owner.View.GetComponent<KytonChainVisual34>() != null };
-                            bodies.Add(cell); Sprint25Check("sprint34-body-" + key + "-" + instance, pass, cell,
+                            bodies.Add(cell); Sprint25Check(assertionPrefix + "-body-" + key + "-" + instance, pass, cell,
                                 "Live original mesh, fader, finite skin, native selection and party-camera visibility.");
                             if (!pass) throw new InvalidOperationException(key + " body presentation incomplete.");
                         }
                         var pair = owners.Select(owner => owner.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                             .Single(value => value.name == TheropodVisualPolicy.BodyRendererName)).ToArray();
                         bool independent = pair[0].sharedMesh != pair[1].sharedMesh && pair[0].sharedMaterial != pair[1].sharedMaterial;
-                        Sprint25Check("sprint34-private-pair-" + key, independent, new JObject { ["independent"] = independent },
+                        Sprint25Check(assertionPrefix + "-private-pair-" + key, independent, new JObject { ["independent"] = independent },
                             "Repeated owners hold separate mutable mesh/material instances.");
                         if (!independent) throw new InvalidOperationException("Shared mutable original body.");
                         var siblingChains = owners[1].View.GetComponent<KytonChainVisual34>();
                         int siblingContacts = siblingChains == null ? 0 : siblingChains.Contacts;
-                        bool siblingControlled = InfernalMartialProfile34.For(owners[1]).ControlsOwnChains(owners[1]);
+                        bool siblingControlled = siblingChains != null &&
+                            InfernalMartialProfile34.For(owners[1]).ControlsOwnChains(owners[1]);
                         foreach (int frame in ReviewInfernalMotion34(fixture, owners[0], key, trace, receipt)) yield return frame;
+                        if (iceDevil)
+                            foreach (int frame in ReviewIceDevilLifetime40(fixture, owners[0], owners[1],
+                                cache, albedo, trace, receipt)) yield return frame;
                         if (siblingChains != null)
                         {
                             bool isolated = siblingChains.Contacts == siblingContacts && siblingChains.Resting &&
@@ -95,23 +135,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (!isolated) throw new InvalidOperationException("Sibling chain ownership changed during motion.");
                         }
                     } finally {
-                        foreach (var owner in owners.Where(value => !value.Destroyed)) {
+                        foreach (var owner in owners.Where(value => !value.Destroyed && value.IsInState)) {
                             owner.Commands.InterruptAll(command => true); owner.Commands.RemoveFinishedAndUpdateQueue();
                             if (owner.IsInCombat) owner.LeaveCombat();
                         }
-                        DisposeExpandedSummoningUnits(fixture.Created, owners.ToArray());
+                        DisposeExpandedSummoningUnits(fixture.Created, owners.Where(value =>
+                            value != null && !value.Destroyed && value.IsInState).ToArray());
                     }
                     for (int frame = 0; frame < 16; frame++) yield return 0;
                     bool clean = owners.All(value => value.Destroyed && !value.IsInState) && resources.All(value => value == null) &&
                         cache != null && albedo != null && renderers.Select(value => value.sharedMesh).SequenceEqual(donorMeshes) &&
                         renderers.Select(value => value.sharedMaterial).SequenceEqual(donorMaterials);
-                    Sprint25Check("sprint34-body-cleanup-" + key, clean, new JObject { ["privateRemaining"] = resources.Count(value => value != null) },
+                    Sprint25Check(assertionPrefix + "-body-cleanup-" + key, clean, new JObject { ["privateRemaining"] = resources.Count(value => value != null) },
                         "Every owned body/weapon component is released; original cache and native donor resources remain unchanged.");
                     if (!clean) throw new InvalidOperationException("Infernal private resource teardown mismatch.");
                 }
             } finally {
                 trace.Dispose();
-                RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory, "sprint34-infernal-bodies.json"), receipt.ToString(Formatting.Indented));
+                if (iceDevil) fixture.Hostile.Descriptor.State.RemoveConditionImmunity(UnitCondition.Frightened);
+                RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory,
+                    iceDevil ? "sprint40-ice-devil-presentation.json" : "sprint34-infernal-bodies.json"), receipt.ToString(Formatting.Indented));
                 ResetExpandedSummoningHostile(fixture);
             }
         }
@@ -167,9 +210,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             string key, InfernalEvents34 trace, JObject receipt)
         {
             var target = fixture.Hostile;
+            bool iceDevil = IceDevilVisualPolicy40.Handles(key);
+            string assertionPrefix = iceDevil ? "sprint40" : "sprint34";
+            string capturePrefix = iceDevil ? "s40-" : "s34-";
             string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
-            if (phase != ExpandedSummoningNativeProfilePolicy.Sprint32InfernalBodiesPhase &&
-                phase != ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulMotionPhase)
+            string expected = iceDevil ? ExpandedSummoningNativeProfilePolicy.Sprint40IceDevilPresentationPhase : phase;
+            if ((iceDevil && phase != expected) || (!iceDevil &&
+                phase != ExpandedSummoningNativeProfilePolicy.Sprint32InfernalBodiesPhase &&
+                phase != ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulMotionPhase))
                 throw new InvalidOperationException("Infernal motion requires its exact owned presentation phase.");
             var mode = Cleanup2EnterNativeDefault(fixture, phase);
             var observer = new Sprint16RuleObserver { Owner = owner, Target = target };
@@ -197,7 +245,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["glaiveRenderers"] = glaive?.Model == null ? null : new JArray(glaive.Model.GetComponentsInChildren<Renderer>(true)
                             .Select(renderer => new JObject { ["name"] = renderer.name, ["bounds"] = renderer.bounds.ToString(), ["enabled"] = renderer.enabled })),
                         ["capture"] = WriteExpandedSummoningPartyCameraCapture(owner, _request.EvidenceDirectory,
-                            "s34-" + key + "-contact-" + contacts.Count + ".png", TheropodVisualPolicy.BodyRendererName) });
+                            capturePrefix + key + "-contact-" + contacts.Count + ".png", TheropodVisualPolicy.BodyRendererName) });
                     contactFrame = Time.frameCount; sampledContact = contacts.Count - 1;
                 } catch (Exception error) { errors.Add(error.ToString()); }
             };
@@ -231,7 +279,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in WaitPresentation32(mode, () => move.IsFinished, 25, () => {
                     velocity = Math.Max(velocity, owner.View.MovementAgent.Velocity.magnitude);
                     if (!movingCapture && Vector3.Distance(origin, owner.Position) > 1f) {
-                        WriteExpandedSummoningPartyCameraCapture(owner, _request.EvidenceDirectory, "s34-" + key + "-move.png", TheropodVisualPolicy.BodyRendererName);
+                        WriteExpandedSummoningPartyCameraCapture(owner, _request.EvidenceDirectory, capturePrefix + key + "-move.png", TheropodVisualPolicy.BodyRendererName);
                         movingCapture = true;
                     }
                 })) yield return frame;
@@ -239,7 +287,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 movement["travel"] = Vector3.Distance(origin, owner.Position); movement["velocity"] = velocity;
                 movement["goalGap"] = Vector3.Distance(destination, owner.Position); movement["movingCapture"] = movingCapture;
                 bool moved = move.IsFinished && Vector3.Distance(origin, owner.Position) > 1f && velocity > .01f && movingCapture;
-                Sprint25Check("sprint34-move-" + key, moved, movement,
+                Sprint25Check(assertionPrefix + "-move-" + key, moved, movement,
                     "Native movement completes on the surveyed lane with actual motion and a retained frame.");
                 if (!moved) throw new InvalidOperationException("Native infernal movement incomplete.");
                 foreach (int frame in WaitPresentation32(mode, () => owner.Commands.Empty && owner.View.MovementAgent.Velocity.sqrMagnitude < .0001f, 12)) yield return frame;
@@ -248,7 +296,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // PowerAttackWatcher, which turns PA on at the first roll.
                 // Settle ON before these visual commands; OFF/live scaling
                 // is a separate mechanics control, not inferred here.
-                foreach (bool alternate in new[] { false, true }) {
+                foreach (bool alternate in iceDevil ? new[] { false } : new[] { false, true }) {
                     if (alternate && key == InfernalVisualPolicy34.Barbazu) {
                         receipt[key + "-sets-before"] = InfernalEquipment34(owner);
                         int index = Enumerable.Range(0, owner.Body.HandsEquipmentSets.Count).Single(value =>
@@ -281,25 +329,110 @@ namespace KingmakerGunslinger.RuntimeTesting
                             var rendered = InfernalRenderedGeometry34(owner, target);
                             rendered["contactIndex"] = sampledContact; rendered["framesAfterContact"] = lag;
                             rendered["capture"] = WriteExpandedSummoningPartyCameraCapture(owner, _request.EvidenceDirectory,
-                                "s34-" + key + "-contact-" + sampledContact + "-after-" + lag + ".png", TheropodVisualPolicy.BodyRendererName);
+                                capturePrefix + key + "-contact-" + sampledContact + "-after-" + lag + ".png", TheropodVisualPolicy.BodyRendererName);
                             renderedFrames.Add(rendered);
                         })) yield return frame;
                         var rows = trace.Rows.Skip(start).Where(row => (string)row["event"] == "attack" && (string)row["owner"] == owner.UniqueId).ToArray();
                         var observed = contacts.Skip(contactStart).ToArray();
-                        int expected = key == InfernalVisualPolicy34.Kyton ? 4 : 2;
-                        bool correct = attack.IsFinished && attack.Result == UnitCommand.ResultType.Success && rows.Length == expected &&
-                            observed.Length == expected && errors.Count == 0 && observed.All(row => (bool)row["animationStarted"] && !string.IsNullOrEmpty((string)row["nativeClip"])) &&
+                        int expectedAttacks = iceDevil ? 5 : key == InfernalVisualPolicy34.Kyton ? 4 : 2;
+                        var ends = trace.Rows.Skip(start).Where(x => (string)x["event"] == "command-end" &&
+                            (int?)x["commandReference"] == System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(attack)).ToArray();
+                        bool nativeExhausted = iceDevil && Sprint40NativeExhaustedAttack(attack, ends, expectedAttacks);
+                        bool correct = attack.IsFinished && (attack.Result == UnitCommand.ResultType.Success || nativeExhausted) && rows.Length == expectedAttacks &&
+                            observed.Length == expectedAttacks && errors.Count == 0 && observed.All(row => (bool)row["animationStarted"] && !string.IsNullOrEmpty((string)row["nativeClip"])) &&
                             (key != InfernalVisualPolicy34.Kyton || observed.All(row => (float)row["chainContactGap"] < .15f)) &&
-                            (key != InfernalVisualPolicy34.Barbazu || observed.All(row => (bool)row["glaiveVisible"] == !alternate));
+                            (key != InfernalVisualPolicy34.Barbazu && !iceDevil || observed.All(row => (bool)row["glaiveVisible"] == !alternate));
                         var cell = new JObject { ["owner"] = owner.UniqueId, ["alternate"] = alternate, ["command"] = Sprint27AiCommand(attack),
-                            ["nativePlan"] = attack.AllAttacks.Count, ["attacks"] = new JArray(rows), ["contacts"] = new JArray(observed), ["costs"] = costs };
-                        Sprint25Check("sprint34-native-contact-" + key + "-" + alternate, correct, cell,
+                            ["nativePlan"] = attack.AllAttacks.Count, ["nativeExhausted"] = nativeExhausted,
+                            ["nativeEnds"] = new JArray(ends), ["attacks"] = new JArray(rows), ["contacts"] = new JArray(observed),
+                            ["costs"] = new JArray(costs.Select(value => value.DeepClone())) };
+                        Sprint25Check(assertionPrefix + "-native-contact-" + key + "-" + alternate, correct, cell,
                             "One native full attack uses the correct alternative routine with actual animation/contact and no extra attacks.");
                         if (!correct) throw new InvalidOperationException("Infernal routine or live contact mismatch.");
+                        if (iceDevil)
+                        {
+                            var profile40 = IceDevilMartialProfile40.For(owner);
+                            var packetAttacks = rows.ToList();
+                            var packetAttempts = new JArray();
+                            int recordedPacketAttacks = 0;
+                            for (int packetAttempt = 1; packetAttempt <= 4; packetAttempt++)
+                            {
+                                var attemptAttacks = packetAttacks.Skip(recordedPacketAttacks).ToArray();
+                                recordedPacketAttacks = packetAttacks.Count;
+                                var naturalHits = packetAttacks.Where(x => (bool?)x["hit"] == true &&
+                                    ((string)x["weapon"] == profile40.Bite.AssetGuid ||
+                                     (string)x["weapon"] == profile40.Tail.AssetGuid)).ToArray();
+                                var coldNaturalHits = naturalHits.Where(x => ((JArray)x["damagePackets"])
+                                    .Any(packet => (string)packet["energy"] == "Cold")).ToArray();
+                                var spearHits = packetAttacks.Where(x => (bool?)x["hit"] == true &&
+                                    (string)x["weapon"] == profile40.Spear.AssetGuid).ToArray();
+                                bool spearFrost = spearHits.Length > 0 && spearHits.All(x =>
+                                    ((JArray)x["damagePackets"]).Count(packet =>
+                                        (string)packet["energy"] == "Cold" && (string)packet["dice"] == "1d6") == 1);
+                                bool witnessedBoth = naturalHits.Any(x => (string)x["weapon"] == profile40.Bite.AssetGuid) &&
+                                    naturalHits.Any(x => (string)x["weapon"] == profile40.Tail.AssetGuid);
+                                packetAttempts.Add(new JObject {
+                                    ["attempt"] = packetAttempt, ["attacks"] = new JArray(attemptAttacks),
+                                    ["biteHitObserved"] = naturalHits.Any(x => (string)x["weapon"] == profile40.Bite.AssetGuid),
+                                    ["tailHitObserved"] = naturalHits.Any(x => (string)x["weapon"] == profile40.Tail.AssetGuid),
+                                    ["coldNaturalPackets"] = coldNaturalHits.Length });
+                                bool terminal = witnessedBoth || coldNaturalHits.Length > 0 || packetAttempt == 4;
+                                if (terminal)
+                                {
+                                    var packetRow = new JObject { ["nativeHitsBothNaturals"] = witnessedBoth,
+                                        ["nativeSpearHits"] = spearHits.Length, ["spearSingleFrostPacket"] = spearFrost,
+                                        ["coldNaturalHits"] = new JArray(coldNaturalHits), ["attempts"] = packetAttempts,
+                                        ["attacks"] = new JArray(packetAttacks),
+                                        ["classification"] = coldNaturalHits.Length > 0 ? "rules-failure" :
+                                            witnessedBoth ? "observed-native-outcome" : "missing-stochastic-precondition" };
+                                    bool packetsCorrect = witnessedBoth && coldNaturalHits.Length == 0 && spearFrost;
+                                    Sprint25Check("sprint40-natural-cold-packets", packetsCorrect, packetRow,
+                                        "Bounded real full attacks witness actual bite and tail hits carrying physical damage only; spear frost remains a separate weapon packet. Missing real hits cannot pass vacuously.");
+                                    if (!packetsCorrect) throw new InvalidOperationException("Ice natural cold packets: " + packetRow["classification"]);
+                                    break;
+                                }
+
+                                int cooldownFrames = 0;
+                                DateTime cooldownDeadline = DateTime.UtcNow.AddSeconds(10);
+                                while (owner.CombatState.Cooldown.StandardAction > 0f && cooldownFrames < 1200 &&
+                                    DateTime.UtcNow < cooldownDeadline)
+                                {
+                                    cooldownFrames++; Game.Instance.IsPaused = false; yield return 0;
+                                }
+                                if (owner.CombatState.Cooldown.StandardAction > 0f)
+                                    throw new InvalidOperationException("Natural packet retry cooldown did not clear.");
+                                owner.Commands.RemoveFinishedAndUpdateQueue();
+                                int retryStart = trace.Rows.Count, retryContactStart = contacts.Count;
+                                var retry = new UnitAttack(target) { ForceFullAttack = true, IsSingleAttack = false };
+                                retry.Init(owner);
+                                if (!retry.CanStart) throw new InvalidOperationException("Natural packet retry attack refused.");
+                                var retryCosts = new JArray();
+                                using (var retryCost = new FirearmReviewCosts(owner, retryCosts))
+                                {
+                                    owner.Commands.Run(retry);
+                                    foreach (int frame in WaitPresentation32(mode, () => retry.IsFinished, 35)) yield return frame;
+                                }
+                                var retryRows = trace.Rows.Skip(retryStart).Where(row =>
+                                    (string)row["event"] == "attack" && (string)row["owner"] == owner.UniqueId).ToArray();
+                                var retryContacts = contacts.Skip(retryContactStart).ToArray();
+                                var retryEnds = trace.Rows.Skip(retryStart).Where(x => (string)x["event"] == "command-end" &&
+                                    (int?)x["commandReference"] == System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(retry)).ToArray();
+                                bool retryExhausted = Sprint40NativeExhaustedAttack(retry, retryEnds, expectedAttacks);
+                                bool retryExact = retry.IsFinished && (retry.Result == UnitCommand.ResultType.Success || retryExhausted) &&
+                                    retryRows.Length == expectedAttacks && retryContacts.Length == expectedAttacks && errors.Count == 0;
+                                packetAttempts.Add(new JObject { ["retryAfterAttempt"] = packetAttempt,
+                                    ["cooldownFrames"] = cooldownFrames, ["command"] = Sprint27AiCommand(retry),
+                                    ["nativeExhausted"] = retryExhausted, ["attacks"] = new JArray(retryRows),
+                                    ["contacts"] = new JArray(retryContacts), ["costs"] = retryCosts,
+                                    ["exactFullRoutine"] = retryExact });
+                                if (!retryExact) throw new InvalidOperationException("Natural packet retry routine mismatch.");
+                                packetAttacks.AddRange(retryRows);
+                            }
+                        }
                         if (key == InfernalVisualPolicy34.Kyton) {
                             var frames = renderedFrames.Where(row => (int)row["contactIndex"] >= contactStart).ToArray();
                             bool followThrough = frames.Any(row => !(bool)row["chainResting"]);
-                            Sprint25Check("sprint34-chain-rendered-follow-through-" + alternate, followThrough,
+                            Sprint25Check(assertionPrefix + "-chain-rendered-follow-through-" + alternate, followThrough,
                                 new JObject { ["owner"] = owner.UniqueId, ["frames"] = new JArray(frames) },
                                 "Native contact survives into ordinary rendered frames instead of resetting before the next presentation update.");
                             if (!followThrough) throw new InvalidOperationException("Native chain contact has no rendered follow-through.");
@@ -307,7 +440,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (!alternate && key == InfernalVisualPolicy34.Barbazu) {
                             bool contact = observed.All(row => ((JArray)row["renderedGeometry"]["glaiveMeshes"]).Any(mesh =>
                                 (float)mesh["bladeTargetCenterGap"] <= target.Corpulence + .65f));
-                            Sprint25Check("sprint34-glaive-measured-contact", contact, new JObject { ["contacts"] = new JArray(observed) },
+                            Sprint25Check(assertionPrefix + "-glaive-measured-contact", contact, new JObject { ["contacts"] = new JArray(observed) },
                                 "The native glaive's measured blade endpoint reaches the target's body during its actual strike; screenshots remain required.");
                             if (!contact) throw new InvalidOperationException("Native glaive blade misses its visual contact envelope.");
                         }
@@ -317,7 +450,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 (string)row["owner"] == owner.UniqueId && (string)row["target"] == target.UniqueId &&
                                 !(bool)row["hasAttackRoll"] && ((JArray)row["packets"]).Any(packet => (string)packet["dice"] == "1d8")).ToArray();
                             bool conditional = beard.Length == (bothHit ? 1 : 0);
-                            Sprint25Check("sprint34-beard-observed-condition", conditional, new JObject {
+                            Sprint25Check(assertionPrefix + "-beard-observed-condition", conditional, new JObject {
                                 ["bothNativeClawsHit"] = bothHit, ["beardEvents"] = new JArray(beard),
                                 ["command"] = Sprint27AiCommand(attack) },
                                 "Beard's separate native damage packet occurs exactly when both claws of this command hit the same target; natural misses stay recorded.");

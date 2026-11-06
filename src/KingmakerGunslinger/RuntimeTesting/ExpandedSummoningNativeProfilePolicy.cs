@@ -55,6 +55,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         // creature has no rend and no separate stun, so its core, its one
         // delayed signature ability, its anti-caster spells and its public
         // route are the whole surface.
+        internal const string Sprint40IceDevilEarlyPhase = "sprint40-ice-devil-early";
+        internal const string Sprint40IceDevilCombatPhase = "sprint40-ice-devil-combat";
+        internal const string Sprint40IceDevilEffectsPhase = "sprint40-ice-devil-effects";
+        internal const string Sprint40NalfeshneeRangePhase = "sprint40-nalfeshnee-range";
+        internal const string Sprint40IceDevilWallsPhase = "sprint40-ice-devil-walls";
+        internal const string Sprint40IceDevilSlowPhase = "sprint40-ice-devil-slow";
+        internal const string Sprint40IceDevilPresentationPhase = "sprint40-ice-devil-presentation";
+        internal const string Sprint40IceDevilPublicPhase = "sprint40-ice-devil-public";
+        internal const string Sprint40IceDevilAiPhase = "sprint40-ice-devil-ai";
+        internal const string Sprint40IceDevilSlowTurnPhase = "sprint40-ice-devil-slow-turn";
         internal const string Sprint39NalfeshneeCorePhase = "sprint39-nalfeshnee-core";
         internal const string Sprint39NalfeshneeNimbusPhase = "sprint39-nalfeshnee-nimbus";
         // The second combat mode is its own phase, as every released
@@ -103,15 +113,26 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string Sprint32CantripPhase = "lillend-cantrips";
         internal const string Sprint32FascinatePhase = "lillend-fascinate";
         internal const string Sprint32BardicSuggestionPhase = "lillend-bardic-suggestion";
+        internal static bool Sprint40Phase(string phase)
+        { return phase == Sprint40IceDevilEarlyPhase ||
+            phase == Sprint40IceDevilCombatPhase ||
+            phase == Sprint40IceDevilEffectsPhase ||
+            phase == Sprint40NalfeshneeRangePhase ||
+            phase == Sprint40IceDevilWallsPhase ||
+            phase == Sprint40IceDevilSlowPhase ||
+            phase == Sprint40IceDevilPresentationPhase ||
+            phase == Sprint40IceDevilPublicPhase ||
+            phase == Sprint40IceDevilAiPhase ||
+            phase == Sprint40IceDevilSlowTurnPhase; }
         internal static bool Sprint32NativeInputPhase(string phase)
         { return phase == Sprint32DruidInputPhase || phase == Sprint32WizardInputPhase || phase == Sprint32SorcererInputPhase; }
         internal static bool Sprint32NativeDefaultPhase(string phase)
-        { return WallFixturePhase(phase) || phase == Sprint39OverhaulDaylightPhase || phase == Sprint39OverhaulMotionPhase || phase == Sprint39OverhaulOffPhase || phase == Sprint32InfernalBodiesPhase || phase == Sprint32ShadowMotionPhase || Sprint32NativeInputPhase(phase) || phase == Sprint32PerformancePhase ||
+        { return Sprint40Phase(phase) || WallFixturePhase(phase) || phase == Sprint39OverhaulDaylightPhase || phase == Sprint39OverhaulMotionPhase || phase == Sprint39OverhaulOffPhase || phase == Sprint32InfernalBodiesPhase || phase == Sprint32ShadowMotionPhase || Sprint32NativeInputPhase(phase) || phase == Sprint32PerformancePhase ||
             phase == Sprint32FascinatePhase || phase == Sprint32BardicSuggestionPhase || phase == Sprint32GrabPhase || phase == Sprint32PresentationPhase || phase == Sprint32SuggestionTerminalsPhase; }
         internal static bool Sprint32NativeDefaultOutdoor(string scenario, string phase)
         { return scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview && Sprint32NativeDefaultPhase(phase); }
         internal static bool Sprint32Phase(string phase)
-        { return phase == Sprint32InfernalHealingPhase || phase == Sprint32InfernalAiPhase || phase == Sprint32InfernalEffectsPhase || phase == Sprint32InfernalLifetimePhase || phase == Sprint32InfernalCombatPhase || phase == Sprint32InfernalRoutesPhase || phase == Sprint32InfernalMechanicsPhase || phase == Sprint32InfernalEarlyPhase || phase == Sprint35InfernalEarlyPhase || phase == Sprint35InfernalBarbedPhase || phase == Sprint35InfernalBarbedCombatPhase || phase == Sprint35InfernalBonePhase || phase == Sprint35InfernalPublicPhase || phase == Sprint36InfernalCorePhase || phase == Sprint36InfernalCombatPhase || phase == Sprint36InfernalTurnsPhase || phase == Sprint36InfernalPublicPhase || phase == Sprint37VrockCorePhase || phase == Sprint37VrockSporesPhase || phase == Sprint37VrockGeometryPhase || phase == Sprint37VrockScreechPhase || phase == Sprint37VrockTurnsPhase || phase == Sprint37VrockAiPhase || phase == Sprint37VrockPublicPhase || phase == Sprint37VrockReleasePhase || phase == Sprint38GlabrezuCorePhase || phase == Sprint38GlabrezuRendPhase || phase == Sprint38GlabrezuStunPhase || phase == Sprint38GlabrezuSpellsPhase || phase == Sprint38GlabrezuAiPhase || phase == Sprint38GlabrezuPublicPhase || phase == Sprint38GlabrezuReleasePhase || phase == Sprint39NalfeshneeCorePhase || phase == Sprint39NalfeshneeNimbusPhase || phase == Sprint39NalfeshneeTurnsPhase || phase == Sprint39NalfeshneeSpellsPhase || phase == Sprint39NalfeshneeIntegrationPhase || phase == Sprint39NalfeshneePublicPhase || phase == Sprint39NalfeshneeReleasePhase || phase == Sprint32ShadowDrainPhase || phase == Sprint32ShadowPreservationPhase || phase == Sprint32StalkerPurgePhase || phase == Sprint32ShadowOutsidersPhase || phase == Sprint32SatyrControlPhase || phase == Sprint32LillendSupportPhase ||
+        { return Sprint40Phase(phase) || phase == Sprint32InfernalHealingPhase || phase == Sprint32InfernalAiPhase || phase == Sprint32InfernalEffectsPhase || phase == Sprint32InfernalLifetimePhase || phase == Sprint32InfernalCombatPhase || phase == Sprint32InfernalRoutesPhase || phase == Sprint32InfernalMechanicsPhase || phase == Sprint32InfernalEarlyPhase || phase == Sprint35InfernalEarlyPhase || phase == Sprint35InfernalBarbedPhase || phase == Sprint35InfernalBarbedCombatPhase || phase == Sprint35InfernalBonePhase || phase == Sprint35InfernalPublicPhase || phase == Sprint36InfernalCorePhase || phase == Sprint36InfernalCombatPhase || phase == Sprint36InfernalTurnsPhase || phase == Sprint36InfernalPublicPhase || phase == Sprint37VrockCorePhase || phase == Sprint37VrockSporesPhase || phase == Sprint37VrockGeometryPhase || phase == Sprint37VrockScreechPhase || phase == Sprint37VrockTurnsPhase || phase == Sprint37VrockAiPhase || phase == Sprint37VrockPublicPhase || phase == Sprint37VrockReleasePhase || phase == Sprint38GlabrezuCorePhase || phase == Sprint38GlabrezuRendPhase || phase == Sprint38GlabrezuStunPhase || phase == Sprint38GlabrezuSpellsPhase || phase == Sprint38GlabrezuAiPhase || phase == Sprint38GlabrezuPublicPhase || phase == Sprint38GlabrezuReleasePhase || phase == Sprint39NalfeshneeCorePhase || phase == Sprint39NalfeshneeNimbusPhase || phase == Sprint39NalfeshneeTurnsPhase || phase == Sprint39NalfeshneeSpellsPhase || phase == Sprint39NalfeshneeIntegrationPhase || phase == Sprint39NalfeshneePublicPhase || phase == Sprint39NalfeshneeReleasePhase || phase == Sprint32ShadowDrainPhase || phase == Sprint32ShadowPreservationPhase || phase == Sprint32StalkerPurgePhase || phase == Sprint32ShadowOutsidersPhase || phase == Sprint32SatyrControlPhase || phase == Sprint32LillendSupportPhase ||
             phase == Sprint39OverhaulIndoorPhase || phase == Sprint32SatyrTurnPhase || phase == Sprint32LillendTurnPhase || phase == Sprint32SuggestionPhase ||
             phase == Sprint32SatyrRoutesPhase || phase == Sprint32LillendRoutesPhase || phase == Sprint32LifecyclePhase ||
             phase == Sprint32CantripPhase || phase == Sprint32HoldPhase || phase == Sprint32HoldTurnPhase ||

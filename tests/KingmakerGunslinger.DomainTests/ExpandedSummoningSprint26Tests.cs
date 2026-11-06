@@ -58,6 +58,8 @@ namespace KingmakerGunslinger.DomainTests
         internal const int Sprint39CatalogIdentityCount =
             Sprint39CreatureIdentityCount + Sprint39RootIdentityCount +
             Sprint39PrivateIdentityCount;
+        internal const int Sprint40PrivateIdentityCount = 27;
+        internal const int Sprint40CatalogIdentityCount = 1 + 1 + Sprint40PrivateIdentityCount;
         internal const int AppendedCatalogIdentityCount =
             Sprint26MagicalBeastRules.AppendedCatalogIdentityCount +
             ExpandedSummoningSprint27Tests.AppendedCatalogIdentityCount +
@@ -67,7 +69,7 @@ namespace KingmakerGunslinger.DomainTests
             Sprint32PrivateIdentityCount + 2 + 10 + 22 +
             InfernalRules35.AppendedCatalogIdentityCount +
             Sprint36CatalogIdentityCount + Sprint37CatalogIdentityCount +
-            Sprint38CatalogIdentityCount + Sprint39CatalogIdentityCount;
+            Sprint38CatalogIdentityCount + Sprint39CatalogIdentityCount + Sprint40CatalogIdentityCount;
         internal const int AppendedLedgerIdentityCount =
             AppendedCatalogIdentityCount +
             Sprint36ReservedIdentityCount;
@@ -101,7 +103,9 @@ namespace KingmakerGunslinger.DomainTests
         // candidate is green on live units in both combat modes, so removing
         // its name here is the whole of publishing it - every dependent count
         // in this file derives rather than being pinned a second time.
-        internal static readonly string[] WithheldKeys = new string[0];
+        // Empty again after Sprint 40 publication: the Ice Devil contributes
+        // exactly one qualified untemplated SM IX route.
+        internal static readonly string[] WithheldKeys = Array.Empty<string>();
         internal static bool IsWithheld(string key) { return Array.IndexOf(WithheldKeys, key) >= 0; }
     }
 

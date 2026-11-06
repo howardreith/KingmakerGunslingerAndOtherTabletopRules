@@ -117,6 +117,18 @@ namespace KingmakerGunslinger.Summoning
                 AbilityModifier(liveCharismaScore);
         }
 
+        internal static int WallSectionHitPoints(int casterLevel)
+        {
+            if (casterLevel < 1) throw new ArgumentOutOfRangeException("casterLevel");
+            return 3 * casterLevel;
+        }
+
+        internal static int WallDurationRounds(int casterLevel)
+        {
+            if (casterLevel < 1) throw new ArgumentOutOfRangeException("casterLevel");
+            return 10 * casterLevel;
+        }
+
         internal static float WallDistanceToFootprint(float alongMeters,
             float acrossMeters, float halfLengthMeters,
             float halfThicknessMeters)
@@ -202,6 +214,8 @@ namespace KingmakerGunslinger.Summoning
         {
             if (unitSymbol == null)
                 throw new ArgumentNullException("unitSymbol");
+            if (String.Equals(unitSymbol, IceDevilRules40Policy.WallSectionSymbol,
+                StringComparison.Ordinal)) return BoneUnitSymbol;
             return String.Equals(unitSymbol, WallSectionUnitSymbol,
                 StringComparison.Ordinal) ? BoneUnitSymbol : null;
         }
@@ -231,6 +245,10 @@ namespace KingmakerGunslinger.Summoning
                 Math.Abs(acrossMeters) <=
                     halfThicknessMeters + cellProjection;
         }
+
+        internal static bool WallNodeWalkableAfterOwnerRelease(
+            bool originalWalkable, bool hasRemainingWallOwner)
+        { return hasRemainingWallOwner ? false : originalWalkable; }
 
         internal static void Validate()
         {

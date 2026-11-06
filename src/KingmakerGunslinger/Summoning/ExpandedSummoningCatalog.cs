@@ -53,7 +53,7 @@ namespace KingmakerGunslinger.Summoning
             // alone, so the Monster roster gains one creature and exactly one
             // placement - 110/598 becomes 111/599 - and the Nature's Ally
             // side is deliberately untouched at 105/588.
-            ValidateFamily(SummonFamily.Monster, 111, 599);
+            ValidateFamily(SummonFamily.Monster, 112, 600);
             ValidateFamily(SummonFamily.NaturesAlly, 105, 588);
         }
 
@@ -180,7 +180,8 @@ namespace KingmakerGunslinger.Summoning
                 // alone and it contributes exactly one placement, at quantity
                 // One. No Nature's Ally row, so that family's totals do not
                 // move at all.
-                C("nalfeshnee","Nalfeshnee",9,false,null,"Original corpulent boar-headed winged demon; measured Lizardfolk rig")
+                C("nalfeshnee","Nalfeshnee",9,false,null,"Original corpulent boar-headed winged demon; measured Lizardfolk rig"),
+                C("ice-devil","Ice Devil (Gelugon)",9,false,null,"Original insectile Gelugon; measured free-hands rig")
             };
         }
 

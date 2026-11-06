@@ -186,14 +186,22 @@ foreach ($icon in $icons) {
     # source archive. A selected append may reuse an unchanged manifest row
     # only when its existing runtime export still matches that row exactly.
     # Full exports and VerifyOnly retain the strict all-source requirement.
-    if ($OnlyKeys.Count -gt 0 -and $OnlyKeys -cnotcontains $key -and
-        -not (Test-Path -LiteralPath $source)) {
+    if ($OnlyKeys.Count -gt 0 -and $OnlyKeys -cnotcontains $key) {
         $oldProvenance = $existingProvenanceRows[$key]
         $oldRuntime = $existingRuntimeRows[$key]
         if ($null -eq $oldProvenance -or $null -eq $oldRuntime -or
             -not (Test-Path -LiteralPath $output) -or
             (Get-Sha256 $output) -cne [string]$oldRuntime.sha256) {
             throw "Sparse selected export cannot verify unchanged icon: $key."
+        }
+        # An available protected source is verified at its recorded path
+        # (which may be an approved edit), but its consumer/provenance row
+        # belongs to that export. A selected append must not regenerate it
+        # from a newer blueprint ledger merely because the source is present.
+        $protectedSource = Join-Path $root ([string]$oldProvenance.sourceFile).Replace('/', '\')
+        if ((Test-Path -LiteralPath $protectedSource) -and
+            (Get-Sha256 $protectedSource) -cne [string]$oldProvenance.sourceSha256) {
+            throw "Selected export found changed protected source: $key."
         }
         Assert-MeaningfulImage $output 128 128
         $provenanceRows += $oldProvenance

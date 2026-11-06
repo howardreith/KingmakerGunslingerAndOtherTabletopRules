@@ -36,13 +36,17 @@ namespace KingmakerGunslinger.DomainTests
                     StringComparison.Ordinal)).ToArray();
             Assertions.Equal(ExpandedSummoningIdentityCatalog.FoundationIdentityCount,
                 first.Count, "Foundation identity count changed.");
-            Assertions.Equal(ExpandedSummoningIdentityCatalog.UnitCount + 1,
+            Assertions.Equal(ExpandedSummoningIdentityCatalog.UnitCount + 2,
                 first.Count(value => value.PlannedType == "BlueprintUnit"),
                 "Creature and private support unit identity counts changed.");
             Assertions.Equal(1, first.Count(value =>
                     value.Symbol == "KMG.Summoning.Infernal.BoneDevil.WallSectionUnit" &&
                     value.PlannedType == "BlueprintUnit"),
-                "The one extra BlueprintUnit is the private Wall section, not a summon creature.");
+                "The released Bone Devil private Wall section identity changed.");
+            Assertions.Equal(1, first.Count(value =>
+                    value.Symbol == "KMG.Summoning.Infernal.IceDevil.WallSectionUnit" &&
+                    value.PlannedType == "BlueprintUnit"),
+                "The Ice Devil private Wall section identity changed.");
             int sprint35Routes = first.Count(value =>
                 value.PlannedType == "BlueprintAbility" &&
                 value.Symbol.StartsWith("KMG.Summoning.Ability.SM.",
@@ -89,11 +93,17 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(SummoningCurrentSurface.Sprint39RootIdentityCount,
                 sprint39Routes,
                 "Sprint39 owns exactly its one public route ability.");
+            int sprint40Routes = released.Count(value =>
+                value.Symbol.StartsWith("KMG.Summoning.Ability.SM.",
+                    StringComparison.Ordinal) &&
+                value.Symbol.Contains(".IceDevil."));
+            Assertions.Equal(1, sprint40Routes,
+                "Sprint40 owns exactly its one public route ability.");
             Assertions.Equal(1760 + TheropodRulesPolicy.AppendedAbilityIdentityCount +
                     GiantBodyRulesPolicy.AppendedTotalAbilityIdentityCount + 9 +
                     ExpandedSummoningSprints30And31Tests.RegisteredAbilityIdentityCount +
                     sprint35Routes + sprint36Routes + sprint37Routes +
-                    sprint38Routes + sprint39Routes,
+                    sprint38Routes + sprint39Routes + sprint40Routes,
                 released.Count(value => value.PlannedType == "BlueprintAbility"),
                 "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(

@@ -39,7 +39,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ReviewSprint28Cleave(
             ExpandedSummoningCorrectionFixture fixture,
             bool celestialCloseout = false, bool reuseHostile = false,
-            string[] selectedKeys = null, string selectedPrefix = null)
+            string[] selectedKeys = null, string selectedPrefix = null,
+            bool selectedOrdinary = false)
         {
             bool mode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool pause = Game.Instance.IsPaused;
@@ -111,7 +112,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "hill-giant", "fire-giant" } :
                     new[] { "hill-giant", "fire-giant" }))
                 {
-                    bool ordinary = selectedKeys == null &&
+                    bool ordinary = selectedOrdinary || selectedKeys == null &&
                         (celestialCloseout || key == "hill-giant" ||
                         key == "storm-giant" || key == "ettin");
                     string prefix = selectedPrefix ?? (celestialCloseout ?
@@ -125,6 +126,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         bool expectFirstMiss = !missObserved;
                         var created = new List<UnitEntityData>();
+                        var fearIsolated = new List<UnitEntityData>();
                         UnitUseAbility command = null;
                         var observer = new Sprint28CleaveAttacks();
                         bool subscribed = false;
@@ -140,6 +142,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 Enumerable.Range(0, 3).Select(index =>
                                     Sprint25CleaveTarget(fixture, created,
                                         true)).ToArray();
+                            if (key == IceDevilVisualPolicy40.Key)
+                                foreach (var recipient in targets)
+                                {
+                                    recipient.Descriptor.State.AddConditionImmunity(
+                                        Kingmaker.UnitLogic.UnitCondition.Frightened);
+                                    fearIsolated.Add(recipient);
+                                }
                             for (int i = 0; i < 8; i++) yield return 0;
                             Vector3 far; string lane, direction;
                             Vector3 origin = Sprint24AiCombatLane(
@@ -507,6 +516,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         finally
                         {
                             if (subscribed) EventBus.Unsubscribe(observer);
+                            foreach (var recipient in fearIsolated.Where(x => !x.Destroyed))
+                                recipient.Descriptor.State.RemoveConditionImmunity(
+                                    Kingmaker.UnitLogic.UnitCondition.Frightened);
                             EndExpandedSummoningDetachedAbility(command);
                             SettingsRoot.Instance.EnableTurnBasedMode
                                 .CurrentValue = false;

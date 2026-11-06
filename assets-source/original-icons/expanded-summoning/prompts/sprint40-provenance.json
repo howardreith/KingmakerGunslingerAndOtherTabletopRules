@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Sprint40 original Ice Devil painted summon medallion",
+  "generator": "Built-in image_gen tool; no API fallback",
+  "generatedAtUtc": "2026-11-05",
+  "ownership": "New generated creature painting; existing project-owned Bone Devil painting supplied only as style/family reference. No extracted game art or downloaded art supplied.",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/expanded-summoning/sources/bone-devil.png",
+      "sha256": "b0df2dac7e6b76b81bf5f28dff9cfd0c7103b4d7e6326c2c7789c6310d3ad14c",
+      "role": "style and ornate frame reference only"
+    }
+  ],
+  "compositionBrief": "Original insectile Gelugon with two multifaceted blue eyes, mandibles, antennae, layered glacier-blue chitin, narrow waist, two arms gripping a frost spear, two legs and a long segmented striking tail; no wings, no poisonous sting. Original dark fantasy painting in an engraved gold medallion. Bone Devil source used only as a painted-family/frame reference, never as a recolor target. No text, counters or UI selection overlays.",
+  "sourceFile": "assets-source/original-icons/expanded-summoning/sources/ice-devil.png",
+  "sourceSha256": "c200f2133856ee789d3fe359a069dc1bbb7348109b629a8c9ad916011e4d2682",
+  "resolution": "1254x1254 RGBA",
+  "humanReview": "NOT_PERFORMED_NONBLOCKING",
+  "technicalReview": "Source pixels inspected: insectile head with compound eyes and antennae, spear and segmented tail distinct; two arms, no wings. Runtime export and native attachment remain separate checks."
+}
