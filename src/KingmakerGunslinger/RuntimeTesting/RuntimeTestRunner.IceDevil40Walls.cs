@@ -13,6 +13,7 @@ using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
@@ -244,7 +245,62 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new JObject { ["boneHp"] = sections[2].Stats.HitPoints.BaseValue,
                         ["boneClaims"] = bindings[2].GridNodesClaimed },
                     "Second Ice source cleanup leaves Bone's unchanged36 HP wall and native node claims intact.");
+                // Retire the last source while a native grid update is in
+                // flight. Only the engine flag the review named is supplied by
+                // this fixture; the deferral, the resumption and every cleanup
+                // consequence below are the production component's own. Before
+                // the repair this exact state threw out of Release() after the
+                // cut was already disabled, stranding the claims and the
+                // lifetime behind a one-way retire flag.
+                bool boneCutEnabled;
+                int boneMask = 1 << bindings[2].GridGraphIndex;
+                var boneBefore = bindings[2].Cut.GetUpdateObjectForGrid(
+                    out boneCutEnabled, boneMask);
+                bool forcedInFlight = boneBefore.guo != null &&
+                    !boneBefore.guo.updating && bindings[2].Cut.gridGuoApplied;
+                if (forcedInFlight) boneBefore.guo.updating = true;
+                Buff boneLifetime = sections[2].Buffs.GetBuff(
+                    BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff);
+                int claimsBeforeInterrupt =
+                    InfernalWallNavmesh35.ActiveGridClaimCount;
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { actors[2] });
+                yield return 0;
+                bool deferredCleanly = !forcedInFlight ||
+                    bindings[2].RetirePending || bindings[2].ReleaseCompleted;
+                int observedDeferrals = bindings[2].RetireDeferrals;
+                bool claimsHeldWhilePending = !bindings[2].RetirePending ||
+                    InfernalWallNavmesh35.ActiveGridClaimCount ==
+                        claimsBeforeInterrupt;
+                // The pathfinder clears this in GridGraph.UpdateArea; release
+                // the state it would have cleared and let retirement resume.
+                if (forcedInFlight) boneBefore.guo.updating = false;
+                foreach (int frame in InfernalBoneWaitUntil35(() =>
+                    bindings[2].ReleaseCompleted &&
+                    InfernalWallNavmesh35.ActiveGridClaimCount == baselineClaims &&
+                    originals.All(x => x.Key.Walkable == x.Value), 20)) yield return frame;
+                check("wall-interrupted-retirement-resumes", forcedInFlight &&
+                    deferredCleanly && claimsHeldWhilePending &&
+                    bindings[2].ReleaseCompleted &&
+                    (boneLifetime == null || boneLifetime.IsDisposed ||
+                        !boneLifetime.Active) &&
+                    InfernalWallNavmesh35.ActiveGridClaimCount == baselineClaims &&
+                    string.IsNullOrEmpty(bindings[2].GridFailure),
+                    new JObject {
+                        ["forcedUpdateInFlight"] = forcedInFlight,
+                        ["deferredWithoutStranding"] = deferredCleanly,
+                        ["claimsHeldWhilePending"] = claimsHeldWhilePending,
+                        ["claimsBeforeInterrupt"] = claimsBeforeInterrupt,
+                        ["retireDeferrals"] = observedDeferrals,
+                        ["releaseCompleted"] = bindings[2].ReleaseCompleted,
+                        ["nativeRevertQueued"] = bindings[2].NativeGridCutRevertQueued,
+                        ["nativeRevertSkipReason"] =
+                            bindings[2].NativeGridCutRevertSkipReason,
+                        ["lifetimeRetired"] = boneLifetime == null ||
+                            boneLifetime.IsDisposed || !boneLifetime.Active,
+                        ["claimsAfter"] = InfernalWallNavmesh35.ActiveGridClaimCount,
+                        ["baselineClaims"] = baselineClaims,
+                        ["gridFailure"] = bindings[2].GridFailure },
+                    "Retirement interrupted by an in-flight native grid update neither throws nor strands ownership: it stays pending while holding its own claims, resumes once the pathfinder settles the update, removes the section lifetime and returns the claim count to its preexisting baseline.");
                 foreach (int frame in InfernalBoneWaitUntil35(() =>
                     InfernalWallNavmesh35.ActiveGridClaimCount == baselineClaims &&
                     originals.All(x => x.Key.Walkable == x.Value), 12)) yield return frame;
