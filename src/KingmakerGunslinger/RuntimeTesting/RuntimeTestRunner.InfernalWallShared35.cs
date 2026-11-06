@@ -190,6 +190,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             var sourceA = CastExpandedSummoningOwnTier(fixture, "bone-devil");
             var sourceB = CastExpandedSummoningOwnTier(fixture, "bone-devil");
             owned.Add(sourceA); owned.Add(sourceB);
+            // The fixture summon appears at its own spawn point; the native
+            // fader only reveals a body inside party sight (the first attempt
+            // left a body faded out 11 m from the party). Stand each new source
+            // beside the party, outside its five-foot fear emanation.
+            Vector3 side = Vector3.Cross(Vector3.up, mover.OrientationDirection); side.y = 0f;
+            if (side.sqrMagnitude < .01f) side = Vector3.right;
+            side.Normalize();
+            PlaceExpandedSummoningUnit(sourceA, mover.Position + side * 2.5f);
+            PlaceExpandedSummoningUnit(sourceB, mover.Position - side * 2.5f);
+            receipt["sourcesPlacedBesideParty"] = new JObject { ["mover"] = SurveyVector(mover.Position),
+                ["a"] = SurveyVector(sourceA.Position), ["b"] = SurveyVector(sourceB.Position) };
             foreach (var source in new[] { sourceA, sourceB })
             {
                 InfernalWallPrepareActor35(source);

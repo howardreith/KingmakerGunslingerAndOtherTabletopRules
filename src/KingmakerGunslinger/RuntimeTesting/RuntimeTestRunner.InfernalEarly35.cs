@@ -376,10 +376,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool windupLate = false, follow = false, followLate = false, settled = false;
                 DateTime deadline = DateTime.UtcNow.AddSeconds(30);
                 int finishedFrame = -1;
+                // The tail itself moves only from the native impact, so the
+                // approach/anticipation evidence is the body's own attack
+                // animation: its first frame and a few frames into it.
+                object lastAnimation = null;
+                int attackStarts = 0, attackStartFrame = -1;
+                bool attackWindup = true;
                 while (DateTime.UtcNow < deadline)
                 {
                     Game.Instance.IsPaused = false; yield return 0;
                     int now = Time.frameCount;
+                    object animation = null;
+                    try { if (command.IsStarted && !command.IsFinished) animation = command.Animation; }
+                    catch (Exception) { animation = null; }
+                    if (animation != null && !ReferenceEquals(animation, lastAnimation) && attackStarts < 6 && contact < 0)
+                    {
+                        lastAnimation = animation; attackStarts++; attackStartFrame = now; attackWindup = false;
+                        sequence.Add(InfernalTailFrame35(bone, target, command, tail, "attack-start-" + attackStarts,
+                            "s35-bone-tail-seq-a" + attackStarts + "-attack-start.png"));
+                    }
+                    else if (!attackWindup && attackStartFrame >= 0 && now - attackStartFrame >= 6 && contact < 0)
+                    {
+                        attackWindup = true;
+                        sequence.Add(InfernalTailFrame35(bone, target, command, tail, "attack-windup-" + attackStarts,
+                            "s35-bone-tail-seq-a" + attackStarts + "-windup.png"));
+                    }
                     if (contact < 0 && tail.Contacts == before && !tail.Resting)
                     {
                         if (windup < 0) { windup = now; sequence.Add(InfernalTailFrame35(bone, target, command, tail, "anticipation", "s35-bone-tail-seq-1-anticipation.png")); }

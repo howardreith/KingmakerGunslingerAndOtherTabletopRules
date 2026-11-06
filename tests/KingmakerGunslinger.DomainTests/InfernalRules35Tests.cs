@@ -455,6 +455,24 @@ namespace KingmakerGunslinger.DomainTests
                 "Stone chips are the installed BloodType.Stone value 9.");
         }
 
+        internal static void WallSteamPresentationOnlyFillsTheWallsMissingEffect()
+        {
+            string mist = InfernalRules35.NativeObscuringMistAreaGuid;
+            Assertions.True(InfernalRules35.WallSteamNeedsPresentation(false, mist, InfernalRules35.WallAbilityName),
+                "The Wall's own steam with no native effect receives the steam cloud.");
+            Assertions.False(InfernalRules35.WallSteamNeedsPresentation(true, mist, InfernalRules35.WallAbilityName),
+                "A native effect that did spawn is never replaced or doubled.");
+            Assertions.False(InfernalRules35.WallSteamNeedsPresentation(false, mist, "KMG_Summoning_Giant_Sprint29_CloudObscuringMist"),
+                "Other users of native Obscuring Mist keep their native presentation.");
+            Assertions.False(InfernalRules35.WallSteamNeedsPresentation(false, mist, null),
+                "An area with no source ability is not Wall steam.");
+            Assertions.False(InfernalRules35.WallSteamNeedsPresentation(false, "6df1ac314d4e6e9418e34470b79f90d8", InfernalRules35.WallAbilityName),
+                "Only the steam area, not another area from the same ability, is changed.");
+            Assertions.True(InfernalRules35.WallSteamFxAssetId != InfernalRules35.NativeObscuringMistFxAssetId &&
+                InfernalRules35.WallSteamFxAssetId.Length == 32,
+                "The steam cloud is a different, well-formed native asset identity.");
+        }
+
         private sealed class FeedbackSink : KingmakerGunslinger.Diagnostics.IPlayerCombatLogSink
         {
             internal bool Throw;

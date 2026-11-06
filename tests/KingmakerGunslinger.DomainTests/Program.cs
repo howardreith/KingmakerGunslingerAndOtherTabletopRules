@@ -1157,6 +1157,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint35-wall-damage-sequence", InfernalRules35Tests.WallDamageSequenceRequiresContinuousLethalHits),
             Case("expanded-summoning.sprint35-wall-no-blood", InfernalRules35Tests.WallSectionUsesNonBloodHitEffects),
             Case("expanded-summoning.sprint35-wall-feedback-delivery", InfernalRules35Tests.WallFeedbackVerdictRequiresSuccessfulPublication),
+            Case("expanded-summoning.sprint35-wall-steam-presentation", InfernalRules35Tests.WallSteamPresentationOnlyFillsTheWallsMissingEffect),
             Case("expanded-summoning.sprint35-original-models", InfernalRules35Tests.OwnedBodiesDecodeAndTailIsIsolated),
             Case("expanded-summoning.sprint36-live-dcs", InfernalRules36Tests.PrintedDcsDeriveFromLiveAbilityScores),
             Case("expanded-summoning.sprint36-public-routes", InfernalRules36Tests.PublicRoutesHaveExactScopeAndQuantity),
