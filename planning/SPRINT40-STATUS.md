@@ -9,8 +9,8 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 - HOWARD-LAPTOP, root `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
   `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Current product
-  source `fde1d57b3871235280f326be2b529205be016b6f`; its reporting pin is the
-  pending enclosing commit. No game,
+  source `fde1d57b3871235280f326be2b529205be016b6f`; its reporting pin is
+  `8d370b77356ef310b3093c7c5fa71f2607f4d47d`. No game,
   deployment, staging or lease is active; the live KMG tree is restored to
   SHA256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 - Recovery is CLOSED EXACTLY. The typed `BlueprintWeaponEnchantment` factory
@@ -422,6 +422,24 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   cast; the existing S35 adjacent-disruption proof and all gameplay are unchanged.
   Production compiles and all five focused Sprint40 checks pass. NEXT: commit/push,
   rebuild once and rerun only the wall phase from a fresh process.
+- Reporting head `8d370b77356ef310b3093c7c5fa71f2607f4d47d` passed the complete
+  2,816/2,816 Sprint gate and strict packaging: ZIP SHA256
+  `664a7a2077bb47aa13319c9fd837cdf6a1be4726566c9a56e00a66f5f6283dc3`, DLL
+  SHA256 `ab6e35094242e2f32034eb788113df836982861fe896a0a2f6426999a05d1bda`,
+  MVID `e4b8c1a8-d025-4695-bc38-23f330ffbec1`, source-state
+  `8e2c0a4100262a64d2e2c4f3b0eec71c76349f914d52416cacaeb430b6a21ce5`.
+  The discriminating wall run
+  `20261106T0240248146216Z-disposable-expanded-summoning-sprint32-native-review`
+  passes all 26 assertions: two real Ice casts, physical/fire breach and residual
+  crossing, isolated first-source cleanup with live exact-claim reconciliation,
+  unchanged Bone36 HP/CL12 creation, simultaneous Ice/Bone claims, isolated
+  cross-species cleanup and all48 original node bits restored with zero claims.
+  Restoration receipt
+  `expanded-summoning-restoration/20261106T0244012685686Z-disposable-expanded-summoning-sprint32-native-review.json`
+  restores the protected live tree to SHA256 `216A9DC2...` exactly. NEXT: freeze
+  this evidence in one reporting commit, rebuild the final coherent candidate,
+  then execute each mandatory fresh final native phase and the six-process
+  persistence envelope on those unchanged bytes.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 
