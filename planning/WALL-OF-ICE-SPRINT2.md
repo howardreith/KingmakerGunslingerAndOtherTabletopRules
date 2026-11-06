@@ -1,4 +1,4 @@
-# Wall of Ice Sprint 2 — integrated with master; native validation blocked (sections below)
+# Wall of Ice Sprint 2 — merged; integrated executable natively validated (sections below)
 
 The Bone Devil Wall of Ice passed full native acceptance in one fresh guarded
 Kingmaker process on exact executable source
@@ -8,6 +8,115 @@ fire destruction, residual cold and steam, controlled original-deadline expiry,
 exact navigation restoration after every retirement, and Bone Devil tail
 contact. Six earlier guarded runs on intermediate candidates failed; each was
 inspected before the next correction and all are retained below.
+
+## Integration validation on merged master (development candidate; draft follow-up PR)
+
+PR #98 merged as `710ac76b7e4bedbc2a0af4d1a4a38758c82fbbca`, after PR #100 published
+`v0.0.178` on `839204cac3`. That removed the packaging blocker recorded in the
+next section. This follow-up branch, `codex/wall-of-ice-integration-validation`,
+adds one fixture correction and documentation. Its product source equals
+master `710ac76b7e`.
+
+### Accepted integrated candidate
+
+Executable source `6ead65652511ceac6775b0b0195717ce84c48e51` passed the guarded
+`summon-overhaul-wall` phase in one fresh process: **PASS, 155 assertions**.
+
+| Item | Value |
+| --- | --- |
+| Product source | identical to master `710ac76b7e` (the commit adds only `RuntimeTestRunner.InfernalWallShared35.cs`) |
+| Source state | `84b7d3b99d4bf944385132a5f2c888c2855f8ec8e8b88d35b4ce05f8cb78bfaa` |
+| ZIP / DLL / MVID | `63c09a4263bfc56c64e8d8aba40bfe49a25cb7ff08740953a4c26ec0ada19baa` / `a20ccbb4cd5d14a4dbd523f299cb04c8748e57092f411ec8024eff032150461c` / `0be2ad10-aaa9-48fc-915a-c2da2547b7ee` |
+| Run | `20261106T1842105331157Z-0194b4d2ba934de7b840502cf1ef6041`, evidence `20261106T1842105175832Z-disposable-expanded-summoning-sprint32-native-review`, result SHA-256 `50f2d0bade30c059e7edfc74ca90440c6a4ddee3e9a9b750a190c973649a9512` |
+| Restoration | installed intake mod 0.0.140 read before and after; settings restored; protected saves unchanged; live tree restored |
+
+Earlier credits (155 on `4aa27dcfea`, 152 on `24a1b93583`, 95 on `36e44513d3`)
+stay with their own candidates.
+
+### What the integrated executable established natively
+
+1. **Claims durable through turn-based updates, on the executed path.**
+   In turn-based combat, 0 of the probe Wall's 17 claimed ring cells and 0 of
+   its 6 ice cells were reopened. `StaticWalkable` and `WalkableErosion` were
+   both read directly.
+   - **Executed path.** The measured move's own `ForcedPath` was an
+     `ABPathWithClearance` generated in turn-based combat:
+     - graph mask 2, with start, end and all 11 nodes on `GridGraph` 1
+     - clearance 1.0 (`Corpulence * 2`), and tags equal to native
+       `ConstructTags`
+     - the command's own `ForcedPath`, with the mover in combat
+   - **Routes and movement.** All four route queries were
+     `ABPathWithClearance` on graph 1. Routes kept 0.12–0.13 m from the ice,
+     and the move kept 0.124 m, ended on the far side and never entered the
+     ice.
+2. **Retirement preserves the survivor (both orders).** Each survivor kept
+   every claim blocked in both layers, did not move (0.0 m), and kept its own
+   counter contribution. Retired-only and unrelated cells equalled baseline.
+   - **Limit:** this run's bounded survey found no legal diagonal or cut-box
+     overlap. Its clear footprints were 0 shared-claim, 0 cut-box and 719
+     independent, so it used an independent 0° placement. The diagonal
+     overlap in both orders therefore remains established only by the
+     pre-integration nav9 (`4aa27dcfea`).
+3. **Final navigation restored.** Both orders restored every flag, counter,
+   claim and connection exactly.
+   - **Tags, a-first:** 673 exact, 2 equivalent restriction (10→0, 10 and 11
+     cells out) and 1 looser beyond reach (9→10, 11 cells out); none looser
+     within reach and none more restrictive.
+   - **Tags, b-first and the turn-based probe:** all 676 exact.
+   - **Physical destruction:** the route returned exactly (2 points, 8.006 m).
+4. **Pending retirement and Bone/Ice ownership isolation: not executed on
+   this host.** Phase `sprint40-ice-devil-walls` was refused at entry, before
+   any launch: "Sprint40 peer protection requires the assigned host and exact
+   captured game installation."
+   - The guard admits only `HOWARD-LAPTOP`; this host is `DATA`. It was not
+     bypassed.
+   - PR #99's native rows remain credited to its own pre-integration
+     candidate `b2be3ebe80`: `wall-interrupted-retirement-resumes` and the
+     cross-species rows.
+   - Offline coverage on the integrated source: `sprint35-wall-retirement-resumable`.
+5. **Steam reuse (strict verdict).** Captured cloud `-587208`, with 16 flame
+   renderers off, reached the native pool. The ordinary native claim returned
+   the same `-587208`.
+   - All 38 renderers were compared: 0 duplicate, missing or extra keys, and
+     0 differing.
+   - Wall ownership was cleared.
+
+### Runs in this validation
+
+| Run | Executable | Result | Cause | Seconds (build / native) |
+| --- | --- | --- | --- | --- |
+| int1 (two attempts) | `f31cccbe3d` | refused before build | setup: `v0.0.178` then unpublished | 3.72 + 3.71 / — |
+| int2 | `710ac76b7e` (exact master) | FAIL 115: mover never settled after lane A | fixture: the source Bone Devils, summons of the mover, were parked about 12 m away with the player out of combat. Installed `SummonedUnitsController` walked one back, and its fear aura frightened the mover after its per-source immunity lapsed. | 323.13 / 313.34 |
+| int2-ice | `710ac76b7e` | refused at entry | host restriction (Sprint 40 peer protection) | — / ≈ 2 |
+| int3 | `6ead656525` | **PASS 155** | — | 338.16 / 344.14 |
+
+**Before int2 failed**, it had already passed `wall-turn-boundary`,
+`wall-turn-boundary-restored`, `wall-steam-pool-reuse`,
+`wall-navigation-restored-physical`, `wall-source-retirement-cleanup`,
+`wall-shared-geometry` and `wall-shared-formation-a-first`, on master's exact
+bytes.
+
+**int3's correction (fixture only):** each source Bone Devil stands on native
+floor at least 3.5 m from every known lane and 4.5 m from each Wall midpoint,
+within 10 m of every lane end, and 3 m from the other source. This keeps it
+inside summon-follow range. Its spots are recorded (`sourceSpots`).
+
+**Ledger.**
+- **This continuation (integration and validation):** ≥ 23.18 min of measured
+  gates, builds and guarded runs, under the 60-minute allowance.
+- **Cumulative:** ≥ 615.19 min.
+- Both are lower bounds; analysis is not counted.
+
+### Remaining
+
+- **Run phase `sprint40-ice-devil-walls` on `HOWARD-LAPTOP`** against this
+  integrated source, for pending-retirement resumption and Bone/Ice ownership
+  isolation on the integrated lifecycle.
+- **Diagonal overlap on the integrated executable:** not reached by this run's
+  fixture geometry.
+- **Forced retirement during an in-flight update** can skip the native revert,
+  by master's design (destruction only).
+- **Ice Devil Wall steam** is still invisible, as master shipped it.
 
 ## Integration closeout with master (development candidate; blocked before packaging)
 
