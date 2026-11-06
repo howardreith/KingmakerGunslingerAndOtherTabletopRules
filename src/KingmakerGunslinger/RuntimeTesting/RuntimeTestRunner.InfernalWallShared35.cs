@@ -33,6 +33,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             internal bool Static, Walkable, Erosion;
             internal int Dynamic, Owners;
+            // The eight native grid connection bits (recalculated by every
+            // native grid update) and the native erosion tag.
+            internal int Connections;
+            internal uint Tag;
 
             internal bool SameNavigation(InfernalWallNodeState35 other)
             {
@@ -61,7 +65,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal Vector3 CenterB, ForwardB, CasterB, RouteStartB, RouteEndB;
             internal float AngleDegrees;
             internal int PredictedShared, PredictedSharedClaimed;
-            internal bool SharedReachable;
+            internal bool SharedReachable, DoubleOwnedReachable;
+            internal int PredictedDoubleOwned;
             internal JObject Survey;
         }
 
@@ -70,13 +75,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             var grid = node as Pathfinding.GridNode;
             return new InfernalWallNodeState35 { Static = node.StaticWalkable, Walkable = node.Walkable,
                 Erosion = grid != null && grid.WalkableErosion, Dynamic = node.DynamicBlocked,
-                Owners = InfernalWallNavmesh35.ClaimOwnerCount(node) };
+                Owners = InfernalWallNavmesh35.ClaimOwnerCount(node), Connections = InfernalWallConnections35(node),
+                Tag = node.Tag };
+        }
+
+        private static int InfernalWallConnections35(Pathfinding.GraphNode node)
+        {
+            var grid = node as Pathfinding.GridNode;
+            if (grid == null) return -1;
+            int connections = 0;
+            for (int direction = 0; direction < 8; direction++)
+                if (grid.GetConnectionInternal(direction)) connections |= 1 << direction;
+            return connections;
         }
 
         private static JObject InfernalWallNodeDocument35(InfernalWallNodeState35 state)
         {
             return new JObject { ["static"] = state.Static, ["walkable"] = state.Walkable,
-                ["erosion"] = state.Erosion, ["dynamicBlocked"] = state.Dynamic, ["claimOwners"] = state.Owners };
+                ["erosion"] = state.Erosion, ["dynamicBlocked"] = state.Dynamic, ["claimOwners"] = state.Owners,
+                ["connections"] = state.Connections, ["tag"] = state.Tag };
         }
 
         // The grid graph Wall claims use: the nearest GridGraph to the point,
@@ -133,7 +150,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             long signature = 17;
             foreach (var node in nodes)
                 signature = signature * 31 + node.DynamicBlocked * 7 + (node.StaticWalkable ? 3 : 0) +
-                    (node.Walkable ? 1 : 0) + InfernalWallNavmesh35.ClaimOwnerCount(node) * 11;
+                    (node.Walkable ? 1 : 0) + InfernalWallNavmesh35.ClaimOwnerCount(node) * 11 +
+                    InfernalWallConnections35(node) * 13;
             return signature;
         }
 
@@ -176,9 +194,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             return best;
         }
 
-        // Two independently sourced sections. Wall B is placed only where its
-        // own ordinary target check passes; the survey looks for legal places
-        // whose native cut box overlaps Wall A's affected cells.
+        // Two independently sourced sections. Wall B is placed only where the
+        // production placement rule and its own ordinary target check pass;
+        // the survey looks first for legal places that share Wall A's claimed
+        // cells, then for places whose native cut box overlaps them.
         // A standing point for a new Wall source that the native fog of war
         // reveals. Installed FogOfWarController.Tick reveals a non-party unit
         // only within 11.7 m of a living party member (its revealers; the
@@ -267,6 +286,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             string receiptPath = Path.Combine(_request.EvidenceDirectory, "s35-wall-shared.json");
             Action persist = () => RuntimeTestResultWriter.WriteAtomic(receiptPath, receipt.ToString(Formatting.Indented));
             var mover = fixture.Caster;
+            // Before this scenario's own Walls: whether a Wall steam cloud with
+            // its flame renderers switched off returns to the native pool.
+            JObject steamPool = null;
+            foreach (int frame in InfernalWallSteamPool35(run, value => steamPool = value)) yield return frame;
+            receipt["steamPool"] = steamPool;
+            persist();
 
             var sourceA = CastExpandedSummoningOwnTier(fixture, "bone-devil");
             var sourceB = CastExpandedSummoningOwnTier(fixture, "bone-devil");
@@ -417,6 +442,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["foreignCutsBefore"] = foreignCutsBefore };
             persist();
 
+            // Turn-based boundary of one standing Wall, before the pairs.
+            foreach (int frame in InfernalWallTurnBoundary35(run, sourceA, sourceB, dataA, plan, sources, region, baseline,
+                park, clearFear, persist, value => receipt["turnBoundary"] = value)) yield return frame;
+            persist();
+            // The pairs measure their Walls against the state they start
+            // from; any turn-based residue is recorded above, not inherited.
+            var afterTurnBoundary = InfernalWallRegion35(grid, gridIndex, plan.Midpoint, 6.5f);
+            int turnResidue = region.Count(node => !afterTurnBoundary.ContainsKey(node) ||
+                !afterTurnBoundary[node].SameNavigation(baseline[node]));
+            receipt["pairsBaselineRetaken"] = turnResidue > 0;
+            if (turnResidue > 0) baseline = afterTurnBoundary;
+            persist();
+
             InfernalWallSharedGeometry35 geometry = null;
             InfernalWallFixturePlan35 planB = null;
             foreach (bool aFirst in new[] { true, false })
@@ -468,9 +506,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     planB = new InfernalWallFixturePlan35(geometry.RouteStartB, geometry.RouteEndB, geometry.CenterB,
                         geometry.CasterB, new JObject { ["source"] = "two-Wall route survey" });
                     check("wall-shared-geometry", geometry.CenterB != Vector3.zero, geometry.Survey,
-                        geometry.SharedReachable ?
-                            "A legal ordinary placement for a second Wall overlaps the first Wall's affected grid cells." :
-                            "No legal placement shares affected grid cells; the nearest legal independent placement is used and the limit is recorded.");
+                        geometry.DoubleOwnedReachable ?
+                            "A placement legal under the production placement and target checks shares grid cells Wall A claims; both Walls will own them." :
+                            geometry.SharedReachable ?
+                                "No probed legal placement shares Wall A's claimed cells (bounded search recorded); a legal placement whose native cut box covers Wall A's cells is used." :
+                                "No probed legal placement shares Wall A's cells (bounded search recorded); the nearest legal independent placement is used.");
                 }
 
                 clearFear();
@@ -492,8 +532,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var aAffected = a.Affected();
                 var bAffected = b.Affected();
                 var shared = new HashSet<Pathfinding.GraphNode>(aAffected.Where(bAffected.Contains));
-                int doubleOwned = region.Count(node => InfernalWallNavmesh35.ClaimOwnedBy(node, a.Binding) &&
-                    InfernalWallNavmesh35.ClaimOwnedBy(node, b.Binding));
+                var doubleOwnedNodes = region.Where(node => InfernalWallNavmesh35.ClaimOwnedBy(node, a.Binding) &&
+                    InfernalWallNavmesh35.ClaimOwnedBy(node, b.Binding)).ToArray();
+                int doubleOwned = doubleOwnedNodes.Length;
+                bool doubleOwnedExact = doubleOwnedNodes.All(node => afterAB[node].Owners == 2);
                 bool claimsOutsideRegion = (a.Binding?.GridNodeSnapshot() ?? new KeyValuePair<Pathfinding.GraphNode, bool>[0])
                     .Concat(b.Binding?.GridNodeSnapshot() ?? new KeyValuePair<Pathfinding.GraphNode, bool>[0])
                     .Any(value => !baseline.ContainsKey(value.Key));
@@ -518,6 +560,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 pairRow["sharedClaimedByA"] = shared.Count(a.Claimed.Contains);
                 pairRow["sharedClaimedByB"] = shared.Count(b.Claimed.Contains);
                 pairRow["doubleOwnedClaims"] = doubleOwned;
+                pairRow["doubleOwnedNodes"] = new JArray(doubleOwnedNodes.Select(node => {
+                    var row = InfernalWallNodeIdentity35(node);
+                    row["baseline"] = InfernalWallNodeDocument35(baseline[node]);
+                    row["afterA"] = InfernalWallNodeDocument35(afterA[node]);
+                    row["afterAB"] = InfernalWallNodeDocument35(afterAB[node]);
+                    row["dynamicFromA"] = a.Dynamic.ContainsKey(node) ? a.Dynamic[node] : 0;
+                    row["dynamicFromB"] = b.Dynamic.ContainsKey(node) ? b.Dynamic[node] : 0;
+                    return row; }));
                 pairRow["claimsOutsideRegion"] = claimsOutsideRegion;
                 pairRow["claimOriginalsDifferingFromBaselineStatic"] = originalsDifferingFromStatic;
                 pairRow["aNodes"] = new JArray(aAffected.Select(node => InfernalWallSharedNodeRow35(node, a, b, baseline, afterAB)));
@@ -545,11 +595,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     row["afterAB"] = InfernalWallNodeDocument35(afterAB[node]);
                     return row; }));
                 bool bothBlocked = iceNodes.Length > 0 && iceNodes.All(node => !afterAB[node].Walkable);
-                // Legal placement never lets two claims share a node (the
-                // second footprint must be walkable), and outside turn-based
-                // combat no cut writes grid counters. The overlap that exists
-                // natively is one Wall's claimed nodes inside the other Wall's
-                // cut box: the box a native grid update rewrites.
+                // Two kinds of overlap are recorded. Shared claims: Wall B's
+                // legal footprint (walkable nodes) can include cells Wall A
+                // claims once a native grid update has reopened them, so both
+                // sections own them. Cross-surface: one Wall's claimed cells
+                // inside the other Wall's native cut box, where the native
+                // combat grid update adds that cut's counter.
                 Func<JObject, Bounds?> cutBox = cast => {
                     var bounds = cast?["cutBounds"] as JObject;
                     if (bounds == null) return null;
@@ -575,9 +626,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     a.Section != b.Section && a.CutInstance != b.CutInstance &&
                     (string)castA["summonerOfSection"] == sourceA.UniqueId &&
                     (string)castB["summonerOfSection"] == sourceB.UniqueId &&
-                    a.Claimed.Count > 0 && b.Claimed.Count > 0 && doubleOwned == 0 && !claimsOutsideRegion &&
+                    a.Claimed.Count > 0 && b.Claimed.Count > 0 && !claimsOutsideRegion &&
+                    (!geometry.DoubleOwnedReachable || doubleOwned > 0) && doubleOwnedExact &&
                     bothBlocked && (!geometry.SharedReachable || crossSurface > 0),
-                    pairRow, "Two ordinary commands from separate Bone Devils form two independently owned sections whose native cuts and claims block every affected cell; where a legal placement reaches it, one Wall's claimed cells lie inside the other Wall's native cut box.");
+                    pairRow, "Two ordinary commands from separate Bone Devils form two independently owned sections, each with its own registered cut and claims, and every cell whose centre lies in either section's ice is blocked. Where the legal placement shares claimed cells, each shared cell is owned by exactly both sections; where it places one Wall's claimed cells inside the other Wall's native cut box, that overlap is present.");
 
                 if (aFirst)
                 {
@@ -609,10 +661,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var survivorClaimLost = survivor.Claimed.Where(node => !InfernalWallNavmesh35.ClaimOwnedBy(node, survivor.Binding) ||
                     afterFirst[node].Owners != 1).ToArray();
                 var survivorIce = survivorAffected.Where(node => insideIce(survivor, node)).ToArray();
-                var survivorUnblocked = survivorIce.Where(node => !beforeFirst[node].Walkable && afterFirst[node].Walkable).ToArray();
-                // A retiring Wall's own native counter may overlap the survivor's
-                // ice (diagonal cut box) and is released with it; the survivor
-                // keeps its static block, claim and blocked state.
+                // Required obstruction: every cell whose centre lies in the
+                // survivor's ice stays blocked.
+                var survivorIceOpen = survivorIce.Where(node => afterFirst[node].Walkable).ToArray();
+                // Native counters are per contribution: the survivor's own cut
+                // contribution stays, and the retired Wall's contribution, and
+                // only it, is removed (a shared counter legitimately drops).
+                var survivorCounterLost = survivor.Dynamic.Where(value => afterFirst[value.Key].Dynamic < value.Value)
+                    .Select(value => value.Key).ToArray();
+                var retiredCounterNotExact = first.Dynamic.Where(value =>
+                    afterFirst[value.Key].Dynamic != beforeFirst[value.Key].Dynamic - value.Value)
+                    .Select(value => value.Key).ToArray();
+                // Recorded, not required: flags the retirement's native grid
+                // update rewrote on the survivor's ice cells, and shared-claim
+                // owner counts dropping to the survivor alone.
                 var survivorChangedByRetirement = survivorIce.Where(node =>
                     afterFirst[node].Walkable != beforeFirst[node].Walkable ||
                     afterFirst[node].Static != beforeFirst[node].Static ||
@@ -653,7 +715,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["claimsAfter"] = InfernalWallNavmesh35.ActiveGridClaimCount,
                     ["survivorClaims"] = survivor.Claimed.Count,
                     ["survivorClaimsLost"] = rows(survivorClaimLost),
-                    ["survivorNodesNowWalkable"] = rows(survivorUnblocked),
+                    ["survivorIceCentreOpen"] = rows(survivorIceOpen),
+                    ["survivorCounterContributionLost"] = rows(survivorCounterLost),
+                    ["retiredCounterContributionNotExactlyRemoved"] = rows(retiredCounterNotExact),
+                    ["survivorClaimedCellsStaticWalkableAfter"] = survivor.Claimed.Count(node => afterFirst[node].Static),
+                    ["survivorClaimedCellsWalkableAfter"] = survivor.Claimed.Count(node => afterFirst[node].Walkable),
+                    ["sharedClaimsAfterRetirement"] = rows(doubleOwnedNodes),
                     ["survivorIceNodes"] = survivorIce.Length,
                     ["survivorNodesChangedByRetirement"] = rows(survivorChangedByRetirement),
                     ["survivorClaimedRingRewrittenByNativeUpdate"] = rows(survivorRingRewritten),
@@ -671,12 +738,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 pairRow["survivorAfterFirstRetirement"] = survivorRow;
                 persist();
                 check("wall-shared-survivor-preserved-" + pair, survivorCutLive && firstCutGone &&
-                    survivorClaimLost.Length == 0 && survivorUnblocked.Length == 0 &&
-                    survivorChangedByRetirement.Length == 0 &&
+                    survivorClaimLost.Length == 0 && survivorIceOpen.Length == 0 &&
+                    survivorCounterLost.Length == 0 && retiredCounterNotExact.Length == 0 &&
                     firstNotRestored.Length == 0 && unrelatedChanged.Length == 0 &&
                     InfernalWallNavmesh35.ActiveGridClaimCount == survivor.Binding.GridNodeSnapshot().Length &&
                     (bool)survivorRow["foreignCutsUnchanged"], survivorRow,
-                    "Retiring one Wall returns only its own cells to their baseline and leaves the other Wall's cut, claims, every layer of its cells and unrelated cells exactly as they were immediately before the retirement.");
+                    "Retiring one Wall removes exactly its own native counter contribution and claims; the survivor keeps its registered live cut, its own counter contribution and sole ownership of every claim it held, and every cell whose centre lies in its ice stays blocked; cells only the retired Wall affected and all unrelated cells equal their pre-Wall baseline in static, pre-erosion, counter, walkability and claim count. Static and pre-erosion changes on the survivor's own cells are recorded, not required.");
                 parkSources(); // 5-ft fear aura beside a lane (close24)
                 foreach (int frame in InfernalEarlyWallMove35(fixture, survivorPlan.Start, survivorPlan.Destination,
                     survivorPlan.Midpoint, true, "shared-" + tag + "-survivor-" + (aFirst ? "b" : "a"), check,
@@ -697,10 +764,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         return row; })),
                     ["nodesNotAtBaselineCount"] = notBaseline.Length,
                     ["sharedNodesRestored"] = shared.All(node => afterBoth[node].SameNavigation(baseline[node])),
+                    ["nodesWithConnectionsNotAtBaseline"] = region.Count(node => afterBoth[node].Connections != baseline[node].Connections),
+                    ["connectionMismatches"] = new JArray(region.Where(node => afterBoth[node].Connections != baseline[node].Connections)
+                        .Take(20).Select(node => {
+                            var row = InfernalWallNodeIdentity35(node);
+                            row["baseline"] = InfernalWallNodeDocument35(baseline[node]);
+                            row["after"] = InfernalWallNodeDocument35(afterBoth[node]);
+                            return row; })),
+                    ["nodesWithTagNotAtBaseline"] = region.Count(node => afterBoth[node].Tag != baseline[node].Tag),
                     ["claimsAfter"] = InfernalWallNavmesh35.ActiveGridClaimCount,
                     ["foreignCutsAfter"] = foreignAfter,
                     ["foreignCutsUnchanged"] = JToken.DeepEquals(foreignAfter, foreignCutsBefore),
-                    ["comparison"] = "Every region node's static flag, pre-erosion flag, DynamicBlocked counter, combined walkability and claim count equals its pre-Wall baseline." };
+                    ["comparison"] = "Required: every region node's static flag, pre-erosion flag, DynamicBlocked counter, combined walkability and claim count equals its pre-Wall baseline. Recorded: grid connection bits and erosion tags against the same baseline." };
                 pairRow["afterBothRetired"] = restoredRow;
                 persist();
                 check("wall-shared-baseline-restored-" + pair, notBaseline.Length == 0 &&
@@ -878,8 +953,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         // Geometry search for Wall B. Predictions use the installed rules
-        // (claim footprint, native cut bounding box); the ordinary target
-        // check on the actual second source is the only legality verdict.
+        // (claim footprint, native cut bounding box); production TryResolve
+        // and the ordinary target check on the actual second source are the
+        // only legality verdict.
         private IEnumerable<int> InfernalWallSharedSurvey35(InfernalWallRun35 run, InfernalWallSharedSection35 a,
             InfernalWallFixturePlan35 planA, Pathfinding.GridGraph grid, int gridIndex, UnitEntityData sourceB,
             AbilityData dataB, Action<InfernalWallSharedGeometry35> result)
@@ -917,6 +993,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return null;
                 return near.clampedPosition;
             };
+            // Predicted overlap with Wall A for a Wall B footprint, from the
+            // installed rules: [0] Wall A's affected cells inside Wall B's
+            // native cut bounding box, [1] Wall A's claimed cells inside that
+            // box, [2] Wall A's claimed cells inside Wall B's own claim
+            // footprint (cells both sections would own).
             Func<Vector3, Vector3, int[]> predict = (center, forward) => {
                 Vector3 along = Vector3.Cross(Vector3.up, forward).normalized;
                 var corners = new[] { center + along * length * .5f + forward * thickness * .5f,
@@ -928,8 +1009,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Func<Pathfinding.GraphNode, bool> inside = node => {
                     Vector3 position = (Vector3)node.position;
                     return position.x >= minX && position.x <= maxX && position.z >= minZ && position.z <= maxZ; };
-                return new[] { aAffected.Count(inside), aClaimed.Count(inside) };
+                Func<Pathfinding.GraphNode, bool> claimable = node => {
+                    Vector3 delta = (Vector3)node.position - center;
+                    return InfernalRules35.WallNodeIntersects(Vector3.Dot(delta, along), Vector3.Dot(delta, forward),
+                        length * .5f, thickness * .5f, nodeSize); };
+                return new[] { aAffected.Count(inside), aClaimed.Count(inside), aClaimed.Count(claimable) };
             };
+            // The production placement rule (InfernalWallPlacementRuntime35
+            // .TryResolve): every grid node the footprint touches is walkable
+            // and no living unit occupies the footprint. A cell Wall A still
+            // claims is not excluded, because production does not exclude it
+            // and native grid updates reopen claimed cells (close27). This
+            // only pre-filters the lattice: TryResolve and the second source's
+            // AbilityData.CanTarget decide legality for every probe.
             Func<Vector3, Vector3, bool> footprintClear = (center, forward) => {
                 Vector3 along = Vector3.Cross(Vector3.up, forward).normalized;
                 List<Pathfinding.GraphNode> nodes = grid.GetNodesInArea(new Bounds(center,
@@ -943,7 +1035,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Vector3 delta = (Vector3)node.position - center;
                         if (!InfernalRules35.WallNodeIntersects(Vector3.Dot(delta, along), Vector3.Dot(delta, forward),
                                 length * .5f, thickness * .5f, nodeSize)) continue;
-                        if (!node.Walkable || InfernalWallNavmesh35.ClaimOwnerCount(node) > 0) return false;
+                        if (!node.Walkable) return false;
                         count++;
                     }
                 }
@@ -962,6 +1054,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var candidates = new List<KeyValuePair<float[], Vector3[]>>();
             var rejected = new JObject();
             Action<string> reject = reason => rejected[reason] = ((int?)rejected[reason] ?? 0) + 1;
+            // Key: angle, [0], [1], centre gap to Wall A, [2].
             foreach (float angle in new[] { 45f, -45f, 0f, 90f })
             {
                 Vector3 forward = Quaternion.Euler(0f, angle, 0f) * forwardA; forward.y = 0f; forward.Normalize();
@@ -972,7 +1065,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Vector3 center = centerA + alongA * offsetAlong + forwardA * offsetForward;
                     int[] predicted = predict(center, forward);
                     bool diagonal = Math.Abs(Math.Abs(angle) - 45f) < 1f;
-                    if (diagonal && predicted[0] == 0) { reject("diagonal-no-predicted-share"); continue; }
+                    if (diagonal && predicted[0] == 0 && predicted[2] == 0) { reject("diagonal-no-predicted-share"); continue; }
                     float gap = Vector3.Distance(center, centerA);
                     if (!diagonal && gap > 5.5f) { reject("independent-too-far"); continue; }
                     if (!footprintClear(center, forward)) { reject("footprint-not-clear"); continue; }
@@ -981,24 +1074,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                         InfernalWallPlacementRuntime35.DistanceToFootprint(planA.CastingPoint, center, along, forward) < 1.5f ||
                         InfernalWallSegmentToFootprint35(planA.Start, planA.Destination, center, along, forward) < .3f)
                     { reject("lane-a-conflict"); continue; }
-                    lattice.Add(new KeyValuePair<float[], Vector3[]>(new[] { angle, predicted[0], predicted[1], gap },
+                    lattice.Add(new KeyValuePair<float[], Vector3[]>(new[] { angle, predicted[0], predicted[1], gap, predicted[2] },
                         new[] { center, forward }));
                 }
             }
-            // Caster and crossing-route searches run only for the best-ranked
-            // clear footprints, so the survey stays bounded.
+            // Category 2 shares claimed cells with Wall A, 1 places Wall A's
+            // cells inside its native cut box, 0 neither. Caster and
+            // crossing-route searches run for the best-ranked clear
+            // footprints of each category, so the survey stays bounded.
+            Func<float[], int> category = key => key[4] > 0 ? 2 : key[1] > 0 ? 1 : 0;
+            int[] caps = { 3, 4, 6 };
             int evaluated = 0;
-            foreach (var entry in lattice.OrderByDescending(value => value.Key[1]).ThenByDescending(value => value.Key[2])
-                .ThenBy(value => value.Key[3]))
+            foreach (var entry in lattice.OrderByDescending(value => category(value.Key))
+                .ThenByDescending(value => value.Key[4]).ThenByDescending(value => value.Key[1])
+                .ThenByDescending(value => value.Key[2]).ThenBy(value => value.Key[3]))
             {
-                int haveSharing = candidates.Count(value => value.Key[1] > 0);
-                int haveOther = candidates.Count - haveSharing;
-                if ((haveSharing >= 6 && haveOther >= 3) || evaluated >= 400) break;
-                if (entry.Key[1] > 0 ? haveSharing >= 6 : haveOther >= 3) continue;
+                int kind = category(entry.Key);
+                if (evaluated >= 400 || Enumerable.Range(0, 3).All(index =>
+                        candidates.Count(value => category(value.Key) == index) >= caps[index])) break;
+                if (candidates.Count(value => category(value.Key) == kind) >= caps[kind]) continue;
                 evaluated++;
                 {
-                    float angle = entry.Key[0], gap = entry.Key[3];
-                    int[] predicted = { (int)entry.Key[1], (int)entry.Key[2] };
                     Vector3 center = entry.Value[0], forward = entry.Value[1];
                     Vector3 along = Vector3.Cross(Vector3.up, forward).normalized;
                     Vector3? caster = null;
@@ -1047,25 +1143,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                         }
                     }
                     if (route == null) { reject("no-crossing-route"); continue; }
-                    candidates.Add(new KeyValuePair<float[], Vector3[]>(
-                        new[] { angle, predicted[0], predicted[1], gap },
+                    candidates.Add(new KeyValuePair<float[], Vector3[]>(entry.Key,
                         new[] { center, forward, caster.Value, route[0], route[1] }));
                 }
             }
-            var ordered = candidates;
             var probes = new JArray();
+            Func<Func<float[], bool>, List<KeyValuePair<float[], Vector3[]>>, int> countOf = (filter, list) =>
+                list.Count(value => filter(value.Key));
             var survey = new JObject { ["wallA"] = new JObject { ["center"] = SurveyVector(centerA),
                     ["forward"] = SurveyVector(forwardA), ["claimed"] = aClaimed.Count, ["affected"] = aAffected.Count,
+                    ["claimedWalkableAtSurvey"] = aClaimed.Count(node => node.Walkable),
                     ["cutBounds"] = new JObject { ["center"] = SurveyVector(a.CutBounds.center), ["size"] = SurveyVector(a.CutBounds.size) } },
                 ["clearFootprintCandidates"] = lattice.Count,
-                ["clearFootprintSharingCandidates"] = lattice.Count(value => value.Key[1] > 0),
+                ["clearFootprintSharedClaimCandidates"] = countOf(key => category(key) == 2, lattice),
+                ["clearFootprintCutBoxCandidates"] = countOf(key => category(key) == 1, lattice),
+                ["clearFootprintIndependentCandidates"] = countOf(key => category(key) == 0, lattice),
                 ["evaluatedForCasterAndRoute"] = evaluated,
                 ["viableCandidates"] = candidates.Count,
-                ["viableSharingCandidates"] = candidates.Count(value => value.Key[1] > 0),
+                ["viableSharedClaimCandidates"] = countOf(key => category(key) == 2, candidates),
+                ["viableCutBoxCandidates"] = countOf(key => category(key) == 1, candidates),
+                ["viableIndependentCandidates"] = countOf(key => category(key) == 0, candidates),
                 ["rejections"] = rejected, ["probes"] = probes,
-                ["method"] = "Wall B centres on a 0.25 m lattice within 4.5 m of Wall A, at 45, -45, 0 and 90 degrees to it; predicted claim footprint and native cut bounding box from installed rules; the second source's ordinary target check decides legality." };
+                ["method"] = "Bounded search: Wall B centres on a 0.25 m lattice, 4.5 m along and 3.5 m across Wall A, at 45, -45, 0 and 90 degrees to it (non-diagonal centres within 5.5 m). A lattice footprint passes the production placement rule (every touched grid node walkable, no living unit in the footprint), with no claim-owner exclusion. Fixture constraints, recorded as such: clear of lane A, a fog-revealed caster point 3-5 m behind the footprint, a crossing route, no adjacent creature that would roll a formation save. Up to 3 shared-claim, 4 cut-box and 2 independent candidates are evaluated (at most 400). Every probe stands the second Bone Devil on its caster point and decides legality by production InfernalWallPlacementRuntime35.TryResolve and that source's AbilityData.CanTarget; shared-claim candidates are probed first." };
             InfernalWallSharedGeometry35 chosen = null;
-            foreach (var candidate in ordered)
+            foreach (var candidate in candidates)
             {
                 Vector3 center = candidate.Value[0], caster = candidate.Value[2];
                 PlaceExpandedSummoningUnit(sourceB, caster);
@@ -1074,17 +1175,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 InfernalWallPlacement35 placement;
                 bool resolved = InfernalWallPlacementRuntime35.TryResolve(sourceB, target, run.Section, out placement);
                 bool targetable = dataB.IsAvailable && dataB.CanTarget(target);
-                int[] actual = resolved ? predict(placement.Center, placement.Forward) : new[] { 0, 0 };
-                probes.Add(new JObject { ["angle"] = candidate.Key[0], ["center"] = SurveyVector(center),
-                    ["caster"] = SurveyVector(sourceB.Position), ["predictedShared"] = candidate.Key[1],
-                    ["predictedSharedClaimed"] = candidate.Key[2], ["targetable"] = targetable, ["resolved"] = resolved,
+                int[] actual = resolved ? predict(placement.Center, placement.Forward) : new[] { 0, 0, 0 };
+                probes.Add(new JObject { ["category"] = category(candidate.Key), ["angle"] = candidate.Key[0],
+                    ["center"] = SurveyVector(center), ["caster"] = SurveyVector(sourceB.Position),
+                    ["predictedShared"] = candidate.Key[1], ["predictedSharedClaimed"] = candidate.Key[2],
+                    ["predictedSharedClaims"] = candidate.Key[4],
+                    ["targetable"] = targetable, ["resolved"] = resolved,
                     ["resolvedCenter"] = resolved ? SurveyVector(placement.Center) : null,
                     ["resolvedForward"] = resolved ? SurveyVector(placement.Forward) : null,
-                    ["resolvedPredictedShared"] = actual[0] });
+                    ["resolvedPredictedShared"] = actual[0], ["resolvedPredictedSharedClaims"] = actual[2] });
                 // A creature adjacent to the forming wall may save to disrupt
                 // it (close19: the mover stood adjacent). Only Wall B's own
-                // source may stand there; the mover is parked at lane A's
-                // start for every cast, where it stands during this probe.
+                // source may stand there; the mover is parked for every cast.
                 var adjacent = resolved ? InfernalWallPlacementRuntime35.AdjacentUnits(placement)
                     .Where(value => !ReferenceEquals(value, sourceB)).Select(value => value.UniqueId).ToArray() : new string[0];
                 ((JObject)probes.Last)["adjacentCreatures"] = new JArray(adjacent);
@@ -1092,7 +1194,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 chosen = new InfernalWallSharedGeometry35 { CenterB = center, ForwardB = placement.Forward,
                     CasterB = caster, RouteStartB = candidate.Value[3], RouteEndB = candidate.Value[4],
                     AngleDegrees = candidate.Key[0], PredictedShared = actual[0], PredictedSharedClaimed = actual[1],
-                    SharedReachable = actual[0] > 0 };
+                    SharedReachable = actual[0] > 0, PredictedDoubleOwned = actual[2], DoubleOwnedReachable = actual[2] > 0 };
                 break;
             }
             if (chosen == null)
@@ -1101,7 +1203,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["forward"] = SurveyVector(chosen.ForwardB), ["caster"] = SurveyVector(chosen.CasterB),
                 ["routeStart"] = SurveyVector(chosen.RouteStartB), ["routeEnd"] = SurveyVector(chosen.RouteEndB),
                 ["predictedShared"] = chosen.PredictedShared, ["predictedSharedClaimed"] = chosen.PredictedSharedClaimed,
-                ["sharedReachable"] = chosen.SharedReachable };
+                ["predictedSharedClaims"] = chosen.PredictedDoubleOwned,
+                ["sharedReachable"] = chosen.SharedReachable, ["sharedClaimsReachable"] = chosen.DoubleOwnedReachable };
             chosen.Survey = survey;
             result(chosen);
         }
