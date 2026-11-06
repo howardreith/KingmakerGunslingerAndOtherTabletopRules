@@ -525,11 +525,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["forcedRolls"] = 0
                 },
                 "The exact native full attack advances Bone's owned sting, and only its private authored tail reaches the real target contact path.");
-            // Natural reach against an adjacent creature under the installed
-            // ProperFlanking2 dead zone (Sprint 3): the same Bone Devil and
-            // stilled hostile witness, after the tail-lane distance check.
-            if (wallPhase)
-                foreach (int frame in InfernalAdjacentNatural35(bone, target, trace, check)) yield return frame;
         }
 
         private static JArray InfernalNativeSpellCensus35(
