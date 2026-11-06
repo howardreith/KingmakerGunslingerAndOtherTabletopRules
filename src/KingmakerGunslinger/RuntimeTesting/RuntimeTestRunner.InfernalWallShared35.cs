@@ -782,13 +782,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["claimsAfter"] = InfernalWallNavmesh35.ActiveGridClaimCount,
                     ["foreignCutsAfter"] = foreignAfter,
                     ["foreignCutsUnchanged"] = JToken.DeepEquals(foreignAfter, foreignCutsBefore),
-                    ["comparison"] = "Required: every region node's static flag, pre-erosion flag, DynamicBlocked counter, combined walkability, claim count and grid connection bits equal its pre-Wall baseline (close28 left restored cells walkable but disconnected). Recorded: erosion tags." };
+                    ["comparison"] = "Required: every region node's static flag, pre-erosion flag, DynamicBlocked counter, combined walkability, claim count, grid connection bits and erosion tag equal its pre-Wall baseline (close28 left restored cells walkable but disconnected; nav5 left stale tags)." };
                 pairRow["afterBothRetired"] = restoredRow;
                 persist();
                 check("wall-shared-baseline-restored-" + pair, notBaseline.Length == 0 &&
-                    region.All(node => afterBoth[node].Connections == baseline[node].Connections) &&
+                    region.All(node => afterBoth[node].Connections == baseline[node].Connections &&
+                        afterBoth[node].Tag == baseline[node].Tag) &&
                     InfernalWallNavmesh35.ActiveGridClaimCount == 0 && (bool)restoredRow["foreignCutsUnchanged"],
-                    restoredRow, "Retiring the second Wall returns every affected and unrelated cell, including its grid connections, to its recorded baseline.");
+                    restoredRow, "Retiring the second Wall returns every affected and unrelated cell, including its grid connections and erosion tag, to its recorded baseline.");
                 parkSources(); // 5-ft fear aura beside a lane (close24)
                 foreach (int frame in InfernalEarlyWallMove35(fixture, plan.Start, plan.Destination, plan.Midpoint,
                     false, "shared-" + tag + "-restored-a", check, plan)) yield return frame;
