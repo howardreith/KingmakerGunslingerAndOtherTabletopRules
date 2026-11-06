@@ -66,7 +66,7 @@ difference.
 | Roster/menu reconciliation at placement level | **COMPLETE** — A-5, A-6, A-7 |
 | Repository release gate at the audit source | **FAIL** — A-8 |
 | Compatibility-profile matrix on the audit candidate | **BLOCKED** by A-8 — A-9 |
-| Compatibility-profile matrix on the released artifact (bounded substitute) | IN PROGRESS, no outcome claimed |
+| Compatibility-profile matrix on the released artifact (bounded substitute) | **EXECUTED** — A-11, A-12 |
 | Gameplay / lifecycle / sanitization / persistence matrix | NOT RUN |
 | Visual acceptance at roster scale | NOT RUN |
 | Performance against the 693-choice baseline | NOT RUN |
@@ -88,6 +88,8 @@ repaired here.
 | A-8 | P2-high | release gate | master fails its own repository validation at the audit source | OPEN |
 | A-9 | info | coverage | Compatibility matrix cannot run on the audit candidate | OPEN |
 | A-10 | info | delivery | Push wrapper refuses the audit branch, so the draft audit PR cannot be opened | OPEN |
+| A-11 | medium | assertion staleness | Two inventory assertions fail in every profile, masking compatibility signal | OPEN |
+| A-12 | medium | compatibility | Lantern Archon exactness fails under Call of the Wild only | OPEN |
 
 ### A-3 — a fire-destroyed Wall of Ice leaves the lane obstructed
 
@@ -272,6 +274,95 @@ exactly `EXACT_INTAKE_VERIFIED`, and publication advances that marker to
 and the old line named the wrong one. No assertion, ledger, published artifact,
 tag or release was touched, and the v0.0.178 verdict is unchanged.
 
+### Compatibility matrix results — A-11 and A-12
+
+Seven steps ran against the released package `4d6e2621…`, `loadedModVersion
+0.0.178`. **All five profile steps report FAILED, and that label is misleading
+on its own**: every one failed on the same 50-assertion scenario
+`observe-expanded-summoning-inventory`, two of whose assertions fail in *every*
+profile including standalone for reasons unrelated to compatibility (A-11). The
+real signal is the per-assertion comparison.
+
+| Assertion | standalone | CotW | Arms&Armor | Soundpacks | combined |
+|---|---|---|---|---|---|
+| ability candidates | 133 | 555 | 133 | 133 | 555 |
+| donor candidates | 814 | 827 | 814 | 814 | 827 |
+| special-mechanic candidates | 469 | 733 | **470** | 469 | 734 |
+| registered identities | FAIL | FAIL | FAIL | FAIL | FAIL |
+| **lantern archon** | exact | **mismatch** | exact | exact | **mismatch** |
+| prohibited references | 101 | 101 | 101 | 101 | 101 |
+
+What this actually establishes:
+
+- **Toggle Custom Soundpacks: no observable difference** from standalone on any
+  of the 50 assertions.
+- **Arms and Armor: one difference**, special-mechanic candidates 469 → 470,
+  still PASS, no new failure.
+- **Call of the Wild** adds 422 ability candidates, 13 donor candidates and 264
+  special-mechanic candidates — all still PASS — and introduces **exactly one**
+  new failure (A-12).
+- **Highest-risk combined is identical to Call of the Wild alone**: the same
+  single new failure, nothing additional. Combining profiles did not compound.
+- `prohibited-references` is identical at **101 in all five**, which is itself
+  the proof that it is a project-side gap and not a mod interaction.
+
+#### A-11 — two assertions were never advanced alongside the shipped content
+
+`expanded-summoning-registered-identities` observes `units=136` against an
+expected `units=134` (abilities `1985` match exactly). It compares a live scan of
+frozen `BlueprintUnit` identities against `ExpandedSummoningCatalog.All.Count`,
+which counts **summonable creatures** — two different populations. Resolved
+offline against `blueprints.json`: the delta is exactly
+
+- `KMG.Summoning.Infernal.BoneDevil.WallSectionUnit`
+- `KMG.Summoning.Infernal.IceDevil.WallSectionUnit`
+
+— Wall of Ice section objects, correctly absent from the summon menu — and
+**zero** creature rows lack a unit identity. So nothing is missing or extra; the
+assertion became unsatisfiable the moment a non-creature unit blueprint shipped
+(Bone Devil section in Sprint 35, Ice Devil section in Sprint 40).
+
+`expanded-summoning-prohibited-references` observes **101** against an expected
+0: 100 `AddFacts` grants plus one ability grant, across **18** project-owned
+outsider units (Astral Deva 17, Lillend 9, Glabrezu 9, Nalfeshnee 9, Trumpet
+Archon 7, Ice Devil 7, Hezrou 6, Vrock 6, Satyr 5, Barbed Devil 5, Bone Devil 5,
+Lantern Archon 3, Dretch 3, Hound Archon 3, Kyton 3, Babau 2, Lemure 1, Bearded
+Devil 1). A reference is prohibited only when it is forbidden **and** absent from
+`ExpandedSummoningInventoryObservationPolicy.QualifiedProjectReference`. These
+are KMG-owned facts that allow-list was never extended to admit as the Sprint
+30-40 outsider expansion shipped.
+
+Both are maintenance gaps in observation code, not product defects — but they
+make the matrix unreadable at step granularity, which is why they are recorded
+at medium.
+
+#### A-12 — a real Call of the Wild interaction, scoped to one creature
+
+`expanded-summoning-lantern-archon` is `exact` standalone, with Arms and Armor
+and with Soundpacks, and `mismatch` under Call of the Wild and the combined
+profile. It is the **only** new failure Call of the Wild introduces.
+
+**Which clause fails is not established.** The check is a single conjunction of
+roughly 25 conditions — hit dice, size, alignment, six ability scores, the
+granted ability array, body limbs, starting inventory, the KMG defenses fact, the
+native aura fact count, and both rays' range, action type and delivery —
+collapsed into one boolean, and the evidence records only `exact`/`mismatch`.
+
+The leading candidate is a **structural inference, not a measurement**: the only
+profile-dependent term in the conjunction is the native aura count,
+`lantern.AddFacts.Count(AssetGuid == 1ce4878b5e714f659d0854a12f4b3cf2) ==
+(lanternAuraAvailable ? 1 : 0)`, where that GUID is the native
+`ArchonSubdomainAreaArchonsAuraEffectBuff` ("Aura of Menace"). Every other clause
+reads KMG-owned data Call of the Wild would not alter.
+
+Explicitly **not** offered as evidence: that aura GUID appears three times in the
+two failing profiles' evidence and once in the three passing ones. Those extra
+occurrences are observer `special-index`/`special-detail` diagnostic dumps — a
+diagnostics-volume difference that says nothing about the failing clause.
+
+Diagnosis needs a targeted Call of the Wild re-run reporting the clauses
+separately.
+
 ## Carried follow-ups from PR #98, unverified on this candidate
 
 | ID | Summary | Status |
@@ -309,9 +400,21 @@ Ordered by severity. Nothing here is repaired under this audit.
    family before reporting Published. Acceptance: the tool reports Summon
    Monster 119 Published with 1 `NoSurface` on the current source. Sequence
    after A-5, whose disposition sets the correct final figure.
-5. **A-7** (low, structural) — author the missing wrapper rows, or restate the
+5. **A-12** (medium, compatibility) — diagnose and fix the Lantern Archon
+   mismatch under Call of the Wild. Acceptance:
+   `expanded-summoning-lantern-archon` reads `exact` under the Call of the Wild
+   and combined profiles. First step is a re-run that reports the ~25 clauses
+   separately, since the single boolean cannot be diagnosed.
+6. **A-11** (medium, assertion staleness) — compare the live unit scan against
+   the frozen *unit*-identity count rather than the creature count, and extend
+   `QualifiedProjectReference` to admit the project-owned outsider facts.
+   Acceptance: `observe-expanded-summoning-inventory` reaches 50/50 standalone,
+   which also makes the matrix readable at step granularity. Worth doing
+   **before** A-12, so the Call of the Wild re-run is not read through two
+   unrelated failures.
+7. **A-7** (low, structural) — author the missing wrapper rows, or restate the
    charter's 1,232 as 1,217 met by native reuse.
-6. **W-1 … W-5** — carried from PR #98, each still to be verified on a
+8. **W-1 … W-5** — carried from PR #98, each still to be verified on a
    candidate.
 
 ## Preserved scope decisions
@@ -327,5 +430,16 @@ The live mod tree was restored to
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3` after each
 native run. Before the compatibility work the machine was verified clean: no
 Kingmaker process, no open `Mods.kmg-compat-*` transaction, live KMG at 0.0.117.
+
+After the matrix, verified again: no Kingmaker process, **0** open
+`Mods.kmg-compat-*` transactions, live KMG back at `0.0.117` with assembly
+`FD2FC61C250B13857D81ACC197A896450F5B242EE392FA7192B01201E908F35F` — the exact
+pre-matrix baseline — and all **7 of 7** of the run's transactions recording
+`state=Restored`. The matrix's own `Live tree after … restored=True` agrees.
+
+One thing not to misread: `C:/Dev/KingmakerGunslingerLab/compatibility-state`
+holds **143** directories, but those are historical transaction *records*, not
+open transactions. The authoritative check is `Mods.kmg-compat-*` inside the
+game install, which is zero.
 `wt/s40` remains frozen at `b2be3ebe…`; the released tag, its peeled target, its
 three assets, its draft/prerelease flags and Latest are all unchanged.
