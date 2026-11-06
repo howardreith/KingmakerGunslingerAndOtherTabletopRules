@@ -712,8 +712,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                     attacker.Commands.RemoveFinishedAndUpdateQueue();
                     var attack = new UnitAttack(section);
                     attacker.Commands.Run(attack);
-                    foreach (int frame in WaitInfernalCommand34(attack, () => true, 25)) yield return frame;
-                    attackerTravel = Math.Max(attackerTravel, Vector3.Distance(attackerStart, attacker.Position));
+                    // Travel is measured every frame while the section stands.
+                    // A killing blow on the first of two planned attacks lets
+                    // the native command redirect its remaining attack to
+                    // another creature and walk toward it (observed once);
+                    // that is after the measured action, so it is stopped and
+                    // recorded rather than counted.
+                    DateTime attackDeadline = DateTime.UtcNow.AddSeconds(25);
+                    bool retiredDuringCommand = false;
+                    while (DateTime.UtcNow < attackDeadline && !attack.IsFinished)
+                    {
+                        Game.Instance.IsPaused = false; yield return 0;
+                        if (section.Destroyed || section.Descriptor.State.IsDead) { retiredDuringCommand = true; break; }
+                        attackerTravel = Math.Max(attackerTravel, Vector3.Distance(attackerStart, attacker.Position));
+                    }
+                    if (!attack.IsFinished && !retiredDuringCommand)
+                        throw new InvalidOperationException("Native Sprint34 command/outcome timeout: " +
+                            attack.GetType().Name + "; result=" + attack.Result);
+                    string redirectedTarget = attack.TargetUnit != null && !ReferenceEquals(attack.TargetUnit, section) ?
+                        attack.TargetUnit.UniqueId : null;
+                    bool stoppedAfterRetirement = false;
+                    if (retiredDuringCommand && !attack.IsFinished)
+                    {
+                        attacker.Commands.InterruptAll(true);
+                        attacker.Commands.RemoveFinishedAndUpdateQueue();
+                        stoppedAfterRetirement = true;
+                    }
                     var ownedEffects = new JArray(section.Buffs.Enumerable.Where(value =>
                         ReferenceEquals(value.Context?.MaybeCaster, attacker)).Select(value => new JObject {
                             ["blueprint"] = value.Blueprint.AssetGuid, ["name"] = value.Blueprint.name }));
@@ -723,7 +747,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     commands.Add(new JObject { ["index"] = index, ["reference"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(attack),
                         ["command"] = Sprint27AiCommand(attack), ["plannedAttacks"] = attack.AllAttacks.Count,
                         ["sectionDamageAfter"] = section.Damage, ["sectionDead"] = section.Descriptor.State.IsDead,
-                        ["attackerOwnedSectionEffects"] = ownedEffects });
+                        ["attackerOwnedSectionEffects"] = ownedEffects,
+                        ["sectionRetiredDuringCommand"] = retiredDuringCommand,
+                        ["nativeRedirectedTarget"] = redirectedTarget,
+                        ["leftoverCommandStoppedAfterRetirement"] = stoppedAfterRetirement });
                     InfernalWallPersist35(run, "physical-commands", commands);
                 }
                 DateTime settled = DateTime.UtcNow.AddSeconds(10);
