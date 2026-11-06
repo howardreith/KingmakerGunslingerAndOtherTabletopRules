@@ -326,6 +326,26 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   Sources, aura memory and production fear remain unchanged. Production compiled
   and all five focused Sprint40 checks pass. NEXT: commit/push the product repair,
   pin it in a reporting commit, rebuild once, and rerun only the wall phase.
+- Reporting head `4d843c92c56f1212b932464fad65fbacb46eb576` passed 2,816/2,816
+  and strict packaging: ZIP SHA256
+  `2e6296ff60c5de2ad7c97a78f4107ab18cc41b3b0c1fbea80474d90abf2f186b`,
+  DLL SHA256 `bdb580dbb65e6bbb546b3b12d779caf679fa6b2bf84da92b23b1c037db327241`,
+  MVID `6a9a9904-ac8d-41de-9516-3a60623dff36`, source-state
+  `52bd177360be61e56acf14b2cd7b1baa1bc9380041dcded28f905abfa597293e`.
+  Wall run `20261106T0114166848963Z-disposable-expanded-summoning-sprint32-native-review`
+  proves the exact setup Frightened riders were removed and zero remained at
+  readiness, then retains FAIL: the legal survey's own temporary translocation
+  left the Bone Devil far from its native formation position; its follower
+  controller issued a fresh move after readiness and crossed within0.87m of the
+  pending wall footprint. This distinct movement correctly made production
+  placement and `CanTarget` false, interrupting the cast. Restoration receipt
+  `expanded-summoning-restoration/20261106T0117475135662Z-disposable-expanded-summoning-sprint32-native-review.json`
+  verifies the live hash, all nine startup peers and all118 saves exact. The
+  observer now records each owner's native settled position after successful
+  appearance and, after each survey, restores only non-casters there. The exact
+  caster stays at its surveyed point and normal placement/targeting remains the
+  admission gate. Production compiled and all five focused Sprint40 checks pass.
+  NEXT: commit/push, repin, rebuild once and rerun only the wall phase.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 
