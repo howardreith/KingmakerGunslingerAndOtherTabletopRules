@@ -15767,6 +15767,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             int kmgUnits = frozenIdentities.Count(value =>
                 value.PlannedType == "BlueprintUnit" && unitNames.Contains(
                     value.Symbol.Replace('.', '_').Replace('-', '_')));
+            // Sprint 41 (A-11). The registered-identities assertion used to
+            // compare this live unit count against ExpandedSummoningCatalog.All
+            // .Count, which counts SUMMONABLE CREATURES - a different
+            // population. It became unsatisfiable as soon as a non-creature
+            // unit blueprint shipped: the Bone Devil wall section in Sprint 35
+            // and the Ice Devil wall section in Sprint 40, which are
+            // obstruction objects and correctly absent from the summon menu.
+            // Counting frozen unit identities instead makes units symmetric
+            // with abilities just below, which have always compared the frozen
+            // total against the live-present subset.
+            int expectedKmgUnits = frozenIdentities.Count(value =>
+                value.PlannedType == "BlueprintUnit");
             int expectedKmgAbilities = frozenIdentities.Count(value =>
                 value.PlannedType == "BlueprintAbility");
             int kmgAbilities = frozenIdentities.Count(value =>
@@ -16735,12 +16747,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observation.SpecialCandidateCount >= 1,
                     "exact final-live Will-o'-Wisp, archon, light-ray, and aura candidates"),
                 Assertion("expanded-summoning-registered-identities",
-                    "units=" + ExpandedSummoningCatalog.All.Count + ";abilities=" +
+                    "units=" + expectedKmgUnits + ";abilities=" +
                         expectedKmgAbilities + ";registry=" +
                         BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime,
                     "units=" + kmgUnits + ";abilities=" + kmgAbilities +
                         ";registry=" + BlueprintBootstrap.RegisteredBlueprintCount,
-                    kmgUnits == ExpandedSummoningCatalog.All.Count &&
+                    kmgUnits == expectedKmgUnits &&
                         kmgAbilities == expectedKmgAbilities &&
                         BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime,
                     "exact final-live KMG blueprint identity scan"),
