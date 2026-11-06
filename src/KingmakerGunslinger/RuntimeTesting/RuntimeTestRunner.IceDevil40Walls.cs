@@ -13,6 +13,7 @@ using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.Utility;
@@ -270,6 +271,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Existing bounded survey retains native availability/targeting; refusal records the actual admission boundary rather than forcing a placement.");
             var readinessBefore = new JArray(actors.Where(actor => !actor.Destroyed)
                 .Select(InfernalWallActorState35));
+            // The qualified S35 wall fixture established that an exact
+            // source-owned setup fear can enqueue a fresh native panic move
+            // even with the witness brain disabled. These request-owned
+            // devils expose one another while the bounded lane is surveyed;
+            // retire only those exact transient riders before clearing their
+            // resulting moves. Aura memory, sources and production fear stay.
+            var fearBlueprints = new[] {
+                (BlueprintBuff)ExpandedSummoningBlueprints.Registered.BySymbol[
+                    ExpandedSummoningSpecialBuilder.IceDevil40Prefix + "FearFrightened"],
+                (BlueprintBuff)ExpandedSummoningBlueprints.Registered.BySymbol[
+                    ExpandedSummoningSpecialBuilder.Bone35Prefix + "FearFrightened"] };
+            UnitEntityData[] fearSources = actors.Where(actor => !actor.Destroyed).ToArray();
+            string[] fearSourceIds = fearSources.Select(actor => actor.UniqueId).ToArray();
+            foreach (var actor in fearSources)
+                InfernalBoneRemoveEffects35(actor, fearSources, fearBlueprints);
+            int ownedFearRemaining = fearSources.Sum(actor => actor.Buffs.Enumerable.Count(buff =>
+                fearBlueprints.Contains(buff.Blueprint) &&
+                (fearSources.Contains(buff.Context?.MaybeCaster) ||
+                 (buff.Context != null && fearSourceIds.Contains(
+                     CircleOriginalCasterId(buff.Context))))));
             foreach (var actor in actors.Where(actor => !actor.Destroyed))
                 InfernalWallPrepareActor35(actor);
             float sourceCastingGap = InfernalEarlyDistanceToSegment35(
@@ -281,12 +302,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !actor.View.MovementAgent.IsReallyMoving &&
                 actor.View.MovementAgent.Velocity.sqrMagnitude < .0001f &&
                 actor.Descriptor.State.CanAct) &&
-                sourceCastingGap < .1f && nativeCanTarget;
+                sourceCastingGap < .1f && nativeCanTarget && ownedFearRemaining == 0;
             check("wall-cast-readiness-" + label, ready,
                 new JObject { ["source"] = source.UniqueId,
                     ["castingPoint"] = Vec(casterPoint), ["sourcePosition"] = Vec(source.Position),
                     ["horizontalCastingGap"] = sourceCastingGap,
                     ["nativeAvailable"] = nativeAvailable, ["nativeCanTarget"] = nativeCanTarget,
+                    ["ownedSetupFearRemaining"] = ownedFearRemaining,
+                    ["isolatedFearBlueprints"] = new JArray(fearBlueprints.Select(value => value.AssetGuid)),
                     ["before"] = readinessBefore,
                     ["after"] = new JArray(actors.Where(actor => !actor.Destroyed)
                         .Select(InfernalWallActorState35)) },
