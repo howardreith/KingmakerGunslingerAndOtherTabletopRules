@@ -40,8 +40,7 @@ namespace KingmakerGunslinger.Blueprints
                 Require<BlueprintWeaponType>(bySymbol,
                     ArmoredDinosaurRulesPolicy.StegosaurusTailTypeSymbol),
                 ArmoredDinosaurRulesPolicy.StegosaurusTailTypeSymbol,
-                ArmoredDinosaurRulesPolicy.
-                    StegosaurusTailTypeStoredRangeFeet);
+                SummonReachRepresentation4.StoredRawFeet);
 
             BlueprintUnit triceratops = Require<BlueprintUnit>(bySymbol,
                 "KMG.Summoning.Unit.Triceratops");
@@ -110,10 +109,13 @@ namespace KingmakerGunslinger.Blueprints
             target.name = InternalName(symbol);
             SetField(target, "m_AttackRange", new Feet(storedRangeFeet));
             SetField(weapon, "m_Type", target);
-            if (target.AttackRange.Value != 5 ||
+            // Sprint 4: tails store the ordinary five feet (two native, not
+            // ProperFlanking2 reach weapons); SummonReachRange4 restores the
+            // three feet the former stored nine gave.
+            if (target.AttackRange.Value != SummonReachRepresentation4.NativeMinWeaponRangeFeet ||
                 !ReferenceEquals(weapon.Type, target))
                 throw new InvalidOperationException(
-                    "Armored-dinosaur private weapon type did not expose five feet before body reach.");
+                    "Armored-dinosaur private weapon type did not expose the native minimum before body reach.");
         }
 
         private static void ConfigureArmoredDinosaurChassis(

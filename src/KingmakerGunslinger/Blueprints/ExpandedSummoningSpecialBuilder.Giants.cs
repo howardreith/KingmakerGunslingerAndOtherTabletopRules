@@ -248,10 +248,11 @@ namespace KingmakerGunslinger.Blueprints
             type.ComponentsArray = (donor.Type.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).Select(
                     ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
-            // The installed type subtracts four feet from melee range.
-            // A raw ten-foot type plus the Large giant's ReachRange gives
-            // the equipped greatclub, greatsword and slams ten feet.
-            SetField(type, "m_AttackRange", new Feet(10));
+            // Sprint 4: the type stores the ordinary five feet (two native,
+            // not a ProperFlanking2 reach weapon). Two plus the Large giant's
+            // four-foot ReachRange plus SummonReachRange4's exact-owner four
+            // keeps the equipped greatclub, greatsword and slams at ten.
+            SetField(type, "m_AttackRange", new Feet(SummonReachRepresentation4.StoredRawFeet));
             BlueprintItemWeapon result = Require<BlueprintItemWeapon>(bySymbol,
                 symbol);
             CopyFields(donor, result);

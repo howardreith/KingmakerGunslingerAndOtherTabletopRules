@@ -4166,7 +4166,11 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureSummonWeaponType(library, LargeTailGuid, "native animated tail",
                 "KMG.Summoning.Special.Salamander.TailType", type);
             SetField(type, "m_BaseDamage", new DiceFormula(2, DiceType.D6));
-            SetField(type, "m_AttackRange", new Feet(SalamanderRulesPolicy.TailReachFeet));
+            // Sprint 4: the tail type stores the ordinary five feet (two
+            // native, not a ProperFlanking2 reach weapon). SummonReachRange4
+            // restores the four feet the former raw TailReachFeet gave, so the
+            // tail keeps its longer reach beside the shorter spear.
+            SetField(type, "m_AttackRange", new Feet(SummonReachRepresentation4.StoredRawFeet));
             SetField(tail, "m_Type", type);
             SetField(tail, "m_Size", Size.Medium);
             SetField(tail, "m_OverrideDamageDice", false);

@@ -99,17 +99,18 @@ namespace KingmakerGunslinger.Blueprints
                 Size.Large, 20, 17, 21, 14, 16, 19, 30);
             var sword = Sprint29Weapon(library, bySymbol, Lillend32Prefix + "Longsword",
                 Lillend32Prefix + "LongswordType", "03d706655c07d804cb9d5a5583f9aec5",
-                Size.Large, 2, DiceType.D6, 10);
+                Size.Large, 2, DiceType.D6, SummonReachRepresentation4.StoredRawFeet);
             var nativeSword = BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(library,
                 "03d706655c07d804cb9d5a5583f9aec5", "captured native +1 longsword");
             SetField(sword, "m_Enchantments", nativeSword.Enchantments.Cast<BlueprintWeaponEnchantment>().ToArray());
             var tail = Sprint29Weapon(library, bySymbol, Lillend32Prefix + "Tail",
-                Lillend32Prefix + "TailType", LargeTailGuid, Size.Large, 2, DiceType.D6, 10);
-            // Same accepted mapping as the Large giants: the native type
-            // getter subtracts four from stored melee values <=10. Six plus
-            // this Large owner's observed four-foot ReachRange gives ten.
-            // Keep live native size/reach changes; no item or command patch.
-            if (sword.AttackRange.Value != 6 || tail.AttackRange.Value != 6)
+                Lillend32Prefix + "TailType", LargeTailGuid, Size.Large, 2, DiceType.D6, SummonReachRepresentation4.StoredRawFeet);
+            // Sprint 4: both types store the ordinary five feet (two native,
+            // not ProperFlanking2 reach weapons). Two plus this Large owner's
+            // four-foot ReachRange plus SummonReachRange4's exact-item four
+            // keeps the ten feet the former raw ten gave. Live native
+            // size/reach changes still apply.
+            if (sword.AttackRange.Value != 2 || tail.AttackRange.Value != 2)
                 throw new InvalidOperationException("Lillend native weapon reach contribution changed.");
             unit.Body = new BlueprintUnit.UnitBody { PrimaryHand = sword,
                 AdditionalLimbs = Array.Empty<BlueprintItemWeapon>(), AdditionalSecondaryLimbs = new[] { tail },

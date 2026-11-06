@@ -122,10 +122,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CheckSprint17SalamanderProfile("native-per-weapon-reach", Sprint17ObservationPolicy.NativeReach(
                     stats.Reach.ModifiedValue, rawSpearRange.Value, rawTailRange.Value,
                     GameConsts.MinWeaponRange.Value, spear.Blueprint.Type.AttackRange.Value, tail.Blueprint.Type.AttackRange.Value,
-                    spear.AttackRange.Value, tail.AttackRange.Value) &&
+                    spear.AttackRange.Value, tail.AttackRange.Value,
+                    SummonReachRepresentation4.CorrectionFeet(unit.Blueprint.AssetGuid, tail.Blueprint.AssetGuid)) &&
                     tail.Blueprint.Size == Size.Medium &&
                     !tail.Blueprint.IsDamageDiceOverridden, weapons,
-                    "raw types retain 5/10 feet; native four-foot allowance and minimum floor produce actual 2/6-foot weapon approach ranges; no five-foot difference is claimed");
+                    "raw types are 5/5 feet since Sprint 4; native four-foot allowance and minimum floor give 2/2-foot types, and the exact tail correction keeps actual 2/6-foot weapon approach ranges; no five-foot difference is claimed");
                 ProbeSprint17SalamanderWeapons(unit, spear, tail, "base", 16);
                 foreach (int delta in new[] { 4, -9 })
                 {

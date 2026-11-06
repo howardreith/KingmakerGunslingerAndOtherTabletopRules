@@ -155,10 +155,11 @@ namespace KingmakerGunslinger.Blueprints
             unit.Type = type;
             var claw = Sprint29Weapon(library, bySymbol, Lemure30Prefix + "Claw1d4",
                 Lemure30Prefix + "ClawType", NativeClaw1d4Guid, Size.Medium, 1, DiceType.D4, 5);
-            // The installed type getter subtracts four feet for raw ranges
-            // at or below ten. Nine raw feet therefore produces the printed
-            // five-foot native reach; only this private type is changed.
-            SetField(claw.Type, "m_AttackRange", new Feet(9));
+            // Sprint 4: the private type stores the ordinary five feet (two
+            // native, not a ProperFlanking2 reach weapon); the exact-item
+            // correction in SummonReachRange4 restores the five-foot reach
+            // the former raw nine gave.
+            SetField(claw.Type, "m_AttackRange", new Feet(SummonReachRepresentation4.StoredRawFeet));
             // Native UnitAttack skips the primary attack when hands are
             // disabled. Reuse the established natural-body path: one primary
             // claw plus one additional claw, with no synthetic empty-hand grant.
@@ -218,9 +219,9 @@ namespace KingmakerGunslinger.Blueprints
             var armor = ScriptableObject.CreateInstance<AddStatBonus>();
             armor.Stat = StatType.AC; armor.Value = 3; armor.Descriptor = ModifierDescriptor.NaturalArmor;
             var claw = Sprint29Weapon(library, bySymbol, Dretch30Prefix + "Claw1d4",
-                Dretch30Prefix + "ClawType", NativeClaw1d4Guid, Size.Small, 1, DiceType.D4, 9);
+                Dretch30Prefix + "ClawType", NativeClaw1d4Guid, Size.Small, 1, DiceType.D4, SummonReachRepresentation4.StoredRawFeet);
             var bite = Sprint29Weapon(library, bySymbol, Dretch30Prefix + "Bite1d4",
-                Dretch30Prefix + "BiteType", NativeBite1d6Guid, Size.Small, 1, DiceType.D4, 9);
+                Dretch30Prefix + "BiteType", NativeBite1d6Guid, Size.Small, 1, DiceType.D4, SummonReachRepresentation4.StoredRawFeet);
             var strength = ScriptableObject.CreateInstance<DeinonychusPrimaryTalonStrength>();
             strength.OwningBlueprint = unit; strength.Talon = claw;
             var equipment = ScriptableObject.CreateInstance<SummonGiantEquipmentOwnership>();

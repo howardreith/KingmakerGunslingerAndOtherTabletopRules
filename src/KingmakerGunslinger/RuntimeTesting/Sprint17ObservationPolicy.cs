@@ -6,15 +6,21 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal static class Sprint17ObservationPolicy
     {
         internal static bool NativeReach(float body, float rawSpearType, float rawTailType,
-            float minimum, float computedSpearType, float computedTailType, float spear, float tail)
+            float minimum, float computedSpearType, float computedTailType, float spear, float tail,
+            float tailItemCorrection)
         {
             // BlueprintWeaponType.AttackRange already applies the native
             // four-foot allowance/floor. Only m_AttackRange is a raw input.
-            return body == 5 && rawSpearType == 5 && rawTailType == 10 &&
+            // Sprint 4: the tail type stores the ordinary five feet (not a
+            // ProperFlanking2 reach weapon) and the exact-item correction
+            // restores the four feet it lost, so the actual tail stays six
+            // feet beside the two-foot spear, exactly as Sprint 17 accepted.
+            return body == 5 && rawSpearType == 5 && rawTailType == 5 &&
                 !float.IsNaN(minimum) && !float.IsInfinity(minimum) && minimum > 0 &&
                 computedSpearType == Math.Max(minimum, rawSpearType - 4) &&
                 computedTailType == Math.Max(minimum, rawTailType - 4) &&
-                spear == computedSpearType && tail == computedTailType;
+                tailItemCorrection == 4 &&
+                spear == computedSpearType && tail == computedTailType + tailItemCorrection;
         }
 
         internal static bool ResolvedStrike(bool expectedMiss, bool hit,

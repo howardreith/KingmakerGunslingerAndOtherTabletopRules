@@ -59,7 +59,7 @@ namespace KingmakerGunslinger.Blueprints
                 library, NativeSpearType40, "native Spear type");
             var spear = Sprint29Weapon(library, symbols, p + "Spear", p + "SpearType",
                 ElvenBranchedSpearBlueprints.NativeLongspearItemGuid, Size.Large,
-                2, DiceType.D6, IceDevilRules40Policy.ReachFeet, 20, spearType);
+                2, DiceType.D6, SummonReachRepresentation4.StoredRawFeet, 20, spearType);
             var nativeFrost = BlueprintLibraryLookup.RequireExact<BlueprintWeaponEnchantment>(library,
                 EasternWeaponNamedBlueprints.FrostGuid, "native frost packet");
             var nativeFrostPacket = nativeFrost.GetComponent<WeaponEnergyDamageDice>();
@@ -78,10 +78,10 @@ namespace KingmakerGunslinger.Blueprints
             BindBarbazuNativeHand34(unit, spear);
             var bite = Sprint29Weapon(library, symbols, p + "Bite", p + "BiteType",
                 NativeBite1d6Guid, Size.Large, 2, DiceType.D6,
-                IceDevilRules40Policy.ReachFeet);
+                SummonReachRepresentation4.StoredRawFeet);
             var tail = Sprint29Weapon(library, symbols, p + "Tail", p + "TailType",
                 NativeSlam, Size.Large, 3, DiceType.D6,
-                IceDevilRules40Policy.ReachFeet);
+                SummonReachRepresentation4.StoredRawFeet);
             SetField(tail.Type, "m_TypeNameText",
                 LocalizationService.Create(p + "TailType.Name", "Tail"));
             BlueprintItemAccess.Resolve().Configure(spear,

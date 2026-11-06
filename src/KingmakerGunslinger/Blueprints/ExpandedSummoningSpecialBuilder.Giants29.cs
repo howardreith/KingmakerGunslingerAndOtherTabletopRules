@@ -84,11 +84,11 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintItemWeapon mainFlail = Sprint29Weapon(library, bySymbol,
                 mainFlailSymbol, flailType,
                 "6cba82e1188132c46b4656b0cefeb9b0",
-                Size.Large, 2, DiceType.D6, 10);
+                Size.Large, 2, DiceType.D6, SummonReachRepresentation4.StoredRawFeet);
             BlueprintItemWeapon offFlail = Sprint29Weapon(library, bySymbol,
                 offFlailSymbol, flailType,
                 "6cba82e1188132c46b4656b0cefeb9b0",
-                Size.Large, 2, DiceType.D6, 10);
+                Size.Large, 2, DiceType.D6, SummonReachRepresentation4.StoredRawFeet);
             BlueprintItemWeapon mainJavelin = Sprint29Weapon(library,
                 bySymbol, mainJavelinSymbol, javelinType,
                 "e24f753bbbbefb84cb94223df00d837a",
@@ -199,10 +199,11 @@ namespace KingmakerGunslinger.Blueprints
             const string chainSymbol = Giant29Prefix + "StormChainLightning";
             const string chainResourceSymbol = Giant29Prefix + "StormChainResource";
 
-            // Preserve the printed type range. The native wielded-item getter
-            // adds Huge owner reach; the exact private-item patch below the
-            // builder supplies the actual 15-foot command range.
-            const int hugeMeleeTypeRange = 15;
+            // Sprint 4: the type stores the ordinary five feet (two native,
+            // not a ProperFlanking2 reach weapon). The exact private-item
+            // patch SummonSprint29HugeMeleeReach still sets the absolute
+            // 15-foot command range.
+            const int hugeMeleeTypeRange = SummonReachRepresentation4.StoredRawFeet;
             BlueprintItemWeapon sword = Sprint29Weapon(library, bySymbol,
                 swordSymbol, swordType, NativeGreatsword, Size.Huge,
                 4, DiceType.D6, hugeMeleeTypeRange);
@@ -511,7 +512,7 @@ namespace KingmakerGunslinger.Blueprints
 
             // Same exact-owner item range correction as Storm. The item
             // remains Gargantuan for Cloud's actual Oversized Weapon use.
-            const int hugeMeleeTypeRange = 15;
+            const int hugeMeleeTypeRange = SummonReachRepresentation4.StoredRawFeet;
             BlueprintItemWeapon morningstar = Sprint29Weapon(library,
                 bySymbol, morningstarSymbol, morningstarType,
                 NativeMorningstar29, Size.Gargantuan, 4, DiceType.D6,
