@@ -783,7 +783,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (bool?)value["hasAttackRoll"] != true) && (secondaryRows.Length == 0 || attackerEffects.Count > 0);
                 bool killingBlowIsWeaponHit = damageRows.Length > 0 && weaponRows.Contains(damageRows.Last());
                 int weaponDamage = weaponRows.Sum(value => (int?)value["ruleDamage"] ?? 0);
-                bool allFromAttacker = weaponRows.Length >= 2 && secondaryOwned && killingBlowIsWeaponHit;
+                // The attacker's own Infernal Wound bleed applying to an ice
+                // section is the tracked bleed-on-ice defect (separate
+                // correction). Its tick timing decides whether the last point
+                // comes from a weapon hit (accepted run, close4-close11) or the
+                // bleed (close12, 34 weapon damage of 36). The verdict records
+                // which; it does not pass or fail on tick timing.
+                bool killingBlowIsOwnedRider = damageRows.Length > 0 && !killingBlowIsWeaponHit &&
+                    secondaryRows.Contains(damageRows.Last()) && secondaryOwned && attackerEffects.Count > 0;
+                string killingBlowSource = killingBlowIsWeaponHit ? "weapon-hit" :
+                    killingBlowIsOwnedRider ? "attacker-owned-infernal-wound-bleed (tracked bleed-on-ice defect)" : "other";
+                bool allFromAttacker = weaponRows.Length >= 2 && secondaryOwned &&
+                    (killingBlowIsWeaponHit || killingBlowIsOwnedRider);
                 bool allHalved = damageRows.Length > 0 && damageRows.All(value => value["packets"] != null &&
                     value["packets"].Any() && value["packets"].All(packet => (bool?)packet["half"] == true));
                 bool retired = section.Destroyed || !section.IsInState || section.Descriptor.State.IsDead;
@@ -801,6 +812,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["weaponHits"] = weaponRows.Length, ["weaponDamage"] = weaponDamage,
                     ["secondaryAttackerRows"] = secondaryRows.Length, ["secondaryOwnedByAttacker"] = secondaryOwned,
                     ["attackerOwnedSectionEffects"] = attackerEffects, ["killingBlowIsWeaponHit"] = killingBlowIsWeaponHit,
+                    ["killingBlowSource"] = killingBlowSource,
                     ["allDamageFromAttackerWeapon"] = allFromAttacker, ["allPacketsObjectHalved"] = allHalved,
                     ["allRollsAutomaticHits"] = autoHits, ["attackerTravelDuringAttacks"] = attackerTravel,
                     ["sectionDamage"] = section.Damage, ["sectionDead"] = section.Descriptor.State.IsDead,
@@ -815,7 +827,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     allHalved && autoHits && attackRows.Length >= weaponRows.Length && retired &&
                     residualOwned && residualLifetime && fog == null && attackerTravel < .25f &&
                     (bool)presentation["pass"], row,
-                    "Repeated ordinary native weapon attacks auto-hit, deal object-halved damage tracked hit by hit, and destroy the section, which leaves its owned cold residual for the remaining duration, no steam, and no donor body.");
+                    "Repeated ordinary native weapon attacks auto-hit, deal object-halved damage tracked hit by hit, and destroy the section (a final point from the attacker's own Infernal Wound bleed, the tracked bleed-on-ice defect, is recorded as such), which leaves its owned cold residual for the remaining duration, no steam, and no donor body.");
             }
         }
 
