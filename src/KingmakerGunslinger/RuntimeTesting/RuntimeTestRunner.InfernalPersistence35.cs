@@ -231,10 +231,19 @@ namespace KingmakerGunslinger.RuntimeTesting
         // One actual native wall command path shared by the two bounded wall
         // consumers. Species-specific blueprints and parameters remain in
         // their own registered prefix; this helper only owns fixture casting.
+        //
+        // activateBrain is the one species-dependent knob. Sprint 35's Bone
+        // Devil has always cast its section with the brain active, and that is
+        // its qualified behaviour. Sprint 40's Ice Devil owns a new area-control
+        // brain that selects its own Wall of Ice, Cone of Cold and Ice Storm,
+        // so an active brain races the directed command and can interrupt it
+        // before it starts. Its own qualified wall phase casts this exact
+        // ability with the brain disabled and the command reaching Success with
+        // a null AI action, so Sprint 40 passes false.
         private IEnumerable<int> PrepareInfernalWallPersistence35(
             UnitEntityData caster, UnitEntityData source,
             UnitEntityData[] sources, string prefix, string label,
-            Action<UnitEntityData> assign)
+            Action<UnitEntityData> assign, bool activateBrain = true)
         {
             BlueprintAbility wallBlueprint = (BlueprintAbility)
                 ExpandedSummoningBlueprints.Registered.BySymbol[
@@ -306,7 +315,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Where(unit => ReferenceEquals(unit.Blueprint,
                     sectionBlueprint)).Select(unit => unit.UniqueId));
             UnitEntityData section = null;
-            SetExpandedSummoningBrainActive(source, true);
+            SetExpandedSummoningBrainActive(source, activateBrain);
             try
             {
                 source.Commands.Run(command);
@@ -334,7 +343,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     command.Result + ";started=" + command.IsStarted +
                     ";acted=" + command.IsActed + ";finished=" +
                     command.IsFinished + ";canStart=" + command.CanStart +
-                    ";queued=" + source.Commands.Raw.Contains(command) + ".");
+                    ";queued=" + source.Commands.Raw.Contains(command) +
+                    // Name the competing actor so a recurrence is
+                    // discriminating rather than another identical relaunch.
+                    ";brainRequested=" + activateBrain +
+                    ";brainActive=" + source.IsBrainActive +
+                    ";aiAction=" + (command.AiAction == null ? "none" :
+                        command.AiAction.name) +
+                    ";running=" + string.Join("|", source.Commands.Raw
+                        .Where(value => value != null)
+                        .Select(value => value.GetType().Name + ":" +
+                            value.Result).ToArray()) +
+                    ";section=" + (section == null ? "none" :
+                        section.UniqueId) + ".");
             DateTime claimsDeadline = DateTime.UtcNow.AddSeconds(15);
             while (DateTime.UtcNow < claimsDeadline &&
                 (section.View?.GetComponent<InfernalWallNavmesh35>()?
