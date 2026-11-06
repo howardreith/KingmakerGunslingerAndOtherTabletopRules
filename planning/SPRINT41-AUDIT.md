@@ -76,7 +76,7 @@ the same commit.
 | Complete offline suite, unfiltered | **2,828 / 2,828**, 0 failures |
 | Development-candidate source validation | PASS (validator unmodified) |
 | Native `sprint40-ice-devil-walls` | **PASS 26/26** |
-| Native `summon-overhaul-wall` | **FAIL 137/138** — A-3 (intermittent), A-14 |
+| Native `summon-overhaul-wall` | **NONDETERMINISTIC** — 1 of 5 runs PASS (155/155); A-15 |
 | Roster/menu reconciliation at placement level | **COMPLETE** — A-5, A-6, A-7 |
 | Repository release gate at the audit source | **FAIL** — A-8 |
 | Compatibility-profile matrix on the audit candidate | **BLOCKED** by A-8 — A-9 |
@@ -88,8 +88,9 @@ the same commit.
 | Visual acceptance at roster scale | NOT RUN |
 | Performance against the 693-choice baseline | NOT RUN |
 
-**The audit found one firm release blocker (A-8) and one intermittent product
-defect (A-3, seen once in two runs).** Neither is repaired here.
+**The audit found two release blockers: A-8, the red repository gate, and
+A-15, a wall review phase that passes only 1 run in 5 and so cannot qualify or
+clear that area in either direction.** Neither is repaired here.
 
 ## Findings
 
@@ -97,7 +98,7 @@ defect (A-3, seen once in two runs).** Neither is repaired here.
 |---|---|---|---|---|
 | A-1 | low | documentation | Ideal-roster document stale against the frozen manifest | **RESOLVED** |
 | A-2 | none | environment | 23 suite failures from a missing gitignored derived input | **RESOLVED** (environment) |
-| A-3 | P2-high (intermittent) | product | Fire-destroyed Wall left the lane obstructed in 1 of 2 runs | OPEN |
+| A-3 | P2-high (instance of A-15) | product | Fire-restoration cell failed 1 of 5 runs | OPEN |
 | A-4 | none | coverage | Cells blocked by A-3 have now all run and passed | **RESOLVED** |
 | A-5 | medium | content/charter | Brachiosaurus has no Summon Monster choice at any level | OPEN |
 | A-6 | medium | reporting | Roster tool reports family coverage from identity, not from a real choice | OPEN |
@@ -108,59 +109,82 @@ defect (A-3, seen once in two runs).** Neither is repaired here.
 | A-11 | medium | assertion staleness | Two inventory assertions fail in every profile, masking compatibility signal | OPEN |
 | A-12 | medium | compatibility | Lantern Archon exactness fails under Call of the Wild only | OPEN |
 | A-13 | info | coverage | Deep module-OFF sweep is reserved to one named purpose | OPEN |
-| A-14 | medium | review code | NRE in InfernalWallShared35 keeps the wall phase red at 137/138 | OPEN |
+| A-14 | medium (instance of A-15) | review code | NRE in InfernalWallShared35, 1 of 5 runs | OPEN |
+| **A-15** | **P2-high** | **nondeterministic verification** | **Wall review phase passes 1 run in 5, four distinct failure modes** | **OPEN** |
 
-### A-3 — a fire-destroyed Wall of Ice left the lane obstructed, **intermittently**
+### A-15 — the wall review phase is nondeterministic *(primary wall finding)*
 
-**Correction to an earlier revision of this report.** I first recorded this from
-a single run and presented it as a reproducible product defect. It does **not**
-reproduce reliably. The phase was re-run on a second artifact built from the
-identical source commit, and the same cell on the same lane restored perfectly.
-The classification is now **intermittent**, and the earlier release-blocker
-assertion is qualified accordingly.
+**This supersedes A-3 as the primary wall finding, and it corrects what I
+reported earlier twice over.** I first recorded A-3 from a single run as a
+reproducible product defect. I then corrected it to "intermittent" after one
+contradicting run. Characterising it properly — five executions of
+`summon-overhaul-wall` at the same source commit `710ac76b` — shows the real
+problem is broader than any one cell:
 
-Two runs, same source commit `710ac76b`, identical lane
-`[-5.252655, -4.8, 1.112009]` → `[2.747345, -4.8, 1.112009]`:
+| Run | Candidate | Assertions | Verdict | Failing cell |
+|---|---|---|---|---|
+| A | `28a6aa41` | 66 | FAIL | `wall-native-mover-restored-fire` |
+| B | `286397cc` | 138 | FAIL | *(NullReferenceException — A-14)* |
+| C | `286397cc` | 109 | FAIL | `wall-turn-boundary-restored` |
+| D | `286397cc` | 114 | FAIL | `wall-native-mover-shared-af-both-a` |
+| E | `286397cc` | **155** | **PASS** | none |
 
-| Cell | Run A — candidate `28a6aa41` | Run B — candidate `286397cc` |
+**Four failing runs, four different failure modes, no mode repeated — and one
+run that passed completely at 155/155.** The assertion count varies (66, 138,
+109, 114, 155) because the phase aborts wherever it happens to fail, so even the
+coverage differs run to run.
+
+The fire route is not special. In the four runs where that cell ran to a verdict
+successfully it read `2.38418579e-07` every time, with actual distance between
+7.9718 and 7.9758 — the baseline value. The single failure read `2.545` at
+distance 10.649. Its failure rate is **1 in 5**, the same as each of the other
+three modes.
+
+**What this means, and it cuts both ways**
+
+- A single **PASS** does not qualify the Wall of Ice area. Run E passed 155/155;
+  four runs at the same commit did not.
+- A single **FAIL** does not condemn a cell. Each failing cell passed in the
+  other four runs.
+- Any gate or release decision resting on one execution of this phase is unsound
+  in **both** directions.
+- My A-3 was simply the first sample of this, and reading it as a specific
+  deterministic defect was the wrong inference from one run.
+
+**What is still not established — and this is the important gap.** Whether the
+instability lives in the product's navigation restoration or in the review
+fixture's *measurement* of it. Every failure is a deviation or restoration
+measurement, and a timing-sensitive fixture would look exactly like this.
+Nothing gathered here distinguishes the two, and no player-facing symptom is
+demonstrated by any of it.
+
+So the honest classification is a **verification-reliability defect,
+demonstrated**; whether it is *also* a product defect is **undetermined** — and
+that undecidability is precisely what the instability imposes.
+
+**Repair queue, first step:** settle product-versus-fixture by instrumenting the
+four failing cells to record their own settle and timing state, then running the
+phase repeatedly. Acceptance: PASS at full assertion count across at least 10
+consecutive executions. Until then the Wall of Ice area can be neither qualified
+nor cleared.
+
+#### A-3 — the fire-restoration cell, as one instance of A-15
+
+Retained for its detail, downgraded to an instance. Identical lane
+`[-5.252655, -4.8, 1.112009]` → `[2.747345, -4.8, 1.112009]`; run A against the
+four later runs:
+
+| Cell | Run A | Runs B–E |
 |---|---|---|
-| baseline-fire (no wall) | 2.38e-07, 0 claims, PASS | 2.38e-07, 0 claims, PASS |
-| live-fire (wall standing) | 1.4033, 24 claims, PASS | 1.4038, 24 claims, PASS |
-| **restored-fire (wall gone)** | **2.5452, dist 10.649, FAIL** | **2.38e-07, dist 7.972, PASS** |
-| restored-physical (control) | 3.93e-06, PASS | 5.72e-06, PASS |
-| phase reached | 66 assertions, aborted here | 138 assertions |
+| baseline-fire (no wall) | 2.38e-07, 0 claims | 2.38e-07, 0 claims |
+| live-fire (wall standing) | 1.4033, 24 claims | ~1.4038, 24 claims |
+| **restored-fire (wall gone)** | **2.5452, dist 10.649, FAIL** | **2.38e-07, dist ~7.972, PASS** |
+| restored-physical (control) | 3.93e-06 | ~5.72e-06 |
 
-Every control is stable across both runs. Only the fire-restoration cell moved,
-and it moved from the baseline value to roughly seven orders of magnitude above
-it and back again.
-
-**What is now established**
-
-- Not caused by the build artifact: both runs share the source commit, differing
-  only in build bytes across roots.
-- Not a fixture-coordinate artifact: identical coordinates, and the controls
-  match to within a few parts in a million.
-- Not the claim logic: `claimsWhileMoving` is **0** in both the failing and the
-  passing run.
-- **It does not happen every run** — so any gate resting on a single execution of
-  this cell is unreliable in both directions.
-
-**What is still not established:** the frequency, the trigger, whether it
-correlates with load or run ordering, and the mechanism. Incomplete recast-tile
-re-tiling on the fire route remains the hypothesis, now with the extra
-constraint that the same code path usually succeeds.
-
-The single failing observation is not a tolerance artifact — 2.545 against the
-same run's own baseline of 2.38e-07, with no wall present and no claims held, is
-a genuine mis-restoration. An intermittent navigation corruption is in some ways
-a worse defect than a deterministic one, precisely because it will not reliably
-appear in a gate.
-
-**First repair step is characterisation, not a fix:** repeat the fire lane enough
-times to establish a failure rate, since one pass no longer demonstrates
-correctness and one failure no longer demonstrates a deterministic bug. That
-characterisation run is in progress and its result is recorded in the audit
-record.
+The one failing observation is still not a tolerance artifact — 2.545 against
+that run's own baseline of 2.38e-07, no wall present, no claims held. And it is
+still not the claim logic: `claimsWhileMoving` is 0 in the failing and the
+passing runs alike.
 
 ### A-4 — RESOLVED: the previously blocked cells all ran and passed
 
@@ -494,10 +518,14 @@ fixture-induced and is not an observation of a naturally occurring engine race.
 
 Ordered by severity. Nothing here is repaired under this audit.
 
-1. **A-3** (P2, product) — fire-destruction restoration of the recast navmesh.
-   Acceptance: `sprint32-sprint35-wall-native-mover-restored-fire` reaches
-   baseline 0.0 deviation with 0 claims on the same lane. Unblocks A-4's six
-   cells.
+1. **A-15** (P2, nondeterministic verification) — settle whether the wall
+   review instability is in the product's navigation restoration or in the
+   fixture's measurement of it, by instrumenting the four failing cells to record
+   their own settle and timing state and then running the phase repeatedly.
+   Acceptance: `summon-overhaul-wall` PASSes at its full assertion count across
+   at least 10 consecutive executions. **Do this before A-3 or A-14**, which are
+   instances of it, and before any attempt to qualify the Wall of Ice area —
+   until it is answered, that area can be neither cleared nor condemned.
 2. **A-8** (P2, release gate) — open the next version so the released 0.0.178
    pin is no longer active. Acceptance: `tools/validate_repository.py --root`
    exits 0 at master. Unblocks A-9, the compatibility matrix, performance
