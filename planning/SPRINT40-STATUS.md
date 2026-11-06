@@ -275,6 +275,22 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   helper and records native availability/targetability; no readiness or gameplay
   condition changed. Production compilation and all five focused Sprint40 checks
   pass. NEXT: commit/push, repin, rebuild and rerun only the wall phase.
+- Reporting head `882425751acfbe5e0d5bb0c3e7073b411b4ce6e5` passed 2,816/2,816
+  and strict packaging: ZIP SHA256 `2a44337901a23d427389a45f89602d68323c9b468c4b2c90884b613548ef9825`,
+  DLL SHA256 `0c2ed00db73c95120178722cd9ad2ad0f085ba45288c356f51894616d69f3349`,
+  MVID `eb6221a4-0c5d-4cd5-b543-1c937c1cc855`; compiled persistence admission/
+  refusals pass33/33. Wall run
+  `20261106T0018442077181Z-disposable-expanded-summoning-sprint32-native-review`
+  passed the bounded survey and exact-owner readiness rows, then retained FAIL
+  when the first real `UnitUseAbility` self-interrupted before acting. Restoration
+  receipt `expanded-summoning-restoration/20261106T0022169954960Z-disposable-expanded-summoning-sprint32-native-review.json`
+  is exact. A bounded read-only inspection of installed `UnitUseAbility.OnTick`
+  establishes that its only applicable interruption gate is the command target's
+  live `AbilityData.CanTarget` transition; pre-command targeting was true. The
+  observer now records that exact live target transition through the real command,
+  with production compilation and all five focused Sprint40 checks passing.
+  NEXT: commit/push and rebuild the changed observer once, then rerun only the
+  wall phase for the discriminating observation; do not repeat the prior artifact.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 
