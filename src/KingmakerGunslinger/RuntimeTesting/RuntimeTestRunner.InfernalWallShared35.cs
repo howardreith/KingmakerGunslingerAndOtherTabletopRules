@@ -360,6 +360,41 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             var plan = InfernalWallNextLane35(run, "shared", _infernalWallPlans35.ToArray());
             foreach (int frame in InfernalWallFixturePrerequisite35(fixture, sourceA, owned, plan, check, "shared")) yield return frame;
+            // The prerequisite stands every owned actor at Wall A's casting
+            // point. Those bystanders are adjacent creatures for any nearby
+            // Wall B (close20: every candidate had two). Only source A needs
+            // that point; the others stand well clear of both Walls.
+            Vector3 away = plan.CastingPoint - plan.Midpoint; away.y = 0f;
+            if (away.sqrMagnitude < .01f) away = Vector3.forward;
+            Vector3 parkingCentre = plan.CastingPoint + away.normalized * 8f;
+            Vector3 parkingSide = Vector3.Cross(Vector3.up, away.normalized);
+            var parked = new JArray();
+            int nextSlot = 0;
+            var slots = new Dictionary<UnitEntityData, Vector3>();
+            // Park keeps one slot per unit, 1.5 m apart, on native floor.
+            Action<UnitEntityData> park = unit => {
+                Vector3 slot;
+                if (!slots.TryGetValue(unit, out slot))
+                {
+                    int index = nextSlot++;
+                    float offset = ((index + 1) / 2) * 1.5f * (index % 2 == 0 ? 1f : -1f);
+                    slot = AstarPath.active.GetNearest(parkingCentre + parkingSide * offset).clampedPosition;
+                    slots[unit] = slot;
+                }
+                InfernalWallPrepareActor35(unit);
+                PlaceExpandedSummoningUnit(unit, slot);
+            };
+            Vector3 parking = AstarPath.active.GetNearest(parkingCentre).clampedPosition;
+            foreach (var bystander in owned.Where(value => value != null && !value.Destroyed && value.IsInState &&
+                    !value.Descriptor.State.IsDead && value != sourceA && value != sourceB && value != mover &&
+                    value.Blueprint?.AssetGuid != InfernalRules35.WallSectionUnitGuid).ToArray())
+            {
+                park(bystander);
+                parked.Add(new JObject { ["unit"] = bystander.UniqueId, ["position"] = SurveyVector(bystander.Position) });
+            }
+            receipt["bystandersParked"] = new JObject { ["point"] = SurveyVector(parking),
+                ["distanceFromWallA"] = Vector3.Distance(parking, plan.Midpoint), ["units"] = parked };
+            persist();
             clearFear();
 
             int gridIndex;
@@ -389,9 +424,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var start = InfernalWallSnapshot35(region);
                 pairRow["baselineMismatchesAtStart"] = region.Count(node => !start[node].SameNavigation(baseline[node]));
 
-                // Every cast starts with the mover parked at lane A's start,
-                // the position the Wall B survey screened for adjacency.
-                PlaceExpandedSummoningUnit(mover, plan.Start);
+                // The mover stands in the parking area for every cast and for
+                // the Wall B survey (close20: at lane A's start it was adjacent
+                // to every candidate); live movers place it on their lanes.
+                park(mover);
                 clearFear();
                 var a = new InfernalWallSharedSection35 { Label = pair + "-a", Source = sourceA };
                 JObject castA = null;
@@ -405,6 +441,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 castA["claimedInRegion"] = a.Claimed.Count;
                 castA["dynamicNodes"] = a.Dynamic.Count;
+                // Source A's job is done until the next pair's cast, which
+                // stands it on its casting point again; until then it is not
+                // a creature adjacent to Wall B (close20).
+                park(sourceA);
+                clearFear();
                 persist();
 
                 if (geometry == null)
