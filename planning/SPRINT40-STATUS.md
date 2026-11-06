@@ -9,8 +9,8 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 - HOWARD-LAPTOP, root `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
   `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Current product
-  source `fde1d57b3871235280f326be2b529205be016b6f`; its reporting pin is
-  `8d370b77356ef310b3093c7c5fa71f2607f4d47d`. No game,
+  source `7813dad3b5d5d9f4a11290475647effe58710ad1`; its reporting pin is the
+  pending enclosing commit. No game,
   deployment, staging or lease is active; the live KMG tree is restored to
   SHA256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 - Recovery is CLOSED EXACTLY. The typed `BlueprintWeaponEnchantment` factory
@@ -440,6 +440,23 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   this evidence in one reporting commit, rebuild the final coherent candidate,
   then execute each mandatory fresh final native phase and the six-process
   persistence envelope on those unchanged bytes.
+- Reporting head `61c5b7674f3ed5adca47f876d89bd858daaedb3e` passed 2,816/2,816
+  and strict packaging: ZIP SHA256
+  `68586c77bfd69075b0fcb93c420cecb0d165c03c23d1c1e95fd5d841364b4f2b`, DLL
+  SHA256 `b93e23c91562b11a67c09132cf5e5607ed1b1061d03fde489b6c7a60e1807f63`,
+  MVID `9dece91a-bfe4-42c0-ae8d-a00efcf30aeb`. Final presentation run
+  `20261106T0255562351195Z-disposable-expanded-summoning-sprint32-native-review`
+  passed bodies, private resources, movement, exact five-attack routine and
+  separate spear-frost packets, then retained FAIL classified
+  `missing-stochastic-precondition`: the tail hit with physical damage only but
+  the bite missed. Restoration receipt
+  `expanded-summoning-restoration/20261106T0259315732549Z-disposable-expanded-summoning-sprint32-native-review.json`
+  is exact. Product source `7813dad3` keeps the real rolls and adds at most three
+  real full-attack retries after naturally waiting for standard-action cooldown;
+  it aggregates actual bite/tail hits, still fails on any natural cold packet or
+  absent witnessed hit, and leaves the one-routine presentation assertion exact.
+  Production compilation and all five focused Sprint40 tests pass. NEXT: commit/
+  push the reporting pin, rebuild once and rerun presentation on the new artifact.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 
