@@ -615,6 +615,49 @@ namespace KingmakerGunslinger.DomainTests
                 "The Wall must not keep ownership of a released cloud.");
         }
 
+        internal static void InfernalWoundNeverBleedsAWallSection()
+        {
+            foreach (string section in new[] { InfernalRules35.WallSectionUnitGuid, IceDevilRules40Policy.WallSectionGuid })
+            {
+                Assertions.True(InfernalRules35.InfernalWoundExcludesTarget(section),
+                    "A Wall of Ice section is an object; bleed is a creature condition.");
+                Assertions.False(SummonInjuryDiseasePolicy.ShouldResolve(true, true, 6, true,
+                        InfernalRules35.InfernalWoundExcludesTarget(section)),
+                    "A damaging Glaive hit on a Wall section applies no Infernal Wound marker.");
+            }
+            Assertions.False(InfernalRules35.InfernalWoundExcludesTarget("74652de839a94feba3c2fb67b536437c"),
+                "A creature keeps the printed Infernal Wound.");
+            Assertions.True(SummonInjuryDiseasePolicy.ShouldResolve(true, true, 6, true,
+                    InfernalRules35.InfernalWoundExcludesTarget("74652de839a94feba3c2fb67b536437c")),
+                "A damaging Glaive hit on a creature still applies the wound.");
+            Assertions.False(InfernalRules35.InfernalWoundExcludesTarget(null),
+                "An unidentified target is not silently excluded.");
+            Assertions.False(InfernalRules35.InfernalWoundExcludesTarget(InfernalRules35.WallSectionUnitGuid.ToUpperInvariant()),
+                "Only the exact section identity is excluded.");
+        }
+
+        internal static void BoneNaturalReachIsNotAProperFlanking2ReachWeapon()
+        {
+            int previous = InfernalRules35.NativeWeaponTypeRangeFeet(InfernalRules35.PreviousBoneNaturalTypeStoredRangeFeet);
+            int current = InfernalRules35.NativeWeaponTypeRangeFeet(InfernalRules35.BoneNaturalTypeStoredRangeFeet);
+            Assertions.Equal(5, previous, "The earlier raw nine-foot natural types were five-foot native types.");
+            Assertions.True(InfernalRules35.ProperFlanking2TreatsAsReachWeapon(true, previous),
+                "ProperFlanking2 treated those natural types as reach weapons with a dead zone.");
+            Assertions.Equal(2, current, "Raw five-foot natural types are the native minimum weapon range.");
+            Assertions.False(InfernalRules35.ProperFlanking2TreatsAsReachWeapon(true, current),
+                "The Bone Devil's natural attacks are not reach weapons, so adjacent targets are legal.");
+            Assertions.Equal(previous, current + InfernalRules35.BoneNaturalReachBonusFeet,
+                "Native ReachRange restores exactly the reach the type range carried, so the total is unchanged.");
+            Assertions.True(InfernalRules35.ProperFlanking2TreatsAsReachWeapon(true,
+                    InfernalRules35.NativeWeaponTypeRangeFeet(10)),
+                "A manufactured raw ten-foot reach weapon such as a glaive keeps its dead zone.");
+            Assertions.False(InfernalRules35.ProperFlanking2TreatsAsReachWeapon(false,
+                    InfernalRules35.NativeWeaponTypeRangeFeet(9)),
+                "Only melee weapons have the dead zone.");
+            Assertions.Equal(20, InfernalRules35.NativeWeaponTypeRangeFeet(20),
+                "Raw ranges above ten feet are returned unchanged by the installed getter.");
+        }
+
         internal static void WallSteamHidesOnlyTheCloudsFlameLayers()
         {
             foreach (string flame in new[] { "GroundFireBig", "GroundFireBig (1)", "Fire_Top (2)", "FireTiny", "Glow", "Glow (1)" })
