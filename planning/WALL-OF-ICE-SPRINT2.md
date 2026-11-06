@@ -1,4 +1,4 @@
-# Wall of Ice Sprint 2 — complete (navigation continuation and closeout below)
+# Wall of Ice Sprint 2 — integrated with master; native validation blocked (sections below)
 
 The Bone Devil Wall of Ice passed full native acceptance in one fresh guarded
 Kingmaker process on exact executable source
@@ -8,6 +8,193 @@ fire destruction, residual cold and steam, controlled original-deadline expiry,
 exact navigation restoration after every retirement, and Bone Devil tail
 contact. Six earlier guarded runs on intermediate candidates failed; each was
 inspected before the next correction and all are retained below.
+
+## Integration closeout with master (development candidate; blocked before packaging)
+
+**Status: merged and conflict-free, but not validated.** The integrated
+source compiles and passes its focused domain gates. It could not be
+packaged, so it has **no native result**, and nothing below is a pass for it.
+
+### Source state
+
+| Item | Commit |
+| --- | --- |
+| Master / base | `839204cac36e2c2079377269b8024f8a76d4c4f6`: PR #97 (Ice Devil) and PR #99 (wall-retirement safety) |
+| PR #98 head before integration | `b981350db7a90a978814ba83d04783e164e08377` (accepted executable `4aa27dcfea`; documentation only after it) |
+| Integration merge | `f31cccbe3d7f457309329d732cf6a4f90af5cd3b`: two parents (`b981350db7`, `839204cac3`), no rewrite |
+| Final head | the documentation commit after it; documentation only after `f31cccbe3d` |
+
+The 155-, 152- and 95-assertion results stay credited only to `4aa27dcfea`,
+`24a1b93583` and `36e44513d3`. None is transferred to the integration.
+
+### Integration decisions (one lifecycle in `InfernalWallNavmesh35`)
+
+Conflicts were resolved by reading both sides, not by choosing one file.
+
+- **Claims.** Each node's snapshot records its own static and pre-erosion
+  flags. A claim holds both layers. The last owner restores both, and a
+  remaining owner keeps the node blocked in both. `DynamicBlocked` counters
+  are never written; they stay owned by the native cuts and units.
+- **Retirement.** Master's resumable, idempotent `Release(force)` is the only
+  retirement path:
+  - An in-flight native update defers, keeping the cut disabled and every
+    claim and reference intact, and resumes from `Update`.
+  - A replaced graph completes without applying old data.
+  - Destruction forces completion.
+  - The paired native cut revert is submitted at most once.
+  - This branch's separate `RevertCutGridBlock` was removed, so the revert
+    cannot be applied twice. Its receipt fields remain as read-only aliases.
+- **Reconciliation.** Master's live and released reconcile work items now
+  compare and write both static layers, never combined walkability. They run
+  the native connection and clearance-tag refresh after any change, and
+  re-check the captured graph inside the work item.
+  - The released reconcile keeps each node's claim record (`_nodeRecords`), so
+    it can still restore both original layers after the shared claim entry is
+    gone.
+- **Donor suppression.** The component no longer disables itself once
+  restoration settles; a settle flag is used instead. Otherwise `LateUpdate`
+  would stop and a dead section's donor body could reappear.
+- **Kept from master:** Ice Devil identity and blueprint support; caster-level
+  hit points, duration and residual bonus (unchanged for the Bone Devil at
+  caster level 12); exactly-once breach consequences and lifetime removal in
+  `finally`; forced cleanup on destruction.
+- **Shared section builder.** Master's species-generic name is combined with
+  this branch's stone hit/death visual. Both species' sections get `CantMove`.
+- **Integration correction (shared rule).** `WallFormationSaveEligible` now
+  excludes both private section identities. Before this, an adjacent Ice
+  Devil section would still have rolled a formation save as a creature.
+  Regression: `sprint35-wall-section-not-formation-creature`.
+
+**Production vs observer.**
+- **Production:** `InfernalWallNavmesh35.cs` and `InfernalRules35Policy.cs`
+  (formation eligibility), plus the merged builder.
+- **Observer and tests:** the verdict corrections below; the lane-survey
+  signature (master's `admit` and `searchCenter` first, then this branch's
+  `avoid` and `surveyFile` by name); the domain tests.
+- **Documentation:** this section.
+
+### Corrected acceptance verdicts (implemented; not yet run natively)
+
+**Steam pool reuse.** `InfernalWallSteamPoolVerdict35` requires all of:
+
+- a captured cloud the Wall modified (flame renderers off)
+- that cloud reaching the native pool, identified by instance
+- the ordinary native claim returning one of those captured instances
+- a nonzero renderer comparison with no duplicate, missing or extra keys on
+  either side, covering every prefab renderer
+- no differing renderer, and Wall ownership cleared
+
+Regression `sprint35-wall-steam-pool-reuse-verdict` rejects a pristine
+different instance, a missing claim identity, an unreleased capture, a release
+row without identity, an unmodified capture, an empty comparison, an
+incomplete comparison, missing keys behind equal counts, duplicate keys on
+either side, an unrecorded key check, a differing renderer and uncleared
+ownership. It accepts the valid complete record.
+
+**Retained nav9 steam evidence**, read from its raw receipt. Captured cloud
+`-587312`, with 16 flame renderers off, was in the pool with 0 off after
+release. The native claim returned the same `-587312`, and 38 renderers
+compared with 0 differing, with Wall ownership 0. Its historical credit is
+kept for exactly those facts. The receipt did not record:
+
+- the released row's identity
+- duplicate, missing or extra keys
+
+So the new verdict would not accept it as a complete record. It is not
+relabelled.
+
+**Turn-based route identity.**
+- **Contract.** In turn-based combat, the installed
+  `UnitMovementAgent.FindPath` calls `StartPathWithClerance` with graph mask 2
+  and the mover's clearance and `ConstructTags`. `UnitCommand` then follows
+  the command's `ForcedPath`.
+- **New requirement.** The probe now records and requires that the executed
+  `ForcedPath`:
+  - is an `ABPathWithClearance` generated in turn-based combat
+  - has start, end and every node on the claim `GridGraph`
+  - used native clearance (`Corpulence * 2`) and native `ConstructTags`
+  - is the command's own `ForcedPath`, with the mover in combat
+- **Routes.** Every route must be `ABPathWithClearance` on that grid.
+- **Retained nav9.** All eight native route queries were
+  `ABPathWithClearance` with every node on graph 1, clearance [1, 0, 1] and
+  native tags. For the executed move, nav9 recorded only the vertices, not the
+  path's graph or type, so the executed path's identity is **not** established
+  by nav9.
+
+**Both static layers.** The turn-based probe, two-Wall formation and survivor
+checks now read `StaticWalkable` and `WalkableErosion` directly. nav9's
+turn-based and survivor checks asserted the static flag only. Its final
+restorations compared both layers, because node state includes the
+pre-erosion flag.
+
+**Clearance outcomes**, classified per cell. Native `ConstructTags` caps a
+creature's size at `erodeIterations` (10) and, with first tag 1, can exclude
+only tags 1–9.
+
+| Outcome | Meaning | Status |
+| --- | --- | --- |
+| **Exact** | Same tag value. | — |
+| **Equivalent restriction** | Different value, same native restriction. Only 0 and 10+ are equivalent: neither is excluded for any creature size. | Permitted |
+| **Looser beyond reach** | Excluded for fewer creature sizes. | Permitted only outside the declared reach |
+| Looser within reach | Excluded for fewer creature sizes. | Fails |
+| More restrictive | Excluded for more creature sizes. | Fails anywhere |
+
+- **nav7/nav8, reclassified:** two cells 10→0 are equivalent restriction. One
+  cell 9→10, 11 cells from the claims, is looser beyond reach: tag 9 is
+  excluded for a creature ten cells wide, so this is a genuine loosening, not
+  an equivalence.
+- **nav9's final diagonal restorations:** exact, with 0 differing tags of 676
+  in both orders.
+
+### Validation and the blocker
+
+**Focused gates (pass):**
+- `expanded-summoning.sprint32-native-admission;expanded-summoning.sprint35;expanded-summoning.sprint40;expanded-summoning.overhaul`: 27, then 28 selected, 0 failures. This includes `sprint35-wall-retirement-resumable`, the new steam verdict and `sprint40-wall-parameters`.
+- `expanded-summoning`: 631 of 2,828, 0 failures.
+
+**Packaging: refused, twice, a setup cause.** `tools/validate_development_candidate.py`
+reports: "No release tag v0.0.178 for the active version. Development
+candidates extend a released version; fetch its tag with: git fetch --tags origin."
+- **Why:** master's "Freeze Sprint 40 release candidate metadata" (`4193018fdd`)
+  set the active version to 0.0.178, which is not published. `origin` has no
+  `v0.0.178` tag, and the latest release is v0.0.177.
+- **No sanctioned route exists** for a development candidate on that base.
+  A local tag would fake a release. The release path would require repinning
+  master's 0.0.178 release validator to this source, which would make it the
+  release candidate; that is an owner decision.
+- **Not executed natively:**
+  - Claims durable through turn-based updates with the executed-path identity
+    proof.
+  - The diagonal two-Wall orders.
+  - Final restoration and the physical-destruction route.
+  - Master's interrupted-retirement row (`wall-interrupted-retirement-resumes`).
+  - Bone/Ice ownership isolation (`wall-cross-species-*`, phase
+    `sprint40-ice-devil-walls`).
+  - The corrected steam check.
+
+**Restoration.** No game process or transaction ran in this continuation. The
+installation reads mod 0.0.140 at intake and now, and no lease or lock was
+held.
+
+**Ledger.**
+- **This continuation:** ≥ 0.942 min (three gates 49.1 s; two refused build
+  attempts 7.43 s).
+- **Cumulative:** ≥ 592.948 min.
+- Lower bounds; analysis and merge time are not counted.
+
+**Smallest remaining action.** Publish `v0.0.178` on a commit this merge
+extends (master `839204cac3` or an ancestor), or obtain the owner's decision
+on another packaging route. Then build `f31cccbe3d` (or its head) once with
+`build-and-run.ps1`, and run
+`run-native.ps1 -Phase sprint40-ice-devil-walls` on the same package.
+
+**Remaining limitations:**
+- **Forced retirement can strand counters.** A forced retirement while a cut's
+  own update is in flight (destruction only) skips the native revert by
+  master's design (recorded skip reason), so that cut's counters could remain.
+- **Ice Devil steam stays invisible.** Wall steam presentation still targets
+  only the Bone Devil's Wall ability, so Ice Devil Wall steam remains as
+  master shipped it. This is a presentation follow-up, not changed here.
 
 ## Navigation continuation (development candidate; PR #98 stays draft and unmerged)
 
@@ -154,11 +341,14 @@ smallest correct implementation:
 
 **Erosion tags.** nav5 left 357–387 cells with tags computed while the claims
 stood, so tag re-erosion was added. nav7 and nav8 then left 3 cells 10–11
-cells from the claims differing (10→0, 10→0, 9→10). Native `ConstructTags`
-excludes only tags 1–9, so 0 and 10+ restrict no creature, and these
-differences only loosen. Restoration requires baseline restriction levels
-within the erosion reach and no cell more restrictive anywhere; looser tags
-beyond the reach are recorded.
+cells from the claims differing. Corrected classification (integration
+closeout): the two cells 10→0 carry the same native restriction (native
+`ConstructTags` excludes neither 0 nor 10 for any creature size); the cell
+9→10, 11 cells out, is genuinely looser (tag 9 is excluded for a creature
+ten cells wide) and lies beyond the declared reach. Restoration requires
+that no tag within the erosion reach be looser or more restrictive and that
+no cell anywhere be more restrictive; equivalent values and looser tags
+beyond the reach are recorded with their classification.
 
 ### 4. Survivor assertions
 
