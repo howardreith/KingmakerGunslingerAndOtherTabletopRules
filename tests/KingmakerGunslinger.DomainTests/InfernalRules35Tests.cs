@@ -434,6 +434,83 @@ namespace KingmakerGunslinger.DomainTests
                 "Bone cannot cross-bind the Barbed body.");
         }
 
+        internal static void WallRetirementResumesAndNeverStrandsClaims()
+        {
+            const int budget = 120;
+
+            // An in-flight grid update is the one transient state: the
+            // pathfinder clears GraphUpdateObject.updating inside
+            // GridGraph.UpdateArea, so retirement defers and retries rather
+            // than aborting between disabling the cut and releasing claims.
+            Assertions.Equal(InfernalRules35.WallRetirementStep.Defer,
+                InfernalRules35.PlanWallRetirement(true, true, true, false, 0,
+                    budget),
+                "An in-flight native grid update defers retirement.");
+            Assertions.Equal(InfernalRules35.WallRetirementStep.Defer,
+                InfernalRules35.PlanWallRetirement(true, true, true, false,
+                    budget - 1, budget),
+                "Retirement keeps retrying while the defer budget remains.");
+            Assertions.True(InfernalRules35.WallRetirementSkipReason(
+                    true, true, true, false, 0, budget) == null,
+                "A deferral is not a skipped native revert.");
+
+            // Once the update is processed the paired revert goes out against
+            // the exact captured graph, as before.
+            Assertions.Equal(InfernalRules35.WallRetirementStep.RevertNativeCut,
+                InfernalRules35.PlanWallRetirement(true, true, false, false, 0,
+                    budget),
+                "A settled update reverts the native cut on the exact graph.");
+            Assertions.True(InfernalRules35.WallRetirementSkipReason(
+                    true, true, false, false, 0, budget) == null,
+                "A normal revert records no skip reason.");
+
+            // A replaced graph is terminal, not transient: nothing of ours
+            // survives on it and its restoration data must never reach the
+            // replacement, so retirement completes instead of throwing.
+            Assertions.Equal(InfernalRules35.WallRetirementStep.SkipNativeCut,
+                InfernalRules35.PlanWallRetirement(true, false, false, false, 0,
+                    budget),
+                "A replaced graph completes retirement without a native revert.");
+            Assertions.Equal("captured-graph-replaced",
+                InfernalRules35.WallRetirementSkipReason(true, false, true,
+                    false, 0, budget),
+                "Graph replacement is recorded ahead of any in-flight update.");
+
+            Assertions.Equal(InfernalRules35.WallRetirementStep.SkipNativeCut,
+                InfernalRules35.PlanWallRetirement(false, true, false, false, 0,
+                    budget),
+                "An unapplied cut needs no native revert.");
+            Assertions.Equal("no-native-cut-applied",
+                InfernalRules35.WallRetirementSkipReason(false, true, false,
+                    false, 0, budget),
+                "An unapplied cut records why it skipped.");
+
+            // Destruction has no later frame, and an indefinitely stalled
+            // update must not strand owned claims. Both force completion and
+            // record it, rather than deferring forever.
+            Assertions.Equal(InfernalRules35.WallRetirementStep.SkipNativeCut,
+                InfernalRules35.PlanWallRetirement(true, true, true, true, 0,
+                    budget),
+                "Destruction forces completion instead of deferring.");
+            Assertions.Equal("forced-while-update-in-flight",
+                InfernalRules35.WallRetirementSkipReason(true, true, true, true,
+                    0, budget),
+                "A forced completion records that the revert was skipped.");
+            Assertions.Equal(InfernalRules35.WallRetirementStep.SkipNativeCut,
+                InfernalRules35.PlanWallRetirement(true, true, true, false,
+                    budget, budget),
+                "An exhausted defer budget completes rather than leaking claims.");
+            Assertions.Equal("update-in-flight-defer-budget-exhausted",
+                InfernalRules35.WallRetirementSkipReason(true, true, true,
+                    false, budget, budget),
+                "Budget exhaustion is recorded distinctly from destruction.");
+
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                InfernalRules35.PlanWallRetirement(true, true, true, false, -1,
+                    budget),
+                "A negative deferral count is rejected.");
+        }
+
         internal static void WallOfIceKeepsFormationAndBreachRulesDistinct()
         {
             Assertions.Equal(18,
