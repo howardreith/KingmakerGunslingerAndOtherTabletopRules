@@ -436,28 +436,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             persist();
 
             // Sprint 3: natural reach against an adjacent creature under the
-            // installed ProperFlanking2 dead zone. A fresh source Bone Devil
-            // attacks the stilled hostile Glaive witness; the original Bone
-            // Devil's summon lifetime ends around the tail step (s3b: it
-            // expired 7 ms before the attack command was interrupted). The
-            // witness first takes the established per-source fear-aura
-            // exposure beside the source, then only its fright is cleared, so
+            // installed ProperFlanking2 dead zone. The attacker is the fresh
+            // source Bone Devil (s3b: the original's summon lifetime ended
+            // 7 ms before its attack command was interrupted). The witness is
+            // the fixture's own hostile: not a summon, so it has no lifetime
+            // to lose, hostile to the party's summons, its brain off and its
+            // hit points far above one routine's damage. The Glaive witness
+            // used before is a summon with its own lifetime. The hostile is
+            // reset, then takes the established per-source fear-aura exposure
+            // beside the source, and only the resulting fright is cleared, so
             // the native fear controller cannot move it during the attack.
-            var witness = run.Attacker;
-            var adjacency = new JObject { ["source"] = sourceA.UniqueId, ["witness"] = witness?.UniqueId };
+            var witness = fixture.Hostile;
+            var adjacency = new JObject { ["source"] = sourceA.UniqueId, ["witness"] = witness?.UniqueId,
+                ["witnessKind"] = "fixture-hostile" };
             receipt["adjacentNaturalAttack"] = adjacency;
             if (witness == null || witness.Destroyed || !witness.IsInState || witness.Descriptor.State.IsDead ||
                 !sourceA.IsEnemy(witness))
             {
-                adjacency["reason"] = "no live hostile Glaive witness";
+                adjacency["setupFailure"] = "no live fixture hostile that is an enemy of the source Bone Devil";
                 check("bone-adjacent-natural-attack", false, adjacency,
                     "A live hostile witness is required for the adjacent natural attack.");
             }
             else
             {
+                adjacency["witnessReset"] = ResetExpandedSummoningHostile(fixture);
                 InfernalWallPrepareActor35(witness);
-                adjacency["witnessImmuneBefore"] = InfernalBoneBuff35(witness, immunity, sourceA) != null;
-                if (!(bool)adjacency["witnessImmuneBefore"])
+                var fear = new JObject { ["immuneBefore"] = InfernalBoneBuff35(witness, immunity, sourceA) != null };
+                adjacency["fearPreparation"] = fear;
+                if (!(bool)fear["immuneBefore"])
                 {
                     Vector3 side = Vector3.Cross(Vector3.up, sourceA.OrientationDirection); side.y = 0f;
                     if (side.sqrMagnitude < .01f) side = Vector3.right;
@@ -466,14 +472,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     while (DateTime.UtcNow < until && InfernalBoneBuff35(witness, immunity, sourceA) == null)
                     { Game.Instance.IsPaused = false; yield return 0; }
                 }
-                adjacency["witnessImmuneAfter"] = InfernalBoneBuff35(witness, immunity, sourceA) != null;
+                fear["immuneAfter"] = InfernalBoneBuff35(witness, immunity, sourceA) != null;
                 InfernalBoneRemoveEffects35(witness, sources, run.Frightened);
                 clearFear();
-                foreach (int frame in InfernalAdjacentNatural35(sourceA, witness, run.Trace, check)) yield return frame;
+                fear["frightenedAfterClearing"] = witness.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Frightened);
+                fear["sourceFrightenedAfterClearing"] = sourceA.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Frightened);
+                if (!(bool)fear["immuneAfter"])
+                {
+                    adjacency["setupFailure"] = "the witness never gained the source's fear-aura immunity";
+                    check("bone-adjacent-natural-attack", false, adjacency,
+                        "The witness must hold the source's per-source fear-aura immunity before the attack.");
+                }
+                else
+                {
+                    foreach (int frame in InfernalAdjacentNatural35(sourceA, witness, run.Trace, check, adjacency)) yield return frame;
+                }
                 InfernalWallPrepareActor35(sourceA);
                 InfernalWallPrepareActor35(witness);
                 InfernalBoneRemoveEffects35(witness, sources, run.Frightened);
                 clearFear();
+                adjacency["witnessResetAfter"] = ResetExpandedSummoningHostile(fixture);
             }
             persist();
 
@@ -1025,6 +1043,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             // parked 12 m off (close26). The summoner stands 3.5 m behind the
             // casting source instead, clear of every standing section.
             JObject summonerSpot = InfernalWallSummonerBeside35(run, casterPoint, point);
+            // Without a spot inside the follow distance native summon follow
+            // interrupts every cast (s3a): fail the setup now, with the
+            // search evidence, instead of casting into that interruption.
+            if (summonerSpot["point"] == null || summonerSpot["point"].Type == JTokenType.Null)
+            {
+                formed.Section = null;
+                result(new JObject { ["label"] = formed.Label, ["source"] = caster.UniqueId,
+                    ["castingPoint"] = SurveyVector(caster.Position), ["targetPoint"] = SurveyVector(point),
+                    ["formed"] = false, ["setupFailure"] = "no-summoner-spot", ["summonerSpot"] = summonerSpot,
+                    ["commandAttempts"] = new JArray() });
+                yield break;
+            }
             InfernalBoneRemoveEffects35(run.Fixture.Caster, sources, run.Frightened);
             InfernalBoneRemoveEffects35(caster, sources, run.Frightened);
             var target = new TargetWrapper(point);
