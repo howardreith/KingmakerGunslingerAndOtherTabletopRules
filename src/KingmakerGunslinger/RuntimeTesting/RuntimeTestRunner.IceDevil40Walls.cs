@@ -274,6 +274,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             Action<UnitEntityData> capture,
             Action<string, bool, JObject, string> check, string label)
         {
+            var liveActors = actors.Where(actor => actor != null &&
+                !actor.Destroyed && actor.IsInGame && actor.View != null).ToList();
+            if (!liveActors.Contains(source))
+                throw new InvalidOperationException(
+                    "Wall survey source is not a live request-owned actor.");
             bool ice = IceDevilMartialProfile40.For(source) != null;
             string prefix = ice ? ExpandedSummoningSpecialBuilder.IceDevil40Prefix :
                 ExpandedSummoningSpecialBuilder.Bone35Prefix;
@@ -283,9 +288,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             Vector3 start, middle, end, casterPoint; JArray attempts; JObject survey;
             int admittedCandidates = 0, availableCandidates = 0, legalCandidates = 0;
             Func<Vector3, Vector3, bool> admit = (point, offLane) => {
-                for (int index = 0; index < actors.Count; index++)
-                    if (!actors[index].Destroyed)
-                        PlaceExpandedSummoningUnit(actors[index], offLane + Vector3.forward * ((index + 1) * 4f));
+                for (int index = 0; index < liveActors.Count; index++)
+                    PlaceExpandedSummoningUnit(liveActors[index],
+                        offLane + Vector3.forward * ((index + 1) * 4f));
                 PlaceExpandedSummoningUnit(source, offLane);
                 admittedCandidates++;
                 bool available = data.IsAvailable;
@@ -294,7 +299,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (legal) legalCandidates++;
                 return legal;
             };
-            bool found = InfernalEarlyWallLane35(fixture, actors, out start, out middle, out end,
+            bool found = InfernalEarlyWallLane35(fixture, liveActors, out start, out middle, out end,
                 out casterPoint, out attempts, out survey, admit, surveyCenter);
             check("wall-survey-" + label, found && legalCandidates > 0,
                 new JObject { ["source"] = source.UniqueId, ["surveyCenter"] = Vec(surveyCenter),
@@ -304,7 +309,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["boundedSurvey"] = attempts, ["nativeSurvey"] = survey },
                 "Existing bounded survey retains native availability/targeting; refusal records the actual admission boundary rather than forcing a placement.");
             var formationRestore = new JArray();
-            foreach (var actor in actors.Where(actor => !actor.Destroyed &&
+            foreach (var actor in liveActors.Where(actor =>
                 !ReferenceEquals(actor, source)))
             {
                 Vector3 position;
@@ -314,7 +319,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 formationRestore.Add(new JObject {
                     ["actor"] = actor.UniqueId, ["position"] = Vec(position) });
             }
-            var readinessBefore = new JArray(actors.Where(actor => !actor.Destroyed)
+            var readinessBefore = new JArray(liveActors
                 .Select(InfernalWallActorState35));
             // The qualified S35 wall fixture established that an exact
             // source-owned setup fear can enqueue a fresh native panic move
@@ -327,7 +332,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ExpandedSummoningSpecialBuilder.IceDevil40Prefix + "FearFrightened"],
                 (BlueprintBuff)ExpandedSummoningBlueprints.Registered.BySymbol[
                     ExpandedSummoningSpecialBuilder.Bone35Prefix + "FearFrightened"] };
-            UnitEntityData[] fearSources = actors.Where(actor => !actor.Destroyed).ToArray();
+            UnitEntityData[] fearSources = liveActors.ToArray();
             string[] fearSourceIds = fearSources.Select(actor => actor.UniqueId).ToArray();
             foreach (var actor in fearSources)
                 InfernalBoneRemoveEffects35(actor, fearSources, fearBlueprints);
@@ -336,13 +341,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (fearSources.Contains(buff.Context?.MaybeCaster) ||
                  (buff.Context != null && fearSourceIds.Contains(
                      CircleOriginalCasterId(buff.Context))))));
-            foreach (var actor in actors.Where(actor => !actor.Destroyed))
+            foreach (var actor in liveActors)
                 InfernalWallPrepareActor35(actor);
             float sourceCastingGap = InfernalEarlyDistanceToSegment35(
                 source.Position, casterPoint, casterPoint);
             bool nativeAvailable = data.IsAvailable;
             bool nativeCanTarget = nativeAvailable && data.CanTarget(new TargetWrapper(middle));
-            bool ready = actors.Where(actor => !actor.Destroyed).All(actor =>
+            bool ready = liveActors.All(actor =>
                 actor.Commands.Empty && actor.Commands.Queue.Count == 0 &&
                 !actor.View.MovementAgent.IsReallyMoving &&
                 actor.View.MovementAgent.Velocity.sqrMagnitude < .0001f &&
@@ -357,7 +362,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["nativeFormationRestore"] = formationRestore,
                     ["isolatedFearBlueprints"] = new JArray(fearBlueprints.Select(value => value.AssetGuid)),
                     ["before"] = readinessBefore,
-                    ["after"] = new JArray(actors.Where(actor => !actor.Destroyed)
+                    ["after"] = new JArray(liveActors
                         .Select(InfernalWallActorState35)) },
                 "Only request-owned sources retire unrelated formation movement through the qualified S35 fixture seam; the exact source remains naturally available and legal at the surveyed casting point.");
             var prior = new HashSet<string>(Game.Instance.State.Units.Select(x => x.UniqueId));
