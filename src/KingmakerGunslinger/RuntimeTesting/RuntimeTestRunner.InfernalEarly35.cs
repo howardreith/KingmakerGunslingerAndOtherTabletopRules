@@ -374,7 +374,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // rest before contact), contact, follow-through and recovery.
                 int windup = -1, contact = -1, recovery = -1;
                 bool windupLate = false, follow = false, followLate = false, settled = false;
-                DateTime deadline = DateTime.UtcNow.AddSeconds(30);
+                // Each ordinary capture encodes a full frame; under host memory
+                // pressure eleven of them outlasted a 30-second wall deadline
+                // before the command's closing animation (observed once).
+                DateTime deadline = DateTime.UtcNow.AddSeconds(90);
                 int finishedFrame = -1;
                 // The tail itself moves only from the native impact, so the
                 // approach/anticipation evidence is the body's own attack
