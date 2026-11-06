@@ -77,9 +77,12 @@ namespace KingmakerGunslinger.DomainTests
             // toggle replaced the first iterative with a sunder maneuver.
             var sunder = Complete();
             sunder["expected"] = new JArray(Spear, Spear, Spear); sunder["plan"] = new JArray(Spear, Spear, Spear);
-            sunder["attacks"] = new JArray(Attack(Spear, true), Attack(Spear, true));
+            var second = Attack(Spear, true); second["gameSeconds"] = 2d;
+            var third = Attack(Spear, true); third["gameSeconds"] = 4d;
+            sunder["attacks"] = new JArray(second, third);
             sunder["replacedSlots"] = new JArray(new JObject { ["owner"] = Owner, ["target"] = Target,
-                ["attackCommand"] = Reference, ["weapon"] = Spear, ["standaloneRoll"] = true });
+                ["attackCommand"] = Reference, ["weapon"] = Spear, ["standaloneRoll"] = true,
+                ["attackIndex"] = 1, ["gameSeconds"] = 0d, ["rollResult"] = "Miss" });
             sunder["attackReplacements"] = new JArray(new JObject { ["buff"] = "SunderActionToggleBuff", ["active"] = true,
                 ["maneuver"] = "SunderArmor", ["onlyCharge"] = false });
             Assertions.Equal<string>(null, SummonAdjacentRoutineVerdict4.Failure(sunder),
@@ -96,9 +99,22 @@ namespace KingmakerGunslinger.DomainTests
             var foreignReplacement = (JObject)sunder.DeepClone();
             foreignReplacement["replacedSlots"][0]["target"] = "another";
             Fails(foreignReplacement, "attack-outside-measured-command", "A replaced slot must be against the exact target.");
+            Assertions.Equal<string>(null, SummonAdjacentRoutineVerdict4.Failure(sunder),
+                "A failed maneuver attempt still consumes its slot.");
             var doubled = (JObject)sunder.DeepClone();
             ((JArray)doubled["replacedSlots"]).Add(doubled["replacedSlots"][0].DeepClone());
-            Fails(doubled, "extra-attack", "Replacements cannot exceed the plan.");
+            Fails(doubled, "replacement-slot-not-unique", "The same substitution cannot be counted twice.");
+            var overWeapon = (JObject)sunder.DeepClone();
+            overWeapon["replacedSlots"][0]["gameSeconds"] = 2d; overWeapon["replacedSlots"][0]["attackIndex"] = 2;
+            overWeapon["attacks"] = new JArray(second.DeepClone(), second.DeepClone());
+            Fails(overWeapon, "replacement-slot-not-unique", "A slot already credited to a weapon attack cannot also be a substitution.");
+            var swapped = (JObject)sunder.DeepClone();
+            swapped["attacks"] = new JArray(second.DeepClone(), second.DeepClone());
+            swapped["replacedSlots"][0]["gameSeconds"] = 2d;
+            Fails(swapped, "replacement-slot-not-unique", "A double-counted slot with another slot missing cannot pass on counts alone.");
+            var outOfPlan = (JObject)sunder.DeepClone();
+            outOfPlan["replacedSlots"][0]["attackIndex"] = 4;
+            Fails(outOfPlan, "replacement-slot-not-unique", "A substitution must name a planned slot.");
             var missingSlot = (JObject)sunder.DeepClone();
             missingSlot["replacedSlots"] = new JArray();
             Fails(missingSlot, "planned-slot-unresolved", "Without the replacement evidence the slot is unresolved.");
