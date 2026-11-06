@@ -1163,6 +1163,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint35-wall-claim-survives-other-wall", InfernalRules35Tests.WallClaimSurvivesAnotherWallsGridUpdate),
             Case("expanded-summoning.sprint35-wall-section-not-formation-creature", InfernalRules35Tests.WallSectionIsNotAFormationSaveCreature),
             Case("expanded-summoning.sprint35-wall-section-stationary", InfernalRules35Tests.WallSectionIsStationary),
+            Case("expanded-summoning.sprint35-wall-section-no-infernal-wound", InfernalRules35Tests.InfernalWoundNeverBleedsAWallSection),
+            Case("expanded-summoning.sprint35-bone-natural-reach-not-reach-weapon", InfernalRules35Tests.BoneNaturalReachIsNotAProperFlanking2ReachWeapon),
             Case("expanded-summoning.sprint35-wall-retirement-resumable", InfernalRules35Tests.WallRetirementResumesAndNeverStrandsClaims),
             Case("expanded-summoning.sprint35-original-models", InfernalRules35Tests.OwnedBodiesDecodeAndTailIsIsolated),
             Case("expanded-summoning.sprint36-live-dcs", InfernalRules36Tests.PrintedDcsDeriveFromLiveAbilityScores),

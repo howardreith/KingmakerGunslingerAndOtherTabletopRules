@@ -40,7 +40,8 @@ namespace KingmakerGunslinger.Summoning
                 !ReferenceEquals(evt.Initiator, source) ||
                 !ReferenceEquals(evt.Weapon?.Blueprint, Glaive) ||
                 !SummonInjuryDiseasePolicy.ShouldResolve(true, evt.AttackRoll?.IsHit == true,
-                    Math.Max(0, evt.MeleeDamage?.Damage ?? 0), SummonDiseaseExposure.IsAvailable(target), false)) return;
+                    Math.Max(0, evt.MeleeDamage?.Damage ?? 0), SummonDiseaseExposure.IsAvailable(target),
+                    InfernalRules35.InfernalWoundExcludesTarget(target?.Blueprint?.AssetGuid))) return;
             object previous;
             if (Seen.TryGetValue(evt, out previous)) return;
             Seen.Add(evt, new object());
