@@ -298,7 +298,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var target = new TargetWrapper(point);
                 if (data.IsAvailable && data.CanTarget(target)) {
                     var candidate = new UnitUseAbility(data, target);
-                    if (candidate.CanStart) {
+                    // CanStart alone admits a point the owner would first have
+                    // to walk to. The qualified walls phase casts only from a
+                    // point it has already settled on, recording
+                    // shouldApproach false and enoughClose true, so require
+                    // the same here rather than queueing an approach this
+                    // save-bound fixture never drives.
+                    if (candidate.CanStart && !candidate.ShouldUnitApproach &&
+                        candidate.IsUnitEnoughClose) {
                         selected = target;
                         command = candidate;
                         break;
@@ -315,10 +322,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Where(unit => ReferenceEquals(unit.Blueprint,
                     sectionBlueprint)).Select(unit => unit.UniqueId));
             UnitEntityData section = null;
+            // A bounded trace of the states this command actually passes
+            // through, so a failure names its own cause instead of only its
+            // terminal state. Samples are kept only when something changes.
+            var trace = new List<string>();
+            string lastSample = null;
+            Func<string, string> sample = phase =>
+                phase + ":started=" + command.IsStarted +
+                ",acted=" + command.IsActed +
+                ",finished=" + command.IsFinished +
+                ",result=" + command.Result +
+                ",canStart=" + command.CanStart +
+                ",approach=" + command.ShouldUnitApproach +
+                ",close=" + command.IsUnitEnoughClose +
+                ",brain=" + source.IsBrainActive +
+                ",paused=" + Game.Instance.IsPaused;
             SetExpandedSummoningBrainActive(source, activateBrain);
             try
             {
                 source.Commands.Run(command);
+                trace.Add(sample("run"));
                 DateTime deadline = DateTime.UtcNow.AddSeconds(30);
                 while (DateTime.UtcNow < deadline &&
                     (!command.IsFinished || section == null))
@@ -329,6 +352,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         unit => ReferenceEquals(unit.Blueprint,
                             sectionBlueprint) &&
                             !prior.Contains(unit.UniqueId));
+                    string current = sample("frame");
+                    if (current != lastSample && trace.Count < 12)
+                        trace.Add(current);
+                    lastSample = current;
                 }
             }
             finally
@@ -354,6 +381,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Where(value => value != null)
                         .Select(value => value.GetType().Name + ":" +
                             value.Result).ToArray()) +
+                    ";trace=" + string.Join(" > ", trace.ToArray()) +
                     ";section=" + (section == null ? "none" :
                         section.UniqueId) + ".");
             DateTime claimsDeadline = DateTime.UtcNow.AddSeconds(15);
