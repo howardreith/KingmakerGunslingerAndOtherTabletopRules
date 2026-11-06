@@ -12,7 +12,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string Sprint39WallPlacementPreflightPhase = "summon-wall-placement-preflight";
         // Sprint 4 summon reach: a read-only census of every catalog unit's
         // weapons and native threat probes of representative summons.
-        internal const string Sprint4SummonReachPhase = "summon-reach-sprint4";
+        internal const string Sprint39OverhaulReachPhase = "summon-reach-sprint4";
         internal static bool WallFixturePhase(string phase)
         { return phase == Sprint39OverhaulWallPhase || WallPlacementPreflightPhase(phase); }
         internal static bool WallPlacementPreflightPhase(string phase)
@@ -130,7 +130,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static bool Sprint32NativeInputPhase(string phase)
         { return phase == Sprint32DruidInputPhase || phase == Sprint32WizardInputPhase || phase == Sprint32SorcererInputPhase; }
         internal static bool Sprint32NativeDefaultPhase(string phase)
-        { return Sprint40Phase(phase) || WallFixturePhase(phase) || phase == Sprint4SummonReachPhase || phase == Sprint39OverhaulDaylightPhase || phase == Sprint39OverhaulMotionPhase || phase == Sprint39OverhaulOffPhase || phase == Sprint32InfernalBodiesPhase || phase == Sprint32ShadowMotionPhase || Sprint32NativeInputPhase(phase) || phase == Sprint32PerformancePhase ||
+        { return Sprint40Phase(phase) || WallFixturePhase(phase) || phase == Sprint39OverhaulReachPhase || phase == Sprint39OverhaulDaylightPhase || phase == Sprint39OverhaulMotionPhase || phase == Sprint39OverhaulOffPhase || phase == Sprint32InfernalBodiesPhase || phase == Sprint32ShadowMotionPhase || Sprint32NativeInputPhase(phase) || phase == Sprint32PerformancePhase ||
             phase == Sprint32FascinatePhase || phase == Sprint32BardicSuggestionPhase || phase == Sprint32GrabPhase || phase == Sprint32PresentationPhase || phase == Sprint32SuggestionTerminalsPhase; }
         internal static bool Sprint32NativeDefaultOutdoor(string scenario, string phase)
         { return scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview && Sprint32NativeDefaultPhase(phase); }

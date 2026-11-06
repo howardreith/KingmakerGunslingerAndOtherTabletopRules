@@ -36,7 +36,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ReviewSummonReach4(ExpandedSummoningCorrectionFixture fixture)
         {
             var cells = new JArray();
-            var receipt = new JObject { ["phase"] = ExpandedSummoningNativeProfilePolicy.Sprint4SummonReachPhase,
+            var receipt = new JObject { ["phase"] = ExpandedSummoningNativeProfilePolicy.Sprint39OverhaulReachPhase,
                 ["cells"] = cells, ["scope"] = "Read-only summon weapon reach census and native threat probes." };
             string path = Path.Combine(_request.EvidenceDirectory, "s4-summon-reach.json");
             Action persist = () => RuntimeTestResultWriter.WriteAtomic(path, receipt.ToString(Formatting.Indented));
