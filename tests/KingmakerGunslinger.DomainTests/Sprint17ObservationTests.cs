@@ -7,14 +7,18 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void NativeReachRetainsTheEngineFloor()
         {
-            Assertions.True(Sprint17ObservationPolicy.NativeReach(5, 5, 10, 2, 2, 6, 2, 6), "Separate raw5/10, computed2/6, body5 and actual2/6 retain the native floor.");
-            Assertions.False(Sprint17ObservationPolicy.NativeReach(5, 2, 6, 2, 2, 6, 2, 6), "Computed getters cannot be relabeled raw profile inputs.");
-            Assertions.False(Sprint17ObservationPolicy.NativeReach(5, 5, 10, 2, 5, 10, 2, 6), "Raw fields cannot be relabeled computed getters.");
-            Assertions.False(Sprint17ObservationPolicy.NativeReach(5, 5, 10, 2, 2, 6, 1, 6), "Cannot remove the native floor to claim five feet.");
-            Assertions.False(Sprint17ObservationPolicy.NativeReach(5, 5, 10, 2, 2, 6, 2, 10), "Actual weapon ranges must match computed ranges, not raw reach.");
-            Assertions.False(Sprint17ObservationPolicy.NativeReach(10, 5, 10, 2, 2, 6, 2, 6), "Body reach is independent; no inflated body reach.");
+            // Sprint 4: raw 5/5, computed 2/2, actual 2/6 with the exact +4
+            // tail correction (the tail is no longer a reach-weapon type).
+            Assertions.True(Sprint17ObservationPolicy.NativeReach(5, 5, 5, 2, 2, 2, 2, 6, 4), "Raw5/5, computed2/2, body5 and actual2/6 with the exact tail correction retain the native floor.");
+            Assertions.False(Sprint17ObservationPolicy.NativeReach(5, 5, 10, 2, 2, 6, 2, 6, 0), "The pre-Sprint-4 reach-weapon tail type is no longer accepted.");
+            Assertions.False(Sprint17ObservationPolicy.NativeReach(5, 2, 2, 2, 2, 2, 2, 6, 4), "Computed getters cannot be relabeled raw profile inputs.");
+            Assertions.False(Sprint17ObservationPolicy.NativeReach(5, 5, 5, 2, 5, 5, 2, 6, 4), "Raw fields cannot be relabeled computed getters.");
+            Assertions.False(Sprint17ObservationPolicy.NativeReach(5, 5, 5, 2, 2, 2, 1, 6, 4), "Cannot remove the native floor to claim five feet.");
+            Assertions.False(Sprint17ObservationPolicy.NativeReach(5, 5, 5, 2, 2, 2, 2, 10, 4), "The actual tail must be its type plus the exact correction, not raw reach.");
+            Assertions.False(Sprint17ObservationPolicy.NativeReach(5, 5, 5, 2, 2, 2, 2, 6, 8), "A doubled correction rejects.");
+            Assertions.False(Sprint17ObservationPolicy.NativeReach(10, 5, 5, 2, 2, 2, 2, 6, 4), "Body reach is independent; no inflated body reach.");
             foreach (float min in new[] { -1f, 0f, float.NaN, float.PositiveInfinity })
-                Assertions.False(Sprint17ObservationPolicy.NativeReach(5, 5, 10, min, 2, 6, 2, 6), "Missing/invalid native floor rejects.");
+                Assertions.False(Sprint17ObservationPolicy.NativeReach(5, 5, 5, min, 2, 2, 2, 6, 4), "Missing/invalid native floor rejects.");
         }
 
         internal static void MissDoesNotResolveAPlannedDamageRule()

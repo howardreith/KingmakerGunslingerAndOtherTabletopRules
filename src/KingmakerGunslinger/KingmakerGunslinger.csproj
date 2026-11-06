@@ -96,6 +96,7 @@
     <Compile Include="RuntimeTesting\InfernalAdjacentRoutineVerdict35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonReach4.cs" />
     <Compile Include="RuntimeTesting\SummonReachProbePolicy4.cs" />
+    <Compile Include="RuntimeTesting\SummonAdjacentRoutineVerdict4.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBarbed35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint36Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint37Inputs.cs" />
