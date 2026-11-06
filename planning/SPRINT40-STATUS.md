@@ -9,7 +9,7 @@ public downloads, restoration and merged records. Stop before Sprint 41.
 
 - HOWARD-LAPTOP, root `C:/Dev/KingmakerGunslingerLab/wt/s40`, branch
   `codex/expanded-summoning-sprint40-ice-devil`, draft PR97. Current product
-  source `a2c732e5d88f37ce578a0a2afaa858ee857e1913`; its reporting pin is the
+  source `71bb0cd3980dad5b18c655e6e54f5bdbd46a7de9`; its reporting pin is the
   pending enclosing commit. No game,
   deployment, staging or lease is active; the live KMG tree is restored to
   SHA256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
@@ -385,6 +385,25 @@ public downloads, restoration and merged records. Stop before Sprint 41.
   reconciliation. Production compiles and all five focused Sprint40 checks pass.
   NEXT: commit/push this reporting pin, rebuild once, then rerun only the wall phase
   as the discriminating native check.
+- Reporting head `0bd0ad8e3e321e8f88fd0bee163403ff78adddbc` passed 2,816/2,816
+  and strict packaging: ZIP SHA256
+  `075107c8066934add65811da1e394408d62d32bd774758c4f7a358f9d8c88939`,
+  DLL SHA256 `6b82081db2203b61323033bd0076444187292047337ac3f0b3d49caa418697f2`,
+  MVID `7bd025e2-e59f-41ae-b116-ae85ab71b1b5`, source-state
+  `f0f323d1bc9fecd75934cd1986cb9923d9f70b4c24c930f59050166c19748a3c`.
+  Wall run `20261106T0206452204101Z-disposable-expanded-summoning-sprint32-native-review`
+  confirms the production live-claim repair: first-source cleanup PASS with20
+  active second-owner claims, one live reconciliation request/completion, zero
+  walkable claimed nodes and no grid failure. It then retained FAIL before the
+  cross-species Bone cast because the survey received the intentionally destroyed
+  first Ice owner and dereferenced its absent native view. Restoration receipt
+  `expanded-summoning-restoration/20261106T0209565518167Z-disposable-expanded-summoning-sprint32-native-review.json`
+  verifies the live hash, all nine startup peers and all118 saves exact. Product
+  source `71bb0cd3` filters that observer boundary once to live request-owned actors,
+  requires the selected source in the set and uses the same set throughout; wall
+  gameplay is unchanged. Production compiles and all five focused Sprint40 checks
+  pass. NEXT: commit/push the reporting pin, rebuild once and rerun only the wall
+  phase from a fresh process.
 
 ## Historical blocked recovery state (superseded by explicit owner authorization)
 
