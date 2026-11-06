@@ -171,6 +171,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                         buff.Remove();
         }
 
+        // Both saved owners must finish native materialization before the
+        // fixture commands either of them. The shared wall helper already
+        // settles the casting owner this way; the qualified Slow phase settles
+        // its owner through Outsider30NativeAppearance. Nothing settled the
+        // second owner, and an attack against a unit still appearing does not
+        // resolve.
+        private IEnumerable<int> IceDevilSettleOwners40(UnitEntityData[] owners)
+        {
+            Func<UnitEntityData, bool> pending = unit =>
+                unit.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics
+                    .SummonedUnitAppearBuff) != null ||
+                !unit.Descriptor.State.CanAct ||
+                unit.Commands.Raw.Any(value => value != null &&
+                    !value.IsFinished);
+            DateTime deadline = DateTime.UtcNow.AddSeconds(20);
+            while (DateTime.UtcNow < deadline && owners.Any(pending))
+            {
+                Game.Instance.IsPaused = false;
+                yield return 0;
+            }
+            Game.Instance.IsPaused = true;
+            UnitEntityData unsettled = owners.FirstOrDefault(pending);
+            if (unsettled != null) throw new InvalidOperationException(
+                "Sprint40 persistence owner never settled: " +
+                unsettled.UniqueId + ";appearing=" +
+                (unsettled.Buffs.GetBuff(BlueprintRoot.Instance
+                    .SystemMechanics.SummonedUnitAppearBuff) != null) +
+                ";canAct=" + unsettled.Descriptor.State.CanAct +
+                ";activeCommands=" + unsettled.Commands.Raw.Count(value =>
+                    value != null && !value.IsFinished) + ".");
+        }
+
         private static void IceDevilMeleeLane40(UnitEntityData caster,
             UnitEntityData[] sources, UnitEntityData owner,
             UnitEntityData target)
@@ -258,6 +290,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Expected a paused, empty two-owner Sprint40 state.");
             UnitEntityData source = devils[0];
             UnitEntityData target = devils[1];
+
+            foreach (int frame in IceDevilSettleOwners40(new[] { source, target }))
+                yield return frame;
 
             // Select the listener faction before anything is spawned, which is
             // what the shared Sprint 32 contract says and what Sprint 35 does.

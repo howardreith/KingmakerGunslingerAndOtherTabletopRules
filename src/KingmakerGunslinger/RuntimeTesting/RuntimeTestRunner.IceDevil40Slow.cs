@@ -325,7 +325,40 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var command = new UnitAttack(target) { IsSingleAttack = true, ForceFullAttack = false };
                 owner.Commands.Run(command);
-                foreach (int frame in WaitInfernalCommand34(command, () => true, 20)) yield return frame;
+                // Same bounded budget as the shared Sprint 34 wait, but the
+                // failure names the states this attack actually passed
+                // through, so a timeout is discriminating on its own.
+                var trace = new List<string>();
+                string last = null;
+                Func<string, string> sample = phase =>
+                    phase + ":started=" + command.IsStarted +
+                    ",acted=" + command.IsActed +
+                    ",finished=" + command.IsFinished +
+                    ",result=" + command.Result +
+                    ",canStart=" + command.CanStart +
+                    ",approach=" + command.ShouldUnitApproach +
+                    ",close=" + command.IsUnitEnoughClose +
+                    ",brain=" + owner.IsBrainActive +
+                    ",combat=" + owner.IsInCombat + "/" + target.IsInCombat +
+                    ",canAct=" + owner.Descriptor.State.CanAct +
+                    ",appearing=" + (owner.Buffs.GetBuff(BlueprintRoot.Instance
+                        .SystemMechanics.SummonedUnitAppearBuff) != null) + "/" +
+                        (target.Buffs.GetBuff(BlueprintRoot.Instance
+                            .SystemMechanics.SummonedUnitAppearBuff) != null);
+                trace.Add(sample("run"));
+                DateTime deadline = DateTime.UtcNow.AddSeconds(20);
+                while (DateTime.UtcNow < deadline && !command.IsFinished)
+                {
+                    Game.Instance.IsPaused = false;
+                    yield return 0;
+                    string current = sample("frame");
+                    if (current != last && trace.Count < 12) trace.Add(current);
+                    last = current;
+                }
+                if (!command.IsFinished) throw new InvalidOperationException(
+                    "Native Sprint40 spear command timeout: " + command.Result +
+                    ";attempt=" + attempt + ";trace=" +
+                    string.Join(" > ", trace.ToArray()) + ".");
             }
             if (!witnessed()) throw new InvalidOperationException(
                 "Unobserved stochastic precondition: native spear hits/saves did not yield the required outcome in8 attempts.");
