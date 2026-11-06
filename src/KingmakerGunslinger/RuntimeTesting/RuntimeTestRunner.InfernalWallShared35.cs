@@ -435,6 +435,48 @@ namespace KingmakerGunslinger.RuntimeTesting
             receipt["moverAuraExposures"] = exposures;
             persist();
 
+            // Sprint 3: natural reach against an adjacent creature under the
+            // installed ProperFlanking2 dead zone. A fresh source Bone Devil
+            // attacks the stilled hostile Glaive witness; the original Bone
+            // Devil's summon lifetime ends around the tail step (s3b: it
+            // expired 7 ms before the attack command was interrupted). The
+            // witness first takes the established per-source fear-aura
+            // exposure beside the source, then only its fright is cleared, so
+            // the native fear controller cannot move it during the attack.
+            var witness = run.Attacker;
+            var adjacency = new JObject { ["source"] = sourceA.UniqueId, ["witness"] = witness?.UniqueId };
+            receipt["adjacentNaturalAttack"] = adjacency;
+            if (witness == null || witness.Destroyed || !witness.IsInState || witness.Descriptor.State.IsDead ||
+                !sourceA.IsEnemy(witness))
+            {
+                adjacency["reason"] = "no live hostile Glaive witness";
+                check("bone-adjacent-natural-attack", false, adjacency,
+                    "A live hostile witness is required for the adjacent natural attack.");
+            }
+            else
+            {
+                InfernalWallPrepareActor35(witness);
+                adjacency["witnessImmuneBefore"] = InfernalBoneBuff35(witness, immunity, sourceA) != null;
+                if (!(bool)adjacency["witnessImmuneBefore"])
+                {
+                    Vector3 side = Vector3.Cross(Vector3.up, sourceA.OrientationDirection); side.y = 0f;
+                    if (side.sqrMagnitude < .01f) side = Vector3.right;
+                    PlaceExpandedSummoningUnit(witness, sourceA.Position - side.normalized * 1.2f);
+                    DateTime until = DateTime.UtcNow.AddSeconds(12);
+                    while (DateTime.UtcNow < until && InfernalBoneBuff35(witness, immunity, sourceA) == null)
+                    { Game.Instance.IsPaused = false; yield return 0; }
+                }
+                adjacency["witnessImmuneAfter"] = InfernalBoneBuff35(witness, immunity, sourceA) != null;
+                InfernalBoneRemoveEffects35(witness, sources, run.Frightened);
+                clearFear();
+                foreach (int frame in InfernalAdjacentNatural35(sourceA, witness, run.Trace, check)) yield return frame;
+                InfernalWallPrepareActor35(sourceA);
+                InfernalWallPrepareActor35(witness);
+                InfernalBoneRemoveEffects35(witness, sources, run.Frightened);
+                clearFear();
+            }
+            persist();
+
             var plan = InfernalWallNextLane35(run, "shared", _infernalWallPlans35.ToArray());
             foreach (int frame in InfernalWallFixturePrerequisite35(fixture, sourceA, owned, plan, check, "shared")) yield return frame;
             // The prerequisite stands every owned actor at Wall A's casting
