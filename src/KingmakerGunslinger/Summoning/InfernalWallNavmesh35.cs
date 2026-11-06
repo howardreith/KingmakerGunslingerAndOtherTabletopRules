@@ -87,6 +87,7 @@ namespace KingmakerGunslinger.Summoning
         internal string GridFailure { get; private set; }
         // Native connection recalculations after this section's own writes.
         internal int GridConnectionRefreshes { get; private set; }
+        internal int GridTagRefreshes { get; private set; }
         internal static int ActiveGridClaimCount { get { return Claims.Count; } }
 
         internal KeyValuePair<GraphNode, bool>[] GridNodeSnapshot()
@@ -386,8 +387,13 @@ namespace KingmakerGunslinger.Summoning
         // Otherwise a node restored to walkable keeps the connections a
         // native update computed while it was claimed (close28: after
         // physical destruction the restored footprint stayed a detour on
-        // the grid). Erosion tags stay native: turn-based combat re-erodes
-        // the whole graph at each turn and grid update. Runs inside a
+        // the grid). It then re-erodes the tags over the same reach the
+        // native update uses (written cells expanded twice by
+        // erodeIterations): a native update that ran while the claim stood
+        // tagged the surrounding cells around it, and restoring the flags
+        // alone left those tags stale (nav5: 357-387 of 676 region cells).
+        // Tag erosion is only run where the grid erodes into tags; with
+        // erosion into walkability it would compound. Runs inside a
         // pathfinding work item.
         private void RefreshGrid(List<GraphNode> written)
         {
@@ -418,6 +424,15 @@ namespace KingmakerGunslinger.Summoning
                             if (node != null) grid.CalculateConnections(x, z, node);
                         }
                     GridConnectionRefreshes++;
+                    int reach = grid.erodeIterations;
+                    if (grid.erosionUseTags && reach > 0)
+                    {
+                        grid.ErodeWalkableArea(Math.Max(0, xmin - 2 * reach),
+                            Math.Max(0, zmin - 2 * reach),
+                            Math.Min(grid.width, xmax + 2 * reach + 1),
+                            Math.Min(grid.depth, zmax + 2 * reach + 1));
+                        GridTagRefreshes++;
+                    }
                 }
             }
             _astar.QueueWorkItemFloodFill();

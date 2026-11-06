@@ -408,9 +408,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             check("wall-turn-boundary-restored", exit != null && (bool?)exit["turnBasedSettingRestored"] == true &&
                 (bool?)exit["cameraScrollRestored"] == true && (bool?)exit["inTurnBasedCombat"] == false &&
                 restoration != null && (int?)restoration["nodesNotAtBaseline"] == 0 &&
-                (int?)restoration["nodesWithConnectionsNotAtBaseline"] == 0 && (int?)restoration["claimsAfter"] == 0,
+                (int?)restoration["nodesWithConnectionsNotAtBaseline"] == 0 &&
+                (int?)restoration["nodesWithTagNotAtBaseline"] == 0 && (int?)restoration["claimsAfter"] == 0,
                 restoration ?? new JObject(),
-                "Leaving turn-based mode restores its setting and camera preference, and retiring the probe Wall returns every region cell, including grid connections, to its pre-Wall baseline.");
+                "Leaving turn-based mode restores its setting and camera preference, and retiring the probe Wall returns every region cell, including grid connections and erosion tags, to its pre-Wall baseline.");
         }
 
         // One native route request through the mover's own agent; under
