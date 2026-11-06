@@ -55,6 +55,9 @@ namespace KingmakerGunslinger.Summoning
         private readonly Dictionary<GraphNode, bool> _nodeOriginals =
             new Dictionary<GraphNode, bool>();
         private bool _released;
+        private bool _liveReconcileQueued;
+        private bool _restoreReconcileQueued;
+        private int _restoreExactFrames;
 
         internal NavmeshCut Cut { get { return _cut; } }
         internal UnitEntityData Owner { get { return _owner; } }
@@ -72,6 +75,12 @@ namespace KingmakerGunslinger.Summoning
         internal bool GridApplyCompleted { get; private set; }
         internal bool GridRestoreQueued { get; private set; }
         internal bool GridRestoreCompleted { get; private set; }
+        internal int GridReconcileRequests { get; private set; }
+        internal int GridReconcileCompleted { get; private set; }
+        internal int GridLiveReconcileRequests { get; private set; }
+        internal int GridLiveReconcileCompleted { get; private set; }
+        internal bool NativeCutDisabledBeforeDestroy { get; private set; }
+        internal bool NativeGridCutRevertQueued { get; private set; }
         internal string GridFailure { get; private set; }
         internal static int ActiveGridClaimCount { get { return Claims.Count; } }
 
@@ -83,8 +92,10 @@ namespace KingmakerGunslinger.Summoning
             UnitEntityData owner = view == null ? null :
                 view.EntityData as UnitEntityData;
             return owner != null && owner.Blueprint != null &&
-                owner.Blueprint.AssetGuid == InfernalRules35.WallSectionUnitGuid &&
-                owner.Blueprint.name == InfernalRules35.WallSectionUnitName;
+                (owner.Blueprint.AssetGuid == InfernalRules35.WallSectionUnitGuid &&
+                    owner.Blueprint.name == InfernalRules35.WallSectionUnitName ||
+                 owner.Blueprint.AssetGuid == IceDevilRules40Policy.WallSectionGuid &&
+                    owner.Blueprint.name == IceDevilRules40Policy.WallSectionName);
         }
 
         internal void Configure(UnitEntityView view)
@@ -299,18 +310,133 @@ namespace KingmakerGunslinger.Summoning
                 NodeClaim claim;
                 if (!Claims.TryGetValue(node, out claim) ||
                     !claim.Owners.Remove(this)) continue;
-                if (claim.Owners.Count != 0) continue;
-                if (restoreWalkability && node.Walkable !=
-                    claim.OriginalWalkable)
+                bool remainingOwner = claim.Owners.Count != 0;
+                bool desired = InfernalRules35
+                    .WallNodeWalkableAfterOwnerRelease(
+                        claim.OriginalWalkable, remainingOwner);
+                if (restoreWalkability && node.Walkable != desired)
                 {
-                    node.Walkable = claim.OriginalWalkable;
+                    node.Walkable = desired;
                     GridNodesRestored++;
                     changed = true;
                 }
+                if (remainingOwner) continue;
                 Claims.Remove(node);
             }
             _claimedNodes.Clear();
             return changed;
+        }
+
+        private bool ReleasedGridIsExact()
+        {
+            return _nodeOriginals.All(pair =>
+            {
+                NodeClaim claim;
+                bool remainingOwner = Claims.TryGetValue(pair.Key,
+                    out claim) && claim.Owners.Count > 0;
+                bool desired = InfernalRules35
+                    .WallNodeWalkableAfterOwnerRelease(pair.Value,
+                        remainingOwner);
+                return pair.Key.Walkable == desired;
+            });
+        }
+
+        private bool LiveGridIsExact()
+        {
+            return _claimedNodes.All(node =>
+            {
+                NodeClaim claim;
+                return Claims.TryGetValue(node, out claim) &&
+                    claim.Owners.Contains(this) && !node.Walkable;
+            });
+        }
+
+        private void QueueLiveGridReconcile()
+        {
+            if (_liveReconcileQueued || _released ||
+                _claimedNodes.Count == 0 || _astar == null ||
+                !ReferenceEquals(AstarPath.active, _astar)) return;
+            _liveReconcileQueued = true;
+            GridLiveReconcileRequests++;
+            _astar.AddWorkItem(new AstarPath.AstarWorkItem(force =>
+            {
+                bool changed = false;
+                try
+                {
+                    if (_released) return true;
+                    foreach (GraphNode node in _claimedNodes)
+                    {
+                        NodeClaim claim;
+                        if (!Claims.TryGetValue(node, out claim) ||
+                            !claim.Owners.Contains(this) || !node.Walkable)
+                            continue;
+                        node.Walkable = false;
+                        GridNodesChanged++;
+                        changed = true;
+                    }
+                    if (changed) _astar.QueueWorkItemFloodFill();
+                }
+                catch (Exception error)
+                {
+                    GridFailure = error.GetType().Name + ": " +
+                        error.Message;
+                    Debug.LogException(error);
+                }
+                finally
+                {
+                    GridLiveReconcileCompleted++;
+                    _liveReconcileQueued = false;
+                }
+                return true;
+            }));
+        }
+
+        private void QueueReleasedGridReconcile()
+        {
+            if (_restoreReconcileQueued || _nodeOriginals.Count == 0 ||
+                _astar == null || !ReferenceEquals(AstarPath.active, _astar))
+                return;
+            _restoreReconcileQueued = true;
+            GridReconcileRequests++;
+            _astar.AddWorkItem(new AstarPath.AstarWorkItem(force =>
+            {
+                bool changed = false;
+                try
+                {
+                    foreach (var pair in _nodeOriginals)
+                    {
+                        NodeClaim claim;
+                        bool remainingOwner = Claims.TryGetValue(pair.Key,
+                            out claim) && claim.Owners.Count > 0;
+                        bool desired = InfernalRules35
+                            .WallNodeWalkableAfterOwnerRelease(pair.Value,
+                                remainingOwner);
+                        if (pair.Key.Walkable == desired) continue;
+                        pair.Key.Walkable = desired;
+                        GridNodesRestored++;
+                        changed = true;
+                    }
+                    if (changed) _astar.QueueWorkItemFloodFill();
+                }
+                catch (Exception error)
+                {
+                    GridFailure = error.GetType().Name + ": " +
+                        error.Message;
+                    Debug.LogException(error);
+                }
+                finally
+                {
+                    GridReconcileCompleted++;
+                    _restoreReconcileQueued = false;
+                }
+                return true;
+            }));
+        }
+
+        internal void ReconcileAfterNativeRetirement()
+        {
+            if (!_released) Release();
+            QueueReleasedGridReconcile();
         }
 
         private void QueueGridRestore()
@@ -343,16 +469,47 @@ namespace KingmakerGunslinger.Summoning
         internal void Release()
         {
             if (_released) return;
-            _released = true;
-            enabled = false;
             if (_cut != null)
             {
+                // Kingmaker's turn-based navigation consumer applies a
+                // separate GridGraph update object for each native cut. Once
+                // the component is destroyed it leaves that consumer's list,
+                // so submit the paired revert object while the exact cut is
+                // still available. The owned 24-node claims below remain the
+                // cross-owner authority; this only retires the native six-node
+                // footprint observed for this same component.
+                _cut.enabled = false;
+                NativeCutDisabledBeforeDestroy = !_cut.enabled;
+                if (_cut.gridGuoApplied)
+                {
+                    if (_astar == null ||
+                        !ReferenceEquals(AstarPath.active, _astar) ||
+                        GridGraphIndex < 0 || GridGraphIndex >= 31)
+                        throw new InvalidOperationException(
+                            "Wall native grid-cut revert has no exact active graph.");
+                    bool cutEnabled;
+                    NavmeshCut.UpdateObjectPair pair =
+                        _cut.GetUpdateObjectForGrid(out cutEnabled,
+                            1 << GridGraphIndex);
+                    if (pair.guo.updating || pair.revertGuo.updating)
+                        throw new InvalidOperationException(
+                            "Wall native grid-cut update is still in flight.");
+                    pair.revertGuo.updating = true;
+                    _astar.UpdateGraphs(pair.revertGuo);
+                    _cut.gridGuoApplied = false;
+                    _cut.NotifyUpdatedForGrid();
+                    NativeGridCutRevertQueued = true;
+                }
                 UnityEngine.Object.DestroyImmediate(_cut);
+                // OnDestroy queues the exact old recast bounds with the
+                // installed TileHandlerHelper, so process that queue only
+                // after the callback has run.
                 if (_tileHandler != null &&
                     _tileHandler.isActiveAndEnabled &&
                     RecastApplyRequests > 0)
                     _tileHandler.ForceUpdate();
             }
+            _released = true;
             if (_wallVisual != null)
                 UnityEngine.Object.DestroyImmediate(_wallVisual);
             if (_wallMaterial != null)
@@ -371,7 +528,24 @@ namespace KingmakerGunslinger.Summoning
 
         private void Update()
         {
-            if (_released) return;
+            if (_released)
+            {
+                if (!GridRestoreCompleted || _restoreReconcileQueued) return;
+                if (!ReleasedGridIsExact())
+                {
+                    _restoreExactFrames = 0;
+                    QueueReleasedGridReconcile();
+                    return;
+                }
+                if (++_restoreExactFrames >= 2) enabled = false;
+                return;
+            }
+            if (GridApplyCompleted && !_liveReconcileQueued &&
+                !LiveGridIsExact())
+            {
+                QueueLiveGridReconcile();
+                return;
+            }
             ModContext context;
             if (!ModContext.TryGet(out context) ||
                 context.FeatureModules?.Active?.ExpandedSummoning != true)
@@ -382,7 +556,11 @@ namespace KingmakerGunslinger.Summoning
             }
         }
 
-        private void OnDestroy() { Release(); }
+        private void OnDestroy()
+        {
+            if (!_released) Release();
+            QueueReleasedGridReconcile();
+        }
     }
 
     [HarmonyPatch(typeof(UnitEntityView), "OnDataAttached")]

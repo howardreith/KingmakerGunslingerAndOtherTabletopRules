@@ -312,14 +312,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
-        /// At will means no resource at all, and the two ranged spells carry
+        /// At will means no resource at all, and all four ranged spells carry
         /// a DERIVED distance rather than a fixed category.
         ///
         /// <para>The range half is the Sprint 38 finding applied rather than
         /// repeated: a range category does not read a caster level, so the
         /// printed medium range of 100 feet plus 10 per level has to be
         /// shipped as an explicit custom distance or it is silently wrong.
-        /// At caster level 12 that is 220 feet.</para>
+        /// At caster level 12 that is 220 feet for Feeblemind and Greater
+        /// Dispel Magic; Slow instead uses close range, 55 feet.</para>
         /// </summary>
         private static void Nalfeshnee39SpellDeclarations(
             BlueprintAbility[] spells, BlueprintAbility feeblemind,
@@ -341,7 +342,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // is how Call Lightning shipped at the flat Medium category
                 // and Slow at the flat Close one through a passing cell.
                 int expected = ReferenceEquals(spell, lightning) ?
-                    distant : medium;
+                    distant : ReferenceEquals(spell, feeblemind) ||
+                    ReferenceEquals(spell, dispel) ? medium :
+                    NalfeshneeRules39Policy.SlowRangeFeet(
+                        NalfeshneeRules39Policy.SpellLikeCasterLevel);
                 bool row = costs.Length == 0 &&
                     spell.Type == AbilityType.SpellLike &&
                     spell.ActionType == UnitCommand.CommandType.Standard &&
@@ -380,7 +384,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["longRangeFeet"] = distant,
                     ["scope"] = "Unholy Nimbus is NOT in this set: it is supernatural with its own three daily uses, and is observed in the nimbus phase."
                 },
-                "All four at-will spell-likes carry no resource of any kind, are declared spell-like standard actions visible on the action bar, and each carries ITS OWN printed reach derived from this creature's caster level - long for Call Lightning, medium for the other three - rather than a fixed range category that reads no caster level at all.");
+                "All four at-will spell-likes carry no resource of any kind, are declared spell-like standard actions visible on the action bar, and each carries ITS OWN printed reach derived from this creature's caster level - long for Call Lightning, medium for Feeblemind and Greater Dispel Magic, close for Slow - rather than a fixed range category that reads no caster level at all.");
         }
 
         /// <summary>

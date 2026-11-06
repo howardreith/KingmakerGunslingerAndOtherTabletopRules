@@ -151,11 +151,12 @@ namespace KingmakerGunslinger.Summoning
         // body - so its suppression key is removed and nothing is withheld.
         // Removing that one key and moving the two placement counts is all
         // publication took, exactly as the withholding note said it should.
+        // Sprint 40 publishes the Ice Devil after its one SM IX route and
+        // final-candidate contract are in place. Nothing remains suppressed.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(Array.Empty<string>(),
-                StringComparer.Ordinal);
+            new HashSet<string>(StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 1187;
+        internal const int RegisteredLogicalPlacementCount = 1188;
         internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
@@ -252,6 +253,10 @@ namespace KingmakerGunslinger.Summoning
                 sprint39.Select(value => value.ParentTier)
                     .OrderBy(value => value)
                     .SequenceEqual(new[] { 9 });
+            var ice = all.Where(value => value.Creature.Key == "ice-devil").ToArray();
+            bool iceRoute = ice.Length == 1 && ice[0].Family == SummonFamily.Monster &&
+                ice[0].ParentTier == 9 && ice[0].Multiplicity == SummonMultiplicity.One &&
+                !ice[0].Creature.MonsterTemplated && IsPublished(ice[0]);
             bool giantRoutes = new[] { "hill-giant", "stone-giant" }
                 .All(key => giants.Where(value => value.Creature.Key == key)
                     .Select(value => value.ParentTier).OrderBy(value => value)
@@ -268,7 +273,7 @@ namespace KingmakerGunslinger.Summoning
                 // simply not checking it means a future suppression cannot be
                 // added silently, which is the same guarantee the one-key
                 // pin gave while the Nalfeshnee was hidden.
-                SuppressedCreatureKeys.Count != 0 ||
+                SuppressedCreatureKeys.Count != 0 || !iceRoute ||
                 !sprint29Routes || !giantRoutes || !sprint35Routes ||
                 !sprint36Routes || !sprint37Routes || !sprint38Routes ||
                 !sprint39Routes ||

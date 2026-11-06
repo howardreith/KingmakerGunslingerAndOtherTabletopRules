@@ -263,13 +263,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ?.SelectComponents<KytonRegeneration34>().SingleOrDefault();
 
         private IEnumerable<int> ObserveInfernalRegenerationRecovery34(UnitEntityData owner, InfernalEvents34 trace,
-            Action<string, bool, JObject, string> check, string label, bool suppressed, JObject row)
+            Action<string, bool, JObject, string> check, string label, bool suppressed, JObject row,
+            KytonRegeneration34 selectedRegeneration = null, string assertionOwner = "kyton")
         {
-            var regeneration = InfernalRegeneration34(owner);
+            var regeneration = selectedRegeneration ?? InfernalRegeneration34(owner);
             bool halved = (bool)typeof(AddEffectRegeneration).GetProperty("IsHalved",
                 System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public |
                 System.Reflection.BindingFlags.NonPublic).GetValue(regeneration, null);
-            int expectedHeal = halved ? 1 : 2, start = trace.Rows.Count, after = owner.Damage;
+            int expectedHeal = halved ? Math.Max(1, regeneration.Heal / 2) : regeneration.Heal;
+            int start = trace.Rows.Count, after = owner.Damage;
             double began = Game.Instance.TimeController.GameTime.TotalSeconds;
             var rounds = new JArray(); int last = -1; bool following = false, noEarlyHeal = true;
             DateTime deadline = DateTime.UtcNow.AddSeconds(24);
@@ -295,7 +297,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["roundTransitions"] = rounds; row["noHealingThroughoutSuppressedFollowingRound"] = noEarlyHeal;
             row["heals"] = new JArray(actualHeals); row["damageAfterNativeHealing"] = owner.Damage;
             row["elapsedGameSeconds"] = Game.Instance.TimeController.GameTime.TotalSeconds - began;
-            check("kyton-regeneration-" + label, exact, row,
+            check(assertionOwner + "-regeneration-" + label, exact, row,
                 "Native round callbacks and actual healing: bypass suppresses the following round, then native regeneration resumes; no observer round invocation.");
         }
 
@@ -319,10 +321,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException("Regeneration native injury precondition differs: " + row);
                 foreach (int frame in ObserveInfernalRegenerationRecovery34(owner, trace, check, bypass, bypass != "mundane", row)) yield return frame;
             }
+            foreach (int frame in ReviewInfernalRegenerationSpellAndDeath34(fixture,
+                owner, trace, check)) yield return frame;
+        }
+
+        private IEnumerable<int> ReviewInfernalRegenerationSpellAndDeath34(
+            ExpandedSummoningCorrectionFixture fixture, UnitEntityData owner,
+            InfernalEvents34 trace, Action<string, bool, JObject, string> check,
+            string recipientKey = "kyton-chain-devil", string assertionOwner = "kyton",
+            Func<UnitEntityData, KytonRegeneration34> getRegeneration = null,
+            bool isolateFear = false, bool stabilizeGoodSpellCombat = false)
+        {
+            var regenerationFor = getRegeneration ??
+                new Func<UnitEntityData, KytonRegeneration34>(InfernalRegeneration34);
+            var fearIsolated = new List<UnitEntityData>();
             UnitEntityData caster = null, recipient = null;
             try {
                 caster = CastExpandedSummoningOwnTier(fixture, "astral-deva");
-                recipient = CastExpandedSummoningOwnTier(fixture, "kyton-chain-devil");
+                recipient = CastExpandedSummoningOwnTier(fixture, recipientKey);
+                if (isolateFear)
+                    foreach (var unit in new[] { caster, recipient })
+                    {
+                        unit.Descriptor.State.AddConditionImmunity(UnitCondition.Frightened);
+                        fearIsolated.Add(unit);
+                    }
                 foreach (var unit in new[] { caster, recipient }) {
                     Sprint28SetBrainActivePreservingActions(unit, false);
                     unit.Commands.InterruptAll(true); unit.Commands.RemoveFinishedAndUpdateQueue();
@@ -348,7 +370,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool protectedClear = hostileOwned && footprint.Contains(recipient) && footprint.All(unit =>
                     (fixture.Created.Contains(unit) || ReferenceEquals(unit, fixture.Hostile)) &&
                     !fixture.UnitsBefore.Any(value => ReferenceEquals(value, unit)));
-                check("kyton-good-spell-owned-burst", protectedClear, new JObject { ["source"] = caster.UniqueId,
+                check(assertionOwner + "-good-spell-owned-burst", protectedClear, new JObject { ["source"] = caster.UniqueId,
                     ["target"] = recipient.UniqueId, ["point"] = SurveyVector(far), ["lane"] = lane,
                     ["privateHostileOwned"] = hostileOwned, ["footprint"] = new JArray(footprint.Select(unit => new JObject {
                         ["unit"] = unit.UniqueId, ["blueprint"] = unit.Blueprint.AssetGuid,
@@ -364,6 +386,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     recipient.Stats.HitPoints.BaseValue = 10000;
                     bool injured = false;
                     for (int attempt = 0; attempt < 8 && !injured; attempt++) {
+                        int cooldownFrames = 0;
+                        if (stabilizeGoodSpellCombat)
+                        {
+                            DateTime cooldownDeadline = DateTime.UtcNow.AddSeconds(10);
+                            while (caster.CombatState.Cooldown.StandardAction > 0f &&
+                                cooldownFrames < 1200 && DateTime.UtcNow < cooldownDeadline)
+                            {
+                                cooldownFrames++; Game.Instance.IsPaused = false; yield return 0;
+                            }
+                            if (caster.CombatState.Cooldown.StandardAction > 0f)
+                                throw new InvalidOperationException("Natural Holy Smite cooldown did not clear.");
+                            // Keep these disposable support actors in native
+                            // combat long enough for the immediately available
+                            // command to finish. Do not clear or ignore cost.
+                            caster.JoinCombat(); recipient.JoinCombat();
+                        }
                         int first = trace.Rows.Count; var costs = new JArray(); UnitUseAbility command = null;
                         using (var economy = new FirearmReviewCosts(caster, costs)) {
                             foreach (int frame in Sprint26Cast(caster, spell, new TargetWrapper(far), value => command = value)) yield return frame;
@@ -373,46 +411,59 @@ namespace KingmakerGunslinger.RuntimeTesting
                             injured = damage.Length != 0;
                             bool exact = command != null && command.Result == UnitCommand.ResultType.Success && command.IsActed &&
                                 economy.Count(command) == 1 && (economy.InCombat(command) ? economy.Exact(command, false) : economy.Unchanged(command)) &&
-                                (!injured || InfernalRegeneration34(recipient).SuppressionRound > 0 && !(bool)recipient.Descriptor.State.IsRegenerate &&
+                                (!injured || regenerationFor(recipient).SuppressionRound > 0 && !(bool)recipient.Descriptor.State.IsRegenerate &&
                                     !trace.Rows.Skip(trace.Rows.IndexOf(damage.Last()) + 1).Any(row =>
                                         (string)row["event"] == "heal" && (string)row["target"] == recipient.UniqueId));
-                            check("kyton-good-spell-command-" + attempt, exact, new JObject { ["source"] = caster.UniqueId,
+                            check(assertionOwner + "-good-spell-command-" + attempt, exact, new JObject { ["source"] = caster.UniqueId,
                                 ["target"] = recipient.UniqueId, ["ability"] = spell.AssetGuid, ["command"] = command == null ? null : Sprint27AiCommand(command),
-                                ["costs"] = costs, ["events"] = new JArray(trace.Rows.Skip(first)), ["positiveNativeInjury"] = injured },
+                                ["costs"] = costs, ["events"] = new JArray(trace.Rows.Skip(first)),
+                                ["naturalCooldownFrames"] = cooldownFrames,
+                                ["combatLeaveIsolation"] = stabilizeGoodSpellCombat,
+                                ["positiveNativeInjury"] = injured },
                                 "Real Holy Smite command and normal cost; positive good-spell injury disables only the recipient's regeneration, without forced SR or saves.");
                         }
                     }
                     if (!injured) throw new InvalidOperationException("Good-spell injury precondition unobserved in eight real attempts.");
                     foreach (int frame in ObserveInfernalRegenerationRecovery34(recipient, trace, check, "good-spell", true,
-                        new JObject { ["source"] = caster.UniqueId, ["ability"] = spell.AssetGuid, ["actualNativeCommand"] = true })) yield return frame;
+                        new JObject { ["source"] = caster.UniqueId, ["ability"] = spell.AssetGuid, ["actualNativeCommand"] = true }, selectedRegeneration: regenerationFor(recipient), assertionOwner: assertionOwner)) yield return frame;
                 } finally { recipient.Stats.HitPoints.BaseValue = capacity; }
                 // Use a fresh undamaged owner for native fatal-injury behavior.
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { recipient }); recipient = null;
-                recipient = CastExpandedSummoningOwnTier(fixture, "kyton-chain-devil");
+                recipient = CastExpandedSummoningOwnTier(fixture, recipientKey);
+                if (isolateFear)
+                {
+                    recipient.Descriptor.State.AddConditionImmunity(UnitCondition.Frightened);
+                    fearIsolated.Add(recipient);
+                }
                 Sprint28SetBrainActivePreservingActions(recipient, false); recipient.Commands.InterruptAll(true);
-                foreach (int frame in Outsider30NativeAppearance(recipient, "kyton-fatal-injury")) yield return frame;
-                var fatal = new PhysicalDamage(new DiceFormula(0, DiceType.Zero), PhysicalDamageForm.Slashing); fatal.AddBonus(250);
+                foreach (int frame in Outsider30NativeAppearance(recipient, assertionOwner + "-fatal-injury")) yield return frame;
+                var fatal = new PhysicalDamage(new DiceFormula(0, DiceType.Zero), PhysicalDamageForm.Slashing); fatal.AddBonus(recipientKey == "ice-devil" ? 1000 : 250);
                 int before = recipient.Damage;
                 var injury = Rulebook.Trigger(new RuleDealDamage(fixture.Hostile, recipient, new DamageBundle(fatal)));
                 for (int frame = 0; frame < 24; frame++) { Game.Instance.IsPaused = false; yield return 0; }
                 bool protectedLife = injury.Damage > recipient.Stats.HitPoints.ModifiedValue + recipient.Stats.Constitution.ModifiedValue &&
                     recipient.Damage > recipient.Stats.HitPoints.ModifiedValue + recipient.Stats.Constitution.ModifiedValue &&
                     !recipient.Descriptor.State.IsDead && (bool)recipient.Descriptor.State.IsRegenerate;
-                check("kyton-regeneration-fatal-ordinary", protectedLife, new JObject { ["owner"] = recipient.UniqueId,
+                check(assertionOwner + "-regeneration-fatal-ordinary", protectedLife, new JObject { ["owner"] = recipient.UniqueId,
                     ["damageBefore"] = before, ["nativeInjury"] = injury.Damage, ["damageAfter"] = recipient.Damage,
                     ["hp"] = recipient.Stats.HitPoints.ModifiedValue, ["constitution"] = recipient.Stats.Constitution.ModifiedValue,
                     ["dead"] = recipient.Descriptor.State.IsDead, ["regeneration"] = (bool)recipient.Descriptor.State.IsRegenerate,
-                    ["directDamageConsumerNotAttackDispatch"] = true }, "Native fatal ordinary HP injury cannot kill the regenerating Kyton.");
+                    ["directDamageConsumerNotAttackDispatch"] = true }, "Native fatal ordinary HP injury cannot kill the regenerating recipient.");
                 var bypass = new PhysicalDamage(new DiceFormula(0, DiceType.Zero), PhysicalDamageForm.Slashing); bypass.AddBonus(20); bypass.AddAlignment(DamageAlignment.Good);
                 var finish = Rulebook.Trigger(new RuleDealDamage(fixture.Hostile, recipient, new DamageBundle(bypass)));
                 DateTime death = DateTime.UtcNow.AddSeconds(4);
                 while (DateTime.UtcNow < death && !recipient.Descriptor.State.IsDead) { Game.Instance.IsPaused = false; yield return 0; }
-                check("kyton-regeneration-fatal-bypass", finish.Damage > 0 && recipient.Descriptor.State.IsDead &&
+                check(assertionOwner + "-regeneration-fatal-bypass", finish.Damage > 0 && recipient.Descriptor.State.IsDead &&
                     !(bool)recipient.Descriptor.State.IsRegenerate, new JObject { ["owner"] = recipient.UniqueId,
                         ["nativeGoodInjury"] = finish.Damage, ["dead"] = recipient.Descriptor.State.IsDead,
                         ["regeneration"] = (bool)recipient.Descriptor.State.IsRegenerate, ["directDamageConsumerNotAttackDispatch"] = true },
                     "Positive good damage suppresses native regeneration and allows actual death from the existing fatal injury.");
-            } finally { DisposeExpandedSummoningUnits(fixture.Created, new[] { caster, recipient }.Where(unit => unit != null).ToArray()); }
+            } finally {
+                foreach (var unit in fearIsolated.Where(value => !value.Destroyed))
+                    unit.Descriptor.State.RemoveConditionImmunity(UnitCondition.Frightened);
+                DisposeExpandedSummoningUnits(fixture.Created,
+                    new[] { caster, recipient }.Where(unit => unit != null).ToArray());
+            }
         }
     }
 }

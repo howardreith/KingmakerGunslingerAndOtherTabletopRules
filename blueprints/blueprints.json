@@ -62687,6 +62687,270 @@
       "status": "active",
       "milestone": "Expanded Summoning alternate sources",
       "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.IceDevil",
+      "guid": "6b5b789a08584fab84a00e7da42e1d2c",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.IceDevil.One",
+      "guid": "ea1b03df5b6540f795dec67f6b6f5b70",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.UnitType",
+      "guid": "a7dfcd3cba92462e93b27cbb6fe46887",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.Traits",
+      "guid": "5e417c359f8842ca879d2819d829b35f",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.Spear",
+      "guid": "a401bfb28e394f06a2fce8b89e91ebd8",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.SpearType",
+      "guid": "573c1e9bffb2470293c276999f94a408",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.Bite",
+      "guid": "d324d22032f14392aa44aad0472cc0de",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.BiteType",
+      "guid": "92dada2bf76947eca2cee0dc494afdfc",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.Tail",
+      "guid": "7f6ab83598e047649f3f47ae813ff8b0",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.TailType",
+      "guid": "30a4a845d51a4d91b2cfdeee35d50bee",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.ConeOfCold",
+      "guid": "2ff81af812954a55810b6f8bd3f946dd",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.IceStorm",
+      "guid": "96a7c3bd9e944d47ab52be0256b1a440",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.WallOfIce",
+      "guid": "d558ed24c72a4c2eb2e323c1b7d0b45d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.FearArea",
+      "guid": "33b3b474d22844648f0491df229113e3",
+      "plannedType": "BlueprintAbilityAreaEffect",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.FearCarrier",
+      "guid": "a3ac0266c4ae443b97346815f6507942",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.FearFrightened",
+      "guid": "27f4315b43f0470f8ac3603e8fe84f91",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.FearImmunity",
+      "guid": "e3514e49ca8f4f6bb97426127bc3bf18",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.Regeneration",
+      "guid": "4f07756e7e5841fa8eed4b35445873f5",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.Brain",
+      "guid": "19a3f6bae76a4916ab4574dbb3dc08ee",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.ConeOfColdAi",
+      "guid": "3a1de953f3ae47b28ae91c881d4d945a",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.IceStormAi",
+      "guid": "48a925a557aa42f2a00c54e596797d10",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.WallOfIceAi",
+      "guid": "0c7c8a6c750946e8b7d983ed92b5881b",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.WallSectionUnit",
+      "guid": "225850056cb944c687748bef47310c23",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.WallSectionTraits",
+      "guid": "0d8560c8d3cb4d5b967f63eb3b5b32a4",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.WallSectionBrain",
+      "guid": "6884215c7d064464a39de28c624ad5c5",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.WallResidualArea",
+      "guid": "89414e4c9d2744a6b0ccb3d30807ba27",
+      "plannedType": "BlueprintAbilityAreaEffect",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier9.IceDevil.One",
+      "guid": "f0df3b6fa8f65c4ca37b4913850b0cc5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier9.IceDevil.One",
+      "guid": "65cffdc6350153dba76446bc36e39902",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier9.IceDevil.One",
+      "guid": "b5cba576376a5b0a826546bc07ee3220",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier9.IceDevil.One",
+      "guid": "0980763892ab55f79e473da91dbcdf2a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.WallSectionUnitType",
+      "guid": "bf572612c2b948a2b8135526d225a897",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.IceStormArea",
+      "guid": "eb16e00e0c804f079d1e3e9ef7bb5ef9",
+      "plannedType": "BlueprintAbilityAreaEffect",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.IceDevil.SpearFrost",
+      "guid": "724a4bd231534a90a60429646f47f31d",
+      "plannedType": "BlueprintWeaponEnchantment",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     }
   ]
 }

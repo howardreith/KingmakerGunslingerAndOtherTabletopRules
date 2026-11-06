@@ -16,6 +16,18 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        // Native UnitAttack.OnTick ends an exhausted ordinary routine with
+        // Interrupt on this installed stack. Keep that result and require the
+        // observed terminal index/no-next-attack boundary, never any interrupt.
+        private static bool Sprint40NativeExhaustedAttack(UnitAttack attack,
+            IEnumerable<JToken> commandEnds, int expected)
+        {
+            return expected > 0 && attack.IsFinished && attack.AllAttacks.Count == expected &&
+                attack.Result == UnitCommand.ResultType.Interrupt && commandEnds.Any(row =>
+                    (int?)row["attackIndex"] == expected && (bool?)row["plannedAttackPresent"] == false &&
+                    ((string)row["interruptionCaller"] ?? "").Contains("UnitAttack.OnTick"));
+        }
+
         // Subscribed only inside the bounded disposable Sprint34 cell. Record
         // all recipients; filtering to the intended patient would conceal a
         // dispatch error. This observer never changes a rule or game state.
@@ -53,6 +65,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["native"] = Sprint27AiCommand(command);
                 row["commandReference"] = RuntimeHelpers.GetHashCode(command);
                 row["ability"] = (command as UnitUseAbility)?.Spell?.Blueprint?.AssetGuid;
+                if (command.Executor != null && command.TargetUnit != null)
+                {
+                    row["centerDistance"] = UnityEngine.Vector3.Distance(
+                        command.Executor.Position, command.TargetUnit.Position);
+                    row["nativeApproachRadius"] = command.ApproachRadius;
+                    row["nativeEnoughClose"] = command.IsUnitEnoughClose;
+                    row["ownerCorpulence"] = command.Executor.Corpulence;
+                    row["targetCorpulence"] = command.TargetUnit.Corpulence;
+                }
                 row["nativeCommandType"] = ReadExpandedSummoningOptionalMember(command, "Type")?.ToString();
                 row["ignoreCooldown"] = command.IsIgnoreCooldown;
                 if (phase == "command-end" && command.Result == UnitCommand.ResultType.Interrupt)
@@ -61,6 +82,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if ((bool)row["turnBased"])
                     row["turn"] = Sprint22TurnState(command.Executor, command.TargetUnit);
                 var attack = command as UnitAttack;
+                if (attack != null)
+                {
+                    row["attackIndex"] = ReadExpandedSummoningOptionalMember(attack, "m_AttackIndex") == null ?
+                        (int?)null : Convert.ToInt32(ReadExpandedSummoningOptionalMember(attack, "m_AttackIndex"));
+                    row["plannedAttackPresent"] = ReadExpandedSummoningOptionalMember(attack, "PlannedAttack") != null;
+                }
                 if (attack != null) row["plan"] = new JArray(attack.AllAttacks.Select(info => new JObject {
                     ["weapon"] = info.Hand?.MaybeWeapon?.Blueprint?.AssetGuid,
                     ["itemReference"] = ReferenceId(info.Hand?.MaybeWeapon),
@@ -111,10 +138,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !value.Source.Immune && value.FinalValue > 0)
                         .Sum(value => value.FinalValue);
                 row["rangeFeet"] = evt.Weapon?.AttackRange.Value;
+                row["statsWeapon"] = evt.AttackRoll?.WeaponStats?.Weapon?.Blueprint?.AssetGuid;
+                row["statsDamageListReference"] = evt.AttackRoll?.WeaponStats?.DamageDescription == null ?
+                    (int?)null : RuntimeHelpers.GetHashCode(evt.AttackRoll.WeaponStats.DamageDescription);
+                row["damageDescriptionValueType"] = typeof(DamageDescription).IsValueType;
+                row["blueprintEnchantments"] = evt.Weapon == null ? null : new JArray(
+                    evt.Weapon.Blueprint.Enchantments.Select(x => x.AssetGuid));
+                row["itemEnchantments"] = evt.Weapon == null ? null : new JArray(evt.Weapon.Enchantments.Select(x =>
+                    new JObject { ["blueprint"] = x.Blueprint?.AssetGuid, ["name"] = x.Blueprint?.name,
+                        ["ownerBlueprint"] = x.Owner?.Blueprint?.AssetGuid, ["ownerReference"] = ReferenceId(x.Owner),
+                        ["components"] = x.Blueprint == null ? null : new JArray(x.Blueprint.ComponentsArray.Select(c => c.GetType().FullName)) }));
                 row["weaponDamage"] = evt.AttackRoll?.WeaponStats == null ? null : new JArray(evt.AttackRoll.WeaponStats.DamageDescription.Select(value =>
-                    new JObject { ["dice"] = value.Dice.ToString(), ["bonus"] = value.Bonus }));
+                    new JObject { ["dice"] = value.Dice.ToString(), ["bonus"] = value.Bonus,
+                        ["descriptionReference"] = typeof(DamageDescription).IsValueType ?
+                            (int?)null : ReferenceId(value) }));
                 row["damagePackets"] = evt.MeleeDamage == null ? null : new JArray(evt.MeleeDamage.DamageBundle.Select(value =>
                     new JObject { ["type"] = value.GetType().Name, ["dice"] = value.Dice.ToString(), ["bonus"] = value.Bonus,
+                        ["energy"] = (value as EnergyDamage)?.EnergyType.ToString(),
                         ["criticalModifier"] = ReadExpandedSummoningOptionalMember(value, "CriticalModifier")?.ToString() }));
                 row["attackCommand"] = evt.Initiator.Commands.Attack == null ? (int?)null :
                     RuntimeHelpers.GetHashCode(evt.Initiator.Commands.Attack);
@@ -129,6 +169,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 JObject row;
                 if (!damage.TryGetValue(evt, out row)) return;
                 row["after"] = evt.Target.Damage; row["actual"] = evt.Damage;
+                row["results"] = evt.ResultDamage == null ? new JArray() : new JArray(evt.ResultDamage.Select(value =>
+                    new JObject { ["type"] = value.Source?.GetType().Name,
+                        ["energy"] = (value.Source as EnergyDamage)?.EnergyType.ToString(),
+                        ["actual"] = value.FinalValue, ["immune"] = value.Source?.Immune }));
                 row["weapon"] = evt.DamageBundle.Weapon?.Blueprint?.AssetGuid;
                 row["hasAttackRoll"] = evt.AttackRoll != null;
                 row["packets"] = new JArray(evt.DamageBundle.Select(value => new JObject {

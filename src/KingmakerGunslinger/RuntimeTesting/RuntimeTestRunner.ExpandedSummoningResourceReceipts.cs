@@ -208,6 +208,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 out mesh, out bones, out paint, out status);
             add(mesh, NalfeshneeVisualPolicy39.Nalfeshnee + ".Mesh");
             add(paint, NalfeshneeVisualPolicy39.Nalfeshnee + ".Albedo");
+            PteranodonAssetRuntime.TryGetIceDevilVisual40(IceDevilVisualPolicy40.Key,
+                out mesh, out bones, out paint, out status);
+            add(mesh, IceDevilVisualPolicy40.Key + ".Mesh");
+            add(paint, IceDevilVisualPolicy40.Key + ".Albedo");
             foreach (string key in ExpandedSummoningCatalog.All.Select(c => c.Key))
             {
                 if (PteranodonAssetRuntime.TryGetUngulateVisual(key, out mesh, out bones, out paint, out status) ||

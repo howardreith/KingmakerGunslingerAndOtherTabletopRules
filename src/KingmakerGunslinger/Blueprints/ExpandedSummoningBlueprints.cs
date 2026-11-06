@@ -32,7 +32,7 @@ namespace KingmakerGunslinger.Blueprints
         internal int Count { get { return BySymbol.Count; } }
     }
 
-    internal static class ExpandedSummoningBlueprints
+    internal static partial class ExpandedSummoningBlueprints
     {
         private const string SummonedFactionDonorGuid =
             "1ed9a630f0d9d7f44855d3d1d1b2cdf2";
@@ -302,9 +302,8 @@ namespace KingmakerGunslinger.Blueprints
                 else if (identity.PlannedType == "BlueprintAbilityAreaEffect")
                     blueprint = registry.Register<BlueprintAbilityAreaEffect>(
                         identity.Symbol, () => CreateAreaEffectShell(identity.Symbol));
-                else throw new InvalidOperationException(
-                    "Unsupported Expanded Summoning planned type " +
-                    identity.PlannedType + ".");
+                else blueprint = RegisterAdditionalShell(identity.Symbol,
+                    identity.PlannedType, registry);
                 registered.Add(identity.Symbol, blueprint);
             }
             var result = new ExpandedSummoningBlueprintSet(registered);
@@ -690,9 +689,6 @@ namespace KingmakerGunslinger.Blueprints
             result.FxOnRemove = new Kingmaker.ResourceLinks.PrefabLink();
             return result;
         }
-
-        private static string InternalName(string symbol)
-        { return symbol.Replace('.', '_').Replace('-', '_'); }
 
         private static IEnumerable<FieldInfo> Fields(Type type)
         {

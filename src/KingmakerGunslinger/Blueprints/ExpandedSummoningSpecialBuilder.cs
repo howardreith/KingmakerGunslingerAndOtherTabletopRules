@@ -687,6 +687,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureVrock37(library, bySymbol);
             ConfigureGlabrezu38(library, bySymbol);
             ConfigureNalfeshnee39(library, bySymbol);
+            ConfigureIceDevil40(library, bySymbol);
             ConfigureHoundArchon30(library, bySymbol, extraplanar);
             ConfigureTrumpet31(library, bySymbol, extraplanar);
             ConfigureAstralDeva31(library, bySymbol, extraplanar);

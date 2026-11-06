@@ -192,6 +192,13 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void SpellLikeRangesScaleWithCasterLevel()
         {
+            Assertions.Equal(55, NalfeshneeRules39Policy.SlowRangeFeet(
+                    NalfeshneeRules39Policy.SpellLikeCasterLevel),
+                "Nalfeshnee Slow uses printed close range at CL12.");
+            Assertions.Equal(55, NalfeshneeRules39Policy.SlowRangeFeet(13),
+                "Close range increases once per two caster levels.");
+            Assertions.Equal(60, NalfeshneeRules39Policy.SlowRangeFeet(14),
+                "The next even caster level increases Slow range.");
             Assertions.Equal(220, NalfeshneeRules39Policy.MediumRangeFeet(
                     NalfeshneeRules39Policy.SpellLikeCasterLevel),
                 "Medium range is 100 + 10 per caster level, so 220 at caster level 12.");

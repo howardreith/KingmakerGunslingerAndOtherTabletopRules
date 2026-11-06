@@ -4,7 +4,7 @@ param(
     [Parameter(Mandatory=$true)][ValidateSet('KMG_AUTOMATION_WORKING')][string]$SaveName,
     [Parameter(Mandatory=$true)][string]$PackagePath,
     [Parameter(Mandatory=$true)][string]$ExpectedVersion,
-    [ValidateSet('ankylosaurus','armored-dinosaurs','theropods','giant-bodies','magical-beasts','griffon','giant-humanoids','giant-humanoids-ii','outsider-celestial','fey-celestial','shadow-outsiders','infernal-outsiders','infernal-reach-ii','infernal-demons','vrock','glabrezu','nalfeshnee')]
+    [ValidateSet('ankylosaurus','armored-dinosaurs','theropods','giant-bodies','magical-beasts','griffon','giant-humanoids','giant-humanoids-ii','outsider-celestial','fey-celestial','shadow-outsiders','infernal-outsiders','infernal-reach-ii','infernal-demons','vrock','glabrezu','nalfeshnee','ice-devil')]
     [string]$PersistenceScope='ankylosaurus',
     [ValidateSet('sprints30-31-dispel-ui')][string]$ReviewCase,
     [string]$DevelopmentPurpose,
@@ -29,6 +29,7 @@ if($PersistenceScope -ieq 'infernal-demons' -and $PersistenceScope -cne 'inferna
 if($PersistenceScope -ieq 'vrock' -and $PersistenceScope -cne 'vrock') { throw 'Sprint37 persistence scope is case-sensitive; no transaction entered.' }
 if($PersistenceScope -ieq 'glabrezu' -and $PersistenceScope -cne 'glabrezu') { throw 'Sprint38 persistence scope is case-sensitive; no transaction entered.' }
 if($PersistenceScope -ieq 'nalfeshnee' -and $PersistenceScope -cne 'nalfeshnee') { throw 'Sprint39 persistence scope is case-sensitive; no transaction entered.' }
+if($PersistenceScope -ieq 'ice-devil' -and $PersistenceScope -cne 'ice-devil') { throw 'Sprint40 persistence scope is case-sensitive; no transaction entered.' }
 $fixedDispelUi=$Scenario -ceq 'working-save-expanded-summoning-creature-review'
 if($fixedDispelUi) {
     $uiParameters=@{creatures='trumpet-archon,astral-deva';reviewCase=$ReviewCase}
@@ -51,6 +52,9 @@ $development=if($fixedDispelUi) {
     } else { throw 'Installed-stack fixed UI development requires its exact S30/S31 purpose; no transaction entered.' }
 } elseif($PersistenceScope -ceq 'infernal-outsiders' -or $PersistenceScope -ceq 'infernal-reach-ii' -or $PersistenceScope -ceq 'infernal-demons') {
     if(-not [string]::IsNullOrEmpty($DevelopmentPurpose)) { throw 'Infernal mixed persistence requires the final frozen release candidate; no development-purpose alias is admitted.' }
+    $false
+} elseif($PersistenceScope -ceq 'ice-devil') {
+    if(-not [string]::IsNullOrEmpty($DevelopmentPurpose)) { throw 'Sprint40 mixed persistence requires the final frozen release candidate; a development candidate must extend a released version and this version is not released yet.' }
     $false
 } elseif($PersistenceScope -ceq 'nalfeshnee') {
     # Sprint 39 takes the same line as Sprints 34-38: the mixed persistence
@@ -118,7 +122,7 @@ if($development) {
 $install='C:/Program Files (x86)/Steam/steamapps/common/Pathfinder Kingmaker'
 $mods=Join-Path $install 'Mods'
 $stateRoot='C:/Dev/KingmakerGunslingerLab/compatibility-state'
-$runPrefix=if($PersistenceScope -ceq 'nalfeshnee'){'sprint39-stack'}elseif($PersistenceScope -ceq 'glabrezu'){'sprint38-stack'}elseif($PersistenceScope -ceq 'vrock'){'sprint37-stack'}elseif($PersistenceScope -ceq 'infernal-demons'){'sprint36-stack'}elseif($PersistenceScope -ceq 'infernal-reach-ii'){'sprint35-stack'}elseif($PersistenceScope -ceq 'infernal-outsiders'){'sprint34-stack'}elseif($PersistenceScope -ceq 'shadow-outsiders'){'sprint33-stack'}elseif($PersistenceScope -ceq 'fey-celestial'){'sprint32-stack'}elseif($fixedDispelUi){'sprints30-31-ui-stack'}elseif($PersistenceScope -ceq 'outsider-celestial'){'sprints30-31-stack'}elseif($PersistenceScope -ceq 'giant-humanoids-ii'){'sprint29-stack'}elseif($PersistenceScope -ceq 'giant-humanoids'){'sprint28-stack'}elseif($PersistenceScope -ceq 'griffon'){'sprint27-stack'}elseif($PersistenceScope -ceq 'magical-beasts'){'sprint26-stack'}elseif($PersistenceScope -ceq 'giant-bodies'){'sprint25-stack'}elseif($PersistenceScope -ceq 'theropods'){'sprint24-stack'}elseif($PersistenceScope -ceq 'armored-dinosaurs'){'sprint23-stack'}else{'sprint22-stack'}
+$runPrefix=if($PersistenceScope -ceq 'ice-devil'){'sprint40-stack'}elseif($PersistenceScope -ceq 'nalfeshnee'){'sprint39-stack'}elseif($PersistenceScope -ceq 'glabrezu'){'sprint38-stack'}elseif($PersistenceScope -ceq 'vrock'){'sprint37-stack'}elseif($PersistenceScope -ceq 'infernal-demons'){'sprint36-stack'}elseif($PersistenceScope -ceq 'infernal-reach-ii'){'sprint35-stack'}elseif($PersistenceScope -ceq 'infernal-outsiders'){'sprint34-stack'}elseif($PersistenceScope -ceq 'shadow-outsiders'){'sprint33-stack'}elseif($PersistenceScope -ceq 'fey-celestial'){'sprint32-stack'}elseif($fixedDispelUi){'sprints30-31-ui-stack'}elseif($PersistenceScope -ceq 'outsider-celestial'){'sprints30-31-stack'}elseif($PersistenceScope -ceq 'giant-humanoids-ii'){'sprint29-stack'}elseif($PersistenceScope -ceq 'giant-humanoids'){'sprint28-stack'}elseif($PersistenceScope -ceq 'griffon'){'sprint27-stack'}elseif($PersistenceScope -ceq 'magical-beasts'){'sprint26-stack'}elseif($PersistenceScope -ceq 'giant-bodies'){'sprint25-stack'}elseif($PersistenceScope -ceq 'theropods'){'sprint24-stack'}elseif($PersistenceScope -ceq 'armored-dinosaurs'){'sprint23-stack'}else{'sprint22-stack'}
 $runId=$runPrefix+'-'+[DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ')+'-'+[Guid]::NewGuid().ToString('N').Substring(0,12)
 $backup=Join-Path $install ("Mods.kmg-compat-$runId.original")
 $runtimeMods=@(Get-ChildItem -LiteralPath $mods -Directory | Where-Object {$_.Name -cne 'KingmakerGunslinger'} | ForEach-Object {

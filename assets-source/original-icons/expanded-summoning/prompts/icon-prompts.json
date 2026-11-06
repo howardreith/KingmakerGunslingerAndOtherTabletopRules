@@ -843,6 +843,13 @@
       "subjectPrompt": "A vast corpulent boar-headed winged demon standing square to the viewer, squatting under its own weight: a dark red-brown mottled body whose belly is far wider than its shoulders and overhangs its short legs, a broad low boar skull carried forward with a blunt snout, two long pale tusks curving up out of the lower jaw past the snout line, a shorter upper pair, small swept-back ears and large amber eyes set wide, two short thick arms held out from the gut ending in three claws each, and two deliberately undersized membranous wings tucked high and back whose span is narrower than the belly. Cold blue-violet radial backdrop against warm red-brown hide with a warm amber rim. The bulk is the portrait and the small wings are identifying by their mismatch with it, so it is never the Vrock's wing-span silhouette, never the Glabrezu's towering pincered trunk, and never a lean humanoid. Two wings, two arms and two legs only; no pincers, no second pair of arms, no tail, no horns, no weapon. Procedural Blender render: tools/render_creature_icon.py --creature nalfeshnee.",
       "generator": "blender-procedural",
       "compositionBriefSource": "assets-source/original-icons/expanded-summoning/prompts/sprint39-provenance.json"
+    },
+    {
+      "key": "ice-devil",
+      "displayName": "Ice Devil (Gelugon)",
+      "subjectPrompt": "Original insectile Gelugon with two multifaceted blue eyes, mandibles, antennae, layered glacier-blue chitin, narrow waist, two arms gripping a frost spear, two legs and a long segmented striking tail; no wings, no poisonous sting. Original dark fantasy painting in an engraved gold medallion. Bone Devil source used only as a painted-family/frame reference, never as a recolor target. No text, counters or UI selection overlays.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/prompts/sprint40-provenance.json"
     }
   ]
 }

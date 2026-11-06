@@ -218,7 +218,7 @@ namespace KingmakerGunslinger.Blueprints
                     NalfeshneeRules39Policy.SpellLikeCasterLevel));
             slow.Range = AbilityRange.Custom;
             slow.CustomRange = new Feet(
-                NalfeshneeRules39Policy.MediumRangeFeet(
+                NalfeshneeRules39Policy.SlowRangeFeet(
                     NalfeshneeRules39Policy.SpellLikeCasterLevel));
             AlternateSummoningAdapterBuilder.ResetComponentCaches(lightning);
             AlternateSummoningAdapterBuilder.ResetComponentCaches(slow);

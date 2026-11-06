@@ -10,6 +10,13 @@ Four authorities are kept apart throughout: the **printed PF1 rule**, the
 **measured installed behaviour**, the **proposed adaptation**, and **owner
 decisions**. Nothing is promoted from one to another silently.
 
+Sprint40 carry-forward,2026-11-05: Nalfeshnee-owned Slow now derives the
+printed close range,25+5 feet per two caster levels:55 feet atCL12. The
+released .177 implementation's220-foot medium range remains a historical
+observation, without established owner acceptance. The global spell and all
+other Slow users retain their own contracts. Actual native inside/outside
+command proof is being added in Sprint40; no whole S39 replay is selected.
+
 ## What was settled offline, with no guarded transaction spent
 
 All of this comes from
