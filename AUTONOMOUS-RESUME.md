@@ -1,23 +1,22 @@
-# Summoned creature manual-playtest repair — R2 completion checkpoint / STOP
+# Summoned creature manual-playtest repair — R2 completion (surprise observed) / STOP
 
-Current. R1 merged (PR #111). R2 with its LIFE-01 follow-up and completion on
-`codex/summon-playtest-r2-lifecycle` (draft PR #112, base master `9d15ba1897`)
+Current. R1 merged (PR #111). R2 on `codex/summon-playtest-r2-lifecycle`
+(draft PR #112, base master `9d15ba1897`)
 ([R2-STATUS](planning/summon-playtest-repair/R2-STATUS.md)).
 
-- LIFE-02 repaired (unchanged since R2; native PASS 8/8 belongs to candidate
-  `c370ec234b70`).
-- LIFE-01 ordinary round established on candidates `9c13837dd4ce` and
-  `4a51fdfecc`: every Acadamae case (Dog, Pteranodon, Lion, Fire Mephit, Hell
-  Hound) acts in its cast round; the ordinary full-round Pteranodon waits for
-  its next turn. Original R2 failures were a fixture turn-timing defect.
-- LIFE-01 surprise round not observed: the native-entry fixture started
-  combat on detection without a surprise round. Source lead only. No
-  production defect demonstrated; no product change.
-- Spend: R2 ≈ 28.4 min, follow-up ≈ 23.9 min, completion ≈ 15.3 min;
-  cumulative ≈ 67.7 min. DATA restored exactly after every run.
-- Stop: owner decision needed on the surprise round (accept the documented
-  ordinary-round result and close LIFE-01, or authorize a narrow ambush
-  fixture). No further validation allowance is granted.
+- LIFE-02 repaired (native PASS 8/8 on candidate `c370ec234b70`).
+- LIFE-01 ordinary round established (candidates `9c13837dd4ce`,
+  `4a51fdfecc`): every Acadamae case tested acts in its cast round; the
+  full-round control waits for its next turn.
+- LIFE-01 surprise round observed (candidate `8a3176bdc312`, genuine native
+  ambush): the wizard casts the Acadamae Pteranodon in round 0; the engine
+  marks the arriving summon Surprised; it first acts in round 1. No KMG product
+  defect demonstrated; no product change.
+- Owner decision pending: accept the engine's surprise-round arrival rule, or
+  authorize a narrow adaptation in which a summon from a surprising caster
+  shares that status (separate checkpoint, own allowance).
+- Spend: cumulative R2 ≈ 76.6 min; completion checkpoint ≈ 1,453.6 s of
+  1,800 s. DATA restored exactly after every run. Stop.
 
 The R1 record below is retained unchanged.
 
