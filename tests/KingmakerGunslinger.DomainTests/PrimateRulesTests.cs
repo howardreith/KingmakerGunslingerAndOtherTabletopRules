@@ -606,7 +606,9 @@ namespace KingmakerGunslinger.DomainTests
                     TheropodRulesPolicy.AppendedWeaponIdentityCount +
                     TheropodRulesPolicy.AppendedUnitTypeIdentityCount +
                     TheropodRulesPolicy.AppendedFeatureIdentityCount +
-                    GiantBodyRulesPolicy.AppendedPrivateIdentityCount + Sprint26MagicalBeastRules.AppendedPrivateIdentityCount + GiantHumanoidRulesPolicy.AppendedPrivateIdentityCount + SummoningCurrentSurface.Sprint29PrivateIdentityCount + SummoningCurrentSurface.Sprints30And31PrivateIdentityCount + SummoningCurrentSurface.Sprint32PrivateIdentityCount,
+                    GiantBodyRulesPolicy.AppendedPrivateIdentityCount + Sprint26MagicalBeastRules.AppendedPrivateIdentityCount + GiantHumanoidRulesPolicy.AppendedPrivateIdentityCount + SummoningCurrentSurface.Sprint29PrivateIdentityCount + SummoningCurrentSurface.Sprints30And31PrivateIdentityCount + SummoningCurrentSurface.Sprint32PrivateIdentityCount +
+                    // Repair R3 UI-03: Ghaele light ray, its AI action and brain.
+                    SummoningCurrentSurface.RepairR3PrivateIdentityCount,
                 ExpandedSummoningIdentityCatalog.SpecialIdentityCount - identities.Count(value =>
                     value.Symbol.StartsWith("KMG.Summoning.Natural.Griffon.", StringComparison.Ordinal) ||
                     value.Symbol.StartsWith("KMG.Summoning.Special.Griffon.", StringComparison.Ordinal) ||

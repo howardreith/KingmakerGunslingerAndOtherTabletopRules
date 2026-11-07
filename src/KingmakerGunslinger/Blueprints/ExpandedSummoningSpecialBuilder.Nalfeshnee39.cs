@@ -46,6 +46,7 @@ namespace KingmakerGunslinger.Blueprints
         // than a second copy of it.
         internal const string NativeFeeblemindBuff39 =
             "8b3b4c225fe0fb046bfa8881c3ddad0d";
+        internal const string NativeUnholyAuraAbility39 = "47f9cb1c367a5e4489cfa32fce290f86";
         private const string NativeUnholyAuraBuff39 =
             "9eda82a1f78558747a03c17e0e9a1a68";
         private const string NativeGreaterDispelTarget39 =
@@ -636,7 +637,15 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create(symbol + ".Name", "Unholy Nimbus"),
                 LocalizationService.Create(symbol + ".Description",
                     "Three times per day as a free action, create a nimbus of unholy light. One round later it bursts in a 60-foot radius; any non-demon caught in the area must succeed on a Will save or be dazed for 1d10 rounds. At most one nimbus may be pending at a time: activating again while one is winding up is refused and costs no use. The burst catches allies as readily as enemies."),
-                null);
+                // Repair R3 UI-04: native-semantic reuse of the Unholy Aura
+                // spell's art for the unholy-light nimbus.
+                ExpandedSummoningSpecialBuilder.NativeAbilityIcon(library,
+                    NativeUnholyAuraAbility39, "native Unholy Aura icon"));
+            // Repair R3 UI-06: real metadata for the two tooltip rows.
+            ability.LocalizedDuration = LocalizationService.Create(symbol + ".Duration",
+                "Bursts after 1 round; dazed 1d10 rounds");
+            ability.LocalizedSavingThrow = LocalizationService.Create(symbol + ".SavingThrow",
+                "Will negates (non-demons)");
             return ability;
         }
 

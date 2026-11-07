@@ -107,6 +107,10 @@ namespace KingmakerGunslinger.Blueprints
             var title = LocalizationService.Create(symbol + ".Name", "Trumpet Blast");
             facts.Configure(ability, title, LocalizationService.Create(symbol + ".Description",
                 "At will as a standard action, sound this archon's own trumpet. All creatures except archons within 100 feet must make a Fortitude save or be paralyzed for 1d4 rounds. The live supernatural save DC is 10 + half racial Hit Dice + Charisma modifier (DC 20 at the adult profile). Spell resistance does not apply. Allies are eligible. This uses no cleric spell slot. The held trumpet and +4 sword are the same summon-owned instrument; it cannot become loot."), icon);
+            // Repair R3 UI-06 sibling: the blast shell had no Duration or
+            // Saving Throw strings either; state the implemented contract.
+            ability.LocalizedDuration = LocalizationService.Create(symbol + ".Duration", "1d4 rounds");
+            ability.LocalizedSavingThrow = LocalizationService.Create(symbol + ".SavingThrow", "Fortitude negates");
             facts.Configure(paralysis, title, LocalizationService.Create(
                 Trumpet31Prefix + "TrumpetParalyzed.Description",
                 "Paralyzed by one trumpet blast for its independently expiring 1d4-round duration. Native paralysis immunity still applies; other casters' effects retain their own ownership and duration."), icon);
