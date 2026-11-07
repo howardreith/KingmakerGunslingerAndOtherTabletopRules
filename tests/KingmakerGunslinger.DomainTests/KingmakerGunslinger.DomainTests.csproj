@@ -58,6 +58,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GlabrezuVisualPolicy38.cs"><Link>Summoning\GlabrezuVisualPolicy38.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\NalfeshneeVisualPolicy39.cs"><Link>Summoning\NalfeshneeVisualPolicy39.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InfernalRules35Policy.cs"><Link>Summoning\InfernalRules35Policy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonActionTimingPolicy.cs"><Link>Summoning\SummonActionTimingPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonReachRepresentation4Policy.cs"><Link>Summoning\SummonReachRepresentation4Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SummonAdjacentRoutineVerdict4.cs"><Link>RuntimeTesting\SummonAdjacentRoutineVerdict4.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\InfernalWallFeedbackPolicy35.cs"><Link>RuntimeTesting\InfernalWallFeedbackPolicy35.cs</Link></Compile>

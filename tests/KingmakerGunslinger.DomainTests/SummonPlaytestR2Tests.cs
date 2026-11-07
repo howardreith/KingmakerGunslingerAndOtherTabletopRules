@@ -83,6 +83,50 @@ namespace KingmakerGunslinger.DomainTests
                 "A Bone Devil stays independent.");
         }
 
+        // LIFE-01 observer: execution is the native act boundary, never the
+        // queue round or an IsActed value read afterwards.
+        internal static void ActionTimingRejectsQueuedButLaterOrNeverActed()
+        {
+            const int cast = 2;
+            var queuedNowActedNext = new SummonCommandTiming { Sequence = 1, QueuedRound = cast,
+                StartedRound = cast + 1, ActedRound = cast + 1, ActedGameSeconds = 18, ResultAtAct = "Success" };
+            Assertions.Equal(SummonFirstActionDisposition.ActedLater,
+                SummonActionTimingPolicy.Classify(new[] { queuedNowActedNext }, cast),
+                "A command queued in the cast round that acts in the next round is not a cast-round action.");
+            var neverActed = new SummonCommandTiming { Sequence = 1, QueuedRound = cast, StartedRound = cast };
+            Assertions.Equal(SummonFirstActionDisposition.QueuedNeverActed,
+                SummonActionTimingPolicy.Classify(new[] { neverActed }, cast),
+                "A queued or started command that never reaches its act boundary is no action.");
+            var interrupted = new SummonCommandTiming { Sequence = 1, QueuedRound = cast, StartedRound = cast,
+                EndedRound = cast, ResultAtEnd = "Interrupt" };
+            Assertions.Equal(SummonFirstActionDisposition.QueuedNeverActed,
+                SummonActionTimingPolicy.Classify(new[] { interrupted }, cast),
+                "An interrupted command that never acted is no action.");
+            Assertions.Equal(SummonFirstActionDisposition.NoCommand,
+                SummonActionTimingPolicy.Classify(new SummonCommandTiming[0], cast),
+                "No command at all is reported as such.");
+        }
+
+        internal static void ActionTimingAcceptsTheFirstCastRoundAction()
+        {
+            const int cast = 2;
+            // A move that acts, then an attack that misses: the attack's command
+            // result is still Success, and the first act boundary decides.
+            var move = new SummonCommandTiming { Sequence = 1, QueuedRound = cast, StartedRound = cast,
+                ActedRound = cast, ActedGameSeconds = 12.1, ResultAtAct = "Success" };
+            var missedAttack = new SummonCommandTiming { Sequence = 2, QueuedRound = cast, StartedRound = cast,
+                ActedRound = cast, ActedGameSeconds = 13.4, ResultAtAct = "Success" };
+            Assertions.Equal(SummonFirstActionDisposition.ActedInCastRound,
+                SummonActionTimingPolicy.Classify(new[] { missedAttack, move }, cast),
+                "A cast-round act boundary with a completed result is a legal action, hit or miss.");
+            Assertions.True(ReferenceEquals(move, SummonActionTimingPolicy.FirstAction(new[] { missedAttack, move })),
+                "The first legal action is the earliest act boundary, not the queue order.");
+            var failed = new SummonCommandTiming { Sequence = 3, QueuedRound = cast, StartedRound = cast,
+                ActedRound = cast, ActedGameSeconds = 11, ResultAtAct = "Fail" };
+            Assertions.False(SummonActionTimingPolicy.IsLegalAction(failed),
+                "An act boundary whose result is Fail is recorded but is not counted as a legal action.");
+        }
+
         internal static void MemoryDurationsKeepTheEstablishedContract()
         {
             Assertions.Equal(86400d, InfernalRules35.FearAuraMemorySeconds(true, 0),
