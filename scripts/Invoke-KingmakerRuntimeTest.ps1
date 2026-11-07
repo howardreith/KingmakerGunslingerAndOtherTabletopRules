@@ -163,12 +163,20 @@ if ($scenarioMetadata.RequiresSaveName) {
         $Parameters = @{ saveName = $SaveName; creatures = [string]$Parameters.creatures }
         if ($crowd) { $Parameters.quantity = 'OneD4PlusOne' }
     } elseif ($Scenario -cin @('summon-same-turn-acadamae', 'summon-same-turn-native-control') -and
-            $Parameters.Count -eq 1 -and $Parameters.ContainsKey('readinessCreature')) {
-        # Repair R2 LIFE-01: matched Acadamae and ordinary readiness controls, a closed list.
+            $Parameters.ContainsKey('readinessCreature') -and ($Parameters.Count -eq 1 -or
+            ($Parameters.Count -eq 2 -and $Parameters.ContainsKey('combatEntry')))) {
+        # Repair R2 LIFE-01: matched Acadamae and ordinary readiness controls, a closed list,
+        # plus one native surprise entry for an Acadamae creature case.
         if ([string]$Parameters.readinessCreature -cnotin @('pteranodon', 'fire-mephit', 'lion', 'hell-hound')) {
             throw 'Summon readiness permits typed -SaveName and only the Pteranodon/Fire Mephit/Lion/Hell Hound readinessCreature.'
         }
-        $Parameters = @{ saveName = $SaveName; readinessCreature = [string]$Parameters.readinessCreature }
+        if ($Parameters.ContainsKey('combatEntry') -and ($Scenario -cne 'summon-same-turn-acadamae' -or
+                $Parameters.combatEntry -isnot [string] -or [string]$Parameters.combatEntry -cne 'surprise')) {
+            throw 'Summon readiness permits combatEntry=surprise only for an Acadamae creature case.'
+        }
+        $readinessParameters = @{ saveName = $SaveName; readinessCreature = [string]$Parameters.readinessCreature }
+        if ($Parameters.ContainsKey('combatEntry')) { $readinessParameters.combatEntry = 'surprise' }
+        $Parameters = $readinessParameters
     } elseif ($Scenario -cin @('summon-same-turn-activation',
             'summon-same-turn-rtwp-control',
             'summon-same-turn-native-control')) {

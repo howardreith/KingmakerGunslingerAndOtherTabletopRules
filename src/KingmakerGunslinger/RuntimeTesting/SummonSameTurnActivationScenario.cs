@@ -305,6 +305,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             private int _lastTimedStage = -1;
             private int _castResolutionPolls;
             private int _castSnapshots;
+            // Repair R2 LIFE-01 surprise entry: a real party attack opens
+            // combat and the engine alone decides surprise participation.
+            private readonly bool _surpriseEntry;
+            private UnitEntityData _opener;
+            private UnitAttack _openerAttack;
+            private bool _surpriseCombatRecorded;
+            private bool _surpriseRoundAtCasterTurn;
+            private double _surpriseEntryStartedSeconds = -1;
+            private int _surpriseRows;
             private int _lastObservedSummonCount = -1;
             private int _stableSummonEntityTicks;
             private int _firstSummonCommandRound;
@@ -331,6 +340,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _kind = ResolveKind(request.Scenario);
                 _flightCreature = (string)request.Parameters?["flightCreature"] ??
                     (string)request.Parameters?["readinessCreature"];
+                _surpriseEntry = string.Equals(
+                    (string)request.Parameters?["combatEntry"],
+                    SummonReadinessAdmissionPolicy.SurpriseEntry,
+                    StringComparison.Ordinal);
                 _requestLocalFixture = RuntimeTestScenarioCatalog
                     .IsSummonSameTurnCompatibilityScenario(request.Scenario);
                 _evidence.Case = _kind.ToString();
@@ -730,6 +743,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _request.CompletionTimeoutSeconds;
                     if (_stage != _lastTimedStage)
                     {
+                        if (_surpriseEntry && _stage == 4)
+                            RecordSurpriseState("summon-enrolled");
                         _lastTimedStage = _stage;
                         _diagnostics.Add("stage-time=stage=" + _stage +
                             ";elapsedSeconds=" + _elapsed.Elapsed.TotalSeconds
@@ -976,6 +991,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue =
                     turnBased;
                 Game.Instance.TurnBasedCombatController.Activate();
+                if (_surpriseEntry)
+                    OpenCombatWithNativeSurpriseAttack();
+                else
+                {
                 _caster.JoinCombat();
                 _enemy.JoinCombat();
                 Game.Instance.Player.UpdateIsInCombat();
@@ -1007,6 +1026,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "The native turn controller did not enroll both " +
                         "request-local combatants.");
+                }
                 if (_requestLocalFixture)
                     _diagnostics.Add("request-local-turn-enrollment=" +
                         "caster=" + Game.Instance.TurnBasedCombatController
@@ -1200,8 +1220,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _stage = 2;
                     return;
                 }
+                if (_surpriseEntry && (!CombatController.IsInTurnBasedCombat() ||
+                    !controller.Initialized))
+                {
+                    if (_elapsed.Elapsed.TotalSeconds -
+                            _surpriseEntryStartedSeconds > 30d)
+                        throw new InvalidOperationException(
+                            "The opener's real attack did not start native " +
+                            "turn-based combat within 30 seconds; " +
+                            DescribeSurprise());
+                    return;
+                }
                 if (!CombatController.IsInTurnBasedCombat() ||
                     !controller.Initialized) return;
+                if (_surpriseEntry && !_surpriseCombatRecorded)
+                {
+                    _surpriseCombatRecorded = true;
+                    RecordSurpriseState("combat-start");
+                    if (controller.RoundNumber != 0)
+                        throw new InvalidOperationException(
+                            "Native combat began without a surprise round; " +
+                            DescribeSurprise());
+                }
                 TurnController turn = controller.CurrentTurn;
                 if (turn == null) return;
                 RecordTurn(turn);
@@ -1222,6 +1262,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (turn.Status != TurnController.TurnStatus.Preparing &&
                         turn.Status != TurnController.TurnStatus.Acting)
                         return;
+                    if (_surpriseEntry)
+                    {
+                        RecordSurpriseState("caster-turn");
+                        if (controller.RoundNumber != 0)
+                            throw new InvalidOperationException(
+                                "The caster had no native round-0 surprise turn; " +
+                                DescribeSurprise());
+                        _surpriseRoundAtCasterTurn =
+                            controller.IsSurprising(_caster);
+                    }
                     _diagnostics.Add("caster-turn-ready=status=" + turn.Status +
                         ";round=" + controller.RoundNumber + ";elapsedSeconds=" +
                         _elapsed.Elapsed.TotalSeconds.ToString("F2"));
@@ -2253,6 +2303,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";acted=" + (turn != null && turn.IsActed());
                 _turns.Add(value);
                 _diagnostics.Add("turn=" + value);
+                if (_surpriseEntry && Game.Instance.TurnBasedCombatController
+                        .RoundNumber <= 1)
+                    RecordSurpriseState("turn");
             }
 
             private void CaptureCasterActions(bool before)
@@ -2700,6 +2753,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _kind == ScenarioKind.Acadamae ?
                             UnitCommand.CommandType.Standard :
                             UnitCommand.CommandType.Swift;
+                    if (!_surpriseEntry)
                     Add(_kind == ScenarioKind.Acadamae ?
                             "acadamae-caster-actions-preserved" :
                             "quickened-caster-actions-preserved",
@@ -2748,6 +2802,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "enrollment-native-join=joined:True") ==
                             _summons.Count,
                         "RuleSummonUnit, UnitEntityData.JoinCombat, UnitCombatPrepareController, and SortedUnits");
+                    if (!_surpriseEntry)
                     Add("accelerated-summon-current-round-opportunity",
                         "every spawned unit receives exactly one lawful cast-round opportunity",
                         OpportunitiesObserved(),
@@ -2755,6 +2810,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         AllUnitsHave(_sameLawfulByUnit, 1) &&
                         _firstLawfulSummonTurnRound == _castRound,
                         "spawned-unit identity plus exact round-correlated turns");
+                    if (!_surpriseEntry)
                     Add("accelerated-summon-next-round-normal",
                         "every surviving spawned unit receives exactly one normal following-round opportunity",
                         OpportunitiesObserved(),
@@ -2792,6 +2848,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "ObstacleAnalyzer and FreePlaceSelector request-local Harmony prefixes; ContextActionSpawnMonster and RuleSummonUnit remain native");
                     else
                     {
+                        if (!_surpriseEntry)
                         Add("accelerated-summon-native-ai",
                             "every summon issues native commands in current and following lawful turns",
                             string.Join(" | ", _evidence.UnitOpportunities
@@ -2822,6 +2879,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 .AlreadyEligible) &&
                         _evidence.DuplicateNoOp,
                         "stateless per-unit canonical-state normalization");
+                    if (_surpriseEntry)
+                    {
+                        string rows = string.Join(" | ", _diagnostics.Where(
+                            value => value.StartsWith("surprise-", StringComparison.Ordinal) ||
+                                value.StartsWith("first-action:", StringComparison.Ordinal))
+                            .ToArray());
+                        Add("surprise-native-round-zero",
+                            "a real party attack opened combat, the engine formed a surprise round, and the caster cast in its own round-0 turn while Surprising",
+                            rows, _castRound == 0 && _surpriseRoundAtCasterTurn,
+                            "CombatController.IsSurprising/IsSurprised/RoundNumber at the native caster turn");
+                        Add("surprise-summon-first-action-observed",
+                            "the summon's first legal native action is recorded at its act boundary (round reported, not asserted)",
+                            rows, _summons.Count > 0 && _summons.All(summon =>
+                                SummonActionTimingPolicy.FirstAction(
+                                    _commandTimings.Where(entry => ReferenceEquals(
+                                        entry.Key.Executor, summon)).Select(entry =>
+                                            entry.Value)) != null),
+                            "IUnitCommandActHandler boundary with the round current at the act");
+                    }
                     if (_kind == ScenarioKind.Acadamae)
                     {
                         Add("acadamae-standard-save-and-slot",
@@ -2844,7 +2920,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             !_evidence.CasterFatigued &&
                             !_evidence.CasterExhausted,
                             "existing Acadamae command/rule correlation and native save");
-                        if (_flightCreature != null)
+                        if (_flightCreature != null && !_surpriseEntry)
                             Add("acadamae-named-creature-cast-round-action",
                                 "the named creature's first legal native action reaches its act boundary in the round its Acadamae cast resolved",
                                 string.Join(" | ", _evidence.SummonCommands
@@ -2990,6 +3066,81 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 _diagnostics.Add("observer-exception=" + boundary + ":" +
                     exception);
+            }
+
+            private void OpenCombatWithNativeSurpriseAttack()
+            {
+                _failureStage = "surprise-native-entry";
+                if (_requestLocalFixture)
+                    throw new InvalidOperationException(
+                        "Native surprise entry needs the loaded working-save area.");
+                if (Game.Instance.Player.IsInCombat)
+                    throw new InvalidOperationException(
+                        "The party was already in combat before the surprise entry.");
+                _opener = Game.Instance.EntityCreator.SpawnUnit(_casterBlueprint,
+                    _enemy.Position + new Vector3(-1.2f, 0f, 0f),
+                    Quaternion.identity, _caster.HoldingState);
+                Game.Instance.EntityCreator.Tick();
+                if (_opener == null || !_opener.IsInState)
+                    throw new InvalidOperationException(
+                        "The disposable opener did not enter the live area.");
+                if (!Game.Instance.Player.Party.Contains(_opener))
+                    Game.Instance.Player.Party.Add(_opener);
+                _opener.Descriptor.Stats.HitPoints.BaseValue = 10000;
+                _opener.Descriptor.State.Immortality.Retain();
+                _openerAttack = new UnitAttack(_enemy);
+                _opener.Commands.Run(_openerAttack);
+                _fixtureJoinedCombat = true;
+                _surpriseEntryStartedSeconds = _elapsed.Elapsed.TotalSeconds;
+                _diagnostics.Add("surprise-entry=opener=" + Identity(_opener) +
+                    ";command=UnitAttack;target=" + Identity(_enemy) +
+                    ";partyInCombat=" + Game.Instance.Player.IsInCombat +
+                    ";gameSeconds=" + Game.Instance.TimeController.GameTime
+                        .TotalSeconds.ToString("F2"));
+            }
+
+            private string SurpriseFlags(CombatController controller,
+                UnitEntityData unit)
+            {
+                if (unit == null) return "<none>";
+                return Identity(unit) + ":inCombat=" + unit.IsInCombat +
+                    ";ordered=" + controller.SortedUnits.Contains(unit) +
+                    ";surprising=" + controller.IsSurprising(unit) +
+                    ";surprised=" + controller.IsSurprised(unit) +
+                    ";actingSurprise=" + controller.IsActingSurpriseCommands(unit) +
+                    ";initiative=" + unit.CombatState.Initiative +
+                    ";sinceSurpriseAction=" + (Game.Instance.TimeController.GameTime -
+                        unit.CombatState.LastSurpriseActionTime).TotalSeconds.ToString("F1");
+            }
+
+            private string DescribeSurprise()
+            {
+                CombatController controller = Game.Instance.TurnBasedCombatController;
+                return "round=" + controller.RoundNumber + ";initialized=" +
+                    controller.Initialized + ";partyInCombat=" +
+                    Game.Instance.Player.IsInCombat + ";caster{" +
+                    SurpriseFlags(controller, _caster) + "};opener{" +
+                    SurpriseFlags(controller, _opener) + "};enemy{" +
+                    SurpriseFlags(controller, _enemy) + "};openerAttack=" +
+                    (_openerAttack == null ? "<none>" : "started:" +
+                        _openerAttack.IsStarted + "/acted:" + _openerAttack.IsActed +
+                        "/finished:" + _openerAttack.IsFinished + "/result:" +
+                        _openerAttack.Result) + ";summons=" + string.Join(",",
+                        _summons.Select(summon => "{" + SurpriseFlags(controller,
+                            summon) + "}").ToArray());
+            }
+
+            private void RecordSurpriseState(string reason)
+            {
+                if (_surpriseRows >= 40) return;
+                _surpriseRows++;
+                CombatController controller = Game.Instance.TurnBasedCombatController;
+                string row = "surprise-state:reason=" + reason + ";current=" +
+                    (controller.CurrentTurn == null ? "<none>" :
+                        Identity(controller.CurrentTurn.Unit) + "/" +
+                        controller.CurrentTurn.Status) + ";" + DescribeSurprise();
+                _diagnostics.Add(row);
+                _evidence.SummonCommands.Add(row);
             }
 
             private SummonCommandTiming TimingFor(UnitCommand command)
@@ -3516,6 +3667,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DisposeUnit(summon);
                 if (_nonSummonControlUnit != null)
                     DisposeUnit(_nonSummonControlUnit);
+                if (_opener != null)
+                {
+                    Game.Instance.Player.Party.Remove(_opener);
+                    DisposeUnit(_opener);
+                }
                 if (_enemy != null) DisposeUnit(_enemy);
                 if (_caster != null)
                 {
