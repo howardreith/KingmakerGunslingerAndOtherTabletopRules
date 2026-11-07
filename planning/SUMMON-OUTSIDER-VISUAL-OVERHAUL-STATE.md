@@ -1,5 +1,106 @@
 # Summoned creature visual overhaul: active checkpoint
 
+## Current status: Sprint 5 visual closeout (2026-11-06)
+
+Current. This section supersedes the earlier draft, unmerged and `NOT RUN`
+summaries below, including the per-creature table under
+[Current per-creature disposition](#current-per-creature-disposition). The
+dated sections stay as historical evidence bound to their own candidates.
+
+- **Base.** Master `ffdccc8cbe` (PR #103 `855f699336`, PR #105 `ffdccc8cbe`).
+  Wall and reach work is unchanged. Model exports, albedos, scale entries and
+  presentation code are unchanged since `59603558`. The only changes since
+  then are reach representation and weapon range fields.
+- **Implemented model changes.** These are the ten revisions recorded below
+  (PR #96, merged earlier). Satyr has no change, and Invisible Stalker and
+  Shadow Demon keep their bytes (meshes `778a3943…`, `6085202d…`).
+- **Cosmetic corrections this sprint: none.** The review used actual native
+  frames and an independent read-only visual review. The original brief's
+  targets are met at normal party-camera distance:
+  - Nalfeshnee and Glabrezu are imposing, at about 2.5x and 2x the humanoid.
+  - Vrock is about 1.5x and reads larger with its wings spread.
+  - The Hezrou has a readable toad head with a wide mouth.
+  - Babau, Barbed Devil and Bone Devil are distinct in both colour and
+    silhouette.
+  - Kyton chains hang from the cuffs at rest, in walking and at contact.
+  - The Lillend's head, shoulders, arms and bodice read naturally on the
+    serpent body.
+  - Surfaces read in the dim hall and in daylight.
+
+  The remaining observations are either taste-level or native-path
+  limitations (listed below). None is a specific defect that the supported
+  presentation path can correct, so no asset was changed.
+- **Actual native observations this sprint.** These are observer-only
+  candidates on branch `codex/summon-visual-closeout`. Each restored the
+  intake installation v0.0.140, native settings and protected saves exactly.
+
+  | Phase / run | Candidate | Result |
+  | --- | --- | --- |
+  | `sprint33-shadow-motion` / `20261107T0007470401701Z` | `90ce81f1af6c` (ZIP `d37f6196…e16e`) | **PASS 29**. Stalker and Shadow Demon native movement, slams/claws with live animation, natural invisibility kept through attacks, private resources, untouched donor control. |
+  | `summon-visual-closeout` / `20261107T0018035295825Z` | `90ce81f1af6c` / `5bfea3a4754e` | Two failures, kept on record. The first request was refused before launch because the phase constant did not match the guarded declaration pattern. The second, run on `5bfea3a4754e`, was **FAIL**: the group settled, but native MultiSelect kept only the humanoid. |
+  | `summon-visual-closeout` / `20261107T0030412872649Z` | `8b88ad1d52fe` (ZIP `257f4c45…2d54`) | **PASS 5**. Ten summons settled in the static interior hall. Dim-interior close-ups for all ten. Read-only camera-ray picks. A shared-point move by ordinary native commands: all eleven bodies Success in 4.0 s. |
+  | `summon-visual-closeout-group` / `20261107T0032575591451Z` | `8b88ad1d52fe` | **FAIL** (selection only). Outdoors, every summon recorded `IsDirectlyControllable=false`. The phase was then withdrawn (see below). Its outdoor group and Stalker/Shadow Demon/Satyr frames are retained. |
+
+  Kingmaker summons are AI-driven. The summoning spells'
+  `ContextActionSpawnMonster` sets `IsDirectlyControllable=false`, so the
+  player never selects a summon, outdoors or in. The interior fixture recorded
+  `IsCapital=false`, so `8b88ad1d52`'s capital explanation was wrong;
+  `a053a22f2b` corrects it. Mixed-group usability is therefore judged by
+  hover-picking:
+  - In the crowded ten-summon ring, eight summons picked themselves from the
+    party camera.
+  - The Shadow Demon and Satyr picked the Nalfeshnee first. A Huge Nalfeshnee
+    can hide smaller summons from the cursor.
+  - In the shared-point stress move, every body reached the same point within
+    0.05 m. Native avoidance lets bodies interpenetrate, and the enlarged
+    Glabrezu and Nalfeshnee visually swallow the smaller ones.
+  - Nothing stuck or jittered. This is a forced worst case, because ordinary
+    AI-driven summons are never sent to one point.
+- **Retained presentation limitations.** These are recorded, not corrected:
+  - Glabrezu's smaller arms and the Vrock and Nalfeshnee wings ride on the
+    chest, with no independent articulation. The Nalfeshnee's closed wings
+    read as stubs.
+  - Hezrou, Nalfeshnee and Glabrezu hides are smooth and fairly uniform.
+  - The Babau is the darkest body and is least readable indoors.
+  - In Kyton strike follow-through, chain segments extend as straight rigid
+    lines with no sag. The head is a chain-wrapped dome with little face at
+    party distance.
+  - The Bearded Devil's native glaive butt dips into the ground while
+    walking.
+  - The Lillend's pre-existing comb-like wing cards were out of scope.
+  - The allied Stalker always shows the native invisible-ally outline, which
+    is faint outdoors. Its natural invisibility is Purge-exempt by design, so
+    no legitimate in-play reveal of an allied Stalker was observable.
+- **Validation (45-minute authorization): 30.1 minutes.**
+  - Focused gates: 13 s (csproj omission) plus 16, 16 and 17 s.
+  - First build attempt: ≤10 s (invocation error).
+  - Builds: 387, 382 and 378 s.
+  - Native drivers: 194.1 s (refusal plus shadow-motion), 133.1, 1.2
+    (wrong path, nothing launched) and 259.2 s.
+  - Each build: 30/30 selected tests, exact-reference compilation and strict
+    package validation.
+  - Ledger: `artifacts/summon-overhaul-closeout/visual-closeout-ledger.json`
+    (local).
+  - Withdrawing the outdoor phase (`a053a22f2b`) compiled and passed its 2
+    focused tests. It was not rebuilt, and its interior PASS stays bound to
+    `8b88ad1d52fe`.
+- **Preview package.** Use the accepted Sprint 4 executable `a9e0ac398d46`,
+  whose models and presentation are identical: ZIP SHA-256 `17e2e255…374d`,
+  DLL MVID `0251abfd-18ef-4860-adc0-7a436cee50ff`. It is a development
+  candidate only, and it is not installed.
+- **Review package.** The owner-visible illustrated review is
+  [Summoned Creature Visual Closeout](https://claude.ai/artifact/8iqQ2PYUB3oPVL98JUHamt)
+  (private to the owner). It has 85 native-frame images and no offline
+  previews, and covers:
+  - the ten revised bodies, with before/now comparisons;
+  - full gameplay frames;
+  - close-ups of faces, chain roots and the Lillend's upper body;
+  - motion sequences;
+  - Stalker, Shadow Demon and Satyr preservation cards;
+  - crowd usability, limitations and preview instructions.
+- **Owner aesthetic approval: unclaimed.** The review package is the basis
+  for that judgment.
+
 ## Integration validated natively on merged master
 
 [Integration validation in the Sprint 2 checkpoint](WALL-OF-ICE-SPRINT2.md#integration-validation-on-merged-master-development-candidate-draft-follow-up-pr).
@@ -776,6 +877,10 @@ detached Kyton arcs and Lillend garment concerns were confirmed from these
 references; final native states still require observation.
 
 ## Current per-creature disposition
+
+Historical, from before the native review. Its `NOT RUN` cells are superseded
+by later native results and the
+[Sprint 5 current status](#current-status-sprint-5-visual-closeout-2026-11-06).
 
 | Creature | Substantive change or preservation | Native review | Owner approval |
 | --- | --- | --- | --- |
