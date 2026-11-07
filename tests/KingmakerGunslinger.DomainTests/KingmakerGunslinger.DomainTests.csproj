@@ -46,6 +46,7 @@
     <Compile Include="NalfeshneeRules39Tests.cs" />
     <Compile Include="IceDevilRules40Tests.cs" />
     <Compile Include="SummonPlaytestR1Tests.cs" />
+    <Compile Include="SummonPlaytestR2Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\IceDevilRules40Policy.cs"><Link>Summoning\IceDevilRules40Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InfernalRules36Policy.cs"><Link>Summoning\InfernalRules36Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InfernalVisualPolicy36.cs"><Link>Summoning\InfernalVisualPolicy36.cs</Link></Compile>

@@ -147,6 +147,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonOverhaulReview.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonVisualCloseout.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR1.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR2Fear.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalMechanics34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCombat34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalAi34.cs" />

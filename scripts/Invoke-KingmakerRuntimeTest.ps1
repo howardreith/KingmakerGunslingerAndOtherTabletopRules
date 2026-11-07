@@ -162,6 +162,13 @@ if ($scenarioMetadata.RequiresSaveName) {
         }
         $Parameters = @{ saveName = $SaveName; creatures = [string]$Parameters.creatures }
         if ($crowd) { $Parameters.quantity = 'OneD4PlusOne' }
+    } elseif ($Scenario -cin @('summon-same-turn-acadamae', 'summon-same-turn-native-control') -and
+            $Parameters.Count -eq 1 -and $Parameters.ContainsKey('readinessCreature')) {
+        # Repair R2 LIFE-01: matched Acadamae and ordinary readiness controls, a closed list.
+        if ([string]$Parameters.readinessCreature -cnotin @('pteranodon', 'fire-mephit', 'lion', 'hell-hound')) {
+            throw 'Summon readiness permits typed -SaveName and only the Pteranodon/Fire Mephit/Lion/Hell Hound readinessCreature.'
+        }
+        $Parameters = @{ saveName = $SaveName; readinessCreature = [string]$Parameters.readinessCreature }
     } elseif ($Scenario -cin @('summon-same-turn-activation',
             'summon-same-turn-rtwp-control',
             'summon-same-turn-native-control')) {
