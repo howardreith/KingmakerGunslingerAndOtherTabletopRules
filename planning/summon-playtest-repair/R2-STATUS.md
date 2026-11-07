@@ -6,11 +6,13 @@ established: under matched ordinary turn-based conditions every Acadamae case
 (Dog, Pteranodon, Lion, Fire Mephit, Hell Hound) takes its first legal native
 action in the round its cast resolved, and the nonaccelerated full-round
 Pteranodon waits for its next turn, as the native casting time requires. The
-reported Pteranodon/mephit slowness was not reproduced. The surprise round was
-**not** observed: the planned native entry started combat on detection, without
-a surprise round (see "R2 completion"). No production defect was demonstrated
-and no production behavior changed for LIFE-01. Not a release; nothing
-installed permanently. R3 has not started.
+reported Pteranodon/mephit slowness was not reproduced. The surprise round is
+now natively observed (see "R2 completion continuation"): in a genuine native
+ambush the wizard casts the Acadamae Pteranodon on its own round-0 turn, the
+engine marks the arriving summon `Surprised`, and the summon first acts in
+round 1. Whether that matches the intended adaptation is an **owner decision**.
+No production behavior changed for LIFE-01. Not a release; nothing installed
+permanently. R3 has not started.
 
 Records: [MISSION](MISSION.md) section 5, [ISSUE-REGISTER](ISSUE-REGISTER.md)
 (LIFE-01, LIFE-02), [R1-STATUS](R1-STATUS.md).
@@ -156,6 +158,107 @@ recovered with the repository's own functions: exact lock owner verified,
 original owner process gone, live mod restored through `Restore-Live-Mod.ps1`
 under that lease, settings and saves verified, then `Exit-KmgRuntimeLease`
 (record: `runtime-evidence/summon-playtest-r2/20261107-readiness-recovery.json`).
+
+## R2 completion continuation — native surprise observation
+
+Authorized to use only the unspent balance of the completion checkpoint
+(880.8 s), for one build and at most one native surprise attempt. Base: PR #112
+branch at `36ce7aeab2` (open). DATA intake unchanged (v0.0.140 DLL
+`00ef6757…66fd`, all sixteen UMM mods enabled, 95 protected save files, no game
+running, no held lock).
+
+### Fixture corrections (`8a3176bdc3`, fixture/observer only)
+
+- **Genuine native ambush.** Installed engine contract: a group adds an enemy
+  to memory only with line of sight within its vision range
+  (`UnitMemoryController.UpdateVisibility`, `UnitEntityData.HasLOSBetweenPoints`);
+  out of combat a hostile sees 8.5 m and player-faction units 11.7 m
+  (`VisionRangeMeters`). A party unit engages only once the enemy remembers it
+  (`UnitCombatJoinController.ShouldEngageEnemy`). An offensive action by a unit
+  not in combat stamps its `LastSurpriseActionTime`
+  (`HandleUnitMakeOffensiveAction`). When the party group enters combat, all of
+  it joins in the same tick, so the wizard is in the turn order at combat start.
+  The fixture now surveys open floor for a hostile position beyond 9.5 m of
+  every party unit (working-save members included) that a party opener 1 m
+  behind the wizard still sees within 11.7 m. It gives that opener a native
+  light crossbow (`19a5092244dcf99478dcd73c974828b1`) and verifies and records
+  native awareness before the real offensive command: no hostile line of sight,
+  no hostile memory of any party unit, nobody in combat. It refuses the run if
+  any precondition fails. Nothing sets surprise flags, initiative, rounds,
+  actions, timestamps or game time.
+- **Round-zero records.** The first-turn, first-lawful-turn, first-command and
+  first-attack summaries used 0 as "unset", so a real round-0 observation could
+  be overwritten by round 1. They now use an explicit `FirstRoundRecord`
+  (unset = `int.MinValue`). Focused test
+  `summon-playtest-r2.round-zero-first-observation-kept`. Native command
+  start/act/end records unchanged.
+
+Focused gate: 29 of 2,855 selected, 0 failures. Admission scope unchanged (no
+recheck needed).
+
+Candidate `8a3176bdc312f28ecce60196569167e6e73913ba`: package
+`0104c48a145f42bd4510db63ac75824ef5f16f9d33d4e5c420bd9965a6335f49`, DLL
+`f8219668b5de65b4fad744b1077ed128b9c0063545ebd125716297bf22ab3cf2`, MVID
+`275b6e89-9046-4b9e-b79d-9238378b5319`, source fingerprint
+`c4a8d5030fd51bf7fed385d678c538840e28780877072044ac7ba8e9ec3b59a4`.
+
+### The single native attempt — PASS 9/9
+
+Run `20261107T2033461134082Z-b38f14e92e4245809c85ea24be577374`
+(`summon-same-turn-acadamae`, `readinessCreature=pteranodon`,
+`combatEntry=surprise`, working save loaded, never written); receipt
+`runtime-result.json` SHA-256 `331cfb20f24d…`.
+
+| Step | Native observation |
+| --- | --- |
+| Pre-entry | Hostile 10.00 / 10.14 / 11.81 / 11.00 m from Hedwirg, Linzi, Tartuccio and the opener (the wizard was 1 m in front of the opener); hostile vision 8.5 m; hostile saw and remembered no party unit; nobody in combat; opener (vision 11.7 m, `StandardHeavyCrossbow` blueprint) saw the hostile |
+| Opener | Real `UnitAttack` (Standard): start 44371.58, act 44372.32 (`Success`), both with no combat turn yet |
+| Combat formation | Native combat at **round 0**. Wizard `surprising=True`, standard and move available; opener `surprising=True` |
+| Wizard | Own round-0 turn (`Preparing`), Acadamae Pteranodon cast: Standard, act and end in round 0 `Success`, one slot spent, one Acadamae save (roll 20, DC 19), no fatigue. After the cast neither standard nor move remained (the surprise-round single action) |
+| Summon arrival | Spawned in round 0 with no appearance lock and lifecycle 120 s (the existing Acadamae repair), enrolled and initiative-prepared by the existing hold. At enrollment and through round 0: `surprising=False`, **`surprised=True`** |
+| Summon round 0 | No turn in round 0 (native `ChooseNextUnit` skips Surprised units) |
+| First legal action | Round 1, its own turn: `UnitAttack` (Standard), act result `Success`, bite hit. Disposition `ActedLater` relative to cast round 0 |
+
+Unexplained observation, recorded only: the hostile was also reported
+`surprising=True` and took a round-0 turn. Under the installed start logic,
+party surprise would normally leave the hostile surprised.
+
+### Interpretation
+
+- **Observed engine mechanism:** a summon created during the surprise round
+  rolls initiative while round 0 is active without the `Surprising` flag. Native
+  `HandleUnitRollsInitiative` marks it `Surprised`, so it first acts in round 1.
+  Summons that already exist at combat start instead inherit their caster's
+  `Surprising` flag. The engine therefore treats a summon conjured by a
+  surprising caster as surprised, but only when it arrives mid-round.
+- **Against the mission's adaptation:** MISSION section 5 says Summon Monster
+  creatures act immediately on the caster's turn and that surprise rounds have
+  their own limits the general text does not settle. This observation shows
+  the engine path; it does not settle whether a summon from an aware caster in
+  a surprise round should get a limited surprise action. That is an owner
+  decision. It is not a demonstrated KMG product defect: ordinary-round
+  behavior is correct, and this is the installed engine's arrival rule.
+- Seconds-component surprise lead: unverified, not exercised here (the opener's
+  stamp was fresh).
+
+### Restoration
+
+Runner restored automatically: live tree
+`5C3E4AD499DC5116D2024D06260D11700087379937B96B7372C821628CB9BFBB` before and
+after, v0.0.140 DLL `00ef6757…66fd`, settings restored, 95 protected saves
+identical, no surviving process, no recovery. Record
+`runtime-evidence/summon-playtest-r2/*-r2c-surprise-*` (latest pair).
+
+### Spend
+
+| Invocation | Seconds |
+| --- | --- |
+| Focused gate (29/29) | 16.4 |
+| Candidate build `8a3176bdc312` | 380 |
+| Native surprise runner (incl. deploy/restore) | 138 |
+| **This continuation** | **≈ 534.4 s** |
+| **Completion checkpoint total** (919.2 + 534.4) | **≈ 1,453.6 s of its 1,800 s cap** |
+| **Cumulative R2** (1,706.2 + 1,436.0 + 919.2 + 534.4) | **≈ 4,595.8 s (≈ 76.6 min)**, plus ≈ 8 s recovery after the R2 hang |
 
 ## R2 completion — remaining LIFE-01 observations
 
@@ -437,6 +540,6 @@ allowance; LIFE-01 needs a separately authorized narrow repair.
 3. In an ordinary turn-based round, Acadamae Pteranodon, a mephit, Lion and
    Hell Hound should each act in the round they appear; without Acadamae the
    same summon waits for its next turn. Optional (unobserved): start combat
-   by ambushing unaware enemies, cast an Acadamae summon in the surprise
-   round, and note whether it first acts in
+   by ambushing unaware enemies and cast an Acadamae summon in the surprise
+   round: natively it is marked surprised and first acts in
    round 1. These are the open LIFE-01 observations.
