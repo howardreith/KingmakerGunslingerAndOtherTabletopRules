@@ -1,21 +1,25 @@
-# Summoned creature manual-playtest repair — R2 checkpoint / STOP
+# Summoned creature manual-playtest repair — R2 follow-up checkpoint / STOP
 
-Current. R1 merged (PR #111). R2 on `codex/summon-playtest-r2-lifecycle`
-from master `9d15ba1897` ([R2-STATUS](planning/summon-playtest-repair/R2-STATUS.md)).
+Current. R1 merged (PR #111). R2 and its LIFE-01 follow-up on
+`codex/summon-playtest-r2-lifecycle` (draft PR #112, base master `9d15ba1897`)
+([R2-STATUS](planning/summon-playtest-repair/R2-STATUS.md)).
 
-- LIFE-02 repaired: the shared Bone/Ice Devil fear aura's source-memory
-  marker inherited the Frightened context's descriptors and was refused by the
-  Nalfeshnee's Unholy Aura (mind-affecting immunity), so the aura re-evaluated
-  every tick. Marker now carries no descriptor. Candidate `c370ec234b70`
-  (package `df7601d9…596f`), save-free DATA run PASS 8/8 including the old
-  marker's refusal on the same bytes and a Bone Devil regression.
-- LIFE-01 not established: the matched Acadamae comparison failed four times
-  at observer setup (named-creature Acadamae cast never resolved); no creature
-  evidence, no product change. Surprise round explained from source only.
-  The game hung after the fourth case; with owner authorization it was
-  terminated and the lease recovered; DATA restored exactly.
-- R2 spend ≈ 28.4 min (target 15, ceiling 30). Stop for review; a narrow
-  LIFE-01 repair needs its own authorization.
+- LIFE-02 repaired (unchanged by the follow-up): fear-aura memory marker no
+  longer inherits the Frightened descriptors. Native PASS 8/8 belongs to
+  candidate `c370ec234b70` only; its 4-second windows are confirmed from the
+  receipt.
+- LIFE-01 follow-up: the R2 cast failures were a fixture defect (cast issued
+  while the caster's native turn was `Scrolling`; native `Prepare()`
+  interrupted it), fixed in the fixture. Exact command start/act/end
+  boundaries now drive the action-timing observer. Candidate `9c13837dd4ce`:
+  Dog control PASS, Acadamae Pteranodon PASS (acts in its cast round), Lion
+  FAIL on an observer full-attack assumption (bite in cast round recorded;
+  policy corrected in source only). Fire Mephit, Hell Hound, the
+  nonaccelerated Pteranodon and the surprise round remain unobserved. No
+  production change.
+- Spend: original R2 ≈ 28.4 min; follow-up ≈ 23.9 min; cumulative ≈ 52.4 min.
+  DATA restored exactly after every run. Stop for review; the remaining
+  observations need their own authorization.
 
 The R1 record below is retained unchanged.
 
