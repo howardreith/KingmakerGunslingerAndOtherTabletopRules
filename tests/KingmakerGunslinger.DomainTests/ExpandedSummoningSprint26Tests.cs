@@ -60,6 +60,8 @@ namespace KingmakerGunslinger.DomainTests
             Sprint39PrivateIdentityCount;
         internal const int Sprint40PrivateIdentityCount = 27;
         internal const int Sprint40CatalogIdentityCount = 1 + 1 + Sprint40PrivateIdentityCount;
+        // Repair R3 UI-03: the KMG Ghaele light ray, its AI action and brain.
+        internal const int RepairR3PrivateIdentityCount = 3;
         internal const int AppendedCatalogIdentityCount =
             Sprint26MagicalBeastRules.AppendedCatalogIdentityCount +
             ExpandedSummoningSprint27Tests.AppendedCatalogIdentityCount +
@@ -69,7 +71,8 @@ namespace KingmakerGunslinger.DomainTests
             Sprint32PrivateIdentityCount + 2 + 10 + 22 +
             InfernalRules35.AppendedCatalogIdentityCount +
             Sprint36CatalogIdentityCount + Sprint37CatalogIdentityCount +
-            Sprint38CatalogIdentityCount + Sprint39CatalogIdentityCount + Sprint40CatalogIdentityCount;
+            Sprint38CatalogIdentityCount + Sprint39CatalogIdentityCount + Sprint40CatalogIdentityCount +
+            RepairR3PrivateIdentityCount;
         internal const int AppendedLedgerIdentityCount =
             AppendedCatalogIdentityCount +
             Sprint36ReservedIdentityCount;

@@ -121,6 +121,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in ReviewSummonPlaytestCutsR1(fixture, phase)) yield return frame;
                 yield break;
             }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestUiPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewSummonPlaytestUiR3(fixture, phase)) yield return frame;
+                yield break;
+            }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestFearPhase)
             {
                 CreateSprint32TurnHostile(fixture);

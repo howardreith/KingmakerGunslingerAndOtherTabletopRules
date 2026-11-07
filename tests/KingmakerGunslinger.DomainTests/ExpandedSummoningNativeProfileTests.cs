@@ -42,6 +42,10 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "summon-playtest-r2-fear"), "R2 fear phase stays in the static interior.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.WallFixturePhase("summon-playtest-r2-fear"), "R2 fear phase never acquires Wall preparation.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-playtest-r2-fear"), "R2 fear phase is not a host-restricted Sprint40 phase.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-playtest-r3-ui", 0, 0, 0, false, false, false, false, true), "Exact fresh R3 UI phase admitted.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-playtest-r3-ui", 0, 0, 0, false, false, true, false, true), "R3 UI phase cannot import a save.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "summon-playtest-r3-ui"), "R3 UI phase stays in the static interior.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-playtest-r3-ui"), "R3 UI phase is not a host-restricted Sprint40 phase.");
             // Sprint 4 reach census: an exact fresh, save-free outdoor Default
             // phase that never acquires Wall preparation or player input.
             Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-reach-sprint4", 0, 0, 0, false, false, false, false, true), "Exact fresh reach phase admitted.");
