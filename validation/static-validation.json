@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.178-expanded-summoning-ice-devil",
+  "milestone": "0.0.179-expanded-summoning-wall-reach-closeout",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.178",
+  "version": "0.0.179",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2858,5 +2858,18 @@
     "harnessIdentityNote": "Tool and fixture identity for the orchestration that produces the native rows, recorded separately from the compiled product identity. These paths lie outside the validator's guarded product roots, so they are pinned here rather than by the product diff. The validator file itself cannot carry its own digest; its provenance is the reviewed release commit.",
     "installedStackFixtureChecks": 57,
     "compiledRequestAdmissionChecks": 33
+  },
+  "expandedSummoningCloseoutRelease179": {
+    "releaseVersion": "0.0.179",
+    "releaseInformationalVersion": "0.0.179-expanded-summoning-wall-reach-closeout",
+    "baseStableVersion": "0.0.178",
+    "reviewedProductSource": "9e67c45f46227ad6dcda10187e6609ffa1f1cab6",
+    "appendedIdentities": 0,
+    "releasedIdentityChanges": 0,
+    "visibleChoiceTotal": 1217,
+    "change": "Wall of Ice durable navigation, steam and tail (PR #98, #101); Bone Devil Wall sections take no Infernal Wound and natural reach is correct under ProperFlanking2 (PR #103); 45 false ProperFlanking2 reach-weapon rows on published summons corrected with live reach preserved (PR #105); observation-only Sprint 41 repairs (PR #106) and visual-closeout observer (PR #107); no creature model, texture or scale change since v0.0.178",
+    "nativeEvidence": "Native results stay attributed to their own development candidates (for example Wall 155/156, reach s4g 41/41, closeout 5, shadow motion 29); none is fresh execution of the version-stamped release DLL",
+    "deferredCoverage": "Sprint 41 A-15 Wall review phase passes 1 run in 5 (verification reliability demonstrated, product defect undetermined); A-5, A-6, A-7, A-9, A-13 and A-16 open; Ice Devil visual acceptance pending; persistence matrix, roster-scale visual acceptance and performance not run for this release",
+    "ownerPublicationAuthority": "Howie Reith, 2026-11-07: 'Alright. Please cut a release that I will test with. Thank you.' then, asked stable or prerelease: 'Stable 0.0.179. I also just merged the other PRs that were in the repo so make sure everything is incorporated.'"
   }
 }
