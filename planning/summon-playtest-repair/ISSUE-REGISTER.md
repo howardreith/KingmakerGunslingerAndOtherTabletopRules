@@ -12,7 +12,7 @@ All entries below start as planned work, not completed fixes. The report and ima
 | CUT-02 Wall of Ice | Intentionally removed (R1 checkpoint) | Bone/Ice Devil grant, parameters, AI removed; cleanup identities retained; load fixer. Native fresh + induced-legacy PASS. Pre-existing wall retirement not re-run natively (no dependency changed). | R1 draft PR |
 | CUT-03 Magma Form | Intentionally removed (R1 checkpoint) | Grant, resource, AI removed; breath/Pyrotechnics retained; load fixer. Native PASS. | R1 draft PR |
 | CUT-04 Bardic Suggestion | Intentionally removed (R1 checkpoint) | Grant, parameters, noncombat route removed; load fixer. Suggestion spell not natively observed (optional provider inactive on DATA). | R1 draft PR |
-| CUT-05 Fire Giant Sunder | Intentionally removed (R1 checkpoint) | Native Improved Sunder withheld; Sunder Armor action and ProperFlanking2 toggle absent; Storm Giant keeps them. Fact-level native PASS after reader re-evaluation; no attack executed. | R1 draft PR |
+| CUT-05 Fire Giant Sunder | Intentionally removed (R1 checkpoint) | Native Improved Sunder withheld; `SunderAction`, ProperFlanking2 `SunderActionToggleAbility` and its `SunderActionToggleBuff` absent; Storm Giant keeps them with the buff active. Native PASS on the corrected observer (candidate `d46726d46ddc`), including induced-legacy buff removal; no attack executed, no cold load. | R1 draft PR |
 | All others | Planned | Not started. | — |
 
 ## R1 — Explicit release cuts

@@ -9,10 +9,21 @@ from Bone and Ice Devil; Magma Form; Lillend Bardic Suggestion; Fire Giant
 Sunder) is a reviewable development checkpoint on
 `codex/summon-playtest-r1-cuts`: focused 196/196, one development candidate
 `ab24a92394ea` (package `2f14eebc…ff8c`), one guarded save-free DATA run
-(16/18 original, 18/18 after a reader-only re-evaluation of an observer
-toggle-identity defect; both verdicts retained), exact restoration of DATA's
-v0.0.140 intake, settings and saves. Not a release. Stop for review; R2 (combat
-entry and fear evaluations) is not started and needs its own authorization.
+(16/18 original; a reader-only re-evaluation of the observer toggle-identity
+defect gives a fact-level 18/18 that never observed the real replacement buff;
+both kept), exact restoration of DATA's v0.0.140 intake, settings and saves.
+
+Review follow-up on PR #111 (same day): no production defect found. Observer
+only (`d46726d46d`): the real ProperFlanking2 Sunder chain
+(`SunderActionToggleAbility` `d9604ead…`, `SunderActionToggleBuff`
+`f9f7edc1…`) is resolved exactly and its toggle/buff states read separately,
+and Lillend is re-read after reconciliation. Second development candidate
+`d46726d46ddc` (package `492a8f12…980d`), one guarded save-free DATA run:
+**PASS 20/20**; Storm Giant control buff active before and after, induced Fire
+Giant buff active before the fixer and gone after it. Exact restoration again.
+Cumulative R1 validation ≈ 20.4 min (past the 15-minute target, inside the
+30-minute ceiling). Not a release. Stop for review; R2 (combat entry and fear
+evaluations) is not started and needs its own authorization.
 
 The section below is the previous record, retained unchanged.
 
