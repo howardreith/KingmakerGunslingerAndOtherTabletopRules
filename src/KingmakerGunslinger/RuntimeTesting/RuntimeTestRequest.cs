@@ -649,6 +649,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "dire-rat", "wolverine", "shadow-mastiff" }.Contains(
                         (string)request.Parameters["flightCreature"]))
                     return "flight-activation-creature-invalid";
+                // Repair R2 LIFE-01: matched Acadamae and ordinary readiness
+                // controls for the four reported creatures, plus one native
+                // surprise entry, a closed scope (SummonReadinessAdmissionPolicy).
+                bool readinessAcadamae = request.Scenario ==
+                    RuntimeTestScenarioCatalog.SummonSameTurnAcadamae;
+                bool readinessNativeControl = request.Scenario ==
+                    RuntimeTestScenarioCatalog.SummonSameTurnNativeControl;
+                bool readinessCreature = (readinessAcadamae ||
+                    readinessNativeControl) &&
+                    request.Parameters?["readinessCreature"]?.Type ==
+                        JTokenType.String;
+                bool combatEntryPresent = request.Parameters?["combatEntry"] != null;
+                bool surpriseEntry = readinessCreature && combatEntryPresent;
+                if (readinessAcadamae || readinessNativeControl)
+                {
+                    string readinessRefusal = SummonReadinessAdmissionPolicy.Refusal(
+                        readinessAcadamae, readinessNativeControl, readinessCreature,
+                        readinessCreature ? (string)request.Parameters["readinessCreature"] : null,
+                        combatEntryPresent,
+                        request.Parameters?["combatEntry"]?.Type == JTokenType.String ?
+                            (string)request.Parameters["combatEntry"] : null);
+                    if (readinessRefusal != null) return readinessRefusal;
+                }
                 if (creatureReview && (!request.ExitAfterCompletion ||
                     request.Parameters?["creatures"]?.Type != JTokenType.String ||
                     string.IsNullOrWhiteSpace((string)request.Parameters["creatures"])))
@@ -666,7 +689,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (circleBound && (!request.ExitAfterCompletion || request.Parameters?["preparationBinding"]?.Type != JTokenType.String ||
                     !MagicCirclePreparationBinding.Valid((string)request.Parameters["preparationBinding"], request.ExpectedModVersion)))
                     return "magic-circle-preparation-binding-required";
-                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : suggestionTransition || persistence || fcbPersistence || traitSave || weaponSave ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect || crowdReview || dispelUi ? 3 : nereidPersistence || deferredMarkers || targetedSummonPersistence || creatureReview || flightActivation || weaponRoute || representativePlayerPaths ? 2 : 1) ||
+                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : suggestionTransition || persistence || fcbPersistence || traitSave || weaponSave ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : surpriseEntry || treacherousEffect || crowdReview || dispelUi ? 3 : readinessCreature || nereidPersistence || deferredMarkers || targetedSummonPersistence || creatureReview || flightActivation || weaponRoute || representativePlayerPaths ? 2 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";

@@ -1,3 +1,21 @@
+# Summoned creature manual-playtest repair — R2 closed
+
+Current. R1 merged (PR #111). R2 closed by owner acceptance on
+`codex/summon-playtest-r2-lifecycle` (draft PR #112, base master
+`9d15ba1897`) ([R2-STATUS](planning/summon-playtest-repair/R2-STATUS.md)).
+
+- LIFE-02 repaired (native PASS 8/8, candidate `c370ec234b70`).
+- LIFE-01 closed: Ordinary Acadamae readiness verified for the requested cases; the reported creature-specific delay was not reproduced. Surprise-round delay was observed and explained: an arriving summon is marked Surprised and first acts in round 1. Native arrival behavior is retained for this release.
+- Native surprise arrival behavior retained; no KMG override. Unexplained
+  hostile round-zero turn and the seconds-component lead stay recorded as
+  nonblocking observations.
+- Cumulative R2 validation ≈ 76.6 min plus ≈ 8 s recovery. No further R2 work
+  is requested. R3 (portraits and interface) proceeds on its own branch.
+
+The R1 record below is retained unchanged.
+
+---
+
 # Summoned creature manual-playtest repair — R1 checkpoint / STOP
 
 Current. A new repair sequence (R1-R7) from the owner's 2026-11-07 manual
