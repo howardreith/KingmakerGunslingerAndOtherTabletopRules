@@ -1,5 +1,122 @@
 # Summoned Creature Manual Playtest Repair — R3 status
 
+**R3 PARTIAL (UI-evidence checkpoint, 2026-11-07).** UI-01 is now established
+on actual framebuffer evidence: the native initiative tracker shows every
+representative's own portrait with native overlays intact. UI-02..UI-06 still
+lack rendered evidence. All eight native description windows were captured
+under exact ownership but rendered **empty**, because the observer built
+`TooltipData` without `Type = TooltipType.Ability`. That is an observer
+construction defect, not product content. Data predicates for UI-01..UI-06
+pass natively. Owner visual approval is separate and pending.
+
+## Active summary (current)
+
+| Item | Live data | Native view binding | Framebuffer evidence | Owner |
+| --- | --- | --- | --- | --- |
+| UI-01 portraits | PASS | PASS: portrait zones bound to each exact unit show its own art | PASS: `native-ui-008.png`, all seven representatives, inspected | pending |
+| UI-02 Lantern icons | PASS | not observed | missing (empty description window) | pending |
+| UI-03 Ghaele ray | PASS | not observed | missing | pending |
+| UI-04 Nimbus icon | PASS | not observed | missing | pending |
+| UI-05 Overrun icon/rows | PASS | not observed | missing | pending |
+| UI-06 tooltip rows | PASS | not observed | missing | pending |
+
+UI-03 data, worded exactly: the live KMG Ghaele has one owned light-ray fact,
+no native ray fact, and its live brain holds **one AI action that references
+the owned ray and none that references the native ray**. No ray cast was
+executed in any R3 run.
+
+## UI-evidence checkpoint (owner allocation 900 s)
+
+Ledgers kept separate: original R3 ≈ 1,256 s; rendered-UI continuation 505 s
+(cumulative ≈ 1,761 s before this allocation); this allocation 573 s
+(gates 33.1 + build 402 + run 138). Cumulative R3 ≈ 2,334 s.
+
+- Intake recheck (unchanged): master `fa3eeb9e1a`; PR #113 open, draft, base
+  master, head `20a1447bf7`; installed 0.0.140, DLL `00EF6757…`, live tree
+  `5C3E4AD4…` (254 files), 16 mod directories, 66 settings values, 95
+  protected save files (baseline `CC7CBB0D…`), reference bundle `7F1EDE2B…`;
+  no Kingmaker process, no held compatibility lock, last lease `Completed`
+  with no recovery required.
+- Engine contracts read before editing (2.1.7b): a non-controllable unit's
+  idle Acting turn is ended natively (`TurnController.Tick` → AI force-tick
+  → idle wait), which explains the `76a9cf269310` failure. A directly
+  controllable unit's turn waits for input and stays `Preparing` until it
+  acts. `DescriptionBricksBox.m_ShowList` holds rendered bricks in order, and
+  `AddH2AndDescriptionBlock` appends a TitleH2 brick then its SimpleText value.
+- Observer changes (product code frozen):
+  - The eight descriptions run first, before combat, each independent.
+    Ownership (native Default, no narrative, exact window, `Data`, live fact,
+    no foreign hover, fully faded-in surface) gates the capture. Content is
+    assessed afterwards from brick bindings. A content FAIL is kept and the
+    next owned surface continues; an owned scroll view is used only if a row
+    is clipped.
+  - The tracker is captured during the verified owned anchor's
+    input-waiting turn (only party member, quiet brain, directly
+    controllable, natively enrolled), then graded on representative
+    coverage (an animal, Lantern Archon, an outsider) and on any wrong
+    visible picture. Units outside the visible list are outside coverage.
+- Focused gate (same filter, 8 registered tests): one compile error
+  (`ScrollToTop` is a Kingmaker extension; replaced with the `ScrollRect`
+  API), then 8/8 PASS.
+- Candidate: source `57a8e659b1e67efee2f7174603709257cb843588`, package
+  `KingmakerGunslinger-0.0.179-development-summon-playtest-r3-57a8e659b1e6.zip`
+  SHA-256 `36f7054abae1dd2021717b3df3fa46cfde30a273fc4500c0e92ff87b85e64f55`,
+  DLL `fad7135459a11c03851aebe197fce48d6be4a97585ada3484c0e8470bdd53eca`
+  (MVID `5aa8ae1b-ae1b-449b-b207-073e96d58253`). Observer: the R3 phase as
+  compiled into that DLL.
+- One guarded run `20261107T2331275709810Z-4252cb3b422f4dcf9a16291cb3a19e2a`
+  (138 s; evidence and 9 PNGs local and private): 17 PASS, 8 FAIL; no execution failure.
+  - PASS: every data predicate, `anchor-waiting-owner`,
+    `tracker-representative-coverage` (covered all seven, `wrongVisible` 0,
+    current turn the anchor in `Preparing`, no fixture turn advances needed),
+    plus admission, Default and fixture restore, and `owned-ui-restored`.
+  - FAIL `render-*` ×8: each window is captured under ownership and is empty.
+    The reader found one empty header brick and one empty content brick.
+    Inspected images `native-ui-000`..`007` show only the parchment frame and
+    close button. Root cause: `DescriptionBuilder.Build` switches on
+    `TooltipData.Type`; the observer left it at default, so
+    `TooltipType.Ability` (→ `DescriptionTemplatesAbility`) never ran.
+    Classification: observer defect. No product inference is drawn from these.
+  - Tracker image `native-ui-008.png`, inspected: from left, the anchor
+    (current, 13/13), Cheetah, Ghaele, Nalfeshnee, Trumpet Archon, Lantern
+    Archon, Dire Rat and Brachiosaurus, each its own species art; then the
+    caster and hostile with native NPC pictures. HP bars, buff/condition icons,
+    frames, Delay and round counter are intact. The square medallion art is
+    cropped to the native aspect and readable (aesthetics: owner).
+  - Observer limitation: the first player turn raised the native
+    "Auto End Turn" prompt in mid-screen. It does not cover the tracker, but
+    the ownership predicate did not detect this unowned modal. It was left
+    unanswered, and the native settings key was restored from snapshot.
+- Restoration: live tree `5C3E4AD4…` (0.0.140) restored (record
+  `expanded-summoning-restoration/20261107T2333129292555Z-…`); 66 settings
+  restored; 95 protected save files unchanged; tutorial flag relocked;
+  selection restored; anchor out of combat; no process; no lock.
+
+### Remaining gap and precise remedy
+
+UI-02..UI-06 rendered descriptions. Remedy, observer only: construct the
+description through the native ability path, setting
+`TooltipData.Type = TooltipType.Ability` with `Ability = <live fact>` (or use
+the native action-bar slot trigger's own data). Also extend the tracker
+ownership predicate to refuse unowned native modals. Alternatively, the owner
+can check these by hand in the retest checklist below.
+
+### Corrections to earlier active summaries
+
+- The portrait-zone tracker reader **did execute** on `76a9cf269310` (it
+  found all seven before the pause). "Compile-checked, not yet run" applies
+  only to the historical completion section.
+- Ghaele: the observation found one live AI action referencing the owned ray
+  and none referencing the native ray; it did not execute a ray cast.
+- On `76a9cf269310` the two FAIL labels were `tracker-rendered` and the
+  resulting `execution` capture exception.
+- All historical verdicts stay attached to their candidates (`42cd2e26978e`,
+  `221cadc7a67e`, `76a9cf269310`).
+
+---
+
+# Rendered-UI continuation and earlier checkpoints (historical, retained)
+
 **R3 PARTIAL (rendered-UI continuation, 2026-11-07).** Product repairs for
 UI-01..UI-06 pass every native data predicate on candidates `221cadc7a67e` and
 `76a9cf269310`. On `76a9cf269310`, the native initiative tracker was observed
