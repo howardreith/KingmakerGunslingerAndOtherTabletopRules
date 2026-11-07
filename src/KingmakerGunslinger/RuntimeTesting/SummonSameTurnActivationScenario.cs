@@ -288,7 +288,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             private int _stage;
             private int _forcedTurns;
             private int _castRound;
-            private int _firstLawfulSummonTurnRound;
+            // Round zero is a real native surprise round; unset is explicit.
+            private readonly FirstRoundRecord _firstLawfulSummonTurn =
+                new FirstRoundRecord();
+            private readonly FirstRoundRecord _firstSummonTurn =
+                new FirstRoundRecord();
             private int _sameRoundSummonTurns;
             private int _sameRoundLawfulSummonTurns;
             private int _nextRoundSummonTurns;
@@ -311,15 +315,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             private UnitEntityData _opener;
             private UnitAttack _openerAttack;
             private bool _surpriseCombatRecorded;
+            private Vector3 _surpriseOpenerPosition;
             private bool _surpriseRoundAtCasterTurn;
             private double _surpriseEntryStartedSeconds = -1;
             private int _surpriseRows;
             private int _lastObservedSummonCount = -1;
             private int _stableSummonEntityTicks;
-            private int _firstSummonCommandRound;
+            private readonly FirstRoundRecord _firstSummonCommand =
+                new FirstRoundRecord();
             private int _sameRoundSummonCommands;
             private int _nextRoundSummonCommands;
-            private int _firstSummonAttackRound;
+            private readonly FirstRoundRecord _firstSummonAttack =
+                new FirstRoundRecord();
             private int _sameRoundSummonAttacks;
             private int _flightRtwpAttackWaitFrames;
             private int _nextRoundSummonAttacks;
@@ -976,7 +983,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 _enemy = ElvenBranchedSpearCombatScenario
                     .SpawnHostileTarget(_caster, _casterBlueprint,
-                        _caster.Position + new Vector3(3f, 0f, 0f),
+                        _surpriseEntry ? SurpriseHostilePosition() :
+                            _caster.Position + new Vector3(3f, 0f, 0f),
                         _caster.HoldingState, out _enemyBlueprint);
                 Game.Instance.EntityCreator.Tick();
                 RegisterRequestLocalUnit(_enemy);
@@ -1769,8 +1777,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveSignatureAbilityOnOwnTurn(summon, round);
                 bool firstForUnit = Count(_sameTurnsByUnit, summon) == 0 &&
                     Count(_nextTurnsByUnit, summon) == 0;
-                if (_evidence.FirstSummonTurnRound == 0)
-                    _evidence.FirstSummonTurnRound = round;
+                _firstSummonTurn.Observe(round);
+                _evidence.FirstSummonTurnRound = _firstSummonTurn.OrUnset;
                 if (firstForUnit)
                 {
                     _evidence.SummonInCombatAtFirstTurn =
@@ -1780,8 +1788,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _evidence.SummonInTurnOrderAtFirstTurn && Game.Instance
                             .TurnBasedCombatController.SortedUnits.Contains(summon);
                 }
-                if (lawful && _firstLawfulSummonTurnRound == 0)
-                    _firstLawfulSummonTurnRound = round;
+                if (lawful) _firstLawfulSummonTurn.Observe(round);
                 if (round == _castRound)
                 {
                     _sameRoundSummonTurns++;
@@ -1827,8 +1834,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                      !ReferenceEquals(controller.CurrentTurn.Unit,
                         command.Executor))) return;
                 int round = rtwp ? 0 : controller.RoundNumber;
-                if (_firstSummonCommandRound == 0)
-                    _firstSummonCommandRound = rtwp ? -1 : round;
+                _firstSummonCommand.Observe(rtwp ? -1 : round);
                 if (round == _castRound)
                 {
                     _sameRoundSummonCommands++;
@@ -1863,8 +1869,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                      !ReferenceEquals(controller.CurrentTurn.Unit,
                         attack.Initiator))) return;
                 int round = rtwp ? 0 : controller.RoundNumber;
-                if (_firstSummonAttackRound == 0)
-                    _firstSummonAttackRound = rtwp ? -1 : round;
+                _firstSummonAttack.Observe(rtwp ? -1 : round);
                 if (round == _castRound)
                 {
                     _sameRoundSummonAttacks++;
@@ -2414,7 +2419,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _diagnostics.Add("acceleration-correlation-final=" +
                     _evidence.AccelerationCorrelationTrace);
                 _evidence.FirstLawfulSummonTurnRound =
-                    _firstLawfulSummonTurnRound;
+                    _firstLawfulSummonTurn.OrUnset;
                 _evidence.SameRoundSummonTurns = _sameRoundSummonTurns;
                 _evidence.SameRoundLawfulSummonTurns =
                     _sameRoundLawfulSummonTurns;
@@ -2426,13 +2431,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _evidence.FollowingRoundLawfulSummonTurns =
                     _followingRoundLawfulSummonTurns;
                 _evidence.FirstSummonCommandRound =
-                    _firstSummonCommandRound;
+                    _firstSummonCommand.OrUnset;
                 _evidence.SameRoundSummonCommands =
                     _sameRoundSummonCommands;
                 _evidence.NextRoundSummonCommands =
                     _nextRoundSummonCommands;
                 _evidence.FirstSummonAttackRound =
-                    _firstSummonAttackRound;
+                    _firstSummonAttack.OrUnset;
                 _evidence.SameRoundSummonAttacks =
                     _sameRoundSummonAttacks;
                 _evidence.NextRoundSummonAttacks =
@@ -2808,7 +2813,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         OpportunitiesObserved(),
                         AllUnitsHave(_sameTurnsByUnit, 1) &&
                         AllUnitsHave(_sameLawfulByUnit, 1) &&
-                        _firstLawfulSummonTurnRound == _castRound,
+                        _firstLawfulSummonTurn.Is(_castRound),
                         "spawned-unit identity plus exact round-correlated turns");
                     if (!_surpriseEntry)
                     Add("accelerated-summon-next-round-normal",
@@ -2860,9 +2865,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _flightCreature == null)
                             Add("accelerated-summon-single-action",
                                 "tier-one dog resolves exactly one weapon rule in its one cast-round opportunity",
-                                "first=" + _firstSummonAttackRound +
+                                "first=" + _firstSummonAttack.OrUnset +
                                     ";current=" + _sameRoundSummonAttacks,
-                                _firstSummonAttackRound == _castRound &&
+                                _firstSummonAttack.Is(_castRound) &&
                                 _sameRoundSummonAttacks == 1,
                                 "RuleAttackWithWeapon correlated to summon CurrentTurn");
                     }
@@ -3068,6 +3073,53 @@ namespace KingmakerGunslinger.RuntimeTesting
                     exception);
             }
 
+            /// <summary>Surveys open floor so the hostile stands beyond its
+            /// own native out-of-combat vision (8.5 m) of every party unit
+            /// while a party opener 1 m behind the wizard still sees it within
+            /// the party's 11.7 m and has a clear native line of sight.</summary>
+            private Vector3 SurpriseHostilePosition()
+            {
+                if (AstarPath.active == null)
+                    throw new InvalidOperationException(
+                        "Native ambush survey has no navigation graph.");
+                Vector3 origin = _caster.Position;
+                UnitEntityData[] party = Game.Instance.Player.Party.Where(
+                    unit => unit != null && unit.IsInGame).ToArray();
+                for (int index = 0; index < 16; index++)
+                {
+                    float angle = index * 22.5f;
+                    Vector3 direction = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
+                    Pathfinding.NNInfo hostile = AstarPath.active.GetNearest(
+                        origin + direction * 10f);
+                    Pathfinding.NNInfo opener = AstarPath.active.GetNearest(
+                        origin - direction * 1f);
+                    if (hostile.node == null || !hostile.node.Walkable ||
+                        opener.node == null || !opener.node.Walkable) continue;
+                    Vector3 point = hostile.clampedPosition;
+                    Vector3 openerPoint = opener.clampedPosition;
+                    if (Vector3.Distance(point, origin + direction * 10f) > 0.75f ||
+                        Vector3.Distance(openerPoint, origin - direction * 1f) > 0.75f)
+                        continue;
+                    float openerDistance = GeometryUtils.Distance2D(openerPoint, point);
+                    if (openerDistance < 9.5f || openerDistance > 11.2f) continue;
+                    if (!party.All(unit => GeometryUtils.Distance2D(unit.Position,
+                            point) >= 9.5f)) continue;
+                    if (!_caster.HasLOS(point) || !_caster.HasLOS(point, openerPoint))
+                        continue;
+                    _surpriseOpenerPosition = openerPoint;
+                    _diagnostics.Add("surprise-survey=angle=" + angle.ToString("F1") +
+                        ";hostile=" + point.ToString("F2") + ";opener=" +
+                        openerPoint.ToString("F2") + ";openerDistance=" +
+                        openerDistance.ToString("F2") + ";partyMinDistance=" +
+                        party.Min(unit => GeometryUtils.Distance2D(unit.Position,
+                            point)).ToString("F2") + ";party=" + party.Length);
+                    return point;
+                }
+                throw new InvalidOperationException(
+                    "Native ambush precondition not met: no surveyed open-floor point keeps " +
+                    "the hostile beyond 9.5 m of every party unit while the opener sees it.");
+            }
+
             private void OpenCombatWithNativeSurpriseAttack()
             {
                 _failureStage = "surprise-native-entry";
@@ -3078,8 +3130,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "The party was already in combat before the surprise entry.");
                 _opener = Game.Instance.EntityCreator.SpawnUnit(_casterBlueprint,
-                    _enemy.Position + new Vector3(-1.2f, 0f, 0f),
-                    Quaternion.identity, _caster.HoldingState);
+                    _surpriseOpenerPosition, Quaternion.identity,
+                    _caster.HoldingState);
                 Game.Instance.EntityCreator.Tick();
                 if (_opener == null || !_opener.IsInState)
                     throw new InvalidOperationException(
@@ -3088,6 +3140,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Game.Instance.Player.Party.Add(_opener);
                 _opener.Descriptor.Stats.HitPoints.BaseValue = 10000;
                 _opener.Descriptor.State.Immortality.Retain();
+                // A ranged opener: the hostile must stay beyond its own native
+                // 8.5 m out-of-combat vision of every party unit until the
+                // offensive action, so nobody walks into its detection.
+                var crossbow = new Kingmaker.Items.ItemEntityWeapon(
+                    BlueprintLibraryLookup.RequireExact<
+                        Kingmaker.Blueprints.Items.Weapons.BlueprintItemWeapon>(
+                        BlueprintBootstrap.Library,
+                        "19a5092244dcf99478dcd73c974828b1",
+                        "native light crossbow"));
+                if (_opener.Body.PrimaryHand.HasItem)
+                    _opener.Body.PrimaryHand.RemoveItem(false);
+                _opener.Body.PrimaryHand.InsertItem(crossbow);
+                UnitEntityData[] party = Game.Instance.Player.Party.Where(
+                    unit => unit != null && unit.IsInGame).ToArray();
+                string awareness = string.Join(",", party.Select(unit =>
+                    Identity(unit) + ":dist=" + GeometryUtils.Distance2D(
+                        unit.Position, _enemy.Position).ToString("F2") +
+                    ";hostileSees=" + _enemy.HasLOS(unit.Position) +
+                    ";hostileRemembers=" + (_enemy.Memory != null &&
+                        _enemy.Memory.Contains(unit)) + ";inCombat=" +
+                    unit.IsInCombat).ToArray());
+                bool hostileUnaware = party.All(unit => !_enemy.HasLOS(unit.Position) &&
+                    (_enemy.Memory == null || !_enemy.Memory.Contains(unit)) &&
+                    !unit.IsInCombat) && !_enemy.IsInCombat;
+                bool openerSees = _opener.HasLOS(_enemy.Position);
+                bool ranged = _opener.Body.PrimaryHand.MaybeWeapon != null &&
+                    _opener.Body.PrimaryHand.MaybeWeapon.Blueprint.IsRanged;
+                _diagnostics.Add("surprise-preentry=hostile=" + Identity(_enemy) +
+                    ";hostileVision=" + _enemy.VisionRangeMeters.ToString("F1") +
+                    ";hostileInCombat=" + _enemy.IsInCombat + ";openerSeesHostile=" +
+                    openerSees + ";openerVision=" + _opener.VisionRangeMeters
+                        .ToString("F1") + ";openerWeapon=" + (_opener.Body.PrimaryHand
+                        .MaybeWeapon == null ? "<none>" : _opener.Body.PrimaryHand
+                        .MaybeWeapon.Blueprint.name) + ";party=" + awareness);
+                if (!hostileUnaware || !openerSees || !ranged)
+                    throw new InvalidOperationException(
+                        "Native ambush precondition not met: hostileUnaware=" +
+                        hostileUnaware + ";openerSees=" + openerSees + ";ranged=" +
+                        ranged + ".");
                 _openerAttack = new UnitAttack(_enemy);
                 _opener.Commands.Run(_openerAttack);
                 _fixtureJoinedCombat = true;
@@ -3109,6 +3200,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";surprised=" + controller.IsSurprised(unit) +
                     ";actingSurprise=" + controller.IsActingSurpriseCommands(unit) +
                     ";initiative=" + unit.CombatState.Initiative +
+                    ";standard=" + unit.HasStandardAction() +
+                    ";move=" + unit.HasMoveAction() +
                     ";sinceSurpriseAction=" + (Game.Instance.TimeController.GameTime -
                         unit.CombatState.LastSurpriseActionTime).TotalSeconds.ToString("F1");
             }
@@ -3169,7 +3262,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (command == null || command.Executor == null) return;
                 bool cast = ReferenceEquals(command, _castCommand);
-                if (!cast && !_summons.Contains(command.Executor)) return;
+                bool opener = _openerAttack != null &&
+                    ReferenceEquals(command, _openerAttack);
+                if (!cast && !opener && !_summons.Contains(command.Executor)) return;
                 CombatController controller = Game.Instance == null ? null :
                     Game.Instance.TurnBasedCombatController;
                 int round = controller == null ? -1 : controller.RoundNumber;
@@ -3188,7 +3283,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     timing.EndedRound = round;
                     timing.ResultAtEnd = command.Result.ToString();
                 }
-                string row = "boundary:" + kind + ";cast=" + cast + ";unit=" +
+                string row = "boundary:" + kind + ";cast=" + cast +
+                    (opener ? ";opener=True" : "") + ";unit=" +
                     Identity(command.Executor) + ";round=" + round +
                     ";currentTurn=" + (controller == null || controller.CurrentTurn ==
                         null ? "<none>" : Identity(controller.CurrentTurn.Unit)) +

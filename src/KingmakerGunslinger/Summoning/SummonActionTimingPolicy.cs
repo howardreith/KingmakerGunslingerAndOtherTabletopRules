@@ -23,6 +23,26 @@ namespace KingmakerGunslinger.Summoning
         internal string ResultAtEnd { get; set; }
     }
 
+    /// <summary>
+    /// The first round in which something was observed. Round zero is a real
+    /// native surprise round, so "unset" is an explicit state, never 0;
+    /// <see cref="OrUnset"/> reports int.MinValue, outside every valid round.
+    /// </summary>
+    internal sealed class FirstRoundRecord
+    {
+        internal const int Unset = int.MinValue;
+        internal bool HasValue { get; private set; }
+        internal int Value { get; private set; }
+        internal void Observe(int round)
+        {
+            if (HasValue) return;
+            HasValue = true;
+            Value = round;
+        }
+        internal int OrUnset { get { return HasValue ? Value : Unset; } }
+        internal bool Is(int round) { return HasValue && Value == round; }
+    }
+
     internal enum SummonFirstActionDisposition
     {
         ActedInCastRound,
