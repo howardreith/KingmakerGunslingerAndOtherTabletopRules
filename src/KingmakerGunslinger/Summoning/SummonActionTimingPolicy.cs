@@ -1,0 +1,72 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace KingmakerGunslinger.Summoning
+{
+    /// <summary>
+    /// One native command's observed boundaries. Each round is the combat
+    /// round current at that native event: queued at UnitCommands.Run,
+    /// started at IUnitCommandStartHandler, acted at IUnitCommandActHandler
+    /// (immediately after OnAction set Result), ended at
+    /// IUnitCommandEndHandler. Null means the boundary was never observed.
+    /// </summary>
+    internal sealed class SummonCommandTiming
+    {
+        internal int Sequence { get; set; }
+        internal int QueuedRound { get; set; }
+        internal int? StartedRound { get; set; }
+        internal int? ActedRound { get; set; }
+        internal double? ActedGameSeconds { get; set; }
+        internal string ResultAtAct { get; set; }
+        internal int? EndedRound { get; set; }
+        internal string ResultAtEnd { get; set; }
+    }
+
+    internal enum SummonFirstActionDisposition
+    {
+        ActedInCastRound,
+        ActedLater,
+        QueuedNeverActed,
+        NoCommand
+    }
+
+    /// <summary>
+    /// Repair R2 LIFE-01: a summon's first legal native action is the first
+    /// command whose act boundary fired with a completed result. The queue
+    /// round is never an execution round, and an eventual IsActed value read
+    /// later says nothing about when it acted. A legal attack that misses is
+    /// still an action (its command result is Success); damage is not needed.
+    /// </summary>
+    internal static class SummonActionTimingPolicy
+    {
+        internal static bool IsLegalAction(SummonCommandTiming timing)
+        {
+            if (timing == null) throw new ArgumentNullException("timing");
+            return timing.ActedRound.HasValue &&
+                string.Equals(timing.ResultAtAct, "Success", StringComparison.Ordinal);
+        }
+
+        internal static SummonCommandTiming FirstAction(IEnumerable<SummonCommandTiming> commands)
+        {
+            if (commands == null) throw new ArgumentNullException("commands");
+            return commands.Where(IsLegalAction)
+                .OrderBy(value => value.ActedGameSeconds ?? double.MaxValue)
+                .ThenBy(value => value.Sequence)
+                .FirstOrDefault();
+        }
+
+        internal static SummonFirstActionDisposition Classify(
+            IEnumerable<SummonCommandTiming> commands, int castRound)
+        {
+            if (commands == null) throw new ArgumentNullException("commands");
+            SummonCommandTiming[] all = commands.ToArray();
+            if (all.Length == 0) return SummonFirstActionDisposition.NoCommand;
+            SummonCommandTiming first = FirstAction(all);
+            if (first == null) return SummonFirstActionDisposition.QueuedNeverActed;
+            return first.ActedRound.Value == castRound ?
+                SummonFirstActionDisposition.ActedInCastRound :
+                SummonFirstActionDisposition.ActedLater;
+        }
+    }
+}

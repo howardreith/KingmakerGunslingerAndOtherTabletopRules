@@ -296,6 +296,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             private int _followingRoundSummonTurns;
             private int _followingRoundLawfulSummonTurns;
             private int _postCommandEntityTicks;
+            // Repair R2 follow-up: native command boundaries (start/act/end
+            // events), each stamped with the round current at that event.
+            private readonly Dictionary<UnitCommand, SummonCommandTiming>
+                _commandTimings = new Dictionary<UnitCommand, SummonCommandTiming>();
+            private int _commandSequence;
+            private CommandBoundaryObserver _boundaryObserver;
+            private int _lastTimedStage = -1;
+            private int _castResolutionPolls;
+            private int _castSnapshots;
             private int _lastObservedSummonCount = -1;
             private int _stableSummonEntityTicks;
             private int _firstSummonCommandRound;
@@ -719,10 +728,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     double timeoutSeconds = _requestLocalFixture ?
                         _request.TimeoutSeconds :
                         _request.CompletionTimeoutSeconds;
+                    if (_stage != _lastTimedStage)
+                    {
+                        _lastTimedStage = _stage;
+                        _diagnostics.Add("stage-time=stage=" + _stage +
+                            ";elapsedSeconds=" + _elapsed.Elapsed.TotalSeconds
+                                .ToString("F2") + ";round=" + (Game.Instance ==
+                                null ? -1 : Game.Instance.TurnBasedCombatController
+                                    .RoundNumber));
+                    }
                     if (_elapsed.Elapsed.TotalSeconds > Math.Min(240,
                             timeoutSeconds))
+                    {
+                        if (_stage == 3) RecordCastCommandSnapshot("timeout");
                         throw new TimeoutException("Summon activation stage " +
                             _stage + " did not complete in time.");
+                    }
                     switch (_stage)
                     {
                         case 0:
@@ -761,6 +782,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             private void Initialize()
             {
                 _failureStage = "fixture-initialize";
+                _boundaryObserver = new CommandBoundaryObserver(this);
+                EventBus.Subscribe(_boundaryObserver);
                 SummonAcceleratedInvocationRuntime.ResetDiagnostics();
                 if (Game.Instance == null || Game.Instance.Player == null ||
                     Game.Instance.State == null)
@@ -1317,6 +1340,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "The native summon command was not retained.");
                 DriveRequestLocalCastCommand();
+                if (_castResolutionPolls++ % 60 == 0)
+                    RecordCastCommandSnapshot("poll");
                 if (!_castCommand.IsStarted) return;
                 if (_castCommand.Animation != null &&
                     !_castCommand.Animation.IsActed)
@@ -1751,6 +1776,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 _summonCommandObjects.Add(
                     new KeyValuePair<int, UnitCommand>(round, command));
+                TimingFor(command).QueuedRound = round;
                 var useAbility = command as UnitUseAbility;
                 string observation = "round=" + round + ";type=" +
                     command.Type + ";command=" + command.GetType().FullName +
@@ -2357,11 +2383,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";started=" + command.IsStarted + ";acted=" +
                         command.IsActed + ";finished=" + command.IsFinished +
                         ";result=" + command.Result;
-                    _evidence.SummonCommands.Add("executed:" + executed);
-                    _diagnostics.Add("summon-command-executed=" + executed);
+                    _evidence.SummonCommands.Add("final-state:queueRound-" + executed);
+                    _diagnostics.Add("summon-command-final-state=queueRound-" + executed);
                 }
                 foreach (UnitEntityData summon in _summons)
                 {
+                    KeyValuePair<UnitCommand, SummonCommandTiming>[] own =
+                        _commandTimings.Where(entry => ReferenceEquals(
+                            entry.Key.Executor, summon)).ToArray();
+                    SummonFirstActionDisposition disposition =
+                        SummonActionTimingPolicy.Classify(
+                            own.Select(entry => entry.Value), _castRound);
+                    SummonCommandTiming first = SummonActionTimingPolicy
+                        .FirstAction(own.Select(entry => entry.Value));
+                    UnitCommand firstCommand = first == null ? null :
+                        own.First(entry => ReferenceEquals(entry.Value, first)).Key;
+                    string firstAction = "first-action:unit=" +
+                        Identity(summon) + ";castRound=" + _castRound +
+                        ";disposition=" + disposition + (firstCommand == null ?
+                            "" : ";actedRound=" + first.ActedRound +
+                            ";queuedRound=" + first.QueuedRound +
+                            ";gameSeconds=" + (first.ActedGameSeconds ?? -1)
+                                .ToString("F2") + ";cost=" + firstCommand.Type +
+                            ";command=" + firstCommand.GetType().Name +
+                            ";ability=" + CommandAbilityName(firstCommand) +
+                            ";result=" + first.ResultAtAct);
+                    _evidence.SummonCommands.Add(firstAction);
+                    _diagnostics.Add(firstAction);
                     _evidence.UnitOpportunities.Add(Identity(summon) +
                         ";same=" + Count(_sameTurnsByUnit, summon) + "/" +
                         Count(_sameLawfulByUnit, summon) + ";next=" +
@@ -2783,18 +2831,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "existing Acadamae command/rule correlation and native save");
                         if (_flightCreature != null)
                             Add("acadamae-named-creature-cast-round-action",
-                                "the named creature executes a native action in the round its Acadamae cast resolved",
+                                "the named creature's first legal native action reaches its act boundary in the round its Acadamae cast resolved",
                                 string.Join(" | ", _evidence.SummonCommands
                                     .Where(value => value.StartsWith(
-                                        "executed:", StringComparison.Ordinal))
+                                        "first-action:", StringComparison.Ordinal) ||
+                                        value.StartsWith("boundary:",
+                                            StringComparison.Ordinal))
                                     .ToArray()),
                                 _summons.Count > 0 && _summons.All(summon =>
-                                    _summonCommandObjects.Any(entry =>
-                                        entry.Key == _castRound &&
-                                        ReferenceEquals(entry.Value.Executor,
-                                            summon) &&
-                                        entry.Value.IsActed)),
-                                "UnitCommand.IsActed for the exact summon in castRound");
+                                    SummonActionTimingPolicy.Classify(
+                                        _commandTimings.Where(entry =>
+                                            ReferenceEquals(entry.Key.Executor,
+                                                summon)).Select(entry =>
+                                                    entry.Value), _castRound) ==
+                                    SummonFirstActionDisposition.ActedInCastRound),
+                                "IUnitCommandActHandler boundary for the exact summon, stamped with the round current at the act");
                         if (_flightCreature == null)
                         Add("accelerated-summon-expiration",
                             "two-round caster-level duration grants current and next opportunities then reaches native destruction at castRound+2",
@@ -2926,9 +2977,110 @@ namespace KingmakerGunslinger.RuntimeTesting
                     exception);
             }
 
+            private SummonCommandTiming TimingFor(UnitCommand command)
+            {
+                SummonCommandTiming timing;
+                if (!_commandTimings.TryGetValue(command, out timing))
+                {
+                    timing = new SummonCommandTiming { Sequence = ++_commandSequence,
+                        QueuedRound = -1 };
+                    _commandTimings[command] = timing;
+                }
+                return timing;
+            }
+
+            private static string CommandAbilityName(UnitCommand command)
+            {
+                var use = command as UnitUseAbility;
+                return use == null || use.Spell == null ? "<none>" :
+                    use.Spell.Blueprint.name;
+            }
+
+            /// <summary>Native start/act/end boundary for an exact summon's
+            /// command or the exact cast command, with the round current at
+            /// that event (never the queue round).</summary>
+            internal void ObserveCommandBoundary(string kind, UnitCommand command)
+            {
+                if (command == null || command.Executor == null) return;
+                bool cast = ReferenceEquals(command, _castCommand);
+                if (!cast && !_summons.Contains(command.Executor)) return;
+                CombatController controller = Game.Instance == null ? null :
+                    Game.Instance.TurnBasedCombatController;
+                int round = controller == null ? -1 : controller.RoundNumber;
+                double seconds = Game.Instance.TimeController.GameTime.TotalSeconds;
+                SummonCommandTiming timing = TimingFor(command);
+                if (kind == "start" && !timing.StartedRound.HasValue)
+                    timing.StartedRound = round;
+                else if (kind == "act" && !timing.ActedRound.HasValue)
+                {
+                    timing.ActedRound = round;
+                    timing.ActedGameSeconds = seconds;
+                    timing.ResultAtAct = command.Result.ToString();
+                }
+                else if (kind == "end" && !timing.EndedRound.HasValue)
+                {
+                    timing.EndedRound = round;
+                    timing.ResultAtEnd = command.Result.ToString();
+                }
+                string row = "boundary:" + kind + ";cast=" + cast + ";unit=" +
+                    Identity(command.Executor) + ";round=" + round +
+                    ";currentTurn=" + (controller == null || controller.CurrentTurn ==
+                        null ? "<none>" : Identity(controller.CurrentTurn.Unit)) +
+                    ";gameSeconds=" + seconds.ToString("F2") + ";cost=" +
+                    command.Type + ";command=" + command.GetType().Name +
+                    ";ability=" + CommandAbilityName(command) + ";result=" +
+                    command.Result + ";queuedRound=" + timing.QueuedRound;
+                _evidence.SummonCommands.Add(row);
+                _diagnostics.Add(row);
+            }
+
+            private void RecordCastCommandSnapshot(string reason)
+            {
+                if (_castCommand == null || _castSnapshots >= 24) return;
+                _castSnapshots++;
+                CombatController controller = Game.Instance.TurnBasedCombatController;
+                TurnController turn = controller.CurrentTurn;
+                Spellbook book = _castAbility == null ? null : _castAbility.Spellbook;
+                string row = "cast-command-snapshot:reason=" + reason +
+                    ";elapsedSeconds=" + _elapsed.Elapsed.TotalSeconds.ToString("F2") +
+                    ";round=" + controller.RoundNumber + ";castRound=" + _castRound +
+                    ";currentTurn=" + (turn == null ? "<none>" : Identity(turn.Unit) +
+                        "/" + turn.Status) +
+                    ";running=" + _castCommand.IsRunning +
+                    ";started=" + _castCommand.IsStarted + ";acted=" +
+                    _castCommand.IsActed + ";finished=" + _castCommand.IsFinished +
+                    ";result=" + _castCommand.Result + ";timeSinceStart=" +
+                    _castCommand.TimeSinceStart.ToString("F2") + ";execution=" +
+                    (_castCommand.ExecutionProcess == null ? "<none>" :
+                        "ended:" + _castCommand.ExecutionProcess.IsEnded) +
+                    ";animation=" + (_castCommand.Animation == null ? "<none>" :
+                        "acted:" + _castCommand.Animation.IsActed + "/finished:" +
+                        _castCommand.Animation.IsFinished) +
+                    ";casterCanAct=" + _caster.Descriptor.State.CanAct +
+                    ";casterInCombat=" + _caster.IsInCombat +
+                    ";ability=" + (_castAbility == null ? "<none>" :
+                        _castAbility.Blueprint.name) + ";convertedFrom=" +
+                    (_castAbility == null || _castAbility.ConvertedFrom == null ?
+                        "<none>" : _castAbility.ConvertedFrom.Blueprint.name) +
+                    ";paramSpellSlot=" + (_castAbility != null &&
+                        _castAbility.ParamSpellSlot != null) +
+                    ";slotAvailable=" + (_castSlot != null && _castSlot.Available) +
+                    ";slotSpell=" + (_castSlot == null || _castSlot.Spell == null ?
+                        "<none>" : _castSlot.Spell.Blueprint.name) +
+                    ";canSpend=" + (book != null && _castAbility != null &&
+                        book.CanSpend(_castAbility, false)) +
+                    ";summons=" + _summons.Count;
+                _diagnostics.Add(row);
+            }
+
             private void Finish()
             {
                 if (Complete) return;
+                if (_boundaryObserver != null)
+                {
+                    EventBus.Unsubscribe(_boundaryObserver);
+                    _boundaryObserver = null;
+                }
                 bool cleaned = false;
                 try
                 {
@@ -4009,6 +4161,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { session.ObserveFailure("RuleAttackWithWeapon", exception); }
             }
         }
+    }
+
+    /// <summary>Repair R2 follow-up: forwards the installed engine's own
+    /// command start/act/end events to the active session.</summary>
+    internal sealed class CommandBoundaryObserver : IUnitCommandStartHandler,
+        IUnitCommandActHandler, IUnitCommandEndHandler
+    {
+        private readonly SummonSameTurnActivationScenario.Session _session;
+        internal CommandBoundaryObserver(SummonSameTurnActivationScenario.Session session)
+        { _session = session; }
+        public void HandleUnitCommandDidStart(UnitCommand command)
+        { _session.ObserveCommandBoundary("start", command); }
+        public void HandleUnitCommandDidAct(UnitCommand command)
+        { _session.ObserveCommandBoundary("act", command); }
+        public void HandleUnitCommandDidEnd(UnitCommand command)
+        { _session.ObserveCommandBoundary("end", command); }
     }
 
     /// <summary>Guarded fixture only: hold one Tail pose through rendering,
