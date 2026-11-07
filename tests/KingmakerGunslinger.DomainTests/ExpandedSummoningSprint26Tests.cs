@@ -105,7 +105,12 @@ namespace KingmakerGunslinger.DomainTests
         // in this file derives rather than being pinned a second time.
         // Empty again after Sprint 40 publication: the Ice Devil contributes
         // exactly one qualified untemplated SM IX route.
-        internal static readonly string[] WithheldKeys = Array.Empty<string>();
+        // Repair R1 CUT-01: the owner withdrew the Stirge from this release
+        // (manual playtest, 2026-11-07). It is a deliberate release cut, not
+        // a qualification hold: its identities stay registered and its nine
+        // SNA I-IX placements leave the public surface. This name comes from
+        // the withdrawal policy so the two cannot drift apart.
+        internal static readonly string[] WithheldKeys = { SummonPlaytestWithdrawalPolicy.StirgeKey };
         internal static bool IsWithheld(string key) { return Array.IndexOf(WithheldKeys, key) >= 0; }
     }
 

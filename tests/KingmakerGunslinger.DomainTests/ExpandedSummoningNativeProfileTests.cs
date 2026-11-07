@@ -27,6 +27,16 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase("summon-visual-closeout"), "Closeout grants no player input.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.WallFixturePhase("summon-visual-closeout"), "Closeout never acquires Wall preparation.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("summon-visual-closeout-group"), "The withdrawn outdoor selection phase is not admitted.");
+            // Repair R1: the five cuts observed on fresh summons in the same
+            // exact fresh, save-free static interior; no input or Wall preparation.
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-playtest-r1-cuts", 0, 0, 0, false, false, false, false, true), "Exact fresh R1 phase admitted.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-playtest-r1-cuts", 1, 0, 0, false, false, false, false, true), "R1 phase cannot replace a live world.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-playtest-r1-cuts", 0, 0, 0, false, false, true, false, true), "R1 phase cannot import a save.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 1, "summon-playtest-r1-cuts "), "Malformed R1 phase refused.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "summon-playtest-r1-cuts"), "R1 phase stays in the static interior.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase("summon-playtest-r1-cuts"), "R1 phase grants no player input.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.WallFixturePhase("summon-playtest-r1-cuts"), "R1 phase never acquires Wall preparation.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-playtest-r1-cuts"), "R1 phase is not a host-restricted Sprint40 phase.");
             // Sprint 4 reach census: an exact fresh, save-free outdoor Default
             // phase that never acquires Wall preparation or player input.
             Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-reach-sprint4", 0, 0, 0, false, false, false, false, true), "Exact fresh reach phase admitted.");

@@ -63,7 +63,9 @@ namespace KingmakerGunslinger.DomainTests
                     value.Creature.Key != "nalfeshnee" &&
                     value.Creature.Key != "ice-devil").ToArray();
             Assertions.Equal(1150, prior.Length, "Accepted public route surface must be preserved.");
-            Assertions.True(prior.All(SummonVisibilityCatalog.IsPublished), "Existing routes must remain published.");
+            // Repair R1: only the explicitly owner-withdrawn Stirge is exempt.
+            Assertions.True(prior.Where(value => !SummoningCurrentSurface.IsWithheld(value.Creature.Key))
+                .All(SummonVisibilityCatalog.IsPublished), "Existing routes must remain published.");
             SummonVisibilityCatalog.Validate();
             SummonChoicePresentationPolicy.Validate();
             Assertions.Equal("Satyr", SummonChoicePresentationPolicy.For("satyr").Label,

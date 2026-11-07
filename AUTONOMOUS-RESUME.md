@@ -1,3 +1,34 @@
+# Summoned creature manual-playtest repair — R1 checkpoint / STOP
+
+Current. A new repair sequence (R1-R7) from the owner's 2026-11-07 manual
+playtest, separate from the historical creature sprints. Records:
+[planning/summon-playtest-repair/](planning/summon-playtest-repair/R1-STATUS.md).
+
+R1 (five owner cuts: Stirge withheld from public routes; Wall of Ice removed
+from Bone and Ice Devil; Magma Form; Lillend Bardic Suggestion; Fire Giant
+Sunder) is a reviewable development checkpoint on
+`codex/summon-playtest-r1-cuts`: focused 196/196, one development candidate
+`ab24a92394ea` (package `2f14eebc…ff8c`), one guarded save-free DATA run
+(16/18 original; a reader-only re-evaluation of the observer toggle-identity
+defect gives a fact-level 18/18 that never observed the real replacement buff;
+both kept), exact restoration of DATA's v0.0.140 intake, settings and saves.
+
+Review follow-up on PR #111 (same day): no production defect found. Observer
+only (`d46726d46d`): the real ProperFlanking2 Sunder chain
+(`SunderActionToggleAbility` `d9604ead…`, `SunderActionToggleBuff`
+`f9f7edc1…`) is resolved exactly and its toggle/buff states read separately,
+and Lillend is re-read after reconciliation. Second development candidate
+`d46726d46ddc` (package `492a8f12…980d`), one guarded save-free DATA run:
+**PASS 20/20**; Storm Giant control buff active before and after, induced Fire
+Giant buff active before the fixer and gone after it. Exact restoration again.
+Cumulative R1 validation ≈ 20.4 min (past the 15-minute target, inside the
+30-minute ceiling). Not a release. Stop for review; R2 (combat entry and fear
+evaluations) is not started and needs its own authorization.
+
+The section below is the previous record, retained unchanged.
+
+---
+
 # Sprint 40 — v0.0.178 RELEASED / STOP
 
 Stable [v0.0.178](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.178)
