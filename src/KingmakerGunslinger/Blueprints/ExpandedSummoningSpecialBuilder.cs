@@ -868,16 +868,35 @@ namespace KingmakerGunslinger.Blueprints
                     ExpandedSummoningProjectIcons.Require("brachiosaurus"));
         }
 
+        /// <summary>
+        /// Repair R3 UI-05 (revised). Every owned Trample keeps the native
+        /// overrun action's art (protected native-semantic reuse), so the
+        /// Brachiosaurus's separate Overrun must not reuse it. It shares the
+        /// identity of its own Greater Overrun carrier instead: the installed
+        /// Greater Overrun feat's art when that provider is present and its
+        /// sprite really differs from the trample art, otherwise the approved
+        /// Brachiosaurus creature art (also that carrier's own fallback).
+        /// </summary>
         internal static UnityEngine.Sprite BrachiosaurusOverrunIcon(
             LibraryScriptableObject library, BlueprintAbility native)
         {
-            if (native != null && native.Icon != null) return native.Icon;
+            UnityEngine.Sprite trample = native == null ? null : native.Icon;
             BlueprintScriptableObject installed;
-            if (library.BlueprintsByAssetId.TryGetValue(InstalledGreaterOverrunFeatureGuid,
-                    out installed) && installed is BlueprintFeature &&
-                ((BlueprintFeature)installed).Icon != null)
-                return ((BlueprintFeature)installed).Icon;
-            return ExpandedSummoningProjectIcons.Require("brachiosaurus");
+            UnityEngine.Sprite feat = library.BlueprintsByAssetId.TryGetValue(
+                InstalledGreaterOverrunFeatureGuid, out installed) &&
+                installed is BlueprintFeature ? ((BlueprintFeature)installed).Icon : null;
+            if (feat != null && !SameIconArt(feat, trample)) return feat;
+            UnityEngine.Sprite creature = ExpandedSummoningProjectIcons.Require("brachiosaurus");
+            if (SameIconArt(creature, trample))
+                throw new InvalidOperationException("Brachiosaurus Overrun has no art distinct from Trample.");
+            return creature;
+        }
+
+        internal static bool SameIconArt(UnityEngine.Sprite left, UnityEngine.Sprite right)
+        {
+            if (left == null || right == null) return ReferenceEquals(left, right);
+            return ReferenceEquals(left, right) || ReferenceEquals(left.texture, right.texture) &&
+                left.textureRect == right.textureRect;
         }
 
         private static void ConfigureBrachiosaurusOverrun(
@@ -952,10 +971,16 @@ namespace KingmakerGunslinger.Blueprints
                     "Move through an opponent's space, forcing a combat "
                         + "maneuver check. This is the ordinary overrun "
                         + "maneuver and is not the creature's trample."),
-                // Repair R3 UI-05: keep the native overrun maneuver's own icon
-                // (it used to be cleared here); fall back to the installed
-                // Greater Overrun feat's art, then the creature art.
+                // Repair R3 UI-05: art distinct from the effective Trample.
                 BrachiosaurusOverrunIcon(library, native));
+            // Repair R3 UI-05/06: replace the rows CopyFields inherited from
+            // the native overrun ("Trample" / the maneuver description).
+            ability.LocalizedDuration = LocalizationService.Create(
+                "KMG.ExpandedSummoning.Brachiosaurus.Overrun.Duration",
+                SummonActionTooltipPolicy.InstantaneousDuration);
+            ability.LocalizedSavingThrow = LocalizationService.Create(
+                "KMG.ExpandedSummoning.Brachiosaurus.Overrun.SavingThrow",
+                SummonActionTooltipPolicy.OverrunSavingThrow);
             unit.AddFacts = (unit.AddFacts ??
                 Array.Empty<BlueprintUnitFact>())
                 .Concat(new BlueprintUnitFact[] { ability }).ToArray();
@@ -1043,6 +1068,14 @@ namespace KingmakerGunslinger.Blueprints
                         "save DC increases to " + (rules.TrampleDc + 2) +
                         ". Nearby idle creatures never count." : "")),
                 native.Icon);
+            // Repair R3 UI-05/06: CopyFields inherited the native overrun's
+            // Duration "Trample" and its maneuver description as the Saving
+            // Throw. State the implemented attack-of-opportunity/Reflex rule.
+            ability.LocalizedDuration = LocalizationService.Create("KMG.ExpandedSummoning." +
+                creatureKey + ".Trample.Duration", SummonActionTooltipPolicy.InstantaneousDuration);
+            ability.LocalizedSavingThrow = LocalizationService.Create("KMG.ExpandedSummoning." +
+                creatureKey + ".Trample.SavingThrow",
+                SummonActionTooltipPolicy.TrampleSavingThrow(rules.TrampleDc, rules.Stampede));
             if (rules.Stampede)
                 UngulateStampedeRuntime.Register(unit, ability);
             unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())

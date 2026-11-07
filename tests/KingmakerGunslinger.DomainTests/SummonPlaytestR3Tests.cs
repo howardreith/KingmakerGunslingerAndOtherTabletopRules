@@ -40,6 +40,24 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Throws<ArgumentOutOfRangeException>(() => SummonPortraitPolicy.CropRect(4), "Degenerate sizes are refused.");
         }
 
+        /// <summary>
+        /// The defect: owned trample/overrun inherited the native overrun's
+        /// Duration "Trample" and its maneuver description as Saving Throw.
+        /// </summary>
+        internal static void TrampleAndOverrunRowsStateTheImplementedContract()
+        {
+            Assertions.Equal("", SummonActionTooltipPolicy.InstantaneousDuration, "Instantaneous movement omits the Duration row (empty text), never 'Trample' or <null>.");
+            Assertions.Equal("", SummonActionTooltipPolicy.OverrunSavingThrow, "An overrun's combat maneuver check is not a saving throw.");
+            string plain = SummonActionTooltipPolicy.TrampleSavingThrow(17, false);
+            Assertions.True(plain.StartsWith("Reflex DC 17 half", StringComparison.Ordinal), "Trample states its Reflex save and DC.");
+            Assertions.True(plain.Contains("attack of opportunity") && !plain.Contains("DC 19"), "The attack-of-opportunity alternative is kept; no stampede DC without Stampede.");
+            string stampede = SummonActionTooltipPolicy.TrampleSavingThrow(17, true);
+            Assertions.True(stampede.Contains("DC 19 during Stampede") && stampede.Contains("attack of opportunity"), "Stampede's +2 applies only while active.");
+            foreach (string text in new[] { plain, stampede })
+                Assertions.False(text == "Trample" || text.Contains("<null>") || text.Contains("run over your target"), "No inherited native overrun text.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() => SummonActionTooltipPolicy.TrampleSavingThrow(0, false), "A missing DC is refused.");
+        }
+
         internal static void GhaeleLightRayIdentitiesAreRegistered()
         {
             var identities = ExpandedSummoningIdentityCatalog.Build();
