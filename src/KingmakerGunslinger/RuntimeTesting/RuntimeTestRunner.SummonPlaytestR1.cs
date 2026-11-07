@@ -42,7 +42,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         // no save and no setting is changed.
         private static readonly string[] SummonPlaytestR1Keys =
         { "bone-devil", "ice-devil", "magma-mephit", "lillend-azata", "fire-giant", "storm-giant" };
-        private const string ProperFlankingSunderToggleGuid = "a0808193670849199f52deb731638297";
+        // The toggle installed ProperFlanking2 actually grants through Improved
+        // Sunder's AddFacts (blueprints.txt: SunderActionToggleAbility). The
+        // first R1 run used a0808193..., PF2's never-granted save-cleanup dummy
+        // SunderArmorToggleAbility; that run's two FAILs are retained with a
+        // reader-only re-evaluation from its directly recorded grants.
+        private const string ProperFlankingSunderToggleGuid = "d9604eade0f54d88a899b5052f98d536";
 
         private IEnumerable<int> ReviewSummonPlaytestCutsR1(ExpandedSummoningCorrectionFixture fixture, string phase)
         {

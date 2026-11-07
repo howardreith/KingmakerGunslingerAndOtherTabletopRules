@@ -1,3 +1,23 @@
+# Summoned creature manual-playtest repair — R1 checkpoint / STOP
+
+Current. A new repair sequence (R1-R7) from the owner's 2026-11-07 manual
+playtest, separate from the historical creature sprints. Records:
+[planning/summon-playtest-repair/](planning/summon-playtest-repair/R1-STATUS.md).
+
+R1 (five owner cuts: Stirge withheld from public routes; Wall of Ice removed
+from Bone and Ice Devil; Magma Form; Lillend Bardic Suggestion; Fire Giant
+Sunder) is a reviewable development checkpoint on
+`codex/summon-playtest-r1-cuts`: focused 196/196, one development candidate
+`ab24a92394ea` (package `2f14eebc…ff8c`), one guarded save-free DATA run
+(16/18 original, 18/18 after a reader-only re-evaluation of an observer
+toggle-identity defect; both verdicts retained), exact restoration of DATA's
+v0.0.140 intake, settings and saves. Not a release. Stop for review; R2 (combat
+entry and fear evaluations) is not started and needs its own authorization.
+
+The section below is the previous record, retained unchanged.
+
+---
+
 # Sprint 40 — v0.0.178 RELEASED / STOP
 
 Stable [v0.0.178](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.178)
