@@ -71,8 +71,9 @@ dated sections stay as historical evidence bound to their own candidates.
   - The allied Stalker always shows the native invisible-ally outline, which
     is faint outdoors. Its natural invisibility is Purge-exempt by design, so
     no legitimate in-play reveal of an allied Stalker was observable.
-- **Validation (45-minute authorization): 30.1 minutes.**
-  - Focused gates: 13 s (csproj omission) plus 16, 16 and 17 s.
+- **Validation (45-minute authorization): 30.4 minutes.**
+  - Focused gates: 13 s (csproj omission) plus 16, 16, 17 and 16 s (final
+    comment and whitespace tidy).
   - First build attempt: ≤10 s (invocation error).
   - Builds: 387, 382 and 378 s.
   - Native drivers: 194.1 s (refusal plus shadow-motion), 133.1, 1.2
