@@ -1219,6 +1219,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("summon-playtest-r2.fear-aura-memory-durations", SummonPlaytestR2Tests.MemoryDurationsKeepTheEstablishedContract),
             Case("summon-playtest-r2.action-timing-rejects-late-or-unacted", SummonPlaytestR2Tests.ActionTimingRejectsQueuedButLaterOrNeverActed),
             Case("summon-playtest-r2.action-timing-first-cast-round-action", SummonPlaytestR2Tests.ActionTimingAcceptsTheFirstCastRoundAction),
+            Case("summon-playtest-r2.readiness-admission-closed", SummonPlaytestR2Tests.ReadinessAdmissionIsClosed),
             Case("expanded-summoning.sprint39-printed-contract", NalfeshneeRules39Tests.PrintedContractDerivesRatherThanPins),
             Case("expanded-summoning.sprint39-aura-not-double-counted", NalfeshneeRules39Tests.ConstantAuraIsNotCountedTwice),
             Case("expanded-summoning.sprint39-spell-resistance-separation", NalfeshneeRules39Tests.GeneralAndConditionalSpellResistanceStaySeparate),

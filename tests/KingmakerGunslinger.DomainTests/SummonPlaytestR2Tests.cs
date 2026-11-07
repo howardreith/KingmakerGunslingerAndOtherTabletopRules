@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using KingmakerGunslinger.RuntimeTesting;
 using KingmakerGunslinger.Summoning;
 
 namespace KingmakerGunslinger.DomainTests
@@ -132,6 +133,37 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(SummonFirstActionDisposition.ActedInCastRound,
                 SummonActionTimingPolicy.Classify(new[] { fullAttackFirstSwing }, cast),
                 "The first executed swing of a full attack is an action even though the command result is not yet Success.");
+        }
+
+        // LIFE-01 request scope: four named creatures, one native surprise
+        // entry for an Acadamae creature case, nothing else.
+        internal static void ReadinessAdmissionIsClosed()
+        {
+            Func<bool, bool, bool, string, bool, string, string> refusal = SummonReadinessAdmissionPolicy.Refusal;
+            Assertions.Equal<string>(null, refusal(true, false, true, "lion", false, null),
+                "Acadamae Lion is admitted.");
+            Assertions.Equal<string>(null, refusal(false, true, true, "pteranodon", false, null),
+                "The ordinary full-round Pteranodon control is admitted.");
+            Assertions.Equal<string>(null, refusal(true, false, true, "pteranodon", true, "surprise"),
+                "Acadamae Pteranodon with native surprise entry is admitted.");
+            Assertions.Equal<string>(null, refusal(true, false, false, null, false, null),
+                "The unparameterized Dog control stays admitted.");
+            Assertions.Equal("readiness-creature-invalid", refusal(true, false, true, "dog", false, null),
+                "Creatures outside the closed list are refused.");
+            Assertions.Equal("readiness-creature-invalid", refusal(false, false, true, "lion", false, null),
+                "The creature key is refused outside the two cases.");
+            Assertions.Equal("readiness-combat-entry-invalid", refusal(false, true, true, "pteranodon", true, "surprise"),
+                "Surprise entry is refused for the ordinary full-round control.");
+            Assertions.Equal("readiness-combat-entry-invalid", refusal(true, false, false, null, true, "surprise"),
+                "Surprise entry requires a named creature case.");
+            Assertions.Equal("readiness-combat-entry-invalid", refusal(true, false, true, "lion", true, "ambush"),
+                "Only the exact surprise entry value is admitted.");
+            Assertions.Equal("readiness-combat-entry-invalid", refusal(true, false, true, "lion", true, null),
+                "A non-string combat entry is refused.");
+            Assertions.Equal(3, SummonReadinessAdmissionPolicy.ParameterCount(true, true),
+                "Surprise entry requests carry exactly saveName, creature and entry.");
+            Assertions.Equal(2, SummonReadinessAdmissionPolicy.ParameterCount(true, false),
+                "Creature requests carry exactly saveName and creature.");
         }
 
         internal static void MemoryDurationsKeepTheEstablishedContract()
