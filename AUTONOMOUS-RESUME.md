@@ -1,3 +1,24 @@
+# Summoned creature manual-playtest repair — R3 checkpoint (partial) / STOP
+
+Current. R2 closed by owner acceptance (draft PR #112, not merged). R3
+(UI-01..UI-06, presentation only) is a partial development checkpoint on
+`codex/summon-playtest-r3-ui`, based on the #112 branch
+([R3-STATUS](planning/summon-playtest-repair/R3-STATUS.md)).
+
+- Candidate `42cd2e26978e` (package `8dc227c3…71b5d2`); one guarded save-free
+  DATA run: 9/10 R3 predicates PASS.
+- UI-01, UI-02, UI-04, UI-06 implemented with native data PASS; no visual PASS
+  (captures covered by the prologue storybook overlay).
+- UI-03 open: owner identified (native `AzataGhaelLightRay` `33e89979…`), but
+  the clone swap found no unit-level grant (`factSwaps=0`). UI-05 open:
+  Overrun icon duplicates Trample's and both carry inherited wrong tooltip rows.
+- R3 spend ≈ 661 s (≈ 11 min). Restoration verified. Next: the narrow R3
+  repair, not R4.
+
+The R2 record below is retained unchanged.
+
+---
+
 # Summoned creature manual-playtest repair — R2 closed
 
 Current. R1 merged (PR #111). R2 closed by owner acceptance on
