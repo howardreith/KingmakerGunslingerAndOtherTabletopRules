@@ -1,10 +1,14 @@
 # Summoned Creature Manual Playtest Repair — R2 status
 
-**R2 DEVELOPMENT CHECKPOINT / STOP.** LIFE-02 (repeated Frightened saves) is
+**R2 FOLLOW-UP CHECKPOINT / STOP.** LIFE-02 (repeated Frightened saves) is
 repaired and natively observed on DATA. LIFE-01 (Acadamae summon readiness) is
-**not** natively established: the ordinary-round comparison failed at observer
-setup before any creature acted, and the surprise round is explained from the
-installed source only. No product change was made for LIFE-01. This is not a
+**partly** established: the original R2 cast failure is now explained (a
+fixture issued the cast while the caster's native turn was still scrolling)
+and fixed; with the corrected fixture, Acadamae Pteranodon and the Dog control
+act in the round their cast resolved; Acadamae Lion attacked in its cast round
+but its predicate failed on an observer assumption (see "R2 follow-up"). Fire
+Mephit, Hell Hound, the nonaccelerated Pteranodon and the surprise round remain
+unobserved. No production behavior was changed for LIFE-01. This is not a
 release; nothing was installed permanently. R3 has not started.
 
 Records: [MISSION](MISSION.md) section 5, [ISSUE-REGISTER](ISSUE-REGISTER.md)
@@ -85,7 +89,9 @@ Domain tests: `summon-playtest-r2.fear-aura-stationary-once`,
 
 ### LIFE-02 limits
 
-- A stationary 4-second window per step (about 240 native ticks). Longer
+- A stationary window per step, confirmed from the receipt's own
+  `windowGameSeconds`: 4.006 (Ice Devil alone), 4.005 (pair), 4.008 (Bone
+  Devil). Longer
   combat cadence, moving units and turn-based mode were not observed.
 - The established 24-hour successful-save memory is a pre-existing Sprint 35/40
   contract, kept unchanged. SOURCES R-06 notes the PF1 Fear universal rule does
@@ -133,10 +139,11 @@ the disposable `KMG_AUTOMATION_WORKING` save (loaded, never written), run
 | Acadamae Pteranodon / Fire Mephit / Lion / Hell Hound | **FAIL ×4**, identical: `failureStage=acadamae-native-command-resolution`, "stage 3 did not complete". The Standard Acadamae command was accepted (Acadamae on, `CanTarget`/`CanStart` true, slot available) but no cast resolved; the caster's turn was forced through rounds 1-2. In-run fixture cleanup exact (130/130 units, party restored) |
 | Native-control Pteranodon | Not run (runner stopped) |
 
-This is an observer defect in the new named-creature Acadamae preparation
-(the SM IV KMG child prepared at its own level through the detached
-canonical/selected construction), not a creature result. Original FAIL
-evidence is kept: `runtime-evidence/20261107T1631221655425Z…`,
+Corrected certainty (R2 follow-up): these receipts establish only a pre-spawn
+cast failure and no creature-readiness result. They did not establish the
+detached canonical/selected construction as the cause; the follow-up found the
+cause in the fixture's turn timing (below), which also failed the SM I Dog
+control. Original FAIL evidence is kept unchanged: `runtime-evidence/20261107T1631221655425Z…`,
 `…T1635418444025Z…`, `…T1639568197585Z…`, `…T1644115022001Z-summon-same-turn-acadamae/`.
 
 After the Hell Hound case flushed its result, Kingmaker hung (not responding,
@@ -149,7 +156,120 @@ original owner process gone, live mod restored through `Restore-Live-Mod.ps1`
 under that lease, settings and saves verified, then `Exit-KmgRuntimeLease`
 (record: `runtime-evidence/summon-playtest-r2/20261107-readiness-recovery.json`).
 
-## Candidate
+## R2 follow-up — LIFE-01 repair checkpoint
+
+Authorized as one bounded additional checkpoint (15-minute target, 30-minute
+additional ceiling). Base: PR #112 branch at `00ad9db6fa` (still open).
+
+### Intake
+
+DATA unchanged from R2 intake: Kingmaker Gunslinger v0.0.140, DLL
+`00ef67570d30e4ff9c54a2ad2027393660436d5724bcee2bb99e4c5718e966fd`, live tree
+`5C3E4AD4…CB9BFBB` (254 files), sixteen UMM mods enabled in `Params.xml`, 95
+protected save files, same reference bundle, passed explicitly.
+
+### Cause of the unresolved R2 cast (established)
+
+Observer additions: native `IUnitCommandStart/Act/EndHandler` events for the
+exact cast and summon commands, stage timestamps, and periodic snapshots of
+the exact cast command.
+
+First candidate `2715e59b007a` (observer only), Dog Acadamae control, run
+`20261107T1750289500185Z-4ef0628666ba4afaa453872328cd563d` — **FAIL** (kept),
+receipt `runtime-result.json` SHA-256 `25250142b533…`:
+
+- The caster owned the turn at 4.18 s with native status `Scrolling`; the
+  fixture issued the cast at 4.21 s.
+- The exact cast command never started (`started=False`, `timeSinceStart=0`)
+  and ended `Interrupt` within 2 s as the turn moved to `Preparing`.
+- Installed `TurnController.Start` sets `Scrolling` while the camera pans,
+  then `Prepare()` calls `InterruptCommands()`. A command queued during the
+  scroll is interrupted by native turn preparation.
+- Stage 3 waited on `IsStarted` and so reported the interrupted command as a
+  240-second timeout. The same signature (pre-spawn, stage 3, caster turn
+  forced onward) matches all four R2 failures.
+
+The working-save fixture moved to the cast as soon as the caster owned the
+turn; the save-free fixture already waited for `Preparing`/`Acting`. This is a
+fixture defect, not a product defect: production Acadamae casting and the
+activation runtime were not changed. Fixture fix (`9c13837dd4`): both fixtures
+wait for the native `Preparing`/`Acting` state; stage 3 fails fast when the
+command ends before it starts.
+
+### Execution-timing observer correction
+
+The R2 observer stored the round at `UnitCommands.Run` and combined it with an
+eventual `IsActed`, so it could accept a command queued in the cast round that
+acted later. The observer now stamps each exact command at its native start,
+act and end events with the round current at that event, and the pure
+`SummonActionTimingPolicy` picks each summon's first legal action. Focused
+tests reject a command queued in the cast round but acting in the next round,
+and a queued/started/interrupted command that never acts, and accept a missed
+attack and the first act of a multi-attack command.
+
+### Native observation (candidate `9c13837dd4ce`)
+
+One guarded runner on the disposable `KMG_AUTOMATION_WORKING` save (loaded,
+never written), stopping at the first non-PASS:
+
+| Case | Run | Result |
+| --- | --- | --- |
+| Acadamae SM I Dog (control) | `20261107T1803470764064Z-f5ba561b…` | **PASS 11/11**. Cast Standard, acted round 1, one Acadamae save (roll 20, DC 16), slot spent. Dog: first legal action `UnitAttack` Standard acted round 1 = cast round (miss, result Success); next round normal; 12-second duration expired at the boundary |
+| Acadamae SM IV Pteranodon | `20261107T1805183558592Z-38015fb8…` | **PASS 12/12**. Cast Standard, acted round 2; Pteranodon `UnitAttack` (BiteHuge2d6, hit) acted round 2 = cast round; one attack per later round; duration 120 s exact; save DC 19 roll 20 |
+| Acadamae SM IV Lion | `20261107T1806562190222Z-876705b4…` | **FAIL 11/12** (kept). Every enrollment, opportunity, duration and Acadamae check passed. The cast-round action predicate failed: the Lion's first act boundary fired in round 2 (cast round) with command `Result=None`, which the observer's policy rejected. The same receipt records the Lion's bite (`BiteDragonLarge1d8`, hit) in round 2 on its own turn, then two claws per later round |
+
+Receipts: `runtime-result.json` SHA-256 `8be6ebc91181…` (Dog), `ea1336b3e544…`
+(Pteranodon), `bfd05c918582…` (Lion).
+
+Classification of the Lion FAIL: observer defect, not a gameplay failure.
+Installed `UnitAttack.OnAction` returns `None` after each attack of a
+full/iterative attack except the last, and `Success` only when the sequence
+completes. The policy required `Success` at the act boundary. The policy now
+counts any act boundary that is not `Fail` or `Interrupt` (focused test added),
+but that correction is **source only and has not executed natively**. The Lion
+FAIL stands for candidate `9c13837dd4ce`; its cast-round bite is a direct
+attack-rule observation, not a reinterpreted PASS.
+
+### LIFE-01 status after the follow-up
+
+- Ordinary round, Acadamae: Pteranodon (one of the two reported slow cases)
+  acted in its cast round under matched conditions, as did the Dog control. No
+  creature-specific delay was reproduced for Pteranodon. Lion attacked in its
+  cast round (direct attack evidence; predicate FAIL as above).
+- Not observed: Acadamae Fire Mephit, Acadamae Hell Hound, the nonaccelerated
+  Pteranodon control, and the surprise round. The allowance did not fit
+  another rebuild plus cases. The surprise-round source finding remains an
+  unobserved lead.
+- No production defect was demonstrated; no production change.
+
+### Follow-up restoration
+
+Both runners restored automatically under their own lease: live tree
+`5C3E4AD499DC5116D2024D06260D11700087379937B96B7372C821628CB9BFBB` before and
+after, v0.0.140 DLL `00ef6757…66fd`, settings restored exactly, 95 protected
+saves byte/metadata identical, no hang, no recovery needed. Records:
+`runtime-evidence/summon-playtest-r2/20261107T1749568956490Z-r2b-*` and
+`…T1803141819688Z-r2b-*`.
+
+### Follow-up validation spend (additional 15-minute target, 30-minute ceiling)
+
+| Invocation | Seconds |
+| --- | --- |
+| Focused gate, refused at compilation | 10.7 |
+| Focused gate (27/27) | 16.0 |
+| Candidate build `2715e59b007a` | 379 |
+| Runner 1 (Dog FAIL; incl. deploy/restore) | 291 |
+| Focused gate (27/27) after fixture fix | 14.9 |
+| Candidate build `9c13837dd4ce` | 393 |
+| Runner 2 (Dog, Pteranodon, Lion; incl. deploy/restore) | 315 |
+| Focused gate (23/23) after policy correction | 16.1 |
+| **Follow-up increment** | **≈ 1,436 s (≈ 23.9 min)** |
+| **Cumulative R2** (1,706 + 1,436) | **≈ 3,142 s (≈ 52.4 min)**, plus ≈ 8 s recovery after the R2 hang |
+
+The increment passed its 15-minute target and stayed under its 30-minute
+ceiling; no further launch fit after the Lion case.
+
+## Candidate (original R2)
 
 | | |
 | --- | --- |
@@ -161,9 +281,16 @@ under that lease, settings and saves verified, then `Exit-KmgRuntimeLease`
 | Version metadata | `0.0.179` |
 | Selected tests | 58 of 2,851 registered, 0 failures |
 
-Observers in these bytes: `summon-playtest-r2-fear` (PASS) and the
-`readinessCreature` Acadamae path (defective, above). A corrected readiness
-observer needs its own rebuild and run.
+Observers in these bytes: `summon-playtest-r2-fear` (PASS; that execution
+claim belongs to these bytes only) and the original `readinessCreature`
+Acadamae path (fixture timing defect, above). Follow-up candidates:
+
+| Source | Package SHA-256 | DLL SHA-256 / MVID | Observed |
+| --- | --- | --- | --- |
+| `2715e59b007aaf9d4f01b607e9913bbaaeccd089` | `c70245d7f12df280831abd3c5fc722718bd1613afcbe14bbd7105ac70943acb3` | `9fd3c97c153be089107f43865bc15772cd73c6150e69e260b7461b249f45ba03` / `345d9c18-8c71-41b1-b955-3287f4d6bdea` | Dog FAIL (cause found) |
+| `9c13837dd4ceb19848799127dfbf92de10441d08` | `a4352bf96d7cc9925b2f43986cb3c973fba6c6a2cb5391fe615e71894763fe2b` | `6500e1ba93ca466da8150fdb1c270281ae905a2e90114ba148d9fcb401949f19` / `f734ae9f-f712-401a-81d4-bf7055ed6217` | Dog PASS, Pteranodon PASS, Lion FAIL |
+
+The later policy correction (full-attack `None` at act) is in source only.
 
 ## Focused tests
 
@@ -207,7 +334,8 @@ allowance; LIFE-01 needs a separately authorized narrow repair.
 2. An enemy walking into an Ice Devil's or Bone Devil's aura still saves and
    can be Frightened; stepping out and back in does not re-roll while it is
    remembered.
-3. Optional: cast an Acadamae summon (Pteranodon or a mephit vs Lion/Hell
-   Hound) in an ordinary round and note whether it acts in that round; and
-   separately, open combat with the summon and note that it first acts in
+3. Acadamae Pteranodon in an ordinary turn-based round should act (attack or
+   move) in the same round it appears. Optional: compare a mephit and Hell
+   Hound, which were not observed; and separately, open combat with the summon
+   and note whether it first acts in
    round 1. These are the open LIFE-01 observations.
