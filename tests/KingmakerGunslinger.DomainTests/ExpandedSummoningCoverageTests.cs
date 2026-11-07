@@ -79,9 +79,19 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count - SummoningCurrentSurface.WithheldKeys.Length,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
                 "Every represented creature is now published somewhere.");
-            Assertions.True(ExpandedSummoningCoveragePolicy.PublishedSomewhere
-                .Contains("stirge"),
-                "The requalified Stirge must count as published coverage.");
+            // Repair R1 CUT-01: the owner withdrew the Stirge. It stays a
+            // represented, registered identity (old saves resolve it) but no
+            // longer counts as published coverage in either family.
+            Assertions.False(ExpandedSummoningCoveragePolicy.PublishedSomewhere
+                .Contains(SummonPlaytestWithdrawalPolicy.StirgeKey),
+                "The owner-withdrawn Stirge must not count as published coverage.");
+            Assertions.True(ExpandedSummoningCoveragePolicy.RepresentedCreatures
+                .Contains(SummonPlaytestWithdrawalPolicy.StirgeKey),
+                "The withdrawn Stirge remains a represented, registered identity.");
+            Assertions.Equal(SummonFamilyCoverage.Registered,
+                ExpandedSummoningCoveragePolicy.Coverage(
+                    SummonPlaytestWithdrawalPolicy.StirgeKey, SummonFamily.NaturesAlly, 1),
+                "Stirge's Nature's Ally coverage is registered-but-withheld.");
             Assertions.True(
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Contains("dire-bat"),
                 "Dire Bat must count as published in both families.");

@@ -755,6 +755,8 @@ namespace KingmakerGunslinger.Blueprints
             foreach (var pair in bySymbol.Where(value =>
                 value.Key.StartsWith("KMG.Summoning.FeyCelestial.", StringComparison.Ordinal) && value.Value is BlueprintUnitFact))
                 NameFeyCelestialFactComponents32((BlueprintUnitFact)pair.Value, pair.Key);
+            // Repair R1: last, after every creature's components are final.
+            ConfigureWithdrawnCapabilityFixers(library, bySymbol);
         }
 
         /// <summary>
@@ -1113,8 +1115,6 @@ namespace KingmakerGunslinger.Blueprints
                         bySymbol, prefix + slot.Key + "Resource");
                     ConfigureMephitSpellLike(library, bySymbol, ability, resource, slot.Value,
                         prefix + slot.Key, prefix, token, unit);
-                    resources.Add(resource);
-                    grants.Add(ability);
                     BlueprintAiCastSpell action = ConfigureMephitAiAction(
                         Require<BlueprintAiCastSpell>(bySymbol, prefix + slot.Key + "Ai"),
                         prefix + slot.Key + "Ai", ability, 0);
@@ -1123,6 +1123,17 @@ namespace KingmakerGunslinger.Blueprints
                     if (slot.Value == "MagmaForm")
                         action.StartCooldownRounds =
                             ExpandedSummoningSpecialProfiles.MagmaFormAiStartCooldownRounds;
+                    // Repair R1 CUT-03: Magma Form is withdrawn. Its ability,
+                    // resource, state and AI stay configured as registered
+                    // identities for older saves, but a fresh Magma Mephit
+                    // is not granted the ability, its resource or the AI
+                    // action. SummonWithdrawnCapabilityFixer retires all
+                    // three from a mephit saved before R1.
+                    if (SummonPlaytestWithdrawalPolicy.IsWithdrawnMephitSpellLike(
+                            profile.Key, slot.Value))
+                        continue;
+                    resources.Add(resource);
+                    grants.Add(ability);
                     aiActions.Add(action);
                 }
                 BlueprintBuff traits = Require<BlueprintBuff>(bySymbol,
