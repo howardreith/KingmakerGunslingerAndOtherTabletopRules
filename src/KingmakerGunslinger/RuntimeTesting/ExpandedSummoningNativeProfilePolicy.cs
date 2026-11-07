@@ -140,7 +140,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         { return phase == Sprint32DruidInputPhase || phase == Sprint32WizardInputPhase || phase == Sprint32SorcererInputPhase; }
         internal static bool Sprint32NativeDefaultPhase(string phase)
         { return Sprint40Phase(phase) || WallFixturePhase(phase) || phase == Sprint39OverhaulReachPhase || phase == Sprint39OverhaulDaylightPhase || phase == Sprint39OverhaulMotionPhase || phase == Sprint39OverhaulOffPhase || phase == Sprint32InfernalBodiesPhase || phase == Sprint32ShadowMotionPhase || Sprint32NativeInputPhase(phase) || phase == Sprint32PerformancePhase ||
-            phase == Sprint32FascinatePhase || phase == Sprint32BardicSuggestionPhase || phase == Sprint32GrabPhase || phase == Sprint32PresentationPhase || phase == Sprint32SuggestionTerminalsPhase; }
+            phase == Sprint32FascinatePhase || phase == Sprint32BardicSuggestionPhase || phase == Sprint32GrabPhase || phase == Sprint32PresentationPhase || phase == Sprint32SuggestionTerminalsPhase ||
+            // Repair R3: actual HUD/description screens need the established
+            // non-narrative Oleg outdoor fixture, not the mansion storybook.
+            phase == Sprint39PlaytestUiPhase; }
         internal static bool Sprint32NativeDefaultOutdoor(string scenario, string phase)
         { return scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview && Sprint32NativeDefaultPhase(phase); }
         internal static bool Sprint32Phase(string phase)

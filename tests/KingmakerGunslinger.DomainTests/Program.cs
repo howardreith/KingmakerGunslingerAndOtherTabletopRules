@@ -1224,6 +1224,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("summon-playtest-r3.portraits-own-art", SummonPlaytestR3Tests.EveryRegisteredSummonOwnsItsPortraitArt),
             Case("summon-playtest-r3.portrait-crop-aspect", SummonPlaytestR3Tests.PortraitCropKeepsTheNativePortraitAspect),
             Case("summon-playtest-r3.ghaele-ray-identities", SummonPlaytestR3Tests.GhaeleLightRayIdentitiesAreRegistered),
+            Case("summon-playtest-r3.trample-overrun-rows", SummonPlaytestR3Tests.TrampleAndOverrunRowsStateTheImplementedContract),
             Case("expanded-summoning.sprint39-printed-contract", NalfeshneeRules39Tests.PrintedContractDerivesRatherThanPins),
             Case("expanded-summoning.sprint39-aura-not-double-counted", NalfeshneeRules39Tests.ConstantAuraIsNotCountedTwice),
             Case("expanded-summoning.sprint39-spell-resistance-separation", NalfeshneeRules39Tests.GeneralAndConditionalSpellResistanceStaySeparate),
