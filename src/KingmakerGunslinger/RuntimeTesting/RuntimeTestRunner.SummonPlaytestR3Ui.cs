@@ -105,9 +105,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             return null;
         }
 
-        // Rendered initiative tracker: each representative must appear with
-        // its own small portrait in a visible native order view (or as the
-        // current unit's visible portrait).
+        // Rendered initiative tracker: which representatives are shown, in a
+        // visible native portrait zone bound to that exact unit, and whether
+        // any visible zone bound to a representative shows another picture.
+        // A unit outside the visible list is outside coverage, not a defect.
         private JObject R3TrackerState(IDictionary<string, UnitEntityData> units)
         {
             var orders = UnityEngine.Object.FindObjectsOfType<InitiativeTrackerUnitOrderHorizontalPCView>()
@@ -115,60 +116,120 @@ namespace KingmakerGunslinger.RuntimeTesting
             var currents = UnityEngine.Object.FindObjectsOfType<InitiativeTrackerCurrentUnitPCView>()
                 .Where(view => view != null && view.isActiveAndEnabled).ToArray();
             var current = Game.Instance.TurnBasedCombatController.CurrentTurn;
-            var rows = new JObject(); bool all = R3TrackerPortraitField != null;
+            var rows = new JObject(); bool all = R3TrackerPortraitField != null; int wrong = 0;
+            var covered = new JArray();
             foreach (var pair in units)
             {
                 Sprite expected = pair.Value.Portrait == null ? null : pair.Value.Portrait.SmallPortrait;
                 var bound = orders.Where(view => ReferenceEquals(R3TrackerUnit(view), pair.Value)).ToArray();
-                var images = bound.SelectMany(R3ZonePictures).ToArray();
-                bool order = images.Any(image => ReferenceEquals(image.sprite, expected) && Cleanup2TooltipGraphicVisible(image));
                 bool isCurrent = current != null && ReferenceEquals(current.Unit, pair.Value);
-                bool currentView = isCurrent && currents.SelectMany(R3ZonePictures)
-                    .Any(image => ReferenceEquals(image.sprite, expected) && Cleanup2TooltipGraphicVisible(image));
-                bool shown = expected != null && expected.name == SummonPortraitPolicy.PortraitName(pair.Key) && (order || currentView);
+                var images = bound.SelectMany(R3ZonePictures)
+                    .Concat(isCurrent ? currents.SelectMany(R3ZonePictures) : new Image[0]).ToArray();
+                var visible = images.Where(image => Cleanup2TooltipGraphicVisible(image)).ToArray();
+                bool shown = expected != null && expected.name == SummonPortraitPolicy.PortraitName(pair.Key) &&
+                    visible.Any(image => ReferenceEquals(image.sprite, expected));
+                bool wrongVisible = visible.Any(image => !ReferenceEquals(image.sprite, expected));
+                if (wrongVisible) wrong++;
+                if (shown) covered.Add(pair.Key);
                 all &= shown;
                 rows[pair.Key] = new JObject { ["unit"] = pair.Value.UniqueId, ["expected"] = expected == null ? null : expected.name,
-                    ["orderViews"] = bound.Length, ["orderSprites"] = new JArray(images.Select(image => image.sprite == null ? null : image.sprite.name)),
-                    ["orderVisible"] = order, ["isCurrent"] = isCurrent, ["currentViewVisible"] = currentView, ["shown"] = shown };
+                    ["orderViews"] = bound.Length, ["isCurrent"] = isCurrent,
+                    ["visibleSprites"] = new JArray(visible.Select(image => image.sprite == null ? null : image.sprite.name)),
+                    ["shown"] = shown, ["wrongVisible"] = wrongVisible };
             }
-            return new JObject { ["passed"] = all, ["orderViews"] = orders.Length, ["currentViews"] = currents.Length,
+            return new JObject { ["allShown"] = all, ["covered"] = covered, ["wrongVisible"] = wrong,
+                ["orderViews"] = orders.Length, ["currentViews"] = currents.Length,
                 ["round"] = Game.Instance.TurnBasedCombatController.RoundNumber,
-                ["currentTurn"] = current == null ? null : current.Unit.UniqueId, ["units"] = rows };
+                ["currentTurn"] = current == null ? null : current.Unit.UniqueId,
+                ["currentStatus"] = current == null ? null : current.Status.ToString(), ["units"] = rows };
         }
 
-        // Rendered native description window for one live Ability fact.
-        private JObject R3DescriptionCard(R3DescriptionTarget target, Ability fact, TooltipData data)
+        private static readonly FieldInfo R3ShowListField = typeof(DescriptionBricksBox).GetField("m_ShowList", Cleanup2Fields);
+
+        // The installed DescriptionBricksBox keeps its rendered bricks in order
+        // in m_ShowList; AddH2AndDescriptionBlock appends a TitleH2 brick and
+        // then its SimpleText value brick, only for non-empty text.
+        private static DescriptionBrick[] R3Bricks(DescriptionBricksBox box)
+        {
+            var list = box == null || R3ShowListField == null ? null : R3ShowListField.GetValue(box) as IList<DescriptionBrick>;
+            return list == null ? new DescriptionBrick[0] :
+                list.Where(brick => brick != null && brick.gameObject.activeInHierarchy).ToArray();
+        }
+
+        private static TextMeshProUGUI R3BrickText(DescriptionBrick brick)
+        {
+            return brick == null || brick.TextFields == null ? null :
+                brick.TextFields.FirstOrDefault(text => text != null && text.isActiveAndEnabled);
+        }
+
+        private static string R3Parsed(TextMeshProUGUI text)
+        { return text == null ? null : (text.GetParsedText() ?? "").Trim(); }
+
+        private static JObject R3Row(DescriptionBrick[] content, string title, string expected)
+        {
+            int index = Array.FindIndex(content, brick => string.Equals(R3Parsed(R3BrickText(brick)), title, StringComparison.OrdinalIgnoreCase));
+            int titles = content.Count(brick => string.Equals(R3Parsed(R3BrickText(brick)), title, StringComparison.OrdinalIgnoreCase));
+            TextMeshProUGUI header = index >= 0 ? R3BrickText(content[index]) : null;
+            TextMeshProUGUI value = index >= 0 && index + 1 < content.Length ? R3BrickText(content[index + 1]) : null;
+            string shown = R3Parsed(value);
+            bool present = index >= 0;
+            bool correct = string.IsNullOrEmpty(expected) ? !present : present && titles == 1 && string.Equals(shown, expected, StringComparison.Ordinal);
+            bool clipped = value != null && (value.isTextTruncated || value.isTextOverflowing);
+            bool visible = !present || value != null && Cleanup2TooltipGraphicVisible(header) && Cleanup2TooltipGraphicVisible(value);
+            return new JObject { ["title"] = title, ["expected"] = expected, ["present"] = present, ["titleBricks"] = titles,
+                ["shown"] = shown, ["correct"] = correct, ["clipped"] = clipped, ["visible"] = visible };
+        }
+
+        // Content of the exact owned native description window (assessed
+        // after capture; never part of the capture's ownership predicate).
+        private JObject R3DescriptionCard(R3DescriptionTarget target)
         {
             var window = Game.Instance.UI.DescriptionController.DescWindow;
-            var texts = window.GetComponentsInChildren<TextMeshProUGUI>(true)
-                .Where(value => value.isActiveAndEnabled).Select(value => value.GetParsedText() ?? "").ToArray();
-            var images = window.GetComponentsInChildren<Image>(true).Where(value => value.isActiveAndEnabled).ToArray();
+            var body = window.Body;
+            var header = R3Bricks(body == null ? null : body.HeaderBox);
+            var content = R3Bricks(body == null ? null : body.ContentBox);
+            var footer = R3Bricks(body == null ? null : body.FooterBox);
+            var bricks = header.Concat(content).Concat(footer).ToArray();
+            var texts = bricks.SelectMany(brick => brick.TextFields ?? new List<TextMeshProUGUI>())
+                .Where(text => text != null && text.isActiveAndEnabled).ToArray();
+            var images = bricks.SelectMany(brick => brick.Images ?? new List<Image>())
+                .Where(image => image != null && image.isActiveAndEnabled).ToArray();
             string durationTitle = UIUtility.GetGlossaryEntryName(TooltipElement.Duration.ToString());
             string saveTitle = UIUtility.GetGlossaryEntryName(TooltipElement.SavingThrow.ToString());
-            Func<string, bool> has = value => texts.Any(text => string.Equals(text.Trim(), value, StringComparison.OrdinalIgnoreCase));
             string description = target.Blueprint.Description ?? "";
             string chunk = description.Length > 24 ? description.Substring(0, 24) : description;
-            bool owned = window.gameObject.activeInHierarchy && ReferenceEquals(window.Data, data) &&
-                ReferenceEquals(data.Ability, fact) && fact.Owner != null && !fact.Owner.Unit.Destroyed &&
-                fact.Owner.Abilities.Enumerable.Contains(fact);
-            bool title = has(target.Blueprint.Name);
-            bool body = chunk.Length > 0 && texts.Any(text => text.IndexOf(chunk, StringComparison.OrdinalIgnoreCase) >= 0);
+            var titleText = header.SelectMany(brick => brick.TextFields ?? new List<TextMeshProUGUI>()).FirstOrDefault(text =>
+                text != null && text.isActiveAndEnabled && string.Equals(R3Parsed(text), target.Blueprint.Name, StringComparison.OrdinalIgnoreCase));
+            bool title = titleText != null && Cleanup2TooltipGraphicVisible(titleText) && !titleText.isTextTruncated;
+            bool described = chunk.Length > 0 && texts.Any(text => (text.GetParsedText() ?? "").IndexOf(chunk, StringComparison.OrdinalIgnoreCase) >= 0);
             bool icon = target.Blueprint.Icon != null && images.Any(image => ReferenceEquals(image.sprite, target.Blueprint.Icon) &&
                 Cleanup2TooltipGraphicVisible(image));
-            bool durationRow = string.IsNullOrEmpty(target.Duration) ? !has(durationTitle) : has(durationTitle) && has(target.Duration);
-            bool saveRow = string.IsNullOrEmpty(target.SavingThrow) ? !has(saveTitle) : has(saveTitle) && has(target.SavingThrow);
-            bool clean = !texts.Any(text => text.Contains("<null>") || string.Equals(text.Trim(), "Trample", StringComparison.Ordinal) && target.Blueprint.Name != "Trample" ||
-                text.IndexOf(R3NativeOverrunDescriptionPrefix, StringComparison.OrdinalIgnoreCase) >= 0);
+            JObject duration = R3Row(content, durationTitle, target.Duration);
+            JObject save = R3Row(content, saveTitle, target.SavingThrow);
+            bool clean = !texts.Any(text => { string value = text.GetParsedText() ?? "";
+                return value.Contains("<null>") || value.IndexOf(R3NativeOverrunDescriptionPrefix, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    string.Equals(value.Trim(), "Trample", StringComparison.Ordinal) && target.Blueprint.Name != "Trample"; });
+            bool content_ok = title && described && icon && (bool)duration["correct"] && (bool)save["correct"] &&
+                !(bool)duration["clipped"] && !(bool)save["clipped"] && clean;
             return new JObject { ["label"] = target.Label, ["creature"] = target.Creature, ["blueprint"] = target.Blueprint.AssetGuid,
                 ["name"] = target.Blueprint.Name, ["icon"] = target.Blueprint.Icon == null ? null : target.Blueprint.Icon.name,
-                ["expectedDuration"] = target.Duration, ["expectedSavingThrow"] = target.SavingThrow,
-                ["durationTitle"] = durationTitle, ["savingThrowTitle"] = saveTitle,
-                ["owned"] = owned, ["title"] = title, ["description"] = body, ["iconVisible"] = icon,
-                ["durationRow"] = durationRow, ["savingThrowRow"] = saveRow, ["noNullOrInheritedText"] = clean,
-                ["passed"] = owned && title && body && icon && durationRow && saveRow && clean,
-                ["texts"] = new JArray(texts.Where(text => text.Trim().Length > 0).Take(40)),
+                ["title"] = title, ["description"] = described, ["iconVisible"] = icon, ["duration"] = duration, ["savingThrow"] = save,
+                ["noNullOrInheritedText"] = clean, ["contentCorrect"] = content_ok,
+                ["rowsVisible"] = (bool)duration["visible"] && (bool)save["visible"],
+                ["headerTexts"] = new JArray(header.Select(brick => R3Parsed(R3BrickText(brick)))),
+                ["contentTexts"] = new JArray(content.Select(brick => R3Parsed(R3BrickText(brick))).Take(40)),
                 ["images"] = new JArray(images.Where(image => image.sprite != null).Take(24).Select(image => image.sprite.name)),
-                ["surface"] = "Native DescriptionController.HandleOpenDescription(TooltipData{Ability=live fact}) -> DescriptionTemplatesAbility; the same Duration/Saving Throw rows the hover tooltip builds (empty text omits a row)." };
+                ["surface"] = "Native DescriptionController.HandleOpenDescription(TooltipData{Ability=live fact}) -> DescriptionTemplatesAbility; rows read from the ContentBox TitleH2->SimpleText brick order." };
+        }
+
+        private bool R3DescriptionOwned(Cleanup2NativeDefaultScope mode, Ability fact, TooltipData data)
+        {
+            var ui = Game.Instance.UI; var window = ui.DescriptionController.DescWindow;
+            return mode.Current && Cleanup2NoNarrativeOverlay() && window != null && window.gameObject.activeInHierarchy &&
+                ReferenceEquals(window.Data, data) && ReferenceEquals(data.Ability, fact) && fact.Owner != null &&
+                !fact.Owner.Unit.Destroyed && fact.Owner.Abilities.Enumerable.Contains(fact) &&
+                ui.TooltipsController.ContextTooltipData == null &&
+                window.GetComponentsInParent<CanvasGroup>(true).All(group => group.alpha >= .99f);
         }
 
         private IEnumerable<int> ReviewSummonPlaytestUiR3(ExpandedSummoningCorrectionFixture fixture, string phase,
@@ -187,7 +248,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             IDictionary<string, BlueprintScriptableObject> symbols = ExpandedSummoningBlueprints.Registered.BySymbol;
             var record = new JObject { ["phase"] = phase, ["runId"] = _request.RunId,
                 ["fixture"] = "established non-DLC Oleg outdoor native Default; save-free",
-                ["limits"] = "Portrait/action checks read live blueprints and units. Screens are the rendered initiative tracker and native description window for live Ability facts; the hover template itself is not opened (same DescriptionTemplatesAbility rows). Owner visual approval is separate. No summon acts." };
+                ["limits"] = "Portrait/action checks read live blueprints and units. Screens: native description windows for live Ability facts (captured on ownership, content assessed after), then the native tracker during the owned anchor's input-waiting turn with representative coverage. The hover template itself is not opened (same DescriptionTemplatesAbility rows). Owner visual approval is separate. No summon acts." };
             var owned = new List<UnitEntityData>();
             Vector3 centre = fixture.Caster.Position;
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue, oldPause = game.IsPaused;
@@ -200,6 +261,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             NativeIconScreenEvidence screens = null;
             TooltipData openDescription = null;
             var captures = new JArray();
+            UnitEntityData[] selectionBefore = null;
+            bool anchorEnrolled = false;
             try
             {
                 // 1. Whole-roster portrait audit in the live library.
@@ -361,52 +424,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new JObject { ["nimbus"] = R3Action(nimbus), ["sprint"] = R3Action(sprint), ["trumpetBlast"] = R3Action(blast) },
                     "Unholy Nimbus, Cheetah Sprint and sibling Trumpet Blast carry their implemented Duration/Saving Throw text.");
 
-                // 3. Rendered native UI in owned turn-based combat.
-                if (tutorial == null) throw new InvalidOperationException("Native turn tutorial flag absent.");
-                tutorial.Unlock(); tutorialTouched = true;
-                SettingsRoot.Instance.PauseOnEngagement.CurrentValue = false;
-                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = true;
-                game.TurnBasedCombatController.Activate(); combatOwned = true;
-                var hostile = fixture.Hostile;
-                PlaceExpandedSummoningUnit(hostile, ObstacleAnalyzer.GetNearestNode(centre + Vector3.back * 9f).clampedPosition);
-                var fighters = owned.Concat(new[] { fixture.Caster }).ToArray();
-                hostile.Wake(0f); if (!game.State.AwakeUnits.Contains(hostile)) game.State.AwakeUnits.Add(hostile);
-                foreach (var unit in fighters)
-                {
-                    unit.Wake(0f); if (!game.State.AwakeUnits.Contains(unit)) game.State.AwakeUnits.Add(unit);
-                    unit.Memory.Add(hostile); hostile.Memory.Add(unit);
-                }
-                // The native join controller owns the party combat edge and the
-                // turn-order initialization (see the performance-combat seam).
-                foreach (var unit in fighters) unit.JoinCombat();
-                hostile.JoinCombat();
-                JObject tracker = null;
-                var watch = System.Diagnostics.Stopwatch.StartNew();
-                for (int frame = 0; frame < 3000 && watch.Elapsed.TotalSeconds < 30; frame++)
-                {
-                    if (!mode.Current || !Cleanup2NoNarrativeOverlay()) throw new InvalidOperationException("Native Default or narrative-free state lost while entering combat.");
-                    game.IsPaused = false;
-                    tracker = R3TrackerState(units);
-                    if ((bool)tracker["passed"] && game.TurnBasedCombatController.CurrentTurn != null) break;
-                    yield return 0;
-                }
-                record["trackerBeforePause"] = tracker;
-                if (tracker == null || !(bool)tracker["passed"])
-                {
-                    Sprint25Check(prefix + "tracker-rendered", false, tracker ?? new JObject(), "All seven representatives render their own portraits in the native initiative tracker.");
-                    throw new InvalidOperationException("Native initiative tracker did not render every representative portrait.");
-                }
-                game.IsPaused = true;
-                for (int frame = 0; frame < 30; frame++) yield return 0;
-                Func<bool> trackerOwned = () => mode.Current && Cleanup2NoNarrativeOverlay() && game.IsPaused &&
-                    !ui.DescriptionController.DescWindow.gameObject.activeInHierarchy && (bool)R3TrackerState(units)["passed"];
-                tracker = R3TrackerState(units);
-                Sprint25Check(prefix + "tracker-rendered", (bool)tracker["passed"] && trackerOwned(), (JObject)tracker.DeepClone(),
-                    "All seven representatives render their own portraits in visible native initiative-tracker views (or the visible current-unit view).");
+                // 3a. Native description windows for the live Ability facts,
+                // before combat entry. Ownership gates each capture; content is
+                // assessed after it, and a content FAIL is kept and reported
+                // while independent owned surfaces continue.
                 screens = new NativeIconScreenEvidence(_request);
-                foreach (int frame in screens.Capture("r3-initiative-tracker", tracker, trackerOwned)) yield return frame;
-                captures.Add(tracker);
-
                 var targets = new[] {
                     new R3DescriptionTarget { Label = "lantern-light-ray", Creature = "lantern-archon", Blueprint = light,
                         Duration = R3Text(light.LocalizedDuration), SavingThrow = R3Text(light.LocalizedSavingThrow) },
@@ -419,6 +441,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new R3DescriptionTarget { Label = "brachiosaurus-trample", Creature = "brachiosaurus", Blueprint = trample, Duration = "", SavingThrow = trampleSave },
                     new R3DescriptionTarget { Label = "cheetah-sprint", Creature = "cheetah", Blueprint = sprint, Duration = "1 round", SavingThrow = "None" },
                     new R3DescriptionTarget { Label = "trumpet-blast", Creature = "trumpet-archon", Blueprint = blast, Duration = "1d4 rounds", SavingThrow = "Fortitude negates" } };
+                var descriptionResults = new JArray();
                 foreach (var target in targets)
                 {
                     UnitEntityData unit = units[target.Creature];
@@ -428,25 +451,142 @@ namespace KingmakerGunslinger.RuntimeTesting
                         throw new InvalidOperationException("A foreign description window or hover is open.");
                     var data = new TooltipData { Ability = fact };
                     ui.DescriptionController.HandleOpenDescription(data); openDescription = data;
-                    JObject card = null;
-                    var layout = System.Diagnostics.Stopwatch.StartNew();
-                    for (int frame = 0; frame < 600 && layout.Elapsed.TotalSeconds < 8; frame++)
+                    var settle = System.Diagnostics.Stopwatch.StartNew();
+                    for (int frame = 0; frame < 600 && settle.Elapsed.TotalSeconds < 8 && !R3DescriptionOwned(mode, fact, data); frame++)
                     {
-                        if (!mode.Current || !Cleanup2NoNarrativeOverlay()) throw new InvalidOperationException("Native Default lost during description layout.");
-                        card = R3DescriptionCard(target, fact, data);
-                        if ((bool)card["passed"]) break;
+                        if (!mode.Current || !Cleanup2NoNarrativeOverlay()) throw new InvalidOperationException("Native Default lost while opening a description.");
                         yield return 0;
                     }
-                    Sprint25Check(prefix + "render-" + target.Label, card != null && (bool)card["passed"], card ?? new JObject(),
-                        "The native description window for the live Ability fact renders its name, description, visible icon, and exactly the intended Duration/Saving Throw rows (omitted when empty), with no <null> or inherited native overrun text.");
-                    if (card == null || !(bool)card["passed"]) throw new InvalidOperationException("Rendered description failed: " + target.Label);
-                    foreach (int frame in screens.Capture("r3-description-" + target.Label, card, () => mode.Current &&
-                        Cleanup2NoNarrativeOverlay() && game.IsPaused && (bool)R3DescriptionCard(target, fact, data)["passed"])) yield return frame;
-                    captures.Add(card);
-                    ui.DescriptionController.HandleCloseDescriptionWindow(window); openDescription = null;
+                    if (!R3DescriptionOwned(mode, fact, data)) throw new InvalidOperationException("Exact owned description window did not become visible: " + target.Label);
+                    for (int frame = 0; frame < 20; frame++) yield return 0;
+                    Func<bool> owns = () => R3DescriptionOwned(mode, fact, data);
+                    JObject card = R3DescriptionCard(target);
+                    foreach (int frame in screens.Capture("r3-description-" + target.Label, card, owns)) yield return frame;
+                    card = R3DescriptionCard(target);
+                    JObject scrolled = null;
+                    bool rowsVisible = (bool)card["rowsVisible"];
+                    if (!rowsVisible && window.Scroll != null && window.Scroll.isActiveAndEnabled)
+                    {
+                        // Supported owned-window interaction: the window's own
+                        // ScrollRect shows the remaining rows at normal scale.
+                        window.Scroll.verticalNormalizedPosition = 0f;
+                        for (int frame = 0; frame < 15; frame++) { if (!owns()) throw new InvalidOperationException("Description ownership lost while scrolling."); yield return 0; }
+                        scrolled = R3DescriptionCard(target);
+                        foreach (int frame in screens.Capture("r3-description-" + target.Label + "-scrolled", scrolled, owns)) yield return frame;
+                        scrolled = R3DescriptionCard(target);
+                        rowsVisible = (bool)scrolled["rowsVisible"] ||
+                            (bool)card["duration"]["visible"] && (bool)scrolled["savingThrow"]["visible"] ||
+                            (bool)scrolled["duration"]["visible"] && (bool)card["savingThrow"]["visible"];
+                        window.Scroll.verticalNormalizedPosition = 1f;
+                    }
+                    bool passed = (bool)card["contentCorrect"] && rowsVisible;
+                    var result = new JObject { ["card"] = card, ["scrolled"] = scrolled, ["rowsVisibleInACapture"] = rowsVisible, ["passed"] = passed };
+                    descriptionResults.Add(result); captures.Add(card);
+                    Sprint25Check(prefix + "render-" + target.Label, passed, (JObject)result.DeepClone(),
+                        "Captured native description window for the live Ability fact shows its name, description and visible icon, and exactly the intended Duration/Saving Throw rows (bound title->value bricks; omitted when empty), unclipped and visible in a capture, with no <null> or inherited native overrun text.");
+                    ui.DescriptionController.HandleCloseDescriptionWindow(window);
                     for (int frame = 0; frame < 120 && window.gameObject.activeInHierarchy; frame++) yield return 0;
                     if (window.gameObject.activeInHierarchy) throw new InvalidOperationException("Native description window did not close.");
+                    openDescription = null;
                 }
+                record["descriptions"] = descriptionResults;
+
+                // 3b. Native tracker in owned turn-based combat. The only
+                // directly controllable participant is the owned quiet anchor;
+                // its turn natively waits for input, which is the stable
+                // capture state. Non-controllable idle turns end natively.
+                bool anchorOwned = anchor != null && !anchor.Destroyed && _summoningProfileActor != null &&
+                    ReferenceEquals(anchor.Blueprint, _summoningProfileActor) && game.Player.Party.Count == 1 &&
+                    ReferenceEquals(game.Player.Party.First(), anchor) && !anchor.IsBrainActive && anchor.Commands.Empty &&
+                    anchor.IsDirectlyControllable && !anchor.IsInCombat;
+                Sprint25Check(prefix + "anchor-waiting-owner", anchorOwned, new JObject { ["anchor"] = anchor == null ? null : anchor.UniqueId,
+                    ["profileActor"] = anchor != null && ReferenceEquals(anchor.Blueprint, _summoningProfileActor),
+                    ["onlyPartyMember"] = game.Player.Party.Count == 1, ["brainQuiet"] = anchor != null && !anchor.IsBrainActive,
+                    ["directlyControllable"] = anchor != null && anchor.IsDirectlyControllable, ["commandsEmpty"] = anchor != null && anchor.Commands.Empty },
+                    "The exact owned quiet profile anchor is the only party member, idle, brain-quiet and directly controllable before it enrolls in the owned combat.");
+                if (!anchorOwned) throw new InvalidOperationException("Exact owned waiting anchor not proven.");
+                selectionBefore = ui.SelectionManagerPC.SelectedUnits.ToArray();
+                if (tutorial == null) throw new InvalidOperationException("Native turn tutorial flag absent.");
+                tutorial.Unlock(); tutorialTouched = true;
+                SettingsRoot.Instance.PauseOnEngagement.CurrentValue = false;
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = true;
+                game.TurnBasedCombatController.Activate(); combatOwned = true;
+                var hostile = fixture.Hostile;
+                PlaceExpandedSummoningUnit(hostile, ObstacleAnalyzer.GetNearestNode(centre + Vector3.back * 9f).clampedPosition);
+                var disposables = owned.Concat(new[] { fixture.Caster, hostile }).ToArray();
+                var fighters = owned.Concat(new[] { fixture.Caster, anchor }).ToArray();
+                hostile.Wake(0f); if (!game.State.AwakeUnits.Contains(hostile)) game.State.AwakeUnits.Add(hostile);
+                foreach (var unit in fighters)
+                {
+                    unit.Wake(0f); if (!game.State.AwakeUnits.Contains(unit)) game.State.AwakeUnits.Add(unit);
+                    unit.Memory.Add(hostile); hostile.Memory.Add(unit);
+                }
+                // The native join controller owns the party combat edge and
+                // turn-order initialization (performance-combat seam).
+                foreach (var unit in fighters) unit.JoinCombat();
+                hostile.JoinCombat(); anchorEnrolled = true;
+                var known = new HashSet<UnitEntityData>(disposables.Concat(new[] { anchor }));
+                var advances = new JArray();
+                TurnBased.Controllers.TurnController waiting = null, stuck = null;
+                var stuckClock = new System.Diagnostics.Stopwatch();
+                int stable = 0;
+                JObject seen = null;
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                for (int frame = 0; frame < 4500 && watch.Elapsed.TotalSeconds < 45 && stable < 60; frame++)
+                {
+                    if (!mode.Current || !Cleanup2NoNarrativeOverlay()) throw new InvalidOperationException("Native Default or narrative-free state lost in combat.");
+                    game.IsPaused = false;
+                    var turn = game.TurnBasedCombatController.CurrentTurn;
+                    if (turn != null && !known.Contains(turn.Unit)) throw new InvalidOperationException("Foreign participant entered the owned turn order.");
+                    bool anchorWaits = turn != null && ReferenceEquals(turn.Unit, anchor) && anchor.Commands.Empty && anchor.IsDirectlyControllable &&
+                        (turn.Status == TurnBased.Controllers.TurnController.TurnStatus.Preparing ||
+                         turn.Status == TurnBased.Controllers.TurnController.TurnStatus.Acting);
+                    if (anchorWaits) { if (ReferenceEquals(turn, waiting)) stable++; else { waiting = turn; stable = 0; } }
+                    else
+                    {
+                        waiting = null; stable = 0;
+                        // Fallback seam only for a known idle disposable turn the
+                        // native idle-AI end has not closed within 8 s.
+                        if (turn != null && disposables.Contains(turn.Unit) && turn.Status == TurnBased.Controllers.TurnController.TurnStatus.Acting &&
+                            turn.Unit.Commands.Empty && turn.Unit.Commands.Queue.Count == 0 && !turn.Unit.IsBrainActive && turn.CanEndTurnAndNoActing())
+                        {
+                            if (!ReferenceEquals(turn, stuck)) { stuck = turn; stuckClock.Reset(); stuckClock.Start(); }
+                            else if (stuckClock.Elapsed.TotalSeconds > 8)
+                            {
+                                advances.Add(new JObject { ["unit"] = turn.Unit.UniqueId, ["round"] = game.TurnBasedCombatController.RoundNumber });
+                                EndSprint17SnakeTurn(turn); stuck = null;
+                            }
+                        }
+                    }
+                    if (frame % 30 == 0) seen = R3TrackerState(units);
+                    yield return 0;
+                }
+                record["fixtureTurnAdvances"] = advances; record["trackerBeforeCapture"] = seen;
+                if (stable < 60)
+                {
+                    Sprint25Check(prefix + "tracker-waiting-turn", false, new JObject { ["stableFrames"] = stable, ["advances"] = advances, ["last"] = seen },
+                        "The owned anchor's input-waiting turn is reached and stable before the tracker capture.");
+                    throw new InvalidOperationException("Stable owned waiting turn not reached.");
+                }
+                var waitTurn = waiting;
+                Func<bool> trackerOwned = () => mode.Current && Cleanup2NoNarrativeOverlay() &&
+                    ReferenceEquals(game.TurnBasedCombatController.CurrentTurn, waitTurn) && anchor.Commands.Empty &&
+                    (waitTurn.Status == TurnBased.Controllers.TurnController.TurnStatus.Preparing ||
+                     waitTurn.Status == TurnBased.Controllers.TurnController.TurnStatus.Acting) &&
+                    !ui.DescriptionController.DescWindow.gameObject.activeInHierarchy &&
+                    UnityEngine.Object.FindObjectsOfType<InitiativeTrackerUnitOrderHorizontalPCView>().Any(view => view != null && view.isActiveAndEnabled);
+                JObject tracker = R3TrackerState(units);
+                foreach (int frame in screens.Capture("r3-initiative-tracker", tracker, trackerOwned)) yield return frame;
+                tracker = R3TrackerState(units);
+                captures.Add(tracker);
+                var coveredKeys = ((JArray)tracker["covered"]).Select(value => (string)value).ToArray();
+                bool animal = coveredKeys.Any(key => key == "dire-rat" || key == "cheetah" || key == "brachiosaurus");
+                bool lantern = coveredKeys.Contains("lantern-archon");
+                bool outsider = coveredKeys.Any(key => key == "ghaele-azata" || key == "nalfeshnee" || key == "trumpet-archon");
+                Sprint25Check(prefix + "tracker-representative-coverage", (int)tracker["wrongVisible"] == 0 && animal && lantern && outsider,
+                    new JObject { ["tracker"] = tracker, ["animal"] = animal, ["lanternArchon"] = lantern, ["outsider"] = outsider,
+                        ["waitingTurn"] = anchor.UniqueId },
+                    "The captured native tracker shows, in visible portrait zones bound to the exact units, a representative animal, the Lantern Archon and an outsider with their own portraits, and no visible representative zone shows another picture. Units outside the visible list are outside this capture's coverage.");
                 record["captures"] = captures;
             }
             finally
@@ -460,7 +600,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     });
                 restore("screens", () => screens?.Dispose());
                 restore("combat", () => {
-                    foreach (UnitEntityData unit in owned.Concat(new[] { fixture.Hostile, fixture.Caster })
+                    foreach (UnitEntityData unit in owned.Concat(new[] { fixture.Hostile, fixture.Caster, anchorEnrolled ? anchor : null })
                         .Where(value => value != null && !value.Destroyed))
                     {
                         unit.Commands.InterruptAll(command => true); unit.Commands.RemoveFinishedAndUpdateQueue();
@@ -473,6 +613,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode; game.TurnBasedCombatController.Activate(); }
                 });
                 restore("tutorial", () => { if (tutorialTouched && tutorialLocked) tutorial.Lock(); });
+                restore("selection", () => {
+                    if (selectionBefore != null && !ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selectionBefore))
+                        ui.SelectionManagerPC.MultiSelect(selectionBefore.Where(value => value != null && value.View != null)
+                            .Select(value => value.View).ToArray(), false);
+                });
                 bool flagsRestored = flagsBefore.OrderBy(value => value.Key.AssetGuid, StringComparer.Ordinal)
                     .SequenceEqual(game.Player.UnlockableFlags.UnlockedFlags.OrderBy(value => value.Key.AssetGuid, StringComparer.Ordinal));
                 game.IsPaused = oldPause;
@@ -480,8 +625,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PlaceExpandedSummoningUnit(fixture.Caster, centre);
                 DisposeExpandedSummoningUnits(fixture.Created, owned.Where(value => !value.Destroyed).ToArray());
                 Sprint25Check(prefix + "owned-ui-restored", errors.Count == 0 && flagsRestored &&
+                    (selectionBefore == null || ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selectionBefore)) &&
                     !ui.DescriptionController.DescWindow.gameObject.activeInHierarchy,
                     new JObject { ["errors"] = errors, ["flagsRestored"] = flagsRestored, ["tutorialInitiallyLocked"] = tutorialLocked,
+                        ["selectionRestored"] = selectionBefore == null || ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selectionBefore),
+                        ["anchorOutOfCombat"] = anchor == null || !anchor.IsInCombat,
                         ["anchorUnchanged"] = anchor == null || ReferenceEquals(game.Player.MainCharacter.Value, anchor) },
                     "Owned description window, combat, turn mode, engagement pause, tutorial flag and pause restore exactly.");
                 record["captures"] = captures; record["restoreErrors"] = errors;
