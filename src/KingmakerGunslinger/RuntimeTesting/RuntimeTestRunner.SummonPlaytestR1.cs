@@ -12,6 +12,7 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.ActivatableAbilities;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.View;
 using KingmakerGunslinger.Blueprints;
@@ -34,20 +35,40 @@ namespace KingmakerGunslinger.RuntimeTesting
         //  2. Fresh summons cast through their ordinary own-tier children: the
         //     withdrawn grants, resources and brain actions are absent; the
         //     retained abilities, Wall source lifetime and Storm Giant control
-        //     are present, including ProperFlanking2's toggle when installed.
+        //     are present. With ProperFlanking2 active, the exact Improved
+        //     Sunder chain is resolved (toggle and replacement buff) and the
+        //     toggle's presence, on and running state and the buff's presence
+        //     and activity are read separately; the Storm Giant's buff must be
+        //     observed active within a bounded wait.
         //  3. The real SummonWithdrawnCapabilityFixer on an induced pre-R1 state.
         //     Adding the withdrawn facts/actions to a fresh summon is a disclosed
-        //     fixture precondition, not a cold load of an older save.
+        //     fixture precondition, not a cold load of an older save, and does
+        //     not exercise native once-per-unit fixer bookkeeping. The induced
+        //     Fire Giant's replacement buff must be observed active before the
+        //     fixer and absent after it; retained capabilities are re-read from
+        //     the live units after reconciliation.
         // Brains are inactive throughout; nothing is cast by a summon, no input,
         // no save and no setting is changed.
         private static readonly string[] SummonPlaytestR1Keys =
         { "bone-devil", "ice-devil", "magma-mephit", "lillend-azata", "fire-giant", "storm-giant" };
         // The toggle installed ProperFlanking2 actually grants through Improved
-        // Sunder's AddFacts (blueprints.txt: SunderActionToggleAbility). The
+        // Sunder's AddFacts (blueprints.txt: SunderActionToggleAbility) and the
+        // attack-replacement buff that toggle applies while running
+        // (SunderActionToggleBuff, AttackReplacementWithCombatManeuver). The
         // first R1 run used a0808193..., PF2's never-granted save-cleanup dummy
-        // SunderArmorToggleAbility; that run's two FAILs are retained with a
-        // reader-only re-evaluation from its directly recorded grants.
+        // SunderArmorToggleAbility, for both the toggle and its buff; that
+        // run's two FAILs are retained with a reader-only re-evaluation.
         private const string ProperFlankingSunderToggleGuid = "d9604eade0f54d88a899b5052f98d536";
+        private const string ProperFlankingSunderToggleName = "SunderActionToggleAbility";
+        private const string ProperFlankingSunderBuffGuid = "f9f7edc1148c453181460dccbbefa3dc";
+        private const string ProperFlankingSunderBuffName = "SunderActionToggleBuff";
+        private const string ProperFlankingReplacementComponent =
+            "ProperFlanking20.ManeuverAsAttack.AttackReplacementWithCombatManeuver";
+        // Bounded waits for a live native condition. A running toggle's buff is
+        // applied by the native activatable controller, and Stop may remove it
+        // after up to one round, so both directions wait for the observed state.
+        private const int SummonPlaytestR1WaitFrames = 900;
+        private const double SummonPlaytestR1WaitGameSeconds = 8.0;
 
         private IEnumerable<int> ReviewSummonPlaytestCutsR1(ExpandedSummoningCorrectionFixture fixture, string phase)
         {
@@ -124,19 +145,79 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Vector3.forward * 5f;
                     PlaceExpandedSummoningUnit(owner, ObstacleAnalyzer.GetNearestNode(centre + offset).clampedPosition);
                 }
-                // Let default-on toggles (ProperFlanking2) and fact activation settle.
+                // Let fact activation settle.
                 for (int frame = 0; frame < 10; frame++) { Game.Instance.IsPaused = false; yield return 0; }
 
-                var bodies = new JObject();
-                record["fresh"] = bodies;
-                foreach (string key in SummonPlaytestR1Keys) bodies[key] = SummonPlaytestR1Snapshot(byKey[key]);
-
+                // The installed Improved Sunder grant chain, resolved exactly.
                 var sunder = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
                     SummonPlaytestWithdrawalPolicy.NativeImprovedSunderGuid, "native Improved Sunder");
                 BlueprintUnitFact[] sunderGrants = sunder.GetComponents<AddFacts>()
                     .SelectMany(value => value.Facts ?? new BlueprintUnitFact[0]).Where(value => value != null).ToArray();
+                JObject properFlanking2 = InfernalProperFlanking2State35();
+                bool pf2Active = properFlanking2.Value<bool?>("modActive") == true;
                 var toggle = ResourcesLibrary.TryGetBlueprint<BlueprintActivatableAbility>(ProperFlankingSunderToggleGuid);
-                record["properFlanking2SunderToggleInstalled"] = toggle != null;
+                var replacementBuff = ResourcesLibrary.TryGetBlueprint<BlueprintBuff>(ProperFlankingSunderBuffGuid);
+                bool toggleGranted = toggle != null && sunderGrants.Any(value => ReferenceEquals(value, toggle));
+                bool replacementComponent = replacementBuff != null && replacementBuff.ComponentsArray != null &&
+                    replacementBuff.ComponentsArray.Any(value => value != null &&
+                        value.GetType().FullName == ProperFlankingReplacementComponent);
+                bool chainExact = toggle != null && replacementBuff != null &&
+                    toggle.name == ProperFlankingSunderToggleName && replacementBuff.name == ProperFlankingSunderBuffName &&
+                    ReferenceEquals(toggle.Buff, replacementBuff) && toggle.IsOnByDefault && toggleGranted && replacementComponent;
+                string chainStatus = !pf2Active
+                    ? (toggle == null && replacementBuff == null && !toggleGranted ? "provider-inactive" : "provider-inactive-identities-present")
+                    : chainExact ? "provider-active-exact" : "provider-active-identity-mismatch";
+                bool observeChain = chainStatus == "provider-active-exact";
+                BlueprintUnitFact[] sunderActions = sunderGrants.Where(value => !ReferenceEquals(value, toggle)).ToArray();
+                record["sunderChain"] = new JObject {
+                    ["status"] = chainStatus, ["properFlanking2Active"] = pf2Active, ["properFlanking2"] = properFlanking2,
+                    ["improvedSunder"] = new JObject { ["guid"] = sunder.AssetGuid, ["name"] = sunder.name },
+                    ["grants"] = new JArray(sunderGrants.Select(value => new JObject { ["guid"] = value.AssetGuid, ["name"] = value.name })),
+                    ["toggle"] = new JObject { ["guid"] = ProperFlankingSunderToggleGuid, ["resolved"] = toggle != null,
+                        ["name"] = toggle?.name, ["isOnByDefault"] = toggle != null && toggle.IsOnByDefault,
+                        ["grantedByImprovedSunder"] = toggleGranted, ["buffGuid"] = toggle?.Buff?.AssetGuid },
+                    ["replacementBuff"] = new JObject { ["guid"] = ProperFlankingSunderBuffGuid, ["resolved"] = replacementBuff != null,
+                        ["name"] = replacementBuff?.name, ["replacementComponent"] = replacementComponent },
+                    ["dependentActions"] = new JArray(sunderActions.Select(value => value.name)) };
+                Sprint25Check(prefix + "sunder-chain-identities", observeChain || chainStatus == "provider-inactive",
+                    (JObject)record["sunderChain"].DeepClone(),
+                    "With ProperFlanking2 active, Improved Sunder grants SunderActionToggleAbility, which is default-on and applies SunderActionToggleBuff carrying AttackReplacementWithCombatManeuver. An inactive provider is recorded as not observed; an active provider with a missing or different identity fails.");
+
+                // Separate readings: toggle present, switched on, running; buff present, active.
+                Func<UnitEntityData, JObject> sunderState = unit =>
+                {
+                    ActivatableAbility live = toggle == null ? null : unit.Descriptor.ActivatableAbilities.Enumerable
+                        .FirstOrDefault(value => ReferenceEquals(value.Blueprint, toggle));
+                    Kingmaker.UnitLogic.Buffs.Buff[] buffs = replacementBuff == null ? new Kingmaker.UnitLogic.Buffs.Buff[0] :
+                        unit.Descriptor.Buffs.Enumerable.Where(value => ReferenceEquals(value.Blueprint, replacementBuff)).ToArray();
+                    return new JObject {
+                        ["improvedSunder"] = unit.Descriptor.HasFact(sunder),
+                        ["dependentActions"] = sunderActions.Count(value => unit.Descriptor.HasFact(value)),
+                        ["togglePresent"] = live != null, ["toggleOn"] = live != null && live.IsOn,
+                        ["toggleRunning"] = live != null && live.IsRunning, ["toggleAvailable"] = live != null && live.IsAvailable,
+                        ["replacementBuffPresent"] = buffs.Length, ["replacementBuffActive"] = buffs.Count(value => value.Active && !value.IsSuppressed),
+                        ["gameSeconds"] = Game.Instance.TimeController.GameTime.TotalSeconds };
+                };
+                Func<JObject, bool> chainLive = state => state.Value<bool>("improvedSunder") &&
+                    state.Value<int>("dependentActions") == sunderActions.Length && state.Value<bool>("togglePresent") &&
+                    state.Value<bool>("toggleOn") && state.Value<bool>("toggleRunning") && state.Value<int>("replacementBuffActive") >= 1;
+                Func<JObject, bool> chainGone = state => !state.Value<bool>("improvedSunder") &&
+                    state.Value<int>("dependentActions") == 0 && !state.Value<bool>("togglePresent") &&
+                    state.Value<int>("replacementBuffPresent") == 0;
+
+                // Storm Giant positive control: wait for the default-on toggle to run.
+                UnitEntityData stormControl = byKey["storm-giant"];
+                TimeSpan stormWaitStart = Game.Instance.TimeController.GameTime;
+                int stormFrames = 0;
+                while (observeChain && !chainLive(sunderState(stormControl)) && stormFrames < SummonPlaytestR1WaitFrames &&
+                    (Game.Instance.TimeController.GameTime - stormWaitStart).TotalSeconds < SummonPlaytestR1WaitGameSeconds)
+                { Game.Instance.IsPaused = false; stormFrames++; yield return 0; }
+                record["stormControlWait"] = new JObject { ["frames"] = stormFrames,
+                    ["gameSeconds"] = (Game.Instance.TimeController.GameTime - stormWaitStart).TotalSeconds };
+
+                var bodies = new JObject();
+                record["fresh"] = bodies;
+                foreach (string key in SummonPlaytestR1Keys) bodies[key] = SummonPlaytestR1Snapshot(byKey[key], replacementBuff);
                 record["improvedSunderGrants"] = new JArray(sunderGrants.Select(value => value.name));
 
                 foreach (WithdrawnCapabilitySpec spec in SummonPlaytestWithdrawalPolicy.All)
@@ -187,46 +268,52 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (JObject)bodies["magma-mephit"].DeepClone(), "Magma Mephit keeps its breath and Pyrotechnics with resource and AI.");
                 var lillendBook = (BlueprintSpellbook)registered("KMG.Summoning.FeyCelestial.LillendAzata.Spellbook");
                 var lillendSuggestion = (BlueprintAbility)registered("KMG.Summoning.FeyCelestial.LillendAzata.Suggestion");
-                var book = lillendBook == null ? null : SummonPlaytestR1Book(lillend, lillendBook);
-                bool providerActive = Sprint32Suggestion.Active;
-                bool suggestionKnown = book != null && book.GetKnownSpells(2).Any(value => ReferenceEquals(value.Blueprint, lillendSuggestion));
-                bool suggestionListed = lillendBook != null && lillendBook.SpellList.SpellsByLevel.Any(level =>
-                    level.SpellLevel == 2 && level.Spells.Contains(lillendSuggestion));
-                var dispatcher = LillendNoncombat32.Find(lillend);
-                bool performances = new[] { "Courage", "Competence", "Fascinate" }.All(name =>
-                    lillend.Descriptor.ActivatableAbilities.Enumerable.Any(value =>
-                        ReferenceEquals(value.Blueprint, registered("KMG.Summoning.FeyCelestial.LillendAzata." + name))));
-                var lillendRow = new JObject { ["providerActive"] = providerActive, ["spellbook"] = book != null,
-                    ["suggestionListed"] = suggestionListed, ["suggestionKnown"] = suggestionKnown,
-                    ["dispatcher"] = dispatcher != null, ["dispatcherBardicRoute"] = dispatcher?.BardicSuggestion?.name,
-                    ["performances"] = performances };
+                bool suggestionProviderActive = Sprint32Suggestion.Active;
+                // Read from the live unit each time it is called.
+                Func<JObject> lillendState = () =>
+                {
+                    var book = lillendBook == null ? null : SummonPlaytestR1Book(lillend, lillendBook);
+                    bool suggestionKnown = book != null && book.GetKnownSpells(2).Any(value => ReferenceEquals(value.Blueprint, lillendSuggestion));
+                    bool suggestionListed = lillendBook != null && lillendBook.SpellList.SpellsByLevel.Any(level =>
+                        level.SpellLevel == 2 && level.Spells.Contains(lillendSuggestion));
+                    var dispatcher = LillendNoncombat32.Find(lillend);
+                    var performanceRows = new JObject();
+                    foreach (string name in new[] { "Courage", "Competence", "Fascinate" })
+                        performanceRows[name] = lillend.Descriptor.ActivatableAbilities.Enumerable.Any(value =>
+                            ReferenceEquals(value.Blueprint, registered("KMG.Summoning.FeyCelestial.LillendAzata." + name)));
+                    bool performances = performanceRows.Properties().All(value => value.Value.Value<bool>());
+                    bool bardicFact = lillend.Descriptor.HasFact((BlueprintUnitFact)registered("KMG.Summoning.FeyCelestial.LillendAzata.BardicSuggestion"));
+                    bool retained = book != null && dispatcher != null && dispatcher.BardicSuggestion == null && performances &&
+                        !bardicFact && (!suggestionProviderActive || (suggestionListed && suggestionKnown));
+                    return new JObject { ["suggestionProviderActive"] = suggestionProviderActive,
+                        ["suggestionObservation"] = suggestionProviderActive ? "observed" : "provider inactive / not observed",
+                        ["spellbook"] = book != null, ["suggestionListed"] = suggestionListed, ["suggestionKnown"] = suggestionKnown,
+                        ["dispatcher"] = dispatcher != null, ["dispatcherBardicRoute"] = dispatcher?.BardicSuggestion?.name,
+                        ["bardicSuggestionFact"] = bardicFact, ["performances"] = performanceRows, ["retained"] = retained };
+                };
+                JObject lillendRow = lillendState();
                 record["lillend"] = lillendRow;
                 Sprint25Check(prefix + "lillend-retains-suggestion-spell-and-performances",
-                    book != null && dispatcher != null && dispatcher.BardicSuggestion == null && performances &&
-                    (!providerActive || (suggestionListed && suggestionKnown)), (JObject)lillendRow.DeepClone(),
+                    lillendRow.Value<bool>("retained"), (JObject)lillendRow.DeepClone(),
                     "Lillend keeps its spellbook, the provider-gated Suggestion spell when its provider is active, and its three performances; the noncombat route has no bardic target.");
                 var cleave = (BlueprintUnitFact)registered("KMG.Summoning.Giant.CleaveAction");
                 var greatCleave = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
                     "cc9c862ef2e03af4f89be5088851ea35", "native Great Cleave");
-                Func<UnitEntityData, bool> toggleOn = unit => toggle != null &&
-                    unit.Descriptor.ActivatableAbilities.Enumerable.Any(value => ReferenceEquals(value.Blueprint, toggle));
-                Func<UnitEntityData, bool> toggleBuff = unit => toggle != null && toggle.Buff != null &&
-                    unit.Descriptor.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, toggle.Buff));
+                JObject fireFresh = sunderState(fire), stormFresh = sunderState(storm);
                 var giants = new JObject {
-                    ["fireImprovedSunder"] = fire.Descriptor.HasFact(sunder), ["fireSunderGrants"] = sunderGrants.Count(value => fire.Descriptor.HasFact(value)),
-                    ["fireToggle"] = toggleOn(fire), ["fireToggleBuff"] = toggleBuff(fire),
+                    ["fire"] = fireFresh, ["storm"] = stormFresh,
                     ["fireGreatCleave"] = fire.Descriptor.HasFact(greatCleave), ["fireCleaveAction"] = fire.Descriptor.HasFact(cleave),
                     ["firePrimaryWeapon"] = fire.Body.PrimaryHand.MaybeWeapon?.Blueprint?.name,
-                    ["stormImprovedSunder"] = storm.Descriptor.HasFact(sunder), ["stormSunderGrants"] = sunderGrants.Count(value => storm.Descriptor.HasFact(value)),
-                    ["stormToggle"] = toggleOn(storm), ["stormToggleBuff"] = toggleBuff(storm) };
+                    ["stormPrimaryWeapon"] = storm.Body.PrimaryHand.MaybeWeapon?.Blueprint?.name,
+                    ["chainStatus"] = chainStatus };
                 record["giants"] = giants;
+                bool stormKeeps = stormFresh.Value<bool>("improvedSunder") &&
+                    stormFresh.Value<int>("dependentActions") == sunderActions.Length &&
+                    (observeChain ? chainLive(stormFresh) : chainStatus == "provider-inactive");
                 Sprint25Check(prefix + "fire-giant-no-sunder-source-storm-keeps-it",
-                    !fire.Descriptor.HasFact(sunder) && sunderGrants.All(value => !fire.Descriptor.HasFact(value)) &&
-                    !toggleOn(fire) && !toggleBuff(fire) && fire.Descriptor.HasFact(greatCleave) &&
-                    fire.Body.PrimaryHand.MaybeWeapon != null &&
-                    storm.Descriptor.HasFact(sunder) && sunderGrants.All(value => storm.Descriptor.HasFact(value)) &&
-                    (toggle == null || toggleOn(storm)), (JObject)giants.DeepClone(),
-                    "Fire Giant has no Improved Sunder, no Sunder Armor action and no ProperFlanking2 replacement toggle, and keeps Great Cleave and its weapon; Storm Giant keeps all of them.");
+                    chainGone(fireFresh) && fire.Descriptor.HasFact(greatCleave) && fire.Body.PrimaryHand.MaybeWeapon != null &&
+                    stormKeeps, (JObject)giants.DeepClone(),
+                    "Fire Giant has no Improved Sunder, Sunder action, SunderActionToggleAbility or SunderActionToggleBuff, and keeps Great Cleave and its weapon; Storm Giant keeps the feat and action, and its default-on toggle runs with an active SunderActionToggleBuff.");
 
                 // 3. The load fixer on an induced pre-R1 state.
                 var induced = new JObject();
@@ -245,9 +332,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         owner.Descriptor.Resources.Add(registered(symbol), true);
                 }
                 for (int frame = 0; frame < 5; frame++) { Game.Instance.IsPaused = false; yield return 0; }
-                var fireInduced = new JObject { ["improvedSunder"] = fire.Descriptor.HasFact(sunder),
-                    ["sunderGrants"] = sunderGrants.Count(value => fire.Descriptor.HasFact(value)), ["toggle"] = toggleOn(fire) };
+                // The induced feat must actually bring a running toggle and an
+                // active replacement buff before the fixer is called.
+                TimeSpan fireWaitStart = Game.Instance.TimeController.GameTime;
+                int fireFrames = 0;
+                while (observeChain && !chainLive(sunderState(fire)) && fireFrames < SummonPlaytestR1WaitFrames &&
+                    (Game.Instance.TimeController.GameTime - fireWaitStart).TotalSeconds < SummonPlaytestR1WaitGameSeconds)
+                { Game.Instance.IsPaused = false; fireFrames++; yield return 0; }
+                JObject fireInduced = sunderState(fire);
                 induced["fireBeforeFixer"] = fireInduced;
+                induced["fireBeforeFixerWait"] = new JObject { ["frames"] = fireFrames,
+                    ["gameSeconds"] = (Game.Instance.TimeController.GameTime - fireWaitStart).TotalSeconds };
+                induced["fireBeforeFixerSnapshot"] = SummonPlaytestR1Snapshot(fire, replacementBuff);
                 // Negative: another creature's fixer never touches this unit.
                 var boneFixer = bone.Blueprint.GetComponents<SummonWithdrawnCapabilityFixer>().Single();
                 boneFixer.OnPostLoad(ice.Descriptor);
@@ -261,32 +357,63 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnitEntityData owner = byKey[spec.CreatureKey];
                     owner.Blueprint.GetComponents<SummonWithdrawnCapabilityFixer>().Single().OnPostLoad(owner.Descriptor);
                 }
+                JObject fireAfterImmediate = sunderState(fire);
                 for (int frame = 0; frame < 5; frame++) { Game.Instance.IsPaused = false; yield return 0; }
+                // Native Stop may remove a running toggle's buff after up to one
+                // round; wait boundedly for the observed removal.
+                TimeSpan removalWaitStart = Game.Instance.TimeController.GameTime;
+                int removalFrames = 0;
+                while (observeChain && !chainGone(sunderState(fire)) && removalFrames < SummonPlaytestR1WaitFrames &&
+                    (Game.Instance.TimeController.GameTime - removalWaitStart).TotalSeconds < SummonPlaytestR1WaitGameSeconds)
+                { Game.Instance.IsPaused = false; removalFrames++; yield return 0; }
+                JObject fireAfter = sunderState(fire), stormAfter = sunderState(storm);
+                induced["fireAfterFixerImmediate"] = fireAfterImmediate;
+                induced["fireAfterFixer"] = fireAfter;
+                induced["fireAfterFixerWait"] = new JObject { ["frames"] = removalFrames,
+                    ["gameSeconds"] = (Game.Instance.TimeController.GameTime - removalWaitStart).TotalSeconds };
+                induced["stormAfterFixer"] = stormAfter;
                 foreach (WithdrawnCapabilitySpec spec in SummonPlaytestWithdrawalPolicy.All)
                 {
                     UnitEntityData owner = byKey[spec.CreatureKey];
                     bool retired = withdrawnFacts(owner, spec).All(value => !owner.Descriptor.HasFact(value)) &&
                         spec.AiActionSymbols.All(symbol => !brainHas(owner, symbol)) &&
                         spec.ResourceSymbols.All(symbol => !owner.Descriptor.Resources.ContainsResource(registered(symbol)));
-                    var row = SummonPlaytestR1Snapshot(owner);
+                    var row = SummonPlaytestR1Snapshot(owner, replacementBuff);
                     induced[spec.CreatureKey] = row;
                     Sprint25Check(prefix + spec.CreatureKey + "-legacy-retired", retired, (JObject)row.DeepClone(),
                         "The real fixer removes exactly the induced withdrawn grant, brain action and resource from " + spec.CreatureKey + ".");
                 }
-                bool fireDependents = fireInduced.Value<bool>("improvedSunder") &&
-                    fireInduced.Value<int>("sunderGrants") == sunderGrants.Length &&
-                    (toggle == null || fireInduced.Value<bool>("toggle")) &&
-                    sunderGrants.All(value => !fire.Descriptor.HasFact(value)) && !toggleOn(fire) && !toggleBuff(fire);
-                Sprint25Check(prefix + "fire-giant-fixer-removes-feat-dependents", fireDependents,
-                    new JObject { ["before"] = fireInduced.DeepClone(), ["afterGrants"] = sunderGrants.Count(value => fire.Descriptor.HasFact(value)),
-                        ["afterToggle"] = toggleOn(fire) },
-                    "Induced Improved Sunder brings its Sunder Armor action and installed toggle; removing the feat takes both with it.");
+                bool fireBefore = observeChain ? chainLive(fireInduced)
+                    : chainStatus == "provider-inactive" && fireInduced.Value<bool>("improvedSunder") &&
+                        fireInduced.Value<int>("dependentActions") == sunderActions.Length;
+                bool stormStill = stormAfter.Value<bool>("improvedSunder") &&
+                    stormAfter.Value<int>("dependentActions") == sunderActions.Length &&
+                    (observeChain ? chainLive(stormAfter) : chainStatus == "provider-inactive");
+                Sprint25Check(prefix + "fire-giant-fixer-removes-feat-dependents", fireBefore && chainGone(fireAfter) && stormStill,
+                    new JObject { ["chainStatus"] = chainStatus, ["before"] = fireInduced.DeepClone(),
+                        ["beforeWait"] = induced["fireBeforeFixerWait"].DeepClone(),
+                        ["afterImmediate"] = fireAfterImmediate.DeepClone(), ["after"] = fireAfter.DeepClone(),
+                        ["afterWait"] = induced["fireAfterFixerWait"].DeepClone(), ["stormAfter"] = stormAfter.DeepClone() },
+                    "Induced Improved Sunder brings its Sunder action and a running SunderActionToggleAbility with an active SunderActionToggleBuff; after the fixer the feat, action, toggle and buff are all gone, while the Storm Giant's chain is still live.");
+                JObject lillendAfter = lillendState();
+                induced["lillendAfterFixer"] = lillendAfter;
+                var retainedRow = new JObject {
+                    ["boneInvisibility"] = has(bone, "KMG.Summoning.Infernal.BoneDevil.Invisibility"),
+                    ["iceConeOfCold"] = has(ice, "KMG.Summoning.Infernal.IceDevil.ConeOfCold"),
+                    ["magmaPyrotechnics"] = has(magma, "KMG.Summoning.Special.MagmaMephit.SpellLikeOne"),
+                    ["magmaBreath"] = has(magma, "KMG.Summoning.Special.MagmaMephit.Breath"),
+                    ["lillend"] = lillendAfter.DeepClone(),
+                    ["fireGreatCleave"] = fire.Descriptor.HasFact(greatCleave),
+                    ["firePrimaryWeapon"] = fire.Body.PrimaryHand.MaybeWeapon?.Blueprint?.name,
+                    ["stormImprovedSunder"] = storm.Descriptor.HasFact(sunder),
+                    ["boneLifetimes"] = lifetimes(bone, boneWall).Length, ["iceLifetimes"] = lifetimes(ice, iceWall).Length };
                 Sprint25Check(prefix + "retained-after-fixer",
-                    has(bone, "KMG.Summoning.Infernal.BoneDevil.Invisibility") && has(ice, "KMG.Summoning.Infernal.IceDevil.ConeOfCold") &&
-                    has(magma, "KMG.Summoning.Special.MagmaMephit.SpellLikeOne") && has(magma, "KMG.Summoning.Special.MagmaMephit.Breath") &&
-                    performances && fire.Descriptor.HasFact(greatCleave) && storm.Descriptor.HasFact(sunder) &&
-                    lifetimes(bone, boneWall).Length == 1 && lifetimes(ice, iceWall).Length == 1,
-                    new JObject(), "Nothing outside the withdrawn list is removed, including the Wall source lifetimes.");
+                    retainedRow.Value<bool>("boneInvisibility") && retainedRow.Value<bool>("iceConeOfCold") &&
+                    retainedRow.Value<bool>("magmaPyrotechnics") && retainedRow.Value<bool>("magmaBreath") &&
+                    lillendAfter.Value<bool>("retained") && retainedRow.Value<bool>("fireGreatCleave") &&
+                    fire.Body.PrimaryHand.MaybeWeapon != null && retainedRow.Value<bool>("stormImprovedSunder") &&
+                    retainedRow.Value<int>("boneLifetimes") == 1 && retainedRow.Value<int>("iceLifetimes") == 1,
+                    retainedRow, "Nothing outside the withdrawn list is removed, read from the live units after reconciliation: Lillend performances, spellbook and provider-gated Suggestion, devil spells and Wall source lifetimes, mephit breath and Pyrotechnics, Fire Giant Great Cleave and weapon, Storm Giant Improved Sunder.");
             }
             finally
             {
@@ -307,7 +434,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return unit.Descriptor.Spellbooks.FirstOrDefault(value => ReferenceEquals(value.Blueprint, blueprint));
         }
 
-        private static JObject SummonPlaytestR1Snapshot(UnitEntityData unit)
+        private static JObject SummonPlaytestR1Snapshot(UnitEntityData unit, BlueprintBuff replacementBuff)
         {
             // The native resource collection exposes GetEnumerator only.
             var resources = new List<string>();
@@ -320,6 +447,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["activatables"] = new JArray(unit.Descriptor.ActivatableAbilities.Enumerable.Select(value => value.Blueprint.name + (value.IsOn ? ":on" : ":off")).OrderBy(value => value, StringComparer.Ordinal)),
                 ["features"] = new JArray(unit.Descriptor.Progression.Features.Enumerable.Select(value => value.Blueprint.name).OrderBy(value => value, StringComparer.Ordinal)),
                 ["resources"] = new JArray(resources),
+                // Only the exact ProperFlanking2 replacement buff, by identity.
+                ["replacementBuffs"] = new JArray(replacementBuff == null ? new string[0] : unit.Descriptor.Buffs.Enumerable
+                    .Where(value => ReferenceEquals(value.Blueprint, replacementBuff))
+                    .Select(value => value.Blueprint.AssetGuid + ":" + (value.Active ? "active" : "inactive") +
+                        (value.IsSuppressed ? ":suppressed" : "")).ToArray()),
                 ["brainActions"] = new JArray(unit.Brain == null ? new string[0] : unit.Brain.Actions.Select(value => value.Blueprint.name).ToArray()) };
         }
     }
