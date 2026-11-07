@@ -1,18 +1,34 @@
 # Summoned Creature Manual Playtest Repair — R2 status
 
-**R2 COMPLETION CHECKPOINT / STOP.** LIFE-02 (repeated Frightened saves) is
-repaired and natively observed on DATA. LIFE-01 ordinary-round readiness is
-established: under matched ordinary turn-based conditions every Acadamae case
-(Dog, Pteranodon, Lion, Fire Mephit, Hell Hound) takes its first legal native
-action in the round its cast resolved, and the nonaccelerated full-round
-Pteranodon waits for its next turn, as the native casting time requires. The
-reported Pteranodon/mephit slowness was not reproduced. The surprise round is
-now natively observed (see "R2 completion continuation"): in a genuine native
-ambush the wizard casts the Acadamae Pteranodon on its own round-0 turn, the
-engine marks the arriving summon `Surprised`, and the summon first acts in
-round 1. Whether that matches the intended adaptation is an **owner decision**.
-No production behavior changed for LIFE-01. Not a release; nothing installed
-permanently. R3 has not started.
+**R2 CLOSED (owner-accepted, 2026-11-07).** Final disposition, recorded by
+records only (no further build or native run):
+
+- **LIFE-02 — repaired.** The shared Bone/Ice Devil fear aura keeps its
+  per-source memory on mind-affecting-immune allies; native PASS 8/8 on
+  candidate `c370ec234b7070679a528b259207f3ea4ddb9b39`.
+- **LIFE-01 — closed.** "Ordinary Acadamae readiness verified for the requested cases; the reported creature-specific delay was not reproduced. Surprise-round delay was observed and explained: an arriving summon is marked Surprised and first acts in round 1. Native arrival behavior is retained for this release."
+
+Qualifications kept with that disposition:
+
+- This accepts the current adaptation for this release. It does not claim
+  that every tabletop interpretation requires a summon conjured during a
+  surprise round to wait. No KMG override grants arriving summons a
+  surprise-round action.
+- The ambushed hostile's unexpected `Surprising` state and round-zero turn
+  remain an unexplained, nonblocking engine observation.
+- The seconds-component surprise lead remains an unverified source reading.
+- The full-round control's historical exact cast-round + 2 predicate remains
+  FAIL; its observed appearance lock and later action still support the
+  readiness contrast.
+- Every original failed run and its classification below stays intact, and
+  every native result stays attached to the source/package that ran it: the
+  final surprise PASS belongs to candidate
+  `8a3176bdc312f28ecce60196569167e6e73913ba`.
+- Cumulative R2 validation ≈ 4,596 s (≈ 76.6 min), plus ≈ 8 s recovery after
+  the R2 hang, recorded separately.
+
+The sections below are the historical checkpoint entries, oldest at the
+bottom, kept unchanged except where a later checkpoint corrected certainty.
 
 Records: [MISSION](MISSION.md) section 5, [ISSUE-REGISTER](ISSUE-REGISTER.md)
 (LIFE-01, LIFE-02), [R1-STATUS](R1-STATUS.md).
