@@ -111,7 +111,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in ReviewSummonReach4(fixture)) yield return frame;
                 yield break;
             }
-            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39VisualCloseoutPhase)
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39VisualCloseoutPhase ||
+                phase == ExpandedSummoningNativeProfilePolicy.Sprint39VisualCloseoutGroupPhase)
             {
                 foreach (int frame in ReviewSummonVisualCloseout(fixture, phase)) yield return frame;
                 yield break;
