@@ -1,5 +1,36 @@
 # Build, package, and publish
 
+## 0.0.179 publication authorization
+
+On 2026-11-07 Howie wrote: "Alright. Please cut a release that I will test
+with. Thank you." Asked to choose between a test prerelease and a stable
+release, he answered: "Stable 0.0.179. I also just merged the other PRs that
+were in the repo so make sure everything is incorporated." This authorizes the
+next stable patch, v0.0.179, from master after every merged PR.
+
+- **Reviewed product.** Master `9e67c45f46`, which includes #98, #101, #102 to
+  #108. `tools/validate_expanded_summoning_closeout_release179.py` pins it:
+  - Only the three AssemblyInfo version attributes and the Info and props
+    version values may change.
+  - All 7,868 released identities stay unchanged, with no additions.
+  - The released routes and the 1,217 public choices stay unchanged.
+  - One static release record is added.
+- **Sprint 41 A-8.** Opening this version and registering its validator is the
+  repair A-8 named, so the released 0.0.178 pin stops being the active one.
+- **Publication path.** Use the ordinary exact-reference publisher from clean,
+  pushed master with `docs/RELEASE-NOTES-0.0.179.md`. It runs the complete
+  gate and two deterministic builds, then publishes. Planning budget: 30
+  minutes, excluding necessary safe completion.
+- **Disclosed, not repaired.** Sprint 41 A-15 and the other open findings,
+  Ice Devil visual acceptance, and the not-run persistence matrix are all
+  disclosed in the notes. Development-candidate native results stay with
+  their own artifacts.
+
+```powershell
+.\scripts\Publish-Release.ps1 -ReferenceBundleDir '<private build references>' `
+  -ReleaseNotesPath 'docs\RELEASE-NOTES-0.0.179.md' -Publish -ConfirmReleaseReady
+```
+
 ## 0.0.170 Satyr/Lillend repair publication (completed)
 
 [Stable v0.0.170](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.170)

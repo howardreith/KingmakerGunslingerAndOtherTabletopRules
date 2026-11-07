@@ -156,6 +156,7 @@ VALIDATORS = {
     "0.0.176": "validate_expanded_summoning_sprint38_release176.py",
     "0.0.177": "validate_expanded_summoning_sprint39_release177.py",
     "0.0.178": "validate_expanded_summoning_sprint40_release178.py",
+    "0.0.179": "validate_expanded_summoning_closeout_release179.py",
 }
 
 
