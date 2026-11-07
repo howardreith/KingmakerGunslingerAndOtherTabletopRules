@@ -1213,10 +1213,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         PrepareRequestLocalTurn(turn);
                         return;
                     }
-                    if (_requestLocalFixture &&
-                        turn.Status != TurnController.TurnStatus.Preparing &&
+                    // Repair R2 follow-up: native TurnController.Start sets
+                    // Scrolling while the camera pans, then Prepare() calls
+                    // InterruptCommands(), which interrupts anything queued
+                    // during the scroll. A cast issued while Scrolling ended
+                    // as Interrupt without starting (R2b Dog control). Both
+                    // fixtures wait for the native preparing/acting state.
+                    if (turn.Status != TurnController.TurnStatus.Preparing &&
                         turn.Status != TurnController.TurnStatus.Acting)
                         return;
+                    _diagnostics.Add("caster-turn-ready=status=" + turn.Status +
+                        ";round=" + controller.RoundNumber + ";elapsedSeconds=" +
+                        _elapsed.Elapsed.TotalSeconds.ToString("F2"));
                     _lastForcedTurn = null;
                     SetScenarioPause(true);
                     _stage = 2;
@@ -1342,6 +1350,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DriveRequestLocalCastCommand();
                 if (_castResolutionPolls++ % 60 == 0)
                     RecordCastCommandSnapshot("poll");
+                if (_castCommand.IsFinished && !_castCommand.IsStarted)
+                {
+                    RecordCastCommandSnapshot("finished-before-start");
+                    throw new InvalidOperationException(
+                        "The native summon command ended before it started; result=" +
+                        _castCommand.Result + ".");
+                }
                 if (!_castCommand.IsStarted) return;
                 if (_castCommand.Animation != null &&
                     !_castCommand.Animation.IsActed)
