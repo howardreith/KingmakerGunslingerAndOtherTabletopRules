@@ -2,6 +2,11 @@
 
 ## Current status: Sprint 5 visual closeout (2026-11-06)
 
+**Thirteen reviewed; Ice Devil visual acceptance pending.** The supplemental
+instruction added Ice Devil (Gelugon), making fourteen requested creatures.
+See the [Ice Devil addendum](#ice-devil-addendum-2026-11-07) and the
+[fourteen dispositions](#fourteen-creature-dispositions).
+
 Current. This section supersedes the earlier draft, unmerged and `NOT RUN`
 summaries below, including the per-creature table under
 [Current per-creature disposition](#current-per-creature-disposition). The
@@ -27,9 +32,9 @@ dated sections stay as historical evidence bound to their own candidates.
     serpent body.
   - Surfaces read in the dim hall and in daylight.
 
-  The remaining observations are either taste-level or native-path
-  limitations (listed below). None is a specific defect that the supported
-  presentation path can correct, so no asset was changed.
+  No asset was changed. The remaining observations are recorded below as
+  retained limitations or art choices. Whether any of them could be improved
+  within the supported presentation path was not investigated.
 - **Actual native observations this sprint.** These are observer-only
   candidates on branch `codex/summon-visual-closeout`. Each restored the
   intake installation v0.0.140, native settings and protected saves exactly.
@@ -51,12 +56,13 @@ dated sections stay as historical evidence bound to their own candidates.
     party camera.
   - The Shadow Demon and Satyr picked the Nalfeshnee first. A Huge Nalfeshnee
     can hide smaller summons from the cursor.
-  - In the shared-point stress move, every body reached the same point within
-    0.05 m. Native avoidance lets bodies interpenetrate, and the enlarged
-    Glabrezu and Nalfeshnee visually swallow the smaller ones.
-  - Nothing stuck or jittered. This is a forced worst case, because ordinary
-    AI-driven summons are never sent to one point.
-- **Retained presentation limitations.** These are recorded, not corrected:
+  - In a forced convergence test (every body ordered to one shared point),
+    every body arrived within 0.05 m and nothing stuck or jittered. The bodies
+    overlapped there, and the enlarged Glabrezu and Nalfeshnee visually
+    swallowed the smaller ones. How often overlap occurs during ordinary AI
+    play was not established.
+- **Retained limitations and art choices.** These are recorded, not
+  corrected, and their improvability was not investigated:
   - Glabrezu's smaller arms and the Vrock and Nalfeshnee wings ride on the
     chest, with no independent articulation. The Nalfeshnee's closed wings
     read as stubs.
@@ -85,10 +91,14 @@ dated sections stay as historical evidence bound to their own candidates.
   - Withdrawing the outdoor phase (`a053a22f2b`) compiled and passed its 2
     focused tests. It was not rebuilt, and its interior PASS stays bound to
     `8b88ad1d52fe`.
-- **Preview package.** Use the accepted Sprint 4 executable `a9e0ac398d46`,
-  whose models and presentation are identical: ZIP SHA-256 `17e2e255…374d`,
-  DLL MVID `0251abfd-18ef-4860-adc0-7a436cee50ff`. It is a development
-  candidate only, and it is not installed.
+- **Preview package.** Use the accepted Sprint 4 executable `a9e0ac398d46`:
+  ZIP SHA-256 `17e2e255…374d`, DLL MVID
+  `0251abfd-18ef-4860-adc0-7a436cee50ff`.
+  - It has the same gameplay and creature presentation as master: identical
+    model exports, albedos, scale entries, presentation code and rules.
+  - It is **not** binary-identical to master, whose DLL also contains the
+    observer-only closeout test code added afterwards.
+  - It is a development candidate only, and it is not installed.
 - **Review package.** The owner-visible illustrated review is
   [Summoned Creature Visual Closeout](https://claude.ai/artifact/8iqQ2PYUB3oPVL98JUHamt)
   (private to the owner). It has 85 native-frame images and no offline
@@ -98,9 +108,90 @@ dated sections stay as historical evidence bound to their own candidates.
   - close-ups of faces, chain roots and the Lillend's upper body;
   - motion sequences;
   - Stalker, Shadow Demon and Satyr preservation cards;
-  - crowd usability, limitations and preview instructions.
+  - crowd usability, limitations and preview instructions;
+  - from 2026-11-07, the pending Ice Devil card and the fourteen-creature
+    table.
+
+  Offline copies:
+  - The artifact serves a single-file page with every image embedded
+    (`Summoned-Creature-Visual-Closeout-standalone.html`, SHA-256
+    `59d8652f…37ab`).
+  - The artifact host does not serve ZIP files. The ZIP (page plus 85 images,
+    `Summoned-Creature-Visual-Closeout.zip`, SHA-256 `03dd259b…96f7`) and the
+    single-file page are kept locally in
+    `artifacts/summon-overhaul-closeout/visual-closeout-review/`.
+  - The repository is public, so no images are attached to the PR.
 - **Owner aesthetic approval: unclaimed.** The review package is the basis
   for that judgment.
+
+### Ice Devil addendum (2026-11-07)
+
+The supplemental instruction added Ice Devil (Gelugon). Bone Devil was already
+covered. The closeout above accounted for only thirteen creatures.
+
+- **Current presentation.** Sprint 40 original, released in v0.0.178 (PR #99,
+  tested source `b2be3ebe`).
+  - Mesh `assets/sprint40-ice-devil/ice-devil-mesh.json`, SHA-256
+    `3c6e0a8ecfd17f50c3996a1ecf6813112e4248da2f5599571b0f27d10cabf753`.
+  - Albedo SHA-256
+    `6d24aafc619ba435899f348444a311ac8072e0d389ea950df83ccad5569cec83`.
+  - Both, and the Ice Devil visual code, are unchanged from `b2be3ebe` to
+    master. The only change is that the spear, bite and tail range fields
+    moved to `SummonReachRepresentation4.StoredRawFeet`.
+- **Applicable native evidence exists, but not on this host.**
+  - The released `sprint40-ice-devil-presentation` PASS is run
+    `20261106T1538237659684Z-eed268fac2094cb2b57188bd43def206`: package
+    `4d6e2621…be25`, MVID `1b273dc4-236e-4f85-9395-af2ec00fae95`.
+  - It ran on HOWARD-LAPTOP. Its folder
+    `runtime-evidence/20261106T1538237356571Z-disposable-expanded-summoning-sprint32-native-review`
+    is absent on this host (DATA).
+  - No `s40-*` frame exists here, and the owner's twelve 2026-11-04
+    screenshots predate Sprint 40.
+  - The frames were therefore not reviewed. A PASS record is not a visual
+    verdict.
+- **Not attempted.** `sprint40-*` phases are host-restricted to HOWARD-LAPTOP.
+  The Ice Devil presentation routine was not re-created under a
+  DATA-admitted phase name, because that would route around the restriction.
+  No build or game run was spent.
+- **Disposition: visual acceptance PENDING.** Unjudged:
+  - scale beside the humanoid;
+  - head, mandibles, body, limbs and tail;
+  - surface readability;
+  - spear grip and attachment;
+  - tail and spear presentation in motion and attack.
+- **Precise missing evidence.** The party-camera frames
+  `s40-ice-devil-body-0.png`, `s40-ice-devil-body-1.png`,
+  `s40-ice-devil-move.png` and `s40-ice-devil-contact-*.png`. Obtain them in
+  either of these ways:
+  - copy them from the HOWARD-LAPTOP folder above (presentation unchanged
+    since `b2be3ebe`);
+  - run the existing `sprint40-ice-devil-presentation` phase on HOWARD-LAPTOP
+    against the current preview candidate.
+- **Asset changes: none.** Validation spend: 0 minutes. The ledger stays at
+  30.4 of 45 minutes, leaving 14.6.
+
+### Fourteen-creature dispositions
+
+| Creature | Disposition | Correction |
+| --- | --- | --- |
+| Nalfeshnee | Reviewed natively; revised model adequate | None |
+| Glabrezu | Reviewed natively; revised model adequate | None |
+| Vrock | Reviewed natively; revised model adequate | None |
+| Babau | Reviewed natively; revised model adequate | None |
+| Hezrou | Reviewed natively; revised model adequate | None |
+| Barbed Devil | Reviewed natively; revised model adequate | None |
+| Bone Devil | Reviewed natively; revised model adequate | None |
+| Bearded Devil | Reviewed natively; revised model adequate | None |
+| Chain Devil (Kyton) | Reviewed natively; revised model adequate | None |
+| Lillend Azata | Reviewed natively; revised model adequate | None |
+| Invisible Stalker | Reviewed natively; preservation confirmed | None |
+| Shadow Demon | Reviewed natively; preservation confirmed | None |
+| Satyr | Reviewed natively; protected appearance unchanged | None |
+| Ice Devil (Gelugon) | **Visual acceptance pending**: native frames held only on HOWARD-LAPTOP | None |
+
+"Adequate" is a technical reviewer's judgment against the brief. It is not
+owner aesthetic approval. Retained limitations for each creature are listed
+above and in the review package.
 
 ## Integration validated natively on merged master
 
