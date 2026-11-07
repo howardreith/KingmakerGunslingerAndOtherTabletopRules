@@ -181,7 +181,8 @@ running, no held lock).
   The fixture now surveys open floor for a hostile position beyond 9.5 m of
   every party unit (working-save members included) that a party opener 1 m
   behind the wizard still sees within 11.7 m. It gives that opener a native
-  light crossbow (`19a5092244dcf99478dcd73c974828b1`) and verifies and records
+  crossbow (`19a5092244dcf99478dcd73c974828b1`, which resolved to
+  `StandardHeavyCrossbow`; the source's lookup label says "light") and verifies and records
   native awareness before the real offensive command: no hostile line of sight,
   no hostile memory of any party unit, nobody in combat. It refuses the run if
   any precondition fails. Nothing sets surprise flags, initiative, rounds,
