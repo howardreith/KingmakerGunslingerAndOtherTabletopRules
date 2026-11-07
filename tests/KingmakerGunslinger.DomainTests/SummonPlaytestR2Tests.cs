@@ -166,6 +166,26 @@ namespace KingmakerGunslinger.DomainTests
                 "Creature requests carry exactly saveName and creature.");
         }
 
+        // Round zero is a real native surprise round: it must survive a
+        // later round-one observation instead of reading as "unset".
+        internal static void RoundZeroFirstObservationIsKept()
+        {
+            var first = new FirstRoundRecord();
+            Assertions.False(first.HasValue, "Nothing observed yet is explicitly unset.");
+            Assertions.Equal(FirstRoundRecord.Unset, first.OrUnset, "Unset reports a value outside every valid round.");
+            first.Observe(0);
+            first.Observe(1);
+            Assertions.True(first.HasValue && first.Value == 0 && first.Is(0),
+                "A first observation in round zero remains first after a round-one event.");
+            var later = new FirstRoundRecord();
+            later.Observe(2);
+            later.Observe(0);
+            Assertions.Equal(2, later.Value, "Only the first observation is kept.");
+            var rtwp = new FirstRoundRecord();
+            rtwp.Observe(-1);
+            Assertions.True(rtwp.Is(-1), "The real-time marker stays a recorded value.");
+        }
+
         internal static void MemoryDurationsKeepTheEstablishedContract()
         {
             Assertions.Equal(86400d, InfernalRules35.FearAuraMemorySeconds(true, 0),
