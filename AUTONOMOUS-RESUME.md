@@ -1,4 +1,19 @@
-# Summoned creature manual-playtest repair — R3 checkpoint (partial) / STOP
+# Summoned creature manual-playtest repair — R3 completion (partial) / STOP
+
+Current. PR #112 merged (`fa3eeb9e1a`); PR #113 retargeted to master.
+UI-01..UI-06 product repairs pass their native data predicates on candidate
+`221cadc7a67e` (package `6c338b28…502e`): the Ghaele ray is redirected through
+its proven `AddAbilityToCharacterComponent` grant with an owned brain, Overrun
+art differs from Trample, and the inherited trample/overrun rows are replaced.
+Rendered-UI evidence is still missing: the tracker observer read the wrong
+image (fixed in source, compile-only). Cumulative R3 ≈ 1,256 of 1,800 s;
+the remaining ≈ 544 s cannot cover one build plus one run. Restoration
+verified. Next: the narrow R3 rendered-UI continuation, with a new allowance
+granted by the owner. Not R4.
+
+---
+
+# (superseded) R3 checkpoint (partial) / STOP
 
 Current. R2 closed by owner acceptance (draft PR #112, not merged). R3
 (UI-01..UI-06, presentation only) is a partial development checkpoint on

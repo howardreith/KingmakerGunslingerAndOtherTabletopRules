@@ -76,8 +76,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string Duration, SavingThrow;
         }
 
+        // The rendered portrait is InitiativeTrackerPortraitZone.m_Picture:
+        // the base view's SetupPortrait calls the character zone's SetUnit,
+        // which assigns unit.Portrait.SmallPortrait. The order view's own
+        // m_Portrait is an unused pooled image (the first completion run read
+        // it and saw a stale native sprite; that observer defect is retained).
         private static readonly FieldInfo R3TrackerPortraitField =
-            typeof(InitiativeTrackerUnitOrderHorizontalPCView).GetField("m_Portrait", Cleanup2Fields);
+            typeof(Kingmaker.UI._ConsoleUI.TurnBasedMode.InitiativeTrackerPortraitZone).GetField("m_Picture", Cleanup2Fields);
+
+        private static Image[] R3ZonePictures(Component view)
+        {
+            return view.GetComponentsInChildren<Kingmaker.UI._ConsoleUI.TurnBasedMode.InitiativeTrackerPortraitZone>(true)
+                .Where(zone => zone.isActiveAndEnabled && zone.gameObject.activeInHierarchy)
+                .Select(zone => R3TrackerPortraitField == null ? null : R3TrackerPortraitField.GetValue(zone) as Image)
+                .Where(image => image != null).ToArray();
+        }
 
         private static UnitEntityData R3TrackerUnit(Component view)
         {
@@ -107,11 +120,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 Sprite expected = pair.Value.Portrait == null ? null : pair.Value.Portrait.SmallPortrait;
                 var bound = orders.Where(view => ReferenceEquals(R3TrackerUnit(view), pair.Value)).ToArray();
-                var images = bound.Select(view => R3TrackerPortraitField == null ? null : R3TrackerPortraitField.GetValue(view) as Image)
-                    .Where(image => image != null).ToArray();
+                var images = bound.SelectMany(R3ZonePictures).ToArray();
                 bool order = images.Any(image => ReferenceEquals(image.sprite, expected) && Cleanup2TooltipGraphicVisible(image));
                 bool isCurrent = current != null && ReferenceEquals(current.Unit, pair.Value);
-                bool currentView = isCurrent && currents.SelectMany(view => view.GetComponentsInChildren<Image>(true))
+                bool currentView = isCurrent && currents.SelectMany(R3ZonePictures)
                     .Any(image => ReferenceEquals(image.sprite, expected) && Cleanup2TooltipGraphicVisible(image));
                 bool shown = expected != null && expected.name == SummonPortraitPolicy.PortraitName(pair.Key) && (order || currentView);
                 all &= shown;
