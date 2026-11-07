@@ -1,3 +1,26 @@
+# Summoned creature manual-playtest repair — R2 checkpoint / STOP
+
+Current. R1 merged (PR #111). R2 on `codex/summon-playtest-r2-lifecycle`
+from master `9d15ba1897` ([R2-STATUS](planning/summon-playtest-repair/R2-STATUS.md)).
+
+- LIFE-02 repaired: the shared Bone/Ice Devil fear aura's source-memory
+  marker inherited the Frightened context's descriptors and was refused by the
+  Nalfeshnee's Unholy Aura (mind-affecting immunity), so the aura re-evaluated
+  every tick. Marker now carries no descriptor. Candidate `c370ec234b70`
+  (package `df7601d9…596f`), save-free DATA run PASS 8/8 including the old
+  marker's refusal on the same bytes and a Bone Devil regression.
+- LIFE-01 not established: the matched Acadamae comparison failed four times
+  at observer setup (named-creature Acadamae cast never resolved); no creature
+  evidence, no product change. Surprise round explained from source only.
+  The game hung after the fourth case; with owner authorization it was
+  terminated and the lease recovered; DATA restored exactly.
+- R2 spend ≈ 28.4 min (target 15, ceiling 30). Stop for review; a narrow
+  LIFE-01 repair needs its own authorization.
+
+The R1 record below is retained unchanged.
+
+---
+
 # Summoned creature manual-playtest repair — R1 checkpoint / STOP
 
 Current. A new repair sequence (R1-R7) from the owner's 2026-11-07 manual
