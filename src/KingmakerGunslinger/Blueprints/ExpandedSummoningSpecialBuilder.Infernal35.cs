@@ -592,12 +592,17 @@ namespace KingmakerGunslinger.Blueprints
             wallLifetime.ResidualArea = wallResidual;
             wallLifetime.FogArea = wallFog;
             wallLifetime.name = "$KMG_S35_BoneWallSourceLifetime";
+            // Repair R1 CUT-02: Wall of Ice is withdrawn from the Bone Devil.
+            // The ability, its section/residual identities and this source
+            // lifetime stay configured so a pre-existing wall still retires
+            // exactly as before; only the grant, parameters and AI below
+            // no longer include it. Component order and names are unchanged.
             parts.Add(wallLifetime);
             var parameters = ScriptableObject.CreateInstance<
                 Sprint29GiantSpellLikeParameters>();
             parameters.OwningBlueprint = unit;
-            parameters.Abilities = new[] { invisibility, quick, wall };
-            parameters.SpellLevels = new[] { 2, 2, 4 };
+            parameters.Abilities = new[] { invisibility, quick };
+            parameters.SpellLevels = new[] { 2, 2 };
             parameters.CasterLevel = 12;
             parts.Add(parameters);
             var naturalReach = ScriptableObject.CreateInstance<AddStatBonus>();
@@ -618,11 +623,14 @@ namespace KingmakerGunslinger.Blueprints
                     Feature(library, ImprovedInitiativeGuid,
                         "Improved Initiative"),
                     Feature(library, IronWillGuid, "Iron Will"), carrier,
-                    invisibility, quick, wall }).ToArray();
+                    invisibility, quick }).ToArray();
             var invisAi = ConfigureInfernalAi35(symbols,
                 p + "InvisibilityAi", unit, invisibility, true, false, 2);
             var quickAi = ConfigureInfernalAi35(symbols,
                 p + "QuickenedInvisibilityAi", unit, quick, true, false, 6);
+            // The registered Wall AI stays configured for a saved reference;
+            // it is not in the brain. SummonWithdrawnCapabilityFixer removes
+            // it, and the Wall grant, from a Bone Devil saved before R1.
             var wallAi = ConfigureInfernalAi35(symbols, p + "WallAi", unit,
                 wall, false, true, 5);
             wallAi.WallPlacement = true;
@@ -630,7 +638,7 @@ namespace KingmakerGunslinger.Blueprints
             invisAi.ActiveBuff = invisibilityBuff;
             quickAi.ActiveBuff = invisibilityBuff;
             unit.Brain = InfernalBrain35(library, symbols, p, quickAi,
-                wallAi, invisAi);
+                invisAi);
         }
 
         private static BlueprintBuff ConfigureBoneInvisibilityBuff35(

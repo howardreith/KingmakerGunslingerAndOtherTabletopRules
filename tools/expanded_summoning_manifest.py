@@ -70,6 +70,15 @@ QUALIFICATION_NOTES = {
 }
 
 
+# A withheld creature is normally waiting on its own qualification. These
+# are instead deliberate owner release cuts: the creature qualified, was
+# published, and the owner withdrew it. Its identities stay registered so
+# older saves resolve; the visibility catalog alone decides it is withheld.
+OWNER_WITHDRAWAL_NOTES = {
+    "stirge": "Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut",
+}
+
+
 def suppressed_keys():
     """The creatures the visibility catalog withholds, read from the catalog.
 
@@ -1364,6 +1373,9 @@ def generated_roster(manifest):
             adaptation = SPECIAL_NOTES.get(creature["key"],
                 "Dedicated mechanics reused only where exact; otherwise donor is view/rig only and the checked-in tabletop profile owns stats, attacks, facts, and deviations.")
             qualification = (
+                OWNER_WITHDRAWAL_NOTES[creature["key"]]
+                if creature["key"] in withheld and
+                creature["key"] in OWNER_WITHDRAWAL_NOTES else
                 "Registered and withheld; mechanics, original visual, both "
                 "combat modes and lifecycle qualification pending"
                 if creature["key"] in withheld else

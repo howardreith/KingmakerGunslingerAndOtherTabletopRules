@@ -57,6 +57,14 @@ VERSION_FIELDS = (
      r'AssemblyInformationalVersion\("([^"]*)"\)'),
 )
 STATUSES = ("reserved", "active", "retired")
+# Released creatures the owner has explicitly withdrawn from public routes.
+# Each is a settled product cut with its own record, not a new withheld
+# cohort: the guard below still refuses every other released creature.
+OWNER_WITHDRAWN_RELEASED = {
+    # Manual-playtest repair R1 CUT-01 (2026-11-07): Stirge omitted from this
+    # release; identities, assets and saves retained.
+    "stirge": "planning/summon-playtest-repair/R1-STATUS.md",
+}
 PACKAGE_SCRIPTS = ("scripts/Build-Local.ps1", "scripts/package.ps1",
                    "scripts/validate-build-output.ps1",
                    "scripts/validate-package.ps1")
@@ -169,7 +177,8 @@ def check_released_publication(released_keys, current_keys,
         raise AssertionError("A released creature disappeared from the catalog")
     if not released_suppressed <= released_keys or not current_suppressed <= current_keys:
         raise AssertionError("A suppression key has no registered creature")
-    hidden_released = (released_keys - released_suppressed) & current_suppressed
+    hidden_released = ((released_keys - released_suppressed) & current_suppressed) - \
+        set(OWNER_WITHDRAWN_RELEASED)
     if hidden_released:
         raise AssertionError("Released public creatures became suppressed: " +
                              ", ".join(sorted(hidden_released)))

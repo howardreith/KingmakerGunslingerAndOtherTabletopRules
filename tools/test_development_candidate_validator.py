@@ -259,6 +259,18 @@ class ReleasedPublicationTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, "Released public creatures"):
             gate.check_released_publication(self.released, self.current, set(), {"elephant", "gorgon"})
 
+    def test_owner_withdrawn_released_creature_is_the_only_exemption(self):
+        released = self.released | {"stirge"}
+        current = self.current | {"stirge"}
+        gate.check_released_publication(released, current, set(), {"stirge"})
+        self.assertEqual({"stirge"}, set(gate.OWNER_WITHDRAWN_RELEASED))
+        with self.assertRaisesRegex(AssertionError, "Released public creatures became suppressed: elephant"):
+            gate.check_released_publication(released, current, set(), {"stirge", "elephant"})
+
+    def test_owner_withdrawn_key_must_still_be_registered(self):
+        with self.assertRaisesRegex(AssertionError, "no registered creature"):
+            gate.check_released_publication(self.released, self.current, set(), {"stirge"})
+
     def test_unregistered_suppression_key_is_refused(self):
         with self.assertRaisesRegex(AssertionError, "no registered creature"):
             gate.check_released_publication(self.released, self.current, set(), {"unknown"})

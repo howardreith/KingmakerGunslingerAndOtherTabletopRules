@@ -45,6 +45,8 @@
     <Compile Include="Summoning\SummonReachRepresentation4Policy.cs" />
     <Compile Include="Summoning\SummonReachRange4.cs" />
     <Compile Include="Summoning\InfernalWallRules35.cs" />
+    <Compile Include="Summoning\SummonPlaytestWithdrawalPolicy.cs" />
+    <Compile Include="Summoning\SummonWithdrawnCapabilityFixer.cs" />
     <Compile Include="Summoning\InfernalVisualPolicy35.cs" />
     <Compile Include="Summoning\InfernalVisualPolicy36.cs" />
     <Compile Include="Summoning\InfernalRules36Policy.cs" />
@@ -80,6 +82,7 @@
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Glabrezu38.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Nalfeshnee39.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.IceDevil40.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Withdrawals.cs" />
     <Compile Include="Summoning\InfernalRules34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEvents34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEarly34.cs" />
@@ -143,6 +146,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBodies34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonOverhaulReview.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonVisualCloseout.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR1.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalMechanics34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCombat34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalAi34.cs" />

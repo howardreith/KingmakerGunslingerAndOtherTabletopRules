@@ -167,8 +167,11 @@ namespace KingmakerGunslinger.DomainTests
                     tier == 2 ? SummonMultiplicity.OneD3 :
                     SummonMultiplicity.OneD4PlusOne, variant.Multiplicity,
                     "Stirge follows the preserved summon quantity ladder.");
-                Assertions.True(SummonVisibilityCatalog.IsPublished(variant),
-                    "Qualified Stirge publishes at every Nature's Ally tier.");
+                // Repair R1 CUT-01: the owner withdrew the Stirge from this
+                // release. Every placement stays registered (above) and is
+                // withheld from every public route.
+                Assertions.False(SummonVisibilityCatalog.IsPublished(variant),
+                    "The owner-withdrawn Stirge is withheld at every Nature's Ally tier.");
             }
             NaturalSummonProfile profile = ExpandedSummoningNaturalProfiles
                 .For("stirge");

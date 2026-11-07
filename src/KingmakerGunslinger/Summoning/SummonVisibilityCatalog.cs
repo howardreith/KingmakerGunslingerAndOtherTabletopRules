@@ -152,12 +152,23 @@ namespace KingmakerGunslinger.Summoning
         // Removing that one key and moving the two placement counts is all
         // publication took, exactly as the withholding note said it should.
         // Sprint 40 publishes the Ice Devil after its one SM IX route and
-        // final-candidate contract are in place. Nothing remains suppressed.
+        // final-candidate contract are in place.
+        //
+        // Repair R1 CUT-01 (owner manual playtest, 2026-11-07): the owner
+        // withdrew the Stirge from this release. This is a release cut, not
+        // a qualification hold. Withholding by key keeps all nine of its
+        // Summon Nature's Ally I-IX roots, their alternate-source adapters,
+        // the unit, its natural attack, attach/drain state, icons and assets
+        // registered, so an older save's Stirge and saved references still
+        // resolve. The Stirge has no Summon Monster row and no template
+        // children, so exactly nine logical placements leave every public
+        // menu that reads IsPublished: the canonical parents, every
+        // alternate-source projection and the Druid conversion rows.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(StringComparer.Ordinal);
+            new HashSet<string>(new[] { "stirge" }, StringComparer.Ordinal);
 
         internal const int RegisteredLogicalPlacementCount = 1188;
-        internal const int SuppressedLogicalPlacementCount = 0;
+        internal const int SuppressedLogicalPlacementCount = 9;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 
@@ -266,14 +277,29 @@ namespace KingmakerGunslinger.Summoning
                     .SequenceEqual(new[] { 7, 8, 9 }) &&
                 giants.All(value => value.Family == SummonFamily.NaturesAlly &&
                     !value.Creature.MonsterTemplated);
+            // Repair R1: exactly the Stirge's nine SNA I-IX placements are
+            // withheld, and nothing else. Pinning the one key and its exact
+            // placements means a further suppression, or a Stirge route that
+            // escaped the cut, cannot happen silently.
+            bool stirgeOnlyWithheld =
+                SuppressedCreatureKeys.Count == 1 &&
+                SuppressedCreatureKeys.Contains(
+                    SummonPlaytestWithdrawalPolicy.StirgeKey) &&
+                suppressed.All(value => value.Creature.Key ==
+                    SummonPlaytestWithdrawalPolicy.StirgeKey &&
+                    value.Family == SummonFamily.NaturesAlly &&
+                    !value.Creature.MonsterTemplated) &&
+                suppressed.Select(value => value.ParentTier)
+                    .OrderBy(value => value).SequenceEqual(
+                        SummonPlaytestWithdrawalPolicy
+                            .StirgeWithheldNaturesAllyTiers) &&
+                all.Where(value => value.Creature.Key ==
+                    SummonPlaytestWithdrawalPolicy.StirgeKey)
+                    .All(value => !IsPublished(value));
             if (all.Length != RegisteredLogicalPlacementCount ||
                 suppressed.Length != SuppressedLogicalPlacementCount ||
                 all.Count(IsPublished) != PublishedLogicalPlacementCount ||
-                // NOTHING is withheld. Pinning the emptiness rather than
-                // simply not checking it means a future suppression cannot be
-                // added silently, which is the same guarantee the one-key
-                // pin gave while the Nalfeshnee was hidden.
-                SuppressedCreatureKeys.Count != 0 || !iceRoute ||
+                !stirgeOnlyWithheld || !iceRoute ||
                 !sprint29Routes || !giantRoutes || !sprint35Routes ||
                 !sprint36Routes || !sprint37Routes || !sprint38Routes ||
                 !sprint39Routes ||
