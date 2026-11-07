@@ -142,6 +142,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalPersistence36.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBodies34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonOverhaulReview.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonVisualCloseout.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalMechanics34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCombat34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalAi34.cs" />
