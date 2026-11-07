@@ -33,18 +33,24 @@ namespace KingmakerGunslinger.Summoning
 
     /// <summary>
     /// Repair R2 LIFE-01: a summon's first legal native action is the first
-    /// command whose act boundary fired with a completed result. The queue
+    /// command whose act boundary fired with a result other than Fail or
+    /// Interrupt (a full attack's earlier swings report None). The queue
     /// round is never an execution round, and an eventual IsActed value read
     /// later says nothing about when it acted. A legal attack that misses is
-    /// still an action (its command result is Success); damage is not needed.
+    /// still an action; damage is not needed.
     /// </summary>
     internal static class SummonActionTimingPolicy
     {
         internal static bool IsLegalAction(SummonCommandTiming timing)
         {
             if (timing == null) throw new ArgumentNullException("timing");
+            // Native UnitAttack.OnAction returns None after each attack of an
+            // iterative/full attack except the last (Success only when the
+            // sequence completes), so None at the act boundary is an executed
+            // attack. Fail and Interrupt are not legal actions.
             return timing.ActedRound.HasValue &&
-                string.Equals(timing.ResultAtAct, "Success", StringComparison.Ordinal);
+                !string.Equals(timing.ResultAtAct, "Fail", StringComparison.Ordinal) &&
+                !string.Equals(timing.ResultAtAct, "Interrupt", StringComparison.Ordinal);
         }
 
         internal static SummonCommandTiming FirstAction(IEnumerable<SummonCommandTiming> commands)
