@@ -6,6 +6,20 @@ $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'Sprints3031QualifiedRelease.Common.ps1')
 . (Join-Path $PSScriptRoot 'Sprint40QualifiedRelease.Common.ps1')
 
+# Repair R1 (owner manual playtest, 2026-11-07): the owner withdrew the
+# released Stirge, so current source is deliberately no longer the frozen
+# Sprint40/v0.0.178 public shape, and the frozen publisher keeps refusing it.
+# This self-test exercises that frozen publisher's logic, so it evaluates it
+# against the released shape: the current derivation with exactly the nine
+# owner-withdrawn Stirge placements restored. Any other difference fails.
+$script:KmgSprint40CurrentSurface=${function:Get-KmgSprint40Surface}
+function Get-KmgSprint40Surface {
+    $surface=& $script:KmgSprint40CurrentSurface
+    if($surface.suppressed -ne 9 -or $surface.registeredRoots -ne 1188){throw 'Only the R1 Stirge withdrawal may separate current source from the Sprint40 shape.'}
+    $surface.generatedRoots+=9;$surface.choices+=9;$surface.suppressed=0
+    return $surface
+}
+
 $script:checks=0
 function Pass([scriptblock]$Body){& $Body;$script:checks++}
 function Refuse([scriptblock]$Body){
