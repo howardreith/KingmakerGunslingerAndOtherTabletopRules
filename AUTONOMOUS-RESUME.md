@@ -1,4 +1,20 @@
-# Summoned creature manual-playtest repair — R3 rendered-UI continuation (partial) / STOP
+# Summoned creature manual-playtest repair — R3 UI-evidence checkpoint (partial) / STOP
+
+Current. Owner allocation of 900 s (spent 573 s) on observer candidate
+`57a8e659b1e6` (package `36f7054a…4f55`, DLL `fad71354…3eca`); product code
+frozen since `221cadc7a67e`. UI-01 is established on an inspected native
+tracker screenshot (all seven representatives' own art, overlays intact).
+UI-02..06 rendered evidence is missing: the eight owned description windows
+rendered empty because the observer omitted `TooltipData.Type =
+TooltipType.Ability`. Data predicates pass for all six; owner visual approval
+is pending. Restoration verified. Cumulative R3 ≈ 2,334 s across three ledgers.
+Next: owner manual retest of UI-02..06, or an observer-only continuation
+(set the tooltip type and refuse unowned modals) under a new allocation.
+Not R4.
+
+---
+
+# (superseded) R3 rendered-UI continuation (partial) / STOP
 
 Current. Continuation (owner allowance 600 s, spent 505 s) on candidate
 `76a9cf269310` (package `d95bf1fe…5bd4`): all data predicates PASS; the native
