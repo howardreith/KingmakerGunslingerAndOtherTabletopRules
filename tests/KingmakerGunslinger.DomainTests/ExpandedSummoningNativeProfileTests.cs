@@ -26,10 +26,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "summon-visual-closeout"), "Closeout stays in the static interior.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase("summon-visual-closeout"), "Closeout grants no player input.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.WallFixturePhase("summon-visual-closeout"), "Closeout never acquires Wall preparation.");
-            Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-visual-closeout-group", 0, 0, 0, false, false, false, false, true), "Exact fresh outdoor closeout phase admitted.");
-            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-visual-closeout-group", 0, 0, 0, false, false, true, false, true), "Outdoor closeout cannot import a save.");
-            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "summon-visual-closeout-group"), "Outdoor closeout uses native Default outside the capital.");
-            Assertions.False(ExpandedSummoningNativeProfilePolicy.WallFixturePhase("summon-visual-closeout-group"), "Outdoor closeout never acquires Wall preparation.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("summon-visual-closeout-group"), "The withdrawn outdoor selection phase is not admitted.");
             // Sprint 4 reach census: an exact fresh, save-free outdoor Default
             // phase that never acquires Wall preparation or player input.
             Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-reach-sprint4", 0, 0, 0, false, false, false, false, true), "Exact fresh reach phase admitted.");
