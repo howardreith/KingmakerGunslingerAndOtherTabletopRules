@@ -2,6 +2,24 @@
 
 ## 0.0.179 publication authorization
 
+**Published (completed).** Stable
+[v0.0.179](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.179)
+is Latest and not a prerelease. The annotated tag `60dca547d3` peels to the
+release commit `b337a73743`.
+
+- **Gate.** The complete suite passed 2,843/2,843 with 0 failures.
+- **Builds.** Two deterministic exact-reference builds produced identical
+  archives:
+  - package SHA-256
+    `42daa4169b949109fb015457a514a2ee4b5914eba7c058657a480554ad2c64c4`;
+  - DLL SHA-256
+    `96140fd89d30d0a9a1125e5b7603d6a46c36b3dda2fdbe830fc8859effdb4290`;
+  - MVID `22f933b9-6cab-4746-b3e3-49edf4afaa06`.
+- **Public download.** The asset matched `SHA256SUMS.txt`, and the embedded
+  `Info.json` reads 0.0.179.
+- **Timing.** The publisher took 1,097 s.
+- **Installation.** The installed mod is untouched and still reads 0.0.140.
+
 On 2026-11-07 Howie wrote: "Alright. Please cut a release that I will test
 with. Thank you." Asked to choose between a test prerelease and a stable
 release, he answered: "Stable 0.0.179. I also just merged the other PRs that
