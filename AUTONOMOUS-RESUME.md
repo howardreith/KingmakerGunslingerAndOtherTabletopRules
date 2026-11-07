@@ -1,25 +1,23 @@
-# Summoned creature manual-playtest repair — R2 follow-up checkpoint / STOP
+# Summoned creature manual-playtest repair — R2 completion checkpoint / STOP
 
-Current. R1 merged (PR #111). R2 and its LIFE-01 follow-up on
+Current. R1 merged (PR #111). R2 with its LIFE-01 follow-up and completion on
 `codex/summon-playtest-r2-lifecycle` (draft PR #112, base master `9d15ba1897`)
 ([R2-STATUS](planning/summon-playtest-repair/R2-STATUS.md)).
 
-- LIFE-02 repaired (unchanged by the follow-up): fear-aura memory marker no
-  longer inherits the Frightened descriptors. Native PASS 8/8 belongs to
-  candidate `c370ec234b70` only; its 4-second windows are confirmed from the
-  receipt.
-- LIFE-01 follow-up: the R2 cast failures were a fixture defect (cast issued
-  while the caster's native turn was `Scrolling`; native `Prepare()`
-  interrupted it), fixed in the fixture. Exact command start/act/end
-  boundaries now drive the action-timing observer. Candidate `9c13837dd4ce`:
-  Dog control PASS, Acadamae Pteranodon PASS (acts in its cast round), Lion
-  FAIL on an observer full-attack assumption (bite in cast round recorded;
-  policy corrected in source only). Fire Mephit, Hell Hound, the
-  nonaccelerated Pteranodon and the surprise round remain unobserved. No
-  production change.
-- Spend: original R2 ≈ 28.4 min; follow-up ≈ 23.9 min; cumulative ≈ 52.4 min.
-  DATA restored exactly after every run. Stop for review; the remaining
-  observations need their own authorization.
+- LIFE-02 repaired (unchanged since R2; native PASS 8/8 belongs to candidate
+  `c370ec234b70`).
+- LIFE-01 ordinary round established on candidates `9c13837dd4ce` and
+  `4a51fdfecc`: every Acadamae case (Dog, Pteranodon, Lion, Fire Mephit, Hell
+  Hound) acts in its cast round; the ordinary full-round Pteranodon waits for
+  its next turn. Original R2 failures were a fixture turn-timing defect.
+- LIFE-01 surprise round not observed: the native-entry fixture started
+  combat on detection without a surprise round. Source lead only. No
+  production defect demonstrated; no product change.
+- Spend: R2 ≈ 28.4 min, follow-up ≈ 23.9 min, completion ≈ 15.3 min;
+  cumulative ≈ 67.7 min. DATA restored exactly after every run.
+- Stop: owner decision needed on the surprise round (accept the documented
+  ordinary-round result and close LIFE-01, or authorize a narrow ambush
+  fixture). No further validation allowance is granted.
 
 The R1 record below is retained unchanged.
 

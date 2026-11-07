@@ -1,15 +1,16 @@
 # Summoned Creature Manual Playtest Repair — R2 status
 
-**R2 FOLLOW-UP CHECKPOINT / STOP.** LIFE-02 (repeated Frightened saves) is
-repaired and natively observed on DATA. LIFE-01 (Acadamae summon readiness) is
-**partly** established: the original R2 cast failure is now explained (a
-fixture issued the cast while the caster's native turn was still scrolling)
-and fixed; with the corrected fixture, Acadamae Pteranodon and the Dog control
-act in the round their cast resolved; Acadamae Lion attacked in its cast round
-but its predicate failed on an observer assumption (see "R2 follow-up"). Fire
-Mephit, Hell Hound, the nonaccelerated Pteranodon and the surprise round remain
-unobserved. No production behavior was changed for LIFE-01. This is not a
-release; nothing was installed permanently. R3 has not started.
+**R2 COMPLETION CHECKPOINT / STOP.** LIFE-02 (repeated Frightened saves) is
+repaired and natively observed on DATA. LIFE-01 ordinary-round readiness is
+established: under matched ordinary turn-based conditions every Acadamae case
+(Dog, Pteranodon, Lion, Fire Mephit, Hell Hound) takes its first legal native
+action in the round its cast resolved, and the nonaccelerated full-round
+Pteranodon waits for its next turn, as the native casting time requires. The
+reported Pteranodon/mephit slowness was not reproduced. The surprise round was
+**not** observed: the planned native entry started combat on detection, without
+a surprise round (see "R2 completion"). No production defect was demonstrated
+and no production behavior changed for LIFE-01. Not a release; nothing
+installed permanently. R3 has not started.
 
 Records: [MISSION](MISSION.md) section 5, [ISSUE-REGISTER](ISSUE-REGISTER.md)
 (LIFE-01, LIFE-02), [R1-STATUS](R1-STATUS.md).
@@ -155,6 +156,105 @@ recovered with the repository's own functions: exact lock owner verified,
 original owner process gone, live mod restored through `Restore-Live-Mod.ps1`
 under that lease, settings and saves verified, then `Exit-KmgRuntimeLease`
 (record: `runtime-evidence/summon-playtest-r2/20261107-readiness-recovery.json`).
+
+## R2 completion — remaining LIFE-01 observations
+
+Authorized as one additional checkpoint (15-minute target, 30-minute
+additional ceiling). Base: PR #112 branch at `3b079c83a5` (open).
+
+### Intake
+
+DATA unchanged: v0.0.140, DLL `00ef6757…66fd`, sixteen UMM mods enabled in
+`Params.xml`, 95 protected save files, no game running, no held runtime lock,
+same reference bundle (passed explicitly).
+
+### Plan and changes (one candidate)
+
+- The Lion full-attack policy correction (`4c6198a707`) was included unchanged.
+- Surprise path planned before building: a native surprise round arises only
+  when combat starts from a party unit's offensive command (installed
+  `CombatController` start logic: a party unit with an acted offensive command,
+  or `(GameTime - LastSurpriseActionTime).Seconds < 6`). The existing scenario
+  forces combat entry directly and never forms one. A closed request value
+  `combatEntry=surprise` (Acadamae creature case only; pure
+  `SummonReadinessAdmissionPolicy`, domain-tested; PowerShell preflight
+  mirrored) makes the fixture open combat with a disposable party opener's
+  real `UnitAttack` on the hostile. Nothing sets any unit's surprise,
+  initiative or action state. The run fails fast if combat does not start,
+  no surprise round forms, or the caster gets no round-0 turn.
+- Admission checks before live use: 10 PowerShell preflight checks (4 admitted,
+  6 refused for the intended reasons: surprise on the ordinary control,
+  surprise without a creature, wrong entry value, creature outside the list,
+  a non-working save, an extra parameter), and the domain admission test.
+
+Candidate `4a51fdfecc1edb335721c402a5fda19be34caa84`: package
+`a1bd1dbf560c843426867d507cc51b8c1677702a5777240a54167e11cf506e16`, DLL
+`6b01a33e65c27d5089a74b30c7d9c8ebd4cdb664c4253ff0e4cfb832184fc58b`, MVID
+`ac37b32e-d91e-43a1-bbbc-3ea43a745ae4`, source fingerprint
+`ace4f697c3bfa0ca6574e1086dd19d46e31a90dcbf9e47432001c91cfa9a2a89`; 28 of 2,854
+selected tests, 0 failures.
+
+### Native results (candidate `4a51fdfecc`, working save loaded, never written)
+
+| Case | Run | Result | First legal native action |
+| --- | --- | --- | --- |
+| Acadamae Lion | `20261107T1919400094390Z…` (receipt `77a689228a8f…`) | **PASS** | `UnitAttack` (Standard) acted round 2 = cast round, result `None` at the act (first swing of a full attack); the corrected predicate now executed natively |
+| Acadamae Fire Mephit | `20261107T1921137811293Z…` (`835162d49dd8…`) | **PASS** | `UnitUseAbility` Scorching Ray (Standard) acted round 1 = cast round, `Success` |
+| Acadamae Hell Hound | `20261107T1922507489564Z…` (`524fc0c4fd0f…`) | **PASS** | `UnitUseAbility` HellhoundBreathWeapon (Standard) acted round 1 = cast round, `Success` |
+| Ordinary full-round Pteranodon (Acadamae off) | `20261107T1924277025278Z-b3ad8109…` (`2406aba6b2af…`) | **FAIL** (kept) | Cast Full-Round; native appearance lock 6 s and lifecycle 126 s (native grace) present; turn in cast round 2 not lawful; `UnitAttack` (bite, hit) acted round 3 |
+| Acadamae Pteranodon, `combatEntry=surprise` | `20261107T1927238516767Z-8f607c03…` (`33553e20e0a7…`) | **FAIL** (kept) | Not reached: `Native combat began without a surprise round` |
+
+Each Acadamae PASS also re-checks the cast (Standard, one slot, one
+successful Acadamae save, caster keeps its turn), native enrollment before the
+caster turn is released, exact duration and duplicate-callback no-ops.
+
+Classification of the ordinary-control FAIL: a historical expectation, not a
+defect. Its `ordinary-native-scheduling` predicate (from the August Dog
+qualification) requires the first lawful turn at cast round + 2; here it was
+cast round + 1. The summon's next turn began exactly 6.0 game seconds after it
+appeared (44379.8 to 44385.8), the same moment the 6-second native appearance
+lock ended, so whether that turn is still locked depends on native update order
+at the boundary. Either way the casting-time contrast holds: the full-round
+summon cannot act in its cast round; every Acadamae summon does.
+
+Classification of the surprise FAIL: no permitted surprise observation in this
+fixture. At combat start the opener's attack had not started
+(`started=False`), combat was round 1, and no unit was surprising or surprised.
+With the hostile 3 m from the party in plain view, native detection started
+combat before any offensive command. A real surprise observation needs the
+hostile unaware of the party until the opener's attack; this fixture does not
+provide that, and no flag was set to fake it. The installed-source lead
+(a summon arriving mid-round-0 is marked `Surprised` and first acts in round
+1) remains unobserved.
+
+Additional installed-source note (lead only): the native surprise check
+compares only the seconds component of `GameTime - LastSurpriseActionTime`
+with 6. A unit whose surprise time was never stamped could count as surprising
+whenever the game clock's seconds component is below 6 at combat start. This
+could make surprise rounds appear intermittently, but it was not observed.
+
+### Restoration
+
+Both runners restored automatically under their own leases: live tree
+`5C3E4AD499DC5116D2024D06260D11700087379937B96B7372C821628CB9BFBB` before and
+after, v0.0.140 DLL `00ef6757…66fd`, settings restored, 95 protected saves
+identical, no surviving game process, no recovery. Records:
+`runtime-evidence/summon-playtest-r2/*-r2c-*` and `*-r2c-surprise-*`.
+
+### Completion validation spend (additional 15-minute target, 30-minute ceiling)
+
+| Invocation | Seconds |
+| --- | --- |
+| Focused gate (28/28) | 16.3 |
+| PowerShell admission checks (two invocations) | 0.9 |
+| Candidate build `4a51fdfecc` | 379 |
+| Runner (Lion, Fire Mephit, Hell Hound, ordinary Pteranodon; incl. deploy/restore) | 413 |
+| Runner (surprise case; incl. deploy/restore) | 110 |
+| **Completion increment** | **≈ 919 s (≈ 15.3 min)** |
+| **Cumulative R2** (1,706 + 1,436 + 919) | **≈ 4,061 s (≈ 67.7 min)**, plus ≈ 8 s recovery after the R2 hang |
+
+The increment slightly passed its 15-minute target and stayed well under its
+ceiling; no further launch was made after the surprise classification.
 
 ## R2 follow-up — LIFE-01 repair checkpoint
 
@@ -334,8 +434,9 @@ allowance; LIFE-01 needs a separately authorized narrow repair.
 2. An enemy walking into an Ice Devil's or Bone Devil's aura still saves and
    can be Frightened; stepping out and back in does not re-roll while it is
    remembered.
-3. Acadamae Pteranodon in an ordinary turn-based round should act (attack or
-   move) in the same round it appears. Optional: compare a mephit and Hell
-   Hound, which were not observed; and separately, open combat with the summon
-   and note whether it first acts in
+3. In an ordinary turn-based round, Acadamae Pteranodon, a mephit, Lion and
+   Hell Hound should each act in the round they appear; without Acadamae the
+   same summon waits for its next turn. Optional (unobserved): start combat
+   by ambushing unaware enemies, cast an Acadamae summon in the surprise
+   round, and note whether it first acts in
    round 1. These are the open LIFE-01 observations.
