@@ -2,6 +2,15 @@ using System;
 
 namespace KingmakerGunslinger.Summoning
 {
+    internal enum FearAuraExposure
+    {
+        Evaluate,
+        NotOwner,
+        Self,
+        Ineligible,
+        Remembered
+    }
+
     internal static class InfernalRules35
     {
         internal const string BarbedUnitSymbol =
@@ -189,6 +198,38 @@ namespace KingmakerGunslinger.Summoning
             int racialBonus)
         {
             return 10 + hitDice / 2 + abilityBonus + racialBonus;
+        }
+
+        /// <summary>
+        /// Shared Bone/Ice Devil fear aura admission. The native area calls
+        /// the aura on entry, on every 5-foot move and on every tick for every
+        /// unit inside, allies included; the Sprint 35 contract keeps native
+        /// eligibility (no enemy-only rule) and forbids per-frame retries, so
+        /// the exact source's memory on the victim is the only repeat gate.
+        /// </summary>
+        internal static FearAuraExposure FearAuraAdmission(bool exactSource,
+            bool victimIsSource, bool victimLive, bool areaLive,
+            bool rememberedForSource)
+        {
+            if (!exactSource) return FearAuraExposure.NotOwner;
+            if (victimIsSource) return FearAuraExposure.Self;
+            if (!victimLive || !areaLive) return FearAuraExposure.Ineligible;
+            if (rememberedForSource) return FearAuraExposure.Remembered;
+            return FearAuraExposure.Evaluate;
+        }
+
+        /// <summary>
+        /// How long one exposure keeps the exact source from evaluating the
+        /// same victim again: the established 24 hours after a successful
+        /// save, the rolled fear duration after a failed one.
+        /// </summary>
+        internal static double FearAuraMemorySeconds(bool savePassed,
+            int frightenedRounds)
+        {
+            if (savePassed) return 24d * 60d * 60d;
+            if (frightenedRounds < 1)
+                throw new ArgumentOutOfRangeException("frightenedRounds");
+            return frightenedRounds * 6d;
         }
 
         internal static int ImpaleStrengthBonus(int strengthBonus)

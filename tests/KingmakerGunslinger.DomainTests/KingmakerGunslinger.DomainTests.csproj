@@ -46,6 +46,7 @@
     <Compile Include="NalfeshneeRules39Tests.cs" />
     <Compile Include="IceDevilRules40Tests.cs" />
     <Compile Include="SummonPlaytestR1Tests.cs" />
+    <Compile Include="SummonPlaytestR2Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\IceDevilRules40Policy.cs"><Link>Summoning\IceDevilRules40Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InfernalRules36Policy.cs"><Link>Summoning\InfernalRules36Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InfernalVisualPolicy36.cs"><Link>Summoning\InfernalVisualPolicy36.cs</Link></Compile>
@@ -57,6 +58,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GlabrezuVisualPolicy38.cs"><Link>Summoning\GlabrezuVisualPolicy38.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\NalfeshneeVisualPolicy39.cs"><Link>Summoning\NalfeshneeVisualPolicy39.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InfernalRules35Policy.cs"><Link>Summoning\InfernalRules35Policy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonActionTimingPolicy.cs"><Link>Summoning\SummonActionTimingPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SummonReadinessAdmissionPolicy.cs"><Link>RuntimeTesting\SummonReadinessAdmissionPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonReachRepresentation4Policy.cs"><Link>Summoning\SummonReachRepresentation4Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SummonAdjacentRoutineVerdict4.cs"><Link>RuntimeTesting\SummonAdjacentRoutineVerdict4.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\InfernalWallFeedbackPolicy35.cs"><Link>RuntimeTesting\InfernalWallFeedbackPolicy35.cs</Link></Compile>
