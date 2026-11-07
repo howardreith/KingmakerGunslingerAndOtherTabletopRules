@@ -121,13 +121,19 @@ namespace KingmakerGunslinger.Blueprints
             var courage = ConfigureLillendCourage32(library, bySymbol, resource);
             var competence = ConfigureLillendCompetence32(library, bySymbol, courage);
             var fascinate = ConfigureLillendFascinate32(library, bySymbol, courage, unit);
-            var bardic = Require<BlueprintAbility>(bySymbol, Lillend32Prefix + "BardicSuggestion");
+            // Repair R1 CUT-04: the separate Bardic Suggestion performance is
+            // withdrawn. Its registered ability stays configured, including
+            // through BindSuggestionProvider32, so an older save still
+            // resolves it, but it is not granted, has no spell-like
+            // parameters here and the noncombat dispatcher no longer routes
+            // to it. The Suggestion spell and other performances are
+            // unchanged. SummonWithdrawnCapabilityFixer removes the old grant.
             var start = ScriptableObject.CreateInstance<LillendPerformanceCommand32>();
             start.OwningBlueprint = unit; start.Courage = courage; start.Competence = competence; start.Fascinate = fascinate;
             var noncombat = ScriptableObject.CreateInstance<LillendNoncombat32>();
             noncombat.OwningBlueprint = unit; noncombat.Competence = competence;
             noncombat.Recipient = Require<BlueprintBuff>(bySymbol, Lillend32Prefix + "CompetenceRecipient");
-            noncombat.Fascinate = fascinate; noncombat.BardicSuggestion = bardic;
+            noncombat.Fascinate = fascinate; noncombat.BardicSuggestion = null;
             noncombat.Fascinated = Require<BlueprintBuff>(bySymbol, Lillend32Prefix + "Fascinated");
             noncombat.Resistance = Require<BlueprintBuff>(bySymbol, Lillend32Prefix + "FascinateResistance");
             // Buff.TickMechanics dispatches ITickEachRound at this frequency,
@@ -155,11 +161,10 @@ namespace KingmakerGunslinger.Blueprints
             proficiency.ArmorProficiencies = Array.Empty<ArmorProficiencyGroup>();
             var traits = Require<BlueprintFeature>(bySymbol, Lillend32Prefix + "Traits");
             traits.name = InternalName(Lillend32Prefix + "Traits"); traits.HideInUI = true;
-            var bardicParams = ScriptableObject.CreateInstance<Sprint29GiantSpellLikeParameters>();
-            bardicParams.name = "$KMG.Lillend.BardicSuggestion.Parameters";
-            bardicParams.OwningBlueprint = unit; bardicParams.CasterLevel = 7;
-            bardicParams.Abilities = new[] { bardic }; bardicParams.SpellLevels = new[] { 3 };
-            traits.ComponentsArray = new BlueprintComponent[] { armor, equipment, proficiency, start, dispatchGrant, bardicParams, AddResource(resource),
+            // The explicitly named, stateless Bardic Suggestion parameters
+            // component is gone with its grant. Every other component keeps
+            // its type ordinal, so no saved component name moves.
+            traits.ComponentsArray = new BlueprintComponent[] { armor, equipment, proficiency, start, dispatchGrant, AddResource(resource),
                 Energy(DamageEnergyType.Cold, 10), Energy(DamageEnergyType.Fire, 10) }
                 .Concat(ArchonPetrificationImmunities()).ToArray();
             BlueprintUnitFactAccess.Resolve().Configure(traits,
@@ -173,7 +178,7 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, "c1b26f97b974aec469613f968439e7bb", "accepted native legless trip immunity"),
                 Feature(library, "06964d468fde1dc4aa71a92ea04d930d", "captured native Combat Casting"),
                 Feature(library, IronWillGuid, "Iron Will"), Feature(library, LightningReflexesGuid, "Lightning Reflexes"),
-                Feature(library, AirborneGuid, "accepted ordinary-map flight adaptation"), traits, courage, competence, fascinate, bardic };
+                Feature(library, AirborneGuid, "accepted ordinary-map flight adaptation"), traits, courage, competence, fascinate };
             ConfigureGrabber(library, bySymbol, "KMG.Summoning.Unit.LillendAzata",
                 Lillend32Prefix + "GrabTraits", "LillendAzata", "Lillend Grab and Constrict",
                 "Only this lillend's tail grabs a foe no larger than itself. A successful grab and " +

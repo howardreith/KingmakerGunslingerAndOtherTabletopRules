@@ -144,11 +144,15 @@ namespace KingmakerGunslinger.Blueprints
             wallLifetime.ResidualArea = Require<BlueprintAbilityAreaEffect>(symbols, p + "WallResidualArea");
             wallLifetime.FogArea = BlueprintLibraryLookup.RequireExact<BlueprintAbilityAreaEffect>(
                 library, NativeObscuringMistArea35, "native fire-breach fog");
+            // Repair R1 CUT-02: Wall of Ice is withdrawn from the Ice Devil.
+            // Ability, prototype, residual area and this source lifetime stay
+            // configured so a pre-existing wall retires unchanged; the grant,
+            // parameters and brain below no longer include it.
             parts.Add(wallLifetime);
             var parameters = ScriptableObject.CreateInstance<Sprint29GiantSpellLikeParameters>();
             parameters.OwningBlueprint = unit;
-            parameters.Abilities = new[] { cone, storm, wall };
-            parameters.SpellLevels = new[] { 5, 4, 4 };
+            parameters.Abilities = new[] { cone, storm };
+            parameters.SpellLevels = new[] { 5, 4 };
             parameters.CasterLevel = IceDevilRules40Policy.SpellLikeCasterLevel;
             parts.Add(parameters);
 
@@ -169,7 +173,7 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, PowerAttackGuid, "Power Attack"),
                 Feature(library, CombatReflexesGuid, "Combat Reflexes"),
                 Require<BlueprintFeature>(symbols, GiantCleaveFeature),
-                cone, storm, wall, fear, regeneration }).ToArray();
+                cone, storm, fear, regeneration }).ToArray();
 
             var coneAi = ConfigureInfernalAi35(symbols, p + "ConeOfColdAi", unit,
                 cone, false, true, 6);
@@ -182,13 +186,16 @@ namespace KingmakerGunslinger.Blueprints
                 storm, false, true, 5);
             stormAi.AvoidFriendlyArea = true; stormAi.NoAlignmentExemption = true;
             stormAi.AreaRadiusFeet = 20;
+            // The registered Wall AI stays configured for a saved reference
+            // but is not in the brain; SummonWithdrawnCapabilityFixer removes
+            // it, and the Wall grant, from an Ice Devil saved before R1.
             var wallAi = ConfigureInfernalAi35(symbols, p + "WallOfIceAi", unit,
                 wall, false, true, 4);
             wallAi.WallPlacement = true; wallAi.WallSection = wallLifetime.WallSection;
             // No resources or cooldowns are introduced on these at-will casts.
             coneAi.SharedSpellCooldownRounds = stormAi.SharedSpellCooldownRounds =
                 wallAi.SharedSpellCooldownRounds = 0;
-            unit.Brain = InfernalBrain35(library, symbols, p, coneAi, stormAi, wallAi);
+            unit.Brain = InfernalBrain35(library, symbols, p, coneAi, stormAi);
             foreach (var pair in symbols.Where(pair => pair.Value is BlueprintUnitFact &&
                 pair.Key.StartsWith(p, StringComparison.Ordinal)))
             {

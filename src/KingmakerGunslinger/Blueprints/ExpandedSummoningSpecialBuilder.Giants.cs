@@ -133,10 +133,16 @@ namespace KingmakerGunslinger.Blueprints
                 sword, slam, fireRock, halfPlate,
                 BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library, NativeNaturalArmorEight, "fire natural armor"),
                 extraplanar,
-                new[] { NativeGreatCleaveFeature,
-                    NativeImprovedSunder,
-                    "175d1577bb6c9a04baf88eec99c66334",
-                    "9972f33f977fc724c838e59641b2fca5" }, true,
+                // Repair R1 CUT-05: the Fire Giant never sunders. The native
+                // Improved Sunder feat's own AddFacts grant both the Sunder
+                // Armor action and ProperFlanking2's default-on attack
+                // replacement toggle, so the feat itself is withheld here,
+                // for this creature alone. Storm Giant keeps its grant.
+                SummonPlaytestWithdrawalPolicy.GrantedNativeFeats("fire-giant",
+                    new[] { NativeGreatCleaveFeature,
+                        NativeImprovedSunder,
+                        "175d1577bb6c9a04baf88eec99c66334",
+                        "9972f33f977fc724c838e59641b2fca5" }), true,
                 new[] { FireSubtypeGuid, FireImmunityGuid, ColdVulnerabilityGuid });
             // Exact body-atlas palettes are applied by GiantSummonPresentationPatch
             // after native appearance settles; armor/capes retain their own materials.
