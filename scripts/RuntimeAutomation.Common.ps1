@@ -2582,6 +2582,9 @@ function Assert-KmgRuntimeScenarioPreflight {
         # be quickened has nowhere else to prove ordinary turn-based behaviour.
         $flightActivation = $Scenario -cin @('summon-same-turn-activation', 'summon-same-turn-rtwp-control', 'summon-same-turn-native-control') -and
             $Parameters.ContainsKey('flightCreature')
+        # Repair R2 LIFE-01: matched Acadamae and ordinary readiness controls.
+        $readinessCreature = $Scenario -cin @('summon-same-turn-acadamae', 'summon-same-turn-native-control') -and
+            $Parameters.ContainsKey('readinessCreature')
         $crowdReview = $Scenario -ceq 'working-save-expanded-summoning-creature-review' -and
             $Parameters.ContainsKey('quantity')
         $representativePlayerPaths = $Scenario -ceq 'disposable-expanded-summoning-player-path' -and $Parameters.ContainsKey('playerPathScope')
@@ -2601,7 +2604,7 @@ function Assert-KmgRuntimeScenarioPreflight {
             throw 'S30/S31 UI requires the exact fixed read-only Working case and automatic exit.'
         }
         $suggestionTransition=Test-KmgSprint32SuggestionTransition -TargetedPersistence $targetedSummonPersistence -Parameters $Parameters
-        $requiredParameterCount = if ($dispelUi -or $suggestionTransition) { 3 } elseif ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence -or $traitSave -or $weaponSave) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation -or $targetedSummonPersistence -or $weaponRoute -or $representativePlayerPaths) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
+        $requiredParameterCount = if ($dispelUi -or $suggestionTransition) { 3 } elseif ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence -or $traitSave -or $weaponSave) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation -or $readinessCreature -or $targetedSummonPersistence -or $weaponRoute -or $representativePlayerPaths) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
@@ -2625,6 +2628,10 @@ function Assert-KmgRuntimeScenarioPreflight {
         if ($flightActivation -and ($Parameters.flightCreature -isnot [string] -or
             [string]$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp', 'stirge', 'dire-rat', 'wolverine', 'shadow-mastiff'))) {
             throw 'The activation fixture permits only Eagle, Dire Bat, Giant Wasp, Stirge, Dire Rat, Wolverine or Shadow Mastiff.'
+        }
+        if ($readinessCreature -and ($Parameters.readinessCreature -isnot [string] -or
+            [string]$Parameters.readinessCreature -cnotin @('pteranodon', 'fire-mephit', 'lion', 'hell-hound'))) {
+            throw 'The summon readiness fixture permits only Pteranodon, Fire Mephit, Lion or Hell Hound.'
         }
         if ($nativeActionCase -and ([string]$Parameters['nativeActionCase'] -cne 'racial-actions' -or
             [string]$Parameters['class'] -cne 'Fighter' -or
@@ -2947,6 +2954,10 @@ function New-KmgRuntimeRequest {
                 $creatureReviewParameters.reviewCase = [string]$Parameters.reviewCase
             }
             $creatureReviewParameters
+        } elseif ($Scenario -cin @('summon-same-turn-acadamae', 'summon-same-turn-native-control') -and
+                $Parameters.ContainsKey('readinessCreature')) {
+            [ordered]@{ saveName = [string]$Parameters.saveName;
+                readinessCreature = [string]$Parameters.readinessCreature }
         } elseif ($Scenario -cin @('summon-same-turn-activation',
                 'summon-same-turn-rtwp-control',
                 'summon-same-turn-native-control') -and

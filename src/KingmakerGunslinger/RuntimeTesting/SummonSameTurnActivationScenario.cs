@@ -196,6 +196,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly Dictionary<UnitEntityData, int>
                 _followingLawfulByUnit =
                     new Dictionary<UnitEntityData, int>();
+            // Repair R2 LIFE-01: the exact summon commands, kept so their
+            // execution and result are read after they ran, not when queued.
+            private readonly List<KeyValuePair<int, UnitCommand>>
+                _summonCommandObjects =
+                    new List<KeyValuePair<int, UnitCommand>>();
             private readonly Dictionary<UnitEntityData, int> _sameCommandsByUnit =
                 new Dictionary<UnitEntityData, int>();
             private readonly Dictionary<UnitEntityData, int> _nextCommandsByUnit =
@@ -315,7 +320,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _context = context;
                 _request = request;
                 _kind = ResolveKind(request.Scenario);
-                _flightCreature = (string)request.Parameters?["flightCreature"];
+                _flightCreature = (string)request.Parameters?["flightCreature"] ??
+                    (string)request.Parameters?["readinessCreature"];
                 _requestLocalFixture = RuntimeTestScenarioCatalog
                     .IsSummonSameTurnCompatibilityScenario(request.Scenario);
                 _evidence.Case = _kind.ToString();
@@ -1592,8 +1598,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FinalizeOpportunityObservations();
                     return;
                 }
-                else if (controller.RoundNumber > _castRound + 1 &&
-                    _kind != ScenarioKind.Acadamae)
+                else if (_kind != ScenarioKind.Acadamae ?
+                    controller.RoundNumber > _castRound + 1 :
+                    _flightCreature != null &&
+                        controller.RoundNumber > _castRound + 2)
                 {
                     FinalizeOpportunityObservations();
                     return;
@@ -1741,8 +1749,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _nextRoundSummonCommands++;
                     Increment(_nextCommandsByUnit, command.Executor);
                 }
+                _summonCommandObjects.Add(
+                    new KeyValuePair<int, UnitCommand>(round, command));
+                var useAbility = command as UnitUseAbility;
                 string observation = "round=" + round + ";type=" +
-                    command.Type + ";command=" + command.GetType().FullName;
+                    command.Type + ";command=" + command.GetType().FullName +
+                    ";ability=" + (useAbility == null || useAbility.Spell == null ?
+                        "<none>" : useAbility.Spell.Blueprint.name);
                 _evidence.SummonCommands.Add(observation);
                 _diagnostics.Add("summon-command=" + observation);
             }
@@ -1777,7 +1790,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _diagnostics.Add("summon-attack=round=" + round +
                     ";target=" + Identity(attack.Target) +
                     ";weapon=" + (attack.Weapon == null ? "<none>" :
-                        attack.Weapon.Blueprint.name));
+                        attack.Weapon.Blueprint.name) +
+                    ";hit=" + (attack.AttackRoll != null && attack.AttackRoll.IsHit));
             }
 
             private void ObserveFlightImpactGeometry(RuleAttackWithWeapon attack)
@@ -2330,6 +2344,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _evidence.NextRoundSummonAttacks =
                     _nextRoundSummonAttacks;
                 _evidence.Turns = _turns.ToArray();
+                foreach (KeyValuePair<int, UnitCommand> entry in
+                    _summonCommandObjects)
+                {
+                    UnitCommand command = entry.Value;
+                    var useAbility = command as UnitUseAbility;
+                    string executed = "round=" + entry.Key + ";unit=" +
+                        Identity(command.Executor) + ";type=" + command.Type +
+                        ";command=" + command.GetType().Name + ";ability=" +
+                        (useAbility == null || useAbility.Spell == null ?
+                            "<none>" : useAbility.Spell.Blueprint.name) +
+                        ";started=" + command.IsStarted + ";acted=" +
+                        command.IsActed + ";finished=" + command.IsFinished +
+                        ";result=" + command.Result;
+                    _evidence.SummonCommands.Add("executed:" + executed);
+                    _diagnostics.Add("summon-command-executed=" + executed);
+                }
                 foreach (UnitEntityData summon in _summons)
                 {
                     _evidence.UnitOpportunities.Add(Identity(summon) +
@@ -2751,6 +2781,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                             !_evidence.CasterFatigued &&
                             !_evidence.CasterExhausted,
                             "existing Acadamae command/rule correlation and native save");
+                        if (_flightCreature != null)
+                            Add("acadamae-named-creature-cast-round-action",
+                                "the named creature executes a native action in the round its Acadamae cast resolved",
+                                string.Join(" | ", _evidence.SummonCommands
+                                    .Where(value => value.StartsWith(
+                                        "executed:", StringComparison.Ordinal))
+                                    .ToArray()),
+                                _summons.Count > 0 && _summons.All(summon =>
+                                    _summonCommandObjects.Any(entry =>
+                                        entry.Key == _castRound &&
+                                        ReferenceEquals(entry.Value.Executor,
+                                            summon) &&
+                                        entry.Value.IsActed)),
+                                "UnitCommand.IsActed for the exact summon in castRound");
+                        if (_flightCreature == null)
                         Add("accelerated-summon-expiration",
                             "two-round caster-level duration grants current and next opportunities then reaches native destruction at castRound+2",
                             "duration=" + DurationObserved() +
@@ -3106,6 +3151,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // player can cast it.
                     bool ordinary = _kind == ScenarioKind.RtwpControl ||
                         _kind == ScenarioKind.NativeControl;
+                    // Repair R2 LIFE-01: Acadamae Graduate shortens the
+                    // creature's own-level prepared spell to a standard
+                    // action; nothing is quickened.
+                    bool acadamae = _kind == ScenarioKind.Acadamae;
+                    if (acadamae)
+                    {
+                        _caseSpellLevel = tier;
+                        result = PrepareAcadamaeSummon(_spellbook, parent,
+                            selected, tier, out _castSlot);
+                        _diagnostics.Add(_flightCreature + "-preparation=" +
+                            "acadamae-own-level;nativeSpellLevel=" + tier);
+                        _evidence.SpellLevel = tier;
+                        _evidence.SlotAvailableBefore = _castSlot != null &&
+                            _castSlot.Available;
+                        return result;
+                    }
                     bool quickenable = tier + 4 <= 9 && !ordinary;
                     if (tier + 4 > 9 && !ordinary)
                         throw new InvalidOperationException(
@@ -3472,8 +3533,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             private static AbilityData PrepareAcadamaeSummon(
                 Spellbook spellbook, out SpellSlot slot)
             {
+                return PrepareAcadamaeSummon(spellbook, SummonMonsterOneGuid,
+                    NativeDogName, 1, out slot);
+            }
+
+            private static AbilityData PrepareAcadamaeSummon(
+                Spellbook spellbook, string parentGuid, string selectedName,
+                int level, out SpellSlot slot)
+            {
                 AbilityData invocation = PreparePreparedSummon(spellbook,
-                    SummonMonsterOneGuid, NativeDogName, 1, out slot);
+                    parentGuid, selectedName, level, out slot);
                 if (invocation.ConvertedFrom == null) return invocation;
                 BlueprintAbility selected = invocation.Blueprint;
                 BlueprintAbility canonical =

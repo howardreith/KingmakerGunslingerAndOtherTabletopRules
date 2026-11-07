@@ -176,10 +176,19 @@ namespace KingmakerGunslinger.Summoning
     }
 
     /// <summary>
-    /// A source-specific aura exposure. A successful save grants the printed
-    /// 24-hour immunity to that source. A failed save gets a marker for the
-    /// exact rolled fear duration, preventing the area's round callback from
-    /// becoming repeated saves while leaving another Bone Devil independent.
+    /// A source-specific aura exposure, shared by Bone Devil and Ice Devil.
+    /// A successful save grants the established 24-hour memory of that
+    /// source. A failed save gets a marker for the exact rolled fear duration,
+    /// preventing the area's tick callback from becoming repeated saves while
+    /// leaving another source independent.
+    ///
+    /// <para>Repair R2 LIFE-02: the marker is bookkeeping, not the fear
+    /// effect, so it is built from its own blueprint with the exact source as
+    /// caster. It used to be added under the Frightened context and so
+    /// inherited the fear's spell descriptors; a victim whose
+    /// <c>BuffDescriptorImmunity</c> refuses those descriptors (the
+    /// Nalfeshnee's Unholy Aura refuses mind-affecting buffs) refused the
+    /// marker too, kept no memory, and saved again on every tick.</para>
     /// </summary>
     [Serializable]
     public sealed class BoneFearAura35 : AbilityAreaEffectLogic
@@ -194,11 +203,14 @@ namespace KingmakerGunslinger.Summoning
         {
             var source = context?.MaybeCaster;
             if (source == null || victim == null || Frightened == null ||
-                SourceMemory == null || OwningBlueprint == null ||
-                !ReferenceEquals(source.Blueprint, OwningBlueprint) ||
-                ReferenceEquals(source, victim) || victim.Destroyed ||
-                victim.Descriptor.State.IsDead || area == null || area.IsEnded ||
-                ContextActionArchonMenace.HasSource(victim, SourceMemory, source))
+                SourceMemory == null || OwningBlueprint == null) return;
+            if (InfernalRules35.FearAuraAdmission(
+                    ReferenceEquals(source.Blueprint, OwningBlueprint),
+                    ReferenceEquals(source, victim),
+                    !victim.Destroyed && !victim.Descriptor.State.IsDead,
+                    area != null && !area.IsEnded,
+                    ContextActionArchonMenace.HasSource(victim, SourceMemory,
+                        source)) != FearAuraExposure.Evaluate)
                 return;
             int dc = InfernalRules35.FearDc(HitDice,
                 source.Stats.Charisma.Bonus,
@@ -211,9 +223,8 @@ namespace KingmakerGunslinger.Summoning
             effect.TriggerRule(save);
             if (save.IsPassed)
             {
-                var memory = victim.Buffs.AddBuff(SourceMemory, effect,
-                    TimeSpan.FromHours(24));
-                if (memory != null) memory.IsNotDispelable = true;
+                Remember(victim, source,
+                    InfernalRules35.FearAuraMemorySeconds(true, 0));
                 return;
             }
             var duration = new RuleRollDice(source,
@@ -221,9 +232,20 @@ namespace KingmakerGunslinger.Summoning
             int rounds = effect.TriggerRule(duration).Result;
             victim.Buffs.AddBuff(Frightened, effect,
                 TimeSpan.FromSeconds(rounds * 6d));
-            var failedMemory = victim.Buffs.AddBuff(SourceMemory, effect,
-                TimeSpan.FromSeconds(rounds * 6d));
-            if (failedMemory != null) failedMemory.IsNotDispelable = true;
+            Remember(victim, source,
+                InfernalRules35.FearAuraMemorySeconds(false, rounds));
+        }
+
+        // Native BuffCollection.AddBuff(blueprint, caster, duration) builds
+        // the context from SourceMemory alone (no parent), so its descriptors
+        // are the marker's own (none) and Context.MaybeCaster is the exact
+        // source that HasSource compares.
+        private void Remember(UnitEntityData victim, UnitEntityData source,
+            double seconds)
+        {
+            var memory = victim.Buffs.AddBuff(SourceMemory, source,
+                TimeSpan.FromSeconds(seconds));
+            if (memory != null) memory.IsNotDispelable = true;
         }
 
         protected override void OnUnitEnter(MechanicsContext context,
