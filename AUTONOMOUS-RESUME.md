@@ -1,4 +1,16 @@
-# Summoned creature manual-playtest repair — R3 completion (partial) / STOP
+# Summoned creature manual-playtest repair — R3 rendered-UI continuation (partial) / STOP
+
+Current. Continuation (owner allowance 600 s, spent 505 s) on candidate
+`76a9cf269310` (package `d95bf1fe…5bd4`): all data predicates PASS; the native
+tracker rendered all seven representatives' own portraits before the pause.
+The capture failed because a brainless AI turn still ended after `IsPaused`
+(observer defect), so there are no screenshots or description windows yet.
+Restoration verified. Next: a narrow observer stabilization plus one run,
+needing a new owner allowance. Not R4.
+
+---
+
+# (superseded) R3 completion (partial) / STOP
 
 Current. PR #112 merged (`fa3eeb9e1a`); PR #113 retargeted to master.
 UI-01..UI-06 product repairs pass their native data predicates on candidate

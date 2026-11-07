@@ -1,5 +1,68 @@
 # Summoned Creature Manual Playtest Repair — R3 status
 
+**R3 PARTIAL (rendered-UI continuation, 2026-11-07).** Product repairs for
+UI-01..UI-06 pass every native data predicate on candidates `221cadc7a67e` and
+`76a9cf269310`. On `76a9cf269310`, the native initiative tracker was observed
+rendering all seven representatives' own portraits (data from the live views;
+no screenshot). The capture then failed on an observer assumption: pausing did
+not freeze the in-flight end of a brainless AI turn. No screenshot or
+description window was captured, so rendered-screen evidence and owner visual
+approval are still missing.
+
+## Rendered-UI continuation (owner allowance 600 s)
+
+- Intake recheck, unchanged: installed 0.0.140, DLL `00EF6757…`, live tree
+  `5C3E4AD4…` (254 files), 16 mod directories, 66 settings values, 95
+  protected save files (baseline `CC7CBB0D…`), reference bundle
+  `7F1EDE2B…`, no Kingmaker process. Branch head `76a9cf2693`, clean.
+- Focused gate `summon-playtest-r3;expanded-summoning.sprint32-native-admission;elemental-traits.exact-ray-eligibility;expanded-summoning.sprint18-append-only-identities;expanded-summoning.identities-exact`:
+  8/8 PASS, 1.0 s.
+- Candidate build (explicit `-ReferenceBundleDir`, same filter, 8 selected):
+  384 s. Source `76a9cf2693108e349b9e2860857db00ed1feb7e2`, package
+  `KingmakerGunslinger-0.0.179-development-summon-playtest-r3-76a9cf269310.zip`
+  SHA-256 `d95bf1fe5c8ee51978c920a1ef1d2ac145745f57c9c6118dfd7b67bb15a55bd4`,
+  DLL `a67107c5b3c3823e99b736a525af4bceea1a7b54d2d53bfc91ee9edcc1e65d51`. The
+  observer is the one in those bytes (portrait-zone tracker reader).
+- One guarded run `20261107T2254033252514Z-fe084a4017b34020bf0cec8df9a2aeee`
+  (evidence local and private): 120 s; 15 PASS, 2 FAIL.
+  - PASS: all data predicates (`portrait-roster`, `donor-portraits-untouched`,
+    `initiative-portraits-live`, `lantern-rays`, `ghaele-ray-owned-grant`,
+    `overrun-trample-presentation`, `metadata-rows`), plus admission, quiet
+    anchor, native Default enter/restore, `owned-ui-restored` and fixture
+    restore.
+  - Tracker observation before the pause (`passed: true`, round 1): Dire Rat,
+    Lantern Archon, Ghaele, Nalfeshnee, Brachiosaurus and Trumpet Archon each
+    had a visible native order view whose `InitiativeTrackerPortraitZone`
+    picture was their own `KMG_SummonPortrait_*`. The Cheetah was the current
+    unit, rendered in the visible current-unit view. This is native evidence
+    for the UI-01 rendered binding, not a screenshot.
+  - FAIL `r3-ui-tracker-rendered`: 30 frames after `IsPaused = true`, the
+    current turn had moved from the Cheetah to the Trumpet Archon, and the
+    Cheetah had no visible order view (it had passed beyond the visible
+    list). The capture's ownership predicate then refused to start
+    (`execution` FAIL: "Native capture lost its exact request-owned UI
+    state"). No screenshot, and no description windows (the run stops there).
+  - Cause, classified as an **observer defect**: the observer assumed `IsPaused`
+    freezes the tracker, but a brainless AI unit's turn that is already ending
+    completes anyway. No product defect is indicated. Per the continuation
+    brief, no second run was made.
+- Restoration: guarded wrapper restored the live tree to
+  `5C3E4AD499DC5116D2024D06260D11700087379937B96B7372C821628CB9BFBB`
+  (record `expanded-summoning-restoration/20261107T2255308115213Z-…`); runner
+  record shows 0.0.140 before and after, 66 settings restored, 95 protected
+  save files unchanged; tutorial flag and owned UI restored; no game process.
+- Spend: 505 s of the 600 s owner allowance (gate 1.0 + build 384 + run 120).
+  It is recorded separately from the original R3 ledger (≈1,256 of 1,800 s).
+
+| Item | Data | Rendered UI | Owner |
+| --- | --- | --- | --- |
+| UI-01 portraits | PASS | live tracker views show all seven own portraits (observation; no screenshot) | pending |
+| UI-02..UI-06 | PASS | not captured (run stopped at the tracker) | pending |
+
+---
+
+# R3 completion continuation and first checkpoint (retained)
+
 **R3 PARTIAL (completion continuation, 2026-11-07). Product repairs for UI-01..UI-06
 are implemented and pass their data predicates natively on candidate
 `221cadc7a67e`. Rendered-UI evidence is still missing:** the completion run's
