@@ -125,6 +125,13 @@ namespace KingmakerGunslinger.DomainTests
                 ActedRound = cast, ActedGameSeconds = 11, ResultAtAct = "Fail" };
             Assertions.False(SummonActionTimingPolicy.IsLegalAction(failed),
                 "An act boundary whose result is Fail is recorded but is not counted as a legal action.");
+            // R2b Lion: a pounce/full attack's first act boundary reports None,
+            // because native UnitAttack returns Success only after its last attack.
+            var fullAttackFirstSwing = new SummonCommandTiming { Sequence = 4, QueuedRound = cast, StartedRound = cast,
+                ActedRound = cast, ActedGameSeconds = 12, ResultAtAct = "None" };
+            Assertions.Equal(SummonFirstActionDisposition.ActedInCastRound,
+                SummonActionTimingPolicy.Classify(new[] { fullAttackFirstSwing }, cast),
+                "The first executed swing of a full attack is an action even though the command result is not yet Success.");
         }
 
         internal static void MemoryDurationsKeepTheEstablishedContract()
