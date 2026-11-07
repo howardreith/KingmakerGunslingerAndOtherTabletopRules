@@ -1,5 +1,179 @@
 # Summoned Creature Manual Playtest Repair — R3 status
 
+**R3 PARTIAL (completion continuation, 2026-11-07). Product repairs for UI-01..UI-06
+are implemented and pass their data predicates natively on candidate
+`221cadc7a67e`. Rendered-UI evidence is still missing:** the completion run's
+tracker predicate failed because of an observer defect (it read the wrong
+tracker image), before any screenshot or description window was taken. The
+corrected observer is committed (compile-checked only). One build plus one
+guarded run (~550 s) does not fit the remaining R3 allowance (~544 s), so it
+was not launched. Owner visual approval is separate and pending throughout.
+
+## Completion continuation (2026-11-07)
+
+Base: PR #112 merged as `fa3eeb9e1aeea1f8d57e1e46eb784d42a2881658`; PR #113
+retargeted to `master` (its diff is exactly the R3 work). Intake recheck on
+DATA, unchanged from the first R3 run: installed 0.0.140, DLL
+`00EF67570D30E4FF9C54A2AD2027393660436D5724BCEE2BB99E4C5718E966FD`, live tree
+254 files `5C3E4AD499DC5116D2024D06260D11700087379937B96B7372C821628CB9BFBB`,
+16 mod directories, 66 native settings values, 95 protected save files
+(KMG_AUTOMATION_BASELINE `CC7CBB0D08581873…`), reference bundle manifest
+`7F1EDE2BB3A01E1F94898DD7753DCAA79169354A48BBEE93EC72E85ED1281C04`,
+Assembly-CSharp `3B6450FFEC440E296E586F71C711B195AED144B28D53E1CBB29406D18FEF5AFB`.
+
+### UI-03: the proven Ghaele grant path and ownership boundary
+
+- Preserved evidence (inventory graph, run
+  `20261021T2235009759632Z-observe-expanded-summoning-inventory`, read-only):
+  native `AzataGhaelSummoned` and the KMG Ghaele each carry a unit-level
+  `AddAbilityToCharacterComponent` with `Abilities=[33e89979…]`, and the two
+  are distinct native objects. Engine (2.1.7b `UnitDescriptor`): at unit
+  creation every ability in those components is added unconditionally. There
+  is no level, form or selection condition. It is not `AddFacts`, which is why
+  the first R3 swap found nothing (`factSwaps=0`).
+- Ownership: `CloneUnitShell` deep-clones every direct unit component and its
+  arrays (`DeepCloneUnitComponent`); only the blueprint references inside are
+  shared. **Correction:** the first R3 record's claim that the KMG unit shares
+  its components with the donor was wrong. `CopyBlueprintFields` alone clones
+  arrays shallowly, but `ComponentsArray` is then replaced with deep clones.
+- Repair: the KMG unit's own component entry now names the owned clone
+  `c3224deccbd349fe833283e7cd3ed712`. Ownership is asserted at load (the
+  component and its array must not be the donor's), and any other grant shape
+  fails closed. The shared native brain `AzataGhaelBrain` is copied into the
+  owned brain `271b9ed69a024e9dbc3bf951ad3ce792` (5 actions). Only its one
+  native ray action is replaced by the owned AI `e11f40cad76e4fceb48849d5770320be`
+  (`Ability` = clone); other actions and scorers are unchanged. The wrong-path
+  `AddFacts` swaps were removed.
+- Compatibility: the clone deep-copies the native ray's components, so action
+  cost, targeting, range, delivery, 2×2d12 damage, spell resistance and
+  conditions are unchanged. The description is read from that data ("Fires 2
+  ranged-touch rays of light at one enemy within long range; each ray deals
+  2d12 damage. Spell resistance does not apply."). Duration and Saving Throw are
+  omitted (empty). The clone has no `Parent`, so the crystalline-form
+  classification would not have reached the native ray through the parent
+  chain. The exact clone identity was therefore added to
+  `ElementalCrystallineFormPolicy`, with a focused parity assertion; ray
+  recognition was not broadened.
+- Existing saves: a Ghaele summoned before this change keeps its native
+  (blank but functional) ray until it expires. No load fixer was added,
+  because that behavior is preserved, not broken.
+- Native data (candidate `221cadc7a67e`): `r3-ui-ghaele-ray-owned-grant` PASS.
+  The live Ghaele has 1 clone fact and 0 native facts, its blueprint grant
+  lists only the clone, its live brain casts the clone once and the native ray
+  never, and the donor's component, native ray, native AI action and native
+  brain are unchanged.
+
+### UI-05/06: Overrun and Trample
+
+- Cause: `CopyFields(native overrun → owned ability)` copied the native
+  ability's Duration ("Trample") and Saving Throw (the maneuver description)
+  into every owned trample and the Brachiosaurus Overrun.
+- Repair (owned builders only; `ConfigureUngulateTrample` is shared by every
+  owned trample): Duration is omitted (empty) for both. Overrun's Saving Throw
+  is omitted, because its combat maneuver check is not a save. Trample states
+  "Reflex DC N half; none for a target that makes its attack of opportunity
+  instead" (plus the Stampede DC where it applies), via
+  `SummonActionTooltipPolicy`.
+- Icon: each Trample keeps the protected native overrun art (`Longstrider`).
+  Overrun uses the installed Greater Overrun feat's art only when that sprite
+  differs from Trample's, and otherwise the approved Brachiosaurus creature
+  art. Native result: Overrun `KMG_SummonIcon_brachiosaurus` (texture
+  `KMG_SummonIcon_Texture_brachiosaurus`) versus Trample `Longstrider`. The run
+  does not show whether the installed feat was absent or shared Trample's art.
+- `r3-ui-overrun-trample-presentation` PASS. The original first-run
+  `r3-ui-brachiosaurus-overrun` PASS stays as the result of its original,
+  more limited predicate (icon non-null only) on `42cd2e26978e`.
+
+### Native UI observation design
+
+- Phase `summon-playtest-r3-ui` now uses the established non-DLC Oleg outdoor
+  fixture under an owned `Cleanup2NativeDefaultScope` (admission requires the
+  exact Sprint32 scenario and phase, plus the grouped quiet anchor). The mansion
+  storybook is never dismissed. Focused admission tests cover the allowed case
+  and refused cases: another scenario, a near-miss phase name, R1/R2 phases
+  unchanged, no Wall preparation, not Sprint40.
+- Turn-based entry reuses the performance-combat seam: acknowledge only the
+  TBMStarted tutorial flag and relock it, PauseOnEngagement off, the native
+  join controller owns the combat edge, then exact restoration.
+- Captures are held by real predicates: owned native Default, no narrative,
+  paused, and each representative's own portrait visible in the tracker; or,
+  for descriptions, the native description window bound to the exact live
+  `Ability` fact with its name, description, visible icon and exactly the
+  intended Duration/Saving Throw rows (empty means the row is absent), and no
+  `<null>` or inherited text. Tooltip plan: `DescriptionController.HandleOpenDescription`
+  with the live fact renders through the same `DescriptionTemplatesAbility`
+  rows as the hover. No owned-hover admission was changed.
+- **Observer defect (completion run):** the tracker predicate read
+  `InitiativeTrackerUnitOrderHorizontalPCView.m_Portrait`, an unused pooled
+  image (it held a stale native sprite, `Valerie_Portrait`, and was not
+  visible). Engine (2.1.7b): `InitiativeTrackerUnitBaseView.SetupPortrait`
+  calls `InitiativeTrackerPortraitZone.SetUnit(unit)`, which assigns
+  `m_Picture.sprite = unit.Portrait.SmallPortrait`. That confirms the product
+  binding. The observer now reads the zone's `m_Picture`. That fix is
+  compile-checked only and has not run natively.
+
+### Completion validation (continues the original R3 ledger)
+
+| Step | Seconds | Result |
+| --- | ---: | --- |
+| Focused gate, compile error (local name clash) | 13.0 | fixed |
+| Focused gate `summon-playtest-r3;expanded-summoning.native-profile;elemental-traits.exact-ray-eligibility;expanded-summoning.sprint32-native-admission` | 17.6 | 15/15 PASS |
+| Candidate build (explicit `-ReferenceBundleDir`), filter `summon-playtest-r3;expanded-summoning.sprint32-native-admission;elemental-traits.exact-ray-eligibility;expanded-summoning.sprint18-append-only-identities;expanded-summoning.identities-exact` | 394 | PASS, 8 selected |
+| Guarded native phase, including deploy/restore | 152 | 13 PASS, 2 FAIL (`tracker-rendered`, `execution`) |
+| Observer fix: focused gate `summon-playtest-r3;expanded-summoning.sprint32-native-admission` | 15.4 | 5/5 PASS (compile only) |
+| **Continuation total** | **≈592 (+≈3 wrapper)** | |
+| **Cumulative R3** | **≈1,256 of 1,800** | ≈544 s left |
+
+Candidate: source `221cadc7a67ee39be8527c34dd9d7bfd79f890b2`, package
+`KingmakerGunslinger-0.0.179-development-summon-playtest-r3-221cadc7a67e.zip`
+SHA-256 `6c338b28c11900cccc206b13855582ddebec35c0d7fca68ad17b78efc9a8502e`, DLL
+`2129b7044c0e659ba7892f392e90d7a6efcd79e0e1bcbaa7b910e13c29468eb4` (MVID
+`f3b47ae0-7666-46af-a244-540da4834f07`). Native run
+`20261107T2239493258556Z-d5a2547302ea48ab911c5a83b420675f` (evidence local and
+private). Observer identity: the R3 observer as compiled into that DLL. The
+corrected tracker observer is a later source change and is **not** in these
+bytes.
+
+Native results on `221cadc7a67e`, all data predicates: PASS for
+`portrait-roster` (134 units, 0 wrong), `donor-portraits-untouched`,
+`initiative-portraits-live`, `lantern-rays` (distinct sprite and texture),
+`ghaele-ray-owned-grant`, `overrun-trample-presentation` and `metadata-rows`,
+plus every admission, anchor and restore predicate. FAIL: `tracker-rendered`
+(observer defect above) and `execution`. No screenshot was captured.
+
+Restoration (completion run): guarded wrapper restored the live tree to
+`5C3E4AD499DC5116D2024D06260D11700087379937B96B7372C821628CB9BFBB` (0.0.140),
+record `expanded-summoning-restoration/20261107T2241453559137Z-…`; 66 settings
+restored; 95 protected save files byte-identical; `r3-ui-owned-ui-restored`
+PASS (tutorial flag relocked, flags exact); no Kingmaker process remains.
+
+### Status by item (data / rendered UI / owner visual approval)
+
+| Item | Data | Rendered UI | Owner |
+| --- | --- | --- | --- |
+| UI-01 portraits | PASS (`221cadc7a67e`) | not established (observer defect; no screen) | pending |
+| UI-02 Lantern icons | PASS | not captured | pending |
+| UI-03 Ghaele ray | PASS (owned grant path, brain, donor unchanged) | not captured | pending |
+| UI-04 Nimbus icon | PASS | not captured | pending |
+| UI-05 Overrun icon | PASS (distinct from Trample) | not captured | pending |
+| UI-06 tooltip rows | PASS (Sprint, Nimbus, Trumpet, Overrun, Trample) | not captured | pending |
+
+### Corrections to the first R3 record
+
+- The shared-component claim (finding 2 below) was wrong; see the ownership
+  boundary above.
+- Attribution: the first record's "96/96" came from the focused gate filter
+  `summon-playtest-r3;summon-playtest-r2;expanded-summoning.sprint32-native-admission;expanded-summoning.sprint18-append-only-identities;expanded-summoning.identities-exact;brown-fur`
+  (96 selected). The filter printed with the candidate (13 selected) is the
+  build filter. They are distinct invocations.
+- The first record's UI-03 finding ("grant path unidentified") is resolved
+  above. Its FAIL and the unusable mansion screenshots on `42cd2e26978e` stay
+  as recorded.
+
+---
+
+# First R3 checkpoint (retained)
+
 **R3 CHECKPOINT — PARTIAL; NOT COMPLETE.** One development candidate, one
 guarded save-free native run on DATA. 9 of 10 R3 native predicates PASS;
 `r3-ui-ghaele-ray-named` FAIL. Visual (screenshot) evidence for the initiative
