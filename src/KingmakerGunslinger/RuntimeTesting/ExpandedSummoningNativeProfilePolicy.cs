@@ -13,6 +13,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         // The Sprint39 name is only the guarded declaration pattern.
         internal const string Sprint39PlaytestCutsPhase = "summon-playtest-r1-cuts";
         internal const string Sprint39PlaytestFearPhase = "summon-playtest-r2-fear";
+        internal const string Sprint39PlaytestUiPhase = "summon-playtest-r3-ui";
         internal const string Sprint39OverhaulDaylightPhase = "summon-overhaul-daylight";
         internal const string Sprint39OverhaulMotionPhase = "summon-overhaul-motion";
         internal const string Sprint39OverhaulOffPhase = "summon-overhaul-off";
@@ -139,12 +140,20 @@ namespace KingmakerGunslinger.RuntimeTesting
         { return phase == Sprint32DruidInputPhase || phase == Sprint32WizardInputPhase || phase == Sprint32SorcererInputPhase; }
         internal static bool Sprint32NativeDefaultPhase(string phase)
         { return Sprint40Phase(phase) || WallFixturePhase(phase) || phase == Sprint39OverhaulReachPhase || phase == Sprint39OverhaulDaylightPhase || phase == Sprint39OverhaulMotionPhase || phase == Sprint39OverhaulOffPhase || phase == Sprint32InfernalBodiesPhase || phase == Sprint32ShadowMotionPhase || Sprint32NativeInputPhase(phase) || phase == Sprint32PerformancePhase ||
-            phase == Sprint32FascinatePhase || phase == Sprint32BardicSuggestionPhase || phase == Sprint32GrabPhase || phase == Sprint32PresentationPhase || phase == Sprint32SuggestionTerminalsPhase; }
+            phase == Sprint32FascinatePhase || phase == Sprint32BardicSuggestionPhase || phase == Sprint32GrabPhase || phase == Sprint32PresentationPhase || phase == Sprint32SuggestionTerminalsPhase ||
+            // Repair R3: actual HUD/description screens need the established
+            // non-narrative Oleg outdoor fixture, not the mansion storybook.
+            phase == Sprint39PlaytestUiPhase; }
+        // Repair R3 observer: a capture surface is owned only in the exact
+        // native Default scope, without narrative, with no unrelated native
+        // modal (desktop DialogMessageBox.IsShown), and on its exact surface.
+        internal static bool SummonPlaytestR3SurfaceOwned(bool nativeDefault, bool narrativeFree, bool unrelatedModal, bool exactSurface)
+        { return nativeDefault && narrativeFree && !unrelatedModal && exactSurface; }
         internal static bool Sprint32NativeDefaultOutdoor(string scenario, string phase)
         { return scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview && Sprint32NativeDefaultPhase(phase); }
         internal static bool Sprint32Phase(string phase)
         { return Sprint40Phase(phase) || phase == Sprint32InfernalHealingPhase || phase == Sprint32InfernalAiPhase || phase == Sprint32InfernalEffectsPhase || phase == Sprint32InfernalLifetimePhase || phase == Sprint32InfernalCombatPhase || phase == Sprint32InfernalRoutesPhase || phase == Sprint32InfernalMechanicsPhase || phase == Sprint32InfernalEarlyPhase || phase == Sprint35InfernalEarlyPhase || phase == Sprint35InfernalBarbedPhase || phase == Sprint35InfernalBarbedCombatPhase || phase == Sprint35InfernalBonePhase || phase == Sprint35InfernalPublicPhase || phase == Sprint36InfernalCorePhase || phase == Sprint36InfernalCombatPhase || phase == Sprint36InfernalTurnsPhase || phase == Sprint36InfernalPublicPhase || phase == Sprint37VrockCorePhase || phase == Sprint37VrockSporesPhase || phase == Sprint37VrockGeometryPhase || phase == Sprint37VrockScreechPhase || phase == Sprint37VrockTurnsPhase || phase == Sprint37VrockAiPhase || phase == Sprint37VrockPublicPhase || phase == Sprint37VrockReleasePhase || phase == Sprint38GlabrezuCorePhase || phase == Sprint38GlabrezuRendPhase || phase == Sprint38GlabrezuStunPhase || phase == Sprint38GlabrezuSpellsPhase || phase == Sprint38GlabrezuAiPhase || phase == Sprint38GlabrezuPublicPhase || phase == Sprint38GlabrezuReleasePhase || phase == Sprint39NalfeshneeCorePhase || phase == Sprint39NalfeshneeNimbusPhase || phase == Sprint39NalfeshneeTurnsPhase || phase == Sprint39NalfeshneeSpellsPhase || phase == Sprint39NalfeshneeIntegrationPhase || phase == Sprint39NalfeshneePublicPhase || phase == Sprint39NalfeshneeReleasePhase || phase == Sprint32ShadowDrainPhase || phase == Sprint32ShadowPreservationPhase || phase == Sprint32StalkerPurgePhase || phase == Sprint32ShadowOutsidersPhase || phase == Sprint32SatyrControlPhase || phase == Sprint32LillendSupportPhase ||
-            phase == Sprint39OverhaulIndoorPhase || phase == Sprint39VisualCloseoutPhase || phase == Sprint39PlaytestCutsPhase || phase == Sprint39PlaytestFearPhase || phase == Sprint32SatyrTurnPhase || phase == Sprint32LillendTurnPhase || phase == Sprint32SuggestionPhase ||
+            phase == Sprint39OverhaulIndoorPhase || phase == Sprint39VisualCloseoutPhase || phase == Sprint39PlaytestCutsPhase || phase == Sprint39PlaytestFearPhase || phase == Sprint39PlaytestUiPhase || phase == Sprint32SatyrTurnPhase || phase == Sprint32LillendTurnPhase || phase == Sprint32SuggestionPhase ||
             phase == Sprint32SatyrRoutesPhase || phase == Sprint32LillendRoutesPhase || phase == Sprint32LifecyclePhase ||
             phase == Sprint32CantripPhase || phase == Sprint32HoldPhase || phase == Sprint32HoldTurnPhase ||
             phase == Sprint32ControlsPhase || phase == Sprint32ControlsTurnPhase ||

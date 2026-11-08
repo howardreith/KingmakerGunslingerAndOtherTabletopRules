@@ -10,9 +10,18 @@ namespace KingmakerGunslinger.DomainTests
         internal static void ExactSemanticRayBoundaries()
         {
             IReadOnlyList<string> rays = ElementalCrystallineFormPolicy.RayAbilityGuids;
-            Assertions.Equal(37, ElementalCrystallineFormPolicy.NativeRayAbilityGuids.Count, "The original 34 rays plus three exact native story rays must remain explicit.");
+            Assertions.Equal(38, ElementalCrystallineFormPolicy.NativeRayAbilityGuids.Count, "The original 34 rays, three exact native story rays and the R3 owned Ghaele ray clone must remain explicit.");
             Assertions.Equal(56, ElementalCrystallineFormPolicy.OptionalRayAbilityGuids.Count, "Every reviewed optional ray and copied spell needs its exact identity.");
-            Assertions.Equal(93, rays.Count, "The combined semantic ray inventory must be explicit.");
+            Assertions.Equal(94, rays.Count, "The combined semantic ray inventory must be explicit.");
+            // Repair R3 parity: the KMG Ghaele's owned light ray (no Parent)
+            // keeps the classification of the native ray it replaces, and the
+            // native identity itself stays recognized.
+            foreach (string ghaele in new[] { "33e8997912cf76b4c99dca0445082804", "c3224deccbd349fe833283e7cd3ed712" })
+            {
+                Assertions.True(ElementalCrystallineFormPolicy.NativeRayAbilityGuids.Contains(ghaele), "Ghaele ray identity is explicit: " + ghaele);
+                Assertions.True(ElementalCrystallineFormPolicy.IsRay(new[] { ghaele }, true, true, true, false), "Ghaele ray accepted: " + ghaele);
+                Assertions.False(ElementalCrystallineFormPolicy.IsRay(new[] { ghaele }, true, true, false, false), "Ghaele ray still needs the native ray weapon contract: " + ghaele);
+            }
             Assertions.True(rays.SequenceEqual(ElementalCrystallineFormPolicy.NativeRayAbilityGuids
                 .Concat(ElementalCrystallineFormPolicy.OptionalRayAbilityGuids)), "Native ordering must be preserved when adding optional identities.");
             Assertions.True(((IList<string>)ElementalCrystallineFormPolicy.NativeRayAbilityGuids).IsReadOnly &&

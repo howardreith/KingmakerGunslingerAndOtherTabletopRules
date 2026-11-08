@@ -99,7 +99,7 @@ namespace KingmakerGunslinger.Summoning
         // moves from 737 by exactly that, and the derived
         // FoundationIdentityCount follows. It is not fitted to whatever the
         // builder happened to produce.
-        internal const int SpecialIdentityCount = 789;
+        internal const int SpecialIdentityCount = 792;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -1139,6 +1139,10 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.WallSectionUnitType", "BlueprintUnitType"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.IceStormArea", "BlueprintAbilityAreaEffect"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.IceDevil.SpearFrost", "BlueprintWeaponEnchantment"));
+            // Repair R3 UI-03: the KMG Ghaele's owned, named light ray.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GhaeleAzata.LightRay", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GhaeleAzata.LightRayAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GhaeleAzata.Brain", "BlueprintBrain"));
             Validate(result);
             return result.AsReadOnly();
         }

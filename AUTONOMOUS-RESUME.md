@@ -1,3 +1,87 @@
+# Summoned creature manual-playtest repair — R3 complete for review / STOP
+
+Current (2026-11-08). R3 is complete for review; owner aesthetic approval is
+pending.
+- UI-01 keeps its inspected tracker screenshot from `57a8e659b1e6`; the
+  undetected Auto End Turn prompt is that candidate's limitation.
+- UI-02..06 are established by eight inspected native ability description
+  windows on observer candidate `31e61aa73a01` (package `f8258ca4…1d5f`, DLL
+  `af3ebc14…fe74`). The run gave 23 PASS, 0 FAIL.
+- The observer now builds `TooltipData` with `Type = TooltipType.Ability` and
+  refuses unrelated native modals. Product code has been frozen since
+  `221cadc7a67e`.
+- Restoration verified (0.0.140, `5C3E4AD4…`, 66 settings, 95 saves).
+- Spend: 1,149 of the 1,500 s cap; cumulative R3 ≈ 2,910 s.
+
+Next: owner review of PR #113, then an explicitly authorized R4 (mephit breath
+audit). Do not start R4 automatically.
+
+---
+
+# (superseded) R3 UI-evidence checkpoint (partial) / STOP
+
+Current. Owner allocation of 900 s (spent 573 s) on observer candidate
+`57a8e659b1e6` (package `36f7054a…4f55`, DLL `fad71354…3eca`); product code
+frozen since `221cadc7a67e`. UI-01 is established on an inspected native
+tracker screenshot (all seven representatives' own art, overlays intact).
+UI-02..06 rendered evidence is missing: the eight owned description windows
+rendered empty because the observer omitted `TooltipData.Type =
+TooltipType.Ability`. Data predicates pass for all six; owner visual approval
+is pending. Restoration verified. Cumulative R3 ≈ 2,334 s across three ledgers.
+Next: owner manual retest of UI-02..06, or an observer-only continuation
+(set the tooltip type and refuse unowned modals) under a new allocation.
+Not R4.
+
+---
+
+# (superseded) R3 rendered-UI continuation (partial) / STOP
+
+Current. Continuation (owner allowance 600 s, spent 505 s) on candidate
+`76a9cf269310` (package `d95bf1fe…5bd4`): all data predicates PASS; the native
+tracker rendered all seven representatives' own portraits before the pause.
+The capture failed because a brainless AI turn still ended after `IsPaused`
+(observer defect), so there are no screenshots or description windows yet.
+Restoration verified. Next: a narrow observer stabilization plus one run,
+needing a new owner allowance. Not R4.
+
+---
+
+# (superseded) R3 completion (partial) / STOP
+
+Current. PR #112 merged (`fa3eeb9e1a`); PR #113 retargeted to master.
+UI-01..UI-06 product repairs pass their native data predicates on candidate
+`221cadc7a67e` (package `6c338b28…502e`): the Ghaele ray is redirected through
+its proven `AddAbilityToCharacterComponent` grant with an owned brain, Overrun
+art differs from Trample, and the inherited trample/overrun rows are replaced.
+Rendered-UI evidence is still missing: the tracker observer read the wrong
+image (fixed in source, compile-only). Cumulative R3 ≈ 1,256 of 1,800 s;
+the remaining ≈ 544 s cannot cover one build plus one run. Restoration
+verified. Next: the narrow R3 rendered-UI continuation, with a new allowance
+granted by the owner. Not R4.
+
+---
+
+# (superseded) R3 checkpoint (partial) / STOP
+
+Current. R2 closed by owner acceptance (draft PR #112, not merged). R3
+(UI-01..UI-06, presentation only) is a partial development checkpoint on
+`codex/summon-playtest-r3-ui`, based on the #112 branch
+([R3-STATUS](planning/summon-playtest-repair/R3-STATUS.md)).
+
+- Candidate `42cd2e26978e` (package `8dc227c3…71b5d2`); one guarded save-free
+  DATA run: 9/10 R3 predicates PASS.
+- UI-01, UI-02, UI-04, UI-06 implemented with native data PASS; no visual PASS
+  (captures covered by the prologue storybook overlay).
+- UI-03 open: owner identified (native `AzataGhaelLightRay` `33e89979…`), but
+  the clone swap found no unit-level grant (`factSwaps=0`). UI-05 open:
+  Overrun icon duplicates Trample's and both carry inherited wrong tooltip rows.
+- R3 spend ≈ 661 s (≈ 11 min). Restoration verified. Next: the narrow R3
+  repair, not R4.
+
+The R2 record below is retained unchanged.
+
+---
+
 # Summoned creature manual-playtest repair — R2 closed
 
 Current. R1 merged (PR #111). R2 closed by owner acceptance on

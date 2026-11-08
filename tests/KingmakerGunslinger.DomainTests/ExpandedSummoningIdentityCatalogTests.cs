@@ -103,7 +103,8 @@ namespace KingmakerGunslinger.DomainTests
                     GiantBodyRulesPolicy.AppendedTotalAbilityIdentityCount + 9 +
                     ExpandedSummoningSprints30And31Tests.RegisteredAbilityIdentityCount +
                     sprint35Routes + sprint36Routes + sprint37Routes +
-                    sprint38Routes + sprint39Routes + sprint40Routes,
+                    sprint38Routes + sprint39Routes + sprint40Routes +
+                    1, // Repair R3 UI-03: the KMG Ghaele's owned light ray.
                 released.Count(value => value.PlannedType == "BlueprintAbility"),
                 "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
@@ -113,10 +114,14 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprints30And31Tests.RegisteredBuffIdentityCount,
                 released.Count(value => value.PlannedType == "BlueprintBuff"),
                 "Buff identity count changed.");
-            Assertions.Equal(29 + ExpandedSummoningSprints30And31Tests.RegisteredAiIdentityCount,
-                released.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
-            Assertions.Equal(17 + ExpandedSummoningSprints30And31Tests.RegisteredBrainIdentityCount,
-                released.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
+            Assertions.Equal(29 + ExpandedSummoningSprints30And31Tests.RegisteredAiIdentityCount +
+                    1, // Repair R3 UI-03: the Ghaele light-ray AI action.
+                released.Count(value => value.PlannedType == "BlueprintAiCastSpell"),
+                "AI identity count changed.");
+            Assertions.Equal(17 + ExpandedSummoningSprints30And31Tests.RegisteredBrainIdentityCount +
+                    1, // Repair R3 UI-03: the Ghaele brain.
+                released.Count(value => value.PlannedType == "BlueprintBrain"),
+                "Brain identity count changed.");
             Assertions.Equal(1, released.Count(value => value.PlannedType == "IsEngagedConsideration"),
                 "Only the bounded crocodilian engagement scorer is registered.");
             Assertions.Equal(29 + TheropodRulesPolicy.AppendedWeaponIdentityCount +

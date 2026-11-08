@@ -338,6 +338,7 @@ namespace KingmakerGunslinger.Blueprints
             ExpandedSummoningSpecialBuilder.Configure(library, registered,
                 extraplanar);
             ExpandedSummoningIconBuilder.Configure(registered);
+            ExpandedSummoningPortraitBuilder.Configure(registered);
             ApplyExtraplanarMarker(registered, extraplanar);
             Registered = result;
             return result;
