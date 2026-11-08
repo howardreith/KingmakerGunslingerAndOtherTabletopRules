@@ -1,5 +1,116 @@
 # Summoned Creature Manual Playtest Repair — R5 status
 
+## R5 UMM ownership repairs (2026-11-08, commit `307cf89356`): review checkpoint
+
+Scripts only: `UmmParams.Common.ps1`, its test, and one line of the guarded
+wrapper. This finishes UMM transaction ownership and supersedes the ownership
+description under Finding 2 below where they differ. The optional-provider
+binding repair and the cleanup-independence repair are unchanged.
+
+**Nothing native happened at this checkpoint:** no package was built, Kingmaker
+was not launched, and the live installation, settings, UMM `Params.xml` and
+saves were not changed. The 22/0 result stays with tested candidate
+`366fad0ac41b271564cf394e6de952e6a4c68591` only. The repaired binder
+(`06d9bc4d0e`) still has compile and focused evidence only.
+
+### Failure path 1: automatic owner restoration was not serialized (repaired)
+
+- **Defect:** the wrapper releases its backup lease as soon as the receipt
+  exists. `Complete-KmgUmmParamsProtection` then restored with no lease, on the
+  strength of the receipt's PID and start time. That identity shows who created
+  the receipt, not who owns the installation now. A foreign transaction could
+  take the shared lock, the installation step could refuse, and the independent
+  UMM step would still overwrite `Params.xml`.
+- **Repair:**
+  - The owner path now needs both the receipt's process identity and a lease
+    held in the receipt's recorded coordination root: its own new lease, or a
+    validated inherited one.
+  - The lease is held through the game recheck, restoration, hash verification
+    and receipt completion.
+  - `Restore-KmgUmmParams` now refuses any write without a live lease. Only
+    verifying an already-restored receipt needs none.
+  - A refusal leaves `Params.xml` and the pending receipt byte-identical, and
+    never touches the other transaction. It is reported in the cleanup outcome,
+    so overall PASS is refused, and the owner can retry once ownership is
+    available.
+  - An inherited lease is validated and never released by this step. The
+    wrapper passes the Sprint40 startup-protection lease it still holds at
+    cleanup, which avoids a self-refusal on its own lock.
+  - Receipts now also record `restorationLease`.
+
+### Failure path 2: a refused recovery could block later recovery (repaired)
+
+- **Defect:** `Invoke-KmgUmmParamsRecovery` took its lease before checking for
+  Kingmaker. With a game already running and no shared lock, recovery took a new
+  lease and refused; `Exit-KmgRuntimeLease` then saw the game and retained that
+  lease as RecoveryRequired, blocking later recovery on its own new lock.
+- **Repair:** recovery and owner completion both refuse a running game before
+  creating a lease, and recheck while holding it, before any write. A refusal at
+  entry creates no lock, run directory or recovery debt. Shared lease teardown is
+  unchanged: a game that appears after the lease is held still retains that
+  lease for recovery.
+
+The `-GameProcessName` parameters are gone, so admission and teardown cannot
+disagree about which process they check.
+
+### Focused verification
+
+- **Process seam:** the test shadows `Get-Process` for the literal name
+  `Kingmaker`, the convention in `Test-RuntimeLeaseLifecycle.ps1`. Admission, the
+  recheck under the lease and `Exit-KmgRuntimeLease` all see the same answer. No
+  process is started and the game is not launched.
+- **`Test-UmmParamsProtection.ps1`: 85 assertions pass (exit 0), about 7 s,** on
+  temporary files and real temporary leases, through the shipped cleanup
+  functions. New or changed cases:
+  - legitimate original process under a foreign lease: `Params.xml` and the
+    pending receipt untouched, the foreign lease intact, failure reported; after
+    release, the owner's retry restores the exact intake bytes and completes;
+  - restoration without a held lease refused, with no write;
+  - combined cleanup under a foreign lease: the installation step's real
+    ownership failure is kept, and the UMM step is refused too;
+  - Kingmaker already running at entry, for recovery (function and script) and
+    for owner completion: no new lock, run directory or debt, and later recovery
+    or retry succeeds;
+  - Kingmaker appearing once the lease is held: no write, and the lease is
+    retained for recovery;
+  - valid inherited lease: no self-refusal, recorded under that lease, parent
+    still held and later released by its owner;
+  - inherited lease from another root, or already released: refused, no write;
+  - existing live-owner, non-owner, interrupted-owner, byte-exact and
+    independent-cleanup cases still pass.
+- **Mutation checks (each reverted, file hash verified):**
+  - owner restores without a lease: 15 failures;
+  - recovery takes its lease before the game check: the suite stops when the
+    later recovery is blocked by the refused attempt's own lock, reproducing the
+    reported defect;
+  - cleanup drops the inherited lease: 2 failures.
+- **`Test-ExpandedSummoningRuntimeOrchestration.ps1 -ScriptRoot scripts`:** 297
+  assertions pass, about 1 s. Its first invocation omitted `-ScriptRoot` and
+  stopped on parameter binding before any assertion.
+- All four UMM and wrapper scripts parse with 0 errors. Both test scripts were
+  inspected: they launch no build, historical validation or native scenario.
+- **Not run:** production compilation (no C# changed) and the focused gate.
+  `summon-playtest-r5-spells` was not run; it continues through the full R5
+  sequence, and its build plus run durations exceed the remaining allowance.
+
+### Identities and spend
+
+- **Sources:** reviewed head `ee533d70d5` → scripts repair `307cf89356`.
+  Product source is unchanged from `06d9bc4d0e`.
+- **Spend this checkpoint:** about 35 s (UMM runs 8 s and 7 s; three mutation
+  runs 16 s; orchestration 2 s; parsing about 2 s).
+- **R5 cumulative:** about **1,389 of 1,800 s**, about 411 s remaining.
+
+### Unchanged limits
+
+The R4 `Params.xml` restoration exception, the earlier observer failure on
+`73bfc8ca97a9`, and all R5 native-coverage limits stand. The window between
+receipt creation and completion is not held under one lease; a foreign
+transaction in that window is refused at completion, and the receipt stays
+pending for `scripts/Restore-UmmParams.ps1`.
+
+---
+
 **R5 review repairs (2026-11-08, commit `06d9bc4d0e`): three review findings
 repaired; review checkpoint.** The three findings are below. The original R5
 record follows unchanged. The 22/0 native result belongs only to tested source
