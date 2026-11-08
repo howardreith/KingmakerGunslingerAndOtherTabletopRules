@@ -10,8 +10,10 @@ Current (2026-11-08). R4 is complete for review on draft PR #114 (branch
 - Charter ally-safety is repaired on the four owned native-backed breaths;
   the native case shows an ally in the cone untouched.
 - The Pyrotechnics flash was captured while alive and retired by itself.
-- Restoration is exact except UMM's own `Params.xml` `LastUpdateCheck`
-  timestamp (not reconstructible; recorded).
+- The KMG installation, settings and saves were restored, and the enabled
+  profile is unchanged. UMM `Params.xml` did not return to its intake hash,
+  so exact restoration of it is not established. An older-backup
+  comparison found only a `LastUpdateCheck` difference.
 - R4 ledger: 1,135 of 1,800 s.
 
 Next: owner review of PR #114, then an explicitly authorized R5 (actual

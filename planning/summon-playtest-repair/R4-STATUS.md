@@ -9,8 +9,9 @@ judgment. Nothing was merged, released or installed.
 - **Charter ally-safety:** repaired on the four owned native-backed
   breaths.
 - **MEPH-04:** the Pyrotechnics flash was captured while alive.
-- **One restoration limitation:** the UMM `Params.xml` `LastUpdateCheck`
-  timestamp, recorded below.
+- **One restoration exception:** UMM `Params.xml` did not return to its
+  intake hash. Exact restoration of that file could not be established
+  (recorded below).
 
 ## Evidence wording (active; supersedes broader phrasing below)
 
@@ -135,14 +136,21 @@ judgment. Nothing was merged, released or installed.
     `CC7CBB0D…`); the intake readout is byte-identical.
   - `owned-ui-restored`: no errors.
   - No process; last lease `Completed`, no recovery required.
-  - **Limitation:** UMM rewrote its own `Params.xml` `<LastUpdateCheck>`
-    when the game started (00:14:01), so the hash changed from
-    `c51c869c…` to `e44f4495…`. Diffed against the latest available UMM
-    backup, that timestamp is the only differing field. The enabled profile
+  - **Exception (narrowed 2026-11-08):** the KMG installation, game
+    settings and protected saves were restored, and the enabled-mod profile
     is unchanged (all 16).
-  - The guarded workflow does not snapshot `Params.xml`, and the intake
-    bytes cannot be reconstructed, so the file was not rewritten. Writing a
-    guessed timestamp would fabricate state.
+  - UMM `Params.xml` did **not** return to its intake hash: `c51c869c…`
+    (only this 16-character prefix was recorded) became `e44f4495…`.
+  - A comparison against an older UMM backup (`runtime-backups/umm-params`,
+    2026-09-26), not the intake bytes, found only a `<LastUpdateCheck>`
+    difference. The current file carries a timestamp from this run's game
+    start (00:14:01). Exact restoration of the file could not be
+    established.
+  - The R4 runner did not snapshot `Params.xml`, and no backup matching the
+    intake hash exists. The file was not rewritten, and no timestamp was
+    invented.
+  - R5 adds byte-exact `Params.xml` protection to the guarded runner and
+    uses the current file as its intake.
 - **Spend:**
   - This continuation: gate 20 s, build 394 s, run 133 s = **547 s**.
   - R4 ledger total **1,135 s** of the 1,800 s ceiling (588 s from the first
