@@ -169,7 +169,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint28SetBrainActivePreservingActions(griffon, false);
                 int charges = griffon.Descriptor.Abilities.Enumerable.Count(value => value.Blueprint.AssetGuid == SummonPlaytestR5Policy.NativeChargeAbilityGuid);
                 Sprint25Check(prefix + "griffon-one-charge", charges == 1, new JObject { ["griffon"] = griffon.UniqueId, ["chargeAbilities"] = charges,
-                    ["pounce"] = griffon.Descriptor.HasFact(BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library, "1a8149c09e0bdfc48a305ee6ac3729a8", "native Pounce")) },
+                    ["pounce"] = griffon.Descriptor.HasFact(BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Classes.BlueprintFeature>(library, "1a8149c09e0bdfc48a305ee6ac3729a8", "native Pounce")) },
                     "A fresh live Griffon has exactly one native Charge ability (the engine grant) and keeps Pounce.");
 
                 // 3. Mastodon: a real commanded trample (existing qualified driver).
@@ -269,6 +269,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint25Check(prefix + "pixie-four-at-will", spellsOk, (JObject)spellRows.DeepClone(),
                     "Each of the Pixie's Entangle, Confusion, Dispel Magic (targeted variant) and Shield executes twice under command with its native action type, no resource, and remains available (Shield's buff on the Pixie and Confusion's on the hostile observed; controlled failed saves).");
 
+                foreach (var area in Game.Instance.State.AreaEffects.All.Where(area => area != null && area.Context != null &&
+                    ReferenceEquals(area.Context.MaybeCaster, pixie)).ToArray()) area.ForceEnd();
                 PlaceExpandedSummoningUnit(pixie, ObstacleAnalyzer.GetNearestNode(hostile.Position + Vector3.back * 1.2f).clampedPosition);
                 for (int frame = 0; frame < 10; frame++) yield return 0;
                 Ability danceFact = pixie.Descriptor.Abilities.Enumerable.Single(value => ReferenceEquals(value.Blueprint, dance));
@@ -328,9 +330,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     JObject card = R3DescriptionCard(target);
                     foreach (int frame in screens.Capture("r5-description-" + item.Label, card, owns)) yield return frame;
                     card = R3DescriptionCard(target);
-                    bool passed = (bool)card["contentCorrect"] && (bool)card["rowsVisible"];
-                    descriptions.Add(new JObject { ["construction"] = R3Construction(data, fact), ["card"] = card, ["passed"] = passed });
-                    Sprint25Check(prefix + "render-" + item.Label, passed, (JObject)card.DeepClone(),
+                    JObject scrolled = null;
+                    bool rowsVisible = (bool)card["rowsVisible"];
+                    if (!rowsVisible && window.Scroll != null && window.Scroll.isActiveAndEnabled)
+                    {
+                        // R3's supported owned-window interaction: the window's
+                        // own ScrollRect shows the remaining rows at normal scale.
+                        window.Scroll.verticalNormalizedPosition = 0f;
+                        for (int frame = 0; frame < 15; frame++) { if (!owns()) throw new InvalidOperationException("Description ownership lost while scrolling."); yield return 0; }
+                        scrolled = R3DescriptionCard(target);
+                        foreach (int frame in screens.Capture("r5-description-" + item.Label + "-scrolled", scrolled, owns)) yield return frame;
+                        scrolled = R3DescriptionCard(target);
+                        rowsVisible = (bool)scrolled["rowsVisible"] ||
+                            (bool)card["duration"]["visible"] && (bool)scrolled["savingThrow"]["visible"] ||
+                            (bool)scrolled["duration"]["visible"] && (bool)card["savingThrow"]["visible"];
+                        window.Scroll.verticalNormalizedPosition = 1f;
+                    }
+                    bool passed = (bool)card["contentCorrect"] && rowsVisible;
+                    var result = new JObject { ["construction"] = R3Construction(data, fact), ["card"] = card, ["scrolled"] = scrolled, ["rowsVisibleInACapture"] = rowsVisible, ["passed"] = passed };
+                    descriptions.Add(result);
+                    Sprint25Check(prefix + "render-" + item.Label, passed, (JObject)result.DeepClone(),
                         "Captured native description window for the live fact shows its name, description, visible icon and only its own rows, unclipped, with no <null>.");
                     ui.DescriptionController.HandleCloseDescriptionWindow(window);
                     for (int frame = 0; frame < 120 && window.gameObject.activeInHierarchy; frame++) yield return 0;
