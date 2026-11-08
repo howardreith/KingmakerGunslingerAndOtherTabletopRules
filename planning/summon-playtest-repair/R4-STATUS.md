@@ -1,24 +1,165 @@
 # Summoned Creature Manual Playtest Repair — R4 status
 
-**R4 PARTIAL (2026-11-08).** MEPH-01 and MEPH-02 are complete for review on
-executed native evidence:
+**R4 COMPLETE FOR REVIEW (finishing checkpoint, 2026-11-08).** MEPH-01..04
+are technically established. Owner aesthetic approval is a separate, pending
+judgment. Nothing was merged, released or installed.
 
-- Air, Earth and Water deal their required damage through owned breaths.
-- Water deals acid packets through the native acid cone.
-- Earth deals bludgeoning packets.
+- **MEPH-01/02:** damage repaired (unchanged since the first checkpoint).
+- **MEPH-03:** Salt's art replaced after inspecting real native art.
+- **Charter ally-safety:** repaired on the four owned native-backed
+  breaths.
+- **MEPH-04:** the Pyrotechnics flash was captured while alive.
+- **One restoration limitation:** the UMM `Params.xml` `LastUpdateCheck`
+  timestamp, recorded below.
 
-Two R4 items remain:
+## Evidence wording (active; supersedes broader phrasing below)
 
-- **Salt Mephit breath icon (MEPH-03).** The art chosen
-  (`FragmentationForm`) renders as a blue figure on a glowing circle in the
-  inspected native window. It does not read as salt or grit.
-- **Pyrotechnics flash (MEPH-04).** The flash is established natively:
-  exactly one native blinding-burst instance is spawned per executed cast, on
-  the caster, and it retires on its own after about 3.1 s. No framebuffer
-  frame was captured while it was visible.
+- **Air:** loaded slashing profile, owned grant and live AI-action
+  reference. No Air cast was executed.
+- **Earth:** an executed cast (first checkpoint) produced bludgeoning damage
+  on the intended target. That assertion did not establish the absence of
+  stray-target damage.
+- **Water:** an executed cast produced acid damage, launched the acid-cone
+  projectile, and produced no stray damage events in that fixture. The
+  screenshot shows the green impact, not the cone in flight.
+- **Brains:** the fixture's brains were inactive. An AI-action reference is
+  configuration, not an observed autonomous cast.
+- **Saves:** every damage observation used controlled failed saves (seeded
+  native d20 on the disposable hostile). Natural save outcomes and save
+  scaling are not qualified.
+- **Dice:** the loaded 1d12 configuration of the four native breaths is
+  preserved. Whether it comes from the game data or another enabled mod
+  remains unresolved.
+- **Fire and the six variants:** loaded configuration and description
+  windows only; none was cast.
 
-Owner aesthetic approval is separate and pending. Nothing was merged,
-released or installed.
+## Finishing checkpoint (continues the R4 ledger)
+
+- **Intake recheck:** identical to the first R4 intake. Branch head
+  `9aa73c4711`; PR #114 open as a draft.
+- **Salt icon (MEPH-03):**
+  - Native art was inspected before choosing. A read-only pure-Python reader
+    (no installs) extracted the 64×64 native textures from
+    `Kingmaker_Data/sharedassets1.assets`. The decode was verified against
+    in-game renders (Burning Hands, Fragmentation, Sandstorm).
+  - About 20 candidates were compared:
+    - Ice Blast, Blizzard, Sleet and white-dragon art read as cold.
+    - Clashing Rocks and Rock Throw read as boulders.
+    - Spike Growth reads as plant thorns; Mud Blast as mud.
+    - Horrid Wilting is a withered face.
+    - Wind Wall is too close to Dust's Sandstorm.
+    - Glitterdust is Salt's own spell-like ability.
+  - Chosen: **Metal Blast** (`MetalBlastAbility` `665cfd37…`), a burst of
+    pale jagged shards that reads as cutting crystalline grit. It is
+    distinct from Dust (golden sand), Earth (rock cluster) and Glitterdust
+    (sparkling silhouette).
+  - The ten-unique-art assertion still holds and was not narrowed. The
+    other nine assignments are unchanged.
+- **Charter ally-safety (MEPH audit):**
+  - The inherited native breath effects deal damage to every creature in the
+    cone. The native breath AI actions' only target consideration is
+    `AttackTargetsPriority` (no friend avoidance). So the four owned
+    native-backed breaths did **not** guarantee ally safety.
+  - Repair: the repository's existing scoped mechanism. The six variants'
+    `Conditional(ContextConditionIsEnemy)` effect gate is now a shared
+    `MephitBreathEnemiesOnly` helper (same object graph and comment) and is
+    applied to the four owned breaths.
+  - Native donors and AI are untouched. Dice, recharge, save scaling,
+    sickness and action cost are unchanged.
+  - The breath text now states that only the mephit's enemies are affected.
+  - All ten loaded breaths carry the gate (`loaded-breath-matrix`).
+- **Pyrotechnics (MEPH-04):**
+  - The cast loop now evaluates the spawn trigger after each yielded frame
+    and before the completion break, with a single-fire guard.
+  - The exact instance from the executed cast is tracked. Liveness is
+    sampled at the frame the screenshot is requested, not while the file is
+    written. Retirement afterwards is required.
+- **Narrow finishing phase** `summon-playtest-r4-finish`:
+  - configuration checks for all ten;
+  - fresh Salt, Water, Earth (as the ally) and Magma;
+  - the Salt description, one ally-safety case and Pyrotechnics.
+  - The original phase is unchanged apart from the shared loop fix and gate
+    check.
+- **Focused gate:** 16 selected (summon-playtest-r4 ×4, summon-playtest-r3
+  ×5, Sprint 5 ×4, sprint32 admission, identities-exact, sprint18
+  append-only): 16/16, 20 s. The guarded admission accepts
+  `summon-playtest-r4-finish` and refuses an unknown phase. No identities or
+  ledger entries changed.
+- **Finishing candidate** (one build, explicit `-ReferenceBundleDir`, 16
+  selected, 394 s; the nested wrapper ran only its `selected-behavior`
+  self-check):
+  - Source `15f9f68a976a66b1051d5e36f8203b371bf338c1`.
+  - Package
+    `KingmakerGunslinger-0.0.179-development-summon-playtest-r4-15f9f68a976a.zip`
+    SHA-256 `a5c1d4b727f44f477f389ecf4070706d07962cb7a68630a660add875b78cd555`.
+  - DLL `2928e00484a0f1b410dea9c9ca20d4a76953e46f558aa374f544b7ca8528dc25`,
+    loaded MVID `175dc344-f882-4f83-a2ed-a35047de98f7`.
+  - Observer: the R4 finishing phase in that DLL.
+- **One guarded run** `20261108T0513132129516Z-1ef754bc478b40c8adb2f805e5df5cef`
+  (133 s; 5 PNGs local and private): **17 PASS, 0 FAIL**.
+  - Configuration: `loaded-breath-matrix` (all ten, including the enemies
+    gate; Salt `MetalBlast`), `native-donors-untouched`,
+    `pyrotechnics-flash-configured`, `live-breath-facts`.
+  - `render-salt-mephit-breath`: passed.
+  - `ally-safety-water-breath`:
+    - Water at 2.6 m from the hostile; ally at 2.75 m, 19° off the aim.
+    - The cone delivered to both the ally and the hostile. The ally had no
+      damage event (damage 0 → 0); the hostile took Energy:Acid 3 under a
+      controlled failed save.
+  - `pyrotechnics-cancel-no-flash`: passed.
+  - `pyrotechnics-flash-captured-live`:
+    - The flash spawned at frame 1485 on the caster. The trigger fired after
+      a yield (frame 1486).
+    - The during image was requested at frame 1500 with the exact instance
+      alive, and completed at 1505.
+    - The instance retired by itself at frame 1591.
+  - `pyrotechnics-one-flash`: applied once, resource 1 → 0, one instance.
+  - Plus admission, native Default enter/restore, `owned-ui-restored`,
+    fixture and profile restore.
+- **Images inspected:**
+  - `000` Salt Mephit Breath window: Metal Blast shards icon, "1d4 slashing
+    … touches only enemies", no `<null>`.
+  - `001` the Water Mephit breathing a green acid spray. The hostile and ally
+    are at the frame edge, so the protection rests on the
+    delivery/damage records.
+  - `002` before: no flash.
+  - `003` during: a bright white-blue burst of rays with a golden runic
+    triangle around the magma mephit, under the "Pyrotechnics" float. It is
+    at the right edge of the view and partly cropped. **Visual acceptance:
+    established.**
+  - `004` after: the flash is gone and nothing lingers.
+- **Restoration:**
+  - Live tree back to `5C3E4AD4…` (0.0.140); record
+    `expanded-summoning-restoration/20261108T0514516642030Z-…`.
+  - 66 settings restored; 95 protected saves unchanged (baseline
+    `CC7CBB0D…`); the intake readout is byte-identical.
+  - `owned-ui-restored`: no errors.
+  - No process; last lease `Completed`, no recovery required.
+  - **Limitation:** UMM rewrote its own `Params.xml` `<LastUpdateCheck>`
+    when the game started (00:14:01), so the hash changed from
+    `c51c869c…` to `e44f4495…`. Diffed against the latest available UMM
+    backup, that timestamp is the only differing field. The enabled profile
+    is unchanged (all 16).
+  - The guarded workflow does not snapshot `Params.xml`, and the intake
+    bytes cannot be reconstructed, so the file was not rewritten. Writing a
+    guessed timestamp would fabricate state.
+- **Spend:**
+  - This continuation: gate 20 s, build 394 s, run 133 s = **547 s**.
+  - R4 ledger total **1,135 s** of the 1,800 s ceiling (588 s from the first
+    checkpoint). R3 ledgers are unchanged.
+
+### Owner retest checklist
+
+1. Salt Mephit breath: the Metal Blast shard icon reads as salt/crystal grit.
+2. Pyrotechnics shows one brief radiant flash with a runic triangle, and
+   nothing lingers.
+3. The Water breath's acid look and the other nine icons are acceptable.
+4. Air/Earth/Fire/Water breaths no longer harm the mephit's allies.
+5. Optional: 1d12 versus PF1 1d8 on the four native breaths.
+
+---
+
+# First R4 checkpoint (historical; evidence wording corrected above)
 
 ## Starting state and branch
 
@@ -67,7 +208,7 @@ configuration in candidate `a1e6c264193f`.
 | Ice | `b37cdd78…` | `fe4016ec…` | cold | cold | Energy: Cold | cold cone | white-dragon Cold Breath | no damage defect; icon repaired | loaded; description screen |
 | Magma | `ce9551f1…` | `512be3e3…` | fire | fire | Energy: Fire | fire cone | Magma Blast | no damage defect; icon repaired | loaded; description screen |
 | Ooze | `7cbf19a6…` | `3d5cd0f7…` | acid | acid (Reflex negates damage and sickness, preserved) | Energy: Acid | acid cone | Corrosive Touch (slime) | no damage defect; icon repaired | loaded; description screen |
-| Salt | `8c8fe6eb…` | `0082eea8…` | slashing | slashing | Physical: Slashing | pale cold cone | Fragmentation | no damage defect; **icon defect remains** | loaded; description screen (misleading art) |
+| Salt | `8c8fe6eb…` | `0082eea8…` | slashing | slashing | Physical: Slashing | pale cold cone | Fragmentation → **Metal Blast** (finishing) | no damage defect; icon repaired in the finishing checkpoint | loaded; description screens (first: misleading art; finishing: Metal Blast) |
 | Steam | `047f68ee…` | `146c6326…` | fire | fire | Energy: Fire | fire cone | Steam Blast | no damage defect; icon repaired | loaded; description screen |
 
 Every row is granted through `BlueprintUnit.AddFacts`: exactly one owned
@@ -121,8 +262,10 @@ established. Variant dice (1d4; magma 1d8) are unchanged.
 
 Preserved, recorded:
 
-- The native-backed breaths keep native targeting, so they also hit allies
-  in the cone. The six variants stay enemy-only.
+- First checkpoint only: the native-backed breaths kept native targeting
+  and hit allies in the cone. This was **repaired in the finishing
+  checkpoint** under the charter's ally-safe rule; all ten are now
+  enemy-only.
 - A Water/Earth/Air/Fire mephit saved before R4 keeps its native breath fact
   and AI action until it expires. No load fixer was added.
 - Dust's ice-like cone is tolerated. Earth now uses the same pale cone as
@@ -195,7 +338,7 @@ Preserved, recorded:
 - **Spend:** gates 54 s, build 390 s, run 144 s, for **588 s (≈ 9.8 min)**
   of the 15-minute target. Image inspection and restoration are excluded.
 
-## Remaining R4 gap (precise)
+## Remaining R4 gap (resolved in the finishing checkpoint above)
 
 1. **Salt Mephit breath icon:** the `FragmentationEarthBlastAbility` art is
    not grit or salt. Replace it with existing art that reads as salt or
