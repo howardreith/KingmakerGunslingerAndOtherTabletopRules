@@ -37,6 +37,8 @@ param(
     [string]$SaveName,
     [string]$LiveModDirectory = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Mods\KingmakerGunslinger',
     [string]$RestorationRecordRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence\expanded-summoning-restoration',
+    # Byte-exact UMM Params.xml protection (receipts survive interruption).
+    [string]$UmmParamsBackupRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-backups\umm-params',
     [hashtable]$ScenarioParameters = @{},
     # Different closed guarded requests may share one candidate/snapshot.
     # The ordinary request validator still validates every returned parameter.
@@ -109,6 +111,15 @@ if($Sprint40DiagnosticRecovery){
 if($sprint40PeerProtection -and -not $PSCmdlet.ShouldProcess('exact HOWARD-LAPTOP installation and nine startup-written peer files',
     'guarded source-bound startup with byte/metadata backup and restoration')){return}
 
+# UMM rewrites its installed Params.xml when the game starts. Preserve and
+# verify its exact bytes before any staging; a failure refuses the launch.
+. (Join-Path $PSScriptRoot 'UmmParams.Common.ps1')
+$ummParamsPath = Get-KmgUmmParamsPath -LiveModDirectory $LiveModDirectory
+$ummReceipt = Backup-KmgUmmParams -ParamsPath $ummParamsPath -BackupRoot $UmmParamsBackupRoot `
+    -Owner ('expanded-summoning-scenario:' + (@($Scenario) -join ','))
+$ummRestorationFailed = $false
+Write-Host "UMM Params.xml protected: existed=$($ummReceipt.existed) sha256=$($ummReceipt.intakeSha256) receipt=$($ummReceipt.receiptPath)"
+
 $before = Get-KmgTreeFingerprint -Directory $LiveModDirectory
 Write-Host "Pre-run live tree: files=$($before.Files) sha256=$($before.Sha256)"
 
@@ -126,6 +137,8 @@ $record = [ordered]@{
     startedAtUtc = [DateTime]::UtcNow.ToString('o')
     snapshotDirectory = $snapshot.Destination
     liveBefore = [ordered]@{ files = $before.Files; sha256 = $before.Sha256 }
+    ummParamsIntake = [ordered]@{ path = $ummReceipt.paramsPath; existed = $ummReceipt.existed
+        sha256 = $ummReceipt.intakeSha256; length = $ummReceipt.intakeLength; receipt = $ummReceipt.receiptPath }
     runs = @()
 }
 $failures = 0
@@ -428,6 +441,26 @@ finally {
         }
     }
 
+    # Independent UMM Params.xml step: runs whatever happened above and never
+    # prevents another restoration step; a failure retains backup and receipt.
+    $ummExitDeadline = [DateTime]::UtcNow.AddSeconds(120)
+    while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and [DateTime]::UtcNow -lt $ummExitDeadline) {
+        Start-Sleep -Milliseconds 500
+    }
+    if (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0) {
+        $record.ummParamsRestoration = [ordered]@{ verified = $false; disposition = 'FAILED'
+            error = 'Kingmaker is still running; Params.xml restoration deferred to scripts\Restore-UmmParams.ps1.'
+            receiptPath = $ummReceipt.receiptPath }
+    } else {
+        $record.ummParamsRestoration = Complete-KmgUmmParamsProtection -Receipt $ummReceipt
+    }
+    if (-not $record.ummParamsRestoration.verified) {
+        $ummRestorationFailed = $true
+        Write-Warning ('UMM Params.xml restoration failed; backup and receipt retained: ' + $record.ummParamsRestoration.error)
+    } else {
+        Write-Host "UMM Params.xml restored to intake: $($record.ummParamsRestoration.disposition) sha256=$($record.ummParamsRestoration.restoredSha256)"
+    }
+
     if($startupPeerScope){
         try {
             Assert-KmgNotRunning
@@ -474,3 +507,4 @@ finally {
     Write-Host "Restoration record: $recordPath"
 }
 if($startupRestorationFailed){throw 'Sprint40 startup restoration failed; inspect the exact restoration receipt before any further dispatch.'}
+if($ummRestorationFailed){throw 'UMM Params.xml restoration failed; restoration is not PASS. Recover with scripts\Restore-UmmParams.ps1 from the retained receipt.'}
