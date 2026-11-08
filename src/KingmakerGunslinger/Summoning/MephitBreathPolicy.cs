@@ -99,7 +99,7 @@ namespace KingmakerGunslinger.Summoning
             new MephitBreathRow("ooze-mephit", MephitBreathDamageKind.Acid, null,
                 "1a40fc88aeac9da4aa2fbdbb88335f5d", "CorrosiveTouch", null),
             new MephitBreathRow("salt-mephit", MephitBreathDamageKind.Slashing, null,
-                "d859e796f6177cf449679c677076c577", "FragmentationEarthBlastAbility", null),
+                "665cfd3718c4f284d80538d85a2791c9", "MetalBlastAbility", null),
             new MephitBreathRow("steam-mephit", MephitBreathDamageKind.Fire, null,
                 "08eb2ade31670b843879d8841b32d629", "SteamBlastAbility", null)
         };
@@ -184,7 +184,7 @@ namespace KingmakerGunslinger.Summoning
         {
             if (row == null || !row.NativeBacked) throw new ArgumentException("Native-backed breath row required.");
             if (dice <= 0 || sides <= 0) throw new ArgumentOutOfRangeException("dice");
-            return row.Description + " Every creature in the cone takes " + dice + "d" + sides + " " +
+            return row.Description + " Only the mephit's enemies in the cone are affected: " + dice + "d" + sides + " " +
                 DamageWord(row.Required) + " damage; a Reflex save halves it.";
         }
     }

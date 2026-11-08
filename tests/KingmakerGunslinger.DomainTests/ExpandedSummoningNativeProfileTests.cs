@@ -62,6 +62,13 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview, "summon-playtest-r4-mephit"), "Another scenario cannot borrow the R4 outdoor admission.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.WallFixturePhase("summon-playtest-r4-mephit"), "R4 mephit phase never acquires Wall preparation.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-playtest-r4-mephit"), "R4 mephit phase is not a host-restricted Sprint40 phase.");
+            // Repair R4 finishing selection: same fresh, save-free outdoor
+            // admission; never Wall preparation or host-restricted.
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-playtest-r4-finish", 0, 0, 0, false, false, false, false, true), "Exact fresh R4 finishing phase admitted.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-playtest-r4-finish", 0, 0, 0, false, false, true, false, true), "R4 finishing phase cannot import a save.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "summon-playtest-r4-finish"), "R4 finishing phase uses the outdoor native Default fixture.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.WallFixturePhase("summon-playtest-r4-finish") ||
+                ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-playtest-r4-finish"), "R4 finishing phase is neither Wall nor Sprint40.");
             // Sprint 4 reach census: an exact fresh, save-free outdoor Default
             // phase that never acquires Wall preparation or player input.
             Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-reach-sprint4", 0, 0, 0, false, false, false, false, true), "Exact fresh reach phase admitted.");

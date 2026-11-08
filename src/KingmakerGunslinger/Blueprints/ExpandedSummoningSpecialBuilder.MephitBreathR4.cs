@@ -5,6 +5,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Controllers.Brain.Blueprints;
+using Kingmaker.ElementsSystem;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
@@ -33,7 +34,9 @@ namespace KingmakerGunslinger.Blueprints
         /// cast action. The installed breaths deal electricity (air, water) and
         /// acid (earth), and wear Burning Hands. Each unit gets an owned clone
         /// (same delivery, cone length, save, dice, targeting and action cost)
-        /// with the required damage, the matching native cone and its own art,
+        /// with the required damage, the matching native cone, its own art and
+        /// the charter's enemies-only effect gate (the native effect and AI
+        /// action had no friend avoidance),
         /// redirected only through that unit's AddFacts entry and an owned brain
         /// copy whose single native breath action is replaced. The native
         /// breaths, their AI actions, the native brains, the donor units and
@@ -96,6 +99,15 @@ namespace KingmakerGunslinger.Blueprints
                         (dice.BonusValue.ValueType != ContextValueType.Simple || dice.BonusValue.Value != 0))
                     throw new InvalidOperationException("Native " + row.Key + " breath dice or save changed.");
                 damage.DamageType = MephitBreathDamageType(row.Required);
+                // Charter ally-safety: the inherited native effect (and the
+                // native AI action, whose only target consideration is
+                // AttackTargetsPriority) would touch every creature in the
+                // cone. The owned effect runs only on the caster's enemies,
+                // exactly as the six variants' breaths do.
+                if (run.Actions == null || run.Actions.Actions == null ||
+                    run.Actions.Actions.Length != 1 || !ReferenceEquals(run.Actions.Actions[0], damage))
+                    throw new InvalidOperationException("Native " + row.Key + " breath effect is no longer a single damage action.");
+                run.Actions = new ActionList { Actions = new GameAction[] { MephitBreathEnemiesOnly(run.Actions.Actions) } };
                 SpellDescriptorComponent descriptor = breath.ComponentsArray.OfType<SpellDescriptorComponent>().Single();
                 descriptor.Descriptor = new SpellDescriptorWrapper(MephitBreathDescriptor(row.Required));
                 BlueprintUnitFactAccess.Resolve().Configure(breath,

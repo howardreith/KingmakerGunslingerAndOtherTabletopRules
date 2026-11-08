@@ -1358,15 +1358,7 @@ namespace KingmakerGunslinger.Blueprints
                     actions.Add(saved);
                 }
             }
-            var enemy = ScriptableObject.CreateInstance<ContextConditionIsEnemy>();
-            enemy.Not = false;
-            var enemiesOnly = ScriptableObject.CreateInstance<Conditional>();
-            enemiesOnly.Comment = "KMG mephit breath: enemies of the caster only";
-            enemiesOnly.ConditionsChecker = new ConditionsChecker {
-                Operation = Operation.And, Conditions = new Condition[] { enemy } };
-            enemiesOnly.IfTrue = new ActionList { Actions = actions.ToArray() };
-            enemiesOnly.IfFalse = new ActionList { Actions = Array.Empty<GameAction>() };
-            run.Actions = new ActionList { Actions = new GameAction[] { enemiesOnly } };
+            run.Actions = new ActionList { Actions = new GameAction[] { MephitBreathEnemiesOnly(actions.ToArray()) } };
             SpellDescriptorComponent descriptor = breath.ComponentsArray
                 .OfType<SpellDescriptorComponent>().Single();
             descriptor.Descriptor = new SpellDescriptorWrapper(
@@ -1379,6 +1371,25 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.ExpandedSummoning." + token +
                     ".Breath.Description", MephitBreathDescription(profile)),
                 NativeAbilityIcon(library, row.IconSourceGuid, "native " + row.IconSourceName + " icon"));
+        }
+
+        /// <summary>
+        /// The charter's ally-safe rule for every mephit breath: the breath's
+        /// effect runs only on enemies of the caster; anything else in the cone
+        /// is untouched (shared by the six variants and, from Repair R4, the
+        /// four owned native-backed breaths).
+        /// </summary>
+        internal static Conditional MephitBreathEnemiesOnly(GameAction[] actions)
+        {
+            var enemy = ScriptableObject.CreateInstance<ContextConditionIsEnemy>();
+            enemy.Not = false;
+            var enemiesOnly = ScriptableObject.CreateInstance<Conditional>();
+            enemiesOnly.Comment = "KMG mephit breath: enemies of the caster only";
+            enemiesOnly.ConditionsChecker = new ConditionsChecker {
+                Operation = Operation.And, Conditions = new Condition[] { enemy } };
+            enemiesOnly.IfTrue = new ActionList { Actions = actions };
+            enemiesOnly.IfFalse = new ActionList { Actions = Array.Empty<GameAction>() };
+            return enemiesOnly;
         }
 
         private static ContextActionApplyBuff MephitSickenAction(BlueprintBuff sickened)

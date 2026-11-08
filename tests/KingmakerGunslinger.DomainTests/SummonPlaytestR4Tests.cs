@@ -62,6 +62,8 @@ namespace KingmakerGunslinger.DomainTests
             string water = MephitBreathPolicy.NativeBackedDescription(MephitBreathPolicy.Row("water-mephit"), 1, 8);
             Assertions.True(water.Contains("1d8 acid damage") && water.Contains("Reflex") && !water.Contains("cold") &&
                 !water.Contains("electric"), "Water text states its actual acid damage.");
+            Assertions.True(water.Contains("Only the mephit's enemies") && !water.Contains("Every creature"),
+                "Native-backed breath text states the charter's enemies-only effect, matching its owned gate.");
             Assertions.True(MephitBreathPolicy.NativeBackedDescription(MephitBreathPolicy.Row("earth-mephit"), 1, 8)
                 .Contains("1d8 bludgeoning damage"), "Earth text states bludgeoning.");
             Assertions.Throws<ArgumentException>(() => MephitBreathPolicy.NativeBackedDescription(MephitBreathPolicy.Row("dust-mephit"), 1, 4),
