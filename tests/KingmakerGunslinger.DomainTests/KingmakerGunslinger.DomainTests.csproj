@@ -283,6 +283,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVisualVariantModulePolicy.cs"><Link>Summoning\SummonVisualVariantModulePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonGlowPolicy.cs"><Link>Summoning\SummonGlowPolicy.cs</Link></Compile>
     <Compile Include="SummonGlowPolicyTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonPlaytestR6Policy.cs"><Link>Summoning\SummonPlaytestR6Policy.cs</Link></Compile>
+    <Compile Include="SummonPlaytestR6Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SalamanderTailGait.cs"><Link>Summoning\SalamanderTailGait.cs</Link></Compile>
     <Compile Include="SalamanderTailGaitTests.cs" />
     <Compile Include="RepairedBodyTests.cs" />

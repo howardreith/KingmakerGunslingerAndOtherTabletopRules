@@ -69,6 +69,9 @@ namespace KingmakerGunslinger.Blueprints
                 PrimaryHand = sword, PrimaryHandAlternative1 = slam, EmptyHandWeapon = null,
                 AdditionalLimbs = new[] { bite }, AdditionalSecondaryLimbs = Array.Empty<BlueprintItemWeapon>(),
                 QuickSlots = Array.Empty<Kingmaker.Blueprints.Items.Equipment.BlueprintItemEquipmentUsable>() };
+            // Repair R6 PRES-01: this rig maps only its measured main-hand
+            // style; without it the greatsword hit with no swing.
+            BindBarbazuNativeHand34(unit, sword);
             var dr = ScriptableObject.CreateInstance<AddDamageResistancePhysical>();
             dr.Value = Simple(10); dr.BypassedByAlignment = true; dr.Alignment = DamageAlignment.Evil;
             var poison = ScriptableObject.CreateInstance<SavingThrowBonusAgainstDescriptor>();

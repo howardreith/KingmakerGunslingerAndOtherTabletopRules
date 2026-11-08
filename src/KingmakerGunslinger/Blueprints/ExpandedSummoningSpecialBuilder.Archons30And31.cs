@@ -86,6 +86,7 @@ namespace KingmakerGunslinger.Blueprints
             var houndAid = ConfigureArchonAid(library, bySymbol, hound,
                 Require<Kingmaker.Blueprints.Classes.BlueprintFeature>(bySymbol, Hound30Prefix + "Traits"),
                 Require<BlueprintBrain>(bySymbol, Hound30Prefix + "Brain"), Hound30Prefix, 6, false);
+            BindHoundAidCastR6(hound, houndAid);
             var trumpetAid = ConfigureArchonAid(library, bySymbol, trumpet,
                 Require<Kingmaker.Blueprints.Classes.BlueprintFeature>(bySymbol, Trumpet31Prefix + "Traits"),
                 Require<BlueprintBrain>(bySymbol, Trumpet31Prefix + "Brain"), Trumpet31Prefix, 14, false);
@@ -94,6 +95,24 @@ namespace KingmakerGunslinger.Blueprints
             lantern.AddFacts = lantern.AddFacts.Where(fact => fact.AssetGuid != AuraOfMenaceBuffGuid)
                 .Concat(new Kingmaker.Blueprints.Facts.BlueprintUnitFact[] { carrier, aid }).ToArray();
         }
+        // Repair R6 PRES-02: use a cast style this rig has a playable clip for,
+        // on the Hound's own Aid only. Execution, targets and cost are unchanged.
+        private static void BindHoundAidCastR6(BlueprintUnit unit, BlueprintAbility aid)
+        {
+            var manager = unit.Prefab.Load(false)
+                .GetComponentsInChildren<Kingmaker.Visual.Animation.Kingmaker.UnitAnimationManager>(true).Single();
+            var cast = manager.AnimationSet.Actions
+                .OfType<Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionCastSpell>().Single();
+            var playable = cast.Animations.Where(entry => entry != null && entry.Default != null &&
+                    entry.Default.CastClip != null &&
+                    entry.Default.CastClip.events.Any(evt => evt.functionName == "PostCommandActEvent"))
+                .Select(entry => entry.Style.ToString()).ToArray();
+            string chosen = SummonPlaytestR6Policy.ChooseCastStyle(aid.Animation.ToString(), playable);
+            if (chosen == null) throw new InvalidOperationException("Hound rig has no playable cast clip for Aid.");
+            aid.Animation = (Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionCastSpell.CastAnimationStyle)
+                Enum.Parse(typeof(Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionCastSpell.CastAnimationStyle), chosen);
+        }
+
         private static BlueprintAbility ConfigureArchonAid(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol, BlueprintUnit unit,
             BlueprintUnitFact defenses, BlueprintBrain brain, string prefix, int casterLevel, bool immediate)
