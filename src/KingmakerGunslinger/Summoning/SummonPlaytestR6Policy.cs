@@ -79,6 +79,32 @@ namespace KingmakerGunslinger.Summoning
         }
 
         /// <summary>
+        /// A native execution that actually ran. A missed ray still qualifies;
+        /// an interrupted, unfinished or never-acted command does not.
+        /// </summary>
+        internal static bool AbilityExecutionObserved(bool finished, bool executionEnded, bool cancelled, int actedAtShot, string result)
+        {
+            return finished && executionEnded && !cancelled && actedAtShot >= 0 && result == "Success";
+        }
+
+        /// <summary>
+        /// Retirement worked only if the real execution had finished, this
+        /// cue's own playback was still active when retirement began, a stop
+        /// was requested for it, and its native end arrived at or after
+        /// retirement within the bound. A short duration alone proves nothing.
+        /// </summary>
+        internal static bool CueRetirementObserved(SummonCastCueRecord cue, DateTime retiredUtc, bool commandFinished,
+            bool activeAtRetirement, uint expectedPlayingId, double boundSeconds)
+        {
+            if (cue == null || !commandFinished || !activeAtRetirement || expectedPlayingId == 0 ||
+                cue.PlayingId != expectedPlayingId || cue.StopResult != SummonCastCueLifecycle.StopRequested ||
+                !cue.StopRequestedUtc.HasValue || !cue.EndUtc.HasValue) return false;
+            double requested = (cue.StopRequestedUtc.Value - retiredUtc).TotalSeconds;
+            double ended = (cue.EndUtc.Value - retiredUtc).TotalSeconds;
+            return requested >= 0d && requested <= boundSeconds && ended >= 0d && ended <= boundSeconds;
+        }
+
+        /// <summary>
         /// The scythe clip is playing at the game frame the real scythe attack
         /// rolled, within a small sampling tolerance, on a command that acted.
         /// </summary>
