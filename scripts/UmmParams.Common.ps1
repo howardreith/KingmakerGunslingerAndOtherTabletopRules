@@ -10,9 +10,14 @@ Set-StrictMode -Version Latest
 # Ownership (repair R5 review): a receipt is created while its owner holds a
 # runtime lease from the shared coordination lock, and records that lease and
 # the owner's exact process identity (PID and start time, as runtime leases
-# do). Only that live owner completes it in place; anyone else must recover it
-# through Invoke-KmgUmmParamsRecovery, which takes its own lease and refuses
-# while the owner, a foreign transaction or Kingmaker is active.
+# do). The receipt identifies who may complete it; it does not grant current
+# ownership of the installation. Every restoration therefore also holds a live
+# lease in the receipt's coordination root: the owner's own new lease or an
+# explicitly inherited one (Complete-KmgUmmParamsProtection), or recovery's
+# (Invoke-KmgUmmParamsRecovery, for an interrupted owner). Kingmaker is checked
+# before a new lease is taken, as other entry points do, because
+# Exit-KmgRuntimeLease retains any lease released while the game runs; it is
+# checked again while the lease is held, before anything is written.
 
 $script:KmgUmmReceiptName = 'umm-params-receipt.json'
 
@@ -59,6 +64,12 @@ function Test-KmgUmmReceiptOwnedByCurrentProcess($Receipt) {
     return Test-KmgRuntimeProcessIdentity $self ([int]$Receipt.ownerProcess.processId) ([string]$Receipt.ownerProcess.startedUtc)
 }
 
+function Assert-KmgUmmGameNotRunning([string]$Operation) {
+    if (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0) {
+        throw "UMM Params.xml $Operation refused: Kingmaker is running."
+    }
+}
+
 # Before staging or launch, while the caller holds its runtime lease. Throws
 # (refusing the launch) when an earlier receipt is still pending, the lease is
 # not live and owned, or the byte copy cannot be verified.
@@ -88,7 +99,7 @@ function Backup-KmgUmmParams {
         intakeSha256 = $null; intakeLength = $null; backupPath = $null; backupSha256 = $null
         createdUtc = [DateTime]::UtcNow.ToString('o'); state = 'pending'
         receiptPath = (Join-Path $directory $script:KmgUmmReceiptName)
-        restoredUtc = $null; restoredSha256 = $null; rewritten = $null; restoredBy = $null; recoveryLease = $null
+        restoredUtc = $null; restoredSha256 = $null; rewritten = $null; restoredBy = $null; restorationLease = $null; recoveryLease = $null
         attempts = 0; lastError = $null
     }
     if ($existed) {
@@ -111,23 +122,21 @@ function Backup-KmgUmmParams {
     return [pscustomobject]$receipt
 }
 
-# The restoration itself. As owner (no RecoveryLease) only the receipt's live
-# owner process may complete it; recovery passes its own held lease after the
-# recovery checks. Throws on any failure; the receipt stays pending with its
-# error and the backup is retained for a retry.
+# The restoration itself, called with the lease its caller holds after that
+# caller's ownership checks. Verifying an already-restored receipt writes
+# nothing and needs no lease; anything else refuses without a live one. Throws
+# on any failure; the receipt stays pending with its error and the backup is
+# retained for a retry.
 function Restore-KmgUmmParams {
-    param([Parameter(Mandatory = $true)][string]$ReceiptPath, $RecoveryLease)
+    param([Parameter(Mandatory = $true)][string]$ReceiptPath, $Lease,
+        [ValidateSet('owner', 'recovery')][string]$RestoredBy = 'owner')
     $receipt = Read-KmgUmmReceipt $ReceiptPath
     if ($receipt.state -ceq 'restored') {
         $current = Get-KmgUmmFileSha256 $receipt.paramsPath
         if ($current -cne $receipt.intakeSha256) { throw 'UMM Params.xml changed after its recorded restoration.' }
         return [pscustomobject]@{ disposition = 'already-restored'; receiptPath = $ReceiptPath; intakeSha256 = $receipt.intakeSha256; restoredSha256 = $current }
     }
-    if ($null -eq $RecoveryLease) {
-        if ($receipt.schemaVersion -ge 2 -and -not (Test-KmgUmmReceiptOwnedByCurrentProcess $receipt)) {
-            throw 'Only the live owner of this UMM Params.xml receipt completes it in place; use scripts\Restore-UmmParams.ps1 to recover an interrupted owner.'
-        }
-    } else { Assert-KmgRuntimeLease $RecoveryLease }
+    Assert-KmgRuntimeLease $Lease
     $state = [ordered]@{}
     foreach ($property in $receipt.PSObject.Properties) { $state[$property.Name] = $property.Value }
     $state.attempts = [int]$state.attempts + 1
@@ -155,8 +164,9 @@ function Restore-KmgUmmParams {
         }
         $state.state = 'restored'; $state.restoredUtc = [DateTime]::UtcNow.ToString('o')
         $state.restoredSha256 = $after; $state.rewritten = $rewritten; $state.lastError = $null
-        $state.restoredBy = $(if ($null -eq $RecoveryLease) { 'owner' } else { 'recovery' })
-        $state.recoveryLease = $(if ($null -eq $RecoveryLease) { $null } else { $RecoveryLease.RunId })
+        $state.restoredBy = $RestoredBy
+        $state.restorationLease = $Lease.RunId
+        $state.recoveryLease = $(if ($RestoredBy -ceq 'recovery') { $Lease.RunId } else { $null })
         Write-KmgUmmReceipt $state
         return [pscustomobject]@{ disposition = $(if ($rewritten) { 'restored' } else { 'unchanged' })
             receiptPath = $ReceiptPath; intakeSha256 = $receipt.intakeSha256; restoredSha256 = $after; attempts = $state.attempts
@@ -168,13 +178,38 @@ function Restore-KmgUmmParams {
     }
 }
 
+# The owner's completion. Requires the receipt's own process identity and valid
+# current coordination ownership, held through the game recheck, restoration,
+# hash verification and receipt completion. A held parent lease is validated
+# and inherited, never released here. A refusal leaves Params.xml and the
+# pending receipt untouched and never disturbs another transaction's lock.
+function Invoke-KmgUmmOwnerCompletion([string]$ReceiptPath, $ParentLease) {
+    $receipt = Read-KmgUmmReceipt $ReceiptPath
+    if ($receipt.state -ceq 'restored') { return Restore-KmgUmmParams -ReceiptPath $ReceiptPath }
+    if (-not (Test-KmgUmmReceiptOwnedByCurrentProcess $receipt)) {
+        throw 'Only the live owner of this UMM Params.xml receipt completes it in place; use scripts\Restore-UmmParams.ps1 to recover an interrupted owner.'
+    }
+    Assert-KmgUmmGameNotRunning 'completion'
+    try { $scope = Enter-KmgRuntimeLease -ParentLease $ParentLease -Purpose 'umm-params completion' -StateRoot $receipt.ownerLease.stateRoot }
+    catch { throw "UMM Params.xml completion refused: another transaction owns the installation, or the inherited lease is not valid here. $($_.Exception.Message)" }
+    try {
+        Assert-KmgUmmGameNotRunning 'completion'
+        $receipt = Read-KmgUmmReceipt $ReceiptPath
+        if ($receipt.state -cne 'restored' -and -not (Test-KmgUmmReceiptOwnedByCurrentProcess $receipt)) {
+            throw 'UMM Params.xml receipt ownership changed before completion.'
+        }
+        return Restore-KmgUmmParams -ReceiptPath $ReceiptPath -Lease $scope.Lease -RestoredBy owner
+    } finally { Exit-KmgRuntimeLease $scope }
+}
+
 # Owner's independent cleanup step: never throws, so a Params.xml failure
-# cannot prevent any other restoration step.
+# cannot prevent any other restoration step. A failure stays in the returned
+# outcome and the owner may retry once ownership is available.
 function Complete-KmgUmmParamsProtection {
-    param([AllowNull()]$Receipt)
+    param([AllowNull()]$Receipt, $ParentLease)
     if ($null -eq $Receipt) { return [ordered]@{ verified = $false; disposition = 'not-protected'; error = 'No UMM Params.xml receipt was recorded.' } }
     try {
-        $result = Restore-KmgUmmParams -ReceiptPath $Receipt.receiptPath
+        $result = Invoke-KmgUmmOwnerCompletion -ReceiptPath $Receipt.receiptPath -ParentLease $ParentLease
         return [ordered]@{ verified = $true; disposition = $result.disposition; receiptPath = $result.receiptPath
             intakeSha256 = $result.intakeSha256; restoredSha256 = $result.restoredSha256 }
     } catch {
@@ -183,26 +218,26 @@ function Complete-KmgUmmParamsProtection {
     }
 }
 
-# Recovery of a receipt whose owner was interrupted. Serialized through the
-# shared coordination lock: entering a lease fails while any transaction (the
-# original owner's or a foreign one) holds it, and no lock is stolen or
-# cleared. While holding it, refuses if the game runs or the receipt's exact
-# owner process is still alive. Throws on refusal or failure.
+# Recovery of a receipt whose owner was interrupted. Refuses a game already
+# running before creating any lease, so that refusal leaves no new lock or
+# recovery obligation. Serialized through the shared coordination lock:
+# entering a lease fails while any transaction (the original owner's or a
+# foreign one) holds it, and no lock is stolen or cleared. While holding it,
+# refuses if the game runs or the receipt's exact owner process is still
+# alive. Throws on refusal or failure.
 function Invoke-KmgUmmParamsRecovery {
     param([Parameter(Mandatory = $true)][string]$ReceiptPath,
-        [string]$StateRoot = 'C:/Dev/KingmakerGunslingerLab/compatibility-state',
-        [string]$GameProcessName = 'Kingmaker')
+        [string]$StateRoot = 'C:/Dev/KingmakerGunslingerLab/compatibility-state')
     $receipt = Read-KmgUmmReceipt $ReceiptPath
     if ($receipt.schemaVersion -ge 2 -and
         -not ([IO.Path]::GetFullPath($receipt.ownerLease.stateRoot)).Equals([IO.Path]::GetFullPath($StateRoot), [StringComparison]::OrdinalIgnoreCase)) {
         throw 'UMM Params.xml receipt belongs to a different coordination root; recovery refused.'
     }
+    Assert-KmgUmmGameNotRunning 'recovery'
     try { $scope = Enter-KmgRuntimeLease -Purpose 'umm-params recovery' -StateRoot $StateRoot }
     catch { throw "UMM Params.xml recovery refused: another transaction owns the installation. $($_.Exception.Message)" }
     try {
-        if (@(Get-Process -Name $GameProcessName -ErrorAction SilentlyContinue).Count -gt 0) {
-            throw "UMM Params.xml recovery refused: $GameProcessName is running."
-        }
+        Assert-KmgUmmGameNotRunning 'recovery'
         $receipt = Read-KmgUmmReceipt $ReceiptPath
         if ($receipt.state -cne 'restored') {
             if ($receipt.schemaVersion -lt 2 -or $null -eq $receipt.ownerProcess) {
@@ -213,7 +248,7 @@ function Invoke-KmgUmmParamsRecovery {
                 throw "UMM Params.xml recovery refused: the original owner (PID $($receipt.ownerProcess.processId)) is still active."
             }
         }
-        return Restore-KmgUmmParams -ReceiptPath $ReceiptPath -RecoveryLease $scope.Lease
+        return Restore-KmgUmmParams -ReceiptPath $ReceiptPath -Lease $scope.Lease -RestoredBy recovery
     } finally { Exit-KmgRuntimeLease $scope }
 }
 
@@ -223,20 +258,20 @@ function Invoke-KmgUmmParamsRecovery {
 function Invoke-KmgIndependentInstallationAndUmmRestoration {
     param([Parameter(Mandatory = $true)][scriptblock]$RestoreInstallation,
         [AllowNull()]$UmmReceipt,
-        [string]$GameProcessName = 'Kingmaker',
+        $ParentLease,
         [int]$ExitWaitSeconds = 120)
     $installation = $null; $installationError = $null
     try { $installation = & $RestoreInstallation } catch { $installationError = $_.Exception.Message }
     try {
         $deadline = [DateTime]::UtcNow.AddSeconds($ExitWaitSeconds)
-        while (@(Get-Process -Name $GameProcessName -ErrorAction SilentlyContinue).Count -gt 0 -and [DateTime]::UtcNow -lt $deadline) {
+        while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and [DateTime]::UtcNow -lt $deadline) {
             Start-Sleep -Milliseconds 500
         }
-        if (@(Get-Process -Name $GameProcessName -ErrorAction SilentlyContinue).Count -gt 0) {
+        if (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0) {
             $umm = [ordered]@{ verified = $false; disposition = 'FAILED'
-                error = "$GameProcessName is still running; Params.xml restoration deferred to scripts\Restore-UmmParams.ps1."
+                error = 'Kingmaker is still running; Params.xml restoration deferred to scripts\Restore-UmmParams.ps1.'
                 receiptPath = $(if ($UmmReceipt) { $UmmReceipt.receiptPath } else { $null }) }
-        } else { $umm = Complete-KmgUmmParamsProtection -Receipt $UmmReceipt }
+        } else { $umm = Complete-KmgUmmParamsProtection -Receipt $UmmReceipt -ParentLease $ParentLease }
     } catch {
         $umm = [ordered]@{ verified = $false; disposition = 'FAILED'; error = $_.Exception.Message
             receiptPath = $(if ($UmmReceipt) { $UmmReceipt.receiptPath } else { $null }) }

@@ -34,7 +34,23 @@ $intake = @'
 '@
 $intakeBytes = [Text.UTF8Encoding]::new($true).GetBytes($intake.Replace("`n", "`r`n"))
 $intakeSha = Get-KmgUmmBytesSha256 $intakeBytes
-$selfName = (Get-Process -Id $PID).ProcessName
+
+# The repository's process-observation seam (as in Test-RuntimeLeaseLifecycle):
+# one controlled answer for the literal name Kingmaker, seen alike by admission,
+# the recheck under the lease and Exit-KmgRuntimeLease. No process is started
+# and no real game is observed or touched.
+$global:kmgUmmTest = @{ running = $false; appearOnceLockExists = $null }
+function global:Get-Process {
+    [CmdletBinding()]param([string]$Name, [int]$Id)
+    if ($Name -ceq 'Kingmaker') {
+        $lock = $global:kmgUmmTest.appearOnceLockExists
+        if ($lock -and (Test-Path -LiteralPath $lock)) { $global:kmgUmmTest.running = $true }
+        if ($global:kmgUmmTest.running) { [pscustomobject]@{ Id = 900001; ProcessName = 'Kingmaker'; StartTime = [DateTime]::UtcNow } }
+        return
+    }
+    Microsoft.PowerShell.Management\Get-Process @PSBoundParameters
+}
+function Reset-Game { $global:kmgUmmTest.running = $false; $global:kmgUmmTest.appearOnceLockExists = $null }
 
 function New-Case([string]$Name) {
     $case = Join-Path $root $Name
@@ -48,6 +64,16 @@ function Set-Text([string]$Path, [string]$Old, [string]$New) {
     [IO.File]::WriteAllBytes($Path, [Text.UTF8Encoding]::new($true).GetBytes($text.Replace($Old, $New)))
 }
 function Test-LockFree($Case) { return -not (Test-Path -LiteralPath (Join-Path $Case.State 'compatibility.lock')) }
+function Get-RunDirectoryCount($Case) { return @(Get-ChildItem -LiteralPath $Case.State -Directory).Count }
+function Get-LeaseStatusCount($Case, [string]$Status) {
+    return @(Get-ChildItem -LiteralPath $Case.State -Directory | ForEach-Object {
+        Get-Content -LiteralPath (Join-Path $_.FullName 'runtime-lease.json') -Raw | ConvertFrom-Json } |
+        Where-Object { $_.status -ceq $Status }).Count
+}
+function Test-LeaseIntact($Scope) {
+    Assert-KmgRuntimeLease $Scope.Lease
+    return ((Get-Content -LiteralPath $Scope.Lease.StatePath -Raw | ConvertFrom-Json).status -ceq 'Active')
+}
 
 # The wrapper's own sequence: a real runtime lease from the case's
 # coordination root, the backup under it, then the lease released.
@@ -229,9 +255,17 @@ if ($CleanupWithLockedParams) {
         Assert-True ((Get-KmgUmmFileSha256 $c.Params) -ceq $changedSha -and (Get-KmgUmmFileSha256 $child.receiptPath) -ceq $receiptBytes) 'foreign-lease-bytes-and-receipt-unchanged'
     } finally { Exit-KmgRuntimeLease $foreign }
 
-    # 13. The game process is running: refused (a real running process name).
-    Assert-Throws { Invoke-KmgUmmParamsRecovery -ReceiptPath $child.receiptPath -StateRoot $c.State -GameProcessName $selfName } 'running-game-recovery-refused' 'is running'
-    Assert-True ((Get-KmgUmmFileSha256 $c.Params) -ceq $changedSha -and (Test-LockFree $c)) 'running-game-refusal-writes-nothing'
+    # 13. Kingmaker already running at entry: refused before any lease, by
+    #     function and by script. No new lock, run directory or recovery debt;
+    #     case 15 is the later permitted recovery on this same receipt.
+    $runsBefore = Get-RunDirectoryCount $c
+    $global:kmgUmmTest.running = $true
+    try {
+        Assert-Throws { Invoke-KmgUmmParamsRecovery -ReceiptPath $child.receiptPath -StateRoot $c.State } 'running-game-recovery-refused' 'recovery refused: Kingmaker is running'
+        Assert-Throws { & (Join-Path $PSScriptRoot 'Restore-UmmParams.ps1') -BackupRoot $c.Backups -StateRoot $c.State -Confirm:$false } 'running-game-script-refused' 'recovery refused: Kingmaker is running'
+    } finally { Reset-Game }
+    Assert-True ((Get-KmgUmmFileSha256 $c.Params) -ceq $changedSha -and (Get-KmgUmmFileSha256 $child.receiptPath) -ceq $receiptBytes) 'running-game-refusal-writes-nothing'
+    Assert-True ((Test-LockFree $c) -and (Get-RunDirectoryCount $c) -eq $runsBefore -and (Get-LeaseStatusCount $c 'RecoveryRequired') -eq 0) 'running-game-refusal-creates-no-lock-or-debt'
 
     # 14. A non-owner cannot complete the receipt in place.
     $inPlace = Complete-KmgUmmParamsProtection -Receipt (Read-KmgUmmReceipt $child.receiptPath)
@@ -288,24 +322,159 @@ if ($CleanupWithLockedParams) {
     Assert-True ($cleanup.installationError -match 'restore failed' -and -not $cleanup.umm.verified -and $cleanup.umm.error -match 'backup is missing') 'both-failures-retained'
     $c = New-Case 'cleanup-game-running'
     $r = Backup-Owned $c
-    $cleanup = Invoke-KmgIndependentInstallationAndUmmRestoration -UmmReceipt $r -ExitWaitSeconds 0 -GameProcessName $selfName -RestoreInstallation { 'verified' }
+    $runsBefore = Get-RunDirectoryCount $c
+    $global:kmgUmmTest.running = $true
+    try { $cleanup = Invoke-KmgIndependentInstallationAndUmmRestoration -UmmReceipt $r -ExitWaitSeconds 0 -RestoreInstallation { 'verified' } }
+    finally { Reset-Game }
     Assert-True ($cleanup.installation -ceq 'verified' -and -not $cleanup.umm.verified -and $cleanup.umm.error -match 'still running' -and
         (Read-KmgUmmReceipt $r.receiptPath).state -ceq 'pending') 'running-game-defers-umm-only'
+    Assert-True ((Test-LockFree $c) -and (Get-RunDirectoryCount $c) -eq $runsBefore) 'running-game-deferral-creates-no-lock'
 
     # 20. The wrapper actually uses this path: backup under its lease; the
     #     finally reaches the independent step before any fingerprint; an
     #     unresolved installation or UMM restoration refuses PASS.
     $wrapper = (Get-Content -LiteralPath (Join-Path $PSScriptRoot 'Invoke-ExpandedSummoningRuntimeScenario.ps1') -Raw).Replace("`r`n", "`n")
     $finally = $wrapper.IndexOf("finally {`n    # Runs on success, on failure, and on interruption.", [StringComparison]::Ordinal)
-    $call = $wrapper.IndexOf('Invoke-KmgIndependentInstallationAndUmmRestoration -UmmReceipt $ummReceipt -RestoreInstallation {', [StringComparison]::Ordinal)
+    $call = $wrapper.IndexOf('Invoke-KmgIndependentInstallationAndUmmRestoration -UmmReceipt $ummReceipt -ParentLease $ummParentLease -RestoreInstallation {', [StringComparison]::Ordinal)
     $fingerprint = $wrapper.IndexOf('Get-KmgTreeFingerprint -Directory $LiveModDirectory', $finally, [StringComparison]::Ordinal)
     Assert-True ($finally -gt 0 -and $call -gt $finally -and $fingerprint -gt $call) 'wrapper-finally-guards-the-fingerprint'
     Assert-True ($wrapper.Contains("`$ummScope = Enter-KmgRuntimeLease -Purpose 'umm-params protection'") -and
         $wrapper.Contains('-OwnerLease $ummScope.Lease') -and $wrapper.Contains('finally { Exit-KmgRuntimeLease $ummScope }')) 'wrapper-backs-up-under-its-lease'
     Assert-True ($wrapper.Contains('if($installationRestorationFailed){throw') -and $wrapper.Contains('if($ummRestorationFailed){throw') -and
         $wrapper.Contains("`$record.restoration -notin @('verified', 'not-needed')")) 'wrapper-refuses-pass-on-unresolved-restoration'
+    $inherit = $wrapper.IndexOf('$ummParentLease = if ($startupPeerScope) { $startupPeerScope.Lease } else { $null }', [StringComparison]::Ordinal)
+    $release = $wrapper.IndexOf('Exit-KmgRuntimeLease $startupPeerScope', [StringComparison]::Ordinal)
+    Assert-True ($inherit -gt $finally -and $inherit -lt $call -and $release -gt $call) 'wrapper-inherits-its-held-startup-lease-through-the-umm-step'
+
+    # ---- Automatic owner completion holds coordination ownership ----
+
+    # 21. The receipt's legitimate original process, while a foreign lease owns
+    #     the coordination root: refused, nothing touched, then a legitimate
+    #     retry once ownership is available.
+    $c = New-Case 'owner-foreign-lease'
+    $r = Backup-Owned $c
+    Set-Text $c.Params 'Enabled="true"' 'Enabled="false"'
+    $changedSha = Get-KmgUmmFileSha256 $c.Params
+    $receiptBytes = Get-KmgUmmFileSha256 $r.receiptPath
+    Assert-True (Test-KmgUmmReceiptOwnedByCurrentProcess (Read-KmgUmmReceipt $r.receiptPath)) 'owner-identity-alone-matches'
+    $foreign = Enter-KmgRuntimeLease -Purpose 'foreign test transaction' -StateRoot $c.State
+    try {
+        $first = Complete-KmgUmmParamsProtection -Receipt $r
+        Assert-True (-not $first.verified -and $first.disposition -ceq 'FAILED' -and $first.error -match 'another transaction') 'owner-under-foreign-lease-reports-failure'
+        Assert-True ((Get-KmgUmmFileSha256 $c.Params) -ceq $changedSha -and (Get-KmgUmmFileSha256 $r.receiptPath) -ceq $receiptBytes) 'owner-under-foreign-lease-bytes-and-receipt-untouched'
+        Assert-True ((Test-LeaseIntact $foreign) -and (Get-Content -LiteralPath $foreign.Lease.LockPath -Raw).Trim() -ceq $foreign.Lease.RunId) 'owner-under-foreign-lease-leaves-it-intact'
+    } finally { Exit-KmgRuntimeLease $foreign }
+    $retry = Complete-KmgUmmParamsProtection -Receipt $r
+    $done = Read-KmgUmmReceipt $r.receiptPath
+    Assert-True ($retry.verified -and $retry.disposition -ceq 'restored' -and (Get-KmgUmmFileSha256 $c.Params) -ceq $intakeSha) 'owner-retry-restores-exact-intake'
+    Assert-True ($done.state -ceq 'restored' -and $done.restoredBy -ceq 'owner' -and $done.restorationLease -match '^runtime-' -and $done.attempts -eq 1 -and (Test-LockFree $c)) 'owner-retry-completes-under-its-own-released-lease'
+
+    # 22. Restoration refuses without a held lease; only verifying a completed
+    #     receipt needs none.
+    $c = New-Case 'restore-needs-lease'
+    $r = Backup-Owned $c
+    Set-Text $c.Params 'Enabled="true"' 'Enabled="false"'
+    $changedSha = Get-KmgUmmFileSha256 $c.Params
+    Assert-Throws { Restore-KmgUmmParams -ReceiptPath $r.receiptPath } 'restore-without-lease-refused' 'lease is missing'
+    Assert-True ((Get-KmgUmmFileSha256 $c.Params) -ceq $changedSha -and (Read-KmgUmmReceipt $r.receiptPath).state -ceq 'pending') 'restore-without-lease-writes-nothing'
+
+    # 23. Combined cleanup under a foreign lease: the installation step's own
+    #     real ownership failure is kept, and the UMM step does not bypass it.
+    $c = New-Case 'combined-foreign-lease'
+    $r = Backup-Owned $c
+    Set-Text $c.Params 'Enabled="true"' 'Enabled="false"'
+    $changedSha = Get-KmgUmmFileSha256 $c.Params
+    $receiptBytes = Get-KmgUmmFileSha256 $r.receiptPath
+    $foreign = Enter-KmgRuntimeLease -Purpose 'foreign test transaction' -StateRoot $c.State
+    try {
+        $cleanup = Invoke-KmgIndependentInstallationAndUmmRestoration -UmmReceipt $r -ExitWaitSeconds 0 -RestoreInstallation {
+            $scope = Enter-KmgRuntimeLease -Purpose 'restore explicit live-mod backup' -StateRoot $c.State
+            Exit-KmgRuntimeLease $scope
+            'verified'
+        }
+        Assert-True ($null -eq $cleanup.installation -and $cleanup.installationError -match 'lock already exists') 'combined-installation-ownership-failure-kept'
+        Assert-True (-not $cleanup.umm.verified -and $cleanup.umm.error -match 'another transaction') 'combined-umm-refused-not-bypassing'
+        Assert-True ((Get-KmgUmmFileSha256 $c.Params) -ceq $changedSha -and (Get-KmgUmmFileSha256 $r.receiptPath) -ceq $receiptBytes -and (Test-LeaseIntact $foreign)) 'combined-foreign-transaction-untouched'
+    } finally { Exit-KmgRuntimeLease $foreign }
+
+    # 24. Automatic completion with Kingmaker already running at entry: no new
+    #     lock or recovery debt, and the owner's retry later succeeds.
+    $c = New-Case 'owner-game-running'
+    $r = Backup-Owned $c
+    Set-Text $c.Params 'Enabled="true"' 'Enabled="false"'
+    $changedSha = Get-KmgUmmFileSha256 $c.Params
+    $receiptBytes = Get-KmgUmmFileSha256 $r.receiptPath
+    $runsBefore = Get-RunDirectoryCount $c
+    $global:kmgUmmTest.running = $true
+    try { $first = Complete-KmgUmmParamsProtection -Receipt $r } finally { Reset-Game }
+    Assert-True (-not $first.verified -and $first.error -match 'completion refused: Kingmaker is running') 'owner-game-running-reported'
+    Assert-True ((Get-KmgUmmFileSha256 $c.Params) -ceq $changedSha -and (Get-KmgUmmFileSha256 $r.receiptPath) -ceq $receiptBytes) 'owner-game-running-writes-nothing'
+    Assert-True ((Test-LockFree $c) -and (Get-RunDirectoryCount $c) -eq $runsBefore -and (Get-LeaseStatusCount $c 'RecoveryRequired') -eq 0) 'owner-game-running-creates-no-lock-or-debt'
+    Assert-True ((Complete-KmgUmmParamsProtection -Receipt $r).verified -and (Get-KmgUmmFileSha256 $c.Params) -ceq $intakeSha) 'owner-game-running-retry-restores'
+
+    # 25. Kingmaker appears after admission, once the lease is held: the recheck
+    #     stops the write, and the shared teardown keeps its protection (the
+    #     lease is retained for recovery rather than released).
+    $c = New-Case 'game-appears-recovery'
+    $child = Invoke-ChildOwner $c
+    Set-Text $c.Params 'Enabled="true"' 'Enabled="false"'
+    $changedSha = Get-KmgUmmFileSha256 $c.Params
+    $receiptBytes = Get-KmgUmmFileSha256 $child.receiptPath
+    $global:kmgUmmTest.appearOnceLockExists = Join-Path $c.State 'compatibility.lock'
+    try { Assert-Throws { Invoke-KmgUmmParamsRecovery -ReceiptPath $child.receiptPath -StateRoot $c.State } 'game-appears-recovery-refused' 'retained for recovery' }
+    finally { Reset-Game }
+    Assert-True ((Get-KmgUmmFileSha256 $c.Params) -ceq $changedSha -and (Get-KmgUmmFileSha256 $child.receiptPath) -ceq $receiptBytes) 'game-appears-recovery-writes-nothing'
+    Assert-True (-not (Test-LockFree $c) -and (Get-LeaseStatusCount $c 'RecoveryRequired') -eq 1) 'game-appears-recovery-lease-retained'
+    $c = New-Case 'game-appears-owner'
+    $r = Backup-Owned $c
+    Set-Text $c.Params 'Enabled="true"' 'Enabled="false"'
+    $changedSha = Get-KmgUmmFileSha256 $c.Params
+    $receiptBytes = Get-KmgUmmFileSha256 $r.receiptPath
+    $global:kmgUmmTest.appearOnceLockExists = Join-Path $c.State 'compatibility.lock'
+    try { $first = Complete-KmgUmmParamsProtection -Receipt $r } finally { Reset-Game }
+    Assert-True (-not $first.verified -and $first.error -match 'retained for recovery') 'game-appears-owner-reported'
+    Assert-True ((Get-KmgUmmFileSha256 $c.Params) -ceq $changedSha -and (Get-KmgUmmFileSha256 $r.receiptPath) -ceq $receiptBytes) 'game-appears-owner-writes-nothing'
+
+    # 26. A valid inherited lease: no deadlock against its own lock, restoration
+    #     recorded under that lease, and the parent is not released.
+    $c = New-Case 'inherited-lease'
+    $r = Backup-Owned $c
+    Set-Text $c.Params 'Enabled="true"' 'Enabled="false"'
+    $changedSha = Get-KmgUmmFileSha256 $c.Params
+    $parent = Enter-KmgRuntimeLease -Purpose 'startup protection test' -StateRoot $c.State
+    try {
+        $notInherited = Complete-KmgUmmParamsProtection -Receipt $r
+        Assert-True (-not $notInherited.verified -and (Get-KmgUmmFileSha256 $c.Params) -ceq $changedSha) 'held-lease-is-not-assumed-without-inheritance'
+        $cleanup = Invoke-KmgIndependentInstallationAndUmmRestoration -UmmReceipt $r -ParentLease $parent.Lease -ExitWaitSeconds 0 -RestoreInstallation { 'verified' }
+        $done = Read-KmgUmmReceipt $r.receiptPath
+        Assert-True ($cleanup.umm.verified -and $cleanup.installation -ceq 'verified' -and (Get-KmgUmmFileSha256 $c.Params) -ceq $intakeSha) 'inherited-lease-restores'
+        Assert-True ($done.state -ceq 'restored' -and $done.restoredBy -ceq 'owner' -and $done.restorationLease -ceq $parent.Lease.RunId) 'inherited-lease-recorded'
+        Assert-True ((Test-LeaseIntact $parent) -and $parent.Lease.Stream.CanRead) 'inherited-lease-not-released'
+    } finally { Exit-KmgRuntimeLease $parent }
+    Assert-True (Test-LockFree $c) 'inherited-lease-released-by-its-owner'
+
+    # 27. An inherited lease from another root, or one already released, is
+    #     refused without any write; the owner can still retry.
+    $c = New-Case 'inherited-invalid'
+    $r = Backup-Owned $c
+    Set-Text $c.Params 'Enabled="true"' 'Enabled="false"'
+    $changedSha = Get-KmgUmmFileSha256 $c.Params
+    $receiptBytes = Get-KmgUmmFileSha256 $r.receiptPath
+    $other = Enter-KmgRuntimeLease -Purpose 'other root' -StateRoot (Join-Path $c.Root 'other-state')
+    try {
+        $wrongRoot = Complete-KmgUmmParamsProtection -Receipt $r -ParentLease $other.Lease
+        Assert-True (-not $wrongRoot.verified -and $wrongRoot.error -match 'different coordination root' -and (Test-LeaseIntact $other)) 'inherited-wrong-root-refused'
+    } finally { Exit-KmgRuntimeLease $other }
+    $released = Enter-KmgRuntimeLease -Purpose 'already released' -StateRoot $c.State
+    Exit-KmgRuntimeLease $released
+    $stale = Complete-KmgUmmParamsProtection -Receipt $r -ParentLease $released.Lease
+    Assert-True (-not $stale.verified -and $stale.error -match 'no longer owned') 'inherited-released-lease-refused'
+    Assert-True ((Get-KmgUmmFileSha256 $c.Params) -ceq $changedSha -and (Get-KmgUmmFileSha256 $r.receiptPath) -ceq $receiptBytes -and (Test-LockFree $c)) 'inherited-invalid-writes-nothing'
+    Assert-True ((Complete-KmgUmmParamsProtection -Receipt $r).verified -and (Get-KmgUmmFileSha256 $c.Params) -ceq $intakeSha) 'inherited-invalid-owner-retry-restores'
 }
 finally {
+    Remove-Item -LiteralPath function:global:Get-Process -Force
+    Remove-Variable -Name kmgUmmTest -Scope Global -Force
     if (Test-Path -LiteralPath $root) { Remove-Item -LiteralPath $root -Recurse -Force }
 }
 
