@@ -1,5 +1,176 @@
 # Summoned Creature Manual Playtest Repair — R3 status
 
+**R3 COMPLETE FOR REVIEW (description checkpoint, 2026-11-08).** Every R3
+item is now established on actual native framebuffer evidence at normal UI
+scale, and every item's live data predicates pass. UI-01 (the initiative
+tracker) keeps its inspected screenshot from candidate `57a8e659b1e6`, with
+its limitation. UI-02..UI-06 are established by the eight native ability
+description windows captured on candidate `31e61aa73a01`. Product code has
+been unchanged since `221cadc7a67e`. Owner aesthetic approval is separate and
+still pending. Not merged or released.
+
+## Active summary (current)
+
+| Item | Live data | Native view binding | Framebuffer evidence | Owner |
+| --- | --- | --- | --- | --- |
+| UI-01 portraits | PASS | PASS: each portrait zone is bound to its exact unit and shows that unit's own art | PASS on `57a8e659b1e6`: `native-ui-008.png` shows all seven representatives (inspected). Not rerun on `31e61aa73a01`. Limitation below. | pending |
+| UI-02 Lantern icons | PASS | PASS: exact window, `Data`, live fact and owner | PASS on `31e61aa73a01`: Light Ray (Searing Light art) and Twin Light Rays (Scorching Ray art) are distinct; no Duration/Saving Throw rows | pending |
+| UI-03 Ghaele ray | PASS | PASS | PASS: the owned `c3224dec…` fact on the live KMG Ghaele renders "Light Ray", a Special type, an icon, Target, Spell Resistance, Casting Time and its description; nothing blank or nameless | pending |
+| UI-04 Nimbus icon | PASS | PASS | PASS: the icon is visible, with Duration "Bursts after 1 round; dazed 1d10 rounds" and Saving Throw "Will negates (non-demons)" | pending |
+| UI-05 Overrun icon/rows | PASS | PASS | PASS: Overrun shows brachiosaurus creature art and Trample keeps `Longstrider`; Overrun has no Duration/Saving Throw rows; Trample's only row is "Reflex DC 32 half; none for a target that makes its attack of opportunity instead"; no inherited "Trample" or native maneuver text | pending |
+| UI-06 tooltip rows | PASS | PASS | PASS: Cheetah Sprint "1 round"/"None", Trumpet Blast "1d4 rounds"/"Fortitude negates", and Nimbus as above; no `<null>` in any of the eight windows | pending |
+
+UI-03 data, worded exactly: the live KMG Ghaele has one owned light-ray fact
+and no native ray fact. Its live brain holds one AI action that references the
+owned ray and none that references the native ray. No ray cast was executed in
+any R3 run.
+
+UI-01 limitation, retained: on `57a8e659b1e6`, the native one-time
+"Auto End Turn" prompt appeared mid-screen on the first player turn. It did
+not cover the tracker, but that candidate's ownership predicate did not
+detect it. It was left unanswered, and the settings snapshot restored the
+native settings key. The modal refusal added below was not in that
+candidate, and the tracker was not replayed.
+
+## Description checkpoint (allocation cap 1,500 s)
+
+Ledgers, kept separate:
+- Original R3: ≈ 1,256 s.
+- Rendered-UI continuation: 505 s.
+- UI-evidence allocation (900 s, later restated as a 1,500 s cap that
+  includes it): 573 s at the previous checkpoint, plus 576 s in this
+  continuation (gates 25.9 + build 409 + run 141). That is 1,149 s of the
+  1,500 s cap.
+- Cumulative R3: ≈ 2,910 s.
+
+- **Intake recheck (unchanged).**
+  - Repository: HEAD and PR #113 at `22f906caad`; this continuation had not
+    been executed.
+  - Installation: 0.0.140, DLL `00EF6757…`, live tree `5C3E4AD4…` (254
+    files), 16 mod directories, 66 settings values.
+  - Saves and references: 95 protected save files (baseline `CC7CBB0D…`),
+    reference bundle `7F1EDE2B…`.
+  - Runtime: no Kingmaker process; last lease `Completed`, no recovery
+    required.
+- **Native construction, verified in the installed 2.1.7b assembly before
+  editing.**
+  - `DescriptionBuilder.Build` switches on `TooltipData.Type`.
+    `TooltipType.Ability` → `DescriptionBuilder.Ability`, which for a
+    non-null `data.Ability` runs
+    `AbilityHeader(isTooltip, HeaderBox, data.Ability, data.BlueprintAbility)`,
+    then `DescriptionTemplatesAbility.AbilityDescription`.
+  - `AbilityDescription` reads the fact's blueprint for Target, Duration,
+    Saving Throw, Spell Resistance and Casting Time. It reads
+    `data.Ability.Data` for metamagic and spell level. With
+    `isTooltip:false` it shows the full description.
+  - The native `TooltipDataHelper` builds exactly
+    `Type = TooltipType.Ability, Ability = <fact>` for a live Ability.
+    `BlueprintAbility` stays null, and `IsHUDPanelAbility` is set only for
+    HUD triggers.
+- **Observer corrections (observer only; product code frozen).**
+  - The descriptions are built as `new TooltipData { Type = TooltipType.Ability, Ability = fact }`.
+  - Each result records its construction: type, window type, fact GUID,
+    owner unit and blueprint, `BlueprintAbility`/`AbilityData`/HUD flags,
+    whether the window holds the request's `Data`, and header/content/footer
+    brick counts.
+  - New unrelated-modal refusal: `TeleportationConfirmationSurface.UnrelatedModalShown()`
+    (desktop `DialogMessageBox.IsShown`), referenced only, never modified.
+    It is checked before opening each description, while the window opens,
+    on every layout frame, on every capture frame (through the ownership
+    predicate) and after closing.
+  - The guard goes through a pure predicate,
+    `ExpandedSummoningNativeProfilePolicy.SummonPlaytestR3SurfaceOwned`,
+    shared by the description and the retained tracker capture helpers. A
+    new focused test (`summon-playtest-r3.surface-modal-refusal`) covers
+    the allowed case and the modal/default/narrative/surface refusals. A
+    shown modal stops UI interaction without answering it.
+  - Descriptions-only: no combat entry, tracker replay, turn advance or
+    Auto End Turn trigger.
+- **Focused gate** (same filter; 9 registered tests including the new one).
+  - Production compiled, then one test-project compile error (a missing
+    `using`), then 9/9 PASS.
+- **Candidate** (one build, explicit `-ReferenceBundleDir`, 9 tests
+  selected, 409 s).
+  - Source `31e61aa73a0108ad7673f250210930254d952933`.
+  - Package `KingmakerGunslinger-0.0.179-development-summon-playtest-r3-31e61aa73a01.zip`,
+    SHA-256 `f8258ca4e45cfcc552d41a0fe3230d2296f3cb16919ca86b2920720062fa1d5f`.
+  - DLL `af3ebc14b7fe384befdb22e5273d756055b15c6c040ecc7dfccf55ea71a6fe74`,
+    loaded MVID `8ee07148-f739-4880-a7a9-0f3d3378be0c`.
+  - Observer: the R3 phase as compiled into that DLL.
+- **One guarded run** `20261108T0321010236250Z-1f81847c43fd42d8afb9badc53730de2`
+  (141 s; evidence and 8 PNGs local and private): 23 PASS, 0 FAIL.
+  - All data predicates passed: `portrait-roster`,
+    `donor-portraits-untouched`, `initiative-portraits-live`,
+    `lantern-rays`, `ghaele-ray-owned-grant`,
+    `overrun-trample-presentation`, `metadata-rows`.
+  - All eight `render-*` checks passed, as did admission, native Default
+    enter/restore, `owned-ui-restored` and fixture restore.
+  - Every construction record shows `type: Ability`, the exact fact and
+    owner, `windowDataIsRequest: true` and `unrelatedModal: false`.
+  - Brick counts: 1 header and 10–16 content bricks. No scroll was needed
+    for any row.
+- **Images inspected personally** (`native-ui-000`..`007`, 1920×1080,
+  normal UI scale). Each shows the native ability window over the Oleg
+  fixture, with no other dialog:
+  - `000` Lantern Light Ray: Searing Light art; Special; Target, Spell
+    Resistance, Casting Time "Standard action", description.
+  - `001` Twin Light Rays: Scorching Ray art; Casting Time "Full round".
+  - `002` Ghaele Light Ray: Searing Light art; "One enemy creature within
+    long range"; description "Fires 2 ranged-touch rays… 2d12…".
+  - `003` Unholy Nimbus: icon visible; Supernatural; Duration and Saving
+    Throw rows; full description visible.
+  - `004` Overrun: brachiosaurus creature medallion; Extraordinary; no
+    Duration/Saving Throw rows; "ordinary overrun maneuver… not the
+    creature's trample".
+  - `005` Trample: `Longstrider` art; the Saving Throw row reads
+    "Reflex DC 32 half; none for a target that makes its attack of
+    opportunity instead"; no Duration row.
+  - `006` Cheetah Sprint: cheetah medallion; "1 round"/"None"; Swift action.
+  - `007` Trumpet Blast: trumpet icon; "1d4 rounds"/"Fortitude negates".
+    The long description continues under the native window scrollbar; every
+    row is fully visible.
+- **Native-template observations (not product defects; owner awareness).**
+  - Custom-range targets read "within 30 ft. feet." and, for
+    Overrun/Trample, "within 0 ft. feet." The native
+    `BlueprintAbility.GetTarget` formats the localized
+    "within {0} feet" string with a `Feet` value that already prints "ft."
+  - Every window's header shows "None" (the spell-school slot). The native
+    `AbilityHeader` with `BlueprintAbility` null does this for any
+    non-spell ability, exactly as on the HUD path.
+  - The Nimbus icon is the native Unholy Aura ability's own sprite (asset
+    name `ProtectionFromGood`).
+  - The combat-log pane shows the fixture's pre-existing "-unit name not
+    set- uses ability" lines.
+- **Restoration (exact).**
+  - The guarded wrapper restored the live tree to `5C3E4AD4…` (0.0.140);
+    record `expanded-summoning-restoration/20261108T0322467042643Z-…`.
+  - The runner record shows 0.0.140 before and after, 66 settings values
+    restored, and 95 protected save files unchanged (baseline `CC7CBB0D…`).
+  - `owned-ui-restored`: no errors, flags restored, tutorial untouched,
+    selection restored, anchor unchanged and out of combat.
+  - No process; last lease `Completed`, no recovery required.
+
+### Owner retest checklist
+
+Every item is visual approval only. All mechanics and presence are already
+established.
+
+1. Initiative: the summoned creatures show their own species art, and the
+   cropped medallion look is acceptable.
+2. Lantern Archon: the Light Ray and Twin Light Rays icons are acceptable.
+3. Ghaele: "Light Ray" and its icon are acceptable, and no blank action
+   remains.
+4. Nalfeshnee: the Unholy Nimbus icon (the native Unholy Aura art) is
+   acceptable.
+5. Brachiosaurus: the Overrun creature medallion versus Trample's
+   `Longstrider` icon is acceptable.
+6. Optional polish to decide on, not R3 scope: the native "ft. feet." target
+   wording on custom-range KMG abilities.
+
+---
+
+# UI-evidence checkpoint (historical, retained)
+
 **R3 PARTIAL (UI-evidence checkpoint, 2026-11-07).** UI-01 is now established
 on actual framebuffer evidence: the native initiative tracker shows every
 representative's own portrait with native overlays intact. UI-02..UI-06 still
@@ -9,7 +180,7 @@ under exact ownership but rendered **empty**, because the observer built
 construction defect, not product content. Data predicates for UI-01..UI-06
 pass natively. Owner visual approval is separate and pending.
 
-## Active summary (current)
+## Active summary (superseded by the description checkpoint above)
 
 | Item | Live data | Native view binding | Framebuffer evidence | Owner |
 | --- | --- | --- | --- | --- |

@@ -1,4 +1,24 @@
-# Summoned creature manual-playtest repair — R3 UI-evidence checkpoint (partial) / STOP
+# Summoned creature manual-playtest repair — R3 complete for review / STOP
+
+Current (2026-11-08). R3 is complete for review; owner aesthetic approval is
+pending.
+- UI-01 keeps its inspected tracker screenshot from `57a8e659b1e6`; the
+  undetected Auto End Turn prompt is that candidate's limitation.
+- UI-02..06 are established by eight inspected native ability description
+  windows on observer candidate `31e61aa73a01` (package `f8258ca4…1d5f`, DLL
+  `af3ebc14…fe74`). The run gave 23 PASS, 0 FAIL.
+- The observer now builds `TooltipData` with `Type = TooltipType.Ability` and
+  refuses unrelated native modals. Product code has been frozen since
+  `221cadc7a67e`.
+- Restoration verified (0.0.140, `5C3E4AD4…`, 66 settings, 95 saves).
+- Spend: 1,149 of the 1,500 s cap; cumulative R3 ≈ 2,910 s.
+
+Next: owner review of PR #113, then an explicitly authorized R4 (mephit breath
+audit). Do not start R4 automatically.
+
+---
+
+# (superseded) R3 UI-evidence checkpoint (partial) / STOP
 
 Current. Owner allocation of 900 s (spent 573 s) on observer candidate
 `57a8e659b1e6` (package `36f7054a…4f55`, DLL `fad71354…3eca`); product code
