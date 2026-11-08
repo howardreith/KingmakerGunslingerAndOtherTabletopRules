@@ -1,5 +1,118 @@
 # Summoned Creature Manual Playtest Repair — R6 status
 
+## R6 repair checkpoint (2026-11-08, candidate `c31c6292f7d3`): review checkpoint
+
+One candidate and one guarded run under a separate repair allowance. **Native
+result: FAIL by one assertion** (`r6-cue-early-retirement`), a real product
+finding described under PRES-05/06. All other assertions passed. The original
+R6 evidence for candidate `0dd811be26b2` is kept below and stays attached to
+those bytes. After the run, one code comment was corrected to state the observed
+limit (no behavior change, not rebuilt).
+
+### Disposition by item (repair candidate)
+
+- **PRES-01 Hound sword:** unchanged from `0dd811be26b2`, where it was
+  established. Not rechecked; no shared path it depends on changed.
+- **PRES-02 Hound Aid — technically established.** Native `Touch` is rewritten to
+  `SelfTouch` for a self target and this rig has no such clip. The Hound's Aid now
+  uses `Omni`, which the engine does not rewrite. Commanded on an ally and on
+  itself: `Omni_casting` plays during the actual casting interval on each, one
+  application each, command Success. Action stays Standard, matching the native
+  Aid blueprint. Real-time cooldown read 0 before and after (out of combat), so
+  native action consumption itself was not measured.
+- **PRES-03 Redcap scythe — technically established.** The unit's real style is
+  `AxeTwoHanded`, which its native main-hand action does not map. A private
+  per-view action and set add that style with the existing scythe clips (Stalker
+  ownership and restoration pattern). Binding is gated on the summoned-unit
+  buff's real context: a `KMG_Summoning_` ability that actually spawns
+  `RedcapSummoned`. A summon whose saved context lacks that keeps native behavior;
+  other Redcaps and the shared scythe are untouched. Observed:
+  `Attack_with_scythe_02` on the private action spans frames 1059-1115 and the
+  `StandardScythe` roll is at 1077; `RedcapKick1d4` roll at 1176 with
+  `LegAttack_01`; two attacks. Reload behavior was reasoned from the view-attach
+  path, not exercised.
+- **PRES-04 Lantern — supported by paired views.** Same live Lantern, donor body
+  shown then hidden, idle/move/real ray, orb framed fully (0 out of frame). A dark
+  blue mass protrudes from the orb in donor-shown frames and is absent in
+  donor-hidden frames, so the mesh suppression is kept. Small pale flecks of light
+  at the orb edge appear in both passes; they are not removed and their source
+  was not isolated from nearby effects. Intrinsic light, orb and ray are intact.
+- **PRES-07 Sheen — technically established.** Monster-family arrival rims were
+  the persistent rim. They now end after 3 s on KMG summons, leaving the arrival
+  cue and the buff. Seven-unit group (Ally and Monster families, native Redcap,
+  fire Mephit, Shadow Demon, Invisible Stalker): 0 generic rims active; the rim was
+  ended on each Monster-family unit and finished naturally on Ally-family units;
+  `MephitFireVisualBuff` stays active and `NaturalInvisibilityBuff` remains. The
+  Shadow Demon and Stalker keep their transparent look in the group frame.
+- **PRES-05 Vrock / PRES-06 Trumpet — execution complete; retirement open.** Real
+  executions post one accepted cue each (reaching 12 and 15 targets), with native
+  end-of-event at 4.25 s and 4.77 s and no stop. A cast cancelled before execution
+  posts nothing. **Early retirement fails:** a Trumpet whose view is destroyed
+  while its cue plays (playing ID 861) ends 4.62 s later (5.15 s total, natural
+  control 4.77 s). The stop reports `not-registered`: the native `AkGameObj` is
+  destroyed before this view's handler, and its unregistration does not end the
+  sound. `InspireCourage` remains a provisional substitute: the installed Wwise
+  event and source-file names were searched for horn, trumpet, bugle, fanfare and
+  brass, and the only match is the music file `PF_LK_HornedHunter`.
+- **PRES-08:** deferred.
+
+### Clips and what was inspected
+
+Private, under `runtime-evidence/summon-playtest-r6/repair-c31c6292f7d3/clips`:
+`hound-aid-ally`, `hound-aid-self`, `redcap-scythe`, `lantern-donor-shown`,
+`lantern-donor-hidden`, `mixed-group` (WebM). I inspected extracted frames from
+each, not continuous playback. Audio was recorded but only native cue records
+were analysed for retirement; WASAPI UTC offsets are approximate and audio and
+video are separate. The agent cannot judge audibility.
+
+- **Capture limits:** in `redcap-scythe` a tree that has no collider puts both
+  units in occlusion silhouette in most frames; the scythe swing is still visible.
+  The `mixed-group` view is clear but wide, so units are small.
+
+### Identities and results
+
+- **Source / candidate:** `c31c6292f7d361c5be7eb460c808f0e55159184f`, v0.0.179
+  development `summon-playtest-r6`. Package
+  `e3d0bf672fefb3a144353b32f5352e794eab7dc06130314761f1424c5f3c242a`, DLL
+  `33fd900a0e9ccb61940bc240f06a49073f5420be434d3400ce73e6a7e7d63ab4`, MVID
+  `52d925bf-f908-4c5c-b393-c7d9a844489d`; the observer is in that DLL.
+- **Native run** `20261108T1832463736030Z-7e98916caaa34b088e4bbe42f55e2062`. The
+  observer no longer ticks abilities. Incidental R5 state: provider, Mist and Dance
+  `active`; the 22/0 stays with `366fad0ac41b`.
+- **Focused:** `summon-playtest` 36 of 2,879 selected, passing, production
+  compiled; the candidate builder selected the same 36. UMM tests 85 assertions
+  pass, and the real `Get-Process` cmdlet is back afterward.
+- **Intake and restoration:** v0.0.140, DLL `00EF6757…66FD`; 16 of 16 mods;
+  `Params.xml` `E44F4495…30BB`; 95 saves; 66 settings. Restored: live tree
+  `5C3E4AD4…BFBB` (254 files), 95/95 saves identical, settings restored,
+  `Params.xml` unchanged, no lock, no foreign Kingmaker during the run.
+
+### Repair ledger (target 900 s, ceiling 1,200 s)
+
+| Step | Seconds |
+| --- | ---: |
+| Focused gates (including one compile refusal, one test correction, comment check) | 72 + 16 |
+| Candidate build | 398 |
+| Guarded native run | 202 |
+| **Repair total** | **about 688** |
+
+Original R6 ledger stays about 1,498 s; combined R6 about 2,186 s. R5 stays about
+1,389 s. A further build and run (about 600 s) does not fit the remaining 512 s.
+
+### Owner viewing and listening
+
+1. `hound-aid-self` and `hound-aid-ally`: is the cast gesture acceptable?
+2. `redcap-scythe`: does the swing read as a scythe attack (tree-silhouetted)?
+3. `lantern-donor-hidden` against `lantern-donor-shown`: is the protrusion gone,
+   and are the small pale flecks acceptable?
+4. `mixed-group`: is the summon sheen now consistent?
+5. Earlier WAV excerpts: do the Trumpet and Vrock cues fit? Retirement remains a
+   separate technical gap.
+
+---
+
+# R6 status as first reviewed (candidate `0dd811be26b2`)
+
 **R6 checkpoint (2026-11-08): partly complete; review checkpoint.** One
 candidate was built and observed once. PRES-01 is technically established,
 PRES-05 and PRES-06 have working one-shot cues awaiting a listener, and
@@ -86,8 +199,8 @@ draft #115, which depends on draft #114.
 - **Change:** `SummonAbilityCastCue` uses the native once-per-cast hook (one cue
   per execution context) on those two abilities only, posting on the caster's view.
 - **Events:** Vrock `EarPiercingScream`; Trumpet `InspireCourage`, both native
-  one-shots in the VFX bank. **Kingmaker has no horn or trumpet effect**; this is
-  a bardic substitute whose fit is the owner's decision.
+  one-shots in the VFX bank. A search of installed Wwise event and source-file names
+  found no horn or trumpet effect; this is a provisional bardic substitute.
 - **Observed:** Trumpet reached 14 targets and Vrock 13, one accepted cue each; a
   cast interrupted before execution posted no cue and applied nothing.
 - **Measured:** about -16 to -14 dBFS against a -35.6 dBFS baseline, starting at
