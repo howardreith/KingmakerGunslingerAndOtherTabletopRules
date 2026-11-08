@@ -147,6 +147,10 @@ if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures fai
 # installation, so it belongs in the gate that runs every build rather
 # than in a script nobody executes.
 & (Join-Path $PSScriptRoot 'Test-ExpandedSummoningRuntimeOrchestration.ps1') -ScriptRoot $PSScriptRoot
+# UMM Params.xml protection, recovery coordination and the wrapper's
+# independent cleanup: temporary files and leases only; no game launch.
+& (Join-Path $PSScriptRoot 'Test-UmmParamsProtection.ps1')
+if ($LASTEXITCODE -ne 0) { throw 'UMM Params.xml protection checks failed.' }
 & (Join-Path $PSScriptRoot 'Test-SummonOverhaulOffAdmission.ps1')
 if ($LASTEXITCODE -ne 0) { throw 'Summon overhaul OFF admission checks failed.' }
 & (Join-Path $PSScriptRoot 'compatibility/Test-SuggestionProfileSelection.ps1')
