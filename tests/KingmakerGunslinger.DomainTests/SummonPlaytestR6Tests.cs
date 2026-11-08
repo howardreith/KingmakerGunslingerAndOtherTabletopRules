@@ -78,14 +78,67 @@ namespace KingmakerGunslinger.DomainTests
 
         // The hook is the risk: a per-target action or precast hook would
         // repeat the cue or sound on a cancelled cast.
-        public static void CastCuesFireOncePerExecutionWithOwnedRetirement()
+        public static void RetirementStopsOnlyUnfinishedOwnedPlayback()
+        {
+            var now = new DateTime(2026, 11, 8, 12, 0, 0, DateTimeKind.Utc);
+            var unfinished = new SummonCastCueRecord { EventName = "InspireCourage", Ability = "blast", CasterId = "caster", Utc = now, Frame = 1, PlayingId = 861 };
+            var completed = new SummonCastCueRecord { PlayingId = 700, EndUtc = now };
+            var failing = new SummonCastCueRecord { PlayingId = 5 };
+            var later = new SummonCastCueRecord { PlayingId = 6 };
+            var stopped = new System.Collections.Generic.List<uint>();
+            Action<uint> engine = id => { if (id == 5) throw new InvalidOperationException("no engine"); stopped.Add(id); };
+            int requested = SummonCastCueLifecycle.Retire(new[] { unfinished, completed, failing, later }, "view-destroyed", () => now, engine);
+            Assertions.Equal(2, requested, "Only stops that returned count as requested.");
+            Assertions.True(stopped.SequenceEqual(new uint[] { 861, 6 }), "Only unfinished owned playback is stopped; one failure does not skip the next, and unrelated IDs are never named.");
+            Assertions.Equal(SummonCastCueLifecycle.StopRequested, unfinished.StopResult, "A returned void call is recorded as a request.");
+            Assertions.True(failing.StopResult.StartsWith("failed:", StringComparison.Ordinal) && !failing.StopRequestedUtc.HasValue, "A failed stop stays visible.");
+            Assertions.Equal(0, completed.StopAttempts, "A completed playback is left alone.");
+            Assertions.False(unfinished.EndUtc.HasValue, "A stop request does not manufacture completion.");
+            int repeat = SummonCastCueLifecycle.Retire(new[] { unfinished, completed, failing, later }, "entity-retired", () => now, engine);
+            Assertions.Equal(0, repeat, "Repeated retirement does nothing.");
+            Assertions.Equal(2, stopped.Count, "No playback is stopped twice.");
+            Assertions.Equal("view-destroyed", unfinished.StopReason, "The first retirement reason is kept.");
+            string cue = Source(Path.Combine("Summoning", "SummonAbilityCastCue.cs"));
+            Assertions.True(cue.Contains("AkSoundEngine.StopPlayingID(id)") && cue.Contains("SummonCastCueLifecycle.Retire"), "Production stops by playing ID through the lifecycle.");
+            Assertions.False(cue.Contains("ExecuteActionOnEvent") || cue.Contains("StopAll") || cue.Contains("AddComponent<AkGameObj>"), "No event-wide or global stop and no duplicate sound registration.");
+            Assertions.False(cue.Contains("EndUtc = DateTime") && !cue.Contains("OnEnded"), "Only the end-of-event callback completes a record.");
+        }
+
+        public static void ObserverRequiresARealStopAndEnd()
+        {
+            var retired = new DateTime(2026, 11, 8, 12, 0, 0, DateTimeKind.Utc);
+            Func<SummonCastCueRecord> good = () => new SummonCastCueRecord { PlayingId = 861, StopResult = SummonCastCueLifecycle.StopRequested,
+                StopRequestedUtc = retired.AddMilliseconds(5), EndUtc = retired.AddMilliseconds(120) };
+            Assertions.True(SummonPlaytestR6Policy.CueRetirementObserved(good(), retired, true, true, 861, 1d), "Stop request and end after retirement pass.");
+            Assertions.False(SummonPlaytestR6Policy.CueRetirementObserved(good(), retired, false, true, 861, 1d), "The real command must have finished.");
+            Assertions.False(SummonPlaytestR6Policy.CueRetirementObserved(good(), retired, true, false, 861, 1d), "The cue must be active when retirement begins.");
+            Assertions.False(SummonPlaytestR6Policy.CueRetirementObserved(good(), retired, true, true, 900, 1d), "It must be the same owned playing ID.");
+            var ended = good(); ended.EndUtc = retired.AddSeconds(-1);
+            Assertions.False(SummonPlaytestR6Policy.CueRetirementObserved(ended, retired, true, true, 861, 1d), "A negative retirement-to-end interval fails.");
+            var slow = good(); slow.EndUtc = retired.AddSeconds(4.6);
+            Assertions.False(SummonPlaytestR6Policy.CueRetirementObserved(slow, retired, true, true, 861, 1d), "A cue that plays on fails.");
+            var noStop = good(); noStop.StopResult = null; noStop.StopRequestedUtc = null;
+            Assertions.False(SummonPlaytestR6Policy.CueRetirementObserved(noStop, retired, true, true, 861, 1d), "A short duration without a stop request fails.");
+            var noEnd = good(); noEnd.EndUtc = null;
+            Assertions.False(SummonPlaytestR6Policy.CueRetirementObserved(noEnd, retired, true, true, 861, 1d), "A request without a native end fails.");
+        }
+
+        public static void ObserverRequiresRealLanternExecution()
+        {
+            Assertions.True(SummonPlaytestR6Policy.AbilityExecutionObserved(true, true, false, 1, "Success"), "A completed execution passes, hit or miss.");
+            Assertions.False(SummonPlaytestR6Policy.AbilityExecutionObserved(true, true, true, 1, "Success"), "Cancellation fails.");
+            Assertions.False(SummonPlaytestR6Policy.AbilityExecutionObserved(true, true, false, 1, "Interrupt"), "An interrupted finish fails.");
+            Assertions.False(SummonPlaytestR6Policy.AbilityExecutionObserved(false, false, false, -1, "None"), "A timeout fails.");
+            Assertions.False(SummonPlaytestR6Policy.AbilityExecutionObserved(true, false, false, 1, "Success"), "Missing execution end fails.");
+            Assertions.False(SummonPlaytestR6Policy.AbilityExecutionObserved(true, true, false, -1, "Success"), "A command that never acted fails.");
+        }
+
+        public static void CastCuesFireOncePerExecution()
         {
             string cue = Source(Path.Combine("Summoning", "SummonAbilityCastCue.cs"));
             Assertions.True(cue.Contains("IAbilityOnCastLogic"), "The cue uses the native once-per-execution cast hook.");
             Assertions.True(cue.Contains("Contexts.TryGetValue(context, out seen)"), "A repeated hook for one execution posts nothing.");
             Assertions.True(cue.Contains("AK_EndOfEvent"), "Each cue records its end-of-event callback.");
-            Assertions.True(cue.Contains("AkActionOnEventType.AkActionOnEventType_Stop, emitter") && cue.Contains("IsAkGameObjectRegistered(emitter)"), "Retirement stops only this event on this registered emitter.");
-            Assertions.False(cue.Contains("StopAll") || cue.Contains("AddComponent<AkGameObj>"), "No global stop and no duplicate sound registration.");
             Assertions.False(cue.Contains("releases it with that view"), "The unproven release claim is gone.");
             string vrock = Source(Path.Combine("Blueprints", "ExpandedSummoningSpecialBuilder.Vrock37.cs"));
             string trumpet = Source(Path.Combine("Blueprints", "ExpandedSummoningSpecialBuilder.Trumpet31Blast.cs"));
@@ -106,6 +159,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             string observer = Source(Path.Combine("RuntimeTesting", "RuntimeTestRunner.SummonPlaytestR6Presentation.cs"));
             Assertions.False(observer.Contains("ExecutionProcess.Tick()") || observer.Contains("R5RunData("), "The R6 observer never advances an ability itself.");
+            Assertions.True(observer.Contains("R6SelectedCells = { \"config\", \"redcap-scythe\", \"audio\" }"), "This checkpoint's native itinerary is explicit.");
             Assertions.True(observer.Contains("AkSoundEngine") == false, "Cues are exercised through the product component, not a direct post.");
         }
     }

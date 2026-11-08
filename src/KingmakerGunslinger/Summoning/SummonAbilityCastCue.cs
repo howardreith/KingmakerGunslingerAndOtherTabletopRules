@@ -16,9 +16,7 @@ namespace KingmakerGunslinger.Summoning
     /// actually executes. The native on-cast hook runs once at the cast point,
     /// after a cancelled command would already have stopped and before any
     /// target is resolved, so a blast hitting many creatures still gets one
-    /// cue. Presentation only: no mechanics or cost. See
-    /// <see cref="SummonCastCuePlayback"/> for the current limit on stopping a
-    /// cue when its caster retires.
+    /// cue. Presentation only: no mechanics or cost.
     /// </summary>
     internal sealed class SummonAbilityCastCue : BlueprintComponent, IAbilityOnCastLogic
     {
@@ -35,27 +33,11 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
-    internal sealed class SummonCastCueRecord
-    {
-        internal string EventName;
-        internal string Ability;
-        internal string CasterId;
-        internal DateTime Utc;
-        internal int Frame;
-        internal uint PlayingId;
-        internal DateTime? EndUtc;
-        internal int EndFrame = -1;
-        internal string StopReason;
-        internal string StopResult;
-    }
-
     /// <summary>
-    /// Tracks this view's cast cues until their end-of-event callback, and
-    /// attempts to stop only the tracked event on this emitter if the caster
-    /// retires first. It registers no sound object of its own. Observed limit
-    /// (candidate c31c6292f7d3, R6-STATUS): when the view is destroyed directly
-    /// its native registration is already gone here, so the stop is not sent
-    /// and the cue plays to its natural end.
+    /// Tracks this view's cast cues until their end-of-event callback. If the
+    /// caster retires first, each unfinished one is stopped by its own playing
+    /// ID, which does not need the emitter to remain registered (the native
+    /// registration can already be gone when this view is destroyed).
     /// </summary>
     internal sealed class SummonCastCuePlayback : MonoBehaviour
     {
@@ -72,25 +54,18 @@ namespace KingmakerGunslinger.Summoning
             _active.RemoveAll(value => value.EndUtc.HasValue);
             if (_active.Count == 0) { enabled = false; return; }
             UnitEntityData unit = _view == null ? null : _view.EntityData;
-            if (unit == null || unit.Destroyed || !unit.IsInState) StopTracked("entity-retired");
+            if (unit == null || unit.Destroyed || !unit.IsInState) Retire("entity-retired");
         }
 
-        private void OnDestroy() { StopTracked("view-destroyed"); }
+        private void OnDestroy() { Retire("view-destroyed"); }
 
-        private void StopTracked(string reason)
+        private void Retire(string reason)
         {
-            GameObject emitter = gameObject;
-            foreach (SummonCastCueRecord record in _active.Where(value => !value.EndUtc.HasValue).ToArray())
+            SummonCastCueLifecycle.Retire(_active, reason, () => DateTime.UtcNow, id =>
             {
-                record.StopReason = reason;
-                // The native registration may already have gone with the view;
-                // posting to an unregistered object would register it again.
-                record.StopResult = AkSoundEngine.IsInitialized() && AkSoundEngine.IsAkGameObjectRegistered(emitter)
-                    ? AkSoundEngine.ExecuteActionOnEvent(record.EventName, AkActionOnEventType.AkActionOnEventType_Stop, emitter).ToString()
-                    : "not-registered";
-            }
-            _active.Clear();
-            enabled = false;
+                if (!AkSoundEngine.IsInitialized()) throw new InvalidOperationException("Sound engine is not initialized.");
+                AkSoundEngine.StopPlayingID(id);
+            });
         }
     }
 

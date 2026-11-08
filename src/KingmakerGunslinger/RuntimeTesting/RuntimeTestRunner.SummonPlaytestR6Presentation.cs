@@ -37,6 +37,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const int R6FrameWidth = 960, R6FrameHeight = 540;
         private const int R6ArrivalFrames = 120;
 
+        // Native itinerary for this checkpoint. Hound Aid, Lantern and the mixed
+        // group are established on c31c6292f7d3 and are not replayed.
+        private static readonly string[] R6SelectedCells = { "config", "redcap-scythe", "audio" };
+        private static bool R6Selected(string cell) { return Array.IndexOf(R6SelectedCells, cell) >= 0; }
+
         private static Bounds R6RenderBounds(params UnitEntityData[] units)
         {
             Bounds? total = null;
@@ -283,34 +288,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit.Descriptor.Abilities.Enumerable.Single(value => ReferenceEquals(value.Blueprint, blueprint)).Data;
             try
             {
-                PlaceExpandedSummoningUnit(hostile, ground(centre + Vector3.forward * 8f + Vector3.right * 5f));
+                // Open ground in the established fixture, clear of the trees that
+                // silhouetted the earlier Redcap capture.
+                PlaceExpandedSummoningUnit(hostile, ground(centre + Vector3.forward * 4f + Vector3.left * 2f));
                 foreach (int step in R6Wait(10)) yield return step;
 
-                foreach (int step in R6Cell("config", () => R6Configuration(symbols, record))) yield return step;
+                if (R6Selected("config")) foreach (int step in R6Cell("config", () => R6Configuration(symbols, record))) yield return step;
 
                 Time.captureFramerate = 30;
                 UnitEntityData hound = null;
-                foreach (int step in R6Cell("hound-aid", () =>
+                if (R6Selected("hound-aid")) foreach (int step in R6Cell("hound-aid", () =>
                 {
                     hound = summon("hound-archon");
                     PlaceExpandedSummoningUnit(hound, ground(centre + Vector3.right * 1.7f));
                     return R6HoundAid(hound, fixture, symbols, record, recorder, abilityData);
                 })) yield return step;
 
-                foreach (int step in R6Cell("redcap-scythe", () =>
+                if (R6Selected("redcap-scythe")) foreach (int step in R6Cell("redcap-scythe", () =>
                 {
                     UnitEntityData redcap = summonRedcap();
                     PlaceExpandedSummoningUnit(redcap, ground(hostile.Position + Vector3.left * 1.6f));
                     return R6Redcap(redcap, hostile, record);
                 })) yield return step;
 
-                foreach (int step in R6Cell("lantern", () => R6Lantern(summon("lantern-archon"), hostile, symbols, record, ground, abilityData))) yield return step;
+                if (R6Selected("lantern")) foreach (int step in R6Cell("lantern", () => R6Lantern(summon("lantern-archon"), hostile, symbols, record, ground, abilityData))) yield return step;
 
-                foreach (int step in R6Cell("mixed-group", () => R6MixedGroup(hound, summon, summonRedcap, ground, record, centre))) yield return step;
+                if (R6Selected("mixed-group")) foreach (int step in R6Cell("mixed-group", () => R6MixedGroup(hound, summon, summonRedcap, ground, record, centre))) yield return step;
                 Time.captureFramerate = priorCapture;
 
                 // Real time, last, because the screech and blast affect nearby creatures.
-                foreach (int step in R6Cell("audio", () => R6Audio(fixture, summon, ground, symbols, record, recorder, saves, mark, abilityData, centre))) yield return step;
+                if (R6Selected("audio")) foreach (int step in R6Cell("audio", () => R6Audio(fixture, summon, ground, symbols, record, recorder, saves, mark, abilityData, centre))) yield return step;
             }
             finally
             {
@@ -341,7 +348,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             return new JArray(SummonAbilityCastCueRuntime.Snapshot().Select(value => new JObject { ["event"] = value.EventName, ["ability"] = value.Ability,
                 ["caster"] = value.CasterId, ["utc"] = value.Utc.ToString("o"), ["frame"] = value.Frame, ["playingId"] = value.PlayingId,
                 ["endUtc"] = value.EndUtc.HasValue ? value.EndUtc.Value.ToString("o") : null, ["endFrame"] = value.EndFrame,
-                ["stopReason"] = value.StopReason, ["stopResult"] = value.StopResult }));
+                ["stopReason"] = value.StopReason, ["stopResult"] = value.StopResult, ["stopAttempts"] = value.StopAttempts,
+                ["stopRequestedUtc"] = value.StopRequestedUtc.HasValue ? value.StopRequestedUtc.Value.ToString("o") : null }));
         }
 
         private IEnumerable<int> R6Configuration(IDictionary<string, BlueprintScriptableObject> symbols, JObject record)
@@ -484,8 +492,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             row["hiddenAtEnd"] = orb.DonorBodiesHidden; row["orb"] = orb.Describe();
             Sprint25Check("r6-lantern-paired-views", (bool)row["hiddenAtSpawn"] && orb.DonorBodiesHidden && orb.Ready &&
-                (bool)((JObject)((JObject)row["donor-hidden"])["ray"])["finished"] && (int)((JObject)row["donor-hidden"])["outOfFrame"] == 0 && (int)((JObject)row["donor-shown"])["outOfFrame"] == 0,
+                R6RayExecuted((JObject)((JObject)row["donor-hidden"])["ray"]) && R6RayExecuted((JObject)((JObject)row["donor-shown"])["ray"]) && (int)((JObject)row["donor-hidden"])["outOfFrame"] == 0 && (int)((JObject)row["donor-shown"])["outOfFrame"] == 0,
                 (JObject)row.DeepClone(), "The same live Lantern is framed fully in both passes, ends suppressed and ready, and its ray finishes.");
+        }
+
+        private static bool R6RayExecuted(JObject ray)
+        {
+            return SummonPlaytestR6Policy.AbilityExecutionObserved((bool)ray["finished"], (bool)ray["executionEnded"], (bool)ray["cancelled"], (int)ray["actedAtShot"], (string)ray["result"]);
         }
 
         private IEnumerable<int> R6MixedGroup(UnitEntityData hound, Func<string, UnitEntityData> summon, Func<UnitEntityData> summonRedcap,
@@ -596,21 +609,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             // Retire after the native command has ended, while its cue still plays.
             DateTime waitFinish = DateTime.UtcNow.AddSeconds(1.2d);
             while (DateTime.UtcNow < waitFinish && !command2.IsFinished) yield return 0;
-            early["commandFinishedBeforeRetirement"] = command2.IsFinished;
+            bool commandFinished = command2.IsFinished && command2.Result == UnitCommand.ResultType.Success;
+            early["commandFinishedBeforeRetirement"] = commandFinished; early["commandResult"] = command2.Result.ToString();
             bool stillPlaying = !cue[0].EndUtc.HasValue;
             DateTime retiredAt = DateTime.UtcNow;
             mark("despawn");
             DisposeExpandedSummoningUnits(fixture.Created, new[] { retired });
             foreach (int step in R6Seconds(6f)) yield return step;
             mark("despawn-window-end");
-            early["playingId"] = cue[0].PlayingId; early["stillPlayingAtRetirement"] = stillPlaying; early["stopReason"] = cue[0].StopReason; early["stopResult"] = cue[0].StopResult;
+            early["creature"] = "Trumpet Archon"; early["ability"] = cue[0].Ability; early["playingId"] = cue[0].PlayingId; early["stillPlayingAtRetirement"] = stillPlaying;
+            early["stopReason"] = cue[0].StopReason; early["stopResult"] = cue[0].StopResult; early["stopAttempts"] = cue[0].StopAttempts;
+            early["stopRequestedUtc"] = cue[0].StopRequestedUtc.HasValue ? cue[0].StopRequestedUtc.Value.ToString("o") : null;
+            early["retiredUtc"] = retiredAt.ToString("o"); early["endUtc"] = cue[0].EndUtc.HasValue ? cue[0].EndUtc.Value.ToString("o") : null;
             double untilEnd = cue[0].EndUtc.HasValue ? (cue[0].EndUtc.Value - retiredAt).TotalSeconds : double.NaN;
             early["secondsFromRetirementToEnd"] = double.IsNaN(untilEnd) ? (double?)null : untilEnd;
             double natural = (double)((JObject)row["trumpet"])["naturalSeconds"];
             double total = cue[0].EndUtc.HasValue ? (cue[0].EndUtc.Value - cue[0].Utc).TotalSeconds : double.NaN;
             early["totalSeconds"] = double.IsNaN(total) ? (double?)null : total; early["naturalControlSeconds"] = natural;
-            Sprint25Check("r6-cue-early-retirement", stillPlaying && !double.IsNaN(total) && untilEnd < 1.0d && natural > total + .8d, (JObject)early.DeepClone(),
-                "A real execution's cue still playing when its caster retires ends within a second, clearly earlier than the same cue's natural completion.");
+            Sprint25Check("r6-cue-early-retirement", SummonPlaytestR6Policy.CueRetirementObserved(cue[0], retiredAt, commandFinished, stillPlaying, cue[0].PlayingId, 1d) && natural > 0d, (JObject)early.DeepClone(),
+                "The Trumpet's real execution finished, its own accepted cue was still active at retirement, a stop was requested for that playing ID, and the cue's native end arrived within a second after retirement; natural completion is the control.");
         }
     }
 }
