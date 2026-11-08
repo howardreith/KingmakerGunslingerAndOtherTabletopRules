@@ -30,6 +30,42 @@ namespace KingmakerGunslinger.Summoning
         /// <summary>The game's SummonedCreatureVisual buff.</summary>
         internal const string VisualBuffGuid = "706c182e86d9be848b59ddccca73d13e";
 
+        /// <summary>
+        /// Repair R6 PRES-07: the six native arrival buffs. Their effects keep
+        /// their brief cue; a generic rim that would otherwise persist past
+        /// this interval is ended on KMG summons.
+        /// </summary>
+        internal const float ArrivalRimSeconds = 3f;
+        private static readonly string[] ArrivalBuffGuids = {
+            "2c3b98e56c1b4e9479f692d7ef95b2d2", "25629d7e78016a340b0e50818b6d8bb5",
+            "932d27490e1701548a48b4cbc2f2caac", "6fcdf014694b2b542a867763b4369cb3",
+            "50d51854cf6a3434d96a87d050e1d09a", "0dff842f06edace43baf8a2f44207045" };
+        internal const string ArrivalBuffNamePrefix = "SummonedCreatureSpawn";
+
+        internal static bool IsArrivalBuff(string guid)
+        { return Array.IndexOf(ArrivalBuffGuids, guid) >= 0; }
+
+        internal static bool OutlastsArrival(bool loops, float lifetime)
+        { return loops || lifetime > ArrivalRimSeconds; }
+
+        /// <summary>
+        /// Active generic rims in a "name:rims/tints/activeRims/activeTints"
+        /// census: the persistent generic buff plus every arrival buff.
+        /// </summary>
+        internal static int ActiveGenericRims(string census)
+        {
+            int total = 0;
+            foreach (string row in (census ?? string.Empty).Split('|'))
+            {
+                int colon = row.LastIndexOf(':');
+                if (colon <= 0 || !row.StartsWith("SummonedCreature", StringComparison.Ordinal)) continue;
+                string[] counts = row.Substring(colon + 1).Split('/');
+                int active;
+                if (counts.Length == 4 && int.TryParse(counts[2], out active)) total += active;
+            }
+            return total;
+        }
+
         internal static bool Suppresses(string sourceAbilityName,
             string unitBlueprintName, bool hasRegisteredRim)
         {

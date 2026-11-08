@@ -5,21 +5,19 @@ using System.IO;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
-using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
-using Kingmaker.View.Animation;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.Utility;
 using Kingmaker.View;
 using Kingmaker.Visual.Animation.Kingmaker;
 using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using KingmakerGunslinger.Blueprints;
-using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -29,53 +27,104 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
-        // Repair R6 (PRES-01..07), one save-free phase in the established Oleg
-        // outdoor native Default fixture. Commanded executions with brains
-        // inactive; nothing here observes autonomous AI. Motion frames are
-        // rendered through the game's camera and written with their native
-        // animation state; a separate process records device audio against
-        // the UTC marks in the timeline. Records support, and never replace,
-        // watching the clips and listening to the audio.
+        // Repair R6 (PRES-02..07), one save-free phase in the established Oleg
+        // outdoor native Default fixture. Commands are submitted and native
+        // progression is only observed; nothing here ticks an ability or
+        // observes autonomous AI. Motion frames are framed from actual render
+        // bounds with depth of field off for each render, and written with
+        // their native animation state. A separate process records device
+        // audio; retirement is judged from native cue end-of-event records.
         private const int R6FrameWidth = 960, R6FrameHeight = 540;
+        private const int R6ArrivalFrames = 120;
+
+        private static Bounds R6RenderBounds(params UnitEntityData[] units)
+        {
+            Bounds? total = null;
+            foreach (UnitEntityData unit in units.Where(value => value != null && value.View != null))
+                foreach (Renderer renderer in unit.View.GetComponentsInChildren<Renderer>(true))
+                {
+                    if (!(renderer is SkinnedMeshRenderer || renderer is MeshRenderer) || !renderer.enabled ||
+                        !renderer.gameObject.activeInHierarchy) continue;
+                    Bounds box = renderer.bounds;
+                    if (box.size.magnitude < .05f) continue;
+                    if (total.HasValue) { Bounds merged = total.Value; merged.Encapsulate(box); total = merged; }
+                    else total = box;
+                }
+            return total ?? new Bounds((units.FirstOrDefault(value => value != null)?.Position ?? Vector3.zero) + Vector3.up, Vector3.one * 2f);
+        }
 
         private sealed class R6Clip : IDisposable
         {
-            // The compile-time references omit this engine module; the game ships it.
+            private readonly string _directory; private readonly Camera _camera;
+            private readonly RenderTexture _texture; private readonly Texture2D _pixels;
+            private readonly Func<Bounds> _subject;
             private static readonly System.Reflection.MethodInfo EncodeJpg =
                 Type.GetType("UnityEngine.ImageConversion, UnityEngine.ImageConversionModule", true)
                     .GetMethod("EncodeToJPG", new[] { typeof(Texture2D), typeof(int) });
-            private readonly string _directory; private readonly CameraRig _rig; private readonly Camera _camera;
-            private readonly RenderTexture _texture; private readonly Texture2D _pixels;
-            internal readonly JArray Rows = new JArray(); internal readonly string Name; internal int Count;
-            internal R6Clip(string evidence, string name)
+            private Vector3? _direction;
+            internal readonly JArray Rows = new JArray(); internal readonly string Name; internal int Count; internal int OutOfFrame; internal int Occluded = -1;
+
+            internal R6Clip(string evidence, string name, Func<Bounds> subject)
             {
-                Name = name; _directory = Path.Combine(evidence, "r6-frames", name); Directory.CreateDirectory(_directory);
-                _rig = TeleportationCastingCamera(); _camera = _rig == null ? Camera.main : _rig.Camera;
+                Name = name; _subject = subject;
+                _directory = Path.Combine(evidence, "r6-frames", name); Directory.CreateDirectory(_directory);
+                CameraRig rig = TeleportationCastingCamera();
+                _camera = rig == null ? Camera.main : rig.Camera;
                 if (_camera == null) throw new InvalidOperationException("No game camera for motion capture.");
                 _texture = new RenderTexture(R6FrameWidth, R6FrameHeight, 24, RenderTextureFormat.ARGB32);
                 _pixels = new Texture2D(R6FrameWidth, R6FrameHeight, TextureFormat.RGB24, false, false);
             }
 
-            internal void Shot(Vector3 focus, Vector3 offset, JObject state)
+            // First unobstructed bearing from the actual subject bounds; the
+            // bearing then stays fixed so the clip reads as one camera.
+            private Vector3 Bearing(Bounds bounds, float distance)
+            {
+                if (_direction.HasValue) return _direction.Value;
+                int best = int.MaxValue; Vector3 chosen = Vector3.back;
+                for (int step = 0; step < 8 && best > 0; step++)
+                {
+                    Vector3 candidate = Quaternion.Euler(0f, 45f * step, 0f) * new Vector3(.6f, .5f, -.62f).normalized;
+                    int hits = Physics.RaycastAll(bounds.center, candidate, distance)
+                        .Count(hit => hit.collider != null && hit.collider.GetComponentInParent<UnitEntityView>() == null);
+                    if (hits < best) { best = hits; chosen = candidate; }
+                }
+                Occluded = best; _direction = chosen;
+                return chosen;
+            }
+
+            internal void Shot(JObject state)
             {
                 Vector3 position = _camera.transform.position; Quaternion rotation = _camera.transform.rotation;
                 RenderTexture target = _camera.targetTexture, active = RenderTexture.active;
+                var post = _camera.GetComponent<UnityEngine.PostProcessing.PostProcessingBehaviour>();
+                var depth = post != null && post.profile != null ? post.profile.depthOfField : null;
+                bool depthBefore = depth != null && depth.enabled;
                 try
                 {
-                    _camera.transform.position = focus + offset;
-                    _camera.transform.rotation = Quaternion.LookRotation(focus + Vector3.up - _camera.transform.position, Vector3.up);
+                    if (depth != null) depth.enabled = false;
+                    Bounds bounds = _subject();
+                    float radius = Mathf.Max(bounds.extents.magnitude, .9f);
+                    float fit = Mathf.Sin(Mathf.Deg2Rad * Mathf.Min(_camera.fieldOfView, _camera.fieldOfView * 16f / 9f) * .5f);
+                    float distance = Mathf.Max(radius * 1.25f / Mathf.Max(fit, .05f), 2.4f);
+                    Vector3 direction = Bearing(bounds, distance);
+                    _camera.transform.position = bounds.center + direction * distance;
+                    _camera.transform.rotation = Quaternion.LookRotation(bounds.center - _camera.transform.position, Vector3.up);
                     _camera.targetTexture = _texture; _camera.Render();
                     RenderTexture.active = _texture;
                     _pixels.ReadPixels(new Rect(0, 0, R6FrameWidth, R6FrameHeight), 0, 0); _pixels.Apply(false, false);
+                    Vector3 min = _camera.WorldToViewportPoint(bounds.min), max = _camera.WorldToViewportPoint(bounds.max);
+                    bool inFrame = min.z > 0f && max.z > 0f && Mathf.Min(min.x, max.x) > -.05f && Mathf.Max(min.x, max.x) < 1.05f && Mathf.Min(min.y, max.y) > -.05f && Mathf.Max(min.y, max.y) < 1.05f;
+                    if (!inFrame) OutOfFrame++;
                     string file = Count.ToString("D4", CultureInfo.InvariantCulture) + ".jpg";
                     File.WriteAllBytes(Path.Combine(_directory, file), (byte[])EncodeJpg.Invoke(null, new object[] { _pixels, 88 }));
-                    state["file"] = file; state["frame"] = Time.frameCount; state["utc"] = DateTime.UtcNow.ToString("o");
+                    state["file"] = file; state["frame"] = Time.frameCount; state["utc"] = DateTime.UtcNow.ToString("o"); state["inFrame"] = inFrame;
                     Rows.Add(state); Count++;
                 }
                 finally
                 {
                     _camera.targetTexture = target; RenderTexture.active = active;
                     _camera.transform.position = position; _camera.transform.rotation = rotation;
+                    if (depth != null) depth.enabled = depthBefore;
                 }
             }
 
@@ -101,7 +150,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             public void Dispose() { EventBus.Unsubscribe(this); }
         }
 
-        private static JObject R6AnimationState(UnitEntityData unit)
+        private static JObject R6AnimationState(UnitEntityData unit, UnitCommand command = null)
         {
             var state = new JObject();
             UnitAnimationManager manager = unit == null || unit.View == null ? null : unit.View.AnimationManager;
@@ -110,7 +159,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             AnimationClip clip = handle == null || handle.ActiveAnimation == null ? null : handle.ActiveAnimation.GetPlayableClip();
             state["clip"] = clip == null ? null : clip.name;
             state["time"] = handle == null ? 0d : Math.Round(handle.GetTime(), 3);
+            if (command != null) { state["started"] = command.IsStarted; state["acted"] = command.IsActed; }
             return state;
+        }
+
+        private static R6CommandFrame[] R6Frames(JArray rows)
+        {
+            return rows.Select(row => new R6CommandFrame { Action = (string)row["action"], Clip = (string)row["clip"],
+                Started = row["started"] != null && (bool)row["started"], Acted = row["acted"] != null && (bool)row["acted"],
+                GameFrame = (int)row["frame"] }).ToArray();
+        }
+
+        private static JArray R6DistinctClips(JArray rows)
+        {
+            return new JArray(rows.Select(value => (string)value["clip"]).Where(value => value != null).Distinct());
         }
 
         // One failed cell records its failure and the later clips still run.
@@ -131,41 +193,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "The cell ran to its end without an exception.");
         }
 
-        private IEnumerable<int> R6Frames(R6Clip clip, UnitEntityData unit, Vector3 focus, Vector3 offset, int count)
+        private static IEnumerable<int> R6Wait(int frames) { for (int frame = 0; frame < frames; frame++) yield return 0; }
+
+        private static IEnumerable<int> R6Seconds(float seconds)
         {
-            for (int index = 0; index < count; index++)
+            DateTime end = DateTime.UtcNow.AddSeconds(seconds);
+            while (DateTime.UtcNow < end) yield return 0;
+        }
+
+        private static IEnumerable<int> R6Shots(R6Clip clip, UnitEntityData unit, int count)
+        {
+            for (int index = 0; index < count; index++) { clip.Shot(R6AnimationState(unit)); yield return 0; }
+        }
+
+        // Submit one native command and observe it: no direct ticking.
+        private IEnumerable<int> R6RunPassive(UnitEntityData owner, AbilityData data, TargetWrapper target, JObject row, R6Clip clip)
+        {
+            row["blueprint"] = data.Blueprint.AssetGuid; row["blueprintName"] = data.Blueprint.name;
+            row["actionType"] = data.Blueprint.ActionType.ToString();
+            row["availableBefore"] = data.IsAvailable; row["canTarget"] = data.CanTarget(target);
+            if (!data.IsAvailable || !data.CanTarget(target)) throw new InvalidOperationException("Native ability unavailable: " + data.Blueprint.name);
+            var command = new UnitUseAbility(data, target);
+            owner.Commands.Run(command);
+            DateTime deadline = DateTime.UtcNow.AddSeconds(30);
+            int actedAt = -1, shots = 0;
+            while (DateTime.UtcNow < deadline)
             {
-                clip.Shot(unit == null ? focus : unit.Position, offset, R6AnimationState(unit));
+                if (actedAt < 0 && command.IsActed) actedAt = shots;
+                if (clip != null) clip.Shot(R6AnimationState(owner, command));
+                shots++;
                 yield return 0;
+                if (command.IsFinished && (command.ExecutionProcess == null || command.ExecutionProcess.IsEnded)) break;
             }
-        }
-
-        private IEnumerable<int> R6Attack(string clipName, UnitEntityData attacker, UnitEntityData target, Vector3 offset, JObject row)
-        {
-            using (var clip = new R6Clip(_request.EvidenceDirectory, clipName))
-            using (var log = new R6AttackLog(attacker))
-            using (new R5AttackSeed(attacker))
-            {
-                foreach (int frame in R6Frames(clip, attacker, Vector3.zero, offset, 12)) yield return frame;
-                var command = new UnitAttack(target);
-                attacker.Commands.Run(command);
-                int actedAt = -1, shots = 0, after = 0;
-                while (shots++ < 180 && after < 30)
-                {
-                    if (actedAt < 0 && command.IsActed) actedAt = clip.Count;
-                    var state = R6AnimationState(attacker); state["acted"] = command.IsActed;
-                    clip.Shot(attacker.Position, offset, state);
-                    if (command.IsFinished) after++;
-                    yield return 0;
-                }
-                row["frames"] = clip.Count; row["actedAtShot"] = actedAt; row["finished"] = command.IsFinished;
-                row["attacks"] = log.Rows; row["clips"] = R6DistinctClips(clip.Rows);
-            }
-        }
-
-        private static JArray R6DistinctClips(JArray rows)
-        {
-            return new JArray(rows.Select(value => (string)value["clip"]).Where(value => value != null).Distinct());
+            row["finished"] = command.IsFinished; row["result"] = command.Result.ToString();
+            row["executionEnded"] = command.ExecutionProcess != null && command.ExecutionProcess.IsEnded;
+            row["actedAtShot"] = actedAt;
+            row["cancelled"] = !command.IsFinished || command.Result == UnitCommand.ResultType.Interrupt;
         }
 
         private IEnumerable<int> ReviewSummonPlaytestPresentationR6(ExpandedSummoningCorrectionFixture fixture, string phase,
@@ -180,7 +243,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException("Exact fresh R6 presentation fixture in owned outdoor native Default, without narrative, required.");
             IDictionary<string, BlueprintScriptableObject> symbols = ExpandedSummoningBlueprints.Registered.BySymbol;
             var record = new JObject { ["phase"] = phase, ["runId"] = _request.RunId, ["fixture"] = "established non-DLC Oleg outdoor native Default; save-free",
-                ["limits"] = "Commanded executions with brains inactive; no autonomous AI is observed. Frames show motion and event records show timing; audibility is established only by listening to the separately recorded audio." };
+                ["limits"] = "Commanded executions with brains inactive; no autonomous AI is observed. Audibility is established only by listening. Cue retirement is judged from native end-of-event records." };
             var timeline = new JArray();
             Action<string> mark = name => timeline.Add(new JObject { ["mark"] = name, ["utc"] = DateTime.UtcNow.ToString("o"), ["frame"] = Time.frameCount });
             var owned = new List<UnitEntityData>();
@@ -188,8 +251,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData hostile = fixture.Hostile;
             Vector3 hostilePosition = hostile.Position;
             int priorCapture = Time.captureFramerate;
-            R4MephitRecorder recorder = new R4MephitRecorder(); EventBus.Subscribe(recorder);
-            Sprint26Saves saves = new Sprint26Saves(hostile) { DesiredRoll = 20 };
+            var recorder = new R4MephitRecorder(); EventBus.Subscribe(recorder);
+            var saves = new List<Sprint26Saves> { new Sprint26Saves(hostile) { DesiredRoll = 20 } };
             Func<Vector3, Vector3> ground = value => ObstacleAnalyzer.GetNearestNode(value).clampedPosition;
             Func<string, UnitEntityData> summon = key =>
             {
@@ -220,72 +283,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit.Descriptor.Abilities.Enumerable.Single(value => ReferenceEquals(value.Blueprint, blueprint)).Data;
             try
             {
-                PlaceExpandedSummoningUnit(hostile, ground(centre + Vector3.forward * 7f));
-                for (int frame = 0; frame < 10; frame++) yield return 0;
+                PlaceExpandedSummoningUnit(hostile, ground(centre + Vector3.forward * 8f + Vector3.right * 5f));
+                foreach (int step in R6Wait(10)) yield return step;
 
-                // 1. Loaded configuration and the Lantern render hierarchy.
                 foreach (int step in R6Cell("config", () => R6Configuration(symbols, record))) yield return step;
 
                 Time.captureFramerate = 30;
                 UnitEntityData hound = null;
-                // 2. PRES-01: Hound Archon greatsword attack.
-                foreach (int step in R6Cell("hound-sword", () =>
-                {
-                    hound = summon("hound-archon");
-                    PlaceExpandedSummoningUnit(hound, ground(hostile.Position + Vector3.left * 1.6f));
-                    var row = new JObject(); record["houndSword"] = row;
-                    return R6AfterSettling(R6Attack("hound-sword", hound, hostile, new Vector3(3.4f, 2.6f, -3.4f), row).Concat(R6Assert(() =>
-                    {
-                        var clips = (JArray)row["clips"]; var attacks = (JArray)row["attacks"];
-                        Sprint25Check("r6-hound-sword-swing", clips.Values<string>().Any(value => value == "Attack_01_3") && (int)row["actedAtShot"] >= 0 &&
-                            attacks.Count >= 1 && (string)attacks[0]["weapon"] == hound.Blueprint.Body.PrimaryHand.name, (JObject)row.DeepClone(),
-                            "The native main-hand clip plays through a real command that acts, and the first attack roll uses the Hound's greatsword.");
-                    })));
-                })) yield return step;
-
-                // 3. PRES-02: Hound Archon Aid.
                 foreach (int step in R6Cell("hound-aid", () =>
                 {
-                    if (hound == null) throw new InvalidOperationException("No Hound from the previous cell.");
-                    PlaceExpandedSummoningUnit(hound, ground(fixture.Caster.Position + Vector3.right * 1.6f));
-                    var aid = (BlueprintAbility)symbols["KMG.Summoning.OutsiderCelestial.HoundArchon.Aid"];
-                    return R6AfterSettling(R6Cast("hound-aid", hound, abilityData(hound, aid), new TargetWrapper(fixture.Caster), new Vector3(3.4f, 2.6f, -3.4f), record, recorder, "houndAid"));
+                    hound = summon("hound-archon");
+                    PlaceExpandedSummoningUnit(hound, ground(centre + Vector3.right * 1.7f));
+                    return R6HoundAid(hound, fixture, symbols, record, recorder, abilityData);
                 })) yield return step;
 
-                // 4. PRES-03: native Redcap through its real KMG summon option.
                 foreach (int step in R6Cell("redcap-scythe", () =>
                 {
                     UnitEntityData redcap = summonRedcap();
-                    PlaceExpandedSummoningUnit(redcap, ground(hostile.Position + Vector3.right * 1.6f));
-                    var row = new JObject(); record["redcap"] = row;
-                    row["unit"] = redcap.Blueprint.name; row["primaryHand"] = redcap.Body.PrimaryHand.MaybeWeapon == null ? null : redcap.Body.PrimaryHand.MaybeWeapon.Blueprint.name;
-                    row["renderers"] = new JArray(redcap.View.GetComponentsInChildren<Renderer>(true).Select(value =>
-                        new JObject { ["name"] = value.name, ["type"] = value.GetType().Name, ["enabled"] = value.enabled, ["active"] = value.gameObject.activeInHierarchy }));
-                    return R6AfterSettling(R6Attack("redcap-scythe", redcap, hostile, new Vector3(-3.2f, 2.4f, -3.2f), row).Concat(R6Assert(() =>
-                    {
-                        var clips = (JArray)row["clips"];
-                        Sprint25Check("r6-redcap-scythe", (string)row["primaryHand"] == "StandardScythe" &&
-                            clips.Values<string>().Any(value => value.StartsWith("Attack_with_scythe", StringComparison.Ordinal)), (JObject)row.DeepClone(),
-                            "The summoned native Redcap wields its StandardScythe and plays its native scythe attack clip.");
-                    })));
+                    PlaceExpandedSummoningUnit(redcap, ground(hostile.Position + Vector3.left * 1.6f));
+                    return R6Redcap(redcap, hostile, record);
                 })) yield return step;
 
-                // 5. PRES-04: Lantern Archon, donor body shown for comparison, then fixed.
-                foreach (int step in R6Cell("lantern", () => R6AfterSettling(R6Lantern(summon("lantern-archon"), hostile, symbols, record, ground, abilityData)))) yield return step;
+                foreach (int step in R6Cell("lantern", () => R6Lantern(summon("lantern-archon"), hostile, symbols, record, ground, abilityData))) yield return step;
 
-                // 6. PRES-07: a small mixed group.
-                foreach (int step in R6Cell("mixed-group", () => R6AfterSettling(R6MixedGroup(fixture, hound, summon, summonRedcap, ground, record, centre)))) yield return step;
+                foreach (int step in R6Cell("mixed-group", () => R6MixedGroup(hound, summon, summonRedcap, ground, record, centre))) yield return step;
                 Time.captureFramerate = priorCapture;
 
-                // 7. PRES-05/06: real-time audio, last, because the blast affects nearby creatures.
-                foreach (int step in R6Cell("audio", () => R6Audio(fixture, summon, ground, symbols, record, recorder, mark, abilityData, centre))) yield return step;
+                // Real time, last, because the screech and blast affect nearby creatures.
+                foreach (int step in R6Cell("audio", () => R6Audio(fixture, summon, ground, symbols, record, recorder, saves, mark, abilityData, centre))) yield return step;
             }
             finally
             {
                 Time.captureFramerate = priorCapture;
                 var errors = new JArray();
                 Action<string, Action> restore = (name, action) => { try { action(); } catch (Exception error) { errors.Add(name + ":" + error.Message); } };
-                restore("saves", () => saves.Dispose());
+                restore("saves", () => { foreach (Sprint26Saves value in saves) value.Dispose(); });
                 restore("recorder", () => EventBus.Unsubscribe(recorder));
                 restore("combat", () => {
                     foreach (UnitEntityData unit in owned.Concat(new[] { fixture.Hostile, fixture.Caster }).Where(value => value != null && !value.Destroyed))
@@ -304,223 +336,281 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private IEnumerable<int> R6AfterSettling(IEnumerable<int> body)
-        {
-            for (int frame = 0; frame < 12; frame++) yield return 0;
-            foreach (int frame in body) yield return frame;
-        }
-
-        private static IEnumerable<int> R6Assert(Action assertion) { assertion(); yield break; }
-
         private static JArray R6Cues()
         {
             return new JArray(SummonAbilityCastCueRuntime.Snapshot().Select(value => new JObject { ["event"] = value.EventName, ["ability"] = value.Ability,
-                ["caster"] = value.CasterId, ["utc"] = value.Utc.ToString("o"), ["frame"] = value.Frame, ["playingId"] = value.PlayingId }));
+                ["caster"] = value.CasterId, ["utc"] = value.Utc.ToString("o"), ["frame"] = value.Frame, ["playingId"] = value.PlayingId,
+                ["endUtc"] = value.EndUtc.HasValue ? value.EndUtc.Value.ToString("o") : null, ["endFrame"] = value.EndFrame,
+                ["stopReason"] = value.StopReason, ["stopResult"] = value.StopResult }));
         }
 
         private IEnumerable<int> R6Configuration(IDictionary<string, BlueprintScriptableObject> symbols, JObject record)
         {
             var hound = (BlueprintUnit)symbols["KMG.Summoning.Unit.HoundArchon"];
-            var sword = (BlueprintItemWeapon)hound.Body.PrimaryHand;
             var aid = (BlueprintAbility)symbols["KMG.Summoning.OutsiderCelestial.HoundArchon.Aid"];
             var screech = (BlueprintAbility)symbols[ExpandedSummoningSpecialBuilder.Vrock37Prefix + "Screech"];
             var blast = (BlueprintAbility)symbols[ExpandedSummoningSpecialBuilder.Trumpet31Prefix + "TrumpetBlast"];
             UnitAnimationManager manager = hound.Prefab.Load(false).GetComponentsInChildren<UnitAnimationManager>(true).Single();
             var cast = manager.AnimationSet.Actions.OfType<UnitAnimationActionCastSpell>().Single();
-            var config = new JObject {
-                ["set"] = manager.AnimationSet.name,
-                ["swordStyle"] = sword.VisualParameters.AnimStyle.ToString(),
-                ["aidStyle"] = aid.Animation.ToString(),
+            var config = new JObject { ["set"] = manager.AnimationSet.name, ["aidStyle"] = aid.Animation.ToString(),
                 ["castStyles"] = new JArray(cast.Animations.Select(entry => entry.Style + ":" + (entry.Default == null || entry.Default.CastClip == null ? "<none>" : entry.Default.CastClip.name))),
-                ["actions"] = new JArray(manager.AnimationSet.Actions.Where(value => value != null).Select(value => value.GetType().Name + ":" + value.name)),
                 ["screechCues"] = new JArray(screech.GetComponents<SummonAbilityCastCue>().Select(value => value.EventName)),
                 ["blastCues"] = new JArray(blast.GetComponents<SummonAbilityCastCue>().Select(value => value.EventName)),
-                // Incidental R5 binding state on this candidate: not a rerun of R5.
                 ["r5Provider"] = R5CotwSpells.Disposition, ["r5Mist"] = R5CotwSpells.MistDisposition, ["r5Dance"] = R5CotwSpells.DanceDisposition };
             record["config"] = config;
-            Sprint25Check("r6-loaded-configuration", sword.VisualParameters.AnimStyle == WeaponAnimationStyle.ThrownStraight && aid.Animation != UnitAnimationActionCastSpell.CastAnimationStyle.Immediate &&
+            Sprint25Check("r6-loaded-configuration", aid.Animation == UnitAnimationActionCastSpell.CastAnimationStyle.Omni &&
                 ((JArray)config["screechCues"]).Count == 1 && ((JArray)config["blastCues"]).Count == 1, (JObject)config.DeepClone(),
-                "The Hound's sword maps the rig's main-hand clip, its Aid uses a playable cast style, and each of the two abilities carries exactly one cue.");
+                "The Hound's Aid uses the target-stable Omni style and each of the two abilities carries exactly one cue.");
             yield break;
         }
 
-        private IEnumerable<int> R6Cast(string clipName, UnitEntityData unit, AbilityData data, TargetWrapper target, Vector3 offset, JObject record, R4MephitRecorder recorder, string key)
+        private IEnumerable<int> R6HoundAid(UnitEntityData hound, ExpandedSummoningCorrectionFixture fixture, IDictionary<string, BlueprintScriptableObject> symbols,
+            JObject record, R4MephitRecorder recorder, Func<UnitEntityData, BlueprintAbility, AbilityData> abilityData)
         {
-            var row = new JObject(); record[key] = row;
-            int applied = recorder.Applied.Count(value => ReferenceEquals(value.AbilityBlueprint, data.Blueprint));
-            using (var clip = new R6Clip(_request.EvidenceDirectory, clipName))
+            foreach (int step in R6Wait(R6ArrivalFrames)) yield return step;
+            var aid = (BlueprintAbility)symbols["KMG.Summoning.OutsiderCelestial.HoundArchon.Aid"];
+            var native = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(Bootstrap.BlueprintBootstrap.Library, "03a9630394d10164a9410882d31572f0", "native Aid");
+            UnitAnimationManager manager = hound.View.AnimationManager;
+            var cast = manager.AnimationSet.Actions.OfType<UnitAnimationActionCastSpell>().Single();
+            var omni = cast.Animations.Single(entry => entry.Style == UnitAnimationActionCastSpell.CastAnimationStyle.Omni).Default;
+            string[] expected = new[] { omni.PrecastStart, omni.PrecastLooped, omni.CastClip }.Where(clip => clip != null).Select(clip => clip.name).Distinct().ToArray();
+            foreach (var target in new[] { new { Key = "ally", Unit = fixture.Caster }, new { Key = "self", Unit = hound } })
             {
-                foreach (int frame in R6Frames(clip, unit, Vector3.zero, offset, 10)) yield return frame;
-                foreach (int frame in R5RunData(unit, data, target, row))
+                var row = new JObject(); record["houndAid-" + target.Key] = row;
+                int before = recorder.Applied.Count(value => ReferenceEquals(value.AbilityBlueprint, aid));
+                float standardBefore = hound.CombatState.Cooldown.StandardAction;
+                using (var clip = new R6Clip(_request.EvidenceDirectory, "hound-aid-" + target.Key, () => R6RenderBounds(hound, target.Unit)))
                 {
-                    clip.Shot(unit.Position, offset, R6AnimationState(unit));
-                    yield return frame;
+                    foreach (int step in R6Shots(clip, hound, 10)) yield return step;
+                    foreach (int step in R6RunPassive(hound, abilityData(hound, aid), new TargetWrapper(target.Unit), row, clip)) yield return step;
+                    foreach (int step in R6Shots(clip, hound, 20)) yield return step;
+                    row["clips"] = R6DistinctClips(clip.Rows); row["outOfFrame"] = clip.OutOfFrame; row["occluders"] = clip.Occluded;
+                    row["applied"] = recorder.Applied.Count(value => ReferenceEquals(value.AbilityBlueprint, aid)) - before;
+                    row["standardCooldownBefore"] = standardBefore; row["standardCooldownAfter"] = hound.CombatState.Cooldown.StandardAction;
+                    row["expectedAction"] = "Standard"; row["nativeAidAction"] = native.ActionType.ToString();
+                    bool gesture = SummonPlaytestR6Policy.CastGestureObserved(R6Frames(clip.Rows), cast.name, expected, (int)row["applied"], (bool)row["cancelled"]);
+                    Sprint25Check("r6-hound-aid-" + target.Key, gesture && (bool)row["finished"] && (string)row["actionType"] == "Standard" && native.ActionType.ToString() == "Standard",
+                        (JObject)row.DeepClone(), "The target-resolved native cast clip plays during the actual casting interval; one application; the action stays Standard, matching the native Aid.");
                 }
-                foreach (int frame in R6Frames(clip, unit, Vector3.zero, offset, 24)) yield return frame;
-                row["frames"] = clip.Count; row["clips"] = R6DistinctClips(clip.Rows);
+                foreach (int step in R6Wait(30)) yield return step;
             }
-            row["applied"] = recorder.Applied.Count(value => ReferenceEquals(value.AbilityBlueprint, data.Blueprint)) - applied;
-            Sprint25Check("r6-" + clipName + "-cast", (int)row["applied"] == 1 && ((JArray)row["clips"]).Count > 0 && (string)row["actionType"] == data.Blueprint.ActionType.ToString(),
-                (JObject)row.DeepClone(), "One real native execution applied once with a native cast clip playing.");
+        }
+
+        private IEnumerable<int> R6Redcap(UnitEntityData redcap, UnitEntityData hostile, JObject record)
+        {
+            var row = new JObject(); record["redcap"] = row;
+            foreach (int step in R6Wait(R6ArrivalFrames)) yield return step;
+            RedcapScytheAnimationR6 binding = redcap.View.GetComponent<RedcapScytheAnimationR6>();
+            row["unit"] = redcap.Blueprint.name; row["primaryHand"] = redcap.Body.PrimaryHand.MaybeWeapon == null ? null : redcap.Body.PrimaryHand.MaybeWeapon.Blueprint.name;
+            row["style"] = redcap.Body.PrimaryHand.GetWeaponStyle().ToString(); row["binding"] = binding == null ? "<absent>" : binding.Outcome; row["bindingLive"] = binding != null && binding.Live;
+            row["nativeSetName"] = redcap.View.AnimationManager.AnimationSet.name;
+            using (var clip = new R6Clip(_request.EvidenceDirectory, "redcap-scythe", () => R6RenderBounds(redcap)))
+            using (var log = new R6AttackLog(redcap))
+            using (new R5AttackSeed(redcap))
+            {
+                foreach (int step in R6Shots(clip, redcap, 12)) yield return step;
+                var command = new UnitAttack(hostile);
+                redcap.Commands.Run(command);
+                int shots = 0, after = 0;
+                while (shots++ < 240 && after < 30)
+                {
+                    clip.Shot(R6AnimationState(redcap, command));
+                    if (command.IsFinished) after++;
+                    yield return 0;
+                }
+                row["frames"] = clip.Count; row["finished"] = command.IsFinished; row["result"] = command.Result.ToString(); row["acted"] = command.IsActed;
+                row["attacks"] = log.Rows; row["clips"] = R6DistinctClips(clip.Rows); row["outOfFrame"] = clip.OutOfFrame; row["occluders"] = clip.Occluded;
+                int[] scytheRolls = log.Rows.Where(value => (string)value["weapon"] == "StandardScythe").Select(value => (int)value["frame"]).ToArray();
+                bool swing = SummonPlaytestR6Policy.ScytheSwingObserved(R6Frames(clip.Rows), scytheRolls, 2);
+                bool kick = log.Rows.Any(value => (string)value["weapon"] == "RedcapKick1d4") && ((JArray)row["clips"]).Values<string>().Any(value => value.StartsWith("LegAttack", StringComparison.Ordinal));
+                Sprint25Check("r6-redcap-scythe", swing && kick && command.IsActed && (string)row["primaryHand"] == "StandardScythe" && (bool)row["bindingLive"], (JObject)row.DeepClone(),
+                    "A KMG-origin summoned Redcap plays its native scythe clip at the frame its real StandardScythe attack rolls, and the kick still plays.");
+            }
+            redcap.Commands.InterruptAll(command => true); redcap.Commands.RemoveFinishedAndUpdateQueue();
+            PlaceExpandedSummoningUnit(redcap, redcap.Position);
+        }
+
+        private static JArray R6NearOrbCensus(LanternArchonOrbView orb, Bounds orbBounds)
+        {
+            var rows = new JArray();
+            foreach (Renderer renderer in Resources.FindObjectsOfTypeAll<Renderer>().Where(value => value != null && value.gameObject.scene.IsValid() && value.enabled && value.gameObject.activeInHierarchy))
+            {
+                Bounds box = renderer.bounds;
+                if (Vector3.Distance(box.center, orbBounds.center) > 5f || orb.OwnsRenderer(renderer) || box.size.magnitude < .01f) continue;
+                string material = renderer.sharedMaterial == null ? null : renderer.sharedMaterial.name;
+                Transform top = renderer.transform; string path = top.name;
+                for (int depth = 0; depth < 4 && top.parent != null; depth++) { top = top.parent; path = top.name + "/" + path; }
+                rows.Add(new JObject { ["type"] = renderer.GetType().Name, ["path"] = path, ["material"] = material,
+                    ["center"] = box.center.ToString("F2"), ["size"] = box.size.ToString("F2"),
+                    ["outsideOrb"] = !orbBounds.Contains(box.min) || !orbBounds.Contains(box.max) });
+            }
+            return rows;
         }
 
         private IEnumerable<int> R6Lantern(UnitEntityData lantern, UnitEntityData hostile, IDictionary<string, BlueprintScriptableObject> symbols, JObject record,
             Func<Vector3, Vector3> ground, Func<UnitEntityData, BlueprintAbility, AbilityData> abilityData)
         {
-            PlaceExpandedSummoningUnit(lantern, ground(hostile.Position + Vector3.back * 5f));
-            for (int frame = 0; frame < 20; frame++) yield return 0;
+            PlaceExpandedSummoningUnit(lantern, ground(hostile.Position + Vector3.left * 6f));
+            foreach (int step in R6Wait(R6ArrivalFrames)) yield return step;
             LanternArchonOrbView orb = lantern.View.GetComponent<LanternArchonOrbView>();
             if (orb == null) throw new InvalidOperationException("Lantern owned orb view is absent.");
-            var offset = new Vector3(2.2f, 1.7f, -2.2f);
+            var ray = (BlueprintAbility)symbols["KMG.Summoning.Special.LanternArchon.LightRay"];
             var row = new JObject(); record["lantern"] = row;
-            row["renderers"] = new JArray(lantern.View.GetComponentsInChildren<Renderer>(true).Where(value => !orb.OwnsRenderer(value)).Select(value => new JObject {
-                ["name"] = value.name, ["type"] = value.GetType().Name, ["enabled"] = value.enabled,
-                ["mesh"] = value is SkinnedMeshRenderer ? (((SkinnedMeshRenderer)value).sharedMesh == null ? null : ((SkinnedMeshRenderer)value).sharedMesh.name) : null,
-                ["materials"] = new JArray(value.sharedMaterials.Where(material => material != null).Select(material => material.name)) }));
             row["hiddenAtSpawn"] = orb.DonorBodiesHidden;
-            using (var before = new R6Clip(_request.EvidenceDirectory, "lantern-donor-body-shown"))
+            Vector3 home = lantern.Position;
+            foreach (var pass in new[] { new { Name = "donor-shown", Hidden = false }, new { Name = "donor-hidden", Hidden = true } })
             {
-                orb.SetDonorBodiesHidden(false);
-                foreach (int frame in R6Frames(before, lantern, Vector3.zero, offset, 75)) yield return frame;
-                orb.SetDonorBodiesHidden(true);
-            }
-            using (var after = new R6Clip(_request.EvidenceDirectory, "lantern-idle-move-cast"))
-            {
-                foreach (int frame in R6Frames(after, lantern, Vector3.zero, offset, 75)) yield return frame;
-                var move = new UnitMoveTo(ground(lantern.Position + Vector3.right * 6f));
-                lantern.Commands.Run(move);
-                for (int shot = 0; shot < 120 && !move.IsFinished; shot++)
+                orb.SetDonorBodiesHidden(pass.Hidden);
+                var part = new JObject(); row[pass.Name] = part;
+                PlaceExpandedSummoningUnit(lantern, home);
+                foreach (int step in R6Wait(20)) yield return step;
+                using (var clip = new R6Clip(_request.EvidenceDirectory, "lantern-" + pass.Name, () => R6RenderBounds(lantern)))
                 {
-                    after.Shot(lantern.Position, offset, R6AnimationState(lantern));
-                    yield return 0;
+                    foreach (int step in R6Shots(clip, lantern, 60)) yield return step;
+                    part["idleCensus"] = R6NearOrbCensus(orb, orb.OrbRenderer.bounds);
+                    var move = new UnitMoveTo(ground(home + Vector3.back * 5f));
+                    lantern.Commands.Run(move);
+                    for (int shot = 0; shot < 150 && !move.IsFinished; shot++) { clip.Shot(R6AnimationState(lantern)); yield return 0; }
+                    part["moveFinished"] = move.IsFinished;
+                    part["moveCensus"] = R6NearOrbCensus(orb, orb.OrbRenderer.bounds);
+                    foreach (int step in R6Shots(clip, lantern, 15)) yield return step;
+                    var cast = new JObject(); part["ray"] = cast;
+                    foreach (int step in R6RunPassive(lantern, abilityData(lantern, ray), new TargetWrapper(hostile), cast, clip)) yield return step;
+                    part["rayCensus"] = R6NearOrbCensus(orb, orb.OrbRenderer.bounds);
+                    foreach (int step in R6Shots(clip, lantern, 25)) yield return step;
+                    part["frames"] = clip.Count; part["outOfFrame"] = clip.OutOfFrame; part["occluders"] = clip.Occluded;
                 }
-                row["moveFinished"] = move.IsFinished;
-                foreach (int frame in R6Frames(after, lantern, Vector3.zero, offset, 15)) yield return frame;
-                var ray = (BlueprintAbility)symbols["KMG.Summoning.Special.LanternArchon.LightRay"];
-                var cast = new JObject(); row["ray"] = cast;
-                foreach (int frame in R5RunData(lantern, abilityData(lantern, ray), new TargetWrapper(hostile), cast))
-                {
-                    after.Shot(lantern.Position, offset, R6AnimationState(lantern));
-                    yield return frame;
-                }
-                foreach (int frame in R6Frames(after, lantern, Vector3.zero, offset, 30)) yield return frame;
+                foreach (int step in R6Wait(30)) yield return step;
             }
             row["hiddenAtEnd"] = orb.DonorBodiesHidden; row["orb"] = orb.Describe();
-            Sprint25Check("r6-lantern-donor-body-replaced", (bool)row["hiddenAtSpawn"] && (bool)row["hiddenAtEnd"] && orb.Ready && (bool)((JObject)row["ray"])["finished"], (JObject)row.DeepClone(),
-                "The donor body is replaced on this view at spawn and after the sequence, the owned orb stays ready and the ray finishes.");
+            Sprint25Check("r6-lantern-paired-views", (bool)row["hiddenAtSpawn"] && orb.DonorBodiesHidden && orb.Ready &&
+                (bool)((JObject)((JObject)row["donor-hidden"])["ray"])["finished"] && (int)((JObject)row["donor-hidden"])["outOfFrame"] == 0 && (int)((JObject)row["donor-shown"])["outOfFrame"] == 0,
+                (JObject)row.DeepClone(), "The same live Lantern is framed fully in both passes, ends suppressed and ready, and its ray finishes.");
         }
 
-        private IEnumerable<int> R6MixedGroup(ExpandedSummoningCorrectionFixture fixture, UnitEntityData hound, Func<string, UnitEntityData> summon, Func<UnitEntityData> summonRedcap,
+        private IEnumerable<int> R6MixedGroup(UnitEntityData hound, Func<string, UnitEntityData> summon, Func<UnitEntityData> summonRedcap,
             Func<Vector3, Vector3> ground, JObject record, Vector3 centre)
         {
-            Vector3 anchor = ground(centre + Vector3.back * 6f);
+            Vector3 anchor = centre + Vector3.forward * 4f;
             var group = new List<UnitEntityData>(); var rows = new JArray(); record["mixedGroup"] = rows;
             Action<string, Func<UnitEntityData>> add = (key, make) =>
             {
                 try
                 {
                     UnitEntityData unit = make();
-                    PlaceExpandedSummoningUnit(unit, ground(anchor + new Vector3(-5f + group.Count * 2f, 0f, 0f)));
+                    PlaceExpandedSummoningUnit(unit, ground(anchor + new Vector3(-6f + group.Count * 2f, 0f, 0f)));
                     group.Add(unit);
                 }
                 catch (Exception error) { rows.Add(new JObject { ["key"] = key, ["error"] = error.Message }); }
             };
             add("wolf", () => summon("wolf"));
             add("redcap", summonRedcap);
-            add("lion", () => summon("lion"));
             add("fire-mephit", () => summon("fire-mephit"));
             if (hound != null) add("hound-archon", () => hound);
+            add("dretch", () => summon("dretch"));
             add("shadow-demon", () => summon("shadow-demon"));
             add("invisible-stalker", () => summon("invisible-stalker"));
-            for (int frame = 0; frame < 45; frame++) yield return 0;
-            using (var clip = new R6Clip(_request.EvidenceDirectory, "mixed-group"))
-                foreach (int frame in R6Frames(clip, null, anchor, new Vector3(0f, 7.5f, -9.5f), 60)) yield return frame;
+            foreach (int step in R6Wait(150)) yield return step;
+            using (var clip = new R6Clip(_request.EvidenceDirectory, "mixed-group", () => R6RenderBounds(group.ToArray())))
+            {
+                foreach (int step in R6Shots(clip, null, 60)) yield return step;
+                record["mixedGroupFraming"] = new JObject { ["outOfFrame"] = clip.OutOfFrame, ["occluders"] = clip.Occluded };
+            }
+            int genericRims = 0;
             foreach (UnitEntityData unit in group)
-                rows.Add(new JObject { ["unit"] = unit.Blueprint.name,
-                    ["buffs"] = new JArray(unit.Descriptor.Buffs.RawFacts.Select(value => value.Blueprint.name)),
-                    ["glow"] = ExpandedSummoningSummonGlowPatch.Describe(unit.View),
-                    ["buffEffects"] = ExpandedSummoningSummonGlowPatch.DescribeBuffEffects(unit),
-                    ["rim"] = ExpandedSummoningVisualVariantPatch.RimFor(unit.View).HasValue });
-            Sprint25Check("r6-mixed-group-recorded", group.Count >= 5, new JObject { ["rows"] = rows.DeepClone() },
-                "At least five distinct summons are present for the group view with their effect census.");
+            {
+                string census = ExpandedSummoningSummonGlowPatch.DescribeBuffEffects(unit);
+                genericRims += SummonGlowPolicy.ActiveGenericRims(census);
+                SummonArrivalRimLimiter limiter = unit.View.GetComponent<SummonArrivalRimLimiter>();
+                rows.Add(new JObject { ["unit"] = unit.Blueprint.name, ["buffEffects"] = census, ["glow"] = ExpandedSummoningSummonGlowPatch.Describe(unit.View),
+                    ["arrivalRimsEnded"] = limiter == null ? 0 : limiter.Ended, ["buffs"] = new JArray(unit.Descriptor.Buffs.RawFacts.Select(value => value.Blueprint.name)) });
+            }
+            bool preserved = rows.Any(value => ((string)value["buffEffects"] ?? "").Contains("MephitFireVisualBuff")) && rows.Any(value => ((string)value["buffEffects"] ?? "").Contains("NaturalInvisibilityBuff"));
+            Sprint25Check("r6-mixed-group-sheen", group.Count >= 6 && genericRims == 0 && preserved && (int)record["mixedGroupFraming"]["outOfFrame"] == 0,
+                new JObject { ["rows"] = rows.DeepClone(), ["genericRims"] = genericRims },
+                "Six or more KMG summons are in frame after arrival, no generic rim stays active, and intrinsic effect and invisibility buffs remain.");
         }
 
         private IEnumerable<int> R6Audio(ExpandedSummoningCorrectionFixture fixture, Func<string, UnitEntityData> summon, Func<Vector3, Vector3> ground,
-            IDictionary<string, BlueprintScriptableObject> symbols, JObject record, R4MephitRecorder recorder, Action<string> mark,
+            IDictionary<string, BlueprintScriptableObject> symbols, JObject record, R4MephitRecorder recorder, List<Sprint26Saves> saves, Action<string> mark,
             Func<UnitEntityData, BlueprintAbility, AbilityData> abilityData, Vector3 centre)
         {
             var row = new JObject(); record["audio"] = row;
             CameraRig rig = TeleportationCastingCamera();
-            UnitEntityData trumpet = summon("trumpet-archon");
-            PlaceExpandedSummoningUnit(trumpet, ground(centre + Vector3.right * 3f));
-            UnitEntityData vrock = summon("vrock");
+            UnitEntityData normal = summon("trumpet-archon"), retired = summon("trumpet-archon"), vrock = summon("vrock");
+            PlaceExpandedSummoningUnit(normal, ground(centre + Vector3.right * 3f));
+            PlaceExpandedSummoningUnit(retired, ground(centre + Vector3.right * 5f));
             PlaceExpandedSummoningUnit(vrock, ground(centre + Vector3.left * 3f));
+            foreach (UnitEntityData unit in new[] { normal, retired, vrock }) saves.Add(new Sprint26Saves(unit) { DesiredRoll = 20 });
             if (rig != null) rig.ScrollToImmediately(centre);
             var blast = (BlueprintAbility)symbols[ExpandedSummoningSpecialBuilder.Trumpet31Prefix + "TrumpetBlast"];
             var screech = (BlueprintAbility)symbols[ExpandedSummoningSpecialBuilder.Vrock37Prefix + "Screech"];
-            Func<IEnumerable<int>> pause = () => R6Seconds(1.5f);
+            foreach (int step in R6Seconds(4f)) yield return step;
 
             mark("baseline-start");
-            foreach (int frame in R6Seconds(4f)) yield return frame;
+            foreach (int step in R6Seconds(3f)) yield return step;
             mark("baseline-end");
 
             // Cancelled before execution: no cue and no application.
             int cuesBefore = SummonAbilityCastCueRuntime.Snapshot().Length;
             int appliedBefore = recorder.Applied.Count(value => ReferenceEquals(value.AbilityBlueprint, blast));
             mark("cancel-start");
-            var cancelled = new UnitUseAbility(abilityData(trumpet, blast), new TargetWrapper(trumpet));
-            trumpet.Commands.Run(cancelled);
+            var cancelled = new UnitUseAbility(abilityData(normal, blast), new TargetWrapper(normal));
+            normal.Commands.Run(cancelled);
             yield return 0;
-            trumpet.Commands.InterruptAll(command => true); trumpet.Commands.RemoveFinishedAndUpdateQueue();
-            foreach (int frame in R6Seconds(3f)) yield return frame;
+            normal.Commands.InterruptAll(command => true); normal.Commands.RemoveFinishedAndUpdateQueue();
+            foreach (int step in R6Seconds(3f)) yield return step;
             mark("cancel-end");
             int cuesAfterCancel = SummonAbilityCastCueRuntime.Snapshot().Length;
-            int appliedAfterCancel = recorder.Applied.Count(value => ReferenceEquals(value.AbilityBlueprint, blast));
-            Sprint25Check("r6-cancelled-cast-no-cue", cuesAfterCancel == cuesBefore && appliedAfterCancel == appliedBefore,
-                new JObject { ["cuesBefore"] = cuesBefore, ["cuesAfter"] = cuesAfterCancel, ["applied"] = appliedAfterCancel - appliedBefore },
-                "A cast interrupted before execution posts no cue and applies nothing.");
+            Sprint25Check("r6-cancelled-cast-no-cue", cuesAfterCancel == cuesBefore && recorder.Applied.Count(value => ReferenceEquals(value.AbilityBlueprint, blast)) == appliedBefore,
+                new JObject { ["cuesBefore"] = cuesBefore, ["cuesAfter"] = cuesAfterCancel }, "A cast interrupted before execution posts no cue and applies nothing.");
 
-            // Real executions: one cue each, however many creatures are affected.
-            foreach (var entry in new[] { new { Key = "trumpet", Unit = trumpet, Ability = blast, Event = SummonPlaytestR6Policy.TrumpetBlastCue },
-                new { Key = "vrock", Unit = vrock, Ability = screech, Event = SummonPlaytestR6Policy.VrockScreechCue } })
+            // Normal completion on both abilities; one cue however many are reached.
+            foreach (var entry in new[] { new { Key = "vrock", Unit = vrock, Ability = screech, Event = SummonPlaytestR6Policy.VrockScreechCue },
+                new { Key = "trumpet", Unit = normal, Ability = blast, Event = SummonPlaytestR6Policy.TrumpetBlastCue } })
             {
                 var cast = new JObject(); row[entry.Key] = cast;
                 int before = SummonAbilityCastCueRuntime.Snapshot().Length;
                 int delivered = recorder.Delivered.Count(value => ReferenceEquals(value.Key.AbilityBlueprint, entry.Ability));
                 mark(entry.Key + "-cast-start");
-                TargetWrapper self = new TargetWrapper(entry.Unit);
-                foreach (int frame in R5RunData(entry.Unit, abilityData(entry.Unit, entry.Ability), self, cast)) yield return frame;
+                foreach (int step in R6RunPassive(entry.Unit, abilityData(entry.Unit, entry.Ability), new TargetWrapper(entry.Unit), cast, null)) yield return step;
                 mark(entry.Key + "-cast-end");
-                foreach (int frame in R6Seconds(5f)) yield return frame;
+                foreach (int step in R6Seconds(6f)) yield return step;
                 SummonCastCueRecord[] added = SummonAbilityCastCueRuntime.Snapshot().Skip(before).ToArray();
                 cast["cues"] = added.Length; cast["delivered"] = recorder.Delivered.Count(value => ReferenceEquals(value.Key.AbilityBlueprint, entry.Ability)) - delivered;
-                Sprint25Check("r6-" + entry.Key + "-one-cue", added.Length == 1 && added[0].EventName == entry.Event && added[0].PlayingId != 0 && (int)cast["delivered"] >= 1, (JObject)cast.DeepClone(),
-                    "One execution posts exactly one accepted cue, regardless of how many creatures it reaches.");
+                bool ended = added.Length == 1 && added[0].EndUtc.HasValue;
+                cast["naturalSeconds"] = ended ? (added[0].EndUtc.Value - added[0].Utc).TotalSeconds : -1d;
+                Sprint25Check("r6-" + entry.Key + "-one-cue", added.Length == 1 && added[0].EventName == entry.Event && added[0].PlayingId != 0 && ended && added[0].StopReason == null && (int)cast["delivered"] >= 1,
+                    (JObject)cast.DeepClone(), "One execution posts one accepted cue, reaches its creatures, and the cue completes naturally with no retirement stop.");
             }
 
-            // Owner listening samples; the product uses only the two cues above.
-            foreach (string sample in new[] { "InspireGreatness", "CacophonousCall", "CacophonousCall_v02", "AoE_Sonic_Large" })
-            {
-                mark("sample-" + sample);
-                AkSoundEngine.PostEvent(sample, trumpet.View.gameObject);
-                foreach (int frame in R6Seconds(5.5f)) yield return frame;
-            }
-
-            // Despawn while a cue plays: the sound must end with its emitter.
-            mark("despawn-cue-start");
-            AkSoundEngine.PostEvent(SummonPlaytestR6Policy.VrockScreechCue, vrock.View.gameObject);
-            foreach (int frame in R6Seconds(.4f)) yield return frame;
+            // Early retirement through a real execution and the product cue.
+            var early = new JObject(); row["earlyRetirement"] = early;
+            int cuesEarly = SummonAbilityCastCueRuntime.Snapshot().Length;
+            var command2 = new UnitUseAbility(abilityData(retired, blast), new TargetWrapper(retired));
+            retired.Commands.Run(command2);
+            DateTime waitCue = DateTime.UtcNow.AddSeconds(15);
+            while (DateTime.UtcNow < waitCue && SummonAbilityCastCueRuntime.Snapshot().Length == cuesEarly) yield return 0;
+            SummonCastCueRecord[] cue = SummonAbilityCastCueRuntime.Snapshot().Skip(cuesEarly).ToArray();
+            if (cue.Length != 1) throw new InvalidOperationException("The early-retirement execution posted no product cue.");
+            // Retire after the native command has ended, while its cue still plays.
+            DateTime waitFinish = DateTime.UtcNow.AddSeconds(1.2d);
+            while (DateTime.UtcNow < waitFinish && !command2.IsFinished) yield return 0;
+            early["commandFinishedBeforeRetirement"] = command2.IsFinished;
+            bool stillPlaying = !cue[0].EndUtc.HasValue;
+            DateTime retiredAt = DateTime.UtcNow;
             mark("despawn");
-            DisposeExpandedSummoningUnits(fixture.Created, new[] { vrock });
-            foreach (int frame in pause()) yield return frame;
-            foreach (int frame in R6Seconds(3f)) yield return frame;
+            DisposeExpandedSummoningUnits(fixture.Created, new[] { retired });
+            foreach (int step in R6Seconds(6f)) yield return step;
             mark("despawn-window-end");
-        }
-
-        private static IEnumerable<int> R6Seconds(float seconds)
-        {
-            DateTime end = DateTime.UtcNow.AddSeconds(seconds);
-            while (DateTime.UtcNow < end) yield return 0;
+            early["playingId"] = cue[0].PlayingId; early["stillPlayingAtRetirement"] = stillPlaying; early["stopReason"] = cue[0].StopReason; early["stopResult"] = cue[0].StopResult;
+            double untilEnd = cue[0].EndUtc.HasValue ? (cue[0].EndUtc.Value - retiredAt).TotalSeconds : double.NaN;
+            early["secondsFromRetirementToEnd"] = double.IsNaN(untilEnd) ? (double?)null : untilEnd;
+            double natural = (double)((JObject)row["trumpet"])["naturalSeconds"];
+            double total = cue[0].EndUtc.HasValue ? (cue[0].EndUtc.Value - cue[0].Utc).TotalSeconds : double.NaN;
+            early["totalSeconds"] = double.IsNaN(total) ? (double?)null : total; early["naturalControlSeconds"] = natural;
+            Sprint25Check("r6-cue-early-retirement", stillPlaying && !double.IsNaN(total) && untilEnd < 1.0d && natural > total + .8d, (JObject)early.DeepClone(),
+                "A real execution's cue still playing when its caster retires ends within a second, clearly earlier than the same cue's natural completion.");
         }
     }
 }
