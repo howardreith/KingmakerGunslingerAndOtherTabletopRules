@@ -395,8 +395,10 @@ finally {
     # Repair R5 review: the complete installation inspection/restoration and
     # the UMM Params.xml step are independent. A failure in either (including
     # the first fingerprint) is retained, the other still runs, and the batch
-    # cannot PASS unless both are resolved.
-    $cleanup = Invoke-KmgIndependentInstallationAndUmmRestoration -UmmReceipt $ummReceipt -RestoreInstallation {
+    # cannot PASS unless both are resolved. The UMM step takes its own lease,
+    # or inherits the startup-protection lease this wrapper still holds.
+    $ummParentLease = if ($startupPeerScope) { $startupPeerScope.Lease } else { $null }
+    $cleanup = Invoke-KmgIndependentInstallationAndUmmRestoration -UmmReceipt $ummReceipt -ParentLease $ummParentLease -RestoreInstallation {
         $deployed = Get-KmgTreeFingerprint -Directory $LiveModDirectory
         $record.liveAfterScenario = [ordered]@{ files = $deployed.Files; sha256 = $deployed.Sha256 }
 
