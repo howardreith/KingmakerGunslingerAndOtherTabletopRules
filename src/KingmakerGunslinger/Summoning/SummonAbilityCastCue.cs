@@ -16,9 +16,9 @@ namespace KingmakerGunslinger.Summoning
     /// actually executes. The native on-cast hook runs once at the cast point,
     /// after a cancelled command would already have stopped and before any
     /// target is resolved, so a blast hitting many creatures still gets one
-    /// cue. Presentation only: no mechanics or cost. If the caster retires
-    /// while the cue plays, <see cref="SummonCastCuePlayback"/> stops exactly
-    /// that event on that emitter.
+    /// cue. Presentation only: no mechanics or cost. See
+    /// <see cref="SummonCastCuePlayback"/> for the current limit on stopping a
+    /// cue when its caster retires.
     /// </summary>
     internal sealed class SummonAbilityCastCue : BlueprintComponent, IAbilityOnCastLogic
     {
@@ -50,9 +50,12 @@ namespace KingmakerGunslinger.Summoning
     }
 
     /// <summary>
-    /// Tracks this view's cast cues until their end-of-event callback. Only the
-    /// tracked event on this emitter is stopped, and only when the caster
-    /// retires first. It registers no sound object of its own.
+    /// Tracks this view's cast cues until their end-of-event callback, and
+    /// attempts to stop only the tracked event on this emitter if the caster
+    /// retires first. It registers no sound object of its own. Observed limit
+    /// (candidate c31c6292f7d3, R6-STATUS): when the view is destroyed directly
+    /// its native registration is already gone here, so the stop is not sent
+    /// and the cue plays to its natural end.
     /// </summary>
     internal sealed class SummonCastCuePlayback : MonoBehaviour
     {

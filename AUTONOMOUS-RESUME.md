@@ -1,4 +1,26 @@
-# Summoned creature manual-playtest repair — R6 partly complete / STOP
+# Summoned creature manual-playtest repair — R6 repair checkpoint / STOP
+
+Current (2026-11-08). See planning/summon-playtest-repair/R6-STATUS.md. Branch
+`codex/summon-playtest-r6-presentation`; draft PR #116 on #115 on #114.
+
+- Repair candidate `c31c6292f7d3`, one guarded run: all assertions passed except
+  `r6-cue-early-retirement`. Install, saves, settings and `Params.xml` restored.
+- PRES-02, PRES-03, PRES-07 technically established; PRES-04 supported by paired
+  views. PRES-01 stays established from `0dd811be26b2`.
+- Open: a Vrock/Trumpet cue outlives a destroyed caster view (4.6 s after retirement;
+  the native registration is gone before the stop runs). Owner viewing and
+  listening remain separate. PRES-08 deferred.
+- Ledgers: original R6 about 1,498 s, repair about 688 of 1,200 s; a further build
+  and run does not fit. R5 about 1,389 s.
+- DATA is shared with `KingmakerSkipCinematicLab`: arrange a no-Kingmaker window
+  before any build or guarded run.
+
+Next: owner decision on a small allowance for the cue-retirement repair. R7 starts
+only on explicit authorization.
+
+---
+
+# (superseded) R6 partly complete / STOP
 
 Current (2026-11-08). See planning/summon-playtest-repair/R6-STATUS.md. Branch
 `codex/summon-playtest-r6-presentation`; draft PR depends on #115, then #114.
