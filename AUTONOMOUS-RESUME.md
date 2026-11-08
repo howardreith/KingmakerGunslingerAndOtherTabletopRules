@@ -1,4 +1,24 @@
-# Summoned creature manual-playtest repair — R5 UMM ownership repairs / STOP
+# Summoned creature manual-playtest repair — R6 partly complete / STOP
+
+Current (2026-11-08). See planning/summon-playtest-repair/R6-STATUS.md. Branch
+`codex/summon-playtest-r6-presentation`; draft PR depends on #115, then #114.
+
+- Candidate `0dd811be26b2`, one guarded run: all assertions passed except
+  `r6-redcap-scythe`, a confirmed product defect. Install, saves, settings and
+  UMM `Params.xml` restored exactly.
+- PRES-01 technically established. PRES-05/06 cues work; owner listening pending.
+- Open: PRES-02 self-targeted Aid, PRES-03 Redcap scythe swing, PRES-04 clear
+  Lantern capture, PRES-07 Monster-family arrival rim. PRES-08 deferred.
+- R6 ledger about 1,498 of 1,800 s; a second candidate does not fit.
+- DATA is shared with `KingmakerSkipCinematicLab`: arrange a no-Kingmaker window
+  before any build or guarded run.
+
+Next: the owner decides whether to authorize a separate R6 repair allowance. R7
+starts only on explicit authorization.
+
+---
+
+# (superseded) R5 UMM ownership repairs / STOP
 
 Current (2026-11-08). The last two R5 UMM ownership findings are repaired on
 `codex/summon-playtest-r5-spells` (scripts commit `307cf89356`, draft PR #115,

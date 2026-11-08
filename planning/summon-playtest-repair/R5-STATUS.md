@@ -1,5 +1,7 @@
 # Summoned Creature Manual Playtest Repair — R5 status
 
+**Correction (R6, 2026-11-08):** the UMM test added at `307cf89356` leaked its `Get-Process` stand-in into later checks in a shared validation session, which broke candidate builds. Fixed on the R6 branch (`22a632a9e4`, `0dd811be26`). The UMM results below were standalone and stand for what they tested. See R6-STATUS.md.
+
 ## R5 UMM ownership repairs (2026-11-08, commit `307cf89356`): review checkpoint
 
 Scripts only: `UmmParams.Common.ps1`, its test, and one line of the guarded
