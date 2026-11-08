@@ -19,6 +19,7 @@ using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.View;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Spells.Teleportation;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -39,10 +40,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         //  2. Seven representative summons cast through their ordinary own-tier
         //     children: live portrait source, live facts, live brain, and the
         //     affected actions' icons and tooltip semantics.
-        //  3. Native turn-based combat (the existing performance-combat seam):
-        //     the rendered initiative tracker, then the native description
-        //     window for each affected live Ability fact. Every capture is held
-        //     by real ownership/visibility checks; obscured or foreign UI fails.
+        //  3. The native description window for each affected live Ability
+        //     fact, before combat (TooltipData built as the native
+        //     TooltipDataHelper does: Type = TooltipType.Ability, Ability = the
+        //     live fact). The tracker capture (UI-01, established on
+        //     57a8e659b1e6) is retained but not replayed by this candidate.
+        //     Every capture is held by real ownership/visibility checks;
+        //     obscured, foreign or unrelated-modal UI stops interaction.
         // Brains are inactive; no summon acts; no input; no save.
         private static readonly string[] SummonPlaytestR3Keys =
         { "dire-rat", "lantern-archon", "ghaele-azata", "nalfeshnee", "brachiosaurus", "cheetah", "trumpet-archon" };
@@ -196,7 +200,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Where(image => image != null && image.isActiveAndEnabled).ToArray();
             string durationTitle = UIUtility.GetGlossaryEntryName(TooltipElement.Duration.ToString());
             string saveTitle = UIUtility.GetGlossaryEntryName(TooltipElement.SavingThrow.ToString());
-            string description = target.Blueprint.Description ?? "";
+            string description = System.Text.RegularExpressions.Regex.Replace(target.Blueprint.Description ?? "", "<[^>]*>", "").Trim();
             string chunk = description.Length > 24 ? description.Substring(0, 24) : description;
             var titleText = header.SelectMany(brick => brick.TextFields ?? new List<TextMeshProUGUI>()).FirstOrDefault(text =>
                 text != null && text.isActiveAndEnabled && string.Equals(R3Parsed(text), target.Blueprint.Name, StringComparison.OrdinalIgnoreCase));
@@ -219,17 +223,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["headerTexts"] = new JArray(header.Select(brick => R3Parsed(R3BrickText(brick)))),
                 ["contentTexts"] = new JArray(content.Select(brick => R3Parsed(R3BrickText(brick))).Take(40)),
                 ["images"] = new JArray(images.Where(image => image.sprite != null).Take(24).Select(image => image.sprite.name)),
-                ["surface"] = "Native DescriptionController.HandleOpenDescription(TooltipData{Ability=live fact}) -> DescriptionTemplatesAbility; rows read from the ContentBox TitleH2->SimpleText brick order." };
+                ["surface"] = "Native DescriptionController.HandleOpenDescription(TooltipData{Type=Ability, Ability=live fact}) -> DescriptionBuilder.Ability -> DescriptionTemplatesAbility; rows read from the ContentBox TitleH2->SimpleText brick order." };
+        }
+
+        // Desktop DialogMessageBox.IsShown (console: a bound message-box view
+        // model) through the existing teleportation reference contract. An
+        // unrelated native modal refuses every retained R3 capture surface;
+        // the observer never answers, closes or suppresses it.
+        private static bool R3UnrelatedModal() { return TeleportationConfirmationSurface.UnrelatedModalShown(); }
+
+        // This candidate observes the eight precombat descriptions only.
+        private static readonly bool SummonPlaytestR3TrackerReplay = false;
+
+        private static JObject R3Construction(TooltipData data, Ability fact)
+        {
+            var window = Game.Instance.UI.DescriptionController.DescWindow;
+            var body = window == null ? null : window.Body;
+            return new JObject { ["type"] = data.Type.ToString(), ["descriptionWindowType"] = data.DescriptionWindowType.ToString(),
+                ["fact"] = fact.Blueprint.AssetGuid, ["factName"] = fact.Blueprint.Name, ["owner"] = fact.Owner.Unit.UniqueId,
+                ["ownerBlueprint"] = fact.Owner.Blueprint.AssetGuid, ["blueprintAbility"] = data.BlueprintAbility == null ? null : data.BlueprintAbility.AssetGuid,
+                ["abilityData"] = data.AbilityData != null, ["hudPanel"] = data.IsHUDPanelAbility,
+                ["windowDataIsRequest"] = window != null && ReferenceEquals(window.Data, data),
+                ["headerBricks"] = R3Bricks(body == null ? null : body.HeaderBox).Length,
+                ["contentBricks"] = R3Bricks(body == null ? null : body.ContentBox).Length,
+                ["footerBricks"] = R3Bricks(body == null ? null : body.FooterBox).Length,
+                ["unrelatedModal"] = R3UnrelatedModal() };
         }
 
         private bool R3DescriptionOwned(Cleanup2NativeDefaultScope mode, Ability fact, TooltipData data)
         {
             var ui = Game.Instance.UI; var window = ui.DescriptionController.DescWindow;
-            return mode.Current && Cleanup2NoNarrativeOverlay() && window != null && window.gameObject.activeInHierarchy &&
+            return ExpandedSummoningNativeProfilePolicy.SummonPlaytestR3SurfaceOwned(mode.Current, Cleanup2NoNarrativeOverlay(), R3UnrelatedModal(),
+                window != null && window.gameObject.activeInHierarchy && data.Type == TooltipType.Ability &&
                 ReferenceEquals(window.Data, data) && ReferenceEquals(data.Ability, fact) && fact.Owner != null &&
                 !fact.Owner.Unit.Destroyed && fact.Owner.Abilities.Enumerable.Contains(fact) &&
                 ui.TooltipsController.ContextTooltipData == null &&
-                window.GetComponentsInParent<CanvasGroup>(true).All(group => group.alpha >= .99f);
+                window.GetComponentsInParent<CanvasGroup>(true).All(group => group.alpha >= .99f));
         }
 
         private IEnumerable<int> ReviewSummonPlaytestUiR3(ExpandedSummoningCorrectionFixture fixture, string phase,
@@ -248,7 +277,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             IDictionary<string, BlueprintScriptableObject> symbols = ExpandedSummoningBlueprints.Registered.BySymbol;
             var record = new JObject { ["phase"] = phase, ["runId"] = _request.RunId,
                 ["fixture"] = "established non-DLC Oleg outdoor native Default; save-free",
-                ["limits"] = "Portrait/action checks read live blueprints and units. Screens: native description windows for live Ability facts (captured on ownership, content assessed after), then the native tracker during the owned anchor's input-waiting turn with representative coverage. The hover template itself is not opened (same DescriptionTemplatesAbility rows). Owner visual approval is separate. No summon acts." };
+                ["limits"] = "Portrait/action checks read live blueprints and units. Screens: native description windows for live Ability facts before combat (TooltipData Type=Ability, Ability=live fact; captured on ownership, content assessed after). The tracker (UI-01, established on 57a8e659b1e6) is not replayed. An unrelated native modal stops UI interaction. The hover template itself is not opened (same DescriptionTemplatesAbility rows). Owner visual approval is separate. No summon acts." };
             var owned = new List<UnitEntityData>();
             Vector3 centre = fixture.Caster.Position;
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue, oldPause = game.IsPaused;
@@ -447,19 +476,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnitEntityData unit = units[target.Creature];
                     Ability fact = unit.Descriptor.Abilities.Enumerable.Single(value => ReferenceEquals(value.Blueprint, target.Blueprint));
                     var window = ui.DescriptionController.DescWindow;
+                    if (R3UnrelatedModal()) throw new InvalidOperationException("Unrelated native modal shown before opening a description; UI interaction stopped.");
                     if (window.gameObject.activeInHierarchy || ui.TooltipsController.ContextTooltipData != null)
                         throw new InvalidOperationException("A foreign description window or hover is open.");
-                    var data = new TooltipData { Ability = fact };
+                    // Native contract (TooltipDataHelper for a live Ability):
+                    // Type = TooltipType.Ability selects DescriptionBuilder.Ability,
+                    // which reads data.Ability (header, then AbilityDescription).
+                    var data = new TooltipData { Type = TooltipType.Ability, Ability = fact };
                     ui.DescriptionController.HandleOpenDescription(data); openDescription = data;
                     var settle = System.Diagnostics.Stopwatch.StartNew();
                     for (int frame = 0; frame < 600 && settle.Elapsed.TotalSeconds < 8 && !R3DescriptionOwned(mode, fact, data); frame++)
                     {
                         if (!mode.Current || !Cleanup2NoNarrativeOverlay()) throw new InvalidOperationException("Native Default lost while opening a description.");
+                        if (R3UnrelatedModal()) throw new InvalidOperationException("Unrelated native modal shown while opening a description; UI interaction stopped.");
                         yield return 0;
                     }
                     if (!R3DescriptionOwned(mode, fact, data)) throw new InvalidOperationException("Exact owned description window did not become visible: " + target.Label);
-                    for (int frame = 0; frame < 20; frame++) yield return 0;
                     Func<bool> owns = () => R3DescriptionOwned(mode, fact, data);
+                    for (int frame = 0; frame < 20; frame++)
+                    {
+                        yield return 0;
+                        if (!owns()) throw new InvalidOperationException("Description ownership lost during native layout (unrelated modal=" + R3UnrelatedModal() + "): " + target.Label);
+                    }
+                    JObject construction = R3Construction(data, fact);
                     JObject card = R3DescriptionCard(target);
                     foreach (int frame in screens.Capture("r3-description-" + target.Label, card, owns)) yield return frame;
                     card = R3DescriptionCard(target);
@@ -480,7 +519,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         window.Scroll.verticalNormalizedPosition = 1f;
                     }
                     bool passed = (bool)card["contentCorrect"] && rowsVisible;
-                    var result = new JObject { ["card"] = card, ["scrolled"] = scrolled, ["rowsVisibleInACapture"] = rowsVisible, ["passed"] = passed };
+                    var result = new JObject { ["construction"] = construction, ["card"] = card, ["scrolled"] = scrolled, ["rowsVisibleInACapture"] = rowsVisible, ["passed"] = passed };
                     descriptionResults.Add(result); captures.Add(card);
                     Sprint25Check(prefix + "render-" + target.Label, passed, (JObject)result.DeepClone(),
                         "Captured native description window for the live Ability fact shows its name, description and visible icon, and exactly the intended Duration/Saving Throw rows (bound title->value bricks; omitted when empty), unclipped and visible in a capture, with no <null> or inherited native overrun text.");
@@ -488,8 +527,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int frame = 0; frame < 120 && window.gameObject.activeInHierarchy; frame++) yield return 0;
                     if (window.gameObject.activeInHierarchy) throw new InvalidOperationException("Native description window did not close.");
                     openDescription = null;
+                    if (R3UnrelatedModal()) throw new InvalidOperationException("Unrelated native modal shown after closing a description; UI interaction stopped.");
                 }
                 record["descriptions"] = descriptionResults;
+                if (!SummonPlaytestR3TrackerReplay)
+                {
+                    // Descriptions-only candidate: no combat entry, no tracker
+                    // replay, no turn advance. UI-01 stays attached to 57a8e659b1e6.
+                    record["tracker"] = "not replayed; UI-01 framebuffer evidence retained from candidate 57a8e659b1e6";
+                    record["captures"] = captures;
+                    yield break;
+                }
 
                 // 3b. Native tracker in owned turn-based combat. The only
                 // directly controllable participant is the owned quiet anchor;
@@ -569,12 +617,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException("Stable owned waiting turn not reached.");
                 }
                 var waitTurn = waiting;
-                Func<bool> trackerOwned = () => mode.Current && Cleanup2NoNarrativeOverlay() &&
+                Func<bool> trackerOwned = () => ExpandedSummoningNativeProfilePolicy.SummonPlaytestR3SurfaceOwned(mode.Current, Cleanup2NoNarrativeOverlay(), R3UnrelatedModal(),
                     ReferenceEquals(game.TurnBasedCombatController.CurrentTurn, waitTurn) && anchor.Commands.Empty &&
                     (waitTurn.Status == TurnBased.Controllers.TurnController.TurnStatus.Preparing ||
                      waitTurn.Status == TurnBased.Controllers.TurnController.TurnStatus.Acting) &&
                     !ui.DescriptionController.DescWindow.gameObject.activeInHierarchy &&
-                    UnityEngine.Object.FindObjectsOfType<InitiativeTrackerUnitOrderHorizontalPCView>().Any(view => view != null && view.isActiveAndEnabled);
+                    UnityEngine.Object.FindObjectsOfType<InitiativeTrackerUnitOrderHorizontalPCView>().Any(view => view != null && view.isActiveAndEnabled));
                 JObject tracker = R3TrackerState(units);
                 foreach (int frame in screens.Capture("r3-initiative-tracker", tracker, trackerOwned)) yield return frame;
                 tracker = R3TrackerState(units);

@@ -144,6 +144,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             // Repair R3: actual HUD/description screens need the established
             // non-narrative Oleg outdoor fixture, not the mansion storybook.
             phase == Sprint39PlaytestUiPhase; }
+        // Repair R3 observer: a capture surface is owned only in the exact
+        // native Default scope, without narrative, with no unrelated native
+        // modal (desktop DialogMessageBox.IsShown), and on its exact surface.
+        internal static bool SummonPlaytestR3SurfaceOwned(bool nativeDefault, bool narrativeFree, bool unrelatedModal, bool exactSurface)
+        { return nativeDefault && narrativeFree && !unrelatedModal && exactSurface; }
         internal static bool Sprint32NativeDefaultOutdoor(string scenario, string phase)
         { return scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview && Sprint32NativeDefaultPhase(phase); }
         internal static bool Sprint32Phase(string phase)

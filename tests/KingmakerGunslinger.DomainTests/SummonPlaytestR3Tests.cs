@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using KingmakerGunslinger.RuntimeTesting;
 using KingmakerGunslinger.Summoning;
 
 namespace KingmakerGunslinger.DomainTests
@@ -56,6 +57,17 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string text in new[] { plain, stampede })
                 Assertions.False(text == "Trample" || text.Contains("<null>") || text.Contains("run over your target"), "No inherited native overrun text.");
             Assertions.Throws<ArgumentOutOfRangeException>(() => SummonActionTooltipPolicy.TrampleSavingThrow(0, false), "A missing DC is refused.");
+        }
+
+        internal static void UnrelatedModalRefusesEveryR3Surface()
+        {
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.SummonPlaytestR3SurfaceOwned(true, true, false, true),
+                "Exact native Default surface without narrative or an unrelated modal is owned.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SummonPlaytestR3SurfaceOwned(true, true, true, true),
+                "An unrelated native message box refuses an otherwise exact surface.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SummonPlaytestR3SurfaceOwned(false, true, false, true), "Lost native Default refuses.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SummonPlaytestR3SurfaceOwned(true, false, false, true), "Narrative overlay refuses.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SummonPlaytestR3SurfaceOwned(true, true, false, false), "A different surface refuses.");
         }
 
         internal static void GhaeleLightRayIdentitiesAreRegistered()
