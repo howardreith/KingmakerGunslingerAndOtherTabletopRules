@@ -104,7 +104,8 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprints30And31Tests.RegisteredAbilityIdentityCount +
                     sprint35Routes + sprint36Routes + sprint37Routes +
                     sprint38Routes + sprint39Routes + sprint40Routes +
-                    1, // Repair R3 UI-03: the KMG Ghaele's owned light ray.
+                    1 + // Repair R3 UI-03: the KMG Ghaele's owned light ray.
+                    4, // Repair R4: the four native-backed mephits' owned breaths.
                 released.Count(value => value.PlannedType == "BlueprintAbility"),
                 "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
@@ -115,11 +116,13 @@ namespace KingmakerGunslinger.DomainTests
                 released.Count(value => value.PlannedType == "BlueprintBuff"),
                 "Buff identity count changed.");
             Assertions.Equal(29 + ExpandedSummoningSprints30And31Tests.RegisteredAiIdentityCount +
-                    1, // Repair R3 UI-03: the Ghaele light-ray AI action.
+                    1 + // Repair R3 UI-03: the Ghaele light-ray AI action.
+                    4, // Repair R4: the four owned mephit breath AI actions.
                 released.Count(value => value.PlannedType == "BlueprintAiCastSpell"),
                 "AI identity count changed.");
             Assertions.Equal(17 + ExpandedSummoningSprints30And31Tests.RegisteredBrainIdentityCount +
-                    1, // Repair R3 UI-03: the Ghaele brain.
+                    1 + // Repair R3 UI-03: the Ghaele brain.
+                    4, // Repair R4: the four owned mephit brains.
                 released.Count(value => value.PlannedType == "BlueprintBrain"),
                 "Brain identity count changed.");
             Assertions.Equal(1, released.Count(value => value.PlannedType == "IsEngagedConsideration"),

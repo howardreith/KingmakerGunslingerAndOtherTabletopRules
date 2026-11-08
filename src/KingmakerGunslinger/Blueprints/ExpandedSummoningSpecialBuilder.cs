@@ -752,6 +752,10 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureBrachiosaurusOverrun(library, bySymbol);
             ConfigureBrachiosaurusGreaterOverrun(library, bySymbol);
             ConfigureMephitVariants(library, bySymbol);
+            // Repair R4 MEPH-01..03: owned breaths for the four native-backed
+            // mephits (required damage, cone and art) through each unit's own
+            // grant and an owned brain copy.
+            ConfigureNativeMephitBreaths(library, bySymbol);
             foreach (var pair in bySymbol.Where(value =>
                 value.Key.StartsWith("KMG.Summoning.FeyCelestial.", StringComparison.Ordinal) && value.Value is BlueprintUnitFact))
                 NameFeyCelestialFactComponents32((BlueprintUnitFact)pair.Value, pair.Key);
@@ -1268,9 +1272,7 @@ namespace KingmakerGunslinger.Blueprints
         /// </summary>
         internal static string MephitBreathProjectileGuid(string energy)
         {
-            if (energy == "Fire") return FireConeProjectileGuid;
-            if (energy == "Acid") return AcidConeProjectileGuid;
-            return ColdConeProjectileGuid;
+            return MephitBreathPolicy.ProjectileFor(MephitBreathPolicy.Parse(energy));
         }
 
         /// <summary>
@@ -1306,6 +1308,10 @@ namespace KingmakerGunslinger.Blueprints
             MephitVariantProfile profile, BlueprintBuff sickened, string symbol,
             string token)
         {
+            MephitBreathRow row = MephitBreathPolicy.Row(profile.Key);
+            if (row.NativeBacked || row.Required != MephitBreathPolicy.Parse(profile.BreathEnergy))
+                throw new InvalidOperationException("Mephit variant " + profile.Key +
+                    " breath profile disagrees with the required damage.");
             ExpandedSummoningAbilityBuilder.CopyFields(nativeBreath, breath);
             breath.name = InternalName(symbol);
             breath.ComponentsArray = (nativeBreath.ComponentsArray ??
@@ -1365,14 +1371,14 @@ namespace KingmakerGunslinger.Blueprints
                 .OfType<SpellDescriptorComponent>().Single();
             descriptor.Descriptor = new SpellDescriptorWrapper(
                 MephitBreathDescriptor(profile.BreathEnergy));
-            // The native breath's icon stays with the clone; the helper
-            // replaces the icon it is handed, so the copied one is passed back.
+            // Repair R4 MEPH-03: the breath's own existing art (native
+            // semantic reuse) instead of the donor's Burning Hands icon.
             BlueprintUnitFactAccess.Resolve().Configure(breath,
                 LocalizationService.Create("KMG.ExpandedSummoning." + token +
                     ".Breath.Name", MephitDisplayName(profile.Key) + " Breath"),
                 LocalizationService.Create("KMG.ExpandedSummoning." + token +
                     ".Breath.Description", MephitBreathDescription(profile)),
-                nativeBreath.Icon);
+                NativeAbilityIcon(library, row.IconSourceGuid, "native " + row.IconSourceName + " icon"));
         }
 
         private static ContextActionApplyBuff MephitSickenAction(BlueprintBuff sickened)
@@ -1393,26 +1399,47 @@ namespace KingmakerGunslinger.Blueprints
 
         internal static DamageTypeDescription MephitBreathDamageType(string energy)
         {
-            if (energy == "Slashing")
-                return new DamageTypeDescription {
-                    Type = DamageType.Physical,
-                    Physical = new DamageTypeDescription.PhysicalData {
-                        Form = PhysicalDamageForm.Slashing }
-                };
-            return new DamageTypeDescription {
-                Type = DamageType.Energy,
-                Energy = energy == "Fire" ? DamageEnergyType.Fire :
-                    energy == "Cold" ? DamageEnergyType.Cold : DamageEnergyType.Acid
-            };
+            return MephitBreathDamageType(MephitBreathPolicy.Parse(energy));
+        }
+
+        /// <summary>
+        /// Repair R4: physical forms are explicit (slashing or bludgeoning);
+        /// energy is fire, cold or acid. Nothing falls back to another type.
+        /// </summary>
+        internal static DamageTypeDescription MephitBreathDamageType(MephitBreathDamageKind kind)
+        {
+            switch (kind)
+            {
+                case MephitBreathDamageKind.Slashing:
+                case MephitBreathDamageKind.Bludgeoning:
+                    return new DamageTypeDescription {
+                        Type = DamageType.Physical,
+                        Physical = new DamageTypeDescription.PhysicalData {
+                            Form = kind == MephitBreathDamageKind.Bludgeoning ?
+                                PhysicalDamageForm.Bludgeoning : PhysicalDamageForm.Slashing }
+                    };
+                case MephitBreathDamageKind.Fire:
+                    return new DamageTypeDescription { Type = DamageType.Energy, Energy = DamageEnergyType.Fire };
+                case MephitBreathDamageKind.Cold:
+                    return new DamageTypeDescription { Type = DamageType.Energy, Energy = DamageEnergyType.Cold };
+                case MephitBreathDamageKind.Acid:
+                    return new DamageTypeDescription { Type = DamageType.Energy, Energy = DamageEnergyType.Acid };
+            }
+            throw new ArgumentOutOfRangeException("kind");
         }
 
         private static SpellDescriptor MephitBreathDescriptor(string energy)
         {
-            switch (energy)
+            return MephitBreathDescriptor(MephitBreathPolicy.Parse(energy));
+        }
+
+        private static SpellDescriptor MephitBreathDescriptor(MephitBreathDamageKind kind)
+        {
+            switch (kind)
             {
-                case "Fire": return SpellDescriptor.Fire;
-                case "Cold": return SpellDescriptor.Cold;
-                case "Acid": return SpellDescriptor.Acid;
+                case MephitBreathDamageKind.Fire: return SpellDescriptor.Fire;
+                case MephitBreathDamageKind.Cold: return SpellDescriptor.Cold;
+                case MephitBreathDamageKind.Acid: return SpellDescriptor.Acid;
             }
             return SpellDescriptor.None;
         }
@@ -1467,7 +1494,7 @@ namespace KingmakerGunslinger.Blueprints
                     description = "One enemy within close range wearing or carrying metal: Will negates, or its metal freezes for seven rounds - 1d4 cold the second round, 2d4 the third to fifth, 1d4 the sixth (1 or 2 points for a creature carrying only a metal weapon). Once per summoning.";
                     break;
                 case "Pyrotechnics":
-                    ConfigurePyrotechnics(bySymbol, ability, prefix, token);
+                    ConfigurePyrotechnics(library, bySymbol, ability, prefix, token);
                     displayName = "Pyrotechnics";
                     description = "A burst of fireworks: every enemy within 20 feet is blinded for 1d4+1 rounds, Will negates. Once per summoning.";
                     break;
@@ -1733,7 +1760,7 @@ namespace KingmakerGunslinger.Blueprints
         /// Will negates. Enemies only, as the charter requires of every
         /// harmful mephit area effect.
         /// </summary>
-        private static void ConfigurePyrotechnics(
+        private static void ConfigurePyrotechnics(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol, BlueprintAbility ability,
             string prefix, string token)
         {
@@ -1770,7 +1797,7 @@ namespace KingmakerGunslinger.Blueprints
             descriptor.Descriptor = new SpellDescriptorWrapper(SpellDescriptor.Fire);
             ability.ComponentsArray = new BlueprintComponent[] { around, run,
                 MephitSpellLikeParameters(ExpandedSummoningSpecialProfiles.PyrotechnicsSpellLevel),
-                descriptor };
+                descriptor, PyrotechnicsFlash(library) };
         }
 
         /// <summary>
