@@ -1,4 +1,29 @@
-# Summoned creature manual-playtest repair — R5 review repairs / STOP
+# Summoned creature manual-playtest repair — R5 UMM ownership repairs / STOP
+
+Current (2026-11-08). The last two R5 UMM ownership findings are repaired on
+`codex/summon-playtest-r5-spells` (scripts commit `307cf89356`, draft PR #115,
+still stacked on draft #114). See the top section of
+planning/summon-playtest-repair/R5-STATUS.md.
+
+- Automatic owner restoration now holds a lease in the receipt's coordination
+  root (its own or a validated inherited one) through recheck, restore and
+  receipt completion. A foreign transaction is refused with no write.
+- A game already running is refused before any lease is created, so the refusal
+  leaves no lock or recovery debt; the recheck under the lease remains.
+- Results: UMM tests 85 assertions pass, orchestration 297 pass, scripts parse.
+  Three mutation checks fail as intended.
+- No package was built, Kingmaker was not launched, and the live installation
+  was not changed. Production C# is unchanged from `06d9bc4d0e`.
+- The 22/0 native result stays with tested source `366fad0ac41b` only. The
+  repaired binder is not natively observed.
+- R5 ledger is about 1,389 of 1,800 s.
+
+Next: owner review of #114, then #115. R6 starts only on explicit
+authorization.
+
+---
+
+# (superseded) R5 review repairs / STOP
 
 Current (2026-11-08). Three R5 review findings are repaired on
 `codex/summon-playtest-r5-spells` (commit `06d9bc4d0e`, draft PR #115, still
