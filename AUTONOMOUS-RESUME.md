@@ -1,4 +1,24 @@
-# Summoned creature manual-playtest repair — R6 repair checkpoint / STOP
+# Summoned creature manual-playtest repair — R6 complete for review / STOP
+
+Current (2026-11-08). See planning/summon-playtest-repair/R6-STATUS.md. Branch
+`codex/summon-playtest-r6-presentation`; draft PR #116 on #115 on #114.
+
+- All required R6 technical gaps are closed. Final candidate `2f1c4eb9f90f`: one
+  guarded run, all assertions passed. Cue retirement now stops playback by playing
+  ID (Trumpet observed; Vrock shares the implementation).
+- Owner viewing and listening remain separate. PRES-08 is deferred.
+- Install, saves, settings and `Params.xml` restored exactly.
+- Ledgers: original R6 about 1,498 s, repair about 1,298 of 1,500 s, cumulative R6
+  about 2,796 s. R5 about 1,389 s.
+- DATA is shared with `KingmakerSkipCinematicLab`: arrange a no-Kingmaker window
+  before any build or guarded run.
+
+Next: owner review of #114, #115 and #116, viewing and listening, then explicit
+authorization for R7.
+
+---
+
+# (superseded) R6 repair checkpoint / STOP
 
 Current (2026-11-08). See planning/summon-playtest-repair/R6-STATUS.md. Branch
 `codex/summon-playtest-r6-presentation`; draft PR #116 on #115 on #114.

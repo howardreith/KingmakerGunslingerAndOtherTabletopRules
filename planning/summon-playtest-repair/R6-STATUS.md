@@ -1,5 +1,108 @@
 # Summoned Creature Manual Playtest Repair — R6 status
 
+## R6 complete for review (2026-11-08, candidate `2f1c4eb9f90f`)
+
+**All required R6 technical gaps are closed.** Owner viewing and listening remain
+separate and are not implied by this result. PRES-08 stays deferred. The earlier
+sections and their verdicts are kept and stay attached to their own candidates.
+
+### Cue retirement repair (PRES-05, PRES-06)
+
+- **Failure reproduced earlier:** on `c31c6292f7d3` a Trumpet cue (ID 861) ended
+  4.62 s after its view retired, because the event-and-emitter stop found the
+  emitter already unregistered.
+- **Verified contract:** the installed integration exposes
+  `AkSoundEngine.StopPlayingID(uint)` (with transition-duration and fade-curve
+  overloads), returns `void`, and needs no game object. See
+  `docs/FIREARM-WWISE-EXACT-RUNTIME-CONTRACT.md`.
+- **Change:** `SummonCastCueLifecycle.Retire` stops each of this feature's own
+  unfinished playbacks by playing ID, one attempt per playback, independently, and
+  records "stop-requested" (never a success code). Only the native end-of-event
+  callback marks completion. No global stop, duplicate registration or re-registered
+  emitter.
+- **Native result (Trumpet Archon only):** a real Trumpet Blast, command Success,
+  playing ID 504 still active at retirement; stop requested 0.03 s after retirement;
+  native end 0.07 s after retirement, 0.56 s into the cue. Natural-completion controls
+  on the same candidate: Trumpet 3.26 s, Vrock 2.60 s, neither stopped. A cast
+  cancelled before execution posted nothing. One cue per execution (7 targets each).
+- **Limit:** early retirement was not separately executed for the Vrock. It shares
+  the implementation. Native event lifetime is not audibility.
+
+### Lantern ray: qualified re-reading of `c31c6292f7d3`
+
+`r6-lantern-paired-views` accepted `ray.finished` alone. Its immutable record for
+both passes shows `result` Success, `cancelled` false, `executionEnded` true,
+`actedAtShot` 1, and act-state frames (12 and 15). That meets the corrected
+predicate (`AbilityExecutionObserved`). The original verdict stands, this reading
+stays with that candidate, and no Lantern cell ran on `2f1c4eb9f90f`.
+
+### Native itinerary and result (`2f1c4eb9f90f`)
+
+- Selected cells: `config`, `redcap-scythe`, `audio`. Hound Aid, Lantern and the
+  mixed group were not replayed. Commands were observed passively.
+- **Run** `summon-playtest-r6-presentation`: **PASS, all assertions**, wrapper exit 0.
+- **Redcap clip** (optional): moved to open ground. I inspected extracted frames:
+  no silhouettes; scythe swings (frames 675-728 span the real roll at 698) and the
+  kick (roll at 792) are clear. `redcap-scythe.webm` under
+  `runtime-evidence/summon-playtest-r6/final-2f1c4eb9f90f/clips`.
+- Device audio was recorded but not used for the retirement claim. Earlier WAV
+  excerpts document the unchanged cue choices only.
+
+### Where each result lives
+
+Product code for Hound sword, Aid, Redcap mapping, Lantern and sheen did not change
+between `c31c6292f7d3` and `2f1c4eb9f90f` (only the cue playback, a policy file and
+the observer did). Their native results stay attached to the candidates that ran
+them: Hound sword on `0dd811be26b2`; Aid, Lantern and sheen on `c31c6292f7d3`.
+
+### Identities
+
+- **Source / candidate:** `2f1c4eb9f90fef5193d05b9dfeb888ae35cd1b23`, v0.0.179
+  development `summon-playtest-r6`.
+- **Package** `cae8e66ba18ef1496e73c94b6c38da9cd2f0d8497e36b817724c43e0c6d1e262`.
+- **DLL** `b994faa751e64e28d365ba07488db33e1c7838e2389d112bdb66f6b28621ee4e`,
+  MVID `0d73c16b-78a6-459a-9caf-f8751a0c0420`; the observer is in that DLL.
+- **Focused:** `summon-playtest` 39 of 2,882 selected, passing, production compiled;
+  new behavior cases for retirement, observer retirement and Lantern execution.
+- **Incidental R5 state:** provider, Mist and Dance `active`. The 22/0 stays with
+  `366fad0ac41b`.
+
+### Restoration
+
+Intake v0.0.140, DLL `00EF6757…66FD`, 16 of 16 mods, `Params.xml` `E44F4495…30BB`,
+95 saves, 66 settings, no lock. After the run: live tree `5C3E4AD4…BFBB` (254 files),
+95/95 saves identical, settings restored, `Params.xml` unchanged, no lock, no foreign
+Kingmaker during the run.
+
+### Ledgers
+
+The earlier repair total of 688 s entered 16 s for the last gate; it took 19 s, so
+it is **691 s**. The owner raised the repair ceiling from 1,200 s to 1,500 s for
+this checkpoint.
+
+| Repair step | Seconds |
+| --- | ---: |
+| Earlier repair checkpoint (reconciled) | 691 |
+| Focused gates (one compile refusal, one pass) | 24 |
+| Candidate build | 422 |
+| Guarded native run | 161 |
+| **Repair total** | **about 1,298 of 1,500** |
+
+Original R6 ledger stays about 1,498 s. **Cumulative R6: about 2,796 s.** R5 stays
+about 1,389 s.
+
+### Owner viewing and listening
+
+1. `hound-sword` (first R6 clips): does the sword read as striking?
+2. `hound-aid-self`, `hound-aid-ally`: is the gesture acceptable?
+3. `redcap-scythe` (final clips): does the scythe attack look right?
+4. `lantern-donor-hidden` against `lantern-donor-shown`: is the protrusion gone, and
+   are the small pale flecks acceptable?
+5. `mixed-group`: is the summon sheen consistent?
+6. The Trumpet and Vrock WAVs: do they fit? `InspireCourage` is provisional.
+
+---
+
 ## R6 repair checkpoint (2026-11-08, candidate `c31c6292f7d3`): review checkpoint
 
 One candidate and one guarded run under a separate repair allowance. **Native
@@ -91,13 +194,13 @@ video are separate. The agent cannot judge audibility.
 
 | Step | Seconds |
 | --- | ---: |
-| Focused gates (including one compile refusal, one test correction, comment check) | 72 + 16 |
+| Focused gates (including one compile refusal, one test correction, comment check) | 72 + 19 |
 | Candidate build | 398 |
 | Guarded native run | 202 |
-| **Repair total** | **about 688** |
+| **Repair total** | **about 691** (reconciled; first recorded as 688) |
 
-Original R6 ledger stays about 1,498 s; combined R6 about 2,186 s. R5 stays about
-1,389 s. A further build and run (about 600 s) does not fit the remaining 512 s.
+Original R6 ledger stays about 1,498 s; combined R6 was then about 2,189 s. R5 stays about
+1,389 s. A further build and run (about 600 s) did not fit the 1,200 s ceiling then in force.
 
 ### Owner viewing and listening
 
