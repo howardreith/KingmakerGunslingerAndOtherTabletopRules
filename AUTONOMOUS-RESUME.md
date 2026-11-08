@@ -1,4 +1,39 @@
-# Summoned creature manual-playtest repair — R4 complete for review / STOP
+# Summoned creature manual-playtest repair — R5 complete for review / STOP
+
+Current (2026-11-08). R5 is complete for review on branch
+`codex/summon-playtest-r5-spells`, stacked on draft PR #114 (open; the R5
+draft PR targets `codex/summon-playtest-r4-mephit`). Owner aesthetic
+approval is pending. See planning/summon-playtest-repair/R5-STATUS.md.
+
+- UMM `Params.xml` protection is now in the actual guarded DATA wrapper
+  (byte backup + durable receipt, verified restore, recovery script);
+  25/25 behavior tests. Both R5 runs restored-verified at the R5 intake
+  `e44f4495…`.
+- R4 restoration qualification remains: after R4, Params.xml did not return
+  to its R4 intake hash and exact restoration of that file is not
+  established; no matching historical backup exists.
+- SPELL-01: Cloud Giant has one at-will Obscuring Mist SLA wrapping Call of
+  the Wild's spell (point target); both custom fog routes removed.
+- SPELL-02: Pixie has at-will native Entangle, full Confusion, Dispel Magic
+  and Shield (owner adaptation).
+- SPELL-03: Pixie Dance wraps CotW Irresistible Dance, once per summoning.
+- MECH-01: Griffon's duplicate native Charge removed (engine already grants
+  it).
+- MECH-02: Mastodon trample 2d8+18, Reflex DC 29.
+- Candidate `366fad0ac41b` (package `8862c485…3af7`, DLL `d5adb10c…e936`):
+  22 PASS / 0 FAIL. First candidate `73bfc8ca97a9` failed on an observer
+  type lookup (evidence kept).
+- Gaps: provider-absent omission not observed natively; no legacy/cold-load
+  cell; no autonomous AI cast; Dispel area variant not executed.
+- R5 ledger ≈ 1,282 s (target 900 s exceeded, ceiling 1,800 s kept). R4
+  remains 1,135 s.
+
+Next: owner review of the R5 PR (after #114), then an explicitly authorized
+R6. Do not start R6 automatically.
+
+---
+
+# (superseded) R4 complete for review / STOP
 
 Current (2026-11-08). R4 is complete for review on draft PR #114 (branch
 `codex/summon-playtest-r4-mephit`); owner aesthetic approval is pending.
