@@ -1,5 +1,156 @@
 # Summoned Creature Manual Playtest Repair — R5 status
 
+**R5 review repairs (2026-11-08, commit `06d9bc4d0e`): three review findings
+repaired; review checkpoint.** The three findings are below. The original R5
+record follows unchanged. The 22/0 native result belongs only to tested source
+`366fad0ac41b271564cf394e6de952e6a4c68591`. The repaired product binary is new
+and has **no native observation**; the PASS does not transfer to it.
+
+### Finding 1 — optional spell binding was not atomic (repaired)
+
+- **Defect:** both Call of the Wild binders copied the donor's fields into the
+  already-granted owned ability and set `Hidden = false` before component
+  cloning and the provider guard were complete. Dance's one-use cost was
+  attached at that same late step. A failure was logged as an omission, but
+  the placeholder was not restored: the ability could stay visible with donor
+  components and no guard, and Dance could lack its cost.
+- **Repair** (`ExpandedSummoningSpecialBuilder.SpellsR5.cs`, `R5CotwSpells.cs`,
+  `SummonPlaytestR5Policy.BindOptional`):
+  - Everything is prepared before the owned ability changes: provider lookups,
+    contract checks, cloned components, the guard, caster parameters and
+    Dance's one-use cost. Dance also refuses a provider cast that carries its
+    own resource cost.
+  - The replacement is then published still hidden.
+  - It is verified: hidden, exactly one guard for this unit and spell, and for
+    Dance exactly its one-use cost.
+  - Visibility is the last step.
+  - Any failure after the owned ability was touched restores a snapshot of the
+    placeholder. A `finally` forces the stable name, `Hidden = true` and the
+    placeholder's own guarded component array.
+  - The binder returns a disposition (`active`, `provider-contract-failed`,
+    `placeholder-restore-failed`) and never throws once the owned identities
+    resolve.
+  - `MistBound` and `DanceBound` (the only state that opens the guard) are set
+    only for `active`.
+  - Mist and Dance stay independent. On the successful path the spell
+    mechanics, caster parameters, native action costs, ownership, identities
+    and Dance's once-per-summoning frequency are unchanged.
+- **Focused tests:**
+  - `summon-playtest-r5.binding-failure-restores-placeholder` drives
+    `BindOptional` with a model that follows the binders' steps and injects
+    failure at:
+    - preparation;
+    - the donor field copy;
+    - publication;
+    - a missing guard;
+    - a missing Dance cost;
+    - reveal;
+    - a failed snapshot restore combined with a publication or reveal failure.
+
+    Each case checks that the ability is hidden, guarded and unavailable, that
+    no unrestricted Dance path exists, and that the placeholder's components
+    and stable identity are restored. A failed restore retains both errors.
+  - `summon-playtest-r5.bindings-independent`: a failure of either binding
+    leaves the other bound. Source contracts pin the production path:
+    - visible publication happens only in the two `reveal:` steps;
+    - both binders use `BindOptional`;
+    - Dance's one-use cost appears only in its placeholder and its prepared
+      replacement;
+    - the Dance binding is attempted whatever Mist's outcome;
+    - a guard opens only for an `active` binding.
+  - Mutation check: with the restore call removed, both tests failed. Restored
+    and re-verified.
+- **Limit:** the binding failure path is established by the model plus source
+  contracts, not by an in-game provider failure. The repaired success path was
+  compiled, not natively observed.
+
+### Finding 2 — UMM recovery ignored transaction ownership (repaired)
+
+- **Defect:** `Restore-UmmParams.ps1` checked only that Kingmaker was absent. A
+  receipt is pending from before launch, so recovery could complete it while
+  the original wrapper was still staging.
+- **Repair** (`UmmParams.Common.ps1`, `Restore-UmmParams.ps1`, the wrapper):
+  - **Owner identity in the receipt (schema v2):** the wrapper creates the
+    receipt while holding its own runtime lease from the shared coordination
+    lock (`Enter-KmgRuntimeLease`, purpose `umm-params protection`). The
+    receipt records that lease (run ID, state path, coordination root) and the
+    owner's exact process identity (PID and start time, the identity runtime
+    leases use).
+  - **Owner-only in-place completion:** only that live owner completes the
+    receipt in place.
+  - **Serialized recovery:** `Invoke-KmgUmmParamsRecovery` takes its own lease.
+    Entering it fails while any transaction holds the lock, and no lock is
+    stolen or cleared. While holding the lease, recovery refuses if Kingmaker
+    is running or the original owner process is alive. It then restores,
+    records `restoredBy = recovery` and its lease ID, and releases the lease.
+  - **Legacy and failure handling:** a pending v1 receipt (no owner identity)
+    is refused. Completed receipts verify idempotently. Failures keep the
+    receipt pending with `lastError` and the attempt count.
+- **Tests** (`Test-UmmParamsProtection.ps1`, real temporary leases and a real
+  child owner process): **52/52 PASS**, about 4 s. Cases:
+  - live original owner with no game: refused by function and by script,
+    bytes and receipt unchanged, lock released;
+  - foreign active lease: refused, the foreign lock is not stolen, bytes and
+    receipt unchanged;
+  - a running process name: refused;
+  - non-owner in-place completion: refused, and the receipt is not marked
+    restored early;
+  - interrupted owner: restored, recovery recorded, lock released,
+    idempotent repeat;
+  - recovery through the shipped script;
+  - all earlier cases: timestamp, profile, unchanged, scenario failure,
+    missing or corrupt backup, locked destination and retry, absent intake,
+    unrecordable backup, and a released lease refusing backup.
+- Now wired into `validate-repository.ps1`, which runs at sprint boundaries.
+
+### Finding 3 — cleanup independence in both directions (repaired)
+
+- **Defect:** the wrapper's `finally` began with an unguarded
+  `Get-KmgTreeFingerprint`. An exception there skipped the later UMM step.
+- **Repair:** the complete installation inspection and restoration (the first
+  fingerprint included) is now the installation step of
+  `Invoke-KmgIndependentInstallationAndUmmRestoration`. The UMM step runs
+  whatever that step did, and each failure is retained. The wrapper now
+  refuses PASS (it throws) when the live installation is not verified or not
+  needed, as well as when UMM restoration fails.
+- **Tests** (same file):
+  - an installation hash failure while `Params.xml` differs from intake: the
+    UMM step still restores the intake hash, and the installation failure is
+    reported;
+  - a UMM failure in a real child owner (destination locked): the
+    installation step still ran with its result kept, the receipt stays
+    pending with its error and an intact backup, and recovery restores the
+    bytes after the owner exits;
+  - both steps failing: both errors kept;
+  - a running game defers only the UMM step;
+  - a source contract that the wrapper's `finally` reaches the independent
+    step before any fingerprint, backs up under its lease, and refuses PASS
+    on unresolved restoration.
+- Orchestration tests: 297 assertions pass. All changed scripts parse cleanly.
+
+### Verification and identities (review repairs)
+
+- **Sources:** review head `42ec35d1a6` → repairs `06d9bc4d0e`.
+- **Focused gate:** production compilation passed; R5 filter **149/149**
+  (2,871 registered; nonzero; R1–R5 groups plus the identity and ledger
+  suites).
+- **Not done:** no package rebuild, no Kingmaker launch, no native phase.
+  Residual risk: the repaired binder's success path (same final state, new
+  ordering, one added Dance contract check) is not natively observed on a new
+  binary. The minimum observation, if wanted, would be the existing
+  `summon-playtest-r5-spells` loaded-configuration cell on a new candidate. It
+  was not selected.
+- **Spend:**
+  - UMM tests about 7 s (including one harness fix);
+  - orchestration about 1 s;
+  - three focused gates 24 + 16 (mutation) + 22 s;
+  - **about 72 s in total.**
+  - R5 cumulative is about **1,354 of 1,800 s**.
+
+---
+
+# R5 status as first reviewed (2026-11-08)
+
 **R5 COMPLETE FOR REVIEW (2026-11-08).** SPELL-01..03 and MECH-01..02 are
 technically established on DATA within the limits listed below. Owner
 aesthetic approval is a separate, pending judgment. Nothing was merged,
