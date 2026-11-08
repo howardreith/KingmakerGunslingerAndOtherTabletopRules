@@ -40,7 +40,10 @@ namespace KingmakerGunslinger.Summoning
             "KMG_Summoning_Special_Aurochs_Trample",
             "KMG_Summoning_Special_Bison_Trample",
             "KMG_Summoning_Special_WoollyRhinoceros_Trample",
-            "KMG_Summoning_Special_Triceratops_Trample"
+            "KMG_Summoning_Special_Triceratops_Trample",
+            // Repair R5 MECH-02: the Mastodon gets the full interrupt and
+            // duplicate-response contract.
+            "KMG_Summoning_Special_Mastodon_Trample"
         };
 
         private static readonly ConditionalWeakTable<UnitEntityData,

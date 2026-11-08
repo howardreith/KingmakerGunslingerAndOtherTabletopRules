@@ -98,8 +98,8 @@ namespace KingmakerGunslinger.DomainTests
         {
             string[] keys = SummonPlaytestWithdrawalPolicy.All.Select(value => value.CreatureKey).ToArray();
             Assertions.True(keys.OrderBy(value => value, StringComparer.Ordinal).SequenceEqual(
-                new[] { "bone-devil", "fire-giant", "ice-devil", "lillend-azata", "magma-mephit" }),
-                "Exactly the owner's four capability cuts on five creatures.");
+                new[] { "bone-devil", "cloud-giant", "fire-giant", "ice-devil", "lillend-azata", "magma-mephit" }),
+                "Exactly the owner's four capability cuts on five creatures, plus Repair R5's retired Cloud Giant Fog Cloud route.");
             var registered = new HashSet<string>(ExpandedSummoningIdentityCatalog.Build()
                 .Select(value => value.Symbol), StringComparer.Ordinal);
             JArray entries = (JArray)JObject.Parse(File.ReadAllText(Path.Combine(

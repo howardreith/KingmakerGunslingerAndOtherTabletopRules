@@ -249,6 +249,11 @@ namespace KingmakerGunslinger.Summoning
             new UngulateRulesProfile("elephant", 11, 30, 2, 8,
                 2, 8, 0, 0, 0, false, true),
             new UngulateRulesProfile("gorgon", 8, 24, 2, 8,
+                2, 8, 0, 0, 0, false, true),
+            // Repair R5 MECH-02: the printed Mastodon trample (2d8+18, Reflex
+            // DC 29) from its own 14 hit dice and Strength 34: 1.5 x Str
+            // modifier, and 10 + HD/2 + Str modifier, live like the Elephant.
+            new UngulateRulesProfile("mastodon", 14, 34, 2, 8,
                 2, 8, 0, 0, 0, false, true)
         };
 
@@ -260,8 +265,8 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 9 || Values.Select(value => value.Key)
-                    .Distinct(StringComparer.Ordinal).Count() != 9 ||
+            if (Values.Length != 10 || Values.Select(value => value.Key)
+                    .Distinct(StringComparer.Ordinal).Count() != 10 ||
                 Values.Any(value => value.HitDice < 1 || value.Strength < 1 ||
                     value.GoreDiceCount < 1 || value.GoreDieSides < 1 ||
                     !value.HasTrample && !value.HasPowerfulCharge))
