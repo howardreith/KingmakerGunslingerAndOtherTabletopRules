@@ -56,9 +56,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal readonly List<RuleDealDamage> Damage = new List<RuleDealDamage>();
             internal readonly List<AbilityExecutionContext> Applied = new List<AbilityExecutionContext>();
             internal readonly List<int> AppliedFrames = new List<int>();
+            internal readonly List<KeyValuePair<AbilityExecutionContext, UnitEntityData>> Delivered =
+                new List<KeyValuePair<AbilityExecutionContext, UnitEntityData>>();
             public void OnEventAboutToTrigger(RuleDealDamage evt) { }
             public void OnEventDidTrigger(RuleDealDamage evt) { if (evt != null) Damage.Add(evt); }
-            public void OnTryToApplyAbilityEffect(AbilityExecutionContext context, TargetWrapper target) { }
+            public void OnTryToApplyAbilityEffect(AbilityExecutionContext context, TargetWrapper target)
+            { if (context != null && target != null && target.Unit != null) Delivered.Add(new KeyValuePair<AbilityExecutionContext, UnitEntityData>(context, target.Unit)); }
             public void OnAbilityEffectAppliedToTarget(AbilityExecutionContext context, TargetWrapper target) { }
             public void OnAbilityEffectApplied(AbilityExecutionContext context)
             { if (context != null) { Applied.Add(context); AppliedFrames.Add(Time.frameCount); } }
@@ -216,6 +219,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                 }
                 yield return 0;
+                if (!fired && trigger != null && trigger())
+                {
+                    fired = true; row["triggerFrame"] = Time.frameCount; row["triggerAfterYield"] = true;
+                    foreach (int frame in onTrigger())
+                    {
+                        if (command.ExecutionProcess != null && !command.ExecutionProcess.IsEnded) command.ExecutionProcess.Tick();
+                        yield return frame;
+                    }
+                }
                 if (command.IsFinished && command.ExecutionProcess != null && command.ExecutionProcess.IsEnded) break;
             }
             row["finished"] = command.IsFinished;
@@ -231,11 +243,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!IsSprint32Review || !_request.ExitAfterCompletion || !ReferenceEquals(fixture, _sprint25Fixture) ||
                 fixture?.Scene == null || fixture.Caster == null || fixture.Hostile == null || mode == null || !mode.Current ||
                 !_context.FeatureModules.Active.ExpandedSummoning ||
-                phase != ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestMephitPhase ||
+                phase != ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestMephitPhase &&
+                    phase != ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestMephitFinishPhase ||
                 !ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(_request.Scenario, phase) ||
                 !Cleanup2NoNarrativeOverlay())
                 throw new InvalidOperationException("Exact fresh R4 mephit fixture in owned outdoor native Default, without narrative, required.");
             const string prefix = "r4-mephit-";
+            // Finishing selection: configuration checks for all ten, then fresh
+            // presentation only for Salt, the ally-safety case and Pyrotechnics.
+            bool finish = phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestMephitFinishPhase;
             var game = Game.Instance; var ui = game.UI;
             LibraryScriptableObject library = BlueprintBootstrap.Library;
             IDictionary<string, BlueprintScriptableObject> symbols = ExpandedSummoningBlueprints.Registered.BySymbol;
@@ -276,13 +292,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         deliver.Projectiles[0] == null ? null : deliver.Projectiles[0].AssetGuid;
                     var iconSource = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library, row.IconSourceGuid, "icon source");
                     string actual = damages.Count == 1 ? R4DamageName(damages[0].DamageType) : "count=" + damages.Count;
+                    AbilityEffectRunAction runAction = (breath.ComponentsArray ?? new BlueprintComponent[0]).OfType<AbilityEffectRunAction>().FirstOrDefault();
+                    Conditional gate = runAction == null || runAction.Actions == null || runAction.Actions.Actions == null ||
+                        runAction.Actions.Actions.Length != 1 ? null : runAction.Actions.Actions[0] as Conditional;
+                    bool enemiesOnly = gate != null && gate.ConditionsChecker != null && gate.ConditionsChecker.Conditions != null &&
+                        gate.ConditionsChecker.Conditions.Length == 1 && gate.ConditionsChecker.Conditions[0] is ContextConditionIsEnemy &&
+                        !gate.ConditionsChecker.Conditions[0].Not &&
+                        (gate.IfFalse == null || gate.IfFalse.Actions == null || gate.IfFalse.Actions.Length == 0);
                     bool ok = facts.Count(value => ReferenceEquals(value, breath)) == 1 &&
                         !facts.Any(value => nativeBreaths.Contains(value)) &&
                         brainAbilities.Count(value => ReferenceEquals(value, breath)) == 1 &&
                         !brainAbilities.Any(value => nativeBreaths.Contains(value)) &&
                         actual == R4Required(row) && projectile == MephitBreathPolicy.ProjectileFor(row.Required) &&
                         breath.Icon != null && ReferenceEquals(breath.Icon, iconSource.Icon) && breath.Icon.name != "BurningHands" &&
-                        deliver != null && deliver.Type == AbilityProjectileType.Cone && deliver.Length.Value == 15f;
+                        deliver != null && deliver.Type == AbilityProjectileType.Cone && deliver.Length.Value == 15f && enemiesOnly;
                     matrixOk &= ok;
                     matrix.Add(new JObject { ["key"] = row.Key, ["unit"] = unit.AssetGuid, ["nativeBacked"] = row.NativeBacked,
                         ["breath"] = breath.AssetGuid, ["breathName"] = breath.Name, ["grantSource"] = "BlueprintUnit.AddFacts",
@@ -293,14 +316,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["nativeAiReferences"] = brainAbilities.Count(value => nativeBreaths.Contains(value)),
                         ["required"] = R4Required(row), ["configured"] = actual,
                         ["dice"] = damages.Count == 1 && damages[0].Value != null ? damages[0].Value.DiceCountValue + "d" + (int)damages[0].Value.DiceType : null,
-                        ["halfIfSaved"] = damages.Count == 1 && damages[0].HalfIfSaved,
+                        ["halfIfSaved"] = damages.Count == 1 && damages[0].HalfIfSaved, ["enemiesOnlyGate"] = enemiesOnly,
                         ["projectile"] = projectile, ["coneFeet"] = deliver == null ? -1 : deliver.Length.Value,
                         ["icon"] = breath.Icon == null ? null : breath.Icon.name, ["iconSource"] = row.IconSourceName,
                         ["evidence"] = "loaded configuration", ["passed"] = ok });
                 }
                 record["matrix"] = matrix;
                 Sprint25Check(prefix + "loaded-breath-matrix", matrixOk && matrix.Count == 10, new JObject { ["rows"] = matrix.DeepClone() },
-                    "All ten loaded KMG mephit units grant exactly one owned breath, reference it from exactly one live-brain cast action, and never the native breath; each deals its required damage through a 15-foot cone of the matching native visual and wears its own existing art.");
+                    "All ten loaded KMG mephit units grant exactly one owned breath, referenced by exactly one brain cast action (a configured reference, not an observed autonomous cast), never the native breath; each owned effect is gated to the caster's enemies (charter ally-safety) and deals its required damage through a 15-foot cone of the matching native visual with its own existing art.");
 
                 var donors = new JArray(); bool donorsOk = true;
                 foreach (MephitBreathRow row in MephitBreathPolicy.NativeBackedRows)
@@ -336,7 +359,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Pyrotechnics carries one caster-anchored, non-target OnApplyEffect spawn of the native Flare Burst blinding burst.");
 
                 // 2. Ten fresh summons; descriptions before any cast.
-                string[] keys = MephitBreathPolicy.Rows.Select(row => row.Key).ToArray();
+                string[] keys = finish ? new[] { "salt-mephit", "water-mephit", "earth-mephit", "magma-mephit" } :
+                    MephitBreathPolicy.Rows.Select(row => row.Key).ToArray();
+                string[] describe = finish ? new[] { "salt-mephit" } : keys;
                 for (int index = 0; index < keys.Length; index++)
                 {
                     UnitEntityData summon = CastExpandedSummoningOwnTier(fixture, keys[index]);
@@ -370,7 +395,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 screens = new NativeIconScreenEvidence(_request);
                 var descriptions = new JArray();
-                foreach (string key in keys)
+                foreach (string key in describe)
                 {
                     BlueprintAbility breath = breathOf(key);
                     var target = new R3DescriptionTarget { Label = key + "-breath", Creature = key, Blueprint = breath,
@@ -433,6 +458,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 trace = new R4SpawnTrace();
                 saves = new Sprint26Saves(hostile) { DesiredRoll = 2 };
 
+                if (finish)
+                {
+                    foreach (int frame in R4AllySafety(record, prefix, hostile, water, earth, centre, breathOf("water-mephit"),
+                        recorder, trace, saves, screens, worldOwned)) yield return frame;
+                }
+                else
+                {
                 // Water: acid.
                 var waterRow = new JObject();
                 BlueprintAbility waterBreath = breathOf("water-mephit");
@@ -486,7 +518,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint25Check(prefix + "earth-bludgeoning-executed", earthBludgeoning, (JObject)earthRow.DeepClone(),
                     "One executed KMG Earth Mephit breath, correlated by caster, owned ability and target, deals only physical bludgeoning packets (the changed explicit physical path), never acid.");
 
+                }
+
                 // Pyrotechnics: cancelled command, then one executed cast.
+                PlaceExpandedSummoningUnit(water, ObstacleAnalyzer.GetNearestNode(centre + Vector3.back * 9f).clampedPosition);
                 PlaceExpandedSummoningUnit(earth, ObstacleAnalyzer.GetNearestNode(centre + Vector3.right * 9f).clampedPosition);
                 PlaceExpandedSummoningUnit(magma, ObstacleAnalyzer.GetNearestNode(centre + forward * 9f).clampedPosition);
                 for (int frame = 0; frame < 15; frame++) yield return 0;
@@ -513,9 +548,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in screens.Capture("r4-pyrotechnics-before", new JObject { ["caster"] = magma.UniqueId,
                     ["flashes"] = trace.Flashes.Count }, worldOwned)) yield return frame;
                 float castRealtime = Time.realtimeSinceStartup;
+                var during = new JObject();
                 foreach (int frame in R4RunCast(magma, pyro, new TargetWrapper(magma), pyroRow,
                     () => trace.Flashes.Count > 0,
-                    () => R4FlashDuring(screens, trace, worldOwned))) yield return frame;
+                    () => R4FlashDuring(screens, trace, worldOwned, during))) yield return frame;
                 GameObject instance = trace.Flashes.FirstOrDefault();
                 var lifetime = new JArray();
                 int retireFrame = -1; float retireRealtime = -1f;
@@ -544,7 +580,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool oneFlash = trace.Flashes.Count == 1 && trace.FlashRows.Count == 1 && (bool)trace.FlashRows[0]["onOwner"] &&
                     applied == 1 && retireFrame >= 0 && resourceBefore - magma.Descriptor.Resources.GetResourceAmount(pyroResource) == 1 &&
                     (bool)pyroRow["finished"] && magma.Buffs.GetBuff(blinded) == null;
+                pyroRow["during"] = during;
                 record["pyrotechnics"] = pyroRow;
+                bool capturedLive = pyroRow["triggerFired"] != null && (bool)pyroRow["triggerFired"] &&
+                    during["requestFrame"] != null && (int)during["requestFrame"] >= 0 && (bool)during["aliveAtRequest"] &&
+                    (bool)during["exactInstance"] && (string)during["status"] == "captured-native-screen-awaiting-visual-inspection" &&
+                    retireFrame > (int)during["requestFrame"];
+                Sprint25Check(prefix + "pyrotechnics-flash-captured-live", capturedLive, (JObject)during.DeepClone(),
+                    "The during image was requested while the exact flash instance from the executed cast was alive (checked at the request frame), completed, and that instance retired naturally afterwards. Visual acceptance still requires inspecting the image for the flash.");
                 Sprint25Check(prefix + "pyrotechnics-one-flash", oneFlash, (JObject)pyroRow.DeepClone(),
                     "One executed Pyrotechnics cast applies once, spends exactly one use, spawns exactly one native blinding flash on the caster, and that instance retires on its own; the caster is not blinded.");
             }
@@ -581,14 +624,100 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private IEnumerable<int> R4FlashDuring(NativeIconScreenEvidence screens, R4SpawnTrace trace, Func<bool> worldOwned)
+        // The helper requests the screenshot (ScreenCapture) in the frame of
+        // its first yield after the request; liveness is sampled exactly then.
+        // The effect is not required to survive while the file is written.
+        private IEnumerable<int> R4FlashDuring(NativeIconScreenEvidence screens, R4SpawnTrace trace, Func<bool> worldOwned, JObject during)
         {
-            foreach (int frame in screens.Capture("r4-pyrotechnics-during", new JObject {
-                ["flashes"] = trace.FlashRows.DeepClone(), ["realtime"] = Time.realtimeSinceStartup }, worldOwned)) yield return frame;
             GameObject instance = trace.Flashes.FirstOrDefault();
-            if (instance != null && instance.activeInHierarchy)
-                foreach (int frame in screens.Capture("r4-pyrotechnics-during-2", new JObject {
-                    ["flashAlive"] = true, ["realtime"] = Time.realtimeSinceStartup }, worldOwned)) yield return frame;
+            during["triggerFrame"] = Time.frameCount; during["requestFrame"] = -1; during["aliveAtRequest"] = false;
+            during["exactInstance"] = instance != null && trace.Flashes.Count == 1 && trace.FlashRows.Count == 1 && (bool)trace.FlashRows[0]["onOwner"];
+            foreach (int frame in screens.Capture("r4-pyrotechnics-during", new JObject {
+                ["flashes"] = trace.FlashRows.DeepClone(), ["realtime"] = Time.realtimeSinceStartup }, worldOwned))
+            {
+                JObject last = screens.LastRecord;
+                if ((int)during["requestFrame"] < 0 && last != null && (string)last["stage"] == "r4-pyrotechnics-during" &&
+                    last["requestedFrame"] != null && (int)last["requestedFrame"] == Time.frameCount)
+                {
+                    during["requestFrame"] = Time.frameCount; during["requestRealtime"] = Time.realtimeSinceStartup;
+                    during["aliveAtRequest"] = instance != null && instance.activeInHierarchy;
+                    during["file"] = last["file"];
+                }
+                yield return frame;
+            }
+            JObject done = screens.LastRecord;
+            during["status"] = done == null ? null : done["status"];
+            during["completedFrame"] = done == null ? null : done["completedFrame"];
+        }
+
+        // Charter ally-safety, one representative native case: a fresh KMG
+        // Water Mephit breathes at the disposable hostile with a fresh allied
+        // Earth Mephit also inside the cone. The cone must deliver to both;
+        // only the hostile may take damage.
+        private IEnumerable<int> R4AllySafety(JObject record, string prefix, UnitEntityData hostile, UnitEntityData water,
+            UnitEntityData ally, Vector3 centre, BlueprintAbility waterBreath, R4MephitRecorder recorder, R4SpawnTrace trace,
+            Sprint26Saves saves, NativeIconScreenEvidence screens, Func<bool> worldOwned)
+        {
+            var row = new JObject();
+            Vector3 site = ObstacleAnalyzer.GetNearestNode(centre + Vector3.forward * 12f).clampedPosition;
+            PlaceExpandedSummoningUnit(hostile, site);
+            Vector3 toCentre = centre - site; toCentre.y = 0f;
+            Vector3 dir = toCentre.sqrMagnitude < 0.01f ? Vector3.back : toCentre.normalized;
+            Vector3 side = new Vector3(dir.z, 0f, -dir.x);
+            JObject geometry = null; bool layout = false;
+            foreach (float back in new[] { 2.6f, 3.0f, 2.2f })
+            {
+                foreach (float lateral in new[] { 0.9f, -0.9f, 1.3f, -1.3f })
+                {
+                    PlaceExpandedSummoningUnit(water, ObstacleAnalyzer.GetNearestNode(site + dir * back).clampedPosition);
+                    PlaceExpandedSummoningUnit(ally, ObstacleAnalyzer.GetNearestNode(site + side * lateral).clampedPosition);
+                    for (int frame = 0; frame < 10; frame++) yield return 0;
+                    Vector3 aim = hostile.Position - water.Position; aim.y = 0f;
+                    Vector3 toAlly = ally.Position - water.Position; toAlly.y = 0f;
+                    float angle = Vector3.Angle(aim, toAlly);
+                    geometry = new JObject { ["back"] = back, ["lateral"] = lateral, ["hostileDistance"] = aim.magnitude,
+                        ["allyDistance"] = toAlly.magnitude, ["allyAngle"] = angle };
+                    layout = aim.magnitude >= 1.0f && aim.magnitude <= 4.0f && toAlly.magnitude >= 0.8f &&
+                        toAlly.magnitude <= 4.0f && angle <= 20f;
+                    if (layout) break;
+                }
+                if (layout) break;
+            }
+            row["geometry"] = geometry; row["layout"] = layout;
+            if (!layout)
+            {
+                record["allySafety"] = row;
+                Sprint25Check(prefix + "ally-safety-water-breath", false, (JObject)row.DeepClone(),
+                    "A bounded layout places the ally inside the Water breath cone with the hostile.");
+                throw new InvalidOperationException("Ally-safety layout not obtained.");
+            }
+            trace.Owner = water;
+            int damageBefore = recorder.Damage.Count, deliveredBefore = recorder.Delivered.Count, projectilesBefore = trace.Projectiles.Count;
+            int allyDamageBefore = ally.Descriptor.Damage;
+            foreach (int frame in R4RunCast(water, waterBreath, new TargetWrapper(hostile), row,
+                () => trace.Projectiles.Count > projectilesBefore,
+                () => screens.Capture("r4-ally-safety-water-breath", new JObject { ["caster"] = water.UniqueId,
+                    ["ally"] = ally.UniqueId, ["hostile"] = hostile.UniqueId }, worldOwned))) yield return frame;
+            for (int frame = 0; frame < 20; frame++) yield return 0;
+            var events = recorder.Damage.Skip(damageBefore).Where(evt => ReferenceEquals(evt.SourceAbility, waterBreath)).ToArray();
+            var delivered = recorder.Delivered.Skip(deliveredBefore).Where(pair => ReferenceEquals(pair.Key.AbilityBlueprint, waterBreath))
+                .Select(pair => pair.Value).ToArray();
+            var hostileEvents = events.Where(evt => ReferenceEquals(evt.Target, hostile) && ReferenceEquals(evt.Initiator, water)).ToArray();
+            var allyEvents = events.Where(evt => ReferenceEquals(evt.Target, ally)).ToArray();
+            row["deliveredTo"] = new JArray(delivered.Select(unit => unit.UniqueId));
+            row["allyDelivered"] = delivered.Contains(ally); row["hostileDelivered"] = delivered.Contains(hostile);
+            row["hostileEvents"] = new JArray(hostileEvents.Select(R4DamageEvent));
+            row["allyEvents"] = new JArray(allyEvents.Select(R4DamageEvent));
+            row["allyDamageBefore"] = allyDamageBefore; row["allyDamageAfter"] = ally.Descriptor.Damage;
+            row["projectiles"] = new JArray(trace.Projectiles.Skip(projectilesBefore));
+            row["hostileSaves"] = saves.Rows.DeepClone();
+            bool safe = (bool)row["finished"] && delivered.Contains(ally) && delivered.Contains(hostile) && allyEvents.Length == 0 &&
+                ally.Descriptor.Damage == allyDamageBefore && hostileEvents.Length >= 1 &&
+                hostileEvents.All(evt => evt.ResultDamage != null && evt.ResultDamage.Any() && evt.ResultDamage.All(value =>
+                    value.Source is EnergyDamage && ((EnergyDamage)value.Source).EnergyType == DamageEnergyType.Acid));
+            record["allySafety"] = row;
+            Sprint25Check(prefix + "ally-safety-water-breath", safe, (JObject)row.DeepClone(),
+                "One executed KMG Water Mephit breath delivers to both an allied KMG summon and the hostile inside its cone; the ally takes no damage event and no damage, while the hostile still takes acid damage (controlled failed save).");
         }
     }
 }
