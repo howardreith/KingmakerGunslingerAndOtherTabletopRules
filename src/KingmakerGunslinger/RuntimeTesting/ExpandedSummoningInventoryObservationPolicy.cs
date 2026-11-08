@@ -104,6 +104,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             new[] { "9093aef39ecc416092ef68655a7e56fb", "KMG_Summoning_Unit_Brachiosaurus", "b41f7d2a6c8e40539af1c2d5e7b30486", "KMG_Summoning_Special_Brachiosaurus_Overrun", "AddFacts" },
             new[] { "9093aef39ecc416092ef68655a7e56fb", "KMG_Summoning_Unit_Brachiosaurus", "c9f41b8d20e7456eae3d6c1f5a8b7204", "KMG_Summoning_Special_Brachiosaurus_GreaterOverrun", "AddFacts" },
             new[] { "9dd8544097234f05bcd35d400d91b510", "KMG_Summoning_Unit_Elephant", "a7c34e1d9b5f4a02ae6d8c71f3b02594", "KMG_Summoning_Special_Elephant_Trample", "AddFacts" },
+            // Repair R5 MECH-02: the Mastodon's own trample.
+            new[] { "e129ffc2768d47c5bee61bb99b0c8703", "KMG_Summoning_Unit_Mastodon", "a1f52aace5124004b76e2351c7023566", "KMG_Summoning_Special_Mastodon_Trample", "AddFacts" },
             new[] { "9dd8544097234f05bcd35d400d91b510", "KMG_Summoning_Unit_Elephant", "bd380912f7c74843966c363ab281c0c2", "KMG_Summoning_Natural_Elephant_Chassis", "AddFacts" },
             // Sprints 26-29: exact already-released project owner/fact pairs.
             // Measured by the retained 20261021T223500 inventory FAIL; these
@@ -132,7 +134,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             new[] { "ff4696c6336141a3b2236cb0a22c86f3", "KMG_Summoning_Unit_CloudGiant", "b45179f0d157465f899c0b9d096b67a6", "KMG_Summoning_Giant_FireImprovedOverrun", "AddFacts" },
             new[] { "ff4696c6336141a3b2236cb0a22c86f3", "KMG_Summoning_Unit_CloudGiant", "e2caf080405e45628d796a6bb94a444e", "KMG_Summoning_Giant_Sprint29_AwesomeBlowFeature", "AddFacts" },
             new[] { "ff4696c6336141a3b2236cb0a22c86f3", "KMG_Summoning_Unit_CloudGiant", "9ea1c943e1ff46e4a458cb5c637540db", "KMG_Summoning_Giant_Sprint29_CloudObscuringMist", "AddFacts" },
-            new[] { "ff4696c6336141a3b2236cb0a22c86f3", "KMG_Summoning_Unit_CloudGiant", "aa562c8636c5472db98ac55fb59103a8", "KMG_Summoning_Giant_Sprint29_CloudFogCloud", "AddFacts" },
             new[] { "4b1143140c614a0aaaa1118c8a44c9ae", "KMG_Summoning_Unit_StormGiant", "6244a2e6ba88439e8ab1cd884b6eb303", "KMG_Summoning_Giant_Sprint29_StormNaturalArmor12", "AddFacts" },
             new[] { "4b1143140c614a0aaaa1118c8a44c9ae", "KMG_Summoning_Unit_StormGiant", "d9ef1385b3fb4adc91b558bcff85c94a", "KMG_Summoning_Giant_Sprint29_StormTraits", "AddFacts" },
             new[] { "4b1143140c614a0aaaa1118c8a44c9ae", "KMG_Summoning_Unit_StormGiant", "9b979adb2ff640a79ebc4dda5cbced22", "KMG_Summoning_Giant_CleaveFeature", "AddFacts" },

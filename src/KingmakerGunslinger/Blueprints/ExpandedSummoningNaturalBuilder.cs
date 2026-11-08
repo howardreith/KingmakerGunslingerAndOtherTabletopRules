@@ -249,7 +249,6 @@ namespace KingmakerGunslinger.Blueprints
                 { "ReducedReach", "c33f2d68d93ceee488aa4004347dffca" },
                 { "Ferocity", "955e356c813de1743a98ab3485d5bc69" },
                 { "Pounce", "1a8149c09e0bdfc48a305ee6ac3729a8" },
-                { "NativeCharge", "c78506dd0e14f7c45a599990e4e65038" },
                 { "SkillFocusStealth", "3a8d34905eae4a74892aae37df3352b9" },
                 { "GreatFortitude", "79042cb55f030614ea29956177977c52" },
                 { "MonitorLizardPoison", "d88236a83413baa45ae9c8e5ddce5a6c" },
@@ -1767,12 +1766,11 @@ namespace KingmakerGunslinger.Blueprints
                 // success alone, where the printed rider follows a
                 // knockdown the overrun caused. Keyed on the creature as
                 // well as the fact, so no other profile can pick it up.
-                // Native Charge is an ability fact, not a feat. The exact
-                // Griffon grant retains the real native charge implementation.
-                BlueprintUnitFact value = fact == "NativeCharge" && profile.Key == "griffon"
-                    ? (BlueprintUnitFact)BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
-                        library, FactGuids[fact], "Griffon native charge ability")
-                    : fact == "GriffonChassis"
+                // Repair R5 MECH-01: no explicit native Charge grant. The
+                // engine's UnitDescriptor adds the native ChargeAbility to
+                // every unit; the former Griffon-only grant was a second copy
+                // (two identical Charge actions).
+                BlueprintUnitFact value = fact == "GriffonChassis"
                     ? Require<BlueprintFeature>(bySymbol, "KMG.Summoning.Natural.Griffon.Chassis")
                     : fact == "GreaterOverrun" &&
                         profile.Key == GiantBodyRulesPolicy.BrachiosaurusKey

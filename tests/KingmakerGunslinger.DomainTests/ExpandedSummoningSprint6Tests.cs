@@ -127,9 +127,13 @@ namespace KingmakerGunslinger.DomainTests
                 builder.Contains("brain.Actions = new BlueprintAiAction[] { ai };"),
                 "The Pixie's dance stays resource-bounded with one cast action.");
             var identities = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(9, identities.Count(value =>
+            // Repair R5 appends exactly its owned at-will spell-likes and cast
+            // actions; the original nine identities stay registered.
+            Assertions.Equal(9 + SummonPlaytestR5Policy.NewIdentities().Count(pair =>
+                    pair.Key.StartsWith("KMG.Summoning.Special.Pixie.", StringComparison.Ordinal)),
+                identities.Count(value =>
                     value.Symbol.StartsWith("KMG.Summoning.Special.Pixie.", StringComparison.Ordinal)),
-                "The Pixie's nine specials are unchanged by the repair sprint.");
+                "The Pixie's nine original specials plus exactly the Repair R5 spell-likes.");
             string runner = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRunner.cs"));
             Assertions.True(runner.Contains("danceApplied") && runner.Contains("sleepApplied") &&

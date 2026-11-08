@@ -88,6 +88,13 @@ namespace KingmakerGunslinger.Summoning
             new WithdrawnCapabilitySpec("fire-giant", "KMG.Summoning.Unit.FireGiant",
                 Array.Empty<string>(), Array.Empty<string>(), Array.Empty<string>(),
                 new[] { NativeImprovedSunderGuid }),
+            // Repair R5 SPELL-01: the custom Fog Cloud route is replaced by the
+            // single provider-backed Obscuring Mist.
+            new WithdrawnCapabilitySpec("cloud-giant", "KMG.Summoning.Unit.CloudGiant",
+                new[] { "KMG.Summoning.Giant.Sprint29.CloudFogCloud" },
+                new[] { "KMG.Summoning.Giant.Sprint29.CloudFogAi" },
+                new[] { "KMG.Summoning.Giant.Sprint29.CloudFogResource" },
+                Array.Empty<string>()),
         };
 
         internal static IReadOnlyList<WithdrawnCapabilitySpec> All
