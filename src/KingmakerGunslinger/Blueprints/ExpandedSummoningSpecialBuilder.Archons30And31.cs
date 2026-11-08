@@ -95,8 +95,10 @@ namespace KingmakerGunslinger.Blueprints
             lantern.AddFacts = lantern.AddFacts.Where(fact => fact.AssetGuid != AuraOfMenaceBuffGuid)
                 .Concat(new Kingmaker.Blueprints.Facts.BlueprintUnitFact[] { carrier, aid }).ToArray();
         }
-        // Repair R6 PRES-02: use a cast style this rig has a playable clip for,
-        // on the Hound's own Aid only. Execution, targets and cost are unchanged.
+        // Repair R6 PRES-02: native Touch becomes SelfTouch on a self target and
+        // this rig has no such clip, so the Hound's own Aid uses a playable
+        // style the engine does not rewrite. Execution, targets and cost are
+        // unchanged.
         private static void BindHoundAidCastR6(BlueprintUnit unit, BlueprintAbility aid)
         {
             var manager = unit.Prefab.Load(false)
