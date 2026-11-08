@@ -480,7 +480,10 @@ if ($CleanupWithLockedParams) {
     Assert-True ((Complete-KmgUmmParamsProtection -Receipt $r).verified -and (Get-KmgUmmFileSha256 $c.Params) -ceq $intakeSha) 'inherited-invalid-owner-retry-restores'
 }
 finally {
-    Remove-Item -LiteralPath function:global:Get-Process -Force
+    # A function: drive path with a global: qualifier removes nothing, and the
+    # stand-in would break every later check in a shared validation session.
+    Remove-Item -Path 'Function:\Get-Process' -Force
+    if ((Get-Command Get-Process).CommandType -ne 'Cmdlet') { $failures.Add('process-seam-removed') }
     Remove-Variable -Name kmgUmmTest -Scope Global -Force
     if (Test-Path -LiteralPath $root) { Remove-Item -LiteralPath $root -Recurse -Force }
 }
