@@ -21,6 +21,10 @@ All entries below start as planned work, not completed fixes. The report and ima
 | UI-04 Unholy Nimbus icon | Complete for review; data PASS; **rendered PASS** (`31e61aa73a01`); owner approval pending | Native Unholy Aura art (sprite `ProtectionFromGood`), visible. | #113 |
 | UI-05 Overrun icon | Repaired; data PASS; **rendered PASS** (`31e61aa73a01`); owner approval pending | Overrun shows brachiosaurus creature art and no Duration/Saving Throw rows. Trample keeps the protected `Longstrider` art and shows its Reflex / attack-of-opportunity Saving Throw. No inherited "Trample" or native maneuver text. | #113 |
 | UI-06 Null tooltip rows | Repaired; data PASS; **rendered PASS** (`31e61aa73a01`) | Sprint "1 round"/"None", Nimbus, Trumpet Blast "1d4 rounds"/"Fortitude negates"; Overrun/Trample as above. No `<null>` in the eight captured windows. | #113 |
+| MEPH-01 Breath damage audit | Repaired (R4); ten-row matrix complete | Air electricity → slashing, Earth acid → bludgeoning, Water electricity → acid, through owned breaths on the four native-backed KMG mephits (grant and brain redirected; native donors untouched). Six variants: no defect. Executed: Water acid and Earth bludgeoning packets on `a1e6c264193f`. [R4-STATUS](R4-STATUS.md) | R4 draft |
+| MEPH-02 Water acid | Repaired (R4) | Executed acid-only damage packet, native acid cone launched, inspected green acid impact. | R4 draft |
+| MEPH-03 Breath icons | Partial (R4) | Nine of ten breaths wear fitting existing art (inspected in native windows). **Salt's Fragmentation art is misleading**; replacement pending. | R4 draft |
+| MEPH-04 Pyrotechnics flash | Implemented; native spawn/retire PASS; framebuffer frame missing | One native blinding burst per executed cast on the caster, about 3.1 s, retires by itself; a cancelled command spawns nothing. No during-frame capture (observer ordering). | R4 draft |
 | All others | Planned | Not started. | — |
 
 ## R1 — Explicit release cuts
