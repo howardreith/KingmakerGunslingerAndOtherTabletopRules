@@ -756,6 +756,7 @@ namespace KingmakerGunslinger.Blueprints
                 value.Key.StartsWith("KMG.Summoning.FeyCelestial.", StringComparison.Ordinal) && value.Value is BlueprintUnitFact))
                 NameFeyCelestialFactComponents32((BlueprintUnitFact)pair.Value, pair.Key);
             // Repair R1: last, after every creature's components are final.
+            ConfigureGhaeleLightRay(library, bySymbol);
             ConfigureWithdrawnCapabilityFixers(library, bySymbol);
         }
 
@@ -867,6 +868,37 @@ namespace KingmakerGunslinger.Blueprints
                     ExpandedSummoningProjectIcons.Require("brachiosaurus"));
         }
 
+        /// <summary>
+        /// Repair R3 UI-05 (revised). Every owned Trample keeps the native
+        /// overrun action's art (protected native-semantic reuse), so the
+        /// Brachiosaurus's separate Overrun must not reuse it. It shares the
+        /// identity of its own Greater Overrun carrier instead: the installed
+        /// Greater Overrun feat's art when that provider is present and its
+        /// sprite really differs from the trample art, otherwise the approved
+        /// Brachiosaurus creature art (also that carrier's own fallback).
+        /// </summary>
+        internal static UnityEngine.Sprite BrachiosaurusOverrunIcon(
+            LibraryScriptableObject library, BlueprintAbility native)
+        {
+            UnityEngine.Sprite trample = native == null ? null : native.Icon;
+            BlueprintScriptableObject installed;
+            UnityEngine.Sprite feat = library.BlueprintsByAssetId.TryGetValue(
+                InstalledGreaterOverrunFeatureGuid, out installed) &&
+                installed is BlueprintFeature ? ((BlueprintFeature)installed).Icon : null;
+            if (feat != null && !SameIconArt(feat, trample)) return feat;
+            UnityEngine.Sprite creature = ExpandedSummoningProjectIcons.Require("brachiosaurus");
+            if (SameIconArt(creature, trample))
+                throw new InvalidOperationException("Brachiosaurus Overrun has no art distinct from Trample.");
+            return creature;
+        }
+
+        internal static bool SameIconArt(UnityEngine.Sprite left, UnityEngine.Sprite right)
+        {
+            if (left == null || right == null) return ReferenceEquals(left, right);
+            return ReferenceEquals(left, right) || ReferenceEquals(left.texture, right.texture) &&
+                left.textureRect == right.textureRect;
+        }
+
         private static void ConfigureBrachiosaurusOverrun(
             LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol)
@@ -939,7 +971,16 @@ namespace KingmakerGunslinger.Blueprints
                     "Move through an opponent's space, forcing a combat "
                         + "maneuver check. This is the ordinary overrun "
                         + "maneuver and is not the creature's trample."),
-                null);
+                // Repair R3 UI-05: art distinct from the effective Trample.
+                BrachiosaurusOverrunIcon(library, native));
+            // Repair R3 UI-05/06: replace the rows CopyFields inherited from
+            // the native overrun ("Trample" / the maneuver description).
+            ability.LocalizedDuration = LocalizationService.Create(
+                "KMG.ExpandedSummoning.Brachiosaurus.Overrun.Duration",
+                SummonActionTooltipPolicy.InstantaneousDuration);
+            ability.LocalizedSavingThrow = LocalizationService.Create(
+                "KMG.ExpandedSummoning.Brachiosaurus.Overrun.SavingThrow",
+                SummonActionTooltipPolicy.OverrunSavingThrow);
             unit.AddFacts = (unit.AddFacts ??
                 Array.Empty<BlueprintUnitFact>())
                 .Concat(new BlueprintUnitFact[] { ability }).ToArray();
@@ -1027,6 +1068,14 @@ namespace KingmakerGunslinger.Blueprints
                         "save DC increases to " + (rules.TrampleDc + 2) +
                         ". Nearby idle creatures never count." : "")),
                 native.Icon);
+            // Repair R3 UI-05/06: CopyFields inherited the native overrun's
+            // Duration "Trample" and its maneuver description as the Saving
+            // Throw. State the implemented attack-of-opportunity/Reflex rule.
+            ability.LocalizedDuration = LocalizationService.Create("KMG.ExpandedSummoning." +
+                creatureKey + ".Trample.Duration", SummonActionTooltipPolicy.InstantaneousDuration);
+            ability.LocalizedSavingThrow = LocalizationService.Create("KMG.ExpandedSummoning." +
+                creatureKey + ".Trample.SavingThrow",
+                SummonActionTooltipPolicy.TrampleSavingThrow(rules.TrampleDc, rules.Stampede));
             if (rules.Stampede)
                 UngulateStampedeRuntime.Register(unit, ability);
             unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
@@ -2895,6 +2944,12 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.ExpandedSummoning.Cheetah.Sprint.Description",
                     "Once per summoning, as a swift action, the cheetah sprints: +30 feet of speed for one round."),
                 null);
+            // Repair R3 UI-06: the fresh shell had no Duration or Saving Throw
+            // strings, which the native tooltip prints as "<null>".
+            sprint.LocalizedDuration = LocalizationService.Create(
+                "KMG.ExpandedSummoning.Cheetah.Sprint.Duration", "1 round");
+            sprint.LocalizedSavingThrow = LocalizationService.Create(
+                "KMG.ExpandedSummoning.Cheetah.Sprint.SavingThrow", "None");
             ConfigureNamedResource(resource, CheetahSprintResourceSymbol,
                 "KMG.ExpandedSummoning.Cheetah.Sprint.Resource", "Sprint",
                 "Sprints remaining for this summoned cheetah.",
@@ -5420,6 +5475,27 @@ namespace KingmakerGunslinger.Blueprints
                 ExpandedSummoningSpecialProfiles.LanternFullRayProjectiles,
                 true, "Twin Light Rays",
                 "Fires two ranged-touch rays to 30 feet as a full-round action. Each ray deals 1d6 direct light damage.");
+            // Repair R3 UI-02: the native ray donor carries no icon, so both
+            // Lantern actions were blank. Native-semantic reuse: Searing Light
+            // for the single ray, Sunbeam for the two-ray action (distinct
+            // silhouettes for two distinct selectable actions).
+            BlueprintUnitFactAccess.Resolve().SetIcon(ray,
+                NativeAbilityIcon(library, NativeSearingLightGuid, "native Searing Light icon"));
+            BlueprintUnitFactAccess.Resolve().SetIcon(fullRay,
+                NativeAbilityIcon(library, NativeSunbeamGuid, "native Sunbeam icon"));
+        }
+
+        internal const string NativeSearingLightGuid = "bf0accce250381a44b857d4af6c8e10d";
+        internal const string NativeSunbeamGuid = "1fca0ba2fdfe2994a8c8bc1f0f2fc5b1";
+
+        /// <summary>A native ability's own icon, read, never written.</summary>
+        internal static UnityEngine.Sprite NativeAbilityIcon(LibraryScriptableObject library,
+            string guid, string purpose)
+        {
+            UnityEngine.Sprite icon = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                library, guid, purpose).Icon;
+            if (icon == null) throw new InvalidOperationException(purpose + " has no icon.");
+            return icon;
         }
 
         private static void ConfigureRayVariant(BlueprintAbility native,

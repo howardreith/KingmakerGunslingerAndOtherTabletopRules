@@ -45,6 +45,10 @@ namespace KingmakerGunslinger.ElementalRaces
             "bf0accce250381a44b857d4af6c8e10d", // Searing Light
             "cdb106d53c65bbc4086183d54c3b97c7", // Scorching Ray
             "d4c2ce6c90094fdfb0fd908312372d72", // Existing project Lantern Archon light ray
+            // Repair R3: the KMG Ghaele's owned clone of the Ghaele light ray
+            // (33e89979...). It has no Parent, so the native identity cannot
+            // be reached through the effective ability's parent chain.
+            "c3224deccbd349fe833283e7cd3ed712", // Project KMG Ghaele owned light ray
             "d66ad81d61ee32344bc66c78ac3d0e4c", // Native Become Dust / Disintegrate
             "d6e72a6f936f8954596451be15fd083a", // Sage Arcane Bolt (printed ray)
             "e50e2db3d78b7ff4aa5c9699ba26febe", // Shadow Elemental Assessor

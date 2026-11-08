@@ -1193,6 +1193,9 @@ def planned():
         ("KMG.Summoning.Infernal.IceDevil.WallSectionUnitType", "BlueprintUnitType"),
         ("KMG.Summoning.Infernal.IceDevil.IceStormArea", "BlueprintAbilityAreaEffect"),
         ("KMG.Summoning.Infernal.IceDevil.SpearFrost", "BlueprintWeaponEnchantment"),
+        ("KMG.Summoning.Special.GhaeleAzata.LightRay", "BlueprintAbility"),
+        ("KMG.Summoning.Special.GhaeleAzata.LightRayAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.GhaeleAzata.Brain", "BlueprintBrain"),
     ))
     expected = sum(identity_count(name) for name in (
         "UnitCount", "LogicalAbilityCount", "TemplateBuffCount", "SpecialIdentityCount",
