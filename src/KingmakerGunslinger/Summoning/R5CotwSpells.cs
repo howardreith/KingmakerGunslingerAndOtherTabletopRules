@@ -63,28 +63,30 @@ namespace KingmakerGunslinger.Summoning
                 if (Disposition != "provider-active") { MistDisposition = DanceDisposition = Disposition; return; }
                 _provider = provider;
                 var bySymbol = ExpandedSummoningBlueprints.Registered.BySymbol;
+                // Each binding is all or nothing and independent: a failure
+                // leaves that ability's hidden, guarded placeholder (its guard
+                // refuses every caster unless the binding reported active).
+                Exception failure;
                 try
                 {
-                    ExpandedSummoningSpecialBuilder.BindCotwObscuringMistR5(BlueprintBootstrap.Library, bySymbol);
-                    MistBound = true; MistDisposition = "active";
+                    MistDisposition = ExpandedSummoningSpecialBuilder.BindCotwObscuringMistR5(
+                        BlueprintBootstrap.Library, bySymbol, out failure);
                 }
-                catch (Exception exception)
-                {
-                    MistDisposition = "provider-contract-failed";
+                catch (Exception exception) { MistDisposition = SummonPlaytestR5Policy.BindingOmitted; failure = exception; }
+                MistBound = MistDisposition == SummonPlaytestR5Policy.BindingActive;
+                if (!MistBound)
                     _context.Logger.Failure("summoning", "r5.cotw-mist-unavailable",
-                        "Cloud Giant Obscuring Mist remains omitted; private identities stay loadable.", exception);
-                }
+                        "Cloud Giant Obscuring Mist remains omitted (" + MistDisposition + "); private identities stay loadable.", failure);
                 try
                 {
-                    ExpandedSummoningSpecialBuilder.BindCotwIrresistibleDanceR5(BlueprintBootstrap.Library, bySymbol);
-                    DanceBound = true; DanceDisposition = "active";
+                    DanceDisposition = ExpandedSummoningSpecialBuilder.BindCotwIrresistibleDanceR5(
+                        BlueprintBootstrap.Library, bySymbol, out failure);
                 }
-                catch (Exception exception)
-                {
-                    DanceDisposition = "provider-contract-failed";
+                catch (Exception exception) { DanceDisposition = SummonPlaytestR5Policy.BindingOmitted; failure = exception; }
+                DanceBound = DanceDisposition == SummonPlaytestR5Policy.BindingActive;
+                if (!DanceBound)
                     _context.Logger.Failure("summoning", "r5.cotw-dance-unavailable",
-                        "Pixie Irresistible Dance remains omitted; private identities stay loadable.", exception);
-                }
+                        "Pixie Irresistible Dance remains omitted (" + DanceDisposition + "); private identities stay loadable.", failure);
                 Disposition = "provider-active;version=" + provider.Info.Version + ";mvid=" +
                     provider.Assembly.ManifestModule.ModuleVersionId.ToString("N");
             }

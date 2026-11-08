@@ -68,43 +68,118 @@ namespace KingmakerGunslinger.Blueprints
                     "Available only with active Call of the Wild, whose Obscuring Mist this uses."), null);
         }
 
-        internal static void BindCotwObscuringMistR5(LibraryScriptableObject library,
-            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        // Repair R5 review: the owned ability's current (placeholder) state,
+        // captured before a binding touches it, so any failure can restore the
+        // exact hidden, guarded placeholder under its stable identity.
+        private static BlueprintAbility SnapshotR5(BlueprintAbility ability)
         {
-            BlueprintAbility source = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library,
-                SummonPlaytestR5Policy.CotwObscuringMistGuid, "Call of the Wild Obscuring Mist");
-            BlueprintAbilityAreaEffect area = BlueprintLibraryLookup.RequireExact<BlueprintAbilityAreaEffect>(library,
-                SummonPlaytestR5Policy.CotwObscuringMistAreaGuid, "Call of the Wild Obscuring Mist area");
-            BlueprintComponent[] sourceComponents = source.ComponentsArray ?? Array.Empty<BlueprintComponent>();
-            AbilityEffectRunAction[] runs = sourceComponents.OfType<AbilityEffectRunAction>().ToArray();
-            ContextActionSpawnAreaEffect[] spawns = runs.Length == 1 && runs[0].Actions != null && runs[0].Actions.Actions != null ?
-                runs[0].Actions.Actions.OfType<ContextActionSpawnAreaEffect>().ToArray() : new ContextActionSpawnAreaEffect[0];
-            if (source.name != SummonPlaytestR5Policy.CotwObscuringMistName || source.Type != AbilityType.Spell ||
-                source.Range != AbilityRange.Medium || !source.CanTargetPoint ||
-                source.ActionType != Kingmaker.UnitLogic.Commands.Base.UnitCommand.CommandType.Standard ||
-                runs.Length != 1 || spawns.Length != 1 || !ReferenceEquals(spawns[0].AreaEffect, area) || spawns[0].OnUnit)
-                throw new InvalidOperationException("Call of the Wild Obscuring Mist no longer matches the investigated target-point contract.");
+            var snapshot = ScriptableObject.CreateInstance<BlueprintAbility>();
+            ExpandedSummoningAbilityBuilder.CopyFields(ability, snapshot);
+            return snapshot;
+        }
+
+        private static void RestorePlaceholderR5(BlueprintAbility ability, BlueprintAbility snapshot, string symbol)
+        {
+            try { ExpandedSummoningAbilityBuilder.CopyFields(snapshot, ability); }
+            finally
+            {
+                // Whatever the field copy did, the owned identity ends hidden
+                // with the placeholder's own guarded component array.
+                ability.name = InternalName(symbol);
+                ability.Hidden = true;
+                ability.ComponentsArray = snapshot.ComponentsArray;
+                AlternateSummoningAdapterBuilder.ResetComponentCaches(ability);
+            }
+        }
+
+        // Hidden, with exactly one provider guard for this unit and spell, and
+        // (Dance) exactly the one-use cost of its resource. The guard refuses
+        // every caster until the binder reports the binding active.
+        private static bool GuardedR5(BlueprintAbility ability, BlueprintUnit unit, bool dance,
+            BlueprintAbilityResource resource)
+        {
+            BlueprintComponent[] components = ability.ComponentsArray ?? Array.Empty<BlueprintComponent>();
+            R5CotwSpellAvailable[] guards = components.OfType<R5CotwSpellAvailable>().ToArray();
+            AbilityResourceLogic[] costs = components.OfType<AbilityResourceLogic>().ToArray();
+            bool guarded = guards.Length == 1 && ReferenceEquals(guards[0].OwningBlueprint, unit) && guards[0].Dance == dance;
+            // Mist's at-will components are the provider's own; only Dance
+            // must carry exactly its one-use cost.
+            bool cost = !dance || costs.Length == 1 && ReferenceEquals(costs[0].RequiredResource, resource) &&
+                costs[0].IsSpendResource && !costs[0].CostIsCustom && costs[0].Amount == 1;
+            return ability.Hidden && guarded && cost;
+        }
+
+        /// <summary>
+        /// Binds the Cloud Giant's Obscuring Mist to Call of the Wild's spell.
+        /// Returns the disposition (never throws once the owned identities
+        /// resolve); a failure leaves the hidden, guarded placeholder.
+        /// </summary>
+        internal static string BindCotwObscuringMistR5(LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol, out Exception failure)
+        {
             BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, "KMG.Summoning.Unit.CloudGiant");
             BlueprintAbility mist = Require<BlueprintAbility>(bySymbol, CloudMistSymbolR5);
-            ExpandedSummoningAbilityBuilder.CopyFields(source, mist);
-            mist.name = InternalName(CloudMistSymbolR5);
-            mist.Type = AbilityType.SpellLike;
-            mist.Hidden = false;
-            // The native AI selects an Enemy target type only with this flag;
-            // the stationary point area stays the provider's own.
-            mist.CanTargetEnemies = true;
-            var guard = ScriptableObject.CreateInstance<R5CotwSpellAvailable>();
-            guard.OwningBlueprint = unit;
-            mist.ComponentsArray = sourceComponents.Where(value => value != null && !(value is SpellListComponent))
-                .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent)
-                .Concat(new BlueprintComponent[] { guard,
-                    SpellLikeParamsR5(SummonPlaytestR5Policy.CloudMistCasterLevel, SummonPlaytestR5Policy.CloudMistSpellLevel) })
-                .ToArray();
-            AlternateSummoningAdapterBuilder.ResetComponentCaches(mist);
             Sprint29FogAiSafety safety = Require<Sprint29FogAiSafety>(bySymbol, CloudMistSafetySymbolR5);
-            safety.OwningBlueprint = unit;
-            safety.FogArea = area;
-            safety.CenterOnCaster = false;
+            BlueprintAbility snapshot = SnapshotR5(mist);
+            BlueprintUnit safetyOwner = safety.OwningBlueprint;
+            BlueprintAbilityAreaEffect safetyArea = safety.FogArea;
+            bool safetyCentered = safety.CenterOnCaster;
+            BlueprintAbility source = null;
+            BlueprintAbilityAreaEffect area = null;
+            BlueprintComponent[] prepared = null;
+            return SummonPlaytestR5Policy.BindOptional(
+                prepare: () =>
+                {
+                    source = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library,
+                        SummonPlaytestR5Policy.CotwObscuringMistGuid, "Call of the Wild Obscuring Mist");
+                    area = BlueprintLibraryLookup.RequireExact<BlueprintAbilityAreaEffect>(library,
+                        SummonPlaytestR5Policy.CotwObscuringMistAreaGuid, "Call of the Wild Obscuring Mist area");
+                    BlueprintComponent[] sourceComponents = source.ComponentsArray ?? Array.Empty<BlueprintComponent>();
+                    AbilityEffectRunAction[] runs = sourceComponents.OfType<AbilityEffectRunAction>().ToArray();
+                    ContextActionSpawnAreaEffect[] spawns = runs.Length == 1 && runs[0].Actions != null && runs[0].Actions.Actions != null ?
+                        runs[0].Actions.Actions.OfType<ContextActionSpawnAreaEffect>().ToArray() : new ContextActionSpawnAreaEffect[0];
+                    if (source.name != SummonPlaytestR5Policy.CotwObscuringMistName || source.Type != AbilityType.Spell ||
+                        source.Range != AbilityRange.Medium || !source.CanTargetPoint ||
+                        source.ActionType != Kingmaker.UnitLogic.Commands.Base.UnitCommand.CommandType.Standard ||
+                        runs.Length != 1 || spawns.Length != 1 || !ReferenceEquals(spawns[0].AreaEffect, area) || spawns[0].OnUnit)
+                        throw new InvalidOperationException("Call of the Wild Obscuring Mist no longer matches the investigated target-point contract.");
+                    var guard = ScriptableObject.CreateInstance<R5CotwSpellAvailable>();
+                    guard.OwningBlueprint = unit;
+                    prepared = sourceComponents.Where(value => value != null && !(value is SpellListComponent))
+                        .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent)
+                        .Concat(new BlueprintComponent[] { guard,
+                            SpellLikeParamsR5(SummonPlaytestR5Policy.CloudMistCasterLevel, SummonPlaytestR5Policy.CloudMistSpellLevel) })
+                        .ToArray();
+                },
+                publishHidden: () =>
+                {
+                    ExpandedSummoningAbilityBuilder.CopyFields(source, mist);
+                    mist.name = InternalName(CloudMistSymbolR5);
+                    mist.Type = AbilityType.SpellLike;
+                    mist.Hidden = true;
+                    // The native AI selects an Enemy target type only with this
+                    // flag; the stationary point area stays the provider's own.
+                    mist.CanTargetEnemies = true;
+                    mist.ComponentsArray = prepared;
+                    AlternateSummoningAdapterBuilder.ResetComponentCaches(mist);
+                    safety.OwningBlueprint = unit;
+                    safety.FogArea = area;
+                    safety.CenterOnCaster = false;
+                },
+                publishedGuarded: () => GuardedR5(mist, unit, false, null) && ReferenceEquals(safety.FogArea, area),
+                reveal: () => mist.Hidden = false,
+                restorePlaceholder: () =>
+                {
+                    try { RestorePlaceholderR5(mist, snapshot, CloudMistSymbolR5); }
+                    finally
+                    {
+                        safety.OwningBlueprint = safetyOwner;
+                        safety.FogArea = safetyArea;
+                        safety.CenterOnCaster = safetyCentered;
+                    }
+                },
+                placeholderGuarded: () => GuardedR5(mist, unit, false, null),
+                failure: out failure);
         }
 
         /// <summary>
@@ -133,43 +208,68 @@ namespace KingmakerGunslinger.Blueprints
                     "Available only with active Call of the Wild, whose Irresistible Dance this uses. Once per summoning."), null);
         }
 
-        internal static void BindCotwIrresistibleDanceR5(LibraryScriptableObject library,
-            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        /// <summary>
+        /// Binds the Pixie's Dance to Call of the Wild's Irresistible Dance
+        /// cast, keeping its one use per summoning. Returns the disposition
+        /// (never throws once the owned identities resolve); a failure leaves
+        /// the hidden, guarded, one-use placeholder.
+        /// </summary>
+        internal static string BindCotwIrresistibleDanceR5(LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol, out Exception failure)
         {
-            BlueprintAbility cast = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library,
-                SummonPlaytestR5Policy.CotwIrresistibleDanceCastGuid, "Call of the Wild Irresistible Dance cast");
-            BlueprintAbility touch = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library,
-                SummonPlaytestR5Policy.CotwIrresistibleDanceGuid, "Call of the Wild Irresistible Dance touch");
-            BlueprintComponent[] castComponents = cast.ComponentsArray ?? Array.Empty<BlueprintComponent>();
-            AbilityEffectStickyTouch[] sticky = castComponents.OfType<AbilityEffectStickyTouch>().ToArray();
-            AbilityEffectRunAction[] touchRuns = (touch.ComponentsArray ?? Array.Empty<BlueprintComponent>())
-                .OfType<AbilityEffectRunAction>().ToArray();
-            if (cast.name != SummonPlaytestR5Policy.CotwIrresistibleDanceCastName || cast.Type != AbilityType.Spell ||
-                cast.ActionType != Kingmaker.UnitLogic.Commands.Base.UnitCommand.CommandType.Standard ||
-                sticky.Length != 1 || !ReferenceEquals(sticky[0].TouchDeliveryAbility, touch) ||
-                touch.GetComponent<AbilityDeliverTouch>() == null || touchRuns.Length != 1 ||
-                touchRuns[0].SavingThrowType != SavingThrowType.Will)
-                throw new InvalidOperationException("Call of the Wild Irresistible Dance no longer matches the investigated touch-cast contract.");
             BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, PixieUnitSymbol);
             BlueprintAbility dance = Require<BlueprintAbility>(bySymbol, PixieDanceSymbol);
             BlueprintAbilityResource resource = Require<BlueprintAbilityResource>(bySymbol, PixieDanceResourceSymbol);
-            ExpandedSummoningAbilityBuilder.CopyFields(cast, dance);
-            dance.name = InternalName(PixieDanceSymbol);
-            dance.Type = AbilityType.SpellLike;
-            dance.Hidden = false;
-            var guard = ScriptableObject.CreateInstance<R5CotwSpellAvailable>();
-            guard.OwningBlueprint = unit;
-            guard.Dance = true;
-            // The sticky touch hands this cast's own ability data (caster
-            // level, DC) to the provider's delivered touch spell; the shared
-            // provider blueprints are referenced, never written.
-            dance.ComponentsArray = castComponents.Where(value => value != null && !(value is SpellListComponent))
-                .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent)
-                .Concat(new BlueprintComponent[] { guard, OneUseCostR5(resource),
-                    SpellLikeParamsR5(ExpandedSummoningSpecialProfiles.PixieDanceCasterLevel,
-                        ExpandedSummoningSpecialProfiles.PixieDanceSpellLevel) })
-                .ToArray();
-            AlternateSummoningAdapterBuilder.ResetComponentCaches(dance);
+            BlueprintAbility snapshot = SnapshotR5(dance);
+            BlueprintAbility cast = null;
+            BlueprintComponent[] prepared = null;
+            return SummonPlaytestR5Policy.BindOptional(
+                prepare: () =>
+                {
+                    cast = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library,
+                        SummonPlaytestR5Policy.CotwIrresistibleDanceCastGuid, "Call of the Wild Irresistible Dance cast");
+                    BlueprintAbility touch = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library,
+                        SummonPlaytestR5Policy.CotwIrresistibleDanceGuid, "Call of the Wild Irresistible Dance touch");
+                    BlueprintComponent[] castComponents = cast.ComponentsArray ?? Array.Empty<BlueprintComponent>();
+                    AbilityEffectStickyTouch[] sticky = castComponents.OfType<AbilityEffectStickyTouch>().ToArray();
+                    AbilityEffectRunAction[] touchRuns = (touch.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                        .OfType<AbilityEffectRunAction>().ToArray();
+                    if (cast.name != SummonPlaytestR5Policy.CotwIrresistibleDanceCastName || cast.Type != AbilityType.Spell ||
+                        cast.ActionType != Kingmaker.UnitLogic.Commands.Base.UnitCommand.CommandType.Standard ||
+                        sticky.Length != 1 || !ReferenceEquals(sticky[0].TouchDeliveryAbility, touch) ||
+                        touch.GetComponent<AbilityDeliverTouch>() == null || touchRuns.Length != 1 ||
+                        touchRuns[0].SavingThrowType != SavingThrowType.Will ||
+                        castComponents.OfType<AbilityResourceLogic>().Any())
+                        throw new InvalidOperationException("Call of the Wild Irresistible Dance no longer matches the investigated touch-cast contract.");
+                    var guard = ScriptableObject.CreateInstance<R5CotwSpellAvailable>();
+                    guard.OwningBlueprint = unit;
+                    guard.Dance = true;
+                    // The sticky touch hands this cast's own ability data
+                    // (caster level, DC) to the provider's delivered touch
+                    // spell; the shared provider blueprints are referenced,
+                    // never written. The one-use cost is prepared here, not
+                    // attached after publication.
+                    prepared = castComponents.Where(value => value != null && !(value is SpellListComponent))
+                        .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent)
+                        .Concat(new BlueprintComponent[] { guard, OneUseCostR5(resource),
+                            SpellLikeParamsR5(ExpandedSummoningSpecialProfiles.PixieDanceCasterLevel,
+                                ExpandedSummoningSpecialProfiles.PixieDanceSpellLevel) })
+                        .ToArray();
+                },
+                publishHidden: () =>
+                {
+                    ExpandedSummoningAbilityBuilder.CopyFields(cast, dance);
+                    dance.name = InternalName(PixieDanceSymbol);
+                    dance.Type = AbilityType.SpellLike;
+                    dance.Hidden = true;
+                    dance.ComponentsArray = prepared;
+                    AlternateSummoningAdapterBuilder.ResetComponentCaches(dance);
+                },
+                publishedGuarded: () => GuardedR5(dance, unit, true, resource),
+                reveal: () => dance.Hidden = false,
+                restorePlaceholder: () => RestorePlaceholderR5(dance, snapshot, PixieDanceSymbol),
+                placeholderGuarded: () => GuardedR5(dance, unit, true, resource),
+                failure: out failure);
         }
 
         /// <summary>

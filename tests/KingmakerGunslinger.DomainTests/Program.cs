@@ -1235,6 +1235,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("summon-playtest-r5.cloud-fog-retired", SummonPlaytestR5Tests.CloudFogRouteIsRetired),
             Case("summon-playtest-r5.mastodon-trample-values", SummonPlaytestR5Tests.MastodonTrampleUsesItsOwnPrintedValues),
             Case("summon-playtest-r5.griffon-one-charge", SummonPlaytestR5Tests.GriffonHasOneNativeCharge),
+            Case("summon-playtest-r5.binding-failure-restores-placeholder", SummonPlaytestR5Tests.OptionalBindingFailureRestoresTheGuardedPlaceholder),
+            Case("summon-playtest-r5.bindings-independent", SummonPlaytestR5Tests.OneFailedBindingDoesNotBlockTheOther),
             Case("expanded-summoning.sprint39-printed-contract", NalfeshneeRules39Tests.PrintedContractDerivesRatherThanPins),
             Case("expanded-summoning.sprint39-aura-not-double-counted", NalfeshneeRules39Tests.ConstantAuraIsNotCountedTwice),
             Case("expanded-summoning.sprint39-spell-resistance-separation", NalfeshneeRules39Tests.GeneralAndConditionalSpellResistanceStaySeparate),

@@ -90,6 +90,49 @@ namespace KingmakerGunslinger.Summoning
             }
         }
 
+        internal const string BindingActive = "active";
+        internal const string BindingOmitted = "provider-contract-failed";
+        internal const string BindingRestoreFailed = "placeholder-restore-failed";
+
+        /// <summary>
+        /// Repair R5 review: one optional binding, all or nothing. Provider
+        /// lookups, contract checks and the replacement components are
+        /// prepared before the owned ability changes; the replacement is then
+        /// published still hidden and guarded, verified, and only then made
+        /// visible. Any failure after the owned ability was touched restores
+        /// the hidden, guarded placeholder (with Dance's one-use cost). Never
+        /// throws, so one binding cannot prevent the other.
+        /// </summary>
+        internal static string BindOptional(Action prepare, Action publishHidden, Func<bool> publishedGuarded,
+            Action reveal, Action restorePlaceholder, Func<bool> placeholderGuarded, out Exception failure)
+        {
+            failure = null;
+            bool touched = false;
+            try
+            {
+                prepare();
+                touched = true;
+                publishHidden();
+                if (!publishedGuarded())
+                    throw new InvalidOperationException("The published replacement is not hidden, guarded and complete before reveal.");
+                reveal();
+                return BindingActive;
+            }
+            catch (Exception exception)
+            {
+                failure = exception;
+                if (touched)
+                {
+                    try { restorePlaceholder(); }
+                    catch (Exception restore) { failure = new AggregateException(exception, restore); }
+                }
+                bool safe;
+                try { safe = placeholderGuarded(); }
+                catch { safe = false; }
+                return safe ? BindingOmitted : BindingRestoreFailed;
+            }
+        }
+
         /// <summary>
         /// The optional provider gate: an exactly-one, loaded, active, error-free
         /// entry whose assembly carries the expected name. Anything else omits
