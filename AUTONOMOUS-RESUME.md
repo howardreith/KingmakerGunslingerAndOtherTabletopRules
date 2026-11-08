@@ -1,4 +1,33 @@
-# Summoned creature manual-playtest repair — R5 complete for review / STOP
+# Summoned creature manual-playtest repair — R5 review repairs / STOP
+
+Current (2026-11-08). Three R5 review findings are repaired on
+`codex/summon-playtest-r5-spells` (commit `06d9bc4d0e`, draft PR #115, still
+stacked on draft #114). See the top section of
+planning/summon-playtest-repair/R5-STATUS.md.
+
+- The Call of the Wild Mist and Dance bindings are now atomic. On any failure
+  the ability stays hidden, guarded and unavailable, and Dance keeps its
+  one-use cost. The two bindings stay independent. Covered by
+  failure-injection domain tests and a mutation check.
+- UMM recovery is tied to the owner's lease and process identity. It is
+  serialized through the coordination lock, and refuses while the owner, a
+  foreign lease or Kingmaker is active.
+- The wrapper's installation cleanup and UMM cleanup are independent in both
+  directions, and an overall PASS is refused if either is unresolved.
+- Results: UMM tests 52/52, orchestration 297, focused gate 149/149, and
+  production compiled. No rebuild, launch or native run.
+- The 22/0 native result stays with tested source `366fad0ac41b` only. The
+  repaired binary is not natively observed.
+- R4's Params.xml exception, R5's first observer failure, and the R5 coverage
+  limits are unchanged.
+- R5 ledger is about 1,354 of 1,800 s.
+
+Next: owner review of #114, then #115. R6 starts only on explicit
+authorization.
+
+---
+
+# (superseded) R5 complete for review / STOP
 
 Current (2026-11-08). R5 is complete for review on branch
 `codex/summon-playtest-r5-spells`, stacked on draft PR #114 (open; the R5
