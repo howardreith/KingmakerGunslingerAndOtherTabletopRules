@@ -45,6 +45,7 @@
     <Compile Include="Summoning\SummonActionTimingPolicy.cs" />
     <Compile Include="Summoning\SummonPortraitPolicy.cs" />
     <Compile Include="Summoning\SummonActionTooltipPolicy.cs" />
+    <Compile Include="Summoning\MephitBreathPolicy.cs" />
     <Compile Include="Summoning\SummonReachRepresentation4Policy.cs" />
     <Compile Include="Summoning\SummonReachRange4.cs" />
     <Compile Include="Summoning\InfernalWallRules35.cs" />
@@ -152,6 +153,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR1.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR2Fear.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR3Ui.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR4Mephit.cs" />
     <Compile Include="RuntimeTesting\SummonReadinessAdmissionPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalMechanics34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCombat34.cs" />
@@ -442,6 +444,7 @@
     <Compile Include="Blueprints\ExpandedSummoningIconBuilder.cs" />
     <Compile Include="Blueprints\ExpandedSummoningPortraitBuilder.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Ghaele.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.MephitBreathR4.cs" />
     <Compile Include="Blueprints\ExpandedSummoningProjectIcons.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherDamageSplit.cs" />
     <Compile Include="Spells\ShieldOther\ShieldOtherDamageSplitPolicy.cs" />

@@ -1196,6 +1196,18 @@ def planned():
         ("KMG.Summoning.Special.GhaeleAzata.LightRay", "BlueprintAbility"),
         ("KMG.Summoning.Special.GhaeleAzata.LightRayAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.Special.GhaeleAzata.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.AirMephit.Breath", "BlueprintAbility"),
+        ("KMG.Summoning.Special.AirMephit.BreathAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.AirMephit.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.EarthMephit.Breath", "BlueprintAbility"),
+        ("KMG.Summoning.Special.EarthMephit.BreathAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.EarthMephit.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.FireMephit.Breath", "BlueprintAbility"),
+        ("KMG.Summoning.Special.FireMephit.BreathAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.FireMephit.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.WaterMephit.Breath", "BlueprintAbility"),
+        ("KMG.Summoning.Special.WaterMephit.BreathAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.WaterMephit.Brain", "BlueprintBrain"),
     ))
     expected = sum(identity_count(name) for name in (
         "UnitCount", "LogicalAbilityCount", "TemplateBuffCount", "SpecialIdentityCount",
