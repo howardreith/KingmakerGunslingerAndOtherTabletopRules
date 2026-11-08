@@ -53,6 +53,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestMephitPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestMephitFinishPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestSpellsPhase ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestPresentationPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint32PerformancePhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint32FascinatePhase)
                 {
@@ -145,6 +146,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CreateSprint32TurnHostile(fixture);
                 using (var mode = Cleanup2EnterNativeDefault(fixture, phase))
                     foreach (int frame in ReviewSummonPlaytestSpellsR5(fixture, phase, mode)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestPresentationPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                using (var mode = Cleanup2EnterNativeDefault(fixture, phase))
+                    foreach (int frame in ReviewSummonPlaytestPresentationR6(fixture, phase, mode)) yield return frame;
                 yield break;
             }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestFearPhase)

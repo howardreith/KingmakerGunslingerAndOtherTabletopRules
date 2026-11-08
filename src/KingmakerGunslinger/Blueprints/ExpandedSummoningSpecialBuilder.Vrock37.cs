@@ -383,10 +383,12 @@ namespace KingmakerGunslinger.Blueprints
             ability.MaterialComponent =
                 new BlueprintAbility.MaterialComponentData();
             ability.ResourceAssetIds = Array.Empty<string>();
+            var screechCue = ScriptableObject.CreateInstance<SummonAbilityCastCue>();
+            screechCue.EventName = SummonPlaytestR6Policy.VrockScreechCue;
             ability.ComponentsArray = new BlueprintComponent[] { around, run,
                 debit, available,
                 ExpandedSummoningAbilityBuilder.DeepCloneComponent(
-                    descriptor) };
+                    descriptor), screechCue };
 
             var icon = ExpandedSummoningProjectIcons.Require("vrock");
             var facts = BlueprintUnitFactAccess.Resolve();
