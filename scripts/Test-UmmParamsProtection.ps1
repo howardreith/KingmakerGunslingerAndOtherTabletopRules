@@ -103,6 +103,13 @@ try {
 param([string]$ScriptsRoot, [string]$Params, [string]$Backups, [string]$StateRoot, [string]$Output, [switch]$CleanupWithLockedParams)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+# The parent's process seam applies here too: a real Kingmaker from any other
+# lab on this machine must not change this temporary fixture.
+function global:Get-Process {
+    [CmdletBinding()]param([string]$Name, [int]$Id)
+    if ($Name -ceq 'Kingmaker') { return }
+    Microsoft.PowerShell.Management\Get-Process @PSBoundParameters
+}
 . (Join-Path $ScriptsRoot 'UmmParams.Common.ps1')
 $scope = Enter-KmgRuntimeLease -Purpose 'umm-params protection' -StateRoot $StateRoot
 try { $receipt = Backup-KmgUmmParams -ParamsPath $Params -BackupRoot $Backups -OwnerLease $scope.Lease -Owner 'child' }
