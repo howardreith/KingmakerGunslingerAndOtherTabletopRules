@@ -1,14 +1,59 @@
 # Cleric alignment restrictions: status
 
-**Draft for review. Native result on the current candidate `efc75b8cc0b0`: FAIL, 70 PASS and 1 FAIL
-(2026-11-09).** The RacesUnleashed Ogre Spider row is now judged by the branch that executes, and that
-was observed in game: refusal for a lawful good cleric and a permitted cast for a chaotic good one.
-The one failure is the semantic census: two other RacesUnleashed rows carry a native template step my
-contract did not list, so they are unresolved. See "Remaining item". The failure stands.
-Separate from R1-R7 and the alphabetical-menu mission. Nothing here is merged, released or
-permanently installed.
+**Cleric alignment mission complete and owner-accepted for the present scope, with known Races
+Unleashed compatibility limitations deferred to a separate mission. The latest native invocation
+remains FAIL, 70 PASS / 1 FAIL; its unresolved third-party census findings are an explicit
+owner-accepted exception, not a passing result.**
 
-## Current candidate and native result
+Accepted by the owner on 2026-11-09, as a records-only closeout. Product code, observers, tests,
+blueprints and assets are frozen at tested candidate `efc75b8cc0b08da3220d9d1151860899d94adb99`. PR #122
+is ready for review. The feature is unreleased until separately authorized; published v0.0.180 and its
+assets are unchanged. Deferred work is parked, not authorized, in
+[races-unleashed-compatibility/MISSION.md](../races-unleashed-compatibility/MISSION.md).
+
+## ACCEPTED EXCEPTION: carry into release known-limitations
+
+When this feature is prepared for release, carry this into `KNOWN-ISSUES.md` and the release notes:
+
+> **Cleric summon alignment and Races Unleashed.** With Races Unleashed's Spider Summoner feature,
+> "Summon Monster V (Ogre Spider)" summons a Bralani or a Redcap, not an ogre spider, in the tested
+> installation; clerics are restricted by the creature that actually appears. Giant Crab Spider and
+> Giant Black Widow are not classified by the cleric alignment rule and keep their native behavior.
+> Black Widow, and by the same rule Crab Spider, is not offered in a Herald Caller conversion.
+
+Native result: the census assertion still fails for those two rows. It was not weakened or removed.
+
+## Closeout summary
+
+**Implemented and observed core behavior.** A cleric cannot cast a Summon Monster choice whose
+effective alignment opposes their own or their deity's. Observed in game: filtered popups, legal casts
+with exact slot debits, forbidden refusals with no spend, the deity-derived case, and Herald Caller
+conversion and prepared-parent coverage. Details are in the sections below.
+
+**Compatibility behavior already implemented and evidenced.** Exact-contract classification of foreign
+rows, one popup and execution decision, the Ogre row enforced by its executing branch (refused for
+LG/Erastil, one Bralani and one tier V slot for CG/Desna), Tarantula verified and present in a Herald
+tier VII conversion, and verified foreign rows admitted to Herald conversions. No Tarantula cast was
+performed. Module-off protection has focused-test evidence only, not a native profile run.
+
+**Remaining incompatibilities and unobserved cases.** See "Accepted exception" above and "Remaining
+limitations" below. The Herald fixture granted the exact native feature to a levelled cleric; it is not
+a naturally levelled archetype.
+
+## Candidate and run identities (from the development receipts)
+
+| Candidate source | Package SHA-256 | DLL SHA-256 | MVID | Run | Result |
+| --- | --- | --- | --- | --- | --- |
+| `059854c046e18322aa457dd2dfe00ffdde89a9b6` | `43af528aff6ea6117104bef219ed6cc9e2a794f7ebec029255d114f60e17d4bf` | `0dcf91f4f7416c79977b8aeb65eacd1f3eb2d8d941df000d429f423beb79011d` | `16e65126-1573-475e-ace5-869ba02d0dc5` | `20261109T1812332936554Z-97654466dd04405abc0791dcfab52a8c` | **FAIL, 4 PASS / 3 FAIL** |
+| `03a87b34891203309488b42aa5618208c7801a83` | `e5f32d7cb469d00cec974f7f67ecb3bd238c5839004341f1dd9ada966bc4f367` | `70b54d0051f38734f936d202152efddd7c3d34d998c820d04b17a846bc4638ea` | `aaaa72b0-3a64-4340-85d6-3e581df4899e` | `20261109T1908013713796Z-42b7ada3857f4e37b2c0065eeaa4e2b5` | **FAIL, 49 PASS / 1 FAIL** |
+| `efc75b8cc0b08da3220d9d1151860899d94adb99` | `76eb276125b02dc3c6a5357982c727e619e13019ec342905ef824bbf360c309b` | `c49e34832e0c6ab755de11b74bed62693c9451e2e42bd228678e131cbabcfbae` | `61ea68d2-380d-4c99-b658-b0c210056752` | `20261109T2033140995495Z-99cc4bd7d946443e95754fd706afc0fa` | **FAIL, 70 PASS / 1 FAIL** |
+
+Each result stays with its own candidate. Focused result for the final candidate, from its receipt:
+59 of 2,913 selected, 0 failures, on source `efc75b8cc0b0`, filter
+`summon-cleric-alignment;alternate-summoning;expanded-summoning.display-ord;druid`, passed-names SHA-256
+`c5405f9260b00c319d902f57741d801502362374c8f71f925e3408686519c701`. Not full qualification.
+
+## Final candidate and native result
 
 Candidate `efc75b8cc0b0` (source `efc75b8cc0b08da3220d9d1151860899d94adb99`, v0.0.180 development,
 package `76eb276125b02dc3c6a5357982c727e619e13019ec342905ef824bbf360c309b`, DLL
@@ -69,22 +114,27 @@ non-cleric keeps it (decision `NotCleric`; provider level, no popup).
 
 **Branch not cast:** the Evil branch (Redcap). It is covered by the loaded graph and focused tests only.
 
-**Not observed:** a popup or cast of the Crab Spider or Black Widow row under this mission, console
-navigation, saved-hotbar reload, cold load, autonomous AI, a multiclass book popup, a naturally
-levelled Herald archetype, evil or true neutral cleric menus, and a module-disabled native profile.
-The module boundary is covered by the focused hook tests only, as authorized.
+**Not observed in this run:** a popup or cast of the Crab Spider or Black Widow row, and any cast of the
+Tarantula row. The module boundary is covered by the focused hook tests only, as authorized.
 
-## Remaining item
+## Remaining limitations
 
-Crab Spider and Black Widow are unresolved because each adds a post-spawn step I did not list in the
-contract: if the caster is Evil, apply native `SummonMonsterFiendishBuffI` (`c707fdbe...`), otherwise
+Races Unleashed: Crab Spider and Black Widow each add a post-spawn step my contract did not list: if
+the caster is Evil, apply native `SummonMonsterFiendishBuffI` (`c707fdbe...`), otherwise
 `SummonMonsterCelestialBuffI` (`83a8a909...`) for the Crab Spider or `SummonMonsterCelestialBuffII`
-(`ec906031...`) for the Black Widow. These are the repository's `NativeMonsterTemplateBuffs`, so they
-look like the starred, caster-matched rule, but that mapping was not built or run.
+(`ec906031...`) for the Black Widow. These are in the repository's `NativeMonsterTemplateBuffs`. Their
+relationship to the caster-matched rule is an investigation lead, not a classification.
 
-Effect today: both rows stay ungoverned and keep their native availability, which is legal for every
-valid cleric and deity pairing. Herald Caller conversions do not project them: the Black Widow is
-missing from a Herald tier IV conversion. The Crab Spider uses the shared tier I parent.
+Effect today: both rows are ungoverned and keep their native behavior. Unresolved means unclassified; it
+is not evidence of an illegal cast. The Herald admission rule leaves the Black Widow out of Herald tier
+IV conversions and the Crab Spider out of a flattened Herald tier I conversion; neither was observed, and
+an earlier note implying the Crab Spider was unaffected was wrong. The upstream Ogre row mismatch is
+restricted by its existing effect and otherwise unchanged. Further compatibility work is parked in the
+[deferred mission](../races-unleashed-compatibility/MISSION.md).
+
+Unobserved in the cleric scope, retained as disclosures only: a naturally levelled Herald archetype,
+saved-hotbar reload, cold load, console navigation, autonomous AI, a multiclass book popup, evil and true
+neutral cleric menus, a cast of the Ogre row's Redcap branch, and a module-disabled native profile.
 
 ## Rule
 
@@ -256,7 +306,8 @@ evidence stays private under `runtime-evidence`.
 | Guarded native invocation | 197 |
 | **Total** | **about 2,026** |
 
-This continuation spent about 668 s, leaving about 374 s of the ceiling. Free memory immediately
+The owner closed this mission with the remaining allowance unspent. The records-only closeout ran no
+build, test suite or game. This continuation spent about 668 s, leaving about 374 s of the ceiling. Free memory immediately
 before the build was 6.25 GB physical and 10.49 GB commit, and 7.7 and 12.19 GB before the run.
 
-No further build or native invocation is authorized.
+No further build or native invocation is authorized by this mission.

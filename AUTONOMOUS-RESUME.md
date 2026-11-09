@@ -1,18 +1,21 @@
-# Cleric alignment restrictions — draft PR #122, native FAIL 70 PASS / 1 FAIL / STOP
+# Cleric alignment restrictions — complete and owner-accepted / PR #122 ready for review / STOP
 
 Current (2026-11-09). See planning/summon-cleric-alignment/STATUS.md. Branch
-`codex/summon-cleric-alignment`, draft PR #122 against master. v0.0.180 is published.
+`codex/summon-cleric-alignment`, PR #122 against master, ready for review. v0.0.180 is published
+and unchanged; this feature is unreleased until separately authorized.
 
-- Focused gate 59 of 2,913 passing. Candidate `efc75b8cc0b0` native: FAIL, 70 PASS / 1 FAIL.
-- RacesUnleashed Ogre Spider is judged by its executing branch: refused for LG/Erastil, cast for
-  CG/Desna. The cast spawned a Bralani, not an ogre spider: a recorded third-party defect.
-- The one failure: Crab Spider and Black Widow are unresolved. They add a native caster-Evil
-  template step the contract did not list. Black Widow is absent from Herald tier IV conversions.
-- `059854c046e1` keeps FAIL 4 PASS / 3 FAIL. `03a87b348912` keeps FAIL 49 PASS / 1 FAIL.
-- Not observed: Redcap branch cast, console, saved hotbars, cold load, AI, multiclass popup,
-  evil or true neutral cleric menus, a module-disabled native profile.
-- Install, saves, settings and `Params.xml` restored exactly. Ledger about 2,026 of 2,400 s.
-- No further build or native invocation is authorized. No merge, release or permanent install.
+Cleric alignment mission complete and owner-accepted for the present scope, with known Races
+Unleashed compatibility limitations deferred to a separate mission. The latest native invocation
+remains FAIL, 70 PASS / 1 FAIL; its unresolved third-party census findings are an explicit
+owner-accepted exception, not a passing result.
+
+- Results stay with their candidates: `059854c046e1` FAIL 4/3, `03a87b348912` FAIL 49/1, `efc75b8cc0b0` FAIL 70/1.
+- Release preparation must carry the accepted exception in STATUS.md into the known-limitations notes.
+- Races Unleashed work is parked: planning/races-unleashed-compatibility/MISSION.md is DEFERRED and
+  NOT AUTHORIZED TO START. Do not resume it from this file.
+- Product code, observers, tests, blueprints and assets are frozen at `efc75b8cc0b0`.
+- Install, saves, settings and `Params.xml` restored exactly. Ledger about 2,026 of 2,400 s, closed.
+- No build, native run, merge, release or permanent install follows without explicit owner authorization.
 
 ---
 
