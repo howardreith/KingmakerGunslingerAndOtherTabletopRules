@@ -86,6 +86,16 @@ namespace KingmakerGunslinger.Summoning
             return tier == baseTier ? SummonMultiplicity.One : tier == baseTier + 1 ? SummonMultiplicity.OneD3 : SummonMultiplicity.OneD4PlusOne;
         }
 
+        /// <summary>A generated row's count, as the native quantity donor
+        /// expresses it: one die of the matrix size plus a rank bonus. That rank
+        /// is where the engine applies Superior Summoning, so it must survive
+        /// unchanged rather than be replaced by a fixed bonus.</summary>
+        internal static bool QuantityExpressionMatches(string dice, string diceCountKind, int diceCount, string bonusKind, SummonMultiplicity quantity)
+        {
+            if (quantity == SummonMultiplicity.One) return false;
+            return dice == (quantity == SummonMultiplicity.OneD3 ? "D3" : "D4") && diceCountKind == "Simple" && diceCount == 1 && bonusKind == "Rank";
+        }
+
         internal static IEnumerable<SpiderPlacement> Placements(SummonFamily family)
         {
             foreach (SpiderSpeciesSpec species in Species)

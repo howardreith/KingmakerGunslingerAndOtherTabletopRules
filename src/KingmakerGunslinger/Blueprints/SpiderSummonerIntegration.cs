@@ -233,17 +233,9 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create(key + ".Description", "Summons " + placement.Species.DisplayName + (placement.Quantity == SummonMultiplicity.One ? "" : " in greater numbers") +
                     " through the native summon lifecycle. Requires Spider Summoner."), icon);
             AlternateSummoningAdapterBuilder.ResetComponentCaches(target);
-            SummonSpawn spawn = SummonSignatureReader.Read(target).Spawns().Single();
-            if (spawn.Unit != placement.Species.UnitGuid || !QuantityMatches(spawn, placement.Quantity))
+            SummonSpawn[] spawns = SummonSignatureReader.Read(target).Spawns().ToArray();
+            if (spawns.Length == 0 || spawns.Any(value => value.Unit != placement.Species.UnitGuid || !SpiderSummonerCatalog.QuantityExpressionMatches(value.CountDice, value.CountDiceCount.Kind, value.CountDiceCount.Value, value.CountBonus.Kind, placement.Quantity)))
                 throw new InvalidOperationException("Generated spider row failed its quantity contract: " + symbol);
-        }
-
-        private static bool QuantityMatches(SummonSpawn spawn, SummonMultiplicity quantity)
-        {
-            if (spawn.CountDiceCount == null || spawn.CountBonus == null || spawn.CountDiceCount.Kind != "Simple" || spawn.CountBonus.Kind != "Simple") return false;
-            if (quantity == SummonMultiplicity.One) return spawn.CountDice == "Zero" && spawn.CountDiceCount.Value == 0 && spawn.CountBonus.Value == 1;
-            if (quantity == SummonMultiplicity.OneD3) return spawn.CountDice == "D3" && spawn.CountDiceCount.Value == 1 && spawn.CountBonus.Value == 0;
-            return spawn.CountDice == "D4" && spawn.CountDiceCount.Value == 1 && spawn.CountBonus.Value == 1;
         }
 
         private static BlueprintBuff CreateMarker()
