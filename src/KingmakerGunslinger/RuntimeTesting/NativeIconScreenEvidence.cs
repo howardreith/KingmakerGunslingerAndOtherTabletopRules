@@ -114,10 +114,15 @@ namespace KingmakerGunslinger.RuntimeTesting
               request.Parameters?.Count == 1 && (ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase(
                   RuntimeTestRequestParser.Sprint32ReviewPhase(request)) ||
                   RuntimeTestRequestParser.Sprint32ReviewPhase(request) == ExpandedSummoningNativeProfilePolicy.Sprint32PresentationPhase ||
-                  RuntimeTestRequestParser.Sprint32ReviewPhase(request) == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestUiPhase)) ||
+                  RuntimeTestRequestParser.Sprint32ReviewPhase(request) == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestUiPhase ||
+                  RuntimeTestRequestParser.Sprint32ReviewPhase(request) == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestMephitPhase ||
+                  RuntimeTestRequestParser.Sprint32ReviewPhase(request) == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestMephitFinishPhase)) ||
              request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||
              request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp ||
              RuntimeTestRequestParser.Sprints30And31DispelUi(request));
+
+        /// <summary>The most recent capture record (read-only use by observers).</summary>
+        internal JObject LastRecord { get { return _records.Count == 0 ? null : (JObject)_records[_records.Count - 1]; } }
 
         internal NativeIconScreenEvidence(RuntimeTestRequest request)
         {

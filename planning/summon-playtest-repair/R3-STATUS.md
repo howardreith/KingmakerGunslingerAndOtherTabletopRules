@@ -152,8 +152,10 @@ Ledgers, kept separate:
 
 ### Owner retest checklist
 
-Every item is visual approval only. All mechanics and presence are already
-established.
+Every item is visual approval only. R3 established presentation (inspected
+screens), the Ghaele's owned grant, and its live AI reference to the owned
+ray; no R3 ray, breath or other ability cast was executed, so R3 makes no
+executed-mechanics claim. (Records-only qualification, 2026-11-08.)
 
 1. Initiative: the summoned creatures show their own species art, and the
    cropped medallion look is acceptable.

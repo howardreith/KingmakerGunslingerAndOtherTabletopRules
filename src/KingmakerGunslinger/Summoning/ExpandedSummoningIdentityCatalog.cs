@@ -99,7 +99,7 @@ namespace KingmakerGunslinger.Summoning
         // moves from 737 by exactly that, and the derived
         // FoundationIdentityCount follows. It is not fitted to whatever the
         // builder happened to produce.
-        internal const int SpecialIdentityCount = 792;
+        internal const int SpecialIdentityCount = 804;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -1143,6 +1143,20 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GhaeleAzata.LightRay", "BlueprintAbility"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GhaeleAzata.LightRayAi", "BlueprintAiCastSpell"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GhaeleAzata.Brain", "BlueprintBrain"));
+            // Repair R4 MEPH-01..03: the four native-backed mephits' owned
+            // breaths, their cast actions and owned brain copies.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.AirMephit.Breath", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.AirMephit.BreathAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.AirMephit.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.EarthMephit.Breath", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.EarthMephit.BreathAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.EarthMephit.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.FireMephit.Breath", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.FireMephit.BreathAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.FireMephit.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.WaterMephit.Breath", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.WaterMephit.BreathAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.WaterMephit.Brain", "BlueprintBrain"));
             Validate(result);
             return result.AsReadOnly();
         }
