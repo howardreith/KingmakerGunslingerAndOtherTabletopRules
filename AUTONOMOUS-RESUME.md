@@ -1,4 +1,23 @@
-# Summoned creature manual-playtest repair — R6 complete for review / STOP
+# Summoned creature manual-playtest repair — R7 complete for review / STOP
+
+Current (2026-11-09). See planning/summon-playtest-repair/R7-STATUS.md. Branch
+`codex/summon-playtest-r7-models`; draft R7 PR on #116 on #115 on #114.
+
+- ART-01..03 revised on final candidate `e4b62528fa2c`. Bright and dim guarded runs
+  passed. Owner aesthetic approval is pending, as are R6 viewing and listening.
+- "After" stills caught the end of the summon fade-in; use the idle pairs in
+  `runtime-evidence/summon-playtest-r7/review-e4b62528fa2c`.
+- Install, saves, settings and `Params.xml` restored exactly.
+- R7 ledger about 1,406 s (900 target, 1,800 ceiling). R5 about 1,389 s; cumulative
+  R6 about 2,796 s.
+- Blender 4.5.10 is at `C:/Dev/.toolchains/blender-4.5.10-windows-x64/`.
+
+Next: owner review of the stack and models. Merge, release or permanent install only
+on explicit authorization.
+
+---
+
+# (superseded) R6 complete for review / STOP
 
 Current (2026-11-08). See planning/summon-playtest-repair/R6-STATUS.md. Branch
 `codex/summon-playtest-r6-presentation`; draft PR #116 on #115 on #114.
