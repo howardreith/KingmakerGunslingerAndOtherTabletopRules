@@ -1,5 +1,30 @@
 # Build, package, and publish
 
+## 0.0.180 publication authorization
+
+On 2026-11-09 Howie wrote: "Go ahead and cut a release." No channel was named, so this
+follows v0.0.179 as the next stable patch, v0.0.180, from master after every merged PR.
+
+- **Reviewed product.** Master `325e10c4a1`, which includes #111 to #119.
+  `tools/validate_summon_playtest_release180.py` pins it:
+  - Only the three AssemblyInfo version attributes and the Info and props version values
+    may change.
+  - All 7,868 released identities stay exact and in order; 26 are appended.
+  - The creature catalog is unchanged; only the owner-withdrawn Stirge is withheld, leaving
+    1,208 public choices.
+  - One static release record is added.
+- **Publication path.** Use the ordinary exact-reference publisher from clean, pushed master
+  with `docs/RELEASE-NOTES-0.0.180.md`. It runs the complete gate and two deterministic
+  builds, then publishes. Planning budget: 30 minutes, excluding necessary safe completion.
+- **Disclosed, not repaired.** The notes list the alphabetical-menu observation limits, owner
+  viewing and listening, and the open audit findings. Development-candidate native results
+  stay with their own artifacts.
+
+```powershell
+.\scripts\Publish-Release.ps1 -ReferenceBundleDir '<private build references>' `
+  -ReleaseNotesPath 'docs\RELEASE-NOTES-0.0.180.md' -Publish -ConfirmReleaseReady
+```
+
 ## 0.0.179 publication authorization
 
 **Published (completed).** Stable
