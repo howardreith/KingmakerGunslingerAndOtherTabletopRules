@@ -1,10 +1,90 @@
 # Cleric alignment restrictions: status
 
-**Draft for review. Native result on the current candidate: FAIL, 49 PASS and 1 FAIL (2026-11-09).**
-The menu filter, legal casts, forbidden refusals, Herald Caller coverage and the deity-derived
-case were observed in game and passed. The one failure is an unresolved RacesUnleashed row: see
-"Open item". The failure stands. Separate from R1-R7 and the alphabetical-menu mission.
-Nothing here is merged, released or permanently installed.
+**Draft for review. Native result on the current candidate `efc75b8cc0b0`: FAIL, 70 PASS and 1 FAIL
+(2026-11-09).** The RacesUnleashed Ogre Spider row is now judged by the branch that executes, and that
+was observed in game: refusal for a lawful good cleric and a permitted cast for a chaotic good one.
+The one failure is the semantic census: two other RacesUnleashed rows carry a native template step my
+contract did not list, so they are unresolved. See "Remaining item". The failure stands.
+Separate from R1-R7 and the alphabetical-menu mission. Nothing here is merged, released or
+permanently installed.
+
+## Current candidate and native result
+
+Candidate `efc75b8cc0b0` (source `efc75b8cc0b08da3220d9d1151860899d94adb99`, v0.0.180 development,
+package `76eb276125b02dc3c6a5357982c727e619e13019ec342905ef824bbf360c309b`, DLL
+`c49e34832e0c6ab755de11b74bed62693c9451e2e42bd228678e131cbabcfbae`, MVID
+`61ea68d2-380d-4c99-b658-b0c210056752`). Run
+`20261109T2033140995495Z-99cc4bd7d946443e95754fd706afc0fa`, phase `summon-cleric-alignment`.
+
+**Result: FAIL, 70 PASS and 1 FAIL.** The only failure is `cleric-route-census`. This narrow result
+belongs to this candidate; it does not change either earlier result.
+
+### Structural contracts, read from the loaded game
+
+| Row | Tier | Possible spawn references | Post-spawn | Outcome |
+| --- | ---: | --- | --- | --- |
+| Summon Monster V (Ogre Spider) | 5 | Redcap `af8bcff0...` if the caster is Evil, otherwise Bralani `58574e8d...` | Summon buff only | Conditionally governed |
+| Summon Monster VII (Giant Tarantula) | 7 | Tarantula `2ea0fc9b...` | Summon buff only | Verified inherently legal |
+| Summon Monster I (Giant Crab Spider) | 1 | Crab Spider `b7e12522...` | Summon buff, then a caster-Evil template step | **Unresolved** |
+| Summon Monster IV (Giant Black Widow) | 4 | Black Widow `9b1fda47...` | Summon buff, then a caster-Evil template step | **Unresolved** |
+
+All four: exact identity `130211b7fcb443e9b67d5561d75cf6a0` plus the internal name, required and
+visible feature Spider Summoner `bd03ca46...`, quantity one, no alignment descriptors on the row.
+Census of 621 children: 617 gated, 1 verified inherently legal, 1 conditionally governed, 2 unresolved.
+These are possible references, not spawned instances.
+
+### Third-party defect, recorded and not changed
+
+**"Summon Monster V (Ogre Spider)" does not summon an ogre spider.** RacesUnleashed copies native
+`0964bf88...` and replaces only top-level spawns, but that row's spawns are nested in its Evil
+branch. Its Ogre Spider unit `4a205de6...` is not referenced by the row. The row's name, payload,
+prerequisite and blueprint were left unchanged, and the current effect is what is restricted.
+
+### Observed in game, each PASS
+
+Rendered menus (real popups; 11 images inspected, every tile count matches its structured row count,
+no blank tile; images support presentation only):
+
+| Menu | Rows | Result |
+| --- | ---: | --- |
+| Spider feature, LG/Erastil, prepared Summon Monster V | 66 of 76 | Ogre row absent |
+| Spider feature, LG/Erastil, Herald conversion from an ordinary tier V spell | 66 of 76 | Ogre row absent, order exact, no duplicates |
+| Spider feature, LG/Erastil, Herald conversion from an ordinary tier VII spell | 86 of 104 | Tarantula survives at index 78, on its original prepared source |
+| Spider feature, CG/Desna, Herald conversion from an ordinary tier V spell | 66 of 76 | Ogre row present at index 60, on its original prepared source |
+| Spider feature, CG/Desna, prepared Summon Monster V | 66 of 76 | Ogre row present at index 60 |
+
+The seven menus of the earlier candidate were repeated with the same row counts, 92, 31, 66, 92, 104 and 99 (the spider menu was replaced by those above).
+
+Executed:
+
+| Case | Result |
+| --- | --- |
+| Forbidden held Ogre row, LG/Erastil, native command | Visible with its feature, unavailable, command Fail, no slot spent, 0 spawn actions, 0 summons |
+| Permitted Ogre row, CG/Desna, selected from the popup | Command Success, 1 cast, 1 spawn action, 1 spawned instance: **`AzataBralaniSummoned` `58574e8d...`, not an ogre spider** |
+| Source debit for that cast | Exactly one tier V slot of the prepared Summon Monster V, all other books and budgets unchanged |
+| Lantern Archon and Redcap legal casts; Ice Devil and retained native refusals | Repeated, PASS |
+
+Controls: the row is hidden without its feature and visible with it on a real cleric. A real
+non-cleric keeps it (decision `NotCleric`; provider level, no popup).
+
+**Branch not cast:** the Evil branch (Redcap). It is covered by the loaded graph and focused tests only.
+
+**Not observed:** a popup or cast of the Crab Spider or Black Widow row under this mission, console
+navigation, saved-hotbar reload, cold load, autonomous AI, a multiclass book popup, a naturally
+levelled Herald archetype, evil or true neutral cleric menus, and a module-disabled native profile.
+The module boundary is covered by the focused hook tests only, as authorized.
+
+## Remaining item
+
+Crab Spider and Black Widow are unresolved because each adds a post-spawn step I did not list in the
+contract: if the caster is Evil, apply native `SummonMonsterFiendishBuffI` (`c707fdbe...`), otherwise
+`SummonMonsterCelestialBuffI` (`83a8a909...`) for the Crab Spider or `SummonMonsterCelestialBuffII`
+(`ec906031...`) for the Black Widow. These are the repository's `NativeMonsterTemplateBuffs`, so they
+look like the starred, caster-matched rule, but that mapping was not built or run.
+
+Effect today: both rows stay ungoverned and keep their native availability, which is legal for every
+valid cleric and deity pairing. Herald Caller conversions do not project them: the Black Widow is
+missing from a Herald tier IV conversion. The Crab Spider uses the shared tier I parent.
 
 ## Rule
 
@@ -28,6 +108,14 @@ type rule, table and starred-creature paragraph; deity pages; bestiary type line
   - A postfix on `AbilityData.IsAvailableForCast` governs retained native Summon Monster quantity
     rows above tier I, by exact identity and the creature branch this caster would summon. A
     native row is a shared blueprint, so no descriptor union or blanket disable is applied to it.
+- **Third-party rows** `Summoning/SummonForeignRowContracts.cs`: the four RacesUnleashed rows are
+  classified from the loaded action graph by exact identity, tier, required and visible feature,
+  quantity, nested condition, spawn references and post-spawn actions. A name never classifies a
+  row, and any difference leaves it unresolved. Popup filtering and execution use one decision
+  (`SummonClericAlignmentRuntime.DecideGovernedRow`). No third-party blueprint is changed.
+- **Module boundary**: every hook first reads `BlueprintBootstrap.IsInitialized` and
+  `ExpandedSummoningVisualVariantPatch.IsModuleActive`. Inactive leaves the native result, and the
+  rule can only remove availability.
 - **Cleric detection**: real class levels (`Progression.Classes`). A deity or a cleric spellbook is
   not membership. Multiclass clerics stay restricted in any spellbook. Items and abilities
   without a spellbook keep native rules. Class SLAs, including the alternate summon families,
@@ -73,7 +161,7 @@ are separate checks. Native result: 1 shared parent and 23 projected and governe
 The fixture granted the exact native feature to a levelled cleric, as the Druid route was
 established; it is not a naturally levelled archetype.
 
-## Current candidate and native result
+## Earlier candidate `03a87b348912`, preserved
 
 Candidate `03a87b348912` (source `03a87b34891203309488b42aa5618208c7801a83`, v0.0.180 development,
 package `e5f32d7cb469d00cec974f7f67ecb3bd238c5839004341f1dd9ada966bc4f367`, DLL
@@ -131,26 +219,10 @@ the menu by projection and refused at execution; it is not visibility-hidden.
 book popup, a naturally levelled Herald archetype, evil or chaotic cleric menus, a true neutral
 cleric menu, and any cast of the Ogre Spider row.
 
-## Open item: the RacesUnleashed Ogre Spider row
+The Ogre Spider row reported two spawn references and was left open for an owner decision. The
+owner has since decided: judge a choice by the verified effect and caster branch that will execute.
 
-The census is right to refuse this row. It reports two spawned units. RacesUnleashed builds it by
-copying native `0964bf88b582bed41b74e79596c4f6d9`, the Summon Monster V row with Evil and NonEvil
-caster branches, and replaces only top-level spawn actions. That row's spawns are nested in its
-branches, so by source reading the copy still spawns the native Redcap or Bralani rather than an
-ogre spider. The two unit identities were not recorded and the row was not cast, so this reading
-is unconfirmed in game.
-
-Effect: the row carries no alignment gate, because it is a third-party blueprint. It needs the
-RacesUnleashed Spider Summoner feature. If the reading is right, a non-evil cleric with that
-feature who is barred from Chaos or Good, such as a lawful cleric or a follower of Asmodeus, can
-still reach the Bralani (Good, Chaos) through it. An evil caster's branch is the Redcap, which has
-no alignment descriptors.
-
-**Owner decision needed:** judge this row by what it actually spawns, on the existing exact-identity
-branch pattern, or by its label, or leave it unsupported. Not implemented, because it would add
-unbuilt source to the tested candidate and the build and native run for this mission are used.
-
-## Earlier candidate, preserved
+## Earliest candidate `059854c046e1`, preserved
 
 Candidate `059854c046e1` (source `059854c046e18322aa457dd2dfe00ffdde89a9b6`, package
 `43af528aff6ea6117104bef219ed6cc9e2a794f7ebec029255d114f60e17d4bf`, DLL
@@ -162,29 +234,29 @@ spellbook above. `0d1cd93f8b`'s `DemandSpellbook` change was superseded and is n
 
 ## Focused checks
 
-`scripts/Invoke-KmgGate.ps1 -Level Focused`: 31 of 2,910 selected, all passing, production compiled.
-Not full qualification. Cases include `summon-cleric-alignment.herald-route-exact`,
-`.herald-projection`, `.native-branch-exact`, `.druid-unchanged`, `.third-party-semantic`,
-`.fixture-prerequisites`, `.deity-derived-case` and `.herald-coverage-fails-uncovered`.
+`scripts/Invoke-KmgGate.ps1 -Level Focused`: `summon-cleric-alignment` 19 of 2,913 selected, then with
+`alternate-summoning`, `expanded-summoning.display-ord` and `druid` 59 of 2,913, all passing, production
+compiled. Not full qualification. New cases: `.foreign-executing-branch`, `.foreign-semantic-negatives`,
+`.foreign-herald-projection`, `.module-boundary`.
 
 ## Restoration
 
 Install v0.0.140, DLL `00EF6757...66FD`, 254 files, 16 mods, `Params.xml` `E44F4495...30BB`,
-settings and 95 protected saves restored and verified, on both runs. `KMG_AUTOMATION_BASELINE`
+settings and 95 protected saves restored and verified, on all three runs. `KMG_AUTOMATION_BASELINE`
 untouched, no campaign save written, no pending receipt. Restoration record `verified`. Raw
 evidence stays private under `runtime-evidence`.
 
-## Validation ledger (900 s target, 1,800 s ceiling)
+## Validation ledger (900 s target exceeded; ceiling raised from 1,800 to 2,400 s)
 
 | Step | Seconds |
 | --- | ---: |
-| First part: focused gates, candidate build, native run | about 591 |
-| Focused gates (28, 4, 17.7; failed attempts counted) | about 50 |
-| Candidate build | 544 |
-| Guarded native invocation | 173 |
-| **Total** | **about 1,358** |
+| Earlier work, through the `03a87b348912` run | about 1,358 |
+| Focused gates (one failed compile about 20, then 22, 2, 2) | about 46 |
+| Candidate build `efc75b8cc0b0` | 425 |
+| Guarded native invocation | 197 |
+| **Total** | **about 2,026** |
 
-This continuation spent about 767 s. The 900 s target was exceeded; the ceiling was not. Lowest
-memory: 4.09 GB available in the build and 4.48 GB in the run, no warning.
+This continuation spent about 668 s, leaving about 374 s of the ceiling. Free memory immediately
+before the build was 6.25 GB physical and 10.49 GB commit, and 7.7 and 12.19 GB before the run.
 
 No further build or native invocation is authorized.

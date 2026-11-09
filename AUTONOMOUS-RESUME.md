@@ -1,17 +1,17 @@
-# Cleric alignment restrictions — draft PR #122, native FAIL 49 PASS / 1 FAIL / STOP
+# Cleric alignment restrictions — draft PR #122, native FAIL 70 PASS / 1 FAIL / STOP
 
 Current (2026-11-09). See planning/summon-cleric-alignment/STATUS.md. Branch
 `codex/summon-cleric-alignment`, draft PR #122 against master. v0.0.180 is published.
 
-- Focused gate 31 of 2,910 passing. Candidate `03a87b348912` native: FAIL, 49 PASS / 1 FAIL.
-- Observed and passing: seven cleric popups, legal casts with exact slot debits, forbidden
-  refusals on a selected child and a retained native row, deity-derived change, non-cleric control.
-- Herald Caller is covered on the Druid pattern: 1 shared parent, 23 projected and governed, 0 uncovered.
-- The one failure: RacesUnleashed Ogre Spider is unresolved (two spawned units, no gate). Whether
-  to judge it by what it spawns or by its label is an owner decision.
-- `059854c046e1` keeps its FAIL, 4 PASS / 3 FAIL. Its fixture failure was the missing native `ApplySpellbook`.
-- Not observed: console, saved hotbars, cold load, AI, multiclass popup, evil or chaotic cleric menus.
-- Install, saves, settings and `Params.xml` restored exactly. Ledger about 1,358 of 1,800 s.
+- Focused gate 59 of 2,913 passing. Candidate `efc75b8cc0b0` native: FAIL, 70 PASS / 1 FAIL.
+- RacesUnleashed Ogre Spider is judged by its executing branch: refused for LG/Erastil, cast for
+  CG/Desna. The cast spawned a Bralani, not an ogre spider: a recorded third-party defect.
+- The one failure: Crab Spider and Black Widow are unresolved. They add a native caster-Evil
+  template step the contract did not list. Black Widow is absent from Herald tier IV conversions.
+- `059854c046e1` keeps FAIL 4 PASS / 3 FAIL. `03a87b348912` keeps FAIL 49 PASS / 1 FAIL.
+- Not observed: Redcap branch cast, console, saved hotbars, cold load, AI, multiclass popup,
+  evil or true neutral cleric menus, a module-disabled native profile.
+- Install, saves, settings and `Params.xml` restored exactly. Ledger about 2,026 of 2,400 s.
 - No further build or native invocation is authorized. No merge, release or permanent install.
 
 ---
