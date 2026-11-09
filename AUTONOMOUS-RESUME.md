@@ -1,4 +1,50 @@
-# Summoned creature manual-playtest repair — R3 complete for review / STOP
+# Summoned creature manual-playtest repair — R4 complete for review / STOP
+
+Current (2026-11-08). R4 is complete for review on draft PR #114 (branch
+`codex/summon-playtest-r4-mephit`); owner aesthetic approval is pending.
+
+- Finishing candidate `15f9f68a976a` (package `a5c1d4b7…d555`, DLL
+  `2928e004…dc25`): 17 PASS / 0 FAIL.
+- The first candidate `a1e6c264193f` (26/0) is retained.
+- Salt now uses Metal Blast art (native art inspected first).
+- Charter ally-safety is repaired on the four owned native-backed breaths;
+  the native case shows an ally in the cone untouched.
+- The Pyrotechnics flash was captured while alive and retired by itself.
+- The KMG installation, settings and saves were restored, and the enabled
+  profile is unchanged. UMM `Params.xml` did not return to its intake hash,
+  so exact restoration of it is not established. An older-backup
+  comparison found only a `LastUpdateCheck` difference.
+- R4 ledger: 1,135 of 1,800 s.
+
+Next: owner review of PR #114, then an explicitly authorized R5 (actual
+spell reuse and missing abilities). Do not start R5 automatically.
+
+---
+
+# (superseded) R4 mephit breaths (partial) / STOP
+
+Current (2026-11-08). R4 runs on branch `codex/summon-playtest-r4-mephit`
+from master `5ad3e88767` (R3 merged), as a draft PR.
+
+- Candidate: `a1e6c264193f` (package `69d293d7…1527`, DLL `b7fbc23a…1935`).
+  One guarded run: 26 PASS / 0 FAIL.
+- MEPH-01/02 complete for review:
+  - Air (slashing), Earth (bludgeoning) and Water (acid) are repaired
+    through owned breaths with the grant and brain redirected; native
+    donors are untouched.
+  - Water acid and Earth bludgeoning packets were executed.
+- MEPH-03: nine icons fit; **Salt's icon is misleading** (open).
+- MEPH-04: the flash spawns once per executed cast and retires about 3.1 s
+  later. **No during-frame capture** (observer ordering; open).
+- Restoration exact (0.0.140, `5C3E4AD4…`, 66 settings, 95 saves).
+- R4 spend: 588 s of the 900 s target (ceiling 1,800 s).
+
+Next: only the precise R4 continuation in R4-STATUS.md (Salt icon plus the
+flash frame). Do not start R5 automatically.
+
+---
+
+# (superseded) R3 complete for review / STOP
 
 Current (2026-11-08). R3 is complete for review; owner aesthetic approval is
 pending.
