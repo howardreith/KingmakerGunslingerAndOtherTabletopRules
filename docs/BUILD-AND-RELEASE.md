@@ -1,5 +1,32 @@
 # Build, package, and publish
 
+## 0.0.181 publication authorization
+
+On 2026-11-09 Howie wrote: "Merge PR #122 and cut a release". No channel was named, so this
+follows v0.0.180 as the next stable patch, v0.0.181, from master after PR #122.
+
+- **Reviewed product.** Master `2f5703f7c9`, the merge of PR #122.
+  `tools/validate_cleric_alignment_release181.py` pins it:
+  - Only the three AssemblyInfo version attributes and the Info and props version values
+    may change.
+  - All 7,894 released identities stay exact and in order; none is appended.
+  - The creature catalog is unchanged; only the owner-withdrawn Stirge is withheld, leaving
+    1,208 public choices.
+  - One static release record is added.
+- **Owner-accepted exception, carried forward.** The latest native result for this feature
+  remains FAIL, 70 PASS / 1 FAIL, on development candidate `efc75b8cc0b0`. Its unresolved
+  Races Unleashed census findings are accepted and appear in `KNOWN-ISSUES.md` and the notes.
+- **Publication path.** Use the ordinary exact-reference publisher from clean, pushed master
+  with `docs/RELEASE-NOTES-0.0.181.md`. It runs the complete gate and two deterministic
+  builds, then publishes. Planning budget: 30 minutes, excluding necessary safe completion.
+- **Native evidence.** Development-candidate results stay with their own artifacts. None was
+  re-executed on the version-stamped build.
+
+```powershell
+.\scripts\Publish-Release.ps1 -ReferenceBundleDir '<private build references>' `
+  -ReleaseNotesPath 'docs\RELEASE-NOTES-0.0.181.md' -Publish -ConfirmReleaseReady
+```
+
 ## 0.0.180 publication authorization
 
 **Published (completed).** Stable
