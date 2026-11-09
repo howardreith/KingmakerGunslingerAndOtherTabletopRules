@@ -190,6 +190,26 @@ namespace KingmakerGunslinger.Blueprints
             return exact;
         }
 
+        /// <summary>
+        /// Orders a native or other-mod row by the name it already shows. It
+        /// counts as a creature choice when its lineage is known or its own
+        /// actions spawn a creature; any other row stays unclassified.
+        /// </summary>
+        internal static SummonMenuOrderKey HostOrderKey(BlueprintAbility ability,
+            SummonMultiplicity? quantity, bool knownLineage)
+        {
+            return SummonMenuOrderKey.Host(VisibleName(ability), quantity, ability.AssetGuid,
+                knownLineage || AlternateSummoningGraph.SpawnUnits(ability).Count > 0);
+        }
+
+        private static string VisibleName(BlueprintAbility ability)
+        {
+            // Another mod's row may carry no usable localized name; that row
+            // is unclassified rather than a publication failure.
+            try { return ability.Name; }
+            catch (NullReferenceException) { return null; }
+        }
+
         private static void PublishParent(BlueprintAbility parent,
             SummonFamily family, int tier,
             BlueprintAbility nativePreservation, BlueprintAbility[] additions,
@@ -228,15 +248,25 @@ namespace KingmakerGunslinger.Blueprints
                     .ReplacementCoverageIsComplete(native, specs, nativeSpecs);
             }).ToArray();
             IReadOnlyList<BlueprintAbility> merged = SummonDisplayOrderPolicy.Order(
-                preservedOriginals, additions.Concat(nativeAdditions),
-                value => {
+                preservedOriginals, additions.Concat(nativeAdditions), value =>
+                {
+                    if (additionSpecs.ContainsKey(value.AssetGuid))
+                    {
+                        SummonVariantSpec spec = additionSpecs[value.AssetGuid];
+                        return SummonMenuOrderKey.Owned(SummonChoicePresentationPolicy.For(
+                            spec.Creature.Key, spec.Multiplicity), spec.StableKey);
+                    }
+                    if (nativeAdditionSpecs.ContainsKey(value.AssetGuid))
+                    {
+                        SummonNativeExpansionSpec spec = nativeAdditionSpecs[value.AssetGuid];
+                        return SummonMenuOrderKey.Owned(SummonChoicePresentationPolicy.For(
+                            spec.IconKey, spec.Multiplicity), spec.Symbol);
+                    }
                     SummonNativeOptionSpec native = SummonNativeOptionCatalog.Find(
                         family, tier, value.AssetGuid);
-                    return native == null ? (SummonMultiplicity?)null :
-                        native.Multiplicity;
-                }, value => additionSpecs.ContainsKey(value.AssetGuid) ?
-                    additionSpecs[value.AssetGuid].Multiplicity :
-                    nativeAdditionSpecs[value.AssetGuid].Multiplicity);
+                    return HostOrderKey(value, native == null ? (SummonMultiplicity?)null :
+                        native.Multiplicity, native != null);
+                });
             if (republishing && SummonVariantMergePolicy.SameReferences(
                 existing.Variants, merged.ToArray())) return;
             var variants = ScriptableObject.CreateInstance<AbilityVariants>();

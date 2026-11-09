@@ -291,7 +291,18 @@ namespace KingmakerGunslinger.Summoning
                         value.Book.GetAllKnownSpells().SequenceEqual(value.Known) && Enumerable.Range(0, 10).SelectMany(value.Book.GetCustomSpells).SequenceEqual(value.Custom)) &&
                     currentResources.SequenceEqual(resources) && resources.Select((value, index) => source.Caster.Resources.GetResourceAmount(value) == amounts[index]).All(value => value);
                 if (!intact || replacements.Count + removals.Count == 0) { Outcome = "preserve-unverified-native-variant-context"; return; }
-                var projected = DruidSummonConversionPolicy.Project(originalRows, replacements, removals);
+                // The published parent already holds the alphabetical order, so
+                // the flattened rows reuse its positions rather than a second rule.
+                var ranks = new Dictionary<AbilityData, int>();
+                foreach (var receipt in receipts)
+                    foreach (var child in receipt.Children)
+                    {
+                        int tier; SummonMultiplicity quantity;
+                        DruidSummonConversionPolicy.TryResolve(receipt.NativeConversionBlueprint.AssetGuid, out tier, out quantity);
+                        ranks[child] = tier * 100000 + Array.IndexOf(receipt.Variants, child.Blueprint);
+                    }
+                var projected = DruidSummonConversionPolicy.OrderProjectedChoices(DruidSummonConversionPolicy.Project(originalRows, replacements, removals),
+                    row => { int rank; return ranks.TryGetValue(row, out rank) ? rank : (int?)null; });
                 foreach (var receipt in receipts)
                 {
                     receipt.ProjectedRows = projected;

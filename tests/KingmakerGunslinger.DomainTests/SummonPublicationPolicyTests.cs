@@ -103,26 +103,44 @@ namespace KingmakerGunslinger.DomainTests
                 "Only placements that are unqualified or held on a proven engine barrier may remain hidden, and the catalog must hide exactly as many as it declares it hides.");
         }
 
-        internal static void DisplayOrderGroupsSinglesBeforeQuantities()
+        internal static void DisplayOrderIsAlphabeticalByCreatureName()
         {
-            var nativeSingle = new Fake("native-single",
-                SummonMultiplicity.One);
-            var nativeD3 = new Fake("native-d3", SummonMultiplicity.OneD3);
-            var nativeD4 = new Fake("native-d4",
-                SummonMultiplicity.OneD4PlusOne);
+            var steam = new Fake("steam", SummonMultiplicity.One);
+            var air = new Fake("air", SummonMultiplicity.One);
+            var airGroup = new Fake("air-d3", SummonMultiplicity.OneD3);
+            var airBig = new Fake("air-d4", SummonMultiplicity.OneD4PlusOne);
+            var dog = new Fake("dog", SummonMultiplicity.OneD3);
+            var nativeWolf = new Fake("native-wolf", SummonMultiplicity.One);
             var thirdA = new Fake("third-a", null);
             var thirdB = new Fake("third-b", null);
-            var oneA = new Fake("one-a", SummonMultiplicity.One);
-            var oneB = new Fake("one-b", SummonMultiplicity.One);
-            var d3 = new Fake("d3", SummonMultiplicity.OneD3);
-            var d4 = new Fake("d4", SummonMultiplicity.OneD4PlusOne);
-            IReadOnlyList<Fake> result = SummonDisplayOrderPolicy.Order(
-                new[] { nativeD4, thirdA, nativeSingle, nativeD3, thirdB },
-                new[] { d4, oneA, d3, oneB }, value => value.Kind,
-                value => value.Kind.Value);
-            Assertions.Equal("one-a|one-b|native-single|d3|native-d3|d4|native-d4|third-a|third-b",
+            var names = new Dictionary<Fake, string> {
+                { steam, "Mephit, Steam" }, { air, "Mephit, Air" },
+                { airGroup, "Mephit, Air" }, { airBig, "MEPHIT, AIR" },
+                { dog, "Dog" }, { nativeWolf, "Wolf" } };
+            Fake[] originals = { thirdA, nativeWolf, thirdB };
+            Fake[] additions = { steam, airBig, dog, airGroup, air };
+            IReadOnlyList<Fake> result = SummonDisplayOrderPolicy.Order(originals, additions,
+                value => names.ContainsKey(value) ?
+                    SummonMenuOrderKey.Host(names[value], value.Kind, value.Guid, true) :
+                    SummonMenuOrderKey.Host(value.Guid, value.Kind, value.Guid, false));
+            Assertions.Equal("dog|air|air-d3|air-d4|steam|native-wolf|third-a|third-b",
                 string.Join("|", result.Select(value => value.Guid)),
-                "Summon display ordering changed or foreign relative order was lost.");
+                "Creature name must lead, equal names order one/1d3/1d4+1 case-insensitively, and unclassified rows stay last in relative order.");
+            Assertions.True(originals.SequenceEqual(new[] { thirdA, nativeWolf, thirdB }) &&
+                additions.SequenceEqual(new[] { steam, airBig, dog, airGroup, air }),
+                "Ordering must not mutate its input arrays.");
+            Assertions.Equal(originals.Length + additions.Length,
+                result.Distinct().Count(), "Ordering lost or repeated a choice.");
+            IReadOnlyList<Fake> tied = SummonDisplayOrderPolicy.Order(
+                new[] { new Fake("b", SummonMultiplicity.One) },
+                new[] { new Fake("a", SummonMultiplicity.One) },
+                value => SummonMenuOrderKey.Host("Same", value.Kind, value.Guid, true));
+            Assertions.Equal("a|b", string.Join("|", tied.Select(value => value.Guid)),
+                "An exact tie must resolve through the row identity.");
+            Assertions.Throws<InvalidOperationException>(() => SummonDisplayOrderPolicy.Order(
+                new Fake[0], new[] { thirdA },
+                value => SummonMenuOrderKey.Host("x", null, value.Guid, false)),
+                "A package-owned addition cannot be an unclassified row.");
         }
 
         internal static void IconCatalogCoversEveryCreature()
