@@ -6,8 +6,8 @@ Generation stays the existing Blender 4.5.10 generator interface with `PYTHONHAS
 
 | Current export | Vertices / triangles (or size) | SHA-256 |
 | --- | --- | --- |
-| `nalfeshnee-mesh.json` | 12402 / 14392 | `19161c156fa8be5cf7e86a732146c7bc39465f40fc1d0f802de38c0f255c29ed` |
-| `nalfeshnee-albedo.png` | 1024 x 1024 | `15c93ef8a379bfa24dc1177d4da032f28f70d46a3fa610fde164a075eab3088c` |
+| `nalfeshnee-mesh.json` | 12402 / 14392 | `d34e6c194d5b6c8c798a1ead77b9248e48e44721fccb2491eccee79aa1199aaf` |
+| `nalfeshnee-albedo.png` | 1024 x 1024 | `d9ab401ba01429ff64c8b05cdfaeac67b29b2d078a0f0c5d35e5002179868e7b` |
 
 Pre-R7 exports are retained at commit `70d44c8be7` and are not packaged.
 

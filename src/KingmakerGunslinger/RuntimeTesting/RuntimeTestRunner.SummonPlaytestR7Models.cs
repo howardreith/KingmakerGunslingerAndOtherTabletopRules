@@ -89,6 +89,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal void ShowBefore() { _renderer.sharedMesh = _before; _material.SetTexture(R7MainTexture, _beforeAlbedo); }
             internal void ShowCurrent() { _renderer.sharedMesh = _current; _material.SetTexture(R7MainTexture, _currentAlbedo); }
             internal bool CurrentShown => _renderer != null && ReferenceEquals(_renderer.sharedMesh, _current);
+            internal UnityEngine.Rendering.ShadowCastingMode ShadowMode { get { return _renderer.shadowCastingMode; } set { _renderer.shadowCastingMode = value; } }
 
             public void Dispose()
             {
@@ -132,13 +133,15 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static float R7Number(string value) { return float.Parse(value, System.Globalization.CultureInfo.InvariantCulture); }
 
-        private IEnumerable<int> R7Motion(UnitEntityData unit, UnitEntityData hostile, R7Model model, string state, string scene, Vector3 start, Vector3 target, JObject row)
+        private IEnumerable<int> R7Motion(UnitEntityData unit, UnitEntityData hostile, R7Model model, string state, string scene, Vector3 start, Vector3 target, Vector3 bearing, JObject row)
         {
-            Func<Bounds> subject = () => R6RenderBounds(unit);
+            // One fixed bearing and torso-centred framing, so both exports are
+            // filmed by the same camera path at a readable size.
+            Func<Bounds> subject = () => R7BoneBounds(unit, "Torso_Upper", 1.2f);
             PlaceExpandedSummoningUnit(unit, start);
             foreach (int step in R6Wait(14)) yield return step;
             string prefix = "r7-" + model.Key + "-" + scene + "-" + state + "-";
-            using (var clip = new R6Clip(_request.EvidenceDirectory, prefix + "idle", subject))
+            using (var clip = new R6Clip(_request.EvidenceDirectory, prefix + "idle", subject, bearing))
                 for (int shot = 0; shot < 24; shot++)
                 { clip.Shot(R6AnimationState(unit)); foreach (int step in R6Wait(2)) yield return step; }
 
@@ -149,7 +152,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (started)
             {
                 unit.Commands.Run(move);
-                using (var clip = new R6Clip(_request.EvidenceDirectory, prefix + "move", subject))
+                using (var clip = new R6Clip(_request.EvidenceDirectory, prefix + "move", subject, bearing))
                     for (int frame = 0; frame < 150 && !move.IsFinished; frame++)
                     {
                         peak = Math.Max(peak, unit.View.MovementAgent.Velocity.magnitude);
@@ -168,7 +171,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             hostile.Descriptor.Damage = 0;
             var attack = new UnitAttack(hostile);
             unit.Commands.Run(attack);
-            using (var clip = new R6Clip(_request.EvidenceDirectory, prefix + "attack", subject))
+            using (var clip = new R6Clip(_request.EvidenceDirectory, prefix + "attack", subject, bearing))
             {
                 int after = 0;
                 for (int frame = 0; frame < 170 && after < 14; frame++)
@@ -207,6 +210,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var after = new JObject(); var before = new JObject();
                 stills["after"] = after; stills["before"] = before;
                 foreach (int step in R7Stills(unit, model, "after", scene, after)) yield return step;
+                // Diagnostic for small bright patches in creases: the first
+                // detail again, with this body casting no shadow onto itself.
+                string[] first = model.Details[0];
+                float firstRadius = R7Number(first[2]);
+                UnityEngine.Rendering.ShadowCastingMode shadow = swap.ShadowMode;
+                swap.ShadowMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                try
+                {
+                    using (var clip = new R6Clip(_request.EvidenceDirectory, "r7-" + model.Key + "-" + scene + "-diagnostic-noselfshadow-" + first[0],
+                        () => R7BoneBounds(unit, first[1], firstRadius), unit.View.transform.rotation * new Vector3(R7Number(first[3]), R7Number(first[4]), R7Number(first[5])).normalized, firstRadius * unit.View.transform.lossyScale.y))
+                        clip.Shot(new JObject { ["state"] = "diagnostic-no-self-shadow" });
+                }
+                finally { swap.ShadowMode = shadow; }
                 swap.ShowBefore();
                 foreach (int step in R6Wait(4)) yield return step;
                 foreach (int step in R7Stills(unit, model, "before", scene, before)) yield return step;
@@ -214,9 +230,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 var motionAfter = new JObject(); var motionBefore = new JObject();
                 row["motionAfter"] = motionAfter; row["motionBefore"] = motionBefore;
-                foreach (int step in R7Motion(unit, hostile, model, "after", scene, start, target, motionAfter)) yield return step;
+                Vector3 bearing = unit.View.transform.rotation * new Vector3(.55f, .32f, .78f).normalized;
+                foreach (int step in R7Motion(unit, hostile, model, "after", scene, start, target, bearing, motionAfter)) yield return step;
                 swap.ShowBefore();
-                foreach (int step in R7Motion(unit, hostile, model, "before", scene, start, target, motionBefore)) yield return step;
+                foreach (int step in R7Motion(unit, hostile, model, "before", scene, start, target, bearing, motionBefore)) yield return step;
                 swap.ShowCurrent();
                 bool shown = swap.CurrentShown;
                 bool stillsFramed = new[] { after, before }.All(values => values.Properties().Where(value => value.Name != "party").All(value => (bool)value.Value));
@@ -246,6 +263,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             Vector3 centre = fixture.Caster.Position;
             UnitEntityData hostile = outdoor ? fixture.Hostile : null;
             Vector3? hostileHome = hostile?.Position;
+            int? hostileHitPoints = hostile == null ? (int?)null : hostile.Descriptor.Stats.HitPoints.BaseValue;
+            if (hostile != null) hostile.Descriptor.Stats.HitPoints.BaseValue = 100000;
             int priorCapture = Time.captureFramerate;
             Func<Vector3, Vector3> ground = value => ObstacleAnalyzer.GetNearestNode(value).clampedPosition;
             try
@@ -285,7 +304,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (unit.CombatState.IsInCombat) unit.CombatState.LeaveCombat();
                     }
                 });
-                restore("hostile", () => { if (hostileHome.HasValue && !fixture.Hostile.Destroyed) PlaceExpandedSummoningUnit(fixture.Hostile, hostileHome.Value); });
+                restore("hostile", () => { if (hostileHome.HasValue && !fixture.Hostile.Destroyed) { fixture.Hostile.Descriptor.Stats.HitPoints.BaseValue = hostileHitPoints.Value; fixture.Hostile.Descriptor.Damage = 0; PlaceExpandedSummoningUnit(fixture.Hostile, hostileHome.Value); } });
                 PlaceExpandedSummoningUnit(fixture.Caster, centre);
                 DisposeExpandedSummoningUnits(fixture.Created, owned.Where(value => !value.Destroyed).ToArray());
                 Sprint25Check("r7-owned-state-restored", errors.Count == 0 && Time.captureFramerate == priorCapture,
