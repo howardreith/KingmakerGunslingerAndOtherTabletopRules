@@ -24,9 +24,8 @@ namespace KingmakerGunslinger.Blueprints
             {
                 if (!ReferenceEquals(record.Parent.ComponentsArray,
                     record.PublishedComponents) ||
-                    !ReferenceEquals(record.PublishedVariants.Variants,
-                        record.PublishedVariantArray) ||
-                    !SummonVariantMergePolicy.SameReferences(
+                    !SummonVariantMergePolicy.PublicationStillOwned(
+                        record.PublishedVariants.Variants,
                         record.PublishedVariantArray, record.PublishedChoices))
                     throw new InvalidOperationException(
                         "Expanded Summoning rollback refused after unrelated mutation: " +
@@ -215,6 +214,7 @@ namespace KingmakerGunslinger.Blueprints
         internal static int ReorderLateHostRows(LibraryScriptableObject library)
         {
             int changed = 0;
+            var outcome = new List<string>();
             foreach (SummonFamily family in new[] { SummonFamily.Monster,
                 SummonFamily.NaturesAlly })
             for (int tier = 1; tier <= 9; tier++)
@@ -224,17 +224,33 @@ namespace KingmakerGunslinger.Blueprints
                     .RequireExact<BlueprintAbility>(library, (family == SummonFamily.Monster ?
                         MonsterParents : AllyParents)[tier - 1], "published summon parent");
                 if (!IsPublishedExpandedParent(parent)) continue;
-                AbilityVariants owned = parent.ComponentsArray.OfType<AbilityVariants>().Single();
-                BlueprintAbility[] current = owned.Variants;
-                if (current == null || current.Any(value => value == null)) continue;
-                BlueprintAbility[] ordered = SummonDisplayOrderPolicy.Order(current,
-                    new BlueprintAbility[0], value => MenuOrderKey(value, scopedFamily, scopedTier))
-                    .ToArray();
-                if (SummonVariantMergePolicy.SameReferences(current, ordered)) continue;
-                owned.Variants = ordered;
+                int rows = parent.Variants == null ? 0 : parent.Variants.Length;
+                if (!ReorderPublishedMenu(parent, scopedFamily, scopedTier)) continue;
                 changed++;
+                outcome.Add(parent.name + ":" + rows);
             }
+            LateOrderOutcome = "changed=" + changed + ";menus=" + string.Join(",", outcome.ToArray());
             return changed;
+        }
+
+        /// <summary>The once-per-process late pass's result, for diagnostics.</summary>
+        internal static string LateOrderOutcome { get; private set; }
+
+        /// <summary>Orders one published menu in a new array on its own
+        /// component. The publication record is deliberately left as it was, so
+        /// a later rollback still refuses instead of restoring a pre-append array.</summary>
+        internal static bool ReorderPublishedMenu(BlueprintAbility parent, SummonFamily family, int tier)
+        {
+            AbilityVariants owned = (parent.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .OfType<AbilityVariants>().SingleOrDefault();
+            if (owned == null || !string.Equals(owned.name, PublishedVariantsComponentName,
+                StringComparison.Ordinal) || owned.Variants == null || owned.Variants.Any(value => value == null))
+                return false;
+            BlueprintAbility[] ordered = SummonDisplayOrderPolicy.ReorderedOrNull(owned.Variants,
+                value => MenuOrderKey(value, family, tier));
+            if (ordered == null) return false;
+            owned.Variants = ordered;
+            return true;
         }
 
         /// <summary>

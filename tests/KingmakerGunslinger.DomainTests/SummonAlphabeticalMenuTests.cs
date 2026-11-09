@@ -182,6 +182,57 @@ namespace KingmakerGunslinger.DomainTests
                 "A repeated final pass must change nothing.");
         }
 
+        // Publication, a foreign append, the late sort, a repeat, then rollback.
+        internal static void LateSortKeepsForeignRowsAndRollbackRefuses()
+        {
+            var bear = new Row("bear", "Bear", SummonMultiplicity.One, "bear");
+            var wolf = new Row("wolf", "Wolf", SummonMultiplicity.One, "wolf");
+            var spider = new Row("spider", "Summon Monster I (Giant Crab Spider)", null, "spider");
+            Row[] published = { bear, wolf };
+            Row[] receiptArray = published;
+            Row[] receiptChoices = published.ToArray();
+            Assertions.True(SummonVariantMergePolicy.PublicationStillOwned(published, receiptArray, receiptChoices),
+                "An untouched publication may roll back.");
+            Assertions.True(SummonDisplayOrderPolicy.ReorderedOrNull(published, HostOrder) == null,
+                "An already ordered menu needs no write.");
+
+            Row[] appended = published.Concat(new[] { spider }).ToArray();
+            Row[] appendedBefore = appended.ToArray();
+            Row[] sorted = SummonDisplayOrderPolicy.ReorderedOrNull(appended, HostOrder);
+            Assertions.Equal("bear|spider|wolf", string.Join("|", sorted.Select(value => value.Id)),
+                "The late row sorts by the name it shows.");
+            Assertions.True(!ReferenceEquals(sorted, appended) && appended.SequenceEqual(appendedBefore),
+                "The late sort writes a new array and never changes the foreign one.");
+            Assertions.True(ReferenceEquals(sorted[0], bear) && ReferenceEquals(sorted[1], spider) && ReferenceEquals(sorted[2], wolf),
+                "The exact row objects survive the sort.");
+            Assertions.True(SummonDisplayOrderPolicy.ReorderedOrNull(sorted, HostOrder) == null,
+                "A repeated sort is idempotent.");
+
+            Assertions.False(SummonVariantMergePolicy.PublicationStillOwned(sorted, receiptArray, receiptChoices),
+                "With the original receipt, rollback must refuse after the append and sort.");
+            Assertions.False(SummonVariantMergePolicy.PublicationStillOwned(appended, receiptArray, receiptChoices),
+                "Rollback must also refuse a foreign append with no sort.");
+            Assertions.True(receiptChoices.SequenceEqual(new[] { bear, wolf }) && ReferenceEquals(receiptArray, published),
+                "The sort must not refresh the ownership receipt.");
+            Row[] inPlace = { wolf, bear };
+            Assertions.False(SummonVariantMergePolicy.PublicationStillOwned(inPlace, inPlace, new[] { bear, wolf }),
+                "An in-place change to the published array must refuse too.");
+        }
+
+        // Candidate 2f7a1afb6ebd reached its observer, which the capture helper
+        // then refused. Both the capture list and the dispatch must name it.
+        internal static void AlphabeticalPhaseIsAdmittedToCaptureAndDispatched()
+        {
+            string root = System.IO.Path.Combine(Environment.CurrentDirectory, "src", "KingmakerGunslinger", "RuntimeTesting");
+            string capture = System.IO.File.ReadAllText(System.IO.Path.Combine(root, "NativeIconScreenEvidence.cs"));
+            Assertions.True(capture.Contains("ExpandedSummoningNativeProfilePolicy.Sprint39AlphabeticalMenusPhase"),
+                "Native capture must admit the alphabetical-menu phase.");
+            string dispatch = System.IO.File.ReadAllText(System.IO.Path.Combine(root, "RuntimeTestRunner.ExpandedSummoningSatyr32.cs"));
+            int branch = dispatch.IndexOf("phase == ExpandedSummoningNativeProfilePolicy.Sprint39AlphabeticalMenusPhase", StringComparison.Ordinal);
+            int observer = dispatch.IndexOf("ReviewSummonAlphabeticalMenus(", StringComparison.Ordinal);
+            Assertions.True(branch >= 0 && observer > branch, "The phase must dispatch to its own observer.");
+        }
+
         // The real published Summon Nature's Ally rows, across all three
         // quantity groups of one tier, give one interleaved order.
         internal static void DruidOrderMatchesCanonicalNaturesAllyRoster()
