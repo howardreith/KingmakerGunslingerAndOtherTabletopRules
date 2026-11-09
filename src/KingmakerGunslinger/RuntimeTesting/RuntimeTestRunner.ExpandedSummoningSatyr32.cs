@@ -156,6 +156,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in ReviewSummonPlaytestModelsR7(fixture, phase, mode)) yield return frame;
                 yield break;
             }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39AlphabeticalMenusPhase)
+            {
+                using (var mode = Cleanup2EnterNativeDefault(fixture, phase))
+                    foreach (int frame in ReviewSummonAlphabeticalMenus(fixture, mode)) yield return frame;
+                yield break;
+            }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestModelsInteriorPhase)
             {
                 foreach (int frame in ReviewSummonPlaytestModelsR7(fixture, phase, null)) yield return frame;

@@ -73,5 +73,20 @@ namespace KingmakerGunslinger.Summoning
             }
             return result.ToArray();
         }
+
+        // Each quantity row projects its own children, so the flattened list
+        // would stay grouped by quantity. The ranked rows take the positions
+        // those rows already hold, in rank order; every other row, including
+        // a foreign one, keeps its exact index.
+        internal static T[] OrderProjectedChoices<T>(IEnumerable<T> projected, Func<T, int?> rank) where T : class
+        {
+            if (projected == null || rank == null) throw new ArgumentNullException();
+            var rows = projected.ToArray();
+            int[] positions = Enumerable.Range(0, rows.Length).Where(index => rows[index] != null && rank(rows[index]).HasValue).ToArray();
+            T[] ordered = positions.OrderBy(index => rank(rows[index]).Value).ThenBy(index => index).Select(index => rows[index]).ToArray();
+            var result = rows.ToArray();
+            for (int index = 0; index < positions.Length; index++) result[positions[index]] = ordered[index];
+            return result;
+        }
     }
 }

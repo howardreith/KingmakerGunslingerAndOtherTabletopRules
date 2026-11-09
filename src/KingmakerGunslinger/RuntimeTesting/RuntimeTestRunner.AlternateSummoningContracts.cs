@@ -144,9 +144,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             string lineage;
                             return foreignRoot.HostLineage.TryGetValue(value.AssetGuid,
                                 out lineage) ? lineage : null;
-                        }, value => foreignRoot.HostQuantity.ContainsKey(value.AssetGuid) ?
-                            (SummonMultiplicity?)foreignRoot.HostQuantity[value.AssetGuid] :
-                            null, new AlternateSummoningChoice[0], choice => null,
+                        }, value => SummonMenuOrderKey.Host(value.Name, null, value.AssetGuid, false),
+                        new AlternateSummoningChoice[0], choice => null,
                         new SummonNativeExpansionSpec[0], native => null);
                 assertions.Add(Assertion("contracts-unknown-option-preserved",
                     "an extra non-template option resolves as unknown and stays in the menu",

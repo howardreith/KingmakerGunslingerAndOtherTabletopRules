@@ -284,7 +284,7 @@ namespace KingmakerGunslinger.DomainTests
             var natives = new Dictionary<string, Fake>();
             AlternateSummoningMenuPlan<Fake> plan = AlternateSummoningMenuPolicy.Compose(
                 SummonFamily.Monster, 5, null, new[] { single, d3, foreign, d4 },
-                value => value.Lineage, value => value.Quantity, exposed,
+                value => value.Lineage, HostOrder, exposed,
                 choice => children[choice.Symbol], SummonNativeExpansionCatalog.All,
                 native => natives.ContainsKey(native.Symbol) ? natives[native.Symbol] :
                     (natives[native.Symbol] = new Fake(native.Symbol, null,
@@ -299,11 +299,12 @@ namespace KingmakerGunslinger.DomainTests
                 "Exactly the Redcap split option replaces the SM V umbrella.");
             Assertions.Equal(exposed.Count + 1 + 1, plan.Final.Count,
                 "The menu must hold every published creature, the split option and the foreign one.");
-            int lastSingle = plan.Final.ToList().FindLastIndex(value =>
-                value.Quantity == SummonMultiplicity.One);
-            int firstGroup = plan.Final.ToList().FindIndex(value =>
-                value.Quantity == SummonMultiplicity.OneD3);
-            Assertions.True(lastSingle < firstGroup, "Singles must precede groups.");
+            string[] shown = plan.Final.Where(value => !ReferenceEquals(value, foreign))
+                .Select(value => exposed.Any(choice => choice.Symbol == value.Name) ?
+                    SummonChoicePresentationPolicy.For(exposed.Single(choice => choice.Symbol == value.Name)
+                        .Placement.Creature.Key, value.Quantity.Value).CreatureName : "Redcap").ToArray();
+            Assertions.True(shown.SequenceEqual(shown.OrderBy(value => value, StringComparer.OrdinalIgnoreCase)),
+                "The adapter menu must follow displayed creature names.");
 
             // Withholding the KMG Dire Wolf keeps the host's 1d3 duplicate.
             AlternateSummoningRoster withheld = WithCreatures(new SummonCreatureSpec[0],
@@ -313,7 +314,7 @@ namespace KingmakerGunslinger.DomainTests
                 AlternateSummoningProjection.Exposed(master, withheld, 5, null);
             AlternateSummoningMenuPlan<Fake> kept = AlternateSummoningMenuPolicy.Compose(
                 SummonFamily.Monster, 5, null, new[] { single, d3, d4 },
-                value => value.Lineage, value => value.Quantity, fewer,
+                value => value.Lineage, HostOrder, fewer,
                 choice => children[choice.Symbol], SummonNativeExpansionCatalog.All,
                 native => natives[native.Symbol]);
             Assertions.True(kept.KeptHost.Contains(d3) && !kept.RemovedHost.Contains(d3),
@@ -331,7 +332,7 @@ namespace KingmakerGunslinger.DomainTests
                     SummonMultiplicity.OneD3);
             AlternateSummoningMenuPlan<Fake> plan = AlternateSummoningMenuPolicy.Compose(
                 SummonFamily.Monster, 3, SummonMultiplicity.OneD3, new[] { preserved },
-                value => value.Lineage, value => value.Quantity, exposed,
+                value => value.Lineage, HostOrder, exposed,
                 choice => new Fake(choice.Symbol, null, choice.Multiplicity),
                 SummonNativeExpansionCatalog.All, native => null);
             Assertions.True(plan.Added.All(value => value.Quantity ==
@@ -469,6 +470,9 @@ namespace KingmakerGunslinger.DomainTests
             Array.Reverse(guid, 4, 2);
             Array.Reverse(guid, 6, 2);
         }
+
+        private static SummonMenuOrderKey HostOrder(Fake value)
+        { return SummonMenuOrderKey.Host(value.Name, value.Quantity, value.Name, value.Lineage != null); }
 
         private sealed class Fake
         {
