@@ -5,11 +5,15 @@ Current (2026-11-09). See planning/summon-playtest-repair/R7-STATUS.md. Branch
 
 - ART-01..03 revised on final candidate `e4b62528fa2c`. Bright and dim guarded runs
   passed. Owner aesthetic approval is pending, as are R6 viewing and listening.
-- "After" stills caught the end of the summon fade-in; use the idle pairs in
-  `runtime-evidence/summon-playtest-r7/review-e4b62528fa2c`.
+- "After" stills caught the end of the summon fade-in. Start with `REVIEW-GUIDE.md` in
+  `runtime-evidence/summon-playtest-r7/review-e4b62528fa2c`; its curated sheets carry
+  fade-in, obstructed and diagnostic labels and exact frame provenance.
+- Records closeout only after `e4b62528fa2c`: results stay on that candidate. No dim
+  attack ran. The Ice Devil generator was not repeated on the final source. The
+  Nalfeshnee has 48 zero-area wing-root triangles (nonblocking cleanup).
 - Install, saves, settings and `Params.xml` restored exactly.
-- R7 ledger about 1,406 s (900 target, 1,800 ceiling). R5 about 1,389 s; cumulative
-  R6 about 2,796 s.
+- R7 ledger about 1,448 s (900 target, 1,800 ceiling): the stated 1,406 s plus about
+  42 s for the repeat-generation check. R5 about 1,389 s; cumulative R6 about 2,796 s.
 - Blender 4.5.10 is at `C:/Dev/.toolchains/blender-4.5.10-windows-x64/`.
 
 Next: owner review of the stack and models. Merge, release or permanent install only
