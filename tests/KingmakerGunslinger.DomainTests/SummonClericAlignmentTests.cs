@@ -108,7 +108,9 @@ namespace KingmakerGunslinger.DomainTests
                 "A row with no alignment needs no deity knowledge.");
             Assertions.True(Allowed(Facts(LG, Unknown), "wolf", true), "A starred row still matches its caster.");
             Assertions.True(Allowed(Facts(TN, SummonClericDeityCatalog.AtheismGuid), "vrock"), "Atheism is a known absence of deity.");
-            Assertions.Equal(21, SummonClericDeityCatalog.Guids.Count(), "Twenty deities and Atheism.");
+            Assertions.Equal(26, SummonClericDeityCatalog.Guids.Count(), "The installed selection's 25 deities and Atheism.");
+            Assertions.False(Allowed(Facts(TN, "8b535b6842e063d48a571a042c3c6e8f"), "lantern-archon"), "Gyronna is chaotic evil.");
+            Assertions.False(Allowed(Facts(TN, "0a111217f49248eabdf8e9abe2537973"), "vrock"), "Ragathiel is lawful good.");
         }
 
         internal static void TwoCastersShareRowsAndOrderIsPreserved()

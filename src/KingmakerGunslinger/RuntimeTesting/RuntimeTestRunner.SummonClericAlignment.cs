@@ -104,10 +104,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             var routes = herald == null ? new SpontaneousSpellConversion[0] : (herald.ComponentsArray ?? new BlueprintComponent[0]).OfType<SpontaneousSpellConversion>().ToArray();
             string[] converted = routes.SelectMany(value => value.SpellsByLevel ?? new BlueprintAbility[0]).Where(value => value != null).Select(value => value.AssetGuid).Distinct().ToArray();
             string[] canonical = ExpandedSummoningPublisher.CanonicalParentGuids.Take(9).ToArray();
-            Sprint25Check("cleric-herald-caller-route", !hasHerald || converted.All(value => canonical.Contains(value, StringComparer.Ordinal)), new JObject {
+            string[] sharedParents = converted.Where(value => canonical.Contains(value, StringComparer.Ordinal)).ToArray();
+            string[] nativeRows = converted.Where(value => SummonNativeOptionCatalog.All.Any(row => row.Family == SummonFamily.Monster && row.Guid == value)).ToArray();
+            string[] unidentified = converted.Except(sharedParents).Except(nativeRows).ToArray();
+            Sprint25Check("cleric-herald-caller-route", !hasHerald || unidentified.Length == 0, new JObject {
                 ["installed"] = hasHerald, ["components"] = routes.Length, ["conversions"] = new JArray(converted),
+                ["sharedExpandedParents"] = new JArray(sharedParents), ["nativeQuantityRowsWithoutGate"] = new JArray(nativeRows), ["unidentified"] = new JArray(unidentified),
+                ["limit"] = "Conversions above tier I are native quantity rows, which do not carry the cleric gate. This records the route; it does not establish enforcement on it.",
                 ["scope"] = "Structural inspection of the installed conversion feature; a Herald Caller menu was not opened." },
-                "Installed Herald Caller conversions reach the shared parents, so the same gated children apply.");
+                "Every installed Herald Caller conversion is identified as a shared parent or a native quantity row.");
         }
 
         private IEnumerable<int> ClericOpenMenu(string label, ActionBarGroupElement spellGroup, ActionBarSubGroupLevels levels, int tier, Spellbook book,
@@ -268,7 +273,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 fixture.Caster.Stats.Wisdom.BaseValue = 30;
                 AdvanceDisposableSpellcaster(fixture.Caster.Descriptor, cleric, 20, ref levelController);
-                book = fixture.Caster.Descriptor.GetSpellbook(cleric);
+                // On 059854c046e1 GetSpellbook(class) returned null after this level-up.
+                book = fixture.Caster.Descriptor.DemandSpellbook(cleric);
+                if (book == null) throw new InvalidOperationException("The native cleric spellbook could not be obtained.");
                 while (book.CasterLevel < 20) book.AddCasterLevel();
                 book.UpdateAllSlotsSize(false);
                 Sprint25Check("cleric-actual-class-route", book != null && ReferenceEquals(book.Blueprint, cleric.Spellbook) && SummonClericAlignmentPolicy.IsCleric(SummonClericAlignmentRuntime.Read(fixture.Caster.Descriptor)),
