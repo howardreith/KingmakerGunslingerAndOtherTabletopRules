@@ -64,6 +64,8 @@ namespace KingmakerGunslinger.DomainTests
         internal const int RepairR3PrivateIdentityCount = 3;
         // Repair R4: four native-backed mephits' owned breath, AI action and brain.
         internal const int RepairR4PrivateIdentityCount = 12;
+        // Repair R5: Mastodon trample and the Pixie's spell-likes and AI actions.
+        internal const int RepairR5PrivateIdentityCount = 11;
         internal const int AppendedCatalogIdentityCount =
             Sprint26MagicalBeastRules.AppendedCatalogIdentityCount +
             ExpandedSummoningSprint27Tests.AppendedCatalogIdentityCount +
@@ -74,7 +76,7 @@ namespace KingmakerGunslinger.DomainTests
             InfernalRules35.AppendedCatalogIdentityCount +
             Sprint36CatalogIdentityCount + Sprint37CatalogIdentityCount +
             Sprint38CatalogIdentityCount + Sprint39CatalogIdentityCount + Sprint40CatalogIdentityCount +
-            RepairR3PrivateIdentityCount + RepairR4PrivateIdentityCount;
+            RepairR3PrivateIdentityCount + RepairR4PrivateIdentityCount + RepairR5PrivateIdentityCount;
         internal const int AppendedLedgerIdentityCount =
             AppendedCatalogIdentityCount +
             Sprint36ReservedIdentityCount;

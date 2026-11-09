@@ -1,4 +1,93 @@
-# Summoned creature manual-playtest repair — R4 complete for review / STOP
+# Summoned creature manual-playtest repair — R5 UMM ownership repairs / STOP
+
+Current (2026-11-08). The last two R5 UMM ownership findings are repaired on
+`codex/summon-playtest-r5-spells` (scripts commit `307cf89356`, draft PR #115,
+still stacked on draft #114). See the top section of
+planning/summon-playtest-repair/R5-STATUS.md.
+
+- Automatic owner restoration now holds a lease in the receipt's coordination
+  root (its own or a validated inherited one) through recheck, restore and
+  receipt completion. A foreign transaction is refused with no write.
+- A game already running is refused before any lease is created, so the refusal
+  leaves no lock or recovery debt; the recheck under the lease remains.
+- Results: UMM tests 85 assertions pass, orchestration 297 pass, scripts parse.
+  Three mutation checks fail as intended.
+- No package was built, Kingmaker was not launched, and the live installation
+  was not changed. Production C# is unchanged from `06d9bc4d0e`.
+- The 22/0 native result stays with tested source `366fad0ac41b` only. The
+  repaired binder is not natively observed.
+- R5 ledger is about 1,389 of 1,800 s.
+
+Next: owner review of #114, then #115. R6 starts only on explicit
+authorization.
+
+---
+
+# (superseded) R5 review repairs / STOP
+
+Current (2026-11-08). Three R5 review findings are repaired on
+`codex/summon-playtest-r5-spells` (commit `06d9bc4d0e`, draft PR #115, still
+stacked on draft #114). See the top section of
+planning/summon-playtest-repair/R5-STATUS.md.
+
+- The Call of the Wild Mist and Dance bindings are now atomic. On any failure
+  the ability stays hidden, guarded and unavailable, and Dance keeps its
+  one-use cost. The two bindings stay independent. Covered by
+  failure-injection domain tests and a mutation check.
+- UMM recovery is tied to the owner's lease and process identity. It is
+  serialized through the coordination lock, and refuses while the owner, a
+  foreign lease or Kingmaker is active.
+- The wrapper's installation cleanup and UMM cleanup are independent in both
+  directions, and an overall PASS is refused if either is unresolved.
+- Results: UMM tests 52/52, orchestration 297, focused gate 149/149, and
+  production compiled. No rebuild, launch or native run.
+- The 22/0 native result stays with tested source `366fad0ac41b` only. The
+  repaired binary is not natively observed.
+- R4's Params.xml exception, R5's first observer failure, and the R5 coverage
+  limits are unchanged.
+- R5 ledger is about 1,354 of 1,800 s.
+
+Next: owner review of #114, then #115. R6 starts only on explicit
+authorization.
+
+---
+
+# (superseded) R5 complete for review / STOP
+
+Current (2026-11-08). R5 is complete for review on branch
+`codex/summon-playtest-r5-spells`, stacked on draft PR #114 (open; the R5
+draft PR targets `codex/summon-playtest-r4-mephit`). Owner aesthetic
+approval is pending. See planning/summon-playtest-repair/R5-STATUS.md.
+
+- UMM `Params.xml` protection is now in the actual guarded DATA wrapper
+  (byte backup + durable receipt, verified restore, recovery script);
+  25/25 behavior tests. Both R5 runs restored-verified at the R5 intake
+  `e44f4495…`.
+- R4 restoration qualification remains: after R4, Params.xml did not return
+  to its R4 intake hash and exact restoration of that file is not
+  established; no matching historical backup exists.
+- SPELL-01: Cloud Giant has one at-will Obscuring Mist SLA wrapping Call of
+  the Wild's spell (point target); both custom fog routes removed.
+- SPELL-02: Pixie has at-will native Entangle, full Confusion, Dispel Magic
+  and Shield (owner adaptation).
+- SPELL-03: Pixie Dance wraps CotW Irresistible Dance, once per summoning.
+- MECH-01: Griffon's duplicate native Charge removed (engine already grants
+  it).
+- MECH-02: Mastodon trample 2d8+18, Reflex DC 29.
+- Candidate `366fad0ac41b` (package `8862c485…3af7`, DLL `d5adb10c…e936`):
+  22 PASS / 0 FAIL. First candidate `73bfc8ca97a9` failed on an observer
+  type lookup (evidence kept).
+- Gaps: provider-absent omission not observed natively; no legacy/cold-load
+  cell; no autonomous AI cast; Dispel area variant not executed.
+- R5 ledger ≈ 1,282 s (target 900 s exceeded, ceiling 1,800 s kept). R4
+  remains 1,135 s.
+
+Next: owner review of the R5 PR (after #114), then an explicitly authorized
+R6. Do not start R6 automatically.
+
+---
+
+# (superseded) R4 complete for review / STOP
 
 Current (2026-11-08). R4 is complete for review on draft PR #114 (branch
 `codex/summon-playtest-r4-mephit`); owner aesthetic approval is pending.

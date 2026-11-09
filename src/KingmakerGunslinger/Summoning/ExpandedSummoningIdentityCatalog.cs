@@ -99,7 +99,7 @@ namespace KingmakerGunslinger.Summoning
         // moves from 737 by exactly that, and the derived
         // FoundationIdentityCount follows. It is not fitted to whatever the
         // builder happened to produce.
-        internal const int SpecialIdentityCount = 804;
+        internal const int SpecialIdentityCount = 815;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -1157,6 +1157,19 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.WaterMephit.Breath", "BlueprintAbility"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.WaterMephit.BreathAi", "BlueprintAiCastSpell"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.WaterMephit.Brain", "BlueprintBrain"));
+            // Repair R5 MECH-02 and SPELL-02: the Mastodon's trample and the
+            // Pixie's four at-will native spell-likes with their cast actions.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Mastodon.Trample", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.Entangle", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.EntangleAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.Confusion", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.ConfusionAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.DispelMagic", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.DispelMagicTarget", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.DispelMagicArea", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.DispelMagicAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.Shield", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.ShieldAi", "BlueprintAiCastSpell"));
             Validate(result);
             return result.AsReadOnly();
         }

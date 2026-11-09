@@ -37,6 +37,8 @@ param(
     [string]$SaveName,
     [string]$LiveModDirectory = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Mods\KingmakerGunslinger',
     [string]$RestorationRecordRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence\expanded-summoning-restoration',
+    # Byte-exact UMM Params.xml protection (receipts survive interruption).
+    [string]$UmmParamsBackupRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-backups\umm-params',
     [hashtable]$ScenarioParameters = @{},
     # Different closed guarded requests may share one candidate/snapshot.
     # The ordinary request validator still validates every returned parameter.
@@ -109,6 +111,22 @@ if($Sprint40DiagnosticRecovery){
 if($sprint40PeerProtection -and -not $PSCmdlet.ShouldProcess('exact HOWARD-LAPTOP installation and nine startup-written peer files',
     'guarded source-bound startup with byte/metadata backup and restoration')){return}
 
+# UMM rewrites its installed Params.xml when the game starts. Preserve and
+# verify its exact bytes before any staging; a failure refuses the launch.
+. (Join-Path $PSScriptRoot 'UmmParams.Common.ps1')
+# The receipt is created under this process's runtime lease from the shared
+# coordination lock and records that owner, so recovery can tell this live
+# owner from an interrupted one (scripts\Restore-UmmParams.ps1).
+$ummParamsPath = Get-KmgUmmParamsPath -LiveModDirectory $LiveModDirectory
+$ummScope = Enter-KmgRuntimeLease -Purpose 'umm-params protection'
+try {
+    $ummReceipt = Backup-KmgUmmParams -ParamsPath $ummParamsPath -BackupRoot $UmmParamsBackupRoot `
+        -OwnerLease $ummScope.Lease -Owner ('expanded-summoning-scenario:' + (@($Scenario) -join ','))
+} finally { Exit-KmgRuntimeLease $ummScope }
+$installationRestorationFailed = $false
+$ummRestorationFailed = $false
+Write-Host "UMM Params.xml protected: existed=$($ummReceipt.existed) sha256=$($ummReceipt.intakeSha256) receipt=$($ummReceipt.receiptPath)"
+
 $before = Get-KmgTreeFingerprint -Directory $LiveModDirectory
 Write-Host "Pre-run live tree: files=$($before.Files) sha256=$($before.Sha256)"
 
@@ -126,6 +144,8 @@ $record = [ordered]@{
     startedAtUtc = [DateTime]::UtcNow.ToString('o')
     snapshotDirectory = $snapshot.Destination
     liveBefore = [ordered]@{ files = $before.Files; sha256 = $before.Sha256 }
+    ummParamsIntake = [ordered]@{ path = $ummReceipt.paramsPath; existed = $ummReceipt.existed
+        sha256 = $ummReceipt.intakeSha256; length = $ummReceipt.intakeLength; receipt = $ummReceipt.receiptPath }
     runs = @()
 }
 $failures = 0
@@ -372,60 +392,83 @@ try {
 finally {
     # Runs on success, on failure, and on interruption.
     $record.failures = $failures
-    $deployed = Get-KmgTreeFingerprint -Directory $LiveModDirectory
-    $record.liveAfterScenario = [ordered]@{ files = $deployed.Files; sha256 = $deployed.Sha256 }
+    # Repair R5 review: the complete installation inspection/restoration and
+    # the UMM Params.xml step are independent. A failure in either (including
+    # the first fingerprint) is retained, the other still runs, and the batch
+    # cannot PASS unless both are resolved. The UMM step takes its own lease,
+    # or inherits the startup-protection lease this wrapper still holds.
+    $ummParentLease = if ($startupPeerScope) { $startupPeerScope.Lease } else { $null }
+    $cleanup = Invoke-KmgIndependentInstallationAndUmmRestoration -UmmReceipt $ummReceipt -ParentLease $ummParentLease -RestoreInstallation {
+        $deployed = Get-KmgTreeFingerprint -Directory $LiveModDirectory
+        $record.liveAfterScenario = [ordered]@{ files = $deployed.Files; sha256 = $deployed.Sha256 }
 
-    if (-not (Resolve-KmgRestorationNeeded -BeforeSha256 $before.Sha256 `
-        -AfterScenarioSha256 $deployed.Sha256)) {
-        $record.restoration = 'not-needed'
-        Write-Host 'Live tree already matches the pre-run snapshot; nothing to restore.'
-    }
-    else {
-        try {
-            # The harness returns while Kingmaker is still shutting down, and a
-            # restore during that window is refused. Wait for the process to go
-            # rather than treating the race as a restoration failure.
-            $exitDeadline = [DateTime]::UtcNow.AddSeconds(120)
-            while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and
-                [DateTime]::UtcNow -lt $exitDeadline) {
-                Start-Sleep -Milliseconds 500
-            }
+        if (-not (Resolve-KmgRestorationNeeded -BeforeSha256 $before.Sha256 `
+            -AfterScenarioSha256 $deployed.Sha256)) {
+            $record.restoration = 'not-needed'
+            Write-Host 'Live tree already matches the pre-run snapshot; nothing to restore.'
+        }
+        else {
+            try {
+                # The harness returns while Kingmaker is still shutting down, and a
+                # restore during that window is refused. Wait for the process to go
+                # rather than treating the race as a restoration failure.
+                $exitDeadline = [DateTime]::UtcNow.AddSeconds(120)
+                while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and
+                    [DateTime]::UtcNow -lt $exitDeadline) {
+                    Start-Sleep -Milliseconds 500
+                }
 
-            # A run that aborted mid-transaction can leave its own compatibility
-            # lock behind. Release it only when this batch owns it; the helper
-            # throws if the recorded owner differs.
-            $compatibilityLock = 'C:\Dev\KingmakerGunslingerLab\compatibility-state\compatibility.lock'
-            if (-not $startupPeerScope -and (Test-Path -LiteralPath $compatibilityLock -PathType Leaf)) {
-                $lockOwner = (Get-Content -LiteralPath $compatibilityLock -Raw).Trim()
-                if (Test-KmgCompatibilityLockOwned -LockOwner $lockOwner `
-                    -BatchStartedUtc ([DateTime]$record.startedAtUtc)) {
-                    . (Join-Path $PSScriptRoot 'compatibility\CompatibilityProfile.Common.ps1')
-                    Remove-KmgCompatibilityOwnedLock -LockPath $compatibilityLock -RunId $lockOwner
-                    $record.releasedStaleCompatibilityLock = $lockOwner
+                # A run that aborted mid-transaction can leave its own compatibility
+                # lock behind. Release it only when this batch owns it; the helper
+                # throws if the recorded owner differs.
+                $compatibilityLock = 'C:\Dev\KingmakerGunslingerLab\compatibility-state\compatibility.lock'
+                if (-not $startupPeerScope -and (Test-Path -LiteralPath $compatibilityLock -PathType Leaf)) {
+                    $lockOwner = (Get-Content -LiteralPath $compatibilityLock -Raw).Trim()
+                    if (Test-KmgCompatibilityLockOwned -LockOwner $lockOwner `
+                        -BatchStartedUtc ([DateTime]$record.startedAtUtc)) {
+                        . (Join-Path $PSScriptRoot 'compatibility\CompatibilityProfile.Common.ps1')
+                        Remove-KmgCompatibilityOwnedLock -LockPath $compatibilityLock -RunId $lockOwner
+                        $record.releasedStaleCompatibilityLock = $lockOwner
+                    } else {
+                        $record.foreignCompatibilityLock = $lockOwner
+                    }
+                }
+
+                Assert-KmgNotRunning
+                $restoreArguments=@{BackupDirectory=$snapshot.Destination;LiveModDirectory=$LiveModDirectory;Confirm=$false}
+                if($startupPeerScope){$restoreArguments.RuntimeLease=$startupPeerScope.Lease}
+                & (Join-Path $PSScriptRoot 'Restore-Live-Mod.ps1') @restoreArguments | Out-Null
+                $after = Get-KmgTreeFingerprint -Directory $LiveModDirectory
+                $record.liveAfterRestore = [ordered]@{ files = $after.Files; sha256 = $after.Sha256 }
+                $record.restoration = Resolve-KmgRestorationResult `
+                    -BeforeSha256 $before.Sha256 -RestoredSha256 $after.Sha256
+                if ($record.restoration -ne 'verified') {
+                    Write-Warning "Restored tree does not match the pre-run fingerprint. Snapshot retained: $($snapshot.Destination)"
                 } else {
-                    $record.foreignCompatibilityLock = $lockOwner
+                    Write-Host "Restored live tree to pre-run state: sha256=$($after.Sha256)"
                 }
             }
-
-            Assert-KmgNotRunning
-            $restoreArguments=@{BackupDirectory=$snapshot.Destination;LiveModDirectory=$LiveModDirectory;Confirm=$false}
-            if($startupPeerScope){$restoreArguments.RuntimeLease=$startupPeerScope.Lease}
-            & (Join-Path $PSScriptRoot 'Restore-Live-Mod.ps1') @restoreArguments | Out-Null
-            $after = Get-KmgTreeFingerprint -Directory $LiveModDirectory
-            $record.liveAfterRestore = [ordered]@{ files = $after.Files; sha256 = $after.Sha256 }
-            $record.restoration = Resolve-KmgRestorationResult `
-                -BeforeSha256 $before.Sha256 -RestoredSha256 $after.Sha256
-            if ($record.restoration -ne 'verified') {
-                Write-Warning "Restored tree does not match the pre-run fingerprint. Snapshot retained: $($snapshot.Destination)"
-            } else {
-                Write-Host "Restored live tree to pre-run state: sha256=$($after.Sha256)"
+            catch {
+                $record.restoration = 'FAILED'
+                $record.restorationError = $_.Exception.Message
+                Write-Warning "Restoration failed. The snapshot is intact at $($snapshot.Destination): $($_.Exception.Message)"
             }
         }
-        catch {
-            $record.restoration = 'FAILED'
-            $record.restorationError = $_.Exception.Message
-            Write-Warning "Restoration failed. The snapshot is intact at $($snapshot.Destination): $($_.Exception.Message)"
-        }
+    }
+    if ($cleanup.installationError) {
+        $record.restoration = 'FAILED'
+        $record.restorationError = $cleanup.installationError
+        Write-Warning "Installation inspection/restoration failed. The snapshot is intact at $($snapshot.Destination): $($cleanup.installationError)"
+    }
+    if (-not $record.Contains('restoration') -or $record.restoration -notin @('verified', 'not-needed')) {
+        $installationRestorationFailed = $true
+    }
+    $record.ummParamsRestoration = $cleanup.umm
+    if (-not $record.ummParamsRestoration.verified) {
+        $ummRestorationFailed = $true
+        Write-Warning ('UMM Params.xml restoration failed; backup and receipt retained: ' + $record.ummParamsRestoration.error)
+    } else {
+        Write-Host "UMM Params.xml restored to intake: $($record.ummParamsRestoration.disposition) sha256=$($record.ummParamsRestoration.restoredSha256)"
     }
 
     if($startupPeerScope){
@@ -474,3 +517,5 @@ finally {
     Write-Host "Restoration record: $recordPath"
 }
 if($startupRestorationFailed){throw 'Sprint40 startup restoration failed; inspect the exact restoration receipt before any further dispatch.'}
+if($installationRestorationFailed){throw 'Live installation restoration was not verified; restoration is not PASS. The snapshot and restoration record are retained.'}
+if($ummRestorationFailed){throw 'UMM Params.xml restoration failed; restoration is not PASS. Recover with scripts\Restore-UmmParams.ps1 from the retained receipt.'}
