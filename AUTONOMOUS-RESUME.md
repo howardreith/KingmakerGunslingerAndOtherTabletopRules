@@ -1,14 +1,16 @@
-# Alphabetical summon menus — draft checkpoint, native observation open
+# Alphabetical summon menus — draft PR #119, final native invocation FAIL / STOP
 
 Current (2026-11-09). See planning/summon-alphabetical-menus/STATUS.md. Branch
-`codex/summon-alphabetical-menus`, one draft PR against master. Separate from R1-R7,
+`codex/summon-alphabetical-menus`, draft PR #119 against master. Separate from R1-R7,
 which integrated through PR #118 (`1efd8a011e`).
 
-- Focused gate passes (46 selected). Candidate `2f7a1afb6ebd` failed natively: no menu was
-  opened, clicked or cast, but its census found late RacesUnleashed rows unsorted.
-- The corrected observer and late sort (`15a823fb61`) have not been observed natively.
-- Ledger: planning total 1,231 s; ceiling raised by the owner to 2,400 s (900 s target).
-- No merge, release or permanent install.
+- Focused gate 48 of 2,892 passing. Candidate `c55f40e53f36` native: 44 passed, 3 failed.
+- Established natively: census 93 of 93 sorted, late RacesUnleashed rows sorted, rollback
+  refuses, six real menus in order, selection routing in two menus.
+- Open: no native cast of a reordered choice (observer defect), no visible RacesUnleashed row
+  in a popup (gated on `SpiderSummonerFeature`), no scroll movement, alternate selection.
+- Install, saves, settings and `Params.xml` restored exactly. Ledger about 1,961 of 2,400 s.
+- No further build or native invocation is authorized. No merge, release or permanent install.
 
 ---
 
