@@ -1,4 +1,19 @@
-# Alphabetical summon menus — accepted, PR #119 awaiting owner review / STOP
+# Cleric alignment restrictions — draft PR, native run FAIL before any menu / STOP
+
+Current (2026-11-09). See planning/summon-cleric-alignment/STATUS.md. Branch
+`codex/summon-cleric-alignment`, one draft PR against master. v0.0.180 is published.
+
+- Focused gate 21 of 2,902 passing. Candidate `059854c046e1` native: FAIL before a menu opened.
+- Established natively: only the route census (9 parents, 617 of 621 children gated, 0 unclassified).
+- Not observed: menu filtering, legal cast, forbidden attempt, deity and non-cleric controls.
+- Herald Caller conversions above tier I bypass the gate; owner decision needed.
+- Source corrections after the run (`0d1cd93f8b`) were not built or run. PR #121 records v0.0.180.
+- Install, saves, settings and `Params.xml` restored exactly. Ledger about 591 of 1,800 s.
+- No further build or native invocation is authorized. No merge, release or permanent install.
+
+---
+
+# (superseded) Alphabetical summon menus — accepted, PR #119 merged / STOP
 
 Current (2026-11-09). See planning/summon-alphabetical-menus/STATUS.md. Branch
 `codex/summon-alphabetical-menus`, draft PR #119 against master. Separate from R1-R7,
