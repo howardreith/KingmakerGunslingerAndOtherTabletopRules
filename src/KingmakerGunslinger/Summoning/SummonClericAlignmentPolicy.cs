@@ -214,10 +214,39 @@ namespace KingmakerGunslinger.Summoning
             throw new InvalidOperationException("Summon choice has no cleric alignment classification: " + creatureKey);
         }
 
+        /// <summary>The creature a retained native quantity ability actually
+        /// summons for this caster, chosen by its own alignment branch, never
+        /// a union of the branches. Throws if the row is unclassified.</summary>
+        internal static SummonSpellAlignment ForNativeOption(SummonNativeOptionSpec native, SummonAlignmentAxes caster)
+        {
+            if (native == null) throw new ArgumentNullException("native");
+            if (native.IsSemanticDuplicate)
+            {
+                SummonCreatureSpec creature = ExpandedSummoningCatalog.All.Single(value => value.Key == native.EquivalentCreatureKey);
+                return For(creature.Key, creature.MonsterTemplated);
+            }
+            bool evil = (caster & SummonAlignmentAxes.Evil) != 0;
+            SummonNativeSpawnBranch wanted = evil ? SummonNativeSpawnBranch.Evil : SummonNativeSpawnBranch.NonEvil;
+            SummonNativeExpansionSpec[] specs = SummonNativeExpansionCatalog.All.Where(value => value.Family == native.Family &&
+                value.SourceAbilityGuid == native.Guid && (value.Branch == wanted || value.Branch == SummonNativeSpawnBranch.Direct)).ToArray();
+            if (specs.Length == 1) return For(specs[0].IconKey, false);
+            if (specs.Length == 0 && !evil)
+            {
+                string[] generated = SummonNativeOptionCatalog.RequiredGeneratedCreatureKeys(native);
+                if (generated.Length == 1) return For(generated[0], false);
+            }
+            throw new InvalidOperationException("Native summon row has no classified branch: " + native.Guid);
+        }
+
         internal static void Validate()
         {
             foreach (SummonCreatureSpec creature in ExpandedSummoningCatalog.All.Where(value => value.MonsterTier.HasValue))
                 For(creature.Key, creature.MonsterTemplated);
+            foreach (SummonNativeOptionSpec native in SummonNativeOptionCatalog.All.Where(value => value.Family == SummonFamily.Monster && value.Tier >= 2))
+            {
+                ForNativeOption(native, SummonAlignmentAxes.None);
+                ForNativeOption(native, SummonAlignmentAxes.Evil);
+            }
             foreach (SummonNativeExpansionSpec native in SummonNativeExpansionCatalog.All.Where(value => value.Family == SummonFamily.Monster))
                 For(native.IconKey, false);
         }

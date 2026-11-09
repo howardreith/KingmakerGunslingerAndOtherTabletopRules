@@ -161,6 +161,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR7Models.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonAlphabeticalMenus.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonClericAlignment.cs" />
+    <Compile Include="RuntimeTesting\SummonClericObservationVerdict.cs" />
     <Compile Include="RuntimeTesting\AlphabeticalMenuObservationVerdict.cs" />
     <Compile Include="Summoning\SummonPlaytestR6Policy.cs" />
     <Compile Include="Summoning\SummonAbilityCastCue.cs" />
