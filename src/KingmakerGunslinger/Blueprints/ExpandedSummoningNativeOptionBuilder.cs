@@ -69,6 +69,8 @@ namespace KingmakerGunslinger.Blueprints
                             StringComparison.Ordinal));
                 effect.Actions = new ActionList { Actions = new GameAction[] {
                     chosen } };
+                if (spec.Family == SummonFamily.Monster)
+                    ExpandedSummoningAbilityBuilder.AttachClericAlignmentGate(target, spec.IconKey, false);
                 target.Hidden = false;
                 target.ActionBarAutoFillIgnored = false;
                 BlueprintUnitFactAccess.Resolve().Configure(target,
