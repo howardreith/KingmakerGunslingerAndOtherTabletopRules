@@ -66,12 +66,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             private static readonly System.Reflection.MethodInfo EncodeJpg =
                 Type.GetType("UnityEngine.ImageConversion, UnityEngine.ImageConversionModule", true)
                     .GetMethod("EncodeToJPG", new[] { typeof(Texture2D), typeof(int) });
-            private Vector3? _direction;
+            private Vector3? _direction; private readonly float _minimumRadius;
             internal readonly JArray Rows = new JArray(); internal readonly string Name; internal int Count; internal int OutOfFrame; internal int Occluded = -1;
 
-            internal R6Clip(string evidence, string name, Func<Bounds> subject)
+            internal R6Clip(string evidence, string name, Func<Bounds> subject, Vector3? fixedBearing = null, float minimumRadius = .9f)
             {
-                Name = name; _subject = subject;
+                Name = name; _subject = subject; _direction = fixedBearing; _minimumRadius = minimumRadius; if (fixedBearing.HasValue) Occluded = 0;
                 _directory = Path.Combine(evidence, "r6-frames", name); Directory.CreateDirectory(_directory);
                 CameraRig rig = TeleportationCastingCamera();
                 _camera = rig == null ? Camera.main : rig.Camera;
@@ -108,9 +108,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     if (depth != null) depth.enabled = false;
                     Bounds bounds = _subject();
-                    float radius = Mathf.Max(bounds.extents.magnitude, .9f);
+                    float radius = Mathf.Max(bounds.extents.magnitude, _minimumRadius);
                     float fit = Mathf.Sin(Mathf.Deg2Rad * Mathf.Min(_camera.fieldOfView, _camera.fieldOfView * 16f / 9f) * .5f);
-                    float distance = Mathf.Max(radius * 1.25f / Mathf.Max(fit, .05f), 2.4f);
+                    float distance = Mathf.Max(radius * 1.25f / Mathf.Max(fit, .05f), Mathf.Min(2.4f, radius * 3f));
                     Vector3 direction = Bearing(bounds, distance);
                     _camera.transform.position = bounds.center + direction * distance;
                     _camera.transform.rotation = Quaternion.LookRotation(bounds.center - _camera.transform.position, Vector3.up);

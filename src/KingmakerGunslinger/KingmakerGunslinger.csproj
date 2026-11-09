@@ -158,6 +158,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR4Mephit.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR5Spells.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR6Presentation.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR7Models.cs" />
     <Compile Include="Summoning\SummonPlaytestR6Policy.cs" />
     <Compile Include="Summoning\SummonAbilityCastCue.cs" />
     <Compile Include="Summoning\SummonCastCueLifecycle.cs" />
