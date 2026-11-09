@@ -27,8 +27,9 @@ namespace KingmakerGunslinger.DomainTests
         /// to <see cref="IdentitiesAreDisjointDeterministicAndRegistered"/>.</summary>
         internal static bool IsAdapterIdentity(string symbol)
         {
-            return symbol != null && symbol.StartsWith(
-                AlternateSummoningProjection.SymbolPrefix, StringComparison.Ordinal);
+            return symbol != null && (symbol.StartsWith(
+                AlternateSummoningProjection.SymbolPrefix, StringComparison.Ordinal) ||
+                symbol.StartsWith("KMG.Summoning.Spider.", StringComparison.Ordinal));
         }
 
         internal static int AppendedLedgerIdentities

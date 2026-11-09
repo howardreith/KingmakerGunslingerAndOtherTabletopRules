@@ -58,6 +58,12 @@ namespace KingmakerGunslinger.Summoning
                     ReferenceEquals(value.Spellbook, Book) && ReferenceEquals(value.Fact, Conversion.Fact) &&
                     ReferenceEquals(value.MetamagicData, Conversion.MetamagicData) && ProjectionVariants.Any(variant => ReferenceEquals(value.Blueprint, variant))); } }
         }
+        private static bool SpiderOverlayAdmits(BlueprintAbility row, SummonFamily family, int tier, SummonMultiplicity quantity)
+        {
+            SpiderPlacement placement = SpiderSummonerIntegration.PlacementOf(row);
+            return placement != null && placement.Family == family && placement.Tier == tier && placement.Quantity == quantity;
+        }
+
         internal static Receipt For(AbilityData child)
         { Receipt receipt; return child != null && Receipts.TryGetValue(child, out receipt) && receipt.Current ? receipt : null; }
 
@@ -258,10 +264,11 @@ namespace KingmakerGunslinger.Summoning
                     var projection = variants.Where(value => expected.Any(owned => ReferenceEquals(owned, value)) ||
                         SummonNativeOptionCatalog.All.Any(native => native.Family == route.Family && native.Tier == tier &&
                             native.Multiplicity == quantity && native.Guid == value.AssetGuid) ||
-                        // A verified third-party row at its own tier and quantity,
-                        // under its own native prerequisite. Herald Caller only.
-                        SummonForeignRowPolicy.AdmittedToConversion(route == DruidSummonConversionPolicy.Herald, tier, quantity,
-                            SummonForeignRowRuntime.Resolve(value), new AbilityData(value, book).IsVisible())).ToArray();
+                        // A verified third-party row or a published Spider Summoner
+                        // overlay row, in this route's family at its own tier and
+                        // quantity, under its own native prerequisite.
+                        ((SummonForeignRowPolicy.AdmittedToConversion(route.Family, tier, quantity, SummonForeignRowRuntime.Resolve(value), true) ||
+                            SpiderOverlayAdmits(value, route.Family, tier, quantity)) && new AbilityData(value, book).IsVisible())).ToArray();
                     // Forbidden rows are dropped here so the projected rows stay
                     // the rows the menu keeps. Execution is still gated separately.
                     if (route == DruidSummonConversionPolicy.Herald)
