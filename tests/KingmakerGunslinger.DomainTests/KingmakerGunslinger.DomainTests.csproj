@@ -66,6 +66,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonActionTooltipPolicy.cs"><Link>Summoning\SummonActionTooltipPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\MephitBreathPolicy.cs"><Link>Summoning\MephitBreathPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonPlaytestR5Policy.cs"><Link>Summoning\SummonPlaytestR5Policy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\AlphabeticalMenuObservationVerdict.cs"><Link>RuntimeTesting\AlphabeticalMenuObservationVerdict.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SummonReadinessAdmissionPolicy.cs"><Link>RuntimeTesting\SummonReadinessAdmissionPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonReachRepresentation4Policy.cs"><Link>Summoning\SummonReachRepresentation4Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SummonAdjacentRoutineVerdict4.cs"><Link>RuntimeTesting\SummonAdjacentRoutineVerdict4.cs</Link></Compile>
