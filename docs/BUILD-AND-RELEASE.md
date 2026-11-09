@@ -2,6 +2,27 @@
 
 ## 0.0.181 publication authorization
 
+**Published (completed).** Stable
+[v0.0.181](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.181)
+is Latest and not a prerelease. The annotated tag `e29f4a7261` peels to the
+release commit `daf87b5456`.
+
+- **Gate.** The complete suite passed 2,913/2,913 with 0 failures.
+- **Builds.** Two deterministic exact-reference builds produced identical
+  archives:
+  - package SHA-256
+    `6733aea0c131c80a28482ca91ab11a8e1ce23381c7942ed94317929a4dfc8532`;
+  - DLL SHA-256
+    `c34783de6a05e09841896b765ec298634ff9b85ac24ba69613f171e9b3109678`;
+  - MVID `6f7f70db-5d5a-4802-88ea-463aefbf8086`.
+- **Public download.** The asset matched `SHA256SUMS.txt`, the manifest names the release
+  commit, and the embedded `Info.json` reads 0.0.181 with the matching DLL.
+- **Timing.** The publisher took 1,220 s. With the preparatory complete suite (81 s) and the
+  repository wrapper (374 s), the release spent about 1,675 s against its 30-minute planning
+  budget.
+- **Installation.** The installed mod is untouched and still reads 0.0.140.
+- **Merges.** PR #122 was merged as `2f5703f7c9`. The owner merged release PR #123 as `daf87b5456`.
+
 On 2026-11-09 Howie wrote: "Merge PR #122 and cut a release". No channel was named, so this
 follows v0.0.180 as the next stable patch, v0.0.181, from master after PR #122.
 

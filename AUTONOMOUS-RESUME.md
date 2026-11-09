@@ -1,8 +1,8 @@
-# Cleric alignment restrictions — complete and owner-accepted / PR #122 ready for review / STOP
+# Cleric alignment restrictions — complete, owner-accepted and released in v0.0.181 / STOP
 
-Current (2026-11-09). See planning/summon-cleric-alignment/STATUS.md. Branch
-`codex/summon-cleric-alignment`, PR #122 against master, ready for review. v0.0.180 is published
-and unchanged; this feature is unreleased until separately authorized.
+Current (2026-11-09). See planning/summon-cleric-alignment/STATUS.md. PR #122 merged as `2f5703f7c9`.
+Stable v0.0.181 is Latest, from release commit `daf87b5456`, package `6733aea0...8532`, with the
+accepted exception in `KNOWN-ISSUES.md` and its notes. The installed mod still reads 0.0.140.
 
 Cleric alignment mission complete and owner-accepted for the present scope, with known Races
 Unleashed compatibility limitations deferred to a separate mission. The latest native invocation
@@ -10,12 +10,11 @@ remains FAIL, 70 PASS / 1 FAIL; its unresolved third-party census findings are a
 owner-accepted exception, not a passing result.
 
 - Results stay with their candidates: `059854c046e1` FAIL 4/3, `03a87b348912` FAIL 49/1, `efc75b8cc0b0` FAIL 70/1.
-- Release preparation must carry the accepted exception in STATUS.md into the known-limitations notes.
 - Races Unleashed work is parked: planning/races-unleashed-compatibility/MISSION.md is DEFERRED and
   NOT AUTHORIZED TO START. Do not resume it from this file.
 - Product code, observers, tests, blueprints and assets are frozen at `efc75b8cc0b0`.
 - Install, saves, settings and `Params.xml` restored exactly. Ledger about 2,026 of 2,400 s, closed.
-- No build, native run, merge, release or permanent install follows without explicit owner authorization.
+- No further build, native run, merge, release or permanent install follows without explicit owner authorization.
 
 ---
 
