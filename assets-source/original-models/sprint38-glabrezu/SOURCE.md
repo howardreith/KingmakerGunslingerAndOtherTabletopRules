@@ -1,3 +1,16 @@
+## R7 owner-playtest revision (Glabrezu)
+
+The small arms were rooted outside the chest surface and left out of the skin union, which was the visible detachment. They now start inside subpectoral mounds and are united with the skin. The boxed head became one tapered canine skull, the banded barrel a V-shaped torso, and the forearms carry chitin vambraces. The small arms still follow the chest because the rig has only two arm chains.
+
+Generation stays the existing Blender 4.5.10 generator interface with `PYTHONHASHSEED=0` and the local rig capture `6443b580c8019d2a32de616ef610df3c2aa851c7c998044b56e0c29b4494e65d`; two clean runs produced byte-identical exports. Texture coordinates now come from the scoped `continuous-bodies/outsider_bake.py`, so the five atlas tiles are authoring material IDs and the albedo is baked from bind-pose position, normal and cavity. Only project-authored geometry and closed-form colour are inputs. No mechanics, reach, collision, attack, GUID or icon changed. Offline renders and native frames are presentation evidence; owner aesthetic approval is separate.
+
+| Current export | Vertices / triangles (or size) | SHA-256 |
+| --- | --- | --- |
+| `glabrezu-mesh.json` | 10770 / 13280 | `fe091f17eef9af988ff86a32f90dba544dd1a3243bf8160c0809e85ae46b13d3` |
+| `glabrezu-albedo.png` | 1024 x 1024 | `4c2f15474aad86188320aed40463ccd6b891a03c0c9bc1ec8495d65a419ef34f` |
+
+Pre-R7 exports are retained at commit `70d44c8be7` and are not packaged.
+
 ## PR 96 review correction
 
 The larger beveled canine skull and visible swept horns carry its head silhouette. The smaller arms root higher and extend forward and laterally into negative space beside the waist, with larger hands; their chest-driven limitation remains. The pincer arms stay on the actual two native arm/digit chains. Calf/metatarsal forms and broad separated toes replace the rod/disc lower legs.
