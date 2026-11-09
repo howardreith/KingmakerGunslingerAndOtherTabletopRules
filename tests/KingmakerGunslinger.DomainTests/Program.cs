@@ -1385,6 +1385,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint18-instance-owned-resources", PrimateVisualTests.InstanceResourcesAreNamedPerInstance),
             Case("expanded-summoning.sprint18-review-expectations", PrimateVisualTests.ReviewExpectationsAgreeWithThePrintedRules),
             Case("expanded-summoning.sprint18-refined-bodies-outward", PrimateVisualTests.RefinedBodiesShipOutward),
+            Case("summon-playtest-r7.glabrezu-small-arms-fused", SummonPlaytestR7Tests.GlabrezuSmallArmsAreOneSkinWithTheChest),
+            Case("summon-playtest-r7.export-loader-contracts", SummonPlaytestR7Tests.RevisedExportsSatisfyTheirLoaderContracts),
             Case("summon-playtest-r6.aid-cast-style", SummonPlaytestR6Tests.AidCastStyleSurvivesTargetRewriting),
             Case("summon-playtest-r6.redcap-kmg-origin", SummonPlaytestR6Tests.RedcapBindingRequiresKmgSummonContext),
             Case("summon-playtest-r6.observer-cast-gesture", SummonPlaytestR6Tests.ObserverRejectsMissingCastGesture),

@@ -1,3 +1,16 @@
+## R7 owner-playtest revision (Nalfeshnee)
+
+The rounded figure and slab wings are replaced on the same joints: a hunched boar-headed ape with a scapular hump, ribcage and pectoral shelf over one sagging gut, a wedge skull with flat rooting disc, underslung jaw, four tusks and a bristled mane, and wings grown from scapular mounds with three fingers and scalloped membranes. Width stays within the prior silhouette apart from the wing tips; the tallest point rises from 1.875 to 1.990 through ears and mane, with no scale change. The wings still follow the chest.
+
+Generation stays the existing Blender 4.5.10 generator interface with `PYTHONHASHSEED=0` and the local rig capture `6443b580c8019d2a32de616ef610df3c2aa851c7c998044b56e0c29b4494e65d`; two clean runs produced byte-identical exports. Texture coordinates now come from the scoped `continuous-bodies/outsider_bake.py`, so the five atlas tiles are authoring material IDs and the albedo is baked from bind-pose position, normal and cavity. Only project-authored geometry and closed-form colour are inputs. No mechanics, reach, collision, attack, GUID or icon changed. Offline renders and native frames are presentation evidence; owner aesthetic approval is separate.
+
+| Current export | Vertices / triangles (or size) | SHA-256 |
+| --- | --- | --- |
+| `nalfeshnee-mesh.json` | 12402 / 14392 | `19161c156fa8be5cf7e86a732146c7bc39465f40fc1d0f802de38c0f255c29ed` |
+| `nalfeshnee-albedo.png` | 1024 x 1024 | `15c93ef8a379bfa24dc1177d4da032f28f70d46a3fa610fde164a075eab3088c` |
+
+Pre-R7 exports are retained at commit `70d44c8be7` and are not packaged.
+
 ## Current owner visual-overhaul revision
 
 The November 2026 owner mission brings the previously deferred cosmetic work into scope. The current exports use opt-in `continuous-bodies/outsider_surface.py` to unite organic skin and blend the existing two-influence weights. Individual teeth, horns, feather vanes and membranes retain intentional ownership. The original rig articulation limits remain. No mechanical profile, attack, route, GUID, icon or save identity changed.
