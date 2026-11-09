@@ -126,3 +126,13 @@
   target fixtures for Targeting/Bleeding Wound. Focused domain and production
   regression scenarios remain authoritative; Expanded Summoning does not
   patch firearm or deed execution paths.
+- Cleric summon alignment and Races Unleashed (owner-accepted limitation since
+  v0.0.181). With Races Unleashed's Spider Summoner feature, "Summon Monster V
+  (Ogre Spider)" summons a Bralani or a Redcap, not an ogre spider, in the tested
+  installation; clerics are restricted by the creature that actually appears. Giant
+  Crab Spider and Giant Black Widow are not classified by the cleric alignment rule
+  and keep their native behavior. Black Widow, and by the same rule Crab Spider, is
+  not offered in a Herald Caller conversion. The latest native result for this
+  feature remains FAIL, 70 PASS / 1 FAIL; those unresolved census findings are an
+  explicit owner-accepted exception, not a passing result. Further work is parked in
+  `planning/races-unleashed-compatibility/MISSION.md`.
