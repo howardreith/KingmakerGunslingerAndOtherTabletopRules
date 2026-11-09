@@ -7,8 +7,10 @@ owner-accepted exception, not a passing result.**
 
 Accepted by the owner on 2026-11-09, as a records-only closeout. Product code, observers, tests,
 blueprints and assets are frozen at tested candidate `efc75b8cc0b08da3220d9d1151860899d94adb99`. PR #122
-is ready for review. The feature is unreleased until separately authorized; published v0.0.180 and its
-assets are unchanged. Deferred work is parked, not authorized, in
+was merged as `2f5703f7c9`, and the feature shipped in stable v0.0.181 (release commit `daf87b5456`,
+package `6733aea0c131c80a28482ca91ab11a8e1ce23381c7942ed94317929a4dfc8532`). The native results above
+stay with their development candidates; none was re-executed on the release build. The accepted
+exception is in `KNOWN-ISSUES.md` and the v0.0.181 notes. Deferred work is parked, not authorized, in
 [races-unleashed-compatibility/MISSION.md](../races-unleashed-compatibility/MISSION.md).
 
 ## ACCEPTED EXCEPTION: carry into release known-limitations
