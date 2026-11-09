@@ -6,8 +6,8 @@ Generation stays the existing Blender 4.5.10 generator interface with `PYTHONHAS
 
 | Current export | Vertices / triangles (or size) | SHA-256 |
 | --- | --- | --- |
-| `glabrezu-mesh.json` | 10770 / 13280 | `1e139167b95418fc8ed102bfaa141e7d69c8f5370941031481531247d5706031` |
-| `glabrezu-albedo.png` | 1024 x 1024 | `df4286933891a287a65dd78f010b689f5ad75987789429aa5c68cfe21eac0155` |
+| `glabrezu-mesh.json` | 10770 / 13280 | `fe091f17eef9af988ff86a32f90dba544dd1a3243bf8160c0809e85ae46b13d3` |
+| `glabrezu-albedo.png` | 1024 x 1024 | `4c2f15474aad86188320aed40463ccd6b891a03c0c9bc1ec8495d65a419ef34f` |
 
 Pre-R7 exports are retained at commit `70d44c8be7` and are not packaged.
 

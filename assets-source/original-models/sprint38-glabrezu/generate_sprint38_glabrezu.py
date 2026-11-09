@@ -254,8 +254,8 @@ def colour(p, n, region, cavity):
     # Paler chest and abdomen so the small arms' roots read against the torso.
     chest = bake.smooth(-.10, .55, n[:, 1]) * bake.smooth(.92, 1.06, z) * \
         (1 - bake.smooth(1.56, 1.72, z)) * (1 - bake.smooth(.26, .44, np.abs(x)))
-    flesh = bake.mix(bake.rgb((.520, .330, .260), count),
-                     bake.rgb((.430, .245, .205), count),
+    flesh = bake.mix(bake.rgb((.440, .275, .220), count),
+                     bake.rgb((.370, .210, .175), count),
                      bake.smooth(.35, .70, surface.fbm(p, 12.0, 91)))
     skin = bake.mix(hide, flesh, chest * .90)
     # Burned-dark hands, feet and small-arm tips fade out of the hide.
@@ -293,7 +293,7 @@ def colour(p, n, region, cavity):
     result = np.where((region == bake.LIMBS)[..., None], chitin, result)
     result = np.where((region == bake.BEAK)[..., None], horn, result)
     result = np.where((region == bake.CREST)[..., None], eye, result)
-    shade = .38 + .62 * bake.smooth(.12, .78, cavity)
+    shade = .32 + .68 * bake.smooth(.30, .90, cavity)
     shade = np.where(region == bake.CREST, 1.0, shade)
     return result * shade[..., None]
 

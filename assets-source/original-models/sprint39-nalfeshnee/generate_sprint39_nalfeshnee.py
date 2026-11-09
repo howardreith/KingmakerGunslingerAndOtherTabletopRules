@@ -303,8 +303,8 @@ def colour(p, n, region, cavity):
     # Sagging belly, chest and inner arms fade to a dusty, bruised flesh.
     front = bake.smooth(-.15, .55, n[:, 1]) * bake.smooth(.04, .26, y)
     gut = front * bake.smooth(.50, .62, z) * (1 - bake.smooth(1.38, 1.60, z))
-    flesh = bake.mix(bake.rgb((.505, .405, .345), count),
-                     bake.rgb((.405, .305, .295), count),
+    flesh = bake.mix(bake.rgb((.450, .355, .300), count),
+                     bake.rgb((.360, .270, .260), count),
                      bake.smooth(.35, .70, surface.fbm(p, 9.0, 37)))
     skin = bake.mix(hide, flesh, gut * .92)
     # Darken toward hands and feet so the extremities separate from the gut.
@@ -354,7 +354,7 @@ def colour(p, n, region, cavity):
     result = np.where((region == bake.CREST)[..., None], eye, result)
     # Baked cavity: the folds, armpits and neck crease carry the form even
     # under the game's flat summon lighting. Eyes keep their value.
-    shade = .38 + .62 * bake.smooth(.12, .78, cavity)
+    shade = .32 + .68 * bake.smooth(.30, .90, cavity)
     shade = np.where(region == bake.CREST, 1.0, shade)
     return result * shade[..., None]
 
