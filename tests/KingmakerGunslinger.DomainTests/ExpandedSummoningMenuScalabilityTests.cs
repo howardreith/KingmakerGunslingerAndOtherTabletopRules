@@ -123,10 +123,9 @@ namespace KingmakerGunslinger.DomainTests
 
         /// <summary>
         /// Production-compatible ordering, proved through the shipped
-        /// SummonDisplayOrderPolicy rather than asserted about a planning list.
-        /// The alphabetical order the manifest returns is a stable enumeration,
-        /// not the menu contract; the menu contract is singles, then 1d3, then
-        /// 1d4+1, with unrelated foreign children preserved at the end.
+        /// SummonDisplayOrderPolicy on every parent's projected roster: the
+        /// displayed creature name leads, equal names order one/1d3/1d4+1, and
+        /// unrelated foreign children stay at the end in their relative order.
         /// </summary>
         internal static void ProjectedOrderMatchesTheShippedContract()
         {
@@ -137,54 +136,44 @@ namespace KingmakerGunslinger.DomainTests
                 {
                     int scopedParent = parent;
                     SummonFamily scopedFamily = family;
-
-                    // Two unrelated third-party children that must survive in
-                    // place: the policy identifies them by having no quantity.
                     string[] foreign = { "third-party-alpha", "third-party-omega" };
+                    string[] placements = ExpandedSummoningIdealRosterCatalog
+                        .Placements(scopedFamily, scopedParent)
+                        .Select(value => value.Key).ToArray();
+                    Func<string, SummonMultiplicity> quantity = value =>
+                        ExpandedSummoningIdealRosterCatalog.Multiplicity(
+                            ExpandedSummoningIdealRosterCatalog.Find(value)
+                                .Tier(scopedFamily).Value, scopedParent);
+                    Func<string, SummonMenuOrderKey> key = value =>
+                        foreign.Contains(value, StringComparer.Ordinal) ?
+                            SummonMenuOrderKey.Host(value, null, value, false) :
+                            SummonMenuOrderKey.Owned(SummonChoicePresentationPolicy.For(
+                                value, quantity(value)), value);
 
                     IReadOnlyList<string> ordered = SummonDisplayOrderPolicy.Order(
-                        foreign,
-                        ExpandedSummoningIdealRosterCatalog
-                            .Placements(scopedFamily, scopedParent)
-                            .Select(value => value.Key).ToArray(),
-                        value => (SummonMultiplicity?)null,
-                        value => ExpandedSummoningIdealRosterCatalog.Multiplicity(
-                            ExpandedSummoningIdealRosterCatalog.Find(value)
-                                .Tier(scopedFamily).Value, scopedParent));
+                        foreign, placements, key);
 
-                    int[] rank = ordered
-                        .Where(value => !foreign.Contains(value, StringComparer.Ordinal))
-                        .Select(value => ExpandedSummoningIdealRosterCatalog.Multiplicity(
-                            ExpandedSummoningIdealRosterCatalog.Find(value)
-                                .Tier(scopedFamily).Value, scopedParent))
-                        .Select(value => value == SummonMultiplicity.One ? 0
-                            : value == SummonMultiplicity.OneD3 ? 1 : 2)
-                        .ToArray();
-                    Assertions.True(rank.SequenceEqual(rank.OrderBy(value => value)),
-                        "Quantity groups are out of shipped order for " +
+                    string[] names = ordered.Where(value =>
+                        !foreign.Contains(value, StringComparer.Ordinal))
+                        .Select(value => SummonChoicePresentationPolicy.For(
+                            value, quantity(value)).CreatureName).ToArray();
+                    Assertions.True(names.SequenceEqual(names.OrderBy(value => value,
+                        StringComparer.OrdinalIgnoreCase)),
+                        "Creature names are out of alphabetical order for " +
                         scopedFamily + " " + scopedParent + ".");
 
-                    // Unrelated children are preserved, and left at the end.
-                    Assertions.Equal(foreign.Length,
-                        ordered.Count(value => foreign.Contains(value, StringComparer.Ordinal)),
-                        "Unrelated third-party children were dropped at " +
+                    Assertions.True(placements.OrderBy(value => value, StringComparer.Ordinal)
+                        .SequenceEqual(ordered.Where(value => !foreign.Contains(value,
+                            StringComparer.Ordinal)).OrderBy(value => value, StringComparer.Ordinal)),
+                        "The projected roster changed membership at " +
                         scopedFamily + " " + scopedParent + ".");
                     Assertions.True(
                         foreign.SequenceEqual(ordered.Skip(ordered.Count - foreign.Length)),
                         "Unrelated third-party children moved or reordered at " +
                         scopedFamily + " " + scopedParent + ".");
-
-                    // Ordering is stable: same input, same output.
                     Assertions.True(ordered.SequenceEqual(
-                        SummonDisplayOrderPolicy.Order(foreign,
-                            ExpandedSummoningIdealRosterCatalog
-                                .Placements(scopedFamily, scopedParent)
-                                .Select(value => value.Key).ToArray(),
-                            value => (SummonMultiplicity?)null,
-                            value => ExpandedSummoningIdealRosterCatalog.Multiplicity(
-                                ExpandedSummoningIdealRosterCatalog.Find(value)
-                                    .Tier(scopedFamily).Value, scopedParent))),
-                        "Projected ordering is not stable for " +
+                        SummonDisplayOrderPolicy.Order(foreign, placements.Reverse().ToArray(), key)),
+                        "Projected ordering depends on input order at " +
                         scopedFamily + " " + scopedParent + ".");
                 }
             }

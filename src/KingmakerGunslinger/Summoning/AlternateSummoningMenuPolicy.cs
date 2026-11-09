@@ -46,7 +46,8 @@ namespace KingmakerGunslinger.Summoning
     /// split options; one that descends from an established semantic
     /// duplicate collapses only when exactly one published project creature
     /// replaces it at that quantity; everything else the host offers -
-    /// including options from other mods - stays, by reference and order.
+    /// including options from other mods - stays by reference. The final
+    /// menu follows SummonDisplayOrderPolicy, as a spell parent does.
     /// </summary>
     internal static class AlternateSummoningMenuPolicy
     {
@@ -54,14 +55,14 @@ namespace KingmakerGunslinger.Summoning
             SummonFamily family, int tier, SummonMultiplicity? rootQuantity,
             IReadOnlyList<T> hostChildren,
             Func<T, string> hostLineage,
-            Func<T, SummonMultiplicity?> hostQuantity,
+            Func<T, SummonMenuOrderKey> hostOrder,
             IReadOnlyList<AlternateSummoningChoice> exposedCreatures,
             Func<AlternateSummoningChoice, T> creatureChild,
             IEnumerable<SummonNativeExpansionSpec> nativeOptions,
             Func<SummonNativeExpansionSpec, T> nativeChild) where T : class
         {
             if (hostChildren == null) throw new ArgumentNullException("hostChildren");
-            if (hostLineage == null || hostQuantity == null ||
+            if (hostLineage == null || hostOrder == null ||
                 creatureChild == null || nativeChild == null)
                 throw new ArgumentNullException();
             AlternateSummoningChoice[] creatures = (exposedCreatures ??
@@ -98,7 +99,7 @@ namespace KingmakerGunslinger.Summoning
                 else removed.Add(host);
             }
             var additions = new List<T>();
-            var additionQuantity = new Dictionary<T, SummonMultiplicity>(
+            var additionOrder = new Dictionary<T, SummonMenuOrderKey>(
                 ReferenceComparer<T>.Instance);
             foreach (AlternateSummoningChoice choice in creatures)
             {
@@ -106,7 +107,9 @@ namespace KingmakerGunslinger.Summoning
                 if (child == null) throw new InvalidOperationException(
                     "No adapter child for " + choice.Symbol + ".");
                 additions.Add(child);
-                additionQuantity.Add(child, choice.Multiplicity);
+                additionOrder.Add(child, SummonMenuOrderKey.Owned(
+                    SummonChoicePresentationPolicy.For(choice.Placement.Creature.Key,
+                        choice.Multiplicity), choice.Symbol));
             }
             foreach (SummonNativeExpansionSpec native in (nativeOptions ??
                 Enumerable.Empty<SummonNativeExpansionSpec>()).Where(value =>
@@ -118,10 +121,13 @@ namespace KingmakerGunslinger.Summoning
                 if (child == null) throw new InvalidOperationException(
                     "No adapter child for native option " + native.Symbol + ".");
                 additions.Add(child);
-                additionQuantity.Add(child, native.Multiplicity);
+                additionOrder.Add(child, SummonMenuOrderKey.Owned(
+                    SummonChoicePresentationPolicy.For(native.IconKey, native.Multiplicity),
+                    native.Symbol));
             }
             IReadOnlyList<T> final = SummonDisplayOrderPolicy.Order(kept, additions,
-                hostQuantity, value => additionQuantity[value]);
+                value => { SummonMenuOrderKey key; return additionOrder.TryGetValue(value, out key) ?
+                    key : hostOrder(value); });
             if (final.Count != kept.Count + additions.Count ||
                 final.Distinct(ReferenceComparer<T>.Instance).Count() != final.Count)
                 throw new InvalidOperationException(

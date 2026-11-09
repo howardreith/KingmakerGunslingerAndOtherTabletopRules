@@ -669,8 +669,8 @@ favor of one canonical choice. Its 67 summon-safe creature identities remain
 registered even when publication is disabled, allowing active summons and old
 saves to deserialize and clean up.
 
-The player-facing list presents current-tier singles before `1d3` and
-`1d4+1` groups. Exact Owlcat hybrid umbrellas are replaced in the menu by
+The player-facing list is alphabetical by the displayed, family-first creature
+name, with one, `1d3` and `1d4+1` in that order for equal names. Exact Owlcat hybrid umbrellas are replaced in the menu by
 distinct Redcap, Axiomite, Soul Eater, Bogeyman, Movanic Deva, Frost Giant,
 and Thanadaemon choices; their original blueprint objects remain registered.
 Dire Bat is intentionally hidden because no acceptable installed bat rig was

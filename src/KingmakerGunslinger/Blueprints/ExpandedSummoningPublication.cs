@@ -24,9 +24,8 @@ namespace KingmakerGunslinger.Blueprints
             {
                 if (!ReferenceEquals(record.Parent.ComponentsArray,
                     record.PublishedComponents) ||
-                    !ReferenceEquals(record.PublishedVariants.Variants,
-                        record.PublishedVariantArray) ||
-                    !SummonVariantMergePolicy.SameReferences(
+                    !SummonVariantMergePolicy.PublicationStillOwned(
+                        record.PublishedVariants.Variants,
                         record.PublishedVariantArray, record.PublishedChoices))
                     throw new InvalidOperationException(
                         "Expanded Summoning rollback refused after unrelated mutation: " +
@@ -190,6 +189,90 @@ namespace KingmakerGunslinger.Blueprints
             return exact;
         }
 
+        // Filled at publication, so a later reorder needs no second naming route.
+        private static readonly Dictionary<string, SummonMenuOrderKey> OwnedOrderKeys =
+            new Dictionary<string, SummonMenuOrderKey>(StringComparer.Ordinal);
+
+        private static SummonMenuOrderKey MenuOrderKey(BlueprintAbility value,
+            SummonFamily family, int tier)
+        {
+            SummonMenuOrderKey owned;
+            if (OwnedOrderKeys.TryGetValue(value.AssetGuid, out owned)) return owned;
+            SummonNativeOptionSpec native = SummonNativeOptionCatalog.Find(
+                family, tier, value.AssetGuid);
+            return HostOrderKey(value, native == null ? (SummonMultiplicity?)null :
+                native.Multiplicity, native != null);
+        }
+
+        /// <summary>
+        /// Another mod's LoadDictionary postfix can run after publication and
+        /// append rows to the published component (RacesUnleashed does, at a
+        /// lower Harmony priority). Once every postfix has finished, order the
+        /// published rows again. It writes a new array to this package's own
+        /// component only, and returns how many menus changed.
+        /// </summary>
+        internal static int ReorderLateHostRows(LibraryScriptableObject library)
+        {
+            int changed = 0;
+            var outcome = new List<string>();
+            foreach (SummonFamily family in new[] { SummonFamily.Monster,
+                SummonFamily.NaturesAlly })
+            for (int tier = 1; tier <= 9; tier++)
+            {
+                int scopedTier = tier; SummonFamily scopedFamily = family;
+                BlueprintAbility parent = BlueprintLibraryLookup
+                    .RequireExact<BlueprintAbility>(library, (family == SummonFamily.Monster ?
+                        MonsterParents : AllyParents)[tier - 1], "published summon parent");
+                if (!IsPublishedExpandedParent(parent)) continue;
+                int rows = parent.Variants == null ? 0 : parent.Variants.Length;
+                if (!ReorderPublishedMenu(parent, scopedFamily, scopedTier)) continue;
+                changed++;
+                outcome.Add(parent.name + ":" + rows);
+            }
+            LateOrderOutcome = "changed=" + changed + ";menus=" + string.Join(",", outcome.ToArray());
+            return changed;
+        }
+
+        /// <summary>The once-per-process late pass's result, for diagnostics.</summary>
+        internal static string LateOrderOutcome { get; private set; }
+
+        /// <summary>Orders one published menu in a new array on its own
+        /// component. The publication record is deliberately left as it was, so
+        /// a later rollback still refuses instead of restoring a pre-append array.</summary>
+        internal static bool ReorderPublishedMenu(BlueprintAbility parent, SummonFamily family, int tier)
+        {
+            AbilityVariants owned = (parent.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .OfType<AbilityVariants>().SingleOrDefault();
+            if (owned == null || !string.Equals(owned.name, PublishedVariantsComponentName,
+                StringComparison.Ordinal) || owned.Variants == null || owned.Variants.Any(value => value == null))
+                return false;
+            BlueprintAbility[] ordered = SummonDisplayOrderPolicy.ReorderedOrNull(owned.Variants,
+                value => MenuOrderKey(value, family, tier));
+            if (ordered == null) return false;
+            owned.Variants = ordered;
+            return true;
+        }
+
+        /// <summary>
+        /// Orders a native or other-mod row by the name it already shows. It
+        /// counts as a creature choice when its lineage is known or its own
+        /// actions spawn a creature; any other row stays unclassified.
+        /// </summary>
+        internal static SummonMenuOrderKey HostOrderKey(BlueprintAbility ability,
+            SummonMultiplicity? quantity, bool knownLineage)
+        {
+            return SummonMenuOrderKey.Host(VisibleName(ability), quantity, ability.AssetGuid,
+                knownLineage || AlternateSummoningGraph.SpawnUnits(ability).Count > 0);
+        }
+
+        private static string VisibleName(BlueprintAbility ability)
+        {
+            // Another mod's row may carry no usable localized name; that row
+            // is unclassified rather than a publication failure.
+            try { return ability.Name; }
+            catch (NullReferenceException) { return null; }
+        }
+
         private static void PublishParent(BlueprintAbility parent,
             SummonFamily family, int tier,
             BlueprintAbility nativePreservation, BlueprintAbility[] additions,
@@ -227,16 +310,17 @@ namespace KingmakerGunslinger.Blueprints
                 return native == null || !SummonNativeOptionCatalog
                     .ReplacementCoverageIsComplete(native, specs, nativeSpecs);
             }).ToArray();
+            foreach (var addition in additionSpecs)
+                OwnedOrderKeys[addition.Key] = SummonMenuOrderKey.Owned(
+                    SummonChoicePresentationPolicy.For(addition.Value.Creature.Key,
+                        addition.Value.Multiplicity), addition.Value.StableKey);
+            foreach (var addition in nativeAdditionSpecs)
+                OwnedOrderKeys[addition.Key] = SummonMenuOrderKey.Owned(
+                    SummonChoicePresentationPolicy.For(addition.Value.IconKey,
+                        addition.Value.Multiplicity), addition.Value.Symbol);
             IReadOnlyList<BlueprintAbility> merged = SummonDisplayOrderPolicy.Order(
                 preservedOriginals, additions.Concat(nativeAdditions),
-                value => {
-                    SummonNativeOptionSpec native = SummonNativeOptionCatalog.Find(
-                        family, tier, value.AssetGuid);
-                    return native == null ? (SummonMultiplicity?)null :
-                        native.Multiplicity;
-                }, value => additionSpecs.ContainsKey(value.AssetGuid) ?
-                    additionSpecs[value.AssetGuid].Multiplicity :
-                    nativeAdditionSpecs[value.AssetGuid].Multiplicity);
+                value => MenuOrderKey(value, family, tier));
             if (republishing && SummonVariantMergePolicy.SameReferences(
                 existing.Variants, merged.ToArray())) return;
             var variants = ScriptableObject.CreateInstance<AbilityVariants>();

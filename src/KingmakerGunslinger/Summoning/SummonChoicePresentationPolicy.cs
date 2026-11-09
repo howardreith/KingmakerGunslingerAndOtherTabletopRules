@@ -25,12 +25,20 @@ namespace KingmakerGunslinger.Summoning
         internal int SizeRank { get { return (int)Size; } }
         internal SummonChoiceTemplate Template { get; private set; }
         internal SummonMultiplicity Quantity { get; private set; }
+        /// <summary>Family, subtype and size as shown, without template or quantity.</summary>
+        internal string CreatureName
+        {
+            get
+            {
+                return Family + (Subtype.Length == 0 ? "" : ", " + Subtype) +
+                    (Size == SummonChoiceSize.None ? "" : ", " + Size);
+            }
+        }
         internal string Label
         {
             get
             {
-                string label = Family + (Subtype.Length == 0 ? "" : ", " + Subtype) +
-                    (Size == SummonChoiceSize.None ? "" : ", " + Size);
+                string label = CreatureName;
                 if (Template != SummonChoiceTemplate.None)
                     label += " (" + Template + ")";
                 return label + (Quantity == SummonMultiplicity.One ? "" :

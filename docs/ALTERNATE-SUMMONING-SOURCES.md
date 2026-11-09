@@ -81,7 +81,10 @@ Source:
    - An established semantic duplicate collapses only when exactly one
      published project creature replaces it at that quantity.
    - Every other host option, including other mods' options, stays by
-     reference and order.
+     reference. Creature choices sort with the rest of the menu; a row not
+     recognized as a creature choice stays at the end in its relative order.
+   - The final menu uses `SummonDisplayOrderPolicy`: creature name as
+     displayed (family-first), then one, 1d3, 1d4+1, then identity.
    - A direct root becomes a menu parent whose children include a frozen copy
      of its original cast. There is no parent/child cycle and no duplicate
      cast action.

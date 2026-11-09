@@ -51,6 +51,16 @@ namespace KingmakerGunslinger.Summoning
             return same ? current : result;
         }
 
+        /// <summary>Rollback may restore only while the live array is still
+        /// the published one with its published contents. Another mod's append,
+        /// or a later reorder, must therefore refuse rather than lose rows.</summary>
+        internal static bool PublicationStillOwned<T>(T[] live, T[] publishedArray,
+            T[] publishedChoices) where T : class
+        {
+            return ReferenceEquals(live, publishedArray) &&
+                SameReferences(publishedArray, publishedChoices);
+        }
+
         internal static bool SameReferences<T>(IList<T> left, IList<T> right)
             where T : class
         {

@@ -142,14 +142,15 @@ namespace KingmakerGunslinger.DomainTests
                 new[] { foreignA, known, foreignB }, new[] { known }, value => value.Guid);
             Assertions.True(originals.SequenceEqual(new[] { foreignA, foreignB }),
                 "Repeat publication must keep unknown third-party references and order.");
+            Func<Fake, SummonMenuOrderKey> key = value => SummonMenuOrderKey.Host(value.Guid,
+                ReferenceEquals(value, known) ? SummonMultiplicity.One : (SummonMultiplicity?)null,
+                value.Guid, ReferenceEquals(value, known));
             IReadOnlyList<Fake> first = SummonDisplayOrderPolicy.Order(originals,
-                new[] { known }, value => (SummonMultiplicity?)null,
-                value => SummonMultiplicity.One);
+                new[] { known }, key);
             IList<Fake> again = SummonVariantMergePolicy.UnownedOriginals(first,
                 new[] { known }, value => value.Guid);
             IReadOnlyList<Fake> second = SummonDisplayOrderPolicy.Order(again,
-                new[] { known }, value => (SummonMultiplicity?)null,
-                value => SummonMultiplicity.One);
+                new[] { known }, key);
             Assertions.True(SummonVariantMergePolicy.SameReferences(first.ToArray(), second.ToArray()),
                 "Repeated publication changed choices or third-party placement.");
             Assertions.Throws<InvalidOperationException>(() =>

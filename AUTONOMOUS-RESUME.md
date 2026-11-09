@@ -1,4 +1,25 @@
-# Summoned creature manual-playtest repair — R7 complete for review / STOP
+# Alphabetical summon menus — accepted, PR #119 awaiting owner review / STOP
+
+Current (2026-11-09). See planning/summon-alphabetical-menus/STATUS.md. Branch
+`codex/summon-alphabetical-menus`, draft PR #119 against master. Separate from R1-R7,
+which integrated through PR #118 (`1efd8a011e`).
+
+- Alphabetization accepted on existing source, focused-test and native menu evidence. Historical
+  native invocation remains FAIL because of observer setup defects. Observer corrections are
+  source/focused-check only; no further native run performed.
+- Candidates keep their verdicts: `2f7a1afb6ebd` FAIL; `c55f40e53f36` 44 PASS / 3 FAIL. Two of those
+  passes (alternate-row clicks) did not establish selection.
+- Observer corrections: `fbd117d4a3`, focused 11 of 2,894 passing. Not executed natively.
+- Established: census 93 of 93 arrays, six menus opened, two canonical selections, rollback
+  refusal on a transient parent, Druid factory/popup agreement.
+- Not established: a completed reordered cast, alternate selection, a feature-enabled spider
+  popup, scroll movement, console navigation, saved hotbars.
+- Install, saves, settings and `Params.xml` restored exactly on both runs. Ledger about 1,981 of
+  2,400 s. No merge, release or permanent install.
+
+---
+
+# (superseded) Summoned creature manual-playtest repair — R7 complete for review / STOP
 
 Current (2026-11-09). See planning/summon-playtest-repair/R7-STATUS.md. Branch
 `codex/summon-playtest-r7-models`; draft R7 PR on #116 on #115 on #114.
