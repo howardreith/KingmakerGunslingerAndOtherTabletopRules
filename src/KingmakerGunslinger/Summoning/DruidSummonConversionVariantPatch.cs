@@ -27,8 +27,11 @@ namespace KingmakerGunslinger.Summoning
     [HarmonyPatch(typeof(MechanicActionBarSlotMemorizedSpell), "GetConvertedAbilityData")]
     internal static class DruidSummonConversionVariantPatch
     {
-        private const string DruidClassGuid = DruidSummonConversionPolicy.DruidClassGuid;
-        private static readonly string[] AllyParents = ExpandedSummoningPublisher.CanonicalParentGuids.Skip(9).ToArray();
+        private static string[] ParentsOf(SummonConversionRoute route)
+        {
+            return route.Family == SummonFamily.NaturesAlly ? ExpandedSummoningPublisher.CanonicalParentGuids.Skip(9).ToArray() :
+                ExpandedSummoningPublisher.CanonicalParentGuids.Take(9).ToArray();
+        }
         internal static string Outcome = "not-used";
         private static readonly ConditionalWeakTable<AbilityData, Receipt> Receipts = new ConditionalWeakTable<AbilityData, Receipt>();
         internal sealed class Receipt
@@ -76,12 +79,12 @@ namespace KingmakerGunslinger.Summoning
 
         internal static bool ExactNativeFeature(BlueprintFeature feature, BlueprintCharacterClass druid)
         {
-            if (feature == null || feature.AssetGuid != DruidSummonConversionPolicy.FeatureGuid || druid == null ||
-                druid.AssetGuid != DruidClassGuid) return false;
+            var route = feature == null ? null : DruidSummonConversionPolicy.RouteForFeature(feature.AssetGuid);
+            if (route == null || druid == null || druid.AssetGuid != route.ClassGuid) return false;
             var components = (feature.ComponentsArray ?? new BlueprintComponent[0]).OfType<SpontaneousSpellConversion>().ToArray();
             return components.Length == 3 && components.All(value => ReferenceEquals(value.CharacterClass, druid)) &&
-                DruidSummonConversionPolicy.MatchesArrays(components.Select(value => value.SpellsByLevel?.Select(spell => spell?.AssetGuid))) &&
-                ReferenceEquals(feature, BlueprintLibraryLookup.RequireExact<BlueprintFeature>(BlueprintBootstrap.Library, feature.AssetGuid, "native Druid conversion feature")) &&
+                DruidSummonConversionPolicy.MatchesArrays(route, components.Select(value => value.SpellsByLevel?.Select(spell => spell?.AssetGuid))) &&
+                ReferenceEquals(feature, BlueprintLibraryLookup.RequireExact<BlueprintFeature>(BlueprintBootstrap.Library, feature.AssetGuid, "native conversion feature")) &&
                 components.SelectMany(value => value.SpellsByLevel).All(value => value == null || ReferenceEquals(value,
                     BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library, value.AssetGuid, "native Druid quantity conversion")));
         }
@@ -170,16 +173,16 @@ namespace KingmakerGunslinger.Summoning
         // registered, so the expected child set is cached per registry.
         private static object _expectedRegistry;
         private static readonly Dictionary<int, BlueprintAbility[]> ExpectedChildren = new Dictionary<int, BlueprintAbility[]>();
-        private static BlueprintAbility[] Expected(int tier, SummonMultiplicity quantity)
+        private static BlueprintAbility[] Expected(SummonConversionRoute route, int tier, SummonMultiplicity quantity)
         {
             var registered = ExpandedSummoningBlueprints.Registered;
             if (!ReferenceEquals(_expectedRegistry, registered)) { ExpectedChildren.Clear(); _expectedRegistry = registered; }
-            int key = tier * 16 + (int)quantity; BlueprintAbility[] expected;
+            int key = (route.Family == SummonFamily.Monster ? 1024 : 0) + tier * 16 + (int)quantity; BlueprintAbility[] expected;
             if (!ExpectedChildren.TryGetValue(key, out expected))
-                ExpectedChildren.Add(key, expected = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly).Where(value => value.ParentTier == tier &&
+                ExpectedChildren.Add(key, expected = ExpandedSummoningCatalog.GenerateVariants(route.Family).Where(value => value.ParentTier == tier &&
                     value.Multiplicity == quantity && SummonVisibilityCatalog.IsPublished(value))
                     .Select(value => registered.BySymbol[ExpandedSummoningIdentityCatalog.AbilitySymbol(value)] as BlueprintAbility)
-                    .Concat(SummonNativeExpansionCatalog.For(SummonFamily.NaturesAlly, tier).Where(value => value.Multiplicity == quantity)
+                    .Concat(SummonNativeExpansionCatalog.For(route.Family, tier).Where(value => value.Multiplicity == quantity)
                         .Select(value => registered.BySymbol[value.Symbol] as BlueprintAbility)).ToArray());
             return expected;
         }
@@ -197,22 +200,25 @@ namespace KingmakerGunslinger.Summoning
             try
             {
                 var source = __instance.Spell; var slot = __instance.SpellSlot; var book = source?.Spellbook;
-                if (book?.Blueprint.CharacterClass?.AssetGuid != DruidClassGuid) return;
+                var route = DruidSummonConversionPolicy.RouteForClass(book?.Blueprint.CharacterClass?.AssetGuid);
+                if (route == null) return;
                 Outcome = "checking-native-druid-source";
                 if (source == null || book == null || slot == null || slot.Type != SpellSlotType.Common || !ReferenceEquals(slot.Spell, source) ||
-                    source.Caster?.Unit == null || source.Caster.Unit.Destroyed || source.SourceItem != null || book.Blueprint.Spontaneous || book.Blueprint.CharacterClass?.AssetGuid != DruidClassGuid ||
+                    source.Caster?.Unit == null || source.Caster.Unit.Destroyed || source.SourceItem != null || book.Blueprint.Spontaneous || book.Blueprint.CharacterClass?.AssetGuid != route.ClassGuid ||
                     !ReferenceEquals(book.Owner, source.Caster) || !ReferenceEquals(__instance.Unit, source.Caster.Unit) ||
                     !source.Caster.Spellbooks.Any(value => ReferenceEquals(value, book)) ||
                     !book.GetMemorizedSpellSlots(slot.SpellLevel).Any(value => ReferenceEquals(value, slot)))
                 { Outcome = "preserve-native-druid-source-slot"; return; }
-                var druid = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library, DruidClassGuid, "native Druid conversion class");
+                var druid = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library, route.ClassGuid, "native conversion class");
                 // Native SpontaneousSpellConversion.OnTurnOn uses
                 // DemandSpellbook(class), which falls back to the default
                 // blueprint without ClassData (06001F0C). GetSpellbook(class)
                 // instead returns null (06001F0B). Verify the existing book
                 // by its exact blueprint, without demanding or adding one.
-                if (!ReferenceEquals(book.Blueprint.CharacterClass, druid) || !ReferenceEquals(book.Blueprint, druid.Spellbook) ||
-                    !ReferenceEquals(source.Caster.GetSpellbook(druid.Spellbook), book))
+                // A cleric's book is the class data's book, which an archetype may replace.
+                var ownBook = route == DruidSummonConversionPolicy.Herald ? source.Caster.Progression.GetClassData(druid)?.Spellbook : druid.Spellbook;
+                if (!ReferenceEquals(book.Blueprint.CharacterClass, druid) || ownBook == null || !ReferenceEquals(book.Blueprint, ownBook) ||
+                    !ReferenceEquals(source.Caster.GetSpellbook(ownBook), book))
                 { Outcome = "preserve-native-druid-book-identity"; return; }
                 var grants = source.Caster.Progression.Features.Enumerable.Where(feature => ExactNativeFeature(feature?.Blueprint, druid)).ToArray();
                 if (grants.Length != 1) { Outcome = "preserve-native-druid-feature-grant"; return; }
@@ -237,11 +243,11 @@ namespace KingmakerGunslinger.Summoning
                 foreach (var conversion in candidates)
                 {
                     int tier; SummonMultiplicity quantity;
-                    if (!DruidSummonConversionPolicy.TryResolve(conversion.Blueprint.AssetGuid, out tier, out quantity)) continue;
-                    var parent = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library, AllyParents[tier - 1], "published native Druid SNA parent");
+                    if (!DruidSummonConversionPolicy.TryResolve(route, conversion.Blueprint.AssetGuid, out tier, out quantity)) continue;
+                    var parent = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library, ParentsOf(route)[tier - 1], "published conversion parent");
                     if (!ExpandedSummoningPublisher.IsPublishedExpandedParent(parent)) continue;
                     var variantArray = parent.Variants; var variants = variantArray?.ToArray();
-                    var expected = Expected(tier, quantity);
+                    var expected = Expected(route, tier, quantity);
                     if (variants == null || variants.Length == 0 || variants.Any(value => value == null) || expected.Length == 0 || expected.Any(value => value == null) ||
                         variants.Select(value => value.AssetGuid).Distinct(StringComparer.Ordinal).Count() != variants.Length ||
                         expected.Any(value => !ReferenceEquals(value.Parent, parent) || variants.Count(variant => ReferenceEquals(variant, value)) != 1))
@@ -250,8 +256,15 @@ namespace KingmakerGunslinger.Summoning
                     // retained original (e.g. Mastodon) remains selectable;
                     // unknown original conversion rows remain untouched.
                     var projection = variants.Where(value => expected.Any(owned => ReferenceEquals(owned, value)) ||
-                        SummonNativeOptionCatalog.All.Any(native => native.Family == SummonFamily.NaturesAlly && native.Tier == tier &&
+                        SummonNativeOptionCatalog.All.Any(native => native.Family == route.Family && native.Tier == tier &&
                             native.Multiplicity == quantity && native.Guid == value.AssetGuid)).ToArray();
+                    // Forbidden rows are dropped here so the projected rows stay
+                    // the rows the menu keeps. Execution is still gated separately.
+                    if (route == DruidSummonConversionPolicy.Herald)
+                    {
+                        projection = projection.Where(value => SummonClericAlignmentRuntime.PermitsRow(value, source.Caster, book)).ToArray();
+                        if (projection.Length == 0) { removals.Add(conversion); continue; }
+                    }
                     // A prepared Summon Nature's Ally is itself this parent, and
                     // the menu lists its own variants as well. Projecting the
                     // quantity row would show every creature twice; keeping it
@@ -298,7 +311,7 @@ namespace KingmakerGunslinger.Summoning
                     foreach (var child in receipt.Children)
                     {
                         int tier; SummonMultiplicity quantity;
-                        DruidSummonConversionPolicy.TryResolve(receipt.NativeConversionBlueprint.AssetGuid, out tier, out quantity);
+                        DruidSummonConversionPolicy.TryResolve(route, receipt.NativeConversionBlueprint.AssetGuid, out tier, out quantity);
                         ranks[child] = tier * 100000 + Array.IndexOf(receipt.Variants, child.Blueprint);
                     }
                 var projected = DruidSummonConversionPolicy.OrderProjectedChoices(DruidSummonConversionPolicy.Project(originalRows, replacements, removals),

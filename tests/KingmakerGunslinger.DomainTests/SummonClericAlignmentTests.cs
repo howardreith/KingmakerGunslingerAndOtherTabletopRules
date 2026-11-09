@@ -126,6 +126,112 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal("", string.Join("|", SummonClericAlignmentPolicy.RetainPermitted(new string[0], key => true)), "An empty list is handled.");
         }
 
+        private static readonly SummonConversionRoute Herald = DruidSummonConversionPolicy.Herald;
+
+        internal static void HeraldRouteMatchesItsTierAndQuantityArrays()
+        {
+            Assertions.Equal("8fd74eddd9b6c224693d9ab241f25e84", DruidSummonConversionPolicy.Expected(Herald, 1, SummonMultiplicity.One), "Tier I converts to the shared parent.");
+            Assertions.Equal<string>(null, DruidSummonConversionPolicy.Expected(Herald, 1, SummonMultiplicity.OneD3), "Tier I has no group row.");
+            Assertions.Equal("7ab27a0d547742741beb5d089f1c3852", DruidSummonConversionPolicy.Expected(Herald, 2, SummonMultiplicity.One), "Tier II single is the exact native row.");
+            Assertions.Equal("6223958f3615eeb4d91e52ba57820878", DruidSummonConversionPolicy.Expected(Herald, 2, SummonMultiplicity.OneD3), "Tier II 1d3 is the exact native row.");
+            Assertions.Equal("22b9580c961c5e64f95f10ca9a82c564", DruidSummonConversionPolicy.Expected(Herald, 9, SummonMultiplicity.OneD4PlusOne), "Tier IX 1d4+1 is the exact native row.");
+            foreach (SummonMultiplicity quantity in Enum.GetValues(typeof(SummonMultiplicity)).Cast<SummonMultiplicity>())
+            {
+                var array = Enumerable.Range(0, 10).Select(level => level == 0 ? null : DruidSummonConversionPolicy.Expected(Herald, level, quantity)).ToArray();
+                Assertions.True(DruidSummonConversionPolicy.MatchesArray(Herald, array, quantity), "The route accepts its own array: " + quantity);
+                Assertions.False(DruidSummonConversionPolicy.MatchesArray(DruidSummonConversionPolicy.Druid, array, quantity), "A Herald array is not a Druid array.");
+            }
+            int tier; SummonMultiplicity resolved;
+            Assertions.True(DruidSummonConversionPolicy.TryResolve(Herald, "22b9580c961c5e64f95f10ca9a82c564", out tier, out resolved) && tier == 9 && resolved == SummonMultiplicity.OneD4PlusOne, "Native rows resolve to tier and quantity.");
+            Assertions.False(DruidSummonConversionPolicy.TryResolve(Herald, "b8ac9c653789b2a46ad85a075734c0e2", out tier, out resolved), "A Nature's Ally row is not a Herald conversion.");
+            Assertions.True(DruidSummonConversionPolicy.RouteForFeature("f6c112a579a81c0439c597f9ee222243") == Herald && DruidSummonConversionPolicy.RouteForClass(Cleric) == Herald, "The route is keyed by exact identity.");
+        }
+
+        private sealed class ProjectionRow { internal string Id; }
+
+        internal static void HeraldProjectionKeepsTheChainWithoutDuplicates()
+        {
+            var single = new ProjectionRow { Id = "native-single" }; var group = new ProjectionRow { Id = "native-d3" }; var other = new ProjectionRow { Id = "cure" };
+            var wolf = new ProjectionRow { Id = "wolf" }; var bear = new ProjectionRow { Id = "bear" }; var ape = new ProjectionRow { Id = "ape" };
+            ProjectionRow[] original = { single, other, group };
+            ProjectionRow[] projected = DruidSummonConversionPolicy.Project(original, new Dictionary<ProjectionRow, ProjectionRow[]> { { single, new[] { wolf } }, { group, new[] { ape, bear } } });
+            ProjectionRow[] parentOrder = { ape, bear, wolf };
+            ProjectionRow[] ordered = DruidSummonConversionPolicy.OrderProjectedChoices(projected, row => { int index = Array.IndexOf(parentOrder, row); return index < 0 ? (int?)null : index; });
+            Assertions.Equal("ape|cure|bear|wolf", string.Join("|", ordered.Select(value => value.Id)), "Children interleave alphabetically; an unrelated conversion keeps its place.");
+            Assertions.Equal(ordered.Length, ordered.Distinct().Count(), "No row is repeated.");
+            ProjectionRow[] preparedParent = DruidSummonConversionPolicy.Project(original, new Dictionary<ProjectionRow, ProjectionRow[]>(), new[] { single, group });
+            Assertions.Equal("cure", string.Join("|", preparedParent.Select(value => value.Id)), "A prepared Summon Monster drops its own quantity rows, so no creature is listed twice.");
+            Assertions.Equal("native-single|cure|native-d3", string.Join("|", original.Select(value => value.Id)), "The native list is unchanged.");
+        }
+
+        internal static void RetainedNativeRowsFollowTheirEffectiveBranch()
+        {
+            SummonNativeOptionSpec[] rows = SummonNativeOptionCatalog.All.Where(value => value.Family == SummonFamily.Monster && value.Tier >= 2).ToArray();
+            Assertions.Equal(23, rows.Length, "All 23 native Herald rows above tier I are classified.");
+            foreach (var row in rows)
+                foreach (SummonAlignmentAxes caster in new[] { SummonAlignmentAxes.None, SummonAlignmentAxes.Good, SummonAlignmentAxes.Evil })
+                    Assertions.False(SummonClericAlignmentCatalog.ForNativeOption(row, caster) == null, "Every native row classifies for every caster branch.");
+            SummonNativeOptionSpec nineOne = rows.Single(value => value.Guid == "e96593e67d206ab49ad1b567327d1e75");
+            Assertions.False(SummonClericAlignmentPolicy.Permits(SummonClericAlignmentPolicy.Decide(Facts(LG, Erastil), SummonClericAlignmentCatalog.ForNativeOption(nineOne, SummonAlignmentAxes.Good | SummonAlignmentAxes.Law))),
+                "A lawful good cleric's branch of the tier IX umbrella summons a Ghaele, a chaotic spell.");
+            Assertions.True(SummonClericAlignmentPolicy.Permits(SummonClericAlignmentPolicy.Decide(Facts(CE), SummonClericAlignmentCatalog.ForNativeOption(nineOne, SummonAlignmentAxes.Evil | SummonAlignmentAxes.Chaos))),
+                "An evil cleric's branch of the same row is the Evil-subtype Thanadaemon, which is legal for them.");
+            SummonNativeOptionSpec two = rows.Single(value => value.Guid == "7ab27a0d547742741beb5d089f1c3852");
+            Assertions.True(SummonClericAlignmentCatalog.ForNativeOption(two, SummonAlignmentAxes.None).CasterDependent, "A semantic duplicate uses its starred creature's rule, not a union of branches.");
+        }
+
+        internal static void DruidRouteIsUnchanged()
+        {
+            Assertions.Equal(DruidSummonConversionPolicy.TierOneParentGuid, DruidSummonConversionPolicy.Expected(1, SummonMultiplicity.One), "The Druid route keeps its tier I parent.");
+            Assertions.Equal("848bd9df8b2643143a7020be7cde8800", DruidSummonConversionPolicy.Expected(2, SummonMultiplicity.One), "The Druid route keeps its Nature's Ally rows.");
+            Assertions.True(DruidSummonConversionPolicy.RouteForFeature(DruidSummonConversionPolicy.FeatureGuid) == DruidSummonConversionPolicy.Druid, "The Druid feature keeps its route.");
+            Assertions.True(DruidSummonConversionPolicy.RouteForClass("b3a505fb61437dc4097f43c3f8f9a4cf") == null, "Other classes have no conversion route.");
+        }
+
+        internal static void ThirdPartyRowsAreCoveredByWhatTheyAre()
+        {
+            Assertions.Equal(RuntimeTesting.SummonClericThirdPartyOutcome.VerifiedLegal, RuntimeTesting.SummonClericObservationVerdict.ClassifyThirdParty(true, true, 1, true), "A row meeting every condition is covered.");
+            Assertions.Equal(RuntimeTesting.SummonClericThirdPartyOutcome.Unresolved, RuntimeTesting.SummonClericObservationVerdict.ClassifyThirdParty(true, false, 1, true), "A known name with alignment descriptors is unresolved.");
+            Assertions.Equal(RuntimeTesting.SummonClericThirdPartyOutcome.Unresolved, RuntimeTesting.SummonClericObservationVerdict.ClassifyThirdParty(true, true, 0, true), "A row with no resolved spawn is unresolved.");
+            Assertions.Equal(RuntimeTesting.SummonClericThirdPartyOutcome.Unresolved, RuntimeTesting.SummonClericObservationVerdict.ClassifyThirdParty(true, true, 1, false), "A row without its visibility gate is unresolved.");
+            Assertions.Equal(RuntimeTesting.SummonClericThirdPartyOutcome.Unresolved, RuntimeTesting.SummonClericObservationVerdict.ClassifyThirdParty(false, true, 1, true), "An unknown row is unresolved, however clean it looks.");
+        }
+
+        internal static void FixturePrerequisitesRejectMissingClassOrBook()
+        {
+            Func<RuntimeTesting.SummonClericObservationVerdict.FixtureReading> good = () => new RuntimeTesting.SummonClericObservationVerdict.FixtureReading {
+                ClassLevel = 20, ExpectedLevel = 20, ClassBook = "book", RegisteredBooks = 1, RegisteredBook = "book", BookIsClassBook = true, BookList = "list", ExpectedList = "list",
+                PreparedSlot = true, DeityMatchesPrerequisite = true, AlignmentIsExact = true };
+            Assertions.Equal(0, RuntimeTesting.SummonClericObservationVerdict.FixtureProblems(good()).Count, "A complete fixture has no problems.");
+            var noBook = good(); noBook.RegisteredBooks = 0; noBook.RegisteredBook = null; noBook.BookIsClassBook = false;
+            Assertions.True(RuntimeTesting.SummonClericObservationVerdict.FixtureProblems(noBook).Count >= 2, "A cleric with no book is rejected, as on the failed candidate.");
+            var noClass = good(); noClass.ClassLevel = 0;
+            Assertions.True(RuntimeTesting.SummonClericObservationVerdict.FixtureProblems(noClass).Any(value => value.StartsWith("class-level", StringComparison.Ordinal)), "Missing class data is rejected.");
+            var wrongList = good(); wrongList.BookList = "other";
+            Assertions.True(RuntimeTesting.SummonClericObservationVerdict.FixtureProblems(wrongList).Contains("wrong-spell-list"), "A wrong spell list is rejected.");
+            var noSlot = good(); noSlot.PreparedSlot = false;
+            Assertions.True(RuntimeTesting.SummonClericObservationVerdict.FixtureProblems(noSlot).Contains("no-valid-prepared-slot"), "A missing prepared slot is rejected.");
+            var fallback = good(); fallback.RegisteredBook = "default-book"; fallback.BookIsClassBook = false;
+            Assertions.True(RuntimeTesting.SummonClericObservationVerdict.FixtureProblems(fallback).Contains("registered-book-differs-from-class-book"), "A fallback book that is not the class data's book is rejected.");
+        }
+
+        internal static void ValidDeityDerivedCaseIsolatesTheDeity()
+        {
+            string Abadar = "6122dacf418611540a3c91e67197ee4e";
+            Assertions.True(Allowed(Facts(LN, Abadar), "astral-deva"), "A lawful neutral character under a lawful neutral deity may summon the Good-only Astral Deva.");
+            Assertions.False(Allowed(Facts(LN, Asmodeus), "astral-deva"), "The same character under a lawful evil deity may not: the deity is the only source.");
+        }
+
+        internal static void HeraldCoverageFailsWhenAConversionIsUncovered()
+        {
+            var parent = new RuntimeTesting.SummonClericObservationVerdict.HeraldConversion { Guid = "parent", SharedParent = true };
+            var covered = new RuntimeTesting.SummonClericObservationVerdict.HeraldConversion { Guid = "covered", Projects = true, ExecutionGoverned = true };
+            var unguarded = new RuntimeTesting.SummonClericObservationVerdict.HeraldConversion { Guid = "unguarded", Projects = true, ExecutionGoverned = false };
+            var unprojected = new RuntimeTesting.SummonClericObservationVerdict.HeraldConversion { Guid = "unprojected", ExecutionGoverned = true };
+            Assertions.Equal(0, RuntimeTesting.SummonClericObservationVerdict.UncoveredHeraldConversions(new[] { parent, covered }).Count, "Enforced conversions pass.");
+            Assertions.Equal("unguarded|unprojected", string.Join("|", RuntimeTesting.SummonClericObservationVerdict.UncoveredHeraldConversions(new[] { parent, unguarded, unprojected })), "Route identification is not acceptance.");
+        }
+
         internal static void ChangesAfterAChoiceWasObtainedAreReevaluated()
         {
             SummonSpellAlignment archon = Row("lantern-archon");

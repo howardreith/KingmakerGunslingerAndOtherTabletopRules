@@ -17478,7 +17478,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static void AdvanceDisposableSpellcaster(UnitDescriptor owner,
             BlueprintCharacterClass characterClass, int levels,
-            ref object activeController)
+            ref object activeController, bool applySpellbook = false)
         {
             Type type = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
             MethodInfo start = type.GetMethods(BindingFlags.Public |
@@ -17506,6 +17506,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "Disposable spellcaster class selection failed at level " +
                         (index + 1) + ".");
                 mechanics.Invoke(activeController, null);
+                // The native ApplySpellbook action, which SelectClass(false) omits.
+                if (applySpellbook) type.GetMethod("ApplySpellbook", BindingFlags.Public | BindingFlags.Instance).Invoke(activeController, null);
                 apply.Invoke(activeController, new object[] { owner });
                 cancel.Invoke(activeController, null);
                 activeController = null;

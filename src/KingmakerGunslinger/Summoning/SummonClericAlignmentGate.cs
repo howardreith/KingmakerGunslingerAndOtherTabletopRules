@@ -73,6 +73,44 @@ namespace KingmakerGunslinger.Summoning
             return new SummonClericFacts(classes, (int)owner.Alignment.Value, deities);
         }
 
+        /// <summary>The cleric rule for one candidate row, shared by menus and execution.</summary>
+        internal static bool PermitsRow(BlueprintAbility row, UnitDescriptor caster, Spellbook book)
+        {
+            SummonClericAlignmentGate gate = (row.ComponentsArray ?? new BlueprintComponent[0]).OfType<SummonClericAlignmentGate>().FirstOrDefault();
+            if (gate != null) return gate.IsAbilityVisible(new AbilityData(row, book));
+            SummonNativeOptionSpec native;
+            return !GovernedNativeRows().TryGetValue(row, out native) || SummonClericAlignmentPolicy.Permits(DecideNative(caster, native));
+        }
+
+        internal static SummonClericDecision DecideNative(UnitDescriptor owner, SummonNativeOptionSpec native)
+        {
+            SummonClericFacts facts = Read(owner);
+            if (!SummonClericAlignmentPolicy.IsCleric(facts)) return SummonClericDecision.NotCleric;
+            return SummonClericAlignmentPolicy.Decide(facts, SummonClericAlignmentCatalog.ForNativeOption(native, SummonClericAlignmentPolicy.AxesOf(facts.AlignmentValue)));
+        }
+
+        private static object _nativeLibrary;
+        private static Dictionary<BlueprintAbility, SummonNativeOptionSpec> _nativeRows;
+
+        /// <summary>Exact native Summon Monster quantity rows above tier I.</summary>
+        internal static Dictionary<BlueprintAbility, SummonNativeOptionSpec> GovernedNativeRows()
+        {
+            LibraryScriptableObject library = BlueprintBootstrap.Library;
+            if (_nativeRows == null || !ReferenceEquals(_nativeLibrary, library))
+            {
+                var rows = new Dictionary<BlueprintAbility, SummonNativeOptionSpec>();
+                foreach (SummonNativeOptionSpec native in SummonNativeOptionCatalog.All.Where(value => value.Family == SummonFamily.Monster && value.Tier >= 2))
+                {
+                    BlueprintScriptableObject found;
+                    if (library != null && library.BlueprintsByAssetId.TryGetValue(native.Guid, out found) && found is BlueprintAbility)
+                        rows[(BlueprintAbility)found] = native;
+                }
+                _nativeRows = rows;
+                _nativeLibrary = library;
+            }
+            return _nativeRows;
+        }
+
         private static Dictionary<BlueprintFeature, string> DeityOptions()
         {
             LibraryScriptableObject library = BlueprintBootstrap.Library;
@@ -87,6 +125,25 @@ namespace KingmakerGunslinger.Summoning
                 _library = library;
             }
             return _deityOptions;
+        }
+    }
+
+    /// <summary>
+    /// A retained native quantity ability is an unowned shared blueprint, so it
+    /// is judged here by exact identity and the branch this caster would summon.
+    /// Native UnitUseAbility.OnAction reads this before spending.
+    /// </summary>
+    [HarmonyPatch(typeof(AbilityData), "IsAvailableForCast", MethodType.Getter)]
+    internal static class SummonClericNativeRowAvailabilityPatch
+    {
+        private static void Postfix(AbilityData __instance, ref bool __result)
+        {
+            if (!__result || __instance == null || __instance.Spellbook == null || __instance.SourceItem != null || __instance.Caster == null ||
+                __instance.Blueprint == null) return;
+            SummonNativeOptionSpec native;
+            if (SummonClericAlignmentRuntime.GovernedNativeRows().TryGetValue(__instance.Blueprint, out native) &&
+                !SummonClericAlignmentPolicy.Permits(SummonClericAlignmentRuntime.DecideNative(__instance.Caster, native)))
+                __result = false;
         }
     }
 
