@@ -97,7 +97,7 @@ native observations.
 | RU-17 | Done | Module boundary | None | none | **RU-absent and module-off profiles** |
 | RU-18 | Done | Negative shapes for feature, unit, tier, count, condition, recipient, hidden spawn, effect | Zero unresolved rows | `ae714f04965b` | None |
 | RU-19 | Done | Observer compiles | Old Bralani and 3/1 expectations replaced; per-row semantics passed; failure records retained | `ae714f04965b` | None |
-| RU-20 | Done | n/a | Draft PR opened, restoration verified. Selection graphs were not changed, so no NPC control was required | `ae714f04965b` | Owner review |
+| RU-20 | Done | n/a | Draft PR opened, restoration verified | `ae714f04965b` | **NPC-without-feat selection/AI control**: generated rows extend the published parents' variant arrays, as Races Unleashed's own rows do, and no NPC selection was observed. Owner review |
 
 ## Smallest next test bundle
 
