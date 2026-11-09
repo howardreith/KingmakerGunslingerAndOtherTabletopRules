@@ -144,6 +144,11 @@ namespace KingmakerGunslinger.Summoning
                 { "d2d5c5a58885a6b489727467e13c3337", L | G }, // Torag
                 { "812f6c07148088e41a9ac94b56ac2fc8", E },     // Urgathoa
                 { "f7eed400baa66a744ad361d4df0e6f1b", L | E }, // Zon-Kuthon
+                { "c3e4d5681906d5246ab8b0637b98cbfe", C },     // Groetus
+                { "8b535b6842e063d48a571a042c3c6e8f", C | E }, // Gyronna
+                { "0a111217f49248eabdf8e9abe2537973", L | G }, // Ragathiel
+                { "a0308d0a3fca459eacc7fe83a3b03232", L | G }, // Tsukiyo
+                { "757f4081d82749338cfcf5aff2909918", L | G }, // Gruhastha
                 { AtheismGuid, N },
             };
 
