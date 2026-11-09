@@ -57,6 +57,8 @@ namespace KingmakerGunslinger.Summoning
             P("pony", "Pony"), P("fire-beetle", "Beetle", "Fire"),
             P("giant-centipede", "Centipede", "Giant"), P("wolf", "Wolf"),
             P("giant-frog", "Frog", "Giant"), P("giant-spider", "Spider", "Giant"),
+            P("giant-crab-spider", "Spider", "Giant Crab"), P("giant-black-widow", "Spider", "Giant Black Widow"),
+            P("ogre-spider", "Spider", "Ogre"), P("giant-tarantula", "Spider", "Giant Tarantula"),
             P("small-air-elemental", "Elemental", "Air", SummonChoiceSize.Small),
             P("small-earth-elemental", "Elemental", "Earth", SummonChoiceSize.Small),
             P("small-fire-elemental", "Elemental", "Fire", SummonChoiceSize.Small),

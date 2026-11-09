@@ -238,6 +238,7 @@ namespace KingmakerGunslinger.Blueprints
             if (alignmentMode.HasValue)
                 AppendAlignmentAction(target.ComponentsArray,
                     alignmentMode.Value);
+            AppendSpiderBenefitIfEligible(target.ComponentsArray, variant);
             AttachClericAlignmentGate(target, variant);
             target.Hidden = false;
             target.ActionBarAutoFillIgnored = templateBuff != null;
@@ -299,6 +300,7 @@ namespace KingmakerGunslinger.Blueprints
             AppendDynamicTemplate(target.ComponentsArray, celestialTemplate,
                 fiendishTemplate, celestialSmite, fiendishSmite,
                 neutralFiendishMode, replacedNativeTemplateBuffs);
+            AppendSpiderBenefitIfEligible(target.ComponentsArray, variant);
             AttachClericAlignmentGate(target, variant);
             SpellDescriptorComponent descriptor = target.ComponentsArray
                 .OfType<SpellDescriptorComponent>().Single();
@@ -477,6 +479,29 @@ namespace KingmakerGunslinger.Blueprints
                 else AppendTemplateBuff(child, buff,
                     replacedNativeTemplateBuffs, seen, ref count);
             }
+        }
+
+        internal static int HitDiceOf(BlueprintUnit unit) { return HitDice(unit); }
+
+        // The ordinary Giant Spider keeps normal access. The action itself
+        // grants nothing unless the caster holds the actual feat at cast time.
+        private static void AppendSpiderBenefitIfEligible(BlueprintComponent[] components, SummonVariantSpec variant)
+        {
+            if (variant.Creature.Key == "giant-spider") AppendSpiderBenefit(components);
+        }
+
+        /// <summary>One benefit action on each spawn, so every spawned creature is covered.</summary>
+        internal static void AppendSpiderBenefit(IEnumerable<BlueprintComponent> components)
+        {
+            int count = 0;
+            foreach (ContextActionSpawnMonster spawn in AlternateSummoningGraph.Objects<ContextActionSpawnMonster>(components))
+            {
+                if (spawn.AfterSpawn == null) spawn.AfterSpawn = new ActionList();
+                spawn.AfterSpawn.Actions = (spawn.AfterSpawn.Actions ?? Array.Empty<GameAction>())
+                    .Concat(new GameAction[] { ScriptableObject.CreateInstance<ContextActionApplySpiderSummonerBenefit>() }).ToArray();
+                count++;
+            }
+            if (count < 1) throw new InvalidOperationException("A spider summon requires a spawn action.");
         }
 
         private static int HitDice(BlueprintUnit unit)

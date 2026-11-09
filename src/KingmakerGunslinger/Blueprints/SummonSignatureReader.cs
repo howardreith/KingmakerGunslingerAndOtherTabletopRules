@@ -158,7 +158,7 @@ namespace KingmakerGunslinger.Blueprints
                 var buff = action as ContextActionApplyBuff;
                 var conditional = action as Conditional;
                 if (buff != null && buff.GetType() == typeof(ContextActionApplyBuff))
-                    result.Add("apply-buff:" + Guid(buff.Buff));
+                    result.Add((buff.ToCaster ? "apply-buff-to-caster:" : "apply-buff:") + Guid(buff.Buff));
                 else if (conditional != null && conditional.GetType() == typeof(Conditional))
                 {
                     ConditionsChecker checker = conditional.ConditionsChecker;
