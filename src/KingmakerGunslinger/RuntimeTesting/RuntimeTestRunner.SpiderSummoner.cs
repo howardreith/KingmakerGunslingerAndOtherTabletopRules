@@ -61,20 +61,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool gated = components.OfType<AbilityCasterHasFacts>().Any(value => value.Facts.Any(fact => fact != null && fact.AssetGuid == SummonForeignRowClassifier.SpiderSummonerFeatureGuid)) &&
                     components.OfType<AbilityShowIfCasterHasFact>().Any(value => value.UnitFact != null && value.UnitFact.AssetGuid == SummonForeignRowClassifier.SpiderSummonerFeatureGuid);
                 string dynamicTemplate = SummonForeignRowClassifier.TemplateAction;
-                string detail = spawns.Length == 1 ? string.Join(",", spawns[0].AfterSpawnDetail.ToArray()) : "none";
-                bool expectedShape = spawns.Length == 1 && spawns[0].Unit == placement.Species.UnitGuid && detail.Contains(SummonForeignRowClassifier.BenefitAction) &&
-                    (placement.Family == SummonFamily.Monster ? detail.Contains(dynamicTemplate) : !detail.Contains(dynamicTemplate) && detail.Contains(SummonForeignRowClassifier.AlignmentAction));
-                string quantity = spawns.Length == 1 ? spawns[0].CountDice + "x" + spawns[0].CountDiceCount + "+" + spawns[0].CountBonus : "none";
+                string detail = spawns.Length == 0 ? "none" : string.Join(" || ", spawns.Select(value => string.Join(",", value.AfterSpawnDetail.ToArray())).ToArray());
+                bool expectedShape = spawns.Length > 0 && spawns.All(value => value.Unit == placement.Species.UnitGuid &&
+                    value.AfterSpawnDetail.Count(item => item == SummonForeignRowClassifier.BenefitAction) == 1 &&
+                    (placement.Family == SummonFamily.Monster ? value.AfterSpawnDetail.Count(item => item == dynamicTemplate) == 1 :
+                        !value.AfterSpawnDetail.Contains(dynamicTemplate) && value.AfterSpawnDetail.Count(item => item == SummonForeignRowClassifier.AlignmentAction) == 1));
+                string quantity = string.Join(" || ", spawns.Select(value => value.CountDice + "x" + value.CountDiceCount + "+" + value.CountBonus).ToArray());
                 SummonMultiplicity want = placement.Quantity;
-                bool quantityOk = spawns.Length == 1 && (want == SummonMultiplicity.One ? spawns[0].CountDice == "Zero" && spawns[0].CountBonus.Value == 1 :
-                    want == SummonMultiplicity.OneD3 ? spawns[0].CountDice == "D3" : spawns[0].CountDice == "D4" && spawns[0].CountBonus.Value == 1);
+                bool quantityOk = spawns.Length > 0 && spawns.All(value => want == SummonMultiplicity.One ? value.CountDice == "Zero" && value.CountBonus.Value == 1 :
+                    SpiderSummonerCatalog.QuantityExpressionMatches(value.CountDice, value.CountDiceCount.Kind, value.CountDiceCount.Value, value.CountBonus.Kind, want));
                 bool original = placement.IsOriginal && row != null && row.AssetGuid.Length != 32;
                 bool ok = row != null && (placement.IsOriginal ? original : true) && listed == 1 && gated && expectedShape && quantityOk &&
                     !components.OfType<AbilityVariants>().Any();
                 if (row != null) published++;
                 if (!ok) wrong++;
                 rows.Add(new JObject { ["symbol"] = placement.Symbol, ["family"] = placement.Family.ToString(), ["tier"] = placement.Tier, ["species"] = placement.Species.Key, ["quantity"] = want.ToString(),
-                    ["row"] = row?.AssetGuid, ["name"] = row?.Name, ["listed"] = listed, ["gated"] = gated, ["unit"] = spawns.Length == 1 ? spawns[0].Unit : null, ["count"] = quantity, ["postSpawn"] = detail, ["ok"] = ok });
+                    ["row"] = row?.AssetGuid, ["name"] = row?.Name, ["listed"] = listed, ["gated"] = gated, ["unit"] = new JArray(spawns.Select(value => value.Unit).Distinct()), ["spawnBranches"] = spawns.Length, ["count"] = quantity, ["postSpawn"] = detail, ["ok"] = ok });
             }
             Sprint25Check("spider-matrix-census", wrong == 0 && published == 46, new JObject { ["rows"] = rows, ["published"] = published, ["wrong"] = wrong,
                 ["outcome"] = SpiderSummonerIntegration.Outcome, ["scope"] = "Structural manifest of all 46 placements read from the loaded rows." },

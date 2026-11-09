@@ -316,6 +316,11 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.False(placements.Any(value => value.Tier < value.Species.BaseTier), "No placement below the species' base tier.");
                 Assertions.Equal(placements.Length, placements.Select(value => value.Symbol).Distinct().Count(), "Each placement has its own stable symbol.");
             }
+            Assertions.True(SpiderSummonerCatalog.QuantityExpressionMatches("D3", "Simple", 1, "Rank", SummonMultiplicity.OneD3), "1d3 keeps the donor's rank bonus.");
+            Assertions.True(SpiderSummonerCatalog.QuantityExpressionMatches("D4", "Simple", 1, "Rank", SummonMultiplicity.OneD4PlusOne), "1d4+1 keeps the donor's rank bonus.");
+            Assertions.False(SpiderSummonerCatalog.QuantityExpressionMatches("D4", "Simple", 1, "Simple", SummonMultiplicity.OneD4PlusOne), "A fixed bonus would bypass the rank Superior Summoning uses.");
+            Assertions.False(SpiderSummonerCatalog.QuantityExpressionMatches("D3", "Simple", 1, "Rank", SummonMultiplicity.OneD4PlusOne), "The wrong die is rejected.");
+            Assertions.False(SpiderSummonerCatalog.QuantityExpressionMatches("D3", "Simple", 2, "Rank", SummonMultiplicity.OneD3), "An altered die count is rejected.");
             Assertions.Equal("KMG.Summoning.Spider.SNA.Tier9.GiantTarantula.OneD4PlusOne",
                 SpiderSummonerCatalog.Placements(SummonFamily.NaturesAlly).Single(value => value.Tier == 9 && value.Species.Key == "giant-tarantula").Symbol, "Identities derive from family, tier, species and quantity.");
         }
