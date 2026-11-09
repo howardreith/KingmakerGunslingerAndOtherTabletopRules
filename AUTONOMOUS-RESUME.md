@@ -1,4 +1,22 @@
-# Cleric alignment restrictions — complete, owner-accepted and released in v0.0.181 / STOP
+# Races Unleashed Spider Summoner integration — implemented, verification pending / STOP
+
+Current (2026-11-09). See planning/races-unleashed-compatibility/STATUS.md. Branch
+`codex/races-unleashed-summoning`, draft PR against master. Activated by the owner's mission package;
+the deferred handoff is preserved as `planning/races-unleashed-compatibility/BASELINE.md`.
+
+- Full gameplay scope implemented: eight original rows repaired in place, 38 generated higher-tier rows,
+  consistent templates, exact +2 poison and web DC ownership, both conversion routes.
+- Development candidate `ae714f04965b`, package `27854009...ec9b`: native 139 PASS / 0 FAIL in the
+  focused phase. Earlier candidate `3e27c5809a9d` keeps its FAIL 132/3. Not release qualification.
+- Open acceptance items are named in STATUS.md, led by SNA and Druid casts, Herald spider casts, Superior
+  and Augment Summoning, real poison saves, web break-free, reload and profile controls.
+- Install, saves, settings and `Params.xml` restored exactly (`verified`; live v0.0.140).
+- Ledger about 1,600 of 1,800 s. No merge, release, permanent install or further native run follows
+  without explicit owner authorization.
+
+---
+
+# (superseded) Cleric alignment restrictions — complete, owner-accepted and released in v0.0.181 / STOP
 
 Current (2026-11-09). See planning/summon-cleric-alignment/STATUS.md. PR #122 merged as `2f5703f7c9`.
 Stable v0.0.181 is Latest, from release commit `daf87b5456`, package `6733aea0...8532`, with the
