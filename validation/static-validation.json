@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.179-expanded-summoning-wall-reach-closeout",
+  "milestone": "0.0.180-summon-playtest-repairs",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.179",
+  "version": "0.0.180",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2871,5 +2871,18 @@
     "nativeEvidence": "Native results stay attributed to their own development candidates (for example Wall 155/156, reach s4g 41/41, closeout 5, shadow motion 29); none is fresh execution of the version-stamped release DLL",
     "deferredCoverage": "Sprint 41 A-15 Wall review phase passes 1 run in 5 (verification reliability demonstrated, product defect undetermined); A-5, A-6, A-7, A-9, A-13 and A-16 open; Ice Devil visual acceptance pending; persistence matrix, roster-scale visual acceptance and performance not run for this release",
     "ownerPublicationAuthority": "Howie Reith, 2026-11-07: 'Alright. Please cut a release that I will test with. Thank you.' then, asked stable or prerelease: 'Stable 0.0.179. I also just merged the other PRs that were in the repo so make sure everything is incorporated.'"
+  },
+  "summonPlaytestRepairsRelease180": {
+    "releaseVersion": "0.0.180",
+    "releaseInformationalVersion": "0.0.180-summon-playtest-repairs",
+    "baseStableVersion": "0.0.179",
+    "reviewedProductSource": "325e10c4a1d64228867c2f94dc2adad945eca065",
+    "appendedIdentities": 26,
+    "releasedIdentityChanges": 0,
+    "visibleChoiceTotal": 1208,
+    "change": "Summoned-creature playtest repairs R1-R7 (owner cuts, fear aura, portraits and icons, mephit breaths, provider spells, trample, motion, effects, sound and three model revisions) and alphabetical summon menus.",
+    "nativeEvidence": "Native results stay attributed to their own development candidates; none was re-executed on this version-stamped build. Alphabetical menus: candidate c55f40e53f36 remains 44 PASS / 3 FAIL, accepted by the owner on existing evidence.",
+    "deferredCoverage": "Alphabetical menus: no completed reordered cast, alternate-menu selection, feature-enabled spider popup, scroll movement, console or saved-hotbar observation. Owner viewing and listening are not claimed. Sprint 41 A-5, A-6, A-7, A-9, A-13 and A-16 remain open. Roster-scale persistence and performance were not run.",
+    "ownerPublicationAuthority": "Howie Reith, 2026-11-09: 'Go ahead and cut a release.' Published as the next stable patch, as v0.0.179 was."
   }
 }

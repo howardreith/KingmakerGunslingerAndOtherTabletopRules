@@ -216,7 +216,7 @@ namespace KingmakerGunslinger.DomainTests
             RequireTokens("Mephit role builder contract", builder,
                 "ConfigureWindWall(bySymbol, ability, prefix, token)",
                 "ConfigureChillMetal(bySymbol, ability, prefix, token)",
-                "ConfigurePyrotechnics(bySymbol, ability, prefix, token)",
+                "ConfigurePyrotechnics(library, bySymbol, ability, prefix, token)",
                 "ConfigureMagmaForm(bySymbol, ability, prefix, token, unit)",
                 "MakeMephitCloudAllySafe(bySymbol, ability, prefix)", "MakeGlitterdustEnemyOnly(ability)",
                 "UnitCondition.CanNotAttack", "ContextConditionIsEnemy>();", "notEnemy.Not = true;",

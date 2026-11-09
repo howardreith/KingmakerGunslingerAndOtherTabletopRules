@@ -110,7 +110,9 @@ namespace KingmakerGunslinger.DomainTests
                 byte[] raw = Convert.FromBase64String((string)document["data"]);
                 Assertions.Equal(0, AtlasCrossingTriangles(document,raw),
                     "Every actual exported face stays inside one atlas tile: " + model);
-                if (model.EndsWith("/nalfeshnee", StringComparison.Ordinal))
+                // The Glabrezu and Nalfeshnee use one full-texture tile since R7,
+                // so the control needs a model that still has separate tiles.
+                if (model.EndsWith("/vrock", StringComparison.Ordinal))
                 {
                     int n = (int)document["vertexCount"];
                     // All corners remain valid atlas points, but their face
