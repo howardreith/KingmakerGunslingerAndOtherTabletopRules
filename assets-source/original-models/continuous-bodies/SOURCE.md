@@ -1,3 +1,7 @@
+## R7 outsider bake
+
+`outsider_bake.py` is imported only by the revised Glabrezu, Nalfeshnee and Ice Devil generators. It reuses `unwrap`, `encode_png` and the existing exporter, keeps seam normals and weights identical, and bakes the albedo from bind-pose position, normal, authored material ID and cavity occlusion.
+
 ## November 2026 outsider revision
 
 The scoped `outsider_surface.py` adapter now reuses this library for the owner-requested outsider skin unions. Only the revised Sprint 34-39 generators import that adapter. Their discrete features, existing atlas/export format and measured native rig remain. Satyr, Stalker and Shadow Demon generators/exports are unchanged. This is the current extension; the pilot-only statements below describe the earlier rollout. See the [active checkpoint](../../../planning/SUMMON-OUTSIDER-VISUAL-OVERHAUL-STATE.md) for diagnosis, regeneration, exact capture authority and native limits.

@@ -10,7 +10,10 @@ namespace KingmakerGunslinger.Summoning
     /// <summary>
     /// A small owned golden orb carried by the released Lantern Archon view.
     /// The Will-o'-Wisp donor continues to supply movement, fading and native
-    /// effects; no donor renderer, mesh, material or prefab is modified.
+    /// effects. Repair R6 PRES-04: the donor's own blue body mesh is swapped,
+    /// on this view's renderer instance only, for a private mesh with no
+    /// triangles, so it cannot poke through the orb; the renderer and its
+    /// native fading stay in place. No donor asset is modified.
     /// </summary>
     internal sealed class LanternArchonOrbView : MonoBehaviour
     {
@@ -30,6 +33,9 @@ namespace KingmakerGunslinger.Summoning
         private Material _material;
         private Light _light;
         private bool _released;
+        private SkinnedMeshRenderer[] _donorBodies = new SkinnedMeshRenderer[0];
+        private Mesh[] _donorMeshes = new Mesh[0];
+        private Mesh[] _emptyMeshes = new Mesh[0];
         private int _enables;
         private int _disables;
 
@@ -71,6 +77,7 @@ namespace KingmakerGunslinger.Summoning
                 center = new Vector3(0f, .9f, 0f);
             float anchorDiameter = Mathf.Max(anchor.bounds.size.x,
                 Mathf.Max(anchor.bounds.size.y, anchor.bounds.size.z));
+            HideDonorBodies();
             float worldDiameter = Mathf.Clamp(anchorDiameter * .55f, .65f, 1.05f);
             Vector3 lossy = view.transform.lossyScale;
             float parentScale = Mathf.Max(Mathf.Abs(lossy.x),
@@ -117,6 +124,50 @@ namespace KingmakerGunslinger.Summoning
             _light.renderMode = LightRenderMode.ForceVertex;
             Status = "attached:owned-golden-orb";
             Apply(false);
+        }
+
+        private void HideDonorBodies()
+        {
+            _donorBodies = _nativeRenderers.OfType<SkinnedMeshRenderer>()
+                .Where(value => value.sharedMesh != null).ToArray();
+            _donorMeshes = _donorBodies.Select(value => value.sharedMesh).ToArray();
+            _emptyMeshes = _donorBodies.Select(EmptyMeshFor).ToArray();
+            SetDonorBodiesHidden(true);
+        }
+
+        // Keeps the bone and bind-pose counts the renderer expects, with
+        // nothing to draw; a source mesh need not be readable.
+        private static Mesh EmptyMeshFor(SkinnedMeshRenderer body)
+        {
+            int bones = body.bones == null ? 0 : body.bones.Length;
+            var empty = new Mesh { name = "KMG_LanternArchon_EmptyDonorBody" };
+            empty.vertices = new[] { Vector3.zero };
+            if (bones > 0)
+            {
+                empty.boneWeights = new[] { new BoneWeight { boneIndex0 = 0, weight0 = 1f } };
+                empty.bindposes = Enumerable.Repeat(Matrix4x4.identity, bones).ToArray();
+            }
+            empty.SetTriangles(new int[0], 0);
+            empty.bounds = new Bounds(Vector3.zero, Vector3.one * .01f);
+            return empty;
+        }
+
+        internal bool DonorBodiesHidden
+        {
+            get
+            {
+                return _donorBodies.Length > 0 && Enumerable.Range(0, _donorBodies.Length)
+                    .All(index => _donorBodies[index] != null &&
+                        ReferenceEquals(_donorBodies[index].sharedMesh, _emptyMeshes[index]));
+            }
+        }
+
+        /// <summary>Also lets the native review capture the donor body for comparison.</summary>
+        internal void SetDonorBodiesHidden(bool hidden)
+        {
+            for (int index = 0; index < _donorBodies.Length; index++)
+                if (_donorBodies[index] != null)
+                    _donorBodies[index].sharedMesh = hidden ? _emptyMeshes[index] : _donorMeshes[index];
         }
 
         private static bool Finite(Vector3 value)
@@ -228,6 +279,7 @@ namespace KingmakerGunslinger.Summoning
             return new UnityEngine.Object[] { this, _root, _orb, _renderer,
                 _light }.Where(value => value != null)
                 .Concat(OwnedMaterials().Cast<UnityEngine.Object>())
+                .Concat(_emptyMeshes.Where(value => value != null).Cast<UnityEngine.Object>())
                 .GroupBy(value => value.GetInstanceID())
                 .Select(group => group.First()).ToArray();
         }
@@ -243,6 +295,12 @@ namespace KingmakerGunslinger.Summoning
             if (_released) return;
             _released = true;
             if (_light != null) _light.enabled = false;
+            SetDonorBodiesHidden(false);
+            foreach (Mesh empty in _emptyMeshes)
+                if (empty != null) UnityEngine.Object.DestroyImmediate(empty);
+            _donorBodies = new SkinnedMeshRenderer[0];
+            _donorMeshes = new Mesh[0];
+            _emptyMeshes = new Mesh[0];
             GameObject root = _root;
             Material[] materials = OwnedMaterials();
             _root = null; _orb = null; _renderer = null; _light = null;

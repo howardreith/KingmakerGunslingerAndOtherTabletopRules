@@ -610,7 +610,9 @@ namespace KingmakerGunslinger.DomainTests
                     // Repair R3 UI-03: Ghaele light ray, its AI action and brain.
                     SummoningCurrentSurface.RepairR3PrivateIdentityCount +
                     // Repair R4: owned breath, AI action and brain for four mephits.
-                    SummoningCurrentSurface.RepairR4PrivateIdentityCount,
+                    SummoningCurrentSurface.RepairR4PrivateIdentityCount +
+                    // Repair R5: Mastodon trample, Pixie spell-likes and AI actions.
+                    SummoningCurrentSurface.RepairR5PrivateIdentityCount,
                 ExpandedSummoningIdentityCatalog.SpecialIdentityCount - identities.Count(value =>
                     value.Symbol.StartsWith("KMG.Summoning.Natural.Griffon.", StringComparison.Ordinal) ||
                     value.Symbol.StartsWith("KMG.Summoning.Special.Griffon.", StringComparison.Ordinal) ||

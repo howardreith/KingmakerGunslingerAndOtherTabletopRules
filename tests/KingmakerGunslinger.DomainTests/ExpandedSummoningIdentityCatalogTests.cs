@@ -105,7 +105,8 @@ namespace KingmakerGunslinger.DomainTests
                     sprint35Routes + sprint36Routes + sprint37Routes +
                     sprint38Routes + sprint39Routes + sprint40Routes +
                     1 + // Repair R3 UI-03: the KMG Ghaele's owned light ray.
-                    4, // Repair R4: the four native-backed mephits' owned breaths.
+                    4 + // Repair R4: the four native-backed mephits' owned breaths.
+                    7, // Repair R5: Mastodon trample; Pixie Entangle, Confusion, Dispel Magic (+2 variants), Shield.
                 released.Count(value => value.PlannedType == "BlueprintAbility"),
                 "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
@@ -117,7 +118,8 @@ namespace KingmakerGunslinger.DomainTests
                 "Buff identity count changed.");
             Assertions.Equal(29 + ExpandedSummoningSprints30And31Tests.RegisteredAiIdentityCount +
                     1 + // Repair R3 UI-03: the Ghaele light-ray AI action.
-                    4, // Repair R4: the four owned mephit breath AI actions.
+                    4 + // Repair R4: the four owned mephit breath AI actions.
+                    4, // Repair R5: the Pixie's four spell-like cast actions.
                 released.Count(value => value.PlannedType == "BlueprintAiCastSpell"),
                 "AI identity count changed.");
             Assertions.Equal(17 + ExpandedSummoningSprints30And31Tests.RegisteredBrainIdentityCount +

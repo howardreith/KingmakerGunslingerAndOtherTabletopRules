@@ -69,6 +69,21 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "summon-playtest-r4-finish"), "R4 finishing phase uses the outdoor native Default fixture.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.WallFixturePhase("summon-playtest-r4-finish") ||
                 ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-playtest-r4-finish"), "R4 finishing phase is neither Wall nor Sprint40.");
+            // Repair R5 spells: the same fresh, save-free outdoor admission;
+            // never Wall preparation or host-restricted.
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-playtest-r7-models", 0, 0, 0, false, false, false, false, true), "The R7 bright phase is a save-free native review.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "summon-playtest-r7-models"), "The R7 bright phase uses the outdoor fixture.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-playtest-r7-models-interior", 0, 0, 0, false, false, false, false, true), "The R7 dim phase is a save-free native review.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "summon-playtest-r7-models-interior"), "The R7 dim phase uses the static interior.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-playtest-r7-models") || ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-playtest-r7-models-interior"), "R7 presentation phases are not host-restricted Sprint40 routines.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-playtest-r6-presentation", 0, 0, 0, false, false, false, false, true), "R6 presentation starts through native Default.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "summon-playtest-r6-presentation"), "R6 presentation uses the established outdoor fixture.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-playtest-r6-presentation"), "R6 presentation is not a laptop-only phase.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-playtest-r5-spells", 0, 0, 0, false, false, false, false, true), "Exact fresh R5 spells phase admitted.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-playtest-r5-spells", 0, 0, 0, false, false, true, false, true), "R5 spells phase cannot import a save.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "summon-playtest-r5-spells"), "R5 spells phase uses the outdoor native Default fixture.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.WallFixturePhase("summon-playtest-r5-spells") ||
+                ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-playtest-r5-spells"), "R5 spells phase is neither Wall nor Sprint40.");
             // Sprint 4 reach census: an exact fresh, save-free outdoor Default
             // phase that never acquires Wall preparation or player input.
             Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-reach-sprint4", 0, 0, 0, false, false, false, false, true), "Exact fresh reach phase admitted.");

@@ -49,6 +49,7 @@
     <Compile Include="SummonPlaytestR2Tests.cs" />
     <Compile Include="SummonPlaytestR3Tests.cs" />
     <Compile Include="SummonPlaytestR4Tests.cs" />
+    <Compile Include="SummonPlaytestR5Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\IceDevilRules40Policy.cs"><Link>Summoning\IceDevilRules40Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InfernalRules36Policy.cs"><Link>Summoning\InfernalRules36Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InfernalVisualPolicy36.cs"><Link>Summoning\InfernalVisualPolicy36.cs</Link></Compile>
@@ -64,6 +65,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonPortraitPolicy.cs"><Link>Summoning\SummonPortraitPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonActionTooltipPolicy.cs"><Link>Summoning\SummonActionTooltipPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\MephitBreathPolicy.cs"><Link>Summoning\MephitBreathPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonPlaytestR5Policy.cs"><Link>Summoning\SummonPlaytestR5Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SummonReadinessAdmissionPolicy.cs"><Link>RuntimeTesting\SummonReadinessAdmissionPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonReachRepresentation4Policy.cs"><Link>Summoning\SummonReachRepresentation4Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SummonAdjacentRoutineVerdict4.cs"><Link>RuntimeTesting\SummonAdjacentRoutineVerdict4.cs</Link></Compile>
@@ -281,6 +283,10 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVisualVariantModulePolicy.cs"><Link>Summoning\SummonVisualVariantModulePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonGlowPolicy.cs"><Link>Summoning\SummonGlowPolicy.cs</Link></Compile>
     <Compile Include="SummonGlowPolicyTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonPlaytestR6Policy.cs"><Link>Summoning\SummonPlaytestR6Policy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonCastCueLifecycle.cs"><Link>Summoning\SummonCastCueLifecycle.cs</Link></Compile>
+    <Compile Include="SummonPlaytestR6Tests.cs" />
+    <Compile Include="SummonPlaytestR7Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SalamanderTailGait.cs"><Link>Summoning\SalamanderTailGait.cs</Link></Compile>
     <Compile Include="SalamanderTailGaitTests.cs" />
     <Compile Include="RepairedBodyTests.cs" />

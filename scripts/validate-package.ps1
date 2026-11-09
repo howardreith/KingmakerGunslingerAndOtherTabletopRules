@@ -315,8 +315,8 @@ try {
         }
     }
     $glabrezu38Exports = @{
-        'glabrezu-mesh.json'='2122716bb703ebd1bef27723c2d2d4cb370786bc3930588ebdff4d1f21111ac6'
-        'glabrezu-albedo.png'='e13ab445694f3e1680b6ab3db03fb2d834d5096dbc0ed69817e8c413f2523187'
+        'glabrezu-mesh.json'='fe091f17eef9af988ff86a32f90dba544dd1a3243bf8160c0809e85ae46b13d3'
+        'glabrezu-albedo.png'='4c2f15474aad86188320aed40463ccd6b891a03c0c9bc1ec8495d65a419ef34f'
     }
     foreach ($entry in $glabrezu38Exports.GetEnumerator()) {
         if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint38-glabrezu\'+$entry.Key))) -cne $entry.Value) {
@@ -324,8 +324,8 @@ try {
         }
     }
     $nalfeshnee39Exports = @{
-        'nalfeshnee-mesh.json'='1caa91e1f79f40ec7c1a0ee251783665ad6b0ff0cbb2ea6fad7ff9ce2ef2fc2e'
-        'nalfeshnee-albedo.png'='3fa71ffd8161700f69464b6aaf3da936d16826a418b0de6f00612847f9a40b84'
+        'nalfeshnee-mesh.json'='d34e6c194d5b6c8c798a1ead77b9248e48e44721fccb2491eccee79aa1199aaf'
+        'nalfeshnee-albedo.png'='d9ab401ba01429ff64c8b05cdfaeac67b29b2d078a0f0c5d35e5002179868e7b'
     }
     foreach ($entry in $nalfeshnee39Exports.GetEnumerator()) {
         if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint39-nalfeshnee\'+$entry.Key))) -cne $entry.Value) {
@@ -333,8 +333,8 @@ try {
         }
     }
     $iceDevil40Exports = @{
-        'ice-devil-mesh.json'='3c6e0a8ecfd17f50c3996a1ecf6813112e4248da2f5599571b0f27d10cabf753'
-        'ice-devil-albedo.png'='6d24aafc619ba435899f348444a311ac8072e0d389ea950df83ccad5569cec83'
+        'ice-devil-mesh.json'='ac3468c597fe97752f5544d9da975c1c6dae0ca5e0d07d3a9ed9f3ca0ee9d700'
+        'ice-devil-albedo.png'='a7e25c51737fcc5679cc29ed194248fd2eeb81eac3c682f34dfcec7df86e8351'
     }
     foreach ($entry in $iceDevil40Exports.GetEnumerator()) {
         if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint40-ice-devil\'+$entry.Key))) -cne $entry.Value) {

@@ -1,3 +1,16 @@
+## R7 owner-playtest revision (Ice Devil)
+
+The separate pale beads and black rods are now one fused skin. Limb sheaths taper into dark joints, dorsal and ventral plates overlap a dark slate under-body, the shoulders carry one pauldron plate, the head is a narrower wedge under a heavy brow with framed eyes and four mandibles, and tail rings wrap a continuous core. The silhouette and equipped-spear contract are preserved; extents stay within 0.02 of the prior export. The export names the retained equivalent capture, so the loader now admits the same reviewed rig pair as its sibling outsiders.
+
+Generation stays the existing Blender 4.5.10 generator interface with `PYTHONHASHSEED=0` and the local rig capture `6443b580c8019d2a32de616ef610df3c2aa851c7c998044b56e0c29b4494e65d`; two clean runs produced byte-identical exports. Texture coordinates now come from the scoped `continuous-bodies/outsider_bake.py`, so the five atlas tiles are authoring material IDs and the albedo is baked from bind-pose position, normal and cavity. Only project-authored geometry and closed-form colour are inputs. No mechanics, reach, collision, attack, GUID or icon changed. Offline renders and native frames are presentation evidence; owner aesthetic approval is separate.
+
+| Current export | Vertices / triangles (or size) | SHA-256 |
+| --- | --- | --- |
+| `ice-devil-mesh.json` | 13741 / 14136 | `ac3468c597fe97752f5544d9da975c1c6dae0ca5e0d07d3a9ed9f3ca0ee9d700` |
+| `ice-devil-albedo.png` | 1024 x 1024 | `a7e25c51737fcc5679cc29ed194248fd2eeb81eac3c682f34dfcec7df86e8351` |
+
+Pre-R7 exports are retained at commit `70d44c8be7` and are not packaged.
+
 # Sprint 40 original Ice Devil body
 
 `generate_ice_devil.py` authors an original insectile Gelugon on the established

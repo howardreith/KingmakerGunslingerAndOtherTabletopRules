@@ -54,7 +54,11 @@ namespace KingmakerGunslinger.DomainTests
                 r[1] == "KMG_Summoning_Unit_" + owner));
             Assertions.Equal(6, giantRows, "Only the four Brachiosaurus carriers and Elephant's exact Trample/chassis are admitted.");
             Assertions.Equal(101, outsiderRows, "Exactly the measured Sprints 30-40 outsider owner/fact pairs are admitted.");
-            Assertions.Equal(53, rows.Length - giantRows - laterRows - outsiderRows, "The released interpretation prefix through Sprint 24 is preserved.");
+            // Repair R5 adds the Mastodon's own trample as its own tranche (the
+            // Cloud Giant's retired Fog Cloud row left the later group).
+            int repairRows = rows.Count(r => r[1] == "KMG_Summoning_Unit_Mastodon");
+            Assertions.Equal(1, repairRows, "Exactly the Mastodon's own trample row is admitted for Repair R5.");
+            Assertions.Equal(53, rows.Length - giantRows - laterRows - outsiderRows - repairRows, "The released interpretation prefix through Sprint 24 is preserved.");
             Assertions.Equal(rows.Length, rows.Select(r => string.Join("|", r)).Distinct().Count(), "No duplicate ownership rows.");
             var entries = (JArray)JObject.Parse(File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "blueprints", "blueprints.json")))["entries"];
             foreach (var r in rows)

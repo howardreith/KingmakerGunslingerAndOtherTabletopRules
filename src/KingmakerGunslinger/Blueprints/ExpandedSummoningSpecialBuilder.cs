@@ -658,14 +658,18 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureResource(pixieSleepResource, "Sleep Arrows",
                 ExpandedSummoningSpecialProfiles.PixieSleepArrowUses);
             ConfigurePixieDanceState(pixieDanceState);
-            ConfigurePixieDance(pixieDance, pixieDanceState,
-                pixieDanceResource, pixieSleepBow.Icon);
+            // Repair R5 SPELL-03: the custom Dance route is replaced by Call of
+            // the Wild's actual Irresistible Dance (bound after load; hidden
+            // and unusable without it), keeping one use per summoning.
+            ConfigurePixieDancePlaceholderR5(pixieDance, pixieDanceResource,
+                Require<BlueprintUnit>(bySymbol, PixieUnitSymbol));
             ConfigurePixieCombatTraits(library, pixieTraits, pixieSleepBow,
                 pixieSleepResource, pixieDanceResource);
             ConfigurePixieAi(pixieDanceAi, pixieDance, pixieBrain);
             ConfigurePixie(library, Require<BlueprintUnit>(bySymbol,
                 PixieUnitSymbol), pixieSleepBow, pixieDance, pixieBrain,
                 pixieTraits);
+            ConfigurePixieSpellLikesR5(library, bySymbol);
             ConfigureCyclops(bySymbol);
             ConfigureDocileHooves(bySymbol, PonyUnitSymbol, PonyCombatTraitsSymbol, "Pony");
             ConfigureDocileHooves(bySymbol, HorseUnitSymbol, HorseCombatTraitsSymbol, "Horse");
@@ -745,6 +749,11 @@ namespace KingmakerGunslinger.Blueprints
                 "KMG.Summoning.Unit.Elephant",
                 GiantBodyRulesPolicy.ElephantTrampleSymbol,
                 GiantBodyRulesPolicy.ElephantKey);
+            // Repair R5 MECH-02: the Mastodon's own trample through the same
+            // qualified carrier (Elephant and Aurochs rows are unchanged).
+            ConfigureUngulateTrample(library, bySymbol,
+                "KMG.Summoning.Unit.Mastodon",
+                SummonPlaytestR5Policy.MastodonTrampleSymbol, "mastodon");
             // The bounded ordinary Overrun command the owner selected
             // over a waiver. Brachiosaurus only, separate from Trample,
             // and it reuses the native implementation rather than
@@ -5303,92 +5312,6 @@ namespace KingmakerGunslinger.Blueprints
                     "KMG.ExpandedSummoning.Pixie.IrresistibleDance.State.Description",
                     "This creature can do nothing but dance and takes a -4 penalty to AC and a -10 penalty on Reflex saves."),
                 null);
-        }
-
-        private static void ConfigurePixieDance(BlueprintAbility ability,
-            BlueprintBuff danceState, BlueprintAbilityResource resource,
-            Sprite icon)
-        {
-            ability.name = InternalName(PixieDanceSymbol);
-            ability.Type = AbilityType.SpellLike;
-            ability.Parent = null;
-            ability.Hidden = false;
-            ability.ActionBarAutoFillIgnored = false;
-            ability.Range = AbilityRange.Touch;
-            ability.CanTargetEnemies = true;
-            ability.CanTargetSelf = false;
-            ability.CanTargetFriends = false;
-            ability.CanTargetPoint = false;
-            ability.SpellResistance = true;
-            ability.NeedEquipWeapons = false;
-            ability.EffectOnEnemy = AbilityEffectOnUnit.Harmful;
-            ability.EffectOnAlly = AbilityEffectOnUnit.None;
-            ability.ActionType = UnitCommand.CommandType.Standard;
-            ability.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Touch;
-            ability.MaterialComponent = new BlueprintAbility.MaterialComponentData();
-            ability.ResourceAssetIds = Array.Empty<string>();
-            var spell = ScriptableObject.CreateInstance<SpellComponent>();
-            spell.School = SpellSchool.Enchantment;
-            var descriptor = ScriptableObject.CreateInstance<
-                SpellDescriptorComponent>();
-            descriptor.Descriptor = SpellDescriptor.MindAffecting |
-                SpellDescriptor.Compulsion;
-            var parameters = ScriptableObject.CreateInstance<
-                ContextCalculateAbilityParams>();
-            parameters.StatType = StatType.Charisma;
-            parameters.ReplaceCasterLevel = true;
-            parameters.CasterLevel = Simple(ExpandedSummoningSpecialProfiles
-                .PixieDanceCasterLevel);
-            parameters.ReplaceSpellLevel = true;
-            parameters.SpellLevel = Simple(ExpandedSummoningSpecialProfiles
-                .PixieDanceSpellLevel);
-            ContextActionApplyBuff failedApply = ScriptableObject.CreateInstance<
-                ContextActionApplyBuff>();
-            failedApply.Buff = danceState;
-            failedApply.DurationValue = new ContextDurationValue {
-                    Rate = DurationRate.Rounds,
-                    DiceType = DiceType.D4,
-                    DiceCountValue = Simple(1),
-                    BonusValue = Simple(1)
-                };
-            failedApply.IsFromSpell = false;
-            failedApply.IsNotDispelable = false;
-            ContextActionApplyBuff succeededApply = ScriptableObject.CreateInstance<
-                ContextActionApplyBuff>();
-            succeededApply.Buff = danceState;
-            succeededApply.DurationValue = new ContextDurationValue {
-                    Rate = DurationRate.Rounds,
-                    DiceType = DiceType.Zero,
-                    DiceCountValue = Simple(0),
-                    BonusValue = Simple(1)
-                };
-            succeededApply.IsFromSpell = false;
-            succeededApply.IsNotDispelable = false;
-            ContextActionConditionalSaved saved = ScriptableObject.CreateInstance<
-                ContextActionConditionalSaved>();
-            saved.Failed = new ActionList { Actions = new GameAction[] {
-                failedApply } };
-            saved.Succeed = new ActionList { Actions = new GameAction[] {
-                succeededApply } };
-            var effect = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
-            effect.SavingThrowType = SavingThrowType.Will;
-            effect.Actions = new ActionList { Actions = new GameAction[] { saved } };
-            var cost = ScriptableObject.CreateInstance<AbilityResourceLogic>();
-            cost.RequiredResource = resource;
-            cost.IsSpendResource = true;
-            cost.CostIsCustom = false;
-            cost.Amount = 1;
-            ability.ComponentsArray = new BlueprintComponent[] {
-                spell, descriptor, parameters, cost, effect
-            };
-            BlueprintUnitFactAccess.Resolve().Configure(ability,
-                LocalizationService.Create(
-                    "KMG.ExpandedSummoning.Pixie.IrresistibleDance.Name",
-                    "Irresistible Dance"),
-                LocalizationService.Create(
-                    "KMG.ExpandedSummoning.Pixie.IrresistibleDance.Description",
-                    "Once per summon, a touched creature dances for 1d4+1 rounds on a failed Will save or one round on a successful save."),
-                icon);
         }
 
         private static AddAbilityResources AddResource(

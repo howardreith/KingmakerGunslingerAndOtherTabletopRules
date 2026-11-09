@@ -91,3 +91,16 @@ authority for whether the overlap is gone.
 The staging boundary additionally requires a structurally valid BKHD/DIDX/DATA/HIRC bank with exactly five unique, nonempty, in-bounds embedded media entries. The guarded global preview accepts an exact `FirearmKind`, permitting one fresh process to validate the complete Pistol, Musket, Blunderbuss, Revolver, and Rifle Event-name mapping.
 
 Run `20260820T0635323959656Z-88cfa04a0deb4595bfbc2ee8d4284e31` observed one load and nonzero playing IDs for all five global Events plus the live-unit/committed Blunderbuss controls, with zero normal-post increment for forced misfire. This is the strongest safe automated event-acceptance boundary. It does not supersede the fresh human report of silence and cannot establish audibility, mix, device output, or absence of an inherited crossbow layer.
+
+## Stopping one playback by ID (verified for the summon cast cues, 2026-11-08)
+
+The installed integration exposes `AkSoundEngine.StopPlayingID(uint playingId)`
+and overloads adding a transition duration and fade curve. All return `void`, and
+`AkSoundEngine.dll` exports the native `CSharp_StopPlayingID` entry points. The
+call takes no game object, so it does not depend on the emitter still being
+registered. Returning from it is a request, not proof of a stop: completion is
+the event's `AK_EndOfEvent` callback.
+
+`AkGameObj.OnDestroy` unregisters the emitter, and on candidate `c31c6292f7d3` a
+cue kept playing to its natural end after that unregistration, so a view's
+destruction alone does not end its sounds.
