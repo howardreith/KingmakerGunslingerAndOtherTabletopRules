@@ -257,7 +257,11 @@ namespace KingmakerGunslinger.Summoning
                     // unknown original conversion rows remain untouched.
                     var projection = variants.Where(value => expected.Any(owned => ReferenceEquals(owned, value)) ||
                         SummonNativeOptionCatalog.All.Any(native => native.Family == route.Family && native.Tier == tier &&
-                            native.Multiplicity == quantity && native.Guid == value.AssetGuid)).ToArray();
+                            native.Multiplicity == quantity && native.Guid == value.AssetGuid) ||
+                        // A verified third-party row at its own tier and quantity,
+                        // under its own native prerequisite. Herald Caller only.
+                        SummonForeignRowPolicy.AdmittedToConversion(route == DruidSummonConversionPolicy.Herald, tier, quantity,
+                            SummonForeignRowRuntime.Resolve(value), new AbilityData(value, book).IsVisible())).ToArray();
                     // Forbidden rows are dropped here so the projected rows stay
                     // the rows the menu keeps. Execution is still gated separately.
                     if (route == DruidSummonConversionPolicy.Herald)

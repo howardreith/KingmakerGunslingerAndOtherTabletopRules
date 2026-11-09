@@ -323,6 +323,7 @@
     <Compile Include="Summoning\SummonDisplayOrderPolicy.cs" />
     <Compile Include="Summoning\SummonClericAlignmentPolicy.cs" />
     <Compile Include="Summoning\SummonClericAlignmentGate.cs" />
+    <Compile Include="Summoning\SummonForeignRowContracts.cs" />
     <Compile Include="Summoning\SummonNativeOptionCatalog.cs" />
     <Compile Include="Summoning\SummonNativeExpansionCatalog.cs" />
     <Compile Include="Summoning\SummonVisibilityCatalog.cs" />

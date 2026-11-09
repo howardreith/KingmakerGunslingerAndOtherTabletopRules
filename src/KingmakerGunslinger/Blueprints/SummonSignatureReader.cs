@@ -145,7 +145,32 @@ namespace KingmakerGunslinger.Blueprints
                 DirectlyControllable = spawn.IsDirectlyControllable,
                 AfterSpawn = (spawn.AfterSpawn == null || spawn.AfterSpawn.Actions == null ?
                     new GameAction[0] : spawn.AfterSpawn.Actions).Select(value =>
-                        value == null ? "null" : value.GetType().FullName).ToList() };
+                        value == null ? "null" : value.GetType().FullName).ToList(),
+                AfterSpawnDetail = Detail(spawn.AfterSpawn == null ? null : spawn.AfterSpawn.Actions) };
+        }
+
+        private static List<string> Detail(IEnumerable<GameAction> actions)
+        {
+            var result = new List<string>();
+            foreach (GameAction action in actions ?? Enumerable.Empty<GameAction>())
+            {
+                if (action == null) { result.Add("null"); continue; }
+                var buff = action as ContextActionApplyBuff;
+                var conditional = action as Conditional;
+                if (buff != null && buff.GetType() == typeof(ContextActionApplyBuff))
+                    result.Add("apply-buff:" + Guid(buff.Buff));
+                else if (conditional != null && conditional.GetType() == typeof(Conditional))
+                {
+                    ConditionsChecker checker = conditional.ConditionsChecker;
+                    result.Add("conditional:" + (checker == null ? "none" : checker.Operation.ToString()) + "[" +
+                        string.Join(";", (checker == null || checker.Conditions == null ? new Condition[0] : checker.Conditions)
+                            .Select(value => value == null ? "null" : Describe(value)).ToArray()) + "]{t:" +
+                        string.Join(";", Detail(conditional.IfTrue == null ? null : conditional.IfTrue.Actions).ToArray()) + "}{f:" +
+                        string.Join(";", Detail(conditional.IfFalse == null ? null : conditional.IfFalse.Actions).ToArray()) + "}");
+                }
+                else result.Add(action.GetType().FullName);
+            }
+            return result;
         }
 
         private static SummonValue Value(ContextValue value)
