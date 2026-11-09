@@ -13,6 +13,12 @@ follows v0.0.179 as the next stable patch, v0.0.180, from master after every mer
   - The creature catalog is unchanged; only the owner-withdrawn Stirge is withheld, leaving
     1,208 public choices.
   - One static release record is added.
+- **Stale tests corrected before publication.** The first complete-suite run on master had 2
+  failures of 2,894, both stale test expectations, and the correction is test-only.
+  `expanded-summoning.correction-mephit-roles` named the call signature from before R4.
+  `expanded-summoning.overhaul-atlas-seams` used the Nalfeshnee for its negative control, but
+  R7 re-baked that model to a single tile, so the control moved to the Vrock. Every shipped
+  mesh still passes the zero-crossing check.
 - **Publication path.** Use the ordinary exact-reference publisher from clean, pushed master
   with `docs/RELEASE-NOTES-0.0.180.md`. It runs the complete gate and two deterministic
   builds, then publishes. Planning budget: 30 minutes, excluding necessary safe completion.
