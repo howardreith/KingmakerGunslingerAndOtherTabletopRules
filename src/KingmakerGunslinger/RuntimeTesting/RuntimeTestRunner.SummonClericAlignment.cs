@@ -104,7 +104,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         mismatches.Add(new JObject { ["key"] = gate.CreatureKey, ["tier"] = tier, ["policy"] = spell.Descriptors.ToString(), ["blueprintDescriptors"] = live.ToString() });
                 }
             }
-            Sprint25Check("cleric-route-census", identities && linked == 9 && unresolved.Count == 0 && verified.Count == 3 && governedContracts.Count == 1, new JObject {
+            Sprint25Check("cleric-route-census", identities && linked == 9 && unresolved.Count == 0 && verified.Count == 4 && governedContracts.Count == 0, new JObject {
                 ["clericClass"] = cleric.AssetGuid, ["spellbook"] = cleric.Spellbook?.AssetGuid, ["spellList"] = list?.AssetGuid, ["identitiesExact"] = identities, ["linkedParents"] = linked, ["links"] = links,
                 ["children"] = children, ["carryingTheNewGate"] = gated, ["verifiedInherentlyLegalContract"] = verified, ["conditionallyGovernedContract"] = governedContracts, ["unresolved"] = unresolved, ["policyVersusBlueprintDescriptorDifferences"] = mismatches,
                 ["scope"] = "Structural census of the real cleric spell list and published children." },
@@ -208,7 +208,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> ClericLegalCast(ExpandedSummoningCorrectionFixture fixture, ActionBarSlot row, AbilityData child, AbilityData prepared, Cleanup2SourceDebit debit, Action closePopup, Cleanup2NativeDefaultScope mode, Stopwatch phase,
-            string caseKey = null, string expectedBranchUnit = null)
+            string caseKey = null, string expectedBranchUnit = null, Action<UnitEntityData[]> inspect = null, Func<int, bool> countOk = null)
         {
             var hooks = HarmonyInstance.Create("kmg.cleric.legal." + _request.RunId); UnitUseAbility command = null;
             const BindingFlags statics = BindingFlags.Static | BindingFlags.NonPublic;
@@ -237,13 +237,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var expected = expectedBranchUnit == null ? references : references.Where(value => value.Unit == expectedBranchUnit).ToArray();
                 bool exact = issued && command.IsFinished && command.Result.ToString() == "Success" && fixture.Caster.Commands.Empty && Cleanup2DruidCastRules.Count == 1 && Cleanup2DruidCastRules[0].Success &&
                     ReferenceEquals(Cleanup2DruidCastRules[0].Spell, child) && _expandedSummoningPlayerPathRuleCastCount == 1 && _expandedSummoningPlayerPathSpawnActionCount == 1 &&
-                    expected.Length == 1 && units.Length == 1 && units[0].Blueprint.AssetGuid == expected[0].Unit && debit.ExactlyOne(prepared.ParamSpellSlot) &&
+                    expected.Length == 1 && (countOk != null ? countOk(units.Length) : units.Length == 1) && units.All(value => value.Blueprint.AssetGuid == expected[0].Unit) && debit.ExactlyOne(prepared.ParamSpellSlot) &&
                     ReferenceEquals(child.ConvertedFrom, prepared) && ReferenceEquals(child.Spellbook, prepared.Spellbook);
                 Sprint25Check("cleric-legal-cast" + (caseKey == null ? "" : "-" + caseKey), exact, new JObject { ["selected"] = selected, ["child"] = child.Blueprint.AssetGuid, ["name"] = child.Name, ["source"] = prepared.Blueprint.AssetGuid,
                     ["commandResult"] = command == null ? null : command.Result.ToString(), ["castRules"] = Cleanup2DruidCastRules.Count, ["castCount"] = _expandedSummoningPlayerPathRuleCastCount,
                     ["spawnActions"] = _expandedSummoningPlayerPathSpawnActionCount, ["units"] = new JArray(units.Select(value => value.Blueprint.AssetGuid)), ["expectedUnit"] = expected.FirstOrDefault()?.Unit, ["possibleSpawnReferences"] = new JArray(references.Select(value => value.Unit)), ["actualSpawnedInstances"] = units.Length, ["actualSpawnedCreature"] = units.Length == 1 ? units[0].Blueprint.name : null, ["quantity"] = units.Length,
                     ["debit"] = debit.Describe(prepared.ParamSpellSlot), ["manualTicks"] = 0, ["forcedAct"] = false, ["wallSeconds"] = watch.Elapsed.TotalSeconds },
                     "Selecting a permitted row from the cleric's own menu casts that ability, summons its creature, and spends only its prepared slot.");
+                if (inspect != null && units.Length != 0) inspect(units);
                 if (units.Length != 0) DisposeExpandedSummoningUnits(fixture.Created, units);
             }
             finally
@@ -319,6 +320,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var ordinary = plainSpells(5)[0]; var ordinarySecond = plainSpells(5)[1]; var ordinarySeventh = plainSpells(7)[0];
                 if (book != null)
                 {
+                    foreach (int spiderTier in new[] { 1, 2, 4, 7 }) PrepareExpandedSummoningPlayerPathSpell(book, smParent(spiderTier), smParent(spiderTier), spiderTier);
                     PrepareExpandedSummoningPlayerPathSpell(book, smParent(3), smParent(3), 3);
                     PrepareExpandedSummoningPlayerPathSpell(book, smParent(5), smParent(5), 5);
                     PrepareExpandedSummoningPlayerPathSpell(book, ordinary, ordinary, 5);
@@ -445,7 +447,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ClericNonClericControl(iceDevil, spiderRow, player.MainCharacter.Value, asmodeus, spiderFeature);
                 SummonForeignRowResult ogreContract = spiderRow == null ? null : SummonForeignRowRuntime.Resolve(spiderRow);
                 SummonForeignRowResult tarantulaContract = tarantulaRow == null ? null : SummonForeignRowRuntime.Resolve(tarantulaRow);
-                bool foreignReady = spiderFeature != null && ogreContract?.Outcome == SummonForeignContractOutcome.ConditionallyGoverned && tarantulaContract?.Outcome == SummonForeignContractOutcome.VerifiedInherentlyLegal &&
+                bool foreignReady = spiderFeature != null && ogreContract?.Outcome == SummonForeignContractOutcome.VerifiedInherentlyLegal && tarantulaContract?.Outcome == SummonForeignContractOutcome.VerifiedInherentlyLegal &&
                     ClericDeityAdmits(desna, Alignment.ChaoticGood);
                 bool hiddenBeforeFeature = spiderRow != null && !new AbilityData(spiderRow, book).IsVisible();
                 Sprint25Check("cleric-foreign-prerequisites", foreignReady, new JObject { ["feature"] = spiderFeature?.AssetGuid, ["ogreOutcome"] = ogreContract?.Outcome.ToString(), ["ogreReason"] = ogreContract?.Reason,
@@ -465,15 +467,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in R6Cell("cleric-foreign-lg-herald", () => ClericOpenMenu("spider-lg-erastil-herald-tier5", spellGroup, levels, 5, book, smParent(5), tierFiveSecond, mode, watch, screens, (menu, source) => lgHerald = menu, true))) yield return frame;
                     foreach (int frame in R6Cell("cleric-foreign-lg-herald-seven", () => ClericOpenMenu("spider-lg-erastil-herald-tier7", spellGroup, levels, 7, book, smParent(7), tierSevenOrdinary, mode, watch, screens, (menu, source) => lgHeraldSeven = menu, true))) yield return frame;
                     Func<AlphaMenu, BlueprintAbility, bool> holds = (menu, row) => menu != null && menu.Data.Any(value => ReferenceEquals(value.Blueprint, row));
-                    Sprint25Check("cleric-foreign-forbidden-row-absent", lgCanonical != null && lgHerald != null && !holds(lgCanonical, spiderRow) && !holds(lgHerald, spiderRow),
-                        new JObject { ["canonicalRows"] = lgCanonical?.Rows.Length ?? 0, ["heraldRows"] = lgHerald?.Rows.Length ?? 0, ["caster"] = "LawfulGood/Erastil", ["branchSpell"] = "Bralani: Good, Chaos" },
-                        "A lawful good cleric's popup and Herald conversion omit the row whose executing branch is forbidden.");
+                    Sprint25Check("cleric-foreign-repaired-ogre-offered", lgCanonical != null && lgHerald != null && holds(lgCanonical, spiderRow) && holds(lgHerald, spiderRow),
+                        new JObject { ["canonicalRows"] = lgCanonical?.Rows.Length ?? 0, ["heraldRows"] = lgHerald?.Rows.Length ?? 0, ["caster"] = "LawfulGood/Erastil", ["classification"] = "caster-matched spider, not the former Bralani" },
+                        "The repaired Ogre row is a caster-matched spider and stays offered to a lawful good cleric in both routes.");
                     AbilityData survivor = lgHeraldSeven?.Data.FirstOrDefault(value => ReferenceEquals(value.Blueprint, tarantulaRow));
                     Sprint25Check("cleric-foreign-inherent-row-survives-herald", survivor != null && ReferenceEquals(survivor.ConvertedFrom?.ConvertedFrom, tierSevenOrdinary) && ReferenceEquals(survivor.Spellbook, book),
                         new JObject { ["rows"] = lgHeraldSeven?.Rows.Length ?? 0, ["row"] = tarantulaRow.AssetGuid, ["sourceSlot"] = survivor != null && survivor.ConvertedFrom != null },
                         "A verified inherently legal third-party row survives the Herald conversion, keeping its original prepared source.");
-                    foreach (int frame in R6Cell("cleric-foreign-forbidden", () => ClericForbiddenAttempt(fixture, spiderRow, book, tierFive, mode, watch, "foreign-ogre-nonevil-branch", true))) yield return frame;
-
                     fixture.Caster.Descriptor.Alignment.Set(Alignment.ChaoticGood);
                     setDeity(desna);
                     foreach (int frame in R6Cell("cleric-foreign-cg-herald", () => ClericOpenMenu("spider-cg-desna-herald-tier5", spellGroup, levels, 5, book, smParent(5), tierFiveSecond, mode, watch, screens, (menu, source) => cgHerald = menu, true))) yield return frame;
@@ -488,16 +488,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var foreignDebit = new Cleanup2SourceDebit(fixture.Caster);
                         ActionBarGroupSlot closeCg = cgSource;
                         foreach (int frame in R6Cell("cleric-foreign-legal", () => ClericLegalCast(fixture, cgCanonical.Rows[ogreIndex], cgCanonical.Data[ogreIndex], tierFive, foreignDebit, () => Cleanup2MenuAdapterHide(closeCg, tierFive), mode, watch,
-                            "foreign-ogre-nonevil-branch", SummonForeignRowClassifier.BralaniUnit))) yield return frame;
+                            "foreign-repaired-ogre", SpiderSummonerCatalog.Find("ogre-spider").UnitGuid))) yield return frame;
                     }
                     else Sprint25Check("cleric-foreign-legal-row-present", false, new JObject { ["rows"] = cgCanonical?.Rows.Length ?? 0 }, "The permitted third-party row is offered in the canonical popup.");
                     if (cgSource != null) Cleanup2MenuAdapterHide(cgSource, tierFive);
                     fixture.Caster.Descriptor.RemoveFact(heraldFact); heraldFact = null;
+                    Func<int, AbilityData> preparedParent = level => book.GetMemorizedSpellSlots(level).Where(value => value.Spell != null && ReferenceEquals(value.Spell.Blueprint, smParent(level))).Select(value => value.Spell).FirstOrDefault();
+                    foreach (int frame in R6Cell("spider-summoner", () => SpiderSummonerCells(fixture, book, spiderFeature, mode, watch, spellGroup, levels, smParent, preparedParent, setDeity, erastil, asmodeus))) yield return frame;
                     fixture.Caster.Descriptor.RemoveFact(spiderFact); spiderFact = null;
                 }
                 Sprint25Check("cleric-surface-limits", true, new JObject { ["openedInGame"] = "Prepared Summon Monster III, V and IX popups and Herald conversion popups on a levelled cleric, including with the exact Spider Summoner feature.",
                     ["execution"] = "Legal casts and forbidden commands, unassisted, under the fixture's induced state.",
-                    ["notObserved"] = "Console navigation, saved-hotbar reload, cold load, autonomous AI, a multiclass book popup, the evil branch of the third-party row, and a module-disabled profile.", ["wallSeconds"] = watch.Elapsed.TotalSeconds },
+                    ["notObserved"] = "Console navigation, saved-hotbar reload, cold load, autonomous AI, a multiclass book popup and a module-disabled profile.", ["wallSeconds"] = watch.Elapsed.TotalSeconds },
                     "Observed and unobserved surfaces are reported separately.");
             }
             finally
