@@ -1,9 +1,17 @@
 # Alphabetical summon menus: status
 
-**Draft checkpoint; final native invocation recorded FAIL (2026-11-09).** New, bounded
-menu-presentation mission, separate from the completed R1-R7 repair history. No R1-R7 result
-transfers to these binaries. Nothing here is merged, released or permanently installed. No
-further build or native invocation is authorized by the current extension.
+**Alphabetization accepted on existing source, focused-test and native menu evidence. Historical
+native invocation remains FAIL because of observer setup defects. Observer corrections are
+source/focused-check only; no further native run performed.** (2026-11-09)
+
+New, bounded menu-presentation mission, separate from the completed R1-R7 repair history. No R1-R7
+result transfers to these binaries. Nothing here is merged, released or permanently installed.
+
+The owner accepted the implemented ordering on the structural census, the six opened native
+menus, Druid factory/popup agreement, the two observed canonical selections and the
+reference-preserving implementation. That acceptance does not establish a completed reordered
+summon cast, alternate-menu selection, a feature-enabled spider popup, actual scroll movement,
+console navigation or saved-hotbar behavior.
 
 ## Starting source
 
@@ -35,7 +43,9 @@ after this package publishes. `AlternateSummoningCoordinator.TryReconcile`, on t
 Mod Manager update once publication is present, runs one final pass: `ReorderLateHostRows`. It
 writes a new array to this package's own component and changes no other mod's blueprint. There
 is no per-frame sorting and no new UI patch. The record of the original publication is left
-as it was, so rollback still refuses after a foreign append and sort.
+as it was, so rollback still refuses after a foreign append and sort. This first-update pass
+covers the demonstrated installed RacesUnleashed loading sequence, not arbitrary later mutations
+by every possible mod.
 
 RacesUnleashed gates those rows on `AbilityShowIfCasterHasFact(SpiderSummonerFeature)`, so a
 caster without that feature correctly does not see them in a menu.
@@ -62,17 +72,18 @@ production compiled. The candidate build ran the same 48. Includes
 
 Save-free phase `summon-alphabetical-menus`, one invocation, 154 s including restoration.
 
-**Structural coverage.** Census of published arrays: 93 checked, 93 passed, 0 failed, 0 skipped
+**Structural coverage (not opened menus).** Census of published arrays: 93 checked, 93 passed, 0 failed, 0 skipped
 (18 canonical, 75 alternate, 5,235 rows), no unclassified row, no Stirge row, all seven
 alternate families `Published`. The late pass changed exactly the 8 previously affected menus:
 Summon Monster I, IV, V, VII and Summon Nature's Ally I, IV, V, VII. That change shows the rows
 were present before the sort.
 
-**Rollback (native).** On a transient unregistered parent holding real rows: append, sort,
-repeat (no change), real `ExpandedSummoningPublication.Rollback`. It refused, all choices were
-kept, and the record was not refreshed. The domain regression covers the same sequence.
+**Rollback (native).** On a transient unregistered parent holding real rows, not on a live
+published parent: append, sort, repeat (no change), real `ExpandedSummoningPublication.Rollback`.
+It refused, all choices were kept, and the record was not refreshed. The domain regression
+covers the same sequence.
 
-**Opened in game**, labels and ability identities recorded from the UI's row objects, all
+**Six menus opened in game**, labels and ability identities recorded from the UI's row objects, all
 sorted, following the published parent order, with no duplicates:
 
 | Menu | Rows | First | Last |
@@ -89,9 +100,16 @@ matched the popup in order (73 rows). All eight screenshots were inspected and a
 incidental hover tooltip covers part of the grid in five of them. The Summon Nature's Ally IX
 first-row and last-row captures are identical, consistent with no scrolling being needed.
 
-**Selection routing.** Clicking a reordered row selected that row's own ability object, with the
-matching quantity and source context: Wolf, Dire (single) in Summon Monster IV, and
-Worm, Purple (1d3) in Summon Nature's Ally IX. Selection only.
+**Selection routing.** Clicking two available canonical rows selected each row's own ability
+object, with the matching quantity and source context: Wolf, Dire (single) in Summon Monster IV,
+and Worm, Purple (1d3) in Summon Nature's Ally IX. Selection only.
+
+**Qualification of two passing assertions.** `alpha-click-alternate-MonsterTacticianSummonVSingle`
+and `alpha-click-alternate-MasterSummonerSummon5Base` passed the old predicate
+`(!available || selected) && quantity && context` while their rows were unavailable. Those two
+PASS results did not establish selection; they established only that the rows' configured
+quantity and source context match. They remain counted in the original 44 PASS. The raw receipt
+is unchanged.
 
 ### The three failures, classified but not converted
 
@@ -104,7 +122,8 @@ Worm, Purple (1d3) in Summon Nature's Ally IX. Selection only.
 
 ### Not established
 
-- A native cast of a reordered choice. Only selection routing was observed.
+- A completed native cast of a reordered choice. No reordered summon cast completed; only
+  selection routing was observed.
 - Selection in an alternate-source menu: those rows were out of resources for the fixture
   caster (the ordering and ability identities of those menus were observed).
 - A visible RacesUnleashed row in a real popup, which needs a caster with `SpiderSummonerFeature`.
@@ -113,13 +132,42 @@ Worm, Purple (1d3) in Summon Nature's Ally IX. Selection only.
 - Console navigation, every tier as an opened popup, natural characters and saved hotbars.
   Cold-save hydration was not exercised.
 
+## Observer corrections after the final run (source and focused checks only)
+
+Commit `fbd117d4a3aa0491b443a15b9592226cff1a0ba7`. **None of this has been executed natively.** No
+package was built and Kingmaker was not launched. The verdicts above stay with `c55f40e53f36`; this
+source has no native result.
+
+- **Selection classification.** `AlphabeticalMenuObservationVerdict.ClassifySelection` separates
+  three outcomes. An available row passes only when the exact row object is selected with the
+  expected quantity and context; an available row that fails to select fails. An unavailable row
+  is not clicked, emits no `alpha-click` assertion, and is listed as not exercised in the
+  `alpha-surface-limits` evidence. A separate `alpha-row-configuration` assertion carries the
+  quantity and context evidence under an accurate name.
+- **Spider visibility.** The check reads the installed row's own `AbilityShowIfCasterHasFact` and
+  the caster's fact. A caster without it must not see the row (`alpha-late-row-expected-absent`,
+  which states it does not demonstrate a visible sorted popup); an eligible caster must see it in
+  a sorted menu. The product's gating is unchanged. The feature-enabled popup remains unobserved.
+- **Druid cast.** Before the existing cast, the observer re-opens the Spell group, refills it,
+  selects the level, waits for the UI, and finds the current slot again by the exact prepared
+  ability, confirming its `SpellSlot`. The cast, debit and restoration checks are unchanged.
+
+Focused gate (`expanded-summoning.alphabetical;alternate-summoning.alphabetical;expanded-summoning.sprint32-native-admission`):
+11 of 2,894 selected, all passing, production compiled, 20.3 s. The behavioral checks cover the
+selection outcomes and the late-row visibility outcomes through the observer's own classifier. The
+Druid correction has compile coverage only. The gate ran compilation and the named tests only: no
+package, compatibility matrix, historical suite or native scenario.
+
+The production ordering code is unchanged by this closeout: no file under `Summoning/` or
+`Blueprints/` differs from `ffbea3343d`.
+
 ## Restoration
 
 Both native invocations restored exactly: live v0.0.140, DLL `00EF6757...66FD`, 254 files,
 `Params.xml` `E44F4495...30BB` (receipt state `restored`), game settings, 95 protected saves with
 byte and metadata comparison. `KMG_AUTOMATION_BASELINE` was not touched. No campaign save was
 written, no game left running, no pending receipt. Raw evidence and screenshots stay private
-under `runtime-evidence`.
+under `runtime-evidence`. This closeout performed no native installation transaction.
 
 ## Memory
 
@@ -144,6 +192,9 @@ repository exposes no separate build-concurrency option. The largest other proce
 | Focused gate | 22 |
 | Candidate build `c55f40e53f36` | 554 |
 | Guarded native invocation | 154 |
-| **Cumulative** | **about 1,961** |
+| Subtotal at the end of the native continuation | about 1,961 |
+| Closeout focused gate | 20 |
+| **Cumulative** | **about 1,981** |
 
-Incremental spend in this continuation is about 730 s.
+The native continuation spent about 730 s; this closeout spent 20 s. About 419 s of the ceiling
+remain unused.
