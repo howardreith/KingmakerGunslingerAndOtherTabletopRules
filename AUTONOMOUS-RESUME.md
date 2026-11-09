@@ -1,14 +1,17 @@
-# Cleric alignment restrictions — draft PR, native run FAIL before any menu / STOP
+# Cleric alignment restrictions — draft PR #122, native FAIL 49 PASS / 1 FAIL / STOP
 
 Current (2026-11-09). See planning/summon-cleric-alignment/STATUS.md. Branch
-`codex/summon-cleric-alignment`, one draft PR against master. v0.0.180 is published.
+`codex/summon-cleric-alignment`, draft PR #122 against master. v0.0.180 is published.
 
-- Focused gate 21 of 2,902 passing. Candidate `059854c046e1` native: FAIL before a menu opened.
-- Established natively: only the route census (9 parents, 617 of 621 children gated, 0 unclassified).
-- Not observed: menu filtering, legal cast, forbidden attempt, deity and non-cleric controls.
-- Herald Caller conversions above tier I bypass the gate; owner decision needed.
-- Source corrections after the run (`0d1cd93f8b`) were not built or run. PR #121 records v0.0.180.
-- Install, saves, settings and `Params.xml` restored exactly. Ledger about 591 of 1,800 s.
+- Focused gate 31 of 2,910 passing. Candidate `03a87b348912` native: FAIL, 49 PASS / 1 FAIL.
+- Observed and passing: seven cleric popups, legal casts with exact slot debits, forbidden
+  refusals on a selected child and a retained native row, deity-derived change, non-cleric control.
+- Herald Caller is covered on the Druid pattern: 1 shared parent, 23 projected and governed, 0 uncovered.
+- The one failure: RacesUnleashed Ogre Spider is unresolved (two spawned units, no gate). Whether
+  to judge it by what it spawns or by its label is an owner decision.
+- `059854c046e1` keeps its FAIL, 4 PASS / 3 FAIL. Its fixture failure was the missing native `ApplySpellbook`.
+- Not observed: console, saved hotbars, cold load, AI, multiclass popup, evil or chaotic cleric menus.
+- Install, saves, settings and `Params.xml` restored exactly. Ledger about 1,358 of 1,800 s.
 - No further build or native invocation is authorized. No merge, release or permanent install.
 
 ---
