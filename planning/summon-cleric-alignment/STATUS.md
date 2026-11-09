@@ -53,7 +53,7 @@ no blank tile; images support presentation only):
 | Spider feature, CG/Desna, Herald conversion from an ordinary tier V spell | 66 of 76 | Ogre row present at index 60, on its original prepared source |
 | Spider feature, CG/Desna, prepared Summon Monster V | 66 of 76 | Ogre row present at index 60 |
 
-The seven menus of the earlier candidate were repeated with the same row counts, 92, 31, 66, 92, 104 and 99 (the spider menu was replaced by those above).
+The six non-spider menus of the earlier candidate were repeated with the same row counts: 92, 31, 66, 92, 104 and 99. Its one spider menu was replaced by those above.
 
 Executed:
 
