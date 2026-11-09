@@ -214,6 +214,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (toggles.Any(value => value)) throw new InvalidOperationException("Closed native groups required at intake.");
                 var sorcerer = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library, "b3a505fb61437dc4097f43c3f8f9a4cf", "native Sorcerer");
                 var druidClass = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library, "610d836f3a3a9ed42a4349b62f002e96", "native Druid");
+                // Level 5 preparation needs the casting score; the caster is disposable.
+                fixture.Caster.Stats.Wisdom.BaseValue = 30; fixture.Caster.Stats.Charisma.BaseValue = 30;
                 var known = addedBooks.AddBook(sorcerer.Spellbook);
                 Func<SummonFamily, int, BlueprintAbility> canonical = (family, tier) => BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
                     ExpandedSummoningPublisher.CanonicalParentGuids[(family == SummonFamily.Monster ? 0 : 9) + tier - 1], "alphabetical canonical parent");
@@ -275,6 +277,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new JObject { ["tier"] = mephitTier, ["mephits"] = mephits == null ? (JToken)JValue.CreateNull() : new JArray(mephits.Data.Where(value => value.Name.StartsWith("Mephit, ", StringComparison.Ordinal)).Select(value => value.Name)) },
                     "The Summon Monster menu shows several family-first mephits adjacent in alphabetical position.");
 
+                if (!spellGroup.ToggleState) spellGroup.OnClick();
                 levels.OnClick(allyTier);
                 for (int frame = 0; frame < 10; frame++) yield return 0;
                 var allySource = findSource(allyTier, data => ReferenceEquals(data?.Blueprint, allyMenu) && ReferenceEquals(data?.Spellbook, known));
@@ -285,12 +288,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     allies.Data.Any(value => AlphaQuantityRank(value.Name) == 0),
                     new JObject { ["tier"] = allyTier, ["rows"] = allies?.Rows.Length ?? 0 }, "The long Nature's Ally menu interleaves single, 1d3 and 1d4+1 rows by creature name.");
 
+                if (!spellGroup.ToggleState) spellGroup.OnClick();
                 levels.OnClick(DruidTier);
                 for (int frame = 0; frame < 10; frame++) yield return 0;
                 var druidSource = findSource(DruidTier, data => ReferenceEquals(data, druidPrepared));
                 var factory = druidSource.MechanicSlot.GetConvertedAbilityData().ToArray();
                 AlphaMenu flat = null;
-                foreach (int frame in AlphaObserveMenu("druid-conversion-" + DruidTier, druidSource, druidParent, druidPrepared, mode, watch, screens, inputs, value => flat = value, true, false)) yield return frame;
+                foreach (int frame in AlphaObserveMenu("druid-conversion-" + DruidTier, druidSource, druidParent, druidPrepared, mode, watch, screens, inputs, value => flat = value, false, false)) yield return frame;
                 bool factoryMatches = flat != null && factory.Length == flat.Data.Length && factory.Select(value => value.Blueprint).SequenceEqual(flat.Data.Select(value => value.Blueprint));
                 Sprint25Check("alpha-druid-factory-matches-popup", factoryMatches, new JObject { ["conversionAdapter"] = DruidSummonConversionVariantPatch.Outcome,
                     ["factory"] = new JArray(factory.Select(value => value.Blueprint.AssetGuid)), ["popupRows"] = flat?.Rows.Length ?? 0 },

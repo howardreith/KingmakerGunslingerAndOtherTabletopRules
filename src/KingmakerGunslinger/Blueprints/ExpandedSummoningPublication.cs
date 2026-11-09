@@ -190,6 +190,53 @@ namespace KingmakerGunslinger.Blueprints
             return exact;
         }
 
+        // Filled at publication, so a later reorder needs no second naming route.
+        private static readonly Dictionary<string, SummonMenuOrderKey> OwnedOrderKeys =
+            new Dictionary<string, SummonMenuOrderKey>(StringComparer.Ordinal);
+
+        private static SummonMenuOrderKey MenuOrderKey(BlueprintAbility value,
+            SummonFamily family, int tier)
+        {
+            SummonMenuOrderKey owned;
+            if (OwnedOrderKeys.TryGetValue(value.AssetGuid, out owned)) return owned;
+            SummonNativeOptionSpec native = SummonNativeOptionCatalog.Find(
+                family, tier, value.AssetGuid);
+            return HostOrderKey(value, native == null ? (SummonMultiplicity?)null :
+                native.Multiplicity, native != null);
+        }
+
+        /// <summary>
+        /// Another mod's LoadDictionary postfix can run after publication and
+        /// append rows to the published component (RacesUnleashed does, at a
+        /// lower Harmony priority). Once every postfix has finished, order the
+        /// published rows again. It writes a new array to this package's own
+        /// component only, and returns how many menus changed.
+        /// </summary>
+        internal static int ReorderLateHostRows(LibraryScriptableObject library)
+        {
+            int changed = 0;
+            foreach (SummonFamily family in new[] { SummonFamily.Monster,
+                SummonFamily.NaturesAlly })
+            for (int tier = 1; tier <= 9; tier++)
+            {
+                int scopedTier = tier; SummonFamily scopedFamily = family;
+                BlueprintAbility parent = BlueprintLibraryLookup
+                    .RequireExact<BlueprintAbility>(library, (family == SummonFamily.Monster ?
+                        MonsterParents : AllyParents)[tier - 1], "published summon parent");
+                if (!IsPublishedExpandedParent(parent)) continue;
+                AbilityVariants owned = parent.ComponentsArray.OfType<AbilityVariants>().Single();
+                BlueprintAbility[] current = owned.Variants;
+                if (current == null || current.Any(value => value == null)) continue;
+                BlueprintAbility[] ordered = SummonDisplayOrderPolicy.Order(current,
+                    new BlueprintAbility[0], value => MenuOrderKey(value, scopedFamily, scopedTier))
+                    .ToArray();
+                if (SummonVariantMergePolicy.SameReferences(current, ordered)) continue;
+                owned.Variants = ordered;
+                changed++;
+            }
+            return changed;
+        }
+
         /// <summary>
         /// Orders a native or other-mod row by the name it already shows. It
         /// counts as a creature choice when its lineage is known or its own
@@ -247,26 +294,17 @@ namespace KingmakerGunslinger.Blueprints
                 return native == null || !SummonNativeOptionCatalog
                     .ReplacementCoverageIsComplete(native, specs, nativeSpecs);
             }).ToArray();
+            foreach (var addition in additionSpecs)
+                OwnedOrderKeys[addition.Key] = SummonMenuOrderKey.Owned(
+                    SummonChoicePresentationPolicy.For(addition.Value.Creature.Key,
+                        addition.Value.Multiplicity), addition.Value.StableKey);
+            foreach (var addition in nativeAdditionSpecs)
+                OwnedOrderKeys[addition.Key] = SummonMenuOrderKey.Owned(
+                    SummonChoicePresentationPolicy.For(addition.Value.IconKey,
+                        addition.Value.Multiplicity), addition.Value.Symbol);
             IReadOnlyList<BlueprintAbility> merged = SummonDisplayOrderPolicy.Order(
-                preservedOriginals, additions.Concat(nativeAdditions), value =>
-                {
-                    if (additionSpecs.ContainsKey(value.AssetGuid))
-                    {
-                        SummonVariantSpec spec = additionSpecs[value.AssetGuid];
-                        return SummonMenuOrderKey.Owned(SummonChoicePresentationPolicy.For(
-                            spec.Creature.Key, spec.Multiplicity), spec.StableKey);
-                    }
-                    if (nativeAdditionSpecs.ContainsKey(value.AssetGuid))
-                    {
-                        SummonNativeExpansionSpec spec = nativeAdditionSpecs[value.AssetGuid];
-                        return SummonMenuOrderKey.Owned(SummonChoicePresentationPolicy.For(
-                            spec.IconKey, spec.Multiplicity), spec.Symbol);
-                    }
-                    SummonNativeOptionSpec native = SummonNativeOptionCatalog.Find(
-                        family, tier, value.AssetGuid);
-                    return HostOrderKey(value, native == null ? (SummonMultiplicity?)null :
-                        native.Multiplicity, native != null);
-                });
+                preservedOriginals, additions.Concat(nativeAdditions),
+                value => MenuOrderKey(value, family, tier));
             if (republishing && SummonVariantMergePolicy.SameReferences(
                 existing.Variants, merged.ToArray())) return;
             var variants = ScriptableObject.CreateInstance<AbilityVariants>();
