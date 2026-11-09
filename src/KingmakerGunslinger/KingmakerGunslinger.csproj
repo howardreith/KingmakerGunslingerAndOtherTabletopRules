@@ -159,6 +159,8 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR5Spells.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR6Presentation.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR7Models.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonAlphabeticalMenus.cs" />
+    <Compile Include="RuntimeTesting\AlphabeticalMenuObservationVerdict.cs" />
     <Compile Include="Summoning\SummonPlaytestR6Policy.cs" />
     <Compile Include="Summoning\SummonAbilityCastCue.cs" />
     <Compile Include="Summoning\SummonCastCueLifecycle.cs" />

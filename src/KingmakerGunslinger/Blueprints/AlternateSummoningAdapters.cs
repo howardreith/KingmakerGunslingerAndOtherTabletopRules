@@ -811,9 +811,12 @@ namespace KingmakerGunslinger.Blueprints
                     root.Spec.Tier, scope, host,
                     value => root.IsDirect ? root.RootLineage :
                         Lookup(root.HostLineage, value.AssetGuid),
-                    value => root.IsDirect ? root.Quantity :
-                        root.HostQuantity.ContainsKey(value.AssetGuid) ?
-                            (SummonMultiplicity?)root.HostQuantity[value.AssetGuid] : null,
+                    value => ExpandedSummoningPublisher.HostOrderKey(value,
+                        root.IsDirect ? root.Quantity :
+                            root.HostQuantity.ContainsKey(value.AssetGuid) ?
+                                (SummonMultiplicity?)root.HostQuantity[value.AssetGuid] : null,
+                        (root.IsDirect ? root.RootLineage :
+                            Lookup(root.HostLineage, value.AssetGuid)) != null),
                     exposed, choice => built.BySymbol[choice.Symbol],
                     SummonNativeExpansionCatalog.All,
                     native => built.BySymbol[AlternateSummoningProjection
