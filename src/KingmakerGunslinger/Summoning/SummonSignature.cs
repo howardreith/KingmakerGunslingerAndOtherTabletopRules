@@ -83,11 +83,15 @@ namespace KingmakerGunslinger.Summoning
         internal bool DoNotLinkToCaster = false;
         internal bool DirectlyControllable = false;
         internal List<string> AfterSpawn = new List<string>();
+        /// <summary>Post-spawn payloads, for exact third-party contracts only.
+        /// Not part of a signature's rendering, so comparisons are unchanged.</summary>
+        internal List<string> AfterSpawnDetail = new List<string>();
 
         internal SummonSpawn Clone()
         {
             var copy = (SummonSpawn)MemberwiseClone();
             copy.AfterSpawn = new List<string>(AfterSpawn);
+            copy.AfterSpawnDetail = new List<string>(AfterSpawnDetail);
             return copy;
         }
 

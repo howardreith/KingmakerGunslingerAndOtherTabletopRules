@@ -76,6 +76,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-playtest-r7-models-interior", 0, 0, 0, false, false, false, false, true), "The R7 dim phase is a save-free native review.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "summon-playtest-r7-models-interior"), "The R7 dim phase uses the static interior.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-alphabetical-menus", 0, 0, 0, false, false, false, false, true), "The alphabetical-menu phase is a save-free native review.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-cleric-alignment", 0, 0, 0, false, false, false, false, true), "The cleric alignment phase is a save-free native review.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "summon-cleric-alignment"), "The cleric alignment phase uses the outdoor fixture.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-cleric-alignment"), "The cleric alignment phase is not a host-restricted Sprint40 routine.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "summon-alphabetical-menus"), "The alphabetical-menu phase uses the outdoor fixture.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-alphabetical-menus"), "The alphabetical-menu phase is not a host-restricted Sprint40 routine.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-playtest-r7-models") || ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-playtest-r7-models-interior"), "R7 presentation phases are not host-restricted Sprint40 routines.");

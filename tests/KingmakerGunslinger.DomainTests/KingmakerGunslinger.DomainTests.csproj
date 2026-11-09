@@ -67,6 +67,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\MephitBreathPolicy.cs"><Link>Summoning\MephitBreathPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonPlaytestR5Policy.cs"><Link>Summoning\SummonPlaytestR5Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\AlphabeticalMenuObservationVerdict.cs"><Link>RuntimeTesting\AlphabeticalMenuObservationVerdict.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SummonClericObservationVerdict.cs"><Link>RuntimeTesting\SummonClericObservationVerdict.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SummonReadinessAdmissionPolicy.cs"><Link>RuntimeTesting\SummonReadinessAdmissionPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonReachRepresentation4Policy.cs"><Link>Summoning\SummonReachRepresentation4Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SummonAdjacentRoutineVerdict4.cs"><Link>RuntimeTesting\SummonAdjacentRoutineVerdict4.cs</Link></Compile>
@@ -220,6 +221,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs"><Link>ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs</Link></Compile>
     <Compile Include="SummonPublicationPolicyTests.cs" />
     <Compile Include="SummonAlphabeticalMenuTests.cs" />
+    <Compile Include="SummonClericAlignmentTests.cs" />
     <Compile Include="SummonVariantMenuLayoutTests.cs" />
     <Compile Include="SummonSameTurnActivationTests.cs" />
     <Compile Include="FirearmConditionDevelopmentControlTests.cs" />
@@ -310,6 +312,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVariantMergePolicy.cs"><Link>Summoning\SummonVariantMergePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVariantMenuLayoutPolicy.cs"><Link>Summoning\SummonVariantMenuLayoutPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonDisplayOrderPolicy.cs"><Link>Summoning\SummonDisplayOrderPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonClericAlignmentPolicy.cs"><Link>Summoning\SummonClericAlignmentPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonForeignRowContracts.cs"><Link>Summoning\SummonForeignRowContracts.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonNativeOptionCatalog.cs"><Link>Summoning\SummonNativeOptionCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonNativeExpansionCatalog.cs"><Link>Summoning\SummonNativeExpansionCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVisibilityCatalog.cs"><Link>Summoning\SummonVisibilityCatalog.cs</Link></Compile>

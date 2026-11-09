@@ -220,7 +220,7 @@ observer's canonical-reference census).
 | Druid spontaneous SNA | native conversion arrays | SNA I-IX | spellbook | SHARED (observed: `DruidSpontaneousSummon` converts to the canonical parents) |
 | Shaman Friend to Animals hex | CotW reuses the native druid conversion arrays | SNA I-IX | spellbook | SHARED (inferred) |
 | Summoner, Witch, Shaman, Psychic and other class spell lists; Witch Animal patron; Psychic grants | CotW `AddToSpellList` / `AddKnownSpell` on the canonical parents | — | spellbook | SHARED |
-| Herald Caller spontaneous SM | native, if present; CotW has no Herald Caller code | — | — | SHARED (observed: `HeraldCallerSpontaneousSummon` `f6c112a5...` converts to the canonical parent) |
+| Herald Caller spontaneous SM | native, if present; CotW has no Herald Caller code | — | — | PARTLY SHARED (observed: `HeraldCallerSpontaneousSummon` `f6c112a5...` reaches the canonical parent at tier I only; its other conversions are native quantity rows) |
 | Occultist / Relic Hunter Servitor | CotW, fixed native single variant per tier (SM I-VII), rank switch | one creature per tier | SpellLike, mental focus | DEFERRED_SPECIALIZED_ADAPTER (no menu; a design question, below) |
 | Occultist / Relic Hunter Shadow Beasts | CotW, load-time snapshot of the canonical SM children and elemental roots, ShadowSpell 60 | SM I-IX | shadow | DEFERRED_SPECIALIZED_ADAPTER (needs a shadow-reality adapter) |
 | Warpriest / Divine Tracker Battle Companion (6 blessings) | CotW, rank switch over fixed native single variants | one creature per rank | Supernatural, blessing resource | DEFERRED_SPECIALIZED_ADAPTER (no menu; a design question, below) |

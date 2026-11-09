@@ -46,6 +46,7 @@ namespace KingmakerGunslinger.Blueprints
         {
             SummonIconCatalog.Validate();
             SummonChoicePresentationPolicy.Validate();
+            SummonClericAlignmentCatalog.Validate();
             ConfigureNativeTierOnePreservation(library, bySymbol,
                 MonsterParents[0],
                 ExpandedSummoningIdentityCatalog.NativeMonsterTierOneSymbol);
@@ -237,6 +238,7 @@ namespace KingmakerGunslinger.Blueprints
             if (alignmentMode.HasValue)
                 AppendAlignmentAction(target.ComponentsArray,
                     alignmentMode.Value);
+            AttachClericAlignmentGate(target, variant);
             target.Hidden = false;
             target.ActionBarAutoFillIgnored = templateBuff != null;
             target.MaterialComponent = native.MaterialComponent == null ?
@@ -256,6 +258,23 @@ namespace KingmakerGunslinger.Blueprints
                     "Summons " + variant.Creature.DisplayName +
                     " through the native summon lifecycle." +
                     CreatureRulesText(variant.Creature.Key)), native.Icon);
+        }
+
+        private static void AttachClericAlignmentGate(BlueprintAbility target, SummonVariantSpec variant)
+        {
+            if (variant.Family != SummonFamily.Monster) return;
+            AttachClericAlignmentGate(target, variant.Creature.Key, variant.Creature.MonsterTemplated);
+        }
+
+        internal static void AttachClericAlignmentGate(BlueprintAbility target, string creatureKey, bool monsterTemplated)
+        {
+            var gate = ScriptableObject.CreateInstance<SummonClericAlignmentGate>();
+            gate.name = "$KMG_ClericAlignmentGate";
+            gate.CreatureKey = creatureKey;
+            gate.MonsterTemplated = monsterTemplated;
+            target.ComponentsArray = target.ComponentsArray.Concat(new BlueprintComponent[] { gate }).ToArray();
+            // CopyFields can bring a donor's cached providers along.
+            AlternateSummoningAdapterBuilder.ResetComponentCaches(target);
         }
 
         private static void ConfigureDynamicTemplate(BlueprintAbility target,
@@ -280,6 +299,7 @@ namespace KingmakerGunslinger.Blueprints
             AppendDynamicTemplate(target.ComponentsArray, celestialTemplate,
                 fiendishTemplate, celestialSmite, fiendishSmite,
                 neutralFiendishMode, replacedNativeTemplateBuffs);
+            AttachClericAlignmentGate(target, variant);
             SpellDescriptorComponent descriptor = target.ComponentsArray
                 .OfType<SpellDescriptorComponent>().Single();
             descriptor.Descriptor &= ~(SpellDescriptor.Good |
