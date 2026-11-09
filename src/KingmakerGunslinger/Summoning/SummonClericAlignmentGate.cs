@@ -5,12 +5,16 @@ using Harmony12;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Selection;
+using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.UI;
 using Kingmaker.UI.ActionBar;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
+using Kingmaker.UnitLogic.Abilities.Components.CasterCheckers;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using UnityEngine;
@@ -40,8 +44,8 @@ namespace KingmakerGunslinger.Summoning
         {
             // The rule concerns spells cast by a cleric; items and non-spellbook
             // abilities keep their native rules.
-            if (ability == null || ability.Caster == null || ability.Spellbook == null ||
-                ability.SourceItem != null) return true;
+            if (!SummonClericAlignmentRuntime.ModuleActive || ability == null || ability.Caster == null ||
+                ability.Spellbook == null || ability.SourceItem != null) return true;
             return SummonClericAlignmentPolicy.Permits(SummonClericAlignmentRuntime.Decide(
                 ability.Caster, SummonClericAlignmentCatalog.For(CreatureKey, MonsterTemplated)));
         }
@@ -51,6 +55,10 @@ namespace KingmakerGunslinger.Summoning
     {
         private static object _library;
         private static Dictionary<BlueprintFeature, string> _deityOptions;
+
+        /// <summary>The repository's own initialized and active module state.</summary>
+        internal static bool ModuleActive
+        { get { return BlueprintBootstrap.IsInitialized && ExpandedSummoningVisualVariantPatch.IsModuleActive; } }
 
         internal static SummonClericDecision Decide(UnitDescriptor owner, SummonSpellAlignment spell)
         { return SummonClericAlignmentPolicy.Decide(Read(owner), spell); }
@@ -78,8 +86,22 @@ namespace KingmakerGunslinger.Summoning
         {
             SummonClericAlignmentGate gate = (row.ComponentsArray ?? new BlueprintComponent[0]).OfType<SummonClericAlignmentGate>().FirstOrDefault();
             if (gate != null) return gate.IsAbilityVisible(new AbilityData(row, book));
+            SummonClericDecision? decision = DecideGovernedRow(row, caster);
+            return decision == null || SummonClericAlignmentPolicy.Permits(decision.Value);
+        }
+
+        /// <summary>The rule for a row with no owned gate: a retained native row
+        /// or a verified third-party contract. Null means this feature has no
+        /// opinion on the row. Menus and execution both use this.</summary>
+        internal static SummonClericDecision? DecideGovernedRow(BlueprintAbility row, UnitDescriptor caster)
+        {
             SummonNativeOptionSpec native;
-            return !GovernedNativeRows().TryGetValue(row, out native) || SummonClericAlignmentPolicy.Permits(DecideNative(caster, native));
+            if (GovernedNativeRows().TryGetValue(row, out native)) return DecideNative(caster, native);
+            SummonForeignRowResult foreign = SummonForeignRowRuntime.Resolve(row);
+            if (foreign == null || foreign.Outcome == SummonForeignContractOutcome.Unresolved) return null;
+            SummonClericFacts facts = Read(caster);
+            if (!SummonClericAlignmentPolicy.IsCleric(facts)) return SummonClericDecision.NotCleric;
+            return SummonClericAlignmentPolicy.Decide(facts, foreign.AlignmentFor(SummonClericAlignmentPolicy.AxesOf(facts.AlignmentValue)));
         }
 
         internal static SummonClericDecision DecideNative(UnitDescriptor owner, SummonNativeOptionSpec native)
@@ -128,23 +150,75 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
+    /// <summary>Loads a third-party row's real components and graph for its contract.</summary>
+    internal static class SummonForeignRowRuntime
+    {
+        private static readonly SummonGovernedRowCache<BlueprintAbility, SummonForeignRowResult> Results =
+            new SummonGovernedRowCache<BlueprintAbility, SummonForeignRowResult>();
+
+        /// <summary>Null for any row that is not a known third-party identity.</summary>
+        internal static SummonForeignRowResult Resolve(BlueprintAbility row)
+        {
+            if (row == null || !SummonForeignRowClassifier.IsKnownIdentity(row.AssetGuid)) return null;
+            return Results.Get(BlueprintBootstrap.Library, row, Compute);
+        }
+
+        private static SummonForeignRowResult Compute(BlueprintAbility row)
+        {
+            try { return SummonForeignRowClassifier.Classify(Read(row)); }
+            catch (Exception error) { return SummonForeignRowResult.Unresolved(null, "reading-failed:" + error.GetType().Name + ":" + error.Message); }
+        }
+
+        internal static SummonForeignRowReading Read(BlueprintAbility row)
+        {
+            BlueprintComponent[] components = row.ComponentsArray ?? new BlueprintComponent[0];
+            return new SummonForeignRowReading {
+                Identity = row.AssetGuid, InternalName = row.name, PublishedTier = PublishedTier(row),
+                RequiredFacts = components.OfType<AbilityCasterHasFacts>().SelectMany(value => value.Facts ?? new BlueprintUnitFact[0])
+                    .Select(value => value == null ? "null" : value.AssetGuid).ToArray(),
+                VisibilityFacts = components.OfType<AbilityShowIfCasterHasFact>().Select(value => value.UnitFact == null ? "null" : value.UnitFact.AssetGuid).ToArray(),
+                LiveDescriptors = LiveAxes(row), Graph = SummonSignatureReader.Read(row) };
+        }
+
+        private static int PublishedTier(BlueprintAbility row)
+        {
+            for (int tier = 1; tier <= 9; tier++)
+            {
+                BlueprintAbility parent = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
+                    ExpandedSummoningPublisher.CanonicalParentGuids[tier - 1], "published Summon Monster parent");
+                if ((parent.Variants ?? new BlueprintAbility[0]).Any(value => ReferenceEquals(value, row))) return tier;
+            }
+            return 0;
+        }
+
+        internal static SummonAlignmentAxes LiveAxes(BlueprintAbility ability)
+        {
+            SpellDescriptorComponent component = (ability.ComponentsArray ?? new BlueprintComponent[0]).OfType<SpellDescriptorComponent>().FirstOrDefault();
+            SpellDescriptor value = component == null ? SpellDescriptor.None : component.Descriptor.Value;
+            SummonAlignmentAxes axes = SummonAlignmentAxes.None;
+            if ((value & SpellDescriptor.Good) != 0) axes |= SummonAlignmentAxes.Good;
+            if ((value & SpellDescriptor.Evil) != 0) axes |= SummonAlignmentAxes.Evil;
+            if ((value & SpellDescriptor.Law) != 0) axes |= SummonAlignmentAxes.Law;
+            if ((value & SpellDescriptor.Chaos) != 0) axes |= SummonAlignmentAxes.Chaos;
+            return axes;
+        }
+    }
+
     /// <summary>
-    /// A retained native quantity ability is an unowned shared blueprint, so it
-    /// is judged here by exact identity and the branch this caster would summon.
-    /// Native UnitUseAbility.OnAction reads this before spending.
+    /// A retained native quantity ability or a third-party row is an unowned
+    /// blueprint, so it is judged here by exact identity and the branch this
+    /// caster would summon. Native UnitUseAbility.OnAction reads this before
+    /// spending. It can only remove availability, and only with the module active.
     /// </summary>
     [HarmonyPatch(typeof(AbilityData), "IsAvailableForCast", MethodType.Getter)]
     internal static class SummonClericNativeRowAvailabilityPatch
     {
+        private static readonly Func<AbilityData, SummonClericDecision?> Decide = ability =>
+            ability == null || ability.Spellbook == null || ability.SourceItem != null || ability.Caster == null || ability.Blueprint == null ? (SummonClericDecision?)null :
+                SummonClericAlignmentRuntime.DecideGovernedRow(ability.Blueprint, ability.Caster);
+
         private static void Postfix(AbilityData __instance, ref bool __result)
-        {
-            if (!__result || __instance == null || __instance.Spellbook == null || __instance.SourceItem != null || __instance.Caster == null ||
-                __instance.Blueprint == null) return;
-            SummonNativeOptionSpec native;
-            if (SummonClericAlignmentRuntime.GovernedNativeRows().TryGetValue(__instance.Blueprint, out native) &&
-                !SummonClericAlignmentPolicy.Permits(SummonClericAlignmentRuntime.DecideNative(__instance.Caster, native)))
-                __result = false;
-        }
+        { __result = SummonClericModuleBoundary.Available(SummonClericAlignmentRuntime.ModuleActive, __result, __instance, Decide); }
     }
 
     /// <summary>
@@ -160,14 +234,13 @@ namespace KingmakerGunslinger.Summoning
 
         private static void Postfix(List<ActionBarSpontaneousConvertedSlot> ___m_Slots)
         {
-            if (___m_Slots == null) return;
+            if (!SummonClericAlignmentRuntime.ModuleActive || ___m_Slots == null) return;
             for (int index = ___m_Slots.Count - 1; index >= 0; index--)
             {
                 ActionBarSpontaneousConvertedSlot slot = ___m_Slots[index];
                 AbilityData data = slot == null || slot.MechanicSlot == null ? null : slot.MechanicSlot.GetContentData() as AbilityData;
-                SummonClericAlignmentGate gate = data == null || data.Blueprint == null ? null :
-                    (data.Blueprint.ComponentsArray ?? new BlueprintComponent[0]).OfType<SummonClericAlignmentGate>().FirstOrDefault();
-                if (gate == null || gate.IsAbilityVisible(data)) continue;
+                if (data == null || data.Blueprint == null || data.Caster == null || data.Spellbook == null || data.SourceItem != null ||
+                    SummonClericAlignmentRuntime.PermitsRow(data.Blueprint, data.Caster, data.Spellbook)) continue;
                 WidgetFactory.DisposeWidget(slot);
                 ___m_Slots.RemoveAt(index);
             }

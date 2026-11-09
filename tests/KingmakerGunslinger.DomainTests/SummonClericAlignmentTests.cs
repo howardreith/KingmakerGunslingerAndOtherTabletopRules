@@ -188,13 +188,120 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(DruidSummonConversionPolicy.RouteForClass("b3a505fb61437dc4097f43c3f8f9a4cf") == null, "Other classes have no conversion route.");
         }
 
-        internal static void ThirdPartyRowsAreCoveredByWhatTheyAre()
+        private const string SpawnBuff = "50d51854cf6a3434d96a87d050e1d09a", Desna = "2c0a3b9971327ba4d9d85354d16998c1";
+        private const string OgreIdentity = "130211b7fcb443e9b67d5561d75cf6a0SummonMonsterOgreSpider", TarantulaIdentity = "130211b7fcb443e9b67d5561d75cf6a0SummonMonsterGiantTarantula";
+        private const string VrockUnit = "ffffffffffffffffffffffffffffff01";
+
+        private static SummonSpawn ForeignSpawn(string unit, params string[] after)
+        { return new SummonSpawn { Unit = unit, CountDice = "Zero", CountDiceCount = SummonValue.Simple(0), CountBonus = SummonValue.Simple(1),
+            AfterSpawnDetail = (after.Length == 0 ? new[] { "apply-buff:" + SpawnBuff } : after).ToList() }; }
+
+        private static SummonSignature ForeignDirect(string unit, params string[] after)
+        { return new SummonSignature { RunActions = 1, Actions = new List<SummonNode> { SummonNode.ForSpawn(ForeignSpawn(unit, after)) } }; }
+
+        private static SummonSignature ForeignBranch(string condition, SummonSpawn ifTrue, SummonSpawn ifFalse)
+        { return new SummonSignature { RunActions = 1, Actions = new List<SummonNode> { SummonNode.ForConditional("And", new[] { condition },
+            new[] { SummonNode.ForSpawn(ifTrue) }, new[] { SummonNode.ForSpawn(ifFalse) }) } }; }
+
+        private static SummonSignature OgreGraph()
+        { return ForeignBranch(SummonForeignRowClassifier.CasterEvilCondition, ForeignSpawn(SummonForeignRowClassifier.RedcapUnit), ForeignSpawn(SummonForeignRowClassifier.BralaniUnit)); }
+
+        private static SummonForeignRowReading Ogre(SummonSignature graph)
+        { return new SummonForeignRowReading { Identity = OgreIdentity, InternalName = "SummonMonsterOgreSpider", PublishedTier = 5,
+            RequiredFacts = new[] { SummonForeignRowClassifier.SpiderSummonerFeatureGuid }, VisibilityFacts = new[] { SummonForeignRowClassifier.SpiderSummonerFeatureGuid }, Graph = graph }; }
+
+        private static SummonForeignRowReading Tarantula(SummonSignature graph)
+        { return new SummonForeignRowReading { Identity = TarantulaIdentity, InternalName = "SummonMonsterGiantTarantula", PublishedTier = 7,
+            RequiredFacts = new[] { SummonForeignRowClassifier.SpiderSummonerFeatureGuid }, VisibilityFacts = new[] { SummonForeignRowClassifier.SpiderSummonerFeatureGuid }, Graph = graph }; }
+
+        private static bool ForeignAllowed(SummonClericFacts facts, SummonForeignRowResult result)
+        { return SummonClericAlignmentPolicy.Permits(SummonClericAlignmentPolicy.Decide(facts, result.AlignmentFor(SummonClericAlignmentPolicy.AxesOf(facts.AlignmentValue)))); }
+
+        internal static void ForeignRowIsJudgedByItsExecutingBranch()
         {
-            Assertions.Equal(RuntimeTesting.SummonClericThirdPartyOutcome.VerifiedLegal, RuntimeTesting.SummonClericObservationVerdict.ClassifyThirdParty(true, true, 1, true), "A row meeting every condition is covered.");
-            Assertions.Equal(RuntimeTesting.SummonClericThirdPartyOutcome.Unresolved, RuntimeTesting.SummonClericObservationVerdict.ClassifyThirdParty(true, false, 1, true), "A known name with alignment descriptors is unresolved.");
-            Assertions.Equal(RuntimeTesting.SummonClericThirdPartyOutcome.Unresolved, RuntimeTesting.SummonClericObservationVerdict.ClassifyThirdParty(true, true, 0, true), "A row with no resolved spawn is unresolved.");
-            Assertions.Equal(RuntimeTesting.SummonClericThirdPartyOutcome.Unresolved, RuntimeTesting.SummonClericObservationVerdict.ClassifyThirdParty(true, true, 1, false), "A row without its visibility gate is unresolved.");
-            Assertions.Equal(RuntimeTesting.SummonClericThirdPartyOutcome.Unresolved, RuntimeTesting.SummonClericObservationVerdict.ClassifyThirdParty(false, true, 1, true), "An unknown row is unresolved, however clean it looks.");
+            SummonForeignRowResult ogre = SummonForeignRowClassifier.Classify(Ogre(OgreGraph()));
+            Assertions.Equal(SummonForeignContractOutcome.ConditionallyGoverned, ogre.Outcome, "A verified two-branch graph is conditionally governed.");
+            Assertions.False(ForeignAllowed(Facts(LG, Erastil), ogre), "A lawful good caster's non-evil branch is the chaotic Bralani.");
+            Assertions.True(ForeignAllowed(Facts(CG, Desna), ogre), "A chaotic good caster may summon the Bralani.");
+            Assertions.True(ForeignAllowed(Facts(LE, Asmodeus), ogre), "An evil caster's branch is the Redcap, which has no alignment subtype.");
+            Assertions.False(ForeignAllowed(Facts(LN, Asmodeus), ogre), "A non-evil caster barred by the deity is refused, with no union of branches.");
+            Assertions.True(ogre.AlignmentFor(SummonAlignmentAxes.Evil).Descriptors == SummonAlignmentAxes.None, "The evil branch contributes no descriptor.");
+            Assertions.True(ogre.AlignmentFor(SummonAlignmentAxes.Good).Descriptors == (SummonAlignmentAxes.Good | SummonAlignmentAxes.Chaos), "The non-evil branch is Good and Chaos.");
+            SummonForeignRowResult tarantula = SummonForeignRowClassifier.Classify(Tarantula(ForeignDirect(SummonForeignRowClassifier.TarantulaUnit)));
+            Assertions.Equal(SummonForeignContractOutcome.VerifiedInherentlyLegal, tarantula.Outcome, "A verified direct spider is inherently legal.");
+            Assertions.True(ForeignAllowed(Facts(LG, Erastil), tarantula) && ForeignAllowed(Facts(CE), tarantula), "A verified spider has no alignment descriptor.");
+        }
+
+        private static void AssertUnresolved(SummonForeignRowReading reading, string because)
+        {
+            SummonForeignRowResult result = SummonForeignRowClassifier.Classify(reading);
+            Assertions.Equal(SummonForeignContractOutcome.Unresolved, result.Outcome, because);
+            Assertions.True(result.AlignmentFor(SummonAlignmentAxes.Good) == null, "An unresolved row reports no alignment: " + because);
+        }
+
+        internal static void ForeignRowsAreCoveredOnlyByWhatTheyAre()
+        {
+            AssertUnresolved(Tarantula(ForeignDirect("eeeeeeeeeeeeeeeeeeeeeeeeeeeeee01")), "A recognized spider name with a different creature is not verified.");
+            AssertUnresolved(Tarantula(ForeignDirect(VrockUnit)), "A recognized name spawning a forbidden outsider with no descriptor flags is not verified.");
+            var wrongRequired = Tarantula(ForeignDirect(SummonForeignRowClassifier.TarantulaUnit)); wrongRequired.RequiredFacts = new[] { "eeeeeeeeeeeeeeeeeeeeeeeeeeeeee02" };
+            AssertUnresolved(wrongRequired, "The wrong required feature is not verified.");
+            var wrongVisibility = Tarantula(ForeignDirect(SummonForeignRowClassifier.TarantulaUnit)); wrongVisibility.VisibilityFacts = new string[0];
+            AssertUnresolved(wrongVisibility, "A missing visibility feature is not verified.");
+            AssertUnresolved(Ogre(ForeignBranch("Kingmaker.UnitLogic.Mechanics.Conditions.ContextConditionAlignment{Alignment=Good;CheckCaster=True;Not=False}", ForeignSpawn(SummonForeignRowClassifier.RedcapUnit), ForeignSpawn(SummonForeignRowClassifier.BralaniUnit))), "An altered branch condition is not verified.");
+            AssertUnresolved(Ogre(ForeignBranch(SummonForeignRowClassifier.CasterEvilCondition, ForeignSpawn(SummonForeignRowClassifier.BralaniUnit), ForeignSpawn(SummonForeignRowClassifier.RedcapUnit))), "Reversed branch units are not verified.");
+            AssertUnresolved(Ogre(ForeignBranch(SummonForeignRowClassifier.CasterEvilCondition, ForeignSpawn(SummonForeignRowClassifier.RedcapUnit), ForeignSpawn(VrockUnit))), "A branch with an unknown creature is not verified.");
+            AssertUnresolved(Ogre(ForeignBranch(SummonForeignRowClassifier.CasterEvilCondition, ForeignSpawn(SummonForeignRowClassifier.RedcapUnit, "KingmakerGunslinger.Summoning.ContextActionApplySummonTemplateByCaster"), ForeignSpawn(SummonForeignRowClassifier.BralaniUnit))), "An unrecognized template action is not verified.");
+            AssertUnresolved(Ogre(ForeignDirect(SummonForeignRowClassifier.BralaniUnit)), "A single reference does not satisfy a two-branch contract.");
+            AssertUnresolved(Tarantula(OgreGraph()), "Two references do not satisfy a direct contract.");
+            var unknown = Ogre(OgreGraph()); unknown.Identity = "130211b7fcb443e9b67d5561d75cf6a0SummonMonsterNewRow";
+            AssertUnresolved(unknown, "An unknown identity is unresolved, however clean it looks.");
+            var flagged = Tarantula(ForeignDirect(SummonForeignRowClassifier.TarantulaUnit)); flagged.LiveDescriptors = SummonAlignmentAxes.Evil;
+            AssertUnresolved(flagged, "A row carrying alignment descriptors is not the verified contract.");
+            var wrongTier = Tarantula(ForeignDirect(SummonForeignRowClassifier.TarantulaUnit)); wrongTier.PublishedTier = 6;
+            AssertUnresolved(wrongTier, "A row published at another tier is not the verified contract.");
+            var quantity = ForeignDirect(SummonForeignRowClassifier.TarantulaUnit); quantity.Actions[0].Spawn.CountBonus = SummonValue.Simple(2);
+            AssertUnresolved(Tarantula(quantity), "A changed quantity is not the verified contract.");
+            var hidden = OgreGraph(); hidden.HiddenSpawns = 1;
+            AssertUnresolved(Ogre(hidden), "A spawn the reader cannot model is not the verified contract.");
+        }
+
+        internal static void HeraldProjectionAdmitsVerifiedForeignRowsAtTheirOwnTierAndQuantity()
+        {
+            SummonForeignRowResult ogre = SummonForeignRowClassifier.Classify(Ogre(OgreGraph()));
+            Func<SummonClericFacts, bool, bool> canonical = (facts, feature) => feature && ForeignAllowed(facts, ogre);
+            Func<SummonClericFacts, bool, int, SummonMultiplicity, bool> herald = (facts, feature, tier, quantity) =>
+                SummonForeignRowPolicy.AdmittedToConversion(true, tier, quantity, ogre, feature) && ForeignAllowed(facts, ogre);
+            foreach (SummonClericFacts facts in new[] { Facts(CG, Desna), Facts(LG, Erastil), Facts(LE, Asmodeus) })
+                Assertions.Equal(canonical(facts, true), herald(facts, true, 5, SummonMultiplicity.One), "The Herald projection agrees with the canonical choice for a feature-qualified cleric.");
+            Assertions.True(herald(Facts(CG, Desna), true, 5, SummonMultiplicity.One), "A permitted row survives.");
+            Assertions.False(herald(Facts(LG, Erastil), true, 5, SummonMultiplicity.One), "A forbidden row is excluded.");
+            Assertions.False(herald(Facts(CG, Desna), false, 5, SummonMultiplicity.One), "Without its feature the row is excluded, as natively.");
+            Assertions.False(herald(Facts(CG, Desna), true, 5, SummonMultiplicity.OneD3), "No invented quantity bucket.");
+            Assertions.False(herald(Facts(CG, Desna), true, 5, SummonMultiplicity.OneD4PlusOne), "No invented quantity bucket.");
+            Assertions.False(herald(Facts(CG, Desna), true, 4, SummonMultiplicity.One), "No other tier.");
+            Assertions.False(SummonForeignRowPolicy.AdmittedToConversion(false, 5, SummonMultiplicity.One, ogre, true), "Other routes, including Druid, are unchanged.");
+            Assertions.False(SummonForeignRowPolicy.AdmittedToConversion(true, 5, SummonMultiplicity.One, SummonForeignRowClassifier.Classify(Ogre(ForeignDirect(VrockUnit))), true), "An unresolved row is never projected.");
+            Assertions.False(SummonForeignRowPolicy.AdmittedToConversion(true, 5, SummonMultiplicity.One, null, true), "An unknown row is never projected.");
+        }
+
+        internal static void ModuleBoundaryLeavesNativeAvailabilityUnchanged()
+        {
+            Func<string, SummonClericDecision?> forbidden = row => SummonClericDecision.ForbiddenByAlignment;
+            Func<string, SummonClericDecision?> notCleric = row => SummonClericDecision.NotCleric;
+            Func<string, SummonClericDecision?> ungoverned = row => null;
+            Assertions.False(SummonClericModuleBoundary.Available(true, true, "row", forbidden), "Active module, forbidden cleric choice: refused.");
+            Assertions.True(SummonClericModuleBoundary.Available(true, true, "row", notCleric), "A non-cleric gains no new restriction.");
+            Assertions.True(SummonClericModuleBoundary.Available(true, true, "row", ungoverned), "An ungoverned row keeps its native result.");
+            Assertions.True(SummonClericModuleBoundary.Available(false, true, "row", forbidden), "Inactive module: the native result is preserved.");
+            Assertions.False(SummonClericModuleBoundary.Available(false, false, "row", notCleric), "Inactive module: native unavailability is preserved.");
+            Assertions.False(SummonClericModuleBoundary.Available(true, false, "row", notCleric), "An unavailable native result is never re-enabled.");
+            var cache = new SummonGovernedRowCache<string, SummonClericDecision?>(); var library = new object(); int computed = 0;
+            Func<string, SummonClericDecision?> cached = row => cache.Get(library, row, value => { computed++; return SummonClericDecision.ForbiddenByAlignment; });
+            Assertions.False(SummonClericModuleBoundary.Available(true, true, "row", cached), "The lookup populates while active.");
+            Assertions.True(SummonClericModuleBoundary.Available(false, true, "row", cached), "Inactive after the cache is populated: still the native result.");
+            Assertions.Equal(1, computed, "The populated lookup is not consulted while inactive.");
+            Assertions.False(SummonClericModuleBoundary.Available(true, true, "row", cached), "The same cached decision applies again once active.");
+            Assertions.Equal(1, computed, "The decision is cached per row.");
         }
 
         internal static void FixturePrerequisitesRejectMissingClassOrBook()

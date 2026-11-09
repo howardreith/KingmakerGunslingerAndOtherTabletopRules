@@ -3,8 +3,6 @@ using System.Linq;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
-    internal enum SummonClericThirdPartyOutcome { VerifiedLegal, Unresolved }
-
     /// <summary>Pure verdicts the cleric alignment observer applies to native readings.</summary>
     internal static class SummonClericObservationVerdict
     {
@@ -29,15 +27,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!value.DeityMatchesPrerequisite) problems.Add("deity-prerequisite-does-not-admit-alignment");
             if (!value.AlignmentIsExact) problems.Add("alignment-not-as-set");
             return problems;
-        }
-
-        /// <summary>An unowned row is covered only by what it actually is. A known
-        /// name alone never classifies it.</summary>
-        internal static SummonClericThirdPartyOutcome ClassifyThirdParty(bool exactInternalName,
-            bool alignmentDescriptorsAbsent, int spawnedUnits, bool hasVisibilityGate)
-        {
-            return exactInternalName && alignmentDescriptorsAbsent && spawnedUnits == 1 && hasVisibilityGate ?
-                SummonClericThirdPartyOutcome.VerifiedLegal : SummonClericThirdPartyOutcome.Unresolved;
         }
 
         internal sealed class HeraldConversion
