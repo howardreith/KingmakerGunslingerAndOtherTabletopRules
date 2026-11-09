@@ -1573,6 +1573,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("alternate-summoning.alphabetical-direct-quantity-roots", SummonAlphabeticalMenuTests.DirectQuantityRootsSortWithoutCombiningRoots),
             Case("expanded-summoning.alphabetical-druid-flattened", SummonAlphabeticalMenuTests.DruidFlattenedListInterleavesQuantitiesByParentOrder),
             Case("expanded-summoning.alphabetical-druid-canonical", SummonAlphabeticalMenuTests.DruidOrderMatchesCanonicalNaturesAllyRoster),
+            Case("expanded-summoning.alphabetical-late-host-rows", SummonAlphabeticalMenuTests.LateHostRowsJoinTheOrderOnTheFinalPass),
             Case("expanded-summoning.icon-catalog", SummonPublicationPolicyTests.IconCatalogCoversEveryCreature),
             Case("expanded-summoning.menu-layout-top", SummonVariantMenuLayoutTests.TopLeftLargeListIsBounded),
             Case("expanded-summoning.menu-layout-top-oversized", SummonVariantMenuLayoutTests.TopLeftOversizedListUsesFullSafeHeight),

@@ -33,6 +33,7 @@ namespace KingmakerGunslinger.Summoning
         private static bool _installed;
         private static bool _attached;
         private static bool _reconciling;
+        private static bool _lateRowsOrdered;
         private static int _pendingUpdates;
         private static Stopwatch _waiting;
 
@@ -138,6 +139,21 @@ namespace KingmakerGunslinger.Summoning
                 bool moduleActive = context.FeatureModules.Active.ExpandedSummoning;
                 bool canonicalPublished = initialized && library != null &&
                     CanonicalPublished(library);
+                if (canonicalPublished && moduleActive && !_lateRowsOrdered)
+                {
+                    _lateRowsOrdered = true;
+                    try
+                    {
+                        context.Logger.Info("summoning", "late-host-rows-ordered",
+                            "Summon menus reordered after late host rows: " +
+                            ExpandedSummoningPublisher.ReorderLateHostRows(library) + ".");
+                    }
+                    catch (Exception exception)
+                    {
+                        context.Logger.Failure("summoning", "late-host-rows-order-failed",
+                            "Late host summon rows keep their existing position.", exception);
+                    }
+                }
                 DependencyProbe cotw = ProbeCotw(context);
                 AlternateSummoningRoster roster = null;
                 BlueprintManifest manifest = null;

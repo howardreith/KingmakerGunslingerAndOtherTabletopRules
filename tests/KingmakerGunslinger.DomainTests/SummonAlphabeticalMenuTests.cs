@@ -164,6 +164,24 @@ namespace KingmakerGunslinger.DomainTests
                 SummonMultiplicity.OneD3.ToString(), "A reordered row keeps its own quantity identity.");
         }
 
+        // A row another mod appends after publication joins the order on the
+        // final pass; an unclassified one stays last, and a repeat is stable.
+        internal static void LateHostRowsJoinTheOrderOnTheFinalPass()
+        {
+            var bear = new Row("bear", "Bear", SummonMultiplicity.One, "bear");
+            var wolf = new Row("wolf", "Wolf", SummonMultiplicity.One, "wolf");
+            var control = new Row("control", "Aaa Control", null, null);
+            var late = new Row("late", "Summon Monster I (Giant Crab Spider)", null, "spider");
+            Row[] published = { bear, wolf, control, late };
+            Row[] before = published.ToArray();
+            IReadOnlyList<Row> ordered = SummonDisplayOrderPolicy.Order(published, new Row[0], HostOrder);
+            Assertions.Equal("bear|late|wolf|control", string.Join("|", ordered.Select(value => value.Id)),
+                "A late creature row sorts by its visible name; an unclassified row stays last.");
+            Assertions.True(published.SequenceEqual(before), "The appended array must not be mutated.");
+            Assertions.True(ordered.SequenceEqual(SummonDisplayOrderPolicy.Order(ordered, new Row[0], HostOrder)),
+                "A repeated final pass must change nothing.");
+        }
+
         // The real published Summon Nature's Ally rows, across all three
         // quantity groups of one tier, give one interleaved order.
         internal static void DruidOrderMatchesCanonicalNaturesAllyRoster()
