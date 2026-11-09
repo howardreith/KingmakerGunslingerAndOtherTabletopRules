@@ -85,8 +85,9 @@ sorted, following the published parent order, with no duplicates:
 | Master Summoner SM V | 75 | Ankylosaurus | Xill |
 
 Summon Monster IV shows all ten mephits, family-first and in order. The Druid conversion factory
-matched the popup in order (73 rows). Eight screenshots were captured; seven were inspected and
-are readable. An incidental hover tooltip covers part of some grids.
+matched the popup in order (73 rows). All eight screenshots were inspected and are readable. An
+incidental hover tooltip covers part of the grid in five of them. The Summon Nature's Ally IX
+first-row and last-row captures are identical, consistent with no scrolling being needed.
 
 **Selection routing.** Clicking a reordered row selected that row's own ability object, with the
 matching quantity and source context: Wolf, Dire (single) in Summon Monster IV, and
