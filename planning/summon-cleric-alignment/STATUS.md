@@ -61,7 +61,7 @@ package `43af528aff6ea6117104bef219ed6cc9e2a794f7ebec029255d114f60e17d4bf`, DLL
 `16e65126-1573-475e-ace5-869ba02d0dc5`). Observer: compiled into that DLL. Run
 `20261109T1812332936554Z-97654466dd04405abc0791dcfab52a8c`.
 
-**Result: FAIL. Three passes and three failures among the mission checks.**
+**Result: FAIL, 4 PASS and 3 FAIL.** The passes are the route census and three state-restoration checks.
 
 Established, structural only:
 - `cleric-route-census` PASS: class, spellbook and list GUIDs exact; all 9 parents on the real
