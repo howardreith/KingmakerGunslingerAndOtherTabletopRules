@@ -1576,6 +1576,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.alphabetical-late-host-rows", SummonAlphabeticalMenuTests.LateHostRowsJoinTheOrderOnTheFinalPass),
             Case("expanded-summoning.alphabetical-late-sort-rollback", SummonAlphabeticalMenuTests.LateSortKeepsForeignRowsAndRollbackRefuses),
             Case("expanded-summoning.alphabetical-phase-capture-dispatch", SummonAlphabeticalMenuTests.AlphabeticalPhaseIsAdmittedToCaptureAndDispatched),
+            Case("expanded-summoning.alphabetical-observer-selection-outcomes", SummonAlphabeticalMenuTests.ObserverSelectionNeverReportsAnUnperformedClick),
+            Case("expanded-summoning.alphabetical-observer-late-row-visibility", SummonAlphabeticalMenuTests.ObserverLateRowFollowsItsVisibilityRequirement),
             Case("expanded-summoning.icon-catalog", SummonPublicationPolicyTests.IconCatalogCoversEveryCreature),
             Case("expanded-summoning.menu-layout-top", SummonVariantMenuLayoutTests.TopLeftLargeListIsBounded),
             Case("expanded-summoning.menu-layout-top-oversized", SummonVariantMenuLayoutTests.TopLeftOversizedListUsesFullSafeHeight),

@@ -10,6 +10,7 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UI.ActionBar;
 using Kingmaker.UI.Group;
 using Kingmaker.UI.Selection;
+using Kingmaker.UI.UnitSettings;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
@@ -180,7 +181,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> AlphaObserveMenu(string label, ActionBarGroupSlot source, BlueprintAbility parent, AbilityData original,
-            Cleanup2NativeDefaultScope mode, Stopwatch watch, NativeIconScreenEvidence screens, Cleanup2TooltipInputs inputs, Action<AlphaMenu> result, bool checkEnds, int clickRank)
+            Cleanup2NativeDefaultScope mode, Stopwatch watch, NativeIconScreenEvidence screens, Cleanup2TooltipInputs inputs, JArray notExercised, Action<AlphaMenu> result, bool checkEnds, int clickRank)
         {
             Cleanup2MenuAdapterBoundary(mode, watch);
             foreach (int frame in Cleanup2AwaitStationaryNativeHud(source, "alpha-" + label)) yield return frame;
@@ -228,17 +229,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var row = menu.Rows[target]; var data = (AbilityData)row.MechanicSlot.GetContentData();
                         bool available = data.IsAvailableForCast;
                         SummonSpawn spawn = SummonSignatureReader.Read(data.Blueprint).Spawns().FirstOrDefault();
-                        row.OnClick();
-                        bool selected = ReferenceEquals(Game.Instance.SelectedAbilityHandler.Ability, data);
-                        Cleanup2MenuAdapterHide(source, original);
                         bool quantity = spawn != null && (clickRank == 0 ? spawn.CountDice == "One" || spawn.CountDice == "Zero" :
                             clickRank == 1 ? spawn.CountDice == "D3" : spawn.CountDice == "D4");
                         bool context = ReferenceEquals(data.ConvertedFrom, original) && ReferenceEquals(data.Spellbook, original.Spellbook);
-                        Sprint25Check("alpha-click-" + label, (!available || selected) && quantity && context, new JObject { ["menu"] = label, ["rowIndex"] = target, ["label"] = data.Name,
+                        // An unavailable row is never clicked: nothing can be selected.
+                        if (available) row.OnClick();
+                        bool selected = available && ReferenceEquals(Game.Instance.SelectedAbilityHandler.Ability, data);
+                        if (available) Cleanup2MenuAdapterHide(source, original);
+                        AlphabeticalSelectionOutcome outcome = AlphabeticalMenuObservationVerdict.ClassifySelection(available, selected, quantity, context);
+                        var rowEvidence = new JObject { ["menu"] = label, ["rowIndex"] = target, ["label"] = data.Name,
                             ["ability"] = data.Blueprint.AssetGuid, ["available"] = available, ["selectedExactRowObject"] = selected,
                             ["spawnUnit"] = spawn?.Unit, ["countDice"] = spawn?.CountDice, ["labelQuantityRank"] = clickRank, ["quantityMatchesLabel"] = quantity,
-                            ["sourceAndBookContext"] = context,
-                            ["limit"] = available ? "selection only; no cast in this case" : "row unavailable for this fixture caster; selection not exercised" },
+                            ["sourceAndBookContext"] = context, ["selection"] = outcome.ToString(),
+                            ["limit"] = available ? "selection only; no cast in this case" : "row unavailable for this fixture caster; selection not exercised" };
+                        Sprint25Check("alpha-row-configuration-" + label, quantity && context, (JObject)rowEvidence.DeepClone(),
+                            "The row's own spawn quantity and source context match its label. This is configuration evidence, not selection.");
+                        if (outcome == AlphabeticalSelectionOutcome.NotExercised) notExercised.Add(rowEvidence);
+                        else Sprint25Check("alpha-click-" + label, outcome == AlphabeticalSelectionOutcome.Selected, rowEvidence,
                             "Selecting a reordered row selects that row's own ability, with its quantity and source context.");
                         if (selected) Game.Instance.SelectedAbilityHandler.DropAbility();
                     }
@@ -321,6 +328,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int frame = 0; frame < 12; frame++) yield return 0;
                 if (!mode.Current) throw new InvalidOperationException("Native Default did not settle after alphabetical book setup.");
                 var inputs = new Cleanup2TooltipInputs(fixture.Caster);
+                var notExercised = new JArray();
                 var spellGroup = groups.Single(value => (ActionBarSlotType)typeof(ActionBarGroupElement).GetField("SlotType", Cleanup2Fields).GetValue(value) == ActionBarSlotType.Spell);
                 var levels = (ActionBarSubGroupLevels)typeof(ActionBarGroupElement).GetField("m_Levels", Cleanup2Fields).GetValue(spellGroup);
                 if (!spellGroup.ToggleState) spellGroup.OnClick();
@@ -333,7 +341,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var mephitSource = findSource(mephitTier, data => ReferenceEquals(data?.Blueprint, mephitMenu) && ReferenceEquals(data?.Spellbook, known));
                 var mephitData = (AbilityData)mephitSource.MechanicSlot.GetContentData();
                 AlphaMenu mephits = null;
-                foreach (int frame in R6Cell("alpha-summon-monster", () => AlphaObserveMenu("summon-monster-" + mephitTier, mephitSource, mephitMenu, mephitData, mode, watch, screens, inputs, value => mephits = value, false, 0))) yield return frame;
+                foreach (int frame in R6Cell("alpha-summon-monster", () => AlphaObserveMenu("summon-monster-" + mephitTier, mephitSource, mephitMenu, mephitData, mode, watch, screens, inputs, notExercised, value => mephits = value, false, 0))) yield return frame;
                 Sprint25Check("alpha-mephit-rows", mephits != null && mephits.Data.Count(value => value.Name.StartsWith("Mephit, ", StringComparison.Ordinal)) > 1,
                     new JObject { ["tier"] = mephitTier, ["mephits"] = mephits == null ? (JToken)JValue.CreateNull() : new JArray(mephits.Data.Where(value => value.Name.StartsWith("Mephit, ", StringComparison.Ordinal)).Select(value => value.Name)) },
                     "The Summon Monster menu shows several family-first mephits adjacent in alphabetical position.");
@@ -344,7 +352,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var allySource = findSource(allyTier, data => ReferenceEquals(data?.Blueprint, allyMenu) && ReferenceEquals(data?.Spellbook, known));
                 var allyData = (AbilityData)allySource.MechanicSlot.GetContentData();
                 AlphaMenu allies = null;
-                foreach (int frame in R6Cell("alpha-natures-ally", () => AlphaObserveMenu("natures-ally-" + allyTier, allySource, allyMenu, allyData, mode, watch, screens, inputs, value => allies = value, true, 1))) yield return frame;
+                foreach (int frame in R6Cell("alpha-natures-ally", () => AlphaObserveMenu("natures-ally-" + allyTier, allySource, allyMenu, allyData, mode, watch, screens, inputs, notExercised, value => allies = value, true, 1))) yield return frame;
                 Sprint25Check("alpha-ally-quantities", allies != null && allies.Data.Any(value => AlphaQuantityRank(value.Name) == 1) && allies.Data.Any(value => AlphaQuantityRank(value.Name) == 2) &&
                     allies.Data.Any(value => AlphaQuantityRank(value.Name) == 0),
                     new JObject { ["tier"] = allyTier, ["rows"] = allies?.Rows.Length ?? 0 }, "The long Nature's Ally menu interleaves single, 1d3 and 1d4+1 rows by creature name.");
@@ -355,7 +363,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var druidSource = findSource(DruidTier, data => ReferenceEquals(data, druidPrepared));
                 var factory = druidSource.MechanicSlot.GetConvertedAbilityData().ToArray();
                 AlphaMenu flat = null;
-                foreach (int frame in R6Cell("alpha-druid-conversion", () => AlphaObserveMenu("druid-conversion-" + DruidTier, druidSource, druidParent, druidPrepared, mode, watch, screens, inputs, value => flat = value, false, -1))) yield return frame;
+                foreach (int frame in R6Cell("alpha-druid-conversion", () => AlphaObserveMenu("druid-conversion-" + DruidTier, druidSource, druidParent, druidPrepared, mode, watch, screens, inputs, notExercised, value => flat = value, false, -1))) yield return frame;
                 bool factoryMatches = flat != null && factory.Length == flat.Data.Length && factory.Select(value => value.Blueprint).SequenceEqual(flat.Data.Select(value => value.Blueprint));
                 Sprint25Check("alpha-druid-factory-matches-popup", factoryMatches, new JObject { ["conversionAdapter"] = DruidSummonConversionVariantPatch.Outcome,
                     ["factory"] = new JArray(factory.Select(value => value.Blueprint.AssetGuid)), ["popupRows"] = flat?.Rows.Length ?? 0 },
@@ -364,18 +372,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var ownSource = findSource(DruidTier, data => ReferenceEquals(data, ownPrepared));
                 var ownFactory = ownSource.MechanicSlot.GetConvertedAbilityData().ToArray();
                 AlphaMenu own = null;
-                foreach (int frame in R6Cell("alpha-druid-prepared-parent", () => AlphaObserveMenu("druid-prepared-parent-" + DruidTier, ownSource, druidParent, ownPrepared, mode, watch, screens, inputs, value => own = value, false, -1))) yield return frame;
+                foreach (int frame in R6Cell("alpha-druid-prepared-parent", () => AlphaObserveMenu("druid-prepared-parent-" + DruidTier, ownSource, druidParent, ownPrepared, mode, watch, screens, inputs, notExercised, value => own = value, false, -1))) yield return frame;
                 Sprint25Check("alpha-druid-prepared-parent", own != null && own.Data.Select(value => value.Blueprint).Distinct().Count() == own.Data.Length &&
                     ownFactory.Select(value => value.Blueprint).Distinct().Count() == ownFactory.Length,
                     new JObject { ["popupRows"] = own?.Rows.Length ?? 0, ["factoryRows"] = ownFactory.Length, ["conversionAdapter"] = DruidSummonConversionVariantPatch.Outcome },
                     "A prepared Summon Nature's Ally shows each creature once, in order.");
                 string[] ownNames = own == null ? new string[0] : own.Data.Select(value => value.Name).ToArray();
-                int lateRow = Array.FindIndex(ownNames, value => value.IndexOf("Ogre Spider", StringComparison.Ordinal) >= 0);
-                Sprint25Check("alpha-late-row-consumed", lateRow >= 0 && lateRow != ownNames.Length - 1, new JObject {
-                    ["menu"] = "druid-prepared-parent-" + DruidTier, ["lateRowIndex"] = lateRow, ["rows"] = ownNames.Length,
-                    ["label"] = lateRow < 0 ? null : ownNames[lateRow], ["next"] = lateRow >= 0 && lateRow + 1 < ownNames.Length ? ownNames[lateRow + 1] : null,
-                    ["lateOrderOutcome"] = ExpandedSummoningPublisher.LateOrderOutcome },
-                    "The installed RacesUnleashed row is in the real menu and sits in its alphabetical place, not at the end.");
+                // The installed row's own visibility component decides whether
+                // this caster should see it; nothing here changes that gate.
+                BlueprintAbility lateAbility = (druidParent.Variants ?? new BlueprintAbility[0]).FirstOrDefault(value =>
+                    value != null && (value.Name ?? "").IndexOf("Ogre Spider", StringComparison.Ordinal) >= 0);
+                AbilityShowIfCasterHasFact[] lateGates = lateAbility == null ? new AbilityShowIfCasterHasFact[0] :
+                    (lateAbility.ComponentsArray ?? new BlueprintComponent[0]).OfType<AbilityShowIfCasterHasFact>().ToArray();
+                bool casterHasFact = lateGates.All(value => value.UnitFact != null && fixture.Caster.Descriptor.HasFact(value.UnitFact));
+                int lateRow = own == null || lateAbility == null ? -1 : Array.FindIndex(own.Data, value => ReferenceEquals(value?.Blueprint, lateAbility));
+                bool ownSorted = own != null && (bool)AlphaOrderVerdict(ownNames, own.Data.Select(value => AlphaIsCreatureChoice(value?.Blueprint)).ToArray())["sorted"];
+                AlphabeticalLateRowOutcome lateOutcome = AlphabeticalMenuObservationVerdict.ClassifyLateRow(lateAbility != null, lateGates.Length > 0, casterHasFact, lateRow >= 0, ownSorted);
+                var lateEvidence = new JObject { ["menu"] = "druid-prepared-parent-" + DruidTier, ["lateAbility"] = lateAbility?.AssetGuid, ["lateName"] = lateAbility?.Name,
+                    ["visibilityGates"] = new JArray(lateGates.Select(value => value.UnitFact?.AssetGuid)), ["casterHasRequiredFact"] = casterHasFact,
+                    ["lateRowIndex"] = lateRow, ["rows"] = ownNames.Length, ["menuSorted"] = ownSorted, ["outcome"] = lateOutcome.ToString(),
+                    ["visibleSortedPopup"] = lateOutcome == AlphabeticalLateRowOutcome.VisibleAndSorted ? "observed" : "not-observed",
+                    ["lateOrderOutcome"] = ExpandedSummoningPublisher.LateOrderOutcome };
+                if (lateOutcome == AlphabeticalLateRowOutcome.VisibleAndSorted)
+                    Sprint25Check("alpha-late-row-visible-sorted", true, lateEvidence, "The installed late row is visible to an eligible caster, in a sorted real menu.");
+                else if (lateOutcome == AlphabeticalLateRowOutcome.ExpectedAbsent)
+                    Sprint25Check("alpha-late-row-expected-absent", true, lateEvidence,
+                        "This caster lacks the row's visibility fact, so the native menu correctly omits it. This does not demonstrate a visible sorted popup.");
+                else if (lateOutcome == AlphabeticalLateRowOutcome.Failed)
+                    Sprint25Check("alpha-late-row-visibility", false, lateEvidence, "A late row must follow its own visibility requirement and sort when visible.");
 
                 foreach (BlueprintAbility root in alternates)
                 {
@@ -389,7 +413,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (sources.Length != 1) continue;
                     var data = (AbilityData)sources[0].MechanicSlot.GetContentData();
                     AlphaMenu alternate = null;
-                    foreach (int frame in R6Cell("alpha-alternate", () => AlphaObserveMenu("alternate-" + root.name, sources[0], root, data, mode, watch, screens, inputs, value => alternate = value, false, 0))) yield return frame;
+                    foreach (int frame in R6Cell("alpha-alternate", () => AlphaObserveMenu("alternate-" + root.name, sources[0], root, data, mode, watch, screens, inputs, notExercised, value => alternate = value, false, 0))) yield return frame;
                 }
                 // A single row that quantity-first order would have placed
                 // before any group row, cast through the existing narrow route.
@@ -402,26 +426,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "The cast target is a single whose position differs from the retired quantity-first order.");
                 if (reordered)
                 {
-                    foreach (int frame in Cleanup2AwaitStationaryNativeHud(druidSource, "alpha-druid-cast")) yield return frame;
-                    druidSource.OnToggleGroupClick();
+                    // The alternate menus left another action-bar group open and
+                    // can recycle slots, so restore the tab and find the slot again.
+                    if (!spellGroup.ToggleState) spellGroup.OnClick();
+                    spellGroup.Fill(fixture.Caster);
+                    levels.OnClick(DruidTier);
+                    for (int frame = 0; frame < 12; frame++) yield return 0;
+                    var castSource = findSource(DruidTier, data => ReferenceEquals(data, druidPrepared));
+                    var castMechanism = castSource.MechanicSlot as MechanicActionBarSlotMemorizedSpell;
+                    bool castSlotExact = castMechanism != null && ReferenceEquals(castMechanism.SpellSlot, druidPrepared.ParamSpellSlot);
+                    Sprint25Check("alpha-druid-cast-source-reacquired", castSlotExact, new JObject { ["ability"] = druidPrepared.Blueprint.AssetGuid,
+                        ["exactPreparedSlot"] = castSlotExact, ["sameWidgetAsBeforeAlternates"] = ReferenceEquals(castSource, druidSource), ["level"] = DruidTier },
+                        "The Druid cast starts from the current slot holding the exact prepared spell, found again after the alternate menus.");
+                    if (!castSlotExact) throw new InvalidOperationException("The exact prepared Druid slot could not be reacquired.");
+                    foreach (int frame in Cleanup2AwaitStationaryNativeHud(castSource, "alpha-druid-cast")) yield return frame;
+                    castSource.OnToggleGroupClick();
                     for (int frame = 0; frame < 10; frame++) yield return 0;
-                    AlphaMenu reopened = AlphaReadPopup(druidSource);
+                    AlphaMenu reopened = AlphaReadPopup(castSource);
                     int reopenedIndex = Array.FindIndex(reopened.Data, value => ReferenceEquals(value?.Blueprint, flatData[castIndex].Blueprint));
                     AbilityData selectedRow = reopened.Data[reopenedIndex];
                     ActionBarSlot rowObject = reopened.Rows[reopenedIndex];
                     Func<bool> owns = () => mode.Current && Cleanup2NoNarrativeOverlay() && Game.Instance.SelectedAbilityHandler.Ability == null &&
-                        ReferenceEquals(druidSource.MechanicSlot?.GetContentData(), druidPrepared) && reopened.Popup.gameObject.activeInHierarchy;
-                    var scroll = Cleanup2DruidPopupSurface(druidSource, reopened.Popup, druidPrepared, selectedRow, owns);
+                        ReferenceEquals(castSource.MechanicSlot?.GetContentData(), druidPrepared) && reopened.Popup.gameObject.activeInHierarchy;
+                    var scroll = Cleanup2DruidPopupSurface(castSource, reopened.Popup, druidPrepared, selectedRow, owns);
                     foreach (int frame in Cleanup2RevealPopupRow(scroll, rowObject, owns)) yield return frame;
                     var debit = new Cleanup2SourceDebit(fixture.Caster);
                     foreach (int frame in Cleanup2MenuAdapterDruidCast(fixture, selectedRow, druidPrepared, druidParent, rowObject, debit, mode, watch,
-                        () => Cleanup2MenuAdapterHide(druidSource, druidPrepared), "alphabetical-reordered")) yield return frame;
+                        () => Cleanup2MenuAdapterHide(castSource, druidPrepared), "alphabetical-reordered")) yield return frame;
                 }
 
                 Sprint25Check("alpha-surface-limits", true, new JObject {
                     ["openedInGame"] = "Known-book Summon Monster and Nature's Ally popups, Druid conversion and prepared parent, granted alternate roots.",
                     ["structuralOnly"] = "Other tiers and families in the census were not opened as popups; console navigation was not exercised.",
-                    ["fixtureAccess"] = "Books and root facts were granted to the disposable caster; not a natural character or saved hotbar.", ["wallSeconds"] = watch.Elapsed.TotalSeconds },
+                    ["fixtureAccess"] = "Books and root facts were granted to the disposable caster; not a natural character or saved hotbar.",
+                    ["selectionNotExercised"] = notExercised, ["wallSeconds"] = watch.Elapsed.TotalSeconds },
                     "Structural and opened surfaces are reported separately.");
             }
             finally

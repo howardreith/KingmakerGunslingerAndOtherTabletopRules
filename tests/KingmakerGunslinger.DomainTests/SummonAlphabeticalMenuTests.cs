@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using KingmakerGunslinger.RuntimeTesting;
 using KingmakerGunslinger.Summoning;
 
 namespace KingmakerGunslinger.DomainTests
@@ -231,6 +232,50 @@ namespace KingmakerGunslinger.DomainTests
             int branch = dispatch.IndexOf("phase == ExpandedSummoningNativeProfilePolicy.Sprint39AlphabeticalMenusPhase", StringComparison.Ordinal);
             int observer = dispatch.IndexOf("ReviewSummonAlphabeticalMenus(", StringComparison.Ordinal);
             Assertions.True(branch >= 0 && observer > branch, "The phase must dispatch to its own observer.");
+        }
+
+        internal static void ObserverSelectionNeverReportsAnUnperformedClick()
+        {
+            Assertions.Equal(AlphabeticalSelectionOutcome.Selected,
+                AlphabeticalMenuObservationVerdict.ClassifySelection(true, true, true, true),
+                "An available row selected with its quantity and context is a success.");
+            Assertions.Equal(AlphabeticalSelectionOutcome.SelectionFailed,
+                AlphabeticalMenuObservationVerdict.ClassifySelection(true, false, true, true),
+                "An available row that does not select must fail.");
+            Assertions.Equal(AlphabeticalSelectionOutcome.SelectionFailed,
+                AlphabeticalMenuObservationVerdict.ClassifySelection(true, true, false, true),
+                "A selection with the wrong quantity must fail.");
+            Assertions.Equal(AlphabeticalSelectionOutcome.SelectionFailed,
+                AlphabeticalMenuObservationVerdict.ClassifySelection(true, true, true, false),
+                "A selection with the wrong context must fail.");
+            Assertions.Equal(AlphabeticalSelectionOutcome.NotExercised,
+                AlphabeticalMenuObservationVerdict.ClassifySelection(false, false, true, true),
+                "An unavailable row records selection as not exercised, even when its configuration is right.");
+            Assertions.Equal(AlphabeticalSelectionOutcome.NotExercised,
+                AlphabeticalMenuObservationVerdict.ClassifySelection(false, false, false, false),
+                "Configuration evidence cannot turn an unperformed click into a result.");
+        }
+
+        internal static void ObserverLateRowFollowsItsVisibilityRequirement()
+        {
+            Assertions.Equal(AlphabeticalLateRowOutcome.ExpectedAbsent,
+                AlphabeticalMenuObservationVerdict.ClassifyLateRow(true, true, false, false, true),
+                "A caster without the fact correctly does not see the gated row.");
+            Assertions.Equal(AlphabeticalLateRowOutcome.Failed,
+                AlphabeticalMenuObservationVerdict.ClassifyLateRow(true, true, false, true, true),
+                "A gated row visible to an ineligible caster is a failure.");
+            Assertions.Equal(AlphabeticalLateRowOutcome.VisibleAndSorted,
+                AlphabeticalMenuObservationVerdict.ClassifyLateRow(true, true, true, true, true),
+                "An eligible caster sees the row in a sorted menu.");
+            Assertions.Equal(AlphabeticalLateRowOutcome.Failed,
+                AlphabeticalMenuObservationVerdict.ClassifyLateRow(true, true, true, false, true),
+                "An eligible caster that does not see the row is a failure.");
+            Assertions.Equal(AlphabeticalLateRowOutcome.Failed,
+                AlphabeticalMenuObservationVerdict.ClassifyLateRow(true, false, false, true, false),
+                "A visible row in an unsorted menu is a failure.");
+            Assertions.Equal(AlphabeticalLateRowOutcome.NotApplicable,
+                AlphabeticalMenuObservationVerdict.ClassifyLateRow(false, false, false, false, true),
+                "A profile without the row has nothing to observe.");
         }
 
         // The real published Summon Nature's Ally rows, across all three
