@@ -582,7 +582,12 @@ namespace KingmakerGunslinger.Blueprints
                 fogSymbol);
             BlueprintAbilityResource resource = Require<BlueprintAbilityResource>(
                 bySymbol, fogResourceSymbol);
-            Sprint29CloneFogSpell(library, mist, mistSymbol, false, null);
+            // Repair R5 SPELL-01: one Obscuring Mist spell-like ability using
+            // Call of the Wild's actual target-point spell, bound after load;
+            // without that provider it stays hidden and unusable. The custom
+            // Fog Cloud stays a loadable legacy identity but is no longer
+            // granted, resourced or AI-routed (saved giants retire it).
+            ConfigureCloudMistPlaceholderR5(mist, unit);
             ConfigureNamedResource(resource, fogResourceSymbol,
                 "KMG.ExpandedSummoning.CloudGiant.FogResource",
                 "Fog Cloud", "One fog cloud per summoning.", 1);
@@ -590,14 +595,14 @@ namespace KingmakerGunslinger.Blueprints
             var spellParams = ScriptableObject.CreateInstance<
                 Sprint29GiantSpellLikeParameters>();
             spellParams.OwningBlueprint = unit;
-            spellParams.Abilities = new[] { mist, fog };
-            spellParams.SpellLevels = new[] { 1, 2 };
-            spellParams.CasterLevel = 16;
+            spellParams.Abilities = new[] { mist };
+            spellParams.SpellLevels = new[] { SummonPlaytestR5Policy.CloudMistSpellLevel };
+            spellParams.CasterLevel = SummonPlaytestR5Policy.CloudMistCasterLevel;
             traits.ComponentsArray = traits.ComponentsArray.Concat(
-                new BlueprintComponent[] { AddResource(resource), spellParams })
+                new BlueprintComponent[] { spellParams })
                 .ToArray();
             unit.AddFacts = unit.AddFacts.Concat(new BlueprintUnitFact[] {
-                mist, fog }).ToArray();
+                mist }).ToArray();
             BlueprintAbilityAreaEffect area = BlueprintLibraryLookup.RequireExact<
                 BlueprintAbilityAreaEffect>(library,
                     "e09010a73354a794293ebc7b33c2d130",
@@ -617,11 +622,14 @@ namespace KingmakerGunslinger.Blueprints
                 fogAiSymbol, fog, 0);
             fogAi.TargetConsiderations = new Kingmaker.Controllers.Brain
                 .Blueprints.Considerations.Consideration[] { fogSafety };
+            // The at-will mist is a stationary point area: the AI centers it on
+            // an enemy only when no ally is inside and this giant has no live
+            // area of its own, and rests 100 rounds (no continuous recasting).
             BlueprintAiCastSpell mistAi = ConfigureMephitAiAction(
                 Require<BlueprintAiCastSpell>(bySymbol, mistAiSymbol),
                 mistAiSymbol, mist, 100);
-            mistAi.ActorConsiderations = new Kingmaker.Controllers.Brain
-                .Blueprints.Considerations.Consideration[] { mistSafety };
+            mistAi.TargetConsiderations = new Kingmaker.Controllers.Brain
+                .Blueprints.Considerations.Consideration[] { fogSafety };
             BlueprintBrain brain = Require<BlueprintBrain>(bySymbol,
                 brainSymbol);
             brain.name = InternalName(brainSymbol);
@@ -631,8 +639,7 @@ namespace KingmakerGunslinger.Blueprints
                 .Actions.Single(value => value != null &&
                     value.GetType().FullName ==
                     "Kingmaker.Controllers.Brain.Blueprints.BlueprintAiAttack");
-            brain.Actions = new BlueprintAiAction[] { fogAi, mistAi,
-                ordinaryAttack };
+            brain.Actions = new BlueprintAiAction[] { mistAi, ordinaryAttack };
             unit.Brain = brain;
         }
 

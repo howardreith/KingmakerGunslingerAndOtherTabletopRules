@@ -100,7 +100,9 @@ namespace KingmakerGunslinger.Blueprints
             ability.Hidden = false; ability.ActionBarAutoFillIgnored = false;
             ability.MaterialComponent = new BlueprintAbility.MaterialComponentData();
             ability.ResourceAssetIds = Array.Empty<string>();
-            ability.ComponentsArray = new BlueprintComponent[] { around, run, access };
+            var blastCue = ScriptableObject.CreateInstance<SummonAbilityCastCue>();
+            blastCue.EventName = SummonPlaytestR6Policy.TrumpetBlastCue;
+            ability.ComponentsArray = new BlueprintComponent[] { around, run, access, blastCue };
 
             var icon = ExpandedSummoningProjectIcons.Require("trumpet-blast");
             var facts = BlueprintUnitFactAccess.Resolve();

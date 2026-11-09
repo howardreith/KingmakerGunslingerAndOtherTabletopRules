@@ -29,6 +29,34 @@ namespace KingmakerGunslinger.Summoning
     /// it for its next owner resets its animations. Nothing else in the
     /// effect, no other buff's effect and no transient flash is touched.
     /// </summary>
+    /// <summary>Ends one view's lasting arrival rims once the arrival has played.</summary>
+    internal sealed class SummonArrivalRimLimiter : MonoBehaviour
+    {
+        private readonly List<RimLightingAnimationSetup> _rims = new List<RimLightingAnimationSetup>();
+        private float _endAt;
+        internal int Ended { get; private set; }
+
+        internal void Begin(IEnumerable<RimLightingAnimationSetup> rims)
+        {
+            _rims.Clear(); _rims.AddRange(rims);
+            _endAt = Time.time + SummonGlowPolicy.ArrivalRimSeconds;
+            enabled = true;
+        }
+
+        private void LateUpdate()
+        {
+            if (Time.time < _endAt) return;
+            foreach (RimLightingAnimationSetup setup in _rims)
+            {
+                if (setup == null || setup.Settings == null) continue;
+                setup.Settings.IsFinished = true;
+                Ended++;
+            }
+            _rims.Clear();
+            enabled = false;
+        }
+    }
+
     [HarmonyPatch(typeof(Buff), "SpawnParticleEffect")]
     internal static class ExpandedSummoningSummonGlowPatch
     {
@@ -91,6 +119,28 @@ namespace KingmakerGunslinger.Summoning
             return rows.Count == 0 ? "<none>" : string.Join("|", rows.ToArray());
         }
 
+        // Repair R6 PRES-07: the arrival effect keeps its particles and brief
+        // rim; only a rim that would outlast the arrival ends after it, on a
+        // KMG summon, and the buff itself stays.
+        private static void LimitArrivalRim(Buff buff)
+        {
+            UnitEntityData unit = buff.Owner == null ? null : buff.Owner.Unit;
+            UnitEntityView view = unit == null ? null : unit.View;
+            GameObject effect = view == null || EffectField == null ? null : EffectField.GetValue(buff) as GameObject;
+            if (effect == null) return;
+            string ability = buff.Context == null || buff.Context.SourceAbility == null ? null : buff.Context.SourceAbility.name;
+            string unitName = unit.Blueprint == null ? null : unit.Blueprint.name;
+            if (!SummonGlowPolicy.Suppresses(ability, unitName, ExpandedSummoningVisualVariantPatch.RimFor(view).HasValue)) return;
+            var rims = new List<RimLightingAnimationSetup>();
+            foreach (RimLightingAnimationSetup setup in effect.GetComponentsInChildren<RimLightingAnimationSetup>(true))
+                if (setup.Settings != null && SummonGlowPolicy.OutlastsArrival(setup.Settings.LoopAnimation, setup.Settings.Lifetime))
+                    rims.Add(setup);
+            if (rims.Count == 0) return;
+            SummonArrivalRimLimiter limiter = view.GetComponent<SummonArrivalRimLimiter>();
+            if (limiter == null) limiter = view.gameObject.AddComponent<SummonArrivalRimLimiter>();
+            limiter.Begin(rims);
+        }
+
         private static void Note(string reason)
         {
             lock (Sync) s_LastSkip = reason.Replace(';', ',').Replace('|', '/');
@@ -104,6 +154,11 @@ namespace KingmakerGunslinger.Summoning
                 if (__instance == null || __instance.Blueprint == null ||
                     !ExpandedSummoningVisualVariantPatch.IsModuleActive)
                     return;
+                if (SummonGlowPolicy.IsArrivalBuff(__instance.Blueprint.AssetGuid))
+                {
+                    LimitArrivalRim(__instance);
+                    return;
+                }
                 BlueprintRoot root = BlueprintRoot.Instance;
                 BlueprintBuff summoned = root == null || root.SystemMechanics == null ? null :
                     root.SystemMechanics.SummonedUnitBuff;
