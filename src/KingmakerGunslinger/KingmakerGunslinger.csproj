@@ -157,6 +157,11 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR3Ui.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR4Mephit.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR5Spells.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR6Presentation.cs" />
+    <Compile Include="Summoning\SummonPlaytestR6Policy.cs" />
+    <Compile Include="Summoning\SummonAbilityCastCue.cs" />
+    <Compile Include="Summoning\SummonCastCueLifecycle.cs" />
+    <Compile Include="Summoning\RedcapScytheAnimationR6.cs" />
     <Compile Include="RuntimeTesting\SummonReadinessAdmissionPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalMechanics34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCombat34.cs" />

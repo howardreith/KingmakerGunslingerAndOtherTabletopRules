@@ -103,6 +103,13 @@ try {
 param([string]$ScriptsRoot, [string]$Params, [string]$Backups, [string]$StateRoot, [string]$Output, [switch]$CleanupWithLockedParams)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+# The parent's process seam applies here too: a real Kingmaker from any other
+# lab on this machine must not change this temporary fixture.
+function global:Get-Process {
+    [CmdletBinding()]param([string]$Name, [int]$Id)
+    if ($Name -ceq 'Kingmaker') { return }
+    Microsoft.PowerShell.Management\Get-Process @PSBoundParameters
+}
 . (Join-Path $ScriptsRoot 'UmmParams.Common.ps1')
 $scope = Enter-KmgRuntimeLease -Purpose 'umm-params protection' -StateRoot $StateRoot
 try { $receipt = Backup-KmgUmmParams -ParamsPath $Params -BackupRoot $Backups -OwnerLease $scope.Lease -Owner 'child' }
@@ -473,7 +480,10 @@ if ($CleanupWithLockedParams) {
     Assert-True ((Complete-KmgUmmParamsProtection -Receipt $r).verified -and (Get-KmgUmmFileSha256 $c.Params) -ceq $intakeSha) 'inherited-invalid-owner-retry-restores'
 }
 finally {
-    Remove-Item -LiteralPath function:global:Get-Process -Force
+    # A function: drive path with a global: qualifier removes nothing, and the
+    # stand-in would break every later check in a shared validation session.
+    Remove-Item -Path 'Function:\Get-Process' -Force
+    if ((Get-Command Get-Process).CommandType -ne 'Cmdlet') { $failures.Add('process-seam-removed') }
     Remove-Variable -Name kmgUmmTest -Scope Global -Force
     if (Test-Path -LiteralPath $root) { Remove-Item -LiteralPath $root -Recurse -Force }
 }

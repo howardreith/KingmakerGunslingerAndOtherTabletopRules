@@ -1,4 +1,66 @@
-# Summoned creature manual-playtest repair — R5 UMM ownership repairs / STOP
+# Summoned creature manual-playtest repair — R6 complete for review / STOP
+
+Current (2026-11-08). See planning/summon-playtest-repair/R6-STATUS.md. Branch
+`codex/summon-playtest-r6-presentation`; draft PR #116 on #115 on #114.
+
+- All required R6 technical gaps are closed. Final candidate `2f1c4eb9f90f`: one
+  guarded run, all assertions passed. Cue retirement now stops playback by playing
+  ID (Trumpet observed; Vrock shares the implementation).
+- Owner viewing and listening remain separate. PRES-08 is deferred.
+- Install, saves, settings and `Params.xml` restored exactly.
+- Ledgers: original R6 about 1,498 s, repair about 1,298 of 1,500 s, cumulative R6
+  about 2,796 s. R5 about 1,389 s.
+- DATA is shared with `KingmakerSkipCinematicLab`: arrange a no-Kingmaker window
+  before any build or guarded run.
+
+Next: owner review of #114, #115 and #116, viewing and listening, then explicit
+authorization for R7.
+
+---
+
+# (superseded) R6 repair checkpoint / STOP
+
+Current (2026-11-08). See planning/summon-playtest-repair/R6-STATUS.md. Branch
+`codex/summon-playtest-r6-presentation`; draft PR #116 on #115 on #114.
+
+- Repair candidate `c31c6292f7d3`, one guarded run: all assertions passed except
+  `r6-cue-early-retirement`. Install, saves, settings and `Params.xml` restored.
+- PRES-02, PRES-03, PRES-07 technically established; PRES-04 supported by paired
+  views. PRES-01 stays established from `0dd811be26b2`.
+- Open: a Vrock/Trumpet cue outlives a destroyed caster view (4.6 s after retirement;
+  the native registration is gone before the stop runs). Owner viewing and
+  listening remain separate. PRES-08 deferred.
+- Ledgers: original R6 about 1,498 s, repair about 688 of 1,200 s; a further build
+  and run does not fit. R5 about 1,389 s.
+- DATA is shared with `KingmakerSkipCinematicLab`: arrange a no-Kingmaker window
+  before any build or guarded run.
+
+Next: owner decision on a small allowance for the cue-retirement repair. R7 starts
+only on explicit authorization.
+
+---
+
+# (superseded) R6 partly complete / STOP
+
+Current (2026-11-08). See planning/summon-playtest-repair/R6-STATUS.md. Branch
+`codex/summon-playtest-r6-presentation`; draft PR depends on #115, then #114.
+
+- Candidate `0dd811be26b2`, one guarded run: all assertions passed except
+  `r6-redcap-scythe`, a confirmed product defect. Install, saves, settings and
+  UMM `Params.xml` restored exactly.
+- PRES-01 technically established. PRES-05/06 cues work; owner listening pending.
+- Open: PRES-02 self-targeted Aid, PRES-03 Redcap scythe swing, PRES-04 clear
+  Lantern capture, PRES-07 Monster-family arrival rim. PRES-08 deferred.
+- R6 ledger about 1,498 of 1,800 s; a second candidate does not fit.
+- DATA is shared with `KingmakerSkipCinematicLab`: arrange a no-Kingmaker window
+  before any build or guarded run.
+
+Next: the owner decides whether to authorize a separate R6 repair allowance. R7
+starts only on explicit authorization.
+
+---
+
+# (superseded) R5 UMM ownership repairs / STOP
 
 Current (2026-11-08). The last two R5 UMM ownership findings are repaired on
 `codex/summon-playtest-r5-spells` (scripts commit `307cf89356`, draft PR #115,
