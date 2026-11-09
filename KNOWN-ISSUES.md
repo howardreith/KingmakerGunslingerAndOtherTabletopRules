@@ -134,5 +134,6 @@
   and keep their native behavior. Black Widow, and by the same rule Crab Spider, is
   not offered in a Herald Caller conversion. The latest native result for this
   feature remains FAIL, 70 PASS / 1 FAIL; those unresolved census findings are an
-  explicit owner-accepted exception, not a passing result. Further work is parked in
-  `planning/races-unleashed-compatibility/MISSION.md`.
+  explicit owner-accepted exception, not a passing result. This describes the released
+  v0.0.181. An unreleased development candidate repairs these rows; its status and open
+  checks are in `planning/races-unleashed-compatibility/STATUS.md`.
