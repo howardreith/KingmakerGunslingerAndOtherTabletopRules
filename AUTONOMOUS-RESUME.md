@@ -1,4 +1,25 @@
-# Alphabetical summon menus — accepted, PR #119 awaiting owner review / STOP
+# Cleric alignment restrictions — complete and owner-accepted / PR #122 ready for review / STOP
+
+Current (2026-11-09). See planning/summon-cleric-alignment/STATUS.md. Branch
+`codex/summon-cleric-alignment`, PR #122 against master, ready for review. v0.0.180 is published
+and unchanged; this feature is unreleased until separately authorized.
+
+Cleric alignment mission complete and owner-accepted for the present scope, with known Races
+Unleashed compatibility limitations deferred to a separate mission. The latest native invocation
+remains FAIL, 70 PASS / 1 FAIL; its unresolved third-party census findings are an explicit
+owner-accepted exception, not a passing result.
+
+- Results stay with their candidates: `059854c046e1` FAIL 4/3, `03a87b348912` FAIL 49/1, `efc75b8cc0b0` FAIL 70/1.
+- Release preparation must carry the accepted exception in STATUS.md into the known-limitations notes.
+- Races Unleashed work is parked: planning/races-unleashed-compatibility/MISSION.md is DEFERRED and
+  NOT AUTHORIZED TO START. Do not resume it from this file.
+- Product code, observers, tests, blueprints and assets are frozen at `efc75b8cc0b0`.
+- Install, saves, settings and `Params.xml` restored exactly. Ledger about 2,026 of 2,400 s, closed.
+- No build, native run, merge, release or permanent install follows without explicit owner authorization.
+
+---
+
+# (superseded) Alphabetical summon menus — accepted, PR #119 merged / STOP
 
 Current (2026-11-09). See planning/summon-alphabetical-menus/STATUS.md. Branch
 `codex/summon-alphabetical-menus`, draft PR #119 against master. Separate from R1-R7,
