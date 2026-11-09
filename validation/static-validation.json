@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.180-summon-playtest-repairs",
+  "milestone": "0.0.181-cleric-summon-alignment",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.180",
+  "version": "0.0.181",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2884,5 +2884,18 @@
     "nativeEvidence": "Native results stay attributed to their own development candidates; none was re-executed on this version-stamped build. Alphabetical menus: candidate c55f40e53f36 remains 44 PASS / 3 FAIL, accepted by the owner on existing evidence.",
     "deferredCoverage": "Alphabetical menus: no completed reordered cast, alternate-menu selection, feature-enabled spider popup, scroll movement, console or saved-hotbar observation. Owner viewing and listening are not claimed. Sprint 41 A-5, A-6, A-7, A-9, A-13 and A-16 remain open. Roster-scale persistence and performance were not run.",
     "ownerPublicationAuthority": "Howie Reith, 2026-11-09: 'Go ahead and cut a release.' Published as the next stable patch, as v0.0.179 was."
+  },
+  "clericAlignmentRelease181": {
+    "releaseVersion": "0.0.181",
+    "releaseInformationalVersion": "0.0.181-cleric-summon-alignment",
+    "baseStableVersion": "0.0.180",
+    "reviewedProductSource": "2f5703f7c9987bbc25699b205495d53f00101924",
+    "appendedIdentities": 0,
+    "releasedIdentityChanges": 0,
+    "visibleChoiceTotal": 1208,
+    "change": "Cleric alignment restrictions for Summon Monster: forbidden choices leave the popup and are refused before any slot is spent, including Herald Caller conversions.",
+    "nativeEvidence": "Native results stay attributed to their own development candidates; none was re-executed on this version-stamped build. Latest candidate efc75b8cc0b08da3220d9d1151860899d94adb99 remains FAIL, 70 PASS / 1 FAIL; its unresolved third-party census findings are an explicit owner-accepted exception, not a passing result.",
+    "deferredCoverage": "Races Unleashed compatibility is deferred to planning/races-unleashed-compatibility/MISSION.md. Not observed: naturally levelled Herald archetype, saved-hotbar reload, cold load, console navigation, autonomous AI, multiclass popup, evil and true neutral cleric menus, a Redcap-branch cast, module-disabled native profile.",
+    "ownerPublicationAuthority": "Howie Reith, 2026-11-09: 'Merge PR #122 and cut a release'. Published as the next stable patch, as v0.0.180 was."
   }
 }
