@@ -75,6 +75,16 @@ namespace KingmakerGunslinger.Summoning
             }
         }
 
+        /// <summary>A new ordered array when the live rows are out of order,
+        /// or null when nothing needs to change. The input is never modified.</summary>
+        internal static T[] ReorderedOrNull<T>(T[] current, Func<T, SummonMenuOrderKey> orderKey)
+            where T : class
+        {
+            if (current == null || orderKey == null) throw new ArgumentNullException();
+            T[] ordered = Order(current, new T[0], orderKey).ToArray();
+            return SummonVariantMergePolicy.SameReferences(current, ordered) ? null : ordered;
+        }
+
         internal static IReadOnlyList<T> Order<T>(IEnumerable<T> originals,
             IEnumerable<T> additions, Func<T, SummonMenuOrderKey> orderKey)
         {

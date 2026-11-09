@@ -96,7 +96,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 inspect("alternate", ability); adapter++;
             }
             passed = allSorted && canonical == 18 && adapter > 0 && stirge == 0;
+            var families = new JArray(AlternateSummoningSourceCatalog.All.Select(family => new JObject { ["family"] = family.Key,
+                ["disposition"] = AlternateSummoningStatusRegistry.Find(family.Key)?.Disposition.ToString() }));
+            int sortedMenus = menus.Count(value => (bool)value["sorted"]);
             return new JObject { ["canonicalMenus"] = canonical, ["alternateMenus"] = adapter, ["rows"] = rowCount,
+                ["checked"] = menus.Count, ["passed"] = sortedMenus, ["failed"] = menus.Count - sortedMenus,
+                ["skipped"] = families.Count(value => (string)value["disposition"] != AlternateSummoningDisposition.Published.ToString()),
+                ["skippedMeaning"] = "alternate families not published in this profile; their menus are not in the census",
+                ["families"] = families, ["lateOrderOutcome"] = ExpandedSummoningPublisher.LateOrderOutcome,
+                ["failedParents"] = new JArray(menus.Where(value => !(bool)value["sorted"]).Select(value => (string)value["rootName"])),
                 ["allSorted"] = allSorted, ["stirgeRows"] = stirge, ["unclassified"] = unclassified, ["menus"] = menus,
                 ["scope"] = "Structural census of published host arrays; not popups opened in game." };
         }
@@ -112,6 +120,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !library.TryGetValue(spec.FeatureGuid, out found) ? new BlueprintAbility[0] :
                     (found.ComponentsArray ?? new BlueprintComponent[0]).OfType<Kingmaker.UnitLogic.FactLogic.AddFacts>().SelectMany(value => value.Facts).OfType<BlueprintAbility>();
             return candidates.Where(AlternateSummoningExposure.IsPublishedRoot).OrderBy(value => value.AssetGuid, StringComparer.Ordinal).FirstOrDefault();
+        }
+
+        // Publication, foreign append, late sort, repeat, then the real rollback
+        // on a transient unregistered parent that holds real published rows.
+        private void AlphaRollbackRegression(BlueprintAbility realParent, SummonFamily family, int tier)
+        {
+            BlueprintAbility[] live = realParent.Variants;
+            BlueprintAbility[] owned = live.Where(value => !value.Name.StartsWith("Summon ", StringComparison.Ordinal)).OrderBy(value => value.Name, StringComparer.OrdinalIgnoreCase).ToArray();
+            BlueprintAbility foreign = live.FirstOrDefault(value => value.Name.StartsWith("Summon ", StringComparison.Ordinal));
+            var parent = ScriptableObject.CreateInstance<BlueprintAbility>();
+            var component = ScriptableObject.CreateInstance<AbilityVariants>();
+            try
+            {
+                component.name = ExpandedSummoningPublisher.PublishedVariantsComponentName;
+                BlueprintAbility[] published = SummonDisplayOrderPolicy.Order(owned, new BlueprintAbility[0], value =>
+                    SummonMenuOrderKey.Host(value.Name, null, value.AssetGuid, true)).ToArray();
+                component.Variants = published;
+                var original = new BlueprintComponent[0]; var components = new BlueprintComponent[] { component };
+                parent.ComponentsArray = components;
+                var record = new ExpandedSummoningPublication.Record { Parent = parent, OriginalComponents = original, PublishedComponents = components,
+                    PublishedVariants = component, PublishedVariantArray = published, PublishedChoices = published.ToArray() };
+                BlueprintAbility[] appended = foreign == null ? null : published.Concat(new[] { foreign }).ToArray();
+                if (appended != null) component.Variants = appended;
+                bool sorted = ExpandedSummoningPublisher.ReorderPublishedMenu(parent, family, tier);
+                BlueprintAbility[] afterSort = component.Variants;
+                bool repeated = ExpandedSummoningPublisher.ReorderPublishedMenu(parent, family, tier);
+                bool refused = false; string message = null;
+                try { new ExpandedSummoningPublication(new List<ExpandedSummoningPublication.Record> { record }).Rollback(); }
+                catch (InvalidOperationException error) { refused = true; message = error.Message; }
+                bool preserved = ReferenceEquals(component.Variants, afterSort) && ReferenceEquals(parent.ComponentsArray, components) &&
+                    appended != null && afterSort.Length == appended.Length && appended.All(value => afterSort.Count(row => ReferenceEquals(row, value)) == 1);
+                Sprint25Check("alpha-late-sort-rollback", foreign != null && sorted && !repeated && refused && preserved && ReferenceEquals(record.PublishedVariantArray, published),
+                    new JObject { ["foreign"] = foreign?.Name, ["sorted"] = sorted, ["repeatChanged"] = repeated, ["rollbackRefused"] = refused, ["message"] = message,
+                        ["choicesPreserved"] = preserved, ["receiptNotRefreshed"] = ReferenceEquals(record.PublishedVariantArray, published), ["rows"] = afterSort?.Length ?? 0,
+                        ["scope"] = "Transient unregistered parent; real rows and the real rollback; no live menu touched." },
+                    "A foreign append survives the late sort and a repeat; rollback refuses instead of restoring a pre-append array.");
+            }
+            finally { UnityEngine.Object.Destroy(component); UnityEngine.Object.Destroy(parent); }
         }
 
         private static AlphaMenu AlphaReadPopup(ActionBarGroupSlot source)
@@ -134,7 +180,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> AlphaObserveMenu(string label, ActionBarGroupSlot source, BlueprintAbility parent, AbilityData original,
-            Cleanup2NativeDefaultScope mode, Stopwatch watch, NativeIconScreenEvidence screens, Cleanup2TooltipInputs inputs, Action<AlphaMenu> result, bool checkEnds, bool click)
+            Cleanup2NativeDefaultScope mode, Stopwatch watch, NativeIconScreenEvidence screens, Cleanup2TooltipInputs inputs, Action<AlphaMenu> result, bool checkEnds, int clickRank)
         {
             Cleanup2MenuAdapterBoundary(mode, watch);
             foreach (int frame in Cleanup2AwaitStationaryNativeHud(source, "alpha-" + label)) yield return frame;
@@ -174,19 +220,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                         foreach (int frame in screens.Capture("alpha-" + label + "-" + which, endEvidence, owns)) yield return frame;
                     }
                 }
-                if (click)
+                if (clickRank >= 0)
                 {
-                    int target = Array.FindLastIndex(menu.Rows, row => AlphaQuantityRank((row.MechanicSlot.GetContentData() as AbilityData)?.Name ?? "") == 0);
+                    int target = Array.FindLastIndex(menu.Rows, row => AlphaQuantityRank((row.MechanicSlot.GetContentData() as AbilityData)?.Name ?? "") == clickRank);
                     if (target >= 0)
                     {
                         var row = menu.Rows[target]; var data = (AbilityData)row.MechanicSlot.GetContentData();
                         bool available = data.IsAvailableForCast;
+                        SummonSpawn spawn = SummonSignatureReader.Read(data.Blueprint).Spawns().FirstOrDefault();
                         row.OnClick();
                         bool selected = ReferenceEquals(Game.Instance.SelectedAbilityHandler.Ability, data);
-                        Sprint25Check("alpha-click-" + label, !available || selected, new JObject { ["menu"] = label, ["rowIndex"] = target, ["label"] = data.Name,
+                        Cleanup2MenuAdapterHide(source, original);
+                        bool quantity = spawn != null && (clickRank == 0 ? spawn.CountDice == "One" || spawn.CountDice == "Zero" :
+                            clickRank == 1 ? spawn.CountDice == "D3" : spawn.CountDice == "D4");
+                        bool context = ReferenceEquals(data.ConvertedFrom, original) && ReferenceEquals(data.Spellbook, original.Spellbook);
+                        Sprint25Check("alpha-click-" + label, (!available || selected) && quantity && context, new JObject { ["menu"] = label, ["rowIndex"] = target, ["label"] = data.Name,
                             ["ability"] = data.Blueprint.AssetGuid, ["available"] = available, ["selectedExactRowObject"] = selected,
+                            ["spawnUnit"] = spawn?.Unit, ["countDice"] = spawn?.CountDice, ["labelQuantityRank"] = clickRank, ["quantityMatchesLabel"] = quantity,
+                            ["sourceAndBookContext"] = context,
                             ["limit"] = available ? "selection only; no cast in this case" : "row unavailable for this fixture caster; selection not exercised" },
-                            "Selecting a reordered row selects that row's own ability object.");
+                            "Selecting a reordered row selects that row's own ability, with its quantity and source context.");
                         if (selected) Game.Instance.SelectedAbilityHandler.DropAbility();
                     }
                 }
@@ -205,6 +258,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool censusPassed;
             JObject census = AlphaCensus(out censusPassed);
             Sprint25Check("alpha-census", censusPassed, census, "Every published canonical and alternate menu array follows the alphabetical contract, and Stirge stays absent.");
+            try
+            {
+                AlphaRollbackRegression(BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
+                    ExpandedSummoningPublisher.CanonicalParentGuids[3], "rollback regression parent"), SummonFamily.Monster, 4);
+            }
+            catch (Exception error)
+            {
+                Sprint25Check("alpha-late-sort-rollback-completed", false, new JObject { ["error"] = error.ToString() },
+                    "The rollback regression ran without an exception.");
+            }
             var party = player.Party.ToArray(); var selected = ui.SelectionManagerPC.SelectedUnits.ToArray(); var selectedGroup = group.GetCurrentCharacter();
             var groups = bar.Group.GroupElements.ToArray(); bool[] toggles = groups.Select(value => value.ToggleState).ToArray();
             var addedBooks = new TeleportResourceFixtureOwner(fixture.Caster); var facts = new List<Action>();
@@ -214,8 +277,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (toggles.Any(value => value)) throw new InvalidOperationException("Closed native groups required at intake.");
                 var sorcerer = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library, "b3a505fb61437dc4097f43c3f8f9a4cf", "native Sorcerer");
                 var druidClass = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library, "610d836f3a3a9ed42a4349b62f002e96", "native Druid");
-                // Level 5 preparation needs the casting score; the caster is disposable.
-                fixture.Caster.Stats.Wisdom.BaseValue = 30; fixture.Caster.Stats.Charisma.BaseValue = 30;
                 var known = addedBooks.AddBook(sorcerer.Spellbook);
                 Func<SummonFamily, int, BlueprintAbility> canonical = (family, tier) => BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
                     ExpandedSummoningPublisher.CanonicalParentGuids[(family == SummonFamily.Monster ? 0 : 9) + tier - 1], "alphabetical canonical parent");
@@ -272,7 +333,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var mephitSource = findSource(mephitTier, data => ReferenceEquals(data?.Blueprint, mephitMenu) && ReferenceEquals(data?.Spellbook, known));
                 var mephitData = (AbilityData)mephitSource.MechanicSlot.GetContentData();
                 AlphaMenu mephits = null;
-                foreach (int frame in AlphaObserveMenu("summon-monster-" + mephitTier, mephitSource, mephitMenu, mephitData, mode, watch, screens, inputs, value => mephits = value, false, true)) yield return frame;
+                foreach (int frame in R6Cell("alpha-summon-monster", () => AlphaObserveMenu("summon-monster-" + mephitTier, mephitSource, mephitMenu, mephitData, mode, watch, screens, inputs, value => mephits = value, false, 0))) yield return frame;
                 Sprint25Check("alpha-mephit-rows", mephits != null && mephits.Data.Count(value => value.Name.StartsWith("Mephit, ", StringComparison.Ordinal)) > 1,
                     new JObject { ["tier"] = mephitTier, ["mephits"] = mephits == null ? (JToken)JValue.CreateNull() : new JArray(mephits.Data.Where(value => value.Name.StartsWith("Mephit, ", StringComparison.Ordinal)).Select(value => value.Name)) },
                     "The Summon Monster menu shows several family-first mephits adjacent in alphabetical position.");
@@ -283,7 +344,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var allySource = findSource(allyTier, data => ReferenceEquals(data?.Blueprint, allyMenu) && ReferenceEquals(data?.Spellbook, known));
                 var allyData = (AbilityData)allySource.MechanicSlot.GetContentData();
                 AlphaMenu allies = null;
-                foreach (int frame in AlphaObserveMenu("natures-ally-" + allyTier, allySource, allyMenu, allyData, mode, watch, screens, inputs, value => allies = value, true, false)) yield return frame;
+                foreach (int frame in R6Cell("alpha-natures-ally", () => AlphaObserveMenu("natures-ally-" + allyTier, allySource, allyMenu, allyData, mode, watch, screens, inputs, value => allies = value, true, 1))) yield return frame;
                 Sprint25Check("alpha-ally-quantities", allies != null && allies.Data.Any(value => AlphaQuantityRank(value.Name) == 1) && allies.Data.Any(value => AlphaQuantityRank(value.Name) == 2) &&
                     allies.Data.Any(value => AlphaQuantityRank(value.Name) == 0),
                     new JObject { ["tier"] = allyTier, ["rows"] = allies?.Rows.Length ?? 0 }, "The long Nature's Ally menu interleaves single, 1d3 and 1d4+1 rows by creature name.");
@@ -294,7 +355,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var druidSource = findSource(DruidTier, data => ReferenceEquals(data, druidPrepared));
                 var factory = druidSource.MechanicSlot.GetConvertedAbilityData().ToArray();
                 AlphaMenu flat = null;
-                foreach (int frame in AlphaObserveMenu("druid-conversion-" + DruidTier, druidSource, druidParent, druidPrepared, mode, watch, screens, inputs, value => flat = value, false, false)) yield return frame;
+                foreach (int frame in R6Cell("alpha-druid-conversion", () => AlphaObserveMenu("druid-conversion-" + DruidTier, druidSource, druidParent, druidPrepared, mode, watch, screens, inputs, value => flat = value, false, -1))) yield return frame;
                 bool factoryMatches = flat != null && factory.Length == flat.Data.Length && factory.Select(value => value.Blueprint).SequenceEqual(flat.Data.Select(value => value.Blueprint));
                 Sprint25Check("alpha-druid-factory-matches-popup", factoryMatches, new JObject { ["conversionAdapter"] = DruidSummonConversionVariantPatch.Outcome,
                     ["factory"] = new JArray(factory.Select(value => value.Blueprint.AssetGuid)), ["popupRows"] = flat?.Rows.Length ?? 0 },
@@ -303,15 +364,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var ownSource = findSource(DruidTier, data => ReferenceEquals(data, ownPrepared));
                 var ownFactory = ownSource.MechanicSlot.GetConvertedAbilityData().ToArray();
                 AlphaMenu own = null;
-                foreach (int frame in AlphaObserveMenu("druid-prepared-parent-" + DruidTier, ownSource, druidParent, ownPrepared, mode, watch, screens, inputs, value => own = value, false, false)) yield return frame;
+                foreach (int frame in R6Cell("alpha-druid-prepared-parent", () => AlphaObserveMenu("druid-prepared-parent-" + DruidTier, ownSource, druidParent, ownPrepared, mode, watch, screens, inputs, value => own = value, false, -1))) yield return frame;
                 Sprint25Check("alpha-druid-prepared-parent", own != null && own.Data.Select(value => value.Blueprint).Distinct().Count() == own.Data.Length &&
                     ownFactory.Select(value => value.Blueprint).Distinct().Count() == ownFactory.Length,
                     new JObject { ["popupRows"] = own?.Rows.Length ?? 0, ["factoryRows"] = ownFactory.Length, ["conversionAdapter"] = DruidSummonConversionVariantPatch.Outcome },
                     "A prepared Summon Nature's Ally shows each creature once, in order.");
+                string[] ownNames = own == null ? new string[0] : own.Data.Select(value => value.Name).ToArray();
+                int lateRow = Array.FindIndex(ownNames, value => value.IndexOf("Ogre Spider", StringComparison.Ordinal) >= 0);
+                Sprint25Check("alpha-late-row-consumed", lateRow >= 0 && lateRow != ownNames.Length - 1, new JObject {
+                    ["menu"] = "druid-prepared-parent-" + DruidTier, ["lateRowIndex"] = lateRow, ["rows"] = ownNames.Length,
+                    ["label"] = lateRow < 0 ? null : ownNames[lateRow], ["next"] = lateRow >= 0 && lateRow + 1 < ownNames.Length ? ownNames[lateRow + 1] : null,
+                    ["lateOrderOutcome"] = ExpandedSummoningPublisher.LateOrderOutcome },
+                    "The installed RacesUnleashed row is in the real menu and sits in its alphabetical place, not at the end.");
 
+                foreach (BlueprintAbility root in alternates)
+                {
+                    var abilityGroups = groups.Where(value => (ActionBarSlotType)typeof(ActionBarGroupElement).GetField("SlotType", Cleanup2Fields).GetValue(value) == ActionBarSlotType.ActivatableAbility).ToArray();
+                    foreach (ActionBarGroupElement element in abilityGroups) { element.Fill(fixture.Caster); if (!element.ToggleState) element.OnClick(); }
+                    for (int frame = 0; frame < 16; frame++) yield return 0;
+                    var sources = abilityGroups.SelectMany(value => value.GetComponentsInChildren<ActionBarGroupSlot>(true)).Where(value => value.gameObject.activeInHierarchy &&
+                        ReferenceEquals((value.MechanicSlot?.GetContentData() as AbilityData)?.Blueprint, root)).ToArray();
+                    Sprint25Check("alpha-alternate-slot-" + root.name, sources.Length == 1, new JObject { ["root"] = root.AssetGuid, ["slots"] = sources.Length },
+                        "The granted alternate root appears once on the action bar.");
+                    if (sources.Length != 1) continue;
+                    var data = (AbilityData)sources[0].MechanicSlot.GetContentData();
+                    AlphaMenu alternate = null;
+                    foreach (int frame in R6Cell("alpha-alternate", () => AlphaObserveMenu("alternate-" + root.name, sources[0], root, data, mode, watch, screens, inputs, value => alternate = value, false, 0))) yield return frame;
+                }
                 // A single row that quantity-first order would have placed
                 // before any group row, cast through the existing narrow route.
-                var flatRows = flat.Rows; var flatData = flat.Data;
+                if (flat == null) throw new InvalidOperationException("Druid conversion rows were not observed; the routing cast is skipped.");
+                var flatData = flat.Data;
                 int lastGroup = Array.FindLastIndex(flatData, value => AlphaQuantityRank(value.Name) != 0);
                 int castIndex = Array.FindLastIndex(flatData, value => AlphaQuantityRank(value.Name) == 0 && SummonSignatureReader.Read(value.Blueprint).Spawns().Count() == 1);
                 bool reordered = castIndex >= 0 && Array.FindIndex(flatData, value => AlphaQuantityRank(value.Name) != 0) < castIndex && lastGroup >= 0;
@@ -335,20 +418,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                         () => Cleanup2MenuAdapterHide(druidSource, druidPrepared), "alphabetical-reordered")) yield return frame;
                 }
 
-                foreach (BlueprintAbility root in alternates)
-                {
-                    var abilityGroups = groups.Where(value => (ActionBarSlotType)typeof(ActionBarGroupElement).GetField("SlotType", Cleanup2Fields).GetValue(value) == ActionBarSlotType.ActivatableAbility).ToArray();
-                    foreach (ActionBarGroupElement element in abilityGroups) { element.Fill(fixture.Caster); if (!element.ToggleState) element.OnClick(); }
-                    for (int frame = 0; frame < 16; frame++) yield return 0;
-                    var sources = abilityGroups.SelectMany(value => value.GetComponentsInChildren<ActionBarGroupSlot>(true)).Where(value => value.gameObject.activeInHierarchy &&
-                        ReferenceEquals((value.MechanicSlot?.GetContentData() as AbilityData)?.Blueprint, root)).ToArray();
-                    Sprint25Check("alpha-alternate-slot-" + root.name, sources.Length == 1, new JObject { ["root"] = root.AssetGuid, ["slots"] = sources.Length },
-                        "The granted alternate root appears once on the action bar.");
-                    if (sources.Length != 1) continue;
-                    var data = (AbilityData)sources[0].MechanicSlot.GetContentData();
-                    AlphaMenu alternate = null;
-                    foreach (int frame in AlphaObserveMenu("alternate-" + root.name, sources[0], root, data, mode, watch, screens, inputs, value => alternate = value, false, true)) yield return frame;
-                }
                 Sprint25Check("alpha-surface-limits", true, new JObject {
                     ["openedInGame"] = "Known-book Summon Monster and Nature's Ally popups, Druid conversion and prepared parent, granted alternate roots.",
                     ["structuralOnly"] = "Other tiers and families in the census were not opened as popups; console navigation was not exercised.",
