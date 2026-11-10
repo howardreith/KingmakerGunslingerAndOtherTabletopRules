@@ -380,6 +380,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintScriptableObject superiorFound;
             BlueprintFeature superior = library.BlueprintsByAssetId.TryGetValue("0477936c0f74841498b5c8753a8062a3", out superiorFound) ? superiorFound as BlueprintFeature : null;
             int fortitude = hostile.Descriptor.Stats.SaveFortitude.BaseValue;
+            SpiderRestoreTarget(hostile);
             Fact featFact = null, augmentFact = null, superiorFact = null;
             try
             {
@@ -478,6 +479,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 foreach (Buff old in hostile.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value => value.Blueprint.ComponentsArray.OfType<BuffPoisonStatDamage>().Any()).ToArray())
                     hostile.Descriptor.Buffs.RemoveFact(old);
+                SpiderRestoreTarget(hostile);
+                if (hostile.Descriptor.State.IsDead || !hostile.Descriptor.State.IsConscious) return new JObject { ["case"] = key, ["error"] = "target-not-alive" };
                 PlaceExpandedSummoningUnit(hostile, spider.Position + Vector3.forward * 1.5f);
                 var features = spider.Descriptor.Progression.Features.Enumerable.Where(value => value?.Blueprint != null && SpiderSummonerBenefitPolicy.AdjustsParametersOf(value.Blueprint.AssetGuid)).ToArray();
                 var contexts = new JObject();
@@ -525,6 +528,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (Buff old in hostile.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value => ReferenceEquals(value.Context?.MaybeCaster, spider)).ToArray())
                     hostile.Descriptor.Buffs.RemoveFact(old);
                 DisposeExpandedSummoningUnits(fixture.Created, units);
+            }
+        }
+
+        /// <summary>The first native mechanics run killed the target with
+        /// accumulated bites and poison damage; every isolated exposure and the
+        /// NPC control now start from a living, unharmed target.</summary>
+        private static void SpiderRestoreTarget(UnitEntityData target)
+        {
+            if (target.Descriptor.Stats.HitPoints.BaseValue < 100000) target.Descriptor.Stats.HitPoints.BaseValue = 100000;
+            target.Descriptor.Damage = 0;
+            foreach (StatType stat in new[] { StatType.Strength, StatType.Dexterity, StatType.Constitution })
+            {
+                var attribute = target.Descriptor.Stats.GetStat(stat) as ModifiableValueAttributeStat;
+                if (attribute != null) attribute.Damage = 0;
             }
         }
 
@@ -607,6 +624,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var parents = new HashSet<string>(ExpandedSummoningPublisher.CanonicalParentGuids, StringComparer.Ordinal);
             int namingParents = actions.Count(value => value.Ability != null && parents.Contains(value.Ability.AssetGuid));
             UnitEntityData npc = fixture.Hostile;
+            SpiderRestoreTarget(npc);
             var sorcerer = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(library, "b3a505fb61437dc4097f43c3f8f9a4cf", "NPC sorcerer");
             var owner = new TeleportResourceFixtureOwner(npc);
             Spellbook book = owner.AddBook(sorcerer.Spellbook);
