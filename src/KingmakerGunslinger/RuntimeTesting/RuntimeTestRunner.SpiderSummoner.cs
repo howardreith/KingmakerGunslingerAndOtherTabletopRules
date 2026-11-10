@@ -174,26 +174,56 @@ namespace KingmakerGunslinger.RuntimeTesting
             public void OnEventDidTrigger(RuleCombatManeuver evt)
             {
                 if (evt == null || !ReferenceEquals(evt.Initiator, Escapee)) return;
-                Rules.Add(new JObject { ["rule"] = "RuleCombatManeuver", ["type"] = evt.Type.ToString(), ["target"] = evt.Target?.Blueprint?.AssetGuid, ["targetNumber"] = evt.TargetCMD, ["initiatorCmb"] = evt.InitiatorCMB });
+                Rules.Add(new JObject { ["rule"] = "RuleCombatManeuver", ["discriminator"] = evt.Type.ToString(), ["target"] = evt.Target?.Blueprint?.AssetGuid, ["targetNumber"] = evt.TargetCMD, ["initiatorCmb"] = evt.InitiatorCMB });
             }
             public void OnEventAboutToTrigger(RuleSkillCheck evt) { }
             public void OnEventDidTrigger(RuleSkillCheck evt)
             {
                 if (evt == null || !ReferenceEquals(evt.Initiator, Escapee)) return;
-                Rules.Add(new JObject { ["rule"] = "RuleSkillCheck", ["stat"] = evt.StatType.ToString(), ["targetNumber"] = evt.DC });
+                Rules.Add(new JObject { ["rule"] = "RuleSkillCheck", ["discriminator"] = evt.StatType.ToString(), ["targetNumber"] = evt.DC });
             }
         }
 
+        /// <summary>The escape implementation the webbed state actually loads:
+        /// "native" for the native action configured as installed (UseCMB on,
+        /// UseCMD off), "cotw" for Call of the Wild's replacement, otherwise an
+        /// explicit unsupported value.</summary>
+        private static string SpiderLoadedEscapeImplementation(BlueprintBuff webbed)
+        {
+            GameAction[] escapes = (webbed.ComponentsArray ?? new BlueprintComponent[0]).OfType<AddFactContextActions>()
+                .SelectMany(value => value.NewRound == null || value.NewRound.Actions == null ? new GameAction[0] : value.NewRound.Actions)
+                .Where(value => value != null && value.GetType().Name.StartsWith("ContextActionBreakFree", StringComparison.Ordinal)).ToArray();
+            if (escapes.Length != 1) return "unsupported:escape-actions=" + escapes.Length;
+            var native = escapes[0] as ContextActionBreakFree;
+            if (native != null && escapes[0].GetType() == typeof(ContextActionBreakFree))
+                return native.UseCMB && !native.UseCMD ? "native" : "unsupported:native-flags-cmb=" + native.UseCMB + "-cmd=" + native.UseCMD;
+            return escapes[0].GetType().FullName == "CallOfTheWild.CombatManeuverMechanics.ContextActionBreakFreeFromSpellGrapple" ? "cotw" : "unsupported:" + escapes[0].GetType().FullName;
+        }
+
+        /// <summary>Null when the one rule triggered is the one this
+        /// implementation's branch must trigger; otherwise why not.</summary>
+        internal static string SpiderEscapeRuleProblem(string implementation, string branch, JObject attempt)
+        {
+            if (implementation == null || implementation.StartsWith("unsupported", StringComparison.Ordinal)) return "unsupported-implementation:" + implementation;
+            JArray rules = attempt["rules"] as JArray;
+            if (rules == null || rules.Count != 1) return "rules=" + (rules == null ? 0 : rules.Count);
+            string rule = (string)rules[0]["rule"], discriminator = (string)rules[0]["discriminator"];
+            bool skillStat = discriminator == "SkillMobility" || discriminator == "SkillAthletics";
+            bool ok = branch == "skill" ? rule == "RuleSkillCheck" && skillStat :
+                implementation == "native" ? rule == "RuleCombatManeuver" && discriminator == "Grapple" :
+                rule == "RuleSkillCheck" && discriminator == "AdditionalCMB";
+            return ok ? null : "unexpected:" + rule + ":" + discriminator;
+        }
+
         /// <summary>
-        /// One escape attempt from the webbed state applied in the spider's own
-        /// web context. Path "native" runs the installed native action exactly
-        /// as configured (ContextActionBreakFree, UseCMB on, UseCMD off; read from
-        /// the installed game data) in the state's own context; path "loaded"
-        /// runs the state's loaded per-round actions, whatever mod replaced them.
-        /// The escapee's skills or BAB select the branch. Returns the escape
-        /// rules actually triggered and their final target numbers.
+        /// One escape attempt from a webbed state: an existing one (a real web
+        /// hit), or one applied in the spider's own web execution context. Path
+        /// "native" runs the installed native action configuration in the
+        /// state's own context; path "loaded" runs the state's loaded per-round
+        /// actions. The escapee's skills or BAB select the branch. Returns the
+        /// escape rules actually triggered and their final target numbers.
         /// </summary>
-        private static JObject SpiderEscapeAttempt(UnitEntityData spider, UnitEntityData escapee, string branch, string path)
+        private static JObject SpiderEscapeAttempt(UnitEntityData spider, UnitEntityData escapee, string branch, string path, Buff existing = null)
         {
             LibraryScriptableObject library = BlueprintBootstrap.Library;
             BlueprintAbility web = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library, SpiderSummonerCatalog.GiantSpiderWebAbility, "giant spider web");
@@ -201,19 +231,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             ModifiableValue bab = escapee.Descriptor.Stats.BaseAttackBonus, mobility = escapee.Descriptor.Stats.GetStat(StatType.SkillMobility), athletics = escapee.Descriptor.Stats.GetStat(StatType.SkillAthletics);
             int babBefore = bab.BaseValue, mobilityBefore = mobility.BaseValue, athleticsBefore = athletics.BaseValue;
             bool skill = branch == "skill";
+            string implementation = path == "native" ? "native" : SpiderLoadedEscapeImplementation(webbed);
             var observer = new SpiderEscapeRuleObserver { Escapee = escapee };
-            Buff state = null;
+            Buff state = existing;
             try
             {
                 bab.BaseValue = skill ? -100 : 200;
                 SetExactProperty(mobility, "BaseValue", skill ? 200 : -100);
                 SetExactProperty(athletics, "BaseValue", skill ? 200 : -100);
-                foreach (Buff old in escapee.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value => ReferenceEquals(value.Blueprint, webbed)).ToArray())
-                    escapee.Descriptor.Buffs.RemoveFact(old);
-                var cast = new MechanicsContext(spider, spider.Descriptor, web);
-                cast.Recalculate();
-                state = escapee.Descriptor.Buffs.AddBuff(webbed, cast, TimeSpan.FromSeconds(60));
-                if (state == null) return new JObject { ["branch"] = branch, ["path"] = path, ["error"] = "webbed state refused" };
+                if (state == null)
+                {
+                    foreach (Buff old in escapee.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value => ReferenceEquals(value.Blueprint, webbed)).ToArray())
+                        escapee.Descriptor.Buffs.RemoveFact(old);
+                    var cast = new MechanicsContext(spider, spider.Descriptor, web);
+                    cast.Recalculate();
+                    state = escapee.Descriptor.Buffs.AddBuff(webbed, cast, TimeSpan.FromSeconds(60));
+                }
+                if (state == null) return new JObject { ["branch"] = branch, ["path"] = path, ["implementation"] = implementation, ["error"] = "webbed state refused" };
                 ActionList actions;
                 if (path == "native")
                 {
@@ -228,16 +262,28 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 EventBus.Unsubscribe(observer);
-                if (state != null && escapee.Descriptor.Buffs.RawFacts.Contains(state)) escapee.Descriptor.Buffs.RemoveFact(state);
+                if (existing == null && state != null && escapee.Descriptor.Buffs.RawFacts.Contains(state)) escapee.Descriptor.Buffs.RemoveFact(state);
                 bab.BaseValue = babBefore;
                 SetExactProperty(mobility, "BaseValue", mobilityBefore);
                 SetExactProperty(athletics, "BaseValue", athleticsBefore);
             }
-            JObject[] maneuvers = observer.Rules.Where(value => (string)value["rule"] == "RuleCombatManeuver").ToArray();
-            JObject[] checks = observer.Rules.Where(value => (string)value["rule"] == "RuleSkillCheck").ToArray();
             JObject decisive = observer.Rules.Count == 1 ? observer.Rules[0] : null;
-            return new JObject { ["branch"] = branch, ["path"] = path, ["rules"] = new JArray(observer.Rules), ["maneuvers"] = maneuvers.Length, ["skillChecks"] = checks.Length,
-                ["rule"] = decisive?["rule"], ["targetNumber"] = decisive?["targetNumber"] };
+            var result = new JObject { ["branch"] = branch, ["path"] = path, ["implementation"] = implementation, ["rules"] = new JArray(observer.Rules),
+                ["rule"] = decisive?["rule"], ["discriminator"] = decisive?["discriminator"], ["targetNumber"] = decisive?["targetNumber"] };
+            result["ruleProblem"] = SpiderEscapeRuleProblem(implementation, branch, result);
+            return result;
+        }
+
+        /// <summary>An ordinary grapple maneuver against the spider, with no
+        /// web reason, and its final CMD target number.</summary>
+        private static int SpiderOrdinaryGrappleTargetNumber(UnitEntityData spider, UnitEntityData initiator)
+        {
+            var observer = new SpiderEscapeRuleObserver { Escapee = initiator };
+            EventBus.Subscribe(observer);
+            try { Rulebook.Trigger(new RuleCombatManeuver(initiator, spider, CombatManeuver.Grapple) { IgnoreConcealment = true }); }
+            finally { EventBus.Unsubscribe(observer); }
+            JObject maneuver = observer.Rules.SingleOrDefault(value => (string)value["rule"] == "RuleCombatManeuver");
+            return maneuver == null ? -1 : (int)maneuver["targetNumber"];
         }
 
         private static readonly string[] SpiderEscapeCases = { "native:skill", "native:cmb", "loaded:skill", "loaded:cmb" };
@@ -256,35 +302,35 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (noFeatBaseline == null)
             {
                 if (held == null) ok = false;
-                int controlWith = Rulebook.Trigger(new RuleCalculateCMD(escapee, spider, CombatManeuver.Grapple)).Result;
+                int controlWith = SpiderOrdinaryGrappleTargetNumber(spider, escapee);
                 var with = SpiderEscapeCases.ToDictionary(value => value, value => SpiderEscapeAttempt(spider, escapee, value.Split(':')[1], value.Split(':')[0]));
                 if (held != null) spider.Descriptor.Buffs.RemoveFact(held);
-                int controlWithout = Rulebook.Trigger(new RuleCalculateCMD(escapee, spider, CombatManeuver.Grapple)).Result;
+                int controlWithout = SpiderOrdinaryGrappleTargetNumber(spider, escapee);
                 var without = SpiderEscapeCases.ToDictionary(value => value, value => SpiderEscapeAttempt(spider, escapee, value.Split(':')[1], value.Split(':')[0]));
                 if (marker != null) spider.Descriptor.AddBuff(marker, spider, null);
                 foreach (string key in SpiderEscapeCases)
                 {
                     JObject a = with[key], b = without[key];
-                    bool one = a["targetNumber"] != null && b["targetNumber"] != null && (string)a["rule"] == (string)b["rule"];
-                    bool native = key.StartsWith("native", StringComparison.Ordinal);
-                    bool expectedRule = !native || (string)a["rule"] == (key.EndsWith("cmb", StringComparison.Ordinal) ? "RuleCombatManeuver" : "RuleSkillCheck");
+                    bool one = a["targetNumber"].Type != JTokenType.Null && b["targetNumber"].Type != JTokenType.Null && (string)a["rule"] == (string)b["rule"];
+                    bool expectedRule = a["ruleProblem"].Type == JTokenType.Null && b["ruleProblem"].Type == JTokenType.Null;
                     bool plusTwo = one && (int)a["targetNumber"] == (int)b["targetNumber"] + SpiderSummonerCatalog.DcBonus;
                     if (one) baseline[key] = (int)b["targetNumber"];
                     ok &= one && expectedRule && plusTwo;
                     rows.Add(new JObject { ["case"] = key, ["withMarker"] = a, ["withoutMarker"] = b, ["exactlyPlusTwo"] = plusTwo, ["expectedRule"] = expectedRule });
                 }
-                ok &= controlWith == controlWithout;
-                Sprint25Check("spider-web-escape-with-feat", ok, new JObject { ["cases"] = rows, ["ordinaryGrappleCmdWithMarker"] = controlWith, ["ordinaryGrappleCmdWithoutMarker"] = controlWithout,
+                ok &= controlWith > 0 && controlWith == controlWithout;
+                Sprint25Check("spider-web-escape-with-feat", ok, new JObject { ["cases"] = rows, ["ordinaryGrappleTargetNumberWithMarker"] = controlWith, ["ordinaryGrappleTargetNumberWithoutMarker"] = controlWithout,
                     ["state"] = "Webbed state applied in the spider's own web execution context (the projectile hit is observed in the correction rules scenario, without the feat).",
                     ["scope"] = "native = the installed native action configuration run in the state's own context; loaded = the state's loaded per-round actions in this profile." },
-                    "Every web escape path, native skill, native CMB and the loaded action, has exactly one escape rule whose final target number is exactly 2 higher for the feat spider; an ordinary CMD calculation is unchanged.");
+                    "Every web escape path, native skill, native CMB and the loaded action's two branches, triggers exactly the rule its implementation and branch require, whose final target number is exactly 2 higher for the feat spider; an ordinary grapple maneuver's target number is unchanged.");
                 return baseline;
             }
             foreach (string key in SpiderEscapeCases)
             {
                 JObject a = SpiderEscapeAttempt(spider, escapee, key.Split(':')[1], key.Split(':')[0]);
                 int expected;
-                bool same = a["targetNumber"] != null && noFeatBaseline.TryGetValue(key, out expected) && (int)a["targetNumber"] == expected;
+                bool same = a["targetNumber"] != null && a["targetNumber"].Type != JTokenType.Null && a["ruleProblem"].Type == JTokenType.Null &&
+                    noFeatBaseline.TryGetValue(key, out expected) && (int)a["targetNumber"] == expected;
                 ok &= held == null && same;
                 rows.Add(new JObject { ["case"] = key, ["attempt"] = a, ["matchesFeatSpiderWithoutMarker"] = same });
             }
@@ -308,7 +354,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> SpiderMenuCast(ExpandedSummoningCorrectionFixture fixture, Spellbook book, int tier, BlueprintAbility parent, AbilityData prepared, BlueprintAbility row,
-            Cleanup2NativeDefaultScope mode, Stopwatch watch, ActionBarGroupElement spellGroup, ActionBarSubGroupLevels levels, string caseKey, string expectedUnit, Action<UnitEntityData[]> inspect, Func<int, bool> countOk)
+            Cleanup2NativeDefaultScope mode, Stopwatch watch, ActionBarGroupElement spellGroup, ActionBarSubGroupLevels levels, string caseKey, string expectedUnit, Action<UnitEntityData[]> inspect, Func<int, bool> countOk,
+            Func<UnitEntityData[], bool> keep = null)
         {
             AlphaMenu menu = null; ActionBarGroupSlot source = null;
             foreach (int frame in ClericOpenMenu("spider-" + caseKey, spellGroup, levels, tier, book, parent, prepared, mode, watch, null, (value, slot) => { menu = value; source = slot; }, false)) yield return frame;
@@ -321,7 +368,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             var debit = new Cleanup2SourceDebit(fixture.Caster);
             ActionBarGroupSlot close = source;
-            foreach (int frame in ClericLegalCast(fixture, menu.Rows[index], menu.Data[index], prepared, debit, () => Cleanup2MenuAdapterHide(close, prepared), mode, watch, "spider-" + caseKey, expectedUnit, inspect, countOk)) yield return frame;
+            foreach (int frame in ClericLegalCast(fixture, menu.Rows[index], menu.Data[index], prepared, debit, () => Cleanup2MenuAdapterHide(close, prepared), mode, watch, "spider-" + caseKey, expectedUnit, inspect, countOk, keep)) yield return frame;
             Cleanup2MenuAdapterHide(source, prepared);
             book.Rest();
         }
@@ -399,6 +446,70 @@ namespace KingmakerGunslinger.RuntimeTesting
             book.Rest();
         }
 
+        /// <summary>
+        /// The feat-marked Giant Spider casts its real web (projectile, ranged
+        /// touch attack) at a hostile. The resulting webbed state's context
+        /// ancestry is recorded, then the native skill and CMB escapes are run
+        /// from that exact state with and without the marker; their actions
+        /// carry no success or failure payload, so the state is kept.
+        /// </summary>
+        private IEnumerable<int> SpiderRealWebHitEscape(ExpandedSummoningCorrectionFixture fixture, UnitEntityData spider)
+        {
+            LibraryScriptableObject library = BlueprintBootstrap.Library;
+            BlueprintAbility web = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library, SpiderSummonerCatalog.GiantSpiderWebAbility, "giant spider web");
+            BlueprintBuff webbed = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library, ExpandedSummoningSpecialBuilder.NativeWebGrappledGuid, "native webbed state");
+            BlueprintBuff marker = SpiderSummonerRuntime.Marker;
+            if (fixture.Hostile == null) CreateExpandedSummoningCorrectionHostile(fixture);
+            UnitEntityData hostile = fixture.Hostile;
+            int acBefore = hostile.Descriptor.Stats.AC.BaseValue;
+            var directions = new List<int>(); string spot;
+            PlaceExpandedSummoningUnit(hostile, ExpandedSummoningOpenPoint(spider.Position, 3f, directions, out spot));
+            hostile.Descriptor.Stats.AC.BaseValue = -100;
+            var rolls = new ExpandedSummoningAttackRollObserver { Initiator = spider };
+            UnitUseAbility command = null; int frames = 0; bool ended = false;
+            EventBus.Subscribe(rolls);
+            try
+            {
+                UnityEngine.Random.InitState(FindNativeD20Seed(10));
+                command = BeginExpandedSummoningDetachedAbility(spider, web, new TargetWrapper(hostile));
+                for (; frames < 420; frames++)
+                {
+                    if (ended = TickExpandedSummoningDetachedAbility(command, frames)) break;
+                    Game.Instance.IsPaused = false; yield return 0;
+                }
+            }
+            finally
+            {
+                EventBus.Unsubscribe(rolls);
+                EndExpandedSummoningDetachedAbility(command);
+                hostile.Descriptor.Stats.AC.BaseValue = acBefore;
+            }
+            Buff state = hostile.Descriptor.Buffs.GetBuff(webbed);
+            MechanicsContext context = state == null ? null : state.Context;
+            bool ancestry = context != null && ReferenceEquals(context.AssociatedBlueprint, webbed) && context.ParentContext != null &&
+                ReferenceEquals(context.ParentContext.AssociatedBlueprint, web) && ReferenceEquals(context.MaybeCaster, spider);
+            var cases = new JArray(); bool ok = state != null && ancestry && marker != null && spider.Descriptor.Buffs.GetBuff(marker) != null;
+            if (state != null)
+                foreach (string branch in new[] { "skill", "cmb" })
+                {
+                    JObject with = SpiderEscapeAttempt(spider, hostile, branch, "native", state);
+                    Buff held = marker == null ? null : spider.Descriptor.Buffs.GetBuff(marker);
+                    if (held != null) spider.Descriptor.Buffs.RemoveFact(held);
+                    JObject without = SpiderEscapeAttempt(spider, hostile, branch, "native", state);
+                    if (marker != null) spider.Descriptor.AddBuff(marker, spider, null);
+                    bool plusTwo = with["ruleProblem"].Type == JTokenType.Null && without["ruleProblem"].Type == JTokenType.Null &&
+                        with["targetNumber"].Type != JTokenType.Null && without["targetNumber"].Type != JTokenType.Null &&
+                        (int)with["targetNumber"] == (int)without["targetNumber"] + SpiderSummonerCatalog.DcBonus;
+                    ok &= plusTwo;
+                    cases.Add(new JObject { ["branch"] = branch, ["withMarker"] = with, ["withoutMarker"] = without, ["exactlyPlusTwo"] = plusTwo });
+                }
+            if (state != null && hostile.Descriptor.Buffs.RawFacts.Contains(state)) hostile.Descriptor.Buffs.RemoveFact(state);
+            Sprint25Check("spider-web-real-hit-escape", ok, new JObject { ["hit"] = state != null, ["ended"] = ended, ["frames"] = frames, ["spot"] = spot,
+                ["rolls"] = new JArray(rolls.Rolls), ["stateAncestry"] = ancestry, ["cases"] = cases,
+                ["scope"] = "Real Giant Spider web cast by the feat spider; escapes run the installed native action configuration in that exact webbed state." },
+                "The feat spider's real web hit produces the webbed state the bonus requires, and escaping that state's native skill and CMB branches carries exactly +2.");
+        }
+
         private IEnumerable<int> SpiderSummonerCells(ExpandedSummoningCorrectionFixture fixture, Spellbook book, BlueprintFeature spiderFeature, Cleanup2NativeDefaultScope mode, Stopwatch watch,
             ActionBarGroupElement spellGroup, ActionBarSubGroupLevels levels, Func<int, BlueprintAbility> smParent, Func<int, AbilityData> preparedParent, Action<BlueprintFeature> setDeity,
             BlueprintFeature erastil, BlueprintFeature asmodeus)
@@ -474,8 +585,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (expect && units.Length == 1) { SpiderWebConsumerEvidence(units[0]); escapeBaseline = SpiderWebEscapeEvidence(units[0], fixture.Caster, null); }
                 else if (!expect && units.Length == 1) SpiderWebEscapeEvidence(units[0], fixture.Caster, escapeBaseline ?? new Dictionary<string, int>());
             };
+            UnitEntityData keptSpider = null;
             foreach (int frame in R6Cell("spider-ordinary-with-feat", () => SpiderMenuCast(fixture, book, 2, smParent(2), preparedParent(2), ordinaryRow, mode, watch, spellGroup, levels,
-                "ordinary-with-feat", SpiderSummonerCatalog.OrdinaryGiantSpiderUnit, units => ordinaryCheck("with-feat", units, true), null))) yield return frame;
+                "ordinary-with-feat", SpiderSummonerCatalog.OrdinaryGiantSpiderUnit, units => ordinaryCheck("with-feat", units, true), null, units => { keptSpider = units.Length == 1 ? units[0] : null; return keptSpider != null; }))) yield return frame;
+            if (keptSpider != null)
+            {
+                foreach (int frame in R6Cell("spider-web-real-hit", () => SpiderRealWebHitEscape(fixture, keptSpider))) yield return frame;
+                DisposeExpandedSummoningUnits(fixture.Created, new[] { keptSpider });
+            }
+            else Sprint25Check("spider-web-real-hit-escape", false, new JObject { ["reason"] = "no feat spider was kept" }, "The feat spider's real web hit is observed.");
             // Real selections, obtained while the feat is held and kept across its removal.
             AbilityData heldOriginal = null, heldGenerated = null;
             foreach (int frame in R6Cell("spider-hold-original", () => SpiderHoldSelection(book, 1, smParent(1), preparedParent(1), row("giant-crab-spider", 1), mode, watch, spellGroup, levels,
@@ -492,8 +610,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (int frame in R6Cell("spider-feature-absent-fresh", () => ClericForbiddenAttempt(fixture, row("giant-crab-spider", 1), book, preparedParent(1), mode, watch, "spider-feature-absent-fresh", false))) yield return frame;
             fixture.Caster.Descriptor.AddFact(spiderFeature);
             Sprint25Check("spider-surface-limits", true, new JObject {
-                ["observed"] = "Summon Monster casts of all four original rows, repaired Ogre under evil and non-evil casters, neutral toggle, one 1d4+1 and one 1d3 quantity, ordinary Giant Spider with and without the feat, an original and a generated selection obtained with the feat and executed after its removal, a fresh no-feat choice, the loaded web consumer and its context DC, and the 46-placement census.",
-                ["notObserved"] = "Summon Nature's Ally casts and Druid conversion casts; Herald quantity-tier casts; natural Drow feat acquisition; multiclass and ordinary spontaneous spellbooks; Augment and Superior Summoning interaction; poison save resolution; an actual web hit and escape roll; reload and module-off or RU-absent profiles; NPC selection." },
+                ["observed"] = "Summon Monster casts of all four original rows, repaired Ogre under evil and non-evil casters, neutral toggle, one 1d4+1 and one 1d3 quantity, ordinary Giant Spider with and without the feat, an original and a generated selection obtained with the feat and executed after its removal, a fresh no-feat choice, the loaded web consumer and its context DC, every web escape path's rule and target number, a real web hit and escape from that state, and the 46-placement census.",
+                ["notObserved"] = "Summon Nature's Ally casts and Druid conversion casts; Herald quantity-tier casts; natural Drow feat acquisition; multiclass and ordinary spontaneous spellbooks; Augment and Superior Summoning interaction; poison save resolution; reload and module-off or RU-absent profiles; NPC selection." },
                 "Observed and unobserved surfaces are reported separately.");
         }
     }
