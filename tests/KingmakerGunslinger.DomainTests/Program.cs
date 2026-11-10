@@ -1598,6 +1598,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("summon-spider-summoner.input-and-repaired-shapes", SummonClericAlignmentTests.SpiderRowsAcceptOnlyTheKnownInputAndRepairedShapes),
             Case("summon-spider-summoner.family-route", SummonClericAlignmentTests.SpiderRowsAdmittedToTheirOwnFamilyRouteOnly),
             Case("summon-spider-summoner.contract-agreement", SummonClericAlignmentTests.SpiderContractsAgreeAcrossRepairClassificationAndConversion),
+            Case("summon-spider-summoner.web-escape-scope", SummonClericAlignmentTests.SpiderWebEscapeAdjustsOnlyTheNativeCmbEscape),
             Case("summon-spider-summoner.benefit-scope", SummonClericAlignmentTests.SpiderBenefitIsExactInScopeAndNeverAccumulates),
             Case("summon-cleric-alignment.fixture-prerequisites", SummonClericAlignmentTests.FixturePrerequisitesRejectMissingClassOrBook),
             Case("summon-cleric-alignment.deity-derived-case", SummonClericAlignmentTests.ValidDeityDerivedCaseIsolatesTheDeity),

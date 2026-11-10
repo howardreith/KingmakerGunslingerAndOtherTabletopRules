@@ -161,4 +161,26 @@ namespace KingmakerGunslinger.Summoning
         internal static bool AdjustsParametersOf(string blueprintGuid)
         { return blueprintGuid != null && Blueprints.Contains(blueprintGuid); }
     }
+
+    /// <summary>
+    /// The native webbed state's escape (ContextActionBreakFree, CMB allowed,
+    /// CMD not used as DC) rolls a grapple maneuver against the web-casting
+    /// spider's CMD whenever the escapee's CMB beats its skills, and reads no
+    /// DC on that branch. This decides when that one maneuver's CMD target
+    /// number carries the feat's +2: never for an ordinary grapple, another
+    /// maneuver, another web source or an unmarked spider. A path that reads
+    /// the bonused DC instead (the native skill check, or a replacement
+    /// action) triggers no maneuver, so it is never adjusted twice.
+    /// </summary>
+    internal static class SpiderWebEscapePolicy
+    {
+        internal const string WebbedState = "a719abac0ea0ce346b401060754cc1c0";
+
+        internal static bool AdjustsEscapeCmd(bool cmdIsGrapple, bool enclosedByGrappleManeuver, bool sameEscapee, bool spiderIsManeuverTarget,
+            string reasonContextBlueprint, string reasonParentBlueprint, bool spiderCastTheWeb, bool spiderMarked)
+        {
+            return cmdIsGrapple && enclosedByGrappleManeuver && sameEscapee && spiderIsManeuverTarget && spiderCastTheWeb && spiderMarked &&
+                reasonContextBlueprint == WebbedState && reasonParentBlueprint == SpiderSummonerCatalog.GiantSpiderWebAbility;
+        }
+    }
 }

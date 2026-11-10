@@ -465,6 +465,22 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(SpiderSummonerBenefitPolicy.AdjustsParametersOf(null), "A missing blueprint is never adjusted.");
         }
 
+        internal static void SpiderWebEscapeAdjustsOnlyTheNativeCmbEscape()
+        {
+            string web = SpiderSummonerCatalog.GiantSpiderWebAbility, state = SpiderWebEscapePolicy.WebbedState;
+            Func<bool, bool, bool, bool, string, string, bool, bool, bool> adjusts = SpiderWebEscapePolicy.AdjustsEscapeCmd;
+            Assertions.True(adjusts(true, true, true, true, state, web, true, true), "The native CMB escape from a marked spider's own web gains +2 CMD.");
+            Assertions.False(adjusts(true, true, true, true, state, web, true, false), "An unmarked spider (no feat) gains nothing.");
+            Assertions.False(adjusts(true, false, true, true, state, web, true, true), "A CMD calculation outside a grapple maneuver, such as the native skill branch's absence of one, is untouched.");
+            Assertions.False(adjusts(false, true, true, true, state, web, true, true), "Another combat maneuver is untouched.");
+            Assertions.False(adjusts(true, true, true, true, null, null, true, true), "An ordinary grapple against the spider, outside the webbed state, is untouched.");
+            Assertions.False(adjusts(true, true, true, true, state, "bebelith-web-ability-0000000000000", true, true), "Another web source, such as the Bebelith's, is untouched.");
+            Assertions.False(adjusts(true, true, true, true, state, web, false, true), "A web cast by another creature is untouched.");
+            Assertions.False(adjusts(true, true, false, true, state, web, true, true), "A different escapee's calculation is untouched.");
+            Assertions.False(adjusts(true, true, true, false, state, web, true, true), "Only the spider's own CMD is the escape's target number.");
+            Assertions.False(adjusts(true, true, true, true, "56ec8788092b6314e8f3c1c502e8433f", web, true, true), "Another state applied by the web ability is untouched.");
+        }
+
         internal static void ModuleBoundaryLeavesNativeAvailabilityUnchanged()
         {
             Func<string, SummonClericDecision?> forbidden = row => SummonClericDecision.ForbiddenByAlignment;
