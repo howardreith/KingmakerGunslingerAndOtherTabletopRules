@@ -45,7 +45,9 @@ namespace KingmakerGunslinger.Blueprints
             return row != null && GeneratedRows.TryGetValue(row.AssetGuid, out placement) ? placement : null;
         }
 
-        internal static void Integrate(ModContext context, LibraryScriptableObject library, BlueprintManifest manifest,
+        /// <param name="manifest">Loaded only on the one attempt, never on a
+        /// later update.</param>
+        internal static void Integrate(ModContext context, LibraryScriptableObject library, Func<BlueprintManifest> manifest,
             ExpandedSummoningBlueprintSet canonical, bool moduleActive)
         {
             if (_attempted) return;
@@ -55,7 +57,7 @@ namespace KingmakerGunslinger.Blueprints
                 SpiderSummonerCatalog.Validate();
                 BlueprintFeature feature = Find<BlueprintFeature>(library, SummonForeignRowClassifier.SpiderSummonerFeatureGuid);
                 if (feature == null) { Outcome = "absent:spider-summoner-feature-not-installed"; return; }
-                var registry = new BlueprintRegistry(library, manifest, context.Logger);
+                var registry = new BlueprintRegistry(library, manifest(), context.Logger);
                 BlueprintBuff marker = registry.Register<BlueprintBuff>(SpiderSummonerCatalog.MarkerBuffSymbol, CreateMarker);
                 var shells = new Dictionary<string, BlueprintAbility>(StringComparer.Ordinal);
                 foreach (SpiderPlacement placement in SpiderSummonerCatalog.Generated)
@@ -140,7 +142,7 @@ namespace KingmakerGunslinger.Blueprints
             if (row == null) { reason = "row-absent"; return false; }
             SummonForeignRowReading reading = SummonForeignRowRuntime.Read(row);
             SummonForeignRowResult before = SummonForeignRowClassifier.Classify(reading);
-            if (before.Reason == "verified-repaired-spider-contract") { reason = null; return true; }
+            if (before.IsRepaired) { reason = null; return true; }
             string input = SummonForeignRowClassifier.LegacyInputProblem(reading);
             if (input != null) { reason = "unsupported-input:" + input; return false; }
             BlueprintUnit unit = BlueprintLibraryLookup.RequireExact<BlueprintUnit>(library, species.UnitGuid, "spider summoner unit");
@@ -158,12 +160,14 @@ namespace KingmakerGunslinger.Blueprints
             else ExpandedSummoningAbilityBuilder.AppendAlignmentAction(new BlueprintComponent[] { run }, SummonAlignmentMode.Caster);
             ExpandedSummoningAbilityBuilder.AppendSpiderBenefit(new BlueprintComponent[] { run });
             // A tier I row copied after publication also inherits the parent's
-            // own variants component and would present as a menu of its own.
-            row.ComponentsArray = components.Where(value => !(value is AbilityVariants))
+            // published variants component and would present as a menu of its
+            // own. Only that recognized component is removed; the input check
+            // already refused a row carrying any other variants component.
+            row.ComponentsArray = components.Where(value => !IsInheritedPublishedMenu(value))
                 .Select(value => ReferenceEquals(value, original) ? run : value).ToArray();
             AlternateSummoningAdapterBuilder.ResetComponentCaches(row);
             SummonForeignRowResult after = SummonForeignRowClassifier.Classify(SummonForeignRowRuntime.Read(row));
-            if (after.Reason != "verified-repaired-spider-contract")
+            if (!after.IsRepaired)
             {
                 row.ComponentsArray = components;
                 AlternateSummoningAdapterBuilder.ResetComponentCaches(row);
@@ -172,6 +176,12 @@ namespace KingmakerGunslinger.Blueprints
             }
             reason = null;
             return true;
+        }
+
+        private static bool IsInheritedPublishedMenu(BlueprintComponent component)
+        {
+            AbilityVariants variants = component as AbilityVariants;
+            return variants != null && string.Equals(variants.name, ExpandedSummoningPublisher.PublishedVariantsComponentName, StringComparison.Ordinal);
         }
 
         private static bool IsNativeTemplateStep(GameAction action)

@@ -193,8 +193,24 @@ namespace KingmakerGunslinger.DomainTests
         private const string VrockUnit = "ffffffffffffffffffffffffffffff01";
 
         private static SummonSpawn ForeignSpawn(string unit, params string[] after)
-        { return new SummonSpawn { Unit = unit, CountDice = "Zero", CountDiceCount = SummonValue.Simple(0), CountBonus = SummonValue.Simple(1),
-            AfterSpawnDetail = (after.Length == 0 ? new[] { "apply-buff:" + SpawnBuff } : after).ToList() }; }
+        {
+            List<string> detail = (after.Length == 0 ? new[] { "apply-buff:" + SpawnBuff } : after).ToList();
+            return new SummonSpawn { Unit = unit, CountDice = "Zero", CountDiceCount = SummonValue.Simple(0), CountBonus = SummonValue.Simple(1),
+                AfterSpawnDetail = detail, AfterSpawnApplications = detail.SelectMany(ApplicationsOf).ToList() };
+        }
+
+        // A fixture application: what the reader records for a native buff application.
+        private const string NativeApplicationProperties = "permanent=True;useSeconds=False;seconds=0;duration=null;fromSpell=False;notDispelable=True;asChild=True";
+
+        private static string Application(string buff) { return SummonSignatureFormat.Application(false, buff, NativeApplicationProperties); }
+
+        private static IEnumerable<string> ApplicationsOf(string detail)
+        {
+            if (detail.StartsWith("apply-buff:", StringComparison.Ordinal)) return new[] { Application(detail.Substring("apply-buff:".Length)) };
+            if (detail.StartsWith("apply-buff-to-caster:", StringComparison.Ordinal)) return new[] { SummonSignatureFormat.Application(true, detail.Substring("apply-buff-to-caster:".Length), NativeApplicationProperties) };
+            if (!detail.StartsWith("conditional:", StringComparison.Ordinal)) return new string[0];
+            return System.Text.RegularExpressions.Regex.Matches(detail, "apply-buff:([0-9a-f]{32})").Cast<System.Text.RegularExpressions.Match>().Select(match => Application(match.Groups[1].Value));
+        }
 
         private static SummonSignature ForeignDirect(string unit, params string[] after)
         { return new SummonSignature { RunActions = 1, Actions = new List<SummonNode> { SummonNode.ForSpawn(ForeignSpawn(unit, after)) } }; }
@@ -206,13 +222,16 @@ namespace KingmakerGunslinger.DomainTests
         private static SummonSignature OgreGraph()
         { return ForeignBranch(SummonForeignRowClassifier.CasterEvilCondition, ForeignSpawn(SummonForeignRowClassifier.RedcapUnit), ForeignSpawn(SummonForeignRowClassifier.BralaniUnit)); }
 
+        private static IReadOnlyList<IReadOnlyList<string>> DonorOf(SummonSignature graph)
+        { return graph.Spawns().Select(value => (IReadOnlyList<string>)value.AfterSpawnApplications.ToArray()).ToArray(); }
+
         private static SummonForeignRowReading Ogre(SummonSignature graph)
         { return new SummonForeignRowReading { Identity = OgreIdentity, InternalName = "SummonMonsterOgreSpider", PublishedTier = 5,
-            RequiredFacts = new[] { SummonForeignRowClassifier.SpiderSummonerFeatureGuid }, VisibilityFacts = new[] { SummonForeignRowClassifier.SpiderSummonerFeatureGuid }, Graph = graph }; }
+            RequiredFacts = new[] { SummonForeignRowClassifier.SpiderSummonerFeatureGuid }, VisibilityFacts = new[] { SummonForeignRowClassifier.SpiderSummonerFeatureGuid }, Graph = graph, NativeApplications = DonorOf(graph) }; }
 
         private static SummonForeignRowReading Tarantula(SummonSignature graph)
         { return new SummonForeignRowReading { Identity = TarantulaIdentity, InternalName = "SummonMonsterGiantTarantula", PublishedTier = 7,
-            RequiredFacts = new[] { SummonForeignRowClassifier.SpiderSummonerFeatureGuid }, VisibilityFacts = new[] { SummonForeignRowClassifier.SpiderSummonerFeatureGuid }, Graph = graph }; }
+            RequiredFacts = new[] { SummonForeignRowClassifier.SpiderSummonerFeatureGuid }, VisibilityFacts = new[] { SummonForeignRowClassifier.SpiderSummonerFeatureGuid }, Graph = graph, NativeApplications = DonorOf(graph) }; }
 
         private static bool ForeignAllowed(SummonClericFacts facts, SummonForeignRowResult result)
         { return SummonClericAlignmentPolicy.Permits(SummonClericAlignmentPolicy.Decide(facts, result.AlignmentFor(SummonClericAlignmentPolicy.AxesOf(facts.AlignmentValue)))); }
@@ -227,7 +246,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ForeignAllowed(Facts(LN, Asmodeus), ogre), "A non-evil caster barred by the deity is refused, with no union of branches.");
             Assertions.True(ogre.AlignmentFor(SummonAlignmentAxes.Evil).Descriptors == SummonAlignmentAxes.None, "The evil branch contributes no descriptor.");
             Assertions.True(ogre.AlignmentFor(SummonAlignmentAxes.Good).Descriptors == (SummonAlignmentAxes.Good | SummonAlignmentAxes.Chaos), "The non-evil branch is Good and Chaos.");
-            SummonForeignRowResult tarantula = SummonForeignRowClassifier.Classify(Tarantula(ForeignDirect(SummonForeignRowClassifier.TarantulaUnit)));
+            SummonForeignRowResult tarantula = SummonForeignRowClassifier.Classify(Tarantula(ForeignDirect(SummonForeignRowClassifier.TarantulaUnit, "apply-buff:" + SummonForeignRowClassifier.SummonBuffFor(SummonFamily.Monster, 7))));
             Assertions.Equal(SummonForeignContractOutcome.VerifiedInherentlyLegal, tarantula.Outcome, "A verified direct spider is inherently legal.");
             Assertions.True(ForeignAllowed(Facts(LG, Erastil), tarantula) && ForeignAllowed(Facts(CE), tarantula), "A verified spider has no alignment descriptor.");
         }
@@ -267,26 +286,29 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void HeraldProjectionAdmitsVerifiedForeignRowsAtTheirOwnTierAndQuantity()
         {
-            SummonForeignRowResult ogre = SummonForeignRowClassifier.Classify(Ogre(OgreGraph()));
+            Assertions.False(SummonForeignRowPolicy.AdmittedToConversion(SummonFamily.Monster, 5, SummonMultiplicity.One, SummonForeignRowClassifier.Classify(Ogre(OgreGraph())), true),
+                "An unrepaired row, however exactly known, is never projected into a conversion route.");
+            SpiderSpeciesSpec ogreSpecies = SpiderSummonerCatalog.Find("ogre-spider");
+            SummonForeignRowResult ogre = SummonForeignRowClassifier.Classify(Row(SummonFamily.Monster, ogreSpecies, Repaired(SummonFamily.Monster, ogreSpecies)));
             Func<SummonClericFacts, bool, bool> canonical = (facts, feature) => feature && ForeignAllowed(facts, ogre);
             Func<SummonClericFacts, bool, int, SummonMultiplicity, bool> herald = (facts, feature, tier, quantity) =>
                 SummonForeignRowPolicy.AdmittedToConversion(SummonFamily.Monster, tier, quantity, ogre, feature) && ForeignAllowed(facts, ogre);
             foreach (SummonClericFacts facts in new[] { Facts(CG, Desna), Facts(LG, Erastil), Facts(LE, Asmodeus) })
                 Assertions.Equal(canonical(facts, true), herald(facts, true, 5, SummonMultiplicity.One), "The Herald projection agrees with the canonical choice for a feature-qualified cleric.");
             Assertions.True(herald(Facts(CG, Desna), true, 5, SummonMultiplicity.One), "A permitted row survives.");
-            Assertions.False(herald(Facts(LG, Erastil), true, 5, SummonMultiplicity.One), "A forbidden row is excluded.");
+            Assertions.True(herald(Facts(LG, Erastil), true, 5, SummonMultiplicity.One), "The repaired Ogre is a spider, permitted to a lawful good cleric.");
             Assertions.False(herald(Facts(CG, Desna), false, 5, SummonMultiplicity.One), "Without its feature the row is excluded, as natively.");
             Assertions.False(herald(Facts(CG, Desna), true, 5, SummonMultiplicity.OneD3), "No invented quantity bucket.");
             Assertions.False(herald(Facts(CG, Desna), true, 5, SummonMultiplicity.OneD4PlusOne), "No invented quantity bucket.");
             Assertions.False(herald(Facts(CG, Desna), true, 4, SummonMultiplicity.One), "No other tier.");
             Assertions.False(SummonForeignRowPolicy.AdmittedToConversion(SummonFamily.NaturesAlly, 5, SummonMultiplicity.One, ogre, true), "A Summon Monster row never enters a Summon Nature's Ally conversion route.");
-            Assertions.False(SummonForeignRowPolicy.AdmittedToConversion(SummonFamily.Monster, 5, SummonMultiplicity.One, SummonForeignRowClassifier.Classify(Ogre(ForeignDirect(VrockUnit))), true), "An unresolved row is never projected.");
+            Assertions.False(SummonForeignRowPolicy.AdmittedToConversion(SummonFamily.Monster, 5, SummonMultiplicity.One, SummonForeignRowClassifier.Classify(Row(SummonFamily.Monster, ogreSpecies, ForeignDirect(VrockUnit))), true), "An unresolved row is never projected.");
             Assertions.False(SummonForeignRowPolicy.AdmittedToConversion(SummonFamily.Monster, 5, SummonMultiplicity.One, null, true), "An unknown row is never projected.");
         }
 
         private static SummonForeignRowReading Row(SummonFamily family, SpiderSpeciesSpec species, SummonSignature graph)
         { return new SummonForeignRowReading { Identity = SpiderSummonerCatalog.RowIdentity(family, species), InternalName = species.RowName(family), PublishedTier = species.BaseTier,
-            RequiredFacts = new[] { SummonForeignRowClassifier.SpiderSummonerFeatureGuid }, VisibilityFacts = new[] { SummonForeignRowClassifier.SpiderSummonerFeatureGuid }, Graph = graph }; }
+            RequiredFacts = new[] { SummonForeignRowClassifier.SpiderSummonerFeatureGuid }, VisibilityFacts = new[] { SummonForeignRowClassifier.SpiderSummonerFeatureGuid }, Graph = graph, NativeApplications = DonorOf(graph) }; }
 
         private static SummonSignature Direct(string unit, params string[] after)
         { return new SummonSignature { RunActions = 1, Actions = new List<SummonNode> { SummonNode.ForSpawn(ForeignSpawn(unit, after)) } }; }
@@ -366,6 +388,52 @@ namespace KingmakerGunslinger.DomainTests
             var natureRepaired = Row(SummonFamily.NaturesAlly, tarantula, Direct(tarantula.UnitGuid, Buff(SummonFamily.NaturesAlly, 7), SummonForeignRowClassifier.TemplateAction, SummonForeignRowClassifier.BenefitAction));
             Assertions.Equal(SummonForeignContractOutcome.Unresolved, SummonForeignRowClassifier.Classify(natureRepaired).Outcome, "A Summon Nature's Ally row carrying a Summon Monster template is not the repaired result.");
             Assertions.True(SummonForeignRowClassifier.IsKnownIdentity(SpiderSummonerCatalog.RowIdentity(SummonFamily.NaturesAlly, ogre)), "All eight original rows are known identities.");
+        }
+
+        internal static void SpiderContractsAgreeAcrossRepairClassificationAndConversion()
+        {
+            SpiderSpeciesSpec crab = SpiderSummonerCatalog.Find("giant-crab-spider"), widow = SpiderSummonerCatalog.Find("giant-black-widow");
+            Func<SummonForeignRowReading> crabInput = () => Row(SummonFamily.Monster, crab, Direct(crab.UnitGuid, Buff(SummonFamily.Monster, 1), TemplateStep(SummonForeignRowClassifier.CelestialTemplateI)));
+            // Variants components: only the inherited published menu, only on tier I.
+            var inherited = crabInput(); inherited.VariantsComponents = new[] { SummonForeignRowClassifier.InheritedPublishedMenu };
+            Assertions.True(SummonForeignRowClassifier.LegacyInputProblem(inherited) == null, "A tier I row carrying the inherited published menu is the known input.");
+            var foreign = crabInput(); foreign.VariantsComponents = new[] { "foreign:$Other_Variants" };
+            Assertions.False(SummonForeignRowClassifier.LegacyInputProblem(foreign) == null, "An unfamiliar variants component makes the row unsupported, so it is left untouched.");
+            Assertions.Equal(SummonForeignContractOutcome.Unresolved, SummonForeignRowClassifier.Classify(foreign).Outcome, "And it is not classified.");
+            var both = crabInput(); both.VariantsComponents = new[] { SummonForeignRowClassifier.InheritedPublishedMenu, "foreign:$Other_Variants" };
+            Assertions.False(SummonForeignRowClassifier.LegacyInputProblem(both) == null, "The inherited menu does not excuse an additional unfamiliar component.");
+            var widowMenu = Row(SummonFamily.Monster, widow, Direct(widow.UnitGuid, Buff(SummonFamily.Monster, 4), TemplateStep(SummonForeignRowClassifier.CelestialTemplateII)));
+            widowMenu.VariantsComponents = new[] { SummonForeignRowClassifier.InheritedPublishedMenu };
+            Assertions.False(SummonForeignRowClassifier.LegacyInputProblem(widowMenu) == null, "Only a tier I row can inherit the published menu.");
+            var repairedMenu = Row(SummonFamily.Monster, crab, Repaired(SummonFamily.Monster, crab)); repairedMenu.VariantsComponents = new[] { SummonForeignRowClassifier.InheritedPublishedMenu };
+            Assertions.False(SummonForeignRowClassifier.Classify(repairedMenu).IsRepaired, "A repaired row carries no variants component of any kind.");
+            // Lifecycle actions are required, not merely allowed.
+            foreach (SummonFamily family in SpiderSummonerCatalog.Families)
+            {
+                var empty = Row(family, crab, Direct(crab.UnitGuid, new string[0])); empty.Graph.Actions[0].Spawn.AfterSpawnDetail.Clear(); empty.Graph.Actions[0].Spawn.AfterSpawnApplications.Clear();
+                empty.NativeApplications = DonorOf(Direct(crab.UnitGuid, Buff(family, 1)));
+                Assertions.False(SummonForeignRowClassifier.LegacyInputProblem(empty) == null, "An empty after-spawn list is not the known input: " + family);
+                SummonForeignRowResult result = SummonForeignRowClassifier.Classify(empty);
+                Assertions.Equal(SummonForeignContractOutcome.Unresolved, result.Outcome, "A row refused for repair is not classified as verified: " + family);
+                Assertions.False(SummonForeignRowPolicy.AdmittedToConversion(family, 1, SummonMultiplicity.One, result, true), "And it is never projected into a conversion route: " + family);
+            }
+            var snaExact = Row(SummonFamily.NaturesAlly, crab, Direct(crab.UnitGuid, Buff(SummonFamily.NaturesAlly, 1)));
+            Assertions.True(SummonForeignRowClassifier.LegacyInputProblem(snaExact) == null, "The exact unrepaired Summon Nature's Ally row is the repair input.");
+            Assertions.False(SummonForeignRowPolicy.AdmittedToConversion(SummonFamily.NaturesAlly, 1, SummonMultiplicity.One, SummonForeignRowClassifier.Classify(snaExact), true), "An unrepaired row never enters the Druid route.");
+            // The buff application itself, not only its identity and recipient.
+            string summon = SummonForeignRowClassifier.SummonBuffFor(SummonFamily.NaturesAlly, 1);
+            var shortened = Row(SummonFamily.NaturesAlly, crab, Direct(crab.UnitGuid, Buff(SummonFamily.NaturesAlly, 1)));
+            shortened.NativeApplications = new IReadOnlyList<string>[] { new[] { SummonSignatureFormat.Application(false, summon, NativeApplicationProperties.Replace("permanent=True", "permanent=False")) } };
+            Assertions.False(SummonForeignRowClassifier.LegacyInputProblem(shortened) == null, "A summon buff applied differently from the native donor is not the known input.");
+            var repaired = Row(SummonFamily.NaturesAlly, crab, Repaired(SummonFamily.NaturesAlly, crab));
+            repaired.NativeApplications = shortened.NativeApplications;
+            Assertions.False(SummonForeignRowClassifier.Classify(repaired).IsRepaired, "A repaired row whose summon buff no longer matches the native application is not the repaired result.");
+            var unreadable = Row(SummonFamily.NaturesAlly, crab, Repaired(SummonFamily.NaturesAlly, crab)); unreadable.NativeApplications = null;
+            Assertions.False(SummonForeignRowClassifier.Classify(unreadable).IsRepaired, "Without a readable native donor nothing is verified.");
+            var reordered = Row(SummonFamily.Monster, crab, Direct(crab.UnitGuid, SummonForeignRowClassifier.BenefitAction, Buff(SummonFamily.Monster, 1), SummonForeignRowClassifier.TemplateAction));
+            Assertions.False(SummonForeignRowClassifier.Classify(reordered).IsRepaired, "The repaired lifecycle is an exact sequence.");
+            var withAugment = Row(SummonFamily.Monster, crab, Direct(crab.UnitGuid, Buff(SummonFamily.Monster, 1), SummonForeignRowClassifier.TemplateAction, SummonForeignRowClassifier.BenefitAction, "conditional:And[x]{t:apply-buff:169d03bbccdbdc542ae1a57d83673d80}{f:}"));
+            Assertions.False(SummonForeignRowClassifier.Classify(withAugment).IsRepaired, "No extra action is tolerated in the repaired result.");
         }
 
         internal static void SpiderRowsAdmittedToTheirOwnFamilyRouteOnly()

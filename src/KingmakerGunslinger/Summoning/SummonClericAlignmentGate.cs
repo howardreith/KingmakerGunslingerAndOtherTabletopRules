@@ -181,7 +181,22 @@ namespace KingmakerGunslinger.Summoning
                 RequiredFacts = components.OfType<AbilityCasterHasFacts>().SelectMany(value => value.Facts ?? new BlueprintUnitFact[0])
                     .Select(value => value == null ? "null" : value.AssetGuid).ToArray(),
                 VisibilityFacts = components.OfType<AbilityShowIfCasterHasFact>().Select(value => value.UnitFact == null ? "null" : value.UnitFact.AssetGuid).ToArray(),
-                LiveDescriptors = LiveAxes(row), Graph = SummonSignatureReader.Read(row) };
+                LiveDescriptors = LiveAxes(row), Graph = SummonSignatureReader.Read(row),
+                VariantsComponents = components.OfType<AbilityVariants>().Select(value => value == null ? "null" :
+                    string.Equals(value.name, ExpandedSummoningPublisher.PublishedVariantsComponentName, StringComparison.Ordinal) ?
+                        SummonForeignRowClassifier.InheritedPublishedMenu : "foreign:" + value.name).ToArray(),
+                NativeApplications = DonorApplications(SummonForeignRowClassifier.DonorOf(row.AssetGuid)) };
+        }
+
+        /// <summary>The loaded native donor's buff applications, per spawn in
+        /// walk order, or null when the donor is missing.</summary>
+        private static IReadOnlyList<IReadOnlyList<string>> DonorApplications(string donor)
+        {
+            BlueprintScriptableObject found;
+            LibraryScriptableObject library = BlueprintBootstrap.Library;
+            if (donor == null || library == null || !library.BlueprintsByAssetId.TryGetValue(donor, out found) || !(found is BlueprintAbility)) return null;
+            return SummonSignatureReader.Read((BlueprintAbility)found).Spawns()
+                .Select(value => (IReadOnlyList<string>)value.AfterSpawnApplications.ToArray()).ToArray();
         }
 
         private static int PublishedTier(BlueprintAbility row)

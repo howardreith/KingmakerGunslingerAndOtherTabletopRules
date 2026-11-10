@@ -39,12 +39,16 @@ namespace KingmakerGunslinger.Summoning
     }
 
     /// <summary>
-    /// Adds the feat's +2 where the engine actually calculates these DCs. The
-    /// poison features and the web ability calculate their parameters through
-    /// <see cref="RuleCalculateAbilityParams"/>, and the poison's continuing
-    /// saves and the webbed state's break-free check read those parameters
-    /// from the context chain. Nothing accumulates: each calculation is a new
-    /// rule, and only the one marker fact on a creature answers it.
+    /// Adds the feat's +2 where the engine calculates these DCs: the poison
+    /// features and the web ability calculate their parameters through
+    /// <see cref="RuleCalculateAbilityParams"/>. The poison save and its
+    /// continuing saves read those parameters through the context chain. The
+    /// shared webbed buff has no parameter calculator of its own, so its
+    /// break-free action reads the web's parameters too, but the installed
+    /// native action (UseCMB on, UseCMD off) uses that DC only for its skill
+    /// check; when the target's CMB is higher it rolls a grapple maneuver
+    /// against the spider's CMD and reads no DC at all. Nothing accumulates:
+    /// each calculation is a new rule, answered by the one marker fact.
     /// </summary>
     [Serializable]
     public sealed class SpiderSummonerDcBonus : RuleInitiatorLogicComponent<RuleCalculateAbilityParams>

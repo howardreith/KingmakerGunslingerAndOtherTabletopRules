@@ -63,6 +63,16 @@ namespace KingmakerGunslinger.Summoning
 
         internal static string List(IEnumerable<string> values)
         { return "[" + string.Join(",", values.ToArray()) + "]"; }
+
+        /// <summary>One buff application: recipient and buff first, so a
+        /// contract can find it by <see cref="ApplicationPrefix"/>, then
+        /// every property that decides how the buff is applied.</summary>
+        internal static string Application(bool toCaster, string buff, string properties)
+        { return "buff=" + (toCaster ? "caster:" : "") + buff + ";" + properties; }
+
+        /// <summary>The start of a target (not caster) application of a buff.</summary>
+        internal static string ApplicationPrefix(string buff)
+        { return "buff=" + buff + ";"; }
     }
 
     /// <summary>One spawn's significant fields. Its unit is the only one an
@@ -86,12 +96,18 @@ namespace KingmakerGunslinger.Summoning
         /// <summary>Post-spawn payloads, for exact third-party contracts only.
         /// Not part of a signature's rendering, so comparisons are unchanged.</summary>
         internal List<string> AfterSpawnDetail = new List<string>();
+        /// <summary>Every native buff application among the post-spawn
+        /// payloads, conditional branches included, in walk order, with its
+        /// recipient, duration and application flags. For exact third-party
+        /// contracts only; not part of a signature's rendering.</summary>
+        internal List<string> AfterSpawnApplications = new List<string>();
 
         internal SummonSpawn Clone()
         {
             var copy = (SummonSpawn)MemberwiseClone();
             copy.AfterSpawn = new List<string>(AfterSpawn);
             copy.AfterSpawnDetail = new List<string>(AfterSpawnDetail);
+            copy.AfterSpawnApplications = new List<string>(AfterSpawnApplications);
             return copy;
         }
 

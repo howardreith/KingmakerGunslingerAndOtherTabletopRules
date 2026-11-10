@@ -19,6 +19,10 @@ using Kingmaker.UnitLogic.Abilities.Components.CasterCheckers;
 using Kingmaker.UnitLogic.Alignments;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.ElementsSystem;
+using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Mechanics.Actions;
+using Kingmaker.UnitLogic.Mechanics.Components;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
@@ -110,6 +114,49 @@ namespace KingmakerGunslinger.RuntimeTesting
             return new JObject { ["unit"] = unit.Blueprint.AssetGuid, ["poison"] = poison?.AssetGuid, ["marker"] = hadMarker, ["dcWithMarker"] = withMarker, ["dcAfterRecalculation"] = recalculated, ["dcWithoutMarker"] = withoutMarker, ["dcRestored"] = restored, ["expectBonus"] = expectBonus, ["ok"] = ok };
         }
 
+        /// <summary>
+        /// The loaded web consumer, structurally: which action the shared
+        /// webbed buff runs each round and where its DC comes from, and the DC
+        /// that context chain carries with and without the marker. No target
+        /// is webbed and no escape is rolled; that remains a separate observation.
+        /// </summary>
+        private void SpiderWebConsumerEvidence(UnitEntityData spider)
+        {
+            LibraryScriptableObject library = BlueprintBootstrap.Library;
+            BlueprintAbility web = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library, SpiderSummonerCatalog.GiantSpiderWebAbility, "giant spider web");
+            BlueprintBuff webbed = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library, ExpandedSummoningSpecialBuilder.NativeWebGrappledGuid, "native webbed state");
+            var actions = new JArray(); bool readsDc = false;
+            foreach (AddFactContextActions component in (webbed.ComponentsArray ?? new BlueprintComponent[0]).OfType<AddFactContextActions>())
+                foreach (GameAction action in component.NewRound == null || component.NewRound.Actions == null ? new GameAction[0] : component.NewRound.Actions)
+                {
+                    if (action == null) continue;
+                    var native = action as ContextActionBreakFree;
+                    string source = native != null && action.GetType() == typeof(ContextActionBreakFree) ?
+                        (native.UseCMD ? "grappler-cmd-no-dc" : native.UseCMB ? "params-dc-on-skill-branch;grapple-maneuver-vs-grappler-cmd-when-cmb-higher" : "params-dc") :
+                        action.GetType().Name == "ContextActionBreakFreeFromSpellGrapple" ? "params-dc-on-both-branches(third-party-replacement)" : "unclassified";
+                    readsDc |= source.StartsWith("params-dc", StringComparison.Ordinal);
+                    actions.Add(new JObject { ["type"] = action.GetType().FullName, ["useCMB"] = native?.UseCMB, ["useCMD"] = native?.UseCMD, ["dcSource"] = source });
+                }
+            BlueprintBuff marker = SpiderSummonerRuntime.Marker;
+            Buff held = marker == null ? null : spider.Descriptor.Buffs.GetBuff(marker);
+            var cast = new MechanicsContext(spider, spider.Descriptor, web);
+            var state = new MechanicsContext(spider, spider.Descriptor, webbed, cast);
+            cast.Recalculate(); state.Recalculate();
+            int withMarker = cast.Params.DC, stateWith = state.Params.DC, withoutMarker = -1, stateWithout = -1;
+            if (held != null)
+            {
+                spider.Descriptor.Buffs.RemoveFact(held);
+                cast.Recalculate(); state.Recalculate();
+                withoutMarker = cast.Params.DC; stateWithout = state.Params.DC;
+                spider.Descriptor.AddBuff(marker, spider, null);
+            }
+            bool ok = held != null && actions.Count > 0 && readsDc && withMarker == withoutMarker + SpiderSummonerCatalog.DcBonus && stateWith == withMarker && stateWithout == withoutMarker;
+            Sprint25Check("spider-web-consumer", ok, new JObject { ["webbedNewRound"] = actions, ["webDcWithMarker"] = withMarker, ["webDcWithoutMarker"] = withoutMarker,
+                ["webbedContextDcWithMarker"] = stateWith, ["webbedContextDcWithoutMarker"] = stateWithout, ["markerPresent"] = held != null,
+                ["scope"] = "Structural: the loaded break-free action and the DC its context chain carries. No web hit or escape roll was observed." },
+                "The webbed state's loaded break-free action reads the web's calculated DC on at least one branch, and that DC carries the +2 exactly once.");
+        }
+
         private static JObject SpiderTemplateEvidence(UnitEntityData unit, bool expectCelestial)
         {
             ExpandedSummoningBlueprintSet set = ExpandedSummoningBlueprints.Registered;
@@ -141,6 +188,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (int frame in ClericLegalCast(fixture, menu.Rows[index], menu.Data[index], prepared, debit, () => Cleanup2MenuAdapterHide(close, prepared), mode, watch, "spider-" + caseKey, expectedUnit, inspect, countOk)) yield return frame;
             Cleanup2MenuAdapterHide(source, prepared);
             book.Rest();
+        }
+
+        /// <summary>Opens the real popup while the feat is held and keeps the
+        /// exact choice object it offers, as a player's selection holds it.</summary>
+        private IEnumerable<int> SpiderHoldSelection(Spellbook book, int tier, BlueprintAbility parent, AbilityData prepared, BlueprintAbility row,
+            Cleanup2NativeDefaultScope mode, Stopwatch watch, ActionBarGroupElement spellGroup, ActionBarSubGroupLevels levels, string caseKey, Action<AbilityData> keep)
+        {
+            AlphaMenu menu = null; ActionBarGroupSlot source = null;
+            foreach (int frame in ClericOpenMenu("spider-held-" + caseKey, spellGroup, levels, tier, book, parent, prepared, mode, watch, null, (value, slot) => { menu = value; source = slot; }, false)) yield return frame;
+            int index = menu == null || row == null ? -1 : Array.FindIndex(menu.Data, value => ReferenceEquals(value?.Blueprint, row));
+            AbilityData choice = index < 0 ? null : menu.Data[index];
+            bool castable = choice != null && choice.IsVisible() && choice.IsAvailableForCast && ReferenceEquals(choice.ConvertedFrom, prepared);
+            Sprint25Check("spider-held-" + caseKey + "-obtained", castable, new JObject { ["row"] = row?.AssetGuid, ["offered"] = index >= 0, ["visible"] = choice?.IsVisible(), ["available"] = choice?.IsAvailableForCast },
+                "With the feat held, the real popup offers the spider row as a castable choice, which is kept.");
+            if (source != null) Cleanup2MenuAdapterHide(source, prepared);
+            keep(castable ? choice : null);
+        }
+
+        private IEnumerable<int> SpiderHeldAttempt(ExpandedSummoningCorrectionFixture fixture, AbilityData held, AbilityData prepared, Cleanup2NativeDefaultScope mode, Stopwatch watch, string caseKey)
+        {
+            if (held == null)
+            {
+                Sprint25Check("spider-held-attempt-" + caseKey, false, new JObject { ["reason"] = "no choice was obtained while the feat was held" }, "A selection kept across feature loss is refused.");
+                return Enumerable.Empty<int>();
+            }
+            return ClericRefusedAttempt(fixture, held, prepared, mode, watch, "spider-held-attempt-" + caseKey, "spider-held-" + caseKey, false,
+                "The same AbilityData the real popup offered while the feat was held, kept across feature removal; native UnitUseAbility; no manual tick or forced act",
+                "A selection obtained while the feat was held and executed after its removal is refused before any slot or resource is spent, and nothing is summoned.");
         }
 
         private IEnumerable<int> SpiderSummonerCells(ExpandedSummoningCorrectionFixture fixture, Spellbook book, BlueprintFeature spiderFeature, Cleanup2NativeDefaultScope mode, Stopwatch watch,
@@ -201,19 +276,28 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 JObject[] dcs = units.Select(value => SpiderDcEvidence(value, ordinaryPoison, expect)).ToArray();
                 Sprint25Check("spider-ordinary-" + key, units.Length == 1 && dcs.All(value => (bool)value["ok"]), new JObject { ["dcs"] = new JArray(dcs) }, "The ordinary Giant Spider's poison DC reflects only the caster's feat.");
+                if (expect && units.Length == 1) SpiderWebConsumerEvidence(units[0]);
             };
             foreach (int frame in R6Cell("spider-ordinary-with-feat", () => SpiderMenuCast(fixture, book, 2, smParent(2), preparedParent(2), ordinaryRow, mode, watch, spellGroup, levels,
                 "ordinary-with-feat", SpiderSummonerCatalog.OrdinaryGiantSpiderUnit, units => ordinaryCheck("with-feat", units, true), null))) yield return frame;
+            // Real selections, obtained while the feat is held and kept across its removal.
+            AbilityData heldOriginal = null, heldGenerated = null;
+            foreach (int frame in R6Cell("spider-hold-original", () => SpiderHoldSelection(book, 1, smParent(1), preparedParent(1), row("giant-crab-spider", 1), mode, watch, spellGroup, levels,
+                "original-crab", value => heldOriginal = value))) yield return frame;
+            foreach (int frame in R6Cell("spider-hold-generated", () => SpiderHoldSelection(book, 4, smParent(4), preparedParent(4), crabD4Row, mode, watch, spellGroup, levels,
+                "generated-crab-d4", value => heldGenerated = value))) yield return frame;
             Kingmaker.Blueprints.Facts.Fact held = fixture.Caster.Descriptor.Progression.Features.Enumerable.FirstOrDefault(value => ReferenceEquals(value?.Blueprint, spiderFeature));
             if (held != null) fixture.Caster.Descriptor.RemoveFact(held);
             foreach (int frame in R6Cell("spider-ordinary-without-feat", () => SpiderMenuCast(fixture, book, 2, smParent(2), preparedParent(2), ordinaryRow, mode, watch, spellGroup, levels,
                 "ordinary-without-feat", SpiderSummonerCatalog.OrdinaryGiantSpiderUnit, units => ordinaryCheck("without-feat", units, false), null))) yield return frame;
-            // A held selection after the feature is gone is refused before any spend.
-            foreach (int frame in R6Cell("spider-feature-lost-held", () => ClericForbiddenAttempt(fixture, row("giant-crab-spider", 1), book, preparedParent(1), mode, watch, "spider-feature-lost", false))) yield return frame;
+            foreach (int frame in R6Cell("spider-held-original", () => SpiderHeldAttempt(fixture, heldOriginal, preparedParent(1), mode, watch, "original-crab"))) yield return frame;
+            foreach (int frame in R6Cell("spider-held-generated", () => SpiderHeldAttempt(fixture, heldGenerated, preparedParent(4), mode, watch, "generated-crab-d4"))) yield return frame;
+            // A fresh choice built without the feat is refused too.
+            foreach (int frame in R6Cell("spider-feature-absent-fresh", () => ClericForbiddenAttempt(fixture, row("giant-crab-spider", 1), book, preparedParent(1), mode, watch, "spider-feature-absent-fresh", false))) yield return frame;
             fixture.Caster.Descriptor.AddFact(spiderFeature);
             Sprint25Check("spider-surface-limits", true, new JObject {
-                ["observed"] = "Summon Monster casts of all four original rows, repaired Ogre under evil and non-evil casters, neutral toggle, one 1d4+1 and one 1d3 quantity, ordinary Giant Spider with and without the feat, held selection after feature loss, and the 46-placement census.",
-                ["notObserved"] = "Summon Nature's Ally casts and Druid conversion casts; Herald quantity-tier casts; natural Drow feat acquisition; multiclass and ordinary spontaneous spellbooks; Augment and Superior Summoning interaction; poison save resolution and webbed break-free attempts; reload and module-off or RU-absent profiles." },
+                ["observed"] = "Summon Monster casts of all four original rows, repaired Ogre under evil and non-evil casters, neutral toggle, one 1d4+1 and one 1d3 quantity, ordinary Giant Spider with and without the feat, an original and a generated selection obtained with the feat and executed after its removal, a fresh no-feat choice, the loaded web consumer and its context DC, and the 46-placement census.",
+                ["notObserved"] = "Summon Nature's Ally casts and Druid conversion casts; Herald quantity-tier casts; natural Drow feat acquisition; multiclass and ordinary spontaneous spellbooks; Augment and Superior Summoning interaction; poison save resolution; an actual web hit and escape roll; reload and module-off or RU-absent profiles; NPC selection." },
                 "Observed and unobserved surfaces are reported separately.");
         }
     }
