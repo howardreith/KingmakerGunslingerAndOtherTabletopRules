@@ -1,18 +1,21 @@
-# Races Unleashed Spider Summoner integration — implemented, verification pending / STOP
+# Races Unleashed Spider Summoner integration — review corrections applied, verification pending / STOP
 
-Current (2026-11-09). See planning/races-unleashed-compatibility/STATUS.md. Branch
-`codex/races-unleashed-summoning`, draft PR against master. Activated by the owner's mission package;
+Current (2026-11-10). See planning/races-unleashed-compatibility/STATUS.md. Branch
+`codex/races-unleashed-summoning`, draft PR #125 against master. Activated by the owner's mission package;
 the deferred handoff is preserved as `planning/races-unleashed-compatibility/BASELINE.md`.
 
-- Full gameplay scope implemented: eight original rows repaired in place, 38 generated higher-tier rows,
-  consistent templates, exact +2 poison and web DC ownership, both conversion routes.
-- Development candidate `ae714f04965b`, package `27854009...ec9b`: native 139 PASS / 0 FAIL in the
-  focused phase. Earlier candidate `3e27c5809a9d` keeps its FAIL 132/3. Not release qualification.
-- Open acceptance items are named in STATUS.md, led by SNA and Druid casts, Herald spider casts, Superior
-  and Augment Summoning, real poison saves, web break-free, reload and profile controls.
-- Install, saves, settings and `Params.xml` restored exactly (`verified`; live v0.0.140).
-- Ledger about 1,600 of 1,800 s. No merge, release, permanent install or further native run follows
-  without explicit owner authorization.
+- Full gameplay scope implemented. The PR #125 review corrections are applied: one exact contract for
+  repair, classification and conversion; only the inherited published menu removed; full buff applications
+  compared with the loaded native donor; a stale-selection observer that keeps the real popup's choice.
+- Development candidate `8c1734743cce`, package `919d9753...a250`: native run 1 FAIL 64/4 (hover-guard
+  refusal in a cleric cell, retained), matched rerun PASS 153/0. Earlier candidates `ae714f04965b` (PASS
+  139/0) and `3e27c5809a9d` (FAIL 132/3) keep their own evidence. Not release qualification.
+- Owner decision pending (RU-13): the native web escape's CMB branch reads no DC, so the +2 cannot reach it
+  without a new scoped rule; Call of the Wild, loaded on DATA, replaces that action.
+- Open acceptance items and a scenario per item are in STATUS.md.
+- Install, saves, settings and `Params.xml` restored exactly after each run (`verified`).
+- This task's ledger is about 920 of 1,800 s. No merge, release, permanent install or further native run
+  follows without explicit owner authorization.
 
 ---
 
