@@ -314,7 +314,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.Creature.Key == key && value.ParentTier == tier && value.Multiplicity == SummonMultiplicity.One);
             var party = player.Party.ToArray(); var selected = ui.SelectionManagerPC.SelectedUnits.ToArray(); var selectedGroup = group.GetCurrentCharacter();
             var groups = bar.Group.GroupElements.ToArray(); bool[] toggles = groups.Select(value => value.ToggleState).ToArray();
-            object levelController = null; bool added = false; NativeIconScreenEvidence screens = null; Cleanup2NativeDefaultScope mode = null;
+            object levelController = null; bool added = false; NativeIconScreenEvidence screens = null; Cleanup2NativeDefaultScope mode = null; SpiderInterfaceCasters spiderCasters = null;
             Spellbook book = null; AbilityData tierThree = null, tierFive = null, tierFiveOrdinary = null, tierFiveSecond = null, tierSevenOrdinary = null, tierNine = null; Feature deityFact = null, heraldFact = null, spiderFact = null;
             var watch = Stopwatch.StartNew();
             Action<BlueprintFeature> setDeity = deity => { if (deityFact != null) fixture.Caster.Descriptor.RemoveFact(deityFact); deityFact = fixture.Caster.Descriptor.AddFact(deity) as Feature; };
@@ -359,6 +359,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (problems.Count != 0) throw new InvalidOperationException("Cleric fixture prerequisites failed: " + string.Join(",", problems.ToArray()));
                 ClericCensus(cleric);
                 if (!player.Party.Contains(fixture.Caster)) { player.PartyCharacters.Add(fixture.Caster); added = true; player.InvalidateCharacterLists(); player.UpdateCharacterLists(); }
+                // The spider interface casters join the party before the native Default scope is owned.
+                try { spiderCasters = SpiderInterfaceSetup(fixture); }
+                catch (Exception error)
+                {
+                    Sprint25Check("spider-interface-setup", false, new JObject { ["error"] = error.ToString() },
+                        "The natural Druids and the natural Herald Caller were levelled and joined the party.");
+                }
                 mode = Cleanup2EnterNativeDefault(fixture, "summon-cleric-alignment");
                 screens = new NativeIconScreenEvidence(_request);
                 ui.SelectionManagerPC.SelectUnit(fixture.Caster.View, true, true, false); group.SelectUnit(fixture.Caster);
@@ -507,9 +514,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (spiderIndex >= 0 && spiderSource != null)
                         {
                             var spiderDebit = new Cleanup2SourceDebit(fixture.Caster);
-                            ActionBarGroupSlot closeSpider = spiderSource;
-                            foreach (int frame in R6Cell("cleric-" + scopedSpider.Key, () => Cleanup2MenuAdapterDruidCast(fixture, spiderMenu.Data[spiderIndex], tierFiveSecond, smParent(5), spiderMenu.Rows[spiderIndex], spiderDebit, mode, watch,
-                                () => Cleanup2MenuAdapterHide(closeSpider, tierFiveSecond), scopedSpider.Key, scopedSpider.Count))) yield return frame;
+                            ActionBarGroupSlot closeSpider = spiderSource; JArray spiderRules = null;
+                            foreach (int frame in SpiderSummonRuleScope(() => R6Cell("cleric-" + scopedSpider.Key, () => Cleanup2MenuAdapterDruidCast(fixture, spiderMenu.Data[spiderIndex], tierFiveSecond, smParent(5), spiderMenu.Rows[spiderIndex], spiderDebit, mode, watch,
+                                () => Cleanup2MenuAdapterHide(closeSpider, tierFiveSecond), scopedSpider.Key, scopedSpider.Count)), value => spiderRules = value)) yield return frame;
+                            string durationProblem = SpiderDurationProblem(spiderRules, book.CasterLevel, false);
+                            Sprint25Check("cleric-" + scopedSpider.Key + "-caster-level-duration", durationProblem == null && book.CasterLevel == 20,
+                                new JObject { ["rules"] = spiderRules, ["problem"] = durationProblem, ["bookCasterLevel"] = book.CasterLevel },
+                                "Every creature of this Herald spider cast has the summon rule's 20 rounds at the cleric book's caster level 20, from an unextended source.");
                         }
                         else Sprint25Check("cleric-" + scopedSpider.Key + "-row-present", false, new JObject { ["rows"] = spiderMenu?.Rows.Length ?? 0, ["row"] = scopedSpider.Row?.AssetGuid }, "The spider row is offered in the Herald popup.");
                         if (spiderSource != null) Cleanup2MenuAdapterHide(spiderSource, tierFiveSecond);
@@ -529,11 +540,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     fixture.Caster.Descriptor.RemoveFact(heraldFact); heraldFact = null;
                     Func<int, AbilityData> preparedParent = level => book.GetMemorizedSpellSlots(level).Where(value => value.Spell != null && ReferenceEquals(value.Spell.Blueprint, smParent(level))).Select(value => value.Spell).FirstOrDefault();
                     foreach (int frame in R6Cell("spider-summoner", () => SpiderSummonerCells(fixture, book, spiderFeature, mode, watch, spellGroup, levels, smParent, preparedParent, setDeity, erastil, asmodeus))) yield return frame;
+                    if (spiderCasters != null)
+                        foreach (int frame in R6Cell("spider-interface", () => SpiderInterfaceCells(fixture, spiderCasters, book, herald, mode, screens, spellGroup, levels, smParent, setDeity, desna))) yield return frame;
+                    else Sprint25Check("spider-interface-casters", false, new JObject(), "The spider interface casters were created.");
                     fixture.Caster.Descriptor.RemoveFact(spiderFact); spiderFact = null;
                 }
-                Sprint25Check("cleric-surface-limits", true, new JObject { ["openedInGame"] = "Prepared Summon Monster III, V and IX popups and Herald conversion popups on a levelled cleric, including with the exact Spider Summoner feature.",
+                Sprint25Check("cleric-surface-limits", true, new JObject { ["openedInGame"] = "Prepared Summon Monster III, V and IX popups and Herald conversion popups on a levelled cleric, including with the exact Spider Summoner feature; " +
+                        "Herald popups at I and IV; an Extend Spell Summon Monster V popup; a natural cleric/wizard Herald popup; Summon Nature's Ally V and Druid conversion popups for a Druid with and without the feat.",
                     ["execution"] = "Legal casts and forbidden commands, unassisted, under the fixture's induced state.",
-                    ["notObserved"] = "Console navigation, saved-hotbar reload, cold load, autonomous AI, a multiclass book popup and a module-disabled profile.", ["wallSeconds"] = watch.Elapsed.TotalSeconds },
+                    ["notObserved"] = "Console navigation and autonomous AI. Saved shortcuts, cold load and the module-disabled reload belong to the spider-summoner Working-save scope.", ["wallSeconds"] = watch.Elapsed.TotalSeconds },
                     "Observed and unobserved surfaces are reported separately.");
             }
             finally
@@ -543,6 +558,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (levelController != null) restore("level-controller", () => levelController.GetType().GetMethod("Cancel").Invoke(levelController, null));
                 restore("herald-fact", () => { if (heraldFact != null) fixture.Caster.Descriptor.RemoveFact(heraldFact); });
                 restore("spider-fact", () => { if (spiderFact != null) fixture.Caster.Descriptor.RemoveFact(spiderFact); });
+                restore("spider-interface", () => SpiderInterfaceTeardown(fixture, spiderCasters));
                 restore("party", () => { if (added) { player.PartyCharacters.Remove(fixture.Caster); player.InvalidateCharacterLists(); player.UpdateCharacterLists(); } });
                 restore("selection", () => { group.SelectUnit(selectedGroup); ui.SelectionManagerPC.MultiSelect(selected.Where(value => value?.View != null).Select(value => value.View).ToArray(), false); });
                 for (int index = 0; index < groups.Length; index++) { int scoped = index; restore("toggle-" + scoped, () => groups[scoped].Toggle(toggles[scoped], true)); }

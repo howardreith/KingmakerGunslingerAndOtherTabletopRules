@@ -167,6 +167,9 @@
     <Compile Include="RuntimeTesting\SummonClericObservationVerdict.cs" />
     <Compile Include="RuntimeTesting\SpiderEscapeObservationVerdict.cs" />
     <Compile Include="RuntimeTesting\SpiderCompletionVerdicts.cs" />
+    <Compile Include="RuntimeTesting\SpiderSummonerPersistencePolicy.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SpiderSummonerPersistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SpiderInterface.cs" />
     <Compile Include="RuntimeTesting\AlphabeticalMenuObservationVerdict.cs" />
     <Compile Include="Summoning\SummonPlaytestR6Policy.cs" />
     <Compile Include="Summoning\SummonAbilityCastCue.cs" />
