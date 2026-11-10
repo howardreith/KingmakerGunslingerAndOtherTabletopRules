@@ -5,10 +5,12 @@ four affected phases pass on candidate `04c6030c02` under controlled input. Thre
 candidates whose code for them is unchanged (below). Four acceptance workstreams still lack required observations:
 **RU-16** saved references across save/reload, plus the reload parts of RU-02 and RU-14; **RU-15** rendered SNA and
 Druid popups; **RU-10** metamagic, Crab I/Widow IV Herald admission, a cast by the naturally levelled Herald, and its
-caster level and duration; and **RU-09** a cast from the multiclass cleric's book. They are unobserved, not shown to
-work. The authorized allowance has about 4 minutes left, and they need about 31 to 45 counted minutes (estimate
-below). This is focused compatibility evidence, not release qualification, and owner review is pending. No merge,
-release or permanent installation has been performed.
+caster level and duration; and **RU-09** a cast from the multiclass cleric's book. Their observers are now written,
+compiled and focused-tested in source commit `65f0acce2e` (fifth review, below), but **not built or run natively**: they
+are unobserved, not shown to work. Native execution waits for the owner's decision on the cumulative validation
+ceiling, which is about 117 of 120 minutes spent; the request is to raise it to 165 minutes (estimate below). This is
+focused compatibility evidence, not release qualification, and owner review is pending. No merge, release or
+permanent installation has been performed.
 
 Baseline and its original result, unchanged: [BASELINE.md](BASELINE.md), including the `FAIL, 70 PASS / 1 FAIL`
 result on candidate `efc75b8cc0b0`.
@@ -88,6 +90,90 @@ while the game window started) were in phases with no UI interaction, so those o
 | `df4b3e4bc6a9` (package `b592b381...2886`) | mechanics FAIL 1 (Tarantula natural-1 miss; NPC execution); routes FAIL (my lifetime check; Herald slot) | Fixed in `deebec4edb39` |
 | `deebec4edb39` | six PASS; cleric FAIL 184/2 | The Herald quantity cast was correct, but the observer assumed one spawn; fixed in `106cda92f3` |
 | `106cda92f3` (package `a4175372...2249`) | cleric **PASS 186/0** | Carried. Its six predecessor phases were superseded by `04c6030c02` where the fourth review found weaker verdicts |
+
+### Fifth review: the four workstreams prepared (`65f0acce2e`, not built)
+
+The fifth review accepted the fourth-review corrections, accepted the carried phases, and asked for the persistence
+checkpoint sequence to be made explicit and for the remaining fixture preparation to be finished before another
+build. Implementation and writing are outside the counted ledger; the compile and focused checks of this pass are
+inside it (57 s).
+
+**RU-16 checkpoint sequence.** A `spider-summoner` scope on the existing Working-save stages, four fresh processes,
+fixed in `SpiderSummonerPersistencePolicy`:
+
+| Stage | Scenario | Module | Working save |
+| --- | --- | --- | --- |
+| 1. Prepare | `working-save-expanded-summoning-prepare` | ON | written: the checkpoint |
+| 2. Disabled reload | `working-save-expanded-summoning-verify-cleanup`, `spiderCheckpoint=preserve` | OFF | **not written**; the checkpoint stays as prepared |
+| 3. Enabled reload and cleanup | `working-save-expanded-summoning-verify-cleanup` | ON | written: the cleaned save |
+| 4. Absence | `working-save-expanded-summoning-verify-absent` | ON | not written |
+
+The disabled reload therefore loads the populated checkpoint and runs before the final cleanup, and the enabled
+verification is the checkpoint's last consumer. The driver also compares the Working save's hash after stage 2 with
+the hash after stage 1, so a write by the disabled reload stops the sequence. Each stage refuses to change anything
+when loaded in the other module state. `spiderCheckpoint=preserve` is admitted only for this scope's verify-cleanup,
+by the C# request validator and both PowerShell gates, with admission tests. The no-write verify-cleanup follows the
+existing roster precedent, where a diagnosis-only cleanup leaves the prepared fixture unwritten. An outer envelope
+keeps the original Working bytes and timestamps, restores them after the sequence or any failure, and compares every
+other save with its intake hash. It is the same envelope `Invoke-ExpandedSummoningCompatibilityMechanical.ps1` uses.
+
+**The checkpoint.** A Sorcerer 11 fixture caster, spawned from the registered `DefaultPlayerCharacter` with a saved
+receipt, holds Spider Summoner and two native `MechanicActionBarSlotSpontaneusConvertedSpell` shortcuts. Each holds the
+AbilityData that the variant popup builds from a known Summon Monster spell:
+- the original Races Unleashed Giant Black Widow row (IV);
+- the generated Giant Crab Spider 1d4+1 row (V), a higher tier than its original.
+
+The Widow cast from its shortcut is the active spider the save carries: one marker, and both poisons at DC 16.
+
+**What each reload asserts.**
+- **Both reloads:**
+  - both shortcuts resolve to their exact saved row identities, children of their saved known spells in the
+    Sorcerer book, so no GUID dangles;
+  - the saved Widow is back with its finite lifetime from the caster and exactly one marker;
+  - both poisons read the saved DC 16, also after recalculation, never 18.
+- **Disabled reload (OFF):**
+  - the generated row is registered but in no published menu; its shortcut casts nothing and spends nothing;
+  - the original shortcut casts Races Unleashed's own Widow with no benefit, spending one level 4 use.
+- **Enabled reload (ON):**
+  - the generated shortcut casts three Crab Spiders (die forced to 2), and the original shortcut one Widow;
+  - each creature has one benefit and one template, 11 rounds at caster level 11, and exactly one use of its level
+    is spent;
+  - the saved Widow still has one marker;
+  - after the feat is removed, both saved shortcuts are refused with nothing spent;
+  - the fixture is retired, and no marked unit remains.
+
+**Decision for owner review: an existing marked summon with the module OFF.** The reload asserts the current
+behavior: a spider cast while the module was ON keeps its marker, and with it the poison and skill-branch web DC
+benefit, until it expires. That is how saved KMG summons keep their saved state under OFF. The native CMB-branch
+web-escape bonus is the exception: it reads the runtime marker identity, which is unset with the module OFF, so it does
+not apply. The four Races Unleashed species have no web, so the fixture's Widow cannot observe this. The owner may
+prefer every benefit dormant under OFF, or every benefit retained; either is a small product change, so none was
+made.
+
+**RU-15, RU-10 and RU-09 in the cleric phase.** These run in the native Default fixture, with their own popup
+stopwatch, because the phase already used about 210 of its 240 popup seconds:
+- **RU-15:** the rendered Summon Nature's Ally V popup and the Druid conversion popup, for a natural Drow Druid that
+  selected the feat and for a Druid without it. With the feat, every published SNA V spider row appears once with an
+  icon. Without it, none appears. The popup's row order and no-duplicate checks apply as for every popup.
+- **RU-10:**
+  - Crab I and Black Widow IV in the Herald popups over unrelated prepared spells;
+  - caster level and engine-rule duration (20 rounds at caster level 20) on both existing Herald spider casts;
+  - a natural cleric 9/wizard 1 Herald Caller's Ogre through its own Herald popup: 9 rounds at caster level 9.
+- **RU-09:** that natural Herald cast spends its cleric slot and leaves its wizard book unchanged.
+- **Representative metamagic, corrected plan:** Kingmaker does not carry a source's metamagic through a spontaneous
+  conversion. `GetConvertedAbilityData` builds each conversion without it, and `AbilityData.ConvertedFrom` copies
+  metamagic only to a variant of the same spell. So the earlier plan, "prepare the unrelated spell with Extend Spell
+  and assert a doubled Herald duration", could not hold. Two cells replace it:
+  - **Extend Spell Summon Monster V:** the Ogre is a variant of the prepared spell, keeps Extend, and its summon rule
+    gives 40 rounds at caster level 20 from the level 6 slot;
+  - **Extend-prepared unrelated level 4 source:** the Herald Ogre is a Summon Monster V from that level 5 slot, and like
+    the native conversion it carries no Extend: 20 rounds.
+
+Focused results on `65f0acce2e`: the candidate filter selects 35 tests, 0 failures, including the new
+`summon-spider-summoner.persistence-stages-duration`. `Test-ExpandedSummoningWorkingSavePersistence.ps1` passed with
+37 round trips and 322 fail-closed cases, including the new scope and preservation cases.
+`Test-ExpandedSummoningLauncherRouting.ps1` and `Test-SummonOverhaulOffAdmission.ps1` passed. No candidate was built
+and nothing ran natively.
 
 ### Fourth review: acceptance-check corrections (`04c6030c02`)
 
@@ -380,6 +466,8 @@ and the validation budget would not cover a profile run after the build.
 | Per-creature benefit action, DC owner, native CMB web-escape bonus | `Summoning/SpiderSummonerBenefit.cs` |
 | Web-escape scope decision | `Summoning/SpiderSummonerCatalog.cs` (`SpiderWebEscapePolicy`) |
 | Completion phases: real web hit, poison and summoning feats, NPC, module-off, RU-absent | `RuntimeTesting/RuntimeTestRunner.SpiderCompletion.cs` |
+| Working-save persistence scope and its stage policy | `RuntimeTesting/RuntimeTestRunner.SpiderSummonerPersistence.cs`, `RuntimeTesting/SpiderSummonerPersistencePolicy.cs` |
+| Rendered Druid menus, Herald admission, metamagic and natural Herald casts (cleric phase) | `RuntimeTesting/RuntimeTestRunner.SpiderInterface.cs` |
 | Routes phase: natural Drow and Herald, SNA, Druid conversion, spontaneous books | `RuntimeTesting/RuntimeTestRunner.SpiderRoutes.cs` |
 | Escape observation verdicts (named failures) | `RuntimeTesting/SpiderEscapeObservationVerdict.cs`, with poison and route verdicts in `RuntimeTesting/SpiderCompletionVerdicts.cs` |
 | Exact module-OFF admission pair | `scripts/ExpandedSummoningOrchestration.Common.ps1`, checked by `scripts/Test-SummonOverhaulOffAdmission.ps1` |
@@ -404,50 +492,50 @@ Disposition against every subrequirement of `ACCEPTANCE.md`. Native candidates a
 | ID | Implementation | Focused evidence | Native evidence | Candidate | Remaining work |
 | --- | --- | --- | --- | --- | --- |
 | RU-01 | Done | Contract, matrix and agreement tests | All 8 rows repaired from exact inputs: `repaired=8;generated=38;problems=` | `106cda92f3` | None |
-| RU-02 | Done | Input and shape negatives | Natural Drow acquisition at level 1; retained and fresh no-feat choices refused, nothing spent; ordinary Giant Spider without the feat | `106cda92f3`, `deebec4edb39` | **Saved-choice attempt after reload** (RU-16) |
+| RU-02 | Done | Input and shape negatives | Natural Drow acquisition at level 1; retained and fresh no-feat choices refused, nothing spent; ordinary Giant Spider without the feat | `106cda92f3`, `deebec4edb39` | **Saved-choice attempt after reload** (RU-16): prepared in `65f0acce2e`, not run |
 | RU-03 | Done | Matrix tests | Four SM and four SNA originals cast as the named spider with a finite summon lifetime; repaired Ogre under evil and non-evil casters | `106cda92f3`, `deebec4edb39` | None |
 | RU-04 | Done | Every matrix cell; quantity expression | 46/46 census; SM 1d3 and 1d4+1; SNA 1d3 → 2 and 1d4+1 → 3 with forced dice; Herald 1d4+1 | `106cda92f3`, `deebec4edb39` | None |
 | RU-05 | Done | Quantity expression | Superior: forced 1d3 → 2 without, 3 with, every spider with one benefit; Augment Con 12→16 and DC interaction | `deebec4edb39` | None |
 | RU-06 | Done | Selection and band policy | Celestial and fiendish on all four species, Mid band, no leftover template | `106cda92f3` | LN and CN focused only, as the contract permits |
 | RU-07 | Done | None new | Choice kept, toggle changed, cast (fiendish); SNA under both toggle positions with no SM template | `106cda92f3`, `deebec4edb39` | None |
 | RU-08 | Done | Repaired Ogre judged as spider | LG/Erastil, LE/Asmodeus, TN/Pharasma; deity-derived control | `106cda92f3` | None |
-| RU-09 | Done | Membership tests; route-creature verdict | Sorcerer feat holder; ordinary spontaneous SM (Sorcerer) and SNA (Call of the Wild Hunter) pool casts with the chosen spider, exactly one use, stale refused; natural cleric/wizard with two books | `04c6030c02` | **A spider cast from the multiclass cleric's book, with the other book unchanged** |
-| RU-10 | Done | Family-route and agreement tests | Natural Herald Caller progression (its slot cells are diagnostics); Herald spider casts (repaired Ogre and Crab 1d4+1) through the real popup with exact debit and chain | `106cda92f3`, `04c6030c02` | **Representative metamagic with its expected duration; Crab I and Widow IV Herald admission; a cast by the naturally levelled Herald; caster level and duration asserted alongside chain and debit** (the casts used the cleric phase's granted-feature Herald) |
+| RU-09 | Done | Membership tests; route-creature verdict | Sorcerer feat holder; ordinary spontaneous SM (Sorcerer) and SNA (Call of the Wild Hunter) pool casts with the chosen spider, exactly one use, stale refused; natural cleric/wizard with two books | `04c6030c02` | **A spider cast from the multiclass cleric's book, with the other book unchanged**: prepared in `65f0acce2e`, not run |
+| RU-10 | Done | Family-route and agreement tests | Natural Herald Caller progression (its slot cells are diagnostics); Herald spider casts (repaired Ogre and Crab 1d4+1) through the real popup with exact debit and chain | `106cda92f3`, `04c6030c02` | **Representative metamagic with its expected duration; Crab I and Widow IV Herald admission; a cast by the naturally levelled Herald; caster level and duration asserted alongside chain and debit** (the casts used the cleric phase's granted-feature Herald): prepared in `65f0acce2e`, not run |
 | RU-11 | Done | Family-route tests; route-creature verdict | Druid conversion at V and VII compared with prepared SNA and cast as the chosen spider (one benefit, no template, caster alignment, finite lifetime), exact source debit, no duplicates | `04c6030c02` | None |
 | RU-12 | Done | Benefit scope; poison attribution verdict | Every expected poison attributed by identity, first and continuing: ordinary 14/12; each species' own and Hunting poison 16 vs 14; Augment 16/14; no cumulative bonus | `04c6030c02` | None |
 | RU-13 | Done, with native CMB-branch bonus | Benefit and web-escape scope; escape verdicts, including rule-selected loaded comparison | Real hit → held state → loaded escape, both branches, both profiles, exactly +2, CMD-reading escapes within one spider; no initial save; uses and duration unchanged; ordinary grapple unchanged | `04c6030c02` | None |
-| RU-14 | Done | Exact-identity negatives | Feat on/off matched casts; ineligible sources with the feat held get nothing | `04c6030c02` | **No duplication after reload** (RU-16) |
-| RU-15 | Done | Display order tests | Real SM popups including Herald conversion, sorted, no duplicates; SNA and Druid conversion rows at data level; no-feat Druid hidden | `106cda92f3`, `deebec4edb39` | **Rendered SNA and Druid conversion popups, with and without the feat** |
-| RU-16 | Done (no implementation gap known) | None | Module-OFF lifecycle without a save: dormant rows, originals intact | `deebec4edb39` | **Fresh-process save/reload of an original and a generated shortcut and an active summon; disabled-module reload** |
+| RU-14 | Done | Exact-identity negatives | Feat on/off matched casts; ineligible sources with the feat held get nothing | `04c6030c02` | **No duplication after reload** (RU-16): prepared in `65f0acce2e`, not run |
+| RU-15 | Done | Display order tests | Real SM popups including Herald conversion, sorted, no duplicates; SNA and Druid conversion rows at data level; no-feat Druid hidden | `106cda92f3`, `deebec4edb39` | **Rendered SNA and Druid conversion popups, with and without the feat**: prepared in `65f0acce2e`, not run |
+| RU-16 | Done (no implementation gap known) | None | Module-OFF lifecycle without a save: dormant rows, originals intact | `deebec4edb39` | **Fresh-process save/reload of an original and a generated shortcut and an active summon; disabled-module reload**: prepared in `65f0acce2e` (four-stage sequence above), not run |
 | RU-17 | Done | Module boundary | RU-absent profile; Expanded-Summoning-inactive/RU-present control | `deebec4edb39` | None |
 | RU-18 | Done | Agreement tests | Zero unresolved rows | `106cda92f3` | None |
 | RU-19 | Done | Observer compiles; escape verdict tests | Per-row semantics; failures retained | `106cda92f3` | None |
 | RU-20 | Done | n/a | Draft PR; exact restoration; bounded NPC control (AI cast-action decisions and an executed ordinary cast; no autonomous brain run) | `04c6030c02`, `106cda92f3` | Owner review |
 
-## Smallest remaining actions
+## Remaining native work
 
-1. **RU-16 (with reload for RU-02, RU-14).** A `spider-summoner` persistence scope in the existing working-save
-   workflow. It needs a scope constant and selection keys, request admission, the `Invoke-Sprint22InstalledStack.ps1`
-   ValidateSet and development branch, and the routing tests. The prepare process summons through the spider rows and
-   pins an original and a generated row to the action bar. Verify-cleanup then reloads, casts from the pins, checks the
-   active summon's marker and DC, attempts a pinned row after feat removal, and retires the fixture. A module-OFF
-   verify comes last. This means three or four fresh processes; Kingmaker saves only to `KMG_AUTOMATION_WORKING`.
-2. **RU-15.** Open the SNA and Druid conversion popups through the cleric phase's existing `ClericOpenMenu`, for the
-   natural Druid and the no-feat Druid.
-3. **RU-10.** Prepare the unrelated spell with Extend Spell for one Herald spider cast and assert the doubled
-   summon duration. Open the tier I and IV Herald popups. Repeat one Herald cast with the naturally levelled Herald.
-   On every Herald cast, assert the caster level and resulting duration alongside the source chain and debit.
-4. **RU-09.** One spider cast from the natural cleric/wizard's cleric book, comparing both books.
+All four workstreams are prepared in `65f0acce2e` (see the fifth review). What remains is native:
+1. **Build:** one development candidate from `65f0acce2e`'s source, run from the main repository detached at that
+   commit.
+2. **Cleric phase:** one controlled-input `summon-cleric-alignment` run, which now holds RU-15, RU-10 and RU-09 and
+   re-observes every earlier cleric cell on the new bytes. Its process timeout is raised from 480 to 600 seconds for
+   the extra casters and popups.
+3. **RU-16 sequence:** four fresh processes in the Working envelope, in the order above.
 
-**Counted-time estimate for the four, one batched build.** Implementation and writing are outside the ledger.
-- **Build and checks:** one candidate build (about 7 minutes) and the focused routing and admission tests (about 1).
-- **RU-16:** three or four fresh working-save processes, about 3 to 4 minutes each including restoration, so 12 to 16.
-- **RU-15, RU-10 and RU-09:** a cleric phase rerun (about 5.5 minutes) and a routes rerun (about 3.5).
-- **First pass:** about 31 counted minutes.
-- **Contingency:** each new fixture on this branch needed at least one corrective cycle (about 10 to 14 minutes).
+The routes, mechanics, web and module-off phases need no rerun. Their code is unchanged apart from the shared cast
+record helper, which this change only adds to.
 
-**Requested additional allowance: 45 counted minutes**, separate from this continuation's ledger. Only about 4
-minutes remain, which cannot fit a build. A partial build now would be replaced by the batched one.
+**Counted-time estimate.**
+- **Build and checks:** the build (about 7 minutes) and the focused checks (about 1).
+- **Cleric phase:** about 6.5 minutes, about one more than before.
+- **RU-16:** four Working-save processes at about 3.5 to 4 minutes each, so 14 to 16.
+- **First pass:** about 29 to 31 minutes.
+- **Contingency:** each new fixture on this branch has needed one corrective cycle. One rebuild with the cleric phase
+  and part of the RU-16 sequence is about 14 minutes.
+
+**Requested: raise the cumulative validation ceiling from 120 to 165 minutes.** That keeps the about 117 minutes
+already spent and leaves about 48 for the work above. The remaining about 3 minutes cannot fit a build. This review
+request itself does not authorize native execution.
 
 ## Validation ledger (completion continuation: 90-minute target, 120-minute ceiling)
 
@@ -456,16 +544,18 @@ minutes remain, which cannot fit a build. A partial build now would be replaced 
 | Focused gates and the OFF admission test | about 223 |
 | Candidate builds (`d94acab016`, `5107a283bd`, `df4b3e4bc6`, `deebec4edb`, `106cda92f3`, `04c6030c02`) | 2,625 |
 | Guarded native transactions (27 runs, failures included) | 4,098 |
-| **Total** | **about 6,946 (116 minutes)** |
+| Fifth-review gates and admission tests | 57 |
+| **Total** | **about 7,003 (117 minutes)** |
 
 - **Target and ceiling:** the 90-minute target was exceeded; the 120-minute ceiling was not.
 - **Fourth-review pass:** about 1,069 seconds in all:
   - two focused gates, 29 s (the first stopped at two compile errors);
   - the `04c6030c02` build, 410 s;
   - four guarded runs, 630 s.
-- **Why native work stopped:** the about 4 minutes left cannot fit a build. Implementation time is not counted.
-  However, the four workstreams need a batched build and at least six fresh processes, so the binding limit is
-  counted time (estimate above). It is not a lack of authorization to prepare them.
+- **Fifth-review pass:** 57 seconds: two focused gates (19 and 15 s; a first attempt was refused in 1 s for a stray
+  parameter), and the persistence admission and routing tests (22 s). Implementation is not counted.
+- **Why native work stopped:** the about 3 minutes left cannot fit a build. All four workstreams are now prepared,
+  so the binding limit is counted time (estimate above), not a lack of authorization to prepare them.
 - **Outside the ledger:** implementation and writing time, and restoration.
 - **Separate earlier ledgers:** about 1,600, 920, 800 and 1,110 seconds.
 

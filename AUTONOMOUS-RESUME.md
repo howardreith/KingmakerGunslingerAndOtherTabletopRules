@@ -1,34 +1,32 @@
 # Races Unleashed Spider Summoner integration: incomplete with named blockers / STOP
 
 Current (2026-11-10). See `planning/races-unleashed-compatibility/STATUS.md`. Branch
-`codex/races-unleashed-summoning`, draft PR #125. This continuation ran under the owner's completion authorization:
-a 90-minute target and a 120-minute ceiling. The ledger is about 116 minutes.
+`codex/races-unleashed-summoning`, draft PR #125. This continuation runs under the owner's completion authorization:
+a 90-minute target and a 120-minute cumulative ceiling. The ledger is about 117 minutes.
 
 - **Delivered candidate:** `04c6030c02`, package `068d1131...2547`, DLL `452552cc...4ce9`.
-  - **Fourth review:** its three acceptance-check corrections (per-poison attribution, route creature identities,
-    and a rule-selected loaded-escape comparison) are observer-only.
-  - **Rerun on `04c6030c02`:** the four affected phases passed under controlled input.
+  - **Fourth review:** its corrections were accepted by the fifth review.
   - **Carried, unchanged code:** the cleric phase from `106cda92f3`; module-off and RU-absent from `deebec4edb39`.
-  - **Restoration:** exact after every run.
-- **Observed:**
-  - real web hit → held state → loaded escape, both branches, with and without Call of the Wild;
-  - actual poison saves for every expected poison by identity, including the Hunting poison and Augment Summoning;
-  - Superior Summoning;
-  - natural Drow and Herald progression;
-  - SNA and Druid conversion casts, and Herald spider casts;
-  - spontaneous Summon Monster and Summon Nature's Ally pools;
-  - module-OFF and RU-absent profiles;
-  - the NPC control.
-- **Open:**
-  - **RU-16:** save/reload persistence, with reload for RU-02 and RU-14;
-  - **RU-15:** rendered SNA and Druid popups;
-  - **RU-10:** metamagic, Crab I/Widow IV Herald admission, and a cast by the natural Herald;
-  - **RU-09:** a cast from the multiclass book.
+- **Fifth review (source `65f0acce2e`, not built):** all four open workstreams are prepared, compiled and
+  focused-tested (35 tests, persistence admission and routing tests pass).
+  - **RU-16:** the `spider-summoner` Working-save scope. Prepare (ON) → disabled reload with
+    `spiderCheckpoint=preserve` (OFF, no write) → enabled reload and cleanup (ON) → absence (ON). The disabled
+    reload uses the populated checkpoint before the final cleanup.
+  - **RU-15, RU-10, RU-09:** cleric-phase cells. Rendered Druid SNA and conversion popups, with and without the feat;
+    Crab I and Widow IV Herald admission; Extend Spell metamagic; caster level and duration on every Herald cast; a
+    natural cleric/wizard Herald cast from its cleric book with the wizard book unchanged.
+  - **Corrected plan:** Kingmaker does not carry a source's metamagic through a spontaneous conversion, so the
+    metamagic case is a variant of an Extend Spell Summon Monster V.
+  - **Owner decision recorded:** an existing marked summon under module OFF keeps its poison and skill-web benefit,
+    while the native CMB-branch escape bonus does not apply.
+- **Next, after the owner's decision on the ceiling:**
+  1. build the candidate from `65f0acce2e`;
+  2. run the cleric phase under controlled input;
+  3. run the four persistence stages with the driver (Working envelope, hash check after the disabled reload).
 
-  The smallest actions and a counted-time estimate are in STATUS.md: about 31 minutes for a first pass, 45
-  requested including one corrective cycle.
-- **Validation limit:** about 4 counted minutes remain, which cannot fit the batched build these workstreams need.
-  No merge, release or permanent install follows without explicit owner authorization.
+  The estimate is about 30 minutes, 45 with one corrective cycle. The request is to raise the cumulative ceiling
+  from 120 to 165 minutes; the remaining about 3 minutes cannot fit a build.
+- No merge, release or permanent install follows without explicit owner authorization.
 
 ---
 
