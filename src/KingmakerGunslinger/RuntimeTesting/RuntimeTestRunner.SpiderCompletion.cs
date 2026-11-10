@@ -239,6 +239,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             ModifiableValue bab = hostile.Descriptor.Stats.BaseAttackBonus, mobility = hostile.Descriptor.Stats.GetStat(StatType.SkillMobility), athletics = hostile.Descriptor.Stats.GetStat(StatType.SkillAthletics);
             int babBefore = bab.BaseValue, mobilityBefore = mobility.BaseValue, athleticsBefore = athletics.BaseValue, acBefore = hostile.Descriptor.Stats.AC.BaseValue;
             var results = new Dictionary<string, JObject>(StringComparer.Ordinal);
+            AbilityResourceLogic webCost = web.ComponentsArray.OfType<AbilityResourceLogic>().FirstOrDefault();
+            int webUsesStart = webCost == null ? -1 : marked[0].Descriptor.Resources.GetResourceAmount(webCost.RequiredResource), webUsesRestored = 0;
             try
             {
                 // Hopeless escape between the hit and the observed attempt, so no
@@ -252,6 +254,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         foreach (int frame in SpiderWebHitAndEscape(pair.Spider, hostile, web, webbed, branch, value => result = value)) yield return frame;
                         results[pair.Key + ":" + branch] = result;
                     }
+                // The same marked spider's own fresh real hits, with its marker removed
+                // after each hit: the baseline for a loaded escape that reads the CMD.
+                // Its web uses are restored to their starting amount first.
+                if (webCost != null)
+                {
+                    int now = marked[0].Descriptor.Resources.GetResourceAmount(webCost.RequiredResource);
+                    if (now < webUsesStart) { webUsesRestored = webUsesStart - now; marked[0].Descriptor.Resources.Restore(webCost.RequiredResource, webUsesRestored); }
+                }
+                foreach (string branch in new[] { "skill", "cmb" })
+                {
+                    JObject result = null;
+                    foreach (int frame in SpiderWebHitAndEscape(marked[0], hostile, web, webbed, branch, value => result = value, true)) yield return frame;
+                    results["marked-without-marker:" + branch] = result;
+                }
             }
             finally
             {
@@ -261,11 +277,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool ok = true; var cases = new JArray();
             foreach (string branch in new[] { "skill", "cmb" })
             {
-                JObject m = results["marked:" + branch], u = results["unmarked:" + branch];
+                JObject m = results["marked:" + branch], u = results["unmarked:" + branch], mb = results["marked-without-marker:" + branch];
                 string hit = (string)m["hitProblem"] ?? (string)u["hitProblem"];
-                // A DC is fixed in the web's context at the hit, so DC-reading
-                // escapes compare the marked summon with the naturally unmarked one.
-                string loaded = hit ?? SpiderEscapeObservationVerdict.PairProblem(m["loaded"] as JObject, u["loaded"] as JObject, SpiderSummonerCatalog.DcBonus);
+                // The loaded escape's comparison follows the rule it actually used: a
+                // CMD read at the attempt against the same spider's own real-hit escape
+                // with its marker removed; a DC fixed in the web context at the hit
+                // against the matched unmarked summon's fresh cast.
+                string loadedComparison = "none";
+                string loaded = hit ?? SpiderEscapeObservationVerdict.LoadedProblem(m["loaded"] as JObject,
+                    (string)mb?["hitProblem"] == null ? mb?["loaded"] as JObject : null, u["loaded"] as JObject, SpiderSummonerCatalog.DcBonus, out loadedComparison);
+                if (loaded != null && loadedComparison == "same-spider" && (string)mb?["hitProblem"] != null) loaded = "same-spider-baseline-hit:" + (string)mb["hitProblem"];
+                string loadedAcrossSummons = hit ?? SpiderEscapeObservationVerdict.PairProblem(m["loaded"] as JObject, u["loaded"] as JObject, SpiderSummonerCatalog.DcBonus);
+                string loadedSameSpider = hit ?? ((string)mb?["hitProblem"] != null ? "baseline-hit:" + (string)mb["hitProblem"] :
+                    SpiderEscapeObservationVerdict.PairProblem(m["loaded"] as JObject, mb?["loaded"] as JObject, SpiderSummonerCatalog.DcBonus));
                 // A CMD-reading escape is decided within the same spider and state;
                 // the pair across two summons is kept as a diagnostic.
                 bool cmdBranch = (string)(m["nativeConfiguration"] as JObject)?["rule"] == "RuleCombatManeuver";
@@ -274,9 +298,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SpiderEscapeObservationVerdict.PairProblem(m["nativeConfiguration"] as JObject, u["nativeConfiguration"] as JObject, SpiderSummonerCatalog.DcBonus));
                 string acrossSummons = hit ?? SpiderEscapeObservationVerdict.PairProblem(m["nativeConfiguration"] as JObject, u["nativeConfiguration"] as JObject, SpiderSummonerCatalog.DcBonus);
                 ok &= loaded == null && nativeConfig == null;
-                cases.Add(new JObject { ["branch"] = branch, ["loadedProblem"] = SpiderEscapeObservationVerdict.Optional(loaded),
+                cases.Add(new JObject { ["branch"] = branch, ["loadedComparison"] = loadedComparison, ["loadedProblem"] = SpiderEscapeObservationVerdict.Optional(loaded),
+                    ["loadedAcrossSummonsDiagnostic"] = SpiderEscapeObservationVerdict.Optional(loadedAcrossSummons),
+                    ["loadedSameSpiderDiagnostic"] = SpiderEscapeObservationVerdict.Optional(loadedSameSpider),
                     ["nativeConfigurationProblem"] = SpiderEscapeObservationVerdict.Optional(nativeConfig),
-                    ["nativeConfigurationAcrossSummons"] = SpiderEscapeObservationVerdict.Optional(acrossSummons), ["marked"] = m, ["unmarked"] = u });
+                    ["nativeConfigurationAcrossSummons"] = SpiderEscapeObservationVerdict.Optional(acrossSummons), ["marked"] = m, ["unmarked"] = u, ["markedWithoutMarkerAfterHit"] = mb });
             }
             JObject defenseMarked, defenseUnmarked, defenseMarkedWithout = null;
             int controlMarked = SpiderOrdinaryGrappleTargetNumber(marked[0], hostile, out defenseMarked), controlUnmarked = SpiderOrdinaryGrappleTargetNumber(unmarked[0], hostile, out defenseUnmarked);
@@ -293,7 +319,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["ordinaryGrappleTargetNumberMarked"] = controlMarked, ["ordinaryGrappleTargetNumberMarkedWithoutMarker"] = controlMarkedWithout,
                 ["ordinaryGrappleTargetNumberUnmarkedSummon"] = controlUnmarked,
                 ["ordinaryGrappleDefenses"] = new JObject { ["marked"] = defenseMarked, ["markedWithoutMarker"] = defenseMarkedWithout, ["unmarkedSummon"] = defenseUnmarked },
-                ["scope"] = "Fresh real web hit per escape; loaded = the state's own loaded per-round escape; nativeConfiguration = the installed native action configuration in the same live state. DC-reading escapes compare the marked and unmarked summons; CMD-reading escapes and the ordinary grapple compare the same spider with and without its marker, with the cross-summon pair kept as a diagnostic." },
+                ["webUsesStart"] = webUsesStart, ["webUsesRestoredForBaseline"] = webUsesRestored,
+                ["scope"] = "Fresh real web hit per escape; loaded = the state's own loaded per-round escape; nativeConfiguration = the installed native action configuration in the same live state. Each comparison follows the rule actually used: a DC fixed in the web context compares the marked summon with the matched unmarked summon's fresh cast; a CMD read at the attempt (the native CMB escape, loaded or configured) and the ordinary grapple compare the same spider with and without its marker, the loaded case from the same spider's own second real hit with the marker removed after the hit. Cross-summon CMD pairs are diagnostics only." },
                 "From a real web hit's own held state, each escape triggers its expected rule and its final target number carries exactly +2 from the feat; an ordinary grapple against the same spider is unchanged by the marker.");
             DisposeExpandedSummoningUnits(fixture.Created, new[] { marked[0], unmarked[0] });
         }
@@ -301,7 +328,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// <summary>One fresh real web hit from this spider, then the native
         /// configuration attempt (no payload, the state stays) and the loaded
         /// escape from that same live state.</summary>
-        private IEnumerable<int> SpiderWebHitAndEscape(UnitEntityData spider, UnitEntityData hostile, BlueprintAbility web, BlueprintBuff webbed, string branch, Action<JObject> report)
+        private IEnumerable<int> SpiderWebHitAndEscape(UnitEntityData spider, UnitEntityData hostile, BlueprintAbility web, BlueprintBuff webbed, string branch, Action<JObject> report,
+            bool markerRemovedAfterHit = false)
         {
             foreach (Buff old in hostile.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value => ReferenceEquals(value.Blueprint, webbed)).ToArray())
                 hostile.Descriptor.Buffs.RemoveFact(old);
@@ -344,7 +372,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["state"] = state == null ? null : new JObject { ["buff"] = state.Blueprint.AssetGuid, ["source"] = context?.MaybeCaster?.UniqueId,
                     ["parent"] = context?.ParentContext?.AssociatedBlueprint?.AssetGuid, ["remainingSeconds"] = state.TimeLeft.TotalSeconds },
                 ["stateAncestry"] = ancestry, ["hitProblem"] = SpiderEscapeObservationVerdict.Optional(hitProblem) };
-            if (hitProblem == null)
+            if (hitProblem == null && markerRemovedAfterHit)
+            {
+                // The same spider's own real hit, then its marker removed before
+                // the loaded escape: the baseline for an escape that reads the
+                // spider's CMD at the attempt.
+                BlueprintBuff marker = SpiderSummonerRuntime.Marker;
+                Buff held = marker == null ? null : spider.Descriptor.Buffs.GetBuff(marker);
+                if (held == null) result["loaded"] = new JObject { ["error"] = "no marker to remove" };
+                else
+                {
+                    spider.Descriptor.Buffs.RemoveFact(held);
+                    try
+                    {
+                        JObject loaded = SpiderEscapeAttempt(spider, hostile, branch, "loaded", state);
+                        loaded["outcome"] = hostile.Descriptor.Buffs.RawFacts.Contains(state) ? "held" : "escaped";
+                        result["loaded"] = loaded;
+                    }
+                    finally { spider.Descriptor.AddBuff(marker, spider, null); }
+                }
+                result["markerRemovedAfterHit"] = true;
+                result["markersAfterRestore"] = SpiderMarkerCount(spider);
+            }
+            else if (hitProblem == null)
             {
                 result["nativeConfiguration"] = SpiderEscapeAttempt(spider, hostile, branch, "native", state);
                 // The CMD is calculated per rule, so the same spider and the same
@@ -393,7 +443,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string ordinaryProblem = SpiderFirstSaveDelta(markedPoison, unmarkedPoison, SpiderSummonerCatalog.GiantSpiderPoisonFeature, SpiderSummonerCatalog.DcBonus);
                 Sprint25Check("spider-poison-ordinary", ordinaryProblem == null, new JObject { ["problem"] = SpiderEscapeObservationVerdict.Optional(ordinaryProblem),
                     ["marked"] = markedPoison, ["unmarked"] = unmarkedPoison },
-                    "Actual first and continuing Giant Spider poison saves: the feat summon's resolving DC is the matched unmarked summon's plus exactly 2, and continuing saves add nothing for a single dose.");
+                    "Actual Giant Spider poison saves attributed by identity: in both matched summons the poison's one failed first save applies its own state, whose continuing saves come from that state at the same DC; the feat summon's DC is the unmarked summon's plus exactly 2.");
                 yield return 0;
 
                 // Each Races Unleashed species with its legitimate feat: every poison that actually resolves
@@ -405,7 +455,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     JObject exposure = SpiderPoisonExposure(fixture, caster, hostile, row, species.BaseTier, species.Key);
                     string problem = SpiderSpeciesPoisonProblem(exposure, species);
                     Sprint25Check("spider-poison-" + species.Key, problem == null, new JObject { ["problem"] = SpiderEscapeObservationVerdict.Optional(problem), ["exposure"] = exposure },
-                        "Every poison that resolves from this species' bite (its own and the inherited Hunting poison) saves against its unbonused parameter plus exactly 2, once, with continuing saves unchanged.");
+                        "Both expected poisons of this species' bite, its own and the inherited Hunting poison, each by identity: one failed first save at its own unbonused parameter plus exactly 2, its own state applied once, and that state's continuing saves (one per poison stat-damage component) at the same DC.");
                     yield return 0;
                 }
 
@@ -485,10 +535,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var features = spider.Descriptor.Progression.Features.Enumerable.Where(value => value?.Blueprint != null && SpiderSummonerBenefitPolicy.AdjustsParametersOf(value.Blueprint.AssetGuid)).ToArray();
                 var contexts = new JObject();
                 foreach (Feature poison in features) contexts[poison.Blueprint.AssetGuid] = poison.MaybeContext == null ? -1 : poison.MaybeContext.Params.DC;
+                JArray expected = SpiderExpectedPoisons(features);
                 ItemEntityWeapon weapon = spider.Body.PrimaryHand.MaybeWeapon ?? spider.Body.EmptyHandWeapon;
                 var saves = new SpiderSaveObserver { Target = hostile };
+                // Every save the target makes fails (d20 forced to 2, Fortitude -100),
+                // so each expected poison reaches its own state and continuing save;
+                // a natural 20 had left one inherited poison without a state.
+                var failed = new SpiderFailedSaveRolls { Target = hostile };
                 int attackBonus = spider.Descriptor.Stats.AdditionalAttackBonus.BaseValue;
-                EventBus.Subscribe(saves);
+                EventBus.Subscribe(saves); EventBus.Subscribe(failed);
                 int attempts = 0;
                 try
                 {
@@ -506,7 +561,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.Blueprint.ComponentsArray.OfType<BuffPoisonStatDamage>().Any()).ToArray();
                 foreach (Buff state in states) state.TickMechanics();
                 var continuing = saves.Saves.Select(SpiderSaveRecord).ToArray();
-                EventBus.Unsubscribe(saves);
+                EventBus.Unsubscribe(saves); EventBus.Unsubscribe(failed);
                 var targetState = new JObject { ["conscious"] = hostile.Descriptor.State.IsConscious, ["dead"] = hostile.Descriptor.State.IsDead,
                     ["damage"] = hostile.Descriptor.Damage, ["strength"] = hostile.Stats.Strength.ModifiedValue, ["constitution"] = hostile.Stats.Constitution.ModifiedValue,
                     ["buffs"] = new JArray(hostile.Descriptor.Buffs.Enumerable.Select(value => value.Blueprint.name)) };
@@ -527,7 +582,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["augmentBuffOnce"] = spider.Descriptor.Buffs.Enumerable.Count(value => ReferenceEquals(value.Blueprint, augmentBuff)) == 1,
                     ["poisonFeatures"] = new JArray(features.Select(value => value.Blueprint.AssetGuid)), ["contextDc"] = contexts, ["unbonusedDc"] = unbonused,
                     ["weapon"] = weapon?.Blueprint?.AssetGuid, ["firstSaves"] = new JArray(first), ["poisonStates"] = new JArray(states.Select(value => value.Blueprint.AssetGuid)),
-                    ["continuingSaves"] = new JArray(continuing), ["applications"] = new JArray(saves.Applications), ["target"] = targetState, ["attackAttempts"] = attempts };
+                    ["continuingSaves"] = new JArray(continuing), ["applications"] = new JArray(saves.Applications), ["target"] = targetState, ["attackAttempts"] = attempts,
+                    ["expected"] = expected, ["forcedSaveRolls"] = failed.Forced };
             }
             finally
             {
@@ -551,49 +607,95 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private static IEnumerable<JObject> SpiderFirstSaves(JObject exposure, string feature)
+        /// <summary>Forces the d20 of each saving throw the target makes to 2.
+        /// Armed by the target's own RuleSavingThrow, so attack and other rolls
+        /// are untouched.</summary>
+        private sealed class SpiderFailedSaveRolls : IGlobalRulebookHandler<RuleSavingThrow>, IGlobalRulebookHandler<RuleRollD20>
         {
-            JArray saves = exposure?["firstSaves"] as JArray;
-            return saves == null ? Enumerable.Empty<JObject>() : saves.OfType<JObject>().Where(value => (string)value["reasonFact"] == feature);
+            internal UnitEntityData Target; internal int Forced;
+            private RuleSavingThrow armed;
+            public void OnEventAboutToTrigger(RuleSavingThrow evt) { if (evt != null && ReferenceEquals(evt.Initiator, Target)) armed = evt; }
+            public void OnEventDidTrigger(RuleSavingThrow evt) { if (ReferenceEquals(evt, armed)) armed = null; }
+            public void OnEventAboutToTrigger(RuleRollD20 evt)
+            {
+                if (armed == null || evt == null || !ReferenceEquals(evt.Initiator, Target)) return;
+                evt.Override(2); Forced++; armed = null;
+            }
+            public void OnEventDidTrigger(RuleRollD20 evt) { }
         }
 
-        /// <summary>Null when the marked exposure's first save from this feature
-        /// is the unmarked one's plus the bonus, both exactly once, and each
-        /// state's continuing saves equal its first save.</summary>
+        /// <summary>The poison state each feature applies on a failed save, per
+        /// Races Unleashed 1.0.11's CreateSpiderPoison (feature, buff) pairs.</summary>
+        private static readonly Dictionary<string, string> SpiderRacesUnleashedPoisonStates = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            { "ddf05b24c484487692764d04079cb899", "37ccf50a465642958b7902cd149c9025" },
+            { "b7d97e350ead49b1abd419fa4655d31a", "16b27023541d4f47b599e00847877515" },
+            { "b32243a8c4c5439c92a00296fc4bb7a1", "14b7bca42b094ab8979d936136b633be" },
+            { "756e0e46215f4a5e8edd79659a6ad992", "f13868529f754fcc8c96d9b503a2ae75" },
+        };
+
+        /// <summary>Each poison feature's expected state by identity, read from
+        /// the feature's own action tree (the buff it applies that carries poison
+        /// stat damage), and that state's continuing saves per tick.</summary>
+        private static JArray SpiderExpectedPoisons(IEnumerable<Feature> features)
+        {
+            var expected = new JArray();
+            foreach (Feature poison in features)
+            {
+                var found = new List<BlueprintBuff>();
+                foreach (BlueprintComponent component in poison.Blueprint.ComponentsArray ?? new BlueprintComponent[0])
+                    SpiderCollectAppliedBuffs(component, found, new HashSet<object>(), 0);
+                BlueprintBuff[] states = found.Where(value => value != null && (value.ComponentsArray ?? new BlueprintComponent[0]).OfType<BuffPoisonStatDamage>().Any()).Distinct().ToArray();
+                BlueprintBuff state = states.Length == 1 ? states[0] : null;
+                string source;
+                bool sourceKnown = SpiderRacesUnleashedPoisonStates.TryGetValue(poison.Blueprint.AssetGuid, out source);
+                bool agrees = !sourceKnown || (state != null && state.AssetGuid == source);
+                int perTick = state == null ? 0 : state.ComponentsArray.OfType<BuffPoisonStatDamage>().Count(value => value.SaveType != SavingThrowType.Unknown);
+                expected.Add(new JObject { ["feature"] = poison.Blueprint.AssetGuid, ["featureName"] = poison.Blueprint.name,
+                    ["state"] = agrees ? (JToken)state?.AssetGuid : JValue.CreateNull(), ["stateName"] = state?.name, ["perTick"] = perTick,
+                    ["statesFound"] = states.Length, ["racesUnleashedSourceState"] = sourceKnown ? (JToken)source : JValue.CreateNull(), ["agreesWithSource"] = agrees });
+            }
+            return expected;
+        }
+
+        private static void SpiderCollectAppliedBuffs(object node, List<BlueprintBuff> found, HashSet<object> seen, int depth)
+        {
+            if (node == null || depth > 16 || !seen.Add(node)) return;
+            var apply = node as ContextActionApplyBuff;
+            if (apply != null && apply.Buff != null) found.Add(apply.Buff);
+            var list = node as Kingmaker.ElementsSystem.ActionList;
+            if (list != null)
+            {
+                foreach (Kingmaker.ElementsSystem.GameAction action in list.Actions ?? new Kingmaker.ElementsSystem.GameAction[0]) SpiderCollectAppliedBuffs(action, found, seen, depth + 1);
+                return;
+            }
+            if (!(node is Kingmaker.ElementsSystem.GameAction) && !(node is BlueprintComponent)) return;
+            foreach (FieldInfo field in node.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public))
+            {
+                if (typeof(Kingmaker.ElementsSystem.ActionList).IsAssignableFrom(field.FieldType) || typeof(Kingmaker.ElementsSystem.GameAction).IsAssignableFrom(field.FieldType))
+                    SpiderCollectAppliedBuffs(field.GetValue(node), found, seen, depth + 1);
+                else if (field.FieldType == typeof(Kingmaker.ElementsSystem.GameAction[]))
+                    foreach (Kingmaker.ElementsSystem.GameAction action in (Kingmaker.ElementsSystem.GameAction[])field.GetValue(node) ?? new Kingmaker.ElementsSystem.GameAction[0])
+                        SpiderCollectAppliedBuffs(action, found, seen, depth + 1);
+            }
+        }
+
+        /// <summary>The ordinary Giant Spider: matched marked and unmarked
+        /// summons, each poison fully attributed, first DC exactly +2.</summary>
         internal static string SpiderFirstSaveDelta(JObject marked, JObject unmarked, string feature, int bonus)
         {
-            if (marked?["error"] != null) return "marked:" + marked["error"];
-            if (unmarked?["error"] != null) return "unmarked:" + unmarked["error"];
-            JObject[] m = SpiderFirstSaves(marked, feature).ToArray(), u = SpiderFirstSaves(unmarked, feature).ToArray();
-            if (m.Length != 1 || u.Length != 1) return "first-saves:" + m.Length + "/" + u.Length;
-            int with = (int)m[0]["dc"], without = (int)u[0]["dc"];
-            if (with != without + bonus) return "first-dc:" + without + "->" + with;
-            return SpiderContinuingProblem(marked) ?? SpiderContinuingProblem(unmarked);
+            return SpiderPoisonObservationVerdict.MatchedProblem(marked, unmarked, new[] { feature }, bonus);
         }
 
-        private static string SpiderContinuingProblem(JObject exposure)
-        {
-            JArray first = exposure["firstSaves"] as JArray, continuing = exposure["continuingSaves"] as JArray;
-            if (continuing == null || continuing.Count == 0) return "no-continuing-save:" + exposure["case"];
-            int[] firstDcs = first.OfType<JObject>().Select(value => (int)value["dc"]).ToArray();
-            return continuing.OfType<JObject>().All(value => firstDcs.Contains((int)value["dc"])) ? null : "continuing-dc-differs:" + exposure["case"];
-        }
-
+        /// <summary>A Races Unleashed species: its own poison and the inherited
+        /// Hunting poison are both required, each fully attributed, each first
+        /// DC its own unbonused parameter plus exactly 2.</summary>
         private static string SpiderSpeciesPoisonProblem(JObject exposure, SpiderSpeciesSpec species)
         {
             if (exposure?["error"] != null) return "error:" + exposure["error"];
             if ((int)exposure["markers"] != 1) return "markers:" + exposure["markers"];
-            JArray first = exposure["firstSaves"] as JArray;
-            if (first == null || !first.OfType<JObject>().Any(value => (string)value["reasonFact"] == species.PoisonFeatureGuid)) return "own-poison-did-not-resolve";
-            foreach (JObject save in first.OfType<JObject>())
-            {
-                string source = (string)save["reasonFact"];
-                JToken unbonused = (exposure["unbonusedDc"] as JObject)?[source ?? ""];
-                if (unbonused == null) return "unattributed-save:" + source;
-                if ((int)save["dc"] != (int)unbonused + SpiderSummonerCatalog.DcBonus) return "dc:" + source + ":" + unbonused + "->" + save["dc"];
-            }
-            if (first.OfType<JObject>().GroupBy(value => (string)value["reasonFact"]).Any(group => group.Count() != 1)) return "repeated-first-save";
-            return SpiderContinuingProblem(exposure);
+            return SpiderPoisonObservationVerdict.UnbonusedProblem(exposure,
+                new[] { species.PoisonFeatureGuid, SpiderSummonerCatalog.HuntingSpiderPoisonFeature }, SpiderSummonerCatalog.DcBonus);
         }
 
         private JObject SpiderSuperiorCast(ExpandedSummoningCorrectionFixture fixture, UnitEntityData caster, BlueprintAbility row, int tier, string unit)

@@ -266,10 +266,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     finally { if (die != null) EventBus.Unsubscribe(die); }
                 }
+                string unitsProblem = child == null ? "not-cast" : SpiderRouteObservationVerdict.UnitsProblem(record["units"] as JArray, scoped.Expected, SpiderSummonerCatalog.Find(scoped.Key).UnitGuid, false);
+                record["unitsProblem"] = SpiderEscapeObservationVerdict.Optional(unitsProblem);
                 bool ok = child != null && chain && (int)record["duplicates"] == 0 && new HashSet<string>(convertedSpiders).SetEquals(spiderRows) &&
-                    (string)record["result"] == "Success" && (int)record["count"] == scoped.Expected && (bool)record["exactlyOneSourceSlot"];
+                    (string)record["result"] == "Success" && (int)record["count"] == scoped.Expected && (bool)record["exactlyOneSourceSlot"] && unitsProblem == null;
                 Sprint25Check("spider-route-druid-conversion-" + scoped.Tier, ok, record,
-                    "Druid conversion from an unrelated prepared spell offers exactly the prepared Summon Nature's Ally parent's spider rows without duplicates, keeps the source chain, casts the spider and spends exactly the source slot.");
+                    "Druid conversion from an unrelated prepared spell offers exactly the prepared Summon Nature's Ally parent's spider rows without duplicates, keeps the source chain, and spends exactly the source slot; every creature is the chosen spider in its expected count, with one benefit, no template, the caster's alignment and a live, finite summon lifetime.");
                 druidBook.Rest();
             }
 
@@ -376,8 +378,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in SpiderRouteCast(fixture, caster, child, (result, actions, units, debit) =>
                     { record["result"] = result; record["count"] = units.Length; record["exactlyOnePoolUse"] = debit.ExactlyOneSpontaneous(book, scoped.Tier);
                       record["units"] = new JArray(units.Select(value => SpiderUnitRecord(value, caster))); })) yield return frame;
+                string unitsProblem = child == null ? "not-cast" : SpiderRouteObservationVerdict.UnitsProblem(record["units"] as JArray, 1, SpiderSummonerCatalog.Find(scoped.Key).UnitGuid, scoped.Family == SummonFamily.Monster);
+                record["unitsProblem"] = SpiderEscapeObservationVerdict.Optional(unitsProblem);
                 bool cast = child != null && book.Blueprint.Spontaneous && onClassList && (string)record["result"] == "Success" &&
-                    record.Value<int?>("count") == 1 && record.Value<bool?>("exactlyOnePoolUse") == true;
+                    record.Value<int?>("count") == 1 && record.Value<bool?>("exactlyOnePoolUse") == true && unitsProblem == null;
                 // The same kept choice after the feat is removed: refused, nothing spent.
                 if (grant != null) caster.Descriptor.RemoveFact(grant);
                 if (child != null)
@@ -385,7 +389,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { record["staleResult"] = result; record["staleSpawned"] = units.Length; record["staleUnspent"] = debit.Unspent; })) yield return frame;
                 bool stale = child != null && (string)record["staleResult"] != "Success" && record.Value<int?>("staleSpawned") == 0 && record.Value<bool?>("staleUnspent") == true;
                 Sprint25Check("spider-route-spontaneous-" + scoped.Family, cast && stale, record,
-                    "An ordinary spontaneous book casts the spider from its pool, losing exactly one use of that level, and the same kept choice after the feat is removed is refused with nothing spent.");
+                    "An ordinary spontaneous book casts the spider from its pool, losing exactly one use of that level; the creature is the chosen spider with one benefit, the family's template behavior and a live, finite summon lifetime; the same kept choice after the feat is removed is refused with nothing spent.");
             }
             var masters = new HashSet<UnitEntityData>(fixture.Created.Where(value => value != null && _spiderRouteBlueprints.Contains(value.Blueprint)).Concat(new[] { fixture.Caster }));
             UnitEntityData[] pets = Game.Instance.State.Units.All.Where(value => value != null && value.Descriptor.Master.Value != null && masters.Contains(value.Descriptor.Master.Value)).ToArray();
