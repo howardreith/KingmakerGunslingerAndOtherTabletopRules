@@ -182,5 +182,16 @@ namespace KingmakerGunslinger.Summoning
             return cmdIsGrapple && enclosedByGrappleManeuver && sameEscapee && spiderIsManeuverTarget && spiderCastTheWeb && spiderMarked &&
                 reasonContextBlueprint == WebbedState && reasonParentBlueprint == SpiderSummonerCatalog.GiantSpiderWebAbility;
         }
+
+        /// <summary>
+        /// The spider is marked when the handler's own fact is the marker its
+        /// owner currently holds. This needs no reference set by an active
+        /// integration, so a marker kept across a reload with Expanded
+        /// Summoning OFF keeps its benefit until the summon expires.
+        /// </summary>
+        internal static bool OwnMarkerHeld(object ownFact, object heldByOwner)
+        {
+            return ownFact != null && ReferenceEquals(ownFact, heldByOwner);
+        }
     }
 }

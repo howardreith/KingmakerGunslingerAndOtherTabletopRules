@@ -141,15 +141,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             report(records);
         }
 
-        private static BlueprintAbility SpiderPlainSpell(Spellbook book, int level, int index)
+        private static BlueprintAbility SpiderPlainSpell(Spellbook book, int level, int index, bool extendable = false)
         {
             return book.Blueprint.SpellList.GetSpells(level).Where(value => value != null && (value.Variants == null || value.Variants.Length == 0) &&
+                (!extendable || (value.AvailableMetamagic & Metamagic.Extend) != 0) &&
                 !ExpandedSummoningPublisher.CanonicalParentGuids.Contains(value.AssetGuid)).OrderBy(value => value.AssetGuid, StringComparer.Ordinal).ElementAt(index);
         }
 
-        /// <summary>Prepares this spell with Extend Spell in its raised slot.</summary>
+        /// <summary>The native Extend Spell feat: the feature whose metamagic
+        /// component grants Extend, preferring the native name.</summary>
+        private static BlueprintFeature SpiderExtendSpellFeat()
+        {
+            BlueprintFeature[] grants = BlueprintBootstrap.Library.BlueprintsByAssetId.Values.OfType<BlueprintFeature>().Where(value =>
+                (value.ComponentsArray ?? new BlueprintComponent[0]).OfType<Kingmaker.UnitLogic.FactLogic.AddMetamagicFeat>().Any(component => component.Metamagic == Metamagic.Extend))
+                .OrderBy(value => value.name == "ExtendSpellFeat" ? 0 : 1).ThenBy(value => value.AssetGuid, StringComparer.Ordinal).ToArray();
+            if (grants.Length == 0) throw new InvalidOperationException("No installed feat grants Extend Spell.");
+            return grants[0];
+        }
+
+        /// <summary>Prepares this spell with Extend Spell in its raised slot, as
+        /// a legal preparation: the spell accepts Extend and the book's owner
+        /// holds the Extend Spell feat (granted to the fixture if absent).</summary>
         private static AbilityData SpiderPrepareExtended(Spellbook book, BlueprintAbility spell, int baseLevel)
         {
+            if ((spell.AvailableMetamagic & Metamagic.Extend) == 0)
+                throw new InvalidOperationException("Precondition unsatisfied: " + spell.name + " does not accept Extend Spell (" + spell.AvailableMetamagic + ").");
+            BlueprintFeature extendFeat = SpiderExtendSpellFeat();
+            if (!book.Owner.HasFact(extendFeat)) book.Owner.AddFact(extendFeat);
+            if (!book.Owner.HasFact(extendFeat)) throw new InvalidOperationException("Precondition unsatisfied: the fixture could not hold " + extendFeat.name + ".");
             var metamagic = new MetamagicData { SpellLevelCost = Metamagic.Extend.DefaultCost() };
             metamagic.Add(Metamagic.Extend);
             if (book.GetSpellLevel(spell) < 0) book.AddKnown(baseLevel, spell, true);
@@ -228,7 +247,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint25Check("spider-extended-caster-level-duration", problem == null && book.CasterLevel == 20 && child.MetamagicData != null && child.MetamagicData.Has(Metamagic.Extend) &&
                         extendedParent.ParamSpellSlot != null && !extendedParent.ParamSpellSlot.Available,
                         new JObject { ["rules"] = rules, ["problem"] = problem, ["bookCasterLevel"] = book.CasterLevel, ["childMetamagic"] = child.MetamagicData?.MetamagicMask.ToString(),
-                            ["slotLevel"] = extendedParent.ParamSpellSlot?.SpellLevel, ["slotSpent"] = extendedParent.ParamSpellSlot != null && !extendedParent.ParamSpellSlot.Available },
+                            ["slotLevel"] = extendedParent.ParamSpellSlot?.SpellLevel, ["slotSpent"] = extendedParent.ParamSpellSlot != null && !extendedParent.ParamSpellSlot.Available,
+                            ["parentAvailableMetamagic"] = smParent(5).AvailableMetamagic.ToString(), ["extendFeat"] = SpiderExtendSpellFeat().name },
                         "The Ogre cast from a Summon Monster V prepared with Extend Spell carries Extend, and the engine's summon rule gives 40 rounds (twice caster level 20); its level 6 slot is the one spent.");
                 }
                 else Sprint25Check("spider-extended-row-present", false, new JObject { ["rows"] = extendedMenu?.Rows.Length ?? 0 }, "The Ogre is offered under the extended Summon Monster V.");
@@ -239,7 +259,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // spontaneous conversion does not carry the source's metamagic (AbilityData copies it only
                 // to a variant of the same spell), so the projected spider has the native conversion's own
                 // metamagic: none, and the caster level's rounds. Its debit is the raised slot.
-                BlueprintAbility unrelatedFour = SpiderPlainSpell(book, 4, 1);
+                BlueprintAbility unrelatedFour = SpiderPlainSpell(book, 4, 0, true);
                 AbilityData extendedSourceSpell = SpiderPrepareExtended(book, unrelatedFour, 4);
                 book.Rest();
                 AlphaMenu conversionMenu = null; ActionBarGroupSlot conversionSource = null;
@@ -257,7 +277,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint25Check("spider-herald-extended-source-caster-level-duration", problem == null && nativeMetamagic && extendedSourceSpell.ParamSpellSlot.SpellLevel == 5,
                         new JObject { ["rules"] = rules, ["problem"] = problem, ["childMetamagic"] = child.MetamagicData?.MetamagicMask.ToString(),
                             ["conversionMetamagic"] = child.ConvertedFrom?.MetamagicData?.MetamagicMask.ToString(), ["sourceMetamagic"] = extendedSourceSpell.MetamagicData?.MetamagicMask.ToString(),
-                            ["sourceSlotLevel"] = extendedSourceSpell.ParamSpellSlot.SpellLevel },
+                            ["sourceSlotLevel"] = extendedSourceSpell.ParamSpellSlot.SpellLevel, ["sourceSpell"] = unrelatedFour.name + ":" + unrelatedFour.AssetGuid,
+                            ["sourceAvailableMetamagic"] = unrelatedFour.AvailableMetamagic.ToString(), ["extendFeat"] = SpiderExtendSpellFeat().name,
+                            ["extendFeatHeld"] = book.Owner.HasFact(SpiderExtendSpellFeat()) },
                         "A Herald spider converted from an unrelated level 4 spell prepared with Extend Spell is a Summon Monster V from that level 5 slot; like the native conversion it carries no Extend, and its summon rule gives 20 rounds at caster level 20.");
                 }
                 else Sprint25Check("spider-herald-extended-source-row-present", false, new JObject { ["rows"] = conversionMenu?.Rows.Length ?? 0 }, "The Ogre is offered in the Herald popup over the extended source.");

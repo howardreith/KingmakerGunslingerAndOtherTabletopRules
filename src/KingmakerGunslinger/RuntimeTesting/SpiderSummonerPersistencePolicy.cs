@@ -5,7 +5,8 @@ namespace KingmakerGunslinger.RuntimeTesting
     /// processes share one prepared checkpoint:
     /// <list type="number">
     /// <item>prepare, Expanded Summoning ON: the fixture caster, its two pinned
-    /// shortcuts and one active marked spider are saved;</item>
+    /// shortcuts, the active marked Black Widow and an active marked Giant
+    /// Spider are saved;</item>
     /// <item>verify-cleanup with <c>spiderCheckpoint=preserve</c>, Expanded
     /// Summoning OFF: the disabled-module reload of that checkpoint. It writes
     /// nothing, so the checkpoint stays exactly as prepared;</item>
@@ -24,6 +25,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string ReceiptScope = "KMG_SpiderSummoner_Persistence_v1";
         internal const string CasterRole = "caster";
         internal const string SummonRole = "summon";
+        /// <summary>The saved marked Giant Spider whose web the disabled
+        /// reload exercises; the Black Widow has no web.</summary>
+        internal const string WebSpiderRole = "web-spider";
 
         /// <summary>Whether the request's stage and parameters are a stage of
         /// this sequence. The module state is checked in the game.</summary>
