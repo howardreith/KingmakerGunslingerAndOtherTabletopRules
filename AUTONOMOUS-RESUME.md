@@ -4,18 +4,21 @@ Current (2026-11-10). See planning/races-unleashed-compatibility/STATUS.md. Bran
 `codex/races-unleashed-summoning`, draft PR #125 against master. Activated by the owner's mission package;
 the deferred handoff is preserved as `planning/races-unleashed-compatibility/BASELINE.md`.
 
-- Both review corrections are implemented and accepted by the second review.
-- The scoped +2 to the native CMB web escape is implemented (`e6723d872320`), along with observers for both escape
-  branches, fiendish Crab and Widow casts, and a retained-toggle cast.
-- Candidate `e6723d872320`, package `b916bc08...0cb9`: native FAIL 67/2. A recurring popup-teardown guard
-  refusal at the Summon Monster V teardown around the repaired Ogre cast (also run 1 of `8c1734743cce`) stopped
-  the phase before any spider cell, so the new behavior has no native result. Cause not established.
-- `8c1734743cce` keeps its PASS 153/0 (run 2) as evidence for that candidate only.
-- Next step: narrow the guard refusal (diagnostic owner of the leftover tooltip context, or pointer use on DATA),
-  then one candidate and the scenario table in STATUS.md.
+- Review corrections and the scoped native CMB web-escape +2 are implemented.
+- Candidate `e6723d872320` passed under controlled input (no human input, pointer parked): PASS 174/0.
+  - Native skill, native CMB and Call of the Wild's loaded escape branches each went from 12 to 14 with the marker.
+  - The fiendish Crab and Widow casts and the retained-toggle cast passed.
+  - Its earlier FAIL 67/2 (popup-teardown guard refusal) is retained, recorded as possible input interference.
+- Observer candidate `655ab8a8ae3e` FAIL 155/9 from observer defects:
+  - a Json.NET null-token check;
+  - an in-phase real web hit that left a second native mode.
+  Its recorded values still confirm the per-branch rules and a real ordinary grapple unchanged at 12. The fix is
+  `182717dd10`, committed but not built.
+- Next step: build `182717dd10` once and run under controlled input. Then a real feat web hit in a fixture that owns
+  its clock and hostile, the `gunslinger-races-unleashed` profile through
+  `scripts/compatibility/Invoke-KingmakerCompatibilityProfile.ps1` after preflight, and the STATUS scenario table.
 - Install, saves, settings and `Params.xml` restored exactly after each run (`verified`).
-- This task's ledger is about 800 of 1,800 s. No merge, release, permanent install or further native run follows
-  without explicit owner authorization.
+- No merge, release, permanent install or further native run follows without explicit owner authorization.
 
 ---
 
