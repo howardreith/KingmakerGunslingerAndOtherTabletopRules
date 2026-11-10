@@ -68,11 +68,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             casters.PlainDruid = SpiderRouteCaster(fixture, "KMG_Runtime_Spider_UiPlainDruid", Vector3.left * 2f + Vector3.back * 2f, Alignment.TrueNeutral);
             casters.PlainDruid.Stats.Wisdom.BaseValue = 30;
             casters.Setup["plainDruid"] = SpiderNaturalLevels(casters.PlainDruid, cls(SpiderDruidClass), 9, null, null, null, Alignment.TrueNeutral);
-            casters.Herald = SpiderRouteCaster(fixture, "KMG_Runtime_Spider_UiHerald", Vector3.right * 2f + Vector3.back * 2f, Alignment.NeutralGood);
+            // A legal chaotic good cleric of Desna, chosen in the native deity selection,
+            // the same pairing as the granted-feature Herald under which spiders are permitted.
+            casters.Herald = SpiderRouteCaster(fixture, "KMG_Runtime_Spider_UiHerald", Vector3.right * 2f + Vector3.back * 2f, Alignment.ChaoticGood);
             casters.Herald.Stats.Wisdom.BaseValue = 30;
             casters.Setup["heraldCleric"] = SpiderNaturalLevels(casters.Herald, cls(SpiderClericClass), 9, null,
-                BlueprintLibraryLookup.RequireExact<BlueprintArchetype>(library, SpiderHeraldArchetype, "Herald Caller"), null, Alignment.NeutralGood);
-            casters.Setup["heraldWizard"] = SpiderNaturalLevels(casters.Herald, cls(SpiderWizardClass), 1, null, null, null, Alignment.NeutralGood);
+                BlueprintLibraryLookup.RequireExact<BlueprintArchetype>(library, SpiderHeraldArchetype, "Herald Caller"), null, Alignment.ChaoticGood,
+                BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library, ClericDesnaGuid, "Desna"));
+            casters.Setup["heraldWizard"] = SpiderNaturalLevels(casters.Herald, cls(SpiderWizardClass), 1, null, null, null, Alignment.ChaoticGood);
             casters.Herald.Descriptor.AddFact(feature);
             // Native level-up may take companions; they are not part of this fixture.
             var masters = new HashSet<UnitEntityData> { casters.Druid, casters.PlainDruid, casters.Herald };
@@ -139,6 +142,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SpiderSummonRules.Clear();
             }
             report(records);
+        }
+
+        /// <summary>Call of the Wild's "metamagic for spontaneous spell conversion"
+        /// adds conversions at the source's base level that the native conversion
+        /// list does not contain; Expanded Summoning does not project them, so they
+        /// show as native quantity rows. Identified exactly and recorded as a
+        /// separate finding, outside the spider comparison.</summary>
+        private static Func<AbilityData, string> SpiderCotwMetamagicConversions(AbilityData source, Spellbook book)
+        {
+            bool cotw = AppDomain.CurrentDomain.GetAssemblies().Any(value => value.GetName().Name == "CallOfTheWild");
+            BlueprintAbility[] native = book.GetSpontaneousConversionSpells(source).ToArray();
+            return row => cotw && ReferenceEquals(row.ConvertedFrom, source) && row.Blueprint != null && !native.Contains(row.Blueprint) &&
+                SummonNativeOptionCatalog.All.Any(value => value.Guid == row.Blueprint.AssetGuid) ? "call-of-the-wild-metamagic-spontaneous-conversion-unprojected" : null;
+        }
+
+        /// <summary>The cleric's own non-summon spontaneous conversions of the
+        /// same source (cure or inflict), which share the native popup.</summary>
+        private static Func<AbilityData, string> SpiderNonSummonConversions(AbilityData source)
+        {
+            return row =>
+            {
+                if (!ReferenceEquals(row.ConvertedFrom, source) || row.Blueprint == null) return null;
+                bool summon;
+                try { summon = SummonSignatureReader.Read(row.Blueprint).Spawns().Any() || (row.Blueprint.Variants != null && row.Blueprint.Variants.Length != 0); }
+                catch (Exception) { summon = true; }
+                return summon ? null : "native-non-summon-spontaneous-conversion";
+            };
+        }
+
+        private static BlueprintAbility[] SpiderPermitted(BlueprintAbility parent, Spellbook book)
+        {
+            return (parent.Variants ?? new BlueprintAbility[0]).Where(value => new AbilityData(value, book).IsVisible() &&
+                SummonClericAlignmentRuntime.PermitsRow(value, book.Owner, book)).ToArray();
         }
 
         private static BlueprintAbility SpiderPlainSpell(Spellbook book, int level, int index, bool extendable = false)
@@ -234,8 +270,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 AbilityData extendedParent = SpiderPrepareExtended(book, smParent(5), 5);
                 book.Rest();
                 AlphaMenu extendedMenu = null; ActionBarGroupSlot extendedSource = null;
+                // The level 6 slot's popup: the Herald conversion of that slot (Summon Monster VI,
+                // projected) followed by the prepared spell's own Summon Monster V variants.
                 foreach (int frame in R6Cell("spider-extended-popup", () => ClericOpenMenu("spider-extended-sm5", spellGroup, levels, 6, book, smParent(5), extendedParent, mode, watch, null,
-                    (value, slot) => { extendedMenu = value; extendedSource = slot; }, false))) yield return frame;
+                    (value, slot) => { extendedMenu = value; extendedSource = slot; }, false, SpiderPermitted(smParent(6), book).Concat(SpiderPermitted(smParent(5), book)).ToArray(),
+                    SpiderCotwMetamagicConversions(extendedParent, book)))) yield return frame;
                 int extendedIndex = extendedMenu == null ? -1 : Array.FindIndex(extendedMenu.Data, value => ReferenceEquals(value?.Blueprint, ogre));
                 if (extendedIndex >= 0 && extendedSource != null)
                 {
@@ -264,7 +303,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 book.Rest();
                 AlphaMenu conversionMenu = null; ActionBarGroupSlot conversionSource = null;
                 foreach (int frame in R6Cell("spider-herald-extended-source-popup", () => ClericOpenMenu("spider-herald-extended-source-tier5", spellGroup, levels, 5, book, smParent(5),
-                    extendedSourceSpell, mode, watch, null, (value, slot) => { conversionMenu = value; conversionSource = slot; }, false))) yield return frame;
+                    extendedSourceSpell, mode, watch, null, (value, slot) => { conversionMenu = value; conversionSource = slot; }, false, null,
+                    SpiderCotwMetamagicConversions(extendedSourceSpell, book)))) yield return frame;
                 int conversionIndex = conversionMenu == null ? -1 : Array.FindIndex(conversionMenu.Data, value => ReferenceEquals(value?.Blueprint, ogre));
                 if (conversionIndex >= 0 && conversionSource != null)
                 {
@@ -299,7 +339,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in SpiderInterfaceSelect(casters.Herald)) yield return frame;
                 AlphaMenu menu = null; ActionBarGroupSlot popupSource = null;
                 foreach (int frame in R6Cell("spider-natural-herald-popup", () => ClericOpenMenu("spider-natural-herald-tier5", spellGroup, levels, 5, clericBook, smParent(5), source, mode, watch, null,
-                    (value, slot) => { menu = value; popupSource = slot; }, false))) yield return frame;
+                    (value, slot) => { menu = value; popupSource = slot; }, false, null, SpiderNonSummonConversions(source)))) yield return frame;
                 int index = menu == null ? -1 : Array.FindIndex(menu.Data, value => ReferenceEquals(value?.Blueprint, ogre));
                 if (index >= 0 && popupSource != null)
                 {

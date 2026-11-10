@@ -65,6 +65,20 @@ namespace KingmakerGunslinger.Summoning
         }
 
         public override void OnEventDidTrigger(RuleCalculateAbilityParams evt) { }
+
+        /// <summary>
+        /// A reload activates the spider's poison features before this marker,
+        /// so their stored parameters are calculated without the bonus. Once
+        /// the marker is on, recalculate them: each calculation is a new rule
+        /// answered by this one fact, so the result carries exactly one +2.
+        /// This needs no active integration, so a saved spider keeps its
+        /// benefit with the module OFF until it expires.
+        /// </summary>
+        public override void OnTurnOn()
+        {
+            base.OnTurnOn();
+            if (Owner != null) SpiderSummonerRuntime.RecalculatePoison(Owner);
+        }
     }
 
     /// <summary>
@@ -133,7 +147,14 @@ namespace KingmakerGunslinger.Summoning
                 Buff applied = target.Descriptor.AddBuff(Marker, caster, null);
                 if (applied != null) applied.IsNotDispelable = true;
             }
-            foreach (Feature feature in target.Descriptor.Progression.Features.Enumerable)
+            RecalculatePoison(target.Descriptor);
+        }
+
+        /// <summary>Recalculates the owner's already calculated parameters of
+        /// every feature the benefit adjusts.</summary>
+        internal static void RecalculatePoison(UnitDescriptor owner)
+        {
+            foreach (Feature feature in owner.Progression.Features.Enumerable.ToArray())
             {
                 if (feature == null || feature.Blueprint == null || !SpiderSummonerBenefitPolicy.AdjustsParametersOf(feature.Blueprint.AssetGuid)) continue;
                 feature.MaybeContext?.Recalculate();

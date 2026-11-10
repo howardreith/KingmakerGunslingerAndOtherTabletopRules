@@ -137,7 +137,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> ClericOpenMenu(string label, ActionBarGroupElement spellGroup, ActionBarSubGroupLevels levels, int tier, Spellbook book,
             BlueprintAbility parent, AbilityData original, Cleanup2NativeDefaultScope mode, Stopwatch watch, NativeIconScreenEvidence screens,
-            Action<AlphaMenu, ActionBarGroupSlot> result, bool closeAfter)
+            Action<AlphaMenu, ActionBarGroupSlot> result, bool closeAfter, BlueprintAbility[] expectedRows = null, Func<AbilityData, string> setAside = null)
         {
             Cleanup2MenuAdapterBoundary(mode, watch);
             if (!spellGroup.ToggleState) spellGroup.OnClick();
@@ -152,13 +152,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             AlphaMenu menu = AlphaReadPopup(source);
             try
             {
-                BlueprintAbility[] rows = menu.Data.Select(value => value?.Blueprint).ToArray();
+                // Rows a caller identifies exactly as outside this summon comparison
+                // (named per row) are recorded, never silently dropped.
+                var setAsideRows = new JArray();
+                BlueprintAbility[] rows = menu.Data.Where(value =>
+                {
+                    string reason = setAside == null || value == null ? null : setAside(value);
+                    if (reason != null) setAsideRows.Add(new JObject { ["row"] = value.Blueprint?.AssetGuid, ["name"] = value.Blueprint?.name, ["reason"] = reason,
+                        ["metamagic"] = value.MetamagicData?.MetamagicMask.ToString(), ["convertedFrom"] = value.ConvertedFrom?.Blueprint?.AssetGuid });
+                    return reason == null;
+                }).Select(value => value?.Blueprint).ToArray();
                 BlueprintAbility[] variants = parent.Variants ?? new BlueprintAbility[0];
-                BlueprintAbility[] expected = variants.Where(value => new AbilityData(value, book).IsVisible() && SummonClericAlignmentRuntime.PermitsRow(value, book.Owner, book)).ToArray();
+                BlueprintAbility[] expected = expectedRows ?? variants.Where(value => new AbilityData(value, book).IsVisible() && SummonClericAlignmentRuntime.PermitsRow(value, book.Owner, book)).ToArray();
                 bool exact = rows.SequenceEqual(expected) && rows.Distinct().Count() == rows.Length;
                 Sprint25Check("cleric-menu-" + label, exact, new JObject { ["menu"] = label, ["parent"] = parent.AssetGuid, ["published"] = variants.Length, ["expected"] = expected.Length,
-                    ["rows"] = AlphaRowsEvidence(menu), ["hiddenForThisCaster"] = new JArray(variants.Except(expected).Select(value => value.Name)) },
-                    "The real popup lists exactly this caster's permitted rows, in the published alphabetical order, with no duplicates.");
+                    ["rows"] = AlphaRowsEvidence(menu), ["hiddenForThisCaster"] = new JArray(variants.Except(expected).Select(value => value.Name)),
+                    ["expectedOverride"] = expectedRows != null, ["setAside"] = setAsideRows },
+                    "The real popup lists exactly this caster's permitted rows, in the published alphabetical order, with no duplicates" +
+                    (setAside == null ? "." : "; rows the caller identifies exactly as outside the summon comparison are recorded separately."));
                 result(menu, source);
                 if (screens != null)
                     foreach (int frame in screens.Capture("cleric-" + label, new JObject { ["menu"] = label, ["rows"] = rows.Length },

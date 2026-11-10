@@ -70,10 +70,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// an archetype and one exact feat choice), then ordinary level-ups,
         /// every other selection filled deterministically.</summary>
         private static JObject SpiderNaturalLevels(UnitEntityData unit, BlueprintCharacterClass characterClass, int levels, BlueprintRace race,
-            BlueprintArchetype archetype, BlueprintFeature feat, Alignment alignment)
+            BlueprintArchetype archetype, BlueprintFeature feat, Alignment alignment, BlueprintFeature deity = null)
         {
             MethodInfo apply = typeof(LevelUpController).GetMethod("ApplyLevelup", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            bool offered = feat == null, selected = feat == null;
+            bool offered = feat == null, selected = feat == null, deitySelected = deity == null;
             int start = unit.Descriptor.Progression.CharacterLevel;
             for (int level = 0; level < levels; level++)
             {
@@ -97,6 +97,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (state != null && FavoredClassLevelUpHarness.CanSelect(backend, state, feat))
                         { offered = true; selected = FavoredClassLevelUpHarness.Select(backend, state, feat); }
                     }
+                    if (deity != null && !deitySelected)
+                    {
+                        // The native deity selection, offered and validated by the level-up itself.
+                        FeatureSelectionState state = FavoredClassLevelUpHarness.FindOpenState(backend, SummonClericAlignmentPolicy.DeitySelectionGuid);
+                        if (state != null && FavoredClassLevelUpHarness.CanSelect(backend, state, deity)) deitySelected = FavoredClassLevelUpHarness.Select(backend, state, deity);
+                    }
                     FillOracleNativeChoices(backend);
                     apply.Invoke(backend, new object[] { unit.Descriptor });
                 }
@@ -104,7 +110,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             return new JObject { ["class"] = characterClass.name, ["levelsFrom"] = start, ["classLevel"] = unit.Descriptor.Progression.GetClassLevel(characterClass),
                 ["race"] = unit.Descriptor.Progression.Race?.AssetGuid, ["archetype"] = archetype == null ? null : (JToken)unit.Descriptor.Progression.IsArchetype(archetype),
-                ["featOffered"] = offered, ["featSelected"] = selected };
+                ["featOffered"] = offered, ["featSelected"] = selected, ["deity"] = deity?.name, ["deitySelected"] = deitySelected,
+                ["alignment"] = unit.Descriptor.Alignment.Value.ToString() };
         }
 
         private static bool SpiderHasFeature(UnitEntityData unit, BlueprintFeature feature)
