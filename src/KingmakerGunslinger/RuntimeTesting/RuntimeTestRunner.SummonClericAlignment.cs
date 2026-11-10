@@ -493,6 +493,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint25Check("cleric-foreign-permitted-row-survives-herald", cgChild != null && ReferenceEquals(cgChild.ConvertedFrom?.ConvertedFrom, tierFiveSecond) && ReferenceEquals(cgChild.Spellbook, book) && DruidSummonConversionVariantPatch.For(cgChild) != null,
                         new JObject { ["rows"] = cgHerald?.Rows.Length ?? 0, ["caster"] = "ChaoticGood/Desna", ["adapter"] = DruidSummonConversionVariantPatch.Outcome },
                         "A permitted third-party row appears in the Herald conversion from an ordinary prepared spell, on its original source.");
+                    // Herald spider casts: the repaired Ogre at its base tier and the Crab 1d4+1 quantity row, each
+                    // from the real Herald popup over the unrelated prepared spell, with the native debit observer.
+                    SpiderPlacement heraldCrab = SpiderSummonerCatalog.Placements(SummonFamily.Monster).Single(value => value.Species.Key == "giant-crab-spider" && value.Tier == 5);
+                    foreach (var spiderCase in new[] { new { Key = "herald-spider-ogre", Row = spiderRow },
+                        new { Key = "herald-spider-crab-d4", Row = BlueprintBootstrap.Library.BlueprintsByAssetId.Values.OfType<BlueprintAbility>().FirstOrDefault(value => SpiderSummonerIntegration.PlacementOf(value)?.Symbol == heraldCrab.Symbol) } })
+                    {
+                        var scopedSpider = spiderCase;
+                        AlphaMenu spiderMenu = null; ActionBarGroupSlot spiderSource = null;
+                        foreach (int frame in R6Cell("cleric-" + scopedSpider.Key + "-popup", () => ClericOpenMenu(scopedSpider.Key + "-tier5", spellGroup, levels, 5, book, smParent(5), tierFiveSecond, mode, watch, null, (menu, source) => { spiderMenu = menu; spiderSource = source; }, false))) yield return frame;
+                        int spiderIndex = spiderMenu == null || scopedSpider.Row == null ? -1 : Array.FindIndex(spiderMenu.Data, value => ReferenceEquals(value.Blueprint, scopedSpider.Row));
+                        if (spiderIndex >= 0 && spiderSource != null)
+                        {
+                            var spiderDebit = new Cleanup2SourceDebit(fixture.Caster);
+                            ActionBarGroupSlot closeSpider = spiderSource;
+                            foreach (int frame in R6Cell("cleric-" + scopedSpider.Key, () => Cleanup2MenuAdapterDruidCast(fixture, spiderMenu.Data[spiderIndex], tierFiveSecond, smParent(5), spiderMenu.Rows[spiderIndex], spiderDebit, mode, watch,
+                                () => Cleanup2MenuAdapterHide(closeSpider, tierFiveSecond), scopedSpider.Key))) yield return frame;
+                        }
+                        else Sprint25Check("cleric-" + scopedSpider.Key + "-row-present", false, new JObject { ["rows"] = spiderMenu?.Rows.Length ?? 0, ["row"] = scopedSpider.Row?.AssetGuid }, "The spider row is offered in the Herald popup.");
+                        if (spiderSource != null) Cleanup2MenuAdapterHide(spiderSource, tierFiveSecond);
+                        book.Rest();
+                    }
                     foreach (int frame in R6Cell("cleric-foreign-cg-canonical", () => ClericOpenMenu("spider-cg-desna-canonical-tier5", spellGroup, levels, 5, book, smParent(5), tierFive, mode, watch, screens, (menu, source) => { cgCanonical = menu; cgSource = source; }, false))) yield return frame;
                     int ogreIndex = cgCanonical == null ? -1 : Array.FindIndex(cgCanonical.Data, value => ReferenceEquals(value.Blueprint, spiderRow));
                     if (ogreIndex >= 0 && cgSource != null)

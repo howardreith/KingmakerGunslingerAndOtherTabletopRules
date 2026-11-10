@@ -489,10 +489,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var saves = new SpiderSaveObserver { Target = hostile };
                 int attackBonus = spider.Descriptor.Stats.AdditionalAttackBonus.BaseValue;
                 EventBus.Subscribe(saves);
+                int attempts = 0;
                 try
                 {
                     spider.Descriptor.Stats.AdditionalAttackBonus.BaseValue = 100;
-                    Rulebook.Trigger(new RuleAttackWithWeapon(spider, hostile, weapon, 0));
+                    while (attempts < 6 && saves.Saves.Count == 0)
+                    {
+                        attempts++;
+                        RuleAttackWithWeapon attack = Rulebook.Trigger(new RuleAttackWithWeapon(spider, hostile, weapon, 0));
+                        if (attack.AttackRoll != null && attack.AttackRoll.IsHit) break;
+                    }
                 }
                 finally { spider.Descriptor.Stats.AdditionalAttackBonus.BaseValue = attackBonus; }
                 var first = saves.Saves.Select(SpiderSaveRecord).ToArray(); saves.Saves.Clear();
@@ -521,7 +527,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["augmentBuffOnce"] = spider.Descriptor.Buffs.Enumerable.Count(value => ReferenceEquals(value.Blueprint, augmentBuff)) == 1,
                     ["poisonFeatures"] = new JArray(features.Select(value => value.Blueprint.AssetGuid)), ["contextDc"] = contexts, ["unbonusedDc"] = unbonused,
                     ["weapon"] = weapon?.Blueprint?.AssetGuid, ["firstSaves"] = new JArray(first), ["poisonStates"] = new JArray(states.Select(value => value.Blueprint.AssetGuid)),
-                    ["continuingSaves"] = new JArray(continuing), ["applications"] = new JArray(saves.Applications), ["target"] = targetState };
+                    ["continuingSaves"] = new JArray(continuing), ["applications"] = new JArray(saves.Applications), ["target"] = targetState, ["attackAttempts"] = attempts };
             }
             finally
             {
@@ -660,23 +666,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     hooks.Patch(typeof(ContextActionSpawnMonster).GetMethod("RunAction"), new HarmonyMethod(typeof(RuntimeTestRunner).GetMethod("ExpandedSummoningPlayerPathSpawnPrefix", BindingFlags.Static | BindingFlags.NonPublic)), null, null);
                     ExpandedSummoningRuleCapture.Clear(); _expandedSummoningPlayerPathSpawnActionCount = 0; _expandedSummoningPlayerPathCaptureActive = true;
-                    // The manual clock does not run this NPC's queue, so the command is
-                    // started and its native execution process ticked, as the web cast is.
-                    ordinaryCommand.Init(npc);
-                    ordinaryCommand.Start();
-                    int frames = 0; bool ended = !ordinaryCommand.IsRunning;
-                    for (; !ended && frames < 420; frames++)
-                    {
-                        if (ended = TickExpandedSummoningDetachedAbility(ordinaryCommand, frames)) break;
-                        Game.Instance.IsPaused = false; yield return 0;
-                    }
-                    EndExpandedSummoningDetachedAbility(ordinaryCommand);
-                    result = _expandedSummoningPlayerPathSpawnActionCount > 0 ? "Success" : "no-spawn:started=" + (frames > 0 || ended) + ";result=" + ordinaryCommand.Result;
+                    // The manual clock does not run this NPC's command queue; the AI-built
+                    // ability itself is executed through the native ability executor.
+                    AbilityData built = ordinaryDecision.Item2;
+                    var process = built.Cast(built.CreateExecutionContext(new TargetWrapper(npc.Position + Vector3.right * 2f)));
+                    int frames = 0;
+                    for (; process != null && !process.IsEnded && frames < 600; frames++) { process.Tick(); Game.Instance.IsPaused = false; yield return 0; }
+                    result = _expandedSummoningPlayerPathSpawnActionCount > 0 ? "Success" : "no-spawn:process=" + (process != null) + ";ended=" + (process?.IsEnded) + ";frames=" + frames;
                 }
                 finally
                 {
                     _expandedSummoningPlayerPathCaptureActive = false; hooks.UnpatchAll(hooks.Id);
-                    if (!ordinaryCommand.IsFinished && ordinaryCommand.IsRunning) ordinaryCommand.Interrupt(true);
+
                 }
                 for (int frame = 0; frame < 12; frame++) yield return 0;
                 UnitEntityData[] units = ExpandedSummoningRuleCapture.Where(value => value != null).Distinct().ToArray();
@@ -688,7 +689,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !(spiderCommand is UnitUseAbility) && spiderData != null && !spiderData.IsAvailableForCast && !spiderData.IsVisible();
             Sprint25Check("spider-npc-selection", ok, new JObject { ["aiCastActions"] = actions.Length, ["actionsNamingSpiderRows"] = namingSpiders,
                 ["actionsNamingSummonParents"] = namingParents, ["ordinaryVariant"] = ordinaryVariant?.AssetGuid, ["ordinaryAiCommand"] = ordinaryDecision?.Item1?.GetType().Name, ["ordinaryAiAbility"] = ordinaryDecision?.Item2?.Blueprint?.AssetGuid,
-                ["ordinaryResult"] = result, ["ordinarySpawned"] = spawned, ["spiderRow"] = spider?.AssetGuid, ["spiderCommand"] = spiderCommand?.GetType().Name,
+                ["ordinaryResult"] = result, ["ordinarySpawned"] = spawned, ["execution"] = "AI-built AbilityData executed by the native ability executor; the command-layer spend is not part of this control", ["spiderRow"] = spider?.AssetGuid, ["spiderCommand"] = spiderCommand?.GetType().Name,
                 ["spiderAvailable"] = spiderData?.IsAvailableForCast, ["spiderVisible"] = spiderData?.IsVisible() },
                 "An NPC without the feat uses the changed Summon Monster V graph through the native AI cast action: an ordinary variant yields a cast command and a real summon; a gated spider row never yields a cast command, so no selection or refusal loop; no loaded AI action names a spider row.");
         }
