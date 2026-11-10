@@ -18,6 +18,7 @@ using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Utility;
@@ -103,8 +104,13 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static JObject SpiderPersistencePoison(UnitEntityData unit, bool recalculate)
         {
+            return SpiderPersistencePoison(unit, recalculate, SpiderSummonerCatalog.Find("giant-black-widow").PoisonFeatureGuid, SpiderSummonerCatalog.HuntingSpiderPoisonFeature);
+        }
+
+        private static JObject SpiderPersistencePoison(UnitEntityData unit, bool recalculate, params string[] guids)
+        {
             var result = new JObject();
-            foreach (string guid in new[] { SpiderSummonerCatalog.Find("giant-black-widow").PoisonFeatureGuid, SpiderSummonerCatalog.HuntingSpiderPoisonFeature })
+            foreach (string guid in guids)
             {
                 var features = unit.Descriptor.Progression.Features.Enumerable.Where(value => value?.Blueprint?.AssetGuid == guid).ToArray();
                 var context = features.Length == 1 ? features[0].MaybeContext : null;
@@ -221,7 +227,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (pets.Length != 0) DisposeExpandedSummoningUnits(new List<UnitEntityData>(pets), pets);
             Spellbook book = caster.Descriptor.GetSpellbook(sorcerer);
             if (book == null) throw new InvalidOperationException("The fixture caster has no Sorcerer book.");
-            foreach (int tier in new[] { 4, 5 })
+            foreach (int tier in new[] { 2, 4, 5 })
                 if (!book.GetKnownSpells(tier).Any(value => ReferenceEquals(value.Blueprint, SpiderPersistenceParent(tier)))) book.AddKnown(tier, SpiderPersistenceParent(tier), true);
             book.UpdateAllSlotsSize(false); book.Rest();
             caster.Descriptor.AddFact(feature);
@@ -259,13 +265,38 @@ namespace KingmakerGunslinger.RuntimeTesting
             summonReceipt.UnitId = summon.UniqueId; summonReceipt.CasterId = caster.UniqueId; summonReceipt.PrepareRunId = _request.RunId;
             SetExpandedSummoningBrainActive(summon, false);
             JObject poison = SpiderPersistencePoison(summon, false);
+
+            // The saved web spider: an ordinary Giant Spider from the published
+            // Summon Monster II row, cast as the popup's child of the known spell.
+            AbilityData known2 = book.GetKnownSpells(2).First(value => ReferenceEquals(value.Blueprint, SpiderPersistenceParent(2)));
+            BlueprintAbility giantRow = ExpandedSummoningRoot(ExpandedSummoningBlueprints.Registered.BySymbol.Values,
+                ExpandedSummoningVariant(SummonFamily.Monster, "giant-spider", 2, SummonMultiplicity.One));
+            JObject webCast = null; UnitEntityData[] webSpawned = null;
+            foreach (int frame in SpiderPersistenceCast(caster, new AbilityData(known2, giantRow), book, 2, DiceType.Zero, true, (record, units) => { webCast = record; webSpawned = units; })) yield return frame;
+            string webUnits = SpiderRouteObservationVerdict.UnitsProblem(webCast["units"] as JArray, 1, SpiderSummonerCatalog.OrdinaryGiantSpiderUnit, true);
+            string webDuration = SpiderDurationProblem(webCast["summonRules"] as JArray, 11, false);
+            bool webOk = (string)webCast["result"] == "Success" && (bool)webCast["exactlyOnePoolUse"] && webUnits == null && webDuration == null && webSpawned.Length == 1 &&
+                (SpiderPersistenceParent(2).Variants ?? new BlueprintAbility[0]).Contains(giantRow);
+            webCast["unitsProblem"] = SpiderEscapeObservationVerdict.Optional(webUnits); webCast["durationProblem"] = SpiderEscapeObservationVerdict.Optional(webDuration);
+            SpiderPersistenceCheck("prepared-active-web-spider", webOk, webCast,
+                "The published Summon Monster II row casts one ordinary Giant Spider with one benefit and one template, 11 rounds at caster level 11, spending exactly one level 2 use.");
+            if (!webOk) throw new InvalidOperationException("The saved web spider was not established.");
+            UnitEntityData webSpider = webSpawned[0];
+            var webReceipt = webSpider.Ensure<UnitPartSpiderPersistenceReceipt>();
+            webReceipt.Scope = SpiderSummonerPersistencePolicy.ReceiptScope; webReceipt.Role = SpiderSummonerPersistencePolicy.WebSpiderRole;
+            webReceipt.UnitId = webSpider.UniqueId; webReceipt.CasterId = caster.UniqueId; webReceipt.PrepareRunId = _request.RunId;
+            SetExpandedSummoningBrainActive(webSpider, false);
+            JObject webPoison = SpiderPersistencePoison(webSpider, false, SpiderSummonerCatalog.GiantSpiderPoisonFeature);
+
             var state = new JObject { ["original"] = widow.AssetGuid, ["generated"] = crab.AssetGuid, ["known4"] = known4.Blueprint.AssetGuid, ["known5"] = known5.Blueprint.AssetGuid,
                 ["book"] = book.Blueprint.AssetGuid, ["pool4"] = book.GetSpontaneousSlots(4), ["pool5"] = book.GetSpontaneousSlots(5), ["summon"] = summon.UniqueId,
-                ["markers"] = SpiderPersistenceMarkers(summon), ["poison"] = poison };
-            receipt.State = state.ToString(Formatting.None); summonReceipt.State = receipt.State;
+                ["markers"] = SpiderPersistenceMarkers(summon), ["poison"] = poison,
+                ["webSpider"] = webSpider.UniqueId, ["webSpiderRow"] = giantRow.AssetGuid, ["webSpiderMarkers"] = SpiderPersistenceMarkers(webSpider), ["webSpiderPoison"] = webPoison };
+            receipt.State = state.ToString(Formatting.None); summonReceipt.State = receipt.State; webReceipt.State = receipt.State;
             bool poisonExact = poison.Properties().All(value => (int)value.Value["facts"] == 1 && (int)value.Value["dc"] == 16);
-            SpiderPersistenceCheck("prepared-saved-state", poisonExact && (int)state["markers"] == 1, state,
-                "The saved Widow carries one marker and both its poisons at DC 16 (14 + 2).");
+            bool webPoisonExact = webPoison.Properties().All(value => (int)value.Value["facts"] == 1 && (int)value.Value["dc"] > 0);
+            SpiderPersistenceCheck("prepared-saved-state", poisonExact && (int)state["markers"] == 1 && webPoisonExact && (int)state["webSpiderMarkers"] == 1, state,
+                "The saved Widow carries one marker and both its poisons at DC 16 (14 + 2); the saved Giant Spider carries one marker and its poison DC is recorded.");
         }
 
         /// <summary>Casts exactly this AbilityData through the native command
@@ -320,14 +351,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             UnitEntityData[] casters = SpiderPersistenceOwned(SpiderSummonerPersistencePolicy.CasterRole);
             UnitEntityData[] summons = SpiderPersistenceOwned(SpiderSummonerPersistencePolicy.SummonRole);
+            UnitEntityData[] webSpiders = SpiderPersistenceOwned(SpiderSummonerPersistencePolicy.WebSpiderRole);
             UnitEntityData caster = casters.Length == 1 ? casters[0] : null;
             UnitEntityData summon = summons.Length == 1 ? summons[0] : null;
+            UnitEntityData webSpider = webSpiders.Length == 1 ? webSpiders[0] : null;
             JObject saved = caster?.Get<UnitPartSpiderPersistenceReceipt>()?.State == null ? null : JObject.Parse(caster.Get<UnitPartSpiderPersistenceReceipt>().State);
-            bool owned = caster != null && summon != null && saved != null && (string)saved["summon"] == summon.UniqueId &&
+            bool owned = caster != null && summon != null && webSpider != null && saved != null && (string)saved["summon"] == summon.UniqueId &&
+                (string)saved["webSpider"] == webSpider.UniqueId && webSpider.Get<UnitPartSpiderPersistenceReceipt>().CasterId == caster.UniqueId &&
                 summon.Get<UnitPartSpiderPersistenceReceipt>().CasterId == caster.UniqueId && caster.Get<UnitPartSpiderPersistenceReceipt>().UnitId == caster.UniqueId;
-            SpiderPersistenceCheck("reloaded-ownership", owned, new JObject { ["casters"] = casters.Length, ["summons"] = summons.Length, ["saved"] = saved,
-                ["prepareRun"] = caster?.Get<UnitPartSpiderPersistenceReceipt>()?.PrepareRunId },
-                "The reloaded save holds exactly the prepared caster and its active spider, bound by their saved receipts.");
+            SpiderPersistenceCheck("reloaded-ownership", owned, new JObject { ["casters"] = casters.Length, ["summons"] = summons.Length, ["webSpiders"] = webSpiders.Length,
+                ["saved"] = saved, ["prepareRun"] = caster?.Get<UnitPartSpiderPersistenceReceipt>()?.PrepareRunId },
+                "The reloaded save holds exactly the prepared caster, its active Black Widow and its active Giant Spider, bound by their saved receipts.");
             if (!owned) throw new InvalidOperationException("The prepared fixture is not exactly present.");
             var sorcerer = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library, SpiderSorcererClass, "Sorcerer");
             Spellbook book = caster.Descriptor.GetSpellbook(sorcerer);
@@ -364,9 +398,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["secondsLeft"] = lifetime == null ? -1 : lifetime.TimeLeft.TotalSeconds, ["poison"] = poison, ["savedPoison"] = saved["poison"], ["moduleEnabled"] = moduleOn },
                 "The saved Black Widow is back with its finite summon lifetime from the caster, exactly one marker, and both poisons at the saved DC 16, also after recalculation, never 18."
                 + (moduleOn ? "" : " With the module OFF it keeps what it was cast with; no new grant is made."));
+            JObject webPoison = SpiderPersistencePoison(webSpider, true, SpiderSummonerCatalog.GiantSpiderPoisonFeature);
+            var webLifetime = webSpider.Descriptor.Buffs.Enumerable.FirstOrDefault(value => ReferenceEquals(value.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff));
+            int webMarkers = SpiderPersistenceMarkers(webSpider);
+            bool webExact = webSpider.Blueprint.AssetGuid == SpiderSummonerCatalog.OrdinaryGiantSpiderUnit && webMarkers == 1 &&
+                webLifetime != null && !webLifetime.IsPermanent && webLifetime.TimeLeft > TimeSpan.Zero && webLifetime.TimeLeft.TotalSeconds <= 66.5 &&
+                ReferenceEquals(webLifetime.MaybeContext?.MaybeCaster, caster) &&
+                webPoison.Properties().All(value => (int)value.Value["facts"] == 1 && (int)value.Value["dc"] == (int)saved["webSpiderPoison"][value.Name]["dc"] &&
+                    (int)value.Value["recalculatedDc"] == (int)saved["webSpiderPoison"][value.Name]["dc"]);
+            SpiderPersistenceCheck((moduleOn ? "on" : "off") + "-reloaded-web-spider", webExact, new JObject { ["unit"] = webSpider.Blueprint.AssetGuid, ["markers"] = webMarkers,
+                ["secondsLeft"] = webLifetime == null ? -1 : webLifetime.TimeLeft.TotalSeconds, ["poison"] = webPoison, ["savedPoison"] = saved["webSpiderPoison"], ["moduleEnabled"] = moduleOn },
+                "The saved Giant Spider is back with its finite summon lifetime from the caster, exactly one marker, and its poison at the saved DC, also after recalculation.");
 
             if (!moduleOn)
             {
+                foreach (int frame in SpiderPersistenceOffWeb(anchor, webSpider)) yield return frame;
                 // The generated shortcut: refused, nothing spent, nothing summoned.
                 JObject refusal = null;
                 foreach (int frame in SpiderPersistenceCast(caster, pinGenerated.Spell, book, 5, DiceType.Zero, false, (record, units) => refusal = record)) yield return frame;
@@ -399,9 +445,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             widow["unitsProblem"] = SpiderEscapeObservationVerdict.Optional(widowUnits);
             SpiderPersistenceCheck("on-original-shortcut-cast", (string)widow["result"] == "Success" && (bool)widow["exactlyOnePoolUse"] && widowUnits == null, widow,
                 "The reloaded original shortcut casts one Black Widow with one benefit and one template, spending exactly one level 4 use.");
-            int stillOne = SpiderPersistenceMarkers(summon);
-            SpiderPersistenceCheck("on-no-duplicated-benefit", stillOne == 1, new JObject { ["savedSpiderMarkers"] = stillOne },
-                "Casting again after the reload adds no second marker to the saved spider.");
+            int stillOne = SpiderPersistenceMarkers(summon), webStillOne = SpiderPersistenceMarkers(webSpider);
+            SpiderPersistenceCheck("on-no-duplicated-benefit", stillOne == 1 && webStillOne == 1, new JObject { ["savedSpiderMarkers"] = stillOne, ["savedWebSpiderMarkers"] = webStillOne },
+                "Casting again after the reload adds no second marker to either saved spider.");
 
             // The saved choices after the feat is lost: refused, nothing spent.
             Kingmaker.UnitLogic.Feature held = caster.Descriptor.Progression.Features.Enumerable.FirstOrDefault(value => ReferenceEquals(value?.Blueprint, feature));
@@ -416,7 +462,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
 
             // Retire the fixture, then the enabled cleanup save.
-            var retire = new List<UnitEntityData> { summon, caster };
+            var retire = new List<UnitEntityData> { summon, webSpider, caster };
             retire.AddRange(Game.Instance.State.Units.All.Where(value => value != null && !value.Destroyed && ReferenceEquals(value.Descriptor.Master.Value, caster)));
             DisposeExpandedSummoningUnits(new List<UnitEntityData>(retire), retire.Distinct().ToArray());
             Game.Instance.EntityDestroyer.Tick();
@@ -424,6 +470,206 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData[] left = SpiderPersistenceOwned(null), marked = SpiderPersistenceMarked();
             SpiderPersistenceCheck("cleanup", left.Length == 0 && marked.Length == 0, new JObject { ["receiptUnits"] = left.Length, ["markedUnits"] = marked.Length },
                 "The fixture caster, its pins and the saved spider are retired before the cleanup save, leaving no marked unit.");
+        }
+
+        // --- Module OFF: the saved Giant Spider's web -------------------------------------------------------
+
+        private static Buff SpiderPersistenceMarkerOf(UnitEntityData unit)
+        {
+            return unit.Descriptor.Buffs.Enumerable.FirstOrDefault(buff => buff?.Blueprint != null && buff.Blueprint.name == SpiderMarkerBlueprintName);
+        }
+
+        /// <summary>
+        /// One real web hit by the saved spider: its granted web ability run by
+        /// the native ability executor (AbilityData.Cast), so the projectile
+        /// makes its own ranged touch attack and the ability's own actions
+        /// apply the held state. The escapee is a disposable non-hostile unit,
+        /// so the Working area never enters combat; Cast spends no web use.
+        /// </summary>
+        private IEnumerable<int> SpiderPersistenceWebHit(UnitEntityData spider, UnitEntityData escapee, BlueprintAbility web, BlueprintBuff webbed, Action<JObject, Buff> report)
+        {
+            foreach (Buff old in escapee.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value => ReferenceEquals(value.Blueprint, webbed)).ToArray())
+                escapee.Descriptor.Buffs.RemoveFact(old);
+            var directions = new List<int>(); string spot;
+            PlaceExpandedSummoningUnit(escapee, ExpandedSummoningOpenPoint(spider.Position, 3f, directions, out spot));
+            int ac = escapee.Descriptor.Stats.AC.BaseValue;
+            escapee.Descriptor.Stats.AC.BaseValue = -100;
+            var rolls = new ExpandedSummoningAttackRollObserver { Initiator = spider };
+            var saves = new SpiderSaveObserver { Target = escapee };
+            Ability granted = spider.Descriptor.Abilities.GetAbility(web);
+            Kingmaker.Controllers.AbilityExecutionProcess process = null; int frames = 0; string startError = null;
+            EventBus.Subscribe(rolls); EventBus.Subscribe(saves);
+            try
+            {
+                if (granted == null) startError = "web-ability-not-granted";
+                else
+                {
+                    UnityEngine.Random.InitState(FindNativeD20Seed(10));
+                    var data = new AbilityData(granted);
+                    process = data.Cast(data.CreateExecutionContext(new TargetWrapper(escapee)));
+                    if (process == null) startError = "no-execution-process";
+                }
+                for (; process != null && !process.IsEnded && frames < 420; frames++)
+                {
+                    // The game's executor advances the process; a stalled one is ticked here too.
+                    if (frames >= 120) process.Tick();
+                    Game.Instance.IsPaused = false; yield return 0;
+                }
+            }
+            finally
+            {
+                EventBus.Unsubscribe(rolls); EventBus.Unsubscribe(saves);
+                Game.Instance.IsPaused = true;
+                escapee.Descriptor.Stats.AC.BaseValue = ac;
+            }
+            Buff state = escapee.Descriptor.Buffs.RawFacts.OfType<Buff>().FirstOrDefault(value => ReferenceEquals(value.Blueprint, webbed) && ReferenceEquals(value.Context?.MaybeCaster, spider));
+            Kingmaker.UnitLogic.Mechanics.MechanicsContext context = state == null ? null : state.Context;
+            bool ancestry = context != null && ReferenceEquals(context.AssociatedBlueprint, webbed) && context.ParentContext != null &&
+                ReferenceEquals(context.ParentContext.AssociatedBlueprint, web) && ReferenceEquals(context.MaybeCaster, spider);
+            string hitProblem = startError != null ? "cast-not-started:" + startError : state == null ? "no-webbed-state-after-cast" : !ancestry ? "state-ancestry-differs" :
+                saves.Saves.Count != 0 ? "initial-save-rolled" : null;
+            report(new JObject { ["spider"] = spider.UniqueId, ["spot"] = spot, ["frames"] = frames, ["ended"] = process != null && process.IsEnded,
+                ["route"] = "native ability executor (AbilityData.Cast)", ["rolls"] = new JArray(rolls.Rolls), ["initialSaves"] = saves.Saves.Count,
+                ["state"] = state == null ? null : new JObject { ["buff"] = state.Blueprint.AssetGuid, ["source"] = context?.MaybeCaster?.UniqueId,
+                    ["parent"] = context?.ParentContext?.AssociatedBlueprint?.AssetGuid, ["remainingSeconds"] = state.TimeLeft.TotalSeconds },
+                ["stateAncestry"] = ancestry, ["hitProblem"] = SpiderEscapeObservationVerdict.Optional(hitProblem) }, hitProblem == null ? state : null);
+        }
+
+        /// <summary>
+        /// One hit and its escapes. Marker modes: "held" (escapes with the
+        /// marker, and the explicit native escape again in the same live state
+        /// with it removed); "removed-before-hit" (the marker is absent while
+        /// the web context captures its DC); "removed-after-hit" (absent only
+        /// for the loaded escape, the same-spider baseline for an escape that
+        /// reads the CMD). The saved marker is put back after each case; this
+        /// stage writes nothing.
+        /// </summary>
+        private IEnumerable<int> SpiderPersistenceWebCase(UnitEntityData spider, UnitEntityData escapee, BlueprintAbility web, BlueprintBuff webbed, BlueprintBuff marker,
+            string branch, string markerMode, Action<JObject> report)
+        {
+            Func<bool> remove = () => { Buff held = spider.Descriptor.Buffs.GetBuff(marker); if (held == null) return false; spider.Descriptor.Buffs.RemoveFact(held); return true; };
+            Action restore = () => { if (spider.Descriptor.Buffs.GetBuff(marker) == null) spider.Descriptor.AddBuff(marker, spider, null); };
+            JObject hit = null; Buff state = null;
+            try
+            {
+                if (markerMode == "removed-before-hit" && !remove()) { report(new JObject { ["branch"] = branch, ["markerMode"] = markerMode, ["hitProblem"] = "no-marker-to-remove" }); yield break; }
+                foreach (int frame in SpiderPersistenceWebHit(spider, escapee, web, webbed, (record, held) => { hit = record; state = held; })) yield return frame;
+                hit["branch"] = branch; hit["markerMode"] = markerMode; hit["markersAtHit"] = SpiderPersistenceMarkers(spider);
+                if (state != null)
+                {
+                    if (markerMode == "held")
+                    {
+                        hit["native"] = SpiderEscapeAttempt(spider, escapee, branch, "native", state);
+                        if (remove()) { hit["nativeWithoutMarker"] = SpiderEscapeAttempt(spider, escapee, branch, "native", state); restore(); }
+                    }
+                    else if (markerMode == "removed-before-hit") hit["native"] = SpiderEscapeAttempt(spider, escapee, branch, "native", state);
+                    if (markerMode == "removed-after-hit" && !remove()) hit["loaded"] = new JObject { ["error"] = "no marker to remove" };
+                    else
+                    {
+                        bool present = escapee.Descriptor.Buffs.RawFacts.Contains(state);
+                        JObject loaded = present ? SpiderEscapeAttempt(spider, escapee, branch, "loaded", state) : new JObject { ["error"] = "state removed before the loaded escape" };
+                        loaded["outcome"] = escapee.Descriptor.Buffs.RawFacts.Contains(state) ? "held" : "escaped";
+                        hit["loaded"] = loaded;
+                    }
+                }
+            }
+            finally
+            {
+                restore();
+                if (state != null && escapee.Descriptor.Buffs.RawFacts.Contains(state)) escapee.Descriptor.Buffs.RemoveFact(state);
+            }
+            hit["markersAfter"] = SpiderPersistenceMarkers(spider);
+            report(hit);
+        }
+
+        /// <summary>
+        /// RU-14's retained benefit with the module OFF: the saved spider's
+        /// own marker still answers the native CMB escape (its handler no
+        /// longer needs the integration's static reference), the DC its web
+        /// captures still carries +2, an ordinary grapple is unchanged, and
+        /// nothing is applied twice.
+        /// </summary>
+        private IEnumerable<int> SpiderPersistenceOffWeb(UnitEntityData anchor, UnitEntityData spider)
+        {
+            LibraryScriptableObject library = BlueprintBootstrap.Library;
+            BlueprintAbility web = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library, SpiderSummonerCatalog.GiantSpiderWebAbility, "giant spider web");
+            BlueprintBuff webbed = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library, ExpandedSummoningSpecialBuilder.NativeWebGrappledGuid, "native webbed state");
+            string loadedEscape = SpiderLoadedEscapeImplementation(webbed);
+            bool callOfTheWild = AppDomain.CurrentDomain.GetAssemblies().Any(value => value.GetName().Name == "CallOfTheWild");
+            Buff savedMarker = SpiderPersistenceMarkerOf(spider);
+            BlueprintBuff marker = savedMarker?.Blueprint;
+            bool supported = loadedEscape == "cotw" || loadedEscape == "native";
+            bool ready = marker != null && SpiderSummonerRuntime.Marker == null && supported && spider.Descriptor.Abilities.GetAbility(web) != null;
+            SpiderPersistenceCheck("off-web-precondition", ready, new JObject { ["savedMarker"] = marker?.name, ["integrationMarkerReference"] = SpiderSummonerRuntime.Marker != null,
+                ["loadedEscape"] = loadedEscape, ["callOfTheWildLoaded"] = callOfTheWild, ["webGranted"] = spider.Descriptor.Abilities.GetAbility(web) != null },
+                "With the module OFF the integration's static marker reference is unset, the saved Giant Spider holds its own marker and its web, and the webbed state loads a supported escape.");
+            if (!ready) yield break;
+
+            UnitEntityData escapee = Game.Instance.EntityCreator.SpawnUnit(BlueprintRoot.Instance.DefaultPlayerCharacter, spider.Position + Vector3.forward * 3f, Quaternion.identity, anchor.HoldingState);
+            Game.Instance.EntityCreator.Tick();
+            if (escapee == null || !escapee.IsInState) throw new InvalidOperationException("The disposable escapee did not enter the area.");
+            escapee.GroupId = escapee.UniqueId;
+            SetExpandedSummoningBrainActive(escapee, false);
+            if (!Game.Instance.State.AwakeUnits.Contains(escapee)) Game.Instance.State.AwakeUnits.Add(escapee);
+            escapee.Stats.HitPoints.BaseValue = 100000;
+            // A CMD-reading loaded escape needs the same spider's baseline with the
+            // marker removed after the hit; a DC captured at the hit needs it
+            // removed before the hit.
+            string cmbBaseline = loadedEscape == "cotw" ? "removed-before-hit" : "removed-after-hit";
+            var plan = new[] { new { Key = "held:cmb", Branch = "cmb", Mode = "held" }, new { Key = "held:skill", Branch = "skill", Mode = "held" },
+                new { Key = "before:skill", Branch = "skill", Mode = "removed-before-hit" }, new { Key = "baseline:cmb", Branch = "cmb", Mode = cmbBaseline } };
+            var cases = new Dictionary<string, JObject>(StringComparer.Ordinal);
+            int grappleWith = -1, grappleWithout = -1; JObject defenseWith = null, defenseWithout = null;
+            try
+            {
+                foreach (var step in plan)
+                {
+                    var scoped = step; JObject result = null;
+                    foreach (int frame in SpiderPersistenceWebCase(spider, escapee, web, webbed, marker, scoped.Branch, scoped.Mode, value => result = value)) yield return frame;
+                    cases[scoped.Key] = result;
+                }
+                grappleWith = SpiderOrdinaryGrappleTargetNumber(spider, escapee, out defenseWith);
+                Buff held = spider.Descriptor.Buffs.GetBuff(marker);
+                if (held != null)
+                {
+                    spider.Descriptor.Buffs.RemoveFact(held);
+                    try { grappleWithout = SpiderOrdinaryGrappleTargetNumber(spider, escapee, out defenseWithout); }
+                    finally { spider.Descriptor.AddBuff(marker, spider, null); }
+                }
+            }
+            finally
+            {
+                DisposeExpandedSummoningUnits(new List<UnitEntityData> { escapee }, new[] { escapee });
+            }
+            var all = new JObject(); foreach (var pair in cases) all[pair.Key] = pair.Value;
+            string[] hitProblems = plan.Select(step => cases.ContainsKey(step.Key) ? (string)cases[step.Key]["hitProblem"] : "no-observation").Where(value => value != null).ToArray();
+            SpiderPersistenceCheck("off-web-real-hits", hitProblems.Length == 0, new JObject { ["hitProblems"] = new JArray(hitProblems), ["cases"] = all },
+                "Each real web hit by the saved Giant Spider, run by the native ability executor, leaves the held state the web's own context applied, cast by that spider.");
+            JObject heldCmb = cases.ContainsKey("held:cmb") ? cases["held:cmb"] : null, heldSkill = cases.ContainsKey("held:skill") ? cases["held:skill"] : null;
+            JObject beforeSkill = cases.ContainsKey("before:skill") ? cases["before:skill"] : null, baselineCmb = cases.ContainsKey("baseline:cmb") ? cases["baseline:cmb"] : null;
+            string nativeCmb = SpiderEscapeObservationVerdict.PairProblem(heldCmb?["native"] as JObject, heldCmb?["nativeWithoutMarker"] as JObject, SpiderSummonerCatalog.DcBonus);
+            SpiderPersistenceCheck("off-native-cmb-escape", nativeCmb == null, new JObject { ["problem"] = SpiderEscapeObservationVerdict.Optional(nativeCmb),
+                ["withMarker"] = heldCmb?["native"], ["withoutMarker"] = heldCmb?["nativeWithoutMarker"], ["loadedEscape"] = loadedEscape,
+                ["scope"] = "The native ContextActionBreakFree (CMB on, CMD off) executed explicitly from the real web-produced state, under the loaded profile (" + loadedEscape + "); compared within the same spider and live state with its marker removed." },
+                "With the module OFF, the native CMB escape from the saved spider's own web rolls a grapple maneuver whose CMD target number carries exactly +2 from its existing marker.");
+            SpiderPersistenceCheck("off-ordinary-grapple-unchanged", grappleWith > 0 && grappleWith == grappleWithout, new JObject { ["withMarker"] = grappleWith, ["withoutMarker"] = grappleWithout,
+                ["defenseWith"] = defenseWith, ["defenseWithout"] = defenseWithout },
+                "An ordinary grapple against the saved spider, outside the webbed state, is unchanged by its marker.");
+            string loadedSkill = SpiderEscapeObservationVerdict.PairProblem(heldSkill?["loaded"] as JObject, beforeSkill?["loaded"] as JObject, SpiderSummonerCatalog.DcBonus);
+            string nativeSkill = SpiderEscapeObservationVerdict.PairProblem(heldSkill?["native"] as JObject, beforeSkill?["native"] as JObject, SpiderSummonerCatalog.DcBonus);
+            SpiderPersistenceCheck("off-web-dc-skill", loadedSkill == null && nativeSkill == null, new JObject { ["loadedProblem"] = SpiderEscapeObservationVerdict.Optional(loadedSkill),
+                ["nativeProblem"] = SpiderEscapeObservationVerdict.Optional(nativeSkill), ["loadedEscape"] = loadedEscape,
+                ["comparison"] = "the same spider's real hit with its marker absent while the web context captured its DC" },
+                "With the module OFF, the DC the saved spider's web captures still carries exactly +2 on the skill escape, loaded and native.");
+            string loadedCmb = SpiderEscapeObservationVerdict.PairProblem(heldCmb?["loaded"] as JObject, baselineCmb?["loaded"] as JObject, SpiderSummonerCatalog.DcBonus);
+            SpiderPersistenceCheck("off-loaded-cmb-escape", loadedCmb == null, new JObject { ["problem"] = SpiderEscapeObservationVerdict.Optional(loadedCmb), ["loadedEscape"] = loadedEscape,
+                ["baseline"] = cmbBaseline, ["callOfTheWildLoaded"] = callOfTheWild,
+                ["scope"] = loadedEscape == "cotw" ? "Call of the Wild's loaded escape, which reads the DC captured in the web context; not a no-Call-of-the-Wild result." :
+                    "The native loaded escape, which reads the spider's CMD at the attempt." },
+                "With the module OFF, the webbed state's loaded CMB-branch escape carries exactly +2 from the saved marker, against its rule's own valid baseline.");
+            int markersAfter = SpiderPersistenceMarkers(spider);
+            SpiderPersistenceCheck("off-web-no-double", markersAfter == 1 && cases.Values.All(value => value?["markersAfter"] != null && (int)value["markersAfter"] == 1), new JObject { ["markersAfter"] = markersAfter },
+                "The saved spider still holds exactly one marker, and every comparison above is exactly +2, never +4.");
         }
 
         private void CompleteSpiderPersistence(string status, string warning)

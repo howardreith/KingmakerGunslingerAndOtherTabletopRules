@@ -479,6 +479,11 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(adjusts(true, true, false, true, state, web, true, true), "A different escapee's calculation is untouched.");
             Assertions.False(adjusts(true, true, true, false, state, web, true, true), "Only the spider's own CMD is the escape's target number.");
             Assertions.False(adjusts(true, true, true, true, "56ec8788092b6314e8f3c1c502e8433f", web, true, true), "Another state applied by the web ability is untouched.");
+            object own = new object(), other = new object();
+            Assertions.True(SpiderWebEscapePolicy.OwnMarkerHeld(own, own), "The handler's own attached marker marks the spider, with or without an active integration.");
+            Assertions.False(SpiderWebEscapePolicy.OwnMarkerHeld(own, null), "A marker no longer held by its owner marks nothing.");
+            Assertions.False(SpiderWebEscapePolicy.OwnMarkerHeld(own, other), "Another fact of the same blueprint is not this handler's marker.");
+            Assertions.False(SpiderWebEscapePolicy.OwnMarkerHeld(null, null), "No fact, no mark.");
         }
 
         private static Newtonsoft.Json.Linq.JObject EscapeAttempt(string implementation, string branch, string rule, string discriminator, int target)

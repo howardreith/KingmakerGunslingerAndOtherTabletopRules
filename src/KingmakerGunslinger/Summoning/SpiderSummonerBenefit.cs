@@ -74,6 +74,10 @@ namespace KingmakerGunslinger.Summoning
     /// other. The enclosing maneuver and its reason context identify the
     /// escape: a grapple against this spider, from the webbed state that this
     /// spider's Giant Spider web applied. No state is kept between rules.
+    /// The marker is recognized as this component's own attached fact, not
+    /// through the integration's static reference, so a marker a spider kept
+    /// from an enabled session still answers after a reload with Expanded
+    /// Summoning OFF, until the summon expires.
     /// </summary>
     [Serializable]
     public sealed class SpiderSummonerWebEscapeDifficulty : RuleTargetLogicComponent<RuleCalculateCMD>
@@ -81,6 +85,7 @@ namespace KingmakerGunslinger.Summoning
         public override void OnEventAboutToTrigger(RuleCalculateCMD evt)
         {
             if (evt == null || Owner == null) return;
+            Buff own = Fact as Buff;
             RulebookEventContext rules = Rulebook.CurrentContext;
             RuleCombatManeuver maneuver = rules == null ? null : rules.PreviousEvent as RuleCombatManeuver;
             MechanicsContext context = maneuver == null || maneuver.Reason == null ? null : maneuver.Reason.Context ?? (maneuver.Reason.Fact == null ? null : maneuver.Reason.Fact.MaybeContext);
@@ -92,7 +97,7 @@ namespace KingmakerGunslinger.Summoning
                 context == null || context.AssociatedBlueprint == null ? null : context.AssociatedBlueprint.AssetGuid,
                 context == null || context.ParentContext == null || context.ParentContext.AssociatedBlueprint == null ? null : context.ParentContext.AssociatedBlueprint.AssetGuid,
                 context != null && ReferenceEquals(context.MaybeCaster, spider),
-                SpiderSummonerRuntime.Marker != null && Owner.Buffs.GetBuff(SpiderSummonerRuntime.Marker) != null);
+                SpiderWebEscapePolicy.OwnMarkerHeld(own, own == null || own.Blueprint == null ? null : Owner.Buffs.GetBuff(own.Blueprint)));
             if (adjusts) evt.AddBonus(SpiderSummonerCatalog.DcBonus, Fact);
         }
 
