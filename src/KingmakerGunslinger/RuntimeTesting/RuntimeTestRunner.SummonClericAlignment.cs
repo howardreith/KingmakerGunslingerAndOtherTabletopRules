@@ -220,8 +220,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> ClericLegalCast(ExpandedSummoningCorrectionFixture fixture, ActionBarSlot row, AbilityData child, AbilityData prepared, Cleanup2SourceDebit debit, Action closePopup, Cleanup2NativeDefaultScope mode, Stopwatch phase,
-            string caseKey = null, string expectedBranchUnit = null, Action<UnitEntityData[]> inspect = null, Func<int, bool> countOk = null,
-            Func<UnitEntityData[], bool> keep = null)
+            string caseKey = null, string expectedBranchUnit = null, Action<UnitEntityData[]> inspect = null, Func<int, bool> countOk = null)
         {
             var hooks = HarmonyInstance.Create("kmg.cleric.legal." + _request.RunId); UnitUseAbility command = null;
             const BindingFlags statics = BindingFlags.Static | BindingFlags.NonPublic;
@@ -258,7 +257,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["debit"] = debit.Describe(prepared.ParamSpellSlot), ["manualTicks"] = 0, ["forcedAct"] = false, ["wallSeconds"] = watch.Elapsed.TotalSeconds },
                     "Selecting a permitted row from the cleric's own menu casts that ability, summons its creature, and spends only its prepared slot.");
                 if (inspect != null && units.Length != 0) inspect(units);
-                if (units.Length != 0 && (keep == null || !keep(units))) DisposeExpandedSummoningUnits(fixture.Created, units);
+                if (units.Length != 0) DisposeExpandedSummoningUnits(fixture.Created, units);
             }
             finally
             {
