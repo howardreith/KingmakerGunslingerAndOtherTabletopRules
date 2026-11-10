@@ -167,6 +167,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally { if (closeAfter) Cleanup2MenuAdapterHide(source, original); }
         }
 
+        // Commands stop being awaited once the phase has run this long.
+        private const double ClericPhaseWaitCeilingSeconds = 300;
+
         // A forbidden row built the way a saved shortcut holds it, through the
         // native availability and command path. No tick or outcome is supplied.
         private IEnumerable<int> ClericForbiddenAttempt(ExpandedSummoningCorrectionFixture fixture, BlueprintAbility child, Spellbook book, AbilityData prepared,
@@ -194,7 +197,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExpandedSummoningRuleCapture.Clear(); _expandedSummoningPlayerPathSpawnActionCount = 0; _expandedSummoningPlayerPathCaptureActive = true;
                 command = new UnitUseAbility(data, new TargetWrapper(fixture.Caster.Position + new Vector3(2, 0, 2)));
                 fixture.Caster.Commands.Run(command);
-                while (!command.IsFinished && watch.Elapsed.TotalSeconds < 15 && phase.Elapsed.TotalSeconds < 240)
+                while (!command.IsFinished && watch.Elapsed.TotalSeconds < 15 && phase.Elapsed.TotalSeconds < ClericPhaseWaitCeilingSeconds)
                 {
                     if (!mode.Current || !Cleanup2NoNarrativeOverlay()) throw new InvalidOperationException("Forbidden attempt lost native mode ownership.");
                     Game.Instance.IsPaused = false; yield return 0;
@@ -235,7 +238,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 command = fixture.Caster.Commands.GetCommand<UnitUseAbility>();
                 bool issued = targeted && command != null && ReferenceEquals(command.Spell, child);
                 var watch = Stopwatch.StartNew();
-                while (issued && watch.Elapsed.TotalSeconds < 25 && phase.Elapsed.TotalSeconds < 240 && (_expandedSummoningPlayerPathRuleCastCount == 0 || !fixture.Caster.Commands.Empty))
+                while (issued && watch.Elapsed.TotalSeconds < 25 && phase.Elapsed.TotalSeconds < ClericPhaseWaitCeilingSeconds && (_expandedSummoningPlayerPathRuleCastCount == 0 || !fixture.Caster.Commands.Empty))
                 {
                     if (!mode.Current || !Cleanup2NoNarrativeOverlay() || Game.Instance.IsControllerGamepad) throw new InvalidOperationException("Native cleric cast lost input ownership.");
                     Game.Instance.IsPaused = false; yield return 0;

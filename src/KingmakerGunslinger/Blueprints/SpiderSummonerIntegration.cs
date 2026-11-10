@@ -254,7 +254,9 @@ namespace KingmakerGunslinger.Blueprints
             marker.name = "KMG_Summoning_Spider_DcBonus";
             SpiderSummonerDcBonus bonus = ScriptableObject.CreateInstance<SpiderSummonerDcBonus>();
             bonus.name = "$KMG_SpiderSummoner_DcBonus";
-            marker.ComponentsArray = new BlueprintComponent[] { bonus };
+            SpiderSummonerWebEscapeDifficulty escape = ScriptableObject.CreateInstance<SpiderSummonerWebEscapeDifficulty>();
+            escape.name = "$KMG_SpiderSummoner_WebEscapeDifficulty";
+            marker.ComponentsArray = new BlueprintComponent[] { bonus, escape };
             marker.FxOnStart = new PrefabLink();
             marker.FxOnRemove = new PrefabLink();
             marker.ResourceAssetIds = new string[0];
@@ -264,7 +266,7 @@ namespace KingmakerGunslinger.Blueprints
             flags.SetValue(marker, Enum.Parse(flags.FieldType, "HiddenInUi"));
             BlueprintUnitFactAccess.Resolve().Configure(marker,
                 LocalizationService.Create("KMG.Spider.DcBonus.Name", "Spider Summoner"),
-                LocalizationService.Create("KMG.Spider.DcBonus.Description", "This summoned spider's poison and web save DCs are increased by 2."), null);
+                LocalizationService.Create("KMG.Spider.DcBonus.Description", "This summoned spider's poison save DCs and the difficulty of escaping its web are increased by 2."), null);
             return marker;
         }
 

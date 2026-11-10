@@ -4,6 +4,8 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
+using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Abilities;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
@@ -44,11 +46,11 @@ namespace KingmakerGunslinger.Summoning
     /// <see cref="RuleCalculateAbilityParams"/>. The poison save and its
     /// continuing saves read those parameters through the context chain. The
     /// shared webbed buff has no parameter calculator of its own, so its
-    /// break-free action reads the web's parameters too, but the installed
-    /// native action (UseCMB on, UseCMD off) uses that DC only for its skill
-    /// check; when the target's CMB is higher it rolls a grapple maneuver
-    /// against the spider's CMD and reads no DC at all. Nothing accumulates:
-    /// each calculation is a new rule, answered by the one marker fact.
+    /// break-free action reads the web's parameters too. The installed native
+    /// action (UseCMB on, UseCMD off) uses that DC for its skill check; its
+    /// CMB branch reads no DC, so <see cref="SpiderSummonerWebEscapeDifficulty"/>
+    /// covers that branch. Nothing accumulates: each calculation is a new
+    /// rule, answered by the one marker fact.
     /// </summary>
     [Serializable]
     public sealed class SpiderSummonerDcBonus : RuleInitiatorLogicComponent<RuleCalculateAbilityParams>
@@ -63,6 +65,38 @@ namespace KingmakerGunslinger.Summoning
         }
 
         public override void OnEventDidTrigger(RuleCalculateAbilityParams evt) { }
+    }
+
+    /// <summary>
+    /// On the feat marker. When the native webbed state's escape takes its
+    /// CMB branch, it rolls a grapple maneuver against this spider's CMD and
+    /// reads no DC; this adds the feat's +2 to that one calculation and to no
+    /// other. The enclosing maneuver and its reason context identify the
+    /// escape: a grapple against this spider, from the webbed state that this
+    /// spider's Giant Spider web applied. No state is kept between rules.
+    /// </summary>
+    [Serializable]
+    public sealed class SpiderSummonerWebEscapeDifficulty : RuleTargetLogicComponent<RuleCalculateCMD>
+    {
+        public override void OnEventAboutToTrigger(RuleCalculateCMD evt)
+        {
+            if (evt == null || Owner == null) return;
+            RulebookEventContext rules = Rulebook.CurrentContext;
+            RuleCombatManeuver maneuver = rules == null ? null : rules.PreviousEvent as RuleCombatManeuver;
+            MechanicsContext context = maneuver == null || maneuver.Reason == null ? null : maneuver.Reason.Context ?? (maneuver.Reason.Fact == null ? null : maneuver.Reason.Fact.MaybeContext);
+            UnitEntityData spider = Owner.Unit;
+            bool adjusts = SpiderWebEscapePolicy.AdjustsEscapeCmd(evt.Type == CombatManeuver.Grapple,
+                maneuver != null && maneuver.Type == CombatManeuver.Grapple,
+                maneuver != null && ReferenceEquals(maneuver.Initiator, evt.Initiator),
+                maneuver != null && ReferenceEquals(maneuver.Target, spider) && ReferenceEquals(evt.Target, spider),
+                context == null || context.AssociatedBlueprint == null ? null : context.AssociatedBlueprint.AssetGuid,
+                context == null || context.ParentContext == null || context.ParentContext.AssociatedBlueprint == null ? null : context.ParentContext.AssociatedBlueprint.AssetGuid,
+                context != null && ReferenceEquals(context.MaybeCaster, spider),
+                SpiderSummonerRuntime.Marker != null && Owner.Buffs.GetBuff(SpiderSummonerRuntime.Marker) != null);
+            if (adjusts) evt.AddBonus(SpiderSummonerCatalog.DcBonus, Fact);
+        }
+
+        public override void OnEventDidTrigger(RuleCalculateCMD evt) { }
     }
 
     internal static class SpiderSummonerRuntime
