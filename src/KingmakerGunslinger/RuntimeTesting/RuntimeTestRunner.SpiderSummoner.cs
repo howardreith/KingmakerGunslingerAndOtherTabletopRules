@@ -166,10 +166,20 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         /// <summary>Records the escape rules one escapee triggers: each grapple
         /// maneuver's CMD target number and each skill check's DC.</summary>
-        private sealed class SpiderEscapeRuleObserver : IGlobalRulebookHandler<RuleCombatManeuver>, IGlobalRulebookHandler<RuleSkillCheck>
+        private sealed class SpiderEscapeRuleObserver : IGlobalRulebookHandler<RuleCombatManeuver>, IGlobalRulebookHandler<RuleSkillCheck>, IGlobalRulebookHandler<RuleCalculateCMD>
         {
             internal UnitEntityData Escapee;
             internal readonly List<JObject> Rules = new List<JObject>();
+            /// <summary>Each CMD calculation against the defender: diagnostic only.</summary>
+            internal readonly List<JObject> Defenses = new List<JObject>();
+            public void OnEventAboutToTrigger(RuleCalculateCMD evt) { }
+            public void OnEventDidTrigger(RuleCalculateCMD evt)
+            {
+                if (evt == null || !ReferenceEquals(evt.Initiator, Escapee)) return;
+                Defenses.Add(new JObject { ["defender"] = evt.Target?.UniqueId, ["type"] = evt.Type.ToString(), ["result"] = evt.Result,
+                    ["flatFooted"] = evt.IsTargetFlatFooted, ["base"] = evt.Base?.Result, ["bab"] = evt.Base?.ResultBAB, ["strength"] = evt.Base?.ResultStrengthBonus,
+                    ["dexterity"] = evt.Base?.ResultDexterityBonus, ["dodge"] = evt.Base?.ResultDodgeBonus, ["size"] = evt.Base?.ResultSizeBonus, ["misc"] = evt.Base?.ResultMiscBonus });
+            }
             public void OnEventAboutToTrigger(RuleCombatManeuver evt) { }
             public void OnEventDidTrigger(RuleCombatManeuver evt)
             {
@@ -255,7 +265,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             JObject decisive = observer.Rules.Count == 1 ? observer.Rules[0] : null;
             var rules = new JArray(observer.Rules);
-            return new JObject { ["branch"] = branch, ["path"] = path, ["implementation"] = implementation, ["rules"] = rules,
+            return new JObject { ["branch"] = branch, ["path"] = path, ["implementation"] = implementation, ["rules"] = rules, ["defenses"] = new JArray(observer.Defenses),
                 ["rule"] = decisive?["rule"] ?? JValue.CreateNull(), ["discriminator"] = decisive?["discriminator"] ?? JValue.CreateNull(),
                 ["targetNumber"] = decisive?["targetNumber"] ?? JValue.CreateNull(),
                 ["ruleProblem"] = SpiderEscapeObservationVerdict.Optional(SpiderEscapeObservationVerdict.RuleProblem(implementation, branch, rules)) };
@@ -265,11 +275,18 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// web reason, and its final CMD target number.</summary>
         private static int SpiderOrdinaryGrappleTargetNumber(UnitEntityData spider, UnitEntityData initiator)
         {
+            JObject defense;
+            return SpiderOrdinaryGrappleTargetNumber(spider, initiator, out defense);
+        }
+
+        private static int SpiderOrdinaryGrappleTargetNumber(UnitEntityData spider, UnitEntityData initiator, out JObject defense)
+        {
             var observer = new SpiderEscapeRuleObserver { Escapee = initiator };
             EventBus.Subscribe(observer);
             try { Rulebook.Trigger(new RuleCombatManeuver(initiator, spider, CombatManeuver.Grapple) { IgnoreConcealment = true }); }
             finally { EventBus.Unsubscribe(observer); }
             JObject maneuver = observer.Rules.SingleOrDefault(value => (string)value["rule"] == "RuleCombatManeuver");
+            defense = observer.Defenses.LastOrDefault();
             return maneuver == null ? -1 : (int)maneuver["targetNumber"];
         }
 

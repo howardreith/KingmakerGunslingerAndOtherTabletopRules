@@ -142,8 +142,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SpiderRacesUnleashedAbsentControl(fixture, library);
                 yield break;
             }
-            IEnumerable<int> cells = phase == ExpandedSummoningNativeProfilePolicy.Sprint39SpiderWebPhase ?
-                SpiderRealWebCells(fixture, feature, webbed) : SpiderMechanicsCells(fixture, feature);
+            IEnumerable<int> cells = phase == ExpandedSummoningNativeProfilePolicy.Sprint39SpiderWebPhase ? SpiderRealWebCells(fixture, feature, webbed) :
+                phase == ExpandedSummoningNativeProfilePolicy.Sprint39SpiderRoutesPhase ? ReviewSpiderRoutes(fixture, feature) : SpiderMechanicsCells(fixture, feature);
             foreach (int frame in cells) yield return frame;
         }
 
@@ -245,18 +245,38 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 JObject m = results["marked:" + branch], u = results["unmarked:" + branch];
                 string hit = (string)m["hitProblem"] ?? (string)u["hitProblem"];
+                // A DC is fixed in the web's context at the hit, so DC-reading
+                // escapes compare the marked summon with the naturally unmarked one.
                 string loaded = hit ?? SpiderEscapeObservationVerdict.PairProblem(m["loaded"] as JObject, u["loaded"] as JObject, SpiderSummonerCatalog.DcBonus);
-                string nativeConfig = hit ?? SpiderEscapeObservationVerdict.PairProblem(m["nativeConfiguration"] as JObject, u["nativeConfiguration"] as JObject, SpiderSummonerCatalog.DcBonus);
+                // A CMD-reading escape is decided within the same spider and state;
+                // the pair across two summons is kept as a diagnostic.
+                bool cmdBranch = (string)(m["nativeConfiguration"] as JObject)?["rule"] == "RuleCombatManeuver";
+                string nativeConfig = hit ?? (cmdBranch ?
+                    SpiderEscapeObservationVerdict.PairProblem(m["nativeConfiguration"] as JObject, m["nativeConfigurationWithoutMarker"] as JObject, SpiderSummonerCatalog.DcBonus) :
+                    SpiderEscapeObservationVerdict.PairProblem(m["nativeConfiguration"] as JObject, u["nativeConfiguration"] as JObject, SpiderSummonerCatalog.DcBonus));
+                string acrossSummons = hit ?? SpiderEscapeObservationVerdict.PairProblem(m["nativeConfiguration"] as JObject, u["nativeConfiguration"] as JObject, SpiderSummonerCatalog.DcBonus);
                 ok &= loaded == null && nativeConfig == null;
                 cases.Add(new JObject { ["branch"] = branch, ["loadedProblem"] = SpiderEscapeObservationVerdict.Optional(loaded),
-                    ["nativeConfigurationProblem"] = SpiderEscapeObservationVerdict.Optional(nativeConfig), ["marked"] = m, ["unmarked"] = u });
+                    ["nativeConfigurationProblem"] = SpiderEscapeObservationVerdict.Optional(nativeConfig),
+                    ["nativeConfigurationAcrossSummons"] = SpiderEscapeObservationVerdict.Optional(acrossSummons), ["marked"] = m, ["unmarked"] = u });
             }
-            int controlMarked = SpiderOrdinaryGrappleTargetNumber(marked[0], hostile), controlUnmarked = SpiderOrdinaryGrappleTargetNumber(unmarked[0], hostile);
-            ok &= controlMarked > 0 && controlMarked == controlUnmarked;
+            JObject defenseMarked, defenseUnmarked, defenseMarkedWithout = null;
+            int controlMarked = SpiderOrdinaryGrappleTargetNumber(marked[0], hostile, out defenseMarked), controlUnmarked = SpiderOrdinaryGrappleTargetNumber(unmarked[0], hostile, out defenseUnmarked);
+            int controlMarkedWithout = -1;
+            Buff controlHeld = SpiderSummonerRuntime.Marker == null ? null : marked[0].Descriptor.Buffs.GetBuff(SpiderSummonerRuntime.Marker);
+            if (controlHeld != null)
+            {
+                marked[0].Descriptor.Buffs.RemoveFact(controlHeld);
+                controlMarkedWithout = SpiderOrdinaryGrappleTargetNumber(marked[0], hostile, out defenseMarkedWithout);
+                marked[0].Descriptor.AddBuff(SpiderSummonerRuntime.Marker, marked[0], null);
+            }
+            ok &= controlMarked > 0 && controlMarked == controlMarkedWithout;
             Sprint25Check("spider-web-real-hit-escape", ok, new JObject { ["cases"] = cases, ["loadedEscape"] = SpiderLoadedEscapeImplementation(webbed),
-                ["ordinaryGrappleTargetNumberMarked"] = controlMarked, ["ordinaryGrappleTargetNumberUnmarked"] = controlUnmarked,
-                ["scope"] = "Fresh real web hit per escape; loaded = the state's own loaded per-round escape; nativeConfiguration = the installed native action configuration in the same live state, supporting evidence only." },
-                "From a real web hit's own held state, the loaded escape of each branch triggers its expected rule, and the feat spider's final target number is the unmarked spider's plus exactly 2; an ordinary grapple is unchanged.");
+                ["ordinaryGrappleTargetNumberMarked"] = controlMarked, ["ordinaryGrappleTargetNumberMarkedWithoutMarker"] = controlMarkedWithout,
+                ["ordinaryGrappleTargetNumberUnmarkedSummon"] = controlUnmarked,
+                ["ordinaryGrappleDefenses"] = new JObject { ["marked"] = defenseMarked, ["markedWithoutMarker"] = defenseMarkedWithout, ["unmarkedSummon"] = defenseUnmarked },
+                ["scope"] = "Fresh real web hit per escape; loaded = the state's own loaded per-round escape; nativeConfiguration = the installed native action configuration in the same live state. DC-reading escapes compare the marked and unmarked summons; CMD-reading escapes and the ordinary grapple compare the same spider with and without its marker, with the cross-summon pair kept as a diagnostic." },
+                "From a real web hit's own held state, each escape triggers its expected rule and its final target number carries exactly +2 from the feat; an ordinary grapple against the same spider is unchanged by the marker.");
             DisposeExpandedSummoningUnits(fixture.Created, new[] { marked[0], unmarked[0] });
         }
 
@@ -309,6 +329,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (hitProblem == null)
             {
                 result["nativeConfiguration"] = SpiderEscapeAttempt(spider, hostile, branch, "native", state);
+                // The CMD is calculated per rule, so the same spider and the same
+                // live state with its marker removed isolates the feat's effect.
+                BlueprintBuff marker = SpiderSummonerRuntime.Marker;
+                Buff held = marker == null ? null : spider.Descriptor.Buffs.GetBuff(marker);
+                if (held != null)
+                {
+                    spider.Descriptor.Buffs.RemoveFact(held);
+                    result["nativeConfigurationWithoutMarker"] = SpiderEscapeAttempt(spider, hostile, branch, "native", state);
+                    spider.Descriptor.AddBuff(marker, spider, null);
+                }
                 bool present = hostile.Descriptor.Buffs.RawFacts.Contains(state);
                 JObject loaded = present ? SpiderEscapeAttempt(spider, hostile, branch, "loaded", state) :
                     new JObject { ["error"] = "state removed before the loaded escape" };
