@@ -1,44 +1,57 @@
 # Spider Summoner integration: status
 
-**Incomplete with named blockers.** The two review corrections are implemented and accepted by review, and the
-scoped native CMB web-escape bonus is now implemented. That bonus and the remaining gameplay acceptance observations
-are open natively. The latest candidate's native run stopped on a recurring popup-teardown guard refusal before any
-spider cell ran (see below). This is not mission completion and not release qualification. No merge, release or
-permanent installation has been performed.
+**Incomplete with named blockers.** The review corrections and the scoped native CMB web-escape bonus are
+implemented. Under controlled input, candidate `e6723d872320` passed its focused native phase (174 PASS, 0 FAIL),
+including the new web-escape, fiendish and retained-toggle observations. The remaining gameplay acceptance
+observations are open (table below). The corrected observer is committed but not yet built. This is not mission
+completion and not release qualification. No merge, release or permanent installation has been performed.
 
 Baseline and its original result, unchanged: [BASELINE.md](BASELINE.md), including the `FAIL, 70 PASS / 1 FAIL`
 result on candidate `efc75b8cc0b0`.
 
-## Current candidate and run
+## Candidates and runs (third review task)
 
-| Item | Value |
-| --- | --- |
-| Source | `e6723d8723206d1fc213e98cb1132e4833862bb0`, v0.0.181 development, branch `codex/races-unleashed-summoning` |
-| Package SHA-256 | `b916bc08fdb8972fff5ba7b69ca9c21fe81d3323f7d59d462fdcef6ea08cb0c9` |
-| DLL SHA-256 | `298b3fa2d61edcada3f89926733dc8bba4ec78951851dd5d5fc42177e760452c` |
-| MVID | `d81c80dd-8fa9-48ee-b187-00f32a499505` |
-| Purpose | Development candidate `races-unleashed-summoning`; never a release |
-| Run | `20261110T0329183919821Z-8081e6929acb4a5b8424e39ad87970fd`: **FAIL, 67 PASS / 2 FAIL** |
-| Profile | The current DATA combined installation. Races Unleashed 1.0.11, DLL `6d18168c...4cb0`; Call of the Wild loaded |
-| Restoration | `verified`; live tree `5C3E4AD4...BFBB`, `Params.xml` `E44F4495...30BB` |
+| Candidate | Package / DLL | Run | Result |
+| --- | --- | --- | --- |
+| `e6723d8723206d1fc213e98cb1132e4833862bb0` (product: CMB web-escape bonus) | `b916bc08...0cb9` / `298b3fa2...452c` | `20261110T0329183919821Z-8081e6929acb4a5b8424e39ad87970fd` | **FAIL, 67 / 2**: guard refusal, before any spider cell |
+| same | same | `20261110T0414271665285Z-af430dceb7de452a899db21058d3ef86`, **controlled input** | **PASS, 174 / 0** |
+| `655ab8a8ae3e` (observer: rule and branch assertions, real grapple control, in-phase real web hit) | `0483c0ea...46dd` / `79f5e7d0...8c5c` | `20261110T0427495327289Z-81a9b3302a4b4e3d8842109f39574375`, controlled input | **FAIL, 155 / 9**: observer defects, below |
+| `182717dd10` (observer fix) | not built | none | none |
 
-**Recurring guard refusal (blocker).** The run stopped at the teardown of the Summon Monster V popup after the cleric
-cell `cleric-foreign-legal`, which casts the repaired Ogre Spider. The popup-teardown guard refused a live tooltip
-context that had no ability and no owning trigger; every candidate trigger reported `nativeHoverActive=false`. The
-guard's recorded engine contract says a pointer entering any tooltip trigger can leave such a context behind, because
-hiding the tooltip does not clear it. Before this run the cleric cells and the live contract classification passed
-(Ogre and Tarantula `verified-repaired-spider-contract`). **No spider cell ran, so the web-escape bonus, the new escape
-observations, the fiendish Crab and Widow casts and the retained-toggle cast have no native result on this candidate.**
+**Controlled input.** No human used DATA during the two controlled runs. The pointer was parked at (300, 200), over
+fog with no interactive UI, before launch, and sampled every 5 seconds. All 62 samples on the first run and all 56
+on the second read (300, 200). Both runs were launched from the clean candidate commit in the main repository; the
+development receipt binds each package to that path. The profile is the current DATA combined installation, with
+Races Unleashed 1.0.11 and Call of the Wild loaded. Restoration was `verified` after every run: live tree
+`5C3E4AD4...BFBB`, `Params.xml` `E44F4495...30BB`.
 
-This is the same refusal, at the same popup and around the same cast, as run 1 of candidate `8c1734743cce` (below):
-two of the last three runs, on two candidates. The earlier classification is therefore withdrawn. Record it as: **a
-recurring tooltip-ownership refusal at the Summon Monster V teardown around the repaired Ogre Spider cast; cause not
-established.** An incidental pointer hover remains a plausible cause but is unproven. The cell's code did not change
-in either candidate. The guard is a runtime-safety check, so it is not weakened here.
+**Popup-teardown guard refusal.** Recorded as possible input interference, not a confirmed root cause. It stopped run
+1 of `8c1734743cce` and the first run of `e6723d872320`, both at the Summon Monster V popup around the repaired Ogre
+Spider cast. The two receipts differ:
+- In run 1 the first close inside the cast failed, with the popup still open.
+- In the `e6723d872320` run, the second, outer close after the cast failed, with the popup already cleared.
 
-The next step is to narrow this before another run. Two options:
-- Record which trigger created the leftover context, as diagnostic observer data.
-- Confirm whether the DATA machine's pointer was in use during the 02:27 and 03:29 UTC runs.
+Both refused a tooltip context that had no ability and no live trigger. The owner reports probably using the mouse
+during those runs. Under controlled input the same unchanged package passed, and the next candidate's run passed
+that step too. That supports the interference hypothesis without proving what caused the earlier refusals; both
+failures are retained. The guard was not changed.
+
+**`655ab8a8ae3e` run: observer defects, not gameplay.**
+- **Assertion bug:** the new rule-problem check compared a Json.NET token type. A null string stored in a `JObject`
+  is a `String` token holding null, so the check failed although every escape triggered exactly its expected rule
+  and branch. Fixed in `182717dd10`.
+- **In-phase real web hit:** the cell created a hostile and fired the web through the correction scenario's
+  detached-ability helper. The command was interrupted (`result=Interrupt`), and a second, `Pause`, mode was left on
+  the native mode stack. Every later cell then failed its ownership checks, by design. Those later failures are
+  consequences, not findings. The cell is withdrawn in `182717dd10`. A feat spider's real web hit needs a fixture
+  that owns its own clock and hostile, such as the correction rules scenario.
+
+The recorded values in that run still answer the review's two observer findings:
+- **Loaded branches:** every escape attempt triggered exactly the rule and branch its implementation requires,
+  identified as `native` or `cotw`. Native skill used `SkillAthletics`, native CMB a `Grapple` maneuver, loaded skill
+  `SkillAthletics` and loaded CMB `AdditionalCMB`. Each was 14 with the marker and 12 without.
+- **Ordinary grapple:** a real `RuleCombatManeuver` against the spider with no web reason had a target number of 12
+  both with and without the marker.
 
 Earlier candidates on this branch are retained, not replaced. Their evidence stays bound to their own bytes:
 
@@ -118,24 +131,35 @@ The component keeps no state between rules. The decision is the pure `SpiderWebE
 
 The CMD baseline is kept; it is not replaced by the web DC.
 
-**Observer added (not yet run).** For the summoned ordinary Giant Spider with the feat, each escape is attempted
-with and without the marker on the same spider, and again on a spider summoned without the feat. Each attempt
-records the actual escape rule and its final target number, and requires exactly one rule with a target number
-exactly 2 higher. The escape paths are:
-- the native skill branch and the native CMB branch: the installed native action's configuration, run in the
-  webbed state's own context;
-- the loaded action in this profile, which is Call of the Wild's replacement, on both of its branches.
+**Native result (`e6723d872320`, controlled input, PASS).** The summoned ordinary Giant Spider with the feat attempted
+each escape with and without the marker. The webbed state was applied in the spider's own web execution context, and
+the escapee's BAB or skills selected the branch.
 
-A standalone CMD calculation checks that an ordinary CMD is unchanged. The escapee is the disposable caster, with its
-BAB or skills set to select the branch and restored afterwards. The webbed state is applied in the spider's own web
-context; the projectile hit itself remains covered only by the correction rules scenario, without the feat.
+| Path | Rule that ran | Without marker | With marker | Spider without the feat |
+| --- | --- | ---: | ---: | ---: |
+| Native skill | `RuleSkillCheck`, `SkillAthletics` | 12 | 14 | 12 |
+| Native CMB | `RuleCombatManeuver`, `Grapple`, against the spider's CMD | 12 | **14** | 12 |
+| Loaded (Call of the Wild) skill | `RuleSkillCheck`, `SkillAthletics` | 12 | 14 | 12 |
+| Loaded (Call of the Wild) CMB | `RuleSkillCheck`, `AdditionalCMB` | 12 | 14 | 12 |
+
+The new component therefore raises the native CMB branch's actual target number by exactly 2 through the engine's own
+rule chain, and no path is adjusted twice.
+
+Two limits apply to this candidate's verdict. Its pass condition did not itself assert the loaded branches, and its
+control was a standalone CMD calculation. The next candidate's observer asserts both, using a real grapple
+maneuver, and its recorded values already match (see above). The projectile hit itself is not part of this
+observation.
 
 **Profile without Call of the Wild.** The committed profile `gunslinger-races-unleashed` is a valid dependency set.
 Races Unleashed declares no requirements, and the three mods that require Call of the Wild (ProperFlanking2,
-TweakOrTreat, ZFavoredClass) are not in it. The guarded launcher, however, admits a `profileId` only for
-`observe-optional-mod-compatibility`, not for this summoning review phase. Running there needs a reviewed change to
-the runtime wrapper. Within the combined profile, the native-path observation exercises the native escape code
-directly.
+TweakOrTreat, ZFavoredClass) are not in it.
+
+The earlier statement that a launcher change is needed was wrong. The existing
+`scripts/compatibility/Invoke-KingmakerCompatibilityProfile.ps1` accepts that profile, the
+`disposable-expanded-summoning-sprint32-native-review` scenario, its `-Parameters`, and a development candidate
+through `-DevelopmentPurpose` with `-ReuseInstalledArtifact` and the exact `-PackagePath`. The next step is a
+preflight on that route with the exact candidate. It was not run in this task, because the wrapper stages mod states
+and the validation budget would not cover a profile run after the build.
 
 ## What the loaded game showed (unchanged findings)
 
@@ -173,7 +197,8 @@ recalculation or reload. Existing summons from before an upgrade receive no mark
 
 ## Acceptance status
 
-Native entries name their candidate; `8c1734743cce` evidence is from its passing run 2. Focused evidence means
+Native entries name their candidate; `8c1734743cce` evidence is from its passing run 2, `e6723d872320` evidence from its
+controlled-input run. Focused evidence means
 the named domain tests; those are not native observations.
 
 | ID | Implementation | Focused evidence | Native evidence | Candidate | Remaining work |
@@ -183,33 +208,30 @@ the named domain tests; those are not native observations.
 | RU-03 | Done | Matrix tests | Four Summon Monster originals cast as the named unit; repaired Ogre under evil and non-evil casters | `8c1734743cce` | **Four Summon Nature's Ally original casts** |
 | RU-04 | Done | Every matrix cell; quantity expression | 46 of 46 placements in the census; 1d4+1 and 1d3 Summon Monster casts | `8c1734743cce` | Representative Summon Nature's Ally quantity casts |
 | RU-05 | Done (donor rank preserved) | Quantity expression rejects a fixed bonus | None | none | **Superior and Augment Summoning native cast** |
-| RU-06 | Done | Selection and band policy | Celestial on all four species; fiendish on the Ogre and Tarantula; correct Mid band, no leftovers | `8c1734743cce` | Fiendish Crab and Black Widow casts: cells added in `e6723d872320`, **not run**; LN and CN focused only |
-| RU-07 | Done | None new | Neutral toggle read at execution, off and on; no Summon Monster template on Summon Nature's Ally rows | `8c1734743cce` | A Summon Monster choice kept from the real popup with the toggle off, then cast after it is turned on: cell added in `e6723d872320`, **not run**; Summon Nature's Ally cast under both toggle positions |
+| RU-06 | Done | Selection and band policy | Celestial on all four species; fiendish on all four, including Crab and Black Widow under an LE caster; correct Mid band, no native or opposite template left | `e6723d872320` | LN and CN focused only |
+| RU-07 | Done | None new | Neutral toggle read at execution, off and on. A Summon Monster choice kept from the real popup with the toggle off and cast after it was turned on summoned a fiendish Tarantula, spending exactly its slot. No Summon Monster template on Summon Nature's Ally rows | `e6723d872320` | Summon Nature's Ally cast under both toggle positions |
 | RU-08 | Done | Repaired Ogre judged as spider | LG/Erastil, LE/Asmodeus, TN/Pharasma casts; deity-derived control; repaired Ogre offered to LG in both routes | `8c1734743cce` | None for the restriction itself |
 | RU-09 | Done | Membership tests | Non-cleric provider control | `8c1734743cce` | **Real multiclass book; ordinary spontaneous SM and SNA pool casts** |
 | RU-10 | Done; admission now requires a repaired row | Family-route and agreement tests | Repaired Ogre and Tarantula in Herald tier V and VII menus (Herald conversion feature granted to the fixture) | `8c1734743cce` | **Herald spider casts, including a quantity tier, debit and metamagic**; Crab I and Widow IV admission; **a legitimately acquired Herald Caller** |
 | RU-11 | Done; admission now requires a repaired row | Family-route and agreement tests | None beyond census | none | **Druid conversion and prepared SNA comparison and casts** |
 | RU-12 | Done; consumers traced | Benefit scope | Poison DC base+2 in the resolving context, stable on recalculation (ordinary Giant Spider 12 to 14; 12 without the feat) | `8c1734743cce` | **Actual first and continuing saves from isolated exposures; inherited Hunting poison; Augment Constitution change; reload; ineligible-source controls** |
-| RU-13 | Done: DC hook plus native CMB-branch bonus (`e6723d872320`) | Benefit scope; web-escape scope | Loaded consumer in this profile is Call of the Wild's replacement; webbed context DC 12 to 14 with the marker (structural, `8c1734743cce`) | `8c1734743cce` | **Escape rules and final target numbers for native skill, native CMB and loaded paths, feat on, off and absent: observer added, not run**; a feat-marked projectile hit; the same in the `gunslinger-races-unleashed` profile after a reviewed wrapper change |
+| RU-13 | Done: DC hook plus native CMB-branch bonus | Benefit scope; web-escape scope | Every escape path's rule and final target number: native skill, native CMB, and loaded skill and CMB each 12 to 14 with the marker and 12 without the feat (`e6723d872320`); the same rules and branches asserted, with a real ordinary grapple unchanged at 12 (values from `655ab8a8ae3e`) | `e6723d872320` | Corrected observer's verdict on a built candidate; **a feat spider's real web hit followed by escape**; the `gunslinger-races-unleashed` profile through the existing compatibility wrapper |
 | RU-14 | Done | Exact identity negatives | Ordinary Giant Spider with and without the feat | `8c1734743cce` | **Reload**; native ineligible-source controls |
 | RU-15 | Done | Display order tests | Real popups exact, sorted, no duplicates, including spider rows on the cleric's menus | `8c1734743cce` | SNA and Druid rendered menus with the feat, and **for a caster without the feat** |
 | RU-16 | Done | None | None | none | **Fresh process, saved shortcut, reload** of an original and a generated row |
 | RU-17 | Done | Module boundary | None | none | **RU-absent and module-off profiles**, after confirming each profile's dependencies |
 | RU-18 | Reopened by review, corrected | Agreement tests: unfamiliar and misplaced variants components, empty after-spawn, changed application, reordered or extra actions, unreadable donor | Zero unresolved rows; all 8 live rows accepted by the stricter contracts | `8c1734743cce` | None known |
 | RU-19 | Done | Observer compiles | Stale-selection cells corrected; old failure records retained | `8c1734743cce` | None |
-| RU-20 | Done | n/a | Draft PR updated, restoration verified | `e6723d872320` | **Recurring popup-teardown guard refusal to narrow**; **NPC-without-feat selection/AI control**; owner review |
+| RU-20 | Done | n/a | Draft PR updated, restoration verified | `e6723d872320` | **NPC-without-feat selection/AI control**; owner review |
 
 ## Next bounded acceptance plan
 
-First narrow the recurring guard refusal, so the next run can reach the spider cells. Then build one candidate and run
-each open item as an explicit scenario, reusing existing fixtures where they exist:
+Build the committed observer fix once, and run under controlled input: no human input to DATA, pointer parked.
+Then cover each open item as an explicit scenario, reusing existing fixtures where they exist:
 
 | Open IDs | Scenario |
 | --- | --- |
-| Blocker | Diagnose the leftover tooltip context at the Summon Monster V teardown (owning trigger and pointer state), without weakening the guard |
-| RU-06 | Fiendish Crab I and Black Widow IV casts under an evil caster (cells present) |
-| RU-07 | Keep a Summon Monster choice from the real popup with the toggle off, turn it on, cast that choice (cell present); SNA under both toggle positions |
-| RU-13 | Escape rules and final target numbers for the native skill branch, native CMB branch and loaded action, with the feat, with the marker removed and without the feat, plus the ordinary CMD control (cells present); a feat-marked projectile hit; then the `gunslinger-races-unleashed` profile after a reviewed wrapper change |
+| RU-13 | Corrected observer verdict on a built candidate; a feat spider's real web hit followed by escape, in a fixture that owns its clock and hostile (the correction rules scenario with the feat granted); the `gunslinger-races-unleashed` profile through `Invoke-KingmakerCompatibilityProfile.ps1` after its preflight |
 | RU-03, 04, 07, 11, 15 | A Drow Druid with a prepared book: the four SNA original casts, one 1d3 and one 1d4+1 cast, the Druid conversion menu and a cast with its debit, and SNA under both toggle positions; the same SNA and Druid menus rendered for a caster without the feat |
 | RU-09 | A multiclass caster and an ordinary spontaneous SM and SNA book: pool casts and debits |
 | RU-10 | A legitimately acquired Herald Caller rather than a granted conversion feature: Crab I and Widow IV admission, one quantity-tier spider cast with debit, and one metamagic cast |
@@ -221,20 +243,20 @@ each open item as an explicit scenario, reusing existing fixtures where they exi
 
 ## Validation ledger
 
-Second review task (15-minute target, 30-minute ceiling):
+Third review task (15-minute target, 30-minute ceiling):
 
 | Step | Seconds |
 | --- | ---: |
-| Focused gates (one compile failure, then 32 selected) | about 25 |
-| Candidate build `e6723d872320` | 592 |
-| Guarded native run, FAIL (guard refusal) | 182 |
-| **Total** | **about 800** |
+| Refused launches (records commit checked out; development package path) | about 50 |
+| Controlled-input run, `e6723d872320`, PASS | 311 |
+| Focused gates, 32 selected, three times | about 60 |
+| Candidate build `655ab8a8ae3e` | 410 |
+| Controlled-input run, `655ab8a8ae3e`, FAIL (observer defects) | 280 |
+| **Total** | **about 1,110** |
 
-No rerun was launched. The refusal recurred, so the policy calls for narrowing rather than relaunching unchanged.
-A further build and run would also come close to the ceiling. Earlier tasks' ledgers (about 1,600 s and about
-920 s) are unchanged and separate.
+The observer fix was not built: another build and run (700 to 900 s) would reach the ceiling. Earlier tasks'
+ledgers (about 1,600 s, 920 s and 800 s) are unchanged and separate.
 
-Focused results on `e6723d872320`: `summon-cleric-alignment;summon-spider-summoner;expanded-summoning.display-ord;druid`,
-32 of 2,919 selected, 0 failures, recorded by the candidate build. The 785-test related selection was run on
-`8c1734743cce`; this change touches only the marker, its new component and the observer, outside that shared
-signature surface. The complete domain suite and release qualification are deferred.
+Focused results: `summon-cleric-alignment;summon-spider-summoner;expanded-summoning.display-ord;druid`, 32 of 2,919
+selected, 0 failures, on each of `e6723d872320`, `655ab8a8ae3e` and `182717dd10`. The 785-test related selection was
+run on `8c1734743cce`. The complete domain suite and release qualification are deferred.
