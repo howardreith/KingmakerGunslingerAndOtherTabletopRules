@@ -200,21 +200,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             return escapes[0].GetType().FullName == "CallOfTheWild.CombatManeuverMechanics.ContextActionBreakFreeFromSpellGrapple" ? "cotw" : "unsupported:" + escapes[0].GetType().FullName;
         }
 
-        /// <summary>Null when the one rule triggered is the one this
-        /// implementation's branch must trigger; otherwise why not.</summary>
-        internal static string SpiderEscapeRuleProblem(string implementation, string branch, JObject attempt)
-        {
-            if (implementation == null || implementation.StartsWith("unsupported", StringComparison.Ordinal)) return "unsupported-implementation:" + implementation;
-            JArray rules = attempt["rules"] as JArray;
-            if (rules == null || rules.Count != 1) return "rules=" + (rules == null ? 0 : rules.Count);
-            string rule = (string)rules[0]["rule"], discriminator = (string)rules[0]["discriminator"];
-            bool skillStat = discriminator == "SkillMobility" || discriminator == "SkillAthletics";
-            bool ok = branch == "skill" ? rule == "RuleSkillCheck" && skillStat :
-                implementation == "native" ? rule == "RuleCombatManeuver" && discriminator == "Grapple" :
-                rule == "RuleSkillCheck" && discriminator == "AdditionalCMB";
-            return ok ? null : "unexpected:" + rule + ":" + discriminator;
-        }
-
         /// <summary>
         /// One escape attempt from a webbed state: an existing one (a real web
         /// hit), or one applied in the spider's own web execution context. Path
@@ -247,7 +232,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     cast.Recalculate();
                     state = escapee.Descriptor.Buffs.AddBuff(webbed, cast, TimeSpan.FromSeconds(60));
                 }
-                if (state == null) return new JObject { ["branch"] = branch, ["path"] = path, ["implementation"] = implementation, ["error"] = "webbed state refused" };
+                if (state == null) return new JObject { ["branch"] = branch, ["path"] = path, ["implementation"] = implementation, ["error"] = "webbed state refused",
+                    ["rule"] = JValue.CreateNull(), ["discriminator"] = JValue.CreateNull(), ["targetNumber"] = JValue.CreateNull(), ["ruleProblem"] = "webbed state refused" };
                 ActionList actions;
                 if (path == "native")
                 {
@@ -268,11 +254,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SetExactProperty(athletics, "BaseValue", athleticsBefore);
             }
             JObject decisive = observer.Rules.Count == 1 ? observer.Rules[0] : null;
-            var result = new JObject { ["branch"] = branch, ["path"] = path, ["implementation"] = implementation, ["rules"] = new JArray(observer.Rules),
-                ["rule"] = decisive?["rule"], ["discriminator"] = decisive?["discriminator"], ["targetNumber"] = decisive?["targetNumber"] };
-            string problem = SpiderEscapeRuleProblem(implementation, branch, result);
-            result["ruleProblem"] = problem == null ? JValue.CreateNull() : (JToken)problem;
-            return result;
+            var rules = new JArray(observer.Rules);
+            return new JObject { ["branch"] = branch, ["path"] = path, ["implementation"] = implementation, ["rules"] = rules,
+                ["rule"] = decisive?["rule"] ?? JValue.CreateNull(), ["discriminator"] = decisive?["discriminator"] ?? JValue.CreateNull(),
+                ["targetNumber"] = decisive?["targetNumber"] ?? JValue.CreateNull(),
+                ["ruleProblem"] = SpiderEscapeObservationVerdict.Optional(SpiderEscapeObservationVerdict.RuleProblem(implementation, branch, rules)) };
         }
 
         /// <summary>An ordinary grapple maneuver against the spider, with no
@@ -291,9 +277,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         /// <summary>
         /// Each escape case with the feat's marker and without it on the same
-        /// summoned spider, plus a standalone CMD calculation as the ordinary
-        /// grapple control. Exactly one escape rule per attempt; with the marker
-        /// its final target number is exactly 2 higher, whichever rule it is.
+        /// summoned spider, plus a real grapple maneuver against the spider with
+        /// no web reason as the ordinary grapple control. Exactly one expected
+        /// escape rule per attempt; with the marker its final target number is
+        /// exactly 2 higher. Any missing, refused or unsupported observation is
+        /// a named failure with its original reason.
         /// </summary>
         private Dictionary<string, int> SpiderWebEscapeEvidence(UnitEntityData spider, UnitEntityData escapee, Dictionary<string, int> noFeatBaseline)
         {
@@ -312,12 +300,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (string key in SpiderEscapeCases)
                 {
                     JObject a = with[key], b = without[key];
-                    bool one = a["targetNumber"].Type != JTokenType.Null && b["targetNumber"].Type != JTokenType.Null && (string)a["rule"] == (string)b["rule"];
-                    bool expectedRule = a["ruleProblem"].Type == JTokenType.Null && b["ruleProblem"].Type == JTokenType.Null;
-                    bool plusTwo = one && (int)a["targetNumber"] == (int)b["targetNumber"] + SpiderSummonerCatalog.DcBonus;
-                    if (one) baseline[key] = (int)b["targetNumber"];
-                    ok &= one && expectedRule && plusTwo;
-                    rows.Add(new JObject { ["case"] = key, ["withMarker"] = a, ["withoutMarker"] = b, ["exactlyPlusTwo"] = plusTwo, ["expectedRule"] = expectedRule });
+                    string problem = SpiderEscapeObservationVerdict.PairProblem(a, b, SpiderSummonerCatalog.DcBonus);
+                    int unmarked;
+                    if (SpiderEscapeObservationVerdict.TargetNumber(b, out unmarked) == null) baseline[key] = unmarked;
+                    ok &= problem == null;
+                    rows.Add(new JObject { ["case"] = key, ["withMarker"] = a, ["withoutMarker"] = b, ["problem"] = SpiderEscapeObservationVerdict.Optional(problem) });
                 }
                 ok &= controlWith > 0 && controlWith == controlWithout;
                 Sprint25Check("spider-web-escape-with-feat", ok, new JObject { ["cases"] = rows, ["ordinaryGrappleTargetNumberWithMarker"] = controlWith, ["ordinaryGrappleTargetNumberWithoutMarker"] = controlWithout,
@@ -329,11 +316,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (string key in SpiderEscapeCases)
             {
                 JObject a = SpiderEscapeAttempt(spider, escapee, key.Split(':')[1], key.Split(':')[0]);
-                int expected;
-                bool same = a["targetNumber"] != null && a["targetNumber"].Type != JTokenType.Null && a["ruleProblem"].Type == JTokenType.Null &&
-                    noFeatBaseline.TryGetValue(key, out expected) && (int)a["targetNumber"] == expected;
-                ok &= held == null && same;
-                rows.Add(new JObject { ["case"] = key, ["attempt"] = a, ["matchesFeatSpiderWithoutMarker"] = same });
+                int actual, expected;
+                string problem = SpiderEscapeObservationVerdict.TargetNumber(a, out actual) ??
+                    (!noFeatBaseline.TryGetValue(key, out expected) ? "no-feat-spider-baseline" : actual != expected ? "target-number:" + actual + "!=" + expected : null);
+                ok &= held == null && problem == null;
+                rows.Add(new JObject { ["case"] = key, ["attempt"] = a, ["problem"] = SpiderEscapeObservationVerdict.Optional(problem) });
             }
             Sprint25Check("spider-web-escape-without-feat", ok, new JObject { ["cases"] = rows, ["marker"] = held != null },
                 "A Giant Spider summoned without the feat has no marker, and each escape path's target number equals the feat spider's without its marker.");

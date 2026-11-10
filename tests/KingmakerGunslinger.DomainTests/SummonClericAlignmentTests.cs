@@ -481,6 +481,36 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(adjusts(true, true, true, true, "56ec8788092b6314e8f3c1c502e8433f", web, true, true), "Another state applied by the web ability is untouched.");
         }
 
+        private static Newtonsoft.Json.Linq.JObject EscapeAttempt(string implementation, string branch, string rule, string discriminator, int target)
+        {
+            var rules = new Newtonsoft.Json.Linq.JArray(new Newtonsoft.Json.Linq.JObject { ["rule"] = rule, ["discriminator"] = discriminator, ["targetNumber"] = target });
+            return new Newtonsoft.Json.Linq.JObject { ["implementation"] = implementation, ["branch"] = branch, ["rules"] = rules, ["rule"] = rule, ["discriminator"] = discriminator, ["targetNumber"] = target,
+                ["ruleProblem"] = RuntimeTesting.SpiderEscapeObservationVerdict.Optional(RuntimeTesting.SpiderEscapeObservationVerdict.RuleProblem(implementation, branch, rules)) };
+        }
+
+        internal static void SpiderEscapeVerdictsNameEveryFailure()
+        {
+            Func<Newtonsoft.Json.Linq.JObject, Newtonsoft.Json.Linq.JObject, string> pair = (a, b) => RuntimeTesting.SpiderEscapeObservationVerdict.PairProblem(a, b, 2);
+            Assertions.Equal(null, pair(EscapeAttempt("native", "cmb", "RuleCombatManeuver", "Grapple", 14), EscapeAttempt("native", "cmb", "RuleCombatManeuver", "Grapple", 12)), "A native CMB escape exactly 2 higher passes.");
+            Assertions.Equal(null, pair(EscapeAttempt("cotw", "cmb", "RuleSkillCheck", "AdditionalCMB", 16), EscapeAttempt("cotw", "cmb", "RuleSkillCheck", "AdditionalCMB", 14)), "The rule passes from the actual unbonused number, not fixed values.");
+            Assertions.Equal(Newtonsoft.Json.Linq.JTokenType.Null, RuntimeTesting.SpiderEscapeObservationVerdict.Optional(null).Type, "An absent problem is a real Null token.");
+            var legacyNullString = EscapeAttempt("native", "skill", "RuleSkillCheck", "SkillAthletics", 14); legacyNullString["ruleProblem"] = new Newtonsoft.Json.Linq.JValue((string)null);
+            Assertions.Equal(null, pair(legacyNullString, EscapeAttempt("native", "skill", "RuleSkillCheck", "SkillAthletics", 12)), "A String token holding null is no problem: the earlier false failure.");
+            Assertions.True(pair(EscapeAttempt("native", "cmb", "RuleCombatManeuver", "Grapple", 15), EscapeAttempt("native", "cmb", "RuleCombatManeuver", "Grapple", 12)).StartsWith("target-numbers", StringComparison.Ordinal), "A difference other than 2 fails.");
+            var refused = new Newtonsoft.Json.Linq.JObject { ["implementation"] = "native", ["branch"] = "skill", ["error"] = "webbed state refused" };
+            Assertions.Equal("marked:error:webbed state refused", pair(refused, EscapeAttempt("native", "skill", "RuleSkillCheck", "SkillAthletics", 12)), "A refused state keeps its original reason without an exception.");
+            var missing = new Newtonsoft.Json.Linq.JObject { ["implementation"] = "native", ["branch"] = "skill" };
+            Assertions.Equal("unmarked:missing-rule-verdict", pair(EscapeAttempt("native", "skill", "RuleSkillCheck", "SkillAthletics", 14), missing), "A missing observation is named.");
+            Assertions.Equal("marked:no-observation", pair(null, missing), "No observation at all is named.");
+            var malformed = EscapeAttempt("native", "skill", "RuleSkillCheck", "SkillAthletics", 14); malformed["targetNumber"] = "fourteen";
+            Assertions.Equal("marked:target-number-string", pair(malformed, EscapeAttempt("native", "skill", "RuleSkillCheck", "SkillAthletics", 12)), "A malformed target number is named.");
+            var nullTarget = EscapeAttempt("native", "skill", "RuleSkillCheck", "SkillAthletics", 14); nullTarget["targetNumber"] = Newtonsoft.Json.Linq.JValue.CreateNull();
+            Assertions.Equal("marked:target-number-null", pair(nullTarget, EscapeAttempt("native", "skill", "RuleSkillCheck", "SkillAthletics", 12)), "A null target number is named.");
+            Assertions.True(pair(EscapeAttempt("unsupported:Other.Escape", "cmb", "RuleSkillCheck", "AdditionalCMB", 14), EscapeAttempt("unsupported:Other.Escape", "cmb", "RuleSkillCheck", "AdditionalCMB", 12)).StartsWith("marked:rule:unsupported-implementation", StringComparison.Ordinal), "An unrecognized replacement is explicitly unsupported.");
+            Assertions.True(pair(EscapeAttempt("cotw", "cmb", "RuleCombatManeuver", "Grapple", 14), EscapeAttempt("cotw", "cmb", "RuleCombatManeuver", "Grapple", 12)).StartsWith("marked:rule:unexpected", StringComparison.Ordinal), "The replacement's CMB branch must be its own skill check.");
+            Assertions.True(pair(EscapeAttempt("native", "skill", "RuleCombatManeuver", "Grapple", 14), EscapeAttempt("native", "skill", "RuleCombatManeuver", "Grapple", 12)).StartsWith("marked:rule:unexpected", StringComparison.Ordinal), "A skill branch that rolled a maneuver is the wrong branch.");
+        }
+
         internal static void ModuleBoundaryLeavesNativeAvailabilityUnchanged()
         {
             Func<string, SummonClericDecision?> forbidden = row => SummonClericDecision.ForbiddenByAlignment;
