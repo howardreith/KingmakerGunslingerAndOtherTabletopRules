@@ -511,6 +511,70 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(pair(EscapeAttempt("native", "skill", "RuleCombatManeuver", "Grapple", 14), EscapeAttempt("native", "skill", "RuleCombatManeuver", "Grapple", 12)).StartsWith("marked:rule:unexpected", StringComparison.Ordinal), "A skill branch that rolled a maneuver is the wrong branch.");
         }
 
+        internal static void SpiderPoisonAndRouteVerdictsRequireIdentity()
+        {
+            const string own = "own-feature", hunting = "hunting-feature", ownState = "own-state", huntingState = "hunting-state", spider = "spider-unit";
+            Func<string, int, bool, Newtonsoft.Json.Linq.JObject> save = (reason, dc, passed) => new Newtonsoft.Json.Linq.JObject { ["reasonFact"] = reason, ["dc"] = dc, ["passed"] = passed };
+            Func<Newtonsoft.Json.Linq.JObject> exposure = () => new Newtonsoft.Json.Linq.JObject
+            {
+                ["expected"] = new Newtonsoft.Json.Linq.JArray(
+                    new Newtonsoft.Json.Linq.JObject { ["feature"] = own, ["state"] = ownState, ["perTick"] = 2 },
+                    new Newtonsoft.Json.Linq.JObject { ["feature"] = hunting, ["state"] = huntingState, ["perTick"] = 1 }),
+                ["firstSaves"] = new Newtonsoft.Json.Linq.JArray(save(own, 16, false), save(hunting, 16, false)),
+                ["poisonStates"] = new Newtonsoft.Json.Linq.JArray(ownState, huntingState),
+                ["continuingSaves"] = new Newtonsoft.Json.Linq.JArray(save(ownState, 16, false), save(ownState, 16, false), save(huntingState, 16, false)),
+                ["unbonusedDc"] = new Newtonsoft.Json.Linq.JObject { [own] = 14, [hunting] = 14 },
+            };
+            string[] required = { own, hunting };
+            Func<Newtonsoft.Json.Linq.JObject, string> species = value => RuntimeTesting.SpiderPoisonObservationVerdict.UnbonusedProblem(value, required, 2);
+            Assertions.Equal(null, species(exposure()), "Both poisons fully attributed, each +2: passes.");
+            var oneContinuing = exposure(); ((Newtonsoft.Json.Linq.JArray)oneContinuing["continuingSaves"]).RemoveAt(2);
+            Assertions.Equal("continuing-saves:hunting-state=0/1", species(oneContinuing), "Both first saves at DC 16 but only one poison's continuing save: the reviewed false pass now fails.");
+            var noHunting = exposure(); ((Newtonsoft.Json.Linq.JArray)noHunting["firstSaves"]).RemoveAt(1);
+            Assertions.Equal("first-saves:hunting-feature=0", species(noHunting), "A Hunting poison that never rolls an initial save fails.");
+            var natural20 = exposure(); natural20["firstSaves"][1]["passed"] = true;
+            ((Newtonsoft.Json.Linq.JArray)natural20["poisonStates"]).RemoveAt(1); ((Newtonsoft.Json.Linq.JArray)natural20["continuingSaves"]).RemoveAt(2);
+            Assertions.Equal("first-save-not-failed:hunting-feature", species(natural20), "The recorded Black Widow shape (Hunting save passed, no state) is incomplete coverage.");
+            var crossed = exposure(); crossed["continuingSaves"][2]["dc"] = 14;
+            Assertions.Equal("continuing-dc:hunting-state:16->14", species(crossed), "A continuing save must match its own poison's first DC, not any first DC.");
+            var stray = exposure(); ((Newtonsoft.Json.Linq.JArray)stray["continuingSaves"]).Add(save("other-state", 16, false));
+            Assertions.Equal("unattributed-continuing-save:other-state", species(stray), "A continuing save from an unexpected state is named.");
+            var missingOwn = exposure(); ((Newtonsoft.Json.Linq.JArray)missingOwn["expected"]).RemoveAt(0);
+            Assertions.Equal("required-poison-not-expected:own-feature", species(missingOwn), "The species' own poison is required by identity.");
+            var noState = exposure(); noState["expected"][1]["state"] = Newtonsoft.Json.Linq.JValue.CreateNull();
+            Assertions.Equal("no-state-identity:hunting-feature", species(noState), "An expected poison without a state identity is named.");
+            var wrongDc = exposure(); wrongDc["firstSaves"][1]["dc"] = 15; wrongDc["continuingSaves"][2]["dc"] = 15;
+            Assertions.Equal("dc:hunting-feature:14->15", species(wrongDc), "Each poison's DC is its own unbonused parameter plus 2.");
+            var unmarked = exposure(); unmarked.Remove("unbonusedDc");
+            foreach (string key in new[] { "firstSaves", "continuingSaves" }) foreach (Newtonsoft.Json.Linq.JObject value in (Newtonsoft.Json.Linq.JArray)unmarked[key]) value["dc"] = 14;
+            Assertions.Equal(null, RuntimeTesting.SpiderPoisonObservationVerdict.MatchedProblem(exposure(), unmarked, required, 2), "Matched summons: every poison +2 over its own unmarked DC.");
+            var unmarkedShort = (Newtonsoft.Json.Linq.JObject)unmarked.DeepClone(); ((Newtonsoft.Json.Linq.JArray)unmarkedShort["continuingSaves"]).RemoveAt(2);
+            Assertions.Equal("unmarked:continuing-saves:hunting-state=0/1", RuntimeTesting.SpiderPoisonObservationVerdict.MatchedProblem(exposure(), unmarkedShort, required, 2), "The matched summon needs complete coverage too.");
+
+            Func<string, int, int, string, string, double, Newtonsoft.Json.Linq.JObject> unit = (guid, markers, templates, alignment, caster, seconds) => new Newtonsoft.Json.Linq.JObject
+            { ["unit"] = guid, ["markers"] = markers, ["templates"] = templates, ["nativeTemplates"] = 0, ["alignment"] = alignment, ["casterAlignment"] = caster, ["secondsLeft"] = seconds };
+            Func<Newtonsoft.Json.Linq.JArray, int, bool, string> units = (array, count, monster) => RuntimeTesting.SpiderRouteObservationVerdict.UnitsProblem(array, count, spider, monster);
+            Assertions.Equal(null, units(new Newtonsoft.Json.Linq.JArray(unit(spider, 1, 0, "NeutralGood", "NeutralGood", 77.3)), 1, false), "The chosen spider, one benefit, no template, caster alignment, live lifetime: passes.");
+            Assertions.Equal("creature:bralani", units(new Newtonsoft.Json.Linq.JArray(unit("bralani", 1, 0, "NeutralGood", "NeutralGood", 77.3)), 1, false), "A converted spider choice that produced another creature fails.");
+            Assertions.Equal("templates:0", units(new Newtonsoft.Json.Linq.JArray(unit(spider, 1, 0, "NeutralGood", "TrueNeutral", 65)), 1, true), "A Summon Monster spider needs its one template.");
+            Assertions.Equal(null, units(new Newtonsoft.Json.Linq.JArray(unit(spider, 1, 1, "NeutralGood", "TrueNeutral", 65)), 1, true), "Summon Monster alignment follows its template.");
+            Assertions.Equal("alignment:NeutralGood", units(new Newtonsoft.Json.Linq.JArray(unit(spider, 1, 0, "NeutralGood", "TrueNeutral", 41)), 1, false), "A Summon Nature's Ally spider keeps the caster's alignment.");
+            Assertions.Equal("markers:2", units(new Newtonsoft.Json.Linq.JArray(unit(spider, 2, 0, "TrueNeutral", "TrueNeutral", 41)), 1, false), "A doubled benefit fails.");
+            Assertions.Equal("lifetime:-1", units(new Newtonsoft.Json.Linq.JArray(unit(spider, 1, 0, "TrueNeutral", "TrueNeutral", -1)), 1, false), "No summon lifetime fails.");
+            Assertions.Equal("count:2/3", units(new Newtonsoft.Json.Linq.JArray(unit(spider, 1, 0, "TrueNeutral", "TrueNeutral", 41), unit(spider, 1, 0, "TrueNeutral", "TrueNeutral", 41)), 3, false), "The expected count is required.");
+
+            string comparison;
+            var cmdMarked = EscapeAttempt("native", "cmb", "RuleCombatManeuver", "Grapple", 18);
+            Assertions.Equal(null, RuntimeTesting.SpiderEscapeObservationVerdict.LoadedProblem(cmdMarked, EscapeAttempt("native", "cmb", "RuleCombatManeuver", "Grapple", 16), EscapeAttempt("native", "cmb", "RuleCombatManeuver", "Grapple", 12), 2, out comparison),
+                "A CMD-reading loaded escape is decided against the same spider, whatever the other summon's CMD.");
+            Assertions.Equal("same-spider", comparison, "The CMD comparison is named.");
+            Assertions.Equal("same-spider-baseline:no-observation", RuntimeTesting.SpiderEscapeObservationVerdict.LoadedProblem(cmdMarked, null, EscapeAttempt("native", "cmb", "RuleCombatManeuver", "Grapple", 16), 2, out comparison),
+                "Without the same-spider baseline a CMD-reading escape is never decided across summons.");
+            Assertions.Equal(null, RuntimeTesting.SpiderEscapeObservationVerdict.LoadedProblem(EscapeAttempt("cotw", "cmb", "RuleSkillCheck", "AdditionalCMB", 14), null, EscapeAttempt("cotw", "cmb", "RuleSkillCheck", "AdditionalCMB", 12), 2, out comparison),
+                "A DC fixed in the web context is decided against the matched unmarked summon.");
+            Assertions.Equal("matched-summons", comparison, "The DC comparison is named.");
+        }
+
         internal static void ModuleBoundaryLeavesNativeAvailabilityUnchanged()
         {
             Func<string, SummonClericDecision?> forbidden = row => SummonClericDecision.ForbiddenByAlignment;

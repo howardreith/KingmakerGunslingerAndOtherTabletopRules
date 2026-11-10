@@ -64,6 +64,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             return with == without + bonus ? null : "target-numbers:" + without + "->" + with;
         }
 
+        /// <summary>True when the attempt's decisive rule reads the spider's
+        /// CMD at the attempt (a grapple maneuver), not a DC fixed at the hit.</summary>
+        internal static bool ReadsSpiderCmd(JObject attempt)
+        { return attempt != null && Text(attempt["rule"]) == "RuleCombatManeuver"; }
+
+        /// <summary>
+        /// The loaded escape's comparison, chosen by the rule it actually used:
+        /// a CMD-reading escape against the same spider's real-hit escape with
+        /// its marker removed (two summons' CMDs can differ for unrelated
+        /// reasons); a DC fixed in the web context against the matched
+        /// unmarked summon's fresh cast.
+        /// </summary>
+        internal static string LoadedProblem(JObject marked, JObject sameSpiderWithoutMarker, JObject unmarkedSummon, int bonus, out string comparison)
+        {
+            comparison = ReadsSpiderCmd(marked) ? "same-spider" : "matched-summons";
+            if (comparison == "same-spider" && sameSpiderWithoutMarker == null) return "same-spider-baseline:no-observation";
+            return PairProblem(marked, comparison == "same-spider" ? sameSpiderWithoutMarker : unmarkedSummon, bonus);
+        }
+
         private static string Text(JToken token)
         { return token == null || token.Type == JTokenType.Null ? null : token.Type == JTokenType.String ? (string)token : token.ToString(); }
     }
