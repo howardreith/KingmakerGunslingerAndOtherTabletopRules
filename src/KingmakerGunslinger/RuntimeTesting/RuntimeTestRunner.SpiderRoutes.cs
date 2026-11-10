@@ -152,7 +152,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             ExpandedSummoningBlueprintSet set = ExpandedSummoningBlueprints.Registered;
             int templates = unit.Descriptor.Buffs.Enumerable.Count(buff => set.BySymbol.Any(pair => pair.Key.StartsWith("KMG.Summoning.Template.", StringComparison.Ordinal) && ReferenceEquals(pair.Value, buff.Blueprint)));
-            Buff summoned = unit.Descriptor.Buffs.Enumerable.FirstOrDefault(buff => (buff.Blueprint.name ?? "").IndexOf("Summon", StringComparison.OrdinalIgnoreCase) >= 0 && buff.TimeLeft.TotalSeconds > 0);
+            var summonBuffs = new HashSet<string>(new[] { SummonFamily.Monster, SummonFamily.NaturesAlly }.SelectMany(family => new[] { 1, 4, 7 }.Select(tier => SummonForeignRowClassifier.SummonBuffFor(family, tier))), StringComparer.Ordinal);
+            Buff summoned = unit.Descriptor.Buffs.Enumerable.FirstOrDefault(buff => summonBuffs.Contains(buff.Blueprint.AssetGuid));
             return new JObject { ["unit"] = unit.Blueprint.AssetGuid, ["markers"] = SpiderMarkerCount(unit), ["templates"] = templates,
                 ["nativeTemplates"] = unit.Descriptor.Buffs.Enumerable.Count(buff => ExpandedSummoningAbilityBuilder.NativeTemplateIds.Contains(buff.Blueprint.AssetGuid)),
                 ["alignment"] = unit.Descriptor.Alignment.Value.ToString(), ["casterAlignment"] = caster.Descriptor.Alignment.Value.ToString(),
@@ -212,7 +213,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 finally { if (die != null) EventBus.Unsubscribe(die); }
                 bool ok = record["error"] == null && (string)record["result"] == "Success" && (int)record["count"] == scoped.Expected && (bool)record["exactlyOneSlot"] &&
                     (record["units"] as JArray).OfType<JObject>().All(value => (string)value["unit"] == SpiderSummonerCatalog.Find(scoped.Key).UnitGuid && (int)value["markers"] == 1 &&
-                        (int)value["templates"] == 0 && (int)value["nativeTemplates"] == 0 && (double)value["secondsLeft"] > 0);
+                        (int)value["templates"] == 0 && (int)value["nativeTemplates"] == 0 && (double)value["secondsLeft"] > 0 && (double)value["secondsLeft"] < 100000);
                 if (die != null) { record["forcedDie"] = die.Value; record["rolls"] = new JArray(die.Rolls); ok &= die.Rolls.Count >= 1; }
                 Sprint25Check("spider-route-sna-" + scoped.Key + "-" + scoped.Tier, ok, record,
                     "A prepared Summon Nature's Ally slot casts the spider row: exactly the named spider in its expected count, a live summon duration, no Summon Monster template, one benefit, and exactly its own slot spent.");
@@ -312,7 +313,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var slot = new MechanicActionBarSlotMemorizedSpell { SpellSlot = source?.ParamSpellSlot, Unit = herald };
                     List<AbilityData> converted = source == null ? new List<AbilityData>() : slot.GetConvertedAbilityData();
                     AbilityData child = converted.FirstOrDefault(value => ReferenceEquals(value.Blueprint, scoped.Row));
+                    AbilityData expanded = child == null ? converted.FirstOrDefault(value => value.Blueprint.HasVariant(scoped.Row)) : null;
+                    // As ActionBarGroupSlot expands a conversion's variants in its popup.
+                    if (expanded != null) child = new AbilityData(expanded, scoped.Row);
                     var record = new JObject { ["tier"] = scoped.Tier, ["converted"] = converted.Count, ["admitted"] = child != null,
+                        ["via"] = expanded == null ? (child == null ? "none" : "conversion-list") : "conversion-variant:" + expanded.Blueprint.AssetGuid,
+                        ["sourceChain"] = child != null && (ReferenceEquals(child.ConvertedFrom, source) || ReferenceEquals(child.ConvertedFrom?.ConvertedFrom, source)),
                         ["book"] = child?.Spellbook?.Blueprint?.AssetGuid, ["casterLevel"] = child == null ? -1 : child.Spellbook.CasterLevel };
                     var die = scoped.Die == DiceType.Zero ? null : new SpiderDieOverride { Initiator = herald, Die = scoped.Die, Value = 2 };
                     if (child != null)
@@ -326,7 +332,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         }
                         finally { if (die != null) EventBus.Unsubscribe(die); }
                     }
-                    bool ok = child != null && ReferenceEquals(child.Spellbook, clericBook) && (string)record["result"] == "Success" && (int)record["count"] == scoped.Expected &&
+                    bool ok = child != null && (bool)record["sourceChain"] && ReferenceEquals(child.Spellbook, clericBook) && (string)record["result"] == "Success" && (int)record["count"] == scoped.Expected &&
                         (bool)record["exactlyOneSourceSlot"] && (record["units"] as JArray).OfType<JObject>().All(value => (string)value["unit"] == SpiderSummonerCatalog.Find(scoped.Unit).UnitGuid && (int)value["markers"] == 1 && (int)value["templates"] == 1);
                     Sprint25Check("spider-route-herald-" + scoped.Tier, ok, record,
                         "The natural multiclass Herald Caller's conversion from an unrelated prepared cleric spell admits the spider row, casts from the cleric book only and spends exactly that source slot.");
@@ -337,7 +343,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             // Ordinary spontaneous Summon Monster (Sorcerer) and, where installed, Summon Nature's Ally (Hunter).
             foreach (var spontaneous in new[] { new { Class = SpiderSorcererClass, Family = SummonFamily.Monster, Tier = 5, Key = "ogre-spider", Levels = 11, Stat = StatType.Charisma },
-                new { Class = SpiderHunterClass, Family = SummonFamily.NaturesAlly, Tier = 4, Key = "giant-black-widow", Levels = 10, Stat = StatType.Wisdom } })
+                new { Class = SpiderHunterClass, Family = SummonFamily.NaturesAlly, Tier = 1, Key = "giant-crab-spider", Levels = 7, Stat = StatType.Wisdom } })
             {
                 var scoped = spontaneous;
                 BlueprintScriptableObject classFound;
@@ -359,7 +365,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 book?.UpdateAllSlotsSize(false); book?.Rest();
                 AbilityData known = book?.GetKnownSpells(scoped.Tier).FirstOrDefault(value => ReferenceEquals(value.Blueprint, parent));
                 Fact grant = caster.Descriptor.AddFact(feature);
-                var record = new JObject { ["class"] = classBlueprint.name, ["spontaneous"] = book?.Blueprint?.Spontaneous, ["known"] = known != null, ["nativelyKnown"] = nativelyKnown };
+                var record = new JObject { ["class"] = classBlueprint.name, ["spontaneous"] = book?.Blueprint?.Spontaneous, ["known"] = known != null, ["nativelyKnown"] = nativelyKnown,
+                    ["knownAtTier"] = book == null ? null : new JArray(book.GetKnownSpells(scoped.Tier).Select(value => value.Blueprint.name)) };
                 AbilityData child = known == null ? null : new AbilityData(original(scoped.Family, scoped.Key), book) { ConvertedFrom = known };
                 if (child != null)
                     foreach (int frame in SpiderRouteCast(fixture, caster, child, (result, actions, units, debit) =>
