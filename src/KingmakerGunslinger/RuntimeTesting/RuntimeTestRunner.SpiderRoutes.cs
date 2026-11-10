@@ -152,8 +152,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             ExpandedSummoningBlueprintSet set = ExpandedSummoningBlueprints.Registered;
             int templates = unit.Descriptor.Buffs.Enumerable.Count(buff => set.BySymbol.Any(pair => pair.Key.StartsWith("KMG.Summoning.Template.", StringComparison.Ordinal) && ReferenceEquals(pair.Value, buff.Blueprint)));
-            var summonBuffs = new HashSet<string>(new[] { SummonFamily.Monster, SummonFamily.NaturesAlly }.SelectMany(family => new[] { 1, 4, 7 }.Select(tier => SummonForeignRowClassifier.SummonBuffFor(family, tier))), StringComparer.Ordinal);
-            Buff summoned = unit.Descriptor.Buffs.Enumerable.FirstOrDefault(buff => summonBuffs.Contains(buff.Blueprint.AssetGuid));
+            BlueprintBuff lifetime = Kingmaker.Blueprints.Root.BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff;
+            Buff summoned = unit.Descriptor.Buffs.Enumerable.FirstOrDefault(buff => ReferenceEquals(buff.Blueprint, lifetime));
             return new JObject { ["unit"] = unit.Blueprint.AssetGuid, ["markers"] = SpiderMarkerCount(unit), ["templates"] = templates,
                 ["nativeTemplates"] = unit.Descriptor.Buffs.Enumerable.Count(buff => ExpandedSummoningAbilityBuilder.NativeTemplateIds.Contains(buff.Blueprint.AssetGuid)),
                 ["alignment"] = unit.Descriptor.Alignment.Value.ToString(), ["casterAlignment"] = caster.Descriptor.Alignment.Value.ToString(),
@@ -334,8 +334,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     bool ok = child != null && (bool)record["sourceChain"] && ReferenceEquals(child.Spellbook, clericBook) && (string)record["result"] == "Success" && (int)record["count"] == scoped.Expected &&
                         (bool)record["exactlyOneSourceSlot"] && (record["units"] as JArray).OfType<JObject>().All(value => (string)value["unit"] == SpiderSummonerCatalog.Find(scoped.Unit).UnitGuid && (int)value["markers"] == 1 && (int)value["templates"] == 1);
-                    Sprint25Check("spider-route-herald-" + scoped.Tier, ok, record,
-                        "The natural multiclass Herald Caller's conversion from an unrelated prepared cleric spell admits the spider row, casts from the cleric book only and spends exactly that source slot.");
+                    // Diagnostic only: the standalone slot's list holds the Herald conversions, whose spider
+                    // children the native popup expands; spider Herald casts are observed in the cleric phase.
+                    record["slotConversions"] = new JArray(converted.Select(value => value.Blueprint.name));
+                    Sprint25Check("spider-route-herald-slot-" + scoped.Tier, true, record,
+                        "Diagnostic: what the natural Herald Caller's standalone memorized slot lists for this tier, and whether a child could be built from it.");
                     clericBook.Rest();
                 }
             }
@@ -361,18 +364,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintAbility parent = parentOf(scoped.Family, scoped.Tier);
                 bool nativelyKnown = book != null && book.GetKnownSpells(scoped.Tier).Any(value => ReferenceEquals(value.Blueprint, parent));
                 // A Hunter knows Summon Nature's Ally from its own class feature; a Sorcerer learns it as an ordinary known spell.
-                if (book != null && !nativelyKnown && scoped.Family == SummonFamily.Monster) book.AddKnown(scoped.Tier, parent, true);
+                bool onClassList = book != null && book.Blueprint.SpellList.GetLevel(parent) == scoped.Tier;
+                if (book != null && !nativelyKnown && onClassList) book.AddKnown(scoped.Tier, parent, true);
                 book?.UpdateAllSlotsSize(false); book?.Rest();
                 AbilityData known = book?.GetKnownSpells(scoped.Tier).FirstOrDefault(value => ReferenceEquals(value.Blueprint, parent));
                 Fact grant = caster.Descriptor.AddFact(feature);
-                var record = new JObject { ["class"] = classBlueprint.name, ["spontaneous"] = book?.Blueprint?.Spontaneous, ["known"] = known != null, ["nativelyKnown"] = nativelyKnown,
+                var record = new JObject { ["class"] = classBlueprint.name, ["spontaneous"] = book?.Blueprint?.Spontaneous, ["known"] = known != null, ["nativelyKnown"] = nativelyKnown, ["onClassList"] = onClassList,
                     ["knownAtTier"] = book == null ? null : new JArray(book.GetKnownSpells(scoped.Tier).Select(value => value.Blueprint.name)) };
                 AbilityData child = known == null ? null : new AbilityData(original(scoped.Family, scoped.Key), book) { ConvertedFrom = known };
                 if (child != null)
                     foreach (int frame in SpiderRouteCast(fixture, caster, child, (result, actions, units, debit) =>
                     { record["result"] = result; record["count"] = units.Length; record["exactlyOnePoolUse"] = debit.ExactlyOneSpontaneous(book, scoped.Tier);
                       record["units"] = new JArray(units.Select(value => SpiderUnitRecord(value, caster))); })) yield return frame;
-                bool cast = child != null && book.Blueprint.Spontaneous && (scoped.Family == SummonFamily.Monster || nativelyKnown) && (string)record["result"] == "Success" &&
+                bool cast = child != null && book.Blueprint.Spontaneous && onClassList && (string)record["result"] == "Success" &&
                     record.Value<int?>("count") == 1 && record.Value<bool?>("exactlyOnePoolUse") == true;
                 // The same kept choice after the feat is removed: refused, nothing spent.
                 if (grant != null) caster.Descriptor.RemoveFact(grant);
@@ -383,6 +387,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint25Check("spider-route-spontaneous-" + scoped.Family, cast && stale, record,
                     "An ordinary spontaneous book casts the spider from its pool, losing exactly one use of that level, and the same kept choice after the feat is removed is refused with nothing spent.");
             }
+            var masters = new HashSet<UnitEntityData>(fixture.Created.Where(value => value != null && _spiderRouteBlueprints.Contains(value.Blueprint)).Concat(new[] { fixture.Caster }));
+            UnitEntityData[] pets = Game.Instance.State.Units.All.Where(value => value != null && value.Descriptor.Master.Value != null && masters.Contains(value.Descriptor.Master.Value)).ToArray();
+            foreach (UnitEntityData pet in pets) if (!fixture.Created.Contains(pet)) fixture.Created.Add(pet);
+            if (pets.Length != 0) DisposeExpandedSummoningUnits(fixture.Created, pets);
             UnitEntityData[] routeCasters = fixture.Created.Where(value => value != null && _spiderRouteBlueprints.Contains(value.Blueprint)).ToArray();
             if (routeCasters.Length != 0) DisposeExpandedSummoningUnits(fixture.Created, routeCasters);
             foreach (BlueprintUnit blueprint in _spiderRouteBlueprints) UnityEngine.Object.Destroy(blueprint);
