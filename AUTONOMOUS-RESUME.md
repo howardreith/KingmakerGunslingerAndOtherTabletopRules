@@ -1,23 +1,28 @@
-# Races Unleashed Spider Summoner integration — incomplete with named blockers / STOP
+# Races Unleashed Spider Summoner integration: incomplete with named blockers / STOP
 
-Current (2026-11-10). See planning/races-unleashed-compatibility/STATUS.md. Branch
-`codex/races-unleashed-summoning`, draft PR #125 against master. Activated by the owner's mission package;
-the deferred handoff is preserved as `planning/races-unleashed-compatibility/BASELINE.md`.
+Current (2026-11-10). See `planning/races-unleashed-compatibility/STATUS.md`. Branch
+`codex/races-unleashed-summoning`, draft PR #125. This continuation ran under the owner's completion authorization:
+a 90-minute target and a 120-minute ceiling. The ledger is about 98 minutes.
 
-- Review corrections and the scoped native CMB web-escape +2 are implemented.
-- Candidate `e6723d872320` passed under controlled input (no human input, pointer parked): PASS 174/0.
-  - Native skill, native CMB and Call of the Wild's loaded escape branches each went from 12 to 14 with the marker.
-  - The fiendish Crab and Widow casts and the retained-toggle cast passed.
-  - Its earlier FAIL 67/2 (popup-teardown guard refusal) is retained, recorded as possible input interference.
-- Observer candidate `655ab8a8ae3e` FAIL 155/9 from observer defects:
-  - a Json.NET null-token check;
-  - an in-phase real web hit that left a second native mode.
-  Its recorded values still confirm the per-branch rules and a real ordinary grapple unchanged at 12. The fix is
-  `182717dd10`, committed but not built.
-- Next step: build `182717dd10` once and run under controlled input. Then a real feat web hit in a fixture that owns
-  its clock and hostile, the `gunslinger-races-unleashed` profile through
-  `scripts/compatibility/Invoke-KingmakerCompatibilityProfile.ps1` after preflight, and the STATUS scenario table.
-- Install, saves, settings and `Params.xml` restored exactly after each run (`verified`).
+- **Delivered candidate:** `106cda92f3`, package `a4175372...2249`. All seven completion transactions passed under
+  controlled input; six of them are carried from `deebec4edb39`, which has identical code for those phases. Exact
+  restoration was verified after every run.
+- **Observed:**
+  - real web hit → held state → loaded escape, both branches, with and without Call of the Wild;
+  - actual poison saves, including the Hunting poison and Augment Summoning;
+  - Superior Summoning;
+  - natural Drow and Herald progression;
+  - SNA and Druid conversion casts, and Herald spider casts;
+  - spontaneous Summon Monster and Summon Nature's Ally pools;
+  - module-OFF and RU-absent profiles;
+  - the NPC control.
+- **Open:**
+  - **RU-16:** save/reload persistence, with reload for RU-02 and RU-14;
+  - **RU-15:** rendered SNA and Druid popups;
+  - **RU-10:** metamagic, Crab I/Widow IV Herald admission, and a cast by the natural Herald;
+  - **RU-09:** a cast from the multiclass book.
+
+  The smallest actions are listed in STATUS.md.
 - No merge, release, permanent install or further native run follows without explicit owner authorization.
 
 ---
