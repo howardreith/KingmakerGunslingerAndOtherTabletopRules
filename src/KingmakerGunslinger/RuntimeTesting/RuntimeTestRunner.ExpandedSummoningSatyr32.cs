@@ -169,7 +169,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39SpiderWebPhase ||
                 phase == ExpandedSummoningNativeProfilePolicy.Sprint39SpiderMechanicsPhase ||
-                phase == ExpandedSummoningNativeProfilePolicy.Sprint39SpiderModuleOffPhase)
+                phase == ExpandedSummoningNativeProfilePolicy.Sprint39SpiderModuleOffPhase ||
+                phase == ExpandedSummoningNativeProfilePolicy.Sprint39SpiderRoutesPhase)
             {
                 CreateSprint32TurnHostile(fixture);
                 foreach (int frame in ReviewSpiderSummonerCompletion(fixture, phase)) yield return frame;
