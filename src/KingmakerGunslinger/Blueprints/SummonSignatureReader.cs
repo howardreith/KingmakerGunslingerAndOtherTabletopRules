@@ -146,7 +146,39 @@ namespace KingmakerGunslinger.Blueprints
                 AfterSpawn = (spawn.AfterSpawn == null || spawn.AfterSpawn.Actions == null ?
                     new GameAction[0] : spawn.AfterSpawn.Actions).Select(value =>
                         value == null ? "null" : value.GetType().FullName).ToList(),
-                AfterSpawnDetail = Detail(spawn.AfterSpawn == null ? null : spawn.AfterSpawn.Actions) };
+                AfterSpawnDetail = Detail(spawn.AfterSpawn == null ? null : spawn.AfterSpawn.Actions),
+                AfterSpawnApplications = Applications(spawn.AfterSpawn == null ? null : spawn.AfterSpawn.Actions) };
+        }
+
+        /// <summary>Each exact native buff application, through exact native
+        /// conditionals' true then false branches, with every field that
+        /// changes how the buff lands: recipient, permanence, duration,
+        /// spell source, dispellability and parenting.</summary>
+        private static List<string> Applications(IEnumerable<GameAction> actions)
+        {
+            var result = new List<string>();
+            foreach (GameAction action in actions ?? Enumerable.Empty<GameAction>())
+            {
+                var buff = action as ContextActionApplyBuff;
+                var conditional = action as Conditional;
+                if (buff != null && buff.GetType() == typeof(ContextActionApplyBuff))
+                {
+                    ContextDurationValue duration = buff.DurationValue;
+                    result.Add(SummonSignatureFormat.Application(buff.ToCaster, Guid(buff.Buff),
+                        "permanent=" + buff.Permanent + ";useSeconds=" + buff.UseDurationSeconds +
+                        ";seconds=" + buff.DurationSeconds.ToString("R", CultureInfo.InvariantCulture) +
+                        ";duration=" + (duration == null ? "null" : duration.Rate + ":" + duration.DiceType + "x" +
+                            Value(duration.DiceCountValue) + "+" + Value(duration.BonusValue) + ":extendable=" +
+                            (ExtendableField != null && (bool)ExtendableField.GetValue(duration))) +
+                        ";fromSpell=" + buff.IsFromSpell + ";notDispelable=" + buff.IsNotDispelable + ";asChild=" + buff.AsChild));
+                }
+                else if (conditional != null && conditional.GetType() == typeof(Conditional))
+                {
+                    result.AddRange(Applications(conditional.IfTrue == null ? null : conditional.IfTrue.Actions));
+                    result.AddRange(Applications(conditional.IfFalse == null ? null : conditional.IfFalse.Actions));
+                }
+            }
+            return result;
         }
 
         private static List<string> Detail(IEnumerable<GameAction> actions)

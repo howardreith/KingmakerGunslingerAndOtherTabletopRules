@@ -172,7 +172,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ClericForbiddenAttempt(ExpandedSummoningCorrectionFixture fixture, BlueprintAbility child, Spellbook book, AbilityData prepared,
             Cleanup2NativeDefaultScope mode, Stopwatch phase, string caseKey, bool visibleExpected)
         {
-            var data = new AbilityData(child, book) { ConvertedFrom = prepared };
+            return ClericRefusedAttempt(fixture, new AbilityData(child, book) { ConvertedFrom = prepared }, prepared, mode, phase, "cleric-forbidden-attempt-" + caseKey, caseKey, visibleExpected,
+                "AbilityData built as a saved shortcut holds it; native UnitUseAbility; no manual tick or forced act",
+                "A forbidden selected choice is refused before any slot or resource is spent, and nothing is summoned.");
+        }
+
+        /// <summary>Executes exactly the given ability object through the
+        /// native command path and requires a refusal with no spend and no spawn.</summary>
+        private IEnumerable<int> ClericRefusedAttempt(ExpandedSummoningCorrectionFixture fixture, AbilityData data, AbilityData prepared,
+            Cleanup2NativeDefaultScope mode, Stopwatch phase, string checkName, string caseKey, bool visibleExpected, string route, string claim)
+        {
+            BlueprintAbility child = data.Blueprint;
             var debit = new Cleanup2SourceDebit(fixture.Caster);
             bool visible = data.IsVisible(), available = data.IsAvailableForCast;
             string reason = data.GetUnavailableReason();
@@ -201,10 +211,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (var unit in summons) if (!fixture.Created.Contains(unit)) fixture.Created.Add(unit);
             if (summons.Length != 0) DisposeExpandedSummoningUnits(fixture.Created, summons);
             bool refused = visible == visibleExpected && !available && result == "Fail" && debit.Unspent && _expandedSummoningPlayerPathSpawnActionCount == 0 && summons.Length == 0;
-            Sprint25Check("cleric-forbidden-attempt-" + caseKey, refused, new JObject { ["child"] = child.AssetGuid, ["name"] = child.Name, ["visible"] = visible, ["availableForCast"] = available,
+            Sprint25Check(checkName, refused, new JObject { ["child"] = child.AssetGuid, ["name"] = child.Name, ["visible"] = visible, ["availableForCast"] = available,
                 ["nativeReason"] = reason, ["commandResult"] = result, ["slotOrResourceSpent"] = !debit.Unspent, ["spawnActions"] = _expandedSummoningPlayerPathSpawnActionCount, ["summons"] = summons.Length,
-                ["debit"] = debit.Describe(prepared.ParamSpellSlot), ["route"] = "AbilityData built as a saved shortcut holds it; native UnitUseAbility; no manual tick or forced act", ["wallSeconds"] = watch.Elapsed.TotalSeconds },
-                "A forbidden selected choice is refused before any slot or resource is spent, and nothing is summoned.");
+                ["debit"] = debit.Describe(prepared.ParamSpellSlot), ["route"] = route, ["wallSeconds"] = watch.Elapsed.TotalSeconds }, claim);
         }
 
         private IEnumerable<int> ClericLegalCast(ExpandedSummoningCorrectionFixture fixture, ActionBarSlot row, AbilityData child, AbilityData prepared, Cleanup2SourceDebit debit, Action closePopup, Cleanup2NativeDefaultScope mode, Stopwatch phase,

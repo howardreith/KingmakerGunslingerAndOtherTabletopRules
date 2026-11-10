@@ -140,7 +140,7 @@ namespace KingmakerGunslinger.Summoning
                 bool canonicalPublished = initialized && library != null &&
                     CanonicalPublished(library);
                 if (initialized && library != null && (canonicalPublished || !moduleActive))
-                    SpiderSummonerIntegration.Integrate(context, library, LoadManifest(context), canonical, moduleActive);
+                    SpiderSummonerIntegration.Integrate(context, library, () => LoadManifest(context), canonical, moduleActive);
                 if (canonicalPublished && moduleActive && !_lateRowsOrdered)
                 {
                     _lateRowsOrdered = true;
