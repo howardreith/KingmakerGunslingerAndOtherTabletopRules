@@ -45,12 +45,20 @@ namespace KingmakerGunslinger.RuntimeTesting
     /// </summary>
     internal sealed partial class RuntimeTestRunner
     {
-        private sealed class SpiderSaveObserver : IGlobalRulebookHandler<RuleSavingThrow>
+        private sealed class SpiderSaveObserver : IGlobalRulebookHandler<RuleSavingThrow>, IGlobalRulebookHandler<RuleApplyBuff>
         {
             internal UnitEntityData Target;
             internal readonly List<RuleSavingThrow> Saves = new List<RuleSavingThrow>();
+            internal readonly List<JObject> Applications = new List<JObject>();
             public void OnEventAboutToTrigger(RuleSavingThrow evt) { }
             public void OnEventDidTrigger(RuleSavingThrow evt) { if (evt != null && ReferenceEquals(evt.Initiator, Target)) Saves.Add(evt); }
+            public void OnEventAboutToTrigger(RuleApplyBuff evt) { }
+            public void OnEventDidTrigger(RuleApplyBuff evt)
+            {
+                if (evt == null || !ReferenceEquals(evt.Initiator, Target)) return;
+                Applications.Add(new JObject { ["buff"] = evt.Blueprint?.AssetGuid, ["name"] = evt.Blueprint?.name, ["applied"] = evt.AppliedBuff != null,
+                    ["immunity"] = evt.Immunity, ["source"] = evt.Context?.MaybeCaster?.UniqueId, ["seconds"] = evt.Duration?.TotalSeconds });
+            }
         }
 
         /// <summary>Forces the first roll of one die type by one initiator, so a
@@ -176,9 +184,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintScriptableObject found;
                     BlueprintAbility row = library.BlueprintsByAssetId.TryGetValue(SpiderSummonerCatalog.RowIdentity(family, species), out found) ? found as BlueprintAbility : null;
                     SummonForeignRowReading reading = row == null ? null : SummonForeignRowRuntime.Read(row);
+                    string attachment = reading == null ? "absent" : reading.PublishedTier == species.BaseTier ? "parent-variants" : "none";
+                    if (reading != null && reading.PublishedTier == 0 && species.BaseTier == 1)
+                    {
+                        // Races Unleashed's own route when the native tier I parent has no variants (CreateSpiderSummon).
+                        BlueprintAbility nativeParent = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library,
+                            ExpandedSummoningPublisher.CanonicalParentGuids[family == SummonFamily.Monster ? 0 : 9], "tier I parent");
+                        bool attached = (nativeParent.ComponentsArray ?? new BlueprintComponent[0]).Any(component => component != null &&
+                            component.GetType().Name == "CustomSpontaneousSpell" && ReferenceEquals(component.GetType().GetField("Spell")?.GetValue(component), row));
+                        if (attached) { reading.PublishedTier = 1; attachment = "races-unleashed-custom-spontaneous-spell"; }
+                    }
                     string input = reading == null ? "absent" : SummonForeignRowClassifier.LegacyInputProblem(reading);
                     originalsIntact &= input == null;
-                    rows.Add(new JObject { ["row"] = row?.AssetGuid, ["legacyInputProblem"] = SpiderEscapeObservationVerdict.Optional(input) });
+                    rows.Add(new JObject { ["row"] = row?.AssetGuid, ["attachment"] = attachment, ["legacyInputProblem"] = SpiderEscapeObservationVerdict.Optional(input) });
                 }
             int generatedListed = SpiderPublishedParents(library).Sum(parent => (parent.Variants ?? new BlueprintAbility[0]).Count(value =>
                 value != null && (SpiderSummonerIntegration.PlacementOf(value) != null || (value.name ?? "").StartsWith("KMG_", StringComparison.Ordinal))));
@@ -480,6 +498,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (Buff state in states) state.TickMechanics();
                 var continuing = saves.Saves.Select(SpiderSaveRecord).ToArray();
                 EventBus.Unsubscribe(saves);
+                var targetState = new JObject { ["conscious"] = hostile.Descriptor.State.IsConscious, ["dead"] = hostile.Descriptor.State.IsDead,
+                    ["damage"] = hostile.Descriptor.Damage, ["strength"] = hostile.Stats.Strength.ModifiedValue, ["constitution"] = hostile.Stats.Constitution.ModifiedValue,
+                    ["buffs"] = new JArray(hostile.Descriptor.Buffs.Enumerable.Select(value => value.Blueprint.name)) };
                 // The verified unbonused parameters: the same contexts without the marker, recalculated, then restored.
                 var unbonused = new JObject();
                 BlueprintBuff marker = SpiderSummonerRuntime.Marker;
@@ -497,7 +518,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["augmentBuffOnce"] = spider.Descriptor.Buffs.Enumerable.Count(value => ReferenceEquals(value.Blueprint, augmentBuff)) == 1,
                     ["poisonFeatures"] = new JArray(features.Select(value => value.Blueprint.AssetGuid)), ["contextDc"] = contexts, ["unbonusedDc"] = unbonused,
                     ["weapon"] = weapon?.Blueprint?.AssetGuid, ["firstSaves"] = new JArray(first), ["poisonStates"] = new JArray(states.Select(value => value.Blueprint.AssetGuid)),
-                    ["continuingSaves"] = new JArray(continuing) };
+                    ["continuingSaves"] = new JArray(continuing), ["applications"] = new JArray(saves.Applications), ["target"] = targetState };
             }
             finally
             {
@@ -621,14 +642,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     hooks.Patch(typeof(ContextActionSpawnMonster).GetMethod("RunAction"), new HarmonyMethod(typeof(RuntimeTestRunner).GetMethod("ExpandedSummoningPlayerPathSpawnPrefix", BindingFlags.Static | BindingFlags.NonPublic)), null, null);
                     ExpandedSummoningRuleCapture.Clear(); _expandedSummoningPlayerPathSpawnActionCount = 0; _expandedSummoningPlayerPathCaptureActive = true;
-                    npc.Commands.Run(ordinaryCommand);
-                    while (!ordinaryCommand.IsFinished && watch.Elapsed.TotalSeconds < 20) { Game.Instance.IsPaused = false; yield return 0; }
-                    result = ordinaryCommand.IsFinished ? ordinaryCommand.Result.ToString() : "unfinished";
+                    // The manual clock does not run this NPC's queue, so the command is
+                    // started and its native execution process ticked, as the web cast is.
+                    ordinaryCommand.Init(npc);
+                    ordinaryCommand.Start();
+                    int frames = 0; bool ended = !ordinaryCommand.IsRunning;
+                    for (; !ended && frames < 420; frames++)
+                    {
+                        if (ended = TickExpandedSummoningDetachedAbility(ordinaryCommand, frames)) break;
+                        Game.Instance.IsPaused = false; yield return 0;
+                    }
+                    EndExpandedSummoningDetachedAbility(ordinaryCommand);
+                    result = _expandedSummoningPlayerPathSpawnActionCount > 0 ? "Success" : "no-spawn:started=" + (frames > 0 || ended) + ";result=" + ordinaryCommand.Result;
                 }
                 finally
                 {
                     _expandedSummoningPlayerPathCaptureActive = false; hooks.UnpatchAll(hooks.Id);
-                    if (!ordinaryCommand.IsFinished) ordinaryCommand.Interrupt(true);
+                    if (!ordinaryCommand.IsFinished && ordinaryCommand.IsRunning) ordinaryCommand.Interrupt(true);
                 }
                 for (int frame = 0; frame < 12; frame++) yield return 0;
                 UnitEntityData[] units = ExpandedSummoningRuleCapture.Where(value => value != null).Distinct().ToArray();
@@ -637,12 +667,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (units.Length != 0) DisposeExpandedSummoningUnits(fixture.Created, units);
             }
             bool ok = namingSpiders == 0 && spider != null && ordinaryVariant != null && ordinaryDecision?.Item1 is UnitUseAbility && ordinaryCommand != null && result == "Success" && spawned >= 1 &&
-                spiderCommand == null && spiderData != null && !spiderData.IsAvailableForCast && !spiderData.IsVisible();
+                !(spiderCommand is UnitUseAbility) && spiderData != null && !spiderData.IsAvailableForCast && !spiderData.IsVisible();
             Sprint25Check("spider-npc-selection", ok, new JObject { ["aiCastActions"] = actions.Length, ["actionsNamingSpiderRows"] = namingSpiders,
                 ["actionsNamingSummonParents"] = namingParents, ["ordinaryVariant"] = ordinaryVariant?.AssetGuid, ["ordinaryAiCommand"] = ordinaryDecision?.Item1?.GetType().Name, ["ordinaryAiAbility"] = ordinaryDecision?.Item2?.Blueprint?.AssetGuid,
                 ["ordinaryResult"] = result, ["ordinarySpawned"] = spawned, ["spiderRow"] = spider?.AssetGuid, ["spiderCommand"] = spiderCommand?.GetType().Name,
                 ["spiderAvailable"] = spiderData?.IsAvailableForCast, ["spiderVisible"] = spiderData?.IsVisible() },
-                "An NPC without the feat uses the changed Summon Monster V graph through the native AI cast action: an ordinary variant yields a command and a real cast; a gated spider row yields no command, so no selection or refusal loop; no loaded AI action names a spider row.");
+                "An NPC without the feat uses the changed Summon Monster V graph through the native AI cast action: an ordinary variant yields a cast command and a real summon; a gated spider row never yields a cast command, so no selection or refusal loop; no loaded AI action names a spider row.");
         }
     }
 }
