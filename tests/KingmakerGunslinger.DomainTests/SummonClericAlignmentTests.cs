@@ -639,5 +639,41 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(SummonClericAlignmentPolicy.Permits(SummonClericAlignmentPolicy.Decide(Facts(TN, Asmodeus), archon)),
                 "The same held choice is refused after a deity change.");
         }
+
+        internal static void SpiderPersistenceStagesAndDurationVerdict()
+        {
+            const string prepare = KingmakerGunslinger.RuntimeTesting.RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare;
+            const string verify = KingmakerGunslinger.RuntimeTesting.RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup;
+            const string absent = KingmakerGunslinger.RuntimeTesting.RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent;
+            const string scope = KingmakerGunslinger.RuntimeTesting.SpiderSummonerPersistencePolicy.Scope;
+            const string keep = KingmakerGunslinger.RuntimeTesting.SpiderSummonerPersistencePolicy.Preserve;
+            Func<string, bool, string, bool> admits = (scenario, present, value) =>
+                KingmakerGunslinger.RuntimeTesting.SpiderSummonerPersistencePolicy.Admits(scenario, scope, present, value);
+            Assertions.True(admits(prepare, false, null) && admits(verify, false, null) && admits(absent, false, null), "All three stages admit the scope.");
+            Assertions.True(admits(verify, true, keep), "Only verify-cleanup may preserve the checkpoint.");
+            Assertions.False(admits(prepare, true, keep) || admits(absent, true, keep) || admits(verify, true, "Preserve") || admits(verify, true, "cleanup"),
+                "Preservation is exact and verify-cleanup only.");
+            Assertions.False(KingmakerGunslinger.RuntimeTesting.SpiderSummonerPersistencePolicy.Admits(verify, "ice-devil", true, keep), "Another scope cannot preserve.");
+            Func<string, bool, bool> writes = KingmakerGunslinger.RuntimeTesting.SpiderSummonerPersistencePolicy.Writes;
+            Assertions.True(writes(prepare, false) && writes(verify, false), "Prepare and the enabled cleanup write.");
+            Assertions.False(writes(verify, true) || writes(absent, false), "The preserving reload and the absence check write nothing.");
+            Func<string, bool, bool, string> stage = KingmakerGunslinger.RuntimeTesting.SpiderSummonerPersistencePolicy.StageProblem;
+            Assertions.True(stage(prepare, false, true) == null && stage(verify, true, false) == null && stage(verify, false, true) == null && stage(absent, false, true) == null,
+                "The four stages of the sequence each have their module state.");
+            Assertions.True(stage(prepare, false, false) != null && stage(verify, true, true) != null && stage(verify, false, false) != null && stage(absent, false, false) != null,
+                "A stage loaded in the other module state is refused before any change.");
+
+            Func<int, bool, double, Newtonsoft.Json.Linq.JObject> rule = (level, extended, seconds) =>
+                new Newtonsoft.Json.Linq.JObject { ["casterLevel"] = level, ["extended"] = extended, ["durationSeconds"] = seconds };
+            Func<Newtonsoft.Json.Linq.JArray, int, bool, string> duration = KingmakerGunslinger.RuntimeTesting.SpiderSummonDurationVerdict.Problem;
+            Assertions.True(duration(new Newtonsoft.Json.Linq.JArray(rule(20, false, 120d)), 20, false) == null, "Caster level 20 gives 20 rounds.");
+            Assertions.True(duration(new Newtonsoft.Json.Linq.JArray(rule(20, true, 240d), rule(20, true, 240d)), 20, true) == null, "Extend doubles every creature's rounds.");
+            Assertions.True(duration(new Newtonsoft.Json.Linq.JArray(rule(9, false, 54d)), 9, false) == null, "Caster level 9 gives 9 rounds.");
+            Assertions.True(duration(new Newtonsoft.Json.Linq.JArray(), 20, false) != null, "No summon rule is not a duration.");
+            Assertions.True(duration(new Newtonsoft.Json.Linq.JArray(rule(20, false, 120d)), 20, true) != null, "An unextended rule fails an extended expectation.");
+            Assertions.True(duration(new Newtonsoft.Json.Linq.JArray(rule(20, true, 120d)), 20, true) != null, "An extended context with undoubled rounds fails.");
+            Assertions.True(duration(new Newtonsoft.Json.Linq.JArray(rule(11, false, 66d)), 9, false) != null, "The wrong caster level fails.");
+            Assertions.True(duration(new Newtonsoft.Json.Linq.JArray(rule(20, false, 120d), rule(20, false, 60d)), 20, false) != null, "One short creature fails the cast.");
+        }
     }
 }

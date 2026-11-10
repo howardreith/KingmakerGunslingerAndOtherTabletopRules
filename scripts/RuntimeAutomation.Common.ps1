@@ -2597,15 +2597,24 @@ function Assert-KmgRuntimeScenarioPreflight {
             'working-save-expanded-summoning-verify-cleanup', 'working-save-expanded-summoning-verify-absent') -and
             $Parameters.ContainsKey('persistenceScope')
         if ($targetedSummonPersistence -and ($Parameters.persistenceScope -isnot [string] -or
-            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon', 'giant-humanoids', 'giant-humanoids-ii', 'outsider-celestial', 'fey-celestial', 'shadow-outsiders', 'infernal-outsiders', 'infernal-reach-ii', 'infernal-demons', 'vrock', 'glabrezu', 'nalfeshnee', 'ice-devil') -or -not $ExitAfterCompletion)) {
-            throw 'The targeted persistence trio permits only its exact named persistence scopes, including infernal-outsiders, infernal-reach-ii, infernal-demons, vrock, glabrezu, nalfeshnee or ice-devil, with automatic exit.'
+            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon', 'giant-humanoids', 'giant-humanoids-ii', 'outsider-celestial', 'fey-celestial', 'shadow-outsiders', 'infernal-outsiders', 'infernal-reach-ii', 'infernal-demons', 'vrock', 'glabrezu', 'nalfeshnee', 'ice-devil', 'spider-summoner') -or -not $ExitAfterCompletion)) {
+            throw 'The targeted persistence trio permits only its exact named persistence scopes, including infernal-outsiders, infernal-reach-ii, infernal-demons, vrock, glabrezu, nalfeshnee, ice-devil or spider-summoner, with automatic exit.'
+        }
+        # The Spider Summoner scope's module-OFF reload must not consume the
+        # prepared checkpoint the enabled reload needs afterwards, so it alone
+        # may name spiderCheckpoint=preserve, and only on verify-cleanup.
+        $spiderCheckpoint = $targetedSummonPersistence -and $Parameters.ContainsKey('spiderCheckpoint')
+        if ($spiderCheckpoint -and ($Parameters.persistenceScope -cne 'spider-summoner' -or
+            $Scenario -cne 'working-save-expanded-summoning-verify-cleanup' -or
+            $Parameters.spiderCheckpoint -isnot [string] -or $Parameters.spiderCheckpoint -cne 'preserve')) {
+            throw 'spiderCheckpoint=preserve is admitted only for the spider-summoner verify-cleanup stage.'
         }
         $dispelUi = $Scenario -ceq 'working-save-expanded-summoning-creature-review' -and $Parameters.ContainsKey('reviewCase')
         if ($dispelUi -and (-not $ExitAfterCompletion -or -not (Test-KmgSprints30DispelUiParameters $Parameters -IncludesSaveName))) {
             throw 'S30/S31 UI requires the exact fixed read-only Working case and automatic exit.'
         }
         $suggestionTransition=Test-KmgSprint32SuggestionTransition -TargetedPersistence $targetedSummonPersistence -Parameters $Parameters
-        $requiredParameterCount = if ($dispelUi -or $suggestionTransition -or $readinessSurprise) { 3 } elseif ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence -or $traitSave -or $weaponSave) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation -or $readinessCreature -or $targetedSummonPersistence -or $weaponRoute -or $representativePlayerPaths) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
+        $requiredParameterCount = if ($dispelUi -or $suggestionTransition -or $readinessSurprise -or $spiderCheckpoint) { 3 } elseif ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence -or $traitSave -or $weaponSave) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation -or $readinessCreature -or $targetedSummonPersistence -or $weaponRoute -or $representativePlayerPaths) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
@@ -2942,6 +2951,7 @@ function New-KmgRuntimeRequest {
                 $Parameters.ContainsKey('persistenceScope')) {
             $targetedParameters=[ordered]@{ saveName = [string]$Parameters.saveName; persistenceScope = [string]$Parameters.persistenceScope }
             if($Parameters.ContainsKey('suggestionTransition')) { $targetedParameters.suggestionTransition=[string]$Parameters.suggestionTransition }
+            if($Parameters.ContainsKey('spiderCheckpoint')) { $targetedParameters.spiderCheckpoint=[string]$Parameters.spiderCheckpoint }
             $targetedParameters
         } elseif ($Scenario -ceq 'disposable-expanded-summoning-player-path' -and $Parameters.ContainsKey('playerPathScope')) {
             [ordered]@{ saveName = [string]$Parameters.saveName; playerPathScope = [string]$Parameters.playerPathScope }

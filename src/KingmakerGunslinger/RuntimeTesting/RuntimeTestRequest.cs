@@ -619,9 +619,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.Parameters["persistenceScope"].Type != JTokenType.String ||
                     !(persistenceScope == "crocodilians" ||
                       persistenceScope == SerpentinePersistenceReviewPolicy.Scope ||
+                      persistenceScope == SpiderSummonerPersistencePolicy.Scope ||
                       ExpandedSummoningRosterPersistencePolicy
                           .IsRosterPersistenceScope(persistenceScope))))
                     return "summoning-persistence-scope-invalid";
+                bool spiderCheckpoint = request.Parameters?.Property(SpiderSummonerPersistencePolicy.CheckpointParameter) != null;
+                if (spiderCheckpoint && (!targetedSummonPersistence ||
+                    request.Parameters[SpiderSummonerPersistencePolicy.CheckpointParameter].Type != JTokenType.String ||
+                    !SpiderSummonerPersistencePolicy.Admits(request.Scenario, persistenceScope, true,
+                        (string)request.Parameters[SpiderSummonerPersistencePolicy.CheckpointParameter])))
+                    return "spider-checkpoint-invalid";
                 bool suggestionTransition = request.Parameters?.Property("suggestionTransition") != null;
                 if (suggestionTransition && (!targetedSummonPersistence ||
                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.FeyCelestialScope ||
@@ -689,7 +696,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (circleBound && (!request.ExitAfterCompletion || request.Parameters?["preparationBinding"]?.Type != JTokenType.String ||
                     !MagicCirclePreparationBinding.Valid((string)request.Parameters["preparationBinding"], request.ExpectedModVersion)))
                     return "magic-circle-preparation-binding-required";
-                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : suggestionTransition || persistence || fcbPersistence || traitSave || weaponSave ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : surpriseEntry || treacherousEffect || crowdReview || dispelUi ? 3 : readinessCreature || nereidPersistence || deferredMarkers || targetedSummonPersistence || creatureReview || flightActivation || weaponRoute || representativePlayerPaths ? 2 : 1) ||
+                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : suggestionTransition || spiderCheckpoint || persistence || fcbPersistence || traitSave || weaponSave ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : surpriseEntry || treacherousEffect || crowdReview || dispelUi ? 3 : readinessCreature || nereidPersistence || deferredMarkers || targetedSummonPersistence || creatureReview || flightActivation || weaponRoute || representativePlayerPaths ? 2 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";

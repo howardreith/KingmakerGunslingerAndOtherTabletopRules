@@ -192,4 +192,31 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static int? Int(JToken token)
         { return token != null && token.Type == JTokenType.Integer ? (int?)(int)token : null; }
     }
+
+    /// <summary>
+    /// The duration the engine's own summon rule gave each creature: the
+    /// caster level's rounds, twice that when the spell context is extended.
+    /// Each record carries <c>casterLevel</c>, <c>extended</c> and
+    /// <c>durationSeconds</c> from one <c>RuleSummonUnit</c>.
+    /// </summary>
+    internal static class SpiderSummonDurationVerdict
+    {
+        internal static string Problem(JArray rules, int expectedCasterLevel, bool expectedExtend)
+        {
+            if (rules == null || rules.Count == 0) return "no-summon-rule";
+            foreach (JToken token in rules)
+            {
+                JObject rule = token as JObject;
+                if (rule == null) return "malformed-rule";
+                int? level = rule["casterLevel"] != null && rule["casterLevel"].Type == JTokenType.Integer ? (int?)(int)rule["casterLevel"] : null;
+                if (level != expectedCasterLevel) return "caster-level:" + rule["casterLevel"] + "!=" + expectedCasterLevel;
+                if (rule["extended"] == null || rule["extended"].Type != JTokenType.Boolean || (bool)rule["extended"] != expectedExtend) return "extend:" + rule["extended"];
+                double expected = 6d * expectedCasterLevel * (expectedExtend ? 2 : 1);
+                JToken seconds = rule["durationSeconds"];
+                if (seconds == null || (seconds.Type != JTokenType.Float && seconds.Type != JTokenType.Integer) || System.Math.Abs((double)seconds - expected) > 0.01)
+                    return "duration:" + seconds + "!=" + expected;
+            }
+            return null;
+        }
+    }
 }

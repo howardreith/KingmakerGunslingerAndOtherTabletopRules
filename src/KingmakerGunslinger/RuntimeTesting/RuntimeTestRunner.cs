@@ -4082,6 +4082,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void StartExpandedSummoningPersistence()
         {
+            if (SpiderPersistenceScope)
+            {
+                StartSpiderPersistence();
+                return;
+            }
             if (RosterPersistenceScope)
             {
                 StartRosterPersistence();
@@ -5168,6 +5173,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void CompleteExpandedSummoningPersistence(string status,
             string warning)
         {
+            if (SpiderPersistenceScope)
+            {
+                CompleteSpiderPersistence(status, warning);
+                return;
+            }
             if (RosterPersistenceScope)
             {
                 CompleteRosterPersistence(status, warning);
