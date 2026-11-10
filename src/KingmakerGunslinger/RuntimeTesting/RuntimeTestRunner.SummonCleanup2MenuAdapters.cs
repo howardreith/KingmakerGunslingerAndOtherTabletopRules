@@ -1053,7 +1053,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
         private IEnumerable<int> Cleanup2MenuAdapterDruidCast(ExpandedSummoningCorrectionFixture fixture, AbilityData child, AbilityData source,
             BlueprintAbility parent, ActionBarSlot row, Cleanup2SourceDebit debit, Cleanup2NativeDefaultScope mode, Stopwatch phase, Action closeOwnPopup,
-            string caseKey = "horse")
+            string caseKey = "horse", Func<int, bool> countOk = null)
         {
             if (_expandedSummoningPlayerPathCaptureActive || _cleanup2DruidCastExpected != null || !Cleanup2DruidSourceChain(child, source, parent) ||
                 !ReferenceEquals(row.MechanicSlot.GetContentData(), child) || child.TargetAnchor == AbilityTargetAnchor.Owner)
@@ -1089,11 +1089,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool exact = issued && command.IsFinished && command.Result.ToString() == "Success" && fixture.Caster.Commands.Empty &&
                     Cleanup2DruidCastRules.Count == 1 && Cleanup2DruidCastRules[0].Success && ReferenceEquals(Cleanup2DruidCastRules[0].Spell, child) &&
                     _expandedSummoningPlayerPathRuleCastCount == 1 && _expandedSummoningPlayerPathSpawnActionCount == 1 &&
-                    expected.Length == 1 && units.Length == 1 && ExpandedSummoningRuleCapture.Distinct().Count() == 1 && units[0].Blueprint.AssetGuid == expected[0].Unit &&
+                    expected.Length == 1 && (countOk == null ? units.Length == 1 : countOk(units.Length)) && ExpandedSummoningRuleCapture.Distinct().Count() == units.Length &&
+                    units.Length > 0 && units.All(value => value.Blueprint.AssetGuid == expected[0].Unit) &&
                     Cleanup2DruidSourceChain(child, source, parent) && debit.ExactlyOne(source.ParamSpellSlot);
                 Cleanup2Check("menu-adapter-druid-native-" + caseKey + "-cast-debit", exact, new JObject {
                     ["source"] = source.Blueprint.AssetGuid, ["canonicalConversion"] = parent.AssetGuid, ["child"] = child.Blueprint.AssetGuid,
-                    ["book"] = child.Spellbook.Blueprint.AssetGuid, ["nativeCommandExact"] = issued, ["nativeRuleExactChildReference"] =
+                    ["book"] = child.Spellbook.Blueprint.AssetGuid, ["spawnedCount"] = units.Length, ["nativeCommandExact"] = issued, ["nativeRuleExactChildReference"] =
                         Cleanup2DruidCastRules.Count == 1 && ReferenceEquals(Cleanup2DruidCastRules[0].Spell, child),
                     ["retainedNativeQuantityConversion"] = child.ConvertedFrom?.Blueprint.AssetGuid,
                     ["nativeQuantityConversionRetainedInChain"] = Cleanup2DruidSourceChain(child, source, parent),

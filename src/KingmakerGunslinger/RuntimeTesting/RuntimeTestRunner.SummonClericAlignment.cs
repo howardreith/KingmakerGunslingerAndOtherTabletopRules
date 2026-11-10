@@ -496,8 +496,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // Herald spider casts: the repaired Ogre at its base tier and the Crab 1d4+1 quantity row, each
                     // from the real Herald popup over the unrelated prepared spell, with the native debit observer.
                     SpiderPlacement heraldCrab = SpiderSummonerCatalog.Placements(SummonFamily.Monster).Single(value => value.Species.Key == "giant-crab-spider" && value.Tier == 5);
-                    foreach (var spiderCase in new[] { new { Key = "herald-spider-ogre", Row = spiderRow },
-                        new { Key = "herald-spider-crab-d4", Row = BlueprintBootstrap.Library.BlueprintsByAssetId.Values.OfType<BlueprintAbility>().FirstOrDefault(value => SpiderSummonerIntegration.PlacementOf(value)?.Symbol == heraldCrab.Symbol) } })
+                    foreach (var spiderCase in new[] { new { Key = "herald-spider-ogre", Row = spiderRow, Count = (Func<int, bool>)null },
+                        new { Key = "herald-spider-crab-d4", Row = BlueprintBootstrap.Library.BlueprintsByAssetId.Values.OfType<BlueprintAbility>().FirstOrDefault(value => SpiderSummonerIntegration.PlacementOf(value)?.Symbol == heraldCrab.Symbol),
+                            Count = (Func<int, bool>)(count => count >= 2 && count <= 5) } })
                     {
                         var scopedSpider = spiderCase;
                         AlphaMenu spiderMenu = null; ActionBarGroupSlot spiderSource = null;
@@ -508,7 +509,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             var spiderDebit = new Cleanup2SourceDebit(fixture.Caster);
                             ActionBarGroupSlot closeSpider = spiderSource;
                             foreach (int frame in R6Cell("cleric-" + scopedSpider.Key, () => Cleanup2MenuAdapterDruidCast(fixture, spiderMenu.Data[spiderIndex], tierFiveSecond, smParent(5), spiderMenu.Rows[spiderIndex], spiderDebit, mode, watch,
-                                () => Cleanup2MenuAdapterHide(closeSpider, tierFiveSecond), scopedSpider.Key))) yield return frame;
+                                () => Cleanup2MenuAdapterHide(closeSpider, tierFiveSecond), scopedSpider.Key, scopedSpider.Count))) yield return frame;
                         }
                         else Sprint25Check("cleric-" + scopedSpider.Key + "-row-present", false, new JObject { ["rows"] = spiderMenu?.Rows.Length ?? 0, ["row"] = scopedSpider.Row?.AssetGuid }, "The spider row is offered in the Herald popup.");
                         if (spiderSource != null) Cleanup2MenuAdapterHide(spiderSource, tierFiveSecond);
