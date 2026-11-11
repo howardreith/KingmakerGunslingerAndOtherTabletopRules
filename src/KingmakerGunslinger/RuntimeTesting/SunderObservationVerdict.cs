@@ -94,4 +94,58 @@ namespace KingmakerGunslinger.RuntimeTesting
             return outcome == SunderCleanupOutcome.Proven || outcome == SunderCleanupOutcome.ProvenFactLevelProviderInactive;
         }
     }
+
+    internal enum SunderReferenceKind { Fact, Brain, Component }
+
+    /// <summary>One reference from a unit blueprint to an exact Sunder source.</summary>
+    internal sealed class SunderReference
+    {
+        internal SunderReferenceKind Kind;
+        /// <summary>Component type full name (Component references only).</summary>
+        internal string ComponentType;
+        /// <summary>The component's own top-level field holding the reference.</summary>
+        internal string Field;
+        internal string Path;
+        internal string Target;
+
+        internal string Describe() { return Kind.ToString().ToLowerInvariant() + ":" + Path + ":" + Target; }
+    }
+
+    internal sealed class SunderCarrierReading
+    {
+        internal SunderReference[] Carriers = new SunderReference[0];
+        internal SunderReference[] Cleanup = new SunderReference[0];
+        internal bool IsCarrier { get { return Carriers.Length > 0; } }
+    }
+
+    /// <summary>
+    /// Separates grants and executable AI from the withdrawal fixer's own
+    /// removal lists. Only the exact fixer type's Facts, AiActions and
+    /// Resources lists are cleanup; every other fact, brain action, component
+    /// or field (including the fixer's other fields) still makes a carrier.
+    /// </summary>
+    internal static class SunderCarrierClassifier
+    {
+        internal const string WithdrawalFixerType = "KingmakerGunslinger.Summoning.SummonWithdrawnCapabilityFixer";
+        private static readonly string[] RemovalFields = { "Facts", "AiActions", "Resources" };
+
+        internal static bool IsWithdrawalCleanup(SunderReference reference)
+        {
+            return reference != null && reference.Kind == SunderReferenceKind.Component &&
+                string.Equals(reference.ComponentType, WithdrawalFixerType, System.StringComparison.Ordinal) &&
+                System.Array.IndexOf(RemovalFields, reference.Field) >= 0;
+        }
+
+        internal static SunderCarrierReading Classify(System.Collections.Generic.IEnumerable<SunderReference> references)
+        {
+            var carriers = new System.Collections.Generic.List<SunderReference>();
+            var cleanup = new System.Collections.Generic.List<SunderReference>();
+            foreach (SunderReference reference in references ?? new SunderReference[0])
+            {
+                if (reference == null) continue;
+                (IsWithdrawalCleanup(reference) ? cleanup : carriers).Add(reference);
+            }
+            return new SunderCarrierReading { Carriers = carriers.ToArray(), Cleanup = cleanup.ToArray() };
+        }
+    }
 }

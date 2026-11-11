@@ -86,6 +86,18 @@ namespace KingmakerGunslinger.Summoning
         internal const string NativeDumbMonsterBrainGuid =
             "5abc8884c6f15204c8604cb01a2efbab";
 
+        /// <summary>
+        /// DISMANTLE-01 (owner decision, 2026-11-11): the Bebelith's Dismantle
+        /// Armor is removed like Sunder. It was a post-claw-hit rider that
+        /// rolled a native SunderArmor combat maneuver; the Bebelith's combat
+        /// component is no longer given the dismantled-armor buff, which is the
+        /// trigger's own precondition, so the maneuver is never attempted. The
+        /// buff blueprint, its component and the retained rules policy stay
+        /// registered for save compatibility; an already applied buff on a
+        /// creature in an older save is not retired by this change.
+        /// </summary>
+        internal static readonly bool BebelithDismantleArmorWithdrawn = true;
+
         /// <summary>KMG creatures that inherited Sunder from a native donor
         /// rather than from their own builder, and so are corrected by the
         /// withdrawal step itself: the feat leaves their AddFacts and the

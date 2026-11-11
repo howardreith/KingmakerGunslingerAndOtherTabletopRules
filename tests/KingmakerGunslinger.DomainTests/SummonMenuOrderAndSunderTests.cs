@@ -303,6 +303,71 @@ namespace KingmakerGunslinger.DomainTests
                 "A unit that is not the exact KMG owner is never touched.");
         }
 
+        private static SunderReference Cleanup(string field, string target)
+        {
+            return new SunderReference { Kind = SunderReferenceKind.Component, ComponentType = SunderCarrierClassifier.WithdrawalFixerType,
+                Field = field, Path = "SummonWithdrawnCapabilityFixer." + field, Target = target };
+        }
+
+        // The census classification: the exact fixer's removal lists alone
+        // never make a carrier.
+        internal static void SunderCensusCleanupReferencesAloneAreNotACarrier()
+        {
+            SunderCarrierReading reading = SunderCarrierClassifier.Classify(new[] {
+                Cleanup("Facts", "ImprovedSunder"), Cleanup("AiActions", "SunderArmorAiAction"), Cleanup("Resources", "SomeResource") });
+            Assertions.False(reading.IsCarrier, "Withdrawal-list references alone are cleanup, not a grant.");
+            Assertions.Equal(3, reading.Cleanup.Length, "Every excluded cleanup reference is kept for diagnostics.");
+            Assertions.Equal("component:SummonWithdrawnCapabilityFixer.Facts:ImprovedSunder", reading.Cleanup[0].Describe(),
+                "The exact excluded path is recorded.");
+        }
+
+        internal static void SunderCensusRealFactStillMakesACarrier()
+        {
+            SunderCarrierReading reading = SunderCarrierClassifier.Classify(new[] { Cleanup("Facts", "ImprovedSunder"),
+                new SunderReference { Kind = SunderReferenceKind.Fact, Path = "AddFacts", Target = "ImprovedSunder" } });
+            Assertions.True(reading.IsCarrier && reading.Carriers.Length == 1 && reading.Carriers[0].Kind == SunderReferenceKind.Fact,
+                "A real Improved Sunder fact on the same unit is still a carrier.");
+        }
+
+        internal static void SunderCensusRealAiActionStillMakesACarrier()
+        {
+            SunderCarrierReading reading = SunderCarrierClassifier.Classify(new[] { Cleanup("AiActions", "SunderArmorAiAction"),
+                new SunderReference { Kind = SunderReferenceKind.Brain, Path = "Brain.Actions", Target = "SunderArmorAiAction" } });
+            Assertions.True(reading.IsCarrier && reading.Carriers.Single().Kind == SunderReferenceKind.Brain,
+                "A real Sunder AI action in the same unit's brain is still a carrier.");
+        }
+
+        // The exception is the exact fixer type and its three removal lists only.
+        internal static void SunderCensusExceptionHidesNoOtherReference()
+        {
+            var others = new[] {
+                new SunderReference { Kind = SunderReferenceKind.Component, ComponentType = "Kingmaker.UnitLogic.FactLogic.AddClassLevels",
+                    Field = "Selections", Path = "AddClassLevels.Selections.Features", Target = "ImprovedSunder" },
+                new SunderReference { Kind = SunderReferenceKind.Component, ComponentType = "Kingmaker.UnitLogic.FactLogic.AddFacts",
+                    Field = "Facts", Path = "AddFacts.Facts", Target = "ImprovedSunder" },
+                new SunderReference { Kind = SunderReferenceKind.Component, ComponentType = SunderCarrierClassifier.WithdrawalFixerType,
+                    Field = "OwningBlueprint", Path = "SummonWithdrawnCapabilityFixer.OwningBlueprint", Target = "ImprovedSunder" },
+                new SunderReference { Kind = SunderReferenceKind.Component, ComponentType = "Other.Mod.SummonWithdrawnCapabilityFixer",
+                    Field = "Facts", Path = "SummonWithdrawnCapabilityFixer.Facts", Target = "ImprovedSunder" },
+                new SunderReference { Kind = SunderReferenceKind.Fact, ComponentType = SunderCarrierClassifier.WithdrawalFixerType,
+                    Field = "Facts", Path = "AddFacts", Target = "ImprovedSunder" } };
+            foreach (SunderReference other in others)
+            {
+                SunderCarrierReading reading = SunderCarrierClassifier.Classify(new[] { Cleanup("Facts", "ImprovedSunder"), other });
+                Assertions.True(reading.IsCarrier && reading.Carriers.Single() == other && reading.Cleanup.Length == 1,
+                    "Not hidden by the cleanup exception: " + other.ComponentType + "." + other.Field + " (" + other.Kind + ").");
+            }
+        }
+
+        // DISMANTLE-01 (owner decision, 2026-11-11): Dismantle Armor is
+        // withdrawn; its identities and retained policy stay for saves.
+        internal static void BebelithDismantleArmorIsWithdrawn()
+        {
+            Assertions.True(SummonPlaytestWithdrawalPolicy.BebelithDismantleArmorWithdrawn, "Dismantle Armor is withdrawn from the Bebelith.");
+            Assertions.True(ExpandedSummoningIdentityCatalog.Build().Any(value => value.Symbol == "KMG.Summoning.Special.Bebelith.DismantledArmor"),
+                "The dismantled-armor buff identity stays registered for saved references.");
+        }
+
         private static SunderUnitState Unit(bool feat, bool action, bool toggle, bool running, int buffActive)
         {
             return new SunderUnitState { Feat = feat, Action = action, TogglePresent = toggle, ToggleOn = toggle,

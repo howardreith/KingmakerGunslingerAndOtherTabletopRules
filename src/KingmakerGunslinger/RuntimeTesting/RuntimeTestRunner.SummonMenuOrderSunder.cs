@@ -61,40 +61,60 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static bool MenuOrderIsSunderManeuver(string type)
         { return type != null && type.IndexOf("Sunder", StringComparison.OrdinalIgnoreCase) >= 0; }
 
-        // Every reference to an exact Sunder source reachable from one unit
-        // blueprint: its own facts, its brain's actions, and blueprint
-        // references held by its components (for example AddClassLevels).
-        private static JArray MenuOrderSunderSources(BlueprintUnit unit, HashSet<string> sources)
+        // Every reference from one unit blueprint to an exact Sunder source:
+        // its own facts, its brain's actions, and blueprint references held by
+        // its components (for example AddClassLevels), each with the
+        // component type and top-level field, for SunderCarrierClassifier.
+        private static List<SunderReference> MenuOrderSunderSources(BlueprintUnit unit, HashSet<string> sources)
         {
-            var found = new JArray();
+            var found = new List<SunderReference>();
             foreach (BlueprintUnitFact fact in unit.AddFacts ?? new BlueprintUnitFact[0])
-                if (fact != null && sources.Contains(fact.AssetGuid)) found.Add("fact:" + fact.name);
+                if (fact != null && sources.Contains(fact.AssetGuid))
+                    found.Add(new SunderReference { Kind = SunderReferenceKind.Fact, Path = "AddFacts", Target = fact.name });
             foreach (BlueprintAiAction action in unit.Brain?.Actions ?? new BlueprintAiAction[0])
             {
                 if (action == null) continue;
-                if (sources.Contains(action.AssetGuid)) found.Add("brain:" + action.name);
+                if (sources.Contains(action.AssetGuid))
+                    found.Add(new SunderReference { Kind = SunderReferenceKind.Brain, Path = "Brain.Actions", Target = action.name });
                 var cast = action as BlueprintAiCastSpell;
-                if (cast?.Ability != null && sources.Contains(cast.Ability.AssetGuid)) found.Add("brain-cast:" + action.name);
+                if (cast?.Ability != null && sources.Contains(cast.Ability.AssetGuid))
+                    found.Add(new SunderReference { Kind = SunderReferenceKind.Brain, Path = "Brain.Actions.Ability", Target = action.name });
             }
             foreach (BlueprintComponent component in unit.ComponentsArray ?? new BlueprintComponent[0])
-                MenuOrderWalk(component, sources, found, "component:" + component?.GetType().Name, 0);
+            {
+                if (component == null) continue;
+                string type = component.GetType().FullName;
+                foreach (FieldInfo field in component.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+                {
+                    if (field.FieldType.IsPrimitive || field.FieldType == typeof(string)) continue;
+                    object child; try { child = field.GetValue(component); } catch { continue; }
+                    MenuOrderWalk(child, sources, found, type, field.Name, component.GetType().Name + "." + field.Name, 1);
+                }
+            }
             return found;
         }
 
-        private static void MenuOrderWalk(object value, HashSet<string> sources, JArray found, string path, int depth)
+        private static void MenuOrderWalk(object value, HashSet<string> sources, List<SunderReference> found,
+            string componentType, string topField, string path, int depth)
         {
             if (value == null || depth > 3) return;
             var blueprint = value as BlueprintScriptableObject;
-            if (blueprint != null && depth > 0) { if (sources.Contains(blueprint.AssetGuid)) found.Add(path + ":" + blueprint.name); return; }
-            if (value is UnityEngine.Object && depth > 0) return;
+            if (blueprint != null)
+            {
+                if (sources.Contains(blueprint.AssetGuid))
+                    found.Add(new SunderReference { Kind = SunderReferenceKind.Component, ComponentType = componentType,
+                        Field = topField, Path = path, Target = blueprint.name });
+                return;
+            }
+            if (value is UnityEngine.Object) return;
             if (value is string || value.GetType().IsPrimitive || value.GetType().IsEnum) return;
             var array = value as Array;
-            if (array != null) { foreach (object item in array) MenuOrderWalk(item, sources, found, path, depth + 1); return; }
+            if (array != null) { foreach (object item in array) MenuOrderWalk(item, sources, found, componentType, topField, path, depth + 1); return; }
             foreach (FieldInfo field in value.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
                 if (field.FieldType.IsPrimitive || field.FieldType == typeof(string)) continue;
                 object child; try { child = field.GetValue(value); } catch { continue; }
-                MenuOrderWalk(child, sources, found, path + "." + field.Name, depth + 1);
+                MenuOrderWalk(child, sources, found, componentType, topField, path + "." + field.Name, depth + 1);
             }
         }
 
@@ -121,11 +141,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                             units.Add(guid, (BlueprintUnit)found);
                     }
                 }
-            var carriers = new JArray();
+            var carriers = new JArray(); var cleanupReferences = new JArray();
+            // The classifier names the fixer by its full type name; prove it is this one.
+            bool fixerTypeExact = typeof(SummonWithdrawnCapabilityFixer).FullName == SunderCarrierClassifier.WithdrawalFixerType;
             foreach (BlueprintUnit unit in units.Values.OrderBy(value => value.AssetGuid, StringComparer.Ordinal))
             {
-                JArray found = MenuOrderSunderSources(unit, sources);
-                if (found.Count > 0) carriers.Add(new JObject { ["unit"] = unit.AssetGuid, ["name"] = unit.name, ["sources"] = found });
+                SunderCarrierReading reading = SunderCarrierClassifier.Classify(MenuOrderSunderSources(unit, sources));
+                if (reading.IsCarrier) carriers.Add(new JObject { ["unit"] = unit.AssetGuid, ["name"] = unit.name,
+                    ["sources"] = new JArray(reading.Carriers.Select(value => value.Describe())) });
+                if (reading.Cleanup.Length > 0) cleanupReferences.Add(new JObject { ["unit"] = unit.AssetGuid, ["name"] = unit.name,
+                    ["withdrawalLists"] = new JArray(reading.Cleanup.Select(value => value.Describe())) });
             }
             var symbols = ExpandedSummoningBlueprints.Registered.BySymbol;
             var ordinaryBrain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(library, SummonPlaytestWithdrawalPolicy.NativeDumbMonsterBrainGuid, "ordinary brain");
@@ -147,9 +172,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 improved.GetComponents<Kingmaker.UnitLogic.FactLogic.AddFacts>().SelectMany(value => value.Facts ?? new BlueprintUnitFact[0]).Any(value => value?.AssetGuid == MenuOrderSunderActionGuid);
             bool fixersAttached = new[] { "storm-giant", "greater-earth-elemental", "elder-earth-elemental" }.All(key =>
                 ((JArray)fixers[key]).Select(value => (string)value).SequenceEqual(new[] { SummonPlaytestWithdrawalPolicy.FixerName(key) }));
-            passed = carriers.Count == 0 && elementalsCorrected && nativeUnchanged && fixersAttached && units.Count > 0;
+            passed = carriers.Count == 0 && fixerTypeExact && elementalsCorrected && nativeUnchanged && fixersAttached && units.Count > 0;
             return new JObject { ["rootsScanned"] = roots.Length, ["rowsScanned"] = rows, ["unitsScanned"] = units.Count,
-                ["carriers"] = carriers, ["elementalBrainsOrdinary"] = elementalsCorrected,
+                ["carriers"] = carriers, ["excludedWithdrawalListReferences"] = cleanupReferences, ["fixerTypeExact"] = fixerTypeExact, ["elementalBrainsOrdinary"] = elementalsCorrected,
                 ["sharedNativeDefinitionsUnchanged"] = nativeUnchanged, ["fixers"] = fixers, ["newFixersAttached"] = fixersAttached,
                 ["scope"] = "Structural: unit facts, brain actions and component blueprint references of every unit a published canonical or alternate row spawns." };
         }
