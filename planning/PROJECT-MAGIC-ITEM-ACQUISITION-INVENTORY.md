@@ -21,10 +21,16 @@ not yet released).**
   Narlmarches, Pitax and BTSL Honest Guy stock.
 - **Existing saves.** Both removals rely on the native known-item reconciliation of Kingmaker 2.1.7b,
   inspected in the installed `Assembly-CSharp`:
-  - `SharedVendorTables.GetTable` subtracts the removed fixed rows from Oleg's persisted entries. A
-    purchased copy is never replenished. A copy the player sold to Oleg stays as buyback.
-  - On area load, `LootComponent.OnDataSetted` calls `LootPersistentData.UpdateLoot`, which removes one
-    unlooted generated Thornstep from that exact container and records the new count.
+  - **Oleg.** `SharedVendorTables.GetTable` subtracts the removed fixed rows from Oleg's persisted
+    blueprint/count entries. A purchased copy is never replenished.
+    - Shared tables keep no per-item provenance. So a cold iron spear the player sold to Oleg after buying the
+      stocked copy is decremented as well.
+  - **Thornstep.** A mod prefix on the former source's `LootComponent.OnDataSetted` runs before native
+    `LootPersistentData.UpdateLoot`.
+    - It removes only an untouched generated Thornstep, by exact reference. The persisted `ItemEntity.Time` is
+      still zero because the party never held it.
+    - It retains any copy the party has held, including one claimed and put back.
+    - It retires the known-item row, so the engine never decrements by blueprint.
   - Both are idempotent, scoped to the one table/container, and never touch player inventories.
   - A save whose persisted known-item history is absent keeps its copy.
   - **No native observation of either path has been made on this branch.** See
