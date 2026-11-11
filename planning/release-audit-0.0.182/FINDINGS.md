@@ -8,13 +8,18 @@ appended to AUDIT-OUTCOMES.md. Severity is a provisional impact judgement, not p
 
 | ID | Kind | Severity | Evidence strength | Feature | Title | Disposition | Evidence |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| GS-AUD-0004 | CONTRACT-QUESTION (was PRODUCT-DEFECT) | **S3, downgraded from S1** | omission source-demonstrated; runtime-null premise **NATIVELY DISCONFIRMED** (EV-000014) | Shared buff/area lifecycle (A15); Gunslinger deeds, Eastern weapons, Elven spears | 21 KMG buff identities omit `FxOnStart`/`FxOnRemove`, breaking the project's own stated invariant | OPEN — **CORRECTED EV-000012** | EV-000004, EV-000012 |
-| GS-AUD-0001 | ENVIRONMENT-BLOCKER | S2 | native-observed | Whole product / release readiness | The installed mod on OLD LAPTOP is 0.0.117, not the 0.0.182 release candidate | OPEN | EV-000002 |
+| GS-AUD-0004 | CONTRACT-QUESTION (was PRODUCT-DEFECT) | **S3, was S1** | omission source-demonstrated; consequence **natively DISCONFIRMED** | Buff invariant (A15) | 21 buff identities omit `FxOnStart`/`FxOnRemove`, deviating from the project's own stated invariant | OPEN — **CORRECTED** | EV-000004, EV-000012, EV-000014 |
+| GS-AUD-0001 | machine-intake provenance | S3 (was S2) | native-observed | Host environment | Installed mod is 0.0.117, not the candidate — the "recent play experience" inference is **withdrawn** | OPEN | EV-000002, EV-000017 |
 | GS-AUD-0003 | VERIFICATION-GAP | UNASSESSED | observed-once (external), local evidence absent | A15 incident reconciliation | The supplied 2026-11-11 incident log does not exist on this host; last local game run was 2026-11-07 | OPEN | EV-000004 |
 | GS-AUD-0006 | PRODUCT-DEFECT | S2 | source-demonstrated | Feature-module settings (A19) | A failed settings-migration write misclassifies a valid older file as malformed and resets all 13 modules to ON | OPEN | EV-000007 |
 | GS-AUD-0007 | CONTRACT-QUESTION | S3 | source-demonstrated | Feature-module settings (A19) | A future settings schema makes the whole mod fail to load, not just the settings file | OPEN | EV-000007 |
 | GS-AUD-0005 | HARNESS-DEFECT | S3 | native-observed (executed gate) | Release validation gate | The broad gate depends on an untracked ~99 MB local IL dump; a fresh checkout fails 23 tests with an opaque path error | OPEN | EV-000005 |
-| GS-AUD-0015 | PRODUCT-DEFECT | S2 | source-demonstrated | Brown-Fur Transmuter (A11) | Persisted Powerful Change bonus silently degrades to +4 when the caster is not in the loaded scene | OPEN | EV-000009 |
+| **GS-AUD-0039** | **PRODUCT-DEFECT** | **S2** | source-demonstrated + **engine IL measured** | Scatter Shot (A06) | **Scatter's documented −2 attack penalty is applied as a +2 bonus** — a 4-point swing on every scatter attack | OPEN | EV-000018 |
+| GS-AUD-0040 | CONTRACT-QUESTION | S2 | source-demonstrated | Shield Other (A15) | Range bound is computed and never compared; the description, the code and the test assert three different things | OPEN | EV-000018 |
+| GS-AUD-0041 | DOCUMENTATION-DRIFT | S3 | source-demonstrated | Protection from Alignment (A15) | Catalog has 23 entries, authority table lists 21; the Suggestion entry may violate the doc's own exclusion list | OPEN | EV-000018 |
+| GS-AUD-0042 | DOCUMENTATION-DRIFT | S3 | source-demonstrated; consequence UNVERIFIED | Scatter Shot (A06) | ADR-0037 requires Vital Strike exclusion; only precision damage is suppressed | OPEN | EV-000018 |
+| GS-AUD-0043 | PRODUCT-DEFECT (presentation) | S3 | source-demonstrated; gated on unverified engine behaviour | Magic Circle (A15) | Decal reuse does not match `AreaId`/`Alignment` | OPEN | EV-000018 |
+| GS-AUD-0015 | CONTRACT-QUESTION / conditional risk | UNASSESSED (was S2) | guard source-demonstrated; **consequence UNVERIFIED** | Brown-Fur Transmuter (A11) | Persisted Powerful Change restoration needs a resolvable live caster; the cross-area +4 result is NOT established | OPEN | EV-000009, EV-000017 |
 | GS-AUD-0013 | CONTRACT-QUESTION | S2/S3 | source-demonstrated, coordinator-verified | Gunslinger firing (A06) | Misfire suppression is released only by player input; an AI companion stays locked out after repair | OPEN | EV-000009 |
 | GS-AUD-0021 | VERIFICATION-GAP | UNASSESSED (S1 if it fails) | source-demonstrated absence | Firearm persistence (A04) | Cold-load firearm token survival is unproven and fails silently | OPEN | EV-000009 |
 | GS-AUD-0008 | DOCUMENTATION-DRIFT | S3 | source-demonstrated | Firearm maintenance (A04) | Stale Broken-or-Wrecked field-repair prose in README and seven other places | OPEN | EV-000009 |
@@ -23,24 +28,24 @@ appended to AUDIT-OUTCOMES.md. Severity is a provisional impact judgement, not p
 | GS-AUD-0009 | PRODUCT-DEFECT (latent) | S3 | source-demonstrated; reachability LOW | Firearm state (A04) | Capacity-6 Advanced Revolver cannot persist state past one round; reload silently rolls back | OPEN | EV-000009 |
 | GS-AUD-0012 | PRODUCT-DEFECT (diagnostics) | S3 | source-demonstrated | Gunslinger's Dodge (A06) | GunslingerDodgeRuntime is dead code, so its pre-AC evidence can only read zero | OPEN | EV-000009 |
 | GS-AUD-0017 | DOCUMENTATION-DRIFT | S3 | source-demonstrated | Cord of Stubborn Resolve (A14) | Combat log says "nonlethal damage" where the approved contract says nonlethal-EQUIVALENT | OPEN | EV-000009 |
-| GS-AUD-0019 | DOCUMENTATION-DRIFT | S3 | source-demonstrated | Brown-Fur Transmuter (A11) | Runtime matrix asserts save/reload PASS while the later startup record says cold reconstruction NOT_RUN | OPEN | EV-000009 |
+| GS-AUD-0019 | DOCUMENTATION-DRIFT | S3 | source-demonstrated | Brown-Fur Transmuter (A11) | Brown-Fur historical records need explicit scope notes; they are not inherently contradictory | OPEN | EV-000009, EV-000017 |
 | GS-AUD-0010 | CONTRACT-QUESTION | S3 | source-demonstrated | Firearm maintenance (A04) | Broken-only field repair is enforced only in callers, not at the state transition | OPEN | EV-000009 |
 | GS-AUD-0011 | CONTRACT-QUESTION | S3 | source-demonstrated | Deadeye (A06) | Deadeye charges a flat 1 Grit and discards the per-increment cost it computes | OPEN | EV-000009 |
 | GS-AUD-0014 | VERIFICATION-GAP | UNASSESSED | source-demonstrated absence | Firearm maintenance / action economy (A04/A06) | Three firearm claims are not settleable from source (rest/autosave order, reload action borrowing, token survival) | OPEN | EV-000009 |
 | GS-AUD-0020 | VERIFICATION-GAP | UNASSESSED | source-demonstrated | Urban Barbarian / Elemental races (A12/A13) | Acceptance checklists carry 38 unchecked items and two explicit native waivers that nothing closes | OPEN | EV-000009 |
-| GS-AUD-0025 | PRODUCT-DEFECT | S2 | source-demonstrated, coordinator-verified | Expanded summoning (A08) | Untemplated alternate-caller summons keep the donor's inherited celestial/fiendish template | OPEN | EV-000013 |
-| GS-AUD-0027 | PRODUCT-DEFECT | S2 | source-demonstrated | Spider Summoner / RU (A08) | The Races Unleashed version pin fails open instead of disabling the integration | OPEN | EV-000013 |
-| GS-AUD-0030 | CONTRACT-QUESTION + DOC-DRIFT | S2 | source-demonstrated, coordinator-verified | Gunslinger progression (A05) | Nimble granted at 2/6/10/14/18 (tabletop 3/7/11/15/19) and the fidelity matrix calls it EXACT | OPEN | EV-000013 |
-| GS-AUD-0031 | DOCUMENTATION-DRIFT | S2 | source-demonstrated | Vendors / acquisition (A17) | Better Vendors doc describes four vendor rows the candidate does not publish; a second doc contradicts it | OPEN | EV-000013 |
+| GS-AUD-0025 | PRODUCT-DEFECT | S2 | source-demonstrated, coordinator-verified | Expanded summoning (A08) | Untemplated **Summon Monster** alternate-caller children keep the donor's inherited template (scope narrowed from "all seven families") | OPEN | EV-000013, EV-000017 |
+| ~~GS-AUD-0027~~ | **WITHDRAWN — FALSE POSITIVE** | ~~S2~~ none | source verified: structural gate exists | Spider Summoner / RU (A08) | ~~RU version pin fails open~~ — unsupported input is refused before mutation and generated rows are withheld | **WITHDRAWN** | EV-000017 |
+| ~~GS-AUD-0030~~ | **WITHDRAWN — FALSE POSITIVE** | ~~S2~~ none | rules text verified: mod is CORRECT | Gunslinger progression (A05) | ~~Nimble granted one level early~~ — tabletop Nimble IS 2/6/10/14/18; the mod and its `EXACT` label are right | **WITHDRAWN** | EV-000017 |
+| GS-AUD-0031 | DOCUMENTATION-DRIFT | S2 | source-demonstrated | Vendors / acquisition (A17) | Better Vendors doc misdescribes the "+1" acquisition path; items ARE available via Dire Narlmarches/Pitax/BTSL plus BV Military rank I | OPEN | EV-000013, EV-000018 |
 | GS-AUD-0024 | CONTRACT-QUESTION / lead | UNASSESSED | supported-risk — hypothesis, no reproduction | A15 incident | HYPOTHESIS: the incident fits a null `Blueprint` on a deserialized buff better than a null `FxOnStart` | OPEN | EV-000012 |
-| GS-AUD-0038 | HARNESS-DEFECT | S3 | native-observed, intermittent (FAIL in batch, PASS alone) | Pistolero deeds (A06) | `up-close-critical` fails only when a Targeting scenario runs first in the same process | OPEN | EV-000014 |
+| GS-AUD-0038 | OBSERVED-FAILURE-UNATTRIBUTED | S3 | native-observed, non-reproducing; **mechanism withdrawn** | Pistolero deeds (A06) | Same assertion failed once and passed once on identical inputs — cause unresolved (the two ran in SEPARATE game processes) | OPEN | EV-000014, EV-000017 |
 | GS-AUD-0023 | VERIFICATION-GAP | S3 | native-observed on 0.0.182 | Gunslinger's Dodge (A06) | Dodge still has no working native acceptance route; known fixture limitation confirmed present | OPEN | EV-000012 |
 | GS-AUD-0028 | VERIFICATION-GAP | UNASSESSED (S1/S2 if confirmed) | source-demonstrated absence | Summon lifecycle (A10) | Grapple/hold release on death, dismissal and scene change is unverified | OPEN | EV-000013 |
 | GS-AUD-0026 | HARNESS-DEFECT | S3 | source-demonstrated | Expanded summoning (A08) | The composed-action contract classifies the template-removal action as Other and never compares it | OPEN | EV-000013 |
 | GS-AUD-0029 | DOCUMENTATION-DRIFT | S3 | source-demonstrated | Alternate summoning (A08) | ALTERNATE-SUMMONING-SOURCES.md still states the superseded name-first menu order as current | OPEN | EV-000013 |
 | GS-AUD-0032 | PRODUCT-DEFECT | S3 | source-demonstrated | Gunslinger progression (A05) | A base Gunslinger's 4th Gun Training pick (level 17) has no selectable option and grants nothing | OPEN | EV-000013 |
 | GS-AUD-0033 | CONTRACT-QUESTION | S3 | source-demonstrated | True Grit deeds (A05) | "Select two different deeds" is enforced only by test-only code | OPEN | EV-000013 |
-| GS-AUD-0034 | PRODUCT-DEFECT (compatibility) | S3 | source-demonstrated | Feature selection (A17) | Both KMG ExtractSelectionItems postfixes silently discard third-party selection items | OPEN | EV-000013 |
+| GS-AUD-0034 | CONTRACT-QUESTION / conditional risk | S3 | source-demonstrated; no affected mod identified | Feature selection (A17) | `ExtractSelectionItems` postfixes narrow to `FeatureUIData`, which would discard other interface implementations | OPEN | EV-000013, EV-000017 |
 | GS-AUD-0035 | PRODUCT-DEFECT | S3 | source-demonstrated | Teleportation UI (A16) | A destination row with no bindable reader is offered and does nothing but log | OPEN | EV-000013 |
 | GS-AUD-0036 | PRODUCT-DEFECT | S3 | source-demonstrated | Firearm crafting (A17) | Crafting rollback loses the original exception and cannot undo a detected over-refund | OPEN | EV-000013 |
 | GS-AUD-0037 | VERIFICATION-GAP | UNASSESSED | historical-only | Progression + teleport UI (A05/A16) | Native evidence for these areas is pinned to earlier commits and was not re-run on the candidate | OPEN | EV-000013 |
@@ -49,294 +54,165 @@ appended to AUDIT-OUTCOMES.md. Severity is a provisional impact judgement, not p
 
 ---
 
-## GS-AUD-0004 — Twenty KMG buff factories still omit the empty FX links the engine dereferences without a null guard
+## GS-AUD-0004 — 21 KMG buff identities omit `FxOnStart`/`FxOnRemove`, deviating from the project's own stated invariant
 
-> ### ⚠ CORRECTED 2026-11-11T18:10Z (EV-000012) — READ THIS FIRST
->
-> This finding was originally filed as **PRODUCT-DEFECT / S1** and asserted that the omission
-> below explains the 2026-11-11 area-load crash. **That causal claim is WITHDRAWN and the
-> severity is downgraded to S3.**
->
-> **Why.** Continued disassembly established that
-> `Kingmaker.UnitLogic.Buffs.Buff::Activate()` calls `SpawnParticleEffect()` directly, and that
-> `IsParticleEffectValid()` returns **false** for a buff that has never spawned an effect — so
-> the `FxOnStart` dereference is reached on the **first ordinary application** of such a buff,
-> not only during area load. If `FxOnStart` were genuinely null for these blueprints, then
-> Gunslinger's Dodge, Deadeye and Bleeding Wound would raise `NullReferenceException` the first
-> time a player used them, every time. They are shipped features with seven documented
-> playtests behind them. **The runtime-null premise is therefore not established, and is argued
-> against by the product working.**
->
-> **What survives (verified, unchanged):** the enumeration of 21 identities that omit the
-> fields, the absence of any downstream normalisation, and the inconsistency with the project's
-> own written invariant and its two prior point fixes. That is a real latent consistency defect
-> worth fixing — it is simply not a demonstrated crash cause.
->
-> A native attempt to settle it (T2, `disposable-gunslinger-dodge`) was **inconclusive**: the
-> command interrupted before delivery, so the buff never applied and the code path was never
-> entered. See GS-AUD-0023. The replacement hypothesis for the incident is **GS-AUD-0024**.
->
-> **UPDATE — NATIVELY DISCONFIRMED 2026-11-11T18:23Z (EV-000014).** A second native attempt
-> settled it. `disposable-pistolero-deeds` arms and consumes `KMG_UpCloseAndDeadly_Armed`
-> (`Blueprints/PistoleroBlueprints.cs:146`) — **one of the 21 identities listed below** — and it
-> was applied to a live unit and consumed across six separate stages, in two independent runs on
-> the frozen 0.0.182 candidate, **with no `NullReferenceException` at any point**. Because
-> `Buff::Activate()` calls `SpawnParticleEffect()` directly and `IsParticleEffectValid()` returns
-> false for a never-spawned effect, every one of those applications reached the
-> `ldfld FxOnStart` / `callvirt Load(bool)` dereference. **`FxOnStart` is therefore not null at
-> runtime for a `CreateInstance`'d `BlueprintBuff` on this engine.** The S3 downgrade now rests
-> on native evidence rather than inference. The omission below is still a real deviation from the
-> project's own invariant and is still worth repairing — it is **not** a crash cause.
-
-
-- **Kind:** CONTRACT-QUESTION / latent consistency defect (originally filed PRODUCT-DEFECT)
-- **Severity:** **S3** (downgraded from S1 — see the correction banner). Rationale: the
-  deviation from the project's own invariant is real and verified, but no runtime failure is
-  demonstrated, and the shipped features that use these buffs work.
-- **Confidence/evidence strength:** the *omission* is source-demonstrated and hand-verified at
-  every site. The *consequence* is **not established**: the engine rule (no null guard) is
-  proven from IL, but that `FxOnStart` is actually null at runtime for a
-  `CreateInstance`'d `BlueprintBuff` is unproven and is argued against by `Buff.Activate()`
-  reaching the same dereference on ordinary application.
-- **Disposition:** OPEN. Authority for the expected rule is the project's own stated contract
-  (below) plus the native IL of the qualified reference assembly.
-- **Affected feature, commit, version, exact package/DLL/profile:**
-  commit aa91f46571eb239df36e0233082153f2cba01899, version 0.0.182. Source-level; applies to
-  any package built from this commit. Not profile-specific — it is independent of optional mods.
-
-### Supported expected behavior and authority
-
-1. **The project's own written contract**, verbatim, at
-   `src/KingmakerGunslinger/Blueprints/PaperCartridgeModeBlueprints.cs:56-60`:
-   > "Buff.SpawnParticleEffect and Buff.OnRemove call Load(false) on these links **without null
-   > guards** when a persistent buff's unit view is rebuilt. Empty links are the engine-safe
-   > representation of an intentionally effect-free buff; they spawn nothing but remain safe
-   > across save/load and **area-transition view reconstruction**."
-2. **The engine, measured directly.** `ildasm` over the qualified private reference assembly
-   (`Managed/Assembly-CSharp.dll`, SHA256 `3B6450FF…5AFB`, byte-identical to the installed
-   game) shows `Kingmaker.UnitLogic.Buffs.Buff::SpawnParticleEffect` executing, with no
-   preceding null test:
-
-   ```
-   IL_003a:  ldarg.0
-   IL_003b:  call    instance BlueprintBuff Buff::get_Blueprint()
-   IL_0040:  ldfld   class PrefabLink BlueprintBuff::FxOnStart
-   IL_0045:  ldc.i4.0
-   IL_0046:  callvirt instance !0 WeakResourceLink`1<GameObject>::Load(bool)
-   ```
-   The method returns early only for a null `View`, a null `View.Data`, or an already-valid
-   particle effect. If `Blueprint.FxOnStart` is null, `callvirt … Load(bool)` raises
-   `NullReferenceException` **inside** `SpawnParticleEffect`.
-3. **The project previously reproduced this exact failure and root-caused it.**
-   `docs/GUNSLINGER-SAVE-LOAD-FORENSICS.md:56-58`:
-   > "The first material failure was reproduced **twice**: `Buff.SpawnParticleEffect_Patch1`
-   > dereferenced a **null project buff FX link** during `UnitEntityData.SpawnBuffsFxs` and
-   > `AttachToViewOnLoad`. … The save contains two references to Focused Aim marker
-   > `ac72998da0a146cf9ca0cff3ea161303`. Its 0.0.88 blueprint factory **omitted `FxOnStart`,
-   > `FxOnRemove`, and `ResourceAssetIds`**, unlike the repository's save-safe buff factories.
-   > The stable Focused Aim identity now initializes both FX links to empty `PrefabLink`
-   > instances…"
-   `CHANGELOG.md` 0.0.74 records the same repair for the Paper Cartridge marker:
-   "Initialized the persistent Use Paper Cartridges marker's no-FX resource links so existing
-   marker facts reconstruct safely during save load and area changes."
-
-   Therefore: on this engine, an omitted `FxOnStart` **is** null at runtime and **does** throw
-   from this exact call site. That is settled empirically by this project's own prior evidence.
-
-### Observed behavior and immutable evidence paths/hashes
-
-The repairs in 0.0.74 and 0.0.88 were applied **only to the two buffs that had crashed**. No
-central sweep, registration-time normalization, or build-time guard was ever added. Verified:
-
-- `src/KingmakerGunslinger/Blueprints/BlueprintRegistry.cs` — `Register<T>(symbol, factory)`
-  contains no reference to `FxOnStart`, `FxOnRemove`, `PrefabLink` or `ResourceAssetIds`.
-- `src/KingmakerGunslinger/Blueprints/BlueprintUnitFactAccess.cs:34-65` — `Configure(...)`
-  sets only `m_DisplayName`, `m_Description` and `m_Icon`. It does not touch the FX links.
-- The only `FxOnStart == null` assertions in the product are three local `Validate` methods
-  (`PaperCartridgeModeBlueprints.cs:107`, `AcadamaeGraduateModeBlueprints.cs:104`,
-  `BodyguardModeBlueprints.cs:200`), each covering only its own marker.
-- The only test guarding the invariant is `FocusedAimSaveCompatibilityTests.cs:9-17`, and it is
-  a **source-text substring assertion against one file**
-  (`MysteriousStrangerBlueprints.cs`). It cannot detect the omission anywhere else.
-
-Scan + hand verification of every `ScriptableObject.CreateInstance<BlueprintBuff>()` site in
-`src/` (41 sites; analyzer `tools-fxscan.py`, raw output `evidence/A15/fxscan.json`) found
-**20 sites that never assign `FxOnStart` or `FxOnRemove`**. Each was then read by hand:
-
-**Player-facing, registered with a stable GUID (serialized into saves):**
-
-| # | Buff `name` | Factory site | Lifetime / who carries it |
-|---|---|---|---|
-| 1 | `KMG_WayfarersOath_Equipped` | `EasternWeaponNamedBlueprints.cs:409` (shared `Buff(...)` factory), registered at :185 | **While the weapon is in the active equipment set** — long-lived, party member |
-| 2 | `KMG_MoonlitCrossing_Equipped` | same factory, registered at :200 | **While equipped** — long-lived, party member |
-| 3 | `KMG_FallingPetal_AC_Buff` | same factory, registered at :195 | 1 round, party member |
-| 4 | `KMG_MountainSunder_Round_Marker` | same factory, registered at :210 | 1 round, party member |
-| 5 | `KMG_Boughkeeper_AC_Buff` | `ElvenBranchedSpearNamedBlueprints.cs:278` (shared `Buff(...)` factory), registered at :120 | until start of next turn, party member |
-| 6 | `KMG_Thornstep_Speed_Penalty` | same factory via `StatBuff`, registered at :130 | 1 round, **enemy** |
-| 7 | named-spear round markers | same factory via `Marker` (:267) | 1 round, party member |
-| 8 | `KMG_BleedingWound_<kind>_Buff` | `BleedingWoundBlueprints.cs:112` | **"until the bleeding is removed"** — long-lived, **enemy** |
-| 9 | `KMG_BleedingWound_<kind>_Armed` | `BleedingWoundBlueprints.cs:102` | armed marker, party member |
-| 10 | `KMG_Deadeye_Armed_Buff` | `DeadeyeBlueprints.cs:71` | 1 round / until next shot, party member |
-| 11 | `KMG_GunslingerDodge_ArmorClass_Buff` | `GunslingerDodgeBlueprints.cs:74` | 1 round, party member |
-| 12 | `KMG_DeathsShot_DeathEffect` | `DeathsShotBlueprints.cs:54` | applied to **enemy** |
-| 13 | `KMG_DeathsShot_Armed` | `DeathsShotBlueprints.cs:68` | armed marker, party member |
-| 14 | `KMG_StartlingShot_FlatFooted_Buff` | `StartlingShotBlueprints.cs:54` | until start of target's next turn, **enemy** |
-| 15 | `KMG_StunningShot_Armed` | `StunningShotBlueprints.cs:71` | armed marker, party member |
-| 16 | `KMG_TargetingHead_Confusion_Buff` | `TargetingHeadBlueprints.cs:49` | 1 round, **enemy** |
-| 17 | `KMG_ExpertLoading_Armed` | `ExpertLoadingBlueprints.cs:50` | armed marker, party member |
-| 18 | `KMG_LightningReload_Used` | `LightningReloadBlueprints.cs:53` | per-round marker, party member |
-| 19 | `KMG_SteadyAim_Armed` | `MusketMasterBlueprints.cs:90` | per-turn marker, party member |
-| 20 | `KMG_UpCloseAndDeadly_Armed` | `PistoleroBlueprints.cs:146` | per-turn marker, party member |
-| 21 | `KMG_SlingersLuck_<suffix>_Armed` | `SlingersLuckBlueprints.cs:93` | armed marker, party member |
-
-**Lower exposure (not ordinary player content), listed for completeness:**
-`ExpandedSummoningSpecialBuilder.Suggestion32.cs:142` (`stagedBuff`, staged/optional-provider
-path); `RuntimeTesting/BodyguardCombatFixture.cs:655`;
-`RuntimeTesting/RuntimeTestRunner.ExpandedSummoningAstral31Dispel.cs:1201`;
-`RuntimeTesting/RuntimeTestRunner.cs:35204`. These are scenario-fixture buffs; they are still
-built into the shipped DLL, so they are reported rather than dismissed.
-
-### Minimal reproduction / concrete static causal path
-
-1. A gunslinger uses **Bleeding Wound** on an enemy (or equips **Wayfarer's Oath** /
-   **Moonlit Crossing**). The corresponding `BlueprintBuff` has `FxOnStart == null`.
-2. The buff is still attached when the player saves, or when the party changes area.
-3. On load / area transition the engine calls
-   `LoadingProcess.TickLoading` → `Game.OnAreaLoaded` → `Player.OnAreaLoaded` →
-   `UnitEntityData.SpawnBuffsFxs`, which iterates the unit's buffs and calls
-   `Buff.SpawnParticleEffect` on each.
-4. The unit's `View` and `View.Data` are non-null (the view has just been rebuilt) and
-   `IsParticleEffectValid()` is false (the particle effect did not survive the rebuild), so
-   execution reaches `IL_0040: ldfld FxOnStart` / `IL_0046: callvirt Load(bool)`.
-5. `FxOnStart` is null → `NullReferenceException` inside `SpawnParticleEffect`, which
-   `LoadingProcess.Update` rethrows as `LoadGameException`.
-
-That path is identical, frame for frame, to the stack preserved in
-`audit48h/reference/INCIDENT_2026-11-11.txt`:
-`Buff.SpawnParticleEffect_Patch4` → `UnitEntityData.SpawnBuffsFxs` → `Player.OnAreaLoaded_Patch2`
-→ `Game.OnAreaLoaded_Patch2` → `LoadingProcess.TickLoading_Patch0` → rethrow `LoadGameException`.
-
-### Preconditions, exact fixture, assistance and native-input limitations
-
-Requires an affected buff to be live on a unit at an area transition or save load. The
-long-lived ones (Bleeding Wound on a surviving enemy; Wayfarer's Oath / Moonlit Crossing while
-equipped) make that ordinary rather than exotic. **No live reproduction was performed in this
-campaign** — see "Remaining unknowns".
-
-### Scope/impact and repeatability
-
-Affects any save in which an affected buff is serialized, or any area transition while one is
-active. The historical 0.0.88 instance was reproduced **twice** on demand once the right save
-existed, so the mechanism is deterministic rather than racy; the user's report of
-*intermittent* failure is consistent with "intermittent presence of the buff", not with an
-intermittent code path.
-
-### Negative controls, disconfirmation and competing explanations
-
-Considered and addressed:
-
-- **"KMG's own `Buff.SpawnParticleEffect` Harmony patches threw."** Ruled out as the direct
-  thrower. KMG patches that method three times
-  (`Summoning/ExpandedSummoningSummonGlowPatch.cs:60`,
-  `Summoning/GiantSummonPresentationPatch.cs:297`,
-  `Summoning/RedcapScytheAnimationR6.cs:122`). All three are **postfixes whose entire bodies
-  are inside `try { … } catch (Exception) { … }`**, so none can propagate an exception out of
-  the patched wrapper. The `_Patch4` frame is the *generated wrapper*, which also contains the
-  original engine body — so the suffix does not implicate any patch owner. The mission's
-  warning against inferring ownership from a Harmony suffix is respected: this finding rests on
-  the engine IL and the project's own prior reproduction, not on the suffix.
-- **"The crash is a third-party mod."** Not excluded, and deliberately not claimed.
-  Six installed peers (BagOfTricks, CheatMenu, CraftMagicItems, KingmakerBuffPlanner,
-  KingmakerDiceRoller, KingmakerLastAzlantiPreserver) are in no compatibility profile, and
-  `KingmakerBuffPlanner` in particular is buff-adjacent. The incident alone cannot attribute
-  ownership. **This finding does not claim the 2026-11-11 incident was caused by KMG.** It
-  claims something narrower and independently sufficient: KMG ships 20 buff identities that
-  violate the project's own engine-safety contract and can raise this exact exception.
-- **"Unity initialises serialised reference fields, so `FxOnStart` is never null."** Ruled out
-  empirically: the project reproduced a null FX-link dereference twice on this engine from
-  exactly this omission (forensics doc above), and wrote two separate repairs for it.
-- **"A `Validate` method would catch it."** Ruled out: only three markers validate their own
-  FX links, and none of the 20 sites above is covered.
-
-### Probable location/cause (hypothesis clearly labeled)
-
-**Hypothesis:** the 0.0.74 and 0.0.88 repairs were applied point-wise to the two buffs that had
-already crashed, and the invariant was never generalised. The newer factories
-(ElementalRaces, Summoning, Acadamae, Bodyguard, MysteriousStranger) do set the links, which
-suggests the convention was adopted going forward but never backfilled into the older
-Gunslinger deed and named-weapon factories.
-
-### Earlier evidence, related/duplicate finding IDs and status changes
-
-Supersedes nothing. Directly extends `docs/GUNSLINGER-SAVE-LOAD-FORENSICS.md` (2026-08-20),
-whose disposition was `BLOCKED` and which closed only the Focused Aim identity. Related to
-GS-AUD-0003 (the incident's own local evidence is missing).
-
-### Demonstrated workaround
-
-None demonstrated. (Not re-equipping the named weapons, and resting off bleed before a
-transition, would avoid the affected states, but neither was tested.)
-
-### Suggested repair direction for later triage (no product fix implemented in this campaign)
-
-A central, enforced invariant rather than another point fix. For later owner decision:
-initialise `FxOnStart`/`FxOnRemove`/`ResourceAssetIds` inside the one shared creation helper
-every buff factory already routes through, or normalise them in `BlueprintRegistry.Register`
-for `BlueprintBuff`; then replace the single-file source-substring test with a reflective test
-over every registered `BlueprintBuff` identity. **Stable GUIDs must be preserved** — this is a
-field-initialisation change, not an identity change.
-
-### Regression verification idea
-
-A domain/reflection test that builds the full registry and asserts, for **every** registered
-`BlueprintBuff`, that `FxOnStart != null`, `FxOnRemove != null` and `ResourceAssetIds != null`.
-That test would fail today on all 21 identities above and cannot be satisfied by a point fix.
-
-### Remaining unknowns and precise next prerequisite
-
-- **Not natively reproduced on 0.0.182 in this campaign.** The precise next step is a guarded
-  disposable native case: apply `KMG_BleedingWound_*` (or equip Wayfarer's Oath) on a
-  disposable unit, force an area transition, and capture whether `SpawnBuffsFxs` throws. That
-  requires an admitted native transaction and a disposable fixture.
-- Whether Unity's serialisation backend leaves these fields null on **every** code path is
-  taken from this project's prior reproduction rather than re-measured here.
-- The exact buff in the 2026-11-11 incident remains **unidentified** (GS-AUD-0003).
+- **Kind:** CONTRACT-QUESTION / latent consistency deviation · **Severity:** **S3**
+- **Evidence:** the **omission** is source-demonstrated and hand-verified at every site.
+  The originally claimed **consequence** was natively **disconfirmed** by this campaign.
+- **Disposition:** OPEN. Originally filed PRODUCT-DEFECT / S1 with a crash-cause claim; that
+  claim is **withdrawn**. See the clearly-marked historical section at the end.
 
 ---
 
+## CURRENT ADJUDICATION
+
+The review was right that the earlier text asserted the withdrawn reasoning as current fact.
+The three questions are separated here deliberately, because only the first is settled.
+
+### 1. Source sites that omit the explicit assignment — **ESTABLISHED**
+
+Every `ScriptableObject.CreateInstance<BlueprintBuff>()` site in `src/` was enumerated by
+analyzer (`tools-fxscan.py`, raw output `evidence/A15/fxscan.json`) and then **read by hand**:
+41 sites, of which **20 never assign `FxOnStart`/`FxOnRemove`**, covering **21 buff identities**.
+
+Nothing downstream fills them in. Verified:
+`Blueprints/BlueprintRegistry.cs` — `Register<T>` contains no reference to `FxOnStart`,
+`FxOnRemove`, `PrefabLink` or `ResourceAssetIds`; `Blueprints/BlueprintUnitFactAccess.cs:34-65` —
+`Configure(...)` sets only `m_DisplayName`, `m_Description` and `m_Icon`.
+
+Player-facing identities registered with stable GUIDs:
+`KMG_WayfarersOath_Equipped`, `KMG_MoonlitCrossing_Equipped`, `KMG_FallingPetal_AC_Buff`,
+`KMG_MountainSunder_Round_Marker` (`EasternWeaponNamedBlueprints.cs:409`, registered :185/:195/:200/:210);
+`KMG_Boughkeeper_AC_Buff`, `KMG_Thornstep_Speed_Penalty`, named-spear round markers
+(`ElvenBranchedSpearNamedBlueprints.cs:278`, :120/:130/:267);
+`KMG_BleedingWound_<kind>_Buff` and `_Armed` (`BleedingWoundBlueprints.cs:112`, `:102`);
+`KMG_Deadeye_Armed_Buff` (`DeadeyeBlueprints.cs:71`);
+`KMG_GunslingerDodge_ArmorClass_Buff` (`GunslingerDodgeBlueprints.cs:74`);
+`KMG_DeathsShot_DeathEffect`/`_Armed` (`DeathsShotBlueprints.cs:54`, `:68`);
+`KMG_StartlingShot_FlatFooted_Buff` (`StartlingShotBlueprints.cs:54`);
+`KMG_StunningShot_Armed` (`StunningShotBlueprints.cs:71`);
+`KMG_TargetingHead_Confusion_Buff` (`TargetingHeadBlueprints.cs:49`);
+`KMG_ExpertLoading_Armed` (`ExpertLoadingBlueprints.cs:50`);
+`KMG_LightningReload_Used` (`LightningReloadBlueprints.cs:53`);
+`KMG_SteadyAim_Armed` (`MusketMasterBlueprints.cs:90`);
+`KMG_UpCloseAndDeadly_Armed` (`PistoleroBlueprints.cs:146`);
+`KMG_SlingersLuck_<suffix>_Armed` (`SlingersLuckBlueprints.cs:93`).
+Lower exposure: `ExpandedSummoningSpecialBuilder.Suggestion32.cs:142` and three
+`RuntimeTesting/` fixture buffs.
+
+**The invariant they deviate from is the project's own**, stated verbatim at
+`Blueprints/PaperCartridgeModeBlueprints.cs:56-60`:
+> "Buff.SpawnParticleEffect and Buff.OnRemove call Load(false) on these links without null
+> guards when a persistent buff's unit view is rebuilt. Empty links are the engine-safe
+> representation of an intentionally effect-free buff..."
+
+The project applied that invariant twice as point fixes — 0.0.74 (Paper Cartridge marker) and
+0.0.88 (Focused Aim) — but never generalised it. The only guard is a **source-text substring
+assertion over one unrelated file** (`FocusedAimSaveCompatibilityTests.cs:9-17`).
+
+### 2. The behaviour actually observed natively — **NARROW, and it CONTRADICTS the original claim**
+
+`disposable-pistolero-deeds` arms and consumes **`KMG_UpCloseAndDeadly_Armed`** — one of the 21.
+On the frozen 0.0.182 candidate it was applied to a live unit and consumed across six stages, in
+**two independent runs**, with **no `NullReferenceException`**.
+
+That matters because the dereference really is reached on ordinary application:
+`Buff::Activate()` calls `SpawnParticleEffect()` directly, and `IsParticleEffectValid()` returns
+**false** for a never-spawned effect, so there is no short-circuit.
+
+**Therefore `FxOnStart` is not null at runtime for that blueprint.** The "omitted ⇒ null ⇒
+throws" premise is false as a general rule.
+
+**What this does NOT establish** (the review's point, and it is correct): one buff behaving
+correctly does **not** prove the runtime state of the other 20 identities, nor every
+initialization path, nor any cold-reconstruction path. The native evidence is narrow.
+
+### 3. Paths that remain unverified — **OPEN**
+
+- The runtime `FxOnStart` state of the other **20** identities (only one was exercised).
+- Any **save-load / cold-reconstruction** path for any of them. **No save was loaded in this
+  campaign at all**, so `UnitEntityData.SpawnBuffsFxs` was never reached.
+- `FxOnRemove` and `ResourceAssetIds`, which were never exercised in any observed path.
+
+### Why this is still worth fixing at S3
+
+21 shipped identities deviate from an invariant the project wrote down for itself and has already
+had to repair twice after real incidents. The cost of compliance is three field assignments; the
+cost of being wrong is, on the project's own prior experience, an unloadable save. That is a
+reasonable thing to tidy — it is **not** a demonstrated defect and **not** a release blocker.
+
+### Suggested repair direction (not implemented)
+
+Initialise `FxOnStart`/`FxOnRemove`/`ResourceAssetIds` in the one shared creation helper, or
+normalise them in `BlueprintRegistry.Register` for `BlueprintBuff`. **Stable GUIDs must be
+preserved** — this is field initialisation, not identity change.
+
+### Regression idea — corrected
+
+A reflective domain test asserting non-null `FxOnStart`/`FxOnRemove`/`ResourceAssetIds` for every
+registered `BlueprintBuff`. **Correction:** the original entry claimed such a test "would fail
+today on all 21 identities". That is now known to be wrong — at least one of the 21 has a
+non-null link at runtime, and the test would run against *registered blueprint objects*, not
+source text. What the test would actually do is **pin the invariant going forward**; what it
+would report today is unknown until it is written.
+
+---
+
+## HISTORICAL — ORIGINAL ANALYSIS, WITHDRAWN 2026-11-11 (EV-000012, EV-000014)
+
+> Retained for the record under the append-only principle. **Everything in this section is
+> superseded by the adjudication above. Do not act on it.**
+
+The original finding was PRODUCT-DEFECT / S1 and claimed this omission explained the
+2026-11-11 area-load crash. Its reasoning was:
+
+1. `Kingmaker.UnitLogic.Buffs.Buff::SpawnParticleEffect` executes
+   `IL_0040 ldfld FxOnStart` / `IL_0046 callvirt Load(bool)` with **no null guard** — measured
+   from the qualified reference assembly. *(This part remains true and is still the reason the
+   invariant exists.)*
+2. 21 identities omit the field. *(Still true — see §1 above.)*
+3. **Therefore** those links are null at runtime and the listed buffs produce a deterministic
+   path to `NullReferenceException` during `SpawnBuffsFxs` on area load. ***This inference was
+   wrong.***
+4. It was supported by `docs/GUNSLINGER-SAVE-LOAD-FORENSICS.md:56-58`, which records a null
+   project buff FX link being dereferenced and **reproduced twice** in 0.0.88 after a factory
+   omitted exactly these three fields. *(That history is real; it does not generalise to every
+   omitting factory, which is the step I got wrong.)*
+
+**How it was withdrawn.** Further disassembly showed `Buff::Activate()` reaches the same
+dereference on *ordinary application*, which would make the shipped deeds crash on first use —
+a disconfirming argument. A first native attempt (`disposable-gunslinger-dodge`, T2) was
+**inconclusive** because the command interrupted before delivery (GS-AUD-0023). A second
+(`disposable-pistolero-deeds`, T3/T4) applied an affected buff six times with no exception,
+settling it.
+
+**Replacement hypothesis for the incident:** a null `Blueprint` rather than a null `FxOnStart` —
+reachable only on a deserialized buff whose GUID no longer resolves, i.e. load-only, which fits
+both the stack and the reported intermittency. Filed **untested** as GS-AUD-0024. The incident
+itself remains **unreproduced and unattributed**.
 ## GS-AUD-0001 — The installed mod on OLD LAPTOP is 0.0.117, not the 0.0.182 release candidate
 
-- **Kind:** ENVIRONMENT-BLOCKER
-- **Severity:** S2; rationale: it does not make the product wrong, but it invalidates any
-  assumption that the machine's live installation represents the release being audited, and it
-  means the user's own recent play experience is not 0.0.182's behaviour.
-- **Confidence/evidence strength:** native-observed (direct hashing of the installed tree).
-- **Disposition:** OPEN.
-- **Affected feature, commit, version, exact package/DLL/profile:** host installation only.
-  Installed DLL SHA256 `FD2FC61C250B13857D81ACC197A896450F5B242EE392FA7192B01201E908F35F`,
-  AssemblyVersion 0.0.117.0, ProductVersion `0.0.117-elemental-char-gen-stabilization`.
-  Repository candidate is 0.0.182.
-- **Supported expected behavior and authority:** mission section 5 step 6 requires the actual
-  intake to be recorded and kept distinct from "an old accepted release version".
-- **Observed behavior and immutable evidence:** `Mods\KingmakerGunslinger\Info.json` declares
-  `"Version": "0.0.117"`; the DLL carries 0.0.117 identity. `FeatureModules.json` there is
-  schemaVersion 10 with **11** modules, missing `teleportation-spells` and
-  `magic-circle-spells`, which 0.0.182 ships. Evidence: `evidence/A00/host-intake.txt`.
-- **Scope/impact:** the live installation cannot be used as evidence about 0.0.182 behaviour.
-  Any native work in this campaign must deploy the frozen candidate inside a transaction and
-  restore **0.0.117** afterwards — restoring "the current release" would be wrong.
-- **Negative controls / competing explanations:** the newest compatibility transaction
-  (`compat-20261106T235909Z-50fe08b7735f`) reports verified exact restoration, and the mod
-  directory's own file timestamps are the packaging-normalised `2026-01-01T05:00:00Z` while the
-  directory mtime is `2026-11-06T21:35:41Z`. That is consistent with 0.0.117 being the user's
-  genuine pre-existing installation, restored intact after testing — not with damage.
-- **Remaining unknowns:** why the user's last local session (2026-11-07, automated) loaded
-  **0.0.178** while the incident log declares **0.0.182** and the resident install is 0.0.117.
-  See GS-AUD-0003.
-- **Suggested direction:** owner decision only — this is the user's machine state, not a
-  product defect. Record it; do not "fix" it during the audit.
+> **CORRECTED 2026-11-11 (EV-000017).** The original entry inferred that "the user's recent play
+> experience is therefore not this release". **That inference is withdrawn** — it contradicted
+> this audit's own GS-AUD-0003, which establishes that the incident log is *not* from this host.
+> OLD LAPTOP was never shown to be the incident machine. Severity reduced S2 → S3: since 0.0.182
+> was successfully staged and tested five times, the intake version is not a blocker to auditing
+> the candidate.
 
----
+- **Kind:** ENVIRONMENT-BLOCKER → **machine-intake provenance** · **Severity:** S3 (was S2)
+- **Evidence:** native-observed · **Disposition:** OPEN (informational)
+- **Observed:** `Mods\KingmakerGunslinger\Info.json` declares `"Version": "0.0.117"`; the DLL
+  carries 0.0.117 identity (SHA-256 `FD2FC61C…8F35F`). Its `FeatureModules.json` is
+  schemaVersion 10 with **11** modules, missing `teleportation-spells` and
+  `magic-circle-spells`, consistent with that older artifact.
+- **Why it still matters:** it is the baseline every native transaction must restore to.
+  Restoring "the current release" would have been wrong. All five transactions restored 0.0.117
+  exactly.
+- **What it does NOT establish:** which version produced any particular play session, and in
+  particular nothing about the machine on which the 2026-11-11 incident occurred (GS-AUD-0003).
+- **Negative control:** the prior compatibility transaction reports verified exact restoration,
+  and the mod tree's own file timestamps are the packaging-normalised `2026-01-01T05:00:00Z`.
+  Consistent with 0.0.117 being a genuine pre-existing installation, not damage.
 
 ## GS-AUD-0003 — The 2026-11-11 incident log is not present on this host; the last local game run was 2026-11-07
 
@@ -453,23 +329,21 @@ That test would fail today on all 21 identities above and cannot be satisfied by
 
 ---
 
-## GS-AUD-0006 — A failed settings migration write turns a *valid* older settings file into "malformed", silently resetting every module to ON
+## GS-AUD-0006 — A failed settings-migration write turns a *valid* older settings file into "malformed", resetting every module to ON
 
-- **Kind:** PRODUCT-DEFECT
-- **Severity:** S2; rationale: wrong behaviour with real user impact (all module choices lost,
-  and lost again on every launch) but with a clear workaround once understood (make the file
-  writable). Not S1: it does not crash, corrupt a save, or block progression.
-- **Confidence/evidence strength:** source-demonstrated. The control flow is unambiguous and
-  was read in full. Not natively reproduced.
-- **Disposition:** OPEN.
-- **Affected feature, commit, version:** feature-module settings, all 13 modules.
-  `src/KingmakerGunslinger/FeatureModules/FeatureModuleSettingsStore.cs:23-97` at commit
-  aa91f4657 / 0.0.182.
-- **Supported expected behavior and authority:** mission card A19 requires these four states to
-  be *distinguished*: "missing/default, supported older schema **preserving values**, malformed
-  quarantined/default behavior and future-schema rejection". A well-formed older-schema file is
-  the "supported older schema preserving values" case; its values must be preserved.
-- **Observed behavior and immutable evidence (`FeatureModuleSettingsStore.cs`):**
+> **NARROWED 2026-11-11 (EV-000017).** The original entry said "every upgrading player passes
+> through this write". Corrected: the write runs for **any player whose existing settings schema
+> is older than 12** — which is every upgrade *from an older schema*, but not an upgrade between
+> two builds that both use schema 12.
+
+- **Kind:** PRODUCT-DEFECT · **Severity:** S2 · **Evidence:** source-demonstrated
+- **Disposition:** OPEN
+- **Affected:** `src/KingmakerGunslinger/FeatureModules/FeatureModuleSettingsStore.cs:23-97`
+- **Supported expected behavior and authority:** mission card A19 requires four states to be
+  *distinguished*: missing/default, **supported older schema preserving values**, malformed
+  quarantined/default, and future-schema rejection. A well-formed older-schema file is the second
+  case and its values must be preserved.
+- **Observed:**
 
   ```csharp
   try {
@@ -480,8 +354,7 @@ That test would fail today on all 21 identities above and cannot be satisfied by
       return state;                                              // :71
   }
   catch (Exception exception) {                                  // :73
-      if (exception is UnsupportedFeatureModuleSchemaException) throw;
-      ... File.Copy(path, quarantine, false) ...                 // :82
+      ...quarantine copy...                                      // :82
       warning("Malformed feature-module settings at " + path +
               "; recovered defaults (all modules ON); " ...);    // :90-93
       return new FeatureModuleSettingsState(
@@ -489,59 +362,31 @@ That test would fail today on all 21 identities above and cannot be satisfied by
           "malformed-recovery", true);                           // :94-96
   }
   ```
-  The migration write at line 70 is inside the same `try` as the parse. Any I/O failure in
-  `Save` is therefore caught by the generic `catch (Exception)` at line 73, which discards the
-  already-correctly-parsed configuration and returns `FeatureModuleConfiguration.Defaults`
-  with `Recovered = true` and the message **"Malformed feature-module settings … recovered
-  defaults (all modules ON)"**. The file was not malformed; it parsed successfully.
-- **Minimal reproduction / concrete static causal path:**
-  1. A user upgrades from any earlier release to 0.0.182. Their `FeatureModules.json` carries
-     `schemaVersion < 12` — so the `Save` at line 70 **will** run. (This host is a live
-     example: the installed `FeatureModules.json` is `schemaVersion 10`.)
-  2. The write fails. Reachable causes: the file carries the read-only attribute (a common way
-     users pin settings); the `Mods` tree is under `C:\Program Files (x86)\…` and the process
-     is a standard user without write permission there; or an antivirus / backup agent holds a
-     transient lock. `Save` uses `File.Replace` (`:137`), which throws `UnauthorizedAccessException`
-     on a read-only destination.
-  3. Control reaches `catch` at line 73 → quarantine `File.Copy` is attempted (and in the
-     read-only / no-permission case usually also fails, yielding `quarantine-failed=…`) →
-     defaults returned.
-  4. The user's module selections are replaced by all-ON for that session, and the log says
-     their file was malformed. Because the write still fails next launch, this repeats forever.
-- **Scope/impact and repeatability:** every existing player upgrading to 0.0.182 passes through
-  the migration write, so the precondition is universal at upgrade; the failure then depends on
-  file writability. Deterministic once the write fails.
-- **Negative controls, disconfirmation and competing explanations:**
-  - **"Save can't realistically fail."** Not relied upon either way. On *this* host the file is
-    writable (`FeatureModules.json` mtime 2026-09-08 differs from the packaged
-    2026-01-01 timestamp), so the happy path demonstrably works here. The finding is about the
-    error path, which is unreached on this host and untested in the suite.
-  - **"The test suite covers this."** Checked. `FeatureModuleSettingsTests.cs` covers
-    defaults/legacy (`:11`), schemas 0-10 preserving values (`:129`), an 8192-combination round
-    trip (`:164`), malformed quarantine (`:210`), future-schema rejection (`:239`), and
-    Teleportation/MagicCircle migration (`:396`, `:639`). **No test makes the migration write
-    fail.** This is a genuine coverage gap, not a known accepted limitation.
-  - **"`Save` might write the wrong values."** Ruled out: `FeatureModuleSettingsState`'s
-    constructor copies `active` into `Pending` field-for-field (`FeatureModuleSettingsState.cs:11-17`),
-    and `Save` serialises `state.Pending`, so a *successful* migration preserves values correctly.
-- **Probable location/cause (hypothesis):** the `Save` call was placed inside the parse `try`
-  for brevity; the generic `catch (Exception)` was written for parse failures and happens to
-  swallow write failures too.
-- **Demonstrated workaround:** none tested. Clearing the read-only attribute / granting write
-  permission on `Mods\KingmakerGunslinger\FeatureModules.json` would avoid it.
-- **Suggested repair direction for later triage (no fix implemented):** move the migration
-  `Save` outside the parse `try`, or wrap it in its own `try/catch` that logs a *write* failure
-  and still returns the correctly parsed `state`. A failure to persist a migration should never
-  change the configuration that session.
-- **Regression verification idea:** a domain test that loads a valid `schemaVersion: 10` file
-  whose destination is made unwritable (read-only attribute, or an open exclusive handle) and
-  asserts the returned state has `Recovered == false`, `Source` starting `migrated-schema-`,
-  and the file's own values — not `Defaults`.
-- **Remaining unknowns:** the real-world frequency of unwritable mod directories on Nexus
-  users' machines. Not measurable from here.
-
----
-
+  The migration write at `:70` is inside the same `try` as the parse, so **any I/O failure in
+  `Save` is caught by the generic `catch (Exception)`**, which discards the already-correctly-parsed
+  configuration and returns all-ON defaults with a message saying the file was malformed. It was not.
+- **Reachability — precondition stated:** the file must have `schemaVersion < 12` (so the write
+  runs) **and** the write must fail. Reachable write failures: the file carries the read-only
+  attribute (a common way users pin settings); the `Mods` tree is under
+  `C:\Program Files (x86)\…` and the process lacks write permission; or an antivirus/backup agent
+  holds a transient lock. `Save` uses `File.Replace` (`:137`), which throws
+  `UnauthorizedAccessException` on a read-only destination.
+  **This host is a live example of the first half**: its installed `FeatureModules.json` is
+  `schemaVersion 10`.
+- **Negative control:** on this host the write demonstrably *succeeds* — the file's mtime
+  (2026-09-08) differs from the packaged `2026-01-01T05:00:00Z`. The finding concerns the
+  unreached error path.
+- **Coverage gap:** `FeatureModuleSettingsTests.cs` covers defaults/legacy (`:11`), schemas 0-10
+  value preservation (`:129`), an 8192-combination round trip (`:164`), malformed quarantine
+  (`:210`), future-schema rejection (`:239`) and per-module migration isolation (`:396`, `:639`).
+  **No test makes the migration write fail.**
+- **Repair direction (not implemented):** move the migration `Save` outside the parse `try`, or
+  give it its own `try/catch` that logs a *write* failure and still returns the parsed `state`.
+  A failure to persist a migration should never change the configuration for that session.
+- **Regression idea:** a domain test loading a valid `schemaVersion: 10` file whose destination is
+  unwritable, asserting `Recovered == false`, `Source` starting `migrated-schema-`, and the file's
+  own values rather than `Defaults`. A focused offline fixture should **allow the read and fail
+  the write specifically**.
 ## GS-AUD-0007 — A future settings schema disables the entire mod rather than the settings file
 
 - **Kind:** CONTRACT-QUESTION
@@ -704,26 +549,49 @@ traces remain in `workers/W1/W1-result.md` and `workers/W2/W2-result.md`.
   enforces it or the claim is unsupported. *Smallest check:* turn-based, attempt a
   standard-action reload after the actor's action is spent.
 
-## GS-AUD-0015 — A persisted Powerful Change bonus silently degrades when its caster is not in the loaded scene
+## GS-AUD-0015 — Persisted Powerful Change restoration requires a resolvable live caster
 
-- **Kind:** PRODUCT-DEFECT · **Severity:** S2 · **Evidence:** source-demonstrated; key line
-  spot-verified by the coordinator
-- **Observed:** the persisted bonus is reconstructed only through
-  `BrownFur/BrownFurModifierAdjustmentRuntime.cs:243`, which returns early when
-  `sourceContext.MaybeCaster` is null, and keys the lookup on the **live** caster at `:254`.
-  There is no fallback to the serialized caster reference — even though this repository reads
-  `MechanicsContext.m_CasterReference` reflectively for exactly that purpose elsewhere
-  (`RuntimeTesting/RuntimeTestRunner.MagicCircleLifetime.cs:114-118`).
-- **Failure scenario:** a Share Transmutation ally is reloaded in a scene that does not contain
-  the Brown-Fur caster. The ally silently shows **+4 instead of +6**. The persistence record
-  itself is intact, and nothing is logged — so the player sees a wrong number with no diagnostic.
-- **Why it matters for this release:** it is exactly the "saved-owner cold reconstruction" gap
-  the mission flags as the Brown-Fur priority (A11), and the 0.0.157 startup repair explicitly
-  did **not** close it (its working save lacked the fact).
-- **Smallest confirming check:** cast Share Transmutation on a companion, split the party so the
-  caster is in another area, save, reload, inspect the ally's stat bonus.
-- **Repair direction (not implemented):** fall back to the serialized caster reference, using the
-  reflective pattern this repository already uses.
+> **RECLASSIFIED 2026-11-11 (EV-000017).** The original entry asserted that an ally reloaded in
+> a scene without its caster "silently shows +4 instead of +6". **That consequence is
+> UNVERIFIED** and is no longer asserted. The code observation stands; the player-visible result
+> does not, because I never established that `MaybeCaster` is actually unresolved in that
+> ordinary cross-area case. Severity S2 → **UNASSESSED**.
+
+- **Kind:** CONTRACT-QUESTION / conditional risk (was PRODUCT-DEFECT) · **Severity:** UNASSESSED
+- **Evidence:** source-demonstrated for the guard; **the triggering condition is not established**
+- **Disposition:** OPEN, consequence UNVERIFIED
+
+### What IS established (source, spot-verified)
+
+`BrownFur/BrownFurModifierAdjustmentRuntime.cs:243` returns early when
+`sourceContext.MaybeCaster` is null, and `:254` keys the persisted record's `CasterId` on that
+**live** caster. There is no fallback to a serialized caster reference.
+
+### The explicit PRECONDITION, which is NOT established
+
+The risk only materialises **if `MaybeCaster` is actually unresolved at the point restoration
+runs.** I have not shown that an ordinary companion in another area produces that state. Pathfinder
+party members generally remain resolvable entities across areas, so the ordinary cross-area case
+may well resolve fine.
+
+The supporting reference I originally cited —
+`RuntimeTesting/RuntimeTestRunner.MagicCircleLifetime.cs:114-118` reading
+`MechanicsContext.m_CasterReference` reflectively — concerns a **permanently destroyed source**
+in its own scenario. That does not establish ordinary companion resolution across areas.
+
+### Kept separate from the .157 gap
+
+These are two different questions and the original entry conflated them:
+
+- The **0.0.157 startup** issue concerned *registration of a previously missing blueprint* before
+  a saved owner is loaded.
+- This entry concerns *restoring a modifier when its caster cannot be resolved*.
+
+### Smallest check that would settle it
+
+A disposable native case that reaches the restoration path with the caster absent, logging
+whether `MaybeCaster` is null there. Until then this is a guard worth a defensive fallback, not a
+demonstrated defect.
 
 ## GS-AUD-0016 — Two UnitParts validate by throwing inside an engine callback that provably has no catch handler
 
@@ -805,17 +673,23 @@ traces remain in `workers/W1/W1-result.md` and `workers/W2/W2-result.md`.
 - **Repair direction (not implemented):** either route production through the policy classes
   (preferred — that is evidently what they were for) or delete both classes and their tests.
 
-## GS-AUD-0019 — Brown-Fur historical records contradict each other on cold reconstruction
+## GS-AUD-0019 — Brown-Fur historical records need their scopes stated, not treated as contradictory
+
+> **SOFTENED 2026-11-11 (EV-000017).** The original entry called the two records a contradiction.
+> They are not inherently contradictory: a PASS on an **older candidate** and a NOT_RUN for a
+> **later, narrower** case can both be true.
 
 - **Kind:** DOCUMENTATION-DRIFT · **Severity:** S3 · **Evidence:** source-demonstrated
-- **Observed:** `planning/BROWN-FUR-RUNTIME-MATRIX.md:43` asserts save/reload **PASS**, while
+- **Observed:** `planning/BROWN-FUR-RUNTIME-MATRIX.md:43` records save/reload **PASS**;
   `docs/BROWN-FUR-STARTUP-ORDER-REPAIR.md:235` records cold reconstruction **NOT_RUN**. The
-  matrix also still cites **19** registered identities against today's pin of **25**.
-- **Adjudication:** per the mission, the newest explicit accepted decision governs — the startup
-  repair record is later and records the gap, so **cold reconstruction is NOT_RUN**. The matrix's
-  PASS must not be read as closing it, and GS-AUD-0015 is consistent with the gap being real.
-- **Repair direction:** mark the matrix superseded. No code change.
-
+  matrix also cites **19** registered identities against today's **25**.
+- **Correct reading:** the matrix's PASS is valid **for its own candidate and its own scope**.
+  The later record introduces a narrower question — genuine cold reconstruction of a
+  *previously missing* saved fact owner — that the earlier run did not and could not cover.
+  Neither record is wrong; what is missing is an explicit scope note.
+- **What should change:** annotate the matrix with the candidate it covers and what it does not
+  establish for later candidates, and reconcile the 19 vs 25 identity count. Do **not** mark the
+  earlier result invalid.
 ## GS-AUD-0020 — Acceptance checklists carry unclosed items that no current evidence closes
 
 - **Kind:** VERIFICATION-GAP · **Severity:** UNASSESSED · **Evidence:** source-demonstrated
@@ -929,28 +803,33 @@ Full traces remain in `workers/W3/W3-result.md` and `workers/W4/W4-result.md`.
 
 ---
 
-## GS-AUD-0025 — Untemplated alternate-caller summons keep the donor's inherited celestial/fiendish template
+## GS-AUD-0025 — Untemplated alternate-caller Summon Monster children keep the donor's inherited template
 
-- **Kind:** PRODUCT-DEFECT · **Severity:** S2 · **Evidence:** source-demonstrated;
-  **structurally re-verified by the coordinator**
+> **SCOPE NARROWED 2026-11-11 (EV-000017).** The original entry said this "affects all seven
+> alternate caller families". It does not: **Naturalist, Feral Hunter and Preservationist are
+> Nature's Ally routes**, and the inherited celestial/fiendish template is a Summon Monster
+> concern. Scope corrected to the Summon Monster callers.
+
+- **Kind:** PRODUCT-DEFECT · **Severity:** S2 · **Evidence:** source-demonstrated,
+  coordinator-verified · **Disposition:** OPEN
 - **Observed:** `ContextActionRemoveInheritedSummonTemplates` has exactly **one** production
-  construction site — `Blueprints/ExpandedSummoningAbilityBuilder.cs:202`, inside the canonical
-  ordinary-spell builder (12 named creatures). The alternate-caller adapter's **untemplated**
-  branch (`Blueprints/AlternateSummoningAdapters.cs:648-663`) calls `ReplaceSpawnUnits` and
-  optionally `AppendAlignmentAction`, but **never appends the removal action** — while the
-  *templated* branch twelve lines above (`:630-647`) does handle templates. Coordinator check:
+  construction site — `Blueprints/ExpandedSummoningAbilityBuilder.cs:202`, in the canonical
+  ordinary-spell builder. The alternate-caller adapter's **untemplated** branch
+  (`Blueprints/AlternateSummoningAdapters.cs:648-663`) calls `ReplaceSpawnUnits` and optionally
+  `AppendAlignmentAction` but **never appends the removal action**, while the *templated* branch
+  twelve lines above (`:630-647`) does call `AppendDynamicTemplate`. Coordinator check:
   `grep -rn ContextActionRemoveInheritedSummonTemplates src/ --include=*.cs` outside
-  `RuntimeTesting/` returns only the class itself and that single construction site.
-- **Failure scenario:** a Monster Tactician / Summoner / Master Summoner / Occultist /
-  Naturalist / Feral Hunter / Preservationist summons an untemplated creature whose native
-  carrier carries an inherited celestial or fiendish template buff. The summon keeps a template
-  the ordinary Summon Monster spell would have stripped — extra resistances, smite, and an
-  alignment descriptor the player did not choose.
-- **Why it is an oversight rather than a design choice:** the asymmetry is inside a single
-  method, and the sibling branch does the right thing.
-- **GS-AUD-0026 explains why CI never caught it** (below).
-- **Smallest confirming check:** summon one untemplated creature through an alternate caller
-  and inspect the spawned unit's fact list for the donor template buff.
+  `RuntimeTesting/` returns only the class and that single site.
+- **Failure scenario, with its precondition:** *if* a Summon Monster alternate caller summons an
+  untemplated creature **whose native carrier actually carries an inherited celestial/fiendish
+  template buff**, that summon keeps a template the ordinary spell would have stripped.
+  The reproduction needs a **specific affected SM caller, carrier, tier and creature** — which
+  this audit has not enumerated.
+- **Why it reads as an oversight rather than a design choice:** the asymmetry sits inside one
+  method and the sibling branch handles templates.
+- **Smallest confirming check:** summon one untemplated creature through a Summon Monster
+  alternate caller and inspect the spawned unit's fact list for the donor template buff.
+- **Related:** GS-AUD-0026 explains why no automated check catches it.
 
 ## GS-AUD-0026 — The composed-action contract classifies the template-removal action as `Other` and never compares it
 
@@ -961,17 +840,60 @@ Full traces remain in `workers/W3/W3-result.md` and `workers/W4/W4-result.md`.
   one action whose absence changes gameplay is the one the comparison ignores.
 - **Repair direction:** classify it explicitly and compare it. Would fail today on GS-AUD-0025.
 
-## GS-AUD-0027 — The Races Unleashed version pin fails open
+## GS-AUD-0027 — ~~The Races Unleashed version pin fails open~~ **WITHDRAWN — FALSE POSITIVE**
 
-- **Kind:** PRODUCT-DEFECT · **Severity:** S2 · **Evidence:** source-demonstrated
-- **Observed:** the Spider Summoner integration's RU version check **fails open** — an
-  unrecognised or unreadable provider version proceeds rather than disabling the integration.
-- **Why it matters for a Nexus release:** Races Unleashed will update independently of KMG. A
-  future RU whose spider blueprints changed would be integrated against anyway, silently. The
-  project's own stated posture elsewhere (`docs/FAVORED-CLASS-COMPATIBILITY.md`,
-  `docs/BETTER-VENDORS-COMPATIBILITY.md`) is exact-binary gating, which this does not match.
-- **Smallest confirming check:** stage a modified RU `Info.json` version string and observe
-  whether the integration still publishes.
+> ### ❌ WITHDRAWN 2026-11-11 (EV-000017) — THIS FINDING WAS WRONG
+>
+> The integration is gated **structurally on blueprint shape**, not on a version string. An
+> unrecognised future RU is refused before mutation and its generated rows are withheld.
+
+- **Kind:** ~~PRODUCT-DEFECT~~ → **FALSE-POSITIVE (withdrawn)** · **Severity:** ~~S2~~ → **none**
+- **Disposition:** WITHDRAWN.
+
+### What the finding claimed
+
+That because the Spider Summoner integration carries no RU version/binary pin, a future Races
+Unleashed with changed spider blueprints "would be integrated against anyway, silently".
+
+### Why it is wrong — `Blueprints/SpiderSummonerIntegration.cs`
+
+The production path refuses unsupported input **before any mutation**, and restores the original
+on a failed repair:
+
+- `:143-144` reads the loaded original row and **classifies** it.
+- `:146-147` `LegacyInputProblem(reading)` returns `"unsupported-input:" + input` and
+  **returns false before touching anything**.
+- `:169-176` re-classifies the repaired result; if rejected it **restores the original
+  components** (`row.ComponentsArray = components`) and returns false.
+- `:102-107` — the caller, on that false result, records the problem and calls `Placeholder(...)`
+  for every placement, so **generated rows are withheld rather than published**.
+- The comment at `:162-165` states explicitly that the input check already refuses a row carrying
+  any other variants component.
+
+That is the accepted **RU-18** contract: unknown contracts remain unsupported, generated rows are
+withheld, unrelated behaviour is preserved.
+
+### The reasoning error
+
+Changing RU's `Info.json` while leaving its blueprints unchanged would only show that the
+integration does not require a particular *version string*. It would not show acceptance of an
+unsupported blueprint *structure*. The finding also argued from "other integrations gate on exact
+binaries, therefore this one is defective" — exactly the inference this audit's own method rules
+forbid: *the absence of a check another component happens to have does not establish a defect
+here.*
+
+### What could still be proposed (not a defect)
+
+An **additional** version or MVID restriction, matching `FAVORED-CLASS-COMPATIBILITY.md` and
+`BETTER-VENDORS-COMPATIBILITY.md`, is a legitimate *design* proposal for defence in depth. It is
+the owner's call, and nothing in the current behaviour requires it.
+
+### Process note
+
+This finding was imported from worker W3 at W3's own calibration **without independent
+verification** — EV-000013 records that limit explicitly. The review found it anyway. Worker
+findings that were not re-derived by the coordinator should be read as having exactly that
+weight.
 
 ## GS-AUD-0028 — Two session-scoped grapple/hold release paths cannot be settled from source
 
@@ -993,43 +915,111 @@ Full traces remain in `workers/W3/W3-result.md` and `workers/W4/W4-result.md`.
   intent for the seven alternate caller families. A future maintainer reconciling code against it
   would "fix" correct code backwards.
 
-## GS-AUD-0030 — Nimble is granted one level early at all five tiers, and the fidelity matrix calls that "EXACT"
+## GS-AUD-0030 — ~~Nimble is granted one level early~~ **WITHDRAWN — FALSE POSITIVE**
 
-- **Kind:** CONTRACT-QUESTION (gameplay fidelity) + DOCUMENTATION-DRIFT · **Severity:** S2
-  · **Evidence:** source-demonstrated; **independently verified by the coordinator**
-- **Observed (coordinator-verified):** `Blueprints/GunslingerClassBlueprints.cs:486-489` computes
-  `nimbleIndex = level < 2 || (level - 2) % 4 != 0 ? -1 : (level - 2) / 4`, granting Nimble at
-  levels **2, 6, 10, 14, 18**. `Classes/NimbleService.cs:14-18` agrees:
-  `gunslingerLevel < 2 → 0`, else `Math.Min(5, 1 + ((gunslingerLevel - 2) / 4))`.
-  The Pathfinder tabletop Gunslinger gains Nimble +1 at **3rd** level and +1 every four levels
-  thereafter (**7, 11, 15, 19**).
-- **The documentation conflict:** `planning/GUNSLINGER-FIDELITY-MATRIX.md:66` records the row as
-  `| 2/6/10/14/18 | Nimble +1..+5 | EXACT |`. Every **other** row in that same matrix sits on its
-  correct tabletop level (Deadeye/Dodge/Quick Clear at 1; Gunslinger Initiative and Pistol-Whip
-  at 3), and deliberate divergences elsewhere are labelled `ADAPTED` or
-  `OMITTED-NO-MEANINGFUL-INTERACTION`. So the off-by-one is anomalous within the project's own
-  scheme.
-- **Scope:** every Gunslinger character gets a +1 AC dodge bonus one level earlier than tabletop,
-  at five separate tiers.
-- **Not adjudicated:** whether the levels or the label should change is the owner's call. But
-  **one of the two is wrong** — if the placement is deliberate, the row must not say `EXACT`.
+> ### ❌ WITHDRAWN 2026-11-11 (EV-000017) — THIS FINDING WAS WRONG
+>
+> **There is no Nimble defect and no owner decision here. Acting on the original finding would
+> have introduced a rules defect into correct code.**
 
-## GS-AUD-0031 — `BETTER-VENDORS-COMPATIBILITY.md` describes vendor rows the candidate does not publish, and a second document says the opposite
+- **Kind:** ~~CONTRACT-QUESTION + DOCUMENTATION-DRIFT~~ → **FALSE-POSITIVE (withdrawn)**
+- **Severity:** ~~S2~~ → **none**
+- **Disposition:** WITHDRAWN. Retained here, not deleted, because the error is part of the record.
 
-- **Kind:** DOCUMENTATION-DRIFT · **Severity:** S2 (two docs in direct conflict on shipped
-  acquisition behaviour) · **Evidence:** source-demonstrated
-- **Observed:** `docs/BETTER-VENDORS-COMPATIBILITY.md:319-327` states KMG publishes fixed
-  `SmithVendorTable` rows for the four melee "+1" items. Both campaign publications pass an
-  **empty kind array** for that exact table GUID
-  (`Blueprints/EasternWeaponCampaignBlueprints.cs:21-24`,
-  `Blueprints/ElvenBranchedSpearCampaignBlueprints.cs:23-25`), and
-  `Blueprints/CapitalVendorBlueprints.cs:85-87` puts those items in the *owned* set so
-  `NormalizeOwned` removes them. `docs/ELVEN-BRANCHED-SPEAR-PLACEMENT-MANIFEST.md:24` states the
-  opposite of the Better Vendors doc and **agrees with the code**.
-- **Impact:** a player following the compatibility doc looks for four items at a vendor that
-  does not stock them.
-- **Repair direction:** correct the Better Vendors document to match the code and the placement
-  manifest, or publish the rows. Owner decision.
+### What the finding claimed
+
+That the Pathfinder Gunslinger gains Nimble at levels **3/7/11/15/19**, that the mod's
+**2/6/10/14/18** was therefore one level early at all five tiers, and that
+`planning/GUNSLINGER-FIDELITY-MATRIX.md:66` was wrong to classify that placement `EXACT`.
+
+### Why it is wrong
+
+The authoritative rules text was in the lab the whole time, at
+`C:\Dev\KingmakerGunslingerLab\private\rules\GUNSLINGER_PFSRD.md`. Its class table reads:
+
+| Level | 2nd | 6th | 10th | 14th | 18th |
+|---|---|---|---|---|---|
+| | Nimble +1 | Nimble +2 | Nimble +3 | Nimble +4 | Nimble +5 |
+
+and its **Nimble (Ex)** entry reads, verbatim:
+
+> "Starting at **2nd level**, a gunslinger gains a +1 dodge bonus to AC while wearing light or no
+> armor. Anything that causes the gunslinger to lose her Dexterity bonus to AC also causes the
+> gunslinger to lose this dodge bonus. This bonus increases by +1 **for every four levels beyond
+> 2nd level** (to a **maximum of +5 at 18th level**)."
+
+The implementation matches that rule **exactly**, including both qualifying clauses —
+`Classes/NimbleService.cs:14-18`:
+
+```csharp
+if (!retainsDexterityBonus ||
+    (armor != NimbleArmor.None && armor != NimbleArmor.Light) ||
+    gunslingerLevel < 2)
+    return 0;
+return Math.Min(5, 1 + ((gunslingerLevel - 2) / 4));
+```
+
+`Math.Min(5, …)` reproduces "maximum of +5 at 18th level"; `retainsDexterityBonus` reproduces
+the lose-Dex clause; the armor test reproduces "light or no armor". The progression wiring at
+`Blueprints/GunslingerClassBlueprints.cs:486-489` grants at the same levels.
+**The code is correct and the `EXACT` label is correct.**
+
+### How the error was made — the part worth keeping
+
+Worker W4 reported two things: the code's levels (checkable in the repository) and the tabletop
+table (not in the repository). I verified the first, did not verify the second, and then recorded
+in EV-000013 that I had "VERIFIED INDEPENDENTLY" — language that covered both. I also reinforced
+the false conclusion with a plausible-sounding argument ("every other row in the matrix sits on
+its correct tabletop level, so this one is anomalous"), which made a wrong finding look stronger.
+
+**The rule I broke is the one I gave my own workers:** *a search hit is navigation, not
+inspection* — and an external fact asserted by a subagent is navigation too. One `grep -i nimble`
+over `private/rules/` would have caught it.
+
+### Consequence if it had been actioned
+
+This was ranked **#1** in `SUMMARY.md` and in the PR body. Moving Nimble to 3/7/11/15/19, or
+relabelling a correct `EXACT` row, would have broken conformance with the tabletop rule.
+
+## GS-AUD-0031 — `BETTER-VENDORS-COMPATIBILITY.md` misdescribes the acquisition path for the reused "+1" items
+
+> **CORRECTED AND SHARPENED 2026-11-11 (EV-000017, EV-000018).** The original entry concluded the
+> four melee "+1" items are **unavailable**. **That conclusion was wrong** — absence of fixed
+> *capital* rows does not establish unavailability. Dedicated re-inspection (worker W6) found the
+> actual acquisition path, and the documentation defect is real but different from what I claimed.
+
+- **Kind:** DOCUMENTATION-DRIFT · **Severity:** S2 · **Evidence:** source-demonstrated
+- **Disposition:** OPEN — a conflict for the owner to resolve, not resolved here.
+
+### The actual acquisition path (this is what the docs should say)
+
+- One-copy **fixed rows at Dire Narlmarches, Pitax and both BTSL "Honest Guy" tables** while the
+  module is on (`PlusOne` appears in both `AllGenericKinds()` and `AllFoundationKinds()`).
+- **Plus** 5-copy batches at the capital blacksmith via **Better Vendors Military rank I** when
+  that optional integration is active.
+
+The items are **not** unavailable.
+
+### The documentation defect
+
+`docs/BETTER-VENDORS-COMPATIBILITY.md:319-324` claims KMG publishes fixed `SmithVendorTable`
+rows for all seven reused "+1" items. The source says otherwise: the capital `SmithVendorTable`
+specs for Eastern and Spear are literally **empty arrays**, labelled *"Model D capital retired
+generic stock"* (`Blueprints/EasternWeaponCampaignBlueprints.cs:21-24`,
+`Blueprints/ElvenBranchedSpearCampaignBlueprints.cs:23-25`), and the capital publication actively
+**strips** such rows. `planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md:159-161` agrees with
+the code, not with the compatibility doc. The doc's *limitation 3* is consequently wrong for four
+of the seven items.
+
+### Why CI did not catch it
+
+The domain case that supposedly pins this models only the Pistol and **never asserts a
+destination table** — code-and-test agreement establishes nothing here.
+
+### Remaining native gap, unchanged
+
+Real merchant behaviour still needs an authorized kingdom-stage fixture that does not exist
+(COV-051, BLOCKED).
 
 ## GS-AUD-0032 — A base Gunslinger's 4th Gun Training pick grants nothing
 
@@ -1053,15 +1043,24 @@ Full traces remain in `workers/W3/W3-result.md` and `workers/W4/W4-result.md`.
 - **Same shape as GS-AUD-0018:** a rule that exists only as test-only code.
 - **Smallest check:** attempt to select the same deed twice at level-up.
 
-## GS-AUD-0034 — Both KMG postfixes on `ExtractSelectionItems` silently discard third-party selection items
+## GS-AUD-0034 — Both KMG `ExtractSelectionItems` postfixes narrow to `FeatureUIData`, discarding other implementations
 
-- **Kind:** PRODUCT-DEFECT (compatibility) · **Severity:** S3 · **Evidence:** source-demonstrated
-- **Observed:** both KMG postfixes on `BlueprintParametrizedFeature.ExtractSelectionItems`
-  narrow the result with `.OfType<FeatureUIData>()` and assign it back, so any selection item
-  contributed by another mod that is not a `FeatureUIData` is dropped.
-- **Impact:** a silent, hard-to-diagnose compatibility failure for an unrelated mod's feature
-  selection — exactly the class of problem a Nexus audience reports as "KMG broke mod X".
-- **Repair direction:** preserve non-`FeatureUIData` entries instead of narrowing.
+> **NARROWED 2026-11-11 (EV-000017).** The original entry implied a realised compatibility
+> failure. **No actually affected installed mod has been identified.** This is a conditional risk.
+
+- **Kind:** CONTRACT-QUESTION / conditional compatibility risk (was PRODUCT-DEFECT)
+- **Severity:** S3 · **Evidence:** source-demonstrated · **Disposition:** OPEN
+- **Observed:** both KMG postfixes on `BlueprintParametrizedFeature.ExtractSelectionItems` accept
+  `IEnumerable<IFeatureSelectionItem>` and narrow it with `.OfType<FeatureUIData>()`, assigning
+  the narrowed result back. Any selection item supplied by another mod that implements the
+  interface **without** being a `FeatureUIData` would be silently dropped.
+- **PRECONDITION, not established:** that some installed mod actually supplies such an item. The
+  eleven mods on this host were not inspected for it.
+- **Why it is still worth recording for a Nexus release:** the failure mode is silent and
+  presents to a user as "KMG broke mod X". The defensive fix (preserve non-`FeatureUIData`
+  entries rather than narrowing) is cheap.
+- **Smallest confirming check:** enumerate `IFeatureSelectionItem` implementations across the
+  installed mod set.
 
 ## GS-AUD-0035 — A teleport destination row with no bindable reader is still offered and does nothing
 
@@ -1094,35 +1093,219 @@ Full traces remain in `workers/W3/W3-result.md` and `workers/W4/W4-result.md`.
 
 ---
 
-## GS-AUD-0038 — `up-close-critical` fails only when another scenario runs first in the same game process
+## GS-AUD-0038 — The same assertion failed once and passed once, on identical inputs — cause unresolved
 
-- **Kind:** HARNESS-DEFECT · **Severity:** S3 · **Evidence:** **native-observed, intermittent**
-- **Disposition:** OPEN. Attributed to the harness, with a product explanation explicitly retained
-  as not excluded.
-- **Observed, on the frozen 0.0.182 candidate:**
+> ### ⚠ MECHANISM WITHDRAWN 2026-11-11 (EV-000017)
+>
+> The original explanation — "fails only when another scenario runs first **in the same game
+> process**" — is **factually wrong** and is withdrawn, along with the broader conclusion it
+> supported about batched native results. The *observation* stands; the *cause does not*.
 
-  | Run | How it ran | Result |
-  |---|---|---|
-  | `20261111T1816557789702Z-disposable-pistolero-deeds` | 2nd scenario in a shared process, after `disposable-gunslinger-targeting-arms` | **FAIL** — `up-close-critical` FAIL, other 9 PASS |
-  | `20261111T1821405012055Z-disposable-pistolero-deeds` | alone, fresh process | **PASS** — including `up-close-critical` |
+- **Kind:** OBSERVED-FAILURE-UNATTRIBUTED (was HARNESS-DEFECT) · **Severity:** S3
+- **Evidence:** native-observed, non-reproducing · **Disposition:** OPEN, cause unresolved
 
-  Nothing else differed: same package, same DLL, same profile, same parameters.
-- **Why the harness is the favoured explanation:** the stage forces a die roll with
-  `UnityEngine.Random.InitState(FindNativeD6Seed(6))`
-  (`RuntimeTesting/RuntimeTestRunner.cs:33962`), and `KNOWN-ISSUES.md:126-129` already records
-  that this aggregate "has **order-sensitive forced-roll** and detached target fixtures for
-  **Targeting**/Bleeding Wound" — and the scenario that preceded it was a Targeting scenario.
-- **Competing explanation retained (not excluded):** a genuine ordering-dependent defect in the
-  Up Close and Deadly critical path. The evidence cannot separate the two, because the assertion
-  conjoins two conditions —
-  `criticalUnmultiplied = hp - target.HPLeft == hitDamage && !attacker.Descriptor.HasFact(pistolero.UpCloseArmed);`
-  (`RuntimeTestRunner.cs:33966-33967`) — and the retained result does not record which half failed.
-- **Why it was investigated rather than dismissed:** `PISTOLERO-MUSKET-MASTER-JOURNAL.md:1010-1024`
-  records this same assertion PASSING on an earlier artifact with "unmultiplied critical packet"
-  explicitly proven, so a fresh FAIL was a credible regression candidate. One justified targeted
-  repeat after clean restoration resolved it to intermittent.
-- **Implication that matters beyond this one assertion:** **batched multi-scenario native results
-  from this harness are weaker evidence than the same scenarios run one per process.** Prior
-  batched PASS records in this project should be read with that in mind.
-- **Repair direction (not implemented):** make the assertion report which half failed, and either
-  isolate the forced-roll stages per process or re-seed deterministically at stage entry.
+### What is actually established
+
+| Run | Position | Result |
+|---|---|---|
+| `20261111T1816557789702Z-disposable-pistolero-deeds` | 2nd scenario of transaction `compat-20261111T181418Z-9d1b82c04345` | **FAIL** — `up-close-critical` FAIL, other 9 PASS |
+| `20261111T1821405012055Z-disposable-pistolero-deeds` | only scenario of transaction `compat-20261111T182024Z-636f7b658091` | **PASS** — all 10 |
+
+Same package, same DLL, same profile, same parameters, ~5 minutes apart.
+
+### Why the original explanation was wrong
+
+My own retained log contradicts it. `evidence/A15/T3-run.log` shows **two separate launch
+sequences** inside the single profile transaction:
+
+```
+L25  Stage: steam-launch-requested      L26  Stage: kingmaker-process-discovered   -> targeting-arms  PASS
+L38  Stage: steam-launch-requested      L39  Stage: kingmaker-process-discovered   -> pistolero-deeds FAIL
+```
+
+and the wrapper sets `ExitAfterCompletion = $true`
+(`scripts/compatibility/Invoke-KingmakerCompatibilityProfile.ps1:512`) and asserts the game is
+not running between scenarios (`Assert-KmgNotRunning`, `:685`). **The two scenarios ran in
+different game processes.** A shared *PowerShell/profile transaction* is not a shared *game
+process*, and I conflated them.
+
+My supporting citation was also a stretch: `KNOWN-ISSUES.md:126-129` describes order-sensitive
+forced-roll fixtures inside the **broad aggregate** scenario, not two separate scenarios in
+separate processes.
+
+### What remains, stated without mechanism
+
+The only difference I can name between the two runs is that the failing one was the **second
+game launch within one profile transaction** and the passing one was the **first launch of its
+own transaction**. Whether that is causal is **not established**.
+
+The assertion itself conjoins two conditions —
+`criticalUnmultiplied = hp - target.HPLeft == hitDamage && !attacker.Descriptor.HasFact(pistolero.UpCloseArmed);`
+(`RuntimeTesting/RuntimeTestRunner.cs:33966-33967`) — and the retained record does not say which
+half failed, so even the failure's shape is unresolved. The stage forces a die roll via
+`UnityEngine.Random.InitState(FindNativeD6Seed(6))` (`:33962`), which is one candidate for
+nondeterminism, but that is a hypothesis and is labelled as one.
+
+### Competing explanations, none excluded
+
+1. Nondeterminism in the forced-roll seeding or the surrounding RNG consumption.
+2. Residual state in the live installation across launches within one transaction.
+3. A genuine ordering-dependent defect in the Up Close and Deadly critical path.
+
+### Withdrawn claim
+
+The statement that *"batched multi-scenario native results from this harness are weaker evidence
+than the same scenarios run one per process"* rested entirely on the false shared-process premise
+and is **withdrawn**. Prior batched PASS records are not impeached by this campaign.
+
+### Smallest check that would settle it
+
+Re-run `disposable-pistolero-deeds` as the second scenario of a two-scenario transaction several
+times. If it fails only in that position, position matters; if it fails sporadically in any
+position, it is nondeterminism. Separately, split the conjoined assertion so the record says
+which half failed.
+
+---
+
+# Findings 0039–0043 — from the investigations the PR #132 review identified as unfinished (EV-000018)
+
+These five come from source work that the first pass left undone and wrongly justified as
+blocked. **GS-AUD-0039 is the most significant product finding of the entire campaign, and it
+only exists because the review refused the early-exit claim.**
+
+## GS-AUD-0039 — Scatter Shot's documented −2 attack penalty is applied as a **+2 bonus**
+
+- **Kind:** PRODUCT-DEFECT · **Severity:** **S2** (worker W5 proposed S1; see rationale)
+- **Evidence:** source-demonstrated **and confirmed by direct engine IL measurement**
+- **Confidence:** high on the sign inversion; the exact final number is subject to the caveat below
+- **Disposition:** OPEN
+
+### Expected rule and authority
+
+ADR-0037:40-41 and `SPRINT-32-ENTRY-CRITERIA.md:13,27` specify a **−2 attack penalty** on scatter
+attacks, and the shipped blueprint text says "attack at **-2**".
+
+### The engine semantics, measured — not inferred
+
+`ildasm` over the qualified reference assembly (`Assembly-CSharp.dll`, SHA-256 `3B6450FF…F5AFB`,
+MVID `07fa1e4d-8618-41b3-9b8d-faa17d3b26f7`), method
+`Kingmaker.RuleSystem.Rules.RuleCalculateAttackBonus::OnTrigger` — the **real calculation**, not a
+UI breakdown:
+
+```
+IL_019a:  ldfld     ModifiableValue CharacterStats::BaseAttackBonus
+IL_019f:  call      int32 ModifiableValue::op_Implicit(...)
+IL_01a4:  ldarg.0
+IL_01a5:  call      instance int32 RuleCalculateAttackBonus::get_AttackBonusPenalty()
+IL_01aa:  sub
+```
+
+`AttackBonusPenalty` is **subtracted**. A **positive** value is a penalty; a **negative** value is
+a **bonus**. The same `sub` appears in `RuleCalculateAttackBonusWithoutTarget`.
+
+### The defect
+
+`Scatter/ScatterAttackVolleyDecision.cs:8` declares `internal const int AttackPenalty = -2;` and
+`Scatter/ScatterShotRuntime.cs:159-161` passes it straight into the `RuleAttackWithWeapon`
+constructor's penalty argument. Under the measured semantics that is **BAB − (−2) = BAB + 2** —
+a **+2 bonus** where a −2 penalty was intended, a **4-point swing in the player's favour** on
+every scatter attack.
+
+### The repository's own convention agrees — six independent production call sites
+
+| Site | Intent | Written as |
+|---|---|---|
+| `Feats/FirearmWeaponFocusAttackBonus.cs:25` | **+1 bonus** | `AttackBonusPenalty - 1` |
+| `Feats/FirearmWeaponFeatBonus.cs:24` | bonus | `AttackBonusPenalty - decision.AttackBonus` |
+| `Summoning/ExpandedSummoningSmiteComponent.cs:24` | bonus | `AttackBonusPenalty - bonus` |
+| `EasternWeapons/EasternWeaponProficiencyRuntime.cs:89` | **−4 penalty** | `AttackBonusPenalty + 4` |
+| `ElvenBranchedSpear/MovementOpportunityAccuracyComponent.cs:99` | **−4 penalty** | `AttackBonusPenalty + 4` |
+| `Summoning/GiantHumanoidAttackComponents.cs:400` | penalty | `AttackBonusPenalty + 5` |
+
+And the project states the rule explicitly in its own words at
+`RuntimeTesting/AidAnotherCompatibilityObserver.cs:477-481`:
+*"`RuleAttackWithWeapon.AttackBonusPenalty` is a positive subtraction in Kingmaker 2.1.7b"* —
+where it passes **1000** through the identical constructor to **force a miss**.
+**Scatter is the only production site that passes a negative.**
+
+### Why the existing coverage never caught it
+
+- The domain test asserts only that the constant **equals −2** — the exact code-and-test-agree
+  trap this audit's method rules warn about.
+- The native scenario `disposable-gunslinger-scatter-shot` **was run on 0.0.182 in this campaign
+  and PASSED** (run `20261111T...-disposable-gunslinger-scatter-shot`). Its four assertions cover
+  the command contract, the combat-log line, the Thundering fallback and external isolation —
+  **none asserts the attack penalty**. Its PASS is therefore fully consistent with the inversion
+  being present and unnoticed.
+
+### Caveat, stated rather than glossed
+
+I could not rule out that the native constructor or an intermediate clamps negative values. If it
+does, the result is "no penalty" rather than "+2". **Either way the documented −2 is not applied.**
+That residual uncertainty is why this is filed S2 rather than W5's proposed S1.
+
+### Smallest confirming check
+
+One disposable scenario asserting `Attacks[0].AttackRoll.AttackBonusPenalty == 2` (positive two)
+after a scatter volley.
+
+### Suggested repair direction (not implemented)
+
+Change the constant to `+2`, matching every other penalty site, and add the assertion above so the
+sign is pinned by behaviour rather than by a constant's literal value.
+
+## GS-AUD-0040 — Shield Other computes a range bound and never compares it
+
+- **Kind:** CONTRACT-QUESTION (documentation vs code conflict) · **Severity:** S2
+- **Evidence:** source-demonstrated · **Disposition:** OPEN — reported as a conflict, not adjudicated
+- **The conflict:** Shield Other's own published description says the protection applies
+  *"while the subject remains within close range"*. But
+  `Spells/ShieldOther/ShieldOtherLinkValidityPolicy.cs:13-19` computes **both** the distance and
+  the bound and **never compares them** — `DistanceFeet` and `MaximumRangeFeet` are written and
+  never read anywhere in the product.
+- **And the test suite pins the opposite:** a guarded scenario at
+  `RuntimeTesting/RuntimeTestRunner.cs:25080-25101` ("post-cast-range-preservation") deliberately
+  asserts the damage split **still happens at ~65 ft with a 35 ft bound**.
+- So three authorities disagree: the player-facing description says range-limited; the code is
+  range-unlimited; the test asserts range-unlimited *on purpose*. One of the three must change.
+- **Owner decision:** either enforce the bound (and change the scenario) or correct the
+  description. This audit does not pick.
+- **Smallest check:** cast Shield Other, separate the pair beyond close range, deal damage, and
+  observe whether the split still occurs.
+
+## GS-AUD-0041 — The Protection-from-Alignment control-immunity catalog has 23 entries; its authority document lists 21
+
+- **Kind:** DOCUMENTATION-DRIFT (+ one embedded contract question) · **Severity:** S3
+- **Evidence:** source-demonstrated · **Disposition:** OPEN
+- **Observed:** the shipped catalog carries **23** entries against the authority table's **21**.
+  The two extras are `FeyCelestial.SuggestionBuff` and `FeyCelestial.CharmBuff`.
+- **Embedded contract question:** the Suggestion entry's own stated reason — *"imposes the
+  provider's fixed avoid-combat instruction"* — reads as the **one-command compulsion** that the
+  authority document's exclusion list explicitly rejects. Either the entry or the exclusion list
+  is wrong.
+- **Repair direction:** reconcile the table with the catalog, and decide whether Suggestion
+  belongs under the control-immunity rule at all.
+
+## GS-AUD-0042 — ADR-0037 requires Vital Strike-style increases excluded from scatter; only precision damage is suppressed
+
+- **Kind:** DOCUMENTATION-DRIFT / unimplemented stated rule · **Severity:** S3
+- **Evidence:** source-demonstrated; **gameplay consequence UNVERIFIED**
+- **Observed:** ADR-0037 requires Vital Strike-style damage increases to be excluded from scatter
+  attacks. Precision damage **is** suppressed; Vital Strike is **not**.
+  `AllowsVitalStrikeDamage` is an inert property referenced only by a test.
+- **Precondition for any player impact:** a gunslinger must actually have Vital Strike and use it
+  with a scatter attack. Whether that combination is reachable in this installation was **not
+  established**, so the consequence is marked UNVERIFIED rather than asserted.
+- **Related:** this is the same inert-property/test-only-reference pattern as GS-AUD-0018.
+
+## GS-AUD-0043 — `MagicCircleRadiusVisual.Attach` reuses an existing decal without matching `AreaId`/`Alignment`
+
+- **Kind:** PRODUCT-DEFECT (presentation) · **Severity:** S3 · **Confidence:** low
+- **Evidence:** source-demonstrated; **gated on an unverified engine behaviour**
+- **Observed:** `Attach` reuses an existing decal without checking that its `AreaId` and
+  `Alignment` match — the fields are written for exactly that purpose but read only by test
+  oracles.
+- **PRECONDITION, not established:** that Kingmaker actually recycles area views in a way that
+  presents a stale decal. If it does not, this is inert.
+- **Smallest check:** create two Magic Circles of different alignments in sequence in one scene
+  and observe the rendered decal colour/identity.

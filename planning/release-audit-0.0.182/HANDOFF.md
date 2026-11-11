@@ -8,17 +8,17 @@ Everything below was actually executed in this campaign unless marked **not run*
 ```
 C:\Dev\KingmakerGunslingerLab\audits\KMG-AUD-20261111T170737Z\
   AUDIT-SUMMARY.md        read this first — standalone
-  AUDIT-FINDINGS.md       38 findings, GS-AUD-0001..0038
-  AUDIT-OUTCOMES.md       15 append-only events, EV-000001..EV-000015
+  AUDIT-FINDINGS.md       43 findings, GS-AUD-0001..0043 (0027 and 0030 WITHDRAWN)
+  AUDIT-OUTCOMES.md       18 append-only events, EV-000001..EV-000018
   AUDIT-COVERAGE.tsv      all 57 rows dispositioned
   AUDIT-RESTORATION.md    intake baseline + every transaction
   AUDIT-STATE.json        durable checkpoint, immutable deadline
-  AUDIT-EVIDENCE-INDEX.tsv 19 retained artifacts with SHA-256
-  workers\W1..W4\         full source traces (778 / 1295 / ~? / 923 lines)
+  AUDIT-EVIDENCE-INDEX.tsv 22 retained artifacts with SHA-256
+  workers\W1..W6\         full source traces, six read-only workers
   adapter\                the one bounded audit adapter
-  evidence\A00 A02 A03 A15 A18\
+  evidence\A00 A02 A03 A15 A18 A25-review\
   private\preserved-logs\ intake output_log.txt, preserved before any launch
-  tools-fxscan.py, tools-coverage.py, tools-state.py
+  tools-fxscan.py, tools-coverage.py, tools-state.py, tools-queue.py, tools-amend-finding.py
 ```
 Native run artifacts live outside the campaign dir, under
 `C:\Dev\KingmakerGunslingerLab\runtime-evidence\` and `...\runtime-backups\live-mod\`.
@@ -72,8 +72,26 @@ C:\Dev\KingmakerGunslingerLab\audits\KMG-AUD-20261111T170737Z\adapter\Invoke-Aud
 | `KMG_Firearms.bnk` | `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18` |
 | UMM `Params.xml` | `5F7B96B4F1BC1313EB169F06951E3C98448D2A1E0F3358CC84E351E4FC4B3747` |
 
+## 3b. Revision 2 — corrections the owner review forced
+
+Read `AUDIT-SUMMARY.md` revision note first. In short:
+
+- **GS-AUD-0030 (Nimble) and GS-AUD-0027 (RU version pin) are WITHDRAWN false positives.**
+  Do not action them. Acting on the Nimble one would have broken correct code.
+- **GS-AUD-0038's shared-process explanation is withdrawn**; cause unresolved.
+- **GS-AUD-0004** is restructured: current adjudication first, the withdrawn causal analysis in a
+  clearly marked historical section.
+- **GS-AUD-0015, 0025, 0031, 0034, 0019, 0006, 0001** were narrowed or re-grounded.
+- The unfinished source rows (scatter, Shield Other, Protection from Alignment, Magic Circle
+  lifetime and vendors) and five save-free native scenarios were **completed**, producing
+  GS-AUD-0039..0043 and 36+ correct-with-file:line rows.
+
 ## 4. The smallest next investigations, in value order
 
+0. **GS-AUD-0039 — the scatter sign inversion.** No run needed to confirm the semantics; they
+   are measured from engine IL. The one check worth doing is a disposable scenario asserting
+   `Attacks[0].AttackRoll.AttackBonusPenalty == 2` (positive two) after a scatter volley, which
+   also settles the open clamping question.
 1. **Firearm cold-load token survival** (GS-AUD-0021) — load a firearm, damage it to Broken,
    save, **exit to desktop**, relaunch, reload, inspect rounds + degradation. One disposable
    save, one cold restart. This is the largest hole in the evidence.
@@ -83,14 +101,17 @@ C:\Dev\KingmakerGunslingerLab\audits\KMG-AUD-20261111T170737Z\adapter\Invoke-Aud
    `schemaVersion < 12` file and launch. If the log says "malformed … all modules ON", confirmed.
 4. **Template leak** (GS-AUD-0025) — summon one *untemplated* creature through any alternate
    caller; inspect the spawned unit's facts for a celestial/fiendish template buff.
-5. **Nimble** (GS-AUD-0030) — no run needed; this is a design decision (see §5).
+5. **Shield Other range** (GS-AUD-0040) — cast it, separate the pair beyond close range, deal
+   damage, and observe whether the split still occurs.
 6. **Area-load path** (GS-AUD-0024) — only worth running once the original log exists.
 
 ## 5. Decisions only the owner can make
 
-- **GS-AUD-0030 — Nimble at 2/6/10/14/18 vs tabletop 3/7/11/15/19.** Either move the levels or
-  change the fidelity matrix row from `EXACT` to `ADAPTED`. Shipping with both as-is is the one
-  outcome that is definitely wrong.
+- ~~**GS-AUD-0030 — Nimble**~~ **WITHDRAWN.** There is no decision here. Tabletop Nimble *is*
+  2/6/10/14/18 (`private/rules/GUNSLINGER_PFSRD.md`); the implementation and the `EXACT` label
+  are both correct.
+- **GS-AUD-0040 — Shield Other's range contract.** The published description, the code and a
+  deliberate test assertion say three different things. One of the three must change.
 - **GS-AUD-0011** — is Deadeye's flat 1-Grit cost intended? The per-increment cost it computes is
   dead code.
 - **GS-AUD-0013** — should a *successful repair* clear misfire suppression? Today only a player
@@ -99,8 +120,11 @@ C:\Dev\KingmakerGunslingerLab\audits\KMG-AUD-20261111T170737Z\adapter\Invoke-Aud
   with no in-game explanation. Rollback after a bad update is ordinary on Nexus.
 - **GS-AUD-0032** — the level-17 Gun Training dead pick: add an option, collapse to three, or at
   minimum document it in `KNOWN-ISSUES.md`.
-- **GS-AUD-0004 / 0016 / 0018 / 0033** — four latent consistency defects with no demonstrated
-  failure. Worth fixing on principle; none is a release blocker on current evidence.
+- **GS-AUD-0041 — Protection from Alignment.** Reconcile the 23-entry catalog with the 21-row
+  authority table, and decide whether the Suggestion entry belongs under the control-immunity
+  rule at all given the doc's own exclusion list.
+- **GS-AUD-0004 / 0016 / 0018 / 0033 / 0042** — latent consistency deviations with no
+  demonstrated failure. Worth fixing on principle; none is a release blocker on current evidence.
 
 ## 6. Prerequisites this campaign could not obtain
 
@@ -110,6 +134,11 @@ C:\Dev\KingmakerGunslingerLab\audits\KMG-AUD-20261111T170737Z\adapter\Invoke-Aud
 - An **authorized kingdom-stage fixture** for Better Vendors (the standard fixture is pre-kingdom).
 - A **non-detached fixture** for Gunslinger's Dodge.
 - **Human/controller observation** for presentation, audio and input — unreachable unattended.
+
+**Not prerequisites, simply not done:** A09 (autonomous summon AI), A20 (presentation/audio),
+A21 (performance) and A22 (upgrade/persistence cross-check) were never scheduled. They are
+recorded as NOT_RUN rather than blocked, and `observe-feature-module-settings` remains eligible
+once its thirteen Boolean module parameters are built from the catalogue.
 
 ## 7. Scaffolding this campaign created
 
