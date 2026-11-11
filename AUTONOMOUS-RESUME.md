@@ -1,29 +1,28 @@
-# Races Unleashed Spider Summoner integration: failing on one named reload defect (RU-14/RU-16) / STOP
+# Races Unleashed Spider Summoner integration: complete for review, owner review pending / STOP
 
-Current (2026-11-10). See `planning/races-unleashed-compatibility/STATUS.md`. Branch
-`codex/races-unleashed-summoning`, draft PR #125. The owner raised the cumulative ceiling to 165, then 170
-minutes. The ledger is about 9,819 of 10,200 seconds, so the about 6 minutes left cannot fit a build.
+Current (2026-11-11). See `planning/races-unleashed-compatibility/STATUS.md`. Branch
+`codex/races-unleashed-summoning`, draft PR #125. After the 170-minute stop, the owner wrote "Go ahead and finish
+up. Take the time you need." The ledger is about 11,504 seconds.
 
-- **Latest candidate:** `e0c4edd35b`, package `b512253a...b132`, DLL `2dd277f7...6ad7`.
-  - **Cleric/interface phase PASS 234/234:** RU-15, RU-10 (admission, natural Desna Herald, both metamagic cases)
-    and RU-09.
-  - **No-Call-of-the-Wild real-web phase PASS 6/6** on the changed escape handler.
-  - **RU-16 prepare PASS.** The disabled reload passed every web and lifecycle check: the saved marker's native
-    CMB escape is +2 with the module OFF. It failed only on the reloaded poison parameters (below).
-- **Open defect:** after a reload, a marked spider's stored poison parameters read the base DC (Widow 14, Giant
-  Spider 12). They read 16/14 only after a recalculation. The `OnTurnOn` recalculation in `e0c4edd35b` did not
-  change that natively.
-- **Next:**
-  1. find where the load recalculates the poison parameters after the marker turns on (instrument once, or recalculate
-     after load completes);
-  2. one build;
-  3. the four persistence stages (`run_persist.ps1`, Windows PowerShell 5.1 stage children).
-
-  This needs about 12 more counted minutes and a new owner allowance.
+- **Final candidate:** `0908e3415f`, package `ec6fd46e...e442`, DLL `d4649502...bfbd`. Every RU-01 to RU-20 row is
+  closed.
+- **Reload fix:** the native `Fact.TurnOn` calls `OnTurnOn` before `StartListenEvents`, so the marker's reload
+  recalculation went unanswered and stored the base DC. The marker now starts listening first.
+- **Native results on `0908e3415f`:**
+  - **Persistence:** four fresh processes on `KMG_AUTOMATION_WORKING`:
+    - prepare 10/10;
+    - module-OFF reload 18/18, checkpoint not written;
+    - enabled reload and cleanup 15/15;
+    - absence 6/6.
+    Reloaded poison DCs read Widow 16/16 and Giant Spider 14.
+  - **Cleric/interface phase:** 234/234.
+  - **No-Call-of-the-Wild web phase:** 6/6.
+- **Restoration:** exact, with every save unchanged.
 - **Separate finding for the owner:** with Call of the Wild's "metamagic for spontaneous spell conversion"
   setting, Herald popups over metamagic sources also list Call of the Wild's base-level conversions as raw
   native Summon Monster rows. This is not Spider Summoner behavior.
-- No merge, release or permanent install follows without explicit owner authorization.
+- **No further work is scheduled.** No merge, release, tag, publication or permanent install follows without
+  explicit owner authorization.
 
 ---
 
