@@ -1,4 +1,28 @@
-# Summon menu order, summon Sunder and the Lillend label: candidate 3f170d4a9c native 44 PASS / 1 FAIL (observer defect) / STOP
+# Summon menu order, summon Sunder, Lillend label, Bebelith Dismantle Armor: closeout at 1ed8aacbcf, ready for merge/release review / STOP
+
+Current (2026-11-11). See `planning/summon-menu-order-and-sunder/STATUS.md`. Branch
+`codex/summon-menu-order-and-sunder`, draft PR #126 against master `3fd5bf5d0b`. Nothing merged, released, tagged
+or permanently installed.
+
+- **Gameplay:**
+  - quantity-first menus;
+  - SUNDER-01 (Storm Giant, Greater/Elder Earth Elemental);
+  - "Azata, Lillend";
+  - DISMANTLE-01: the Bebelith's Dismantle Armor withdrawn (owner decision). Focused/compile only. Already
+    dismantled armor in older saves is not retired.
+- **Saved elementals:** keep their former ordinary attack AI action, by owner decision.
+- **Census observer:** fixed to exclude only the exact fixer's removal lists. Focused/compile only.
+- **Focused gate:** 120 of 2,939, 0 failures.
+- **Native results stay with their candidates:**
+  - `3f170d4a9c`: 44 PASS / 1 FAIL. `sunder-census` FAIL retained; reader-only re-evaluation PASS, 0 carriers.
+  - `c6e861a98a`: initialization FAIL.
+- **No package or game run in the closeout.** Ledger: about 1,267 of 1,800 s.
+- **Next:** owner merge/release review. A release would need its own qualification. The Bebelith withdrawal and
+  the corrected observer have no native observation yet.
+
+---
+
+# (superseded) Summon menu order, summon Sunder and the Lillend label: candidate 3f170d4a9c native 44 PASS / 1 FAIL (observer defect) / STOP
 
 Current (2026-11-11). See `planning/summon-menu-order-and-sunder/STATUS.md`. Branch
 `codex/summon-menu-order-and-sunder`, draft PR #126 against master `3fd5bf5d0b`. Nothing merged, released, tagged

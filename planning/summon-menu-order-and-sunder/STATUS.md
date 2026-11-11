@@ -1,12 +1,125 @@
-# Summon menu order, summon Sunder and the Lillend label: status
+# Summon menu order, summon Sunder, the Lillend label and Bebelith Dismantle Armor: status
 
-**Candidate `3f170d4a9c`: native FAIL, 44 PASS / 1 FAIL. The single failure (`sunder-census`) is an observer
-defect; a reader-only re-evaluation of the recorded data passes, and the original FAIL is retained. Every other
-cell passed, including all ordering, label, spider and Sunder behavior cells. Review checkpoint; nothing merged or
-released.** (2026-11-11)
+**Closeout at source `1ed8aacbcf` (2026-11-11). This source has focused and compile evidence only; no package
+was built and no game run was made.** It adds the owner-requested withdrawal of the Bebelith's Dismantle Armor
+and a census-observer correction. The native results below belong to their own candidates:
+- `3f170d4a9c`: native **44 PASS / 1 FAIL**. The single FAIL, `sunder-census`, was an observer defect, and its
+  original verdict stands.
+- `c6e861a98a`: initialization FAIL; no feature was observed.
 
-The earlier candidate `c6e861a98a` keeps its own initialization FAIL; it established no menu, label or Sunder
-behavior, and none of the results below belong to it.
+Nothing is merged, released, tagged or permanently installed.
+
+## Closeout (source `1ed8aacbcf`, focused/compile evidence only)
+
+### Settled scope (owner decisions, 2026-11-11, recorded prospectively)
+
+1. **DISMANTLE-01: the Bebelith's Dismantle Armor is removed, like Sunder** (the owner's explicit preference,
+   overriding the proposed retention). The dismantle was a post-claw-hit rider that rolled a native `SunderArmor`
+   combat maneuver and then a Reflex save. Changes:
+   - The Bebelith combat component is no longer given the dismantled-armor buff. That buff is the trigger's own
+     first precondition, so the maneuver, the save and the buff are never attempted.
+   - The combat-traits description now reads "Natural armor 13 and DR 10/good."
+   - Penetrating strike, natural armor, DR, bite, claws, rot, web, trip defense and skills are unchanged.
+   - A saved Bebelith takes the change on load: the component reads its blueprint field, so no fixer is needed.
+   - The `KMG.Summoning.Special.Bebelith.DismantledArmor` buff, its component and the retained rules policy stay
+     registered for save compatibility.
+   - **Not retired:** a dismantled-armor buff already applied to a creature in an older save is permanent and
+     keeps its described effect. Retiring it safely would need a new migration plus native validation, which
+     this closeout did not authorize.
+   - **Not observed natively:** this change has focused and compile evidence only.
+2. **Saved elemental targeting stays as is.** The withdrawal removes the saved Greater/Elder Earth Elemental's
+   Sunder AI action, enabling feat, toggle and replacement buff. Its retained ordinary attack action
+   (`GreaterEarthElementalAttackAiAction`, with its LightArmor/HasBuffSunder target considerations) is kept; no
+   second migration makes its targeting identical to a fresh summon's. Autonomous decisions with that action
+   were not observed, and no actual old save was cold-loaded.
+3. Every other gameplay behavior is frozen: ordering, labels, spider integration, grants, blueprints and fixer
+   behavior.
+
+### Census correction
+
+`SunderCarrierClassifier` (in `RuntimeTesting/SunderObservationVerdict.cs`):
+- **Cleanup:** only references held in the exact `KingmakerGunslinger.Summoning.SummonWithdrawnCapabilityFixer`
+  type's `Facts`, `AiActions` and `Resources` lists count as cleanup.
+- **Carriers:** every other reference still makes a carrier. That includes unit facts, brain actions (directly or
+  through a cast ability), other components such as `AddClassLevels` or `AddFacts`, the fixer's other fields, and
+  a same-named type in another namespace.
+- **Observer:** the census now routes through this classifier and records excluded references separately
+  (`excludedWithdrawalListReferences`). It also requires the classifier's type name to equal the real fixer type
+  (`fixerTypeExact`). The provider-chain prerequisite and the native donor/brain/feat controls are unchanged.
+
+New focused regressions, through `SunderCarrierClassifier.Classify`:
+- `summon-sunder.census-cleanup-alone-not-carrier`;
+- `.census-real-fact-still-carrier`;
+- `.census-real-ai-still-carrier`;
+- `.census-exception-hides-nothing-else`;
+- `.bebelith-dismantle-withdrawn`.
+
+### Focused checks
+
+`Invoke-KmgGate.ps1 -Filter` (Focused level: production compilation plus filtered domain tests only; no
+Build-Local, package or native scenario). The filter is the recorded one plus `expanded-summoning.sprint21` (the
+Bebelith rules suite).
+- **Result:** 120 selected of 2,939, 0 failures, 19 s, production compiled.
+- **Per prefix:** alternate-summoning 33, expanded-summoning 37 (including 21 matching sprint21/Bebelith),
+  summon-cleric-alignment 19, summon-menu-order 5, summon-playtest-r1 5, summon-spider-summoner 9,
+  summon-sunder 12.
+
+### Census verdicts, kept separate
+
+| Reading | Source and binary | Verdict |
+| --- | --- | --- |
+| Original native `sunder-census` | candidate `3f170d4a9c` (DLL `cec3f24c...`), run `20261111T0318117060805Z-...` | **FAIL** (unchanged) |
+| Reader-only re-evaluation of that recorded data | `runtime-evidence/summon-menu-order-and-sunder/20261111-sunder-census-reader-reevaluation.json` (private), SHA-256 `5df455802e50659d0b870f9bb2d6d3ff9212fbdb479e149ae0c5d7adddc5c562` | **PASS**, 0 carriers |
+| Corrected observer | source `1ed8aacbcf` | focused/compile only; not executed natively |
+
+**Re-evaluation details.**
+- **Source receipt:** `runtime-result.json`, SHA-256
+  `3db91eb9683560b3ba3c90f23c4fba028852e1926f7c8f7c10857c6f3ea6f850`, rechecked equal on 2026-11-11.
+- **Reader:** an inline scratch exclusion of recorded sources under the `component:SummonWithdrawnCapabilityFixer.`
+  prefix. That is broader than the corrected classifier, but every excluded path falls inside the narrower
+  `Facts`/`AiActions` rule, so the result is identical.
+- **Exactly six excluded paths:**
+  - Greater Earth Elemental: `...Fixer.Facts:ImprovedSunder` and `...Fixer.AiActions:SunderArmorAiAction`;
+  - Elder Earth Elemental: the same two;
+  - Storm Giant: `...Fixer.Facts:ImprovedSunder`;
+  - Fire Giant: `...Fixer.Facts:ImprovedSunder`.
+- **Carriers after exclusion:** 0. All other recorded findings are unchanged: elemental brains ordinary, shared
+  native definitions unchanged, new fixers attached, chain `ActiveExact`.
+
+No new native run happened, so there is no 45/45 result, and the `3f170d4a9c` results do not transfer to
+`1ed8aacbcf`.
+
+### Evidence boundaries
+
+- **Gameplay observed natively on `3f170d4a9c`:** quantity-first ordering, labels, spider rows, Druid conversion
+  context, and Sunder removal on Storm Giant and Greater Earth Elemental. The Bebelith withdrawal is newer and was
+  not on those bytes.
+- **Live units:** Storm Giant and Greater Earth Elemental were spawned and observed (fresh state, a commanded
+  attack, induced legacy cleanup). The Elder Earth Elemental has structural coverage only (census, brain, fixer
+  attachment).
+- **Menus:** opened in game were the known-book SM V (feat absent and present), VI and VII, plus one Druid level 5
+  conversion. Herald conversions, alternate-source menus and every other tier are structural census only.
+- **Legacy:** induced on fresh summons with each fixer's `OnPostLoad` called directly. No older save was
+  cold-loaded.
+- **Not observed:** autonomous AI decisions; attacks were commanded and observed passively.
+
+### Ledger (continued)
+
+| Step | Seconds |
+| --- | ---: |
+| Before this closeout | about 1,248 |
+| Focused gate (compile + 120 tests) | 19 |
+| **Cumulative** | **about 1,267 of 1,800** |
+
+Previously uncounted verification time:
+- the read-only offline blueprint scans at intake, recorded only as "about 15 s" (individual runs measured about
+  2.4 s each);
+- intake and restoration hash checks, which were never timed and are not estimated here.
+
+No live installation transaction happened in this closeout. The installation, profile, `Params.xml`, settings,
+saves and processes were left untouched.
+
+---
 
 ## Continuation result (candidate `3f170d4a9c`)
 
@@ -103,6 +216,8 @@ recorded row objects.
 `SunderArmor` combat maneuver. It is not a standard Sunder action, feat grant or automatic attack replacement.
 Treating it as out of SUNDER-01's scope is a **proposed** distinction for final owner review, not an owner
 approval already received.
+*(Superseded at closeout: the owner chose to remove Dismantle Armor, DISMANTLE-01, at source `1ed8aacbcf`. On
+candidate `3f170d4a9c` it was still present.)*
 
 ### Restoration (this invocation)
 
