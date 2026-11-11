@@ -30,13 +30,16 @@ function Test-KmgTemporaryExpandedSummoningOffScope {
     if ($Scenario.Count -ne 1) { return $false }
     if ($Scenario[0] -ceq 'working-save-expanded-summoning-verify-cleanup' -and
         $SaveName -ceq 'KMG_AUTOMATION_WORKING') { return $true }
+    # Each save-free OFF review is one exact purpose paired with its one phase.
+    $pairs = @{ 'summon-outsider-review-corrections' = 'summon-overhaul-off'; 'races-unleashed-summoning' = 'spider-module-off' }
     return $Scenario[0] -ceq 'disposable-expanded-summoning-sprint32-native-review' -and
         [string]::IsNullOrEmpty($SaveName) -and
-        $DevelopmentPurpose -ceq 'summon-outsider-review-corrections' -and
+        -not [string]::IsNullOrEmpty($DevelopmentPurpose) -and $pairs.ContainsKey($DevelopmentPurpose) -and
+        @($pairs.Keys) -ccontains $DevelopmentPurpose -and
         $ScenarioParameterMap.Count -eq 0 -and $ScenarioParameters.Count -eq 1 -and
         @($ScenarioParameters.Keys) -ccontains 'reviewPhase' -and
         $ScenarioParameters.reviewPhase -is [string] -and
-        $ScenarioParameters.reviewPhase -ceq 'summon-overhaul-off'
+        $ScenarioParameters.reviewPhase -ceq $pairs[$DevelopmentPurpose]
 }
 
 # The two owned boundaries must each get a restoration attempt. Callers first

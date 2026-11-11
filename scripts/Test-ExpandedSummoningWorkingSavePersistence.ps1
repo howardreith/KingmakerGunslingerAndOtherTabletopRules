@@ -137,4 +137,41 @@ foreach ($scope in @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', '
     if (-not $rejected) { throw 'The targeted fixture scope leaked into another scenario.' }
     $rejections++
 }
+# Spider Summoner (Races Unleashed): the scope is admitted on all three stages,
+# and only its verify-cleanup stage may name spiderCheckpoint=preserve - the
+# module-OFF reload that must leave the prepared checkpoint for the enabled one.
+foreach ($scenario in $scenarios) {
+    $spider = New-KmgRuntimeRequest @requestBase -Scenario $scenario -Parameters @{
+        saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'spider-summoner' }
+    $json = $spider | ConvertTo-Json -Depth 20 | ConvertFrom-Json
+    if ($spider.parameters.Count -ne 2 -or $json.parameters.persistenceScope -cne 'spider-summoner') {
+        throw "Spider Summoner scope did not round-trip for $scenario."
+    }
+    $roundTrips++
+    $preserve = @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'spider-summoner'; spiderCheckpoint = 'preserve' }
+    if ($scenario -ceq 'working-save-expanded-summoning-verify-cleanup') {
+        $kept = New-KmgRuntimeRequest @requestBase -Scenario $scenario -Parameters $preserve
+        $json = $kept | ConvertTo-Json -Depth 20 | ConvertFrom-Json
+        if ($kept.parameters.Count -ne 3 -or $json.parameters.spiderCheckpoint -cne 'preserve') {
+            throw 'The spider checkpoint preservation did not round-trip.'
+        }
+        $roundTrips++
+    } else {
+        $rejected = $false
+        try { $null = New-KmgRuntimeRequest @requestBase -Scenario $scenario -Parameters $preserve } catch { $rejected = $true }
+        if (-not $rejected) { throw "spiderCheckpoint was admitted on $scenario." }
+        $rejections++
+    }
+    foreach ($bad in @(
+        @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'spider-summoner'; spiderCheckpoint = 'Preserve' },
+        @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'spider-summoner'; spiderCheckpoint = 'cleanup' },
+        @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'ice-devil'; spiderCheckpoint = 'preserve' },
+        @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'Spider-Summoner' }
+    )) {
+        $rejected = $false
+        try { $null = New-KmgRuntimeRequest @requestBase -Scenario $scenario -Parameters $bad } catch { $rejected = $true }
+        if (-not $rejected) { throw "An invalid Spider Summoner persistence request was admitted for $scenario." }
+        $rejections++
+    }
+}
 Write-Host "PASS targeted persistence request: $roundTrips exact JSON round trips, three historical defaults and $rejections fail-closed cases."

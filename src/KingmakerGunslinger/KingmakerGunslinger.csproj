@@ -160,8 +160,16 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR6Presentation.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR7Models.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonAlphabeticalMenus.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SpiderSummoner.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SpiderCompletion.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SpiderRoutes.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonClericAlignment.cs" />
     <Compile Include="RuntimeTesting\SummonClericObservationVerdict.cs" />
+    <Compile Include="RuntimeTesting\SpiderEscapeObservationVerdict.cs" />
+    <Compile Include="RuntimeTesting\SpiderCompletionVerdicts.cs" />
+    <Compile Include="RuntimeTesting\SpiderSummonerPersistencePolicy.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SpiderSummonerPersistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SpiderInterface.cs" />
     <Compile Include="RuntimeTesting\AlphabeticalMenuObservationVerdict.cs" />
     <Compile Include="Summoning\SummonPlaytestR6Policy.cs" />
     <Compile Include="Summoning\SummonAbilityCastCue.cs" />
@@ -323,6 +331,9 @@
     <Compile Include="Summoning\SummonDisplayOrderPolicy.cs" />
     <Compile Include="Summoning\SummonClericAlignmentPolicy.cs" />
     <Compile Include="Summoning\SummonClericAlignmentGate.cs" />
+    <Compile Include="Summoning\SpiderSummonerCatalog.cs" />
+    <Compile Include="Summoning\SpiderSummonerBenefit.cs" />
+    <Compile Include="Blueprints\SpiderSummonerIntegration.cs" />
     <Compile Include="Summoning\SummonForeignRowContracts.cs" />
     <Compile Include="Summoning\SummonNativeOptionCatalog.cs" />
     <Compile Include="Summoning\SummonNativeExpansionCatalog.cs" />

@@ -233,6 +233,24 @@ namespace KingmakerGunslinger.Blueprints
             return changed;
         }
 
+        /// <summary>
+        /// Adds one late-built owned row to a published menu, using the same
+        /// named-order key as every other owned row, and links it to its parent.
+        /// </summary>
+        internal static void AddLateOwnedRow(LibraryScriptableObject library, SpiderPlacement placement, BlueprintAbility row)
+        {
+            BlueprintAbility parent = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library,
+                (placement.Family == SummonFamily.Monster ? MonsterParents : AllyParents)[placement.Tier - 1], "published spider summon parent");
+            AbilityVariants owned = (parent.ComponentsArray ?? Array.Empty<BlueprintComponent>()).OfType<AbilityVariants>().SingleOrDefault();
+            if (owned == null || !string.Equals(owned.name, PublishedVariantsComponentName, StringComparison.Ordinal))
+                throw new InvalidOperationException("Late spider row needs a published parent: " + parent.AssetGuid);
+            OwnedOrderKeys[row.AssetGuid] = SummonMenuOrderKey.Owned(
+                SummonChoicePresentationPolicy.For(placement.Species.Key, placement.Quantity), placement.StableKey);
+            if (!(owned.Variants ?? Array.Empty<BlueprintAbility>()).Contains(row))
+                owned.Variants = (owned.Variants ?? Array.Empty<BlueprintAbility>()).Concat(new[] { row }).ToArray();
+            row.Parent = parent;
+        }
+
         /// <summary>The once-per-process late pass's result, for diagnostics.</summary>
         internal static string LateOrderOutcome { get; private set; }
 

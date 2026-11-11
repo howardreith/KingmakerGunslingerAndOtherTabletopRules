@@ -167,6 +167,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in ReviewSummonClericAlignment(fixture)) yield return frame;
                 yield break;
             }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39SpiderWebPhase ||
+                phase == ExpandedSummoningNativeProfilePolicy.Sprint39SpiderMechanicsPhase ||
+                phase == ExpandedSummoningNativeProfilePolicy.Sprint39SpiderModuleOffPhase ||
+                phase == ExpandedSummoningNativeProfilePolicy.Sprint39SpiderRoutesPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewSpiderSummonerCompletion(fixture, phase)) yield return frame;
+                yield break;
+            }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestModelsInteriorPhase)
             {
                 foreach (int frame in ReviewSummonPlaytestModelsR7(fixture, phase, null)) yield return frame;
