@@ -43,7 +43,7 @@ namespace KingmakerGunslinger.Blueprints
                 BlueprintAiAction[] actions = spec.AiActionSymbols
                     .Select(symbol => Require<BlueprintAiAction>(bySymbol, symbol))
                     .Concat(spec.NativeAiActionGuids.Select(guid =>
-                        BlueprintLibraryLookup.RequireExact<BlueprintAiAction>(
+                        BlueprintLibraryLookup.RequireExact<BlueprintAiCastSpell>(
                             library, guid, "native AI action withdrawn from " + spec.CreatureKey)))
                     .ToArray();
                 if (unit.Brain != null && actions.Any(action =>
@@ -81,7 +81,7 @@ namespace KingmakerGunslinger.Blueprints
                 SummonPlaytestWithdrawalPolicy.NativeGreaterEarthElementalBrainGuid, "native Greater Earth Elemental brain");
             BlueprintBrain ordinaryBrain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(library,
                 SummonPlaytestWithdrawalPolicy.NativeDumbMonsterBrainGuid, "native ordinary-attack brain");
-            BlueprintAiAction sunderAi = BlueprintLibraryLookup.RequireExact<BlueprintAiAction>(library,
+            BlueprintAiAction sunderAi = BlueprintLibraryLookup.RequireExact<BlueprintAiCastSpell>(library,
                 SummonPlaytestWithdrawalPolicy.NativeSunderArmorAiActionGuid, "native Sunder Armor AI action");
             if ((ordinaryBrain.Actions ?? Array.Empty<BlueprintAiAction>()).Contains(sunderAi))
                 throw new InvalidOperationException("The native ordinary-attack brain unexpectedly sunders.");

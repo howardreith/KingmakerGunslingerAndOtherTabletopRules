@@ -130,7 +130,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var symbols = ExpandedSummoningBlueprints.Registered.BySymbol;
             var ordinaryBrain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(library, SummonPlaytestWithdrawalPolicy.NativeDumbMonsterBrainGuid, "ordinary brain");
             var sunderBrain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(library, SummonPlaytestWithdrawalPolicy.NativeGreaterEarthElementalBrainGuid, "native sunder brain");
-            var sunderAi = BlueprintLibraryLookup.RequireExact<BlueprintAiAction>(library, SummonPlaytestWithdrawalPolicy.NativeSunderArmorAiActionGuid, "native sunder AI");
+            var sunderAi = BlueprintLibraryLookup.RequireExact<BlueprintAiCastSpell>(library, SummonPlaytestWithdrawalPolicy.NativeSunderArmorAiActionGuid, "native sunder AI");
             var improved = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library, SummonPlaytestWithdrawalPolicy.NativeImprovedSunderGuid, "native Improved Sunder");
             var donor = BlueprintLibraryLookup.RequireExact<BlueprintUnit>(library, MenuOrderNativeGreaterEarthDonorGuid, "native Greater Earth Elemental donor");
             var elementals = SummonPlaytestWithdrawalPolicy.DonorInheritedSunderKeys.Select(key =>
@@ -428,10 +428,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             var improved = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library, SummonPlaytestWithdrawalPolicy.NativeImprovedSunderGuid, "native Improved Sunder");
             var toggle = ResourcesLibrary.TryGetBlueprint<BlueprintActivatableAbility>(ProperFlankingSunderToggleGuid);
             var buff = ResourcesLibrary.TryGetBlueprint<BlueprintBuff>(ProperFlankingSunderBuffGuid);
-            var action = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library, MenuOrderSunderActionGuid, "native Sunder action");
+            var action = ResourcesLibrary.TryGetBlueprint<BlueprintUnitFact>(MenuOrderSunderActionGuid);
             ActivatableAbility live = toggle == null ? null : unit.Descriptor.ActivatableAbilities.Enumerable.FirstOrDefault(value => ReferenceEquals(value.Blueprint, toggle));
             var buffs = buff == null ? new Kingmaker.UnitLogic.Buffs.Buff[0] : unit.Descriptor.Buffs.Enumerable.Where(value => ReferenceEquals(value.Blueprint, buff)).ToArray();
-            return new JObject { ["improvedSunder"] = unit.Descriptor.HasFact(improved), ["sunderAction"] = unit.Descriptor.HasFact(action),
+            return new JObject { ["improvedSunder"] = unit.Descriptor.HasFact(improved), ["sunderAction"] = action != null && unit.Descriptor.HasFact(action),
                 ["togglePresent"] = live != null, ["toggleOn"] = live != null && live.IsOn, ["toggleRunning"] = live != null && live.IsRunning,
                 ["replacementBuffPresent"] = buffs.Length, ["replacementBuffActive"] = buffs.Count(value => value.Active && !value.IsSuppressed),
                 ["brainBlueprint"] = unit.Blueprint.Brain?.AssetGuid,
@@ -490,7 +490,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var library = BlueprintBootstrap.Library;
             var symbols = ExpandedSummoningBlueprints.Registered.BySymbol;
             var improved = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library, SummonPlaytestWithdrawalPolicy.NativeImprovedSunderGuid, "native Improved Sunder");
-            var sunderAi = BlueprintLibraryLookup.RequireExact<BlueprintAiAction>(library, SummonPlaytestWithdrawalPolicy.NativeSunderArmorAiActionGuid, "native Sunder AI");
+            var sunderAi = BlueprintLibraryLookup.RequireExact<BlueprintAiCastSpell>(library, SummonPlaytestWithdrawalPolicy.NativeSunderArmorAiActionGuid, "native Sunder AI");
             var ordinaryBrain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(library, SummonPlaytestWithdrawalPolicy.NativeDumbMonsterBrainGuid, "ordinary brain");
             Func<string, SummonWithdrawnCapabilityFixer> fixerOf = key => ((BlueprintUnit)symbols[SummonPlaytestWithdrawalPolicy.For(key).UnitSymbol])
                 .GetComponents<SummonWithdrawnCapabilityFixer>().Single();

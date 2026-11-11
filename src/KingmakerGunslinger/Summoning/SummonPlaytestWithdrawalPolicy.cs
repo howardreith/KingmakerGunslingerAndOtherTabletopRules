@@ -70,7 +70,9 @@ namespace KingmakerGunslinger.Summoning
         internal const string NativeImprovedSunderGuid =
             "9719015edcbf142409592e2cbaab7fe1";
 
-        /// <summary>Native SunderArmorAiAction: casts the native SunderAction.</summary>
+        /// <summary>Native SunderArmorAiAction: casts the native SunderAction.
+        /// Its exact installed type is BlueprintAiCastSpell (RequireExact does
+        /// not accept a base type; candidate c6e861a98a failed closed on it).</summary>
         internal const string NativeSunderArmorAiActionGuid =
             "23bcb18f2dd735c4d9d2d228f654efce";
 
@@ -225,8 +227,9 @@ namespace KingmakerGunslinger.Summoning
         internal IReadOnlyList<string> ResourceSymbols { get; private set; }
         /// <summary>Native feats no longer granted to this creature alone.</summary>
         internal IReadOnlyList<string> NativeFeatGuids { get; private set; }
-        /// <summary>Native AI actions removed from an older saved brain of
-        /// this creature alone. The shared native action is never modified.</summary>
+        /// <summary>Native cast-spell AI actions (exact type
+        /// BlueprintAiCastSpell) removed from an older saved brain of this
+        /// creature alone. The shared native action is never modified.</summary>
         internal IReadOnlyList<string> NativeAiActionGuids { get; private set; }
     }
 }
