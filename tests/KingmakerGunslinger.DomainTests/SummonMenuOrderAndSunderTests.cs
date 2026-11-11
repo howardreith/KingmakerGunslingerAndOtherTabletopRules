@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using KingmakerGunslinger.RuntimeTesting;
 using KingmakerGunslinger.Summoning;
 
 namespace KingmakerGunslinger.DomainTests
@@ -300,6 +301,86 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(0, SummonPlaytestWithdrawalPolicy.SelectWithdrawn(false, savedFacts, new[] { improvedSunder }).Length +
                 SummonPlaytestWithdrawalPolicy.SelectWithdrawn(false, savedActions, new[] { sunderAi }).Length,
                 "A unit that is not the exact KMG owner is never touched.");
+        }
+
+        private static SunderUnitState Unit(bool feat, bool action, bool toggle, bool running, int buffActive)
+        {
+            return new SunderUnitState { Feat = feat, Action = action, TogglePresent = toggle, ToggleOn = toggle,
+                ToggleRunning = running, BuffPresent = buffActive, BuffActive = buffActive };
+        }
+
+        private static SunderProviderChain Provider(bool active, bool exact)
+        {
+            return SunderObservationVerdict.ClassifyProvider(active, exact, true, exact, exact, exact, exact, true, exact, exact, exact);
+        }
+
+        // Active provider with the exact chain: the claimed pre-state, then absence.
+        internal static void SunderVerdictActiveExactChainProvesCleanup()
+        {
+            SunderProviderChain chain = Provider(true, true);
+            Assertions.Equal(SunderProviderChain.ActiveExact.ToString(), chain.ToString(), "Exact wiring with an active provider.");
+            SunderUnitState live = Unit(true, true, true, true, 1), gone = Unit(false, false, false, false, 0);
+            Assertions.Equal(SunderCleanupOutcome.Proven.ToString(),
+                SunderObservationVerdict.ClassifyCleanup(chain, true, live, gone).ToString(), "Live chain before, all gone after.");
+            Assertions.True(SunderObservationVerdict.AbsenceAssertable(chain, true, true), "Absence is assertable on a verified chain.");
+            Assertions.Equal(SunderCleanupOutcome.NotRemoved.ToString(),
+                SunderObservationVerdict.ClassifyCleanup(chain, true, live, Unit(false, false, false, false, 1)).ToString(),
+                "A replacement buff left behind is not a removal.");
+            Assertions.Equal(SunderCleanupOutcome.Proven.ToString(),
+                SunderObservationVerdict.ClassifyCleanup(chain, false, Unit(true, true, true, false, 0), gone).ToString(),
+                "Where only feat and action are claimed, a present but idle toggle need not run, yet must be gone after.");
+            Assertions.Equal(SunderCleanupOutcome.NotRemoved.ToString(),
+                SunderObservationVerdict.ClassifyCleanup(chain, false, Unit(true, true, true, false, 0), Unit(false, false, true, false, 0)).ToString(),
+                "A toggle left behind is not a removal.");
+        }
+
+        // Active provider, any missing or mismatched identity or link: never a removal proof.
+        internal static void SunderVerdictActiveMismatchFails()
+        {
+            for (int index = 0; index < 10; index++)
+            {
+                bool[] parts = Enumerable.Repeat(true, 10).ToArray();
+                parts[index] = false;
+                SunderProviderChain chain = SunderObservationVerdict.ClassifyProvider(true, parts[0], parts[1], parts[2], parts[3],
+                    parts[4], parts[5], parts[6], parts[7], parts[8], parts[9]);
+                Assertions.Equal(SunderProviderChain.ActiveMismatch.ToString(), chain.ToString(), "Missing part " + index + " is a mismatch.");
+                Assertions.Equal(SunderCleanupOutcome.ChainUnverified.ToString(), SunderObservationVerdict.ClassifyCleanup(chain, true,
+                    Unit(true, true, true, true, 1), Unit(false, false, false, false, 0)).ToString(), "A mismatched chain proves no cleanup.");
+                Assertions.False(SunderObservationVerdict.AbsenceAssertable(chain, true, true), "Absence is not assertable on a mismatched chain.");
+            }
+            Assertions.False(SunderObservationVerdict.AbsenceAssertable(SunderProviderChain.ActiveExact, true, false),
+                "An unresolved Sunder action can never read as an absent fact.");
+            Assertions.False(SunderObservationVerdict.AbsenceAssertable(SunderProviderChain.ActiveExact, false, true),
+                "An unresolved feat can never read as an absent fact.");
+        }
+
+        // A genuinely inactive provider is a qualified, fact-level reading only.
+        internal static void SunderVerdictInactiveProviderIsQualified()
+        {
+            SunderProviderChain inactive = SunderObservationVerdict.ClassifyProvider(false, true, true, true, false, false, false, false, false, false, false);
+            Assertions.Equal(SunderProviderChain.Inactive.ToString(), inactive.ToString(), "Provider inactive with no identities.");
+            Assertions.Equal(SunderCleanupOutcome.ProvenFactLevelProviderInactive.ToString(), SunderObservationVerdict.ClassifyCleanup(inactive, true,
+                Unit(true, true, false, false, 0), Unit(false, false, false, false, 0)).ToString(), "Feat and action only, explicitly qualified.");
+            SunderProviderChain partial = SunderObservationVerdict.ClassifyProvider(false, true, true, true, true, false, false, false, false, false, false);
+            Assertions.Equal(SunderProviderChain.InactiveIdentitiesPresent.ToString(), partial.ToString(), "Inactive yet identities present.");
+            Assertions.Equal(SunderCleanupOutcome.ChainUnverified.ToString(), SunderObservationVerdict.ClassifyCleanup(partial, true,
+                Unit(true, true, false, false, 0), Unit(false, false, false, false, 0)).ToString(), "Inactive-with-identities is unverified.");
+        }
+
+        // The claimed pre-removal state must actually have been observed.
+        internal static void SunderVerdictMissingPreStateIsNotAProof()
+        {
+            SunderProviderChain chain = Provider(true, true);
+            SunderUnitState gone = Unit(false, false, false, false, 0);
+            foreach (SunderUnitState before in new[] { Unit(false, true, true, true, 1), Unit(true, false, true, true, 1),
+                Unit(true, true, false, false, 0), Unit(true, true, true, false, 1), Unit(true, true, true, true, 0), gone })
+                Assertions.Equal(SunderCleanupOutcome.PreconditionMissing.ToString(),
+                    SunderObservationVerdict.ClassifyCleanup(chain, true, before, gone).ToString(), "An unobserved claimed pre-state is not a cleanup proof.");
+            Assertions.Equal(SunderCleanupOutcome.PreconditionMissing.ToString(),
+                SunderObservationVerdict.ClassifyCleanup(chain, false, null, gone).ToString(), "No reading is no proof.");
+            Assertions.False(SunderObservationVerdict.Passes(SunderCleanupOutcome.PreconditionMissing) ||
+                SunderObservationVerdict.Passes(SunderCleanupOutcome.ChainUnverified) || SunderObservationVerdict.Passes(SunderCleanupOutcome.NotRemoved),
+                "Only the two removal outcomes pass.");
         }
     }
 }

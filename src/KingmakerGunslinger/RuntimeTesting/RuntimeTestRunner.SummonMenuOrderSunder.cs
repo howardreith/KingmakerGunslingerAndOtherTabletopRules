@@ -233,8 +233,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool spiderPassed; JObject spiderCensus = MenuOrderSpiderCensus(out spiderPassed);
             Sprint25Check("order-spider-census", spiderPassed, spiderCensus,
                 "All 46 Spider Summoner placements (8 original, 38 generated) appear once in their own parent, inside their own matrix quantity group.");
+            MenuOrderSunderChain chain = MenuOrderReadSunderChain();
+            Sprint25Check("sunder-provider-chain", chain.Status == SunderProviderChain.ActiveExact || chain.Status == SunderProviderChain.Inactive,
+                (JObject)chain.Evidence.DeepClone(),
+                "ProperFlanking2's actual activation is read and, when active, native Improved Sunder grants the native Sunder action and SunderActionToggleAbility, which is default-on and applies SunderActionToggleBuff carrying AttackReplacementWithCombatManeuver. A genuinely inactive provider is a qualified, native-only reading; an active provider with a missing or different identity fails.");
             bool sunderPassed; JObject sunderCensus = MenuOrderSunderCensus(out sunderPassed);
-            Sprint25Check("sunder-census", sunderPassed, sunderCensus,
+            sunderCensus["providerChain"] = chain.Status.ToString();
+            Sprint25Check("sunder-census", sunderPassed && SunderObservationVerdict.AbsenceAssertable(chain.Status, chain.Feat != null, chain.Action != null), sunderCensus,
                 "No unit spawned by a published summon row carries Improved Sunder, Greater Sunder, the Sunder action, the Sunder AI action or ProperFlanking2's Sunder toggle; the two earth elementals use the native ordinary brain; the shared native donor, brain and feat are unchanged; the new fixers are attached.");
             var lillendRows = new JArray(); bool lillendLabels = true;
             for (int tier = 6; tier <= 9; tier++)
@@ -409,9 +414,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
 
             // 3. Fresh Storm Giant: Sunder state, then one native full attack.
-            foreach (int frame in R6Cell("sunder-storm-giant", () => MenuOrderStormGiant(fixture))) yield return frame;
+            foreach (int frame in R6Cell("sunder-storm-giant", () => MenuOrderStormGiant(fixture, chain))) yield return frame;
             // 4. Induced legacy state retired by the real fixers, with controls.
-            foreach (int frame in R6Cell("sunder-legacy", () => MenuOrderLegacyCleanup(fixture))) yield return frame;
+            foreach (int frame in R6Cell("sunder-legacy", () => MenuOrderLegacyCleanup(fixture, chain))) yield return frame;
         }
 
         private IEnumerable<int> OpenMenuOrderLevel(ActionBarGroupElement spellGroup, ActionBarSubGroupLevels levels, UnitEntityData caster, int tier)
@@ -422,137 +427,230 @@ namespace KingmakerGunslinger.RuntimeTesting
             for (int frame = 0; frame < 12; frame++) yield return 0;
         }
 
-        private JObject MenuOrderSunderState(UnitEntityData unit)
+        // The installed Improved Sunder chain, read as R1 reads it: the
+        // provider's actual activation, then each exact identity and link.
+        private sealed class MenuOrderSunderChain
         {
-            var library = BlueprintBootstrap.Library;
-            var improved = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library, SummonPlaytestWithdrawalPolicy.NativeImprovedSunderGuid, "native Improved Sunder");
+            internal SunderProviderChain Status;
+            internal BlueprintFeature Feat;
+            internal BlueprintUnitFact Action;
+            internal BlueprintActivatableAbility Toggle;
+            internal BlueprintBuff Buff;
+            internal JObject Evidence;
+        }
+
+        private MenuOrderSunderChain MenuOrderReadSunderChain()
+        {
+            JObject flanking = InfernalProperFlanking2State35();
+            bool active = flanking.Value<bool?>("modActive") == true;
+            var feat = ResourcesLibrary.TryGetBlueprint<BlueprintFeature>(SummonPlaytestWithdrawalPolicy.NativeImprovedSunderGuid);
+            var action = ResourcesLibrary.TryGetBlueprint<BlueprintUnitFact>(MenuOrderSunderActionGuid);
             var toggle = ResourcesLibrary.TryGetBlueprint<BlueprintActivatableAbility>(ProperFlankingSunderToggleGuid);
             var buff = ResourcesLibrary.TryGetBlueprint<BlueprintBuff>(ProperFlankingSunderBuffGuid);
-            var action = ResourcesLibrary.TryGetBlueprint<BlueprintUnitFact>(MenuOrderSunderActionGuid);
-            ActivatableAbility live = toggle == null ? null : unit.Descriptor.ActivatableAbilities.Enumerable.FirstOrDefault(value => ReferenceEquals(value.Blueprint, toggle));
-            var buffs = buff == null ? new Kingmaker.UnitLogic.Buffs.Buff[0] : unit.Descriptor.Buffs.Enumerable.Where(value => ReferenceEquals(value.Blueprint, buff)).ToArray();
-            return new JObject { ["improvedSunder"] = unit.Descriptor.HasFact(improved), ["sunderAction"] = action != null && unit.Descriptor.HasFact(action),
-                ["togglePresent"] = live != null, ["toggleOn"] = live != null && live.IsOn, ["toggleRunning"] = live != null && live.IsRunning,
-                ["replacementBuffPresent"] = buffs.Length, ["replacementBuffActive"] = buffs.Count(value => value.Active && !value.IsSuppressed),
-                ["brainBlueprint"] = unit.Blueprint.Brain?.AssetGuid,
-                ["brainActions"] = unit.Brain?.Actions == null ? null : new JArray(unit.Brain.Actions.Where(value => value != null).Select(value => value.Blueprint?.name)),
-                ["primaryWeapon"] = unit.Body.PrimaryHand.MaybeWeapon?.Blueprint?.name, ["providerToggleResolved"] = toggle != null };
+            BlueprintUnitFact[] grants = feat == null ? new BlueprintUnitFact[0] : feat.GetComponents<Kingmaker.UnitLogic.FactLogic.AddFacts>()
+                .SelectMany(value => value.Facts ?? new BlueprintUnitFact[0]).Where(value => value != null).ToArray();
+            bool actionGranted = action != null && grants.Any(value => ReferenceEquals(value, action));
+            bool toggleGranted = toggle != null && grants.Any(value => ReferenceEquals(value, toggle));
+            bool namesExact = toggle != null && buff != null && toggle.name == ProperFlankingSunderToggleName && buff.name == ProperFlankingSunderBuffName;
+            bool appliesBuff = toggle != null && buff != null && ReferenceEquals(toggle.Buff, buff);
+            bool replacement = buff != null && (buff.ComponentsArray ?? new BlueprintComponent[0]).Any(value => value != null &&
+                value.GetType().FullName == ProperFlankingReplacementComponent);
+            SunderProviderChain status = SunderObservationVerdict.ClassifyProvider(active, feat != null, action != null, actionGranted,
+                toggle != null, toggleGranted, namesExact, toggle != null && toggle.IsOnByDefault, buff != null, appliesBuff, replacement);
+            return new MenuOrderSunderChain { Status = status, Feat = feat, Action = action, Toggle = toggle, Buff = buff,
+                Evidence = new JObject { ["status"] = status.ToString(), ["properFlanking2Active"] = active, ["properFlanking2"] = flanking,
+                    ["featResolved"] = feat != null, ["actionResolved"] = action != null, ["actionGrantedByFeat"] = actionGranted,
+                    ["toggle"] = new JObject { ["guid"] = ProperFlankingSunderToggleGuid, ["resolved"] = toggle != null, ["name"] = toggle?.name,
+                        ["grantedByFeat"] = toggleGranted, ["isOnByDefault"] = toggle != null && toggle.IsOnByDefault, ["appliesBuff"] = appliesBuff },
+                    ["buff"] = new JObject { ["guid"] = ProperFlankingSunderBuffGuid, ["resolved"] = buff != null, ["name"] = buff?.name,
+                        ["replacementComponent"] = replacement },
+                    ["grants"] = new JArray(grants.Select(value => value.AssetGuid + ":" + value.name)) } };
         }
 
-        private static bool MenuOrderSunderGone(JObject state)
+        private static SunderUnitState MenuOrderReadUnit(UnitEntityData unit, MenuOrderSunderChain chain)
         {
-            return !(bool)state["improvedSunder"] && !(bool)state["sunderAction"] && !(bool)state["togglePresent"] &&
-                (int)state["replacementBuffPresent"] == 0;
+            ActivatableAbility live = chain.Toggle == null ? null : unit.Descriptor.ActivatableAbilities.Enumerable.FirstOrDefault(value => ReferenceEquals(value.Blueprint, chain.Toggle));
+            var buffs = chain.Buff == null ? new Kingmaker.UnitLogic.Buffs.Buff[0] : unit.Descriptor.Buffs.Enumerable.Where(value => ReferenceEquals(value.Blueprint, chain.Buff)).ToArray();
+            return new SunderUnitState { Feat = chain.Feat != null && unit.Descriptor.HasFact(chain.Feat), Action = chain.Action != null && unit.Descriptor.HasFact(chain.Action),
+                TogglePresent = live != null, ToggleOn = live != null && live.IsOn, ToggleRunning = live != null && live.IsRunning,
+                BuffPresent = buffs.Length, BuffActive = buffs.Count(value => value.Active && !value.IsSuppressed) };
         }
 
-        private IEnumerable<int> MenuOrderStormGiant(ExpandedSummoningCorrectionFixture fixture)
+        private static JObject MenuOrderUnitEvidence(UnitEntityData unit, SunderUnitState state)
+        {
+            return new JObject { ["unit"] = unit.Blueprint.name, ["improvedSunder"] = state.Feat, ["sunderAction"] = state.Action,
+                ["togglePresent"] = state.TogglePresent, ["toggleOn"] = state.ToggleOn, ["toggleRunning"] = state.ToggleRunning,
+                ["replacementBuffPresent"] = state.BuffPresent, ["replacementBuffActive"] = state.BuffActive,
+                ["brainBlueprint"] = unit.Blueprint.Brain?.AssetGuid,
+                ["brainActions"] = unit.Brain?.Actions == null ? null : new JArray(unit.Brain.Actions.Where(value => value != null).Select(value => value.Blueprint?.AssetGuid + ":" + value.Blueprint?.name)),
+                ["primaryWeapon"] = unit.Body.PrimaryHand.MaybeWeapon?.Blueprint?.name,
+                ["gameSeconds"] = Game.Instance.TimeController.GameTime.TotalSeconds };
+        }
+
+        private static JObject MenuOrderAiActionEvidence(BlueprintAiAction action)
+        {
+            if (action == null) return null;
+            var evidence = new JObject { ["guid"] = action.AssetGuid, ["name"] = action.name, ["type"] = action.GetType().FullName };
+            foreach (FieldInfo field in action.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .Where(value => value.Name.IndexOf("Consideration", StringComparison.OrdinalIgnoreCase) >= 0))
+            {
+                var values = field.GetValue(action) as Array;
+                evidence[field.Name] = values == null ? null : new JArray(values.Cast<object>().Select(value => value == null ? "<null>" :
+                    value.GetType().Name + ":" + ((value as BlueprintScriptableObject)?.name ?? "")));
+            }
+            return evidence;
+        }
+
+        // One fresh summon's own native full attack on the adjacent hostile,
+        // through the existing Sprint 4 routine, with a passive maneuver probe.
+        private IEnumerable<int> MenuOrderObserveAttack(ExpandedSummoningCorrectionFixture fixture, string key, string check, string description)
+        {
+            var symbols = ExpandedSummoningBlueprints.Registered.BySymbol;
+            var blueprint = (BlueprintUnit)symbols[SummonPlaytestWithdrawalPolicy.For(key).UnitSymbol];
+            JObject routine = null; bool routinePass = false;
+            Action<string, bool, JObject, string> capture = (id, pass, row, text) => { routine = row; routinePass = pass; };
+            var routines = new JArray();
+            JObject flanking = InfernalProperFlanking2State35();
+            var maneuvers = new MenuOrderManeuverProbe(blueprint);
+            try
+            {
+                using (var trace = new InfernalEvents34())
+                    foreach (int frame in SummonAdjacentRoutine4(fixture, key, trace, capture, routines, flanking)) yield return frame;
+            }
+            finally { maneuvers.Dispose(); }
+            int weaponAttacks = routine == null ? 0 : ((JArray)routine["ruleRows"] ?? new JArray()).OfType<JObject>().Count(value => (string)value["event"] == "weapon-did");
+            int sunders = maneuvers.Rows.OfType<JObject>().Count(value => MenuOrderIsSunderManeuver((string)value["type"]));
+            JArray replacements = routine?["attackReplacements"] as JArray ?? new JArray();
+            bool sunderReplacement = replacements.OfType<JObject>().Any(value => MenuOrderIsSunderManeuver((string)value["maneuver"]) ||
+                ((string)value["buff"] ?? "").IndexOf("Sunder", StringComparison.OrdinalIgnoreCase) >= 0);
+            Sprint25Check(check, routine != null && routine["setupFailure"] == null && weaponAttacks >= 1 && sunders == 0 && !sunderReplacement,
+                new JObject { ["creature"] = key, ["weaponAttacks"] = weaponAttacks, ["sunderManeuvers"] = sunders, ["maneuvers"] = maneuvers.Rows,
+                    ["attackReplacementBuffs"] = replacements, ["properFlanking2"] = flanking,
+                    ["routineVerdictFailure"] = routine?["verdictFailure"], ["routineSprint4VerdictPass"] = routinePass,
+                    ["attackCount"] = routine?["attackCount"], ["replacedSlots"] = routine?["replacedSlots"], ["setupFailure"] = routine?["setupFailure"],
+                    ["limit"] = "One native full-attack command (not an AI decision) on the adjacent durable hostile, observed passively; the Sprint 4 routine verdict is recorded, not asserted. A non-Sunder maneuver substitution (for example ProperFlanking2 Bull Rush) is recorded, not counted as Sunder." },
+                description);
+        }
+
+        private IEnumerable<int> MenuOrderStormGiant(ExpandedSummoningCorrectionFixture fixture, MenuOrderSunderChain chain)
         {
             var symbols = ExpandedSummoningBlueprints.Registered.BySymbol;
             var stormBlueprint = (BlueprintUnit)symbols[SummonPlaytestWithdrawalPolicy.For("storm-giant").UnitSymbol];
             UnitEntityData storm = CastExpandedSummoningOwnTier(fixture, "storm-giant");
             Sprint28SetBrainActivePreservingActions(storm, false);
             for (int frame = 0; frame < 30; frame++) { Game.Instance.IsPaused = false; yield return 0; }
-            JObject fresh = MenuOrderSunderState(storm);
+            SunderUnitState fresh = MenuOrderReadUnit(storm, chain);
+            JObject freshEvidence = MenuOrderUnitEvidence(storm, fresh);
             bool fixer = stormBlueprint.GetComponents<SummonWithdrawnCapabilityFixer>().Select(value => value.name)
                 .SequenceEqual(new[] { SummonPlaytestWithdrawalPolicy.FixerName("storm-giant") });
-            Sprint25Check("sunder-storm-fresh", MenuOrderSunderGone(fresh) && fixer && fresh["primaryWeapon"].Type != JTokenType.Null,
-                new JObject { ["state"] = fresh, ["fixerAttached"] = fixer, ["source"] = "fixture cast of the published own-tier Summon Monster row" },
-                "A fresh Storm Giant has no Improved Sunder, no Sunder action, no Sunder toggle and no replacement buff, and keeps its weapon.");
+            bool assertable = SunderObservationVerdict.AbsenceAssertable(chain.Status, chain.Feat != null, chain.Action != null);
+            Sprint25Check("sunder-storm-fresh", assertable && fresh.Gone && fixer && storm.Body.PrimaryHand.MaybeWeapon != null,
+                new JObject { ["state"] = freshEvidence, ["chain"] = chain.Status.ToString(), ["absenceAssertable"] = assertable, ["fixerAttached"] = fixer,
+                    ["source"] = "fixture cast of the published own-tier Summon Monster row" },
+                "With the Sunder identities resolved and the provider chain verified, a fresh Storm Giant has no Improved Sunder, Sunder action, Sunder toggle or replacement buff, and keeps its weapon.");
             CleanupExpandedSummoningUnit(storm); fixture.Created.Remove(storm);
             for (int frame = 0; frame < 2; frame++) { Game.Instance.IsPaused = false; yield return 0; }
-
-            JObject routine = null; bool routinePass = false;
-            Action<string, bool, JObject, string> capture = (id, pass, row, description) => { routine = row; routinePass = pass; };
-            var routines = new JArray();
-            JObject flanking = InfernalProperFlanking2State35();
-            var maneuvers = new MenuOrderManeuverProbe(stormBlueprint);
-            try
-            {
-                using (var trace = new InfernalEvents34())
-                    foreach (int frame in SummonAdjacentRoutine4(fixture, "storm-giant", trace, capture, routines, flanking)) yield return frame;
-            }
-            finally { maneuvers.Dispose(); }
-            int weaponAttacks = routine == null ? 0 : ((JArray)routine["ruleRows"] ?? new JArray()).OfType<JObject>().Count(value => (string)value["event"] == "weapon-did");
-            int sunders = maneuvers.Rows.OfType<JObject>().Count(value => MenuOrderIsSunderManeuver((string)value["type"]));
-            JArray replacements = routine?["attackReplacements"] as JArray ?? new JArray();
-            bool sunderReplacement = replacements.OfType<JObject>().Any(value => MenuOrderIsSunderManeuver((string)value["maneuver"]) || ((string)value["buff"] ?? "").IndexOf("Sunder", StringComparison.OrdinalIgnoreCase) >= 0);
-            Sprint25Check("sunder-storm-attack", routine != null && routine["setupFailure"] == null && weaponAttacks >= 1 && sunders == 0 && !sunderReplacement,
-                new JObject { ["weaponAttacks"] = weaponAttacks, ["sunderManeuvers"] = sunders, ["maneuvers"] = maneuvers.Rows,
-                    ["attackReplacementBuffs"] = replacements, ["properFlanking2"] = flanking,
-                    ["routineVerdictFailure"] = routine?["verdictFailure"], ["routineSprint4VerdictPass"] = routinePass,
-                    ["attackCount"] = routine?["attackCount"], ["replacedSlots"] = routine?["replacedSlots"], ["setupFailure"] = routine?["setupFailure"],
-                    ["limit"] = "One native full-attack command on the adjacent durable hostile, observed passively; the Sprint 4 routine verdict is recorded, not asserted. A non-Sunder maneuver substitution (for example ProperFlanking2 Bull Rush) is recorded, not counted as Sunder." },
-                "A fresh Storm Giant's native full attack resolves ordinary weapon attacks; no attack is converted into a Sunder maneuver and no Sunder replacement buff is active.");
+            foreach (int frame in MenuOrderObserveAttack(fixture, "storm-giant", "sunder-storm-attack",
+                "A fresh Storm Giant's native full attack resolves ordinary weapon attacks; no attack is converted into a Sunder maneuver and no Sunder replacement buff is active.")) yield return frame;
         }
 
-        private IEnumerable<int> MenuOrderLegacyCleanup(ExpandedSummoningCorrectionFixture fixture)
+        private IEnumerable<int> MenuOrderLegacyCleanup(ExpandedSummoningCorrectionFixture fixture, MenuOrderSunderChain chain)
         {
             var library = BlueprintBootstrap.Library;
             var symbols = ExpandedSummoningBlueprints.Registered.BySymbol;
-            var improved = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library, SummonPlaytestWithdrawalPolicy.NativeImprovedSunderGuid, "native Improved Sunder");
             var sunderAi = BlueprintLibraryLookup.RequireExact<BlueprintAiCastSpell>(library, SummonPlaytestWithdrawalPolicy.NativeSunderArmorAiActionGuid, "native Sunder AI");
             var ordinaryBrain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(library, SummonPlaytestWithdrawalPolicy.NativeDumbMonsterBrainGuid, "ordinary brain");
+            var formerBrain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(library, SummonPlaytestWithdrawalPolicy.NativeGreaterEarthElementalBrainGuid, "former native brain");
             Func<string, SummonWithdrawnCapabilityFixer> fixerOf = key => ((BlueprintUnit)symbols[SummonPlaytestWithdrawalPolicy.For(key).UnitSymbol])
                 .GetComponents<SummonWithdrawnCapabilityFixer>().Single();
             var units = new List<UnitEntityData>();
+            bool casterInduced = false;
             try
             {
                 UnitEntityData storm = CastExpandedSummoningOwnTier(fixture, "storm-giant"); units.Add(storm);
                 UnitEntityData earth = CastExpandedSummoningOwnTier(fixture, "greater-earth-elemental"); units.Add(earth);
                 foreach (UnitEntityData unit in units) Sprint28SetBrainActivePreservingActions(unit, false);
                 for (int frame = 0; frame < 20; frame++) { Game.Instance.IsPaused = false; yield return 0; }
-                JObject earthFresh = MenuOrderSunderState(earth);
-                bool earthFreshOk = MenuOrderSunderGone(earthFresh) && ReferenceEquals(earth.Blueprint.Brain, ordinaryBrain) &&
-                    earth.Brain.Actions.All(value => !ReferenceEquals(value?.Blueprint, sunderAi));
-                Sprint25Check("sunder-earth-elemental-fresh", earthFreshOk, new JObject { ["state"] = earthFresh },
-                    "A fresh Greater Earth Elemental has no Improved Sunder, no Sunder action or toggle, and the native ordinary-attack brain without the Sunder AI action.");
+                SunderUnitState earthFresh = MenuOrderReadUnit(earth, chain);
+                bool assertable = SunderObservationVerdict.AbsenceAssertable(chain.Status, chain.Feat != null, chain.Action != null);
+                bool earthFreshOk = assertable && earthFresh.Gone && ReferenceEquals(earth.Blueprint.Brain, ordinaryBrain) &&
+                    earth.Brain != null && earth.Brain.Actions.Count > 0 && earth.Brain.Actions.All(value => !ReferenceEquals(value?.Blueprint, sunderAi));
+                Sprint25Check("sunder-earth-elemental-fresh", earthFreshOk, new JObject { ["state"] = MenuOrderUnitEvidence(earth, earthFresh), ["chain"] = chain.Status.ToString(),
+                    ["absenceAssertable"] = assertable, ["ordinaryBrainActions"] = new JArray((ordinaryBrain.Actions ?? new BlueprintAiAction[0]).Select(MenuOrderAiActionEvidence)) },
+                    "A fresh Greater Earth Elemental has no Improved Sunder, Sunder action or toggle, and the native ordinary-attack brain without the Sunder AI action.");
+                if (chain.Feat == null) throw new InvalidOperationException("Native Improved Sunder did not resolve; the induced cleanup cannot be judged.");
 
                 // Induced pre-change state on fresh summons (not a cold load).
-                storm.Descriptor.AddFact(improved);
-                earth.Descriptor.AddFact(improved);
-                earth.Brain.Actions.Add(new AiAction(sunderAi));
+                // Storm Giant: the former printed feat. Greater Earth Elemental:
+                // the feat plus the exact former native brain action list,
+                // rebuilt on this disposable unit from the unmodified shared brain.
+                storm.Descriptor.AddFact(chain.Feat);
+                earth.Descriptor.AddFact(chain.Feat);
+                BlueprintAiAction[] former = (formerBrain.Actions ?? new BlueprintAiAction[0]).Where(value => value != null).ToArray();
+                earth.Brain.Actions.Clear();
+                foreach (BlueprintAiAction action in former) earth.Brain.Actions.Add(new AiAction(action));
                 int frames = 0;
-                while (!((bool)MenuOrderSunderState(storm)["toggleRunning"] && (int)MenuOrderSunderState(storm)["replacementBuffActive"] >= 1) && frames < SummonPlaytestR1WaitFrames)
+                while (chain.Status == SunderProviderChain.ActiveExact && !MenuOrderReadUnit(storm, chain).LiveChain && frames < SummonPlaytestR1WaitFrames)
                 { Game.Instance.IsPaused = false; frames++; yield return 0; }
-                JObject stormBefore = MenuOrderSunderState(storm), earthBefore = MenuOrderSunderState(earth);
+                SunderUnitState stormBefore = MenuOrderReadUnit(storm, chain), earthBefore = MenuOrderReadUnit(earth, chain);
+                JObject stormBeforeEvidence = MenuOrderUnitEvidence(storm, stormBefore), earthBeforeEvidence = MenuOrderUnitEvidence(earth, earthBefore);
+                bool earthBrainRebuilt = earth.Brain.Actions.Select(value => value?.Blueprint).SequenceEqual(former) && former.Contains(sunderAi);
                 // Non-summon control: the same feat on the disposable caster.
-                fixture.Caster.Descriptor.AddFact(improved);
+                fixture.Caster.Descriptor.AddFact(chain.Feat); casterInduced = true;
                 fixerOf("storm-giant").OnPostLoad(fixture.Caster.Descriptor);
                 fixerOf("greater-earth-elemental").OnPostLoad(fixture.Caster.Descriptor);
-                bool casterKept = fixture.Caster.Descriptor.HasFact(improved);
-                fixture.Caster.Descriptor.RemoveFact(improved);
+                bool casterKept = fixture.Caster.Descriptor.HasFact(chain.Feat);
+                fixture.Caster.Descriptor.RemoveFact(chain.Feat); casterInduced = false;
                 // A foreign fixer leaves the other summon alone.
                 fixerOf("greater-earth-elemental").OnPostLoad(storm.Descriptor);
-                bool foreignUntouched = storm.Descriptor.HasFact(improved);
+                bool foreignUntouched = storm.Descriptor.HasFact(chain.Feat);
+                // The real fixers, OnPostLoad called directly.
                 fixerOf("storm-giant").OnPostLoad(storm.Descriptor);
                 fixerOf("greater-earth-elemental").OnPostLoad(earth.Descriptor);
                 int removal = 0;
-                while (!MenuOrderSunderGone(MenuOrderSunderState(storm)) && removal < SummonPlaytestR1WaitFrames)
+                while ((!MenuOrderReadUnit(storm, chain).Gone || !MenuOrderReadUnit(earth, chain).Gone) && removal < SummonPlaytestR1WaitFrames)
                 { Game.Instance.IsPaused = false; removal++; yield return 0; }
-                JObject stormAfter = MenuOrderSunderState(storm), earthAfter = MenuOrderSunderState(earth);
+                SunderUnitState stormAfter = MenuOrderReadUnit(storm, chain), earthAfter = MenuOrderReadUnit(earth, chain);
+                JObject stormAfterEvidence = MenuOrderUnitEvidence(storm, stormAfter), earthAfterEvidence = MenuOrderUnitEvidence(earth, earthAfter);
+                BlueprintAiAction[] remaining = earth.Brain.Actions.Select(value => value?.Blueprint).ToArray();
                 fixerOf("storm-giant").OnPostLoad(storm.Descriptor);
                 fixerOf("greater-earth-elemental").OnPostLoad(earth.Descriptor);
-                JObject stormRepeat = MenuOrderSunderState(storm), earthRepeat = MenuOrderSunderState(earth);
-                bool stormInducedLive = (bool)stormBefore["improvedSunder"] && (bool)stormBefore["sunderAction"] &&
-                    ((bool)stormBefore["toggleRunning"] && (int)stormBefore["replacementBuffActive"] >= 1 || !(bool)stormBefore["providerToggleResolved"]);
-                bool earthInduced = (bool)earthBefore["improvedSunder"] && earth.Brain != null;
-                bool earthClean = MenuOrderSunderGone(earthAfter) && earth.Brain.Actions.All(value => !ReferenceEquals(value?.Blueprint, sunderAi)) && earth.Brain.Actions.Count > 0;
-                bool repeatStable = JToken.DeepEquals(stormAfter, stormRepeat) && JToken.DeepEquals(earthAfter, earthRepeat);
-                Sprint25Check("sunder-legacy-cleanup", stormInducedLive && earthInduced && MenuOrderSunderGone(stormAfter) && earthClean && repeatStable &&
-                    stormAfter["primaryWeapon"].Type != JTokenType.Null,
-                    new JObject { ["stormBefore"] = stormBefore, ["stormAfter"] = stormAfter, ["stormRepeat"] = stormRepeat, ["stormWaitFrames"] = frames, ["removalFrames"] = removal,
-                        ["earthBefore"] = earthBefore, ["earthAfter"] = earthAfter, ["earthRepeat"] = earthRepeat,
-                        ["label"] = "Induced pre-change state on fresh summons; the real fixer's OnPostLoad called directly. No older save was cold-loaded." },
-                    "The real fixers remove the induced Improved Sunder with its Sunder action, running toggle and active replacement buff from the Storm Giant, and the feat plus Sunder AI action from the Greater Earth Elemental, keeping the ordinary attack action and weapon; a repeat changes nothing.");
+                JObject stormRepeat = MenuOrderUnitEvidence(storm, MenuOrderReadUnit(storm, chain)), earthRepeat = MenuOrderUnitEvidence(earth, MenuOrderReadUnit(earth, chain));
+                stormRepeat.Remove("gameSeconds"); earthRepeat.Remove("gameSeconds");
+                JObject stormAfterCompare = (JObject)stormAfterEvidence.DeepClone(), earthAfterCompare = (JObject)earthAfterEvidence.DeepClone();
+                stormAfterCompare.Remove("gameSeconds"); earthAfterCompare.Remove("gameSeconds");
+
+                SunderCleanupOutcome stormOutcome = SunderObservationVerdict.ClassifyCleanup(chain.Status, true, stormBefore, stormAfter);
+                bool stormRepeatStable = JToken.DeepEquals(stormAfterCompare, stormRepeat);
+                Sprint25Check("sunder-legacy-storm-giant", SunderObservationVerdict.Passes(stormOutcome) && stormRepeatStable && storm.Body.PrimaryHand.MaybeWeapon != null,
+                    new JObject { ["outcome"] = stormOutcome.ToString(), ["chain"] = chain.Status.ToString(), ["before"] = stormBeforeEvidence, ["after"] = stormAfterEvidence,
+                        ["repeat"] = stormRepeat, ["repeatStable"] = stormRepeatStable, ["liveChainWaitFrames"] = frames, ["removalFrames"] = removal,
+                        ["label"] = "Induced pre-change state on a fresh summon; the real fixer's OnPostLoad called directly. No older save was cold-loaded and native m_AppliedFixers bookkeeping was not exercised." },
+                    "Before removal the induced Improved Sunder brings its Sunder action and a running toggle with an active replacement buff; after the Storm Giant fixer all four are gone, the weapon stays, and a repeat changes nothing.");
+
+                SunderCleanupOutcome earthOutcome = SunderObservationVerdict.ClassifyCleanup(chain.Status, false, earthBefore, earthAfter);
+                BlueprintAiAction[] expectedRemaining = former.Where(value => !ReferenceEquals(value, sunderAi)).ToArray();
+                bool aiExact = earthBrainRebuilt && remaining.SequenceEqual(expectedRemaining) && expectedRemaining.Length > 0;
+                bool earthRepeatStable = JToken.DeepEquals(earthAfterCompare, earthRepeat);
+                Sprint25Check("sunder-legacy-earth-elemental", SunderObservationVerdict.Passes(earthOutcome) && aiExact && earthRepeatStable,
+                    new JObject { ["outcome"] = earthOutcome.ToString(), ["chain"] = chain.Status.ToString(), ["before"] = earthBeforeEvidence, ["after"] = earthAfterEvidence,
+                        ["repeat"] = earthRepeat, ["repeatStable"] = earthRepeatStable, ["formerBrainRebuilt"] = earthBrainRebuilt,
+                        ["formerBrainActions"] = new JArray(former.Select(MenuOrderAiActionEvidence)),
+                        ["remainingActions"] = new JArray(remaining.Select(MenuOrderAiActionEvidence)),
+                        ["toggleRunningClaimed"] = false,
+                        ["label"] = "Induced pre-change state on a fresh summon: the feat plus the exact former native brain action list rebuilt from the unmodified shared GreaterEarthElementalBrain; the real fixer's OnPostLoad called directly. No older save was cold-loaded.",
+                        ["limit"] = "The retained former attack action's AI decisions were not observed; its considerations are recorded. Fresh summons use the native ordinary-attack brain instead." },
+                    "On the rebuilt former brain, the Greater Earth Elemental fixer removes Improved Sunder (with its Sunder action and any toggle) and exactly the Sunder Armor AI action, leaving the former attack action; a repeat changes nothing.");
                 Sprint25Check("sunder-fixer-exact-owner", casterKept && foreignUntouched, new JObject { ["nonSummonCasterKeptFeat"] = casterKept, ["foreignFixerLeftStormAlone"] = foreignUntouched },
                     "A non-summon unit holding Improved Sunder is untouched by the summon fixers, and one creature's fixer never touches another creature.");
             }
             finally
             {
                 foreach (UnitEntityData unit in units) { CleanupExpandedSummoningUnit(unit); fixture.Created.Remove(unit); }
-                if (fixture.Caster.Descriptor.HasFact(BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library, SummonPlaytestWithdrawalPolicy.NativeImprovedSunderGuid, "native Improved Sunder")))
-                    fixture.Caster.Descriptor.RemoveFact(BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library, SummonPlaytestWithdrawalPolicy.NativeImprovedSunderGuid, "native Improved Sunder"));
+                if (casterInduced && chain.Feat != null && fixture.Caster.Descriptor.HasFact(chain.Feat)) fixture.Caster.Descriptor.RemoveFact(chain.Feat);
             }
+            foreach (int frame in MenuOrderObserveAttack(fixture, "greater-earth-elemental", "sunder-earth-elemental-attack",
+                "A fresh Greater Earth Elemental's native full attack resolves ordinary attacks with no Sunder maneuver or Sunder replacement buff.")) yield return frame;
         }
     }
 }
