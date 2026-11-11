@@ -131,7 +131,7 @@ namespace KingmakerGunslinger.Summoning
             P("hound-archon", "Archon", "Hound"),
             P("astral-deva", "Deva", "Astral"),
             P("trumpet-archon", "Archon", "Trumpet"),
-            P("satyr", "Satyr"), P("lillend-azata", "Lillend Azata"),
+            P("satyr", "Satyr"), P("lillend-azata", "Azata", "Lillend"),
             P("bearded-devil", "Devil", "Bearded (Barbazu)"), P("kyton-chain-devil", "Kyton (Chain Devil)"),
             P("barbed-devil", "Devil", "Barbed (Hamatula)"), P("bone-devil", "Devil", "Bone (Osyluth)"),
             P("babau", "Demon", "Babau"), P("hezrou", "Demon", "Hezrou"),

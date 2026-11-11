@@ -67,6 +67,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\MephitBreathPolicy.cs"><Link>Summoning\MephitBreathPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonPlaytestR5Policy.cs"><Link>Summoning\SummonPlaytestR5Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\AlphabeticalMenuObservationVerdict.cs"><Link>RuntimeTesting\AlphabeticalMenuObservationVerdict.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SunderObservationVerdict.cs"><Link>RuntimeTesting\SunderObservationVerdict.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SummonClericObservationVerdict.cs"><Link>RuntimeTesting\SummonClericObservationVerdict.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SpiderEscapeObservationVerdict.cs"><Link>RuntimeTesting\SpiderEscapeObservationVerdict.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SpiderCompletionVerdicts.cs"><Link>RuntimeTesting\SpiderCompletionVerdicts.cs</Link></Compile>
@@ -224,6 +225,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs"><Link>ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs</Link></Compile>
     <Compile Include="SummonPublicationPolicyTests.cs" />
     <Compile Include="SummonAlphabeticalMenuTests.cs" />
+    <Compile Include="SummonMenuOrderAndSunderTests.cs" />
     <Compile Include="SummonClericAlignmentTests.cs" />
     <Compile Include="SummonVariantMenuLayoutTests.cs" />
     <Compile Include="SummonSameTurnActivationTests.cs" />

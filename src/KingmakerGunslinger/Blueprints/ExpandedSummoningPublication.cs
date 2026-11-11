@@ -198,6 +198,11 @@ namespace KingmakerGunslinger.Blueprints
         {
             SummonMenuOrderKey owned;
             if (OwnedOrderKeys.TryGetValue(value.AssetGuid, out owned)) return owned;
+            // A Races Unleashed original row keeps the label it shows, and takes
+            // its base multiplicity from the Spider Summoner placement matrix.
+            SummonMultiplicity? spider = SpiderSummonerCatalog.OriginalRowQuantity(
+                family, tier, value.AssetGuid);
+            if (spider.HasValue) return HostOrderKey(value, spider, true);
             SummonNativeOptionSpec native = SummonNativeOptionCatalog.Find(
                 family, tier, value.AssetGuid);
             return HostOrderKey(value, native == null ? (SummonMultiplicity?)null :

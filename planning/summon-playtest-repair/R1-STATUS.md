@@ -61,6 +61,11 @@ and local.
 | CUT-04 Lillend Bardic Suggestion | `BardicSuggestion` grant on the unit, the named `$KMG.Lillend.BardicSuggestion.Parameters` component, the noncombat dispatcher's route (`BardicSuggestion = null`). | The `BardicSuggestion` ability and its `BindSuggestionProvider32` / Fascinate configuration; `ConfigureSuggestion32` (Satyr and Lillend Suggestion spell consumers) unchanged; Lillend spellbook, Courage, Competence, Fascinate. Null-guarded consumers (`LillendBardicMemory32`, `LillendFascinated32`) fall through to native behavior. | Fixer removes the exact `BardicSuggestion` fact. |
 | CUT-05 Fire Giant Sunder | Native Improved Sunder (`9719015e…`) is no longer in the Fire Giant's feat list. Its own AddFacts grant the native `SunderAction` (`fa9bfb9f…`) and, with ProperFlanking2 installed, its default-on `SunderActionToggleAbility` (`d9604eade0f54d88a899b5052f98d536`), which while running applies `SunderActionToggleBuff` (`f9f7edc1148c453181460dccbbefa3dc`, the only carrier of AttackReplacementWithCombatManeuver). All of them go with the feat. (`a0808193…` `SunderArmorToggleAbility` is PF2's never-granted save-cleanup dummy; see the first run's failure below.) | The native feat and all native/ProperFlanking2 code untouched; Storm Giant's separate grant unchanged; Fire Giant's Great Cleave, the other feats, weapon and attacks unchanged. ProperFlanking2 not altered. | Fixer removes the exact feat from the exact KMG Fire Giant; native AddFacts deactivation removes the action and toggle, and the toggle's deactivation stops it and removes its buff (observed natively, induced state). |
 
+> **Later owner decision (SUNDER-01, 2026-11-10).** No supported summon keeps Sunder: Storm Giant and the Greater
+> and Elder Earth Elementals are now withdrawn too, with new fixer names. See
+> [../summon-menu-order-and-sunder/STATUS.md](../summon-menu-order-and-sunder/STATUS.md). The R1 verdicts below,
+> including the Storm Giant control, stay with their R1 candidates.
+
 The load fixer is `SummonWithdrawnCapabilityFixer`, a native `FixUnitOnPostLoad`
 component on each affected unit blueprint. Native `UnitDescriptor.PostLoad` runs
 each named fixer once per unit and records its name (`m_AppliedFixers`). Names:

@@ -34,8 +34,17 @@ namespace KingmakerGunslinger.Summoning
     /// <item>CUT-05 Fire Giant Sunder: the native Improved Sunder feat is not
     /// granted to the KMG Fire Giant. That feat's own AddFacts are the source
     /// of both the native Sunder Armor action and ProperFlanking2's default-on
-    /// attack-replacement toggle, so removing the feat removes both. Storm
-    /// Giant keeps its separate grant.</item>
+    /// attack-replacement toggle, so removing the feat removes both.</item>
+    /// <item>SUNDER-01 (owner decision, 2026-11-10, superseding CUT-05's
+    /// Storm Giant exception): no summon offered through this module's Summon
+    /// Monster / Nature's Ally routes keeps or uses Sunder. Storm Giant loses
+    /// its own Improved Sunder grant. The Greater and Elder Earth Elementals
+    /// inherited the native feat and the native GreaterEarthElementalBrain
+    /// (whose actions are SunderArmorAiAction and an attack scored around
+    /// sundered targets) from their native donors; each KMG unit now omits
+    /// the feat and uses the unmodified native Dumb Monster Brain that the
+    /// Huge Earth Elemental already uses. Shared native feats, abilities,
+    /// brains and donors are never modified.</item>
     /// </list>
     ///
     /// <para>Kingmaker persists a unit's granted facts and its brain's action
@@ -60,6 +69,69 @@ namespace KingmakerGunslinger.Summoning
 
         internal const string NativeImprovedSunderGuid =
             "9719015edcbf142409592e2cbaab7fe1";
+
+        /// <summary>Native SunderArmorAiAction: casts the native SunderAction.
+        /// Its exact installed type is BlueprintAiCastSpell (RequireExact does
+        /// not accept a base type; candidate c6e861a98a failed closed on it).</summary>
+        internal const string NativeSunderArmorAiActionGuid =
+            "23bcb18f2dd735c4d9d2d228f654efce";
+
+        /// <summary>Native GreaterEarthElementalBrain, shared by the native
+        /// summoned and hostile Greater/Elder Earth Elementals. Never modified.</summary>
+        internal const string NativeGreaterEarthElementalBrainGuid =
+            "d8342bca1ce38294bbf47f9566e6e2aa";
+
+        /// <summary>Native Dumb Monster Brain (ordinary attack only), already
+        /// used by the native and KMG Huge Earth Elemental.</summary>
+        internal const string NativeDumbMonsterBrainGuid =
+            "5abc8884c6f15204c8604cb01a2efbab";
+
+        /// <summary>
+        /// DISMANTLE-01 (owner decision, 2026-11-11): the Bebelith's Dismantle
+        /// Armor is removed like Sunder. It was a post-claw-hit rider that
+        /// rolled a native SunderArmor combat maneuver. While withdrawn, the
+        /// builder gives the combat component no dismantled-armor buff, the
+        /// component's attack handler does no Dismantle work even with a
+        /// buff reference, and an already applied dismantled-armor buff in an
+        /// older save contributes no armor-class penalty (an inert legacy
+        /// marker). The buff blueprint, its component and the retained rules
+        /// policy stay registered for save compatibility.
+        /// </summary>
+        internal static readonly bool BebelithDismantleArmorWithdrawn = true;
+
+        /// <summary>
+        /// The one decision both Bebelith handlers consult. Penetrating
+        /// Strike never depends on the Dismantle withdrawal; the Dismantle
+        /// trigger needs both an active mechanic and a configured buff; the
+        /// legacy dismantled-armor penalty applies only while the mechanic is
+        /// active.
+        /// </summary>
+        internal static bool BebelithEffectActive(BebelithEffect effect, bool dismantleWithdrawn, bool dismantledArmorConfigured)
+        {
+            switch (effect)
+            {
+                case BebelithEffect.PenetratingStrike: return true;
+                case BebelithEffect.DismantleTrigger: return !dismantleWithdrawn && dismantledArmorConfigured;
+                case BebelithEffect.DismantledArmorPenalty: return !dismantleWithdrawn;
+                default: return false;
+            }
+        }
+
+        /// <summary>The armor-class penalty an existing dismantled-armor
+        /// effect contributes: none while withdrawn, otherwise the live
+        /// contribution of the dismantled piece (never negative).</summary>
+        internal static int BebelithDismantledArmorPenalty(bool dismantleWithdrawn, Func<int> lostArmorClass)
+        {
+            if (!BebelithEffectActive(BebelithEffect.DismantledArmorPenalty, dismantleWithdrawn, true) || lostArmorClass == null) return 0;
+            return Math.Max(0, lostArmorClass());
+        }
+
+        /// <summary>KMG creatures that inherited Sunder from a native donor
+        /// rather than from their own builder, and so are corrected by the
+        /// withdrawal step itself: the feat leaves their AddFacts and the
+        /// shared Sunder brain is replaced by the native ordinary-attack brain.</summary>
+        internal static readonly string[] DonorInheritedSunderKeys =
+            { "greater-earth-elemental", "elder-earth-elemental" };
 
         /// <summary>The native fixer records each component name once per
         /// unit, so this name must stay fixed. A later withdrawal needs a new
@@ -95,7 +167,29 @@ namespace KingmakerGunslinger.Summoning
                 new[] { "KMG.Summoning.Giant.Sprint29.CloudFogAi" },
                 new[] { "KMG.Summoning.Giant.Sprint29.CloudFogResource" },
                 Array.Empty<string>()),
+            // SUNDER-01. None of these units carried a withdrawal fixer
+            // before, so each fixer name below is new and runs once on an
+            // older saved summon. A later withdrawal from one of these units
+            // needs yet another name.
+            new WithdrawnCapabilitySpec("storm-giant", "KMG.Summoning.Unit.StormGiant",
+                Array.Empty<string>(), Array.Empty<string>(), Array.Empty<string>(),
+                new[] { NativeImprovedSunderGuid }),
+            new WithdrawnCapabilitySpec("greater-earth-elemental", "KMG.Summoning.Unit.GreaterEarthElemental",
+                Array.Empty<string>(), Array.Empty<string>(), Array.Empty<string>(),
+                new[] { NativeImprovedSunderGuid }, new[] { NativeSunderArmorAiActionGuid }),
+            new WithdrawnCapabilitySpec("elder-earth-elemental", "KMG.Summoning.Unit.ElderEarthElemental",
+                Array.Empty<string>(), Array.Empty<string>(), Array.Empty<string>(),
+                new[] { NativeImprovedSunderGuid }, new[] { NativeSunderArmorAiActionGuid }),
         };
+
+        /// <summary>True when this creature's native Improved Sunder grant is
+        /// withdrawn (SUNDER-01 and the earlier Fire Giant cut).</summary>
+        internal static bool WithdrawsSunderFrom(string creatureKey)
+        {
+            WithdrawnCapabilitySpec spec = For(creatureKey);
+            return spec != null && spec.NativeFeatGuids.Contains(NativeImprovedSunderGuid,
+                StringComparer.OrdinalIgnoreCase);
+        }
 
         internal static IReadOnlyList<WithdrawnCapabilitySpec> All
         { get { return Array.AsReadOnly(Specs); } }
@@ -149,17 +243,20 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
+    internal enum BebelithEffect { PenetratingStrike, DismantleTrigger, DismantledArmorPenalty }
+
     internal sealed class WithdrawnCapabilitySpec
     {
         internal WithdrawnCapabilitySpec(string creatureKey, string unitSymbol,
             string[] factSymbols, string[] aiActionSymbols, string[] resourceSymbols,
-            string[] nativeFeatGuids)
+            string[] nativeFeatGuids, string[] nativeAiActionGuids = null)
         {
             CreatureKey = creatureKey; UnitSymbol = unitSymbol;
             FactSymbols = Array.AsReadOnly(factSymbols);
             AiActionSymbols = Array.AsReadOnly(aiActionSymbols);
             ResourceSymbols = Array.AsReadOnly(resourceSymbols);
             NativeFeatGuids = Array.AsReadOnly(nativeFeatGuids);
+            NativeAiActionGuids = Array.AsReadOnly(nativeAiActionGuids ?? Array.Empty<string>());
         }
 
         internal string CreatureKey { get; private set; }
@@ -172,5 +269,9 @@ namespace KingmakerGunslinger.Summoning
         internal IReadOnlyList<string> ResourceSymbols { get; private set; }
         /// <summary>Native feats no longer granted to this creature alone.</summary>
         internal IReadOnlyList<string> NativeFeatGuids { get; private set; }
+        /// <summary>Native cast-spell AI actions (exact type
+        /// BlueprintAiCastSpell) removed from an older saved brain of this
+        /// creature alone. The shared native action is never modified.</summary>
+        internal IReadOnlyList<string> NativeAiActionGuids { get; private set; }
     }
 }

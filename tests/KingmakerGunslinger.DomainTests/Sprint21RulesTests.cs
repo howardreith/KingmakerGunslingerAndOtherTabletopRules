@@ -658,8 +658,12 @@ namespace KingmakerGunslinger.DomainTests
                 StringComparison.Ordinal);
             Assertions.True(dismantle > 0,
                 "The dismantle handler must exist.");
-            string sequence = components.Substring(dismantle,
-                Math.Min(3000, components.Length - dismantle));
+            // The whole handler, up to the next member (DISMANTLE-01 added a
+            // withdrawal guard at its top, so a fixed-length window no longer
+            // reached the save).
+            int handlerEnd = components.IndexOf("public void OnNewRound()", dismantle, StringComparison.Ordinal);
+            Assertions.True(handlerEnd > dismantle, "The dismantle handler must end before OnNewRound.");
+            string sequence = components.Substring(dismantle, handlerEnd - dismantle);
             Assertions.False(sequence.Contains("SavingThrowType.Reflex, 25"),
                 "The invented difficulty class 25 must be gone.");
             Assertions.True(sequence.IndexOf("CombatManeuver.SunderArmor",

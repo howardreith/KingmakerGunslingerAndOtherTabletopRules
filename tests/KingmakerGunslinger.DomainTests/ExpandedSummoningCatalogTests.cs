@@ -22,8 +22,10 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(routes.All(SummonVisibilityCatalog.IsPublished),
                 "The candidate exposes every legal Lillend route.");
             SummonVisibilityCatalog.Validate(); SummonChoicePresentationPolicy.Validate();
-            Assertions.Equal("Lillend Azata", SummonChoicePresentationPolicy.For(lillend.Key).Label,
-                "The creature retains its deliberate identity.");
+            // Owner decision of 2026-11-10: family-first "Azata, Lillend",
+            // beside Azata, Bralani and Azata, Ghaele. The key is unchanged.
+            Assertions.Equal("Azata, Lillend", SummonChoicePresentationPolicy.For(lillend.Key).Label,
+                "The Lillend choice uses its family-first presentation.");
             var identities = ExpandedSummoningIdentityCatalog.Build().ToDictionary(value => value.Symbol);
             foreach (var row in new[] {
                 new { Suffix = "Spellbook", Type = "BlueprintSpellbook" },

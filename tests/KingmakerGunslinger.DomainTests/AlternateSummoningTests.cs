@@ -300,12 +300,15 @@ namespace KingmakerGunslinger.DomainTests
                 "Exactly the Redcap split option replaces the SM V umbrella.");
             Assertions.Equal(exposed.Count + 1 + 1, plan.Final.Count,
                 "The menu must hold every published creature, the split option and the foreign one.");
-            string[] shown = plan.Final.Where(value => !ReferenceEquals(value, foreign))
-                .Select(value => exposed.Any(choice => choice.Symbol == value.Name) ?
+            // Quantity first, then displayed creature name (owner decision of
+            // 2026-11-10, superseding the earlier name-first rule).
+            var shown = plan.Final.Where(value => !ReferenceEquals(value, foreign))
+                .Select(value => new { Quantity = (int)value.Quantity.Value, Name = exposed.Any(choice => choice.Symbol == value.Name) ?
                     SummonChoicePresentationPolicy.For(exposed.Single(choice => choice.Symbol == value.Name)
-                        .Placement.Creature.Key, value.Quantity.Value).CreatureName : "Redcap").ToArray();
-            Assertions.True(shown.SequenceEqual(shown.OrderBy(value => value, StringComparer.OrdinalIgnoreCase)),
-                "The adapter menu must follow displayed creature names.");
+                        .Placement.Creature.Key, value.Quantity.Value).CreatureName : "Redcap" }).ToArray();
+            Assertions.True(shown.SequenceEqual(shown.OrderBy(value => value.Quantity)
+                .ThenBy(value => value.Name, StringComparer.OrdinalIgnoreCase)),
+                "The adapter menu must follow quantity, then displayed creature names.");
 
             // Withholding the KMG Dire Wolf keeps the host's 1d3 duplicate.
             AlternateSummoningRoster withheld = WithCreatures(new SummonCreatureSpec[0],

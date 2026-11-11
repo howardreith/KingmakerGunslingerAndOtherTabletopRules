@@ -103,7 +103,9 @@ namespace KingmakerGunslinger.DomainTests
                 "Only placements that are unqualified or held on a proven engine barrier may remain hidden, and the catalog must hide exactly as many as it declares it hides.");
         }
 
-        internal static void DisplayOrderIsAlphabeticalByCreatureName()
+        // Owner decision of 2026-11-10 supersedes the earlier name-first rule:
+        // base multiplicity leads, then the family-first name, then identity.
+        internal static void DisplayOrderIsQuantityThenCreatureName()
         {
             var steam = new Fake("steam", SummonMultiplicity.One);
             var air = new Fake("air", SummonMultiplicity.One);
@@ -111,22 +113,23 @@ namespace KingmakerGunslinger.DomainTests
             var airBig = new Fake("air-d4", SummonMultiplicity.OneD4PlusOne);
             var dog = new Fake("dog", SummonMultiplicity.OneD3);
             var nativeWolf = new Fake("native-wolf", SummonMultiplicity.One);
+            var unknown = new Fake("unknown-quantity", null);
             var thirdA = new Fake("third-a", null);
             var thirdB = new Fake("third-b", null);
             var names = new Dictionary<Fake, string> {
                 { steam, "Mephit, Steam" }, { air, "Mephit, Air" },
                 { airGroup, "Mephit, Air" }, { airBig, "MEPHIT, AIR" },
-                { dog, "Dog" }, { nativeWolf, "Wolf" } };
-            Fake[] originals = { thirdA, nativeWolf, thirdB };
+                { dog, "Dog" }, { nativeWolf, "Wolf" }, { unknown, "Aardvark" } };
+            Fake[] originals = { thirdA, unknown, nativeWolf, thirdB };
             Fake[] additions = { steam, airBig, dog, airGroup, air };
             IReadOnlyList<Fake> result = SummonDisplayOrderPolicy.Order(originals, additions,
                 value => names.ContainsKey(value) ?
                     SummonMenuOrderKey.Host(names[value], value.Kind, value.Guid, true) :
                     SummonMenuOrderKey.Host(value.Guid, value.Kind, value.Guid, false));
-            Assertions.Equal("dog|air|air-d3|air-d4|steam|native-wolf|third-a|third-b",
+            Assertions.Equal("air|steam|native-wolf|dog|air-d3|air-d4|unknown-quantity|third-a|third-b",
                 string.Join("|", result.Select(value => value.Guid)),
-                "Creature name must lead, equal names order one/1d3/1d4+1 case-insensitively, and unclassified rows stay last in relative order.");
-            Assertions.True(originals.SequenceEqual(new[] { thirdA, nativeWolf, thirdB }) &&
+                "Every single summon precedes every 1d3, which precedes every 1d4+1; names order case-insensitively inside each group; an unknown base quantity follows the groups; unclassified rows stay last in relative order.");
+            Assertions.True(originals.SequenceEqual(new[] { thirdA, unknown, nativeWolf, thirdB }) &&
                 additions.SequenceEqual(new[] { steam, airBig, dog, airGroup, air }),
                 "Ordering must not mutate its input arrays.");
             Assertions.Equal(originals.Length + additions.Length,
