@@ -135,5 +135,15 @@
   not offered in a Herald Caller conversion. The latest native result for this
   feature remains FAIL, 70 PASS / 1 FAIL; those unresolved census findings are an
   explicit owner-accepted exception, not a passing result. This describes the released
-  v0.0.181. An unreleased development candidate repairs these rows; its status and open
-  checks are in `planning/races-unleashed-compatibility/STATUS.md`.
+  v0.0.181. The Races Unleashed Spider Summoner integration (PR #125) repairs these rows.
+  It was owner-accepted and merged on 2026-11-11 but is not yet in a release, so the
+  limitation stays in v0.0.181 until a release includes it. Its evidence is in
+  `planning/races-unleashed-compatibility/STATUS.md`.
+- With Call of the Wild's "metamagic for spontaneous spell conversion" setting
+  enabled, a Herald Caller conversion popup over a metamagic source also lists
+  Call of the Wild's own base-level conversions. They appear as raw native
+  Summon Monster rows, for example "Summon Monster IV (Dire Wolf)" in a level 5
+  popup. Expanded Summoning projects only the native conversion list, and these
+  extra rows are not Spider Summoner behavior. Projecting or hiding them is an
+  open design choice; nothing was changed (recorded 2026-11-11 in
+  `planning/races-unleashed-compatibility/STATUS.md`).
