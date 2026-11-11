@@ -1,4 +1,22 @@
-# Gunslinger playtest repairs: focused checkpoint, draft PR / STOP
+# Gunslinger playtest repairs: review P2 corrected at e04609c2f1, awaiting re-review / STOP
+
+Current (2026-11-11). See `planning/gunslinger-playtest-repairs/STATUS.md`. Draft PR #129.
+- **P2 correction.** The review found Thornstep's retirement could delete a previously claimed copy returned to
+  its former container. A prefix on the exact source's `LootComponent.OnDataSetted` now removes only a
+  zero-`ItemEntity.Time` (never party-held) reward and retains every other copy. It retires the known-item row
+  so the native blueprint decrement never runs.
+- **Tests.** Six `retired-loot.*` behavior tests run over a transcribed native diff.
+- **Evidence.**
+  - Focused gate: 153 of 2,948, 0 failures.
+  - Patch target 1/1; spellbook targets 40/40.
+  - DLL `f5ba9fc4...96fc`.
+- **Correction of the Oleg record.** A copy sold to Oleg after the stocked copy was bought is decremented too.
+- **Native rows remain NOT RUN.**
+- **Next:** owner re-review; then an explicitly selected candidate run for the native checks in STATUS.
+
+---
+
+# (superseded) Gunslinger playtest repairs: focused checkpoint, draft PR / STOP
 
 Current (2026-11-11). See `planning/gunslinger-playtest-repairs/STATUS.md`. Branch
 `codex/gunslinger-playtest-repairs` from master `aa91f46571`, source commit `bfd39dda00`. Nothing merged,

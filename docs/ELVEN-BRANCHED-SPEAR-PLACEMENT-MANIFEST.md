@@ -12,11 +12,15 @@ project cleanup target. Boughkeeper and the other four placements are unchanged.
 unchanged. Generic cold iron is therefore first purchasable from the Dire Narlmarches village trader, Pitax
 or BTSL Honest Guy, not in Act I.
 
-**Existing saves.** The native 2.1.7b known-item reconciliation removes these from older saves:
-- Oleg's already generated, unsold stocked copies (`SharedVendorTables.GetTable`);
-- an unlooted Thornstep already generated in its former container (`LootPersistentData.UpdateLoot` on area load).
+**Existing saves.**
+- **Oleg.** The native 2.1.7b known-item reconciliation (`SharedVendorTables.GetTable`) removes Oleg's
+  already generated, unsold stocked copies. It never replenishes stock. A copy sold back after the stocked one
+  was bought is also decremented.
+- **Thornstep.** `RetiredLootReconciliationPatch` removes only an untouched generated Thornstep from its exact
+  former container (persisted `ItemEntity.Time` still zero). It retains any copy the party has held, and the
+  native blueprint decrement is suppressed.
 
-That reconciliation never replenishes stock and never touches player inventories. This was not natively
+Neither path touches player inventories. This was not natively
 observed on this branch. The 0.0.143 text below describes the former six-placement contract.
 
 ## Current 0.0.143 contract

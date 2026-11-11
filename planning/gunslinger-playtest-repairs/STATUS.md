@@ -1,11 +1,16 @@
 # Gunslinger playtest repairs (2026-11-11): status
 
-**Reviewable development checkpoint. Focused/compile evidence only. No candidate package was built, no game
-was launched, and no native acceptance row has been observed.**
+**Review correction applied (2026-11-11); awaiting re-review.** The review of `5e7ffa13fd` found one P2:
+Thornstep's retirement could delete a previously claimed copy that had been returned to its former container.
+It is corrected in `e04609c2f1` (see "Existing-save handling"). The status stays a reviewable development
+checkpoint. Evidence is focused and compile only: no candidate package was built, no game was launched, and no
+native acceptance row has been observed.
 
 Branch `codex/gunslinger-playtest-repairs` from master `aa91f46571eb239df36e0233082153f2cba01899` (v0.0.182
-records merge). Source commit `bfd39dda00c7da7d8c8e8a304cd47556f5d2384f`; this record and the acquisition docs
-follow in a documentation commit. Draft PR #129. Nothing is merged, tagged, released or installed.
+records merge). Draft PR #129. Nothing is merged, tagged, released or installed.
+- Source commits: `bfd39dda00c7da7d8c8e8a304cd47556f5d2384f` (six repairs) and
+  `e04609c2f1e46d2be29cda76501ed3095efa3cb2` (review correction).
+- Documentation commits follow each.
 
 ## Changes
 
@@ -108,6 +113,8 @@ Thornstep leaves:
 **Added:**
 - `Retired = { NamedSpearKind.Thornstep }`;
 - an exact `CleanupSpec` for its former source;
+- `RetiredLootSources`, the exact former source. Publication validates its identity, its cleanup row and the
+  absence of the retired row, and `RetiredLootReconciliationPatch` uses it for older saves (below);
 - publication validation requiring exactly one mutation per active spec, and no retired kind in loot or vendor
   specs. This replaces `_loot.Count < 6`.
 
@@ -121,34 +128,58 @@ Thornstep leaves:
 effects and visuals. Boughkeeper's Old Mesa placement is unchanged, and the test pins it. The
 development-only "Add one Thornstep" grant (disposable saves) stays as a legacy-copy fixture.
 
-## Existing-save handling (engine contract, inspected; not natively observed)
+## Existing-save handling (engine contract inspected; correction tested offline; not natively observed)
 
-The installed 2.1.7b `Assembly-CSharp` (MVID `07fa1e4d-…`) was decompiled with ilspycmd 9.1. No mod-side save
-migration was added, because the engine already does the exact, idempotent work.
+The installed 2.1.7b `Assembly-CSharp` (MVID `07fa1e4d-...`) was decompiled with ilspycmd 9.1: first by type,
+then as a full project for the review correction.
 
-- **Oleg (`Kingmaker.UnitLogic.Parts.SharedVendorTables.GetTable`).**
+- **Oleg (`Kingmaker.UnitLogic.Parts.SharedVendorTables.GetTable`).** No mod-side migration.
   - On the first access to a table per loaded game, the persisted `KnownItems` is diffed with the current
-    `LootItemsPackFixed` rows (`GetLootDifference`). `UpdateLootItems` subtracts the removed counts from the
-    persisted `Entries`, clamped at 0, and then `KnownItems` is replaced.
+    `LootItemsPackFixed` rows (`GetLootDifference`). `UpdateLootItems` subtracts one per removed row from the
+    persisted blueprint/count `Entries`, clamped at 0, and then `KnownItems` is replaced.
   - An unsold stocked copy is removed. A purchased copy is never replenished.
-  - The decrement is one per removed row, by blueprint. So a cold iron spear the player sold to Oleg stays.
-    If the stocked copy is still unsold, the stacked count drops from 2 to 1.
   - Other tables, other items and player inventories are never touched. `PreSave` persists the result, so
     reloads don't reintroduce it.
-- **Thornstep (`LootComponent.OnDataSetted` → `LootPersistentData.UpdateLoot`, on area load).**
-  - The persisted `m_KnownItems` is compared with the container's current `LootTables` items. A dropped
-    Thornstep row calls `Loot.Remove(Thornstep, 1)` on that container's own collection and sets its known count
-    to 0.
-  - Native and foreign loot rows are unchanged.
-  - A Thornstep already taken is unaffected: it is not in the container, and the engine logs a harmless
-    "Can't remove". A copy owned anywhere else is never searched.
-  - **Fresh source:** never generated with Thornstep.
-  - **Generated, unlooted source in an older save:** removed when Riverine Rise is next loaded.
-  - **Limitations:**
-    - A save whose container has no persisted known-item history (`m_KnownItems == null`) keeps its copy.
-    - If a player took the original and later deposited a Thornstep back into that same container, the engine
-      cannot tell the two apart and removes one.
-    - An unloaded area keeps the copy in its saved state until that area is loaded.
+  - **Correction of the earlier record.** It said a cold iron spear the player sold to Oleg always stays; that
+    was wrong.
+    - A shared table persists only blueprint/count entries, with no per-item state such as `SellTime`, so a
+      sold copy and the stocked copy cannot be told apart.
+    - If the stocked copy was bought and the player later sold a cold iron spear to Oleg, the one-count
+      decrement removes that sold copy from Oleg's stock.
+    - If the stocked copy is unsold, the stacked count drops from 2 to 1.
+    - The sold item is vendor stock, not player inventory. There is no safer provenance to use, so this is
+      recorded as the precise Oleg migration limitation rather than changed.
+- **Thornstep (`RetiredLootReconciliationPatch`, a prefix on the exact source's `LootComponent.OnDataSetted`).**
+  - **The native behavior the review identified.** `LootPersistentData.UpdateLoot` would call
+    `Loot.Remove(Thornstep, 1)` by blueprint, from the end of the collection. That deletes a copy the player
+    claimed and put back, and with two copies it removes the last one.
+  - **Provenance used.** `ItemEntity.Time` is persisted (`[JsonProperty]`). The entity constructor never sets it,
+    and `ItemsCollection.Add` stamps `Player.GameTime` only when an item enters the party inventory
+    (`IsPlayerInventory`); `Split` also stamps it. Adding to a container does not.
+    - A generated reward in its container therefore keeps `Time == 0` until the party holds it.
+    - Every claimed-and-returned or deposited copy carries a nonzero time.
+    - The zone-exit mass-loot window can take items from unviewed bodies, so the container's `IsViewed` flag is
+      not used as proof.
+  - **Plan (`RetiredLootReconciliationPolicy`).** Only containers whose `LootTables` reference
+    `3322c56f38031eb4983b6f87c95081b7` are affected.
+    - **No persisted history** (`m_KnownItems == null`): nothing changes, and the engine also skips
+      reconciliation, so every copy is retained.
+    - **History without Thornstep** (fresh source, or already reconciled): nothing changes.
+    - **History records Thornstep:** zero-time, unequipped instances, at most the recorded count, are removed
+      by exact reference. Every other Thornstep is retained. The history row is set to 0 before the native
+      diff, so the engine never decrements by blueprint, and repeat loads are no-ops.
+    - **Faults:** on any fault the history row is still retired, so the copy is retained.
+    - **Scope:** native rows, deposits and other containers are never touched.
+  - **Guards.** `Prepare` pins the MVID, `OnDataSetted` 59 IL bytes (`0x06001A28`), `UpdateLoot` 219 IL bytes
+    (`0x0600A6C8`), the `Data` property type and the `m_KnownItems` field type. The adapter also does nothing if
+    the current definition still publishes the item.
+  - **Results:**
+    - **Fresh source:** never generated with Thornstep.
+    - **Generated, untouched source in an older save:** removed when Riverine Rise is next loaded.
+    - **Claimed and returned:** retained.
+    - **Missing history:** retained.
+  - **Remaining limitation.** A Thornstep added by the engine to a container generated before the placement
+    existed also has zero time and is removed. That copy has likewise never been held.
 
 ## Validation
 
@@ -160,11 +191,31 @@ migration was added, because the engine already does the exact, idempotent work.
 | Harmony target preparation (read-only, no game launch) | `scripts/Test-SummonCleanup2ConsolePatchTargets.ps1 -ModAssemblyPath artifacts/bin/Release/KingmakerGunslinger/KingmakerGunslinger.dll` | 1 s | 40/40 PASS: all remaining patch targets resolve, and the 10 withdrawn spellbook patches are absent |
 | Historical validator | `python -I -B` → `validate_mysterious_stranger.validate` | <1 s | PASS |
 | Engine-contract inspection | ilspycmd on `LootComponent`, `ItemsCollection`, `SharedVendorTables`, `VendorLogic`, `UnitPartVendor`, `UnitEntityData` | about 6 min of tooling | Contract read, not a test |
+| **Review correction** | | | |
+| Full decompile for provenance | `ilspycmd -p` of `Assembly-CSharp` (`ItemEntity`, `ItemsCollection.Add`, `MassLootHelper`, `LootCollector`) | about 5 min of tooling | Contract read, not a test |
+| Focused gate, correction run 1 | filter above plus `retired-loot` | 16 s | **Compile FAIL** (missing `Kingmaker.Blueprints.DirectSerialization` using). Fixed |
+| Focused gate, correction run 2 | same | 24 s | 153 of 2,948: the 6 `retired-loot.*` cases PASS; **2 failures** (`model-d.SalesmanNamedLootAndStarterUnchanged`, `acquisition.weapon-active-cleanup-disjoint`) because `RetiredSources` sat before `CleanupLoot`, where the disjointness test treats GUIDs as active. Moved after `CleanupLoot` |
+| Focused gate, correction run 3 | same | 21 s | Compile PASS; 153 of 2,948, 0 failures |
+| Focused gate on commit `e04609c2f1` | same | about 3 s (incremental) | 153 of 2,948, 0 failures |
+| New patch target preparation (read-only) | a scratch copy of the target checker scoped to `KingmakerGunslinger.Acquisition.RetiredLootReconciliationPatch` | 1 s | 1/1 PASS: the installed Harmony12 shim ran `Prepare` (all pins) and resolved `LootComponent::OnDataSetted` |
+| Spellbook target preparation on the new DLL | `scripts/Test-SummonCleanup2ConsolePatchTargets.ps1` | 1 s | 40/40 PASS |
 
-- **Compile output** (development, not a candidate; same source bytes as `bfd39dda00`):
-  `artifacts/bin/Release/KingmakerGunslinger/KingmakerGunslinger.dll`, SHA-256
-  `6d15ed3ba08ed9eb51a0f9d72560bed37c9a038bb5cbd4938b801489c8bfccfc`. It was not packaged, staged or deployed.
-- **Ledger:** about 50 s of validation inside the 15-minute target.
+- **Compile output** (development, not a candidate). Neither was packaged, staged or deployed:
+  - at `bfd39dda00`: SHA-256 `6d15ed3ba08ed9eb51a0f9d72560bed37c9a038bb5cbd4938b801489c8bfccfc`;
+  - at `e04609c2f1`: SHA-256 `f5ba9fc4a1f6f87f1efd3621d9545b321725adc711469f4c2dfbb4a4a5f696fc`.
+- **New behavior tests (`retired-loot.*`).** These run the production policy, then a model of the native
+  `UpdateLoot`/`UpdateLootItem`/`Remove(blueprint, count)` diff transcribed from the decompiled method:
+  - untouched generated reward removed once, with repeat loads idempotent;
+  - claimed-and-returned copy retained, with an unprotected control showing the reviewed deletion;
+  - missing history retained at zero and nonzero time;
+  - unrelated items preserved: native rows, a partially looted row and a deposited dagger;
+  - mixed copies: the exact untouched instance is removed and the deposited one retained, with a control
+    showing native would remove the deposited copy;
+  - claimed and fresh boundaries.
+
+  The native method itself was not executed.
+- **Ledger:** about 50 s of validation for the six repairs and about 90 s for the correction, inside the
+  15-minute target.
 - **Not run:** a broad suite, Sprint/Tranche, a package or native work. The full acceptance matrix needs native
   fixtures that do not exist yet (see "Remaining native checks"). Building and qualifying them would exceed the
   30-minute ordinary ceiling, so it was not launched (VALIDATION-POLICY §7).
@@ -177,8 +228,8 @@ migration was added, because the engine already does the exact, idempotent work.
 | Deadeye Armed | Actual active-status tooltip explains benefit, range penalties and expiration | **NOT RUN** (native hover) | Source text above; `deadeye.*` and `ac.deadeye-*` behavior tests PASS (mechanics unchanged) |
 | Gunslinger's Dodge | Clean descriptions; representative activation stays standing with its expected AC effect | Descriptions: source updated. Activation: **NOT RUN** (native) | `dodge.*`, `third-playtest.dodge-no-prone` and `third-playtest.dodge-one-round-two-ac` PASS; delivery code applies no prone. Copy-only, with no behavior fix needed |
 | Focused Aim | Consistent descriptions and a correct Dead Shot example; relevant existing behavior checks pass | **PASS** (offline) / tooltip display NOT RUN | `mysterious-stranger.focused-aim` asserts the example (3, 2) → 6, minimum +1 and the ordinary ×1; 7 `mysterious-stranger.*` PASS |
-| Oleg | Fresh and previously saved stock cleaned; scope excludes other vendors and player inventory | **NOT RUN** (native) | Publication spec plus contract test (`elven-branched-spear.campaign-publication`); engine reconciliation inspected only |
-| Thornstep | Removed from active publication and recovery; fresh and previously generated sources checked separately | Publication/recovery: **PASS** (offline contract). Fresh and generated sources: **NOT RUN** (native) | `elven-branched-spear.campaign-publication`, `acquisition.distributed-campaign`, `acquisition.source-target-contracts` and the registry pin compile |
+| Oleg | Fresh and previously saved stock cleaned; scope excludes other vendors and player inventory | **NOT RUN** (native) | Publication spec plus contract test (`elven-branched-spear.campaign-publication`); engine reconciliation inspected only. Limitation: a copy sold to Oleg after the stocked copy was bought is decremented |
+| Thornstep | Removed from active publication and recovery; fresh and previously generated sources checked separately | Publication/recovery: **PASS** (offline contract). Existing-save plan: **PASS** (offline policy plus a native-diff model). Fresh and generated sources in game: **NOT RUN** | `elven-branched-spear.campaign-publication`, `acquisition.*` and the six `retired-loot.*` cases; patch target 1/1 |
 | Compatibility | Legacy owned weapons load; Boughkeeper and unrelated loot survive; no duplicate additions on repeat load | **NOT RUN** (native) | Identities unchanged; Boughkeeper spec pinned; cleanup removes only project-owned rows |
 | Runtime restoration | The pre-test installation, Mods state and protected saves are preserved or restored | **N/A (untouched)** | No staging, deployment, lease or game launch; the installed mod and saves were not accessed |
 
@@ -203,8 +254,12 @@ migration was added, because the engine already does the exact, idempotent work.
    - Repeat after `PreSave` with a new instance: no reintroduction.
    - Also check a fresh table: no cold iron.
 5. **Thornstep, induced generated container, labelled induced.**
-   - Build `LootPersistentData` from the former six-placement entries, then call `UpdateLoot(current
-     MapObjectLoot)`. Expect Thornstep removed and native rows kept; a repeat call changes nothing.
+   - On the exact former-source `LootComponent`, invoke the real `OnDataSetted` path (prefix plus native) for
+     each case, and check that a repeat changes nothing:
+     - untouched (`Time` 0): removed, native rows kept;
+     - returned copy (`Time` > 0): retained;
+     - null history: retained;
+     - mixed copies: the exact untouched copy is removed.
    - A real Riverine Rise reload would be stronger, but needs a save that has generated that container.
 6. **Legacy copies.** Grant Thornstep and both cold iron spears into inventory, equipment, a companion and the
    stash of the disposable working save. Save, cold-load and reload: all present, the Thornstep enchantment
@@ -212,9 +267,8 @@ migration was added, because the engine already does the exact, idempotent work.
 
 ## Owner review
 
-- **Level-up learning disclosure.** The same "Elementals (n) — show original sources" control still exists in
-  level-up spell learning (wizard-type selection, PC and controller). It was kept because this mission scoped the
-  removal to the spellbook. Should it also be withdrawn?
-- **Cold iron availability.** Generic cold iron branched spears are no longer purchasable in Act I. Their first
-  vendor is now the Dire Narlmarches village trader, Pitax or BTSL.
+The reviewer confirmed the following are within the mission scope, not questions:
+- leaving the level-up learning disclosure;
+- the loss of the Act I cold iron purchase.
+
 - **Visual acceptance** of the repaired book and the tooltips remains the owner's.
