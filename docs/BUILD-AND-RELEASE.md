@@ -2,6 +2,35 @@
 
 ## 0.0.182 publication authorization
 
+**Published (completed).** Stable
+[v0.0.182](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.182)
+is Latest and not a prerelease. The annotated tag `6f44d76823` peels to the
+release commit `c19d12e095`.
+
+- **Gate.** The complete suite passed 2,942/2,942 with 0 failures.
+- **Builds.** Two deterministic exact-reference builds produced identical
+  archives:
+  - package SHA-256
+    `84424d74dc9cd4e39bd1ba25b0a018d1056eeb200e5ad187100f424ac9be771b`;
+  - DLL SHA-256
+    `2ef86f154dd27d663f77841a104f4bda8dbf3d4cefb802a1415894d8fc5fe858`;
+  - MVID `cceb476e-138c-4837-add8-107363c77250`.
+- **Public download.** The asset matched `SHA256SUMS.txt`, the manifest names the release
+  commit, and the embedded `Info.json` reads 0.0.182 with the matching DLL.
+- **Interrupted first attempt.** The first publisher run (about 996 s) was stopped by the
+  operator session for low system memory during the reproducibility build, after its primary
+  build and complete suite passed. It published nothing and created no tag. Its outputs were
+  moved, unchanged, to the git-ignored `artifacts/interrupted-release-attempts/`; its primary
+  package hash equals the published one. The publisher refused to overwrite them, which it
+  should, and the rerun repeated the whole sequence.
+- **Timing.** The successful publisher run took 1,122 s. With the interrupted attempt, the
+  refused restart (5 s), the repository wrapper (378 s) and two preparatory complete suites
+  (143 s), the release spent about 2,644 s, over its 30-minute planning budget because of the
+  repeated run.
+- **Installation.** The installed mod is untouched and still reads 0.0.140.
+- **Merges.** PR #125 was merged as `3fd5bf5d0b` and PR #126 as `22eea359b6`. Release PR #127
+  was merged as `c19d12e095`.
+
 On 2026-11-11 Howie wrote: "Accepted. Please merge, push, and cut a new release with a new version
 number." PR #126 was merged as `22eea359b6`. No channel was named, so this follows v0.0.181 as the
 next stable patch, v0.0.182, from master after PRs #125 and #126.
