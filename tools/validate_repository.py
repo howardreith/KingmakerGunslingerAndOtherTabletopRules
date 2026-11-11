@@ -159,6 +159,7 @@ VALIDATORS = {
     "0.0.179": "validate_expanded_summoning_closeout_release179.py",
     "0.0.180": "validate_summon_playtest_release180.py",
     "0.0.181": "validate_cleric_alignment_release181.py",
+    "0.0.182": "validate_summon_menu_order_release182.py",
 }
 
 
