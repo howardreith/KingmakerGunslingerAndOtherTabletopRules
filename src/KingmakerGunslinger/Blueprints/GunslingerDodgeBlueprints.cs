@@ -95,7 +95,7 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.Dodge.Reaction.Name",
                     "Gunslinger's Dodge"),
                 LocalizationService.Create("KMG.Dodge.Reaction.Description",
-                    "As a swift action, immediately spend 1 grit and gain a +2 dodge bonus to AC for one round. This adaptation causes no movement and does not make you prone."),
+                    "As a swift action, spend 1 grit to gain a +2 dodge bonus to AC for 1 round."),
                 null);
             result.Type = AbilityType.Extraordinary; result.Range = AbilityRange.Personal;
             result.CanTargetSelf = true;
@@ -172,7 +172,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().Configure(result,
                 LocalizationService.Create("KMG.Dodge.Feature.Name", "Gunslinger's Dodge"),
                 LocalizationService.Create("KMG.Dodge.Feature.AdaptedDescription",
-                    "As a swift action, immediately spend 1 grit to gain a +2 dodge bonus to AC for one round. You remain standing and may act normally."), null);
+                    "As a swift action, spend 1 grit to gain a +2 dodge bonus to AC for 1 round."), null);
             return result;
         }
 

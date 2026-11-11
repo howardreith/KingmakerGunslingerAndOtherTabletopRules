@@ -61,9 +61,13 @@ namespace KingmakerGunslinger.Acquisition
                     BlueprintBootstrap.ElvenBranchedSpears.Named.Require(spec.NamedKind).Item,
                     spec.Guid, spec.Name, spec.AreaName,
                     context.FeatureModules.Active.ElvenBranchedSpears, true));
-            if (result.Count != 29 || result.Select(value => value.Key).Distinct().Count() != 29 ||
-                result.Select(value => value.Item.AssetGuid).Distinct().Count() != 29 ||
-                result.Select(value => value.Location.TargetGuid).Distinct().Count() != 29)
+            // 28 active named placements: Thornstep was retired from campaign
+            // acquisition (2026-11-11) and is deliberately not recoverable.
+            if (result.Count != 28 || result.Select(value => value.Key).Distinct().Count() != 28 ||
+                result.Select(value => value.Item.AssetGuid).Distinct().Count() != 28 ||
+                result.Select(value => value.Location.TargetGuid).Distinct().Count() != 28 ||
+                ElvenBranchedSpearCampaignBlueprints.RetiredNamedKinds.Any(kind =>
+                    result.Any(value => value.Key == "spear:" + kind)))
                 throw new InvalidOperationException("Complete named campaign weapon registry differs.");
             return result.ToArray();
         }

@@ -403,9 +403,64 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(8, source.Split(new[] { "new VendorSpec(" },
                 StringSplitOptions.None).Length - 1,
                 "Vendor placement count changed.");
-            Assertions.Equal(6, source.Split(new[] { "new LootSpec(" },
+            Assertions.Equal(5, source.Split(new[] { "new LootSpec(" },
                 StringSplitOptions.None).Length - 1,
                 "Fixed-loot placement count changed.");
+
+            // Owner playtest repair (2026-11-11). Oleg's own table publishes
+            // only the ordinary and masterwork spears; every later vendor that
+            // offered all four foundation spears still does.
+            string normalized = source.Replace("\r\n", "\n");
+            int olegStart = normalized.IndexOf("new VendorSpec(\"f720440559fc00949900bfa1575196ac\"",
+                StringComparison.Ordinal);
+            int olegEnd = normalized.IndexOf("new VendorSpec(", olegStart + 1,
+                StringComparison.Ordinal);
+            Assertions.True(olegStart >= 0 && olegEnd > olegStart,
+                "Oleg's spear vendor spec could not be isolated.");
+            string oleg = normalized.Substring(olegStart, olegEnd - olegStart);
+            Assertions.True(oleg.Contains("\"C11_OlegVendorTable\"") &&
+                oleg.Contains("ElvenBranchedSpearItemKind.Mundane") &&
+                oleg.Contains("ElvenBranchedSpearItemKind.Masterwork }"),
+                "Oleg lost his ordinary or masterwork branched spear.");
+            Assertions.False(oleg.Contains("ColdIron") || oleg.Contains("AllFoundationKinds"),
+                "Oleg still stocks a cold iron branched spear.");
+            Assertions.Equal(5, normalized.Split(new[] { "AllFoundationKinds()" },
+                StringSplitOptions.None).Length - 1,
+                "Later vendors' complete foundation stock (Dire Narlmarches, Pitax, two Honest Guy tables) changed.");
+
+            // Thornstep is retired from acquisition: no active placement, its
+            // exact former Riverine Rise source is a cleanup target, and its
+            // registered identity remains for owned copies.
+            int retiredStart = normalized.IndexOf("private static readonly NamedSpearKind[] Retired",
+                StringComparison.Ordinal);
+            int activeStart = normalized.IndexOf("private static readonly LootSpec[] Loot",
+                StringComparison.Ordinal);
+            int activeEnd = normalized.IndexOf("private static readonly CleanupSpec[] CleanupLoot",
+                StringComparison.Ordinal);
+            int cleanupEnd = normalized.IndexOf("internal static VendorSpec[] VendorSpecs",
+                StringComparison.Ordinal);
+            Assertions.True(retiredStart >= 0 && activeStart > retiredStart &&
+                activeEnd > activeStart && cleanupEnd > activeEnd,
+                "Spear loot tables could not be isolated.");
+            string active = normalized.Substring(activeStart, activeEnd - activeStart);
+            string retiredAndCleanup = normalized.Substring(retiredStart, activeStart - retiredStart) +
+                normalized.Substring(activeEnd, cleanupEnd - activeEnd);
+            Assertions.False(active.Contains("Thornstep") ||
+                active.Contains("3322c56f38031eb4983b6f87c95081b7"),
+                "Retired Thornstep regained an active loot placement.");
+            Func<string, string> flat = value =>
+                new string(value.Where(c => !char.IsWhiteSpace(c)).ToArray());
+            Assertions.True(flat(active).Contains(
+                "NamedSpearKind.Boughkeeper,\"40db074f21260344b95d0e9919c8e682\",\"Forest_PoorLoot01\",\"CapitalRegionLair01\""),
+                "Boughkeeper's intended placement changed.");
+            Assertions.True(retiredAndCleanup.Contains("NamedSpearKind.Thornstep") &&
+                flat(retiredAndCleanup).Contains(
+                    "newCleanupSpec(\"3322c56f38031eb4983b6f87c95081b7\",\"Forest_GoodLoot01\",\"NorthNarlmarchesRegionLair01\")"),
+                "Thornstep's exact former source is not a retirement cleanup target.");
+            Assertions.True(ElvenBranchedSpearNamedCatalog.All.Any(value =>
+                    value.Kind == NamedSpearKind.Thornstep) &&
+                (int)NamedSpearKind.Thornstep == 1,
+                "Retired Thornstep's registered identity or enum value changed.");
 
             string bootstrap = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Bootstrap", "BlueprintBootstrap.cs"));

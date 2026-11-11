@@ -1,8 +1,9 @@
 # Recovery of missed relocated campaign weapons
 
 Changing loot definitions does not promise to refill generated inventories in an
-old campaign. Recovery is an explicit, selected action for 28 historically
-relocated named weapons. It is separate from ordinary discovery and crafting.
+old campaign. Recovery is an explicit, selected action for 27 historically
+relocated named weapons (28 before Thornstep was retired from acquisition on
+2026-11-11; retired Thornstep is not offered). It is separate from ordinary discovery and crafting.
 World-Tree Severer, Cord, Roadwarden, Dead Reckoning and generic weapons are
 excluded. Paper Lantern and The River King's Measure are included because the
 installed scene checks exposed additional retired sources with no scene object.

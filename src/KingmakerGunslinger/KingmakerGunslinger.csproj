@@ -532,6 +532,8 @@
     <Compile Include="Ammunition\ReloadAmmunitionTransactionService.cs" />
     <Compile Include="Acquisition\VendorCatalogPublication.cs" />
     <Compile Include="Acquisition\RetiredVendorStockPolicy.cs" />
+    <Compile Include="Acquisition\RetiredLootReconciliationPolicy.cs" />
+    <Compile Include="Acquisition\RetiredLootReconciliationPatch.cs" />
     <Compile Include="Acquisition\RetiredKitVendorStockCleanup.cs" />
     <Compile Include="Acquisition\ProjectMagicItemDiscoverabilityPolicy.cs" />
     <Compile Include="Acquisition\MagicWeaponPricing.cs" />

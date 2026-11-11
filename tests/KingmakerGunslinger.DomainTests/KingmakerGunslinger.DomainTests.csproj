@@ -430,6 +430,7 @@
     <Compile Include="RepairRuntimePolicyTests.cs" />
     <Compile Include="UnifiedFirearmRepairTests.cs" />
     <Compile Include="RetiredVendorStockPolicyTests.cs" />
+    <Compile Include="RetiredLootReconciliationTests.cs" />
     <Compile Include="RareFirearmSeekingTests.cs" />
     <Compile Include="MidgameFirearmTests.cs" />
     <Compile Include="TeleportationContextTests.cs" />
@@ -675,6 +676,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Diagnostics\PlayerCombatLogMessagePolicy.cs"><Link>Diagnostics\PlayerCombatLogMessagePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acquisition\VendorCatalogPublication.cs"><Link>Acquisition\VendorCatalogPublication.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acquisition\RetiredVendorStockPolicy.cs"><Link>Acquisition\RetiredVendorStockPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Acquisition\RetiredLootReconciliationPolicy.cs"><Link>Acquisition\RetiredLootReconciliationPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StunningShotStatus.cs"><Link>Deeds\StunningShotStatus.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StunningShotRequest.cs"><Link>Deeds\StunningShotRequest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StunningShotDecision.cs"><Link>Deeds\StunningShotDecision.cs</Link></Compile>

@@ -47,8 +47,10 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(audit.IsAcceptable,
                 "Audited campaign distribution failed: " +
                 string.Join("|", audit.Issues));
-            Assertions.Equal(28, audit.ExactAreaDensity.Count,
-                "The complete registry must span twenty-eight exact areas.");
+            Assertions.Equal(27, audit.ExactAreaDensity.Count,
+                "The complete registry must span twenty-seven exact areas.");
+            Assertions.False(audit.ExactAreaDensity.ContainsKey("NorthNarlmarchesRegionLair01"),
+                "Retired Thornstep's Riverine Rise placement is still active.");
             Assertions.Equal(2, audit.CampaignAreaDensity["FinalDungeon"],
                 "The Last Word must leave the final sequence for the House.");
             Assertions.Equal(3, audit.CampaignAreaDensity["HouseAtTheEdgeOfTime"],
@@ -99,8 +101,10 @@ namespace KingmakerGunslinger.DomainTests
                 "private static readonly CleanupSpec[] CleanupTargets");
             Assertions.Equal(18, Count(easternActive,
                 "new EasternLootSpec("), "Eastern active loot count changed.");
-            Assertions.Equal(6, Count(spearActive, "new LootSpec("),
+            Assertions.Equal(5, Count(spearActive, "new LootSpec("),
                 "Spear active loot count changed.");
+            Assertions.False(spearActive.Contains("NamedSpearKind.Thornstep"),
+                "Retired Thornstep regained an active loot placement.");
             Assertions.Equal(5, Count(firearmActive, "new TargetSpec("),
                 "Rare firearm active loot count changed.");
             foreach (string token in new[] {
@@ -117,7 +121,7 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(cord.Contains(token),
                     "Cord relocation contract lacks: " + token);
             foreach (string token in new[] {
-                "across 28 exact areas", ";exactAreas=",
+                "across 27 exact areas", ";exactAreas=",
                 "fixed Stag Lord Old Camp weapon chest" })
                 Assertions.True(runtime.Contains(token),
                     "Runtime acquisition evidence lacks: " + token);

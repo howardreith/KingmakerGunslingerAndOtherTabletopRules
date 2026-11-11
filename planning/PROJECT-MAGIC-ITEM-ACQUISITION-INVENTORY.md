@@ -1,17 +1,47 @@
 # Project Magic Item Acquisition Inventory
 
-## Current 0.0.143 findability contract
+## Current findability contract (0.0.143, Thornstep retired 2026-11-11)
 
 This is the active location inventory. It supersedes the 0.0.105 and 0.0.87
-directions below. It contains **29 named world-loot weapons**: five firearms,
-18 Eastern weapons and six Elven Branched Spears. Cord of Stubborn Resolve is
-the separate thirtieth item. Roadwarden and Dead Reckoning are merchant-only.
+directions below. It contains **28 named world-loot weapons**: five firearms,
+18 Eastern weapons and five Elven Branched Spears. Cord of Stubborn Resolve is
+the separate twenty-ninth item. Roadwarden and Dead Reckoning are merchant-only.
+
+**Owner playtest repair, 2026-11-11 (branch `codex/gunslinger-playtest-repairs`,
+not yet released).**
+- **Thornstep is retired from campaign acquisition.** The owner considers it redundant with Boughkeeper,
+  so two obscure unique spears no longer sit so close together. No replacement reward was added.
+  Its item (`676faa5f811d851c9f14204bf864e1ec`), enchantment, buffs and `NamedSpearKind.Thornstep = 1`
+  stay registered, so owned, equipped, companion and stashed copies keep loading. It has no active loot,
+  vendor or recovery route. Its exact former source, `3322c56f38031eb4983b6f87c95081b7` /
+  `Forest_GoodLoot01` / `NorthNarlmarchesRegionLair01` (Riverine Rise), is a project cleanup target.
+  Boughkeeper's Old Mesa placement is unchanged.
+- **Oleg stocks no cold iron branched spears.** `C11_OlegVendorTable` now publishes only the ordinary and
+  masterwork Elven Branched Spear. Both cold iron variants remain registered items and stay in Dire
+  Narlmarches, Pitax and BTSL Honest Guy stock.
+- **Existing saves.** Both removals rely on the native known-item reconciliation of Kingmaker 2.1.7b,
+  inspected in the installed `Assembly-CSharp`:
+  - **Oleg.** `SharedVendorTables.GetTable` subtracts the removed fixed rows from Oleg's persisted
+    blueprint/count entries. A purchased copy is never replenished.
+    - Shared tables keep no per-item provenance. So a cold iron spear the player sold to Oleg after buying the
+      stocked copy is decremented as well.
+  - **Thornstep.** A mod prefix on the former source's `LootComponent.OnDataSetted` runs before native
+    `LootPersistentData.UpdateLoot`.
+    - It removes only an untouched generated Thornstep, by exact reference. The persisted `ItemEntity.Time` is
+      still zero because the party never held it.
+    - It retains any copy the party has held, including one claimed and put back.
+    - It retires the known-item row, so the engine never decrements by blueprint.
+  - Both are idempotent, scoped to the one table/container, and never touch player inventories.
+  - A save whose persisted known-item history is absent keeps its copy.
+  - **No native observation of either path has been made on this branch.** See
+    `planning/gunslinger-playtest-repairs/STATUS.md`.
 
 The seven specified moves and two scene-backed source corrections preserve canonical item GUIDs, weapon families,
 effects, prices, crafting identities and module ownership. Publication normalizes
 only mod-owned rows on exact active/retired definitions, retaining original game
 treasure and foreign rows. There is one intended target per weapon. Complete
-registry counts, including Cord, are **30 distinct containers and 28 exact areas**.
+registry counts, including Cord, are **29 distinct containers and 27 exact areas** (30 and 28
+before Thornstep's retirement).
 The normalized House group has three weapons: both +5 firearms on its first
 floor and Heaven's Measure on its second floor. This House exception does not
 relax other area limits or Cord's contract.
@@ -24,7 +54,7 @@ results are recorded separately in the
 Until those measured results pass, the locations below are intended locations,
 with room/route uncertainty shown explicitly. The 2.1.7b runtime is the authority.
 
-## Player location guide: all 29 named world-loot weapons
+## Player location guide: all 28 named world-loot weapons
 
 Native treasure helps distinguish the intended object from similarly named
 containers. Normal combat, story progression, ordinary locks/traps and documented
@@ -56,7 +86,6 @@ optional-map discovery remain. Map discovery alone does not relocate a spear.
 | Heaven's Measure | Katana | House at the Edge of Time | Second floor, room behind Nyrissa's encounter room: cabinet containing Headband of Mental Perfection +6 | Native flag 2, HouseAtTheEdgeOfTime_2ndFloor02_Mechanics / Loot_SideB; behind Nyrissa's encounter room. The normal route requires the Horned Hunter corridor key and Wriggling Man, Knurly Witch and Third Nyrissa keys (supplied only as disposable story prerequisites). Native fog/gate route, cabinet pickup, revisit and reload passed; organic key/puzzle progression remains separate. Guide phase numbers are not native flags. |
 | World-Tree Severer | Nodachi | Ravaged Capital — Entrance | Southwestern ruined house, chest with Greatsword +5 after its Wild Hunt ambush | Final chapter; native rubble/stair approach and ordinary vine interaction, followed by walking, pickup, revisit and disk reload. No placement change. |
 | Boughkeeper | Elven Branched Spear | Old Mesa | Static body at the northern werewolf camp: Reduce Person potion, Silver Inkpot, Garnet Ring (Amethyst) and 10 gold | Optional map discovery (guide Perception 15) and werewolf combat. Native body, walking, pickup, revisit and reload passed. |
-| Thornstep | Elven Branched Spear | Riverine Rise | Static body northwest of the uphill/northeastern Water Elemental encounter: Lesser Restoration potions ×2, Remove Blindness scrolls ×3 and 43 gold | Optional map discovery and elemental combat remain. Native body, walking, pickup, revisit and reload passed. |
 | Moonlit Fork | Elven Branched Spear | Hodag Lair | Persistent ground loot beside the corpse and wagon after the hodag: Greatclub +2 | Optional discovery (guide Perception 40 or Dalton's lead) and hodag combat. Native persistent pile, walking, pickup, revisit and reload passed; Amiri's quest was not prepared. |
 | Viper's Reach | Elven Branched Spear | Saint Galvan's Gullet | Static body with Trident +3, Crumpled Sheet of Paper (internal ExpeditionEstimateList) and 940 gold | Optional discovery (guide Perception 30) and Greater Cyclops combat. Native body, walking, pickup, revisit and reload passed; pillar skill checks concern separate treasure. |
 | Briar-Crowned Spear | Elven Branched Spear | Blakemoor's Hideout | Blakemoor's Hideout (Middle of Nowhere): chest with Charlatan's Locket, Robe of False Death and Bindings of the Prince | War of the River Kings optional map. Exterior native door and real Trickery 35 dialogue check, entrance transfer, interior walking/lock, pickup, revisit and reload passed. Optional Perception 45 discovery/Blutmond lead remains reference evidence. |
@@ -97,11 +126,16 @@ Individual route/pickup/persistence gates are listed in the qualification report
 | Heaven's Measure | `dc086bdf8af25bceb569c8f5c627f560` | `e3703cd9a6de2f24c80c1505e3c9784f` / `FirstWorld_2ndFloorGoodLoot05` | `HouseAtTheEdgeOfTime_2ndFloor` |
 | World-Tree Severer | `e6e5cf56d3a259debd2f16a300bff115` | `7e6448d1d8a7e4f4d9cc340b8f15e732` / `RichHuman_Loot_1` | `FinalDungeon` |
 | Boughkeeper | `4a084b0226e077b58d79e33184018002` | `40db074f21260344b95d0e9919c8e682` / `Forest_PoorLoot01` | `CapitalRegionLair01` |
-| Thornstep | `676faa5f811d851c9f14204bf864e1ec` | `3322c56f38031eb4983b6f87c95081b7` / `Forest_GoodLoot01` | `NorthNarlmarchesRegionLair01` |
 | Moonlit Fork | `403d62f6d3bb415c86939430176e55c0` | `2aa7aa5c2df96b143bd2fc62a8547c9c` / `Forest_TH_GreatclubBarbarianMagic` | `MonsterLairHodag` |
 | Viper's Reach | `1cfe40563a9b816931bb35e69677ac27` | `8a850f7758cb77b498621a307445bb1e` / `Forest_GoodLoot_withWeaponOrArmor` | `LoneCyclopCave` |
 | Briar-Crowned Spear | `ee580f43f50a0f0afefaedb3ce7133f3` | `decb6060ab534294eb6d35510e45d317` / `RichHuman_NotHiddenLockedGood` | `BlakemoorHideout` |
 | Spear of the First Branch | `85c18b96ebee3fdc87eb33da93c8fdf6` | `13e98ebc52714d34eb8e53f1099110fd` / `RichHuman_Loot_5_2lvl` | `FinalDungeon2` |
+
+### Retired placement (no active acquisition)
+
+| Weapon | Item | Former source (now a cleanup target) | Area | Historical evidence |
+|---|---|---|---|---|
+| Thornstep | `676faa5f811d851c9f14204bf864e1ec` | `3322c56f38031eb4983b6f87c95081b7` / `Forest_GoodLoot01` | `NorthNarlmarchesRegionLair01` (Riverine Rise) | Before retirement: static body northwest of the uphill/northeastern Water Elemental encounter (Lesser Restoration potions ×2, Remove Blindness scrolls ×3, 43 gold). Native body, walking, pickup, revisit and reload passed. That evidence belongs to the former placement. |
 
 ## House and Blakemoor route evidence
 
@@ -174,9 +208,9 @@ Changed loot definitions do **not** promise to repair already-generated old
 campaign inventories. Existing valid weapons/upgrades, stash and native loot
 are retained. The explicitly selected recovery path checks known ownership,
 progress and loaded/cached container state before granting one weapon. It is
-restricted to 28 historically relocated named weapons, including earlier
-relocations; it excludes World-Tree Severer, Cord, merchant-only firearms and
-generic stock.
+restricted to 27 historically relocated named weapons, including earlier
+relocations; it excludes World-Tree Severer, retired Thornstep, Cord,
+merchant-only firearms and generic stock.
 
 See [the exact invocation and limits](../docs/WEAPON-FINDABILITY-RECOVERY.md).
 No grant runs on load. No whole-container refill or general spawning interface
