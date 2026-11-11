@@ -609,7 +609,10 @@ namespace KingmakerGunslinger.DomainTests
                 "(expectedElvenBranchedSpears ? 3 : 0)",
                 "spearFamiliarityCategories == 1",
                 "boundaryVendorRows.Where(row => row.Group == \"spear\").All(row => row.Passed)",
-                "(expectedElvenBranchedSpears ? 6 : 0)",
+                // 5 loot rows since Thornstep was retired from acquisition (#129).
+                "spearLootRows ==",
+                "(expectedElvenBranchedSpears ? 5 : 0)",
+                "5 loot rows (Thornstep retired)",
                 "always-registered identities and exact selector, familiarity, vendor, and fixed-loot surfaces" })
                 Assertions.True(runner.Contains(token),
                     "The live module observer lacks the spear assertion: " +
