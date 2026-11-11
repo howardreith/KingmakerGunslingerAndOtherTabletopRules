@@ -15,7 +15,11 @@ appended to AUDIT-OUTCOMES.md. Severity is a provisional impact judgement, not p
 | GS-AUD-0007 | CONTRACT-QUESTION | S3 | source-demonstrated | Feature-module settings (A19) | A future settings schema makes the whole mod fail to load, not just the settings file | OPEN | EV-000007 |
 | GS-AUD-0005 | HARNESS-DEFECT | S3 | native-observed (executed gate) | Release validation gate | The broad gate depends on an untracked ~99 MB local IL dump; a fresh checkout fails 23 tests with an opaque path error | OPEN | EV-000005 |
 | **GS-AUD-0039** | **PRODUCT-DEFECT** | **S2** | source-demonstrated + **engine IL measured** | Scatter Shot (A06) | **Scatter's documented −2 attack penalty is applied as a +2 bonus** — a 4-point swing on every scatter attack | OPEN | EV-000018 |
-| GS-AUD-0040 | CONTRACT-QUESTION | S2 | source-demonstrated | Shield Other (A15) | Range bound is computed and never compared; the description, the code and the test assert three different things | OPEN | EV-000018 |
+| **GS-AUD-0044** | OBSERVED-FAILURE (candidate defect) | **S2** | **native-reproduced once** | Dead Shot audio (A20) | Dead Shot appears to commit ~11 audio events where its contract requires exactly 1 | OPEN | EV-000019 |
+| GS-AUD-0045 | HARNESS-DEFECT (stale pin) | S3 | native-observed + source | Firearm visual rigs (A20) | The rig assertion is hard-pinned to `items.Count == 14`; the roster is now 16 | OPEN | EV-000019 |
+| GS-AUD-0046 | HARNESS-DEFECT (stale pin) | S3 | native-observed | Item presentation (A20) | Presentation counts are stale (57/12 vs 55/11); `issues=<none>` — the text itself is clean | OPEN | EV-000019 |
+| GS-AUD-0047 | OBSERVED-FAILURE-UNATTRIBUTED | UNASSESSED | native-observed once | Firearm visual rigs (A20) | `pistol-authored-marker-contract` reports `exact=False`; which sub-condition failed is unrecoverable | OPEN | EV-000019 |
+| GS-AUD-0040 | DOCUMENTATION-DRIFT (was CONTRACT-QUESTION) | S3 (was S2) | source-demonstrated | Shield Other (A15) | The shipped ability description contradicts the **approved** distance-independent bond contract; code and test are correct | OPEN — **RECLASSIFIED** | EV-000018, EV-000019 |
 | GS-AUD-0041 | DOCUMENTATION-DRIFT | S3 | source-demonstrated | Protection from Alignment (A15) | Catalog has 23 entries, authority table lists 21; the Suggestion entry may violate the doc's own exclusion list | OPEN | EV-000018 |
 | GS-AUD-0042 | DOCUMENTATION-DRIFT | S3 | source-demonstrated; consequence UNVERIFIED | Scatter Shot (A06) | ADR-0037 requires Vital Strike exclusion; only precision damage is suppressed | OPEN | EV-000018 |
 | GS-AUD-0043 | PRODUCT-DEFECT (presentation) | S3 | source-demonstrated; gated on unverified engine behaviour | Magic Circle (A15) | Decal reuse does not match `AreaId`/`Alignment` | OPEN | EV-000018 |
@@ -1238,11 +1242,26 @@ where it passes **1000** through the identical constructor to **force a miss**.
   **none asserts the attack penalty**. Its PASS is therefore fully consistent with the inversion
   being present and unnoticed.
 
-### Caveat, stated rather than glossed
+### The clamping question — TRACED AND CLOSED (EV-000019)
 
-I could not rule out that the native constructor or an intermediate clamps negative values. If it
-does, the result is "no penalty" rather than "+2". **Either way the documented −2 is not applied.**
-That residual uncertainty is why this is filed S2 rather than W5's proposed S1.
+The first revision left open whether something clamps negatives. The full chain is now
+disassembled and there is **no clamp anywhere on the penalty path**:
+
+1. `RuleAttackWithWeapon..ctor` stores the 4th argument **verbatim** —
+   `IL_0010 ldarg.s attackBonusPenalty` / `IL_0012 stfld AttackBonusPenalty`.
+2. It forwards that field **verbatim** into `RuleAttackRoll..ctor` —
+   `IL_0020 ldfld AttackBonusPenalty` / `IL_0025 newobj RuleAttackRoll::.ctor(...)`.
+3. `RuleAttackRoll::set_AttackBonusPenalty` is a plain auto-property setter —
+   `IL_0001 ldarg.1` / `IL_0002 stfld '<AttackBonusPenalty>k__BackingField'`.
+4. `RuleCalculateAttackBonus::OnTrigger` does a plain `sub`.
+
+The only `Math::Min` in `RuleAttackRoll` is in `IncreaseMissChance`, clamping **miss chance** to
+75 — unrelated to the attack bonus. So passing `-2` does yield **+2**, and the "4-point swing"
+figure is supported rather than inferred.
+
+**Severity remains S2** (not W5's proposed S1): it is wrong gameplay behaviour confined to one
+deed, with no crash, data loss or progression impact. The magnitude is now established; the
+severity rubric is what caps it.
 
 ### Smallest confirming check
 
@@ -1254,25 +1273,58 @@ after a scatter volley.
 Change the constant to `+2`, matching every other penalty site, and add the assertion above so the
 sign is pinned by behaviour rather than by a constant's literal value.
 
-## GS-AUD-0040 — Shield Other computes a range bound and never compares it
+## GS-AUD-0040 — Shield Other's shipped ability description contradicts the approved range contract
 
-- **Kind:** CONTRACT-QUESTION (documentation vs code conflict) · **Severity:** S2
-- **Evidence:** source-demonstrated · **Disposition:** OPEN — reported as a conflict, not adjudicated
-- **The conflict:** Shield Other's own published description says the protection applies
-  *"while the subject remains within close range"*. But
-  `Spells/ShieldOther/ShieldOtherLinkValidityPolicy.cs:13-19` computes **both** the distance and
-  the bound and **never compares them** — `DistanceFeet` and `MaximumRangeFeet` are written and
-  never read anywhere in the product.
-- **And the test suite pins the opposite:** a guarded scenario at
-  `RuntimeTesting/RuntimeTestRunner.cs:25080-25101` ("post-cast-range-preservation") deliberately
-  asserts the damage split **still happens at ~65 ft with a 35 ft bound**.
-- So three authorities disagree: the player-facing description says range-limited; the code is
-  range-unlimited; the test asserts range-unlimited *on purpose*. One of the three must change.
-- **Owner decision:** either enforce the bound (and change the scenario) or correct the
-  description. This audit does not pick.
-- **Smallest check:** cast Shield Other, separate the pair beyond close range, deal damage, and
-  observe whether the split still occurs.
+> ### ⚠ RECLASSIFIED 2026-11-12 (EV-000019)
+>
+> The original entry presented this as a **three-way conflict requiring an owner decision**
+> between enforcing a post-cast range limit and correcting the description. **That was wrong:
+> the owner decision already exists in the audited candidate and I had not found it.** This is
+> documentation drift only, and "reintroduce the distance check" has been **removed** as a repair
+> option — doing so would undo a deliberately approved repair.
 
+- **Kind:** DOCUMENTATION-DRIFT (was CONTRACT-QUESTION) · **Severity:** S3 (was S2)
+- **Evidence:** source-demonstrated · **Disposition:** OPEN
+
+### The approved contract
+
+`planning/EXPANDED-SUMMONING-MISSION.md:71`, owner-authorized, verbatim:
+
+> "Before summoning work, inspect `ShieldOtherLinkValidityPolicy` and its tests.
+> **An established bond must not depend on distance; close range remains on the casting ability.**
+> Preserve expiration, removal/dispel, dead/missing endpoints, and area separation."
+
+`EXPANDED-SUMMONING-JOURNAL.md:77` records the *pre-repair* state as the defect:
+> "Mandatory inspection proved `ShieldOtherLinkValidityPolicy` **still removes** an established
+> bond outside close range. Separate prerequisite repair is next."
+
+followed by a "Shield Other prerequisite qualified" entry. So distance-independence is the
+**deliberate outcome of an approved repair**, not an oversight.
+
+### Therefore
+
+| Element | Status |
+|---|---|
+| `ShieldOtherLinkValidityPolicy.cs:13-19` computes distance/bound and never compares them | **CORRECT** — matches the approved contract |
+| `RuntimeTestRunner.cs:25080-25101` ("post-cast-range-preservation") asserts the split still happens at ~65 ft with a 35 ft bound | **CORRECT** — it is a regression guard protecting the approved behaviour |
+| The shipped ability description saying the subject must remain "within close range" | **STALE** — the only thing that is wrong |
+
+The unread fields `DistanceFeet`/`MaximumRangeFeet` are a residue of the pre-repair implementation
+(same inert-property pattern as GS-AUD-0018/0042), not evidence of a missing check.
+
+### Repair direction
+
+Correct the ability description so it states that **close range applies at casting** and the
+established bond then persists regardless of distance. **Do not** reintroduce the distance check
+and **do not** change the regression test.
+
+### Process note — the same error as Nimble
+
+I found an apparent conflict among code, test and description and escalated it as an owner
+decision, when the contract was already in the repository. Both failures share one cause:
+**incomplete contract discovery before asking the owner to choose.** For the rest of this
+register, any "owner decision" is only raised after `planning/*MISSION*.md`, `docs/`, the
+journals and `KNOWN-ISSUES.md` have been searched for an existing instruction.
 ## GS-AUD-0041 — The Protection-from-Alignment control-immunity catalog has 23 entries; its authority document lists 21
 
 - **Kind:** DOCUMENTATION-DRIFT (+ one embedded contract question) · **Severity:** S3
@@ -1309,3 +1361,101 @@ sign is pinned by behaviour rather than by a constant's literal value.
   presents a stale decal. If it does not, this is inert.
 - **Smallest check:** create two Magic Circles of different alignments in sequence in one scene
   and observe the rendered decal colour/identity.
+
+---
+
+# Findings 0044–0047 — from the A20 scenarios I had wrongly implied were human-only (EV-000019)
+
+The rev-2 review's point 4 noted the disposition said complete while eligible work remained.
+Re-checking the wrapper's own `ValidateSet` showed **three machine-observable
+presentation/audio scenarios were admissible all along**. Running them produced three native
+FAILs. Each is classified below on the evidence, **not** assumed to be a product defect —
+two are stale assertion pins and one is a credible defect.
+
+## GS-AUD-0044 — Dead Shot appears to commit far more audio events than its contract allows
+
+- **Kind:** OBSERVED-FAILURE (candidate PRODUCT-DEFECT) · **Severity:** S2
+- **Evidence:** **native-reproduced once** on the frozen 0.0.182 candidate · **Disposition:** OPEN
+- **Expected rule and authority:** the scenario's own contract at
+  `RuntimeTesting/RuntimeTestRunner.cs:8780` requires
+  `deadAfter == deadBefore + 1 && startlingAfter == startlingBefore + 1 &&
+  menacingAfter == menacingBefore + 2 && bleedingAfter == bleedingBefore + 2`
+  — i.e. **Dead Shot must commit exactly one** source-specific audio discharge.
+  Mission card A20 independently requires "no duplicate sound event/state after repeated use".
+- **Observed:** `disposable-firearm-wwise-audio` **FAIL** on `deed-audio-commit-boundaries`.
+  Route diagnostics: `dead=PASS:11;scatter=PASS:1;startling=PASS:1;menacing=PASS:2;stopBleeding=PASS:2`.
+  Startling (+1), Menacing (+2) and Stop Bleeding (+2) all match their required deltas.
+  **Only Dead Shot is anomalous, at 11.**
+- **Reading of the evidence, stated as a reading:** the `:N` suffix is the committed-discharge
+  counter the assertion compares, so Dead Shot committed ~11 where 1 is required. I am inferring
+  that from the diagnostic format rather than from a labelled delta field, so the exact number
+  carries that caveat. What is **not** in doubt is that the assertion failed while the other
+  three deeds matched, which localises the failure to Dead Shot.
+- **Why 11 is anomalous on any reading:** Dead Shot is a multi-attack deed, so a number above 1
+  is conceivable — but it is not 2 or 3 either, and the contract says 1.
+- **Competing explanations:** (a) duplicate audio commits per constituent attack — the A20
+  concern; (b) a stale expectation that never accounted for Dead Shot's multi-attack structure.
+  **Neither is excluded.** Note that GS-AUD-0014's A06 work found Dead Shot's *delivery* correctly
+  spends once despite duplicate callbacks, which makes (a) specifically interesting: the
+  mechanical path dedupes and the audio path may not.
+- **Smallest confirming check:** re-run with the counter logged as an explicit before/after pair,
+  and listen for repeated reports on one Dead Shot.
+
+## GS-AUD-0045 — The firearm visual-rig assertion is hard-pinned to 14 items; the roster is now 16
+
+- **Kind:** HARNESS-DEFECT (stale assertion pin) · **Severity:** S3
+- **Evidence:** native-observed + source-demonstrated · **Disposition:** OPEN
+- **Observed:** `disposable-firearm-visual-rigs` **FAIL 2 of 66**. The first failure,
+  `firearm-all-14-item-visual-identities`, is computed at
+  `RuntimeTesting/RuntimeTestRunner.cs:13928` as:
+  ```csharp
+  bool exactItems = items.Count == 14 && items.All(value =>
+      FirearmWeaponPresentation.HasExactItemVariant(value.Item3, value.Item1, value.Item2));
+  ```
+  The count is **hard-pinned to 14**; the observed roster is **16**. The firearm set has grown
+  (`RoadwardenItem`, `DeadReckoningItem`, `WatchAtTheWorldsEndItem` and others now appear).
+- **This is NOT a presentation defect.** The assertion can fail on the count alone, and every
+  observed item does resolve to a named variant (`Pistol.Duelist`, `Pistol.LastWord`) or a
+  `<Kind>.Service` variant that `WeaponVisualVariantCatalog` explicitly maps. `issues` were not
+  reported for any item.
+- **Explicitly NOT a finding, having been checked:** `KMG.Test.TestMusketItem` appears in the
+  observed list. It is a **development-only** item (`Blueprints/TestMusketBlueprints.cs`,
+  consumed by `Development/DevelopmentControls.cs:313,395`) and is in
+  `Assets/WeaponVisualVariantCatalog.cs:76` by design to satisfy this very rig check. It is
+  **not** a player-facing leak, and I am recording that so nobody "fixes" it.
+- **Repair direction:** derive the expected count from the catalogue instead of pinning 14, or
+  update the pin deliberately. Per this project's convention, a count pin should be moved
+  **knowingly**, not to make a run green.
+
+## GS-AUD-0046 — The player-facing presentation assertion's counts are stale; the text itself is clean
+
+- **Kind:** HARNESS-DEFECT (stale assertion pin) · **Severity:** S3
+- **Evidence:** native-observed · **Disposition:** OPEN
+- **Observed:** `observe-gunslinger-presentation` **FAIL 1 of 9** on
+  `project-item-player-facing-presentation`.
+  Expected: "55 weapons and the Cord have complete clean player text; eleven visible custom
+  enchantments are clean and the policy-only enchantment is blank."
+  Observed: `weapons=57;items=58;customEnchantments=12;issues=<none>`.
+- **The decisive detail is `issues=<none>`:** the observer found **no text-quality problems at
+  all**. The failure is purely that content has grown past the pinned counts (57 vs 55 weapons,
+  12 vs 11 enchantments).
+- **Scope limit:** this is a *structured text* check. It does **not** establish rendered
+  appearance, icon quality or layout — those remain human-only gaps regardless.
+- **Repair direction:** same as GS-AUD-0045 — derive the counts or move the pins knowingly.
+
+## GS-AUD-0047 — `pistol-authored-marker-contract` fails and the cause is unresolved
+
+- **Kind:** OBSERVED-FAILURE-UNATTRIBUTED · **Severity:** UNASSESSED
+- **Evidence:** native-observed once · **Disposition:** OPEN, cause unresolved
+- **Observed:** the second failure in `disposable-firearm-visual-rigs`:
+  `pistol-authored-marker-contract`, expected "Duelist and LastWord retain exactly four authored
+  markers, +Z muzzle, and no support IK", observed **`exact=False`**.
+- Unlike GS-AUD-0045 this is a **structural** assertion, not a count pin, so a stale-expectation
+  explanation does not obviously apply. The retained diagnostic reports only the boolean, so
+  **which** of the three conditions failed (marker count, muzzle axis, or support IK) is not
+  recoverable from the evidence.
+- **Why it is UNASSESSED rather than S2/S3:** I have not established whether this is cosmetic
+  (a muzzle-flash origin) or functionally visible, and the sibling assertion
+  `pistol-three-variant-separation` **passed**, so the three prefab references are distinct.
+- **Smallest confirming check:** re-run with the three sub-conditions reported separately, then
+  inspect the two named pistols' authored markers against the contract.
