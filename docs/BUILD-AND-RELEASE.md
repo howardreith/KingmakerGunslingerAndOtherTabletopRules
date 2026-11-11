@@ -2,6 +2,30 @@
 
 ## 0.0.183 publication authorization
 
+**Published (completed).** Stable
+[v0.0.183](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.183)
+is Latest and not a prerelease. The annotated tag `017930dd1d` peels to the
+release commit `6365ddb261`.
+
+- **Gate.** The complete suite passed 2,948/2,948 with 0 failures.
+- **Builds.** Two deterministic exact-reference builds produced identical
+  archives:
+  - package SHA-256
+    `018b41f12b83091e603ef59b3816c687abaa4ec0371a78d157babaf64d8c6288`;
+  - DLL SHA-256
+    `e8b03b81b62f75e69f731122eff0a21ac37afc40ebca7c4c9077dabce5a40e81`;
+  - MVID `0d07e114-b0a6-4991-8c86-a7294bcafc32`.
+- **Public download.** The asset matched `SHA256SUMS.txt`, the manifest names the release
+  commit, and the embedded `Info.json` reads 0.0.183 with the matching DLL.
+- **Preparation.** The first complete-suite run on the release branch had 1 failure of 2,948:
+  `feature-modules.runtime-matrix` still pinned the observer's spear loot-row count at 6, which #129
+  had changed to 5. The correction is test-only and shipped in release PR #130.
+- **Timing.** The publisher took 1,386 s. With the preparatory complete suites (55 and 61 s) and
+  the repository wrapper (388 s), the release spent about 1,890 s, about 90 s over its 30-minute
+  planning budget.
+- **Installation.** The installed mod is untouched and still reads 0.0.140.
+- **Merges.** PR #129 was merged as `57d8640323`. The owner merged release PR #130 as `6365ddb261`.
+
 On 2026-11-11 Howie wrote: "This is acceptable. Please merge this and cut a new release." PR #129 was marked
 ready and merged as `57d8640323`. No channel was named, so this follows v0.0.182 as the next stable patch,
 v0.0.183, from master after PR #129.
