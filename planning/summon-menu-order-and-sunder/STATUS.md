@@ -7,7 +7,14 @@ with their own candidates:
   stands.
 - `c6e861a98a`: initialization FAIL.
 
-`1ed8aacbcf` has focused and compile evidence only. Nothing is merged, released, tagged or permanently installed.
+`1ed8aacbcf` has focused and compile evidence only.
+
+**Released (2026-11-11).** Owner-accepted. PR #126 was merged as `22eea359b6`, and the work shipped in stable
+v0.0.182 (release commit `c19d12e095`, package
+`84424d74dc9cd4e39bd1ba25b0a018d1056eeb200e5ad187100f424ac9be771b`) together with the Races Unleashed Spider
+Summoner integration. The native results above stay with their development candidates; none was re-executed on
+the release build. The focused/compile-only items are disclosed in `KNOWN-ISSUES.md` and the v0.0.182 notes. The
+installed mod is not permanently changed.
 
 ## Bebelith withdrawal finished (source `ec33e2b3553b62534540b190cf2e96a06c4d7e82`, focused/compile only)
 
