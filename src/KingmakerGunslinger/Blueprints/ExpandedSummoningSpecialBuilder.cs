@@ -4868,7 +4868,9 @@ namespace KingmakerGunslinger.Blueprints
                     "Dismantled Armor"),
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.Bebelith.DismantledArmor.Description",
-                    "A Bebelith tore this creature's armor apart. The piece no longer protects it: its entire armor class contribution is gone. No item is moved, unequipped or altered."),
+                    SummonPlaytestWithdrawalPolicy.BebelithDismantleArmorWithdrawn ?
+                        "Retired legacy effect. The Bebelith's Dismantle Armor has been withdrawn; this marker no longer reduces armor class." :
+                        "A Bebelith tore this creature's armor apart. The piece no longer protects it: its entire armor class contribution is gone. No item is moved, unequipped or altered."),
                 null);
         }
 
@@ -4894,7 +4896,10 @@ namespace KingmakerGunslinger.Blueprints
             combat.Bite = bite;
             combat.OutsiderType = Feature(library, OutsiderTypeGuid,
                 "outsider creature type");
-            combat.DismantledArmor = dismantledArmor;
+            // DISMANTLE-01: Dismantle Armor withdrawn. The trigger returns before
+            // any roll when it has no dismantled-armor buff to apply.
+            combat.DismantledArmor = SummonPlaytestWithdrawalPolicy.BebelithDismantleArmorWithdrawn ?
+                null : dismantledArmor;
             buff.Stacking = StackingType.Replace;
             buff.IsClassFeature = true;
             buff.ComponentsArray = new BlueprintComponent[] {
@@ -4906,7 +4911,8 @@ namespace KingmakerGunslinger.Blueprints
                     "Bebelith Combat Traits"),
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.Bebelith.CombatTraits.Description",
-                    "Natural armor 13 and DR 10/good. Both claws landing on one armored or shielded foe in a round let the Bebelith attempt to tear the piece apart."),
+                    SummonPlaytestWithdrawalPolicy.BebelithDismantleArmorWithdrawn ? "Natural armor 13 and DR 10/good." :
+                        "Natural armor 13 and DR 10/good. Both claws landing on one armored or shielded foe in a round let the Bebelith attempt to tear the piece apart."),
                 null);
         }
 

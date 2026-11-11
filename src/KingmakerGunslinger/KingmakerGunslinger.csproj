@@ -160,6 +160,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR6Presentation.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR7Models.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonAlphabeticalMenus.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonMenuOrderSunder.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SpiderSummoner.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SpiderCompletion.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SpiderRoutes.cs" />
@@ -171,6 +172,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SpiderSummonerPersistence.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SpiderInterface.cs" />
     <Compile Include="RuntimeTesting\AlphabeticalMenuObservationVerdict.cs" />
+    <Compile Include="RuntimeTesting\SunderObservationVerdict.cs" />
     <Compile Include="Summoning\SummonPlaytestR6Policy.cs" />
     <Compile Include="Summoning\SummonAbilityCastCue.cs" />
     <Compile Include="Summoning\SummonCastCueLifecycle.cs" />

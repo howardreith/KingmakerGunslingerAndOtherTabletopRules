@@ -24,6 +24,7 @@ namespace KingmakerGunslinger.Blueprints
             LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol)
         {
+            WithholdDonorInheritedSunder(library, bySymbol);
             foreach (WithdrawnCapabilitySpec spec in SummonPlaytestWithdrawalPolicy.All)
             {
                 BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, spec.UnitSymbol);
@@ -40,7 +41,11 @@ namespace KingmakerGunslinger.Blueprints
                     throw new InvalidOperationException(
                         "Withdrawn capability is still granted to " + spec.CreatureKey + ".");
                 BlueprintAiAction[] actions = spec.AiActionSymbols
-                    .Select(symbol => Require<BlueprintAiAction>(bySymbol, symbol)).ToArray();
+                    .Select(symbol => Require<BlueprintAiAction>(bySymbol, symbol))
+                    .Concat(spec.NativeAiActionGuids.Select(guid =>
+                        BlueprintLibraryLookup.RequireExact<BlueprintAiCastSpell>(
+                            library, guid, "native AI action withdrawn from " + spec.CreatureKey)))
+                    .ToArray();
                 if (unit.Brain != null && actions.Any(action =>
                         (unit.Brain.Actions ?? Array.Empty<BlueprintAiAction>()).Contains(action)))
                     throw new InvalidOperationException(
@@ -55,6 +60,42 @@ namespace KingmakerGunslinger.Blueprints
                 unit.ComponentsArray = (unit.ComponentsArray ?? Array.Empty<BlueprintComponent>())
                     .Where(value => !(value is SummonWithdrawnCapabilityFixer))
                     .Concat(new BlueprintComponent[] { fixer }).ToArray();
+            }
+        }
+
+        /// <summary>
+        /// SUNDER-01: the Greater and Elder Earth Elementals are clones of
+        /// native donors that carry Improved Sunder in their own AddFacts and
+        /// the shared native GreaterEarthElementalBrain (SunderArmorAiAction
+        /// plus an attack scored around sundered targets). Each KMG unit drops
+        /// the feat and takes the unmodified native Dumb Monster Brain, the
+        /// ordinary-attack brain the Huge Earth Elemental already uses. Only
+        /// these KMG-owned unit blueprints change; the native feat, brain,
+        /// actions and donors do not. Any other input fails closed.
+        /// </summary>
+        private static void WithholdDonorInheritedSunder(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            BlueprintBrain sunderBrain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(library,
+                SummonPlaytestWithdrawalPolicy.NativeGreaterEarthElementalBrainGuid, "native Greater Earth Elemental brain");
+            BlueprintBrain ordinaryBrain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(library,
+                SummonPlaytestWithdrawalPolicy.NativeDumbMonsterBrainGuid, "native ordinary-attack brain");
+            BlueprintAiAction sunderAi = BlueprintLibraryLookup.RequireExact<BlueprintAiCastSpell>(library,
+                SummonPlaytestWithdrawalPolicy.NativeSunderArmorAiActionGuid, "native Sunder Armor AI action");
+            if ((ordinaryBrain.Actions ?? Array.Empty<BlueprintAiAction>()).Contains(sunderAi))
+                throw new InvalidOperationException("The native ordinary-attack brain unexpectedly sunders.");
+            foreach (string key in SummonPlaytestWithdrawalPolicy.DonorInheritedSunderKeys)
+            {
+                WithdrawnCapabilitySpec spec = SummonPlaytestWithdrawalPolicy.For(key);
+                BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, spec.UnitSymbol);
+                if (!ReferenceEquals(unit.Brain, sunderBrain) && !ReferenceEquals(unit.Brain, ordinaryBrain))
+                    throw new InvalidOperationException("Unexpected inherited brain on " + key + ".");
+                unit.Brain = ordinaryBrain;
+                BlueprintUnitFact[] facts = unit.AddFacts ?? Array.Empty<BlueprintUnitFact>();
+                unit.AddFacts = facts.Where(fact => fact == null ||
+                    SummonPlaytestWithdrawalPolicy.GrantedNativeFeats(key, new[] { fact.AssetGuid }).Length == 1)
+                    .ToArray();
             }
         }
     }

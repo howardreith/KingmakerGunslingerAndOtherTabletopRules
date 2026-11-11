@@ -98,8 +98,9 @@ namespace KingmakerGunslinger.DomainTests
         {
             string[] keys = SummonPlaytestWithdrawalPolicy.All.Select(value => value.CreatureKey).ToArray();
             Assertions.True(keys.OrderBy(value => value, StringComparer.Ordinal).SequenceEqual(
-                new[] { "bone-devil", "cloud-giant", "fire-giant", "ice-devil", "lillend-azata", "magma-mephit" }),
-                "Exactly the owner's four capability cuts on five creatures, plus Repair R5's retired Cloud Giant Fog Cloud route.");
+                new[] { "bone-devil", "cloud-giant", "elder-earth-elemental", "fire-giant", "greater-earth-elemental", "ice-devil",
+                    "lillend-azata", "magma-mephit", "storm-giant" }),
+                "Exactly the owner's four capability cuts on five creatures, Repair R5's retired Cloud Giant Fog Cloud route, and SUNDER-01's Storm Giant and two earth elementals.");
             var registered = new HashSet<string>(ExpandedSummoningIdentityCatalog.Build()
                 .Select(value => value.Symbol), StringComparer.Ordinal);
             JArray entries = (JArray)JObject.Parse(File.ReadAllText(Path.Combine(
@@ -167,8 +168,10 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(SummonPlaytestWithdrawalPolicy.GrantedNativeFeats("fire-giant",
                     new[] { sunder.ToUpperInvariant() }).Length == 0,
                 "The withdrawn feat is matched regardless of GUID case.");
-            Assertions.True(SummonPlaytestWithdrawalPolicy.GrantedNativeFeats("storm-giant", new[] { sunder })
-                .SequenceEqual(new[] { sunder }), "Storm Giant keeps its separate Improved Sunder grant.");
+            // SUNDER-01 (owner decision of 2026-11-10) supersedes the R1 Storm
+            // Giant exception; the R1 run's own verdicts stay with their candidates.
+            Assertions.True(SummonPlaytestWithdrawalPolicy.GrantedNativeFeats("storm-giant", new[] { cleave, sunder })
+                .SequenceEqual(new[] { cleave }), "Storm Giant loses only Improved Sunder.");
             Assertions.True(SummonPlaytestWithdrawalPolicy.GrantedNativeFeats("hill-giant", fire)
                 .SequenceEqual(fire), "No other giant's feat list changes.");
             Assertions.True(SummonPlaytestWithdrawalPolicy.For("fire-giant").FactSymbols.Count == 0 &&
@@ -177,7 +180,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(SummonPlaytestWithdrawalPolicy.For("lillend-azata").FactSymbols
                 .SequenceEqual(new[] { "KMG.Summoning.FeyCelestial.LillendAzata.BardicSuggestion" }),
                 "Lillend loses only Bardic Suggestion, never its Suggestion spell.");
-            Assertions.Equal(null, SummonPlaytestWithdrawalPolicy.For("storm-giant"), "Storm Giant has no withdrawal.");
+            Assertions.True(SummonPlaytestWithdrawalPolicy.For("storm-giant").NativeFeatGuids.SequenceEqual(new[] { sunder }) &&
+                SummonPlaytestWithdrawalPolicy.For("storm-giant").FactSymbols.Count == 0,
+                "Storm Giant's withdrawal is exactly its native Improved Sunder grant.");
             Assertions.Equal(null, SummonPlaytestWithdrawalPolicy.For("satyr"), "Satyr's Suggestion is untouched.");
         }
 

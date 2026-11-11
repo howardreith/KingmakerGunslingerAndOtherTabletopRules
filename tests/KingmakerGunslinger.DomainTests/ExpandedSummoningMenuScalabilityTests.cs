@@ -153,13 +153,14 @@ namespace KingmakerGunslinger.DomainTests
                     IReadOnlyList<string> ordered = SummonDisplayOrderPolicy.Order(
                         foreign, placements, key);
 
-                    string[] names = ordered.Where(value =>
-                        !foreign.Contains(value, StringComparer.Ordinal))
-                        .Select(value => SummonChoicePresentationPolicy.For(
-                            value, quantity(value)).CreatureName).ToArray();
-                    Assertions.True(names.SequenceEqual(names.OrderBy(value => value,
-                        StringComparer.OrdinalIgnoreCase)),
-                        "Creature names are out of alphabetical order for " +
+                    string[] owned = ordered.Where(value =>
+                        !foreign.Contains(value, StringComparer.Ordinal)).ToArray();
+                    string[] expected = owned.OrderBy(value => (int)quantity(value))
+                        .ThenBy(value => SummonChoicePresentationPolicy.For(value,
+                            quantity(value)).CreatureName, StringComparer.OrdinalIgnoreCase)
+                        .ThenBy(value => value, StringComparer.Ordinal).ToArray();
+                    Assertions.True(owned.SequenceEqual(expected),
+                        "Choices are out of quantity-then-name order for " +
                         scopedFamily + " " + scopedParent + ".");
 
                     Assertions.True(placements.OrderBy(value => value, StringComparer.Ordinal)

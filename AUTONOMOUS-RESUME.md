@@ -1,4 +1,98 @@
-# Races Unleashed Spider Summoner integration: owner-accepted, PR #125 merged, project complete / STOP
+# Summon menu order, summon Sunder, Lillend label, Bebelith Dismantle Armor: source-review checkpoint at ec33e2b355 / STOP
+
+Current (2026-11-11). See `planning/summon-menu-order-and-sunder/STATUS.md`. Draft PR #126; nothing merged,
+released, tagged or permanently installed.
+
+- **Bebelith Dismantle Armor (DISMANTLE-01), focused/compile only:**
+  - inert at both handlers: no trigger even with a buff reference;
+  - a legacy Dismantled Armor buff in an older save is an inert marker with no AC penalty and a "retired" text;
+  - Penetrating Strike and all other behavior unchanged.
+- **Focused gate:** 40 of 2,942, 0 failures, after one historical source-window test was corrected.
+- **Native evidence stays with its candidates:** `3f170d4a9c` 44 PASS / 1 FAIL (census observer defect;
+  reader-only re-evaluation PASS); `c6e861a98a` initialization FAIL. `1ed8aacbcf` focused/compile only.
+- **Ledger:** about 1,304 of 1,800 s (the 15 s of offline scans now counted).
+- **Next:** owner source review. A release needs a separately authorized candidate qualification, including the
+  recorded Bebelith native check.
+
+---
+
+# (superseded) Summon menu order, summon Sunder, Lillend label, Bebelith Dismantle Armor: closeout at 1ed8aacbcf, ready for merge/release review / STOP
+
+Current (2026-11-11). See `planning/summon-menu-order-and-sunder/STATUS.md`. Branch
+`codex/summon-menu-order-and-sunder`, draft PR #126 against master `3fd5bf5d0b`. Nothing merged, released, tagged
+or permanently installed.
+
+- **Gameplay:**
+  - quantity-first menus;
+  - SUNDER-01 (Storm Giant, Greater/Elder Earth Elemental);
+  - "Azata, Lillend";
+  - DISMANTLE-01: the Bebelith's Dismantle Armor withdrawn (owner decision). Focused/compile only. Already
+    dismantled armor in older saves is not retired.
+- **Saved elementals:** keep their former ordinary attack AI action, by owner decision.
+- **Census observer:** fixed to exclude only the exact fixer's removal lists. Focused/compile only.
+- **Focused gate:** 120 of 2,939, 0 failures.
+- **Native results stay with their candidates:**
+  - `3f170d4a9c`: 44 PASS / 1 FAIL. `sunder-census` FAIL retained; reader-only re-evaluation PASS, 0 carriers.
+  - `c6e861a98a`: initialization FAIL.
+- **No package or game run in the closeout.** Ledger: about 1,267 of 1,800 s.
+- **Next:** owner merge/release review. A release would need its own qualification. The Bebelith withdrawal and
+  the corrected observer have no native observation yet.
+
+---
+
+# (superseded) Summon menu order, summon Sunder and the Lillend label: candidate 3f170d4a9c native 44 PASS / 1 FAIL (observer defect) / STOP
+
+Current (2026-11-11). See `planning/summon-menu-order-and-sunder/STATUS.md`. Branch
+`codex/summon-menu-order-and-sunder`, draft PR #126 against master `3fd5bf5d0b`. Nothing merged, released, tagged
+or permanently installed.
+
+- **Candidate `3f170d4a9c`:** package `012e469a...b89d`, DLL `cec3f24c...e72a`, MVID
+  `2be9b4e9-1dbc-4154-a993-4ebea76b798c`. Initialization succeeded. The single guarded run returned 44 PASS and
+  1 FAIL.
+- **Passed:** the quantity-first census (93 arrays); all 46 spider placements; feat-absent and feat-enabled SM V
+  (Ogre single, Widow 1d3, Crab 1d4+1); SM VII single group first; "Azata, Lillend"; Druid conversion with exact
+  generated-row selection and context; ProperFlanking2 chain `ActiveExact`; fresh Storm Giant and Greater Earth
+  Elemental with no Sunder state; native attacks with no Sunder maneuver; induced legacy cleanup `Proven` for both;
+  exact-owner and non-summon controls.
+- **FAIL `sunder-census`:** an observer defect. It counted the withdrawal fixers' own removal lists as carriers. A
+  reader-only re-evaluation passes with 0 carriers; the original FAIL is retained and the observer source is
+  unchanged.
+- **Earlier candidate `c6e861a98a`:** keeps its initialization FAIL.
+- **Restoration:** exact. **Ledger:** about 1,248 of 1,800 s.
+- **Open for the owner:**
+  - Accept the Bebelith scope distinction (proposed, not approved).
+  - Optionally have the elemental fixer swap the retained legacy `GreaterEarthElementalAttackAiAction`.
+  - Optionally correct the census observer to exclude fixer self-references.
+  - Review and merge.
+
+---
+
+# (superseded) Summon menu order, summon Sunder and the Lillend label: native checkpoint FAIL, fix pending rebuild / STOP
+
+Current (2026-11-10). See `planning/summon-menu-order-and-sunder/STATUS.md`. Branch
+`codex/summon-menu-order-and-sunder` from master `3fd5bf5d0b` (PR #125 merge); one draft PR against master.
+Nothing merged, released or permanently installed. DATA intake: live v0.0.140, `Params.xml` `E44F4495...30BB`, 95 saves.
+
+- **Owner decisions recorded:** quantity-first menus (one, 1d3, 1d4+1; then family-first name; then identity),
+  superseding the name-first rule; no Sunder on any supported summon (SUNDER-01), superseding R1's Storm Giant
+  exception; "Azata, Lillend".
+- **Sunder audit:** Storm Giant (own grant) and the KMG Greater and Elder Earth Elementals (native donor's
+  Improved Sunder and GreaterEarthElementalBrain with SunderArmorAiAction) were the only reachable carriers. They
+  were withdrawn, the elementals use the native Dumb Monster Brain, and new fixers retire older saved state.
+  Bebelith's printed dismantle (a SunderArmor maneuver roll) is kept and raised as an owner question.
+- **Spider integration preserved:** 46 placements, identities and gates unchanged; originals ordered by matrix
+  quantity, generated rows by placement.
+- **Candidate `c6e861a98a`:** package `a24041f3...ca1c`, DLL `fbbf5999...0409`. One guarded run: **FAIL**, mod
+  initialization failed closed (`RequireExact<BlueprintAiAction>` vs installed `BlueprintAiCastSpell` for
+  SunderArmorAiAction); no observer ran. Restoration exact.
+- **Fix `896c089a19`:** focused 91/2,930 passing; not built, not run.
+- **Ledger:** about 627 of 1,800 s.
+- **Next, owner authorization required:** one rebuild of the fixed source and one guarded `summon-menu-order-sunder`
+  run. Then review, and merge/release only on separate instruction.
+
+---
+
+# (superseded) Races Unleashed Spider Summoner integration: owner-accepted, PR #125 merged, project complete / STOP
 
 Current (2026-11-11). See `planning/races-unleashed-compatibility/STATUS.md`. The owner accepted the final
 candidate and asked for PR #125 (`codex/races-unleashed-summoning`) to be merged and the project closed. The merge
