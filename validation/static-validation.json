@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.182-summon-menu-order-spider-summoner",
+  "milestone": "0.0.183-gunslinger-playtest-repairs",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.182",
+  "version": "0.0.183",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2910,5 +2910,18 @@
     "nativeEvidence": "Native results stay attributed to their own development candidates; none was re-executed on this version-stamped build. Spider Summoner: candidate 0908e3415fa4, every RU-01..RU-20 row closed. Menu order and Sunder: candidate 3f170d4a9cea remains 44 PASS / 1 FAIL (the sunder-census FAIL is an observer defect; a separate reader-only re-evaluation passes with 0 carriers); candidate c6e861a98a93 remains an initialization FAIL.",
     "deferredCoverage": "Not observed natively: the Bebelith Dismantle Armor withdrawal and inert legacy penalty, the corrected census observer, an old-save cold load, Herald and alternate-source menus as opened popups, the Elder Earth Elemental live, autonomous AI decisions with a saved elemental's retained attack action. Call of the Wild metamagic-conversion rows remain an open design choice.",
     "ownerPublicationAuthority": "Howie Reith, 2026-11-11: 'Accepted. Please merge, push, and cut a new release with a new version number.' Published as the next stable patch, as v0.0.181 was."
+  },
+  "gunslingerPlaytestRelease183": {
+    "releaseVersion": "0.0.183",
+    "releaseInformationalVersion": "0.0.183-gunslinger-playtest-repairs",
+    "baseStableVersion": "0.0.182",
+    "reviewedProductSource": "57d86403239b94715c10adaca0187bc2ada63d49",
+    "appendedIdentities": 0,
+    "releasedIdentityChanges": 0,
+    "visibleChoiceTotal": 1208,
+    "change": "Gunslinger playtest repairs: the spellbook 'Elementals - show/hide original sources' disclosure withdrawn on PC and controller (level-up learning and the action-bar source chooser unchanged); Deadeye Armed, Gunslinger's Dodge, Focused Aim and Dead Shot descriptions clarified; both cold iron branched spears removed from Oleg's stock; Thornstep retired from campaign acquisition (registry 28, discoverability 29 items / 27 exact areas) with provenance-based reconciliation of its former source in older saves.",
+    "nativeEvidence": "None of the six repairs was observed natively and no development candidate was built or run. Evidence: focused gate 153 of 2,948 with 0 failures at e04609c2f1, compilation, read-only Harmony target preparation (spellbook 40/40, retired-loot 1/1) and inspection of the decompiled 2.1.7b engine contract.",
+    "deferredCoverage": "Not observed natively: spellbook rows through refresh and reload on PC and controller, the Deadeye Armed, Dodge and Focused Aim tooltips, a Dodge activation, Oleg's fresh and saved stock, Thornstep's fresh and previously generated sources, legacy owned copies. Known migration limits: a cold iron spear sold to Oleg after his stocked copy was bought is decremented; an engine-added zero-time Thornstep in a container generated before its placement existed is removed.",
+    "ownerPublicationAuthority": "Howie Reith, 2026-11-11: 'This is acceptable. Please merge this and cut a new release.' Published as the next stable patch, as v0.0.182 was."
   }
 }

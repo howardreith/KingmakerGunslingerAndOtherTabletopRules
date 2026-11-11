@@ -1,5 +1,31 @@
 # Build, package, and publish
 
+## 0.0.183 publication authorization
+
+On 2026-11-11 Howie wrote: "This is acceptable. Please merge this and cut a new release." PR #129 was marked
+ready and merged as `57d8640323`. No channel was named, so this follows v0.0.182 as the next stable patch,
+v0.0.183, from master after PR #129.
+
+- **Reviewed product.** Master `57d8640323`; its tree equals the reviewed branch head `121623b5be`.
+  `tools/validate_gunslinger_playtest_release183.py` pins it:
+  - only the three AssemblyInfo version attributes and the Info and props version values may change;
+  - all 7,933 released identities stay exact and in order, and none is appended;
+  - the creature catalog is unchanged, with only the owner-withdrawn Stirge withheld (1,208 public choices);
+  - one static release record is added.
+- **Native evidence.** None. The six repairs have focused-test (153 of 2,948, 0 failures), compilation,
+  read-only Harmony target (spellbook 40/40, retired-loot 1/1) and engine-contract evidence only. The owner
+  accepted the source review; the native rows in `planning/gunslinger-playtest-repairs/STATUS.md` stay NOT RUN.
+- **Disclosed migration limits.** The Oleg sold-copy decrement and the engine-added zero-time Thornstep are in
+  `KNOWN-ISSUES.md` and the notes.
+- **Publication path.** Use the ordinary exact-reference publisher from clean, pushed master with
+  `docs/RELEASE-NOTES-0.0.183.md`. It runs the complete gate and two deterministic builds, then publishes.
+  Planning budget: 30 minutes, excluding necessary safe completion.
+
+```powershell
+.\scripts\Publish-Release.ps1 -ReferenceBundleDir '<private build references>' `
+  -ReleaseNotesPath 'docs\RELEASE-NOTES-0.0.183.md' -Publish -ConfirmReleaseReady
+```
+
 ## 0.0.182 publication authorization
 
 **Published (completed).** Stable
