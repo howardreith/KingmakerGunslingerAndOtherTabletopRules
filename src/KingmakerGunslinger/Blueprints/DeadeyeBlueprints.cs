@@ -76,7 +76,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().Configure(result,
                 LocalizationService.Create("KMG.Deadeye.Armed.Name", "Deadeye Armed"),
                 LocalizationService.Create("KMG.Deadeye.Armed.Description",
-                    "You paid 1 Grit when this buff was activated. Your next valid firearm attack before the end of one round uses Deadeye's touch-AC range behavior; the buff is consumed even if that attack misses."), null);
+                    "Your next firearm attack targets touch AC even beyond the weapon's first range increment. Normal range penalties still apply. This effect ends after 1 round or after that firearm attack, even if it misses."), null);
             return result;
         }
 
@@ -88,7 +88,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().Configure(result,
                 LocalizationService.Create("KMG.Deadeye.Ability.Name", "Deadeye"),
                 LocalizationService.Create("KMG.Deadeye.Ability.Description",
-                    "As a free action, immediately spend 1 Grit and gain Deadeye Armed for one round. Your next valid firearm shot consumes the buff, even on a miss, and resolves range increments against touch AC; normal range penalties still apply."), null);
+                    "As a free action, spend 1 grit to gain Deadeye Armed for 1 round. Your next firearm attack targets touch AC even beyond the weapon's first range increment. Normal range penalties still apply. The effect ends after that firearm attack, even if it misses."), null);
             result.Type = AbilityType.Extraordinary;
             result.Range = AbilityRange.Personal;
             result.CanTargetSelf = true;
@@ -135,7 +135,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().Configure(result,
                 LocalizationService.Create("KMG.Deadeye.Feature.Name", "Deadeye"),
                 LocalizationService.Create("KMG.Deadeye.Feature.Description",
-                    "Immediately spend 1 Grit to arm your next firearm attack for one round. That shot uses Deadeye's touch-AC range behavior and consumes the armed buff even if it misses."), null);
+                    "As a free action, spend 1 grit. For 1 round, your next firearm attack targets touch AC even beyond the weapon's first range increment. Normal range penalties still apply. The effect ends after that firearm attack, even if it misses."), null);
             return result;
         }
 

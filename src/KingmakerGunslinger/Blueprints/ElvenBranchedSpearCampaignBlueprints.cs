@@ -14,12 +14,14 @@ namespace KingmakerGunslinger.Blueprints
     {
         private static readonly VendorSpec[] Vendors =
         {
+            // Owner playtest repair (2026-11-11): Oleg stocks no cold iron
+            // branched spears. Publication removes those two rows from this one
+            // table; native SharedVendorTables known-item reconciliation then
+            // removes an already generated, unsold stocked copy in older saves.
             new VendorSpec("f720440559fc00949900bfa1575196ac",
                 "C11_OlegVendorTable", new[] {
                     ElvenBranchedSpearItemKind.Mundane,
-                    ElvenBranchedSpearItemKind.Masterwork,
-                    ElvenBranchedSpearItemKind.ColdIron,
-                    ElvenBranchedSpearItemKind.MasterworkColdIron }, null),
+                    ElvenBranchedSpearItemKind.Masterwork }, null),
             new VendorSpec(CapitalVendorBlueprints.TableGuid,
                 CapitalVendorBlueprints.ExpectedTableName,
                 new ElvenBranchedSpearItemKind[0], null),
@@ -48,14 +50,19 @@ namespace KingmakerGunslinger.Blueprints
                 "campaign Tenebrous Depths support merchant cleanup")
         };
 
+        // Thornstep was retired from campaign acquisition (owner request,
+        // 2026-11-11). Its item, enchantment, buffs and enum value stay
+        // registered so owned copies load; it has no active placement.
+        private static readonly NamedSpearKind[] Retired =
+        {
+            NamedSpearKind.Thornstep
+        };
+
         private static readonly LootSpec[] Loot =
         {
             new LootSpec(NamedSpearKind.Boughkeeper,
                 "40db074f21260344b95d0e9919c8e682",
                 "Forest_PoorLoot01", "CapitalRegionLair01"),
-            new LootSpec(NamedSpearKind.Thornstep,
-                "3322c56f38031eb4983b6f87c95081b7",
-                "Forest_GoodLoot01", "NorthNarlmarchesRegionLair01"),
             new LootSpec(NamedSpearKind.MoonlitFork,
                 "2aa7aa5c2df96b143bd2fc62a8547c9c",
                 "Forest_TH_GreatclubBarbarianMagic", "MonsterLairHodag"),
@@ -72,6 +79,11 @@ namespace KingmakerGunslinger.Blueprints
 
         private static readonly CleanupSpec[] CleanupLoot =
         {
+            // Thornstep's former Riverine Rise source. Native
+            // LootPersistentData known-item reconciliation removes exactly an
+            // unlooted generated Thornstep from this container in older saves.
+            new CleanupSpec("3322c56f38031eb4983b6f87c95081b7",
+                "Forest_GoodLoot01", "NorthNarlmarchesRegionLair01"),
             new CleanupSpec("59cb0ac65b4093440ad341b9a2f372cf",
                 "Forest_BarrikadedChest1", "StagLordFort"),
             new CleanupSpec("70c4615a8d667dc4cb740c22ee7b5eed",
@@ -98,6 +110,7 @@ namespace KingmakerGunslinger.Blueprints
 
         internal static VendorSpec[] VendorSpecs { get { return Vendors.ToArray(); } }
         internal static LootSpec[] LootSpecs { get { return Loot.ToArray(); } }
+        internal static NamedSpearKind[] RetiredNamedKinds { get { return Retired.ToArray(); } }
 
         internal static ElvenBranchedSpearCampaignPublication Publish(
             LibraryScriptableObject library, ElvenBranchedSpearBlueprintSet foundation,
@@ -229,7 +242,9 @@ namespace KingmakerGunslinger.Blueprints
                     vendorMutations, lootMutations);
                 result.Validate();
                 logger.Info("elven-branched-spear", "campaign.published",
-                    "Normalized generic campaign/BTSL stock and six distinct fixed-loot placements for the named spear progression.");
+                    "Normalized generic campaign/BTSL stock and " + Loot.Length +
+                    " distinct fixed-loot placements for the named spear progression; retired: " +
+                    string.Join(",", Retired.Select(value => value.ToString()).ToArray()) + ".");
                 return result;
             }
             catch
@@ -294,8 +309,18 @@ namespace KingmakerGunslinger.Blueprints
             int requiredVendors = ElvenBranchedSpearCampaignBlueprints.VendorSpecs
                 .Count(value => !value.Optional);
             int maximumVendors = ElvenBranchedSpearCampaignBlueprints.VendorSpecs.Length;
+            ElvenBranchedSpearCampaignBlueprints.LootSpec[] active =
+                ElvenBranchedSpearCampaignBlueprints.LootSpecs;
             if (_vendors.Count < requiredVendors || _vendors.Count > maximumVendors ||
-                _loot.Count < 6 ||
+                active.Any(spec => _loot.Count(value => value.Spec != null &&
+                    value.Spec.NamedKind == spec.NamedKind && value.Spec.Guid == spec.Guid) != 1) ||
+                _loot.Count(value => value.Spec != null) != active.Length ||
+                active.Select(value => value.NamedKind).Distinct().Count() != active.Length ||
+                active.Any(spec => ElvenBranchedSpearCampaignBlueprints.RetiredNamedKinds
+                    .Contains(spec.NamedKind)) ||
+                _vendors.Any(value => value.Spec.NamedKind.HasValue &&
+                    ElvenBranchedSpearCampaignBlueprints.RetiredNamedKinds
+                        .Contains(value.Spec.NamedKind.Value)) ||
                 _vendors.Select(value => value.Table).Distinct().Count() != _vendors.Count ||
                 _loot.Select(value => value.Target).Distinct().Count() !=
                     _loot.Count)

@@ -869,35 +869,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (!ReferenceEquals(controller.CurrentSpellbook, book) || controller.CurrentBookLevel != level || !controller.IsShow)
                     throw new InvalidOperationException("Native elemental source book/page ownership changed.");
-                // Native pagination owns the actual rows. The production
-                // disclosure owns only visibility, so reveal this exact page's
-                // original row through its real button instead of treating an
-                // intentionally folded row as an absent known/custom source.
-                var view = controller.SpellBookView;
-                var fold = view.GetComponent<ElementalNativeSourceFold>();
-                var folded = fold == null ? null : typeof(ElementalNativeSourceFold).GetField("_rows", Cleanup2Fields)
-                    .GetValue(fold) as ElementalNativeSourceFold.Row[];
-                var owned = folded == null ? new ElementalNativeSourceFold.Row[0] : folded.Where(value => value.Current &&
-                    value.Component is SpellItem item && ReferenceEquals(item.SpellData, expected)).ToArray();
-                if (owned.Length > 1) throw new InvalidOperationException("Native source disclosure owns duplicate original row references.");
-                if (owned.Length == 1 && !owned[0].Component.gameObject.activeInHierarchy)
-                {
-                    int actualPage = controller.CurrentPageIndex;
-                    var originalRow = (SpellItem)owned[0].Component;
-                    var header = Cleanup2DesktopDisclosure(view);
-                    header.onClick.Invoke();
-                    for (int frame = 0; frame < 4; frame++) yield return 0;
-                    bool revealed = ReferenceEquals(controller.CurrentSpellbook, book) && controller.CurrentBookLevel == level &&
-                        controller.CurrentPageIndex == actualPage && originalRow.gameObject.activeInHierarchy &&
-                        ReferenceEquals(originalRow.SpellData, expected) && owned[0].Current;
-                    Cleanup2Check("elemental-sources-native-book-disclosure-" + (extend ? "extend" : "ordinary"), revealed,
-                        new JObject { ["source"] = parent.AssetGuid, ["book"] = book.Blueprint.AssetGuid, ["level"] = level,
-                            ["page"] = actualPage, ["exactNativeAbilityData"] = ReferenceEquals(originalRow.SpellData, expected),
-                            ["originalRowVisible"] = originalRow.gameObject.activeInHierarchy, ["actualDisclosureButton"] = header.GetInstanceID(),
-                            ["directVisibilityWrites"] = 0 },
-                        "The actual Elementals disclosure reveals this native page's exact known/custom AbilityData before original-source metamagic selection; no row is unhidden directly.");
-                    if (!revealed) throw new InvalidOperationException("Owned native elemental source disclosure did not reveal its exact original row.");
-                }
+                // Native pagination owns the actual rows. The spellbook source
+                // disclosure was withdrawn (2026-11-11), so the exact original
+                // row is an ordinary visible native row on its own page.
+                if (controller.SpellBookView.GetComponent<ElementalNativeSourceFold>() != null &&
+                    controller.SpellBookView.GetComponent<ElementalNativeSourceFold>().HasFold)
+                    throw new InvalidOperationException("A withdrawn spellbook source disclosure is present.");
                 row = controller.SpellBookView.GetComponentsInChildren<SpellItem>(true).SingleOrDefault(value => value.gameObject.activeInHierarchy &&
                     ReferenceEquals(value.SpellData, expected));
                 if (row != null) break;

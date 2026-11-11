@@ -182,7 +182,7 @@ namespace KingmakerGunslinger.DomainTests
         }
         internal static void RegionalSpearsAndNamedLootUnchanged()
         {
-            AssertHash(Source("Blueprints/ElvenBranchedSpearCampaignBlueprints.cs").Replace("CapitalVendorBlueprints.ExpectedTableName,\n                new ElvenBranchedSpearItemKind[0], null)", "CapitalVendorBlueprints.ExpectedTableName,\n                AllFoundationKinds(), null)"), "b8588b4d52b1674bfe4fe69d7f124fa8ddf69fede1ebfca2ac39e5f63555528d", "Blueprints/ElvenBranchedSpearCampaignBlueprints.cs");
+            AssertHash(Source("Blueprints/ElvenBranchedSpearCampaignBlueprints.cs").Replace("CapitalVendorBlueprints.ExpectedTableName,\n                new ElvenBranchedSpearItemKind[0], null)", "CapitalVendorBlueprints.ExpectedTableName,\n                AllFoundationKinds(), null)"), "b7e4f8123a978213ff6c32b7f3687f6f420cdcd7c822c9587403207279f09158", "Blueprints/ElvenBranchedSpearCampaignBlueprints.cs");
         }
         internal static void BtslUnchanged()
         {

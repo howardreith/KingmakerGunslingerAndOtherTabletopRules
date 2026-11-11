@@ -5,9 +5,7 @@ using System.Reflection;
 using Harmony12;
 using Kingmaker;
 using Kingmaker.Assets.UI.LevelUp;
-using Kingmaker.UI.ServiceWindow;
 using Kingmaker.UnitLogic;
-using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Class.LevelUp;
 using TMPro;
@@ -16,8 +14,8 @@ using UnityEngine.UI;
 
 namespace KingmakerGunslinger.Summoning
 {
-    // A fold owns only visibility of exact native rows during this one native
-    // screen generation. Source objects, row callbacks, ToggleGroups, budgets,
+    // A fold owns only visibility of exact native learning rows during this one
+    // native screen generation. Source objects, row callbacks, ToggleGroups, budgets,
     // preparation actions and native pagination remain the original objects.
     internal sealed class ElementalNativeSourceFold : MonoBehaviour
     {
@@ -131,6 +129,10 @@ namespace KingmakerGunslinger.Summoning
         private void OnDisable(){Release();}
     }
 
+    // Level-up spell learning only. The spellbook (preparation) fold and its
+    // "Elementals (n) - show/hide original sources" row were withdrawn by owner
+    // request (2026-11-11): the native book shows every original source as an
+    // ordinary row again, with native pagination, selection and preparation.
     internal static class ElementalNativeRowsPresentation
     {
         private const BindingFlags Fields=BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic;
@@ -155,25 +157,6 @@ namespace KingmakerGunslinger.Summoning
                         level!=null && level.SpellSelections!=null && level.SpellSelections.Any(value=>ReferenceEquals(value,item.BlueprintAbility))) }).ToArray();
             ElementalNativeSourceFold.Install(layer,rows,()=>ReferenceEquals(LearningSelection.GetValue(layer),selection) &&
                 ReferenceEquals(layer.CharBuildController?.LevelUpController,controller),()=>layer.UpdateLayout(false),"learning");
-        }
-        internal static void Preparation(SpellBookView view)
-        {
-            ElementalNativeSourceFold.Release(view);
-            var book=view.CurrentSpellbook;
-            if(!ElementalSourceChooserRuntime.Active || book?.Blueprint.SpellList==null ||
-                !StandaloneElementalPresentationPolicy.IsObservedOrdinaryList(book.Blueprint.SpellList.AssetGuid))return;
-            var rows=view.GetComponentsInChildren<SpellItem>(true).Where(value=>value.gameObject.activeSelf && value.SpellData!=null &&
-                ReferenceEquals(value.SpellData.Spellbook,book) && value.SpellData.SourceItem==null && value.SlotType==SpellSlotType.Common &&
-                (!book.IsSpellSpecial(value.SpellData) || book.IsSpellCommon(value.SpellData)) &&
-                ElementalSourceChooserPolicy.Parent(value.SpellData.Blueprint.AssetGuid)!=null &&
-                book.Blueprint.SpellList.GetSpells(ElementalSourceChooserPolicy.SourceRank(value.SpellData.Blueprint.AssetGuid))
-                    .Any(spell=>ReferenceEquals(spell,value.SpellData.Blueprint))).Select(item=> {
-                        AbilityData data=item.SpellData;
-                        return new ElementalNativeSourceFold.Row {Component=item,Blueprint=data.Blueprint,
-                            CurrentBlueprint=()=>ReferenceEquals(item.SpellData,data)?data.Blueprint:null,Parent=item.transform.parent,
-                            Selected=()=>ReferenceEquals(view.SelectedSpell,data) || item.Toggle.isOn}; }).ToArray();
-            ElementalNativeSourceFold.Install(view,rows,()=>ReferenceEquals(view.CurrentSpellbook,book),
-                ()=>Canvas.ForceUpdateCanvases(),"preparation");
         }
         internal static bool Exact(Type owner,string method,int bytes)
         {var target=owner.GetMethod(method,BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic);
@@ -204,14 +187,5 @@ namespace KingmakerGunslinger.Summoning
         private static bool Prepare(){return typeof(CharBSelectorLayer).Module.ModuleVersionId.ToString()==ElementalSourceChooserRuntime.GameMvid;}
         private static void Prefix(CharBSelectorLayer __instance){ElementalNativeRowsPresentation.Safe(__instance,()=>ElementalNativeSourceFold.Release(__instance));}
         private static void Postfix(CharBSelectorLayer __instance){ElementalNativeRowsPresentation.Safe(__instance,()=>ElementalNativeRowsPresentation.Learning(__instance));}
-    }
-    [HarmonyPatch(typeof(SpellBookView),"RefreshSpellsView")]
-    internal static class ElementalPreparationRowsPatch
-    {
-        // Installed 2.1.7b RefreshSpellsView 06004838 is 731 IL bytes; the
-        // former 730 pin silently left this preparation fold uninstalled.
-        private static bool Prepare(){return ElementalNativeRowsPresentation.Exact(typeof(SpellBookView),"RefreshSpellsView",731);}
-        private static void Prefix(SpellBookView __instance){ElementalNativeRowsPresentation.Safe(__instance,()=>ElementalNativeSourceFold.Release(__instance));}
-        private static void Postfix(SpellBookView __instance){ElementalNativeRowsPresentation.Safe(__instance,()=>ElementalNativeRowsPresentation.Preparation(__instance));}
     }
 }
