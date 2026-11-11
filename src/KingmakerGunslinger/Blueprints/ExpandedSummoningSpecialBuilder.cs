@@ -4868,7 +4868,9 @@ namespace KingmakerGunslinger.Blueprints
                     "Dismantled Armor"),
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.Bebelith.DismantledArmor.Description",
-                    "A Bebelith tore this creature's armor apart. The piece no longer protects it: its entire armor class contribution is gone. No item is moved, unequipped or altered."),
+                    SummonPlaytestWithdrawalPolicy.BebelithDismantleArmorWithdrawn ?
+                        "Retired legacy effect. The Bebelith's Dismantle Armor has been withdrawn; this marker no longer reduces armor class." :
+                        "A Bebelith tore this creature's armor apart. The piece no longer protects it: its entire armor class contribution is gone. No item is moved, unequipped or altered."),
                 null);
         }
 

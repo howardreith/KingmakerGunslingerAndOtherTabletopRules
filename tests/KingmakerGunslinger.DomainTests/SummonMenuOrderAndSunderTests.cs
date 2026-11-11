@@ -359,13 +359,54 @@ namespace KingmakerGunslinger.DomainTests
             }
         }
 
-        // DISMANTLE-01 (owner decision, 2026-11-11): Dismantle Armor is
-        // withdrawn; its identities and retained policy stay for saves.
+        // DISMANTLE-01 (owner decision, 2026-11-11). These exercise the exact
+        // policy seam the production handlers call
+        // (BebelithCombatComponent's attack and damage handlers and
+        // BebelithDismantledArmorComponent's AC handler); the live components
+        // are compiled, not run, here.
         internal static void BebelithDismantleArmorIsWithdrawn()
         {
             Assertions.True(SummonPlaytestWithdrawalPolicy.BebelithDismantleArmorWithdrawn, "Dismantle Armor is withdrawn from the Bebelith.");
             Assertions.True(ExpandedSummoningIdentityCatalog.Build().Any(value => value.Symbol == "KMG.Summoning.Special.Bebelith.DismantledArmor"),
                 "The dismantled-armor buff identity stays registered for saved references.");
+        }
+
+        internal static void BebelithDismantleTriggerBlockedEvenWithBuffReference()
+        {
+            Assertions.False(SummonPlaytestWithdrawalPolicy.BebelithEffectActive(BebelithEffect.DismantleTrigger, true, true),
+                "Withdrawn: a retained buff reference does not reactivate the trigger.");
+            Assertions.False(SummonPlaytestWithdrawalPolicy.BebelithEffectActive(BebelithEffect.DismantleTrigger, true, false),
+                "Withdrawn with no buff reference: no trigger.");
+            Assertions.True(SummonPlaytestWithdrawalPolicy.BebelithEffectActive(BebelithEffect.DismantleTrigger, false, true),
+                "Control: the same seam would run the trigger if the mechanic were not withdrawn, so the withdrawal is what blocks it.");
+            Assertions.False(SummonPlaytestWithdrawalPolicy.BebelithEffectActive(BebelithEffect.DismantleTrigger,
+                SummonPlaytestWithdrawalPolicy.BebelithDismantleArmorWithdrawn, true), "The shipped decision blocks the trigger.");
+        }
+
+        internal static void BebelithLegacyDismantledArmorPenaltyIsInert()
+        {
+            int reads = 0;
+            Func<int> lost = () => { reads++; return 6; };
+            Assertions.Equal(0, SummonPlaytestWithdrawalPolicy.BebelithDismantledArmorPenalty(true, lost),
+                "Withdrawn: an existing dismantled-armor effect contributes no AC penalty.");
+            Assertions.Equal(0, reads, "Withdrawn: the dismantled piece is not even read.");
+            Assertions.Equal(0, SummonPlaytestWithdrawalPolicy.BebelithDismantledArmorPenalty(
+                SummonPlaytestWithdrawalPolicy.BebelithDismantleArmorWithdrawn, lost), "The shipped decision is inert.");
+            Assertions.Equal(6, SummonPlaytestWithdrawalPolicy.BebelithDismantledArmorPenalty(false, lost),
+                "Control: the same seam returns the live contribution when not withdrawn.");
+            Assertions.Equal(0, SummonPlaytestWithdrawalPolicy.BebelithDismantledArmorPenalty(false, () => -3),
+                "No compensating positive modifier: a penalty is never negative.");
+        }
+
+        // The withdrawal never gates Penetrating Strike. Ordinary attacks are
+        // not consulted at all: the Dismantle handler reacts only after an
+        // attack has resolved (compile coverage; not a game-free behavior).
+        internal static void BebelithPenetratingStrikeUnaffectedByWithdrawal()
+        {
+            foreach (bool withdrawn in new[] { true, false })
+                foreach (bool configured in new[] { true, false })
+                    Assertions.True(SummonPlaytestWithdrawalPolicy.BebelithEffectActive(BebelithEffect.PenetratingStrike, withdrawn, configured),
+                        "Penetrating Strike stays active (withdrawn=" + withdrawn + ", buff=" + configured + ").");
         }
 
         private static SunderUnitState Unit(bool feat, bool action, bool toggle, bool running, int buffActive)
