@@ -1,4 +1,30 @@
-# Summon menu order, summon Sunder, Lillend label, Bebelith Dismantle Armor: merged and released in v0.0.182 / STOP
+# Gunslinger playtest repairs: focused checkpoint, draft PR / STOP
+
+Current (2026-11-11). See `planning/gunslinger-playtest-repairs/STATUS.md`. Branch
+`codex/gunslinger-playtest-repairs` from master `aa91f46571`, source commit `bfd39dda00`. Nothing merged,
+released, tagged or installed.
+
+- **Six repairs:**
+  - the PC and controller spellbook "Elementals — show original sources" disclosure is withdrawn (level-up
+    learning keeps its own);
+  - Deadeye Armed, Gunslinger's Dodge and Focused Aim/Dead Shot descriptions are rewritten (copy only);
+  - Oleg no longer stocks either cold iron branched spear;
+  - Thornstep is retired from loot, the registry and recovery, with identities kept and its Riverine Rise source
+    an exact cleanup target.
+- **Existing saves:** handled by native 2.1.7b known-item reconciliation (inspected, not observed).
+- **Evidence:**
+  - focused gate 147 of 2,942, 0 failures;
+  - production compile; DLL `6d15ed3b…bfccfc`, not packaged;
+  - read-only Harmony target check 40/40.
+- **Native rows NOT RUN:** no package, no game launch, and the installation was untouched.
+- **Next:**
+  - owner review of the draft PR;
+  - an explicitly selected candidate run for the remaining native checks listed in STATUS;
+  - an owner decision on the level-up learning disclosure.
+
+---
+
+# (previous mission) Summon menu order, summon Sunder, Lillend label, Bebelith Dismantle Armor: merged and released in v0.0.182 / STOP
 
 Current (2026-11-11). See `planning/summon-menu-order-and-sunder/STATUS.md`. PR #126 merged as `22eea359b6`
 and release PR #127 as `c19d12e095`. Stable v0.0.182 is Latest, from release commit `c19d12e095`, package
