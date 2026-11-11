@@ -108,9 +108,20 @@ namespace KingmakerGunslinger.Blueprints
                 "Forest_cache_1561", "VordakaiTombLevel2")
         };
 
+        // Exact former authored source of each retired weapon. Older saves are
+        // reconciled by RetiredLootReconciliationPatch: an untouched generated
+        // reward is removed; a copy the party has held is retained.
+        private static readonly RetiredLootSource[] RetiredSources =
+        {
+            new RetiredLootSource(NamedSpearKind.Thornstep,
+                "3322c56f38031eb4983b6f87c95081b7",
+                "Forest_GoodLoot01", "NorthNarlmarchesRegionLair01")
+        };
+
         internal static VendorSpec[] VendorSpecs { get { return Vendors.ToArray(); } }
         internal static LootSpec[] LootSpecs { get { return Loot.ToArray(); } }
         internal static NamedSpearKind[] RetiredNamedKinds { get { return Retired.ToArray(); } }
+        internal static RetiredLootSource[] RetiredLootSources { get { return RetiredSources.ToArray(); } }
 
         internal static ElvenBranchedSpearCampaignPublication Publish(
             LibraryScriptableObject library, ElvenBranchedSpearBlueprintSet foundation,
@@ -238,6 +249,20 @@ namespace KingmakerGunslinger.Blueprints
                     lootMutations.Add(new SpearLootMutation(target, before,
                         published, null, null, true));
                 }
+                foreach (RetiredLootSource retired in RetiredSources)
+                {
+                    BlueprintLoot source = BlueprintLibraryLookup.RequireExact<BlueprintLoot>(
+                        library, retired.Guid, "Retired Elven Branched Spear source " + retired.Name);
+                    if (!Retired.Contains(retired.Kind) ||
+                        !CleanupLoot.Any(value => value.Guid == retired.Guid) ||
+                        !string.Equals(source.name, retired.Name, StringComparison.Ordinal) ||
+                        source.Area == null || !string.Equals(source.Area.name,
+                            retired.AreaName, StringComparison.Ordinal) ||
+                        (source.Items ?? new LootEntry[0]).Any(value => value != null &&
+                            ReferenceEquals(value.Item, foundation.Named.Require(retired.Kind).Item)))
+                        throw new InvalidOperationException(
+                            "Retired spear source identity/cleanup mismatch: " + retired.Guid);
+                }
                 var result = new ElvenBranchedSpearCampaignPublication(
                     vendorMutations, lootMutations);
                 result.Validate();
@@ -281,6 +306,17 @@ namespace KingmakerGunslinger.Blueprints
                 string areaName)
             { NamedKind = kind; Guid = guid; Name = name; AreaName = areaName; }
             internal NamedSpearKind NamedKind { get; private set; }
+            internal string Guid { get; private set; }
+            internal string Name { get; private set; }
+            internal string AreaName { get; private set; }
+        }
+
+        internal sealed class RetiredLootSource
+        {
+            internal RetiredLootSource(NamedSpearKind kind, string guid, string name,
+                string areaName)
+            { Kind = kind; Guid = guid; Name = name; AreaName = areaName; }
+            internal NamedSpearKind Kind { get; private set; }
             internal string Guid { get; private set; }
             internal string Name { get; private set; }
             internal string AreaName { get; private set; }
