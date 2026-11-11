@@ -54,8 +54,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (tail) { violation = index; break; }
                 if (previous != null)
                 {
+                    // Quantity first, then name (owner decision of 2026-11-10,
+                    // superseding the name-first rule), read from the labels.
+                    int rank = AlphaQuantityRank(previous).CompareTo(AlphaQuantityRank(names[index]));
                     int compare = string.Compare(AlphaCreatureName(previous), AlphaCreatureName(names[index]), StringComparison.OrdinalIgnoreCase);
-                    if (compare > 0 || (compare == 0 && AlphaQuantityRank(previous) > AlphaQuantityRank(names[index]))) violation = index;
+                    if (rank > 0 || (rank == 0 && compare > 0)) violation = index;
                 }
                 previous = names[index];
             }
@@ -415,15 +418,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     AlphaMenu alternate = null;
                     foreach (int frame in R6Cell("alpha-alternate", () => AlphaObserveMenu("alternate-" + root.name, sources[0], root, data, mode, watch, screens, inputs, notExercised, value => alternate = value, false, 0))) yield return frame;
                 }
-                // A single row that quantity-first order would have placed
-                // before any group row, cast through the existing narrow route.
+                // The last single row of the leading single-summon group
+                // (quantity-first order, owner decision of 2026-11-10), cast
+                // through the existing narrow route.
                 if (flat == null) throw new InvalidOperationException("Druid conversion rows were not observed; the routing cast is skipped.");
                 var flatData = flat.Data;
                 int lastGroup = Array.FindLastIndex(flatData, value => AlphaQuantityRank(value.Name) != 0);
                 int castIndex = Array.FindLastIndex(flatData, value => AlphaQuantityRank(value.Name) == 0 && SummonSignatureReader.Read(value.Blueprint).Spawns().Count() == 1);
-                bool reordered = castIndex >= 0 && Array.FindIndex(flatData, value => AlphaQuantityRank(value.Name) != 0) < castIndex && lastGroup >= 0;
+                bool reordered = castIndex >= 0 && lastGroup >= 0 && castIndex < Array.FindIndex(flatData, value => AlphaQuantityRank(value.Name) != 0);
                 Sprint25Check("alpha-druid-cast-target-reordered", reordered, new JObject { ["castIndex"] = castIndex, ["label"] = castIndex < 0 ? null : flatData[castIndex].Name },
-                    "The cast target is a single whose position differs from the retired quantity-first order.");
+                    "The cast target is a single row inside the leading single-summon group.");
                 if (reordered)
                 {
                     // The alternate menus left another action-bar group open and

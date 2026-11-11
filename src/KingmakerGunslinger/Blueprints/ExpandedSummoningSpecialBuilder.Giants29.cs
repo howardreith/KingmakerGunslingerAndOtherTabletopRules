@@ -239,12 +239,17 @@ namespace KingmakerGunslinger.Blueprints
                 Alignment.ChaoticGood, 19, 39, 14, 23, 16, 20, 15,
                 85, 11, 6, 6, 19, 15, 0,
                 sword, slam, null, breastplate, natural, extraplanar,
-                new[] { "0f8939ae6f220984e8fb568abbdfba95",
-                    NativeImprovedBullRush29,
-                    "6b6e53330d0739d41bc50d7b4ca5ceea",
-                    NativeImprovedSunder,
-                    "14a1fc1356df9f146900e1e42142fc9d",
-                    IronWillGuid, PowerAttackGuid }, false,
+                // SUNDER-01 (owner decision, 2026-11-10): no summon sunders.
+                // The native Improved Sunder feat's own AddFacts carry the
+                // Sunder Armor action and ProperFlanking2's attack-replacement
+                // toggle, so the feat is withheld for this creature alone.
+                SummonPlaytestWithdrawalPolicy.GrantedNativeFeats("storm-giant",
+                    new[] { "0f8939ae6f220984e8fb568abbdfba95",
+                        NativeImprovedBullRush29,
+                        "6b6e53330d0739d41bc50d7b4ca5ceea",
+                        NativeImprovedSunder,
+                        "14a1fc1356df9f146900e1e42142fc9d",
+                        IronWillGuid, PowerAttackGuid }), false,
                 new[] { ElectricityImmunityGuid });
             BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, Storm29Unit);
             unit.Size = Size.Huge;

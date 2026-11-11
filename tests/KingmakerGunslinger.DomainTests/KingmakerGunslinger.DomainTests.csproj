@@ -224,6 +224,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs"><Link>ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs</Link></Compile>
     <Compile Include="SummonPublicationPolicyTests.cs" />
     <Compile Include="SummonAlphabeticalMenuTests.cs" />
+    <Compile Include="SummonMenuOrderAndSunderTests.cs" />
     <Compile Include="SummonClericAlignmentTests.cs" />
     <Compile Include="SummonVariantMenuLayoutTests.cs" />
     <Compile Include="SummonSameTurnActivationTests.cs" />
