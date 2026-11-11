@@ -295,18 +295,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 var nativeRows = view.GetComponentsInChildren<SpellItem>(true).Where(value => value.SpellData != null).ToArray();
                 var rowData = nativeRows.Select(value => value.SpellData).ToArray();
-                if (!off) { Cleanup2DesktopDisclosure(view).onClick.Invoke(); for (int frame = 0; frame < 4; frame++) yield return 0; }
+                // The spellbook disclosure was withdrawn (2026-11-11): module ON
+                // and fresh OFF alike show the original source as an ordinary,
+                // already visible native row with no owned disclosure row.
+                bool sourceRowVisible = nativeRows.Any(value => ReferenceEquals(value.SpellData, source) && value.gameObject.activeInHierarchy);
                 bool disclosure = book.GetAllKnownSpells().SequenceEqual(known) && slots.Select(value => value.Spell).SequenceEqual(spells) &&
                     slots.Select(value => value.Available).SequenceEqual(available) && Cleanup2ElementalResources(fixture.Caster) == resources &&
                     nativeRows.Select(value => value.SpellData).SequenceEqual(rowData) && Cleanup2LearningModuleState(off) &&
-                    (!off || Cleanup2DesktopNoOwnedDisclosure(view) && nativeRows.Any(value => ReferenceEquals(value.SpellData, source) && value.gameObject.activeInHierarchy));
-                Cleanup2Check("elemental-desktop-preparation-disclosure", disclosure, new JObject { ["source"] = sourceBlueprint.AssetGuid,
+                    Cleanup2DesktopNoOwnedDisclosure(view) && sourceRowVisible;
+                Cleanup2Check("elemental-desktop-preparation-no-disclosure", disclosure, new JObject { ["source"] = sourceBlueprint.AssetGuid,
                     ["sourceBook"] = book.Blueprint.AssetGuid, ["knownObjectsExact"] = book.GetAllKnownSpells().SequenceEqual(known),
                     ["nativeRowAbilityReferencesExact"] = nativeRows.Select(value => value.SpellData).SequenceEqual(rowData),
                     ["slotsAndAvailabilityExact"] = slots.Select(value => value.Spell).SequenceEqual(spells) && slots.Select(value => value.Available).SequenceEqual(available),
-                    ["freshModuleOff"] = off, ["noOwnedDisclosure"] = off && Cleanup2DesktopNoOwnedDisclosure(view),
-                    ["foldOutcome"] = ElementalNativeSourceFold.Outcome }, "The native PC original source is visible without spending/replacing sources; fresh OFF has no owned disclosure.");
-                if (!disclosure) throw new InvalidOperationException("Native PC preparation disclosure changed source authority.");
+                    ["freshModuleOff"] = off, ["noOwnedDisclosure"] = Cleanup2DesktopNoOwnedDisclosure(view), ["originalSourceRowVisible"] = sourceRowVisible,
+                    ["foldOutcome"] = ElementalNativeSourceFold.Outcome }, "The native PC book shows the original source as an ordinary visible row with no owned disclosure, without spending or replacing sources.");
+                if (!disclosure) throw new InvalidOperationException("Native PC spellbook shows a withdrawn disclosure or hides the original source row.");
                 var row = nativeRows.Single(value => ReferenceEquals(value.SpellData, source) && value.gameObject.activeInHierarchy);
                 row.Toggle.isOn = true;
                 if (!ReferenceEquals(row.SpellData, source) || !ReferenceEquals(controller.CurrentSpellbook, book))

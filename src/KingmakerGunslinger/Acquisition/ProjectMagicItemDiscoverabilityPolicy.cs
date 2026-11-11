@@ -41,8 +41,10 @@ namespace KingmakerGunslinger.Acquisition
 
     internal static class ProjectMagicItemDiscoverabilityPolicy
     {
-        internal const int ExpectedItemCount = 30;
-        internal const int ExpectedExactAreaCount = 28;
+        // 28 active named weapons plus the Cord. Thornstep's Riverine Rise
+        // placement was retired on 2026-11-11.
+        internal const int ExpectedItemCount = 29;
+        internal const int ExpectedExactAreaCount = 27;
         internal const string CordItemKey =
             "KMG.Items.CordOfStubbornResolve";
         internal const string CordTargetGuid =

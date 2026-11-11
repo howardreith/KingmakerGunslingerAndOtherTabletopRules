@@ -135,7 +135,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             var availability=originalSlots.Select(value=>value.Available).ToArray();
             var pins=new TeleportationUiSettingsFixture(fixture.Caster.UISettings);
             SpellSlot written=null;AbilityData originalSource=null;
-            ElementalConsoleBookPresentation.PreparationContext cleanupContext=null;
             try
             {
                 if(!originalSlots.Any(value=>value.Spell==null && value.Type==SpellSlotType.Common))
@@ -148,22 +147,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var view=Resources.FindObjectsOfTypeAll<SpellBookView>().Single(value=>value.gameObject.scene.IsValid() && value.gameObject.scene.isLoaded &&
                     value.gameObject.activeInHierarchy && ReferenceEquals(ElementalConsoleBookPresentation.Model(value),owned));
                 var scroll=view.GetComponentsInChildren<SpellbookKnownSpellsScrollView>(true).Single(value=>ReferenceEquals(ElementalConsoleBookPresentation.Model(value),owned.SpellBookKnownSpells));
-                var context=ElementalConsoleBookPresentation.PreparationFor(scroll);
-                if((!off && (context==null || !context.Current)) || (off && (context!=null || !Cleanup2LearningModuleState(true) ||
-                    owned.SpellBookKnownSpells.KnownSpells.Any(value=>value is ElementalConsoleBookPresentation.PreparationHeader) ||
-                    scroll.GetComponentsInChildren<SpellBookKnownSpellView>(true).Any(value=>value.GetViewModel() is ElementalConsoleBookPresentation.PreparationHeader))))
-                    throw new InvalidOperationException("Native preparation disclosure/module-OFF original-row contract failed.");
-                cleanupContext=context;
-                if(!off)
-                {
-                    var header=scroll.GetComponentsInChildren<SpellBookKnownSpellView>(false).Single(value=>ReferenceEquals(value.GetViewModel(),context.Header));
-                    Cleanup2ConsolePreparationFocus(view,owned,header,false,"disclosure");InvokeTeleportGamepadInput(view,"WantConfirm");
-                    for(int frame=0;frame<5;frame++)yield return 0;
-                }
+                // The console spellbook source disclosure was withdrawn
+                // (2026-11-11): module ON and fresh OFF both list the original
+                // source as an ordinary native row, with no owned header VM.
+                bool noOwnedHeader=!owned.SpellBookKnownSpells.KnownSpells.Any(value=>value!=null &&
+                        value.GetType().Assembly==typeof(ElementalConsoleBookPresentation).Assembly) &&
+                    !scroll.GetComponentsInChildren<SpellBookKnownSpellView>(true).Any(value=>value.GetViewModel()!=null &&
+                        value.GetViewModel().GetType().Assembly==typeof(ElementalConsoleBookPresentation).Assembly);
+                if(!noOwnedHeader || (off && !Cleanup2LearningModuleState(true)))
+                    throw new InvalidOperationException("Native preparation original-row contract failed: a withdrawn disclosure header is present.");
                 var sourceVm=owned.SpellBookKnownSpells.KnownSpells.Single(value=>value.SpellData!=null &&
                     value.SpellData.Blueprint.AssetGuid==ElementalSourceChooserPolicy.Rank(2).Guid && ReferenceEquals(value.SpellData.Spellbook,book));
-                if(!off && !context.Sources.Any(value=>ReferenceEquals(value,sourceVm)))
-                    throw new InvalidOperationException("Native original source is absent from the owned preparation disclosure.");
                 originalSource=sourceVm.SpellData;
                 var row=scroll.GetComponentsInChildren<SpellBookKnownSpellView>(false).Single(value=>ReferenceEquals(value.GetViewModel(),sourceVm));
                 Cleanup2ConsolePreparationFocus(view,owned,row,false,"original-source");
@@ -181,7 +175,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["slotType"]=written?.Type.ToString(),["slotIndex"]=written?.Index,["slotLevel"]=written?.SpellLevel,
                     ["availableAfterNativeMemorize"]=written?.Available,["knownObjectsExact"]=book.GetAllKnownSpells().SequenceEqual(originalKnown),
                     ["resourcesExact"]=Cleanup2ElementalResources(fixture.Caster)==resources,["freshModuleOff"]=off,
-                    ["ownedProjectionAbsent"]=off && context==null,["nativeInput"]="SpellBookView.WantConfirm on exact original native source row" },
+                    ["ownedProjectionAbsent"]=noOwnedHeader,["nativeInput"]="SpellBookView.WantConfirm on exact original native source row" },
                     "Choosing the original source through real console preparation assigns its exact known AbilityData to one native common slot, preserving every other slot and resource.");
                 if(!exact)throw new InvalidOperationException("Native console original-source preparation failed.");
                 // Active pooled views may still be unbound; only the exact native written slot owns this row.
@@ -212,92 +206,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if(written!=null && ReferenceEquals(written.Spell,originalSource))book.ForgetMemorized(written);
                 pins.Restore();
             }
-            // Native40: installed SpellBookKnownSpellsVM.DisposeImplementation
-            // 060050E1 only clears its list/selection; it never disposes its row
-            // VMs, and the inactive pooled view stays bound to the disposed group
-            // until the next native rebind (6.9s/600 frames observed, no unbind).
-            // The owned header correctly retires and awaits that same rebind.
-            // Observe both native steps: retirement after close, then disposal
-            // when one real native reopen rebinds the view. Nothing is released
-            // or disposed by this observer.
+            // The withdrawn spellbook disclosure owned no header/context, so
+            // closing the native book needs no retirement/rebind observation.
             var bookField=typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields);
-            Func<bool> headerBoundNow=()=>cleanupContext!=null && cleanupContext.View!=null &&
-                cleanupContext.View.GetComponentsInChildren<SpellBookKnownSpellView>(true).Any(value=>ReferenceEquals(value.GetViewModel(),cleanupContext.Header));
-            // Native42: after close the owned context has no live authority
-            // (!Current) with the native book, group selection and service field
-            // gone. Its lifetime Update cannot run on the inactive closed screen,
-            // so Release/Dispose happen at the next native rebind, observed below.
-            Func<bool> retiredNow=()=>owned!=null && owned.IsDisposed && cleanupContext!=null && cleanupContext.Group.IsDisposed &&
-                cleanupContext.Group.CurrentSelectedSpell==null && !cleanupContext.Current && bookField.GetValue(service)==null;
-            Func<JObject> retirementState=()=>new JObject {
-                ["ownedBookDisposed"]=owned!=null && owned.IsDisposed,["nativeGroupDisposed"]=cleanupContext!=null && cleanupContext.Group.IsDisposed,
-                ["nativeSelectionCleared"]=cleanupContext!=null && cleanupContext.Group.CurrentSelectedSpell==null,
-                ["ownedContextReleased"]=cleanupContext!=null && cleanupContext.Released,["ownedContextLiveAuthority"]=cleanupContext!=null && cleanupContext.Current,
-                ["serviceBookFieldCleared"]=bookField.GetValue(service)==null,
-                ["viewActiveInHierarchy"]=cleanupContext!=null && cleanupContext.View!=null && cleanupContext.View.gameObject.activeInHierarchy,
-                ["viewModelStillDisposedGroup"]=cleanupContext!=null && cleanupContext.View!=null &&
-                    ReferenceEquals(ElementalConsoleBookPresentation.Model(cleanupContext.View),cleanupContext.Group),
-                ["activeRowsBindHeader"]=cleanupContext!=null && cleanupContext.View!=null &&
-                    cleanupContext.View.GetComponentsInChildren<SpellBookKnownSpellView>(false).Any(value=>ReferenceEquals(value.GetViewModel(),cleanupContext.Header)) };
-            var releaseWatch=Stopwatch.StartNew();int releaseFrames=0;
-            for(;releaseFrames<8 || (!off && !retiredNow() && releaseFrames<600 && releaseWatch.Elapsed.TotalSeconds<8);releaseFrames++)yield return 0;
-            bool retired=!off && retiredNow(),disposedAtClose=cleanupContext!=null && cleanupContext.Disposed,boundAtClose=headerBoundNow();
-            var stateAtClose=retirementState();
-            bool reopened=false,disposedAtRebind=disposedAtClose,reopenedClosed=false,retiredAtRebind=disposedAtClose,newContextCurrent=false;int rebindFrames=0;
-            if(retired && !disposedAtClose)
-            {
-                typeof(CharcaterServiceContext).GetMethod("OnSpellBookHandler",Cleanup2Fields).Invoke(service,null);
-                for(int frame=0;frame<8;frame++)yield return 0;
-                var again=bookField.GetValue(service) as SpellBookVM;
-                try
-                {
-                    if(again==null || !ReferenceEquals(again.UnitEntity.Value,fixture.Caster))throw new InvalidOperationException("Native console book did not reopen for the fixture caster.");
-                    again.ChooseSpellBook(book.Blueprint);again.ChooseLevel(2);reopened=true;
-                    // Native43: an unreused pooled row may keep referencing the old
-                    // header after the rebind, exactly as native row VMs stay
-                    // referenced (never disposed by 060050E1). Require the old
-                    // context released, a new current context, and no active
-                    // reopened row showing the old header; disposal is recorded.
-                    Func<ElementalConsoleBookPresentation.PreparationContext> newContext=()=>{
-                        var reopenedView=Resources.FindObjectsOfTypeAll<SpellBookView>().FirstOrDefault(value=>value.gameObject.scene.IsValid() &&
-                            value.gameObject.activeInHierarchy && ReferenceEquals(ElementalConsoleBookPresentation.Model(value),again));
-                        var reopenedScroll=reopenedView==null?null:reopenedView.GetComponentsInChildren<SpellbookKnownSpellsScrollView>(true)
-                            .FirstOrDefault(value=>ReferenceEquals(ElementalConsoleBookPresentation.Model(value),again.SpellBookKnownSpells));
-                        return reopenedScroll==null?null:ElementalConsoleBookPresentation.PreparationFor(reopenedScroll);};
-                    Func<bool> reboundNow=()=>{var current=newContext();return cleanupContext.Released && current!=null && current.Current &&
-                        !ReferenceEquals(current,cleanupContext) && !ReferenceEquals(current.Header,cleanupContext.Header) &&
-                        !Resources.FindObjectsOfTypeAll<SpellBookKnownSpellView>().Any(value=>value.gameObject.activeInHierarchy &&
-                            ReferenceEquals(value.GetViewModel(),cleanupContext.Header));};
-                    var rebindWatch=Stopwatch.StartNew();
-                    for(;rebindFrames<8 || (!reboundNow() && rebindFrames<600 && rebindWatch.Elapsed.TotalSeconds<8);rebindFrames++)yield return 0;
-                    retiredAtRebind=reboundNow();newContextCurrent=newContext()?.Current==true;
-                    disposedAtRebind=cleanupContext.Disposed && cleanupContext.Header.IsDisposed && cleanupContext.Projection==null && !headerBoundNow();
-                }
-                finally
-                {
-                    if(again!=null && ReferenceEquals(bookField.GetValue(service),again))Cleanup2CloseOwnedConsoleBook(service,again,fixture.Caster);
-                }
-                for(int frame=0;frame<8;frame++)yield return 0;
-                reopenedClosed=again!=null && again.IsDisposed && bookField.GetValue(service)==null;
-            }
-            bool released=off ? owned!=null && owned.IsDisposed && cleanupContext==null && Cleanup2LearningModuleState(true) &&
-                bookField.GetValue(service)==null :
-                retired && (disposedAtClose || (reopened && retiredAtRebind && reopenedClosed));
-            Cleanup2Check("elemental-console-native-disposed-preparation-release",released,new JObject {
-                ["waitedFrames"]=releaseFrames,["waitedSeconds"]=releaseWatch.Elapsed.TotalSeconds,
-                ["nativeBookDisposed"]=owned!=null && owned.IsDisposed,["nativeGroupDisposed"]=cleanupContext!=null && cleanupContext.Group.IsDisposed,
-                ["nativeSelectionFieldCleared"]=cleanupContext!=null && cleanupContext.Group.CurrentSelectedSpell==null,
-                ["ownedContextRetiredAtClose"]=retired,["ownedHeaderDisposedAtClose"]=disposedAtClose,["retirementStateAtClose"]=stateAtClose,
-                ["inactiveNativeViewStillBindsHeaderAtClose"]=boundAtClose,
-                ["nativeReopenRebind"]=reopened,["rebindFrames"]=rebindFrames,
-                ["oldContextReleasedNewContextCurrentAtRebind"]=retiredAtRebind,["newContextCurrent"]=newContextCurrent,
-                ["ownedHeaderDisposedAtRebind"]=disposedAtRebind,["oldHeaderStillReferencedByInactivePooledRow"]=headerBoundNow(),["reopenedBookClosedExactly"]=reopenedClosed,
-                ["presentationOutcome"]=ElementalConsoleBookPresentation.Outcome,
-                ["freshModuleOff"]=off,["ownedProjectionExpected"]=!off,
-                ["nativeContract"]="SpellBookKnownSpellsVM.DisposeImplementation 060050E1 clears KnownSpells/selection without disposing row VMs; inactive pooled rows stay bound until the next native rebind.",
-                ["scope"]="Actual native close, then one real native reopen (OnSpellBookHandler) and exact close. Fresh OFF has no owned header/context. No observer call to presentation Release or native VM Dispose." },
-                "After native close the owned header retires with no selection or book authority; at the native rebind its context is released and replaced, and no active row shows it, exactly like native row VMs.");
-            if(!released)throw new InvalidOperationException("Native disposed preparation presentation did not retire/dispose across actual close and rebind.");
+            for(int frame=0;frame<8;frame++)yield return 0;
+            bool released=owned!=null && owned.IsDisposed && bookField.GetValue(service)==null && Cleanup2LearningModuleState(off);
+            Cleanup2Check("elemental-console-native-preparation-closed-no-disclosure",released,new JObject {
+                ["nativeBookDisposed"]=owned!=null && owned.IsDisposed,["serviceBookFieldCleared"]=bookField.GetValue(service)==null,
+                ["presentationOutcome"]=ElementalConsoleBookPresentation.Outcome,["freshModuleOff"]=off,
+                ["scope"]="Actual native close of the exact owned console book; the spellbook has no owned disclosure header or context to retire." },
+                "Closing the native console book disposes it and clears the service field; no withdrawn disclosure state exists to retire.");
+            if(!released)throw new InvalidOperationException("Native console spellbook did not close exactly.");
         }
 
         private void Cleanup2ConsolePreparationFocus(SpellBookView view,SpellBookVM owner,

@@ -6,6 +6,11 @@ category is the stable enum value `0x004b4d47` (`4934983`); it is not a
 blueprint GUID. The request-local duplicate-feature test identity is never
 registered or saved and is intentionally absent from this manifest.
 
+Thornstep was retired from campaign acquisition on 2026-11-11. Its weapon,
+enchantment, speed-penalty buff, round marker and `NamedSpearKind.Thornstep = 1`
+remain registered with unchanged GUIDs so owned copies load. No loot, vendor or
+recovery route publishes it.
+
 | Symbol | GUID | Type |
 | --- | --- | --- |
 | `KMG.ElvenBranchedSpear.WeaponType` | `77f72b0febaf212a5650e7193c00361f` | `BlueprintWeaponType` |

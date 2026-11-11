@@ -9,8 +9,6 @@ using Kingmaker;
 using Kingmaker.UI._ConsoleUI;
 using Kingmaker.UI._ConsoleUI.CharGen.Phases.Spells;
 using Kingmaker.UI._ConsoleUI.Common;
-using Kingmaker.UI._ConsoleUI.SpellBook;
-using Kingmaker.UI._ConsoleUI.Utils.HintTool;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Class.LevelUp;
 using TMPro;
@@ -19,10 +17,13 @@ using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
 {
-    // Only native virtual-list presentation is projected. Neither authoritative
-    // VM collection, known/prepared object, selection budget nor spell list is
-    // replaced. A header is an owned transient VM borrowing one original source
-    // for native row sizing/icon; it can never select/memorize/cast that source.
+    // Console level-up spell learning only. Only native virtual-list presentation
+    // is projected. Neither authoritative VM collection, known object, selection
+    // budget nor spell list is replaced. A header is an owned transient VM
+    // borrowing one original source for native row sizing/icon; it can never
+    // select that source. The console spellbook (preparation) projection and its
+    // "Elementals / Show sources" header were withdrawn by owner request
+    // (2026-11-11); the native book lists every original source row again.
     internal static class ElementalConsoleBookPresentation
     {
         internal const BindingFlags Fields=BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic;
@@ -33,16 +34,10 @@ namespace KingmakerGunslinger.Summoning
             new ConditionalWeakTable<List<CharGenSpellSelectorItemVM>,CharGenSpellsPhaseVM>();
         private static readonly ConditionalWeakTable<CharGenSpellsSelectorView,LearningContext> LearningContexts=
             new ConditionalWeakTable<CharGenSpellsSelectorView,LearningContext>();
-        private static readonly ConditionalWeakTable<SpellBookKnownSpellsVM,BookIntake> BookOwners=
-            new ConditionalWeakTable<SpellBookKnownSpellsVM,BookIntake>();
-        private static readonly ConditionalWeakTable<SpellbookKnownSpellsScrollView,PreparationContext> PreparationContexts=
-            new ConditionalWeakTable<SpellbookKnownSpellsScrollView,PreparationContext>();
         internal static string Outcome="not-used";
-        internal static int LearningHeaders,PreparationHeaders,HeaderConfirms;
+        internal static int LearningHeaders,HeaderConfirms;
         internal static LearningContext LearningFor(CharGenSpellsSelectorView view)
         {LearningContext value;return view!=null && LearningContexts.TryGetValue(view,out value)?value:null;}
-        internal static PreparationContext PreparationFor(SpellbookKnownSpellsScrollView view)
-        {PreparationContext value;return view!=null && PreparationContexts.TryGetValue(view,out value)?value:null;}
 
         internal static object Model(Component view)
         {return view==null?null:view.GetType().GetProperty("ViewModel",Fields)?.GetValue(view,null);}
@@ -53,9 +48,6 @@ namespace KingmakerGunslinger.Summoning
         {try{action();}catch(Exception error){Outcome="preserve-native-console-book:"+error.GetType().Name+":"+error.Message;}}
         internal static void RegisterLearning(CharGenSpellsPhaseVM owner,List<CharGenSpellSelectorItemVM> rows)
         {if(rows==null)return;LearningOwners.Remove(rows);LearningOwners.Add(rows,owner);}
-        internal static void RegisterBook(SpellBookKnownSpellsVM vm,Spellbook book)
-        {BookOwners.Remove(vm);BookOwners.Add(vm,new BookIntake {Book=book});}
-        private sealed class BookIntake {internal Spellbook Book;}
 
         internal sealed class LearningHeader : CharGenSpellSelectorItemVM
         {
@@ -64,14 +56,6 @@ namespace KingmakerGunslinger.Summoning
                 :base(source.Spell,source.Level,source.RecommendationPriority,source.HasInSpellbook)
             {Context=context;CanChoose.Value=false;}
         }
-        internal sealed class PreparationHeader : AbilityDataVM
-        {
-            internal readonly PreparationContext Context;
-            internal PreparationHeader(PreparationContext context,AbilityDataVM source,Spellbook book):base(source.SpellData,book)
-            {Context=context;DisplayName="Elementals";Description="Confirm to show or hide original spell sources. Choose an original source to prepare, cast or edit metamagic.";
-                SchoolName="Show sources";LevelIsValid=false;IsDomain=false;IsSpecial=false;}
-        }
-
         internal sealed class LearningContext
         {
             internal CharGenSpellsSelectorView View;
@@ -124,74 +108,6 @@ namespace KingmakerGunslinger.Summoning
                 finally{Retiring=false;}
             }
         }
-        internal sealed class PreparationContext
-        {
-            internal SpellbookKnownSpellsScrollView View;
-            internal SpellBookKnownSpellsVM Group;
-            internal SpellBookVM BookOwner;
-            internal Spellbook Book;
-            internal AbilityDataVM[] Originals,Sources;
-            internal PreparationHeader Header;
-            internal List<AbilityDataVM> Projection;
-            internal IReactiveProperty<AbilityDataVM> SelectionProperty;
-            internal AbilityDataVM PreviousSelected;
-            internal bool Expanded,Released,Retiring,Disposed;
-            internal bool Current {get{return !Released && OwnsLiveSelection &&
-                ReferenceEquals(Model(View),Group) && Group.KnownSpells.SequenceEqual(Originals) &&
-                Originals.All(value=>ReferenceEquals(value.SpellData?.Spellbook,Book));}}
-            private bool OwnsLiveSelection {get{return View!=null && Group!=null && !Group.IsDisposed &&
-                BookOwner!=null && !BookOwner.IsDisposed && SelectionProperty!=null &&
-                ReferenceEquals(Group.CurrentSelectedSpell,SelectionProperty) &&
-                ReferenceEquals(Model(View),Group) && ReferenceEquals(BookOwner.CurrentSpellbook.Value,Book) &&
-                ReferenceEquals(BookOwner.SpellBookKnownSpells,Group);}}
-            internal void Build()
-            {Projection=ElementalSourceChooserPolicy.ProjectOriginalSources(Originals,Sources,Header,Expanded,
-                source=>ReferenceEquals(Group.CurrentSelectedSpell.Value,source));
-                Header.SchoolName=Expanded?"Hide sources":"Show sources";}
-            internal void Refresh()
-            {
-                typeof(SpellbookKnownSpellsScrollView).GetField("m_VirtualViews",Fields).SetValue(View,null);
-                var list=(VirtualListController)typeof(SpellbookKnownSpellsScrollView).GetField("m_VirtualListController",Fields).GetValue(View);
-                list.UpdateData(VirtualListController.ScrollBasePosition.None);
-                typeof(SpellbookKnownSpellsScrollView).GetMethod("OnPageChanged",Fields).Invoke(View,null);
-            }
-            internal void Toggle()
-            {
-                if(!Current || !ElementalSourceChooserRuntime.Active){Release(true);return;}
-                try
-                {Expanded=!Expanded;Build();Refresh();HeaderConfirms++;
-                    Outcome="console-preparation-original-source-disclosure;expanded="+Expanded;}
-                catch(Exception error)
-                {try{Release(true);}catch(Exception restore){throw new InvalidOperationException("Native preparation refresh failed; original restoration unverified: "+restore.Message,error);}throw;}
-            }
-            internal void Remember(AbilityDataVM previous)
-            {if(!(previous is PreparationHeader) && (previous==null || Originals.Any(value=>ReferenceEquals(value,previous))))PreviousSelected=previous;}
-            internal void Release(bool refresh)
-            {
-                if(Disposed || Retiring)return;bool first=!Released;Released=true;Retiring=true;
-                try
-                {
-                    if(Header==null){Disposed=true;return;}
-                    // Native DisposeImplementation clears CurrentSelectedSpell.
-                    // An old header may outlive that VM until its pooled rows
-                    // unbind; retire it without calling back into disposed or
-                    // replaced native selection/book authority.
-                    bool live=OwnsLiveSelection;
-                    if(live && ReferenceEquals(SelectionProperty.Value,Header))
-                        SelectionProperty.Value=PreviousSelected!=null &&
-                            Group.KnownSpells.Any(value=>ReferenceEquals(value,PreviousSelected))?PreviousSelected:null;
-                    if(first && refresh && live)Refresh();
-                    var data=View==null?null:typeof(SpellbookKnownSpellsScrollView).GetField("m_VirtualViews",Fields).GetValue(View) as IList<IVirtualItemData>;
-                    bool bound=View!=null && View.GetComponentsInChildren<SpellBookKnownSpellView>(true)
-                        .Any(row=>ReferenceEquals(row.GetViewModel(),Header));
-                    if((data==null || !data.Any(value=>ReferenceEquals(value,Header))) && !bound)
-                    {Header?.Dispose();Projection=null;Disposed=true;}
-                    else Outcome="console-preparation-header-retired-await-native-unbind";
-                }
-                finally{Retiring=false;}
-            }
-        }
-
         internal static List<CharGenSpellSelectorItemVM> LearningRows(SelectorEntitiesGroupVM<CharGenSpellSelectorItemVM> group,
             SelectorEntitiesGroupView<CharGenSpellSelectorItemVM,CharGenSpellSelectorItemView> nativeView)
         {
@@ -233,44 +149,6 @@ namespace KingmakerGunslinger.Summoning
             }
             catch{context.Release(false);throw;}
         }
-        internal static void BeginPreparation(SpellbookKnownSpellsScrollView view)
-        {
-            var group=Model(view) as SpellBookKnownSpellsVM;PreparationContext previous;
-            if(PreparationContexts.TryGetValue(view,out previous))
-            {
-                if(previous.Retiring)return;
-                if(previous.Current && ElementalSourceChooserRuntime.Active){previous.Build();return;}
-                previous.Release(false);PreparationContexts.Remove(view);
-            }
-            BookIntake intake;
-            if(!ElementalSourceChooserRuntime.Active || !Game.Instance.IsControllerGamepad || group==null || group.IsDisposed ||
-                !BookOwners.TryGetValue(group,out intake) || intake.Book?.Blueprint.SpellList==null ||
-                !StandaloneElementalPresentationPolicy.IsObservedOrdinaryList(intake.Book.Blueprint.SpellList.AssetGuid))return;
-            Spellbook book=intake.Book;
-            var bookView=view.GetComponentInParent<SpellBookView>();var bookOwner=Model(bookView) as SpellBookVM;
-            if(bookOwner==null || !ReferenceEquals(bookOwner.CurrentSpellbook.Value,book) ||
-                !ReferenceEquals(bookOwner.SpellBookKnownSpells,group))return;
-            var sources=group.KnownSpells.Where(value=>value.SpellData!=null && value.Type==SpellSlotType.Common &&
-                ReferenceEquals(value.SpellData.Spellbook,book) && value.SpellData.SourceItem==null &&
-                (!book.IsSpellSpecial(value.SpellData) || book.IsSpellCommon(value.SpellData)) &&
-                ElementalSourceChooserPolicy.Parent(value.SpellData.Blueprint.AssetGuid)!=null &&
-                book.Blueprint.SpellList.GetSpells(ElementalSourceChooserPolicy.SourceRank(value.SpellData.Blueprint.AssetGuid))
-                    .Any(spell=>ReferenceEquals(spell,value.SpellData.Blueprint))).ToArray();
-            if(sources.Length==0)return;
-            var context=new PreparationContext {View=view,Group=group,BookOwner=bookOwner,Book=book,Originals=group.KnownSpells.ToArray(),Sources=sources,
-                SelectionProperty=group.CurrentSelectedSpell,PreviousSelected=group.CurrentSelectedSpell.Value};
-            try
-            {
-                context.Header=new PreparationHeader(context,sources[0],book);context.Build();PreparationContexts.Add(view,context);
-                var lifetime=view.GetComponent<ElementalConsoleBookLifetime>() ?? view.gameObject.AddComponent<ElementalConsoleBookLifetime>();
-                lifetime.Preparation.Add(context);PreparationHeaders++;Outcome="console-preparation-native-projection-ready";
-            }
-            catch{context.Release(false);throw;}
-        }
-        internal static List<AbilityDataVM> PreparationRows(SpellBookKnownSpellsVM group,SpellbookKnownSpellsScrollView view)
-        {PreparationContext context;return PreparationContexts.TryGetValue(view,out context) && context.Current && ElementalSourceChooserRuntime.Active?
-            context.Projection:group.KnownSpells;}
-
         internal static LearningHeader FocusedLearning(CharGenSpellsPhaseDetailedView owner)
         {
             var embeddedBook=(ReactiveProperty<bool>)typeof(CharGenSpellsPhaseDetailedView)
@@ -280,26 +158,12 @@ namespace KingmakerGunslinger.Summoning
             var row=view?.CurrentSelected as CharGenSpellSelectorItemView;
             return row?.GetViewModelClass() as LearningHeader;
         }
-        internal static PreparationHeader FocusedPreparation(SpellBookView owner)
-        {
-            var row=typeof(SpellBookView).GetField("m_CurrentSelected",Fields).GetValue(owner) as SpellBookKnownSpellView;
-            return row?.GetViewModel() as PreparationHeader;
-        }
         internal static void HeaderLearningText(CharGenSpellSelectorItemView view)
         {
             var header=view.GetViewModelClass() as LearningHeader;if(header==null)return;
             var title=typeof(CharGenSpellSelectorItemView).GetField("m_SpellName",Fields).GetValue(view) as TextMeshProUGUI;
             var school=typeof(CharGenSpellSelectorItemView).GetField("m_SchoolName",Fields).GetValue(view) as TextMeshProUGUI;
             title.text="Elementals";school.text=header.Context.Expanded?"Hide sources":"Show sources";
-        }
-        internal static void PreparationHints(SpellBookView view)
-        {
-            var header=FocusedPreparation(view);if(header==null)return;
-            ((ReactiveProperty<bool>)typeof(SpellBookView).GetField("m_ConfirmHintActive",Fields).GetValue(view)).Value=header.Context.Current;
-            ((ReactiveProperty<bool>)typeof(SpellBookView).GetField("m_ContextHintActive",Fields).GetValue(view)).Value=false;
-            ((ReactiveProperty<bool>)typeof(SpellBookView).GetField("m_MetaMagicHintActive",Fields).GetValue(view)).Value=false;
-            ((GenericHintView)typeof(SpellBookView).GetField("m_ConfirmHint",Fields).GetValue(view)).SetLabel(
-                header.Context.Expanded?"Hide sources":"Show sources");
         }
         internal static IEnumerable<CodeInstruction> Project(IEnumerable<CodeInstruction> instructions,FieldInfo source,MethodInfo helper,int expected)
         {
@@ -320,20 +184,15 @@ namespace KingmakerGunslinger.Summoning
     internal sealed class ElementalConsoleBookLifetime : MonoBehaviour
     {
         internal readonly List<ElementalConsoleBookPresentation.LearningContext> Learning=new List<ElementalConsoleBookPresentation.LearningContext>();
-        internal readonly List<ElementalConsoleBookPresentation.PreparationContext> Preparation=new List<ElementalConsoleBookPresentation.PreparationContext>();
         private void Update()
         {
             foreach(var value in Learning.ToArray())
                 if(value.Released || !ElementalSourceChooserRuntime.Active || !value.Current)
                     ElementalConsoleBookPresentation.Safe(()=>value.Release(!value.Released));
-            foreach(var value in Preparation.ToArray())
-                if(value.Released || !ElementalSourceChooserRuntime.Active || !value.Current)
-                    ElementalConsoleBookPresentation.Safe(()=>value.Release(!value.Released));
-            Learning.RemoveAll(value=>value.Disposed);Preparation.RemoveAll(value=>value.Disposed);
+            Learning.RemoveAll(value=>value.Disposed);
         }
         private void OnDestroy()
-        {foreach(var value in Learning)ElementalConsoleBookPresentation.Safe(()=>value.Release(false));
-            foreach(var value in Preparation)ElementalConsoleBookPresentation.Safe(()=>value.Release(false));}
+        {foreach(var value in Learning)ElementalConsoleBookPresentation.Safe(()=>value.Release(false));}
     }
     [HarmonyPatch(typeof(CharGenSpellsPhaseVM),"GetSpellsCollection")]
     internal static class ElementalConsoleLearningIntakePatch
@@ -371,82 +230,11 @@ namespace KingmakerGunslinger.Summoning
             ElementalConsoleBookPresentation.Safe(()=>header.Context.Toggle());__result=false;return false;
         }
     }
-    [HarmonyPatch]
-    internal static class ElementalConsolePreparationIntakePatch
-    {
-        private static MethodBase TargetMethod()
-        {return typeof(SpellBookKnownSpellsVM).GetConstructor(ElementalConsoleBookPresentation.Fields,null,
-            new[]{typeof(Spellbook),typeof(SpellBookLevelVM),typeof(IReactiveProperty<AbilityDataVM>)},null);}
-        private static bool Prepare()
-        {var target=TargetMethod();return ElementalConsoleBookPresentation.Exact(target,206) && target.MetadataToken==0x060050df;}
-        private static void Postfix(SpellBookKnownSpellsVM __instance,Spellbook __0)
-        {ElementalConsoleBookPresentation.Safe(()=>ElementalConsoleBookPresentation.RegisterBook(__instance,__0));}
-    }
-    [HarmonyPatch(typeof(SpellbookKnownSpellsScrollView),"GenerateVirtualViews")]
-    internal static class ElementalConsolePreparationProjectionPatch
-    {
-        private static bool Prepare(){return ElementalNativeRowsPresentation.Exact(typeof(SpellbookKnownSpellsScrollView),"GenerateVirtualViews",228);}
-        private static void Prefix(SpellbookKnownSpellsScrollView __instance)
-        {ElementalConsoleBookPresentation.Safe(()=>ElementalConsoleBookPresentation.BeginPreparation(__instance));}
-        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-        {return ElementalConsoleBookPresentation.Project(instructions,typeof(SpellBookKnownSpellsVM).GetField("KnownSpells"),
-            typeof(ElementalConsoleBookPresentation).GetMethod("PreparationRows",BindingFlags.Static|BindingFlags.NonPublic),2);}
-    }
-    [HarmonyPatch(typeof(SpellBookView),"WantConfirm")]
-    internal static class ElementalConsolePreparationConfirmPatch
-    {
-        private static bool Prepare(){return ElementalNativeRowsPresentation.Exact(typeof(SpellBookView),"WantConfirm",232);}
-        private static bool Prefix(SpellBookView __instance)
-        {var header=ElementalConsoleBookPresentation.FocusedPreparation(__instance);if(header==null)return true;
-            ElementalConsoleBookPresentation.Safe(()=>header.Context.Toggle());return false;}
-    }
-    [HarmonyPatch(typeof(SpellBookView),"SetupHintsLabels")]
-    internal static class ElementalConsolePreparationHintPatch
-    {
-        private static bool Prepare(){return ElementalNativeRowsPresentation.Exact(typeof(SpellBookView),"SetupHintsLabels",156);}
-        private static void Postfix(SpellBookView __instance)
-        {ElementalConsoleBookPresentation.Safe(()=>ElementalConsoleBookPresentation.PreparationHints(__instance));}
-    }
-    [HarmonyPatch(typeof(SpellBookVM),"SelectKnownSpell")]
-    internal static class ElementalConsolePreparationSelectedPatch
-    {
-        private static bool Prepare(){return ElementalNativeRowsPresentation.Exact(typeof(SpellBookVM),"SelectKnownSpell",13);}
-        private static void Prefix(SpellBookVM __instance,AbilityDataVM __0)
-        {var header=__0 as ElementalConsoleBookPresentation.PreparationHeader;
-            if(header!=null)header.Context.Remember(__instance.CurrentSelectedSpell.Value);}
-    }
-    [HarmonyPatch(typeof(SpellBookVM),"TryMemorize")]
-    internal static class ElementalConsolePreparationBudgetGuardPatch
-    {
-        private static bool Prepare(){return ElementalNativeRowsPresentation.Exact(typeof(SpellBookVM),"TryMemorize",79);}
-        private static bool Prefix(AbilityDataVM __0,ref bool __result)
-        {if(!(__0 is ElementalConsoleBookPresentation.PreparationHeader))return true;__result=false;return false;}
-    }
-    [HarmonyPatch(typeof(SpellBookVM),"TryContext")]
-    internal static class ElementalConsolePreparationContextGuardPatch
-    {
-        private static bool Prepare(){return ElementalNativeRowsPresentation.Exact(typeof(SpellBookVM),"TryContext",357);}
-        private static bool Prefix(AbilityDataVM __1){return !(__1 is ElementalConsoleBookPresentation.PreparationHeader);}
-    }
-    [HarmonyPatch(typeof(SpellBookVM),"SwitchMetaMagicBuilderMode")]
-    internal static class ElementalConsolePreparationMetaGuardPatch
-    {
-        private static bool Prepare(){return ElementalNativeRowsPresentation.Exact(typeof(SpellBookVM),"SwitchMetaMagicBuilderMode",40);}
-        private static bool Prefix(SpellBookVM __instance)
-        {return !(__instance.CurrentSelectedSpell.Value is ElementalConsoleBookPresentation.PreparationHeader);}
-    }
     [HarmonyPatch(typeof(CharGenSpellSelectorItemView),"TooltipObject")]
     internal static class ElementalConsoleLearningHeaderTooltipPatch
     {
         private static bool Prepare(){return ElementalNativeRowsPresentation.Exact(typeof(CharGenSpellSelectorItemView),"TooltipObject",12);}
         private static void Postfix(CharGenSpellSelectorItemView __instance,ref object __result)
         {if(__instance.GetViewModelClass() is ElementalConsoleBookPresentation.LearningHeader)__result=null;}
-    }
-    [HarmonyPatch(typeof(AbilityDataVM),"TooltipObject")]
-    internal static class ElementalConsolePreparationHeaderTooltipPatch
-    {
-        private static bool Prepare(){return ElementalNativeRowsPresentation.Exact(typeof(AbilityDataVM),"TooltipObject",7);}
-        private static void Postfix(AbilityDataVM __instance,ref object __result)
-        {if(__instance is ElementalConsoleBookPresentation.PreparationHeader)__result=null;}
     }
 }
