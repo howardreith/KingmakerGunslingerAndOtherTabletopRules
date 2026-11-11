@@ -1,5 +1,11 @@
 # Spider Summoner integration: status
 
+> **Later change (2026-11-10), preserved scope.** Menus now order quantity first. Original rows take their
+> quantity from the placement matrix and keep their labels; generated rows keep their placement keys. Matrix,
+> identities, gates and behavior are unchanged. See
+> [summon-menu-order-and-sunder/STATUS.md](../summon-menu-order-and-sunder/STATUS.md). Results below stay with
+> `0908e3415f`.
+
 **Owner-accepted and complete (2026-11-11).** The owner accepted the final candidate and asked for PR #125 to be
 merged and the project closed. That merge authorization supersedes the mission's original "no merge" boundary for
 this one action. It is not a release: no tag, publication or permanent installation has been performed, and released

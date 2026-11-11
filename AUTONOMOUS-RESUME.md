@@ -1,4 +1,29 @@
-# Races Unleashed Spider Summoner integration: owner-accepted, PR #125 merged, project complete / STOP
+# Summon menu order, summon Sunder and the Lillend label: native checkpoint FAIL, fix pending rebuild / STOP
+
+Current (2026-11-10). See `planning/summon-menu-order-and-sunder/STATUS.md`. Branch
+`codex/summon-menu-order-and-sunder` from master `3fd5bf5d0b` (PR #125 merge); one draft PR against master.
+Nothing merged, released or permanently installed. DATA intake: live v0.0.140, `Params.xml` `E44F4495...30BB`, 95 saves.
+
+- **Owner decisions recorded:** quantity-first menus (one, 1d3, 1d4+1; then family-first name; then identity),
+  superseding the name-first rule; no Sunder on any supported summon (SUNDER-01), superseding R1's Storm Giant
+  exception; "Azata, Lillend".
+- **Sunder audit:** Storm Giant (own grant) and the KMG Greater and Elder Earth Elementals (native donor's
+  Improved Sunder and GreaterEarthElementalBrain with SunderArmorAiAction) were the only reachable carriers. They
+  were withdrawn, the elementals use the native Dumb Monster Brain, and new fixers retire older saved state.
+  Bebelith's printed dismantle (a SunderArmor maneuver roll) is kept and raised as an owner question.
+- **Spider integration preserved:** 46 placements, identities and gates unchanged; originals ordered by matrix
+  quantity, generated rows by placement.
+- **Candidate `c6e861a98a`:** package `a24041f3...ca1c`, DLL `fbbf5999...0409`. One guarded run: **FAIL**, mod
+  initialization failed closed (`RequireExact<BlueprintAiAction>` vs installed `BlueprintAiCastSpell` for
+  SunderArmorAiAction); no observer ran. Restoration exact.
+- **Fix `896c089a19`:** focused 91/2,930 passing; not built, not run.
+- **Ledger:** about 627 of 1,800 s.
+- **Next, owner authorization required:** one rebuild of the fixed source and one guarded `summon-menu-order-sunder`
+  run. Then review, and merge/release only on separate instruction.
+
+---
+
+# (superseded) Races Unleashed Spider Summoner integration: owner-accepted, PR #125 merged, project complete / STOP
 
 Current (2026-11-11). See `planning/races-unleashed-compatibility/STATUS.md`. The owner accepted the final
 candidate and asked for PR #125 (`codex/races-unleashed-summoning`) to be merged and the project closed. The merge
