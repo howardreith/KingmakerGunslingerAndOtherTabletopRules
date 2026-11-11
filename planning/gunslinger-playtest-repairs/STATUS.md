@@ -5,7 +5,7 @@ was launched, and no native acceptance row has been observed.**
 
 Branch `codex/gunslinger-playtest-repairs` from master `aa91f46571eb239df36e0233082153f2cba01899` (v0.0.182
 records merge). Source commit `bfd39dda00c7da7d8c8e8a304cd47556f5d2384f`; this record and the acquisition docs
-follow in a documentation commit. Nothing is merged, tagged, released or installed.
+follow in a documentation commit. Draft PR #129. Nothing is merged, tagged, released or installed.
 
 ## Changes
 

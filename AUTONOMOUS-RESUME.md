@@ -2,7 +2,7 @@
 
 Current (2026-11-11). See `planning/gunslinger-playtest-repairs/STATUS.md`. Branch
 `codex/gunslinger-playtest-repairs` from master `aa91f46571`, source commit `bfd39dda00`. Nothing merged,
-released, tagged or installed.
+released, tagged or installed. Draft PR #129.
 
 - **Six repairs:**
   - the PC and controller spellbook "Elementals — show original sources" disclosure is withdrawn (level-up
