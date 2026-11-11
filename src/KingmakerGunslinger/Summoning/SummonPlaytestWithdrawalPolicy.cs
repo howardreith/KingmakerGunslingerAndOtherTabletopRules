@@ -89,14 +89,42 @@ namespace KingmakerGunslinger.Summoning
         /// <summary>
         /// DISMANTLE-01 (owner decision, 2026-11-11): the Bebelith's Dismantle
         /// Armor is removed like Sunder. It was a post-claw-hit rider that
-        /// rolled a native SunderArmor combat maneuver; the Bebelith's combat
-        /// component is no longer given the dismantled-armor buff, which is the
-        /// trigger's own precondition, so the maneuver is never attempted. The
-        /// buff blueprint, its component and the retained rules policy stay
-        /// registered for save compatibility; an already applied buff on a
-        /// creature in an older save is not retired by this change.
+        /// rolled a native SunderArmor combat maneuver. While withdrawn, the
+        /// builder gives the combat component no dismantled-armor buff, the
+        /// component's attack handler does no Dismantle work even with a
+        /// buff reference, and an already applied dismantled-armor buff in an
+        /// older save contributes no armor-class penalty (an inert legacy
+        /// marker). The buff blueprint, its component and the retained rules
+        /// policy stay registered for save compatibility.
         /// </summary>
         internal static readonly bool BebelithDismantleArmorWithdrawn = true;
+
+        /// <summary>
+        /// The one decision both Bebelith handlers consult. Penetrating
+        /// Strike never depends on the Dismantle withdrawal; the Dismantle
+        /// trigger needs both an active mechanic and a configured buff; the
+        /// legacy dismantled-armor penalty applies only while the mechanic is
+        /// active.
+        /// </summary>
+        internal static bool BebelithEffectActive(BebelithEffect effect, bool dismantleWithdrawn, bool dismantledArmorConfigured)
+        {
+            switch (effect)
+            {
+                case BebelithEffect.PenetratingStrike: return true;
+                case BebelithEffect.DismantleTrigger: return !dismantleWithdrawn && dismantledArmorConfigured;
+                case BebelithEffect.DismantledArmorPenalty: return !dismantleWithdrawn;
+                default: return false;
+            }
+        }
+
+        /// <summary>The armor-class penalty an existing dismantled-armor
+        /// effect contributes: none while withdrawn, otherwise the live
+        /// contribution of the dismantled piece (never negative).</summary>
+        internal static int BebelithDismantledArmorPenalty(bool dismantleWithdrawn, Func<int> lostArmorClass)
+        {
+            if (!BebelithEffectActive(BebelithEffect.DismantledArmorPenalty, dismantleWithdrawn, true) || lostArmorClass == null) return 0;
+            return Math.Max(0, lostArmorClass());
+        }
 
         /// <summary>KMG creatures that inherited Sunder from a native donor
         /// rather than from their own builder, and so are corrected by the
@@ -214,6 +242,8 @@ namespace KingmakerGunslinger.Summoning
                 targets.Any(target => ReferenceEquals(target, value))).ToArray();
         }
     }
+
+    internal enum BebelithEffect { PenetratingStrike, DismantleTrigger, DismantledArmorPenalty }
 
     internal sealed class WithdrawnCapabilitySpec
     {

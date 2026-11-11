@@ -235,7 +235,12 @@ namespace KingmakerGunslinger.Summoning
         {
             if (evt == null || Owner == null || Owner.Unit == null ||
                 !ReferenceEquals(evt.Target, Owner.Unit)) return;
-            int lost = BebelithDismantle.LostArmorClass(Owner.Unit);
+            // DISMANTLE-01: withdrawn, so an existing (legacy) dismantled-armor
+            // buff is an inert marker. The piece is not read and no modifier,
+            // positive or negative, is added.
+            int lost = SummonPlaytestWithdrawalPolicy.BebelithDismantledArmorPenalty(
+                SummonPlaytestWithdrawalPolicy.BebelithDismantleArmorWithdrawn,
+                () => BebelithDismantle.LostArmorClass(Owner.Unit));
             if (lost <= 0) return;
             ModifiableValue.Modifier modifier = Owner.Stats.AC.AddModifier(
                 -lost, Fact, GetType().FullName,
@@ -273,7 +278,9 @@ namespace KingmakerGunslinger.Summoning
         public override void OnEventAboutToTrigger(RuleDealDamage evt)
         {
             if (evt == null || evt.DamageBundle == null || Owner == null ||
-                !ReferenceEquals(evt.Initiator, Owner.Unit)) return;
+                !ReferenceEquals(evt.Initiator, Owner.Unit) ||
+                !SummonPlaytestWithdrawalPolicy.BebelithEffectActive(BebelithEffect.PenetratingStrike,
+                    SummonPlaytestWithdrawalPolicy.BebelithDismantleArmorWithdrawn, DismantledArmor != null)) return;
             // The weapon comes from the attack roll that caused the
             // damage. Spell and area damage carry no attack roll and are
             // therefore never this creature's natural weapons, which is the
@@ -306,6 +313,11 @@ namespace KingmakerGunslinger.Summoning
 
         public void OnEventDidTrigger(RuleAttackWithWeapon evt)
         {
+            // DISMANTLE-01: no Dismantle work at all while withdrawn, even if a
+            // buff reference were present. This handler only reacts after the
+            // attack has resolved, so ordinary attacks are never affected.
+            if (!SummonPlaytestWithdrawalPolicy.BebelithEffectActive(BebelithEffect.DismantleTrigger,
+                    SummonPlaytestWithdrawalPolicy.BebelithDismantleArmorWithdrawn, DismantledArmor != null)) return;
             if (evt == null || evt.AttackRoll == null || !evt.AttackRoll.IsHit ||
                 evt.Target == null || evt.Weapon == null ||
                 !ReferenceEquals(evt.Weapon.Blueprint, Claw) || Owner == null ||
