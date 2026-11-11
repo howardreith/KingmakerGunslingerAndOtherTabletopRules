@@ -1,5 +1,10 @@
 # Alphabetical summon menus: status
 
+> **Superseded ordering rule (owner decision, 2026-11-10).** Active menus now order by base quantity first
+> (one, 1d3, 1d4+1), then the family-first name, then identity. See
+> [summon-menu-order-and-sunder/STATUS.md](../summon-menu-order-and-sunder/STATUS.md). The record below and its
+> verdicts stay with their own candidates.
+
 **Alphabetization accepted on existing source, focused-test and native menu evidence. Historical
 native invocation remains FAIL because of observer setup defects. Observer corrections are
 source/focused-check only; no further native run performed.** (2026-11-09)
