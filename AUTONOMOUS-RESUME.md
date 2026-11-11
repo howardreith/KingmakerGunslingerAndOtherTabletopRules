@@ -1,4 +1,31 @@
-# Summon menu order, summon Sunder and the Lillend label: native checkpoint FAIL, fix pending rebuild / STOP
+# Summon menu order, summon Sunder and the Lillend label: candidate 3f170d4a9c native 44 PASS / 1 FAIL (observer defect) / STOP
+
+Current (2026-11-11). See `planning/summon-menu-order-and-sunder/STATUS.md`. Branch
+`codex/summon-menu-order-and-sunder`, draft PR #126 against master `3fd5bf5d0b`. Nothing merged, released, tagged
+or permanently installed.
+
+- **Candidate `3f170d4a9c`:** package `012e469a...b89d`, DLL `cec3f24c...e72a`, MVID
+  `2be9b4e9-1dbc-4154-a993-4ebea76b798c`. Initialization succeeded. The single guarded run returned 44 PASS and
+  1 FAIL.
+- **Passed:** the quantity-first census (93 arrays); all 46 spider placements; feat-absent and feat-enabled SM V
+  (Ogre single, Widow 1d3, Crab 1d4+1); SM VII single group first; "Azata, Lillend"; Druid conversion with exact
+  generated-row selection and context; ProperFlanking2 chain `ActiveExact`; fresh Storm Giant and Greater Earth
+  Elemental with no Sunder state; native attacks with no Sunder maneuver; induced legacy cleanup `Proven` for both;
+  exact-owner and non-summon controls.
+- **FAIL `sunder-census`:** an observer defect. It counted the withdrawal fixers' own removal lists as carriers. A
+  reader-only re-evaluation passes with 0 carriers; the original FAIL is retained and the observer source is
+  unchanged.
+- **Earlier candidate `c6e861a98a`:** keeps its initialization FAIL.
+- **Restoration:** exact. **Ledger:** about 1,248 of 1,800 s.
+- **Open for the owner:**
+  - Accept the Bebelith scope distinction (proposed, not approved).
+  - Optionally have the elemental fixer swap the retained legacy `GreaterEarthElementalAttackAiAction`.
+  - Optionally correct the census observer to exclude fixer self-references.
+  - Review and merge.
+
+---
+
+# (superseded) Summon menu order, summon Sunder and the Lillend label: native checkpoint FAIL, fix pending rebuild / STOP
 
 Current (2026-11-10). See `planning/summon-menu-order-and-sunder/STATUS.md`. Branch
 `codex/summon-menu-order-and-sunder` from master `3fd5bf5d0b` (PR #125 merge); one draft PR against master.
