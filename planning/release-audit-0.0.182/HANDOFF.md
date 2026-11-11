@@ -8,12 +8,13 @@ Everything below was actually executed in this campaign unless marked **not run*
 ```
 C:\Dev\KingmakerGunslingerLab\audits\KMG-AUD-20261111T170737Z\
   AUDIT-SUMMARY.md        read this first — standalone
-  AUDIT-FINDINGS.md       43 findings, GS-AUD-0001..0043 (0027 and 0030 WITHDRAWN)
-  AUDIT-OUTCOMES.md       18 append-only events, EV-000001..EV-000018
+  AUDIT-FINDINGS.md       47 records, GS-AUD-0001..0047 (0027 and 0030 WITHDRAWN).
+                          NOT 47 defects - 6 active S2; read each entry's evidence strength
+  AUDIT-OUTCOMES.md       19 append-only events, EV-000001..EV-000019
   AUDIT-COVERAGE.tsv      all 57 rows dispositioned
   AUDIT-RESTORATION.md    intake baseline + every transaction
   AUDIT-STATE.json        durable checkpoint, immutable deadline
-  AUDIT-EVIDENCE-INDEX.tsv 22 retained artifacts with SHA-256
+  AUDIT-EVIDENCE-INDEX.tsv 23 retained artifacts with SHA-256
   workers\W1..W6\         full source traces, six read-only workers
   adapter\                the one bounded audit adapter
   evidence\A00 A02 A03 A15 A18 A25-review\
@@ -83,24 +84,51 @@ Read `AUDIT-SUMMARY.md` revision note first. In short:
   clearly marked historical section.
 - **GS-AUD-0015, 0025, 0031, 0034, 0019, 0006, 0001** were narrowed or re-grounded.
 - The unfinished source rows (scatter, Shield Other, Protection from Alignment, Magic Circle
-  lifetime and vendors) and five save-free native scenarios were **completed**, producing
-  GS-AUD-0039..0043 and 36+ correct-with-file:line rows.
+  lifetime and vendors) were **completed**, producing GS-AUD-0039..0043 and 36+
+  correct-with-file:line rows.
+- Native follow-up, stated accurately: **four** disposable/observe scenarios plus **two** profile
+  startup smokes in T6, then **four** more in T7 (the settings observer plus three A20
+  presentation/audio scenarios). The earlier wording "five previously unassessed native
+  scenarios" was a miscount.
+
+## 3c. Revision 3 — the second review
+
+- **`GS-AUD-0040` reclassified to documentation drift.** `planning/EXPANDED-SUMMONING-MISSION.md:71`
+  already approves a distance-independent established bond. **Do not reintroduce the distance
+  check and do not change the regression test** — only the shipped ability description is stale.
+- **Coverage ledger reconciled** with the rev-2 withdrawals; `VERIFIED` rows fell 6 → 3 because
+  the Magic Circle rows had been verified on an inventory-only observer.
+- **Disposition is now `IN_PROGRESS_CHECKPOINT`**, not complete. See `SUMMARY.md` §6a for the
+  explicit remaining queue.
+- **GS-AUD-0044** (Dead Shot audio commits) is new and is the second-highest repair priority
+  after the scatter sign.
 
 ## 4. The smallest next investigations, in value order
 
-0. **GS-AUD-0039 — the scatter sign inversion.** No run needed to confirm the semantics; they
-   are measured from engine IL. The one check worth doing is a disposable scenario asserting
-   `Attacks[0].AttackRoll.AttackBonusPenalty == 2` (positive two) after a scatter volley, which
-   also settles the open clamping question.
+0. **GS-AUD-0039 — the scatter sign inversion.** No run needed: the full
+   constructor-to-`OnTrigger` chain is disassembled and carries **no clamp**, so the +2 result is
+   established. The worthwhile check is a disposable scenario asserting
+   `Attacks[0].AttackRoll.AttackBonusPenalty == 2` (positive two), which would also pin the sign
+   by behaviour instead of by the constant's literal value.
+0b. **GS-AUD-0044 — Dead Shot audio commits.** Re-run `disposable-firearm-wwise-audio` with the
+   committed-discharge counter logged as an explicit before/after pair, so the delta is recorded
+   rather than inferred from the `:N` diagnostic suffix.
 1. **Firearm cold-load token survival** (GS-AUD-0021) — load a firearm, damage it to Broken,
    save, **exit to desktop**, relaunch, reload, inspect rounds + degradation. One disposable
    save, one cold restart. This is the largest hole in the evidence.
-2. **Brown-Fur saved-owner** (GS-AUD-0015) — cast Share Transmutation on a companion, split the
-   party so the caster is elsewhere, save, reload, read the ally's bonus. Expect +6; +4 confirms.
+2. **Brown-Fur unresolved caster** (GS-AUD-0015) — the consequence is **UNVERIFIED**, so the run
+   must establish the **precondition first**: instrument or observe whether
+   `sourceContext.MaybeCaster` is actually null at the restoration point when the caster is in
+   another area. Only if it IS null does the +4-instead-of-+6 result follow. A bonus of +4 alone
+   does not confirm this finding — it could have other causes — and a bonus of +6 does not clear
+   the guard, only that scenario.
 3. **Settings migration write failure** (GS-AUD-0006) — mark `FeatureModules.json` read-only on a
    `schemaVersion < 12` file and launch. If the log says "malformed … all modules ON", confirmed.
-4. **Template leak** (GS-AUD-0025) — summon one *untemplated* creature through any alternate
-   caller; inspect the spawned unit's facts for a celestial/fiendish template buff.
+4. **Template leak** (GS-AUD-0025) — scope is **Summon Monster callers only** (Naturalist,
+   Feral Hunter and Preservationist are Nature's Ally routes and are not affected). The run needs
+   a **specific affected SM caller, carrier, tier and creature** whose native carrier actually
+   carries an inherited celestial/fiendish template buff — that tuple has not been enumerated.
+   Then inspect the spawned unit's facts for the donor template.
 5. **Shield Other range** (GS-AUD-0040) — cast it, separate the pair beyond close range, deal
    damage, and observe whether the split still occurs.
 6. **Area-load path** (GS-AUD-0024) — only worth running once the original log exists.
@@ -110,8 +138,9 @@ Read `AUDIT-SUMMARY.md` revision note first. In short:
 - ~~**GS-AUD-0030 — Nimble**~~ **WITHDRAWN.** There is no decision here. Tabletop Nimble *is*
   2/6/10/14/18 (`private/rules/GUNSLINGER_PFSRD.md`); the implementation and the `EXACT` label
   are both correct.
-- **GS-AUD-0040 — Shield Other's range contract.** The published description, the code and a
-  deliberate test assertion say three different things. One of the three must change.
+- ~~**GS-AUD-0040 — Shield Other's range contract**~~ **RESOLVED, no decision needed.**
+  `planning/EXPANDED-SUMMONING-MISSION.md:71` already settles it: the established bond is
+  distance-independent by approved design. Only the shipped description needs correcting.
 - **GS-AUD-0011** — is Deadeye's flat 1-Grit cost intended? The per-increment cost it computes is
   dead code.
 - **GS-AUD-0013** — should a *successful repair* clear misfire suppression? Today only a player

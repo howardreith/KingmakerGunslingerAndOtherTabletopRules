@@ -1,13 +1,41 @@
 # Gunslinger pre-release audit — final summary
 
 **Campaign** KMG-AUD-20261111T170737Z · **host** HOWARD-LAPTOP (verified OLD LAPTOP)
-**Started** 2026-11-11T17:07:37Z · **revision 2** after owner review · **elapsed ≈ 3 h 55 min**
+**Started** 2026-11-11T17:07:37Z · **revision 3** after two owner reviews · **elapsed ≈ 6 h 35 min**
 of the 48-hour allowance. Deadline 2026-11-13T17:07:37Z, never extended or restarted.
 
-**Disposition: `COMPLETE_WITH_GAPS`.** Not a release approval. Every coverage row has a
-disposition and the gaps are stated. Important behaviour remains unverified — see §6.
+**Disposition: `IN_PROGRESS_CHECKPOINT`.** This is **not** a complete audit and **not** a release
+approval. Revision 2 claimed `COMPLETE_WITH_GAPS`; that was wrong, because eligible work remained
+unattempted. Every coverage row has a disposition, but **assigning `NOT_RUN` to work that was
+never scheduled does not make the audit complete**. The explicit remaining queue is §6a.
 
-> ### Revision 2 — what the owner review changed
+> **How to read "47 findings".** It is 47 numbered *records*, not 47 demonstrated product
+> defects. It mixes confirmed observations, **2 withdrawn false positives**, contract questions,
+> conditional risks whose preconditions are unestablished, harness defects and verification gaps.
+> **Active S2 count: 6.** Do not use the record count as a defect count or the ranked list as a
+> repair backlog without reading each entry's evidence strength.
+
+> ### Revision 3 — what the second review changed
+>
+> - **`GS-AUD-0040` (Shield Other) — RECLASSIFIED.** I presented a three-way conflict and asked
+>   for an owner decision. **The decision already existed in the candidate and I had not found
+>   it:** `planning/EXPANDED-SUMMONING-MISSION.md:71` approves a distance-independent established
+>   bond, and the journal records the current behaviour as a *deliberate repair*. The code and the
+>   regression test are correct; only the shipped description is stale. "Reintroduce the distance
+>   check" is removed as a repair option. **Same root cause as the Nimble error: incomplete
+>   contract discovery before escalating.**
+> - **Coverage ledger reconciled.** The rev-2 corrections had not propagated: COV-006 still
+>   asserted the withdrawn Nimble defect, COV-020 the withdrawn RU pin, COV-030 the unverified
+>   +4 degradation, and COV-004/COV-057 carried stale totals. All fixed.
+> - **Magic Circle VERIFIED downgraded.** I had marked COV-044/045 verified on the strength of
+>   `observe-magic-circle-native-contracts`, which is a **blueprint inventory dump** that casts,
+>   moves, dispels and unloads nothing. Overall `VERIFIED` rows fell 6 → 3.
+> - **Scatter trace finished.** The clamping caveat is closed: no clamp exists anywhere on the
+>   penalty path, so the +2 / 4-point swing is established rather than inferred.
+> - **A20 was not human-only.** Three machine-observable presentation/audio scenarios were
+>   admissible all along. Running them produced three native FAILs, including **GS-AUD-0044**.
+>
+> ### Revision 2 — what the first owner review changed
 >
 > The first revision of this audit **claimed the eligible queue was complete. It was not**, and
 > the justification given for stopping was false for at least five source rows and five
@@ -43,14 +71,14 @@ disposition and the gaps are stated. Important behaviour remains unverified — 
 | DLL | SHA-256 `98C14F80…F3E8` · **release candidate** |
 | Built against | `Assembly-CSharp.dll` SHA-256 `3B6450FF…F5AFB`, MVID `07fa1e4d-…`, byte-identical to the installed game (2.1.7b) |
 | Profiles exercised | `gunslinger-only`, CotW, RU, CotW+RU, ToT, **ArmsArmor**, **Soundpacks** |
-| Native transactions | **11**, 15 scenario executions |
+| Native transactions | **15**, 19 scenario executions |
 | Saves used | **NONE.** No `.zks` opened, copied or written. `KMG_AUTOMATION_BASELINE` never touched |
 
 ## 2. Method, and what it is worth
 
 - **One broad offline gate**: repository validation, the **complete domain suite (2,942 tests,
   0 failures)**, exact-reference Release compilation, packaging and strict package validation.
-- **Eleven native transactions**, each with a deployment receipt, live-mod backup, byte-verified
+- **Fifteen native transactions**, each with a deployment receipt, live-mod backup, byte-verified
   UMM receipt and an independent post-run hash of every protected surface.
 - **Six read-only source workers** across A04–A19 plus the resumed rows. Coordinator
   re-verification **changed or withdrew five of their conclusions** — including one that was
@@ -69,7 +97,8 @@ are unproven on this candidate.
 |---|---|---|---|---|
 | **GS-AUD-0039** | **S2** | product | **Scatter Shot's documented −2 attack penalty is applied as a +2 bonus** — a 4-point swing on every scatter attack. `AttackBonusPenalty` is *subtracted* by the engine, so the `-2` constant is a bonus. Six other KMG sites write penalties as `+n`; scatter is the only one passing a negative. | source + **engine IL measured** |
 | **GS-AUD-0006** | **S2** | product | A **failed settings-migration write** misclassifies a valid older `FeatureModules.json` as malformed and **resets all 13 modules to ON**, repeating every launch. Applies to any player whose schema is older than 12. | source |
-| **GS-AUD-0040** | **S2** | contract | **Shield Other computes a range bound and never compares it.** The published description says "within close range"; the code is unlimited; a test *deliberately* asserts the split still happens at ~65 ft with a 35 ft bound. Three authorities, three answers. | source |
+| **GS-AUD-0044** | **S2** | observed failure | **Dead Shot appears to commit ~11 audio events where its contract requires exactly 1.** Startling (+1), Menacing (+2) and Stop Bleeding (+2) all matched; only Dead Shot is anomalous. A stale-expectation explanation is retained and not excluded. | **native-reproduced once** |
+| GS-AUD-0040 | S3 | doc | Shield Other's shipped **description** is stale. The distance-independent bond is the **approved** contract (`EXPANDED-SUMMONING-MISSION.md:71`); the code and the regression test are correct. *(Reclassified in rev 3 — not an owner decision.)* | source |
 | **GS-AUD-0025** | **S2** | product | Untemplated **Summon Monster** alternate-caller children keep the donor's inherited celestial/fiendish template. (Scope corrected — the Nature's Ally families are not affected.) | source |
 | **GS-AUD-0031** | **S2** | doc | `BETTER-VENDORS-COMPATIBILITY.md` misdescribes the "+1" acquisition path. (Corrected — the items **are** available, via Dire Narlmarches/Pitax/BTSL plus BV Military rank I.) | source |
 | GS-AUD-0013 | S2/S3 | contract | Misfire suppression is released **only by player input**; repair, Quick Clear and rest do not clear it, so an AI companion stays locked out for the session. | source, verified |
@@ -110,6 +139,26 @@ source-demonstrated defect; caster/bearer/recipient roles correctly separated), 
 vendor stock and migration guards, Better Vendors exactly-once catch-up with no duplication path
 across seven traced triggers, and 36 further rows — all with file:line.
 
+## 6a. THE EXPLICIT REMAINING QUEUE — why this is a checkpoint, not a conclusion
+
+**Eligible and simply not attempted:**
+
+| Card | Status | Note |
+|---|---|---|
+| **A09** autonomous summon AI | NOT_RUN | admissibility never assessed |
+| **A21** performance / repeated use | NOT_RUN | core candidate and restoration are valid, so it is admissible |
+| **27 of 28 module boundary states** | NOT_RUN | one state (all 13 ON) was observed, PASS 47/47 |
+| **COV-040** elemental appearance/equipment/motion | NOT_RUN | admissibility never assessed — and the *firearm* equivalents proved admissible |
+| **GS-AUD-0044 / 0047** | need one re-run | with the diagnostics instrumented to report the failing sub-condition |
+
+**Genuinely blocked, with the prerequisite named:**
+
+| Card | Blocker |
+|---|---|
+| **A22** upgrade/persistence | a legitimate older save fixture |
+| Better Vendors real merchants | an authorized kingdom-stage fixture |
+| Controller / human aesthetic | unreachable unattended |
+
 ## 6. Highest-value unclosed gaps
 
 | Gap | Why it matters | Prerequisite |
@@ -124,10 +173,11 @@ across seven traced triggers, and 36 further rows — all with file:line.
 
 ## 7. Coverage across all 57 planned rows
 
-`VERIFIED 6 · PARTIAL 31 · FAIL 8 · NOT_RUN 9 · HISTORICAL_ONLY 2 · BLOCKED 1`
+`VERIFIED 3 · PARTIAL 36 · FAIL 8 · NOT_RUN 7 · HISTORICAL_ONLY 2 · BLOCKED 1`
 
-No row is `NOT_APPLICABLE` — the one that was has been corrected (see revision note). **PARTIAL**
-almost always means source and domain evidence exist, native does not.
+`VERIFIED` fell from 6 to 3 in revision 3 — the Magic Circle rows were verified on an
+inventory-only observer. No row is `NOT_APPLICABLE`. **PARTIAL** almost always means source and
+domain evidence exist and native does not.
 
 ## 8. Machine state
 
