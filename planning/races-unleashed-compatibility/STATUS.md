@@ -1,7 +1,11 @@
 # Spider Summoner integration: status
 
-**Complete for review; owner review pending.** On the final candidate `0908e3415f`, every RU-01 to RU-20 row is
-closed (acceptance table below):
+**Owner-accepted and complete (2026-11-11).** The owner accepted the final candidate and asked for PR #125 to be
+merged and the project closed. That merge authorization supersedes the mission's original "no merge" boundary for
+this one action. It is not a release: no tag, publication or permanent installation has been performed, and released
+v0.0.181 keeps its documented limitation (`KNOWN-ISSUES.md`) until a release includes this work.
+
+On the final candidate `0908e3415f`, every RU-01 to RU-20 row is closed (acceptance table below):
 - **Reload defect fixed (RU-14, RU-16).** The native `Fact.TurnOn` calls a component's `OnTurnOn` before it starts
   that component listening for rules, so the marker's recalculation went unanswered and stored the base DC.
   `0908e3415f` starts the marker listening first.
@@ -14,8 +18,8 @@ closed (acceptance table below):
 - **The cleric/interface phase (234/234) and the no-Call-of-the-Wild real-web phase (6/6)** pass again on the same
   bytes.
 
-This is focused compatibility evidence, not release qualification. Owner acceptance is not claimed. No merge,
-release, tag, publication or permanent installation has been performed, and the Races Unleashed DLL is untouched.
+This is focused compatibility evidence, not release qualification; a release would need its own qualification. The
+Races Unleashed DLL is untouched.
 
 ## Reload fix and completion (owner instruction "Go ahead and finish up. Take the time you need.")
 
@@ -711,11 +715,12 @@ Disposition against every subrequirement of `ACCEPTANCE.md`. Native candidates a
 | RU-17 | Done | Module boundary | RU-absent profile; Expanded-Summoning-inactive/RU-present control | `deebec4edb39` | None |
 | RU-18 | Done | Agreement tests | Zero unresolved rows | `106cda92f3` | None |
 | RU-19 | Done | Observer compiles; escape verdict tests | Per-row semantics; failures retained | `106cda92f3` | None |
-| RU-20 | Done | n/a | Draft PR; exact restoration; bounded NPC control (AI cast-action decisions and an executed ordinary cast; no autonomous brain run) | `04c6030c02`, `106cda92f3` | Owner review |
+| RU-20 | Done | n/a | Draft PR; exact restoration; bounded NPC control (AI cast-action decisions and an executed ordinary cast; no autonomous brain run) | `04c6030c02`, `106cda92f3`, `0908e3415f` | None: owner-accepted 2026-11-11; PR #125 merged on the owner's instruction |
 
 ## Remaining native work
 
-None for this mission. Owner review is pending. Deferred by the validation policy, not by this mission:
+None. The project is closed as owner-accepted. Deferred by the validation policy to any future release, not by this
+mission:
 - the complete domain suite;
 - release qualification.
 

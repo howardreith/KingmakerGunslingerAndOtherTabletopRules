@@ -1,8 +1,9 @@
-# Races Unleashed Spider Summoner integration: complete for review, owner review pending / STOP
+# Races Unleashed Spider Summoner integration: owner-accepted, PR #125 merged, project complete / STOP
 
-Current (2026-11-11). See `planning/races-unleashed-compatibility/STATUS.md`. Branch
-`codex/races-unleashed-summoning`, draft PR #125. After the 170-minute stop, the owner wrote "Go ahead and finish
-up. Take the time you need." The ledger is about 11,504 seconds.
+Current (2026-11-11). See `planning/races-unleashed-compatibility/STATUS.md`. The owner accepted the final
+candidate and asked for PR #125 (`codex/races-unleashed-summoning`) to be merged and the project closed. The merge
+is not a release: there is no tag, publication or permanent installation. Released v0.0.181 keeps its
+`KNOWN-ISSUES.md` limitation until a release includes this work. The ledger is about 11,504 seconds.
 
 - **Final candidate:** `0908e3415f`, package `ec6fd46e...e442`, DLL `d4649502...bfbd`. Every RU-01 to RU-20 row is
   closed.
@@ -21,8 +22,9 @@ up. Take the time you need." The ledger is about 11,504 seconds.
 - **Separate finding for the owner:** with Call of the Wild's "metamagic for spontaneous spell conversion"
   setting, Herald popups over metamagic sources also list Call of the Wild's base-level conversions as raw
   native Summon Monster rows. This is not Spider Summoner behavior.
-- **No further work is scheduled.** No merge, release, tag, publication or permanent install follows without
-  explicit owner authorization.
+  It is recorded in `KNOWN-ISSUES.md` as an open design choice.
+- **No further work is scheduled.** A release, tag, publication or permanent install needs a separate owner
+  instruction and its own qualification.
 
 ---
 
