@@ -67,17 +67,23 @@ namespace KingmakerGunslinger.Summoning
         public override void OnEventDidTrigger(RuleCalculateAbilityParams evt) { }
 
         /// <summary>
-        /// A reload activates the spider's poison features before this marker,
-        /// so their stored parameters are calculated without the bonus. Once
+        /// A reload can calculate the spider's poison parameters before this
+        /// marker answers rules, so they are stored without the bonus. Once
         /// the marker is on, recalculate them: each calculation is a new rule
         /// answered by this one fact, so the result carries exactly one +2.
+        /// The native <c>Fact.TurnOn</c> calls <c>OnTurnOn</c> before it
+        /// starts a component listening, so start listening first (the call
+        /// is idempotent, and the native step then skips it); otherwise the
+        /// recalculation is not answered and stores the base DC.
         /// This needs no active integration, so a saved spider keeps its
         /// benefit with the module OFF until it expires.
         /// </summary>
         public override void OnTurnOn()
         {
             base.OnTurnOn();
-            if (Owner != null) SpiderSummonerRuntime.RecalculatePoison(Owner);
+            if (Owner == null) return;
+            StartListenEvents();
+            SpiderSummonerRuntime.RecalculatePoison(Owner);
         }
     }
 
