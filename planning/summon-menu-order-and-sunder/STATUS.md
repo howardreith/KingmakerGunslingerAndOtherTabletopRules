@@ -1,13 +1,81 @@
 # Summon menu order, summon Sunder, the Lillend label and Bebelith Dismantle Armor: status
 
-**Closeout at source `1ed8aacbcf` (2026-11-11). This source has focused and compile evidence only; no package
-was built and no game run was made.** It adds the owner-requested withdrawal of the Bebelith's Dismantle Armor
-and a census-observer correction. The native results below belong to their own candidates:
-- `3f170d4a9c`: native **44 PASS / 1 FAIL**. The single FAIL, `sunder-census`, was an observer defect, and its
-  original verdict stands.
-- `c6e861a98a`: initialization FAIL; no feature was observed.
+**Source-review checkpoint at `ec33e2b355` (2026-11-11): the withdrawn Bebelith Dismantle Armor is inert at both
+handlers. Focused and compile evidence only; no package was built and no game run was made.** Native results stay
+with their own candidates:
+- `3f170d4a9c`: **44 PASS / 1 FAIL**. The `sunder-census` FAIL was an observer defect, and its original verdict
+  stands.
+- `c6e861a98a`: initialization FAIL.
 
-Nothing is merged, released, tagged or permanently installed.
+`1ed8aacbcf` has focused and compile evidence only. Nothing is merged, released, tagged or permanently installed.
+
+## Bebelith withdrawal finished (source `ec33e2b3553b62534540b190cf2e96a06c4d7e82`, focused/compile only)
+
+**Trigger.** The builder still gives the Bebelith combat component no dismantled-armor buff (`1ed8aacbcf`). In
+addition, `BebelithCombatComponent.OnEventDidTrigger(RuleAttackWithWeapon)` first asks
+`SummonPlaytestWithdrawalPolicy.BebelithEffectActive(DismantleTrigger, BebelithDismantleArmorWithdrawn, buffConfigured)`
+and returns before any Dismantle work: no hit tracking, `SunderArmor` maneuver, Reflex save or buff application.
+- A retained, non-null buff reference cannot reactivate it.
+- This direct runtime guard is the implementation; the old field's restoration behavior is no longer relied on.
+- The handler reacts only after an attack has resolved, so ordinary attacks are never gated.
+- The separate Penetrating Strike damage handler consults the same seam with `PenetratingStrike`, which is always
+  active.
+- Claws, bite, rot, web, trip defense, natural armor, DR and skills are unchanged.
+
+**Legacy effect.** `BebelithDismantledArmorComponent.OnEventAboutToTrigger(RuleCalculateAC)` takes its penalty
+from `BebelithDismantledArmorPenalty(withdrawn, ...)`, which returns 0 while withdrawn without reading the
+equipped piece.
+- No modifier is added, positive or negative.
+- Unrelated armor, shields, enchantments and AC modifiers are untouched.
+- An already applied `KMG.Summoning.Special.Bebelith.DismantledArmor` buff in an older save may remain as an
+  **inert, save-compatible marker**: identity, blueprint and component kept.
+- Its description now reads "Retired legacy effect. The Bebelith's Dismantle Armor has been withdrawn; this marker
+  no longer reduces armor class."
+- Saved buff instances are not physically removed, and this was **not observed through a cold load**.
+
+**Installed contract.** The buff's only component is that AC component, whose modifier is temporary per AC
+calculation; it has no duration, FX or other persisted state. The combat component's hit tracking is
+process-local. No additional persisted effect was found, and there is no load hook, save rewrite, inventory
+repair or migration.
+
+**Focused checks.** `Invoke-KmgGate.ps1 -Filter 'summon-sunder;expanded-summoning.sprint21;summon-playtest-r1'`
+(Focused level: production compilation and filtered domain tests only; no Build-Local, package or native scenario):
+
+| Run | Result | Seconds |
+| --- | --- | ---: |
+| 1 | 40 of 2,942, **1 failure**: `expanded-summoning.sprint21-dismantle-touches-no-inventory`, a historical source-order test whose fixed 3,000-character window no longer reached the Reflex save after the guard was added. Corrected to read the whole handler up to `OnNewRound`; assertions unchanged | 18 |
+| 2 | 40 of 2,942, 0 failures, production compiled (selected-name SHA-256 prefix `33f1acd484cbd2a7`) | 4 |
+
+New seam tests:
+- `summon-sunder.bebelith-dismantle-trigger-blocked`: blocked even with a buff reference, plus a control showing
+  the seam would trigger if not withdrawn;
+- `.bebelith-legacy-penalty-inert`: 0 penalty, the piece is never read, the control returns the live
+  contribution, and the penalty is never negative;
+- `.bebelith-penetrating-strike-retained`;
+- `.bebelith-dismantle-withdrawn` (identity kept).
+
+These exercise the exact policy seam the production handlers call. The live components were compiled, not run.
+The ordinary-attack claim rests on the handler's post-resolution shape and compilation, not on a game-free
+behavior test. The census classifier and its negative tests are unchanged.
+
+**Future native check** (for the next explicitly authorized candidate qualification; not run here):
+1. Bebelith ordinary attacks still resolve with no Dismantle maneuver, save or buff events.
+2. An induced exact legacy Dismantled Armor buff adds no AC penalty.
+3. Penetrating Strike still applies its damage descriptors.
+4. Any induced-state check is labelled induced, not an old-save reload.
+
+**Ledger.**
+
+| Step | Seconds |
+| --- | ---: |
+| Subtotal through `1ed8aacbcf` | about 1,267 |
+| Previously omitted offline blueprint scans (recorded estimate, not re-measured) | about 15 |
+| **Before this work** | **about 1,282** |
+| Focused gates (18 + 4) | 22 |
+| **Cumulative** | **about 1,304 of 1,800** |
+
+Intake and restoration hash checks remain untimed and are not estimated. No live installation transaction
+happened; the installation, settings, `Params.xml`, saves and processes were left untouched.
 
 ## Closeout (source `1ed8aacbcf`, focused/compile evidence only)
 
@@ -26,6 +94,8 @@ Nothing is merged, released, tagged or permanently installed.
    - **Not retired:** a dismantled-armor buff already applied to a creature in an older save is permanent and
      keeps its described effect. Retiring it safely would need a new migration plus native validation, which
      this closeout did not authorize.
+     *(Superseded at `ec33e2b355`: the legacy buff identity may remain, but its Dismantle penalty is inert; see
+     above.)*
    - **Not observed natively:** this change has focused and compile evidence only.
 2. **Saved elemental targeting stays as is.** The withdrawal removes the saved Greater/Elder Earth Elemental's
    Sunder AI action, enabling feat, toggle and replacement buff. Its retained ordinary attack action

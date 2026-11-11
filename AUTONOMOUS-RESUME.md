@@ -1,4 +1,22 @@
-# Summon menu order, summon Sunder, Lillend label, Bebelith Dismantle Armor: closeout at 1ed8aacbcf, ready for merge/release review / STOP
+# Summon menu order, summon Sunder, Lillend label, Bebelith Dismantle Armor: source-review checkpoint at ec33e2b355 / STOP
+
+Current (2026-11-11). See `planning/summon-menu-order-and-sunder/STATUS.md`. Draft PR #126; nothing merged,
+released, tagged or permanently installed.
+
+- **Bebelith Dismantle Armor (DISMANTLE-01), focused/compile only:**
+  - inert at both handlers: no trigger even with a buff reference;
+  - a legacy Dismantled Armor buff in an older save is an inert marker with no AC penalty and a "retired" text;
+  - Penetrating Strike and all other behavior unchanged.
+- **Focused gate:** 40 of 2,942, 0 failures, after one historical source-window test was corrected.
+- **Native evidence stays with its candidates:** `3f170d4a9c` 44 PASS / 1 FAIL (census observer defect;
+  reader-only re-evaluation PASS); `c6e861a98a` initialization FAIL. `1ed8aacbcf` focused/compile only.
+- **Ledger:** about 1,304 of 1,800 s (the 15 s of offline scans now counted).
+- **Next:** owner source review. A release needs a separately authorized candidate qualification, including the
+  recorded Bebelith native check.
+
+---
+
+# (superseded) Summon menu order, summon Sunder, Lillend label, Bebelith Dismantle Armor: closeout at 1ed8aacbcf, ready for merge/release review / STOP
 
 Current (2026-11-11). See `planning/summon-menu-order-and-sunder/STATUS.md`. Branch
 `codex/summon-menu-order-and-sunder`, draft PR #126 against master `3fd5bf5d0b`. Nothing merged, released, tagged
