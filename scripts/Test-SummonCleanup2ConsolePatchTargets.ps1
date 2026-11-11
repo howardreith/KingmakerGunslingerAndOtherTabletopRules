@@ -42,16 +42,7 @@ try {
         @('ElementalConsoleLearningProjectionPatch','SelectorEntitiesGroupView`2','GenerateVirtualViews',339),
         @('ElementalConsoleLearningHeaderTextPatch','CharGenSpellSelectorItemView','RefreshView',165),
         @('ElementalConsoleLearningConfirmPatch','CharGenSpellsPhaseDetailedView','PressConfirmOnPhase',261),
-        @('ElementalConsolePreparationIntakePatch','SpellBookKnownSpellsVM','.ctor',206),
-        @('ElementalConsolePreparationProjectionPatch','SpellbookKnownSpellsScrollView','GenerateVirtualViews',228),
-        @('ElementalConsolePreparationConfirmPatch','SpellBookView','WantConfirm',232),
-        @('ElementalConsolePreparationHintPatch','SpellBookView','SetupHintsLabels',156),
-        @('ElementalConsolePreparationSelectedPatch','SpellBookVM','SelectKnownSpell',13),
-        @('ElementalConsolePreparationBudgetGuardPatch','SpellBookVM','TryMemorize',79),
-        @('ElementalConsolePreparationContextGuardPatch','SpellBookVM','TryContext',357),
-        @('ElementalConsolePreparationMetaGuardPatch','SpellBookVM','SwitchMetaMagicBuilderMode',40),
         @('ElementalConsoleLearningHeaderTooltipPatch','CharGenSpellSelectorItemView','TooltipObject',12),
-        @('ElementalConsolePreparationHeaderTooltipPatch','AbilityDataVM','TooltipObject',7),
         @('ElementalConsoleSpellCollectionPatch','ActionBarSelectorVm','CollectSpells',508),
         @('ElementalConsoleSourceResultPatch','ActionBarVM','Result',67),
         @('ElementalConsoleSourceViewPatch','ActionBarSelectorView','Bind',-1),
@@ -63,9 +54,10 @@ try {
         @('GiantSummonNativeVisibilityPatch','EntityFader','SetRendererVisibility',-1),
         # Desktop/presentation patches: a Prepare pin that misses the installed
         # method silently disables its surface (the PC preparation fold did).
+        # The PC and console spellbook (preparation) disclosures were withdrawn
+        # on 2026-11-11; their absence is asserted after this catalog.
         @('ElementalLearningRowsPatch','CharBSelectorLayer','SetupSpellSelectorView',377),
         @('ElementalLearningRefreshRowsPatch','CharBSelectorLayer','FillSpellLightUpdate',438),
-        @('ElementalPreparationRowsPatch','SpellBookView','RefreshSpellsView',731),
         @('ElementalSourceChooserDesktopPatch','ActionBarGroupElement','FillSlots',-1),
         @('EttinSecondHeadVisual','UnitEntityView','OnDataAttached',-1),
         @('EttinSecondHeadTeardown','UnitEntityView','OnDestroy',-1),
@@ -96,18 +88,15 @@ try {
                 $target.Module.ModuleVersionId -ne $game.ManifestModule.ModuleVersionId){throw "Wrong native target: $target"}
             $length=$target.GetMethodBody().GetILAsByteArray().Length
             if($entry[3] -ge 0 -and $length -ne $entry[3]){throw "Unexpected native IL length $length."}
-            if($entry[0] -eq 'ElementalConsolePreparationIntakePatch'){
-                $args=@($target.GetParameters()|ForEach-Object{$_.ParameterType.FullName})
-                if($target.MetadataToken -ne 0x060050df -or $args.Count -ne 3 -or
-                    $args[0] -cne 'Kingmaker.UnitLogic.Spellbook' -or
-                    $args[1] -cne 'Kingmaker.UI._ConsoleUI.SpellBook.SpellBookLevelVM' -or
-                    $args[2] -cne 'UniRx.IReactiveProperty`1[[Kingmaker.UI._ConsoleUI.Common.AbilityDataVM, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]'){
-                    throw "Constructor token/parameter mismatch: $($args -join ', ')"
-                }
-            }
             $passed++
             Write-Output ('PASS '+$entry[0]+' => '+$target.DeclaringType.FullName+'::'+$target+' token=0x'+$target.MetadataToken.ToString('X8')+' bytes='+$length)
         } catch {$message=$_.Exception.GetBaseException().Message;$failures.Add($entry[0]+': '+$message);Write-Output ('FAIL '+$entry[0]+': '+$message)}
+    }
+    # Owner withdrawal (2026-11-11): no spellbook preparation disclosure patch
+    # may remain in the mod; spell-learning disclosures above stay.
+    foreach($name in @('ElementalConsolePreparationIntakePatch','ElementalConsolePreparationProjectionPatch','ElementalConsolePreparationConfirmPatch','ElementalConsolePreparationHintPatch','ElementalConsolePreparationSelectedPatch','ElementalConsolePreparationBudgetGuardPatch','ElementalConsolePreparationContextGuardPatch','ElementalConsolePreparationMetaGuardPatch','ElementalConsolePreparationHeaderTooltipPatch','ElementalPreparationRowsPatch')){
+        if($null -ne $mod.GetType('KingmakerGunslinger.Summoning.'+$name,$false)){$failures.Add($name+': withdrawn spellbook disclosure patch is still present');Write-Output ('FAIL withdrawn '+$name)}
+        else{$passed++;Write-Output ('PASS withdrawn '+$name+' absent')}
     }
     # Reproduce the previous untyped constructor lookup using the actual shim
     # resolver without executing a constructor or synthesizing a native object.
@@ -126,6 +115,6 @@ try {
         if(-not $fillExact){throw 'Installed ActionBarSpellsGroup.Fill differs from token 0x0600451C / 113 IL bytes.'}
         $passed++;Write-Output 'PASS DruidSummonConversionPopupRowsPatch.ExactVariantFill => ActionBarSpellsGroup::Fill token=0x0600451C bytes=113'
     } catch {$message=$_.Exception.GetBaseException().Message;$failures.Add('ExactVariantFill: '+$message);Write-Output ('FAIL ExactVariantFill: '+$message)}
-    Write-Output ('Targets: '+$passed+'/'+($catalog.Count+2)+' passed; modSha256='+(Get-FileHash -LiteralPath $modPath -Algorithm SHA256).Hash.ToLowerInvariant())
+    Write-Output ('Targets: '+$passed+'/'+($catalog.Count+12)+' passed; modSha256='+(Get-FileHash -LiteralPath $modPath -Algorithm SHA256).Hash.ToLowerInvariant())
     if($failures.Count -gt 0){throw ($failures -join [Environment]::NewLine)}
 } finally {[AppDomain]::CurrentDomain.remove_AssemblyResolve($resolver)}

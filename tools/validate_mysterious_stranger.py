@@ -39,7 +39,7 @@ def validate(root: Path) -> None:
     if "FirearmDefinitionComponent>().Count() != 1" not in mechanics:
         raise AssertionError("Focused Aim does not use exact weapon-type firearm identity")
     for token in ["LocalizedDuration", '"Until the end of your turn"',
-                  "LocalizedSavingThrow", '"None"', "not attack rolls"]:
+                  "LocalizedSavingThrow", '"None"', "of Dead Shot's attack rolls that hits"]:
         if token not in source: raise AssertionError(f"Focused Aim presentation lacks {token}")
     icon=root/"assets/game/icons/focused-aim.png"
     data=icon.read_bytes()

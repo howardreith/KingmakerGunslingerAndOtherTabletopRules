@@ -727,29 +727,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var view=Resources.FindObjectsOfTypeAll<SpellBookView>().Single(value=>value.gameObject.scene.IsValid() && value.gameObject.scene.isLoaded &&
                     value.gameObject.activeInHierarchy && ReferenceEquals(ElementalConsoleBookPresentation.Model(value),owned));
                 var scroll=view.GetComponentsInChildren<SpellbookKnownSpellsScrollView>(true).Single(value=>ReferenceEquals(ElementalConsoleBookPresentation.Model(value),owned.SpellBookKnownSpells));
-                var context=ElementalConsoleBookPresentation.PreparationFor(scroll);
-                if(context==null || !context.Current)throw new InvalidOperationException("Actual console preparation source disclosure absent: "+ElementalConsoleBookPresentation.Outcome);
+                // The console spellbook source disclosure was withdrawn
+                // (2026-11-11). The native virtual list must render the exact
+                // authoritative known VMs: every original elemental source is an
+                // ordinary row and no owned header row or projection exists.
                 var authority=owned.SpellBookKnownSpells.KnownSpells.ToArray();
-                var header=scroll.GetComponentsInChildren<SpellBookKnownSpellView>(false).Single(value=>ReferenceEquals(value.GetViewModel(),context.Header));
-                bool visible=header.IsValid() && header.GetComponentsInChildren<TextMeshProUGUI>(false).Any(value=>value.text=="Elementals" && !value.isTextTruncated);
-                var navigation=(ConsoleMultiNavigationCollection)typeof(SpellBookView).GetField("m_ConsoleMultiNavigationCollection",Cleanup2Fields).GetValue(view);
-                navigation.SetCurrentEntityManual(header);
-                if(!ReferenceEquals(ElementalConsoleBookPresentation.FocusedPreparation(view),context.Header))
-                    throw new InvalidOperationException("Native console preparation header did not receive actual focus.");
-                InvokeTeleportGamepadInput(view,"WantConfirm");for(int frame=0;frame<5;frame++)yield return 0;
-                bool expanded=context.Expanded && context.Current && context.Projection.Any(value=>ReferenceEquals(value,context.Sources[0])) &&
-                    owned.SpellBookKnownSpells.KnownSpells.SequenceEqual(authority) && before.Unchanged() && pins.IsRestored();
-                Cleanup2Check("elemental-console-preparation-disclosure",visible && expanded,new JObject { ["headerVisibleFocusable"]=visible,
-                    ["expandedThroughNativeConfirm"]=expanded,["authoritativeKnownVMReferencesExact"]=owned.SpellBookKnownSpells.KnownSpells.SequenceEqual(authority),
-                    ["sourceCount"]=context.Sources.Length,["nativeSources"]=new JArray(context.Sources.Select(value=>value.SpellData.Blueprint.AssetGuid)),
-                    ["budgetExact"]=before.Unchanged(),["pinsExact"]=pins.IsRestored(),["outcome"]=ElementalConsoleBookPresentation.Outcome },
-                    "The real native console preparation list shows one focusable disclosure; native confirm expands original known VM/source references without changing any budget or pin.");
-                if(!visible || !expanded)throw new InvalidOperationException("Actual console preparation disclosure contract failed.");
+                var sources=authority.Where(value=>value.SpellData!=null && ReferenceEquals(value.SpellData.Spellbook,book) &&
+                    ElementalSourceChooserPolicy.Parent(value.SpellData.Blueprint.AssetGuid)!=null).ToArray();
+                var rendered=(System.Collections.IEnumerable)typeof(SpellbookKnownSpellsScrollView).GetField("m_VirtualViews",Cleanup2Fields).GetValue(scroll);
+                var renderedModels=rendered==null?new object[0]:rendered.Cast<object>().ToArray();
+                bool noHeader=!scroll.GetComponentsInChildren<SpellBookKnownSpellView>(true).Any(value=>value.GetViewModel()!=null &&
+                        value.GetViewModel().GetType().Assembly==typeof(ElementalConsoleBookPresentation).Assembly) &&
+                    !scroll.GetComponentsInChildren<TextMeshProUGUI>(false).Any(value=>value.text=="Show sources" || value.text=="Hide sources");
+                bool sourcesListed=sources.Length>0 && sources.All(source=>renderedModels.Any(value=>ReferenceEquals(value,source)) ||
+                    scroll.GetComponentsInChildren<SpellBookKnownSpellView>(true).Any(value=>ReferenceEquals(value.GetViewModel(),source)));
+                bool ordinary=noHeader && sourcesListed && owned.SpellBookKnownSpells.KnownSpells.SequenceEqual(authority) && before.Unchanged() && pins.IsRestored();
+                Cleanup2Check("elemental-console-preparation-no-disclosure",ordinary,new JObject { ["noOwnedHeaderRow"]=noHeader,
+                    ["originalSourcesListedAsOrdinaryRows"]=sourcesListed,["authoritativeKnownVMReferencesExact"]=owned.SpellBookKnownSpells.KnownSpells.SequenceEqual(authority),
+                    ["sourceCount"]=sources.Length,["nativeSources"]=new JArray(sources.Select(value=>value.SpellData.Blueprint.AssetGuid)),
+                    ["renderedRows"]=renderedModels.Length,["budgetExact"]=before.Unchanged(),["pinsExact"]=pins.IsRestored(),["outcome"]=ElementalConsoleBookPresentation.Outcome },
+                    "The real native console spellbook lists every original elemental source as an ordinary known-spell row; no disclosure header exists and no budget or pin changes.");
+                if(!ordinary)throw new InvalidOperationException("Console spellbook shows a withdrawn disclosure or hides an original source row.");
                 foreach(int frame in screens.Capture("elementals-console-native-preparation",new JObject {
                     ["nativeText"]=new JArray(scroll.GetComponentsInChildren<TextMeshProUGUI>(false).Select(value=>value.text)),
                     ["sourceObjectsExact"]=owned.SpellBookKnownSpells.KnownSpells.SequenceEqual(authority),
-                    ["scope"]="Real scene-bound console SpellBookView with native virtual rows and original known spell VM objects." },
-                    ()=>context.Current && before.Unchanged() && pins.IsRestored() && Cleanup2NoNarrativeOverlay()))yield return frame;
+                    ["scope"]="Real scene-bound console SpellBookView with native virtual rows and original known spell VM objects; no disclosure header." },
+                    ()=>ReferenceEquals(ElementalConsoleBookPresentation.Model(scroll),owned.SpellBookKnownSpells) && before.Unchanged() && pins.IsRestored() && Cleanup2NoNarrativeOverlay()))yield return frame;
             }
             finally
             {

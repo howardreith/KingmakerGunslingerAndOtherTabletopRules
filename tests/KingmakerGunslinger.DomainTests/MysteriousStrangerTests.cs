@@ -6,7 +6,10 @@ namespace KingmakerGunslinger.DomainTests
         private static void MysteriousStrangerGrit()
         { Assertions.Equal(1,MysteriousStrangerPolicy.GritMaximum(-2),"Charisma grit floor changed."); Assertions.Equal(4,MysteriousStrangerPolicy.GritMaximum(4),"Charisma grit changed."); }
         private static void MysteriousStrangerFocusedAim()
-        { Assertions.Equal(1,MysteriousStrangerPolicy.FocusedAimBonus(-1,1),"Focused Aim floor changed."); Assertions.Equal(12,MysteriousStrangerPolicy.FocusedAimBonus(4,3),"Dead Shot multiplier changed."); }
+        { Assertions.Equal(1,MysteriousStrangerPolicy.FocusedAimBonus(-1,1),"Focused Aim floor changed."); Assertions.Equal(12,MysteriousStrangerPolicy.FocusedAimBonus(4,3),"Dead Shot multiplier changed.");
+            // Tooltip example: Charisma +3 with two Dead Shot hits adds +6 to that one shot.
+            Assertions.Equal(6,MysteriousStrangerPolicy.FocusedAimBonus(3,2),"Focused Aim tooltip example differs from the calculation.");
+            Assertions.Equal(3,MysteriousStrangerPolicy.FocusedAimBonus(3,1),"Ordinary firearm damage must add the bonus once."); }
         private static void MysteriousStrangerFocusedAimTransactions()
         {
             Assertions.True(MysteriousStrangerPolicy.CanActivateFocusedAim(

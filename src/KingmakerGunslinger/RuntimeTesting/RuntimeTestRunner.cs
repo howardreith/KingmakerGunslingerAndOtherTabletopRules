@@ -12154,7 +12154,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, validRareLoot == 5,
                     "installed live blueprint graph after transactional publication"),
                 Assertion("project-magic-item-distribution",
-                    "Blueprint publication only: 29 named weapons plus Cord on 30 distinct exact fixed targets across 28 exact areas, zero named vendor rows, and no stale loot copies; physical availability unverified",
+                    "Blueprint publication only: 28 named weapons plus Cord on 29 distinct exact fixed targets across 27 exact areas, zero named vendor rows, no stale loot copies, and zero loot/vendor rows for retired Thornstep; physical availability unverified",
                     projectMagicDistribution, projectMagicDistributionExact,
                     "all installed BlueprintLoot and BlueprintSharedVendorTable rows by exact item reference"),
                 Assertion("production-critical-profiles",
@@ -12287,6 +12287,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     targetAreas[entry.Key] + ";active=" + active + ";loot=" +
                     allLootRows + ";target=" + targetRows + ";vendor=" +
                     vendorRows);
+            }
+            // Retired named weapons keep their registered item for owned
+            // copies but must have no loot or vendor row anywhere.
+            foreach (NamedSpearKind kind in
+                ElvenBranchedSpearCampaignBlueprints.RetiredNamedKinds)
+            {
+                BlueprintItem retired = spears.Named.Require(kind).Item;
+                int retiredLoot = loot.Sum(target => (target.Items ??
+                    Array.Empty<LootEntry>()).Count(value => value != null &&
+                        ReferenceEquals(value.Item, retired)));
+                int retiredVendor = tables.Sum(table => (table.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
+                    .Count(value => ReferenceEquals(
+                        CapitalVendorBlueprints.ReadItem(value), retired)));
+                exact = exact && retiredLoot == 0 && retiredVendor == 0;
+                records.Add("retired " + retired.name + ":" + retired.AssetGuid +
+                    ";loot=" + retiredLoot + ";vendor=" + retiredVendor);
             }
             return "items=" + targets.Count + ";targets=" +
                 targets.Values.Distinct().Count() + ";exactAreas=" +
@@ -15599,7 +15616,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "live AbilityVariants census across the eighteen canonical native summon parents"),
                 Assertion("feature-module-elven-branched-spears-publication-gate",
                     expectedElvenBranchedSpears ?
-                        "12 identities;7 parameter options;3 static references;exact campaign/BTSL VendorSpecs rows and quantities;6 loot rows" :
+                        "12 identities;7 parameter options;3 static references;exact campaign/BTSL VendorSpecs rows and quantities;5 loot rows (Thornstep retired)" :
                         "12 identities;0 parameter options;0 static references;0 vendor rows;0 loot rows",
                     observed,
                     activeElvenBranchedSpears ==
@@ -15612,7 +15629,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     spearFamiliarityCategories == 1 &&
                     boundaryVendorRows.Where(row => row.Group == "spear").All(row => row.Passed) &&
                     spearLootRows ==
-                        (expectedElvenBranchedSpears ? 6 : 0),
+                        (expectedElvenBranchedSpears ? 5 : 0),
                     "always-registered identities and exact selector, familiarity, vendor, and fixed-loot surfaces"),
                 Assertion("feature-module-eastern-weapons-publication-gate",
                     expectedEasternWeapons ?
