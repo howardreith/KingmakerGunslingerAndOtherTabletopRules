@@ -1,6 +1,141 @@
 # Summon menu order, summon Sunder and the Lillend label: status
 
-**Implemented; native checkpoint FAIL on candidate `c6e861a98a` (mod initialization failed closed on a product defect); fix `896c089a19` has focused-check evidence only. One rebuild and one guarded run await owner authorization** (2026-11-10)
+**Candidate `3f170d4a9c`: native FAIL, 44 PASS / 1 FAIL. The single failure (`sunder-census`) is an observer
+defect; a reader-only re-evaluation of the recorded data passes, and the original FAIL is retained. Every other
+cell passed, including all ordering, label, spider and Sunder behavior cells. Review checkpoint; nothing merged or
+released.** (2026-11-11)
+
+The earlier candidate `c6e861a98a` keeps its own initialization FAIL; it established no menu, label or Sunder
+behavior, and none of the results below belong to it.
+
+## Continuation result (candidate `3f170d4a9c`)
+
+### Observer correction (source `3f170d4a9c`)
+
+- `RuntimeTesting/SunderObservationVerdict.cs` follows the R1 discipline. It reads ProperFlanking2's actual
+  activation and verifies the exact chain:
+  - Improved Sunder `9719015e...` grants the Sunder action `fa9bfb9f...` and `SunderActionToggleAbility`
+    `d9604ead...` (name exact, default-on);
+  - that toggle applies `SunderActionToggleBuff` `f9f7edc1...`, which carries `AttackReplacementWithCombatManeuver`.
+- The chain classifies as `Inactive`, `InactiveIdentitiesPresent`, `ActiveExact` or `ActiveMismatch`. Absence
+  can be asserted only when the feat and action resolve and the chain is `ActiveExact` (or genuinely `Inactive`,
+  which is a qualified case). A cleanup passes only if the claimed pre-removal state was observed and everything
+  was gone afterwards.
+- The observer adds a `sunder-provider-chain` prerequisite. Fresh-absence cells and the structural census
+  require it. The legacy check is split into one cell per unit.
+- The Greater Earth Elemental's induced state rebuilds the exact former native brain action list, read from the
+  unmodified shared `GreaterEarthElementalBrain`. A fresh elemental native attack is observed as well.
+- Four verdict regression tests: active exact chain, active mismatched chain (each missing part), genuinely
+  inactive provider (qualified), and missing pre-removal state.
+- Product code is unchanged from `896c089a19`, including the exact-type `BlueprintAiCastSpell` fix.
+
+### Focused checks
+
+`Invoke-KmgGate.ps1 -Filter` with the recorded filter: 95 selected of 2,934, 0 failures, production compiled. Two
+runs, 23 s and 20 s; the second followed one census strictness edit. Selected per prefix: alternate-summoning 33,
+expanded-summoning 17, summon-cleric-alignment 19, summon-menu-order 5, summon-playtest-r1 5,
+summon-spider-summoner 9, summon-sunder 7. Sorted selected-name list SHA-256 `1c19809dcb18...9766`. The build ran
+the same 95.
+
+### Candidate
+
+| Item | Value |
+| --- | --- |
+| Source | `3f170d4a9ceaad457546c4a714a4c92d2f68cfc1`, v0.0.181 development, purpose `summon-menu-order-and-sunder` |
+| Package SHA-256 | `012e469a079181eee58cdbf72a65dc5f3a777398ed13172bb5693084a8a9b89d` |
+| DLL SHA-256 / MVID | `cec3f24c82671556a1b82f5bf46e6118da132873cd4576aebea1703d0b69e72a` / `2be9b4e9-1dbc-4154-a993-4ebea76b798c` (also the loaded module) |
+| Build | 416 s; 95/2,934 tests; development contract PASS 89/0; strict UMM package validation passed; explicit `-ReferenceBundleDir artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references` |
+
+### Native invocation
+
+One guarded run on DATA: wrapper `Invoke-ExpandedSummoningRuntimeScenario.ps1` (Params.xml-protected), launched
+through a Windows PowerShell 5.1 child.
+- Scenario `disposable-expanded-summoning-sprint32-native-review`, `reviewPhase=summon-menu-order-sunder`, on the
+  combined installation.
+- Run `20261111T0318117060805Z-00abec6c34c34058b5893177511d5ffd`; evidence
+  `runtime-evidence/20261111T0318116815327Z-disposable-expanded-summoning-sprint32-native-review` (private).
+- Wall time 154.7 s; runner 162 s.
+- Memory go/no-go 10.7 / 11.2 / 9.6 GB free. The pointer stayed at (300, 200) in all 31 samples.
+
+**Mod initialization succeeded.** The loaded build is 0.0.181 at `3f170d4a9c`. **Result: 44 PASS, 1 FAIL.**
+
+| Area | Cell | Observed |
+| --- | --- | --- |
+| Order census (structural) | `order-census` PASS | 93 arrays (18 canonical, 75 alternate), 5,273 rows: all quantity then name; 0 unclassified; 0 Stirge. The late pass reordered all 18 canonical menus, as expected once generated spider rows are appended to every tier |
+| Spider census (structural) | `order-spider-census` PASS | 46/46 placements once each in their own matrix quantity group; integration `repaired=8;generated=38;problems=` |
+| Provider prerequisite | `sunder-provider-chain` PASS | ProperFlanking2 active; chain `ActiveExact`; Improved Sunder grants exactly `SunderAction` and `SunderActionToggleAbility` |
+| Sunder census (structural) | `sunder-census` **FAIL** (observer defect) | 148 spawnable units from 93 roots, scanned. The only flagged references are inside the four `SummonWithdrawnCapabilityFixer` components (Storm, Fire, Greater and Elder Earth): their own withdrawal lists, not grants. No unit fact or brain holds a Sunder source. Elemental brains are ordinary, the shared native donor, brain and feat are unchanged, and the new fixers are attached. Reader-only re-evaluation excluding the fixers' own lists: **PASS**, 0 carriers (`runtime-evidence/summon-menu-order-and-sunder/20261111-sunder-census-reader-reevaluation.json`, SHA-256 `5df455802e50...`; source result SHA-256 `3db91eb96835...`). Original FAIL retained; observer source unchanged |
+| Lillend labels (structural) | `order-lillend-labels` PASS | SM VI "Azata, Lillend"; VII "(1d3)"; VIII and IX "(1d4+1)"; identities `KMG_Summoning_Ability_SM_TierN_LillendAzata_*` unchanged |
+| Feat-absent SM V popup | `order-spider-feat-absent` PASS | 75 rows; 0 Spider Summoner rows; the ordinary Giant Spider row present |
+| Feat-enabled SM V popup | `order-spider-tier5-mixed` PASS | 78 rows. Original `Summon Monster V (Ogre Spider)` (RU identity `...SummonMonsterOgreSpider`) at index 13 in the single group. Generated `Spider, Giant Black Widow (1d3)` at 41, inside the 1d3 group (indexes 15-43). Generated `Spider, Giant Crab (1d4+1)` at 74, inside the 1d4+1 group (from 44). Exactly 3 spider rows, no duplicates. Feature fixture-granted |
+| Unrestricted SM VII popup | `order-sm7-single-group-first` PASS | 107 rows; singles 0-12 (first: Bebelith); 1d3 group ends at 28; `Ankylosaurus (1d4+1)` at 29 |
+| SM VI popup | `order-lillend-menu` PASS | "Azata, Lillend" at index 1 (after Axiomite, before Bear, Dire), identity `..._Tier6_LillendAzata_One` |
+| Druid level 5 conversion | `order-druid-conversion-spiders` PASS | 76 rows, the native factory equals the popup, no duplicates. Spider rows: the original SNA V Ogre Spider plus the generated Widow (1d3) and Crab (1d4+1) |
+| Generated-row selection | `order-druid-select-generated-spider` PASS | Row 40, `KMG_Summoning_Spider_SNA_Tier5_GiantBlackWidow_OneD3` (`d9145ca9...`): the exact row object selected. It is converted from the native quantity conversion `03e8e960...` of the exact prepared source, in the same book; the receipt source matches; placement `KMG.Summoning.Spider.SNA.Tier5.GiantBlackWidow.OneD3`. Selection only, no cast |
+| Fresh Storm Giant | `sunder-storm-fresh` PASS | Absence assertable. No feat, action or toggle, 0 buffs. Greatsword kept; brain is its own spells plus the native `AttackAiAction`; fixer attached |
+| Storm Giant attack | `sunder-storm-attack` PASS | Native full attack: 3 weapon attacks, 0 maneuvers of any kind, 0 replaced slots. Only `BullRushActionToggleBuff` was active (charge-only), not counted as Sunder. The Sprint 4 routine verdict also passed |
+| Fresh Greater Earth Elemental | `sunder-earth-elemental-fresh` PASS | No feat, action or toggle; brain is native Dumb Monster Brain `5abc8884...` = [`AttackAiAction` (`BlueprintAiAttack`, AttackTargetsPriority)] |
+| Elemental attack | `sunder-earth-elemental-attack` PASS | Native full attack: 2 slam attacks, 0 maneuvers, 0 replacement buffs |
+| Legacy Storm Giant (induced) | `sunder-legacy-storm-giant` PASS, outcome `Proven` | Before: feat, action, toggle on/running, replacement buff 1/1 active. After the real fixer: all absent within the same frame; weapon and brain unchanged; a repeat changed nothing |
+| Legacy Greater Earth Elemental (induced) | `sunder-legacy-earth-elemental` PASS, outcome `Proven` | Before: feat, action, toggle running, buff active, and the rebuilt former brain [`SunderArmorAiAction` (`BlueprintAiCastSpell`), `GreaterEarthElementalAttackAiAction` (`BlueprintAiAttack`)]. After: all Sunder state gone; the brain holds exactly `GreaterEarthElementalAttackAiAction`; a repeat changed nothing |
+| Controls | `sunder-fixer-exact-owner` PASS | The non-summon caster keeps an induced Improved Sunder through both fixers; the elemental fixer leaves the Storm Giant alone |
+| Restoration in-game | `order-owned-state-restored`, `fixture-restored`, native-profile restored PASS | Owned books, facts, party and UI selection restored |
+
+**Screenshots (private, 5, 1920x1200).** These were inspected. The feat-enabled SM V grid (78 rows) and the Druid
+conversion grid (76 rows) are readable, with every row carrying an icon and no blanks. The three Races Unleashed
+spider rows in the Druid popup show its green paw icon at grid positions 11, 40 and 72, consistent with the
+recorded single, 1d3 and 1d4+1 indexes. The grids show icons, not labels, so order and labels rest on the
+recorded row objects.
+
+**Precise limits.**
+- Legacy state was **induced** on fresh summons, and each fixer's `OnPostLoad` was called directly. No older save
+  was cold-loaded; native `m_AppliedFixers` bookkeeping and real load order were not exercised.
+- A saved former elemental keeps `GreaterEarthElementalAttackAiAction`. Its target considerations
+  (AttackTargetsPriority, LightArmorConsideration, HasBuffSunder) are recorded, but AI decisions with that action
+  were not observed. Its ordinary attack was shown by a commanded native attack on a fresh elemental, not by AI.
+  Fresh summons use the native ordinary-attack brain. Whether the fixer should also swap that retained action for
+  the native `AttackAiAction` is a possible follow-up for the owner, not done here.
+- Attacks were native commands observed passively, not AI choices. Popups were the fixture's known-book SM V, VI
+  and VII and one Druid level 5 conversion. Herald, alternate sources and every other tier are census-only.
+- This does not claim that no summon can produce any `SunderArmor` rule event. The Bebelith dismantle (below) does.
+
+**Bebelith (unchanged).** Its Dismantle Armor is a post-claw-hit creature ability that rolls a native
+`SunderArmor` combat maneuver. It is not a standard Sunder action, feat grant or automatic attack replacement.
+Treating it as out of SUNDER-01's scope is a **proposed** distinction for final owner review, not an owner
+approval already received.
+
+### Restoration (this invocation)
+
+Wrapper record `runtime-evidence/expanded-summoning-restoration/20261111T0320134304754Z-...json`:
+- `restoration: verified`;
+- live tree before and after restore 254 files `5C3E4AD4...BFBB`;
+- `Params.xml` restored byte-exact `E44F4495...30BB`.
+
+Independent Windows PowerShell 5.1 check afterwards:
+- live v0.0.140, DLL `00EF6757...66FD`, 254 files, tree `5C3E4AD4...BFBB`;
+- `Params.xml` `E44F4495...30BB` (3,077 bytes);
+- the same 16 enabled mods; 95 saves, none modified since the run started;
+- no Kingmaker process.
+
+`KMG_AUTOMATION_BASELINE` and every campaign save were untouched; the scenario is save-free. There was no foreign
+lock and no other session.
+
+### Ledger (continued)
+
+| Step | Seconds |
+| --- | ---: |
+| Before this continuation | about 627 |
+| Focused gates (23 + 20) | 43 |
+| Candidate build `3f170d4a9c` | 416 |
+| Guarded invocation (runner wall) | 162 |
+| **Cumulative** | **about 1,248 of 1,800** |
+
+Not counted: reading evidence, the reader-only re-evaluation and documentation.
+
+---
+
+The sections below are the earlier record, kept as written for candidate `c6e861a98a`.
+
 
 A three-correction development checkpoint on `codex/summon-menu-order-and-sunder`, started from master
 `3fd5bf5d0b` (the PR #125 merge of the Races Unleashed Spider Summoner integration). Nothing here is merged,
@@ -90,7 +225,8 @@ these sources. Living Armor and Fredero are encounter units, not summon choices.
   saved attack action.
 
 **Open question for the owner.** The Bebelith's printed armor dismantle resolves through the engine's
-`SunderArmor` maneuver roll. It was not treated as Sunder and is unchanged.
+`SunderArmor` maneuver roll. It was not treated as Sunder and is unchanged (see the continuation result above for
+the proposed scope distinction).
 
 ## 3. Lillend label
 
