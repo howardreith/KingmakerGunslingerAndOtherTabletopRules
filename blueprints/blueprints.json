@@ -63159,6 +63159,318 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SM.Tier2.CrabSpider.OneD3",
+      "guid": "277840a48dfa5d1f82e52e7b2f8d9c3a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SM.Tier3.CrabSpider.OneD4PlusOne",
+      "guid": "5571183ec78e5fd9a9853a5c1aa83943",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SM.Tier4.CrabSpider.OneD4PlusOne",
+      "guid": "08873d633ac15f50bfa88b5dd46dd154",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SM.Tier5.CrabSpider.OneD4PlusOne",
+      "guid": "6bdb9826b4055b3bbe308303e7f6c415",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SM.Tier6.CrabSpider.OneD4PlusOne",
+      "guid": "3b4ff1b7e081509aa675f50e1e236ade",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SM.Tier7.CrabSpider.OneD4PlusOne",
+      "guid": "2b7a7f00a36759a189cdfd9a9c51dc54",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SM.Tier8.CrabSpider.OneD4PlusOne",
+      "guid": "d8261c0c5ef553f6b9d0e5da3d392503",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SM.Tier9.CrabSpider.OneD4PlusOne",
+      "guid": "3be4b03f39cd5977a9434a548c7f5f4d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SM.Tier5.GiantBlackWidow.OneD3",
+      "guid": "6aa7c191c654573a906379201538ebe6",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SM.Tier6.GiantBlackWidow.OneD4PlusOne",
+      "guid": "ce47bbab03d15bc1a7057fcb93249d87",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SM.Tier7.GiantBlackWidow.OneD4PlusOne",
+      "guid": "efa9d8fe41b05ef3a8fda462b7b3f195",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SM.Tier8.GiantBlackWidow.OneD4PlusOne",
+      "guid": "110accab5e5f54519f38b551f967ea24",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SM.Tier9.GiantBlackWidow.OneD4PlusOne",
+      "guid": "21d9f87663c653659ce89d140d6bf6d7",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SM.Tier6.OgreSpider.OneD3",
+      "guid": "03159c2852ec52afad5d1ba602d614b3",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SM.Tier7.OgreSpider.OneD4PlusOne",
+      "guid": "0b1bc3b604a45b45b9c14f83fc7f2f21",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SM.Tier8.OgreSpider.OneD4PlusOne",
+      "guid": "743fa2f980195c82b8aa282d6400fbed",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SM.Tier9.OgreSpider.OneD4PlusOne",
+      "guid": "b35e80bff70555aca40046bdae1cdc79",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SM.Tier8.GiantTarantula.OneD3",
+      "guid": "96c74600a94d5bc89cabbbaca109b8f3",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SM.Tier9.GiantTarantula.OneD4PlusOne",
+      "guid": "0dc34b3055f95287a064e18ddc1928d8",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SNA.Tier2.CrabSpider.OneD3",
+      "guid": "fb5b55408e005e2e9aefccfe41e70345",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SNA.Tier3.CrabSpider.OneD4PlusOne",
+      "guid": "70cf1491c5d45cf28758604c150372ec",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SNA.Tier4.CrabSpider.OneD4PlusOne",
+      "guid": "016c2ba1222750d69282fe92a9aabf52",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SNA.Tier5.CrabSpider.OneD4PlusOne",
+      "guid": "17c18984c66555e89ada63f5960892d9",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SNA.Tier6.CrabSpider.OneD4PlusOne",
+      "guid": "6e5a494853075a199f6e4e9b6ca42619",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SNA.Tier7.CrabSpider.OneD4PlusOne",
+      "guid": "70ddc380a7145bf1a0862ed473c62afe",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SNA.Tier8.CrabSpider.OneD4PlusOne",
+      "guid": "b4dfab04f2d557a98d0e3844bab0b5c7",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SNA.Tier9.CrabSpider.OneD4PlusOne",
+      "guid": "a284ea4f672659aab2d52132821eea0d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SNA.Tier5.GiantBlackWidow.OneD3",
+      "guid": "d9145ca9798b519fa1333789c5c281ed",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SNA.Tier6.GiantBlackWidow.OneD4PlusOne",
+      "guid": "031a859bb375588a94721fadc9fa4f47",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SNA.Tier7.GiantBlackWidow.OneD4PlusOne",
+      "guid": "689521004da25ec6b6e319dfc23ea9a5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SNA.Tier8.GiantBlackWidow.OneD4PlusOne",
+      "guid": "9c05b38161ee50c588c7cafd5addeea0",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SNA.Tier9.GiantBlackWidow.OneD4PlusOne",
+      "guid": "a6374a687ee451dbb82cd9c0e6d4749e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SNA.Tier6.OgreSpider.OneD3",
+      "guid": "61db16d7c6975856844a48de75c388e5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SNA.Tier7.OgreSpider.OneD4PlusOne",
+      "guid": "0640f8b99b2b585887266771e0aaa443",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SNA.Tier8.OgreSpider.OneD4PlusOne",
+      "guid": "3945fac2d739579994a91c3527b7d03a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SNA.Tier9.OgreSpider.OneD4PlusOne",
+      "guid": "f86a753d5e5b56bd95a654764e7f9f3f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SNA.Tier8.GiantTarantula.OneD3",
+      "guid": "822a7b05d93a5056ac077116fd658719",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.SNA.Tier9.GiantTarantula.OneD4PlusOne",
+      "guid": "e0eb89183d9f5fc0b11f5b3d7db4fd5f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Generated Spider Summoner higher-tier choice; feature-gated overlay published only for a verified Races Unleashed source row."
+    },
+    {
+      "symbol": "KMG.Summoning.Spider.DcBonus",
+      "guid": "8e9c809b3eff5771917af445288aa71e",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Races Unleashed Spider Summoner",
+      "notes": "Hidden marker carrying the Spider Summoner +2 to exact poison and web parameters."
     }
   ]
 }

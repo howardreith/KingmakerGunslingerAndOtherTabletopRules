@@ -77,9 +77,10 @@ namespace KingmakerGunslinger.DomainTests
             Sprint36CatalogIdentityCount + Sprint37CatalogIdentityCount +
             Sprint38CatalogIdentityCount + Sprint39CatalogIdentityCount + Sprint40CatalogIdentityCount +
             RepairR3PrivateIdentityCount + RepairR4PrivateIdentityCount + RepairR5PrivateIdentityCount;
+        internal const int SpiderSummonerLedgerIdentityCount = 39;
         internal const int AppendedLedgerIdentityCount =
             AppendedCatalogIdentityCount +
-            Sprint36ReservedIdentityCount;
+            Sprint36ReservedIdentityCount + SpiderSummonerLedgerIdentityCount;
         internal static int RegisteredCreatureCount => ExpandedSummoningCatalog.All.Count;
         internal static int RegisteredMonsterCreatureCount => ExpandedSummoningCatalog.All.Count(value => value.MonsterTier.HasValue);
         internal static int RegisteredNatureAllyCreatureCount => ExpandedSummoningCatalog.All.Count(value => value.NaturesAllyTier.HasValue);

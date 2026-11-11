@@ -1,4 +1,34 @@
-# Cleric alignment restrictions — complete, owner-accepted and released in v0.0.181 / STOP
+# Races Unleashed Spider Summoner integration: owner-accepted, PR #125 merged, project complete / STOP
+
+Current (2026-11-11). See `planning/races-unleashed-compatibility/STATUS.md`. The owner accepted the final
+candidate and asked for PR #125 (`codex/races-unleashed-summoning`) to be merged and the project closed. The merge
+is not a release: there is no tag, publication or permanent installation. Released v0.0.181 keeps its
+`KNOWN-ISSUES.md` limitation until a release includes this work. The ledger is about 11,504 seconds.
+
+- **Final candidate:** `0908e3415f`, package `ec6fd46e...e442`, DLL `d4649502...bfbd`. Every RU-01 to RU-20 row is
+  closed.
+- **Reload fix:** the native `Fact.TurnOn` calls `OnTurnOn` before `StartListenEvents`, so the marker's reload
+  recalculation went unanswered and stored the base DC. The marker now starts listening first.
+- **Native results on `0908e3415f`:**
+  - **Persistence:** four fresh processes on `KMG_AUTOMATION_WORKING`:
+    - prepare 10/10;
+    - module-OFF reload 18/18, checkpoint not written;
+    - enabled reload and cleanup 15/15;
+    - absence 6/6.
+    Reloaded poison DCs read Widow 16/16 and Giant Spider 14.
+  - **Cleric/interface phase:** 234/234.
+  - **No-Call-of-the-Wild web phase:** 6/6.
+- **Restoration:** exact, with every save unchanged.
+- **Separate finding for the owner:** with Call of the Wild's "metamagic for spontaneous spell conversion"
+  setting, Herald popups over metamagic sources also list Call of the Wild's base-level conversions as raw
+  native Summon Monster rows. This is not Spider Summoner behavior.
+  It is recorded in `KNOWN-ISSUES.md` as an open design choice.
+- **No further work is scheduled.** A release, tag, publication or permanent install needs a separate owner
+  instruction and its own qualification.
+
+---
+
+# (superseded) Cleric alignment restrictions — complete, owner-accepted and released in v0.0.181 / STOP
 
 Current (2026-11-09). See planning/summon-cleric-alignment/STATUS.md. PR #122 merged as `2f5703f7c9`.
 Stable v0.0.181 is Latest, from release commit `daf87b5456`, package `6733aea0...8532`, with the

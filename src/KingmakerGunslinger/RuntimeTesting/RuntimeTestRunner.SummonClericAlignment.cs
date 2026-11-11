@@ -104,7 +104,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         mismatches.Add(new JObject { ["key"] = gate.CreatureKey, ["tier"] = tier, ["policy"] = spell.Descriptors.ToString(), ["blueprintDescriptors"] = live.ToString() });
                 }
             }
-            Sprint25Check("cleric-route-census", identities && linked == 9 && unresolved.Count == 0 && verified.Count == 3 && governedContracts.Count == 1, new JObject {
+            Sprint25Check("cleric-route-census", identities && linked == 9 && unresolved.Count == 0 && verified.Count == 4 && governedContracts.Count == 0, new JObject {
                 ["clericClass"] = cleric.AssetGuid, ["spellbook"] = cleric.Spellbook?.AssetGuid, ["spellList"] = list?.AssetGuid, ["identitiesExact"] = identities, ["linkedParents"] = linked, ["links"] = links,
                 ["children"] = children, ["carryingTheNewGate"] = gated, ["verifiedInherentlyLegalContract"] = verified, ["conditionallyGovernedContract"] = governedContracts, ["unresolved"] = unresolved, ["policyVersusBlueprintDescriptorDifferences"] = mismatches,
                 ["scope"] = "Structural census of the real cleric spell list and published children." },
@@ -137,7 +137,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> ClericOpenMenu(string label, ActionBarGroupElement spellGroup, ActionBarSubGroupLevels levels, int tier, Spellbook book,
             BlueprintAbility parent, AbilityData original, Cleanup2NativeDefaultScope mode, Stopwatch watch, NativeIconScreenEvidence screens,
-            Action<AlphaMenu, ActionBarGroupSlot> result, bool closeAfter)
+            Action<AlphaMenu, ActionBarGroupSlot> result, bool closeAfter, BlueprintAbility[] expectedRows = null, Func<AbilityData, string> setAside = null)
         {
             Cleanup2MenuAdapterBoundary(mode, watch);
             if (!spellGroup.ToggleState) spellGroup.OnClick();
@@ -152,13 +152,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             AlphaMenu menu = AlphaReadPopup(source);
             try
             {
-                BlueprintAbility[] rows = menu.Data.Select(value => value?.Blueprint).ToArray();
+                // Rows a caller identifies exactly as outside this summon comparison
+                // (named per row) are recorded, never silently dropped.
+                var setAsideRows = new JArray();
+                BlueprintAbility[] rows = menu.Data.Where(value =>
+                {
+                    string reason = setAside == null || value == null ? null : setAside(value);
+                    if (reason != null) setAsideRows.Add(new JObject { ["row"] = value.Blueprint?.AssetGuid, ["name"] = value.Blueprint?.name, ["reason"] = reason,
+                        ["metamagic"] = value.MetamagicData?.MetamagicMask.ToString(), ["convertedFrom"] = value.ConvertedFrom?.Blueprint?.AssetGuid });
+                    return reason == null;
+                }).Select(value => value?.Blueprint).ToArray();
                 BlueprintAbility[] variants = parent.Variants ?? new BlueprintAbility[0];
-                BlueprintAbility[] expected = variants.Where(value => new AbilityData(value, book).IsVisible() && SummonClericAlignmentRuntime.PermitsRow(value, book.Owner, book)).ToArray();
+                BlueprintAbility[] expected = expectedRows ?? variants.Where(value => new AbilityData(value, book).IsVisible() && SummonClericAlignmentRuntime.PermitsRow(value, book.Owner, book)).ToArray();
                 bool exact = rows.SequenceEqual(expected) && rows.Distinct().Count() == rows.Length;
                 Sprint25Check("cleric-menu-" + label, exact, new JObject { ["menu"] = label, ["parent"] = parent.AssetGuid, ["published"] = variants.Length, ["expected"] = expected.Length,
-                    ["rows"] = AlphaRowsEvidence(menu), ["hiddenForThisCaster"] = new JArray(variants.Except(expected).Select(value => value.Name)) },
-                    "The real popup lists exactly this caster's permitted rows, in the published alphabetical order, with no duplicates.");
+                    ["rows"] = AlphaRowsEvidence(menu), ["hiddenForThisCaster"] = new JArray(variants.Except(expected).Select(value => value.Name)),
+                    ["expectedOverride"] = expectedRows != null, ["setAside"] = setAsideRows },
+                    "The real popup lists exactly this caster's permitted rows, in the published alphabetical order, with no duplicates" +
+                    (setAside == null ? "." : "; rows the caller identifies exactly as outside the summon comparison are recorded separately."));
                 result(menu, source);
                 if (screens != null)
                     foreach (int frame in screens.Capture("cleric-" + label, new JObject { ["menu"] = label, ["rows"] = rows.Length },
@@ -167,12 +178,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally { if (closeAfter) Cleanup2MenuAdapterHide(source, original); }
         }
 
+        // Commands stop being awaited once the phase has run this long.
+        private const double ClericPhaseWaitCeilingSeconds = 300;
+
         // A forbidden row built the way a saved shortcut holds it, through the
         // native availability and command path. No tick or outcome is supplied.
         private IEnumerable<int> ClericForbiddenAttempt(ExpandedSummoningCorrectionFixture fixture, BlueprintAbility child, Spellbook book, AbilityData prepared,
             Cleanup2NativeDefaultScope mode, Stopwatch phase, string caseKey, bool visibleExpected)
         {
-            var data = new AbilityData(child, book) { ConvertedFrom = prepared };
+            return ClericRefusedAttempt(fixture, new AbilityData(child, book) { ConvertedFrom = prepared }, prepared, mode, phase, "cleric-forbidden-attempt-" + caseKey, caseKey, visibleExpected,
+                "AbilityData built as a saved shortcut holds it; native UnitUseAbility; no manual tick or forced act",
+                "A forbidden selected choice is refused before any slot or resource is spent, and nothing is summoned.");
+        }
+
+        /// <summary>Executes exactly the given ability object through the
+        /// native command path and requires a refusal with no spend and no spawn.</summary>
+        private IEnumerable<int> ClericRefusedAttempt(ExpandedSummoningCorrectionFixture fixture, AbilityData data, AbilityData prepared,
+            Cleanup2NativeDefaultScope mode, Stopwatch phase, string checkName, string caseKey, bool visibleExpected, string route, string claim)
+        {
+            BlueprintAbility child = data.Blueprint;
             var debit = new Cleanup2SourceDebit(fixture.Caster);
             bool visible = data.IsVisible(), available = data.IsAvailableForCast;
             string reason = data.GetUnavailableReason();
@@ -184,7 +208,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExpandedSummoningRuleCapture.Clear(); _expandedSummoningPlayerPathSpawnActionCount = 0; _expandedSummoningPlayerPathCaptureActive = true;
                 command = new UnitUseAbility(data, new TargetWrapper(fixture.Caster.Position + new Vector3(2, 0, 2)));
                 fixture.Caster.Commands.Run(command);
-                while (!command.IsFinished && watch.Elapsed.TotalSeconds < 15 && phase.Elapsed.TotalSeconds < 240)
+                while (!command.IsFinished && watch.Elapsed.TotalSeconds < 15 && phase.Elapsed.TotalSeconds < ClericPhaseWaitCeilingSeconds)
                 {
                     if (!mode.Current || !Cleanup2NoNarrativeOverlay()) throw new InvalidOperationException("Forbidden attempt lost native mode ownership.");
                     Game.Instance.IsPaused = false; yield return 0;
@@ -201,14 +225,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (var unit in summons) if (!fixture.Created.Contains(unit)) fixture.Created.Add(unit);
             if (summons.Length != 0) DisposeExpandedSummoningUnits(fixture.Created, summons);
             bool refused = visible == visibleExpected && !available && result == "Fail" && debit.Unspent && _expandedSummoningPlayerPathSpawnActionCount == 0 && summons.Length == 0;
-            Sprint25Check("cleric-forbidden-attempt-" + caseKey, refused, new JObject { ["child"] = child.AssetGuid, ["name"] = child.Name, ["visible"] = visible, ["availableForCast"] = available,
+            Sprint25Check(checkName, refused, new JObject { ["child"] = child.AssetGuid, ["name"] = child.Name, ["visible"] = visible, ["availableForCast"] = available,
                 ["nativeReason"] = reason, ["commandResult"] = result, ["slotOrResourceSpent"] = !debit.Unspent, ["spawnActions"] = _expandedSummoningPlayerPathSpawnActionCount, ["summons"] = summons.Length,
-                ["debit"] = debit.Describe(prepared.ParamSpellSlot), ["route"] = "AbilityData built as a saved shortcut holds it; native UnitUseAbility; no manual tick or forced act", ["wallSeconds"] = watch.Elapsed.TotalSeconds },
-                "A forbidden selected choice is refused before any slot or resource is spent, and nothing is summoned.");
+                ["debit"] = debit.Describe(prepared.ParamSpellSlot), ["route"] = route, ["wallSeconds"] = watch.Elapsed.TotalSeconds }, claim);
         }
 
         private IEnumerable<int> ClericLegalCast(ExpandedSummoningCorrectionFixture fixture, ActionBarSlot row, AbilityData child, AbilityData prepared, Cleanup2SourceDebit debit, Action closePopup, Cleanup2NativeDefaultScope mode, Stopwatch phase,
-            string caseKey = null, string expectedBranchUnit = null)
+            string caseKey = null, string expectedBranchUnit = null, Action<UnitEntityData[]> inspect = null, Func<int, bool> countOk = null)
         {
             var hooks = HarmonyInstance.Create("kmg.cleric.legal." + _request.RunId); UnitUseAbility command = null;
             const BindingFlags statics = BindingFlags.Static | BindingFlags.NonPublic;
@@ -226,7 +249,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 command = fixture.Caster.Commands.GetCommand<UnitUseAbility>();
                 bool issued = targeted && command != null && ReferenceEquals(command.Spell, child);
                 var watch = Stopwatch.StartNew();
-                while (issued && watch.Elapsed.TotalSeconds < 25 && phase.Elapsed.TotalSeconds < 240 && (_expandedSummoningPlayerPathRuleCastCount == 0 || !fixture.Caster.Commands.Empty))
+                while (issued && watch.Elapsed.TotalSeconds < 25 && phase.Elapsed.TotalSeconds < ClericPhaseWaitCeilingSeconds && (_expandedSummoningPlayerPathRuleCastCount == 0 || !fixture.Caster.Commands.Empty))
                 {
                     if (!mode.Current || !Cleanup2NoNarrativeOverlay() || Game.Instance.IsControllerGamepad) throw new InvalidOperationException("Native cleric cast lost input ownership.");
                     Game.Instance.IsPaused = false; yield return 0;
@@ -237,13 +260,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var expected = expectedBranchUnit == null ? references : references.Where(value => value.Unit == expectedBranchUnit).ToArray();
                 bool exact = issued && command.IsFinished && command.Result.ToString() == "Success" && fixture.Caster.Commands.Empty && Cleanup2DruidCastRules.Count == 1 && Cleanup2DruidCastRules[0].Success &&
                     ReferenceEquals(Cleanup2DruidCastRules[0].Spell, child) && _expandedSummoningPlayerPathRuleCastCount == 1 && _expandedSummoningPlayerPathSpawnActionCount == 1 &&
-                    expected.Length == 1 && units.Length == 1 && units[0].Blueprint.AssetGuid == expected[0].Unit && debit.ExactlyOne(prepared.ParamSpellSlot) &&
+                    expected.Length == 1 && (countOk != null ? countOk(units.Length) : units.Length == 1) && units.All(value => value.Blueprint.AssetGuid == expected[0].Unit) && debit.ExactlyOne(prepared.ParamSpellSlot) &&
                     ReferenceEquals(child.ConvertedFrom, prepared) && ReferenceEquals(child.Spellbook, prepared.Spellbook);
                 Sprint25Check("cleric-legal-cast" + (caseKey == null ? "" : "-" + caseKey), exact, new JObject { ["selected"] = selected, ["child"] = child.Blueprint.AssetGuid, ["name"] = child.Name, ["source"] = prepared.Blueprint.AssetGuid,
                     ["commandResult"] = command == null ? null : command.Result.ToString(), ["castRules"] = Cleanup2DruidCastRules.Count, ["castCount"] = _expandedSummoningPlayerPathRuleCastCount,
                     ["spawnActions"] = _expandedSummoningPlayerPathSpawnActionCount, ["units"] = new JArray(units.Select(value => value.Blueprint.AssetGuid)), ["expectedUnit"] = expected.FirstOrDefault()?.Unit, ["possibleSpawnReferences"] = new JArray(references.Select(value => value.Unit)), ["actualSpawnedInstances"] = units.Length, ["actualSpawnedCreature"] = units.Length == 1 ? units[0].Blueprint.name : null, ["quantity"] = units.Length,
                     ["debit"] = debit.Describe(prepared.ParamSpellSlot), ["manualTicks"] = 0, ["forcedAct"] = false, ["wallSeconds"] = watch.Elapsed.TotalSeconds },
                     "Selecting a permitted row from the cleric's own menu casts that ability, summons its creature, and spends only its prepared slot.");
+                if (inspect != null && units.Length != 0) inspect(units);
                 if (units.Length != 0) DisposeExpandedSummoningUnits(fixture.Created, units);
             }
             finally
@@ -301,7 +325,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.Creature.Key == key && value.ParentTier == tier && value.Multiplicity == SummonMultiplicity.One);
             var party = player.Party.ToArray(); var selected = ui.SelectionManagerPC.SelectedUnits.ToArray(); var selectedGroup = group.GetCurrentCharacter();
             var groups = bar.Group.GroupElements.ToArray(); bool[] toggles = groups.Select(value => value.ToggleState).ToArray();
-            object levelController = null; bool added = false; NativeIconScreenEvidence screens = null; Cleanup2NativeDefaultScope mode = null;
+            object levelController = null; bool added = false; NativeIconScreenEvidence screens = null; Cleanup2NativeDefaultScope mode = null; SpiderInterfaceCasters spiderCasters = null;
             Spellbook book = null; AbilityData tierThree = null, tierFive = null, tierFiveOrdinary = null, tierFiveSecond = null, tierSevenOrdinary = null, tierNine = null; Feature deityFact = null, heraldFact = null, spiderFact = null;
             var watch = Stopwatch.StartNew();
             Action<BlueprintFeature> setDeity = deity => { if (deityFact != null) fixture.Caster.Descriptor.RemoveFact(deityFact); deityFact = fixture.Caster.Descriptor.AddFact(deity) as Feature; };
@@ -319,6 +343,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var ordinary = plainSpells(5)[0]; var ordinarySecond = plainSpells(5)[1]; var ordinarySeventh = plainSpells(7)[0];
                 if (book != null)
                 {
+                    foreach (int spiderTier in new[] { 1, 2, 4, 7 }) PrepareExpandedSummoningPlayerPathSpell(book, smParent(spiderTier), smParent(spiderTier), spiderTier);
                     PrepareExpandedSummoningPlayerPathSpell(book, smParent(3), smParent(3), 3);
                     PrepareExpandedSummoningPlayerPathSpell(book, smParent(5), smParent(5), 5);
                     PrepareExpandedSummoningPlayerPathSpell(book, ordinary, ordinary, 5);
@@ -345,6 +370,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (problems.Count != 0) throw new InvalidOperationException("Cleric fixture prerequisites failed: " + string.Join(",", problems.ToArray()));
                 ClericCensus(cleric);
                 if (!player.Party.Contains(fixture.Caster)) { player.PartyCharacters.Add(fixture.Caster); added = true; player.InvalidateCharacterLists(); player.UpdateCharacterLists(); }
+                // The spider interface casters join the party before the native Default scope is owned.
+                try { spiderCasters = SpiderInterfaceSetup(fixture); }
+                catch (Exception error)
+                {
+                    Sprint25Check("spider-interface-setup", false, new JObject { ["error"] = error.ToString() },
+                        "The natural Druids and the natural Herald Caller were levelled and joined the party.");
+                }
                 mode = Cleanup2EnterNativeDefault(fixture, "summon-cleric-alignment");
                 screens = new NativeIconScreenEvidence(_request);
                 ui.SelectionManagerPC.SelectUnit(fixture.Caster.View, true, true, false); group.SelectUnit(fixture.Caster);
@@ -445,7 +477,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ClericNonClericControl(iceDevil, spiderRow, player.MainCharacter.Value, asmodeus, spiderFeature);
                 SummonForeignRowResult ogreContract = spiderRow == null ? null : SummonForeignRowRuntime.Resolve(spiderRow);
                 SummonForeignRowResult tarantulaContract = tarantulaRow == null ? null : SummonForeignRowRuntime.Resolve(tarantulaRow);
-                bool foreignReady = spiderFeature != null && ogreContract?.Outcome == SummonForeignContractOutcome.ConditionallyGoverned && tarantulaContract?.Outcome == SummonForeignContractOutcome.VerifiedInherentlyLegal &&
+                bool foreignReady = spiderFeature != null && ogreContract?.Outcome == SummonForeignContractOutcome.VerifiedInherentlyLegal && tarantulaContract?.Outcome == SummonForeignContractOutcome.VerifiedInherentlyLegal &&
                     ClericDeityAdmits(desna, Alignment.ChaoticGood);
                 bool hiddenBeforeFeature = spiderRow != null && !new AbilityData(spiderRow, book).IsVisible();
                 Sprint25Check("cleric-foreign-prerequisites", foreignReady, new JObject { ["feature"] = spiderFeature?.AssetGuid, ["ogreOutcome"] = ogreContract?.Outcome.ToString(), ["ogreReason"] = ogreContract?.Reason,
@@ -465,15 +497,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in R6Cell("cleric-foreign-lg-herald", () => ClericOpenMenu("spider-lg-erastil-herald-tier5", spellGroup, levels, 5, book, smParent(5), tierFiveSecond, mode, watch, screens, (menu, source) => lgHerald = menu, true))) yield return frame;
                     foreach (int frame in R6Cell("cleric-foreign-lg-herald-seven", () => ClericOpenMenu("spider-lg-erastil-herald-tier7", spellGroup, levels, 7, book, smParent(7), tierSevenOrdinary, mode, watch, screens, (menu, source) => lgHeraldSeven = menu, true))) yield return frame;
                     Func<AlphaMenu, BlueprintAbility, bool> holds = (menu, row) => menu != null && menu.Data.Any(value => ReferenceEquals(value.Blueprint, row));
-                    Sprint25Check("cleric-foreign-forbidden-row-absent", lgCanonical != null && lgHerald != null && !holds(lgCanonical, spiderRow) && !holds(lgHerald, spiderRow),
-                        new JObject { ["canonicalRows"] = lgCanonical?.Rows.Length ?? 0, ["heraldRows"] = lgHerald?.Rows.Length ?? 0, ["caster"] = "LawfulGood/Erastil", ["branchSpell"] = "Bralani: Good, Chaos" },
-                        "A lawful good cleric's popup and Herald conversion omit the row whose executing branch is forbidden.");
+                    Sprint25Check("cleric-foreign-repaired-ogre-offered", lgCanonical != null && lgHerald != null && holds(lgCanonical, spiderRow) && holds(lgHerald, spiderRow),
+                        new JObject { ["canonicalRows"] = lgCanonical?.Rows.Length ?? 0, ["heraldRows"] = lgHerald?.Rows.Length ?? 0, ["caster"] = "LawfulGood/Erastil", ["classification"] = "caster-matched spider, not the former Bralani" },
+                        "The repaired Ogre row is a caster-matched spider and stays offered to a lawful good cleric in both routes.");
                     AbilityData survivor = lgHeraldSeven?.Data.FirstOrDefault(value => ReferenceEquals(value.Blueprint, tarantulaRow));
                     Sprint25Check("cleric-foreign-inherent-row-survives-herald", survivor != null && ReferenceEquals(survivor.ConvertedFrom?.ConvertedFrom, tierSevenOrdinary) && ReferenceEquals(survivor.Spellbook, book),
                         new JObject { ["rows"] = lgHeraldSeven?.Rows.Length ?? 0, ["row"] = tarantulaRow.AssetGuid, ["sourceSlot"] = survivor != null && survivor.ConvertedFrom != null },
                         "A verified inherently legal third-party row survives the Herald conversion, keeping its original prepared source.");
-                    foreach (int frame in R6Cell("cleric-foreign-forbidden", () => ClericForbiddenAttempt(fixture, spiderRow, book, tierFive, mode, watch, "foreign-ogre-nonevil-branch", true))) yield return frame;
-
                     fixture.Caster.Descriptor.Alignment.Set(Alignment.ChaoticGood);
                     setDeity(desna);
                     foreach (int frame in R6Cell("cleric-foreign-cg-herald", () => ClericOpenMenu("spider-cg-desna-herald-tier5", spellGroup, levels, 5, book, smParent(5), tierFiveSecond, mode, watch, screens, (menu, source) => cgHerald = menu, true))) yield return frame;
@@ -481,6 +511,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint25Check("cleric-foreign-permitted-row-survives-herald", cgChild != null && ReferenceEquals(cgChild.ConvertedFrom?.ConvertedFrom, tierFiveSecond) && ReferenceEquals(cgChild.Spellbook, book) && DruidSummonConversionVariantPatch.For(cgChild) != null,
                         new JObject { ["rows"] = cgHerald?.Rows.Length ?? 0, ["caster"] = "ChaoticGood/Desna", ["adapter"] = DruidSummonConversionVariantPatch.Outcome },
                         "A permitted third-party row appears in the Herald conversion from an ordinary prepared spell, on its original source.");
+                    // Herald spider casts: the repaired Ogre at its base tier and the Crab 1d4+1 quantity row, each
+                    // from the real Herald popup over the unrelated prepared spell, with the native debit observer.
+                    SpiderPlacement heraldCrab = SpiderSummonerCatalog.Placements(SummonFamily.Monster).Single(value => value.Species.Key == "giant-crab-spider" && value.Tier == 5);
+                    foreach (var spiderCase in new[] { new { Key = "herald-spider-ogre", Row = spiderRow, Count = (Func<int, bool>)null },
+                        new { Key = "herald-spider-crab-d4", Row = BlueprintBootstrap.Library.BlueprintsByAssetId.Values.OfType<BlueprintAbility>().FirstOrDefault(value => SpiderSummonerIntegration.PlacementOf(value)?.Symbol == heraldCrab.Symbol),
+                            Count = (Func<int, bool>)(count => count >= 2 && count <= 5) } })
+                    {
+                        var scopedSpider = spiderCase;
+                        AlphaMenu spiderMenu = null; ActionBarGroupSlot spiderSource = null;
+                        foreach (int frame in R6Cell("cleric-" + scopedSpider.Key + "-popup", () => ClericOpenMenu(scopedSpider.Key + "-tier5", spellGroup, levels, 5, book, smParent(5), tierFiveSecond, mode, watch, null, (menu, source) => { spiderMenu = menu; spiderSource = source; }, false))) yield return frame;
+                        int spiderIndex = spiderMenu == null || scopedSpider.Row == null ? -1 : Array.FindIndex(spiderMenu.Data, value => ReferenceEquals(value.Blueprint, scopedSpider.Row));
+                        if (spiderIndex >= 0 && spiderSource != null)
+                        {
+                            var spiderDebit = new Cleanup2SourceDebit(fixture.Caster);
+                            ActionBarGroupSlot closeSpider = spiderSource; JArray spiderRules = null;
+                            foreach (int frame in SpiderSummonRuleScope(() => R6Cell("cleric-" + scopedSpider.Key, () => Cleanup2MenuAdapterDruidCast(fixture, spiderMenu.Data[spiderIndex], tierFiveSecond, smParent(5), spiderMenu.Rows[spiderIndex], spiderDebit, mode, watch,
+                                () => Cleanup2MenuAdapterHide(closeSpider, tierFiveSecond), scopedSpider.Key, scopedSpider.Count)), value => spiderRules = value)) yield return frame;
+                            string durationProblem = SpiderDurationProblem(spiderRules, book.CasterLevel, false);
+                            Sprint25Check("cleric-" + scopedSpider.Key + "-caster-level-duration", durationProblem == null && book.CasterLevel == 20,
+                                new JObject { ["rules"] = spiderRules, ["problem"] = durationProblem, ["bookCasterLevel"] = book.CasterLevel },
+                                "Every creature of this Herald spider cast has the summon rule's 20 rounds at the cleric book's caster level 20, from an unextended source.");
+                        }
+                        else Sprint25Check("cleric-" + scopedSpider.Key + "-row-present", false, new JObject { ["rows"] = spiderMenu?.Rows.Length ?? 0, ["row"] = scopedSpider.Row?.AssetGuid }, "The spider row is offered in the Herald popup.");
+                        if (spiderSource != null) Cleanup2MenuAdapterHide(spiderSource, tierFiveSecond);
+                        book.Rest();
+                    }
                     foreach (int frame in R6Cell("cleric-foreign-cg-canonical", () => ClericOpenMenu("spider-cg-desna-canonical-tier5", spellGroup, levels, 5, book, smParent(5), tierFive, mode, watch, screens, (menu, source) => { cgCanonical = menu; cgSource = source; }, false))) yield return frame;
                     int ogreIndex = cgCanonical == null ? -1 : Array.FindIndex(cgCanonical.Data, value => ReferenceEquals(value.Blueprint, spiderRow));
                     if (ogreIndex >= 0 && cgSource != null)
@@ -488,16 +544,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var foreignDebit = new Cleanup2SourceDebit(fixture.Caster);
                         ActionBarGroupSlot closeCg = cgSource;
                         foreach (int frame in R6Cell("cleric-foreign-legal", () => ClericLegalCast(fixture, cgCanonical.Rows[ogreIndex], cgCanonical.Data[ogreIndex], tierFive, foreignDebit, () => Cleanup2MenuAdapterHide(closeCg, tierFive), mode, watch,
-                            "foreign-ogre-nonevil-branch", SummonForeignRowClassifier.BralaniUnit))) yield return frame;
+                            "foreign-repaired-ogre", SpiderSummonerCatalog.Find("ogre-spider").UnitGuid))) yield return frame;
                     }
                     else Sprint25Check("cleric-foreign-legal-row-present", false, new JObject { ["rows"] = cgCanonical?.Rows.Length ?? 0 }, "The permitted third-party row is offered in the canonical popup.");
                     if (cgSource != null) Cleanup2MenuAdapterHide(cgSource, tierFive);
                     fixture.Caster.Descriptor.RemoveFact(heraldFact); heraldFact = null;
+                    Func<int, AbilityData> preparedParent = level => book.GetMemorizedSpellSlots(level).Where(value => value.Spell != null && ReferenceEquals(value.Spell.Blueprint, smParent(level))).Select(value => value.Spell).FirstOrDefault();
+                    foreach (int frame in R6Cell("spider-summoner", () => SpiderSummonerCells(fixture, book, spiderFeature, mode, watch, spellGroup, levels, smParent, preparedParent, setDeity, erastil, asmodeus))) yield return frame;
+                    if (spiderCasters != null)
+                        foreach (int frame in R6Cell("spider-interface", () => SpiderInterfaceCells(fixture, spiderCasters, book, herald, mode, screens, spellGroup, levels, smParent, setDeity, desna))) yield return frame;
+                    else Sprint25Check("spider-interface-casters", false, new JObject(), "The spider interface casters were created.");
                     fixture.Caster.Descriptor.RemoveFact(spiderFact); spiderFact = null;
                 }
-                Sprint25Check("cleric-surface-limits", true, new JObject { ["openedInGame"] = "Prepared Summon Monster III, V and IX popups and Herald conversion popups on a levelled cleric, including with the exact Spider Summoner feature.",
+                Sprint25Check("cleric-surface-limits", true, new JObject { ["openedInGame"] = "Prepared Summon Monster III, V and IX popups and Herald conversion popups on a levelled cleric, including with the exact Spider Summoner feature; " +
+                        "Herald popups at I and IV; an Extend Spell Summon Monster V popup; a natural cleric/wizard Herald popup; Summon Nature's Ally V and Druid conversion popups for a Druid with and without the feat.",
                     ["execution"] = "Legal casts and forbidden commands, unassisted, under the fixture's induced state.",
-                    ["notObserved"] = "Console navigation, saved-hotbar reload, cold load, autonomous AI, a multiclass book popup, the evil branch of the third-party row, and a module-disabled profile.", ["wallSeconds"] = watch.Elapsed.TotalSeconds },
+                    ["notObserved"] = "Console navigation and autonomous AI. Saved shortcuts, cold load and the module-disabled reload belong to the spider-summoner Working-save scope.", ["wallSeconds"] = watch.Elapsed.TotalSeconds },
                     "Observed and unobserved surfaces are reported separately.");
             }
             finally
@@ -507,6 +569,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (levelController != null) restore("level-controller", () => levelController.GetType().GetMethod("Cancel").Invoke(levelController, null));
                 restore("herald-fact", () => { if (heraldFact != null) fixture.Caster.Descriptor.RemoveFact(heraldFact); });
                 restore("spider-fact", () => { if (spiderFact != null) fixture.Caster.Descriptor.RemoveFact(spiderFact); });
+                restore("spider-interface", () => SpiderInterfaceTeardown(fixture, spiderCasters));
                 restore("party", () => { if (added) { player.PartyCharacters.Remove(fixture.Caster); player.InvalidateCharacterLists(); player.UpdateCharacterLists(); } });
                 restore("selection", () => { group.SelectUnit(selectedGroup); ui.SelectionManagerPC.MultiSelect(selected.Where(value => value?.View != null).Select(value => value.View).ToArray(), false); });
                 for (int index = 0; index < groups.Length; index++) { int scoped = index; restore("toggle-" + scoped, () => groups[scoped].Toggle(toggles[scoped], true)); }

@@ -99,6 +99,8 @@ namespace KingmakerGunslinger.Summoning
             if (GovernedNativeRows().TryGetValue(row, out native)) return DecideNative(caster, native);
             SummonForeignRowResult foreign = SummonForeignRowRuntime.Resolve(row);
             if (foreign == null || foreign.Outcome == SummonForeignContractOutcome.Unresolved) return null;
+            // The established cleric restriction is the Summon Monster rule.
+            if (foreign.Contract.Family != SummonFamily.Monster) return null;
             SummonClericFacts facts = Read(caster);
             if (!SummonClericAlignmentPolicy.IsCleric(facts)) return SummonClericDecision.NotCleric;
             return SummonClericAlignmentPolicy.Decide(facts, foreign.AlignmentFor(SummonClericAlignmentPolicy.AxesOf(facts.AlignmentValue)));
@@ -157,6 +159,8 @@ namespace KingmakerGunslinger.Summoning
             new SummonGovernedRowCache<BlueprintAbility, SummonForeignRowResult>();
 
         /// <summary>Null for any row that is not a known third-party identity.</summary>
+        internal static void InvalidateCache() { Results.Clear(); }
+
         internal static SummonForeignRowResult Resolve(BlueprintAbility row)
         {
             if (row == null || !SummonForeignRowClassifier.IsKnownIdentity(row.AssetGuid)) return null;
@@ -177,15 +181,32 @@ namespace KingmakerGunslinger.Summoning
                 RequiredFacts = components.OfType<AbilityCasterHasFacts>().SelectMany(value => value.Facts ?? new BlueprintUnitFact[0])
                     .Select(value => value == null ? "null" : value.AssetGuid).ToArray(),
                 VisibilityFacts = components.OfType<AbilityShowIfCasterHasFact>().Select(value => value.UnitFact == null ? "null" : value.UnitFact.AssetGuid).ToArray(),
-                LiveDescriptors = LiveAxes(row), Graph = SummonSignatureReader.Read(row) };
+                LiveDescriptors = LiveAxes(row), Graph = SummonSignatureReader.Read(row),
+                VariantsComponents = components.OfType<AbilityVariants>().Select(value => value == null ? "null" :
+                    string.Equals(value.name, ExpandedSummoningPublisher.PublishedVariantsComponentName, StringComparison.Ordinal) ?
+                        SummonForeignRowClassifier.InheritedPublishedMenu : "foreign:" + value.name).ToArray(),
+                NativeApplications = DonorApplications(SummonForeignRowClassifier.DonorOf(row.AssetGuid)) };
+        }
+
+        /// <summary>The loaded native donor's buff applications, per spawn in
+        /// walk order, or null when the donor is missing.</summary>
+        private static IReadOnlyList<IReadOnlyList<string>> DonorApplications(string donor)
+        {
+            BlueprintScriptableObject found;
+            LibraryScriptableObject library = BlueprintBootstrap.Library;
+            if (donor == null || library == null || !library.BlueprintsByAssetId.TryGetValue(donor, out found) || !(found is BlueprintAbility)) return null;
+            return SummonSignatureReader.Read((BlueprintAbility)found).Spawns()
+                .Select(value => (IReadOnlyList<string>)value.AfterSpawnApplications.ToArray()).ToArray();
         }
 
         private static int PublishedTier(BlueprintAbility row)
         {
+            SummonForeignRowContract contract = SummonForeignRowClassifier.All.FirstOrDefault(value => value.Identity == row.AssetGuid);
+            int offset = contract != null && contract.Family == SummonFamily.NaturesAlly ? 9 : 0;
             for (int tier = 1; tier <= 9; tier++)
             {
                 BlueprintAbility parent = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
-                    ExpandedSummoningPublisher.CanonicalParentGuids[tier - 1], "published Summon Monster parent");
+                    ExpandedSummoningPublisher.CanonicalParentGuids[offset + tier - 1], "published summon parent");
                 if ((parent.Variants ?? new BlueprintAbility[0]).Any(value => ReferenceEquals(value, row))) return tier;
             }
             return 0;

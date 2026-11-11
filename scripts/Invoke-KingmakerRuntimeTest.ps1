@@ -126,13 +126,20 @@ if ($scenarioMetadata.RequiresSaveName) {
             'working-save-expanded-summoning-verify-absent') -and
             $Parameters.ContainsKey('persistenceScope')) {
         $suggestionTransition=Test-KmgSprint32SuggestionTransition -TargetedPersistence $true -Parameters $Parameters
-        $targetedParameterCount=if($suggestionTransition){2}else{1}
+        $spiderCheckpoint=$Parameters.ContainsKey('spiderCheckpoint')
+        $targetedParameterCount=if($suggestionTransition -or $spiderCheckpoint){2}else{1}
         if ($Parameters.Count -ne $targetedParameterCount -or $Parameters.persistenceScope -isnot [string] -or
-            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon', 'giant-humanoids', 'giant-humanoids-ii', 'outsider-celestial', 'fey-celestial', 'shadow-outsiders', 'infernal-outsiders', 'infernal-reach-ii', 'infernal-demons', 'vrock', 'glabrezu', 'nalfeshnee', 'ice-devil') -or -not $ExitAfterCompletion) {
-            throw 'The targeted persistence trio permits only its exact named persistence scopes, including infernal-outsiders, infernal-reach-ii, infernal-demons, vrock, glabrezu or nalfeshnee, with automatic exit.'
+            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon', 'giant-humanoids', 'giant-humanoids-ii', 'outsider-celestial', 'fey-celestial', 'shadow-outsiders', 'infernal-outsiders', 'infernal-reach-ii', 'infernal-demons', 'vrock', 'glabrezu', 'nalfeshnee', 'ice-devil', 'spider-summoner') -or -not $ExitAfterCompletion) {
+            throw 'The targeted persistence trio permits only its exact named persistence scopes, including infernal-outsiders, infernal-reach-ii, infernal-demons, vrock, glabrezu, nalfeshnee or spider-summoner, with automatic exit.'
+        }
+        if ($spiderCheckpoint -and ($Parameters.persistenceScope -cne 'spider-summoner' -or
+            $Scenario -cne 'working-save-expanded-summoning-verify-cleanup' -or
+            $Parameters.spiderCheckpoint -isnot [string] -or $Parameters.spiderCheckpoint -cne 'preserve')) {
+            throw 'spiderCheckpoint=preserve is admitted only for the spider-summoner verify-cleanup stage.'
         }
         $targetedParameters = @{ saveName = $SaveName; persistenceScope = $Parameters.persistenceScope }
         if($suggestionTransition){$targetedParameters.suggestionTransition=$Parameters.suggestionTransition}
+        if($spiderCheckpoint){$targetedParameters.spiderCheckpoint=$Parameters.spiderCheckpoint}
         $Parameters=$targetedParameters
     } elseif ($Scenario -ceq 'disposable-expanded-summoning-player-path' -and
             $Parameters.ContainsKey('playerPathScope')) {
