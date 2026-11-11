@@ -148,6 +148,16 @@
   attack AI action, whose targeting favors lightly armored or sundered foes; fresh
   summons use the ordinary-attack brain. Autonomous decisions with the retained action
   were not observed, and no actual old save was cold-loaded.
+- Oleg's cold iron branched spears (withdrawn in v0.0.183). Shared vendor stock
+  persists only item types and counts. If the stocked cold iron spear was bought and a
+  cold iron spear was later sold back to Oleg, the engine's update removes that sold
+  copy from his stock. Player inventory is never touched. Not observed natively.
+- Thornstep (retired from acquisition in v0.0.183). In its former Riverine Rise
+  container, a copy the party never held (persisted item time still zero) is removed;
+  a claimed-and-returned copy, deposits and the container's other loot are kept. A
+  Thornstep the engine added to a container generated before the placement existed is
+  also never held, so it is removed too. Offline policy tests and a model of the native
+  diff only; not observed natively (`planning/gunslinger-playtest-repairs/STATUS.md`).
 - With Call of the Wild's "metamagic for spontaneous spell conversion" setting
   enabled, a Herald Caller conversion popup over a metamagic source also lists
   Call of the Wild's own base-level conversions. They appear as raw native
