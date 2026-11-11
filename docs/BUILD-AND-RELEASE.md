@@ -1,5 +1,36 @@
 # Build, package, and publish
 
+## 0.0.182 publication authorization
+
+On 2026-11-11 Howie wrote: "Accepted. Please merge, push, and cut a new release with a new version
+number." PR #126 was merged as `22eea359b6`. No channel was named, so this follows v0.0.181 as the
+next stable patch, v0.0.182, from master after PRs #125 and #126.
+
+- **Reviewed product.** Master `22eea359b6`. `tools/validate_summon_menu_order_release182.py` pins it:
+  - only the three AssemblyInfo version attributes and the Info and props version values may change;
+  - all 7,894 released identities stay exact and in order, and exactly 39 `KMG.Summoning.Spider.*`
+    identities are appended;
+  - the creature catalog is unchanged, with only the owner-withdrawn Stirge withheld (1,208 public
+    choices);
+  - one static release record is added.
+- **Native evidence.** Development-candidate results stay with their own artifacts; none was
+  re-executed on the version-stamped build:
+  - Spider Summoner: `0908e3415fa4`, every RU row closed;
+  - menu order and Sunder: `3f170d4a9cea`, 44 PASS / 1 FAIL (census observer defect; reader-only
+    re-evaluation PASS);
+  - `c6e861a98a93`: initialization FAIL.
+
+  The Bebelith Dismantle Armor withdrawal and the corrected census observer have focused and compile
+  evidence only.
+- **Publication path.** Use the ordinary exact-reference publisher from clean, pushed master with
+  `docs/RELEASE-NOTES-0.0.182.md`. It runs the complete gate and two deterministic builds, then
+  publishes. Planning budget: 30 minutes, excluding necessary safe completion.
+
+```powershell
+.\scripts\Publish-Release.ps1 -ReferenceBundleDir '<private build references>' `
+  -ReleaseNotesPath 'docs\RELEASE-NOTES-0.0.182.md' -Publish -ConfirmReleaseReady
+```
+
 ## 0.0.181 publication authorization
 
 **Published (completed).** Stable

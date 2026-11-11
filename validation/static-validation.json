@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.181-cleric-summon-alignment",
+  "milestone": "0.0.182-summon-menu-order-spider-summoner",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.181",
+  "version": "0.0.182",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2897,5 +2897,18 @@
     "nativeEvidence": "Native results stay attributed to their own development candidates; none was re-executed on this version-stamped build. Latest candidate efc75b8cc0b08da3220d9d1151860899d94adb99 remains FAIL, 70 PASS / 1 FAIL; its unresolved third-party census findings are an explicit owner-accepted exception, not a passing result.",
     "deferredCoverage": "Races Unleashed compatibility is deferred to planning/races-unleashed-compatibility/MISSION.md. Not observed: naturally levelled Herald archetype, saved-hotbar reload, cold load, console navigation, autonomous AI, multiclass popup, evil and true neutral cleric menus, a Redcap-branch cast, module-disabled native profile.",
     "ownerPublicationAuthority": "Howie Reith, 2026-11-09: 'Merge PR #122 and cut a release'. Published as the next stable patch, as v0.0.180 was."
+  },
+  "summonMenuOrderRelease182": {
+    "releaseVersion": "0.0.182",
+    "releaseInformationalVersion": "0.0.182-summon-menu-order-spider-summoner",
+    "baseStableVersion": "0.0.181",
+    "reviewedProductSource": "22eea359b677b481801a956767299eb9ce1f3255",
+    "appendedIdentities": 39,
+    "releasedIdentityChanges": 0,
+    "visibleChoiceTotal": 1208,
+    "change": "Races Unleashed Spider Summoner integration (repaired original rows, 38 generated higher-tier placements, the +2 poison/web DC benefit); quantity-first summon menus; no Sunder on supported summons (Storm Giant, Greater and Elder Earth Elemental) with save fixers; Azata, Lillend label; the Bebelith's Dismantle Armor withdrawn and its legacy penalty inert.",
+    "nativeEvidence": "Native results stay attributed to their own development candidates; none was re-executed on this version-stamped build. Spider Summoner: candidate 0908e3415fa4, every RU-01..RU-20 row closed. Menu order and Sunder: candidate 3f170d4a9cea remains 44 PASS / 1 FAIL (the sunder-census FAIL is an observer defect; a separate reader-only re-evaluation passes with 0 carriers); candidate c6e861a98a93 remains an initialization FAIL.",
+    "deferredCoverage": "Not observed natively: the Bebelith Dismantle Armor withdrawal and inert legacy penalty, the corrected census observer, an old-save cold load, Herald and alternate-source menus as opened popups, the Elder Earth Elemental live, autonomous AI decisions with a saved elemental's retained attack action. Call of the Wild metamagic-conversion rows remain an open design choice.",
+    "ownerPublicationAuthority": "Howie Reith, 2026-11-11: 'Accepted. Please merge, push, and cut a new release with a new version number.' Published as the next stable patch, as v0.0.181 was."
   }
 }

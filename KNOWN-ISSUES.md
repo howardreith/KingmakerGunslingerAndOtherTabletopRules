@@ -135,10 +135,19 @@
   not offered in a Herald Caller conversion. The latest native result for this
   feature remains FAIL, 70 PASS / 1 FAIL; those unresolved census findings are an
   explicit owner-accepted exception, not a passing result. This describes the released
-  v0.0.181. The Races Unleashed Spider Summoner integration (PR #125) repairs these rows.
-  It was owner-accepted and merged on 2026-11-11 but is not yet in a release, so the
-  limitation stays in v0.0.181 until a release includes it. Its evidence is in
+  v0.0.181 only. **Resolved in v0.0.182** by the Races Unleashed Spider Summoner
+  integration (PR #125): the four spiders appear as themselves, are classified by the
+  cleric rule and are offered in Herald Caller conversions. Its evidence is in
   `planning/races-unleashed-compatibility/STATUS.md`.
+- Bebelith Dismantle Armor (withdrawn in v0.0.182). A "Dismantled Armor" effect already
+  on a character in an older save remains as a retired marker that no longer reduces
+  armor class; it is not removed from the save. The withdrawal and the inert marker have
+  focused-test and compilation evidence only, not a native observation.
+- Saved Greater/Elder Earth Elementals (v0.0.182). A summon saved before v0.0.182 loses
+  its Sunder feat, action, toggle and AI action on load but keeps its former ordinary
+  attack AI action, whose targeting favors lightly armored or sundered foes; fresh
+  summons use the ordinary-attack brain. Autonomous decisions with the retained action
+  were not observed, and no actual old save was cold-loaded.
 - With Call of the Wild's "metamagic for spontaneous spell conversion" setting
   enabled, a Herald Caller conversion popup over a metamagic source also lists
   Call of the Wild's own base-level conversions. They appear as raw native
