@@ -1,5 +1,14 @@
 # Gunslinger playtest repairs (2026-11-11): status
 
+**Released (2026-11-11).** The owner accepted the corrected review: "This is acceptable. Please merge this and
+cut a new release." PR #129 was merged as `57d8640323`, and the work shipped in stable v0.0.183 (release commit
+`6365ddb261`, package `018b41f12b83091e603ef59b3816c687abaa4ec0371a78d157babaf64d8c6288`). Release PR #130 also
+corrected one stale test expectation (`feature-modules.runtime-matrix`, spear loot rows 6 → 5) that the focused
+filter below missed. The native rows in the acceptance matrix stay NOT RUN; nothing was re-executed on the
+release build. The installed mod is not permanently changed.
+
+The record below is the pre-release checkpoint.
+
 **Review correction applied (2026-11-11); awaiting re-review.** The review of `5e7ffa13fd` found one P2:
 Thornstep's retirement could delete a previously claimed copy that had been returned to its former container.
 It is corrected in `e04609c2f1` (see "Existing-save handling"). The status stays a reviewable development

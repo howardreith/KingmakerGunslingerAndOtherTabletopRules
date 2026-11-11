@@ -1,4 +1,17 @@
-# Gunslinger playtest repairs: review P2 corrected at e04609c2f1, awaiting re-review / STOP
+# Gunslinger playtest repairs: merged and released in v0.0.183 / STOP
+
+Current (2026-11-11). See `planning/gunslinger-playtest-repairs/STATUS.md`. The owner accepted the corrected
+review. PR #129 was merged as `57d8640323` and release PR #130 as `6365ddb261`. Stable v0.0.183 is Latest, from
+release commit `6365ddb261`, package `018b41f1...6288`. The installed mod still reads 0.0.140.
+
+- No native acceptance row was observed; the six repairs have focused, compile and read-only Harmony-target
+  evidence only. The Oleg sold-copy and engine-added Thornstep limits are in `KNOWN-ISSUES.md`.
+- Product code, observers, tests, blueprints and assets are frozen at `6365ddb261`.
+- No further build, native run, merge, release or permanent install follows without explicit owner authorization.
+
+---
+
+# (superseded) Gunslinger playtest repairs: review P2 corrected at e04609c2f1, awaiting re-review / STOP
 
 Current (2026-11-11). See `planning/gunslinger-playtest-repairs/STATUS.md`. Draft PR #129.
 - **P2 correction.** The review found Thornstep's retirement could delete a previously claimed copy returned to
