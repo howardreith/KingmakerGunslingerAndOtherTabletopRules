@@ -1,4 +1,18 @@
-# Summon menu order, summon Sunder, Lillend label, Bebelith Dismantle Armor: source-review checkpoint at ec33e2b355 / STOP
+# Summon menu order, summon Sunder, Lillend label, Bebelith Dismantle Armor: merged and released in v0.0.182 / STOP
+
+Current (2026-11-11). See `planning/summon-menu-order-and-sunder/STATUS.md`. PR #126 merged as `22eea359b6`
+and release PR #127 as `c19d12e095`. Stable v0.0.182 is Latest, from release commit `c19d12e095`, package
+`84424d74...771b`. It also ships the Races Unleashed Spider Summoner integration (PR #125). The installed mod
+still reads 0.0.140.
+
+- Native results stay with their development candidates; none was re-executed on the release build. The
+  Bebelith withdrawal and the corrected census observer remain focused/compile only (see `KNOWN-ISSUES.md`).
+- Product code, observers, tests, blueprints and assets are frozen at `22eea359b6`.
+- No further build, native run, merge, release or permanent install follows without explicit owner authorization.
+
+---
+
+# (superseded) Summon menu order, summon Sunder, Lillend label, Bebelith Dismantle Armor: source-review checkpoint at ec33e2b355 / STOP
 
 Current (2026-11-11). See `planning/summon-menu-order-and-sunder/STATUS.md`. Draft PR #126; nothing merged,
 released, tagged or permanently installed.
