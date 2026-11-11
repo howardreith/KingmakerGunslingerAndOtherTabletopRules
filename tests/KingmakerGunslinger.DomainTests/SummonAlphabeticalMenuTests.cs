@@ -6,7 +6,9 @@ using KingmakerGunslinger.Summoning;
 
 namespace KingmakerGunslinger.DomainTests
 {
-    /// <summary>The alphabetical menu contract across the generated roster.</summary>
+    /// <summary>The summon menu order across the generated roster: base
+    /// multiplicity first, then the family-first name (owner decision of
+    /// 2026-11-10, superseding the earlier name-first rule).</summary>
     internal static class SummonAlphabeticalMenuTests
     {
         private sealed class Row
@@ -89,12 +91,15 @@ namespace KingmakerGunslinger.DomainTests
                 Row[] creatures = plan.Final.Where(value => !ReferenceEquals(value, foreign)).ToArray();
                 string[] names = creatures.Select(value => ReferenceEquals(value, other) ? other.Name :
                     SummonChoicePresentationPolicy.For(value.Creature, value.Quantity.Value).CreatureName).ToArray();
-                Assertions.True(names.SequenceEqual(names.OrderBy(value => value,
-                    StringComparer.OrdinalIgnoreCase)), family.Key + " tier " + tier + " is out of order.");
                 for (int index = 1; index < creatures.Length; index++)
-                    if (string.Equals(names[index - 1], names[index], StringComparison.OrdinalIgnoreCase))
-                        Assertions.True(Rank(creatures[index - 1]) <= Rank(creatures[index]),
-                            "Equal names must order one, 1d3, then 1d4+1.");
+                {
+                    int previous = Rank(creatures[index - 1]), current = Rank(creatures[index]);
+                    Assertions.True(previous < current || (previous == current && string.Compare(names[index - 1],
+                        names[index], StringComparison.OrdinalIgnoreCase) <= 0),
+                        family.Key + " tier " + tier + " is out of quantity-then-name order at " + index + ".");
+                }
+                Assertions.True(ReferenceEquals(creatures.Last(), other),
+                    "A creature row of unknown base quantity follows the three quantity groups.");
                 Assertions.False(exposed.Any(value => value.Placement.Creature.Key == "stirge"),
                     "Stirge must remain withheld at " + family.Key + " tier " + tier + ".");
                 menus++;
@@ -104,7 +109,7 @@ namespace KingmakerGunslinger.DomainTests
 
         private static int Rank(Row row)
         {
-            return row.Quantity == SummonMultiplicity.One ? 0 :
+            return !row.Quantity.HasValue ? 3 : row.Quantity == SummonMultiplicity.One ? 0 :
                 row.Quantity == SummonMultiplicity.OneD3 ? 1 : 2;
         }
 
@@ -133,9 +138,9 @@ namespace KingmakerGunslinger.DomainTests
             }
         }
 
-        // The flattened Druid list interleaves quantities by creature name,
+        // The flattened Druid list follows the parent's quantity groups,
         // keeping every row object and the slot of every unranked row.
-        internal static void DruidFlattenedListInterleavesQuantitiesByParentOrder()
+        internal static void DruidFlattenedListFollowsParentQuantityGroups()
         {
             var single = new Row("native-single", "single", null, null);
             var d3 = new Row("native-d3", "d3", null, null);
@@ -148,12 +153,15 @@ namespace KingmakerGunslinger.DomainTests
             var replacements = new Dictionary<Row, Row[]> {
                 { single, new[] { wolf, bear } }, { d3, new[] { wolfGroup, boarGroup } } };
             Row[] projected = DruidSummonConversionPolicy.Project(original, replacements);
-            Row[] parentOrder = { bear, boarGroup, wolf, wolfGroup };
+            Row[] parentOrder = SummonDisplayOrderPolicy.Order(new Row[0],
+                new[] { wolfGroup, bear, boarGroup, wolf }, HostOrder).ToArray();
+            Assertions.Equal("bear|wolf|boar-d3|wolf-d3", string.Join("|", parentOrder.Select(value => value.Id)),
+                "The parent lists every single summon before every 1d3.");
             Row[] before = projected.ToArray();
             Row[] ordered = DruidSummonConversionPolicy.OrderProjectedChoices(projected, row => {
                 int index = Array.IndexOf(parentOrder, row);
                 return index < 0 ? (int?)null : index; });
-            Assertions.Equal("bear|boar-d3|foreign|wolf|wolf-d3|<null>",
+            Assertions.Equal("bear|wolf|foreign|boar-d3|wolf-d3|<null>",
                 string.Join("|", ordered.Select(value => value == null ? "<null>" : value.Id)),
                 "Ranked rows take their shared positions in parent order; a foreign row keeps its index.");
             Assertions.True(projected.SequenceEqual(before),
@@ -167,17 +175,21 @@ namespace KingmakerGunslinger.DomainTests
 
         // A row another mod appends after publication joins the order on the
         // final pass; an unclassified one stays last, and a repeat is stable.
+        // The Races Unleashed original row carries its placement quantity, as
+        // the publisher supplies it from the Spider Summoner matrix.
         internal static void LateHostRowsJoinTheOrderOnTheFinalPass()
         {
             var bear = new Row("bear", "Bear", SummonMultiplicity.One, "bear");
             var wolf = new Row("wolf", "Wolf", SummonMultiplicity.One, "wolf");
+            var ant = new Row("ant-d3", "Ant", SummonMultiplicity.OneD3, "ant");
             var control = new Row("control", "Aaa Control", null, null);
-            var late = new Row("late", "Summon Monster I (Giant Crab Spider)", null, "spider");
-            Row[] published = { bear, wolf, control, late };
+            var late = new Row("late", "Summon Monster I (Giant Crab Spider)", SummonMultiplicity.One, "spider");
+            var unknown = new Row("unknown", "Aardvark", null, "other");
+            Row[] published = { ant, bear, wolf, control, unknown, late };
             Row[] before = published.ToArray();
             IReadOnlyList<Row> ordered = SummonDisplayOrderPolicy.Order(published, new Row[0], HostOrder);
-            Assertions.Equal("bear|late|wolf|control", string.Join("|", ordered.Select(value => value.Id)),
-                "A late creature row sorts by its visible name; an unclassified row stays last.");
+            Assertions.Equal("bear|late|wolf|ant-d3|unknown|control", string.Join("|", ordered.Select(value => value.Id)),
+                "A late single row joins the single group by its visible name; an unknown quantity follows the groups; an unclassified row stays last.");
             Assertions.True(published.SequenceEqual(before), "The appended array must not be mutated.");
             Assertions.True(ordered.SequenceEqual(SummonDisplayOrderPolicy.Order(ordered, new Row[0], HostOrder)),
                 "A repeated final pass must change nothing.");
@@ -188,7 +200,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             var bear = new Row("bear", "Bear", SummonMultiplicity.One, "bear");
             var wolf = new Row("wolf", "Wolf", SummonMultiplicity.One, "wolf");
-            var spider = new Row("spider", "Summon Monster I (Giant Crab Spider)", null, "spider");
+            var spider = new Row("spider", "Summon Monster I (Giant Crab Spider)", SummonMultiplicity.One, "spider");
             Row[] published = { bear, wolf };
             Row[] receiptArray = published;
             Row[] receiptChoices = published.ToArray();

@@ -117,6 +117,19 @@ namespace KingmakerGunslinger.Summoning
         internal static string RowIdentity(SummonFamily family, SpiderSpeciesSpec species)
         { return IdentityPrefix + species.RowName(family); }
 
+        /// <summary>The base multiplicity of a Races Unleashed original row in
+        /// its own family's parent at its own base tier, read from the placement
+        /// matrix (always one); null for any other row, tier or family. Menu
+        /// ordering uses it so an original row joins the single-summon group by
+        /// its identity, never by its label or list position.</summary>
+        internal static SummonMultiplicity? OriginalRowQuantity(SummonFamily family, int tier, string rowIdentity)
+        {
+            if (rowIdentity == null) return null;
+            SpiderSpeciesSpec species = Species.SingleOrDefault(value => value.BaseTier == tier &&
+                string.Equals(RowIdentity(family, value), rowIdentity, StringComparison.Ordinal));
+            return species == null ? (SummonMultiplicity?)null : QuantityAt(species.BaseTier, tier);
+        }
+
         internal static IEnumerable<string> EligibleUnits
         { get { return Species.Select(value => value.UnitGuid).Concat(new[] { OrdinaryGiantSpiderUnit }); } }
 

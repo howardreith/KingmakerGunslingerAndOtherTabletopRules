@@ -119,7 +119,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                   RuntimeTestRequestParser.Sprint32ReviewPhase(request) == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestMephitFinishPhase ||
                   RuntimeTestRequestParser.Sprint32ReviewPhase(request) == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestSpellsPhase ||
                   RuntimeTestRequestParser.Sprint32ReviewPhase(request) == ExpandedSummoningNativeProfilePolicy.Sprint39AlphabeticalMenusPhase ||
-                  RuntimeTestRequestParser.Sprint32ReviewPhase(request) == ExpandedSummoningNativeProfilePolicy.Sprint39ClericAlignmentPhase)) ||
+                  RuntimeTestRequestParser.Sprint32ReviewPhase(request) == ExpandedSummoningNativeProfilePolicy.Sprint39ClericAlignmentPhase ||
+                  RuntimeTestRequestParser.Sprint32ReviewPhase(request) == ExpandedSummoningNativeProfilePolicy.Sprint39MenuOrderSunderPhase)) ||
              request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||
              request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp ||
              RuntimeTestRequestParser.Sprints30And31DispelUi(request));

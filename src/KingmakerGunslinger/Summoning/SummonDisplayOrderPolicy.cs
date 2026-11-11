@@ -47,10 +47,15 @@ namespace KingmakerGunslinger.Summoning
     }
 
     /// <summary>
-    /// The one summon menu order: creature name, then one / 1d3 / 1d4+1, then
-    /// identity. Ordinal comparison keeps it independent of the machine's
-    /// culture. Unclassified rows follow the creature choices in their
-    /// existing relative order.
+    /// The one summon menu order (owner decision of 2026-11-10, superseding the
+    /// earlier name-first rule): base multiplicity first (every single summon,
+    /// then every 1d3, then every 1d4+1), then the displayed family-first
+    /// creature name, then identity. The multiplicity is the row's base
+    /// metadata, never a rolled or feat-increased count. A creature row whose
+    /// base multiplicity is unknown follows the three groups, alphabetized
+    /// among its kind. Ordinal comparison keeps it independent of the
+    /// machine's culture. Unclassified rows follow the creature choices in
+    /// their existing relative order.
     /// </summary>
     internal static class SummonDisplayOrderPolicy
     {
@@ -60,9 +65,9 @@ namespace KingmakerGunslinger.Summoning
 
             public int Compare(SummonMenuOrderKey x, SummonMenuOrderKey y)
             {
-                int result = string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase);
+                int result = QuantityRank(x.Quantity).CompareTo(QuantityRank(y.Quantity));
                 if (result != 0) return result;
-                result = QuantityRank(x.Quantity).CompareTo(QuantityRank(y.Quantity));
+                result = string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase);
                 return result != 0 ? result :
                     string.Compare(x.Identity, y.Identity, StringComparison.Ordinal);
             }
