@@ -1420,6 +1420,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.cleanup2-elemental-learning-refusal", Cleanup2ElementalPresentationTests.UnverifiedLearningContextAlwaysReturnsIndependentOriginalCopy),
             Case("expanded-summoning.original-summon-elemental-book-hidden", Cleanup2ElementalPresentationTests.DefaultOptionHidesOriginalBookRowsButKeepsSpecialAndForeignRows),
             Case("expanded-summoning.original-summon-elemental-learning-hidden", Cleanup2ElementalPresentationTests.DefaultOptionLearningFilterHidesEveryUnselectedOriginalRank),
+            Case("expanded-summoning.original-summon-elemental-decision", Cleanup2ElementalPresentationTests.HideDecisionCoversHiddenRevealedAndModuleInactive),
+            Case("expanded-summoning.original-summon-elemental-mixed-metamagic", Cleanup2ElementalPresentationTests.MixedOrdinaryAndMetamagicRowsKeepOrderAndAnyLevelSpecialGrants),
             Case("expanded-summoning.cleanup2-label-map", Cleanup2SummonPresentationTests.ExplicitLabelsCoverPublishedRoutesAndKeepNaturalNames),
             Case("expanded-summoning.cleanup2-currentstack-roster", Cleanup2CreatureReviewRosterTests.EveryAdvertisedWorkingKeyResolvesToItsPublishedNativeObserverVariant),
             Case("expanded-summoning.cleanup2-currentstack-roster-refusal", Cleanup2CreatureReviewRosterTests.FrostUnknownDuplicatesAndUnsupportedQuantitiesFailBeforeAnyBatchIsReturned),

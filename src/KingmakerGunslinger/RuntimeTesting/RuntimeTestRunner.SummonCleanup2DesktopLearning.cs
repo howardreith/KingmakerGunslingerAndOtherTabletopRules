@@ -80,12 +80,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 catch (Exception error) { observeFailure("intake-selection", error); throw; }
                 for (int frame = 0; frame < 8; frame++) yield return 0;
-                foreach (int frame in Cleanup2DesktopObservedSteps(Cleanup2DesktopPrepareAndUndo(fixture, book, screens), "preparation", observeFailure)) yield return frame;
-                if (!mode.Current || !Cleanup2LearningModuleState(off) || watch.Elapsed.TotalSeconds > 120)
-                { var error = new InvalidOperationException("Desktop learning phase boundary expired or changed."); observeFailure("preparation-boundary", error); throw error; }
+                // The level-up "Choose Spells" screen that reproduced the owner's
+                // bug runs first; the book/metamagic cell has its own fixture.
                 foreach (int frame in Cleanup2DesktopObservedSteps(Cleanup2DesktopLearnAndCancel(fixture, book, screens, levelUpIntake), "learning", observeFailure)) yield return frame;
-                if (!mode.Current || !Cleanup2LearningModuleState(off) || watch.Elapsed.TotalSeconds > 180)
-                { var error = new InvalidOperationException("Desktop learning phase exceeded its bounded native UI scope."); observeFailure("learning-boundary", error); throw error; }
+                if (!mode.Current || !Cleanup2LearningModuleState(off) || watch.Elapsed.TotalSeconds > 170)
+                { var error = new InvalidOperationException("Desktop learning phase boundary expired or changed."); observeFailure("learning-boundary", error); throw error; }
+                foreach (int frame in Cleanup2DesktopObservedSteps(Cleanup2DesktopPrepareAndUndo(fixture, book, screens), "preparation", observeFailure)) yield return frame;
+                if (!mode.Current || !Cleanup2LearningModuleState(off) || watch.Elapsed.TotalSeconds > 260)
+                { var error = new InvalidOperationException("Desktop learning phase exceeded its bounded native UI scope."); observeFailure("preparation-boundary", error); throw error; }
             }
             finally
             {
@@ -177,6 +179,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!ReferenceEquals(controller.CurrentSpellbook, book) || controller.CurrentBookLevel != 2 || controller.CurrentPageIndex != 0)
                 throw new InvalidOperationException("Native desktop level2 return differs.");
         }
+
+        // Native favorites (metamagic) tab through its real Toggle.
+        private static IEnumerable<int> Cleanup2DesktopFavorites(SpellBookView view, SpellBookController controller)
+        {
+            var toggle = view.LevelBookSwitcher.ToggleFavorites;
+            if (toggle == null || !toggle.gameObject.activeInHierarchy || !toggle.interactable) throw new InvalidOperationException("Native favorites tab unavailable.");
+            toggle.isOn = true;
+            foreach (int frame in WaitTeleportLevelUpUi(() => view.CurrentBookLevel == view.FavoriteBookmarkIndex, "native PC favorites tab")) yield return frame;
+            for (int frame = 0; frame < 8; frame++) yield return 0;
+        }
+
+        private static List<AbilityData> Cleanup2DesktopFavoriteRows(SpellBookView view)
+        { return ((List<AbilityData>)typeof(SpellBookView).GetField("m_ShowSpellsList", Cleanup2Fields).GetValue(view) ?? new List<AbilityData>()).ToList(); }
+
+        private static List<AbilityData> Cleanup2DesktopRenderedRows(SpellBookView view)
+        { return view.GetComponentsInChildren<SpellItem>(true).Where(value => value.gameObject.activeInHierarchy && value.SpellData != null).Select(value => value.SpellData).ToList(); }
 
         // Visits every native page of the current level once, from page 0,
         // then returns to page 0.
@@ -289,7 +307,28 @@ namespace KingmakerGunslinger.RuntimeTesting
             var game = Game.Instance; var ui = game.UI; var controller = ui.SpellBookController;
             var sourceBlueprint = Cleanup2ElementalAbility(fixture, ElementalSourceChooserPolicy.Rank(2).Guid);
             if (!book.IsKnown(sourceBlueprint)) book.AddKnown(2, sourceBlueprint, true);
+            // Disposable mixed fixture (module ON only): one ordinary level-2
+            // control spell plus Extend metamagic copies of the source and the
+            // control for the favorites tab. Removed explicitly in finally.
+            Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility controlBlueprint = null; bool controlAdded = false;
+            AbilityData customSource = null, customControl = null;
+            var preMixedKnown = book.GetAllKnownSpells().ToArray();
+            Func<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility, AbilityData> extended = blueprint => {
+                var metamagic = new MetamagicData { SpellLevelCost = Metamagic.Extend.DefaultCost() }; metamagic.Add(Metamagic.Extend);
+                return new AbilityData(blueprint, book) { MetamagicData = metamagic }; };
+            if (!off)
+            {
+                controlBlueprint = book.Blueprint.SpellList.GetSpells(2).Where(value => value != null &&
+                    !StandaloneElementalPresentationPolicy.IsOriginalSummonElemental(value.AssetGuid) && !book.IsKnown(value) &&
+                    !(value.ComponentsArray ?? new BlueprintComponent[0]).Any(component => component != null && component.GetType().Name == "UniqueSpellComponent"))
+                    .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).FirstOrDefault();
+                if (controlBlueprint == null) throw new InvalidOperationException("No ordinary unknown level-2 Wizard control spell for the mixed book fixture.");
+                book.AddKnown(2, controlBlueprint, true); controlAdded = true;
+                customSource = extended(sourceBlueprint); book.AddCustomSpell(customSource);
+                customControl = extended(controlBlueprint); book.AddCustomSpell(customControl);
+            }
             var known = book.GetAllKnownSpells().ToArray(); var source = known.Single(value => ReferenceEquals(value.Blueprint, sourceBlueprint) && !value.HasMetamagic(Metamagic.Extend));
+            var control = controlBlueprint == null ? null : known.Single(value => ReferenceEquals(value.Blueprint, controlBlueprint) && value.MetamagicData == null);
             var slots = Enumerable.Range(0, 10).SelectMany(level => RawSlots(book, level)).ToArray();
             var spells = slots.Select(value => value.Spell).ToArray(); var available = slots.Select(value => value.Available).ToArray();
             var resources = Cleanup2ElementalResources(fixture.Caster); var pins = new TeleportationUiSettingsFixture(fixture.Caster.UISettings);
@@ -341,35 +380,69 @@ namespace KingmakerGunslinger.RuntimeTesting
                     OriginalSummonElementalVisibility.Show = false;
                     foreach (int frame in Cleanup2DesktopBookLevelRoundTrip(view, controller, book)) yield return frame;
                     var listed = view.GetSpellsForLevel(2);
-                    var rendered = new List<string>(); int pages = 0;
+                    var rendered = new List<AbilityData>(); int pages = 0;
                     foreach (int frame in Cleanup2DesktopBookPages(view, controller, () => {
                         pages++;
-                        rendered.AddRange(view.GetComponentsInChildren<SpellItem>(true).Where(value => value.gameObject.activeInHierarchy &&
-                            value.SpellData?.Blueprint != null && StandaloneElementalPresentationPolicy.IsOriginalSummonElemental(value.SpellData.Blueprint.AssetGuid))
-                            .Select(value => value.SpellData.Blueprint.AssetGuid)); })) yield return frame;
-                    bool hidden = book.IsKnown(sourceBlueprint) && book.GetAllKnownSpells().SequenceEqual(known) &&
-                        !listed.Any(value => value?.Blueprint != null && StandaloneElementalPresentationPolicy.IsOriginalSummonElemental(value.Blueprint.AssetGuid)) &&
-                        // Native run b0d235c33a: the disposable CL20 fixture's
-                        // only level-2 known spell is the granted source, so an
-                        // empty list is the correct hidden result (not asserted
-                        // non-empty). The filter's own count must show it hid it.
-                        OriginalSummonElementalVisibility.BookOutcome.StartsWith("pc-book:hidden=", StringComparison.Ordinal) &&
-                        OriginalSummonElementalVisibility.BookOutcome != "pc-book:hidden=0" &&
-                        rendered.Count == 0 && pages > 0 && Cleanup2DesktopNoOwnedDisclosure(view) &&
-                        slots.Select(value => value.Spell).SequenceEqual(spells) && Cleanup2LearningModuleState(off);
-                    Cleanup2Check("elemental-desktop-preparation-hidden-by-default", hidden, new JObject { ["source"] = sourceBlueprint.AssetGuid,
-                        ["sourceKnown"] = book.IsKnown(sourceBlueprint), ["knownObjectsExact"] = book.GetAllKnownSpells().SequenceEqual(known),
-                        ["nativeListedRows"] = listed.Count, ["nativeListedOriginalElementals"] = listed.Count(value => value?.Blueprint != null &&
-                            StandaloneElementalPresentationPolicy.IsOriginalSummonElemental(value.Blueprint.AssetGuid)),
-                        ["renderedOriginalElementals"] = new JArray(rendered), ["pagesInspected"] = pages,
-                        ["noOwnedDisclosure"] = Cleanup2DesktopNoOwnedDisclosure(view), ["bookOutcome"] = OriginalSummonElementalVisibility.BookOutcome },
-                        "With the default option the PC book lists no original Summon Elemental row on any page, without a disclosure, while the known spell itself remains.");
-                    if (!hidden) throw new InvalidOperationException("Native PC spellbook still shows an original Summon Elemental row with the default option.");
-                    foreach (int frame in screens.Capture("elementals-desktop-book-hidden-default", new JObject { ["source"] = sourceBlueprint.AssetGuid,
+                        rendered.AddRange(view.GetComponentsInChildren<SpellItem>(true).Where(value => value.gameObject.activeInHierarchy && value.SpellData != null)
+                            .Select(value => value.SpellData)); })) yield return frame;
+                    Func<IEnumerable<AbilityData>, int> originals = rows => rows.Count(value => value?.Blueprint != null &&
+                        StandaloneElementalPresentationPolicy.IsOriginalSummonElemental(value.Blueprint.AssetGuid));
+                    // Identities are checked directly; BookOutcome is diagnostic only.
+                    bool hidden = book.IsKnown(sourceBlueprint) && book.IsKnown(controlBlueprint) && book.GetAllKnownSpells().SequenceEqual(known) &&
+                        !listed.Any(value => ReferenceEquals(value, source)) && originals(listed) == 0 &&
+                        listed.Count(value => ReferenceEquals(value, control)) == 1 &&
+                        originals(rendered) == 0 && rendered.Count(value => ReferenceEquals(value, control)) == 1 && pages > 0 &&
+                        Cleanup2DesktopNoOwnedDisclosure(view) && slots.Select(value => value.Spell).SequenceEqual(spells) && Cleanup2LearningModuleState(off);
+                    Cleanup2Check("elemental-desktop-book-mixed-hidden", hidden, new JObject { ["source"] = sourceBlueprint.AssetGuid,
+                        ["control"] = controlBlueprint.AssetGuid, ["sourceKnown"] = book.IsKnown(sourceBlueprint), ["controlKnown"] = book.IsKnown(controlBlueprint),
+                        ["knownObjectsExact"] = book.GetAllKnownSpells().SequenceEqual(known), ["nativeListed"] = new JArray(listed.Select(value => value.Blueprint.AssetGuid)),
+                        ["nativeListedOriginalElementals"] = originals(listed), ["sourceObjectListed"] = listed.Any(value => ReferenceEquals(value, source)),
+                        ["controlObjectListed"] = listed.Count(value => ReferenceEquals(value, control)),
+                        ["renderedOriginalElementals"] = originals(rendered), ["renderedControl"] = rendered.Count(value => ReferenceEquals(value, control)),
+                        ["pagesInspected"] = pages, ["noOwnedDisclosure"] = Cleanup2DesktopNoOwnedDisclosure(view), ["bookOutcome"] = OriginalSummonElementalVisibility.BookOutcome },
+                        "With the default option the PC book's level-2 list and rendered pages omit the known original source object while the ordinary control remains exactly once.");
+                    if (!hidden) throw new InvalidOperationException("Native PC mixed book hiding failed.");
+                    foreach (int frame in screens.Capture("elementals-desktop-book-mixed-hidden", new JObject { ["source"] = sourceBlueprint.AssetGuid, ["control"] = controlBlueprint.AssetGuid,
                         ["nativeText"] = new JArray(view.GetComponentsInChildren<TextMeshProUGUI>(false).Select(value => value.text)) },
                         () => controller.IsShow && ReferenceEquals(controller.CurrentSpellbook, book) && controller.CurrentBookLevel == 2 && Cleanup2NoNarrativeOverlay())) yield return frame;
-                    // Revealed: the same rows return as ordinary native rows.
+                    // Metamagic (favorites) tab through its real native toggle.
+                    foreach (int frame in Cleanup2DesktopFavorites(view, controller)) yield return frame;
+                    var favorites = Cleanup2DesktopFavoriteRows(view); var favoriteRendered = Cleanup2DesktopRenderedRows(view);
+                    bool favoritesHidden = favorites.Count(value => ReferenceEquals(value, customControl)) == 1 && !favorites.Any(value => ReferenceEquals(value, customSource)) &&
+                        originals(favorites) == 0 && originals(favoriteRendered) == 0 &&
+                        book.GetCustomSpells(3).Count(value => ReferenceEquals(value, customSource)) == 1 && book.GetCustomSpells(3).Count(value => ReferenceEquals(value, customControl)) == 1 &&
+                        OriginalSummonElementalVisibility.FavoritesSeamState == "installed-exact-favorites-call-copy" && Cleanup2DesktopNoOwnedDisclosure(view);
+                    Cleanup2Check("elemental-desktop-favorites-mixed-hidden", favoritesHidden, new JObject { ["customSourceLevel"] = book.GetSpellLevel(customSource),
+                        ["favoriteRows"] = new JArray(favorites.Select(value => value.Blueprint.AssetGuid + (value.MetamagicData == null ? "" : ":" + value.MetamagicData.MetamagicMask))),
+                        ["customControlListed"] = favorites.Count(value => ReferenceEquals(value, customControl)), ["customSourceListed"] = favorites.Any(value => ReferenceEquals(value, customSource)),
+                        ["renderedOriginalElementals"] = originals(favoriteRendered), ["renderedCustomControl"] = favoriteRendered.Count(value => ReferenceEquals(value, customControl)),
+                        ["customDataRetained"] = book.GetCustomSpells(3).Count(value => ReferenceEquals(value, customSource)) == 1,
+                        ["seam"] = OriginalSummonElementalVisibility.FavoritesSeamState, ["outcome"] = OriginalSummonElementalVisibility.FavoritesOutcome,
+                        ["nativeInput"] = "SpellBookLevelTabs.ToggleFavorites.isOn -> native SetUpFavorite" },
+                        "With the default option the PC metamagic tab omits the original source's Extend copy while the ordinary control copy remains and both custom objects stay in the book.");
+                    if (!favoritesHidden) throw new InvalidOperationException("Native PC metamagic tab hiding failed.");
+                    foreach (int frame in screens.Capture("elementals-desktop-favorites-mixed-hidden", new JObject {
+                        ["nativeText"] = new JArray(view.GetComponentsInChildren<TextMeshProUGUI>(false).Select(value => value.text)) },
+                        () => controller.IsShow && view.CurrentBookLevel == view.FavoriteBookmarkIndex && Cleanup2NoNarrativeOverlay())) yield return frame;
+                    // Revealed: rebuild the tab natively (level tab, then favorites).
                     OriginalSummonElementalVisibility.Show = true;
+                    view.LevelBookSwitcher.m_Tabs[2].Toggle.isOn = true; for (int frame = 0; frame < 8; frame++) yield return 0;
+                    foreach (int frame in Cleanup2DesktopFavorites(view, controller)) yield return frame;
+                    favorites = Cleanup2DesktopFavoriteRows(view); favoriteRendered = Cleanup2DesktopRenderedRows(view);
+                    bool favoritesRevealed = favorites.Count(value => ReferenceEquals(value, customSource)) == 1 &&
+                        favorites.Count(value => ReferenceEquals(value, customControl)) == 1 && Cleanup2DesktopNoOwnedDisclosure(view);
+                    Cleanup2Check("elemental-desktop-favorites-revealed", favoritesRevealed, new JObject {
+                        ["favoriteRows"] = new JArray(favorites.Select(value => value.Blueprint.AssetGuid + (value.MetamagicData == null ? "" : ":" + value.MetamagicData.MetamagicMask))),
+                        ["customSourceListed"] = favorites.Count(value => ReferenceEquals(value, customSource)), ["customControlListed"] = favorites.Count(value => ReferenceEquals(value, customControl)),
+                        ["renderedCustomSource"] = favoriteRendered.Count(value => ReferenceEquals(value, customSource)), ["renderedCustomControl"] = favoriteRendered.Count(value => ReferenceEquals(value, customControl)),
+                        ["outcome"] = OriginalSummonElementalVisibility.FavoritesOutcome },
+                        "Revealed, the metamagic tab lists the same original custom object and the control exactly once each.");
+                    if (!favoritesRevealed) throw new InvalidOperationException("Native PC metamagic tab reveal failed.");
+                    foreach (int frame in screens.Capture("elementals-desktop-favorites-revealed", new JObject {
+                        ["nativeText"] = new JArray(view.GetComponentsInChildren<TextMeshProUGUI>(false).Select(value => value.text)) },
+                        () => controller.IsShow && view.CurrentBookLevel == view.FavoriteBookmarkIndex && Cleanup2NoNarrativeOverlay())) yield return frame;
+                    // Back to the level-2 page: the same objects return as ordinary rows.
+                    view.LevelBookSwitcher.m_Tabs[2].Toggle.isOn = true; for (int frame = 0; frame < 8; frame++) yield return 0;
                     foreach (int frame in Cleanup2DesktopBookLevelRoundTrip(view, controller, book)) yield return frame;
                 }
                 for (int page = 0; page < 30 && !view.GetComponentsInChildren<SpellItem>(true).Any(value => ReferenceEquals(value.SpellData, source)); page++)
@@ -389,7 +462,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool disclosure = book.GetAllKnownSpells().SequenceEqual(known) && slots.Select(value => value.Spell).SequenceEqual(spells) &&
                     slots.Select(value => value.Available).SequenceEqual(available) && Cleanup2ElementalResources(fixture.Caster) == resources &&
                     nativeRows.Select(value => value.SpellData).SequenceEqual(rowData) && Cleanup2LearningModuleState(off) &&
-                    Cleanup2DesktopNoOwnedDisclosure(view) && sourceRowVisible;
+                    Cleanup2DesktopNoOwnedDisclosure(view) && sourceRowVisible &&
+                    (off || view.GetSpellsForLevel(2).Count(value => ReferenceEquals(value, source)) == 1 &&
+                        view.GetSpellsForLevel(2).Count(value => ReferenceEquals(value, control)) == 1);
                 Cleanup2Check("elemental-desktop-preparation-no-disclosure", disclosure, new JObject { ["source"] = sourceBlueprint.AssetGuid,
                     ["sourceBook"] = book.Blueprint.AssetGuid, ["knownObjectsExact"] = book.GetAllKnownSpells().SequenceEqual(known),
                     ["nativeRowAbilityReferencesExact"] = nativeRows.Select(value => value.SpellData).SequenceEqual(rowData),
@@ -440,6 +515,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (opened) requestClose();
                 if (written != null && ReferenceEquals(written.Spell, source)) book.ForgetMemorized(written);
                 pins.Restore();
+                var mixedErrors = new List<string>();
+                try { if (customSource != null) book.RemoveCustomSpell(customSource); } catch (Exception error) { mixedErrors.Add("custom-source:" + error.Message); }
+                try { if (customControl != null) book.RemoveCustomSpell(customControl); } catch (Exception error) { mixedErrors.Add("custom-control:" + error.Message); }
+                try { if (controlAdded) book.RemoveSpell(controlBlueprint); } catch (Exception error) { mixedErrors.Add("control:" + error.Message); }
+                if (!off)
+                {
+                    bool mixedRestored = mixedErrors.Count == 0 && !book.IsKnown(controlBlueprint) && book.IsKnown(sourceBlueprint) &&
+                        !Enumerable.Range(0, 10).Any(value => book.GetCustomSpells(value).Any(row => ReferenceEquals(row, customSource) || ReferenceEquals(row, customControl))) &&
+                        book.GetAllKnownSpells().SequenceEqual(preMixedKnown);
+                    Cleanup2Check("elemental-desktop-mixed-fixture-restored", mixedRestored, new JObject { ["errors"] = new JArray(mixedErrors),
+                        ["controlKnown"] = controlBlueprint != null && book.IsKnown(controlBlueprint), ["knownExactPreMixed"] = book.GetAllKnownSpells().SequenceEqual(preMixedKnown) },
+                        "The disposable control spell and both custom copies are removed; the fixture book returns to its pre-cell known objects.");
+                }
             }
         }
 
@@ -625,6 +713,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["nativeInput"] = "Second CharBSelectionSwitchItem.Toggle then the original collection Toggle; native FillSpellLevel rebuild" },
                     "Changing learning collection and returning keeps the original spell selected as one ordinary row, without a header, duplicate or lost selection.");
                 if (!retained) throw new InvalidOperationException("Native PC learning refresh lost, duplicated or re-hid the selected original spell.");
+                if (!off)
+                {
+                    // Turn hiding back on while the choice is pending: the native
+                    // rebuild must keep exactly that selected row reachable.
+                    OriginalSummonElementalVisibility.Show = false;
+                    foreach (int frame in Cleanup2DesktopLearningRoundTrip(build, other, collection, currentLayer)) yield return frame;
+                    layer = currentLayer();
+                    var pendingRows = layer == null ? new CharBuildSelectorItem[0] : layer.GetComponentsInChildren<CharBuildSelectorItem>(true)
+                        .Where(value => value.gameObject.activeInHierarchy && ReferenceEquals(value.BlueprintAbility, source)).ToArray();
+                    bool reachable = ownsCreator() && pendingRows.Length == 1 && pendingRows[0].Toggle.isOn && pendingRows[0].Toggle.interactable &&
+                        elementalRows(layer).All(value => ReferenceEquals(value.BlueprintAbility, source)) && Cleanup2DesktopNoOwnedDisclosure(layer) &&
+                        Cleanup2DesktopPending(selection).SequenceEqual(afterSelect) && commits == 0 && !book.IsKnown(source);
+                    Cleanup2Check("elemental-desktop-learning-hidden-pending-reachable", reachable, new JObject { ["source"] = source.AssetGuid,
+                        ["optionRevealed"] = OriginalSummonElementalVisibility.Show, ["sourceRows"] = pendingRows.Length,
+                        ["sourceRowSelected"] = pendingRows.Length == 1 && pendingRows[0].Toggle.isOn,
+                        ["otherOriginalRows"] = elementalRows(layer).Count(value => !ReferenceEquals(value.BlueprintAbility, source)),
+                        ["pendingExact"] = Cleanup2DesktopPending(selection).SequenceEqual(afterSelect), ["freePendingSlots"] = afterSelect.Count(value => value == null) },
+                        "With hiding back on, the pending original selection stays one selected, interactable native row so it can be undone or replaced; other original rows stay hidden.");
+                    if (!reachable) throw new InvalidOperationException("Hiding made the pending original selection unreachable.");
+                }
                 // Native PC deselection: choosing another spell for the same
                 // collection runs CharacterBuildController.SetSpell, which
                 // unselects the collection's current spell before selecting.
@@ -644,7 +752,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReferenceEquals(value.BlueprintAbility, source)).ToArray();
                 bool deselected = ownsCreator() && !afterReplace.Contains(source) && afterReplace.Count(value => ReferenceEquals(value, replacementSpell)) == 1 &&
                     afterReplace.Count(value => value == null) == afterSelect.Count(value => value == null) &&
-                    stillListed.Length == 1 && !stillListed[0].Toggle.isOn && stillListed[0].Toggle.interactable &&
+                    // A native SetupUI rebuild may already omit the now-unselected
+                    // row while hidden; any remaining row must be unselected.
+                    stillListed.Length <= 1 && (stillListed.Length == 0 || !stillListed[0].Toggle.isOn) &&
                     !book.IsKnown(source) && book.GetAllKnownSpells().SequenceEqual(known) && commits == 0;
                 Cleanup2Check("elemental-desktop-learning-native-deselect", deselected, new JObject { ["source"] = source.AssetGuid,
                     ["replacement"] = replacementSpell.AssetGuid, ["sourcePendingAfter"] = afterReplace.Contains(source),
@@ -654,6 +764,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["nativeInput"] = "Another ordinary CharBuildSelectorItem.Toggle in the same collection -> native SetSpell (UnselectSpell, SelectSpell)" },
                     "Choosing another spell natively deselects the original spell; it stays one ordinary selectable row and the allowance is spent once, by the replacement.");
                 if (!deselected) throw new InvalidOperationException("Native PC learning deselection of the original spell failed.");
+                if (!off)
+                {
+                    foreach (int frame in Cleanup2DesktopLearningRoundTrip(build, other, collection, currentLayer)) yield return frame;
+                    layer = currentLayer();
+                    var afterRehide = Cleanup2DesktopPending(selection);
+                    bool rehidden = ownsCreator() && layer != null && elementalRows(layer).Length == 0 && Cleanup2DesktopNoOwnedDisclosure(layer) &&
+                        afterRehide.SequenceEqual(afterReplace) && !afterRehide.Contains(source) &&
+                        layer.GetComponentsInChildren<CharBuildSelectorItem>(true).Count(value => value.gameObject.activeInHierarchy && ReferenceEquals(value.BlueprintAbility, replacementSpell)) == 1 &&
+                        !book.IsKnown(source) && book.GetAllKnownSpells().SequenceEqual(known) && commits == 0;
+                    Cleanup2Check("elemental-desktop-learning-rehidden-after-deselect", rehidden, new JObject { ["source"] = source.AssetGuid,
+                        ["replacement"] = replacementSpell.AssetGuid, ["originalElementalRows"] = elementalRows(layer).Length,
+                        ["pendingExact"] = afterRehide.SequenceEqual(afterReplace), ["freePendingSlots"] = afterRehide.Count(value => value == null),
+                        ["committedKnownExact"] = book.GetAllKnownSpells().SequenceEqual(known), ["commits"] = commits },
+                        "After native replacement and another rebuild, the now-unselected original row is hidden again; the replacement stays pending and nothing is committed.");
+                    if (!rehidden) throw new InvalidOperationException("The deselected original row was not hidden after refresh.");
+                    foreach (int frame in screens.Capture("elementals-desktop-learning-rehidden", new JObject { ["source"] = source.AssetGuid, ["replacement"] = replacementSpell.AssetGuid,
+                        ["nativeText"] = new JArray(layer.GetComponentsInChildren<TextMeshProUGUI>(false).Select(value => value.text)) },
+                        () => build.IsShow && ReferenceEquals(build.LevelUpController, backend) && Cleanup2NoNarrativeOverlay())) yield return frame;
+                }
                 if (!ownsCreator()) throw new InvalidOperationException("Owned native PC creator changed before cancellation.");
                 build.OnHotKeyEscPressed();
                 foreach (int frame in WaitTeleportLevelUpUi(() => DialogMessageBox.Instance.IsShown, "native PC learning cancellation confirmation")) yield return frame;
