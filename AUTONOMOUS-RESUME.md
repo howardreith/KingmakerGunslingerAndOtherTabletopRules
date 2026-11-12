@@ -1,20 +1,23 @@
-# Hide original Summon Elemental by default: draft PR, native checkpoint FAIL (observer), fix not re-run / STOP
+# Hide original Summon Elemental by default: PR #133 corrections, native FAIL (observer design) / STOP
 
-Current (2026-11-12). See `planning/hide-original-summon-elemental/STATUS.md`. Branch
-`codex/hide-original-summon-elemental` from master `4b10c85768`; one draft PR against master. Nothing merged,
-released or permanently installed. DATA intake: live v0.0.140, `Params.xml` `E44F4495...30BB`, 95 saves.
+Current (2026-11-12). See `planning/hide-original-summon-elemental/STATUS.md` ("Review corrections"). Branch
+`codex/hide-original-summon-elemental`, draft PR #133. Nothing merged, released or permanently installed.
 
-- Owner directive: original Summon Elemental is hidden from level-up learning and spellbook lists by default
-  (PC and controller), with a live UMM option that shows it as ordinary rows. The learning disclosure is
-  withdrawn. Presentation only; saves, spells and the action-bar chooser are unchanged.
-- Focused 24/2,947 passing; patch targets 49/49. Candidate `b0d235c33a`, package `4d84746f...9861`, DLL
-  `cdf252fb...8e2f`, MVID `616ccf20-197c-4c99-8d66-5ce60d64089b`.
-- One guarded `elementals-learning` run: FAIL 7/3. The hidden-book cell wrongly required a non-empty level-2 list
-  (the fixture's only level-2 spell is the hidden source). The learning screen was not observed. Fix `70ad3b8e6c`
-  passed the focused gate; not built or run.
-- Restoration exact. Ledger about 689 of 1,800 s.
-- Next, owner authorization required: review; optionally one rebuild and one guarded `elementals-learning` run.
-
+- Review corrections `312bb462e8`:
+  - the PC metamagic tab is now covered (`SetUpFavorite` call-site copy);
+  - the special keep matches any level;
+  - shared hide decision;
+  - observer strengthened.
+- Focused 26/2,949 and patch targets 50/50.
+- Candidate `312bb462e8`: package `1f3eb684...fb8a`, DLL `40d94cb5...d239`, MVID `268ffcd7-0894-4f35-88fa-caf9ce63fab4`.
+- One guarded run: FAIL 8/2.
+  - The owner's Wizard "Choose Spells" screen was observed hidden by default: 82 rows, 0 elementals, no disclosure,
+    screenshot inspected.
+  - The reveal cell failed because a native slot round trip never rebuilds a same-list layer (`FillSpellLightUpdate`
+    only). This is an observer-design defect. The book and metamagic cells were not reached.
+- Restoration exact (after an unrelated machine crash and reboot before the run). Ledger about 1,314 of 1,800 s.
+- Next, owner authorization required: two-session observer correction plus wording ("applies the next time a spell
+  list is opened"), with a new allowance for one build and run; or review as-is.
 ---
 
 # (superseded) Gunslinger playtest repairs: merged and released in v0.0.183 / STOP
