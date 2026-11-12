@@ -1,4 +1,26 @@
-# Hide original Summon Elemental by default: PR #133 corrections, native FAIL (observer design) / STOP
+# Hide original Summon Elemental by default: PR #133 verification, native FAIL 12/1 (deselection) / STOP
+
+Current (2026-11-12). See `planning/hide-original-summon-elemental/STATUS.md` ("Verification continuation"). Branch
+`codex/hide-original-summon-elemental`, draft PR #133. Nothing merged, released or permanently installed.
+
+- Source `0d944a262f`:
+  - two-session learning observer;
+  - stronger book/metamagic verdicts;
+  - wording "no restart; close and reopen the spell list to apply".
+- Focused 26/2,949; targets 50/50.
+- Candidate: package `41043db7...39f0c4`, DLL `84c2917a...67b9`, MVID `f34ca190-0bbd-4707-a880-74a700947a9e`.
+- Native result 12 PASS / 1 FAIL:
+  - real Wizard "Choose Spells" hidden with the option off, then (after reopening with it on) the ordinary row,
+    native selection and retained slot switch;
+  - native deselection by replacement did not settle (state not recorded);
+  - the book/metamagic cells were not reached.
+- Restoration exact. Ledger about 2,247 of 2,400 s.
+- Next, owner authorization required: a deselection-instrumentation observer fix plus one build and run (new
+  allowance), or review as-is.
+
+---
+
+# (superseded) Hide original Summon Elemental by default: PR #133 corrections, native FAIL (observer design) / STOP
 
 Current (2026-11-12). See `planning/hide-original-summon-elemental/STATUS.md` ("Review corrections"). Branch
 `codex/hide-original-summon-elemental`, draft PR #133. Nothing merged, released or permanently installed.
