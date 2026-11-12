@@ -260,11 +260,15 @@ namespace KingmakerGunslinger.Feats
             UnitDescriptor beforeLevelUpUnit, UnitDescriptor previewUnit,
             ref IEnumerable<IFeatureSelectionItem> __result)
         {
-            IEnumerable<FeatureUIData> source = (__result ??
-                Enumerable.Empty<IFeatureSelectionItem>()).OfType<FeatureUIData>();
-            __result = NativeFirearmFeatIntegration.Append(__instance, source,
-                    previewUnit ?? beforeLevelUpUnit)
-                .Cast<IFeatureSelectionItem>();
+            // GS-AUD-0034: filter only the entries this project understands
+            // and never discard another mod's implementation.
+            __result = Compatibility.SelectionBoundaryPreservation.Merge(
+                __result,
+                value => value is FeatureUIData,
+                understood => NativeFirearmFeatIntegration.Append(__instance,
+                        understood.Cast<FeatureUIData>(),
+                        previewUnit ?? beforeLevelUpUnit)
+                    .Cast<IFeatureSelectionItem>().ToArray());
         }
     }
 }
