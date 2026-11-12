@@ -112,6 +112,22 @@ namespace KingmakerGunslinger.DomainTests
             var resolved = Compose(Point(), new[] { known, unknown, guaranteed }).SpellActions.Single();
             Assertions.True(resolved.ReaderResolved && ReferenceEquals(guaranteed, resolved.Source), "A proven no-check success has the maximum possible activation chance.");
             Assertions.Equal(row.Key, resolved.Key, "Resolving current effects does not replace the UI identity.");
+
+            // GS-AUD-0035. The group is still OFFERED when no best reader can
+            // be bound - hiding it would conceal a scroll the player owns - and
+            // ReaderResolved is what the destination panel reads to present the
+            // row as visibly disabled with its reason, on both the desktop and
+            // gamepad paths. So this flag is a UI contract, not only a cast
+            // precondition: exactly one stable row, marked non-executable.
+            Assertions.Equal(1, Compose(Point(), new[] { known, unknown })
+                .SpellActions.Count(), "An unrankable group keeps exactly one stable row.");
+            Assertions.True(row.Source != null,
+                "A disabled row still names a concrete group source for its label.");
+            // And the same group becomes executable again, without changing
+            // identity, once a best reader can be bound - which is what lets the
+            // panel re-enable the row on refresh rather than rebuild the list.
+            Assertions.True(!row.ReaderResolved && resolved.ReaderResolved,
+                "The same row identity must be able to move from disabled to executable.");
         }
     }
 
