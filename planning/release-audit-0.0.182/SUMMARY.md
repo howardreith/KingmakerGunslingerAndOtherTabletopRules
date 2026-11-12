@@ -1,7 +1,7 @@
 # Gunslinger pre-release audit — final summary
 
 **Campaign** KMG-AUD-20261111T170737Z · **host** HOWARD-LAPTOP (verified OLD LAPTOP)
-**Started** 2026-11-11T17:07:37Z · **revision 3** after two owner reviews · **elapsed ≈ 6 h 35 min**
+**Started** 2026-11-11T17:07:37Z · **revision 4** after three owner reviews · **elapsed ≈ 7 h 20 min**
 of the 48-hour allowance. Deadline 2026-11-13T17:07:37Z, never extended or restarted.
 
 **Disposition: `IN_PROGRESS_CHECKPOINT`.** This is **not** a complete audit and **not** a release
@@ -9,12 +9,35 @@ approval. Revision 2 claimed `COMPLETE_WITH_GAPS`; that was wrong, because eligi
 unattempted. Every coverage row has a disposition, but **assigning `NOT_RUN` to work that was
 never scheduled does not make the audit complete**. The explicit remaining queue is §6a.
 
-> **How to read "47 findings".** It is 47 numbered *records*, not 47 demonstrated product
-> defects. It mixes confirmed observations, **2 withdrawn false positives**, contract questions,
-> conditional risks whose preconditions are unestablished, harness defects and verification gaps.
-> **Active S2 count: 6.** Do not use the record count as a defect count or the ranked list as a
-> repair backlog without reading each entry's evidence strength.
+> **How to read "48 findings".** It is 48 numbered *records*, not 48 demonstrated product
+> defects. It mixes confirmed observations, **2 withdrawn false positives**, several
+> reclassified entries, contract questions, conditional risks whose preconditions are
+> unestablished, harness defects and verification gaps. **Active S2 count: 6.** Do not use the
+> record count as a defect count, or the ranked list as a repair backlog, without reading each
+> entry's evidence strength.
 
+> ### Revision 4 — what the third review changed
+>
+> - **`GS-AUD-0044` (Dead Shot audio) — RECLASSIFIED S2 → S3 harness.** **Eleven notifications
+>   are correct.** The counter brackets the *entire* nested scenario, which runs eleven
+>   discharge-producing volleys, and production posts one per non-misfire volley. The assertion's
+>   `+1` is stale. The counter also measures **attempted** notifications (incremented before the
+>   emitter check and before `TryPost`), so it could not have shown audio duplication anyway.
+>   Its "second-highest repair priority" ranking is withdrawn.
+> - **`GS-AUD-0045` — over-exclusion retracted.** I wrote that every item resolves correctly.
+>   `items.Count == 14 &&` **short-circuits**, so the binding check never ran, and the diagnostic
+>   prints the *catalog's expectation*, not a comparison result. Bindings are **UNVERIFIED**.
+> - **`GS-AUD-0046` — count corrected.** The predicate already expects **12** enchantments and 12
+>   were observed; only the weapon (55→57) and item (56→58) counts are stale. `custom.Contains(policy)`
+>   is skipped after the weapon mismatch, so policy presence stays unverified.
+> - **COV-027 attribution fixed.** Revision 3 classified the *expanded-summoning* row using
+>   *firearm* results. COV-027 is restored to `NOT_RUN`; firearm evidence moved to new rows
+>   **COV-058/COV-059**.
+> - **Superseded instructions removed** from the summary and handoff bodies — not just banners.
+> - **`GS-AUD-0048` added**, found by the review: Dead Shot's probes carry the same sign error as
+>   Scatter. A complete sweep of production `RuleAttackRoll`/`RuleAttackWithWeapon` constructions
+>   now bounds it: **exactly two** sites pass a negative penalty, and no third exists.
+>
 > ### Revision 3 — what the second review changed
 >
 > - **`GS-AUD-0040` (Shield Other) — RECLASSIFIED.** I presented a three-way conflict and asked
@@ -33,7 +56,8 @@ never scheduled does not make the audit complete**. The explicit remaining queue
 > - **Scatter trace finished.** The clamping caveat is closed: no clamp exists anywhere on the
 >   penalty path, so the +2 / 4-point swing is established rather than inferred.
 > - **A20 was not human-only.** Three machine-observable presentation/audio scenarios were
->   admissible all along. Running them produced three native FAILs, including **GS-AUD-0044**.
+>   admissible all along. Running them produced three native FAILs — all three of which
+>   revision 4 then had to reclassify as stale assertions rather than product defects.
 >
 > ### Revision 2 — what the first owner review changed
 >
@@ -97,11 +121,12 @@ are unproven on this candidate.
 |---|---|---|---|---|
 | **GS-AUD-0039** | **S2** | product | **Scatter Shot's documented −2 attack penalty is applied as a +2 bonus** — a 4-point swing on every scatter attack. `AttackBonusPenalty` is *subtracted* by the engine, so the `-2` constant is a bonus. Six other KMG sites write penalties as `+n`; scatter is the only one passing a negative. | source + **engine IL measured** |
 | **GS-AUD-0006** | **S2** | product | A **failed settings-migration write** misclassifies a valid older `FeatureModules.json` as malformed and **resets all 13 modules to ON**, repeating every launch. Applies to any player whose schema is older than 12. | source |
-| **GS-AUD-0044** | **S2** | observed failure | **Dead Shot appears to commit ~11 audio events where its contract requires exactly 1.** Startling (+1), Menacing (+2) and Stop Bleeding (+2) all matched; only Dead Shot is anomalous. A stale-expectation explanation is retained and not excluded. | **native-reproduced once** |
+| **GS-AUD-0048** | **S2** | product | **Dead Shot's iterative probes receive +5/+10 bonuses instead of −5/−10 penalties** — the same sign error as GS-AUD-0039. A complete sweep shows these are the **only two** negative-penalty production sites. *(Found by the rev-3 review.)* | source + **engine IL measured** |
 | GS-AUD-0040 | S3 | doc | Shield Other's shipped **description** is stale. The distance-independent bond is the **approved** contract (`EXPANDED-SUMMONING-MISSION.md:71`); the code and the regression test are correct. *(Reclassified in rev 3 — not an owner decision.)* | source |
 | **GS-AUD-0025** | **S2** | product | Untemplated **Summon Monster** alternate-caller children keep the donor's inherited celestial/fiendish template. (Scope corrected — the Nature's Ally families are not affected.) | source |
 | **GS-AUD-0031** | **S2** | doc | `BETTER-VENDORS-COMPATIBILITY.md` misdescribes the "+1" acquisition path. (Corrected — the items **are** available, via Dire Narlmarches/Pitax/BTSL plus BV Military rank I.) | source |
 | GS-AUD-0013 | S2/S3 | contract | Misfire suppression is released **only by player input**; repair, Quick Clear and rest do not clear it, so an AI companion stays locked out for the session. | source, verified |
+| GS-AUD-0044 | S3 | harness | The deed-audio aggregate expectation is stale — **eleven notifications are correct** for the nested scenario, and the counter measures *attempted* not audible events. *(Reclassified from S2 in rev 4.)* | native, re-explained |
 | GS-AUD-0008 | S3 | doc | Stale "Broken **or Wrecked**" field-repair prose in **eight** places including **`README.md:869`** — the Nexus front page. | source |
 | GS-AUD-0041 | S3 | doc | PFA control-immunity catalog has 23 entries; its authority table lists 21. The Suggestion entry may violate the doc's own exclusion list. | source |
 | GS-AUD-0032 | S3 | product | A base Gunslinger's level-17 Gun Training pick has no option and grants nothing. | source |
@@ -166,18 +191,21 @@ across seven traced triggers, and 36 further rows — all with file:line.
 | **Any save-bearing behaviour at all** | **No save was loaded.** Migration, cold reconstruction and the area-load path are entirely unproven | An admitted Working-save transaction |
 | **Firearm cold-load token survival** (GS-AUD-0021) | Core persistent state; a lost token decodes **silently** | One disposable save, one cold restart |
 | **The incident** (GS-AUD-0003/0024) | Attribution impossible without it | The original `output_log.txt` |
-| **Autonomous summon AI, presentation, audio, performance** (A09/A20/A21/A22) | **Genuinely never attempted** — not blocked, just not done | Dedicated native sessions |
+| **Summon roster presentation / audio / performance** (A09, A21, COV-027) | **Never attempted** — not blocked. The *firearm* presentation and audio scenarios were run (COV-058/059); the *summoning* ones were never assessed | Dedicated native sessions |
+| **A22** upgrade/persistence | genuinely **blocked** | a legitimate older save fixture |
 | `observe-feature-module-settings` | Would close the native 13-module boundary | Build the 13 Boolean parameters from the catalogue |
 | **Better Vendors real merchants** (COV-051) | Declared BLOCKED | A kingdom-stage fixture |
 | **Nereid / Treacherous Earth** (GS-AUD-0020) | Owner-**waived** — a waiver is a gap | Admitted native runs |
 
-## 7. Coverage across all 57 planned rows
+## 7. Coverage across all 59 rows (57 planned + 2 added)
 
-`VERIFIED 3 · PARTIAL 36 · FAIL 8 · NOT_RUN 7 · HISTORICAL_ONLY 2 · BLOCKED 1`
+`VERIFIED 3 · PARTIAL 36 · FAIL 9 · NOT_RUN 8 · HISTORICAL_ONLY 2 · BLOCKED 1` (59 rows)
 
-`VERIFIED` fell from 6 to 3 in revision 3 — the Magic Circle rows were verified on an
-inventory-only observer. No row is `NOT_APPLICABLE`. **PARTIAL** almost always means source and
-domain evidence exist and native does not.
+`VERIFIED` fell from 6 to 3 in revision 3 — the Magic Circle rows had been verified on an
+inventory-only observer. Revision 4 added **COV-058** (firearm visual rigs) and **COV-059**
+(firearm/deed audio) because revision 3 had wrongly recorded firearm results against the
+expanded-summoning row COV-027, which is restored to `NOT_RUN`. No row is `NOT_APPLICABLE`.
+**PARTIAL** almost always means source and domain evidence exist and native does not.
 
 ## 8. Machine state
 
@@ -197,7 +225,11 @@ bytes, not timestamps. Bytes are exact. **No restoration debt remains.**
    the sign by behaviour instead of by the constant's literal value.
 2. **GS-AUD-0008** — fix `README.md`. Nexus front page, currently false about a core mechanic.
 3. **GS-AUD-0006** — move the migration `Save` out of the parse `try`.
-4. **GS-AUD-0040** — decide Shield Other's range contract; three authorities disagree.
+4. **GS-AUD-0040** — correct Shield Other's shipped **description** only. There is **no design
+   decision here**: `planning/EXPANDED-SUMMONING-MISSION.md:71` already approves the
+   distance-independent bond, and the code and regression test are correct. **Do not reintroduce
+   the distance check.**
+4b. **GS-AUD-0048** — Dead Shot's probe sign, alongside GS-AUD-0039. One coherent change.
 5. **GS-AUD-0025 / 0026**, then **GS-AUD-0031**, **GS-AUD-0013**, **GS-AUD-0041**.
 6. **Close the save-bearing gap before release** — GS-AUD-0021 above all.
 7. Harness debt (**GS-AUD-0005, 0018, 0038**) — currently producing false assurance.
@@ -206,10 +238,21 @@ bytes, not timestamps. Bytes are exact. **No restoration debt remains.**
 
 ## 10. Honest statement of what this audit is not
 
-It did not reproduce the crash. It did not load a save. Native coverage is startup plus six
-scenarios. Several S2 findings rest on source reading alone. A09/A20/A21/A22 were never
-attempted. **And its first revision over-claimed completeness, shipped two false positives, and
-had to be corrected on review** — one of which would have broken correct code.
+It did not reproduce the crash. It did not load a save. Native coverage is **startup across
+seven profiles plus ten disposable/observe scenarios** — real, but narrow. Several S2 findings
+rest on source reading alone. **A09, A21, A22, 27 of the 28 module boundary states and the whole
+summon-roster presentation/audio/performance contract were never attempted.**
+
+**And its findings needed three rounds of correction.** Across those reviews it withdrew two
+false positives (Nimble, RU), withdrew one mechanism (GS-AUD-0038), reclassified three findings
+(GS-AUD-0040 Shield Other, GS-AUD-0044 Dead Shot audio, GS-AUD-0046 enchantment counts),
+retracted an over-exclusion (GS-AUD-0045), corrected a coverage attribution error (COV-027), and
+changed its own disposition from "complete" to "checkpoint". Four of those errors shared one
+cause: **accepting a subagent's claim, or an apparent conflict, without finishing the
+verification.** Two of them — Nimble and Shield Other — would have sent a repair agent to undo
+correct, deliberately approved code.
+
+Read each entry's evidence strength before acting on it.
 
 **A clean domain suite and clean startup smokes are not a release qualification.** On this
 evidence, release readiness for 0.0.182 is **not established**.
