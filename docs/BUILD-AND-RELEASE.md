@@ -2,6 +2,30 @@
 
 ## 0.0.184 publication authorization
 
+**Published (completed).** Stable
+[v0.0.184](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.184)
+is Latest and not a prerelease. The annotated tag `1b2eaa3bee` peels to the
+release commit `6d033bc4d9`.
+
+- **Gate.** The complete suite passed 2,949/2,949 with 0 failures.
+- **Builds.** Two deterministic exact-reference builds produced identical
+  archives:
+  - package SHA-256
+    `1496ead5dbfd8227943fd0fc068aca881f830b52d498ab8357ecd5d764332c76`;
+  - DLL SHA-256
+    `9251118ef487e6393628b70a8198f20a238d533321a6dc10724d86f27e185fee`;
+  - MVID `7b0d2325-988c-4dd2-8aef-c053b1899904`.
+- **Reference bundle.** `artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references`
+  (the verified bundle with `UniRx.dll`, used for every development candidate of this work).
+- **Public download.** A fresh download matched `SHA256SUMS.txt`, the manifest names the release commit, and the
+  embedded `Info.json` reads 0.0.184 with the matching DLL.
+- **Timing.**
+  - The publisher took 1,579 s; a peer session's short package build overlapped part of it.
+  - Preparation: the release-branch repository wrapper plus complete suite took 603 s.
+  - Total about 2,182 s, about 380 s over the 30-minute planning budget.
+- **Installation.** The installed mod is untouched and still reads 0.0.140.
+- **Merges.** PR #133 was merged as `9469105336`. The owner merged release PR #141 as `6d033bc4d9`.
+
 On 2026-11-12 Howie wrote: "Approved. Please merge and cut a release." PR #133 was marked ready and merged as
 `9469105336`. No channel was named, so this follows v0.0.183 as the next stable patch, v0.0.184, from master after
 PR #133.
