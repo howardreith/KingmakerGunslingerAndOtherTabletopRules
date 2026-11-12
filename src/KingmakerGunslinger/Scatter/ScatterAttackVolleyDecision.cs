@@ -5,7 +5,23 @@ namespace KingmakerGunslinger.Scatter
     /// <summary>Aggregate decision for one independently rolled scatter volley.</summary>
     internal sealed class ScatterAttackVolleyDecision
     {
-        internal const int AttackPenalty = -2;
+        /// <summary>
+        /// The scatter volley's attack penalty, expressed in the Kingmaker
+        /// 2.1.7b native convention: <c>RuleAttackWithWeapon.AttackBonusPenalty</c>
+        /// is a positive quantity that the engine SUBTRACTS. Measured on the
+        /// qualified reference assembly (Assembly-CSharp.dll, SHA-256
+        /// 3b6450ff...f5afb): the constructor stores the argument verbatim into
+        /// an initonly field, forwards it verbatim into RuleAttackRoll, whose
+        /// setter is a plain auto-property, and
+        /// RuleCalculateAttackBonus::OnTrigger computes
+        /// <c>BaseAttackBonus - AttackBonusPenalty</c> with no clamp anywhere on
+        /// the path. So positive two realises the documented -2 attack penalty
+        /// (ADR-0037:40-41); a negative value here would realise a +2 BONUS.
+        /// Every other penalty site in this repository uses the same positive
+        /// convention (for example EasternWeaponProficiencyRuntime's
+        /// <c>AttackBonusPenalty + 4</c> for a -4 penalty).
+        /// </summary>
+        internal const int AttackPenalty = 2;
 
         internal ScatterAttackVolleyDecision(
             int targetCount,
