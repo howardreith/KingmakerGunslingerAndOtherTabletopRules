@@ -1,8 +1,21 @@
 # Hide original Summon Elemental by default (2026-11-12): status
 
-**Reviewable development checkpoint after the PR #133 review corrections. Second native checkpoint (candidate
-`312bb462e8`) FAIL on an observer-design defect: the owner's reproduced screen is observed hidden by default; reveal,
-selection, book and metamagic cells were not reached. STOP.** See "Review corrections" at the end.
+**Current state (2026-11-12, source `0d944a262f`): reviewable development checkpoint. Third native checkpoint
+FAIL (observer), 12 PASS / 1 FAIL.** Observed natively on the real Wizard "Choose Spells" screen:
+- hidden with the option off;
+- after reopen with the option on, the original spell is one ordinary row;
+- native selection works, and a slot switch retains it.
+
+Native deselection by replacement did not settle within its bound, and the book/metamagic cells were not reached.
+STOP. See "Verification continuation" at the end.
+
+**Current behavior.**
+- Hidden by default in learning, spellbook/memorize lists and the PC metamagic tab. The metamagic filtering is
+  implemented, though not yet observed natively.
+- UMM option: "no restart; close and reopen the spell list to apply". A same-list learning-slot switch does not
+  apply it.
+- Sections below "Verification continuation" are the current record; earlier sections are history.
+
 Branch `codex/hide-original-summon-elemental` from master `4b10c85768` (v0.0.183 records merge). One draft PR.
 Nothing is merged, tagged, released or installed.
 
@@ -22,8 +35,9 @@ spells and prepared slots stay intact, and the option shows everything again as 
 
 ## Changes (source `b0d235c33a`, observer fix `70ad3b8e6c`)
 
-**New UMM option.** "Show original Summon Elemental spells (applies immediately)", under Expanded Summoning.
-- Default off. Applies live (no restart).
+**New UMM option.** "Show original Summon Elemental spells", under Expanded Summoning. (Historical label "applies
+immediately", superseded: current label "no restart; close and reopen the spell list to apply".)
+- Default off. No restart; close and reopen the spell list to apply.
 - Persisted as the optional `FeatureModules.json` key `show-original-summon-elemental`. There is no schema bump:
   earlier releases ignore the key. A missing key means hidden, and a non-boolean value recovers to defaults.
 - Only active while Expanded Summoning is active. With the module off, nothing is hidden.
@@ -335,3 +349,148 @@ attempt needs a new owner allowance.
 4. Uncheck the option, reopen, and the rows are gone. Summon Monster / Summon Nature's Ally elementals, prepared
    copies and the action-bar Elementals chooser are unchanged.
 5. Optional: a Cleric with a Fire, Travel or Weather domain keeps its domain elemental, including a metamagic copy.
+
+---
+
+# Verification continuation (PR #133, 2026-11-12, candidate `0d944a262f`)
+
+The owner authorized narrow observer and wording corrections, focused checks, one build and one guarded run, and
+raised the cumulative ceiling to 2,400 s (target 900 s). The reviewed head was `f500a1cda6`. Feature implementation
+frozen.
+
+## Changes (source `0d944a262f`)
+
+- **Wording.** The UMM label and comments now say "no restart; close and reopen the spell list to apply". This was
+  verified in the installed code: opening level-up and `SetClass` both call `ClearAllSelectors`, which clears the
+  layer's cached `CurrentSpellSelectionData`, so a reopened list rebuilds through the filter. A same-list slot switch
+  only runs `FillSpellLightUpdate`.
+- **Learning observer.** One disposable Wizard2 actor and two separate native level-up sessions:
+  - **Session A:** option off before opening; hidden check (at least 10 ordinary rows, Summon Monster II once,
+    0 originals, no disclosure, allocation unchanged); owned native cancel, with preview disposal checked.
+  - **Session B:** option on before reopening; all references reacquired; ordinary row; native selection; the slot
+    switch is described as a native selection refresh; native replacement; cancel.
+
+  Each session owns its controller cleanup, and the actor is destroyed once. The old in-session "hidden pending
+  reachable" and "re-hidden after deselect" cells are removed: they assumed a rebuild that never happens.
+  Pending-choice filtering safety rests on the focused tests (`cleanup2-elemental-learning-budget`,
+  `original-summon-elemental-learning-hidden`).
+- **Book/metamagic verdicts strengthened.**
+  - The level-3 metamagic-copy list is checked when hidden.
+  - A revealed book cell page-walks the rendered identities: source and control once each.
+  - Metamagic tab: the hidden verdict requires the rendered control copy; the revealed verdict requires both
+    rendered copies.
+  - The ordinary preparation/undo and the explicit mixed-fixture cleanup are kept.
+
+## Focused verification
+
+- Focused gate (filter `cleanup2-elemental;original-summon-elemental;feature-settings`): 26/2,949, 0 failures,
+  production compiled, 66.2 s.
+- Patch targets: 50/50, 1.3 s.
+
+## Candidate `0d944a262f`
+
+| Item | Value |
+| --- | --- |
+| Source | `0d944a262f4fc78541ef396753e0513f1cb5f30c`, v0.0.183 development, purpose `hide-original-summon-elemental` |
+| Source-state fingerprint | `dc153be10ae1c057a71b45801499d132df9e917df2988648ec10652a5e9c14b3` |
+| Package SHA-256 | `41043db7dee2289ea8f96623e02d18b9c5f01a719b19614a0492daf99139f0c4` |
+| DLL SHA-256 / MVID | `84c2917a5ffbf932c8f2dfb62b3b19f2c420635fd695fce249562a2e1b5f67b9` / `f34ca190-0bbd-4707-a880-74a700947a9e` (loaded module) |
+| Build | 733 s (a peer session's offline MSBuild ran concurrently); 26/2,949 tests; strict UMM package validation passed; explicit `-ReferenceBundleDir artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references` |
+
+## Native checkpoint
+
+One guarded invocation on DATA. Same route as before: `Invoke-ExpandedSummoningRuntimeScenario.ps1`
+(Params.xml-protected), Windows PowerShell 5.1 child, combined installation,
+`disposable-expanded-summoning-cleanup2-native-review`, `reviewPhase=elementals-learning`, save-free.
+- Run evidence `runtime-evidence/20261112T1413144022391Z-disposable-expanded-summoning-cleanup2-native-review`
+  (private). Wrapper 117.8 s.
+- The peer session granted a no-Kingmaker window; it was released after restoration.
+
+**Result: FAIL, 12 PASS / 1 FAIL.** The failure is the execution cell.
+
+| Cell | Result | Observed |
+| --- | --- | --- |
+| Session A `learning-hidden-by-default` | PASS | Real Wizard 2→3 "Choose Spells"; 82 active rows, 0 original elementals, Summon Monster II once, no disclosure, pending `[–, –]` (2 free), seam installed |
+| Session A `native-learning-cancel-hidden-session` | PASS | Owned Esc and confirm Yes; 0 commits; Wizard2; known spells exact; preview disposed; original controller field restored |
+| Session B `learning-revealed-ordinary-row` | PASS | Option on before reopening; 83 active rows; `970c6db4…` (Summon Small Elemental) exactly once, interactable, unselected; no disclosure or duplicate |
+| Session B `native-learning-allocation` | PASS | Native row toggle → `SetSpell`; pending `[–, –]` → `[970c6db4…, –]`; free slots 2 → 1; preview knows it; actor does not; 0 commits |
+| Session B `learning-selection-refresh-retains-choice` | PASS | Second slot then the original slot (native selection refresh, not a rebuild); the row is still once and selected; pending exact |
+| Session B native deselection by replacement | **FAIL** (`ui-execution-learning`) | After toggling another ordinary unselected level-2 row, the wait for "replacement pending and source not pending" did not settle within its bound. The pending state at timeout was not recorded. |
+| `learning-restored` and native Default restore | PASS | Session B's controller force-closed by its own cleanup; creator closed; party/selection exact; in-memory option restored |
+
+**Screenshots inspected (private).**
+- `native-ui-000`: session A, the native list with no "Elementals" row.
+- `native-ui-001`: session B. The list shows "Summon Small Elemental" as an ordinary row between Summon Monster II and
+  Telekinetic Strikes, in the same Stone Call…Vine Strike region as the owner's bug screenshot.
+- `native-ui-002`: after selection, the first slot holds Summon Small Elemental, the second slot is empty, and the
+  preview book lists it at level 2.
+
+**Classification: observer/native-interaction unknown, not a product defect** (product presentation was correct
+in every observed cell). The replacement click either did not route through `SetSpell` for the original slot,
+or routed into the other slot. One candidate explanation is that the native current slot differs from the toggled
+one. It was not established because the timeout recorded no state. **Not observed:** native deselection by
+replacement, session B's cancel cell, the mixed book (hidden/revealed), the metamagic tab (hidden/revealed),
+book preparation/undo and the mixed-fixture cleanup cell. The mixed fixture was never created.
+
+**Controller.** No rendered observation. Coverage is the shared learning seam, the controller book postfix target,
+compile and pure tests.
+
+**Exceptions unchanged.** Domain/special grants are kept (any level). Scroll copying is unrestricted. Unclassified
+learning contexts fall back to native rows. The budget guard is kept.
+
+Earlier candidates keep their own results: `b0d235c33a` FAIL 7/3 and `312bb462e8` FAIL 8/2 (its hidden-default
+learning PASS). Correction `70ad3b8e6c` stays focused/compile-only. No result transfers to `0d944a262f`.
+
+## Restoration
+
+Wrapper record `runtime-evidence/expanded-summoning-restoration/20261112T1414383464502Z-disposable-expanded-summoning-cleanup2-native-review.json`.
+- Live tree 254 files `5C3E4AD4…BFBB` before and after.
+- `Params.xml` restored to `E44F4495…30BB` (receipt
+  `runtime-backups/umm-params/20261112T1412413018455Z-78540c992d9f4e96a0b18efc75a6b720/`).
+- An independent Windows PowerShell 5.1 comparison against the intake was identical:
+  - live v0.0.140, DLL `00EF6757…66FD`;
+  - `FeatureModules.json` `6E24B278…85D0`;
+  - `Params.xml` byte-identical;
+  - the same 16 enabled mods;
+  - 95 saves, none modified since 13:30 UTC;
+  - baseline and working save hashes unchanged.
+- No Kingmaker process and no lock left. The disposable actor was destroyed, the in-memory option restored and the
+  creator closed.
+
+## Ledger (cumulative; ceiling 2,400 s by owner extension, target 900 s)
+
+| Step | Seconds |
+| --- | ---: |
+| Carried | ~1,314 |
+| Focused gate | 66.2 |
+| Patch targets | 1.3 |
+| Candidate build `0d944a262f` | 733 |
+| Guarded invocation (wrapper wall, incl. restoration) | 117.8 |
+| Intake and restoration verification | ~15 |
+| **Cumulative** | **~2,247** |
+
+About 153 s remain, which is not enough for another build or run.
+
+## Proposed next correction (not implemented, not authorized)
+
+The observer change is small:
+- record pending, the current native slot index and the replacement identity on any deselection timeout;
+- before replacing, select the original slot through its native switch item and require the native current index
+  to equal that slot;
+- if the native UI auto-advances to the empty slot after a choice, describe that.
+
+The book/metamagic cells are unchanged and still need their first native observation. One build and one run need a
+new allowance (about 600 s, plus a margin for concurrent builds).
+
+## Owner retest checklist
+
+1. Option off: Wizard level-up "Choose Spells" shows no Summon Elemental and no "Elementals (n)" row. Observed
+   natively.
+2. Option on, then **close and reopen** level-up: "Summon Small Elemental" appears once as an ordinary row and can be
+   selected. Observed natively. Then pick a different spell for that slot and confirm it replaces Summon Small
+   Elemental (not yet observed natively).
+3. Spellbook (level pages and the star metamagic tab), option off then on with the book reopened: original
+   elemental rows and their metamagic copies are hidden, then shown once each; other spells and favorites
+   unchanged. Not yet observed natively.
+4. Summon Monster / Summon Nature's Ally elementals, prepared copies, domain elementals and the action-bar
+   Elementals chooser are unchanged.
