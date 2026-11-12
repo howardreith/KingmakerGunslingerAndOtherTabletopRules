@@ -61,6 +61,25 @@ namespace KingmakerGunslinger.Blueprints
         /// applied it, so an alternate caller's untemplated Summon Monster
         /// child kept the donor's template. Keeping the set here means the two
         /// paths cannot diverge again.
+        ///
+        /// Acceptance for this repair has TWO separate parts, and the first
+        /// must never be allowed to close the second:
+        ///
+        /// 1. Graph/reader verification. The removal action exists on each
+        ///    spawn branch, is bound to the correct creature unit, carries the
+        ///    exact native identities, and occupies the final composed
+        ///    position. This is what the alternate-summoning composition
+        ///    observation checks - and that scenario states its own limit:
+        ///    "Structural and graph evidence only... summon execution...
+        ///    not exercised". It casts nothing.
+        /// 2. Execution verification. A concrete affected tuple is actually
+        ///    cast - for example Monster Tactician, tier 4, hound-archon - and
+        ///    the SPAWNED UNIT's buffs are inspected to confirm the inherited
+        ///    celestial/fiendish template is gone, with an intended templated
+        ///    Summon Monster control that retains its template and an
+        ///    unchanged Nature's Ally control.
+        ///
+        /// A passing graph observation alone leaves part 2 outstanding.
         /// </summary>
         internal static bool RequiresInheritedTemplateRemoval(SummonFamily family,
             SummonCreatureSpec creature)
