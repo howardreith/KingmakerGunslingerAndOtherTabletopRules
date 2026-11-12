@@ -43,6 +43,35 @@ namespace KingmakerGunslinger.Spells.MagicCircle
             if (area == null || area.IsEnded || area.View == null || BlueprintBootstrap.MagicCircles == null) return;
             var circle = BlueprintBootstrap.MagicCircles.FirstOrDefault(value => ReferenceEquals(value.Area, area.Blueprint));
             if (circle == null) return;
+            // GS-AUD-0043. This reuses an existing boundary without comparing
+            // existing.AreaId to area.UniqueId or existing.Alignment to
+            // circle.Alignment, and those fields are written just below for
+            // exactly that kind of matching. The audit flagged it as a possible
+            // stale-decal defect, gated on an unverified precondition: that
+            // Kingmaker recycles an area view such that a previous circle's
+            // boundary survives into a different area or alignment.
+            //
+            // That precondition does not hold, measured on the qualified
+            // reference assembly (Assembly-CSharp.dll, SHA-256
+            // 3b6450ff...f5afb). Kingmaker.Controllers.AreaEffectsController::Spawn
+            // constructs a BRAND-NEW GameObject, calls
+            // AddComponent<AreaEffectView>() on it, and assigns a fresh
+            // Guid.NewGuid() as the unique id. There is no pooling or reuse of
+            // the view object at spawn, so a newly spawned circle's view cannot
+            // already carry another circle's boundary and this
+            // GetComponentInChildren returns null.
+            //
+            // The branch is therefore reachable only when OnViewAttached fires
+            // again for the SAME AreaEffectEntityData, where AreaId and
+            // Alignment match by construction. The missing comparison is inert,
+            // so the matching logic is deliberately left unchanged rather than
+            // repaired against an unproven precondition.
+            //
+            // Honest limit: this is an engine/structural conclusion. No rendered
+            // decal observation was performed, and none is implied. If area-view
+            // reuse across differing alignments is ever actually demonstrated,
+            // the fix is to compare both fields here before reusing - without
+            // destroying unrelated visuals.
             var existing = area.View.GetComponentInChildren<MagicCircleRadiusVisual>(true);
             if (existing != null) { existing.Boundary.enabled = true; return; }
             var root = new GameObject("KMG_MagicCircle_Radius_" + circle.Alignment);
