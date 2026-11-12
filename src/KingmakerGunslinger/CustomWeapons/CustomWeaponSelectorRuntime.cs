@@ -148,10 +148,14 @@ namespace KingmakerGunslinger.CustomWeapons
             UnitDescriptor beforeLevelUpUnit, UnitDescriptor previewUnit,
             ref IEnumerable<IFeatureSelectionItem> __result)
         {
-            IEnumerable<FeatureUIData> source = (__result ??
-                Enumerable.Empty<IFeatureSelectionItem>()).OfType<FeatureUIData>();
-            __result = CustomWeaponSelectorRuntime.Append(__instance, source)
-                .Cast<IFeatureSelectionItem>();
+            // GS-AUD-0034: filter only the entries this project understands
+            // and never discard another mod's implementation.
+            __result = Compatibility.SelectionBoundaryPreservation.Merge(
+                __result,
+                value => value is FeatureUIData,
+                understood => CustomWeaponSelectorRuntime.Append(__instance,
+                        understood.Cast<FeatureUIData>())
+                    .Cast<IFeatureSelectionItem>().ToArray());
         }
     }
 }

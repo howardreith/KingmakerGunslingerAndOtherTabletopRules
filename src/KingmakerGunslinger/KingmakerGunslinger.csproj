@@ -266,6 +266,7 @@
     <Compile Include="ElvenBranchedSpear\MovementOpportunityAccuracyComponent.cs" />
     <Compile Include="CustomWeapons\CustomWeaponCategoryDefinition.cs" />
     <Compile Include="CustomWeapons\CustomWeaponCategoryRegistry.cs" />
+    <Compile Include="Compatibility\SelectionBoundaryPreservation.cs" />
     <Compile Include="CustomWeapons\CustomWeaponSelectorRuntime.cs" />
     <Compile Include="Compatibility\CustomWeaponFocusedWeaponCompatibility.cs" />
     <Compile Include="Compatibility\CustomWeaponMartialPerformancePolicy.cs" />
@@ -1034,6 +1035,7 @@
     <Compile Include="Gunsmithing\CraftBasicAmmunitionAbilityLogic.cs" />
     <Compile Include="Gunsmithing\CraftPaperCartridgesAbilityLogic.cs" />
     <Compile Include="Gunsmithing\GunsmithingPlayerFacingReasonPolicy.cs" />
+    <Compile Include="Gunsmithing\FirearmCraftingCompensationPolicy.cs" />
     <Compile Include="Gunsmithing\FirearmCraftingTransactionService.cs" />
     <Compile Include="Gunsmithing\CraftingRestResetPatch.cs" />
     <Compile Include="Gunsmithing\CompletedRestMaintenancePolicy.cs" />
