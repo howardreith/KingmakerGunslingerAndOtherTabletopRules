@@ -114,21 +114,6 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(0, (int)declared.GoldToRestore,
                 "A declared prior refund must not be repeated.");
 
-            // The same holds for items.
-            FirearmCraftingCompensationPlan itemsDeclared =
-                FirearmCraftingCompensationPolicy.Plan(100, 100 - Cost, Cost,
-                    new[] { 5 }, new[] { 25 }, new[] { 20 }, false, 0, new[] { 20 });
-            Assertions.Equal(0, itemsDeclared.ItemsToRemove[0],
-                "A declared prior removal must not be repeated.");
-
-            FirearmCraftingCompensationPlan partial =
-                FirearmCraftingCompensationPolicy.Plan(100, 100 - Cost, Cost,
-                    new[] { 5 }, new[] { 25 }, new[] { 20 }, false, 5, new[] { 8 });
-            Assertions.Equal((int)Cost - 5, (int)partial.GoldToRestore,
-                "A partially settled refund continues from where it stopped.");
-            Assertions.Equal(12, partial.ItemsToRemove[0],
-                "A partially settled removal continues from where it stopped.");
-
             Assertions.Throws<ArgumentOutOfRangeException>(() =>
                 FirearmCraftingCompensationPolicy.Plan(100, 90, Cost,
                     new[] { 0 }, new[] { 0 }, new[] { 0 }, false, -1, null),
@@ -137,6 +122,116 @@ namespace KingmakerGunslinger.DomainTests
                 FirearmCraftingCompensationPolicy.Plan(100, 90, Cost,
                     new[] { 0 }, new[] { 0 }, new[] { 0 }, false, 0, new[] { 0, 0 }),
                 "A declared-removal array of the wrong length must fail closed.");
+        }
+
+        /// <summary>
+        /// An ordinary interrupted compensation, resumed. No external
+        /// interference. The balances and counts are the CURRENT ones, so they
+        /// already include the first pass - which is exactly what the earlier
+        /// version of this fixture got wrong by declaring a partial refund
+        /// while still supplying the pre-refund balance.
+        ///
+        ///     100 -> debit 22 -> 78 -> refund 5, interrupted -> 83
+        ///     resume: remaining budget 17, observed deficit 17 -> restore 17
+        ///
+        /// Subtracting the declared refund from the deficit as well would
+        /// return 12 here and strand 5 gold permanently.
+        /// </summary>
+        internal static void AnInterruptedCompensationResumesExactly()
+        {
+            const int outputBefore = 5;
+            const int inserted = 20;
+
+            // First pass on the real failure: refund 22, remove 20.
+            FirearmCraftingCompensationPlan first = Plan(100, 100 - Cost,
+                new[] { outputBefore }, new[] { outputBefore + inserted },
+                new[] { inserted });
+            Assertions.Equal((int)Cost, (int)first.GoldToRestore,
+                "The first pass plans the whole debit.");
+            Assertions.Equal(inserted, first.ItemsToRemove[0],
+                "The first pass plans the whole insertion.");
+
+            // It is interrupted after returning 5 gold and removing 8 items.
+            const int refunded = 5;
+            const int removed = 8;
+            long moneyNow = 100 - Cost + refunded;                 // 83
+            int countNow = outputBefore + inserted - removed;      // 17
+
+            FirearmCraftingCompensationPlan resumed =
+                FirearmCraftingCompensationPolicy.Plan(100, moneyNow, Cost,
+                    new[] { outputBefore }, new[] { countNow },
+                    new[] { inserted }, false, refunded, new[] { removed });
+
+            Assertions.Equal((int)Cost - refunded, (int)resumed.GoldToRestore,
+                "The resumed pass must return the remaining 17 gold, not 12.");
+            Assertions.Equal(inserted - removed, resumed.ItemsToRemove[0],
+                "The resumed pass must remove the remaining 12 items.");
+            Assertions.Equal(null, resumed.Invariant,
+                "An ordinary resumed compensation has no unrestorable residual.");
+            Assertions.True(FirearmCraftingCompensationPolicy.RestoresPreState(
+                resumed, 100, moneyNow, new[] { outputBefore }, new[] { countNow }),
+                "Applying the resumed plan restores the pre-transaction state exactly.");
+
+            // Cumulative accounting: the two passes together return exactly the
+            // cost and remove exactly the insertion, never more.
+            Assertions.Equal((int)Cost, refunded + (int)resumed.GoldToRestore,
+                "The passes together must return exactly the cost.");
+            Assertions.Equal(inserted, removed + resumed.ItemsToRemove[0],
+                "The passes together must remove exactly the insertion.");
+
+            // Resuming again after the second pass completes is a no-op.
+            FirearmCraftingCompensationPlan settled =
+                FirearmCraftingCompensationPolicy.Plan(100, 100, Cost,
+                    new[] { outputBefore }, new[] { outputBefore },
+                    new[] { inserted }, false, (long)Cost, new[] { inserted });
+            Assertions.Equal(0, (int)settled.GoldToRestore,
+                "A fully settled transaction refunds nothing further.");
+            Assertions.Equal(0, settled.ItemsToRemove[0],
+                "A fully settled transaction removes nothing further.");
+            Assertions.Equal(null, settled.Invariant,
+                "A fully settled transaction reports no residual.");
+        }
+
+        /// <summary>
+        /// A retry must keep reporting an external residual. Measured against
+        /// the ORIGINAL cost, a pass that had already refunded enough would
+        /// report a clean restore while the external deficit was still there.
+        /// </summary>
+        internal static void AnExternalResidualSurvivesTheRetry()
+        {
+            const int external = 5;
+
+            // 100 -> this transaction debits 22, something else debits 5 -> 73.
+            FirearmCraftingCompensationPlan first = Plan(100, 100 - Cost - external,
+                new[] { 0 }, new[] { 0 }, new[] { 0 });
+            Assertions.Equal((int)Cost, (int)first.GoldToRestore,
+                "Only this transaction's own debit may be refunded.");
+            Assertions.True(first.Invariant != null,
+                "The external debit must be reported on the first pass.");
+
+            // Refund the whole 22 -> 95. The 5 is still missing and is not ours.
+            FirearmCraftingCompensationPlan after =
+                FirearmCraftingCompensationPolicy.Plan(100, 100 - external, Cost,
+                    new[] { 0 }, new[] { 0 }, new[] { 0 }, false, (long)Cost, null);
+            Assertions.Equal(0, (int)after.GoldToRestore,
+                "A fully refunded transaction must not pay for an external debit.");
+            Assertions.True(after.Invariant != null &&
+                after.Invariant.Contains("only account for 0 more"),
+                "The external residual must still be reported after the retry.");
+            Assertions.False(FirearmCraftingCompensationPolicy.RestoresPreState(
+                after, 100, 100 - external, new[] { 0 }, new[] { 0 }),
+                "A state with an external residual must not claim to be restored.");
+
+            // The same for items: our 20 are gone, but 3 we never added remain.
+            FirearmCraftingCompensationPlan items =
+                FirearmCraftingCompensationPolicy.Plan(100, 100, Cost,
+                    new[] { 5 }, new[] { 8 }, new[] { 20 }, false, (long)Cost,
+                    new[] { 20 });
+            Assertions.Equal(0, items.ItemsToRemove[0],
+                "A fully removed insertion must not remove items we never added.");
+            Assertions.True(items.Invariant != null &&
+                items.Invariant.Contains("only account for 0 more"),
+                "An external item surplus must still be reported after the retry.");
         }
 
         internal static void AnExternalGoldChangeIsReportedNotAbsorbed()
@@ -149,8 +244,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal((int)Cost, (int)plan.GoldToRestore,
                 "Only this transaction's own debit may be refunded.");
             Assertions.True(plan.Invariant != null &&
-                plan.Invariant.Contains("could only debit"),
-                "A larger external debit must be reported.");
+                plan.Invariant.Contains("only account for " + Cost + " more"),
+                "A larger external debit must be reported against the remaining budget.");
             Assertions.False(FirearmCraftingCompensationPolicy.RestoresPreState(
                 plan, 100, 100 - Cost - 50, new[] { 0 }, new[] { 0 }),
                 "An unrestorable state must not claim to restore the pre-state.");
