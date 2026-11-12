@@ -19,8 +19,9 @@ namespace KingmakerGunslinger.Summoning
     /// reveals them as ordinary native rows, with no disclosure or header.
     /// Presentation only: blueprints, spell lists, known/custom spells,
     /// preparations, action-bar slots and saves are never changed, so the
-    /// option is reversible at any time. It needs no restart and applies when a
-    /// native list next rebuilds (refresh, level/tab change or reopen).
+    /// option is reversible at any time. No restart; close and reopen the spell
+    /// list to apply. (An open level-up list never rebuilds on a same-list slot
+    /// switch; the PC spellbook rebuilds on a level or tab change.)
     /// </summary>
     internal static class OriginalSummonElementalVisibility
     {
