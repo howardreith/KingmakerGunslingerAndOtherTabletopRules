@@ -289,7 +289,7 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.Equal("settings", state.Source, "The optional key is not a schema migration.");
                 Assertions.False(state.RestartRequired, "The presentation option never requires a restart.");
                 state.SetShowOriginalSummonElemental(true);
-                Assertions.False(state.RestartRequired, "Revealing applies immediately; no restart is pending.");
+                Assertions.False(state.RestartRequired, "Revealing needs no restart (close and reopen the spell list to apply).");
                 FeatureModuleSettingsStore.Save(state);
                 JObject saved = JObject.Parse(File.ReadAllText(settings));
                 Assertions.True((int)saved["schemaVersion"] == 12 &&
