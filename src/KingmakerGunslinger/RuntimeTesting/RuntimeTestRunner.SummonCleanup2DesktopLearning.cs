@@ -349,7 +349,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .Select(value => value.SpellData.Blueprint.AssetGuid)); })) yield return frame;
                     bool hidden = book.IsKnown(sourceBlueprint) && book.GetAllKnownSpells().SequenceEqual(known) &&
                         !listed.Any(value => value?.Blueprint != null && StandaloneElementalPresentationPolicy.IsOriginalSummonElemental(value.Blueprint.AssetGuid)) &&
-                        listed.Count > 0 && rendered.Count == 0 && pages > 0 && Cleanup2DesktopNoOwnedDisclosure(view) &&
+                        // Native run b0d235c33a: the disposable CL20 fixture's
+                        // only level-2 known spell is the granted source, so an
+                        // empty list is the correct hidden result (not asserted
+                        // non-empty). The filter's own count must show it hid it.
+                        OriginalSummonElementalVisibility.BookOutcome.StartsWith("pc-book:hidden=", StringComparison.Ordinal) &&
+                        OriginalSummonElementalVisibility.BookOutcome != "pc-book:hidden=0" &&
+                        rendered.Count == 0 && pages > 0 && Cleanup2DesktopNoOwnedDisclosure(view) &&
                         slots.Select(value => value.Spell).SequenceEqual(spells) && Cleanup2LearningModuleState(off);
                     Cleanup2Check("elemental-desktop-preparation-hidden-by-default", hidden, new JObject { ["source"] = sourceBlueprint.AssetGuid,
                         ["sourceKnown"] = book.IsKnown(sourceBlueprint), ["knownObjectsExact"] = book.GetAllKnownSpells().SequenceEqual(known),
