@@ -111,6 +111,48 @@ class IconCatalogTests(unittest.TestCase):
         catalog["protectedFiles"][0]["sha256"] = "0" * 64
         self.rejects("Hash mismatch:", catalog=catalog)
 
+    def _assignment_record(self, catalog):
+        return next(r for r in catalog["protectedAssignmentFiles"]
+                    if r.get("authorizedAssignmentEdits"))
+
+    def test_authorized_assignment_edit_is_rejected_outside_its_group(self):
+        catalog = copy.deepcopy(self.catalog)
+        donor = self._assignment_record(catalog)
+        catalog["protectedFiles"][0]["authorizedAssignmentEdits"] =             copy.deepcopy(donor["authorizedAssignmentEdits"])
+        self.rejects("authorizedAssignmentEdits is only valid on protectedAssignmentFiles:",
+                     catalog=catalog)
+
+    def test_authorized_assignment_edit_requires_a_recorded_authorization(self):
+        catalog = copy.deepcopy(self.catalog)
+        self._assignment_record(catalog)["authorization"] = "   "
+        self.rejects("authorizedAssignmentEdits requires a recorded authorization:",
+                     catalog=catalog)
+
+    def test_malformed_authorized_assignment_edit_is_rejected(self):
+        catalog = copy.deepcopy(self.catalog)
+        record = self._assignment_record(catalog)
+        record["authorizedAssignmentEdits"] = [
+            {"before": "same", "after": "same"}]
+        self.rejects("Malformed authorizedAssignmentEdits:", catalog=catalog)
+
+    def test_absent_authorized_assignment_hunk_is_rejected(self):
+        catalog = copy.deepcopy(self.catalog)
+        record = self._assignment_record(catalog)
+        record["authorizedAssignmentEdits"][0]["after"] = "text that is not in the file"
+        self.rejects("Change outside authorized assignment edit:", catalog=catalog)
+
+    def test_duplicated_authorized_assignment_hunk_is_rejected(self):
+        catalog = copy.deepcopy(self.catalog)
+        record = self._assignment_record(catalog)
+        record["authorizedAssignmentEdits"] =             record["authorizedAssignmentEdits"] + copy.deepcopy(
+                record["authorizedAssignmentEdits"])
+        self.rejects("Change outside authorized assignment edit:", catalog=catalog)
+
+    def test_authorized_assignment_edit_still_proves_the_pinned_baseline(self):
+        catalog = copy.deepcopy(self.catalog)
+        self._assignment_record(catalog)["sha256"] = "0" * 64
+        self.rejects("Change outside authorized assignment edit:", catalog=catalog)
+
     def test_approval_needs_exact_pixels_and_owner_evidence(self):
         catalog = copy.deepcopy(self.catalog)
         record = self.pilot["records"][0]
