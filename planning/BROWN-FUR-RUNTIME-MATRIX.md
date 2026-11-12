@@ -18,23 +18,34 @@ requirement.
 
 ### Scope of this matrix (GS-AUD-0019)
 
-Every row below is evidence about the `0.0.82-brown-fur-human-review-repair`
-candidate at `0940c282237826adfd6ef44f5bf864c2fdf0c588` and the scenarios named
-in that row. Those results remain valid for those inputs. They are **not**
-evidence about any later candidate, and nothing here is retracted by a later
-record.
+Each row is evidence about **the candidate named in its own section** and the
+scenarios named in that row. Those results remain valid for those inputs. They
+are **not** evidence about any later candidate, and nothing here is retracted by
+a later record.
+
+This document covers more than one candidate, so attribution matters:
+
+- The accepted **`0.0.82-brown-fur-human-review-repair`** candidate at
+  `0940c282237826adfd6ef44f5bf864c2fdf0c588`, whose catalog already declared
+  `IdentityCount = 25`.
+- The earlier **superseded pre-human** candidate `849f116`, under its own
+  heading below, whose catalog declared `IdentityCount = 19`. Human review did
+  not accept it, and its evidence is retained for regression provenance only.
 
 Two consequences are worth stating explicitly, because they have been misread
 as contradictions:
 
-- **Identity count.** This matrix reports **19** stable Brown-Fur identities,
-  which was the catalog size at the time of its runs. The current catalog holds
-  **25** (`BrownFurIdentityCatalog.All.Count`, pinned by a domain test), and
-  `docs/BROWN-FUR-STARTUP-ORDER-REPAIR.md` reports 25 for its own later
-  candidate. Both figures are correct for their own candidate; the catalog grew
-  between them. Do not read the 19 here as a claim about today's 25.
-- **Save/reload persistence.** The `Save/reload persistence` row below passed
-  for this candidate and its working-save cycle. A later and **narrower**
+- **Identity count.** The **19** stable Brown-Fur identities reported in this
+  document belong to the **superseded `849f116`** observation, not to the
+  accepted `0940c282…` candidate. The catalog was already **25** at
+  `0940c282…`, and it is 25 today
+  (`BrownFurIdentityCatalog.IdentityCount`, pinned by a domain test), which is
+  also what `docs/BROWN-FUR-STARTUP-ORDER-REPAIR.md` reports for its own later
+  candidate. So there is no 19-to-25 growth *after* the accepted candidate:
+  19 is simply the earlier, rejected candidate's count. Do not reattribute
+  either figure.
+- **Save/reload persistence.** The `Save/reload persistence` row passed for the
+  accepted candidate and its working-save cycle. A later and **narrower**
   question — genuine cold reconstruction of a *previously missing* saved fact
   owner — is recorded as `NOT_RUN` in
   `docs/BROWN-FUR-STARTUP-ORDER-REPAIR.md`. That run could not have covered it:
@@ -243,7 +254,9 @@ structural Brown-Fur contract observer in transaction
 exploit-bearing levels `1,3,5,7,9,11,13,15,17,19`, shape Normal, and
 replacement opportunities 3/9. The same process proved all required CotW
 identities and Shared Spells signatures, 86 Transmutation roots, 19 stable
-Brown-Fur identities (the catalog size for this candidate; it is 25 today),
+Brown-Fur identities (the catalog size at this superseded `849f116` candidate,
+whose `IdentityCount` was 19; the accepted `0940c282...` candidate already
+declared 25, as does the catalog today),
 effective Available/not-published state, one successful
 reconciliation, and zero selector references. The original CotW settings SHA
 `24CC3F...F6E8` was restored by exact byte comparison. Exact artifact,
