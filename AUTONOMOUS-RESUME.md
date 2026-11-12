@@ -1,4 +1,23 @@
-# Gunslinger playtest repairs: merged and released in v0.0.183 / STOP
+# Hide original Summon Elemental by default: draft PR, native checkpoint FAIL (observer), fix not re-run / STOP
+
+Current (2026-11-12). See `planning/hide-original-summon-elemental/STATUS.md`. Branch
+`codex/hide-original-summon-elemental` from master `4b10c85768`; one draft PR against master. Nothing merged,
+released or permanently installed. DATA intake: live v0.0.140, `Params.xml` `E44F4495...30BB`, 95 saves.
+
+- Owner directive: original Summon Elemental is hidden from level-up learning and spellbook lists by default
+  (PC and controller), with a live UMM option that shows it as ordinary rows. The learning disclosure is
+  withdrawn. Presentation only; saves, spells and the action-bar chooser are unchanged.
+- Focused 24/2,947 passing; patch targets 49/49. Candidate `b0d235c33a`, package `4d84746f...9861`, DLL
+  `cdf252fb...8e2f`, MVID `616ccf20-197c-4c99-8d66-5ce60d64089b`.
+- One guarded `elementals-learning` run: FAIL 7/3. The hidden-book cell wrongly required a non-empty level-2 list
+  (the fixture's only level-2 spell is the hidden source). The learning screen was not observed. Fix `70ad3b8e6c`
+  passed the focused gate; not built or run.
+- Restoration exact. Ledger about 689 of 1,800 s.
+- Next, owner authorization required: review; optionally one rebuild and one guarded `elementals-learning` run.
+
+---
+
+# (superseded) Gunslinger playtest repairs: merged and released in v0.0.183 / STOP
 
 Current (2026-11-11). See `planning/gunslinger-playtest-repairs/STATUS.md`. The owner accepted the corrected
 review. PR #129 was merged as `57d8640323` and release PR #130 as `6365ddb261`. Stable v0.0.183 is Latest, from
