@@ -97,7 +97,12 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().Configure(result,
                 LocalizationService.Create("KMG.ShieldOther.Ability.Name", "Shield Other"),
                 LocalizationService.Create("KMG.ShieldOther.Ability.Description",
-                    "This spell wards one allied creature. The subject gains a +1 deflection bonus to AC and a +1 resistance bonus on all saving throws. While the subject remains within close range, half of its finalized hit point damage is transferred to you."),
+                    // GS-AUD-0040. The approved contract (planning/EXPANDED-SUMMONING-MISSION.md:71) is that close range applies
+                    // when CASTING and an established bond then does NOT depend on distance. ShieldOtherLinkValidityPolicy
+                    // matches that: it computes close range but never compares a distance to it. Only this description was
+                    // stale. Do not reintroduce a post-cast range check; the "post-cast-range-preservation" runtime
+                    // assertion exists to protect the approved behaviour.
+                    "This spell wards one allied creature. The subject gains a +1 deflection bonus to AC and a +1 resistance bonus on all saving throws. You must be within close range to cast it; once the bond is established, half of the subject's finalized hit point damage is transferred to you regardless of how far apart you move. The bond ends if it expires or is dispelled, if either of you leaves the area, or if you die."),
                 icon);
             result.Type = AbilityType.Spell;
             result.Range = AbilityRange.Close;

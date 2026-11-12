@@ -16,6 +16,33 @@ superseded and unaccepted. The runtime policy revision of 2026-08-16 makes the
 `2N + 2` boundary authoritative and removes the exhaustive game-launch release
 requirement.
 
+### Scope of this matrix (GS-AUD-0019)
+
+Every row below is evidence about the `0.0.82-brown-fur-human-review-repair`
+candidate at `0940c282237826adfd6ef44f5bf864c2fdf0c588` and the scenarios named
+in that row. Those results remain valid for those inputs. They are **not**
+evidence about any later candidate, and nothing here is retracted by a later
+record.
+
+Two consequences are worth stating explicitly, because they have been misread
+as contradictions:
+
+- **Identity count.** This matrix reports **19** stable Brown-Fur identities,
+  which was the catalog size at the time of its runs. The current catalog holds
+  **25** (`BrownFurIdentityCatalog.All.Count`, pinned by a domain test), and
+  `docs/BROWN-FUR-STARTUP-ORDER-REPAIR.md` reports 25 for its own later
+  candidate. Both figures are correct for their own candidate; the catalog grew
+  between them. Do not read the 19 here as a claim about today's 25.
+- **Save/reload persistence.** The `Save/reload persistence` row below passed
+  for this candidate and its working-save cycle. A later and **narrower**
+  question — genuine cold reconstruction of a *previously missing* saved fact
+  owner — is recorded as `NOT_RUN` in
+  `docs/BROWN-FUR-STARTUP-ORDER-REPAIR.md`. That run could not have covered it:
+  its supplied evidence contained no affected save, and the working ZIP does not
+  contain the missing GUID. A PASS for a broader cycle and a NOT_RUN for a
+  narrower later case are both true at once. The earlier PASS stands; the
+  narrower case is still open.
+
 ## Current focused evidence
 
 | Contract | Result | Immutable source | Qualified scope |
@@ -40,7 +67,7 @@ requirement.
 | Native command derives immutable intent from actual owner facts | PASS | Guarded command-constructor path validates and arms exactly one transaction; combined debit and native slot spend are exact |
 | Cancellation and post-submission interruption | PASS | Native submitted command returns `Interrupt`; no reservoir or slot spend; all one-shot and retained state clears |
 | Dispel and expiration | PASS | Enhanced effects preserve native rule-driven dispel, deadline expiration, descriptor, removal, stat restoration, and source behavior |
-| Save/reload persistence | PASS | Stable identities, the native buff, source context, duration, original descriptor, and enhanced value survive a guarded fresh-process working-save cycle; native removal retires the owner record |
+| Save/reload persistence | PASS (this candidate, working-save cycle) | Stable identities, the native buff, source context, duration, original descriptor, and enhanced value survive a guarded fresh-process working-save cycle; native removal retires the owner record. Scope: does not cover cold reconstruction of a previously missing saved fact owner, which remains NOT_RUN in `docs/BROWN-FUR-STARTUP-ORDER-REPAIR.md` |
 | Module OFF existing-owner behavior | PASS | Fresh OFF process proves immutable active setting false, compatible dependency, zero selector references, retained existing-owner features/grants and persisted enhanced spell behavior, then exact cleanup |
 | CotW absent isolation | PASS | Three fresh KMG-only launches prove core readiness, exact six-module publication, saved Brown-Fur intent ON, Unavailable/not-published status, no CotW assembly/contract/identity/reconciliation, and exact profile restoration |
 | CotW normal progression | PASS | Runtime graph is Normal with resolved exploit levels `1,3,5,7,9,11,13,15,17,19`, replacements 3/9, setting agreement, compatible contract, and exact settings restoration |
@@ -216,7 +243,8 @@ structural Brown-Fur contract observer in transaction
 exploit-bearing levels `1,3,5,7,9,11,13,15,17,19`, shape Normal, and
 replacement opportunities 3/9. The same process proved all required CotW
 identities and Shared Spells signatures, 86 Transmutation roots, 19 stable
-Brown-Fur identities, effective Available/not-published state, one successful
+Brown-Fur identities (the catalog size for this candidate; it is 25 today),
+effective Available/not-published state, one successful
 reconciliation, and zero selector references. The original CotW settings SHA
 `24CC3F...F6E8` was restored by exact byte comparison. Exact artifact,
 evidence, and transaction hashes are in the CotW contract.

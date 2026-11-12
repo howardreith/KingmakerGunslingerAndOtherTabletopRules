@@ -116,7 +116,7 @@ the runtime test runner remain orchestration-only.
 
 The runtime retains the accepted token-backed architecture, condition-preserving Broken reload, exact loaded-round enforcement, exact natural-d20 misfire classification, exact-item Normal-to-Broken-to-Wrecked transitions, and the native five-foot Reflex-half second-misfire burst.
 
-The current owner-approved design replaces the historical two-step loop with one full-round personal extraordinary Repair Firearm action. Repair requires one reusable Gunsmith’s Kit in the shared party inventory, consumes nothing, preserves surviving loaded rounds and their ammunition identity exactly (a Wrecked firearm stays empty), and atomically changes the exact equipped Broken or Wrecked item to Normal. It verifies unchanged repository identity and in-process runtime reference, exactly one revision increment, an unchanged tool count, and rollback of the exact pre-repair state after a fault. The separate Overhaul action no longer exists: its identity stays registered as a hidden delegate of this same repair for save compatibility, and the consumable Firearm Repair Kit and Firearm Overhaul Kit are no longer sold or required. Reload remains a separate operation and the only stage that consumes inventory ammunition.
+The current owner-approved design replaces the historical two-step loop with one full-round personal extraordinary Repair Firearm action. Repair requires one reusable Gunsmith’s Kit in the shared party inventory, consumes nothing, preserves surviving loaded rounds and their ammunition identity exactly (a Wrecked firearm stays empty), and atomically changes the exact equipped Broken item to Normal. It is available only outside party combat and rechecks eligibility at delivery; a Wrecked firearm is rejected and is restored only by a completed full rest, which repairs both Broken and Wrecked and leaves Wrecked unloaded. It verifies unchanged repository identity and in-process runtime reference, exactly one revision increment, an unchanged tool count, and rollback of the exact pre-repair state after a fault. The separate Overhaul action no longer exists: its identity stays registered as a hidden delegate of this same repair for save compatibility, and the consumable Firearm Repair Kit and Firearm Overhaul Kit are no longer sold or required. Reload remains a separate operation and the only stage that consumes inventory ammunition.
 
 Sprint 29 also adds a deterministic two-item maintenance fixture, a pure process-local PASS/FAIL evaluator, and a one-command immediate transaction runner. These diagnostics accelerate regression checks but never participate in gameplay decisions or persistence; manual action-bar testing still proves full-round delivery and interruption behavior.
 
@@ -418,13 +418,13 @@ Firearms remain real `BlueprintItemWeapon`/`ItemEntityWeapon` instances and use 
 | Weapon attack/damage | Preserve native modifiers, criticals, concealment, cover, damage, and other mod composition |
 | `RuleAttackRoll.set_Roll(RollEntry)` / `IsSuccessRoll(int)` | Observe or deterministically force the exact eligible firearm natural d20, force configured misfires to miss, and apply one exact-item condition transition |
 | Reload ability delivery | Atomically consume one powder plus one Lead Ball and load the exact empty Normal or Broken firearm without changing condition; reject Wrecked |
-| Repair ability delivery | Require one reusable shared-inventory Gunsmith’s Kit, consume nothing, and change the exact equipped Broken or Wrecked firearm to Normal while preserving loaded ammunition and item identity; reject Normal/ambiguous targets |
+| Repair ability delivery | Outside party combat only, rechecked at delivery: require one reusable shared-inventory Gunsmith’s Kit, consume nothing, and change the exact equipped **Broken** firearm to Normal while preserving loaded ammunition and item identity; reject Normal, Wrecked and ambiguous targets. Wrecked is restored only by a completed full rest |
 | Maintenance qualification | Observe exact target, second-item isolation, revisions, resources, completions, faults, and duplicates; never mutate gameplay or persistence state |
 | Later class systems | Gun Training, deeds, grit, and class progression |
 
 Loaded Normal and Loaded Broken attacks consume one round at the start of the exact firearm attack roll. Empty, Wrecked, or state-faulted marked firearms are forced to miss. A weak reference-identity gate prevents duplicate callbacks from consuming twice. Firing never consumes shared-inventory ammunition again.
 
-Natural-roll misfire detection, force-next-roll diagnostics, exact-item Normal-to-Broken-to-Wrecked transitions, native definition-sized second-misfire burst delivery, unified one-step Broken-or-Wrecked-to-Normal Repair with a reusable Gunsmith’s Kit, and the complete Repair-then-Reload loop are active in the current design. Scatter damage delivery and other enumerated deferrals are tracked separately.
+Natural-roll misfire detection, force-next-roll diagnostics, exact-item Normal-to-Broken-to-Wrecked transitions, native definition-sized second-misfire burst delivery, one-step Broken-to-Normal out-of-combat Repair with a reusable Gunsmith’s Kit (Wrecked is restored by a completed full rest instead), and the complete Repair-then-Reload loop are active in the current design. Scatter damage delivery and other enumerated deferrals are tracked separately.
 
 ## 12. Persistence evidence boundary
 
@@ -465,7 +465,7 @@ Core mechanics have no dependency on custom models or animation controllers. The
 | `KMG.Test.LeadBulletItem` | Active | Stackable Lead Ball component; stable symbol retained |
 | `KMG.Test.FirearmRepairKitItem` | Active (retired) | Obsolete consumable kit kept for save compatibility; no longer sold or consumed |
 | `KMG.Test.OverhaulAbility` | Active (hidden alias) | Legacy identity delegating to unified Repair |
-| `KMG.Test.RepairAbility` | Active | Full-round unified Broken-or-Wrecked-to-Normal repair ability with a reusable Gunsmith’s Kit |
+| `KMG.Test.RepairAbility` | Active | Full-round out-of-combat Broken-to-Normal repair ability with a reusable Gunsmith’s Kit; Wrecked needs a completed full rest |
 | `KMG.Test.TouchAcEnchantment` | Reserved | Unused because touch AC is implemented by rule patch |
 
 Stable symbols and GUIDs are never regenerated or repurposed.
@@ -601,7 +601,7 @@ the next exact firearm attack consumes the marker, and an eligible hit spends
 grit and applies a persistent native-descriptor Bleed fact whose per-round
 component dispatches native direct HP or stat damage.
 
-Availability remains read-only. Unified Repair starts no transaction before `Deliver`, accepts one exact equipped Broken or Wrecked project firearm plus one reusable shared-inventory Gunsmith's Kit, consumes nothing, preserves surviving loaded ammunition, writes Normal once, verifies the unchanged tool count, and restores the exact pre-operation loaded state after a mutation-time failure when possible. `FirearmRepairRuntimeResult` requires unchanged process-local item identity and one revision increment.
+Availability remains read-only. Unified Repair starts no transaction before `Deliver`, accepts one exact equipped **Broken** project firearm outside party combat plus one reusable shared-inventory Gunsmith's Kit, consumes nothing, preserves surviving loaded ammunition, writes Normal once, verifies the unchanged tool count, and restores the exact pre-operation loaded state after a mutation-time failure when possible. `FirearmRepairRuntimeResult` requires unchanged process-local item identity and one revision increment.
 
 The qualification harness remains outside gameplay. `MaintenanceQualificationBaseline` captures one target, one independent second item, resources, completion counters, fault totals, and duplicate totals. `MaintenanceQualificationService` compares later observations and emits one of three checkpoints: `FixtureReady`, `RepairPassed`, or `MaintenanceLoopPassed`. The one-command runner uses immediate runtime adapters only for fast transaction regression; actual action-bar delivery and interruption remain live-test obligations.
 
