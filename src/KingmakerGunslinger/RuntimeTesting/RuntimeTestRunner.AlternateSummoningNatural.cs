@@ -326,16 +326,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // An affected creature is the first summon in this scenario
                 // that brings AURAS with it - the hound archon carries a magic
                 // circle against evil and Archon's Menace - and destroying a
-                // unit does not end the areas it spawned. Attribute them while
-                // their casters are still alive.
+                // unit does not end the areas it spawned.
+                //
+                // Ownership is established HERE, while the casters still exist,
+                // and the attributed entities are RETAINED. An earlier version
+                // of this cleanup ended every remaining new area in a second
+                // pass, on the reasoning that this fixture creates the only new
+                // units. That reasoning is wrong: the scenario deliberately
+                // unpauses the game while casting, so an existing unit can
+                // spawn an area during the run. Ending it would have destroyed
+                // somebody else's entity and then reported extraAreas=0, so a
+                // clean census would no longer have meant the cleanup was
+                // bounded. Nothing is ended unless it was attributed to one of
+                // our own units.
                 var ourUnitIds = new HashSet<string>(summons.Select(value => value.UniqueId));
                 if (caster != null) ourUnitIds.Add(caster.UniqueId);
+                var ownedAreas = new List<AreaEffectEntityData>();
                 var endedAreas = new List<string>();
                 foreach (AreaEffectEntityData area in game.State.AreaEffects.All
                     .Except(areas).ToArray())
                 {
                     UnitEntityData source = area.Context == null ? null : area.Context.MaybeCaster;
                     if (source == null || !ourUnitIds.Contains(source.UniqueId)) continue;
+                    ownedAreas.Add(area);
                     endedAreas.Add(area.Blueprint.name + ":attributed");
                     EndDisposableArea(area);
                 }
@@ -358,14 +371,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 game.EntityDestroyer.Tick();
                 game.EntityDestroyer.Tick();
-                // Anything still new after that lost its caster when the unit
-                // went. It can only be ours: this fixture creates the only new
-                // units in the run, which the extraUnits census re-checks
-                // independently. Each one is named rather than quietly swept.
-                foreach (AreaEffectEntityData area in game.State.AreaEffects.All
-                    .Except(areas).ToArray())
+                // A retry for the areas ALREADY ATTRIBUTED above, whose
+                // casters have since been destroyed. It is keyed on those
+                // retained identities, so it cannot reach an area this fixture
+                // does not own.
+                foreach (AreaEffectEntityData area in ownedAreas
+                    .Where(value => game.State.AreaEffects.All.Contains(value)).ToArray())
                 {
-                    endedAreas.Add(area.Blueprint.name + ":orphaned");
+                    endedAreas.Add(area.Blueprint.name + ":retried");
                     EndDisposableArea(area);
                 }
                 game.EntityDestroyer.Tick();
@@ -387,11 +400,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["party"] = player.Party.SequenceEqual(party),
                     ["gameTimeAdvancedSeconds"] = (game.Player.GameTime - time).TotalSeconds,
                     ["endedAreas"] = new JArray(endedAreas),
+                    // New areas this fixture could NOT attribute to itself. They
+                    // are left alone and reported, never swept to make the
+                    // census look clean.
+                    ["unattributedAreas"] = new JArray(extraAreas
+                        .Where(value => !ownedAreas.Contains(value))
+                        .Select(value => value.Blueprint.name)),
                     ["saveWriteObserved"] = _workingSaveSmoke.WriteObserved });
                 AltNaturalAssert("cleanup",
-                    "the disposable summoner and every summon are gone; the original units, areas and party are unchanged; nothing was saved (native time advanced while unpaused, by design)",
+                    "the disposable summoner and every summon are gone; the original units, areas and party are unchanged; nothing was saved (native time advanced while unpaused, by design). Only areas attributed to this fixture's own units are ever ended, so a clean area census means the cleanup was bounded as well as complete - an unattributed new area is reported and fails this instead of being swept",
                     "extraUnits=" + extra.Length + ";missingUnits=" + missing.Length + ";extraAreas=" +
-                        extraAreas.Length + ";party=" + player.Party.SequenceEqual(party),
+                        extraAreas.Length + ";unattributedAreas=" + extraAreas
+                            .Count(value => !ownedAreas.Contains(value)) +
+                        ";party=" + player.Party.SequenceEqual(party),
                     extra.Length == 0 && missing.Length == 0 && extraAreas.Length == 0 &&
                         player.Party.SequenceEqual(party) && !_workingSaveSmoke.WriteObserved,
                     "Game.State.Units/AreaEffects census; Player.Party; working-save write guard");
@@ -649,9 +670,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             // description - "an alternate caller's untemplated Summon Monster
             // child kept the donor's template" - is NOT reproducible here.
             //
-            // That makes the repair behaviour-neutral on the path it touches,
-            // which is worth knowing before merging rather than after: the
-            // summon was clean before the removal was added and is clean now.
+            // The repair is therefore inert on this route. Stated precisely,
+            // because the distinction matters: that is an INFERENCE FROM
+            // SOURCE, not a two-version native comparison. No pre-repair build
+            // was deployed and observed. What is observed is one post-repair
+            // cast whose graph applies no native template and whose spawned
+            // unit carries none; the step from there to "the previous build
+            // behaved identically" is read from the source, where the only
+            // change on this route is the added removal action.
+            //
             // Its value is that the two paths can no longer diverge, so if the
             // adapter ever starts copying a templated carrier the rule is
             // already there.
@@ -673,7 +700,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "native template buff. appliedByGraph is pinned at 0: the alternate-caller " +
                     "path copies the caller's host template, not the native carrier, so it " +
                     "inherits no template and the removal is a no-op here - this records that " +
-                    "the change is behaviour-neutral on this path and does NOT prove removal " +
+                    "the change is inert on this path - inferred from source for this route, not " +
+                    "from a two-version native comparison - and does NOT prove removal " +
                     "efficacy, which only the canonical path can show",
                 "appliedByGraph=" + appliedByGraph.Length + ";removalInGraph=" + removalInGraph +
                     ";summoned=" + cast.Summoned.Length + ";markerCarriers=" + markerCarriers +

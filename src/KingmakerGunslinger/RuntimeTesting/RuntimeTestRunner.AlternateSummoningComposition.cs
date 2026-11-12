@@ -103,158 +103,167 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
-        /// GS-AUD-0025. InheritedTemplateRemovalCreatures is a hard-coded list
-        /// of twelve creature keys, and 63 Summon Monster creatures are
-        /// untemplated - so membership is NOT simply "untemplated". The list
-        /// asserts a property of the installed native library: that this
+        /// GS-AUD-0025 / GS-REP-0002. InheritedTemplateRemovalCreatures is a
+        /// hard-coded list of twelve creature KEYS, and 63 untemplated Summon
+        /// Monster creatures exist, so membership is not simply "untemplated".
+        /// The list asserts a property of the installed native library: that a
         /// creature's native carrier still applies a celestial/fiendish
-        /// template after spawn. Nothing measured that, which means a
-        /// thirteenth affected creature would silently keep a template the
-        /// ordinary spell removes, and the repair would look complete.
+        /// template after spawn. Nothing measured that.
         ///
-        /// So derive the set from the live library instead of trusting it. For
-        /// every untemplated Summon Monster creature, read the registered
-        /// canonical ability's own spawn graph: it is a copy of the native
-        /// carrier, with the spawn unit replaced, so an inherited template
-        /// shows up as a ContextActionApplyBuff carrying one of the four native
-        /// template identities. The derived set must equal the declared set
-        /// exactly, and exactly those creatures must carry the removal action.
+        /// This observation is deliberately kept PER PLACEMENT, not per
+        /// creature. ExpandedSummoningCatalog.GenerateVariants admits a
+        /// creature under every parent tier from its source tier to 9, so one
+        /// creature has up to eight placements and they need not agree. An
+        /// earlier version of this observation reduced everything to sets of
+        /// creature keys and then labelled each key with the ParentTier of its
+        /// FIRST variant - which is just its source tier - and on that basis a
+        /// "parent tier 2-4 versus 5-9" boundary was reported. That conclusion
+        /// was not supported: a creature-level set cannot say which of its
+        /// placements carries the action, and a creature-level set also cannot
+        /// notice a removal action disappearing from ONE placement while
+        /// another still has it.
         ///
-        /// This runs at mod load against the installed library, so it needs no
-        /// save and no cast.
+        /// So each placement is recorded on its own with its StableKey, source
+        /// tier, parent tier, multiplicity, the native template identities its
+        /// graph applies, and whether it carries the removal. Creature-level
+        /// summaries are derived from those rows rather than replacing them.
+        ///
+        /// This is GRAPH evidence only. It says what a registered ability's
+        /// action graph contains. It is not evidence that any particular summon
+        /// retained or lost a buff at run time; the spawned-unit observation in
+        /// disposable-alternate-summoning-natural is a separate thing and
+        /// covers only the one route it casts.
         /// </summary>
         private static void InheritedTemplateRemovalSetIsDerived(
             List<RuntimeTestAssertion> assertions, JObject record)
         {
             var nativeIds = new HashSet<string>(
                 ExpandedSummoningAbilityBuilder.NativeTemplateIds, StringComparer.Ordinal);
-            var inherits = new SortedSet<string>(StringComparer.Ordinal);
-            var carriesRemoval = new SortedSet<string>(StringComparer.Ordinal);
+            var rows = new JArray();
             var unresolved = new SortedSet<string>(StringComparer.Ordinal);
-            var examined = new SortedSet<string>(StringComparer.Ordinal);
+            var creatureApplies = new Dictionary<string, int>(StringComparer.Ordinal);
+            var creaturePlacements = new Dictionary<string, int>(StringComparer.Ordinal);
+            var wiringMismatches = new List<string>();
+            var appliesByTierPair = new SortedDictionary<string, int>(StringComparer.Ordinal);
+            int placements = 0;
 
             foreach (SummonVariantSpec variant in ExpandedSummoningCatalog
                 .GenerateVariants(SummonFamily.Monster))
             {
                 if (variant.Creature.MonsterTemplated) continue;
                 string key = variant.Creature.Key;
-                examined.Add(key);
+                placements++;
+                creaturePlacements[key] = creaturePlacements.ContainsKey(key) ?
+                    creaturePlacements[key] + 1 : 1;
+                if (!creatureApplies.ContainsKey(key)) creatureApplies[key] = 0;
+
                 BlueprintScriptableObject registered;
                 if (!ExpandedSummoningBlueprints.Registered.BySymbol.TryGetValue(
                         ExpandedSummoningIdentityCatalog.AbilitySymbol(variant), out registered))
-                {
-                    unresolved.Add(key);
-                    continue;
-                }
+                { unresolved.Add(variant.StableKey); continue; }
                 var ability = registered as BlueprintAbility;
-                if (ability == null) { unresolved.Add(key); continue; }
-                if (AlternateSummoningGraph.Objects<ContextActionApplyBuff>(
-                        ability.ComponentsArray).Any(action => action.Buff != null &&
-                        nativeIds.Contains(action.Buff.AssetGuid)))
-                    inherits.Add(key);
-                if (AlternateSummoningGraph
-                        .Objects<ContextActionRemoveInheritedSummonTemplates>(
-                            ability.ComponentsArray).Any())
-                    carriesRemoval.Add(key);
+                if (ability == null) { unresolved.Add(variant.StableKey); continue; }
+
+                string[] applied = AlternateSummoningGraph
+                    .Objects<ContextActionApplyBuff>(ability.ComponentsArray)
+                    .Where(action => action.Buff != null && nativeIds.Contains(action.Buff.AssetGuid))
+                    .Select(action => action.Buff.AssetGuid)
+                    .Distinct(StringComparer.Ordinal)
+                    .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+                bool removal = AlternateSummoningGraph
+                    .Objects<ContextActionRemoveInheritedSummonTemplates>(
+                        ability.ComponentsArray).Any();
+                bool declared = ExpandedSummoningAbilityBuilder
+                    .RequiresInheritedTemplateRemoval(SummonFamily.Monster, variant.Creature);
+
+                if (applied.Length > 0)
+                {
+                    creatureApplies[key] = creatureApplies[key] + 1;
+                    string pair = "source" + variant.SourceTier + "/parent" + variant.ParentTier;
+                    appliesByTierPair[pair] = appliesByTierPair.ContainsKey(pair) ?
+                        appliesByTierPair[pair] + 1 : 1;
+                }
+                // Per PLACEMENT, which is what makes this able to see a single
+                // placement losing its removal action.
+                if (removal != declared)
+                    wiringMismatches.Add(variant.StableKey + ":removal=" + removal +
+                        ";declared=" + declared);
+
+                rows.Add(new JObject {
+                    ["stableKey"] = variant.StableKey,
+                    ["creature"] = key,
+                    ["sourceTier"] = variant.SourceTier,
+                    ["parentTier"] = variant.ParentTier,
+                    ["multiplicity"] = variant.Multiplicity.ToString(),
+                    ["appliedNativeTemplates"] = new JArray(applied),
+                    ["carriesRemoval"] = removal,
+                    ["declared"] = declared });
             }
 
-            var declared = new SortedSet<string>(ExpandedSummoningCatalog
-                .GenerateVariants(SummonFamily.Monster)
-                .Select(variant => variant.Creature)
-                .Where(creature => ExpandedSummoningAbilityBuilder
-                    .RequiresInheritedTemplateRemoval(SummonFamily.Monster, creature))
-                .Select(creature => creature.Key), StringComparer.Ordinal);
+            string[] declaredKeys = creaturePlacements.Keys
+                .Where(key => ExpandedSummoningAbilityBuilder.RequiresInheritedTemplateRemoval(
+                    SummonFamily.Monster, ExpandedSummoningCatalog.GenerateVariants(
+                        SummonFamily.Monster).First(value => value.Creature.Key == key).Creature))
+                .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            // "Every placement applies" and "some placement applies" are
+            // different claims, so both are reported rather than conflated.
+            string[] allPlacementsApply = creatureApplies.Where(entry =>
+                entry.Value > 0 && entry.Value == creaturePlacements[entry.Key])
+                .Select(entry => entry.Key).OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            string[] somePlacementsApply = creatureApplies.Where(entry =>
+                entry.Value > 0 && entry.Value < creaturePlacements[entry.Key])
+                .Select(entry => entry.Key).OrderBy(value => value, StringComparer.Ordinal).ToArray();
 
-            string[] extra = inherits.Except(declared, StringComparer.Ordinal).ToArray();
-            string[] missing = declared.Except(inherits, StringComparer.Ordinal).ToArray();
-            // The parent tier of each side, because the discrepancy turned out
-            // to be decided by tier and nothing else.
-            Func<string, string> tier = key =>
-            {
-                SummonVariantSpec first = ExpandedSummoningCatalog
-                    .GenerateVariants(SummonFamily.Monster)
-                    .FirstOrDefault(value => value.Creature.Key == key);
-                return key + "@" + (first == null ? "?" : first.ParentTier.ToString());
-            };
-            bool removalMatches = carriesRemoval.SetEquals(declared);
-            record["derivedInheriting"] = string.Join(",", inherits.ToArray());
-            record["declaredRemovalSet"] = string.Join(",", declared.ToArray());
-            record["untemplatedExamined"] = examined.Count;
+            record["inheritedTemplatePlacements"] = rows;
+            record["inheritedTemplateSummary"] = new JObject {
+                ["placements"] = placements,
+                ["creatures"] = creaturePlacements.Count,
+                ["declaredCreatures"] = new JArray(declaredKeys),
+                ["everyPlacementApplies"] = new JArray(allPlacementsApply),
+                ["somePlacementsApply"] = new JArray(somePlacementsApply),
+                ["appliesByTierPair"] = new JObject(appliesByTierPair
+                    .Select(entry => new JProperty(entry.Key, entry.Value))),
+                ["wiringMismatches"] = new JArray(wiringMismatches),
+                ["unresolved"] = new JArray(unresolved) };
 
-            // GS-REP-0002, found by this observation on its first native run.
-            //
-            // The declared twelve is wrong in BOTH directions, and the
-            // measurement is decisive rather than suggestive: the discrepancy
-            // partitions EXACTLY by parent tier. All 23 untemplated Summon
-            // Monster creatures at tiers 2-4 inherit a native
-            // celestial/fiendish template from their carrier; NONE of the 40 at
-            // tiers 5-9 does. No tier is partial. A faulty observer would not
-            // split cleanly on a dimension it never looks at.
-            //
-            // So 19 untemplated creatures at tiers 2-4 - the small and medium
-            // elementals, all ten mephits and the hell hound - silently keep a
-            // template the ordinary spell is supposed to strip, and 8 declared
-            // creatures at tiers 5-9 carry a removal action for a template that
-            // is never applied. Only four of the twelve are right: lemure,
-            // dretch, lantern-archon and hound-archon.
-            //
-            // It is PRE-EXISTING. Master carries the same twelve keys inline in
-            // the canonical builder, so this branch did not introduce it; it
-            // hoisted the list into one place and stopped the alternate-caller
-            // adapter diverging from it, which is still a strict improvement.
-            //
-            // This assertion therefore PINS the known discrepancy. It is not
-            // weakened to obtain a clean run and it does not claim the product
-            // is correct: it fails on ANY change to the discrepancy - a new
-            // creature on either side, the tier boundary moving, a symbol that
-            // stops resolving, or the removal action ceasing to be wired to
-            // exactly the declared set. Correcting the set changes what 19
-            // creatures spawn with, so it belongs to its own card with its own
-            // review and its own native evidence, not to this one.
-            string[] knownUndeclared = {
-                "air-mephit", "dust-mephit", "earth-mephit", "fire-mephit", "hell-hound",
-                "ice-mephit", "magma-mephit", "medium-air-elemental", "medium-earth-elemental",
-                "medium-fire-elemental", "medium-water-elemental", "ooze-mephit", "salt-mephit",
-                "small-air-elemental", "small-earth-elemental", "small-fire-elemental",
-                "small-water-elemental", "steam-mephit", "water-mephit" };
-            string[] knownNotInheriting = {
-                "astral-deva", "babau", "barbed-devil", "bearded-devil", "bone-devil",
-                "hezrou", "kyton-chain-devil", "trumpet-archon" };
-            bool pinned = extra.SequenceEqual(knownUndeclared, StringComparer.Ordinal) &&
-                missing.SequenceEqual(knownNotInheriting, StringComparer.Ordinal);
-            assertions.Add(Assertion("inherited-template-removal-set-is-derived",
-                "the derived and declared inherited-template sets differ by exactly the recorded " +
-                    "GS-REP-0002 discrepancy and nothing else - 19 undeclared inheriting " +
-                    "creatures at parent tiers 2-4 and 8 declared non-inheriting creatures at " +
-                    "tiers 5-9 - every symbol resolves, more creatures are examined than are " +
-                    "declared, and the removal action is wired to exactly the declared set. " +
-                    "This PINS a pre-existing defect that master shares; it does not assert the " +
-                    "set is correct",
-                "untemplatedExamined=" + examined.Count + ";declared=" + declared.Count +
-                    ";derived=" + inherits.Count + ";pinnedDiscrepancy=" + pinned +
-                    ";undeclaredButInheriting=[" +
-                    string.Join(",", extra.Select(value => tier(value)).ToArray()) +
-                    "];declaredButNotInheriting=[" +
-                    string.Join(",", missing.Select(value => tier(value)).ToArray()) +
-                    "];removalCarriers=" + carriesRemoval.Count +
-                    ";removalSetMatches=" + removalMatches + ";unresolved=[" +
-                    string.Join(",", unresolved.ToArray()) + "]",
-                unresolved.Count == 0 && examined.Count > declared.Count && pinned &&
-                    removalMatches,
-                "registered canonical graphs in the installed library; " +
+            // What is asserted here is only the WIRING invariant this branch is
+            // responsible for, per placement: the removal action is present on
+            // exactly the placements whose creature is declared. The
+            // declared-versus-measured discrepancy itself is GS-REP-0002, is
+            // pre-existing on master, and is reported as evidence above rather
+            // than asserted - the earlier version of this assertion pinned a
+            // creature-level summary and a tier boundary that the data does not
+            // establish.
+            assertions.Add(Assertion("inherited-template-removal-wiring-per-placement",
+                "every untemplated Summon Monster placement carries the inherited-template removal " +
+                    "action exactly when its creature is declared, checked per placement rather " +
+                    "than per creature so one placement losing the action cannot hide behind " +
+                    "another that keeps it; every symbol resolves; and more placements are " +
+                    "examined than there are creatures. The declared-versus-measured set " +
+                    "discrepancy is GS-REP-0002, recorded as evidence here and NOT asserted",
+                "placements=" + placements + ";creatures=" + creaturePlacements.Count +
+                    ";declaredCreatures=" + declaredKeys.Length +
+                    ";everyPlacementApplies=" + allPlacementsApply.Length +
+                    ";somePlacementsApply=" + somePlacementsApply.Length +
+                    ";wiringMismatches=[" + string.Join(",", wiringMismatches.ToArray()) +
+                    "];unresolved=[" + string.Join(",", unresolved.ToArray()) + "]",
+                unresolved.Count == 0 && wiringMismatches.Count == 0 &&
+                    placements > creaturePlacements.Count,
+                "registered canonical graphs in the installed library, one record per placement; " +
                     "ContextActionApplyBuff identities compared against " +
-                    "ExpandedSummoningAbilityBuilder.NativeTemplateIds; GS-REP-0002 pin"));
-        }
-
-        /// <summary>
+                    "ExpandedSummoningAbilityBuilder.NativeTemplateIds. Graph evidence only - it " +
+                    "is not evidence that any summon retained or lost a buff at run time"));
+        }        /// <summary>
         /// GS-AUD-0025. The controls above run on a templated creature and on a
         /// Nature's Ally creature, so NONE of them enters the TemplateRemoval
         /// comparison branch - which is the branch the inherited-template
         /// removal, and the multiset identity repair, actually live in. A
         /// passing composition observation over those two subjects therefore
         /// says nothing about the removal. These controls use an AFFECTED
-        /// subject: an untemplated Summon Monster creature whose native carrier
-        /// still applies a celestial/fiendish template after spawn.
+        /// subject, meaning an untemplated Summon Monster creature that
+        /// RequiresInheritedTemplateRemoval declares - which is a property of
+        /// the declared set, not a measured claim about its native carrier. See
+        /// GS-REP-0002: the declared set and the installed library disagree.
         ///
         /// Still graph/reader evidence only. It does not cast, so it does not
         /// discharge the execution half of the acceptance recorded on
