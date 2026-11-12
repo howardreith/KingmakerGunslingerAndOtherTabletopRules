@@ -295,6 +295,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // actually affected creature through the alternate caller and
                 // inspects the SPAWNED UNIT.
                 Ability tierFour = PlayerPathRootFact(caster, family, 4);
+                // This is the fourth cast in the scenario and the resource was
+                // restored once during setup, so top the disposable caster's
+                // own pool back up rather than depend on it still having a use
+                // left. Each cast still asserts that exactly one use is spent -
+                // the per-cast before/after is captured after this point - so
+                // nothing is weakened by it.
+                caster.Descriptor.Resources.Restore(resource);
                 var inherited = new AltNaturalCast { Label = "inherited-template-removal-tier4" };
                 foreach (int frame in AltNaturalChoose(caster, tierFour,
                     AltNaturalPick.InheritedTemplateCreature, inherited)) yield return frame;
