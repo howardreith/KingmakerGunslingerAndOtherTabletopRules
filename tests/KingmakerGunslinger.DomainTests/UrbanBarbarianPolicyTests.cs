@@ -158,29 +158,21 @@ namespace KingmakerGunslinger.DomainTests
                 "Persisted state without ordinary tier must be rejected.");
         }
 
-        internal static void ConstitutionHitPointReconciliationCannotHealCycle()
-        {
-            Assertions.Equal(120,
-                ControlledRageHitPointPolicy.ReconcileCurrentHitPoints(100, 100, 120),
-                "Full-health entry did not preserve a zero damage deficit.");
-            Assertions.Equal(85,
-                ControlledRageHitPointPolicy.ReconcileCurrentHitPoints(65, 80, 100),
-                "Damaged entry did not preserve the damage deficit.");
-            Assertions.Equal(65,
-                ControlledRageHitPointPolicy.ReconcileCurrentHitPoints(85, 100, 80),
-                "Rage exit changed the pre-entry damaged HP.");
-            Assertions.Equal(-15,
-                ControlledRageHitPointPolicy.ReconcileCurrentHitPoints(5, 100, 80),
-                "Low-HP Rage exit did not preserve lethal damage.");
-            int hp = 47;
-            for (int index = 0; index < 10; index++)
-            {
-                hp = ControlledRageHitPointPolicy.ReconcileCurrentHitPoints(hp, 80, 100);
-                hp = ControlledRageHitPointPolicy.ReconcileCurrentHitPoints(hp, 100, 80);
-            }
-            Assertions.Equal(47, hp,
-                "Repeated Constitution Rage entry/exit created healing.");
-        }
+        // GS-AUD-0018: ConstitutionHitPointReconciliationCannotHealCycle was
+        // removed with ControlledRageHitPointPolicy. It was not merely dead
+        // code with passing tests - it modelled a current-HP reconciliation
+        // that production deliberately does NOT perform. ControlledRageRuntime
+        // applies a Constitution MODIFIER through the engine
+        // (Owner.Stats.Constitution.AddModifier, then UpdateValue) and removes
+        // it on turn-off, so the engine owns every hit-point consequence. The
+        // acceptance contract says exactly that: HP changes "only through the
+        // real Constitution modifier". Routing production through the policy to
+        // satisfy a reference count would have changed behaviour and
+        // contradicted that contract, so the divergent copy was deleted
+        // instead. The real behaviour is engine-observable and belongs to the
+        // Urban Barbarian Constitution acceptance rows, which remain
+        // unchecked and are tracked under GS-AUD-0020 rather than being
+        // simulated by a domain test.
 
         internal static void CrowdControlThresholdFilteringAndAdjacencyAreExact()
         {
