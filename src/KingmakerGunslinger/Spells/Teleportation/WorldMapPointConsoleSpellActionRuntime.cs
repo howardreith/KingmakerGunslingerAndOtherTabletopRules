@@ -173,8 +173,35 @@ namespace KingmakerGunslinger.Spells.Teleportation
             var element = clone.GetComponent<LayoutElement>() ?? clone.AddComponent<LayoutElement>();
             element.ignoreLayout = false; element.minWidth = 0; element.preferredWidth = -1; element.flexibleWidth = 1;
             element.minHeight = _rowHeight; element.preferredHeight = _rowHeight; element.flexibleHeight = 0;
-            var row = new Row { Action = action, Button = button };
+            var row = new Row { Action = action, Button = button, Clone = clone };
+            ApplyReaderAvailability(row);
             button.SetConfirmAction(() => Choose(row)); _rows.Add(row); clone.SetActive(true);
+        }
+
+        /// <summary>
+        /// GS-AUD-0035, gamepad counterpart of the desktop rule. A scroll group
+        /// whose best reader cannot be bound has no executable action, so the
+        /// row stays visible but non-interactable and carries its reason
+        /// through the native ButtonPF warning. Re-evaluated on every refresh,
+        /// so it becomes selectable again as soon as a best reader can be
+        /// bound. Nothing is spent on this path and the execution-time
+        /// revalidation is unchanged.
+        /// </summary>
+        private static void ApplyReaderAvailability(Row row)
+        {
+            if (row == null || row.Button == null) return;
+            bool executable = row.Action != null && row.Action.ReaderResolved;
+            row.Button.SetInteractable(executable);
+            if (row.Clone == null) return;
+            string warning = executable ? string.Empty :
+                TeleportationText.Get("ScrollReaderUnsupportedRow",
+                    "No best scroll reader can be determined for this group with " +
+                    "the party's current effects, so this destination cannot be " +
+                    "cast from it. Nothing has been spent.");
+            foreach (var pointer in row.Clone.GetComponentsInChildren<ButtonPF>(true))
+                if (!string.Equals(pointer.DisableWarningMessage, warning,
+                        StringComparison.Ordinal))
+                    pointer.DisableWarningMessage = warning;
         }
         internal void RegisterNavigation()
         {
@@ -191,6 +218,9 @@ namespace KingmakerGunslinger.Spells.Teleportation
             try
             {
                 if (!_ready || !gameObject.activeInHierarchy || !_rows.Contains(row) || TeleportContextConfirmationPresenter.Pending) return;
+                // GS-AUD-0035: race guard for a refresh landing between the
+                // confirm event and this handler. It spends nothing.
+                if (row.Action == null || !row.Action.ReaderResolved) return;
                 var context = TeleportationWorldMapAdapter.Capture(false);
                 var fresh = TeleportationWorldMapAdapter.Compose(context, _location.Blueprint).SingleOrDefault(value => value.Key == row.Action.Key);
                 if (fresh == null) { _ready = false; TeleportContextConfirmationPresenter.Unavailable(row.Action, context); WorldMapPointConsoleSpellActionRuntime.Clear(_panel); return; }
@@ -222,7 +252,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
                         if (_navigation != null) _navigation.RemoveEntity(row.Button);
                         row.Button.transform.SetParent(null, false); Destroy(row.Button.gameObject);
                     }
-                    else { row.Action = fresh; row.Button.SetLabel(TeleportContextPresentation.Row(fresh, TeleportationText.Get)); }
+                    else { row.Action = fresh; row.Button.SetLabel(TeleportContextPresentation.Row(fresh, TeleportationText.Get)); ApplyReaderAvailability(row); }
                 }
                 if (_rows.Count == 0) WorldMapPointConsoleSpellActionRuntime.Clear(_panel);
                 else { RefreshGroupSeparators(); Resize(); RegisterNavigation(); }
@@ -286,6 +316,9 @@ namespace KingmakerGunslinger.Spells.Teleportation
             transform.SetParent(null, false); Destroy(gameObject);
         }
         private void OnDestroy() { RemoveNavigation(); WorldMapPointConsoleSpellActionRuntime.Forget(_panel, this); }
-        private sealed class Row { internal WorldMapPointSpellAction Action; internal ConsoleButton Button; }
+        private sealed class Row { internal WorldMapPointSpellAction Action; internal ConsoleButton Button;
+            /// <summary>The cloned row object, which carries the native ButtonPF
+            /// whose DisableWarningMessage explains a disabled row.</summary>
+            internal GameObject Clone; }
     }
 }
