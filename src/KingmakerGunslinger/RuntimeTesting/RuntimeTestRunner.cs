@@ -8724,7 +8724,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             int bleedingAfter=Audio.FirearmSoundRuntime
                 .GetCommittedDischargeAttempts("stop-bleeding");
             string routeDiagnostics="dead="+dead.Status+":"+
-                (deadAfter-deadBefore)+";scatter="+scatter.Status+":"+
+                (deadAfter-deadBefore)+"/expected"+_deadShotDischargingVolleys+
+                "(misfireVolleys"+_deadShotMisfireVolleys+")"+
+                ";scatter="+scatter.Status+":"+
                 (scatterAfter-scatterBefore)+";startling="+startling.Status+":"+
                 (startlingAfter-startlingBefore)+";menacing="+menacing.Status+":"+
                 (menacingAfter-menacingBefore)+";stopBleeding="+
@@ -8777,7 +8779,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("rejected-and-uncommitted-attacks-silent","empty, Wrecked, and constructed-but-untriggered attacks preserve accepted count and the canceled chamber",rejectionDiagnostics,afterEmpty==afterMisfire&&afterWrecked==afterEmpty&&afterCanceled==afterWrecked&&canceledAttackConstructed&&canceledStatePreserved,"production discharge gate plus untriggered RuleAttackWithWeapon"),
                 Assertion("native-crossbow-audio-isolation","no custom firearm notification or accepted post",rejectionDiagnostics,afterCrossbow==afterCanceled&&ordinaryAttemptsAfter==ordinaryAttemptsBefore+2,"native heavy-crossbow RuleAttackWithWeapon and exact firearm marker boundary"),
                 Assertion("scatter-audio-once-per-volley","one committed notification across two targets; all-misfire volley silent",routeDiagnostics,scatter.Status==RuntimeTestStatuses.Pass&&scatterAfter==scatterBefore+1,"production two-target Scatter transaction and all-misfire branch"),
-                Assertion("deed-audio-commit-boundaries","Dead Shot +1, Startling Shot +1, Menacing Shot +2, Stop Bleeding two commits +2 with rejected branch silent",routeDiagnostics,dead.Status==RuntimeTestStatuses.Pass&&startling.Status==RuntimeTestStatuses.Pass&&menacing.Status==RuntimeTestStatuses.Pass&&bleeding.Status==RuntimeTestStatuses.Pass&&deadAfter==deadBefore+1&&startlingAfter==startlingBefore+1&&menacingAfter==menacingBefore+2&&bleedingAfter==bleedingBefore+2,"existing production deed transactions and source-specific committed-discharge counters"),
+                // GS-AUD-0044: Dead Shot is compared against the volleys its
+                // own scenario reports executing - one attempted notification
+                // per non-misfire volley, zero for an all-misfire volley - and
+                // the scenario must actually contain at least one all-misfire
+                // volley so the zero case is genuinely exercised. The other
+                // three deeds keep their constants, which the audit confirmed
+                // still match because their nested scenarios did not grow.
+                Assertion("deed-audio-commit-boundaries","Dead Shot one attempted notification per non-misfire volley and zero for an all-misfire volley; Startling Shot +1, Menacing Shot +2, Stop Bleeding two commits +2 with rejected branch silent",routeDiagnostics,dead.Status==RuntimeTestStatuses.Pass&&startling.Status==RuntimeTestStatuses.Pass&&menacing.Status==RuntimeTestStatuses.Pass&&bleeding.Status==RuntimeTestStatuses.Pass&&_deadShotDischargingVolleys>0&&_deadShotMisfireVolleys>0&&deadAfter-deadBefore==_deadShotDischargingVolleys&&startlingAfter==startlingBefore+1&&menacingAfter==menacingBefore+2&&bleedingAfter==bleedingBefore+2,"existing production deed transactions and source-specific committed-discharge counters; the Dead Shot expectation is derived from the volleys its scenario reports, not a whole-scenario constant"),
                 Assertion("save-free-audio-scenario","no save/inventory mutation and detached fixtures cleaned","cleaned="+cleaned,cleaned,"disposable SceneEntitiesState and exact global-unit snapshot")
             };
             bool pass=assertions.TrueForAll(value=>value.Status=="PASS");
@@ -31534,6 +31543,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
 
+        /// <summary>
+        /// GS-AUD-0044: what the last Dead Shot scenario actually executed, so
+        /// the deed-audio observer can derive its expectation instead of
+        /// carrying a stale whole-scenario constant. Attempts only - accepted
+        /// posts and audible output are separate quantities.
+        /// </summary>
+        private static int _deadShotDischargingVolleys = -1;
+        private static int _deadShotMisfireVolleys = -1;
+
         private RuntimeTestResult RunDisposableGunslingerDeadShot()
         {
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
@@ -31767,6 +31785,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (attacker == null || !ContainsReference(allUnits, attacker)) &&
                     (target == null || !ContainsReference(allUnits, target));
             }
+            // GS-AUD-0044: the outer deed-audio assertion used to require a
+            // hard-coded +1 across this whole nested scenario, written when it
+            // ran a single volley and never updated as it grew. Rather than
+            // re-pin it to another whole-scenario number - which the next added
+            // volley would break again - the scenario now reports what it
+            // actually executed, and the observer compares against that.
+            //
+            // The production invariant is exact: DeadShotRuntime posts
+            // TryPostCommittedDischarge("dead-shot") once per volley, guarded by
+            // if (!outcome.Misfires), outside the per-attack loop. So the
+            // expected attempt delta is the number of executed volleys whose
+            // aggregate outcome is not a misfire, and an all-misfire volley
+            // contributes zero.
+            Deeds.DeadShotExecutionResult[] executedVolleys = {
+                mixed, allMisfire, fourProbe, calibration, confirmed, unconfirmed,
+                natural20, natural20Control, natural1, natural1Control,
+                partyOff, partyOn, immune };
+            _deadShotDischargingVolleys = executedVolleys.Count(value =>
+                value != null && value.Outcome != null && !value.Outcome.Misfires);
+            _deadShotMisfireVolleys = executedVolleys.Count(value =>
+                value != null && value.Outcome != null && value.Outcome.Misfires);
+
             string observed = mixed == null || allMisfire == null ? "missing" :
                 "probes=" + mixed.Probes.Length +
                 ";bonuses=" + string.Join(",", mixed.Decision.AttackBonuses) +
