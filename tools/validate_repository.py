@@ -161,6 +161,7 @@ VALIDATORS = {
     "0.0.181": "validate_cleric_alignment_release181.py",
     "0.0.182": "validate_summon_menu_order_release182.py",
     "0.0.183": "validate_gunslinger_playtest_release183.py",
+    "0.0.184": "validate_hide_original_summon_elemental_release184.py",
 }
 
 
