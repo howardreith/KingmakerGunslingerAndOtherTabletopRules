@@ -796,11 +796,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !previewBook.IsKnown(value.BlueprintAbility) && !afterSelect.Contains(value.BlueprintAbility));
                     if (replacement == null || !ownsCreator()) throw new InvalidOperationException("No ordinary unselected level2 replacement row for native deselection.");
                     var replacementSpell = replacement.BlueprintAbility;
+                    int slotBeforeReplace = build.Spells.CurrentSpellsCollectionIndex;
+                    // Native UnselectSpell -> RemoveAction recalculates the preview:
+                    // ApplyLevelup creates a new LevelUpState, so every captured
+                    // SpellSelectionData is stale (native finding on 0d944a262f;
+                    // the console observer documents the same rebuild). Read the
+                    // live selection from the current native state.
+                    Func<SpellSelectionData> liveSelection = () => backend?.State?.SpellSelections?.SingleOrDefault(value => value != null &&
+                        ReferenceEquals(value.Spellbook, wizard.Spellbook) && ReferenceEquals(value.SpellList, wizard.Spellbook.SpellList) &&
+                        value.ExtraMaxLevel == 2 && !value.ExtraByStat);
+                    Func<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility[]> livePending = () => {
+                        var current = liveSelection(); return current == null ? new Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility[0] : Cleanup2DesktopPending(current); };
                     replacement.Toggle.isOn = true;
-                    foreach (int frame in WaitTeleportLevelUpUi(() => Cleanup2DesktopPending(selection).Contains(replacementSpell) &&
-                        !Cleanup2DesktopPending(selection).Contains(source), "native PC original-source deselection")) yield return frame;
+                    // Bounded wait that records state instead of throwing blind.
+                    var replaceWatch = Stopwatch.StartNew(); int replaceFrames = 0;
+                    while (!(livePending().Contains(replacementSpell) && !livePending().Contains(source)) && replaceFrames < 600 && replaceWatch.Elapsed.TotalSeconds < 8)
+                    { replaceFrames++; yield return 0; }
                     for (int frame = 0; frame < 8; frame++) yield return 0;
-                    var afterReplace = Cleanup2DesktopPending(selection);
+                    var afterReplace = livePending();
                     var stillListed = layer.GetComponentsInChildren<CharBuildSelectorItem>(true).Where(value => value.gameObject.activeInHierarchy &&
                         ReferenceEquals(value.BlueprintAbility, source)).ToArray();
                     bool deselected = ownsCreator() && !afterReplace.Contains(source) && afterReplace.Count(value => ReferenceEquals(value, replacementSpell)) == 1 &&
@@ -814,7 +827,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["freePendingSlotsAfterDeselect"] = afterReplace.Count(value => value == null), ["sourceRowsAfter"] = stillListed.Length,
                         ["sourceRowSelectedAfter"] = stillListed.Length == 1 && stillListed[0].Toggle.isOn,
                         ["committedKnownExact"] = book.GetAllKnownSpells().SequenceEqual(known), ["commits"] = commits,
-                        ["nativeInput"] = "Another ordinary CharBuildSelectorItem.Toggle in the same slot -> native SetSpell (UnselectSpell, SelectSpell)" },
+                        ["slotBeforeReplace"] = slotBeforeReplace, ["slotAfterReplace"] = build.Spells.CurrentSpellsCollectionIndex,
+                        ["selectionObjectRebuilt"] = !ReferenceEquals(liveSelection(), selection), ["liveSelectionFound"] = liveSelection() != null,
+                        ["capturedStalePending"] = new JArray(Cleanup2DesktopPending(selection).Select(value => value?.AssetGuid)),
+                        ["previewKnowsReplacement"] = backend.Preview?.GetSpellbook(wizard.Spellbook)?.IsKnown(replacementSpell) ?? false,
+                        ["previewKnowsSource"] = backend.Preview?.GetSpellbook(wizard.Spellbook)?.IsKnown(source) ?? false,
+                        ["waitFrames"] = replaceFrames, ["waitSeconds"] = replaceWatch.Elapsed.TotalSeconds,
+                        ["nativeInput"] = "Another ordinary CharBuildSelectorItem.Toggle in the same slot -> native SetSpell (UnselectSpell, SelectSpell); pending read from the live native LevelUpState" },
                         "Choosing another spell natively deselects the original spell; it stays one ordinary selectable row, the allowance is spent once by the replacement, and nothing is committed.");
                     if (!deselected) throw new InvalidOperationException("Native PC learning deselection of the original spell failed.");
                 }
