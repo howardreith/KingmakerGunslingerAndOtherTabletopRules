@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.183-gunslinger-playtest-repairs",
+  "milestone": "0.0.184-hide-original-summon-elemental",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.183",
+  "version": "0.0.184",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2923,5 +2923,18 @@
     "nativeEvidence": "None of the six repairs was observed natively and no development candidate was built or run. Evidence: focused gate 153 of 2,948 with 0 failures at e04609c2f1, compilation, read-only Harmony target preparation (spellbook 40/40, retired-loot 1/1) and inspection of the decompiled 2.1.7b engine contract.",
     "deferredCoverage": "Not observed natively: spellbook rows through refresh and reload on PC and controller, the Deadeye Armed, Dodge and Focused Aim tooltips, a Dodge activation, Oleg's fresh and saved stock, Thornstep's fresh and previously generated sources, legacy owned copies. Known migration limits: a cold iron spear sold to Oleg after his stocked copy was bought is decremented; an engine-added zero-time Thornstep in a container generated before its placement existed is removed.",
     "ownerPublicationAuthority": "Howie Reith, 2026-11-11: 'This is acceptable. Please merge this and cut a new release.' Published as the next stable patch, as v0.0.182 was."
+  },
+  "hideOriginalSummonElementalRelease184": {
+    "releaseVersion": "0.0.184",
+    "releaseInformationalVersion": "0.0.184-hide-original-summon-elemental",
+    "baseStableVersion": "0.0.183",
+    "reviewedProductSource": "9469105336d4a3d6ad0da153bc2016f51bf98739",
+    "appendedIdentities": 0,
+    "releasedIdentityChanges": 0,
+    "visibleChoiceTotal": 1208,
+    "change": "Original Summon Elemental spells hidden by default while Expanded Summoning is active: level-up spell learning (PC and controller), spellbook and memorize lists (PC and controller) and the PC metamagic tab; the level-up 'Elementals (n) - show original sources' disclosure withdrawn on PC and controller; new UMM option 'Show original Summon Elemental spells' (default off; no restart; close and reopen the spell list to apply) reveals ordinary rows. Presentation only: spells, spell lists, known and custom spells, preparations, casting, saves, scroll copying and the action-bar elemental chooser unchanged; domain/special grants kept.",
+    "nativeEvidence": "Desktop development candidate 60d2d1b618 (DLL cd62c823..., MVID dd2fbe1c-84a8-49f1-bddf-9b1770814748) guarded native run PASS 22/22: mixed spellbook and PC metamagic tab hidden and revealed (backing lists and rendered rows), preparation/undo, fixture restoration, revealed level-up row, native allocation, live-state native replacement and normal cancellation. Candidate 0d944a262f (FAIL 12/1 on an observer defect) observed the default-hidden Wizard 'Choose Spells' list and the ordinary row after reopening with the option on. Earlier candidates b0d235c33a (7/3) and 312bb462e8 (8/2) keep their FAIL results. None was re-executed on this version-stamped build.",
+    "deferredCoverage": "Not observed natively: controller learning and spellbook (compile, Harmony target and shared-policy tests only); domain/special elemental grants (policy tests); pending-choice filtering under a rebuilt hidden list (focused tests); an existing campaign save. Scroll copying is unrestricted and unclassified learning contexts fall back to native rows.",
+    "ownerPublicationAuthority": "Howie Reith, 2026-11-12: 'Approved. Please merge and cut a release.' Published as the next stable patch, as v0.0.183 was."
   }
 }
