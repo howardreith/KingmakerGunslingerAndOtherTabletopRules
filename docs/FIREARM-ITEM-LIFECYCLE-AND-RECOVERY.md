@@ -2,7 +2,7 @@
 
 ## Status
 
-Sprint 27 established the exact Kingmaker 2.1.7b item-removal and replacement boundaries and introduced one development-only same-item recovery probe. The current owner-approved design supersedes the historical two-stage recovery: one full-round Repair Firearm action now restores a Broken or Wrecked firearm directly to Normal using one reusable shared-inventory Gunsmith's Kit, consumes nothing, and preserves surviving loaded ammunition. The former separate Overhaul action remains registered only as a hidden save-compatibility delegate of that unified repair.
+Sprint 27 established the exact Kingmaker 2.1.7b item-removal and replacement boundaries and introduced one development-only same-item recovery probe. The current owner-approved design supersedes the historical two-stage recovery: one full-round Repair Firearm action now restores a **Broken** firearm directly to Normal using one reusable shared-inventory Gunsmith's Kit, consumes nothing, and preserves surviving loaded ammunition. It is available only outside party combat; a Wrecked firearm is restored by a completed full rest, which handles Broken and Wrecked and leaves Wrecked unloaded. The former separate Overhaul action remains registered only as a hidden save-compatibility delegate of that unified repair.
 
 The authoritative firearm state remains an inert item-owned `BlueprintWeaponEnchantment` token. The rejected `ItemEntityWeapon.UniqueId` vault remains prohibited.
 
@@ -90,4 +90,4 @@ The old one-click cleanup control could remove every unequipped Test Musket and 
 
 ## Runtime acceptance and player-facing delivery
 
-Sprint 27 proved the exact-item overhaul boundary in Kingmaker, and Sprint 28 exposed it through a full-round ability that consumed one Firearm Repair Kit. The current unified design replaces that loop: Repair Firearm is one full-round personal extraordinary action that requires a reusable Gunsmith's Kit in the shared inventory, consumes nothing, preserves surviving loaded rounds, and restores the exact equipped Broken or Wrecked item to Normal without item replacement. The historical two-step implementation contract is documented in `FIREARM-PLAYER-FACING-OVERHAUL.md`.
+Sprint 27 proved the exact-item overhaul boundary in Kingmaker, and Sprint 28 exposed it through a full-round ability that consumed one Firearm Repair Kit. The current unified design replaces that loop: Repair Firearm is one full-round personal extraordinary action, usable only outside party combat, that requires a reusable Gunsmith's Kit in the shared inventory, consumes nothing, preserves surviving loaded rounds, and restores the exact equipped **Broken** item to Normal without item replacement. Wrecked firearms are restored by a completed full rest instead. The historical two-step implementation contract is documented in `FIREARM-PLAYER-FACING-OVERHAUL.md`.

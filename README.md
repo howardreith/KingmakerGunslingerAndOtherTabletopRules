@@ -866,7 +866,7 @@ A first misfire consumes the loaded round, forces a miss, and changes only the e
 Firearm Proficiency now grants two separate full-round abilities:
 
 ```text
-Repair Firearm: Broken or Wrecked + shared Gunsmith's Kit â†’ Normal
+Repair Firearm (outside combat): Broken only + shared Gunsmith's Kit â†’ Normal
 Reload Firearm: empty + powder + Lead Ball â†’ loaded
 ```
 
