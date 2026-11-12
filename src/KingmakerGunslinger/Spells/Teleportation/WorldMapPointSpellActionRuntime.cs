@@ -411,16 +411,59 @@ namespace KingmakerGunslinger.Spells.Teleportation
             element.ignoreLayout = false;
             element.minWidth = 0; element.preferredWidth = -1; element.flexibleWidth = 1;
             element.minHeight = RowExtent; element.preferredHeight = RowExtent; element.flexibleHeight = 0;
-            var row = new Row { Action = action, Button = button, Label = label };
+            var row = new Row { Action = action, Button = button, Label = label,
+                Native = native };
+            ApplyReaderAvailability(row);
             button.onClick.AddListener(() => Choose(row));
             _rows.Add(row);
             clone.SetActive(true);
+        }
+
+        /// <summary>
+        /// GS-AUD-0035. A scroll group whose best reader cannot be bound has no
+        /// executable action, so the row must not present itself as one. It
+        /// stays VISIBLE - hiding it would conceal a scroll the player owns -
+        /// but is made non-interactable and carries its reason.
+        ///
+        /// This uses the native convention rather than inventing one:
+        /// ButtonPF.OnPointerClick raises IWarningNotificationUIHandler with
+        /// DisableWarningMessage when the control is not interactable and that
+        /// message is set, and Selectable's own disabled colours grey the row.
+        /// So the player sees a greyed row and, on clicking it, the native
+        /// warning explaining why.
+        ///
+        /// Nothing is spent on this path, and the execution-time revalidation in
+        /// TeleportationCastExecution.RevalidateAndCapture is unchanged: this
+        /// only stops the offer, it does not replace the recheck.
+        ///
+        /// Re-evaluated every refresh, so a row becomes interactable again as
+        /// soon as a best reader can be bound - for example after a party
+        /// effect changes - without rebuilding the list.
+        /// </summary>
+        private static void ApplyReaderAvailability(Row row)
+        {
+            if (row == null || row.Button == null) return;
+            bool executable = row.Action != null && row.Action.ReaderResolved;
+            if (row.Button.interactable != executable) row.Button.interactable = executable;
+            if (row.Native == null) return;
+            string warning = executable ? string.Empty :
+                TeleportationText.Get("ScrollReaderUnsupportedRow",
+                    "No best scroll reader can be determined for this group with " +
+                    "the party's current effects, so this destination cannot be " +
+                    "cast from it. Nothing has been spent.");
+            if (!string.Equals(row.Native.DisableWarningMessage, warning,
+                    StringComparison.Ordinal))
+                row.Native.DisableWarningMessage = warning;
         }
         private void Choose(Row row)
         {
             try
             {
                 if (!_ready || !gameObject.activeInHierarchy || !_rows.Contains(row) || TeleportContextConfirmationPresenter.Pending) return;
+                // GS-AUD-0035: a disabled row is already non-interactable, so
+                // this is the race guard for a refresh that lands between the
+                // pointer event and this handler. It spends nothing.
+                if (row.Action == null || !row.Action.ReaderResolved) return;
                 var context = TeleportationWorldMapAdapter.Capture(false);
                 var current = TeleportationWorldMapAdapter.Compose(context, _location.Blueprint).SingleOrDefault(value => value.Key == row.Action.Key);
                 if (current == null) { _ready = false; TeleportContextConfirmationPresenter.Unavailable(row.Action, context); WorldMapPointSpellActionRuntime.Clear(_panel); return; }
@@ -451,7 +494,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
                     if (!current.TryGetValue(row.Action.Key, out fresh)) {
                         _rows.Remove(row); row.Button.gameObject.SetActive(false);
                         row.Button.transform.SetParent(null, false); Destroy(row.Button.gameObject);
-                    } else { row.Action = fresh; row.Label.text = TeleportContextPresentation.CompactRow(fresh, TeleportationText.Get); }
+                    } else { row.Action = fresh; row.Label.text = TeleportContextPresentation.CompactRow(fresh, TeleportationText.Get); ApplyReaderAvailability(row); }
                 }
                 if (_rows.Count == 0) WorldMapPointSpellActionRuntime.Clear(_panel);
                 else { RefreshGroupSeparators(); Resize(); }
@@ -502,6 +545,9 @@ namespace KingmakerGunslinger.Spells.Teleportation
             internal WorldMapPointSpellAction Action;
             internal Button Button;
             internal TextMeshProUGUI Label;
+            /// <summary>The same control as <see cref="Button"/> when it is a
+            /// native ButtonPF, which is what carries DisableWarningMessage.</summary>
+            internal ButtonPF Native;
         }
     }
 }
