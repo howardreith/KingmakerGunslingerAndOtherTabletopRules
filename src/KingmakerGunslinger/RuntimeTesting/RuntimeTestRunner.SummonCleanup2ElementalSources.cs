@@ -872,8 +872,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // Native pagination owns the actual rows. The spellbook source
                 // disclosure was withdrawn (2026-11-11), so the exact original
                 // row is an ordinary visible native row on its own page.
-                if (controller.SpellBookView.GetComponent<ElementalNativeSourceFold>() != null &&
-                    controller.SpellBookView.GetComponent<ElementalNativeSourceFold>().HasFold)
+                if (!Cleanup2DesktopNoOwnedDisclosure(controller.SpellBookView))
                     throw new InvalidOperationException("A withdrawn spellbook source disclosure is present.");
                 row = controller.SpellBookView.GetComponentsInChildren<SpellItem>(true).SingleOrDefault(value => value.gameObject.activeInHierarchy &&
                     ReferenceEquals(value.SpellData, expected));
