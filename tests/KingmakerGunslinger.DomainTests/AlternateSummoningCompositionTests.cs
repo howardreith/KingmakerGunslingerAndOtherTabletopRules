@@ -119,11 +119,33 @@ namespace KingmakerGunslinger.DomainTests
 
             // A missing native identity changes which buffs are stripped.
             Assertions.Equal(
-                "branch0:template-removal-native-buffs:missing=[native-d];extra=[]",
+                "branch0:template-removal-native-buffs:expected=[native-a,native-b,native-c,native-d];" +
+                "actual=[native-a,native-b,native-c]",
                 AlternateSummoningComposition.Verify(Branches(
                     new[] { Removal("unit-hound-archon", "native-a", "native-b",
                         "native-c") }), expected),
                 "A dropped native template identity is reported exactly.");
+
+            // A DUPLICATED identity is also a failure. The run-time action
+            // requires exactly the four native identities and throws on a
+            // five-entry array, so a set comparison here would have passed a
+            // composition that cannot execute.
+            Assertions.Equal(
+                "branch0:template-removal-native-buffs:expected=[native-a,native-b,native-c,native-d];" +
+                "actual=[native-a,native-a,native-b,native-c,native-d]",
+                AlternateSummoningComposition.Verify(Branches(
+                    new[] { Removal("unit-hound-archon", "native-a", "native-b",
+                        "native-c", "native-d", "native-a") }), expected),
+                "A duplicated native template identity must fail, not pass as an equal set.");
+
+            // A repeated identity standing in for a missing one must also fail.
+            Assertions.Equal(
+                "branch0:template-removal-native-buffs:expected=[native-a,native-b,native-c,native-d];" +
+                "actual=[native-a,native-b,native-c,native-c]",
+                AlternateSummoningComposition.Verify(Branches(
+                    new[] { Removal("unit-hound-archon", "native-a", "native-b",
+                        "native-c", "native-c") }), expected),
+                "A repeated identity must not substitute for a missing one.");
 
             Assertions.Equal(
                 "branch0:template-removal-native-buffs:null-entry",
