@@ -337,8 +337,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnitEntityData source = area.Context == null ? null : area.Context.MaybeCaster;
                     if (source == null || !ourUnitIds.Contains(source.UniqueId)) continue;
                     endedAreas.Add(area.Blueprint.name + ":attributed");
-                    area.ForceEnd();
+                    EndDisposableArea(area);
                 }
+                game.EntityDestroyer.Tick();
                 foreach (UnitEntityData unit in summons)
                     if (!unit.Destroyed) CleanupExpandedSummoningUnit(unit);
                 foreach (UnitEntityData unit in game.State.Units.All.Except(units).ToArray())
@@ -365,7 +366,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Except(areas).ToArray())
                 {
                     endedAreas.Add(area.Blueprint.name + ":orphaned");
-                    area.ForceEnd();
+                    EndDisposableArea(area);
                 }
                 game.EntityDestroyer.Tick();
                 if (prototype != null) UnityEngine.Object.Destroy(prototype);
@@ -680,6 +681,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 appliedByGraph.Length == 0 && removalInGraph && cast.Summoned.Length >= 1 &&
                     markerCarriers == cast.Summoned.Length && residual.Count == 0,
                 "the cast AbilityData's own graph; UnitDescriptor.Buffs on the spawned units");
+        }
+
+        /// <summary>
+        /// ForceEnd alone only marks an area; the first run force-ended both of
+        /// the hound archon's auras twice and the census still listed them. The
+        /// area's own Tick is what actually retires it, which is the pairing the
+        /// existing native area fixtures already use.
+        /// </summary>
+        private static void EndDisposableArea(AreaEffectEntityData area)
+        {
+            if (area == null) return;
+            area.ForceEnd();
+            area.Tick();
+            area.Tick();
+            Game.Instance.EntityCreator.Tick();
         }
 
         private IEnumerable<int> AltNaturalCastSelected(UnitEntityData caster,
