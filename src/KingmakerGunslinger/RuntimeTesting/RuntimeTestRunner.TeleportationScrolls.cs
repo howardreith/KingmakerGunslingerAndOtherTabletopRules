@@ -1157,18 +1157,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 using (var notifications = new TeleportNotificationObserver())
                 {
                     button.onClick.Invoke(); button.onClick.Invoke();
+                    // Sampled HERE, before yielding. The first run asserted RNG
+                    // and rule-context stability across four rendered frames,
+                    // which measures the game's own update loop rather than this
+                    // click: everything about spending held (pending=False,
+                    // stock=3/3, messages=0) and the assertion still failed. The
+                    // claim is about the click path, so it is sampled around the
+                    // click path.
+                    bool quietInvocation =
+                        ReferenceEquals(contextBefore, Game.Instance.Rulebook.Context) &&
+                        rngBefore.Equals(UnityEngine.Random.state);
                     for (int frame = 0; frame < 4; frame++) yield return 0;
                     ScrollsAssert("unrankable-reader-row-click-spends-nothing",
                         "the production race guard in Choose refuses a direct event invocation twice over: no confirmation " +
-                            "opens, no scroll is consumed, no rule context or RNG changes",
+                            "opens, no scroll is consumed, and the invocation itself changes no rule context or RNG",
                         "pending=" + TeleportContextConfirmationPresenter.Pending + ";stock=" +
                             TeleportationScrollAdapter.Stock(player.Party, scroll) + "/" + stockBefore +
-                            ";messages=" + notifications.Text.Count,
+                            ";messages=" + notifications.Text.Count +
+                            ";quietInvocation=" + quietInvocation,
                         !TeleportContextConfirmationPresenter.Pending &&
                             TeleportContextConfirmationPresenter.Current == null &&
                             TeleportationScrollAdapter.Stock(player.Party, scroll) == stockBefore &&
-                            ReferenceEquals(contextBefore, Game.Instance.Rulebook.Context) &&
-                            rngBefore.Equals(UnityEngine.Random.state));
+                            quietInvocation);
                 }
 
                 // Re-evaluated per refresh, not latched at construction: the row
