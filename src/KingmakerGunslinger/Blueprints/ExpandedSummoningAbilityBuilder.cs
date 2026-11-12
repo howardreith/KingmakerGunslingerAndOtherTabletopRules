@@ -73,13 +73,33 @@ namespace KingmakerGunslinger.Blueprints
         ///    "Structural and graph evidence only... summon execution...
         ///    not exercised". It casts nothing.
         /// 2. Execution verification. A concrete affected tuple is actually
-        ///    cast - for example Monster Tactician, tier 4, hound-archon - and
-        ///    the SPAWNED UNIT's buffs are inspected to confirm the inherited
-        ///    celestial/fiendish template is gone, with an intended templated
-        ///    Summon Monster control that retains its template and an
-        ///    unchanged Nature's Ally control.
+        ///    cast and the SPAWNED UNIT's buffs are inspected to confirm the
+        ///    inherited celestial/fiendish template is gone. Implemented as the
+        ///    inherited-template-removal stage of
+        ///    disposable-alternate-summoning-natural: the Master Summoner tier-4
+        ///    row is selected from the live native menu BY WHAT ITS OWN GRAPH
+        ///    CARRIES rather than by creature name, so the fixture cannot drift
+        ///    onto an unaffected creature and still look like it passed.
         ///
-        /// A passing graph observation alone leaves part 2 outstanding.
+        ///    That stage also proves there was something to remove, which a
+        ///    spawned-unit inspection alone does not: the cast row's graph must
+        ///    still contain the native carrier's apply action for one of the
+        ///    four identities, while the spawned unit carries none of them and
+        ///    still carries the native summon marker.
+        ///
+        /// A passing graph observation alone leaves part 2 outstanding. Note
+        /// also that the composition controls' original subjects were a
+        /// TEMPLATED creature and a Nature's Ally creature, so they never
+        /// entered the TemplateRemoval comparison branch at all; part 1 needs
+        /// an affected subject, which composition-affected-subject-positive-
+        /// control and its four negative controls supply.
+        ///
+        /// Membership below is a claim about the INSTALLED NATIVE LIBRARY, not
+        /// about this catalog: 63 Summon Monster creatures are untemplated and
+        /// only these twelve inherit a template. The
+        /// inherited-template-removal-set-is-derived observation re-derives the
+        /// set from the registered graphs at mod load and fails if a
+        /// thirteenth creature inherits a template without being declared.
         /// </summary>
         internal static bool RequiresInheritedTemplateRemoval(SummonFamily family,
             SummonCreatureSpec creature)

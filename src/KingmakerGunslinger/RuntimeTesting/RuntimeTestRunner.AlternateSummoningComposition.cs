@@ -96,6 +96,203 @@ namespace KingmakerGunslinger.RuntimeTesting
                     last.AfterSpawn.Actions = last.AfterSpawn.Actions.Where(value =>
                         !(value is ContextActionApplySummonTemplateByCaster)).ToArray();
                 }, "placement:branch" + (templatedBranches - 1) + ":", false);
+
+            AlternateSummoningTemplateRemovalControls(assertions, record, lookup, tactician,
+                created);
+            InheritedTemplateRemovalSetIsDerived(assertions, record);
+        }
+
+        /// <summary>
+        /// GS-AUD-0025. InheritedTemplateRemovalCreatures is a hard-coded list
+        /// of twelve creature keys, and 63 Summon Monster creatures are
+        /// untemplated - so membership is NOT simply "untemplated". The list
+        /// asserts a property of the installed native library: that this
+        /// creature's native carrier still applies a celestial/fiendish
+        /// template after spawn. Nothing measured that, which means a
+        /// thirteenth affected creature would silently keep a template the
+        /// ordinary spell removes, and the repair would look complete.
+        ///
+        /// So derive the set from the live library instead of trusting it. For
+        /// every untemplated Summon Monster creature, read the registered
+        /// canonical ability's own spawn graph: it is a copy of the native
+        /// carrier, with the spawn unit replaced, so an inherited template
+        /// shows up as a ContextActionApplyBuff carrying one of the four native
+        /// template identities. The derived set must equal the declared set
+        /// exactly, and exactly those creatures must carry the removal action.
+        ///
+        /// This runs at mod load against the installed library, so it needs no
+        /// save and no cast.
+        /// </summary>
+        private static void InheritedTemplateRemovalSetIsDerived(
+            List<RuntimeTestAssertion> assertions, JObject record)
+        {
+            var nativeIds = new HashSet<string>(
+                ExpandedSummoningAbilityBuilder.NativeTemplateIds, StringComparer.Ordinal);
+            var inherits = new SortedSet<string>(StringComparer.Ordinal);
+            var carriesRemoval = new SortedSet<string>(StringComparer.Ordinal);
+            var unresolved = new SortedSet<string>(StringComparer.Ordinal);
+            var examined = new SortedSet<string>(StringComparer.Ordinal);
+
+            foreach (SummonVariantSpec variant in ExpandedSummoningCatalog
+                .GenerateVariants(SummonFamily.Monster))
+            {
+                if (variant.Creature.MonsterTemplated) continue;
+                string key = variant.Creature.Key;
+                examined.Add(key);
+                BlueprintScriptableObject registered;
+                if (!ExpandedSummoningBlueprints.Registered.BySymbol.TryGetValue(
+                        ExpandedSummoningIdentityCatalog.AbilitySymbol(variant), out registered))
+                {
+                    unresolved.Add(key);
+                    continue;
+                }
+                var ability = registered as BlueprintAbility;
+                if (ability == null) { unresolved.Add(key); continue; }
+                if (AlternateSummoningGraph.Objects<ContextActionApplyBuff>(
+                        ability.ComponentsArray).Any(action => action.Buff != null &&
+                        nativeIds.Contains(action.Buff.AssetGuid)))
+                    inherits.Add(key);
+                if (AlternateSummoningGraph
+                        .Objects<ContextActionRemoveInheritedSummonTemplates>(
+                            ability.ComponentsArray).Any())
+                    carriesRemoval.Add(key);
+            }
+
+            var declared = new SortedSet<string>(ExpandedSummoningCatalog
+                .GenerateVariants(SummonFamily.Monster)
+                .Select(variant => variant.Creature)
+                .Where(creature => ExpandedSummoningAbilityBuilder
+                    .RequiresInheritedTemplateRemoval(SummonFamily.Monster, creature))
+                .Select(creature => creature.Key), StringComparer.Ordinal);
+
+            string[] extra = inherits.Except(declared, StringComparer.Ordinal).ToArray();
+            string[] missing = declared.Except(inherits, StringComparer.Ordinal).ToArray();
+            bool removalMatches = carriesRemoval.SetEquals(declared);
+            record["derivedInheriting"] = string.Join(",", inherits.ToArray());
+            record["declaredRemovalSet"] = string.Join(",", declared.ToArray());
+            record["untemplatedExamined"] = examined.Count;
+
+            assertions.Add(Assertion("inherited-template-removal-set-is-derived",
+                "every untemplated Summon Monster creature whose registered graph still applies a " +
+                    "native celestial/fiendish template is declared in " +
+                    "InheritedTemplateRemovalCreatures, and exactly those creatures carry the " +
+                    "removal action",
+                "untemplatedExamined=" + examined.Count + ";declared=" + declared.Count +
+                    ";derived=" + inherits.Count + ";undeclaredButInheriting=[" +
+                    string.Join(",", extra) + "];declaredButNotInheriting=[" +
+                    string.Join(",", missing) + "];removalCarriers=" + carriesRemoval.Count +
+                    ";removalSetMatches=" + removalMatches + ";unresolved=[" +
+                    string.Join(",", unresolved.ToArray()) + "]",
+                unresolved.Count == 0 && examined.Count > declared.Count &&
+                    extra.Length == 0 && missing.Length == 0 && removalMatches,
+                "registered canonical graphs in the installed library; " +
+                    "ContextActionApplyBuff identities compared against " +
+                    "ExpandedSummoningAbilityBuilder.NativeTemplateIds"));
+        }
+
+        /// <summary>
+        /// GS-AUD-0025. The controls above run on a templated creature and on a
+        /// Nature's Ally creature, so NONE of them enters the TemplateRemoval
+        /// comparison branch - which is the branch the inherited-template
+        /// removal, and the multiset identity repair, actually live in. A
+        /// passing composition observation over those two subjects therefore
+        /// says nothing about the removal. These controls use an AFFECTED
+        /// subject: an untemplated Summon Monster creature whose native carrier
+        /// still applies a celestial/fiendish template after spawn.
+        ///
+        /// Still graph/reader evidence only. It does not cast, so it does not
+        /// discharge the execution half of the acceptance recorded on
+        /// ExpandedSummoningAbilityBuilder.InheritedTemplateRemovalCreatures.
+        /// </summary>
+        private static void AlternateSummoningTemplateRemovalControls(
+            List<RuntimeTestAssertion> assertions, JObject record,
+            Func<string, BlueprintScriptableObject> lookup,
+            AlternateSummoningTacticianSources tactician, List<UnityEngine.Object> created)
+        {
+            BlueprintAbility canonicalAffected;
+            AlternateSummoningChoice affectedChoice = null;
+            BlueprintAbility affected = BuildCompositionSubject(lookup, tactician, created,
+                AlternateSummoningSourceCatalog.MasterSummonerKey, choice =>
+                {
+                    bool match = choice.Kind == AlternateSummoningChoiceKind.Creature &&
+                        choice.Multiplicity == SummonMultiplicity.One &&
+                        ExpandedSummoningAbilityBuilder.RequiresInheritedTemplateRemoval(
+                            choice.Placement.Family, choice.Placement.Creature);
+                    if (match) affectedChoice = choice;
+                    return match;
+                }, out canonicalAffected);
+
+            ComposedActionView[] removals = AlternateSummoningCompositionReader
+                .Branches(affected).SelectMany(branch => branch)
+                .Where(value => value.Kind == ComposedActionKind.TemplateRemoval).ToArray();
+            string affectedKey = affectedChoice == null ? "<none>" :
+                affectedChoice.Placement.Creature.Key;
+            record["affectedSubject"] = affected.name;
+            record["affectedCreature"] = affectedKey;
+            record["affectedTier"] = affectedChoice == null ? -1 : affectedChoice.Tier;
+            record["affectedRemovalActions"] = removals.Length;
+
+            string affectedPositive = AlternateSummoningCompositionReader.Verify(affected,
+                canonicalAffected);
+            assertions.Add(Assertion("composition-affected-subject-positive-control",
+                "an untemplated template-inheriting child carries at least one removal action " +
+                    "bound to the four native identities, and matches its canonical child",
+                "creature=" + affectedKey + ";tier=" +
+                    (affectedChoice == null ? -1 : affectedChoice.Tier) + ";removalActions=" +
+                    removals.Length + ";identities=" + (removals.Length == 0 ? "<none>" :
+                        removals[0].ReplacedNativeTemplateBuffs.Length.ToString()) +
+                    ";verify=" + (affectedPositive ?? "ok"),
+                affectedPositive == null && removals.Length >= 1 && removals.All(value =>
+                    value.ReplacedNativeTemplateBuffs != null &&
+                    value.ReplacedNativeTemplateBuffs.Length ==
+                        ExpandedSummoningAbilityBuilder.NativeTemplateIds.Count),
+                "production builder on an affected creature; AlternateSummoningCompositionReader.Verify"));
+
+            // THE multiset regression, demonstrated by execution rather than
+            // argued: a duplicated native identity. The run-time action
+            // revalidates that NativeTemplates holds exactly the four
+            // identities and throws otherwise, so this composition would fail
+            // to execute - and the superseded set comparison called [a,b,c,d,a]
+            // equal to [a,b,c,d] and accepted it.
+            CompositionNegative(assertions, record, "template-removal-duplicate-identity",
+                affected, canonicalAffected, created, clone =>
+                {
+                    foreach (ContextActionRemoveInheritedSummonTemplates action in
+                        AlternateSummoningGraph
+                            .Objects<ContextActionRemoveInheritedSummonTemplates>(
+                                clone.ComponentsArray))
+                        action.NativeTemplates = action.NativeTemplates
+                            .Concat(new[] { action.NativeTemplates[0] }).ToArray();
+                }, "branch0:template-removal-native-buffs:", false);
+
+            CompositionNegative(assertions, record, "template-removal-missing-identity",
+                affected, canonicalAffected, created, clone =>
+                {
+                    foreach (ContextActionRemoveInheritedSummonTemplates action in
+                        AlternateSummoningGraph
+                            .Objects<ContextActionRemoveInheritedSummonTemplates>(
+                                clone.ComponentsArray))
+                        action.NativeTemplates = action.NativeTemplates.Skip(1).ToArray();
+                }, "branch0:template-removal-native-buffs:", false);
+
+            CompositionNegative(assertions, record, "template-removal-owner",
+                affected, canonicalAffected, created, clone =>
+                {
+                    foreach (ContextActionRemoveInheritedSummonTemplates action in
+                        AlternateSummoningGraph
+                            .Objects<ContextActionRemoveInheritedSummonTemplates>(
+                                clone.ComponentsArray))
+                        action.OwningBlueprint = null;
+                }, "branch0:template-removal-owner:", false);
+
+            CompositionNegative(assertions, record, "template-removal-absent",
+                affected, canonicalAffected, created, clone =>
+                {
+                    foreach (ContextActionSpawnMonster spawn in AlternateSummoningGraph
+                        .Objects<ContextActionSpawnMonster>(clone.ComponentsArray))
+                        spawn.AfterSpawn.Actions = spawn.AfterSpawn.Actions.Where(value =>
+                            !(value is ContextActionRemoveInheritedSummonTemplates)).ToArray();
+                }, "placement:branch0:", false);
         }
 
         private static BlueprintAbility BuildCompositionSubject(
