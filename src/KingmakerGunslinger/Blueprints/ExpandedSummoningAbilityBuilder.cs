@@ -72,20 +72,31 @@ namespace KingmakerGunslinger.Blueprints
         ///    observation checks - and that scenario states its own limit:
         ///    "Structural and graph evidence only... summon execution...
         ///    not exercised". It casts nothing.
-        /// 2. Execution verification. A concrete affected tuple is actually
-        ///    cast and the SPAWNED UNIT's buffs are inspected to confirm the
-        ///    inherited celestial/fiendish template is gone. Implemented as the
-        ///    inherited-template-removal stage of
-        ///    disposable-alternate-summoning-natural: the Master Summoner tier-4
-        ///    row is selected from the live native menu BY WHAT ITS OWN GRAPH
-        ///    CARRIES rather than by creature name, so the fixture cannot drift
-        ///    onto an unaffected creature and still look like it passed.
+        /// 2. Execution verification. ATTEMPTED AND CORRECTED, not discharged.
+        ///    The inherited-template-removal stage of
+        ///    disposable-alternate-summoning-natural casts an affected creature
+        ///    selected from the live native menu BY WHAT ITS OWN GRAPH CARRIES
+        ///    rather than by creature name, and inspects the spawned unit.
         ///
-        ///    That stage also proves there was something to remove, which a
-        ///    spawned-unit inspection alone does not: the cast row's graph must
-        ///    still contain the native carrier's apply action for one of the
-        ///    four identities, while the spawned unit carries none of them and
-        ///    still carries the native summon marker.
+        ///    Measured on
+        ///    KMG_Summoning_Adapter_MasterSummoner_Tier4_HoundArchon_One:
+        ///    appliedByGraph=0, removalInGraph=true, one hound archon spawned
+        ///    carrying the native summon marker and NO native template.
+        ///
+        ///    So the alternate-caller child does not copy the native Summon
+        ///    Monster carrier; it is built from the caller's own host template,
+        ///    which applies no celestial/fiendish buff anywhere in its graph.
+        ///    On this path there is nothing to inherit and nothing to strip,
+        ///    and GS-AUD-0025's description - "an alternate caller's untemplated
+        ///    Summon Monster child kept the donor's template" - is NOT
+        ///    reproducible. The repair is therefore behaviour-neutral where it
+        ///    applies: the summon was clean before it and is clean after. Its
+        ///    value is that the two paths can no longer diverge.
+        ///
+        ///    An execution proof of removal EFFICACY can only come from the
+        ///    canonical ordinary-spell path, where
+        ///    inherited-template-removal-set-is-derived shows the apply really
+        ///    is present. That is queued, not claimed here.
         ///
         /// A passing graph observation alone leaves part 2 outstanding. Note
         /// also that the composition controls' original subjects were a
