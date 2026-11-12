@@ -9,12 +9,10 @@ namespace KingmakerGunslinger.DomainTests
     {
         private sealed class Source { internal string Book; internal bool Available = true; internal long Metamagic; }
         private sealed class Preparation {internal Source Spell;internal bool Available=true;}
-        private sealed class NativeRow
-        {internal bool Current=true,Selected,Visible=true,FailOnce;internal int Writes;}
-        private static ElementalRowVisibilityLease<NativeRow>.Row Row(NativeRow native,string parent)
-        {return new ElementalRowVisibilityLease<NativeRow>.Row {Native=native,ParentGuid=parent,
-            Current=()=>native.Current,Selected=()=>native.Selected,Visible=()=>native.Visible,
-            SetVisible=value=>{native.Visible=value;native.Writes++;if(native.FailOnce){native.FailOnce=false;throw new InvalidOperationException("native setter failure");}}};}
+        // The learning/spellbook disclosure projection and row-visibility
+        // lease tests were retired with those helpers (owner withdrawal,
+        // 2026-11-11 and 2026-11-12); see Cleanup2ElementalPresentationTests
+        // for the replacement default-hidden presentation policy.
 
         internal static void RetainedInvocationDriftRefusesWithoutSubstitutingFreshChild()
         {
@@ -32,69 +30,6 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(0,dispatches,"Neither source-context nor metamagic drift can hand off or spend.");
             metamagic=1;
             Assertions.True(choice.Cast() && dispatches==1,"Exact restored original invocation may dispatch once after explicit selection.");
-        }
-
-        internal static void NativeDisclosurePreservesMixedSourcesAndSelectedAllocations()
-        {
-            var native=new NativeRow();var selected=new NativeRow{Selected=true};var monster=new NativeRow();var ally=new NativeRow();
-            var spec=ElementalSourceChooserPolicy.Rank(2);
-            var lease=new ElementalRowVisibilityLease<NativeRow>(new[]{Row(native,spec.Guid),Row(selected,spec.Guid),
-                Row(monster,spec.MonsterParentGuid),Row(ally,spec.NaturesAllyParentGuid)});
-            Assertions.Equal(2,lease.Count,"Only exact standalone source rows belong to the disclosure.");
-            lease.Apply(false);
-            Assertions.False(native.Visible,"Unselected native standalone source folds.");
-            Assertions.True(selected.Visible,"Actual selected legacy allocation stays visible and undoable.");
-            Assertions.True(monster.Visible && ally.Visible && monster.Writes==0 && ally.Writes==0,
-                "Mixed SM/SNA source rows must never be folded or written.");
-            lease.Apply(true);Assertions.True(native.Visible,"Expansion restores the same original row.");
-            lease.Release();Assertions.True(native.Visible && selected.Visible,"Release restores original native visibility.");
-        }
-
-        internal static void ConsoleProjectionRetainsOriginalAuthorityAndSelectedSource()
-        {
-            var mixed=new object();var legacy=new object();var chosen=new object();var foreign=new object();var header=new object();
-            var authoritative=new List<object>{mixed,legacy,chosen,foreign};var original=authoritative.ToArray();
-            var collapsed=ElementalSourceChooserPolicy.ProjectOriginalSources(authoritative,new[]{legacy,chosen},header,false,
-                source=>ReferenceEquals(source,chosen));
-            Assertions.True(collapsed.SequenceEqual(new[]{mixed,header,chosen,foreign}),
-                "A fresh console projection folds only source rows and retains the exact selected source.");
-            Assertions.True(authoritative.SequenceEqual(original),"Native allocation/known collection retains every original object and order.");
-            var expanded=ElementalSourceChooserPolicy.ProjectOriginalSources(authoritative,new[]{legacy,chosen},header,true,source=>false);
-            Assertions.True(expanded.SequenceEqual(new[]{mixed,header,legacy,chosen,foreign}),
-                "Disclosure expands the original native VM references; it cannot create replacement rule sources.");
-            Assertions.False(authoritative.Contains(header),"Transient header never enters native allocation/known authority.");
-            var one=ElementalSourceChooserPolicy.ProjectOriginalSources(new[]{mixed,legacy},new[]{legacy},header,false,source=>false);
-            Assertions.True(one.SequenceEqual(new[]{mixed,header}),"A level-specific screen with one legacy source still has the common disclosure.");
-        }
-
-        internal static void ConsoleProjectionPreservesNativeHiddenSourcesAndRefusesDrift()
-        {
-            var hidden=new NativeRow{Visible=false};var visible=new NativeRow();var mixed=new NativeRow();var header=new NativeRow();
-            var authority=new[]{mixed,hidden,visible};var capturedSources=new[]{visible};
-            var projection=ElementalSourceChooserPolicy.ProjectOriginalSources(authority,new[]{hidden,visible},header,false,
-                row=>row.Selected,row=>row.Visible);
-            Assertions.True(projection.SequenceEqual(new[]{mixed,hidden,header}),
-                "A native-hidden source stays the same original object for the native renderer to skip; it never becomes a disclosure member.");
-            Assertions.True(ElementalSourceChooserPolicy.SourcesRemainEligible(capturedSources,row=>row.Visible),
-                "The captured originally visible source admits the current native presentation generation.");
-            visible.Visible=false;
-            Assertions.False(ElementalSourceChooserPolicy.SourcesRemainEligible(capturedSources,row=>row.Visible),
-                "Foreign/native hiding of a captured source invalidates the generation; it cannot be overwritten to keep the fold alive.");
-            Assertions.True(authority.SequenceEqual(new[]{mixed,hidden,visible}) && !hidden.Visible && !visible.Visible,
-                "Eligibility refusal changes no native object, authoritative order, or native visibility flag.");
-        }
-
-        internal static void NativeDisclosureFailureRollsBackOnlyOwnedRowGeneration()
-        {
-            var first=new NativeRow();var second=new NativeRow{FailOnce=true};var spec=ElementalSourceChooserPolicy.Rank(4);
-            var lease=new ElementalRowVisibilityLease<NativeRow>(new[]{Row(first,spec.Guid),Row(second,spec.Guid)});
-            bool failed=false;try{lease.Apply(false);}catch(InvalidOperationException){failed=true;}
-            Assertions.True(failed && first.Visible && second.Visible,"Partial native row initialization restores both exact original rows and retains failure.");
-            var foreign=new NativeRow();var owned=new NativeRow();
-            lease=new ElementalRowVisibilityLease<NativeRow>(new[]{Row(foreign,spec.Guid),Row(owned,spec.Guid)});
-            lease.Apply(false);foreign.Current=false;int writes=foreign.Writes;lease.Release();
-            Assertions.True(owned.Visible,"Owned unchanged row restores.");
-            Assertions.True(!foreign.Visible && foreign.Writes==writes,"A recycled foreign row generation is never overwritten during release.");
         }
 
         internal static void ExplicitSourceSelectionNeverPoolsOrFallsBack()

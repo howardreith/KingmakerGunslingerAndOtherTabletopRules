@@ -91,11 +91,17 @@ namespace KingmakerGunslinger.Summoning
             {
                 if (!ExpandedSummoningVisualVariantPatch.IsModuleActive || !BlueprintBootstrap.IsInitialized)
                 { Record(list, level, null, "preserve-module-off-or-not-initialized"); return original; }
+                // Owner option (2026-11-12): revealed original spells are
+                // ordinary native rows; there is no disclosure or header.
+                if (OriginalSummonElementalVisibility.Show)
+                { Record(list, level, null, "preserve-owner-revealed-original-summon-elemental"); return original; }
+                // Owner directive (2026-11-12): the original spells are folded
+                // into Summon Monster / Summon Nature's Ally, so any class list
+                // hides them; no per-list equivalence proof gates the decision.
                 if (list == null || selection == null || preview == null || selection.Spellbook == null ||
                     !ReferenceEquals(selection.SpellList, list) ||
                     !ReferenceEquals(preview.Blueprint, selection.Spellbook) ||
                     !ReferenceEquals(preview.Blueprint.SpellList, list) ||
-                    !StandaloneElementalPresentationPolicy.IsObservedOrdinaryList(list.AssetGuid) ||
                     level < 0 || level > 9 || selection.LevelCount == null || selection.ExtraByStat)
                 { Record(list, level, null, "preserve-unclassified-selection-context"); return original; }
 
@@ -121,17 +127,13 @@ namespace KingmakerGunslinger.Summoning
                 var eligible = new HashSet<string>(StringComparer.Ordinal);
                 foreach (BlueprintAbility ability in original)
                 {
-                    if (ability == null) continue;
-                    StandaloneElementalAbilitySpec spec = StandaloneElementalPresentationPolicy.Find(ability.AssetGuid);
-                    if (spec == null) continue;
+                    if (ability == null || !StandaloneElementalPresentationPolicy.IsOriginalSummonElemental(ability.AssetGuid)) continue;
+                    // A pending selection stays visible so it can still be
+                    // changed natively; known rows are natively disabled.
                     if (selected.Contains(ability.AssetGuid) || known.Contains(ability.AssetGuid))
                     { Record(list, level, ability, "preserve-selected-or-known-legacy-invocation"); continue; }
-                    string reason;
-                    StandaloneElementalEquivalenceEvidence proof = Prove(list, level, preview, original, ability, spec, out reason);
-                    if (proof != null && StandaloneElementalPresentationPolicy.Disposition(true, spec.Guid,
-                        StandaloneElementalConsumerRoute.OrdinaryClassLearning, proof) == "eligible-redundant-discovery-only")
-                        eligible.Add(ability.AssetGuid);
-                    Record(list, level, ability, reason);
+                    eligible.Add(ability.AssetGuid);
+                    Record(list, level, ability, "hidden-original-summon-elemental");
                 }
                 string budget;
                 List<BlueprintAbility> result = StandaloneElementalPresentationPolicy.FilterLearningRows(original,
@@ -144,6 +146,9 @@ namespace KingmakerGunslinger.Summoning
             { Record(list, level, null, "preserve-proof-exception:" + exception.GetType().Name); return original; }
         }
 
+        // Historical cleanup2 equivalence proof. Since 2026-11-12 it no longer
+        // gates learning presentation (owner directive above); it remains only
+        // for the historical cleanup2 review observer that reflects on it.
         private static StandaloneElementalEquivalenceEvidence Prove(BlueprintSpellList list, int level,
             Spellbook book, IList<BlueprintAbility> rows, BlueprintAbility source,
             StandaloneElementalAbilitySpec spec, out string reason)
