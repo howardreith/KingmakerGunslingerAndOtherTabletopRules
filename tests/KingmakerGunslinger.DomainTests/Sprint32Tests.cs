@@ -251,8 +251,19 @@ namespace KingmakerGunslinger.DomainTests
             ScatterAttackVolleyDecision decision = new ScatterAttackVolleyDecision(0, 0, 0, 0, 0);
             Assertions.False(decision.AllowsPrecisionDamage,
                 "Scatter volley allowed precision damage.");
+            // GS-AUD-0042: this asserts the declared contract only. Unlike
+            // AllowsPrecisionDamage, whose exclusion the live damage path
+            // actually enforces through DisablePrecisionDamage, nothing in the
+            // pipeline reads AllowsVitalStrikeDamage. The exclusion is
+            // unenforced because the route is unreachable in Kingmaker 2.1.7b:
+            // the multiplier lives in AbilityCustomMeleeAttack/VitalStrike,
+            // subscribed only inside that component's own disposable scope
+            // around its own melee attack, while scatter builds its own
+            // RuleAttackWithWeapon per target outside any such scope. So this
+            // line must not be read as evidence that scatter suppresses a
+            // Vital Strike increase it has actually been offered.
             Assertions.False(decision.AllowsVitalStrikeDamage,
-                "Scatter volley allowed Vital Strike damage.");
+                "Scatter volley declared contract allows Vital Strike damage.");
         }
 
         private static void ScatterVolleyNonScatterRejected()
