@@ -129,16 +129,24 @@ namespace KingmakerGunslinger.Summoning
                 string[] removed = actual.ReplacedNativeTemplateBuffs ?? new string[0];
                 if (removed.Any(value => value == null))
                     return "template-removal-native-buffs:null-entry";
-                var expectedRemoved = new HashSet<string>(
-                    expected.ReplacedNativeTemplateBuffs ?? new string[0],
-                    StringComparer.Ordinal);
-                var actualRemoved = new HashSet<string>(removed, StringComparer.Ordinal);
-                if (!expectedRemoved.SetEquals(actualRemoved))
-                    return "template-removal-native-buffs:missing=[" + string.Join(",",
-                        expectedRemoved.Except(actualRemoved)
-                            .OrderBy(value => value, StringComparer.Ordinal).ToArray()) +
-                        "];extra=[" + string.Join(",", actualRemoved.Except(expectedRemoved)
-                            .OrderBy(value => value, StringComparer.Ordinal).ToArray()) + "]";
+                // Compared as a MULTISET, not a set: order may differ but
+                // cardinality may not. ContextActionRemoveInheritedSummonTemplates
+                // revalidates at run time that NativeTemplates has exactly the
+                // four native identities and throws otherwise, so a duplicated
+                // or repeated entry is a composition that will fail to execute.
+                // Set comparison would have called [a,b,c,d,a] equal to
+                // [a,b,c,d] and passed an action that throws before removing
+                // any buff.
+                string[] expectedRemoved = (expected.ReplacedNativeTemplateBuffs ??
+                    new string[0]).OrderBy(value => value, StringComparer.Ordinal).ToArray();
+                string[] actualRemoved = removed
+                    .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+                if (expectedRemoved.Length != actualRemoved.Length ||
+                    expectedRemoved.Where((value, index) => !string.Equals(value,
+                        actualRemoved[index], StringComparison.Ordinal)).Any())
+                    return "template-removal-native-buffs:expected=[" +
+                        string.Join(",", expectedRemoved) + "];actual=[" +
+                        string.Join(",", actualRemoved) + "]";
                 return null;
             }
             if (expected.Kind == ComposedActionKind.Alignment)
