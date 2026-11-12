@@ -1,20 +1,18 @@
 # Hide original Summon Elemental by default (2026-11-12): status
 
-**Current state (2026-11-12, source `0d944a262f`): reviewable development checkpoint. Third native checkpoint
-FAIL (observer), 12 PASS / 1 FAIL.** Observed natively on the real Wizard "Choose Spells" screen:
-- hidden with the option off;
-- after reopen with the option on, the original spell is one ordinary row;
-- native selection works, and a slot switch retains it.
+**Current state (2026-11-12, candidate `60d2d1b618`): ready for final review.** One guarded native run
+**PASS, 22/22**. It covers the still-unobserved surfaces:
+- the mixed spellbook and the PC metamagic tab, hidden and revealed, with backing lists and rendered rows;
+- preparation and undo, and mixed-fixture restoration;
+- revealed learning with live-state native replacement and normal cancellation.
 
-Native deselection by replacement did not settle within its bound, and the book/metamagic cells were not reached.
-STOP. See "Verification continuation" at the end.
+Hidden learning and reveal-after-reopen were observed on `0d944a262f` and were not replayed. See
+"Targeted verification" at the end. Nothing is merged, released or installed.
 
 **Current behavior.**
-- Hidden by default in learning, spellbook/memorize lists and the PC metamagic tab. The metamagic filtering is
-  implemented, though not yet observed natively.
-- UMM option: "no restart; close and reopen the spell list to apply". A same-list learning-slot switch does not
-  apply it.
-- Sections below "Verification continuation" are the current record; earlier sections are history.
+- Hidden by default in learning, spellbook/memorize lists and the PC metamagic tab.
+- UMM option: "no restart; close and reopen the spell list to apply".
+- Sections from "Targeted verification" on are the current record; earlier sections are history.
 
 Branch `codex/hide-original-summon-elemental` from master `4b10c85768` (v0.0.183 records merge). One draft PR.
 Nothing is merged, tagged, released or installed.
@@ -517,5 +515,157 @@ ledger is about 2,299 of 2,400 s.
 3. Spellbook (level pages and the star metamagic tab), option off then on with the book reopened: original
    elemental rows and their metamagic copies are hidden, then shown once each; other spells and favorites
    unchanged. Not yet observed natively.
+4. Summon Monster / Summon Nature's Ally elementals, prepared copies, domain elementals and the action-bar
+   Elementals chooser are unchanged.
+
+---
+
+# Targeted verification (PR #133, 2026-11-12, candidate `60d2d1b618`)
+
+The owner authorized observer safeguards and an itinerary change, focused checks, one build and one guarded run, and
+raised the cumulative ceiling to 3,600 s. Earlier extensions are preserved: 1,800 s, then 2,400 s, with the target
+900 s. Reviewed head `389e3c4112`. Feature code frozen and unchanged.
+
+## Observer changes (source `60d2d1b618`)
+
+- **Stale-selection diagnosis kept separate.** `7b7d5fa102` established an observer defect: native `UnselectSpell`
+  rebuilds `LevelUpState`. It did not establish that replacement succeeded on `0d944a262f`. That remains not
+  observed.
+- **Live-state replacement.**
+  - The intended slot is taken from the live allocation, where the source landed.
+  - Before input: the native current slot must be the intended one. If not, the slot's own switch toggle (off→on)
+    is used. The live selection must hold the source there and the live preview must know it. An ordinary,
+    interactable, unselected replacement row is reacquired from the live layer.
+  - Each observation is one coherent snapshot of the live `LevelUpState` selection (exactly one match required),
+    the current preview, the current slot, and reacquired source/replacement rows.
+  - The verdict requires:
+    - intended slot source → replacement;
+    - the other slot and the allowance unchanged;
+    - the preview knows the replacement and not the source;
+    - the source still one ordinary unselected interactable row while revealed;
+    - committed known spells unchanged, 0 commits.
+  - Bounded waits record before/after state. Toggles are set only off→on.
+- **Itinerary.**
+  1. The mixed book and metamagic cell first: hidden, revealed, preparation/undo, then fixture restoration. A failed
+     restoration gates learning.
+  2. Then one revealed level-up session: ordinary row, native allocation, replacement, normal cancellation.
+
+  The hidden session and slot round trip are not replayed.
+- **Fallback cleanup** is recorded as its own failing cell, never as normal cancellation.
+- No verdict logic testable outside the game changed, so no new pure tests.
+
+## Focused verification
+
+- Focused gate (filter `cleanup2-elemental;original-summon-elemental;feature-settings`): 26/2,949, 0 failures,
+  production compiled, 50.5 s.
+- Patch targets: 50/50, 1.3 s.
+
+These are compile and target evidence, not native verification of replacement.
+
+## Candidate
+
+| Item | Value |
+| --- | --- |
+| Source | `60d2d1b618` (full SHA in the development receipt), v0.0.183 development, purpose `hide-original-summon-elemental` |
+| Package SHA-256 | `8353c5b64218b8a9f2c404899700037b86f5d8d448dbff6e0d43d6f77b1a0c3c` |
+| DLL SHA-256 / MVID | `cd62c823a262bfca430e393231caa37d9e59f956d2ba6c13570c68566607278a` / `dd2fbe1c-84a8-49f1-bddf-9b1770814748` |
+| Build | 627 s; no peer session or competing compiler (only this session's idle VBCSCompiler); 26/2,949 tests; strict UMM package validation passed; explicit `-ReferenceBundleDir artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references` |
+
+## Native checkpoint: PASS 22/22
+
+One guarded invocation on DATA. Same route as before: `Invoke-ExpandedSummoningRuntimeScenario.ps1`
+(Params.xml-protected), Windows PowerShell 5.1 child, combined installation,
+`disposable-expanded-summoning-cleanup2-native-review`, `reviewPhase=elementals-learning`, save-free.
+- Evidence `runtime-evidence/20261112T1528377487196Z-disposable-expanded-summoning-cleanup2-native-review` (private).
+- Game 64.5 s, wrapper 115.1 s. No fallback cleanup cell was recorded.
+
+**Mixed spellbook and metamagic.** The disposable CL20 Wizard book holds:
+- the known source `970c6db4…` (Summon Small Elemental);
+- an ordinary level-2 control `08cb5f4c…` (Scare);
+- Extend copies of both at level 3.
+
+| Cell | Observed |
+| --- | --- |
+| `book-mixed-hidden` | Level-2 list: source object absent, 0 original elementals, control once; rendered (1 page): 0 originals, control once. Level-3 list: Extend source absent, Extend control once. Source and control still known; known objects exact; no disclosure |
+| `favorites-mixed-hidden` | Native star toggle → `SetUpFavorite` (favorites seam installed). Backing list `[Scare:Extend]`; rendered control copy once, 0 originals; Extend source still in `GetCustomSpells(3)` |
+| `favorites-revealed` | Rebuilt via level tab then star: `[SummonSmallElemental:Extend, Scare:Extend]`, each listed and rendered once |
+| `book-mixed-revealed` | Level 2: source and control listed and rendered once each. Level 3: both Extend copies listed once. No disclosure |
+| `preparation-no-disclosure`, `native-source-preparation`, `native-preparation-undo` | Native double-click memorized the exact source `AbilityData` in common slot 0; native double-click forgot it; known spells exact |
+| `mixed-fixture-restored` | Control unknown again; both custom copies gone; known objects equal the pre-cell snapshot; no errors |
+| `native-book-close` | Owned native close completed |
+
+**Revealed learning, replacement and cancellation.** A fresh disposable Wizard2→3 level-up, with the option on
+before opening.
+
+| Cell | Observed |
+| --- | --- |
+| `learning-revealed-ordinary-row` | 83 active rows; source once, interactable, unselected; Summon Monster II once; no disclosure |
+| `native-learning-allocation` | Native row toggle → `SetSpell`. Live selection (1 match) pending `[–,–]` → `[source,–]`; free 2 → 1; intended slot 0; the preview knows the source; the actor does not; 0 commits. **The native UI then auto-advanced the current slot to 1** |
+| `learning-replacement-preconditions` | Slot 0 re-selected through its native switch; current slot 0; live pending `[source,–]`; the preview knows the source, not the replacement; source row on; replacement `9a46dfd3…` (Acid Arrow) row unselected and interactable |
+| `learning-native-deselect` | Live after: pending `[Acid Arrow, –]`; free still 1; the selection object **and** preview were rebuilt (identities changed). The preview knows Acid Arrow and not the source. The source row is still once, unselected, interactable; the Acid Arrow row is on. Captured stale selection still read `[source, –]`, confirming the earlier diagnosis. Committed known spells exact; 0 commits; settled at the first check (0.08 s) |
+| `native-learning-cancel` | **Normal** cancellation: owned Esc and confirm Yes; 0 commits; Wizard2; known spells exact; preview disposed; controller field restored. No fallback |
+| `learning-restored` | Party, selection, creator, sources, pins and in-memory option exact; no rejected predicates |
+
+**Screenshots inspected (private).**
+- `000`: level-2 book shows only Scare.
+- `001`: metamagic tab shows only Scare (Extend).
+- `002`: metamagic tab shows Summon Small Elemental and Scare, each once.
+- `003`: level-2 book shows Summon Small Elemental and Scare.
+- `005`: level-up after replacement, with slot 1 holding Acid Arrow and the preview book showing Acid Arrow.
+
+`004` (prepared slot) is not re-inspected; its structured cell passed.
+
+**Not covered (unchanged limits).**
+- Controller: no rendered observation. Coverage is the shared learning seam, the controller book postfix target,
+  compile and pure tests.
+- Domain/special grants are kept by policy and pure tests; not observed natively.
+- Scroll copying is unrestricted.
+- Unclassified learning contexts use the native fallback.
+- Pending-choice filtering under a rebuilt hidden list is covered by focused tests only (a rebuild needs a reopen,
+  which discards pending choices).
+
+Earlier results stay with their candidates:
+- `b0d235c33a`: FAIL 7/3.
+- `312bb462e8`: FAIL 8/2.
+- `0d944a262f`: FAIL 12/1, including its valid hidden and reveal-after-reopen learning observations.
+- `7b7d5fa102`: focused/compile-only. This run is on `60d2d1b618`.
+
+## Restoration
+
+Wrapper record `runtime-evidence/expanded-summoning-restoration/20261112T1529594218486Z-disposable-expanded-summoning-cleanup2-native-review.json`.
+- Live tree 254 files `5C3E4AD4…BFBB` before and after.
+- `Params.xml` restored to `E44F4495…30BB` (receipt
+  `runtime-backups/umm-params/20261112T1528049374232Z-144658a0fe534d96b8c65590b36f5a1c/`).
+- An independent Windows PowerShell 5.1 comparison against the intake was identical:
+  - live v0.0.140, DLL `00EF6757…66FD`;
+  - `FeatureModules.json` `6E24B278…85D0`;
+  - `Params.xml` byte-identical;
+  - the same 16 enabled mods;
+  - 95 saves, none modified since 15:00 UTC;
+  - baseline and working save hashes unchanged.
+- No Kingmaker process and no lock left. The mixed fixture was removed (verified cell), the disposable learning
+  actor destroyed, and the in-memory option restored.
+
+## Ledger (cumulative; ceiling 3,600 s by owner extension; history 900 → 1,800 → 2,400 → 3,600)
+
+| Step | Seconds |
+| --- | ---: |
+| Carried | ~2,299 |
+| Focused gate | 50.5 |
+| Patch targets | 1.3 |
+| Candidate build `60d2d1b618` | 627 |
+| Guarded invocation (wrapper wall, incl. restoration) | 115.1 |
+| Intake and restoration verification | ~15 |
+| **Cumulative** | **~3,108** |
+
+## Owner retest checklist
+
+1. Option off: Wizard level-up "Choose Spells" shows no Summon Elemental and no "Elementals (n)" row.
+2. Spellbook level page and star (metamagic) tab: no Summon Elemental and no Summon Elemental metamagic copy;
+   other spells and favorites are unchanged.
+3. Option on, then close and reopen level-up and the spellbook:
+   - Summon Small Elemental appears once as an ordinary row, and its metamagic copy once;
+   - select it, then pick another spell for the same slot, and it is replaced;
+   - cancel the level-up, and nothing is learned.
 4. Summon Monster / Summon Nature's Ally elementals, prepared copies, domain elementals and the action-bar
    Elementals chooser are unchanged.
