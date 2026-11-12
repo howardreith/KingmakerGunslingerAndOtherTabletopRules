@@ -67,10 +67,10 @@ namespace KingmakerGunslinger.DomainTests
                 "The plan restores both money and inventory exactly.");
         }
 
-        internal static void CompensationIsRepeatSafe()
+        internal static void CompensationIsRepeatSafeAfterAFullRestore()
         {
             // Applying the plan once brings the state back; planning again from
-            // the restored state must do nothing, so a repeat cannot double-refund.
+            // the restored state observes no difference and does nothing.
             FirearmCraftingCompensationPlan first = Plan(100, 100 - Cost,
                 new[] { 5 }, new[] { 25 }, new[] { 20 });
             Assertions.Equal((int)Cost, (int)first.GoldToRestore, "First pass refunds the debit.");
@@ -82,6 +82,61 @@ namespace KingmakerGunslinger.DomainTests
                 "A second pass must not refund again.");
             Assertions.Equal(0, second.ItemsToRemove[0],
                 "A second pass must not remove items that are no longer there.");
+        }
+
+        /// <summary>
+        /// The clamp alone is NOT repeat-safe. When the first compensation left
+        /// an unrestorable invariant, the observed difference is still non-zero
+        /// and an undeclared replan refunds again. Repeat-safety requires the
+        /// caller to declare what it has already settled.
+        /// </summary>
+        internal static void RepeatSafetyRequiresDeclaredBookkeeping()
+        {
+            // External debit of 50 on top of this transaction's 22.
+            FirearmCraftingCompensationPlan first = Plan(100, 100 - Cost - 50,
+                new[] { 0 }, new[] { 0 }, new[] { 0 });
+            Assertions.Equal((int)Cost, (int)first.GoldToRestore,
+                "The first pass refunds only this transaction's own debit.");
+            Assertions.True(first.Invariant != null,
+                "The external debit leaves an unrestorable invariant.");
+
+            // Money is now 50. Replanning WITHOUT bookkeeping refunds again -
+            // the honest boundary of the clamp.
+            FirearmCraftingCompensationPlan undeclared = Plan(100, 50,
+                new[] { 0 }, new[] { 0 }, new[] { 0 });
+            Assertions.Equal((int)Cost, (int)undeclared.GoldToRestore,
+                "Without declared bookkeeping a replan does refund again.");
+
+            // Declaring the prior refund makes the replan a no-op.
+            FirearmCraftingCompensationPlan declared =
+                FirearmCraftingCompensationPolicy.Plan(100, 50, Cost,
+                    new[] { 0 }, new[] { 0 }, new[] { 0 }, false, Cost, null);
+            Assertions.Equal(0, (int)declared.GoldToRestore,
+                "A declared prior refund must not be repeated.");
+
+            // The same holds for items.
+            FirearmCraftingCompensationPlan itemsDeclared =
+                FirearmCraftingCompensationPolicy.Plan(100, 100 - Cost, Cost,
+                    new[] { 5 }, new[] { 25 }, new[] { 20 }, false, 0, new[] { 20 });
+            Assertions.Equal(0, itemsDeclared.ItemsToRemove[0],
+                "A declared prior removal must not be repeated.");
+
+            FirearmCraftingCompensationPlan partial =
+                FirearmCraftingCompensationPolicy.Plan(100, 100 - Cost, Cost,
+                    new[] { 5 }, new[] { 25 }, new[] { 20 }, false, 5, new[] { 8 });
+            Assertions.Equal((int)Cost - 5, (int)partial.GoldToRestore,
+                "A partially settled refund continues from where it stopped.");
+            Assertions.Equal(12, partial.ItemsToRemove[0],
+                "A partially settled removal continues from where it stopped.");
+
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                FirearmCraftingCompensationPolicy.Plan(100, 90, Cost,
+                    new[] { 0 }, new[] { 0 }, new[] { 0 }, false, -1, null),
+                "A negative declared refund must fail closed.");
+            Assertions.Throws<ArgumentException>(() =>
+                FirearmCraftingCompensationPolicy.Plan(100, 90, Cost,
+                    new[] { 0 }, new[] { 0 }, new[] { 0 }, false, 0, new[] { 0, 0 }),
+                "A declared-removal array of the wrong length must fail closed.");
         }
 
         internal static void AnExternalGoldChangeIsReportedNotAbsorbed()

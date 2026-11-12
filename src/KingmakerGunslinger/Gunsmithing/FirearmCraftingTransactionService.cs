@@ -56,9 +56,14 @@ namespace KingmakerGunslinger.Gunsmithing
                         countsBefore[index] + amounts[index])
                         throw new InvalidOperationException(
                             "Crafted inventory verification failed.");
-                // Record whether the marker was added HERE. Removing one the
-                // caster already held would strip an entitlement this
-                // transaction never granted.
+                // Record whether the marker was added HERE, so compensation
+                // removes only what this transaction granted. This is
+                // ownership hardening rather than a reachable defect: Complete
+                // already rejects caster.HasFact(marker) at entry, before the
+                // try block, so an ordinary attempt that begins with the marker
+                // held cannot reach the rollback. Tracking it removes the
+                // dependence on that entry guard and on no other system
+                // granting the marker mid-transaction.
                 bool heldMarkerBefore = caster.HasFact(marker);
                 if (caster.AddFact(marker) == null || !caster.HasFact(marker))
                     throw new InvalidOperationException(

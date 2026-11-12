@@ -43,25 +43,51 @@ namespace KingmakerGunslinger.Gunsmithing
     /// 2. That detection threw a fresh exception with no inner exception, so
     ///    the real reason the craft failed was unrecoverable from the logs.
     /// 3. It removed the entitlement marker whenever the caster had it,
-    ///    including when the caster already held it before the attempt - so a
-    ///    failed craft could strip a marker this transaction never added.
+    ///    rather than only when this transaction added it. This is ownership
+    ///    HARDENING, not a demonstrated defect: Complete rejects
+    ///    caster.HasFact(marker) at entry, before the try block, so an
+    ///    ordinary attempt that begins with the marker already held cannot
+    ///    reach the rollback at all. Tracking ownership removes the dependence
+    ///    on that entry guard and on no other system granting the marker
+    ///    mid-transaction, neither of which this compensation should have to
+    ///    assume.
     ///
     /// This policy is pure arithmetic over observed counts so it is directly
     /// testable, and it is consumed by the production service rather than
     /// existing only for tests.
     ///
-    /// Clamping is what makes the compensation exact and repeat-safe: gold is
-    /// restored up to what this transaction could have debited and no more, and
-    /// each output is removed up to what this transaction actually added and
-    /// what is still present. Running it twice therefore cannot refund twice.
+    /// Clamping is what makes the compensation exact: gold is restored up to
+    /// what this transaction could have debited and no more, and each output is
+    /// removed up to what this transaction actually added and what is still
+    /// present.
+    ///
+    /// Repeat-safety needs more than the clamp, and the clamp alone does not
+    /// provide it. After a compensation that fully restored the pre-transaction
+    /// state the observed debit is zero, so replanning returns nothing - but
+    /// after a compensation whose invariant was violated, for example an
+    /// external debit larger than this cost, the observed difference is still
+    /// non-zero and replanning would refund again:
+    ///
+    ///     moneyBefore 100, goldCost 22, moneyNow 28  -> restore 22 (money 50)
+    ///     replan from 50 with no bookkeeping         -> restore 22 again
+    ///
+    /// So callers that may run compensation more than once must pass what they
+    /// have already given back and already removed, through
+    /// <paramref name="alreadyRefunded"/> and <paramref name="alreadyRemoved"/>.
+    /// With those declared the plan is genuinely repeat-safe. The production
+    /// service applies the plan exactly once and therefore passes zero, but the
+    /// parameters exist so a retry is correct by construction rather than by
+    /// relying on the single-call assumption.
     /// </summary>
     internal static class FirearmCraftingCompensationPolicy
     {
         internal static FirearmCraftingCompensationPlan Plan(long moneyBefore,
             long moneyNow, long goldCost, int[] countsBefore, int[] countsNow,
-            int[] committedAdds, bool markerAddedHere)
+            int[] committedAdds, bool markerAddedHere, long alreadyRefunded = 0,
+            int[] alreadyRemoved = null)
         {
             if (goldCost < 0) throw new ArgumentOutOfRangeException("goldCost");
+            if (alreadyRefunded < 0) throw new ArgumentOutOfRangeException("alreadyRefunded");
             if (countsBefore == null) throw new ArgumentNullException("countsBefore");
             if (countsNow == null) throw new ArgumentNullException("countsNow");
             if (committedAdds == null) throw new ArgumentNullException("committedAdds");
@@ -69,18 +95,25 @@ namespace KingmakerGunslinger.Gunsmithing
                 committedAdds.Length != countsBefore.Length)
                 throw new ArgumentException("Crafting compensation inputs disagree in length.");
 
+            if (alreadyRemoved != null && alreadyRemoved.Length != countsBefore.Length)
+                throw new ArgumentException("Crafting compensation inputs disagree in length.");
+
             // Only what this transaction could have taken, never a difference
-            // some other system caused.
+            // some other system caused, and never more than it has not already
+            // given back.
             long observedDebit = moneyBefore - moneyNow;
-            long restore = Math.Max(0, Math.Min(goldCost, observedDebit));
+            long restore = Math.Max(0, Math.Min(goldCost, observedDebit) - alreadyRefunded);
 
             var remove = new int[countsBefore.Length];
             for (int index = 0; index < remove.Length; index++)
             {
                 if (committedAdds[index] < 0)
                     throw new ArgumentOutOfRangeException("committedAdds");
+                int settled = alreadyRemoved == null ? 0 : alreadyRemoved[index];
+                if (settled < 0) throw new ArgumentOutOfRangeException("alreadyRemoved");
                 int present = countsNow[index] - countsBefore[index];
-                remove[index] = Math.Max(0, Math.Min(committedAdds[index], present));
+                remove[index] = Math.Max(0, Math.Min(
+                    committedAdds[index] - settled, present));
             }
 
             // What this transaction cannot put back by itself. Reported, never
