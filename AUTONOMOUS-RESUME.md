@@ -1,4 +1,28 @@
-# Hide original Summon Elemental by default: PR #133 verification, native FAIL 12/1 (deselection) / STOP
+# Hide original Summon Elemental by default: PR #133 ready for final review, native PASS 22/22 / STOP
+
+Current (2026-11-12). See `planning/hide-original-summon-elemental/STATUS.md` ("Targeted verification"). Branch
+`codex/hide-original-summon-elemental`, draft PR #133. Nothing merged, released or permanently installed.
+
+- Observer `60d2d1b618`:
+  - live-state replacement safeguards;
+  - the book/metamagic cell first, gated on fixture restoration;
+  - one revealed learning session.
+
+  Feature code is unchanged.
+- Focused 26/2,949; targets 50/50.
+- Candidate: package `8353c5b6...0c3c`, DLL `cd62c823...278a`, MVID `dd2fbe1c-84a8-49f1-bddf-9b1770814748`.
+- Native PASS 22/22:
+  - mixed book and metamagic tab hidden/revealed (lists and rendered rows), preparation/undo, fixture restored;
+  - revealed learning: allocation, then native replacement (live pending `[source,–]` → `[Acid Arrow,–]`; the
+    preview knows only the replacement);
+  - normal cancellation, with no fallback.
+- Restoration exact. Ledger about 3,108 of 3,600 s.
+- Earlier candidates keep their FAIL results.
+- Next: owner final review. Merge, release or install only on separate instruction.
+
+---
+
+# (superseded) Hide original Summon Elemental by default: PR #133 verification, native FAIL 12/1 (deselection) / STOP
 
 Current (2026-11-12). See `planning/hide-original-summon-elemental/STATUS.md` ("Verification continuation"). Branch
 `codex/hide-original-summon-elemental`, draft PR #133. Nothing merged, released or permanently installed.
