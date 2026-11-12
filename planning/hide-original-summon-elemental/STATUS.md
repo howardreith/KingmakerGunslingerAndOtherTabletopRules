@@ -1,5 +1,17 @@
 # Hide original Summon Elemental by default (2026-11-12): status
 
+**Released (2026-11-12).** The owner wrote "Approved. Please merge and cut a release."
+- PR #133 was merged as `9469105336`.
+- Release PR #141 (version-only, owner-merged) became `6d033bc4d9`.
+- Stable v0.0.184 is Latest: tag `1b2eaa3bee` → `6d033bc4d9`; package
+  `1496ead5dbfd8227943fd0fc068aca881f830b52d498ab8357ecd5d764332c76`; DLL `9251118e…5fee`; MVID
+  `7b0d2325-988c-4dd2-8aef-c053b1899904`.
+- The native evidence below belongs to development candidate `60d2d1b618`; nothing was re-executed on the release
+  build.
+- The installed mod is unchanged (0.0.140).
+
+The record below is the pre-release checkpoint.
+
 **Current state (2026-11-12, candidate `60d2d1b618`): ready for final review.** One guarded native run
 **PASS, 22/22**. It covers the still-unobserved surfaces:
 - the mixed spellbook and the PC metamagic tab, hidden and revealed, with backing lists and rendered rows;

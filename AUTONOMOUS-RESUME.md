@@ -1,4 +1,20 @@
-# Hide original Summon Elemental by default: PR #133 ready for final review, native PASS 22/22 / STOP
+# Hide original Summon Elemental: merged and released in v0.0.184 / STOP
+
+Current (2026-11-12). See `planning/hide-original-summon-elemental/STATUS.md`.
+- The owner approved and asked for a merge and release.
+- PR #133 was merged as `9469105336`; release PR #141 as `6d033bc4d9`.
+- Stable v0.0.184 is Latest: tag `1b2eaa3bee`, package `1496ead5...2c76`, DLL `9251118e...5fee`, MVID
+  `7b0d2325-988c-4dd2-8aef-c053b1899904`.
+- Two deterministic builds; complete suite 2,949/2,949; public download verified.
+- The installed mod still reads 0.0.140.
+
+- Native evidence stays with development candidate `60d2d1b618` (PASS 22/22). Earlier candidates keep their FAIL
+  results. Controller coverage is compile, target and shared tests only.
+- No further build, native run, release or permanent install follows without explicit owner authorization.
+
+---
+
+# (superseded) Hide original Summon Elemental by default: PR #133 ready for final review, native PASS 22/22 / STOP
 
 Current (2026-11-12). See `planning/hide-original-summon-elemental/STATUS.md` ("Targeted verification"). Branch
 `codex/hide-original-summon-elemental`, draft PR #133. Nothing merged, released or permanently installed.
