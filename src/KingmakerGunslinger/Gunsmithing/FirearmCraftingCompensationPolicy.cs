@@ -74,10 +74,25 @@ namespace KingmakerGunslinger.Gunsmithing
     /// So callers that may run compensation more than once must pass what they
     /// have already given back and already removed, through
     /// <paramref name="alreadyRefunded"/> and <paramref name="alreadyRemoved"/>.
-    /// With those declared the plan is genuinely repeat-safe. The production
-    /// service applies the plan exactly once and therefore passes zero, but the
-    /// parameters exist so a retry is correct by construction rather than by
-    /// relying on the single-call assumption.
+    ///
+    /// The bookkeeping reduces this transaction's remaining BUDGET. It is NOT
+    /// subtracted from the observed deficit, because <c>moneyNow</c> and
+    /// <c>countsNow</c> are current observations that already include the
+    /// earlier pass. Subtracting it twice strands the difference - an
+    /// interrupted refund of 5 out of 22 would then return 12 instead of 17
+    /// and leave 5 gold permanently unreturned:
+    ///
+    ///     100 -> debit 22 -> 78 -> refund 5 (interrupted) -> 83
+    ///     remaining budget 22-5 = 17, observed deficit 17  -> restore 17
+    ///
+    /// The residual-invariant checks use the remaining budgets for the same
+    /// reason: measured against the original cost, a retry that had already
+    /// refunded enough would report a clean restore while a genuine external
+    /// residual remained.
+    ///
+    /// The production service applies the plan exactly once and therefore
+    /// passes zero, but the parameters exist so a retry is correct by
+    /// construction rather than by relying on the single-call assumption.
     /// </summary>
     internal static class FirearmCraftingCompensationPolicy
     {
@@ -98,31 +113,46 @@ namespace KingmakerGunslinger.Gunsmithing
             if (alreadyRemoved != null && alreadyRemoved.Length != countsBefore.Length)
                 throw new ArgumentException("Crafting compensation inputs disagree in length.");
 
-            // Only what this transaction could have taken, never a difference
-            // some other system caused, and never more than it has not already
-            // given back.
+            // moneyNow and countsNow are CURRENT observations, so they already
+            // include anything a previous compensation pass gave back. The
+            // bookkeeping therefore reduces this transaction's remaining
+            // BUDGET; it must not also be subtracted from the observed
+            // deficit, which would count the earlier payment twice and strand
+            // the difference. The item arithmetic below already had this
+            // shape - remaining budget, then capped by what is present - and
+            // the gold arithmetic now matches it.
             long observedDebit = moneyBefore - moneyNow;
-            long restore = Math.Max(0, Math.Min(goldCost, observedDebit) - alreadyRefunded);
+            long remainingBudget = Math.Max(0, goldCost - alreadyRefunded);
+            long restore = Math.Max(0, Math.Min(remainingBudget, observedDebit));
 
             var remove = new int[countsBefore.Length];
+            var remainingAdds = new int[countsBefore.Length];
             for (int index = 0; index < remove.Length; index++)
             {
                 if (committedAdds[index] < 0)
                     throw new ArgumentOutOfRangeException("committedAdds");
                 int settled = alreadyRemoved == null ? 0 : alreadyRemoved[index];
                 if (settled < 0) throw new ArgumentOutOfRangeException("alreadyRemoved");
+                remainingAdds[index] = Math.Max(0, committedAdds[index] - settled);
                 int present = countsNow[index] - countsBefore[index];
-                remove[index] = Math.Max(0, Math.Min(
-                    committedAdds[index] - settled, present));
+                remove[index] = Math.Max(0, Math.Min(remainingAdds[index], present));
             }
 
             // What this transaction cannot put back by itself. Reported, never
             // "corrected" by taking gold or items it does not own.
+            //
+            // These compare against the REMAINING budgets too. Comparing a
+            // retry's observed deficit against the ORIGINAL goldCost would
+            // report no invariant once enough has been refunded, silently
+            // losing a genuine external residual: after refunding this
+            // transaction's whole 22 out of a 27 deficit, the remaining 5 is
+            // below 22 and would look clean while still being unaccounted for.
             string invariant = null;
-            if (observedDebit > goldCost)
-                invariant = "gold decreased by " + observedDebit +
-                    " but this transaction could only debit " + goldCost +
-                    "; the difference was not made here and is not refunded";
+            if (observedDebit > remainingBudget)
+                invariant = "gold is still " + observedDebit +
+                    " below the pre-transaction balance but this transaction can " +
+                    "only account for " + remainingBudget +
+                    " more; the difference was not made here and is not refunded";
             else if (observedDebit < 0)
                 invariant = "gold increased by " + (-observedDebit) +
                     " during the attempt; nothing is reclaimed";
@@ -131,11 +161,12 @@ namespace KingmakerGunslinger.Gunsmithing
                 for (int index = 0; index < remove.Length; index++)
                 {
                     int present = countsNow[index] - countsBefore[index];
-                    if (present > committedAdds[index])
+                    if (present > remainingAdds[index])
                     {
-                        invariant = "output " + index + " gained " + present +
-                            " but this transaction added " + committedAdds[index] +
-                            "; the surplus was not made here and is not removed";
+                        invariant = "output " + index + " is still " + present +
+                            " above its pre-transaction count but this transaction " +
+                            "can only account for " + remainingAdds[index] +
+                            " more; the surplus was not made here and is not removed";
                         break;
                     }
                     if (present < 0)

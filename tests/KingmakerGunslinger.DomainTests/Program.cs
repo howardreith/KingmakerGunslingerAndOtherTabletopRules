@@ -1704,6 +1704,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("crafting-compensation.fault-after-partial-insertion", FirearmCraftingCompensationTests.FaultAfterPartialInsertionRemovesOnlyWhatCommitted),
             Case("crafting-compensation.repeat-safe-after-full-restore", FirearmCraftingCompensationTests.CompensationIsRepeatSafeAfterAFullRestore),
             Case("crafting-compensation.repeat-safety-needs-bookkeeping", FirearmCraftingCompensationTests.RepeatSafetyRequiresDeclaredBookkeeping),
+            Case("crafting-compensation.interrupted-resumes-exactly", FirearmCraftingCompensationTests.AnInterruptedCompensationResumesExactly),
+            Case("crafting-compensation.external-residual-survives-retry", FirearmCraftingCompensationTests.AnExternalResidualSurvivesTheRetry),
             Case("crafting-compensation.external-gold-reported", FirearmCraftingCompensationTests.AnExternalGoldChangeIsReportedNotAbsorbed),
             Case("crafting-compensation.external-item-reported", FirearmCraftingCompensationTests.AnExternalItemChangeIsReportedNotAbsorbed),
             Case("crafting-compensation.marker-not-stripped", FirearmCraftingCompensationTests.APreExistingMarkerIsNeverStripped),
