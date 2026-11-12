@@ -161,8 +161,19 @@ namespace KingmakerGunslinger.Deeds
                 var observations = new DeadShotRollObservation[probes.Length];
                 for (int index = 0; index < probes.Length; index++)
                 {
+                    // RuleAttackRoll's fourth argument is the native
+                    // AttackBonusPenalty, a POSITIVE quantity the engine
+                    // subtracts (RuleCalculateAttackBonus::OnTrigger computes
+                    // BaseAttackBonus - AttackBonusPenalty, measured on the
+                    // qualified reference assembly, with no clamp on the path).
+                    // The iterative progression therefore needs ascending
+                    // positive penalties 0/5/10(/15), which realise the
+                    // intended BAB, BAB-5, BAB-10(, BAB-15) probes. Passing the
+                    // negative of that would ADD the step as a bonus. The
+                    // absolute progression itself stays in the domain decision
+                    // as decision.AttackBonuses.
                     var probe = new RuleAttackRoll(casterEntity, target,
-                        firearm.Weapon, -(index * 5));
+                        firearm.Weapon, index * 5);
                     // A probe only reports hit, misfire and threat (its natural
                     // roll against the critical edge, ConsumeProbe); it never
                     // rolls a confirmation or fires critical triggers of its
