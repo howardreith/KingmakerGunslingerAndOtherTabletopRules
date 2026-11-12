@@ -30,8 +30,9 @@ namespace KingmakerGunslinger.FeatureModules
         internal bool Recovered { get; private set; }
         internal bool RestartRequired { get { return !Active.Equals(Pending); } }
 
-        // Presentation option, not a feature module: it applies immediately,
-        // is persisted on save and never participates in restart decisions.
+        // Presentation option, not a feature module: no restart (it applies
+        // when a native list next rebuilds), persisted on save, and never
+        // part of restart decisions.
         internal bool ShowOriginalSummonElemental { get; private set; }
 
         internal void SetShowOriginalSummonElemental(bool value)

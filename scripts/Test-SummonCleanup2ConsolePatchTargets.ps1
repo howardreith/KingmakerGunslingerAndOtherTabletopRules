@@ -43,6 +43,7 @@ try {
         # existing StandaloneElemental*LearningPatch call-site transpilers.
         @('OriginalSummonElementalPcBookPatch','SpellBookView','GetSpellsForLevel',84),
         @('OriginalSummonElementalConsoleBookPatch','UIUtilityUnit','GetKnownSpellsForLevel',68),
+        @('OriginalSummonElementalPcFavoritesPatch','SpellBookView','SetUpFavorite',203),
         @('StandaloneElementalPcLearningPatch','CharBSelectorLayer','FillSpellLevel',511),
         @('StandaloneElementalConsoleLearningPatch','CharGenSpellsPhaseVM','GetSpellsCollection',298),
         @('ElementalConsoleSpellCollectionPatch','ActionBarSelectorVm','CollectSpells',508),

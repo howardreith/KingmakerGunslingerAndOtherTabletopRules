@@ -34,7 +34,7 @@ namespace KingmakerGunslinger.FeatureModules
                 _state.Pending.ExpandedSummoning, "Expanded Summoning");
             bool showOriginalSummonElemental = ImmediateModeGui.Toggle(
                 _state.ShowOriginalSummonElemental,
-                "    Show original Summon Elemental spells (applies immediately)");
+                "    Show original Summon Elemental spells (no restart; applies when the list refreshes or reopens)");
             if (showOriginalSummonElemental != _state.ShowOriginalSummonElemental)
             {
                 _state.SetShowOriginalSummonElemental(showOriginalSummonElemental);

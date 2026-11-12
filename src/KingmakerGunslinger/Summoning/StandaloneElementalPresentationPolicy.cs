@@ -94,6 +94,11 @@ namespace KingmakerGunslinger.Summoning
         /// their 24 element children). The unique Wriggling Man NPC ability is
         /// never a player spell and is excluded.
         /// </summary>
+        /// <summary>The shared hide decision: only with the UMM option off and
+        /// Expanded Summoning (which replaces these spells) active.</summary>
+        internal static bool OriginalRowsHidden(bool showOption, bool moduleActive)
+        { return !showOption && moduleActive; }
+
         internal static bool IsOriginalSummonElemental(string guid)
         {
             StandaloneElementalAbilitySpec spec = Find(guid);

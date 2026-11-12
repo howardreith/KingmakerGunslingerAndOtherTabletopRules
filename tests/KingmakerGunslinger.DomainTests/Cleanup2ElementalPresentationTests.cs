@@ -193,6 +193,39 @@ namespace KingmakerGunslinger.DomainTests
                 "The hidden identity set is exactly the six original ranks and their 24 element children.");
         }
 
+        internal static void HideDecisionCoversHiddenRevealedAndModuleInactive()
+        {
+            Assertions.True(StandaloneElementalPresentationPolicy.OriginalRowsHidden(false, true),
+                "Default option with Expanded Summoning active hides original rows.");
+            Assertions.False(StandaloneElementalPresentationPolicy.OriginalRowsHidden(true, true),
+                "The UMM option reveals ordinary native rows.");
+            Assertions.False(StandaloneElementalPresentationPolicy.OriginalRowsHidden(false, false) ||
+                StandaloneElementalPresentationPolicy.OriginalRowsHidden(true, false),
+                "With Expanded Summoning inactive the native presentation is preserved.");
+        }
+
+        internal static void MixedOrdinaryAndMetamagicRowsKeepOrderAndAnyLevelSpecialGrants()
+        {
+            // Rows model a favorites/book list: identity plus a metamagic tag.
+            var parents = StandaloneElementalPresentationPolicy.All.Where(value => value.IsParent).Select(value => value.Guid).ToArray();
+            string domainParent = parents[3];
+            var rows = new List<string[]> {
+                new[] { "glitterdust", "" }, new[] { parents[0], "" }, new[] { parents[0], "Extend" },
+                new[] { "glitterdust", "Extend" }, new[] { domainParent, "Quicken" }, new[] { "web", "Extend" } };
+            var snapshot = rows.ToArray();
+            int hidden;
+            var result = StandaloneElementalPresentationPolicy.HideOriginalBookRows(rows, value => value[0],
+                value => value[0] == domainParent, out hidden);
+            Assertions.True(result.Select(value => value[0] + ":" + value[1]).SequenceEqual(new[] {
+                "glitterdust:", "glitterdust:Extend", domainParent + ":Quicken", "web:Extend" }),
+                "Ordinary rows and their metamagic copies keep order; a metamagic copy of a special grant (any level) stays.");
+            Assertions.Equal(2, hidden, "The original row and its Extend copy are hidden.");
+            Assertions.True(rows.SequenceEqual(snapshot) && result.All(value => rows.Any(row => ReferenceEquals(row, value))),
+                "The same row objects are returned; nothing is copied or mutated.");
+            var empty = StandaloneElementalPresentationPolicy.HideOriginalBookRows(new[] { parents[1] }, value => value, null, out hidden);
+            Assertions.True(empty.Count == 0 && hidden == 1, "A list holding only an original spell is legitimately empty when hidden.");
+        }
+
         internal static void DefaultOptionLearningFilterHidesEveryUnselectedOriginalRank()
         {
             // The runtime seam marks every unselected, unknown original row
