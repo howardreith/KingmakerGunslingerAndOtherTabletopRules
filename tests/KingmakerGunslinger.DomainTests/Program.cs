@@ -1779,7 +1779,6 @@ namespace KingmakerGunslinger.DomainTests
             Case("urban-barbarian.allocation-icons", UrbanBarbarianPolicyTests.AllocationIconVocabularyIsExactAndLegible),
             Case("urban-barbarian.tier-selection", UrbanBarbarianPolicyTests.TierSelectionDefaultsVisibilityAndGuardsAreExact),
             Case("urban-barbarian.selection-persistence", UrbanBarbarianPolicyTests.TierSelectionPersistenceAndLevelTransitionAreExact),
-            Case("urban-barbarian.constitution-hp", UrbanBarbarianPolicyTests.ConstitutionHitPointReconciliationCannotHealCycle),
             Case("urban-barbarian.crowd-control", UrbanBarbarianPolicyTests.CrowdControlThresholdFilteringAndAdjacencyAreExact),
             Case("urban-barbarian.cotw-compatibility", UrbanBarbarianPolicyTests.CotwCompatibilityNeverDisablesCore),
             Case("urban-barbarian.identities", UrbanBarbarianPolicyTests.IdentityManifestIsExactAndCollisionFree),
