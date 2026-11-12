@@ -100,8 +100,11 @@ Read `AUDIT-SUMMARY.md` revision note first. In short:
   the Magic Circle rows had been verified on an inventory-only observer.
 - **Disposition is now `IN_PROGRESS_CHECKPOINT`**, not complete. See `SUMMARY.md` §6a for the
   explicit remaining queue.
-- **GS-AUD-0044** (Dead Shot audio commits) is new and is the second-highest repair priority
-  after the scatter sign.
+- **GS-AUD-0044** (Dead Shot audio) was filed S2 and then **reclassified to S3 harness** in rev 4:
+  eleven notifications are correct for the nested scenario, and the counter measures *attempted*
+  not audible events. It is **not** a repair priority.
+- **GS-AUD-0048** (Dead Shot probe sign) IS a repair priority — the same sign error as
+  GS-AUD-0039, and a complete sweep shows these are the only two such sites.
 
 ## 4. The smallest next investigations, in value order
 
@@ -164,10 +167,17 @@ Read `AUDIT-SUMMARY.md` revision note first. In short:
 - A **non-detached fixture** for Gunslinger's Dodge.
 - **Human/controller observation** for presentation, audio and input — unreachable unattended.
 
-**Not prerequisites, simply not done:** A09 (autonomous summon AI), A20 (presentation/audio),
-A21 (performance) and A22 (upgrade/persistence cross-check) were never scheduled. They are
-recorded as NOT_RUN rather than blocked, and `observe-feature-module-settings` remains eligible
-once its thirteen Boolean module parameters are built from the catalogue.
+**Not prerequisites, simply not done** — the current, accurate status:
+
+- **A09** autonomous summon AI — never assessed for admissibility. NOT_RUN, not blocked.
+- **A21** performance / repeated use — admissible (core candidate and restoration are valid).
+  NOT_RUN, not blocked.
+- **COV-027** summon-roster presentation / audio / performance — never assessed. NOT_RUN. Note
+  the *firearm* equivalents proved admissible and were run (COV-058/059), so the summoning ones
+  probably are too.
+- **27 of the 28 module boundary states** — eligible, not run. `observe-feature-module-settings`
+  itself **has now been run** (PASS 47/47, all thirteen modules ON).
+- **A22** upgrade/persistence — genuinely **blocked** on a legitimate older save fixture.
 
 ## 7. Scaffolding this campaign created
 

@@ -15,7 +15,8 @@ appended to AUDIT-OUTCOMES.md. Severity is a provisional impact judgement, not p
 | GS-AUD-0007 | CONTRACT-QUESTION | S3 | source-demonstrated | Feature-module settings (A19) | A future settings schema makes the whole mod fail to load, not just the settings file | OPEN | EV-000007 |
 | GS-AUD-0005 | HARNESS-DEFECT | S3 | native-observed (executed gate) | Release validation gate | The broad gate depends on an untracked ~99 MB local IL dump; a fresh checkout fails 23 tests with an opaque path error | OPEN | EV-000005 |
 | **GS-AUD-0039** | **PRODUCT-DEFECT** | **S2** | source-demonstrated + **engine IL measured** | Scatter Shot (A06) | **Scatter's documented −2 attack penalty is applied as a +2 bonus** — a 4-point swing on every scatter attack | OPEN | EV-000018 |
-| **GS-AUD-0044** | OBSERVED-FAILURE (candidate defect) | **S2** | **native-reproduced once** | Dead Shot audio (A20) | Dead Shot appears to commit ~11 audio events where its contract requires exactly 1 | OPEN | EV-000019 |
+| **GS-AUD-0048** | **PRODUCT-DEFECT** | **S2** | source-demonstrated + engine IL measured | Dead Shot (A06) | **Dead Shot's iterative probes get +5/+10 bonuses instead of −5/−10 penalties** — same sign error as GS-AUD-0039 | OPEN | EV-000020 |
+| GS-AUD-0044 | HARNESS-DEFECT (stale aggregate) | S3 (was S2) | native-observed, correctly explained | Dead Shot audio (A20) | The deed-audio aggregate expectation is stale; **eleven notifications are correct** for the nested scenario | OPEN — **RECLASSIFIED** | EV-000019, EV-000020 |
 | GS-AUD-0045 | HARNESS-DEFECT (stale pin) | S3 | native-observed + source | Firearm visual rigs (A20) | The rig assertion is hard-pinned to `items.Count == 14`; the roster is now 16 | OPEN | EV-000019 |
 | GS-AUD-0046 | HARNESS-DEFECT (stale pin) | S3 | native-observed | Item presentation (A20) | Presentation counts are stale (57/12 vs 55/11); `issues=<none>` — the text itself is clean | OPEN | EV-000019 |
 | GS-AUD-0047 | OBSERVED-FAILURE-UNATTRIBUTED | UNASSESSED | native-observed once | Firearm visual rigs (A20) | `pistol-authored-marker-contract` reports `exact=False`; which sub-condition failed is unrecoverable | OPEN | EV-000019 |
@@ -1372,77 +1373,137 @@ presentation/audio scenarios were admissible all along**. Running them produced 
 FAILs. Each is classified below on the evidence, **not** assumed to be a product defect —
 two are stale assertion pins and one is a credible defect.
 
-## GS-AUD-0044 — Dead Shot appears to commit far more audio events than its contract allows
+## GS-AUD-0044 — The deed-audio assertion's aggregate expectation is stale; eleven notifications are correct
 
-- **Kind:** OBSERVED-FAILURE (candidate PRODUCT-DEFECT) · **Severity:** S2
-- **Evidence:** **native-reproduced once** on the frozen 0.0.182 candidate · **Disposition:** OPEN
-- **Expected rule and authority:** the scenario's own contract at
-  `RuntimeTesting/RuntimeTestRunner.cs:8780` requires
-  `deadAfter == deadBefore + 1 && startlingAfter == startlingBefore + 1 &&
-  menacingAfter == menacingBefore + 2 && bleedingAfter == bleedingBefore + 2`
-  — i.e. **Dead Shot must commit exactly one** source-specific audio discharge.
-  Mission card A20 independently requires "no duplicate sound event/state after repeated use".
-- **Observed:** `disposable-firearm-wwise-audio` **FAIL** on `deed-audio-commit-boundaries`.
-  Route diagnostics: `dead=PASS:11;scatter=PASS:1;startling=PASS:1;menacing=PASS:2;stopBleeding=PASS:2`.
-  Startling (+1), Menacing (+2) and Stop Bleeding (+2) all match their required deltas.
-  **Only Dead Shot is anomalous, at 11.**
-- **Reading of the evidence, stated as a reading:** the `:N` suffix is the committed-discharge
-  counter the assertion compares, so Dead Shot committed ~11 where 1 is required. I am inferring
-  that from the diagnostic format rather than from a labelled delta field, so the exact number
-  carries that caveat. What is **not** in doubt is that the assertion failed while the other
-  three deeds matched, which localises the failure to Dead Shot.
-- **Why 11 is anomalous on any reading:** Dead Shot is a multi-attack deed, so a number above 1
-  is conceivable — but it is not 2 or 3 either, and the contract says 1.
-- **Competing explanations:** (a) duplicate audio commits per constituent attack — the A20
-  concern; (b) a stale expectation that never accounted for Dead Shot's multi-attack structure.
-  **Neither is excluded.** Note that GS-AUD-0014's A06 work found Dead Shot's *delivery* correctly
-  spends once despite duplicate callbacks, which makes (a) specifically interesting: the
-  mechanical path dedupes and the audio path may not.
-- **Smallest confirming check:** re-run with the counter logged as an explicit before/after pair,
-  and listen for repeated reports on one Dead Shot.
+> ### ⚠ RECLASSIFIED 2026-11-12 (EV-000020) — the duplicate-audio interpretation is WITHDRAWN
+>
+> Filed as **S2, candidate PRODUCT-DEFECT** and ranked the second-highest repair priority. **Both
+> are withdrawn.** Eleven is exactly what the current nested scenario should produce. This is a
+> stale aggregate harness expectation.
 
-## GS-AUD-0045 — The firearm visual-rig assertion is hard-pinned to 14 items; the roster is now 16
+- **Kind:** HARNESS-DEFECT (stale aggregate expectation) · **Severity:** **S3** (was S2)
+- **Evidence:** native-observed FAIL, now correctly explained · **Disposition:** OPEN
 
-- **Kind:** HARNESS-DEFECT (stale assertion pin) · **Severity:** S3
+### What the counter actually measures
+
+`RuntimeTestRunner.cs:8701-8705` samples the counter **either side of the entire
+`RunDisposableGunslingerDeadShot()` invocation**, and `:8727` prints `(deadAfter - deadBefore)` —
+so the `:11` is an **exact delta**, not a counter value. My earlier claim that reading it as the
+compared counter was "an inference from the diagnostic format" was simply wrong; it is explicit.
+
+The nested scenario executes **eleven discharge-producing volleys**: one mixed volley, one
+all-misfire volley (contributing 0), and ten separate critical-confirmation and control volleys
+covering calibration, confirmation success and failure, natural-20 and natural-1 controls, party
+critical settings and critical immunity. The production runtime posts **one notification per
+non-misfire volley**, outside the constituent-attack loop. Eleven volleys therefore produce
+eleven notifications, and the observed delta **agrees with the scenario**.
+
+The outer assertion at `:8780` still requires `deadAfter == deadBefore + 1` — written for a
+single volley and never updated as the nested scenario grew. Startling (+1), Menacing (+2) and
+Stop Bleeding (+2) still match because their nested scenarios did not grow.
+
+### A second distinction I had missed
+
+The counter is `GetCommittedDischargeAttempts` and is incremented at
+`Audio/FirearmSoundRuntime.cs:157-160` — **before** the emitter is resolved (`:162`) and
+**before** `machine.TryPost` (`:166`). It counts **attempted** notifications. Accepted posts are
+a separate quantity (`AcceptedPosts`, `:30`). **Eleven attempts do not establish eleven audible
+reports**, so even a genuine excess here would not have been an audio-duplication finding without
+further evidence.
+
+### What survives
+
+A real native FAIL on the release candidate, correctly attributed to the harness. The mission's
+"no duplicate sound event after repeated use" question is **untouched by this run** — it was
+never actually tested.
+
+### Repair direction (not implemented)
+
+Measure the **per-volley invariant** rather than an aggregate. Simply changing the constant from
+1 to 11 would break again at the next expansion of the nested scenario.
+
+## GS-AUD-0045 — The firearm visual-rig assertion is hard-pinned to 14 items, so its binding check never executes
+
+> ### ⚠ CORRECTED 2026-11-12 (EV-000020)
+>
+> The stale-pin half was right. But I then wrote that "every observed item does resolve to a
+> named variant", **excluding a presentation defect on the strength of a check that never ran.**
+> That exclusion is withdrawn.
+
+- **Kind:** HARNESS-DEFECT (stale pin) · **Severity:** S3
 - **Evidence:** native-observed + source-demonstrated · **Disposition:** OPEN
-- **Observed:** `disposable-firearm-visual-rigs` **FAIL 2 of 66**. The first failure,
-  `firearm-all-14-item-visual-identities`, is computed at
-  `RuntimeTesting/RuntimeTestRunner.cs:13928` as:
+- **Observed:** `disposable-firearm-visual-rigs` FAIL 2 of 66. The assertion at
+  `RuntimeTesting/RuntimeTestRunner.cs:13928` is:
   ```csharp
   bool exactItems = items.Count == 14 && items.All(value =>
       FirearmWeaponPresentation.HasExactItemVariant(value.Item3, value.Item1, value.Item2));
   ```
-  The count is **hard-pinned to 14**; the observed roster is **16**. The firearm set has grown
-  (`RoadwardenItem`, `DeadReckoningItem`, `WatchAtTheWorldsEndItem` and others now appear).
-- **This is NOT a presentation defect.** The assertion can fail on the count alone, and every
-  observed item does resolve to a named variant (`Pistol.Duelist`, `Pistol.LastWord`) or a
-  `<Kind>.Service` variant that `WeaponVisualVariantCatalog` explicitly maps. `issues` were not
-  reported for any item.
-- **Explicitly NOT a finding, having been checked:** `KMG.Test.TestMusketItem` appears in the
-  observed list. It is a **development-only** item (`Blueprints/TestMusketBlueprints.cs`,
-  consumed by `Development/DevelopmentControls.cs:313,395`) and is in
-  `Assets/WeaponVisualVariantCatalog.cs:76` by design to satisfy this very rig check. It is
-  **not** a player-facing leak, and I am recording that so nobody "fixes" it.
-- **Repair direction:** derive the expected count from the catalogue instead of pinning 14, or
-  update the pin deliberately. Per this project's convention, a count pin should be moved
-  **knowingly**, not to make a run green.
+  With a **16-item** roster the first condition is false, and `&&` **short-circuits**, so
+  `All(HasExactItemVariant)` — the part that actually compares a loaded item's visual against its
+  approved variant — **never executes**.
+- **And the diagnostic does not fill that gap:** `:13950-13951` prints
+  `WeaponVisualVariantCatalog.Require(value.Item1)`, which is the variant the **catalog expects**,
+  not the result of comparing the loaded item against it. Reading that output as evidence of
+  correct resolution was my error.
 
-## GS-AUD-0046 — The player-facing presentation assertion's counts are stale; the text itself is clean
+### What is supported, precisely
 
-- **Kind:** HARNESS-DEFECT (stale assertion pin) · **Severity:** S3
+1. The count expectation is **stale** (14 pinned, 16 actual).
+2. Each listed symbol **has a catalog mapping** (otherwise `Require` would have thrown).
+3. **The exact loaded-item visual bindings are UNVERIFIED by this execution.**
+
+This does **not** mean a binding defect exists. It means this run did not look.
+
+### Still explicitly NOT a finding, having been checked
+
+`KMG.Test.TestMusketItem` appears in the list. It is development-only
+(`Blueprints/TestMusketBlueprints.cs`, used by `Development/DevelopmentControls.cs:313,395`) and
+sits in `Assets/WeaponVisualVariantCatalog.cs:76` by design to satisfy this check. Not a
+player-facing leak.
+
+### Repair direction
+
+Derive the expected count from the catalogue instead of pinning 14 — and, because the binding
+predicate is the valuable half, evaluate and report it **independently** of the count so a count
+drift can never mask it again.
+
+## GS-AUD-0046 — Two of the three presentation counts are stale; the enchantment count is correct
+
+> ### ⚠ CORRECTED 2026-11-12 (EV-000020)
+>
+> I reported the enchantment count as drifted (12 observed vs 11 expected). **It is not.** The
+> predicate already expects **12** — eleven visible enchantments plus one policy-only
+> enchantment — and 12 was observed. Directing a repair agent to raise that expectation would
+> have been wrong.
+
+- **Kind:** HARNESS-DEFECT (stale pins) · **Severity:** S3
 - **Evidence:** native-observed · **Disposition:** OPEN
-- **Observed:** `observe-gunslinger-presentation` **FAIL 1 of 9** on
+- **Observed:** `observe-gunslinger-presentation` FAIL 1 of 9 on
   `project-item-player-facing-presentation`.
-  Expected: "55 weapons and the Cord have complete clean player text; eleven visible custom
-  enchantments are clean and the policy-only enchantment is blank."
-  Observed: `weapons=57;items=58;customEnchantments=12;issues=<none>`.
-- **The decisive detail is `issues=<none>`:** the observer found **no text-quality problems at
-  all**. The failure is purely that content has grown past the pinned counts (57 vs 55 weapons,
-  12 vs 11 enchantments).
-- **Scope limit:** this is a *structured text* check. It does **not** establish rendered
-  appearance, icon quality or layout — those remain human-only gaps regardless.
-- **Repair direction:** same as GS-AUD-0045 — derive the counts or move the pins knowingly.
 
+| Quantity | Expected by the predicate | Observed | Verdict |
+|---|---|---|---|
+| Weapons | 55 | **57** | **STALE** |
+| Total items, including the Cord | 56 | **58** | **STALE** |
+| Total custom enchantments | **12** (11 visible + 1 policy-only) | **12** | **matches** |
+
+### What `issues=<none>` does and does not establish
+
+It **does** establish that the text checks performed on the observed objects found no problems —
+those checks run before the final boolean conjunction.
+
+It does **not** establish that the required policy-only enchantment is present:
+`custom.Contains(policy)` is another condition in the same conjunction and is **skipped** once the
+weapon-count comparison fails. **That condition remains UNVERIFIED.**
+
+### Scope limit, unchanged
+
+A structured-text check. It establishes nothing about rendered appearance, icon quality or layout.
+
+### Repair direction
+
+Derive the weapon and item counts rather than pinning them, and **leave the enchantment
+expectation alone**. Report the policy-presence condition independently so it cannot be skipped.
 ## GS-AUD-0047 — `pistol-authored-marker-contract` fails and the cause is unresolved
 
 - **Kind:** OBSERVED-FAILURE-UNATTRIBUTED · **Severity:** UNASSESSED
@@ -1459,3 +1520,82 @@ two are stale assertion pins and one is a credible defect.
   `pistol-three-variant-separation` **passed**, so the three prefab references are distinct.
 - **Smallest confirming check:** re-run with the three sub-conditions reported separately, then
   inspect the two named pistols' authored markers against the contract.
+
+---
+
+## GS-AUD-0048 — Dead Shot's iterative-attack probes receive +5/+10 bonuses instead of −5/−10 penalties
+
+- **Kind:** PRODUCT-DEFECT · **Severity:** **S2** · **Evidence:** source-demonstrated +
+  **engine IL already measured** (same semantics as GS-AUD-0039) · **Confidence:** high on the
+  sign; **no native reproduction**
+- **Disposition:** OPEN. **Found by the owner's rev-3 review**, then verified here and extended
+  with the complete sweep I should have performed when GS-AUD-0039 was filed.
+
+### Expected rule
+
+Dead Shot resolves an iterative-attack progression — base attack bonus, BAB − 5, BAB − 10 — one
+probe per entry in `decision.AttackBonuses`.
+
+### Observed
+
+`Deeds/DeadShotRuntime.cs:160-165`:
+
+```csharp
+var probes = new RuleAttackRoll[decision.AttackBonuses.Length];
+for (int index = 0; index < probes.Length; index++)
+{
+    var probe = new RuleAttackRoll(casterEntity, target,
+        firearm.Weapon, -(index * 5));
+```
+
+The 4th argument is `RuleAttackRoll`'s **penalty**, which the engine **subtracts**
+(`RuleCalculateAttackBonus::OnTrigger`, measured under GS-AUD-0039, with no clamp anywhere on the
+path). So `index` 0/1/2 yields penalties 0/−5/−10, which become **+0/+5/+10 bonuses** — the
+second and third probes are **5 and 10 points too likely to hit**, a 10- and 20-point swing from
+the intended values.
+
+### Why it matters mechanically
+
+The probes decide **whether each iterative attack hits**; the single delivery at `:192` correctly
+passes `0`. So the inverted probes make Dead Shot land materially more of its iterative attacks
+than the progression intends.
+
+### Why the existing coverage did not catch it
+
+The native assertion checks that the **decision metadata** contains the expected values; it does
+**not** check the probes' actual calculated attack bonuses. That is the identical gap that let
+GS-AUD-0039 survive — in both cases the test pins the *intended numbers* rather than the
+*realised modifier*.
+
+### The complete sweep — the useful closure
+
+Prompted by this, every production construction of `RuleAttackRoll` / `RuleAttackWithWeapon`
+outside `RuntimeTesting/` was enumerated. **Exactly two pass a negative penalty**, and both are
+this same error:
+
+| Site | Penalty argument | Verdict |
+|---|---|---|
+| `Scatter/ScatterShotRuntime.cs:159-161` | `-2` | **GS-AUD-0039** |
+| `Deeds/DeadShotRuntime.cs:164-165` | `-(index * 5)` | **this finding** |
+| `Summoning/ContextActionUngulateTrample.cs:180-181` | `4` | correct — a positive value *is* a penalty |
+| `DeadShotRuntime.cs:192`, `PistolWhipRuntime.cs:94`, `TargetingArms/Head/Legs/TorsoRuntime.cs`, `SummonGiantCleaveDelivery.cs:92`, `ExpandedSummoningSpecialCombatComponents.cs:2446` | `0` | not affected |
+
+So there is **no third instance**. That bounds the blast radius of the sign-convention problem to
+these two sites.
+
+### Smallest confirming check
+
+Observe the **successive differences** between the probes' actual calculated attack bonuses under
+otherwise matched conditions — general modifiers move the absolute values, so the differences are
+the signal. Expect −5 steps; +5 steps confirm the inversion.
+
+### Suggested repair direction (not implemented)
+
+Pass `index * 5` (positive) and add an assertion on the realised probe modifiers, not on the
+decision metadata. Fixing GS-AUD-0039 and this together is one coherent change.
+
+### Process note
+
+I filed GS-AUD-0039 after measuring the engine's sign semantics and then **did not sweep the
+codebase for other callers of the same API**. The reviewer found this one while tracing an
+unrelated finding. Measuring a convention and not then applying it exhaustively is the gap.

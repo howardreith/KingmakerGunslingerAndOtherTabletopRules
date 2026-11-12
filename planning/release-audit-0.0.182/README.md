@@ -11,51 +11,49 @@ No fix was implemented, nothing was merged or published, and no save was opened 
 | File | What it is |
 |---|---|
 | [`SUMMARY.md`](SUMMARY.md) | Standalone executive summary: what was audited, ranked problems, gaps, machine state, suggested triage order |
-| [`FINDINGS.md`](FINDINGS.md) | 47 numbered records, `GS-AUD-0001`..`GS-AUD-0047` (0027 and 0030 WITHDRAWN) — **not** 47 defects, each with kind, severity, evidence strength and disposition held separately |
-| [`COVERAGE.tsv`](COVERAGE.tsv) | All 57 planned coverage rows with a final disposition each, separating source / domain / native evidence |
+| [`FINDINGS.md`](FINDINGS.md) | 48 numbered records, `GS-AUD-0001`..`GS-AUD-0048` (0027 and 0030 WITHDRAWN) — **not** 48 defects, each with kind, severity, evidence strength and disposition held separately |
+| [`COVERAGE.tsv`](COVERAGE.tsv) | All 59 coverage rows (57 planned + 2 added) with a final disposition each, separating source / domain / native evidence |
 | [`HANDOFF.md`](HANDOFF.md) | Reproduction commands, the smallest next investigations, and the decisions only the owner can make |
 
-## Revision 3 — corrected after a second owner review
+## Revision 4 — corrected after a third owner review
 
-**This is an incomplete audit checkpoint, not a finished audit.** Revision 2 claimed
-`COMPLETE_WITH_GAPS`; that was wrong, because eligible work remained unattempted. The disposition
-is now `IN_PROGRESS_CHECKPOINT` and `SUMMARY.md` §6a carries the explicit remaining queue.
+**This is an incomplete audit checkpoint, not a finished audit** (`IN_PROGRESS_CHECKPOINT`).
+`SUMMARY.md` §6a carries the explicit remaining queue.
 
-> **"47 findings" is 47 numbered records, not 47 demonstrated product defects.** It mixes
-> confirmed observations, **2 withdrawn false positives**, contract questions, conditional risks
-> with unestablished preconditions, harness defects and verification gaps. **Active S2 count: 6.**
-> Do not use this as a repair backlog without reading each entry's evidence strength.
+> **"48 findings" is 48 numbered records, not 48 demonstrated product defects.** It mixes
+> confirmed observations, **2 withdrawn false positives**, several reclassified entries, contract
+> questions, conditional risks with unestablished preconditions, harness defects and verification
+> gaps. **Active S2 count: 6.** Do not use it as a repair backlog without reading each entry's
+> evidence strength.
 
-Corrected in revision 3:
+Corrected in revision 4:
 
-- **`GS-AUD-0040` (Shield Other) — RECLASSIFIED to documentation drift.** I presented a three-way
-  conflict and asked for an owner decision. The decision already existed in the candidate:
-  `planning/EXPANDED-SUMMONING-MISSION.md:71` approves a distance-independent established bond,
-  and the journal records the current behaviour as a *deliberate repair*. The code and the
-  regression test are **correct**; only the shipped description is stale. "Reintroduce the
-  distance check" is removed as a repair option.
-- **Coverage ledger reconciled.** The rev-2 withdrawals had not propagated: COV-006 still
-  asserted the withdrawn Nimble defect, COV-020 the withdrawn RU pin, COV-030 the unverified +4
-  degradation, and COV-004/COV-057 carried stale totals.
-- **Magic Circle `VERIFIED` downgraded.** COV-044/045 had been marked verified on
-  `observe-magic-circle-native-contracts`, which is a **blueprint inventory dump** that casts,
-  moves, dispels and unloads nothing. Overall `VERIFIED` rows fell **6 → 3**.
-- **Scatter trace finished.** No clamp exists anywhere on the penalty path, so the +2 / 4-point
-  swing is established rather than inferred.
-- **A20 was not human-only.** Three machine-observable presentation/audio scenarios were
-  admissible all along; running them produced three native FAILs, including **GS-AUD-0044**.
+- **`GS-AUD-0044` (Dead Shot audio) — RECLASSIFIED S2 → S3 harness.** **Eleven notifications are
+  correct.** The counter brackets the *entire* nested scenario, which runs eleven
+  discharge-producing volleys, and production posts one per non-misfire volley; the assertion's
+  `+1` is stale. The counter also measures **attempted** notifications (incremented before the
+  emitter check and before `TryPost`), so it could not have evidenced audio duplication. Its
+  "second-highest repair priority" ranking is withdrawn.
+- **`GS-AUD-0045` — over-exclusion retracted.** `items.Count == 14 &&` **short-circuits**, so the
+  binding comparison never ran, and the diagnostic prints the *catalog's expectation* rather than
+  a comparison result. The visual bindings are **UNVERIFIED**, not confirmed correct.
+- **`GS-AUD-0046` — count corrected.** The predicate already expects **12** enchantments and 12
+  were observed. Only the weapon (55→57) and item (56→58) counts are stale, and
+  `custom.Contains(policy)` is skipped after the weapon mismatch, so policy presence is unverified.
+- **COV-027 attribution fixed.** Revision 3 classified the *expanded-summoning* row using
+  *firearm* results. COV-027 is restored to `NOT_RUN`; the firearm evidence moved to new rows
+  **COV-058** and **COV-059**.
+- **Superseded instructions removed** from the summary and handoff bodies — including a triage
+  item still telling the owner to decide Shield Other's range contract, which is already settled.
+- **`GS-AUD-0048` added, found by the reviewer:** Dead Shot's iterative probes carry the same sign
+  error as Scatter. A complete sweep now bounds it — **exactly two** production sites pass a
+  negative penalty, and there is no third.
 
-## Revision 2 — corrected after the first owner review
-
-The first revision claimed the eligible queue was complete. It was not, and two prominent
-findings were wrong:
-
-- **GS-AUD-0030 (Nimble) — WITHDRAWN false positive.** Tabletop Gunslinger Nimble *is*
-  2/6/10/14/18, exactly as implemented. Acting on the original finding would have **introduced**
-  a rules defect into correct code.
-- **GS-AUD-0027 (RU version pin) — WITHDRAWN false positive.** The integration gates structurally
-  on blueprint shape; unsupported input is refused before mutation and generated rows withheld.
-- **GS-AUD-0038's mechanism — withdrawn.** The two scenarios ran in separate game processes.
+Earlier revisions withdrew **GS-AUD-0030 (Nimble)** and **GS-AUD-0027 (RU version pin)** as false
+positives — the Nimble one would have *introduced* a rules defect into correct code — withdrew
+GS-AUD-0038's mechanism, reclassified GS-AUD-0040 (Shield Other) once an existing owner contract
+was found, downgraded the Magic Circle coverage that had rested on an inventory-only observer, and
+replaced the claim that the audit was complete.
 
 ## Headline
 
@@ -65,13 +63,11 @@ cleanly on seven optional-mod profiles** across **15 native transactions**.
 
 The **6 active S2 findings**:
 
-- **GS-AUD-0039 — Scatter Shot's documented −2 attack penalty is applied as a +2 bonus.**
-  `RuleCalculateAttackBonus::OnTrigger` **subtracts** `AttackBonusPenalty`, and the whole
-  constructor-to-trigger chain carries no clamp. Six other KMG sites write penalties as `+n`;
-  scatter is the only production site passing a negative. A 4-point swing on every scatter
-  attack. *This finding only exists because the first review refused the early-exit claim.*
-- **GS-AUD-0044 — Dead Shot appears to commit ~11 audio events** where its own contract requires
-  exactly 1. Native-reproduced once; a stale-expectation explanation is retained.
+- **GS-AUD-0039 — Scatter Shot's documented −2 attack penalty is applied as a +2 bonus**, and
+  **GS-AUD-0048 — Dead Shot's iterative probes get +5/+10 instead of −5/−10.** Same root cause:
+  the engine *subtracts* `AttackBonusPenalty`, and the whole constructor-to-trigger chain carries
+  no clamp. A complete sweep shows these are the **only two** negative-penalty production sites.
+  Both survived because the tests pin intended numbers rather than the realised modifier.
 - **GS-AUD-0006** — a failed settings-migration write misclassifies a valid older file as
   malformed and silently resets all 13 modules to ON.
 - **GS-AUD-0025** — untemplated Summon Monster alternate-caller children keep the donor's
@@ -106,7 +102,7 @@ The correction is kept visible rather than edited away: see the banner at the to
 
 Kept local as private campaign evidence, per the audit's own evidence rules:
 
-- the append-only outcomes journal (19 events, ~130 KB of machine-local receipts, run IDs and
+- the append-only outcomes journal (20 events, ~130 KB of machine-local receipts, run IDs and
   deployment manifests)
 - the evidence index, with hashes and paths of machine-local artifacts
 - raw `output_log.txt` captures, runtime result JSON, worker reports, the campaign's bounded
