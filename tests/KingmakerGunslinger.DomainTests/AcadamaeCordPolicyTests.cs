@@ -464,6 +464,24 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Throws<ArgumentOutOfRangeException>(() =>
                 CordSubstitutionPolicy.Decide(true, CordConditionKind.Fatigue,
                     7, 10), "A d6 roll above six must fail.");
+            // The 1 HP floor at the boundary. The live patch clamps HPLeft at
+            // zero before calling this, because the previous inline form
+            // returned zero damage for a non-positive HPLeft and the policy
+            // instead fails closed on a negative value; clamping keeps the
+            // refactor behaviour-preserving for a dying or unconscious wearer.
+            Assertions.Equal(0, CordSubstitutionPolicy.Decide(true,
+                CordConditionKind.Fatigue, 6, 0).Damage,
+                "Zero hit points must substitute zero damage, not negative damage.");
+            Assertions.True(CordSubstitutionPolicy.Decide(true,
+                CordConditionKind.Fatigue, 6, 0).Substituted,
+                "An equipped Cord still substitutes at zero hit points, for zero damage.");
+            Assertions.Equal(0, CordSubstitutionPolicy.Decide(true,
+                CordConditionKind.Fatigue, 1, 1).Damage,
+                "One hit point must substitute zero damage.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                CordSubstitutionPolicy.Decide(true, CordConditionKind.Fatigue,
+                    6, -1),
+                "A negative hit-point total must fail closed for a domain caller.");
         }
 
         internal static void CordNativeConditionSourceContract()
