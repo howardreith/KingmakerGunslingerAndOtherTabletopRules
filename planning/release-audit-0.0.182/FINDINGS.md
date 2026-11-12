@@ -18,7 +18,7 @@ appended to AUDIT-OUTCOMES.md. Severity is a provisional impact judgement, not p
 | **GS-AUD-0048** | **PRODUCT-DEFECT** | **S2** | source-demonstrated + engine IL measured | Dead Shot (A06) | **Dead Shot's iterative probes get +5/+10 bonuses instead of −5/−10 penalties** — same sign error as GS-AUD-0039 | OPEN | EV-000020 |
 | GS-AUD-0044 | HARNESS-DEFECT (stale aggregate) | S3 (was S2) | native-observed, correctly explained | Dead Shot audio (A20) | The deed-audio aggregate expectation is stale; **eleven notifications are correct** for the nested scenario | OPEN — **RECLASSIFIED** | EV-000019, EV-000020 |
 | GS-AUD-0045 | HARNESS-DEFECT (stale pin) | S3 | native-observed + source | Firearm visual rigs (A20) | The rig assertion is hard-pinned to `items.Count == 14`; the roster is now 16 | OPEN | EV-000019 |
-| GS-AUD-0046 | HARNESS-DEFECT (stale pin) | S3 | native-observed | Item presentation (A20) | Presentation counts are stale (57/12 vs 55/11); `issues=<none>` — the text itself is clean | OPEN | EV-000019 |
+| GS-AUD-0046 | HARNESS-DEFECT (stale pins) | S3 | native-observed | Item presentation (A20) | **Weapon (55→57) and item (56→58) counts are stale; the 12-enchantment expectation is CORRECT.** `issues=<none>`, but the policy-enchantment condition was skipped and is unverified | OPEN — **CORRECTED** | EV-000019, EV-000020 |
 | GS-AUD-0047 | OBSERVED-FAILURE-UNATTRIBUTED | UNASSESSED | native-observed once | Firearm visual rigs (A20) | `pistol-authored-marker-contract` reports `exact=False`; which sub-condition failed is unrecoverable | OPEN | EV-000019 |
 | GS-AUD-0040 | DOCUMENTATION-DRIFT (was CONTRACT-QUESTION) | S3 (was S2) | source-demonstrated | Shield Other (A15) | The shipped ability description contradicts the **approved** distance-independent bond contract; code and test are correct | OPEN — **RECLASSIFIED** | EV-000018, EV-000019 |
 | GS-AUD-0041 | DOCUMENTATION-DRIFT | S3 | source-demonstrated | Protection from Alignment (A15) | Catalog has 23 entries, authority table lists 21; the Suggestion entry may violate the doc's own exclusion list | OPEN | EV-000018 |
@@ -1231,7 +1231,7 @@ And the project states the rule explicitly in its own words at
 `RuntimeTesting/AidAnotherCompatibilityObserver.cs:477-481`:
 *"`RuleAttackWithWeapon.AttackBonusPenalty` is a positive subtraction in Kingmaker 2.1.7b"* —
 where it passes **1000** through the identical constructor to **force a miss**.
-**Scatter is the only production site that passes a negative.**
+**Scatter and Dead Shot (`Deeds/DeadShotRuntime.cs:164-165`, GS-AUD-0048) are the only two production sites that pass a negative** — a complete sweep found no third.
 
 ### Why the existing coverage never caught it
 
@@ -1371,7 +1371,7 @@ The rev-2 review's point 4 noted the disposition said complete while eligible wo
 Re-checking the wrapper's own `ValidateSet` showed **three machine-observable
 presentation/audio scenarios were admissible all along**. Running them produced three native
 FAILs. Each is classified below on the evidence, **not** assumed to be a product defect —
-two are stale assertion pins and one is a credible defect.
+all three turned out to be stale assertions rather than product defects, and a fourth item (GS-AUD-0047) remains an unresolved structural failure.
 
 ## GS-AUD-0044 — The deed-audio assertion's aggregate expectation is stale; eleven notifications are correct
 
@@ -1551,8 +1551,10 @@ for (int index = 0; index < probes.Length; index++)
 The 4th argument is `RuleAttackRoll`'s **penalty**, which the engine **subtracts**
 (`RuleCalculateAttackBonus::OnTrigger`, measured under GS-AUD-0039, with no clamp anywhere on the
 path). So `index` 0/1/2 yields penalties 0/−5/−10, which become **+0/+5/+10 bonuses** — the
-second and third probes are **5 and 10 points too likely to hit**, a 10- and 20-point swing from
-the intended values.
+second and third probes receive **attack bonuses 10 and 20 points too high** than intended
+(+5 where −5 was intended is a 10-point swing; +10 where −10 was intended is 20). How much
+that raises the hit *probability* depends on the target AC and the natural-roll rules, so the
+defensible statement is the bonus error, not a probability figure.
 
 ### Why it matters mechanically
 
