@@ -14,9 +14,11 @@ Current (2026-11-12). See `planning/hide-original-summon-elemental/STATUS.md` ("
     native selection and retained slot switch;
   - native deselection by replacement did not settle (state not recorded);
   - the book/metamagic cells were not reached.
-- Restoration exact. Ledger about 2,247 of 2,400 s.
-- Next, owner authorization required: a deselection-instrumentation observer fix plus one build and run (new
-  allowance), or review as-is.
+- Restoration exact.
+- Diagnosis: native `UnselectSpell` rebuilds `LevelUpState`, so the observer polled a stale selection object. The
+  observer fix (live state, bounded, recorded) is committed; focused passed; not built or run.
+- Ledger about 2,299 of 2,400 s.
+- Next, owner authorization required: a new allowance for one build plus one guarded run, or review as-is.
 
 ---
 

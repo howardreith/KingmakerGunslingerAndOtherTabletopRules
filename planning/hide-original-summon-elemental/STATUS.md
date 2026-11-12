@@ -467,20 +467,45 @@ Wrapper record `runtime-evidence/expanded-summoning-restoration/20261112T1414383
 | Candidate build `0d944a262f` | 733 |
 | Guarded invocation (wrapper wall, incl. restoration) | 117.8 |
 | Intake and restoration verification | ~15 |
-| **Cumulative** | **~2,247** |
+| **Cumulative after the run** | **~2,247** |
+| Focused gate (deselection observer fix) | 51.6 |
+| **Cumulative** | **~2,299** |
 
-About 153 s remain, which is not enough for another build or run.
+About 101 s remain, which is not enough for another build or run.
 
-## Proposed next correction (not implemented, not authorized)
+## Deselection diagnosis and observer fix (`HEAD`, focused/compile-only)
 
-The observer change is small:
-- record pending, the current native slot index and the replacement identity on any deselection timeout;
-- before replacing, select the original slot through its native switch item and require the native current index
-  to equal that slot;
-- if the native UI auto-advances to the empty slot after a choice, describe that.
+Offline reading of installed 2.1.7b (no validation time):
+- `LevelUpController.UnselectSpell` calls `RemoveAction`, which recalculates the preview. `UpdatePreview` →
+  `ApplyLevelup` creates a **new `LevelUpState`**, so every `SpellSelectionData` object is replaced.
+- The earlier selection went through incremental `AddAction` (`Check` + `Apply` on the same state). That is why the
+  captured object showed the first allocation correctly.
+- The deselection wait polled the captured, now stale, selection object, which still read `[source, –]`. It could
+  never settle even if the native replacement had succeeded.
+- The console observer already documents this native rebuild (`UnselectSpell06002852`).
 
-The book/metamagic cells are unchanged and still need their first native observation. One build and one run need a
-new allowance (about 600 s, plus a margin for concurrent builds).
+**Classification.** Observer defect: a stale reference after a native state rebuild. Native replacement was not
+observed either way.
+
+**Fix.** Committed after the record of candidate `0d944a262f`; not built, not run.
+- After the replacement click, pending is read from the live `backend.State.SpellSelections` entry for the Wizard
+  book/list.
+- The wait is bounded and records state instead of throwing blind: slot index before and after, whether the selection
+  object was rebuilt, the stale captured pending, whether the preview knows the replacement or source, and the wait
+  frames and seconds.
+
+Focused gate: 26/2,949, 0 failures, production compiled, 51.6 s.
+
+Remaining native observations for a future candidate:
+- native deselection by replacement;
+- session B cancel;
+- mixed book hidden and revealed;
+- metamagic tab hidden and revealed;
+- book preparation and undo;
+- mixed-fixture cleanup.
+
+One build and one run need a new allowance (about 600 s, plus a margin if a peer build runs concurrently). The
+ledger is about 2,299 of 2,400 s.
 
 ## Owner retest checklist
 
