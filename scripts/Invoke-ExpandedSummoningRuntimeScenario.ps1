@@ -53,11 +53,26 @@ param(
     [ValidateRange(5, 600)]
     [int]$ObserverStartupTimeoutSeconds = 180,
     [ValidateRange(5, 1800)]
-    [int]$CompletionTimeoutSeconds = 180
+    [int]$CompletionTimeoutSeconds = 180,
+    # GS-AUD-0007 staged acceptance. Replaces FeatureModules.json inside the
+    # deployed tree with this exact file, AFTER deployment and BEFORE launch, so
+    # the candidate loads it at startup. Both the original bytes and the original
+    # file ATTRIBUTES are recorded and put back; the read-only switch below is
+    # applied to the STAGED fixture only and is always cleared before the tree is
+    # restored, so the owner's real settings file is never left read-only.
+    [string]$StageFeatureModulesPath,
+    # Forces the migration write to fail by making the staged fixture read-only.
+    [switch]$StageFeatureModulesReadOnly
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+if ($StageFeatureModulesReadOnly -and [string]::IsNullOrEmpty($StageFeatureModulesPath)) {
+    throw '-StageFeatureModulesReadOnly requires -StageFeatureModulesPath.'
+}
+if ($StageFeatureModulesPath -and -not (Test-Path -LiteralPath $StageFeatureModulesPath -PathType Leaf)) {
+    throw "Staged FeatureModules.json is missing: $StageFeatureModulesPath"
+}
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 
 # The orchestration decisions - which evidence belongs to this run, how the
@@ -127,6 +142,9 @@ $installationRestorationFailed = $false
 $ummRestorationFailed = $false
 Write-Host "UMM Params.xml protected: existed=$($ummReceipt.existed) sha256=$($ummReceipt.intakeSha256) receipt=$($ummReceipt.receiptPath)"
 
+$settingsStagedTarget = $null
+$settingsOriginalBytes = $null
+$settingsOriginalAttributes = [IO.FileAttributes]::Normal
 $before = Get-KmgTreeFingerprint -Directory $LiveModDirectory
 Write-Host "Pre-run live tree: files=$($before.Files) sha256=$($before.Sha256)"
 
@@ -211,6 +229,31 @@ try {
         $reuseManifest = (Resolve-Path -LiteralPath $deploymentOutput[0]).Path
         $record.explicitPackage = $reusePackage
         $record.explicitDeploymentManifest = $reuseManifest
+        if ($StageFeatureModulesPath) {
+            $stagedTarget = Join-Path $LiveModDirectory 'FeatureModules.json'
+            if (-not (Test-Path -LiteralPath $stagedTarget -PathType Leaf)) {
+                throw "Deployed tree has no FeatureModules.json to stage over: $stagedTarget"
+            }
+            # Bytes AND attributes, so the restore can put back exactly what was
+            # there. The snapshot already covers the bytes; attributes are the
+            # part a tree restore does not carry.
+            $settingsOriginalBytes = [IO.File]::ReadAllBytes($stagedTarget)
+            $settingsOriginalAttributes = [IO.File]::GetAttributes($stagedTarget)
+            $settingsStagedTarget = $stagedTarget
+            [IO.File]::SetAttributes($stagedTarget, [IO.FileAttributes]::Normal)
+            [IO.File]::WriteAllBytes($stagedTarget, [IO.File]::ReadAllBytes($StageFeatureModulesPath))
+            if ($StageFeatureModulesReadOnly) {
+                [IO.File]::SetAttributes($stagedTarget, [IO.FileAttributes]::ReadOnly)
+            }
+            $record.stagedFeatureModules = [ordered]@{
+                source = (Resolve-Path -LiteralPath $StageFeatureModulesPath).Path
+                target = $stagedTarget
+                readOnly = [bool]$StageFeatureModulesReadOnly
+                originalSha256 = (Get-FileHash -LiteralPath $stagedTarget -Algorithm SHA256).Hash
+                originalAttributes = $settingsOriginalAttributes.ToString()
+                stagedSha256 = (Get-FileHash -LiteralPath $StageFeatureModulesPath -Algorithm SHA256).Hash }
+            Write-Host "Staged FeatureModules.json (readOnly=$([bool]$StageFeatureModulesReadOnly)): $stagedTarget"
+        }
         if (-not [string]::IsNullOrEmpty($DevelopmentPurpose)) {
             $record.developmentPurpose = $DevelopmentPurpose
             $record.developmentDeploymentManifest = $reuseManifest
@@ -435,6 +478,28 @@ finally {
                 }
 
                 Assert-KmgNotRunning
+                # Clear the staged read-only attribute FIRST: leaving it set
+                # would make the tree restore fail on that file, and leaving the
+                # owner's settings file read-only is exactly what must not
+                # happen. Bytes and attributes are both put back explicitly, and
+                # the tree restore below then re-verifies the whole tree.
+                if ($settingsStagedTarget) {
+                    try {
+                        if (Test-Path -LiteralPath $settingsStagedTarget -PathType Leaf) {
+                            [IO.File]::SetAttributes($settingsStagedTarget, [IO.FileAttributes]::Normal)
+                        }
+                        [IO.File]::WriteAllBytes($settingsStagedTarget, $settingsOriginalBytes)
+                        [IO.File]::SetAttributes($settingsStagedTarget, $settingsOriginalAttributes)
+                        $record.stagedFeatureModulesRestored = [ordered]@{
+                            sha256 = (Get-FileHash -LiteralPath $settingsStagedTarget -Algorithm SHA256).Hash
+                            attributes = ([IO.File]::GetAttributes($settingsStagedTarget)).ToString() }
+                        Write-Host "Restored staged FeatureModules.json bytes and attributes."
+                    }
+                    catch {
+                        $record.stagedFeatureModulesRestored = 'FAILED: ' + $_.Exception.Message
+                        Write-Warning "Staged FeatureModules.json restore failed: $($_.Exception.Message)"
+                    }
+                }
                 $restoreArguments=@{BackupDirectory=$snapshot.Destination;LiveModDirectory=$LiveModDirectory;Confirm=$false}
                 if($startupPeerScope){$restoreArguments.RuntimeLease=$startupPeerScope.Lease}
                 & (Join-Path $PSScriptRoot 'Restore-Live-Mod.ps1') @restoreArguments | Out-Null
