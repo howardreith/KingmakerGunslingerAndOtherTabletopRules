@@ -276,6 +276,35 @@ namespace KingmakerGunslinger.DomainTests
             });
         }
 
+        internal static void ShowOriginalSummonElementalDefaultsOffAndRoundTrips()
+        {
+            WithDirectory(path =>
+            {
+                string settings = Path.Combine(path, FeatureModuleSettingsStore.FileName);
+                Assertions.False(FeatureModuleSettingsStore.Load(path).ShowOriginalSummonElemental,
+                    "Missing settings hide original Summon Elemental spells.");
+                File.WriteAllText(settings, "{\"schemaVersion\":12,\"expanded-summoning\":true}");
+                FeatureModuleSettingsState state = FeatureModuleSettingsStore.Load(path);
+                Assertions.False(state.ShowOriginalSummonElemental, "An existing schema-12 file without the key stays hidden.");
+                Assertions.Equal("settings", state.Source, "The optional key is not a schema migration.");
+                Assertions.False(state.RestartRequired, "The presentation option never requires a restart.");
+                state.SetShowOriginalSummonElemental(true);
+                Assertions.False(state.RestartRequired, "Revealing applies immediately; no restart is pending.");
+                FeatureModuleSettingsStore.Save(state);
+                JObject saved = JObject.Parse(File.ReadAllText(settings));
+                Assertions.True((int)saved["schemaVersion"] == 12 &&
+                    (bool)saved[FeatureModuleSettingsStore.ShowOriginalSummonElementalId],
+                    "The option is saved under its key without a schema bump.");
+                FeatureModuleSettingsState loaded = FeatureModuleSettingsStore.Load(path);
+                Assertions.True(loaded.ShowOriginalSummonElemental && loaded.Active.Equals(state.Active),
+                    "The option round-trips without changing any module.");
+                File.WriteAllText(settings, "{\"schemaVersion\":12,\"show-original-summon-elemental\":\"yes\"}");
+                FeatureModuleSettingsState malformed = FeatureModuleSettingsStore.Load(path);
+                Assertions.True(malformed.Recovered && !malformed.ShowOriginalSummonElemental,
+                    "A non-boolean value recovers to the hidden default.");
+            });
+        }
+
         internal static void ActiveSnapshotIsImmutable()
         {
             var state = new FeatureModuleSettingsState(

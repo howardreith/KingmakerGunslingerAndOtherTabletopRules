@@ -38,11 +38,13 @@ try {
     $ctor=$pp.GetConstructor($flags,$null,[Type[]]@($hi,[Type],$hm),$null)
     $harmony=$hi.GetMethod('Create',[Type[]]@([string])).Invoke($null,@('kmg.cleanup2.console.targets.'+[guid]::NewGuid().ToString('N')))
     $catalog=@(
-        @('ElementalConsoleLearningIntakePatch','CharGenSpellsPhaseVM','GetSpellsCollection',298),
-        @('ElementalConsoleLearningProjectionPatch','SelectorEntitiesGroupView`2','GenerateVirtualViews',339),
-        @('ElementalConsoleLearningHeaderTextPatch','CharGenSpellSelectorItemView','RefreshView',165),
-        @('ElementalConsoleLearningConfirmPatch','CharGenSpellsPhaseDetailedView','PressConfirmOnPhase',261),
-        @('ElementalConsoleLearningHeaderTooltipPatch','CharGenSpellSelectorItemView','TooltipObject',12),
+        # Default-hidden original Summon Elemental rows (owner, 2026-11-12):
+        # the PC and console spellbook list builders. Learning lists use the
+        # existing StandaloneElemental*LearningPatch call-site transpilers.
+        @('OriginalSummonElementalPcBookPatch','SpellBookView','GetSpellsForLevel',84),
+        @('OriginalSummonElementalConsoleBookPatch','UIUtilityUnit','GetKnownSpellsForLevel',68),
+        @('StandaloneElementalPcLearningPatch','CharBSelectorLayer','FillSpellLevel',511),
+        @('StandaloneElementalConsoleLearningPatch','CharGenSpellsPhaseVM','GetSpellsCollection',298),
         @('ElementalConsoleSpellCollectionPatch','ActionBarSelectorVm','CollectSpells',508),
         @('ElementalConsoleSourceResultPatch','ActionBarVM','Result',67),
         @('ElementalConsoleSourceViewPatch','ActionBarSelectorView','Bind',-1),
@@ -55,9 +57,8 @@ try {
         # Desktop/presentation patches: a Prepare pin that misses the installed
         # method silently disables its surface (the PC preparation fold did).
         # The PC and console spellbook (preparation) disclosures were withdrawn
-        # on 2026-11-11; their absence is asserted after this catalog.
-        @('ElementalLearningRowsPatch','CharBSelectorLayer','SetupSpellSelectorView',377),
-        @('ElementalLearningRefreshRowsPatch','CharBSelectorLayer','FillSpellLightUpdate',438),
+        # on 2026-11-11 and the level-up learning disclosures on 2026-11-12;
+        # their absence is asserted after this catalog.
         @('ElementalSourceChooserDesktopPatch','ActionBarGroupElement','FillSlots',-1),
         @('EttinSecondHeadVisual','UnitEntityView','OnDataAttached',-1),
         @('EttinSecondHeadTeardown','UnitEntityView','OnDestroy',-1),
@@ -92,10 +93,14 @@ try {
             Write-Output ('PASS '+$entry[0]+' => '+$target.DeclaringType.FullName+'::'+$target+' token=0x'+$target.MetadataToken.ToString('X8')+' bytes='+$length)
         } catch {$message=$_.Exception.GetBaseException().Message;$failures.Add($entry[0]+': '+$message);Write-Output ('FAIL '+$entry[0]+': '+$message)}
     }
-    # Owner withdrawal (2026-11-11): no spellbook preparation disclosure patch
-    # may remain in the mod; spell-learning disclosures above stay.
-    foreach($name in @('ElementalConsolePreparationIntakePatch','ElementalConsolePreparationProjectionPatch','ElementalConsolePreparationConfirmPatch','ElementalConsolePreparationHintPatch','ElementalConsolePreparationSelectedPatch','ElementalConsolePreparationBudgetGuardPatch','ElementalConsolePreparationContextGuardPatch','ElementalConsolePreparationMetaGuardPatch','ElementalConsolePreparationHeaderTooltipPatch','ElementalPreparationRowsPatch')){
-        if($null -ne $mod.GetType('KingmakerGunslinger.Summoning.'+$name,$false)){$failures.Add($name+': withdrawn spellbook disclosure patch is still present');Write-Output ('FAIL withdrawn '+$name)}
+    # Owner withdrawals: spellbook preparation disclosures (2026-11-11) and
+    # level-up learning disclosures (2026-11-12). No disclosure patch, fold
+    # or header type may remain in the mod.
+    $withdrawn=@('ElementalConsolePreparationIntakePatch','ElementalConsolePreparationProjectionPatch','ElementalConsolePreparationConfirmPatch','ElementalConsolePreparationHintPatch','ElementalConsolePreparationSelectedPatch','ElementalConsolePreparationBudgetGuardPatch','ElementalConsolePreparationContextGuardPatch','ElementalConsolePreparationMetaGuardPatch','ElementalConsolePreparationHeaderTooltipPatch','ElementalPreparationRowsPatch',
+        'ElementalConsoleLearningIntakePatch','ElementalConsoleLearningProjectionPatch','ElementalConsoleLearningHeaderTextPatch','ElementalConsoleLearningConfirmPatch','ElementalConsoleLearningHeaderTooltipPatch','ElementalLearningRowsPatch','ElementalLearningRefreshRowsPatch',
+        'ElementalNativeSourceFold','ElementalNativeRowsPresentation','ElementalConsoleBookLifetime','ElementalConsoleBookPresentation+LearningHeader','ElementalConsoleBookPresentation+LearningContext')
+    foreach($name in $withdrawn){
+        if($null -ne $mod.GetType('KingmakerGunslinger.Summoning.'+$name,$false)){$failures.Add($name+': withdrawn disclosure type is still present');Write-Output ('FAIL withdrawn '+$name)}
         else{$passed++;Write-Output ('PASS withdrawn '+$name+' absent')}
     }
     # Reproduce the previous untyped constructor lookup using the actual shim
@@ -115,6 +120,6 @@ try {
         if(-not $fillExact){throw 'Installed ActionBarSpellsGroup.Fill differs from token 0x0600451C / 113 IL bytes.'}
         $passed++;Write-Output 'PASS DruidSummonConversionPopupRowsPatch.ExactVariantFill => ActionBarSpellsGroup::Fill token=0x0600451C bytes=113'
     } catch {$message=$_.Exception.GetBaseException().Message;$failures.Add('ExactVariantFill: '+$message);Write-Output ('FAIL ExactVariantFill: '+$message)}
-    Write-Output ('Targets: '+$passed+'/'+($catalog.Count+12)+' passed; modSha256='+(Get-FileHash -LiteralPath $modPath -Algorithm SHA256).Hash.ToLowerInvariant())
+    Write-Output ('Targets: '+$passed+'/'+($catalog.Count+$withdrawn.Count+2)+' passed; modSha256='+(Get-FileHash -LiteralPath $modPath -Algorithm SHA256).Hash.ToLowerInvariant())
     if($failures.Count -gt 0){throw ($failures -join [Environment]::NewLine)}
 } finally {[AppDomain]::CurrentDomain.remove_AssemblyResolve($resolver)}
