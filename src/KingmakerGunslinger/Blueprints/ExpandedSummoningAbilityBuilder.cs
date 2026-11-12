@@ -41,6 +41,82 @@ namespace KingmakerGunslinger.Blueprints
 
         internal static IReadOnlyList<string> NativeTemplateIds { get { return Array.AsReadOnly(NativeMonsterTemplateBuffs); } }
 
+        /// <summary>
+        /// The Summon Monster creatures whose native carrier still applies a
+        /// celestial/fiendish template after spawn even though the project
+        /// creature is untemplated. Exactly these need the explicit removal
+        /// action. Every one of them is monsterTemplated=false in
+        /// ExpandedSummoningCatalog, so they take the untemplated path.
+        /// </summary>
+        private static readonly string[] InheritedTemplateRemovalCreatures = {
+            "lemure", "dretch", "hound-archon", "lantern-archon",
+            "trumpet-archon", "astral-deva", "bearded-devil",
+            "kyton-chain-devil", "barbed-devil", "bone-devil", "babau",
+            "hezrou" };
+
+        /// <summary>
+        /// GS-AUD-0025: the one scoped rule for inherited-template removal.
+        /// The canonical ordinary-spell builder and the alternate-caller
+        /// adapter must agree, and previously only the canonical builder
+        /// applied it, so an alternate caller's untemplated Summon Monster
+        /// child kept the donor's template. Keeping the set here means the two
+        /// paths cannot diverge again.
+        /// </summary>
+        internal static bool RequiresInheritedTemplateRemoval(SummonFamily family,
+            SummonCreatureSpec creature)
+        {
+            if (creature == null) throw new ArgumentNullException("creature");
+            return family == SummonFamily.Monster && !creature.MonsterTemplated &&
+                Array.IndexOf(InheritedTemplateRemovalCreatures, creature.Key) >= 0;
+        }
+
+        /// <summary>
+        /// Appends the inherited-template removal to every spawn branch, bound
+        /// to its exact owning unit and the exact four native template
+        /// identities the action itself revalidates at run time. Appended last
+        /// so it is the final composed action of its branch, which is what the
+        /// composition contract compares.
+        /// </summary>
+        internal static void AppendInheritedTemplateRemoval(
+            BlueprintComponent[] components, BlueprintUnit unit,
+            BlueprintBuff[] nativeTemplateBuffs)
+        {
+            if (components == null) throw new ArgumentNullException("components");
+            if (unit == null) throw new ArgumentNullException("unit");
+            if (nativeTemplateBuffs == null)
+                throw new ArgumentNullException("nativeTemplateBuffs");
+            foreach (var spawn in AlternateSummoningGraph
+                .Objects<ContextActionSpawnMonster>(components))
+            {
+                if (spawn.AfterSpawn == null) spawn.AfterSpawn = new ActionList();
+                var remove = ScriptableObject
+                    .CreateInstance<ContextActionRemoveInheritedSummonTemplates>();
+                remove.OwningBlueprint = unit;
+                remove.NativeTemplates = (BlueprintBuff[])nativeTemplateBuffs.Clone();
+                spawn.AfterSpawn.Actions = (spawn.AfterSpawn.Actions ??
+                    Array.Empty<GameAction>())
+                    .Concat(new GameAction[] { remove }).ToArray();
+            }
+        }
+
+        /// <summary>Resolves the four native summon template buffs by their
+        /// exact identities, for a caller that has only a library lookup.</summary>
+        internal static BlueprintBuff[] ResolveNativeTemplateBuffs(
+            Func<string, BlueprintScriptableObject> lookup)
+        {
+            if (lookup == null) throw new ArgumentNullException("lookup");
+            var resolved = new BlueprintBuff[NativeMonsterTemplateBuffs.Length];
+            for (int index = 0; index < NativeMonsterTemplateBuffs.Length; index++)
+            {
+                resolved[index] = lookup(NativeMonsterTemplateBuffs[index]) as BlueprintBuff;
+                if (resolved[index] == null)
+                    throw new InvalidOperationException(
+                        "Native summon template buff missing: " +
+                        NativeMonsterTemplateBuffs[index]);
+            }
+            return resolved;
+        }
+
         internal static void Configure(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol)
         {
@@ -190,22 +266,14 @@ namespace KingmakerGunslinger.Blueprints
                     SpellDescriptor.Evil;
             }
             // Native SM carriers retain native celestial/fiendish after-spawn
-            // behavior even when the project creature is untemplated. Repair
-            // these six scoped creatures only, including the in-place Lantern
-            // upgrade; unrelated released graphs are untouched.
-            if (variant.Family == SummonFamily.Monster &&
-                (variant.Creature.Key == "lemure" || variant.Creature.Key == "dretch" || variant.Creature.Key == "hound-archon" || variant.Creature.Key == "lantern-archon" || variant.Creature.Key == "trumpet-archon" || variant.Creature.Key == "astral-deva" || variant.Creature.Key == "bearded-devil" || variant.Creature.Key == "kyton-chain-devil" || variant.Creature.Key == "barbed-devil" || variant.Creature.Key == "bone-devil" || variant.Creature.Key == "babau" || variant.Creature.Key == "hezrou"))
-            {
-                foreach (var spawn in AlternateSummoningGraph.Objects<ContextActionSpawnMonster>(target.ComponentsArray))
-                {
-                    if (spawn.AfterSpawn == null) spawn.AfterSpawn = new ActionList();
-                    var remove = ScriptableObject.CreateInstance<ContextActionRemoveInheritedSummonTemplates>();
-                    remove.OwningBlueprint = unit;
-                    remove.NativeTemplates = (BlueprintBuff[])replacedNativeTemplateBuffs.Clone();
-                    spawn.AfterSpawn.Actions = (spawn.AfterSpawn.Actions ?? Array.Empty<GameAction>())
-                        .Concat(new GameAction[] { remove }).ToArray();
-                }
-            }
+            // behavior even when the project creature is untemplated, so these
+            // scoped creatures need the removal action; unrelated released
+            // graphs are untouched. GS-AUD-0025: the scoped set and the append
+            // now live in one place so the alternate-caller adapter applies the
+            // same rule instead of silently omitting it.
+            if (RequiresInheritedTemplateRemoval(variant.Family, variant.Creature))
+                AppendInheritedTemplateRemoval(target.ComponentsArray, unit,
+                    replacedNativeTemplateBuffs);
             // The S30 Lemure has lawful/evil subtypes. Set the actual spell
             // descriptors on this new owned route, preserving class-specific
             // native eligibility rather than imposing a global caster alignment.
