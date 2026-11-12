@@ -21,6 +21,7 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.Mechanics.Actions;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
@@ -289,6 +290,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in AltNaturalCastSelected(caster, resource, recent, summons)) yield return frame;
                 AltNaturalAssertCast(recent, tierSeven, 7);
 
+                // GS-AUD-0025 execution half. The composition observation is
+                // graph/reader evidence and says so itself; this casts an
+                // actually affected creature through the alternate caller and
+                // inspects the SPAWNED UNIT.
+                Ability tierFour = PlayerPathRootFact(caster, family, 4);
+                var inherited = new AltNaturalCast { Label = "inherited-template-removal-tier4" };
+                foreach (int frame in AltNaturalChoose(caster, tierFour,
+                    AltNaturalPick.InheritedTemplateCreature, inherited)) yield return frame;
+                foreach (int frame in AltNaturalCastSelected(caster, resource, inherited, summons))
+                    yield return frame;
+                AltNaturalAssertCast(inherited, tierFour, 4);
+                AltNaturalAssertInheritedTemplateRemoved(inherited);
+
                 foreach (int frame in AltNaturalDismiss(caster, recent)) yield return frame;
             }
             finally
@@ -348,7 +362,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private enum AltNaturalPick { FirstProjectCreature, LastRow, Tyrannosaurus }
+        private enum AltNaturalPick { FirstProjectCreature, LastRow, Tyrannosaurus,
+            InheritedTemplateCreature }
 
         private static string AltNaturalSpawnName(AbilityData data)
         {
@@ -420,6 +435,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (scroll != null) scroll.verticalNormalizedPosition = 0f;
                 for (int frame = 0; frame < 6; frame++) yield return 0;
                 chosenRow = rows.LastOrDefault();
+            }
+            else if (pick == AltNaturalPick.InheritedTemplateCreature)
+            {
+                // GS-AUD-0025. The row is identified by what its OWN graph
+                // carries - an inherited-template removal action - rather than
+                // by a creature name, so the fixture cannot drift onto an
+                // unaffected creature and still look like it passed. The
+                // offered menu itself decides which row is affected.
+                ActionBarSlot[] matches = rows.Where(row =>
+                {
+                    var data = (AbilityData)row.MechanicSlot.GetContentData();
+                    return AlternateSummoningGraph
+                        .Objects<Summoning.ContextActionRemoveInheritedSummonTemplates>(
+                            data.Blueprint.ComponentsArray).Any();
+                }).ToArray();
+                chosenRow = matches.FirstOrDefault();
+                if (chosenRow != null && !AltNaturalRowVisible(popup, chosenRow))
+                {
+                    ScrollRect scroll = popup.GetComponentInChildren<ScrollRect>(true);
+                    if (scroll != null) scroll.verticalNormalizedPosition =
+                        1f - (float)Array.IndexOf(rows, chosenRow) / Math.Max(1, rows.Length - 1);
+                    for (int frame = 0; frame < 6; frame++) yield return 0;
+                }
             }
             else if (pick == AltNaturalPick.Tyrannosaurus)
             {
@@ -504,6 +542,75 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// through the native click handler and lets native time run until
         /// the command ends and the caster's standard-action cooldown has
         /// passed.</summary>
+        /// <summary>
+        /// GS-AUD-0025 execution verification. Two halves, and both are needed:
+        ///
+        /// 1. There really was a template to remove. The cast row's own graph
+        ///    still contains the native carrier's ContextActionApplyBuff for one
+        ///    of the four native template identities - that apply action is what
+        ///    the project copies, and it is the defect's actual source. Without
+        ///    this half, a summon that never received an inherited template
+        ///    could not prove the template was removed.
+        /// 2. The spawned unit does not carry any of the four. And it still
+        ///    carries the native summon marker, so this is a real summon that
+        ///    was stripped, not a failed spawn with no buffs at all.
+        /// </summary>
+        private void AltNaturalAssertInheritedTemplateRemoved(AltNaturalCast cast)
+        {
+            var nativeIds = new HashSet<string>(
+                Blueprints.ExpandedSummoningAbilityBuilder.NativeTemplateIds,
+                StringComparer.Ordinal);
+            string[] appliedByGraph = cast.Selected == null ? new string[0] :
+                AlternateSummoningGraph.Objects<ContextActionApplyBuff>(
+                    cast.Selected.Blueprint.ComponentsArray)
+                    .Where(action => action.Buff != null &&
+                        nativeIds.Contains(action.Buff.AssetGuid))
+                    .Select(action => action.Buff.AssetGuid)
+                    .Distinct(StringComparer.Ordinal)
+                    .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            bool removalInGraph = cast.Selected != null && AlternateSummoningGraph
+                .Objects<Summoning.ContextActionRemoveInheritedSummonTemplates>(
+                    cast.Selected.Blueprint.ComponentsArray).Any();
+
+            var residual = new List<string>();
+            int markerCarriers = 0;
+            foreach (UnitEntityData unit in cast.Summoned)
+            {
+                Buff[] buffs = unit.Descriptor.Buffs.RawFacts.OfType<Buff>().ToArray();
+                if (buffs.Any(value => ReferenceEquals(value.Blueprint,
+                        BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff)))
+                    markerCarriers++;
+                foreach (Buff buff in buffs)
+                    if (buff.Blueprint != null && nativeIds.Contains(buff.Blueprint.AssetGuid))
+                        residual.Add(unit.Blueprint.name + ":" + buff.Blueprint.name);
+            }
+
+            var state = new JObject {
+                ["row"] = cast.Selected == null ? null :
+                    cast.Selected.Blueprint.AssetGuid + ":" + cast.Selected.Blueprint.name,
+                ["appliedByGraph"] = new JArray(appliedByGraph),
+                ["removalInGraph"] = removalInGraph,
+                ["summoned"] = cast.Summoned.Length,
+                ["markerCarriers"] = markerCarriers,
+                ["residualTemplates"] = new JArray(residual),
+                ["units"] = new JArray(cast.Summoned.Select(unit => unit.Blueprint.name + ":[" +
+                    string.Join(",", unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                        .Where(value => value.Blueprint != null)
+                        .Select(value => value.Blueprint.name).OrderBy(value => value,
+                            StringComparer.Ordinal).ToArray()) + "]")) };
+            AltNaturalCapture("inherited-template-removal", state);
+            AltNaturalAssert("inherited-template-removal",
+                "the cast row's graph still applies at least one of the four native template " +
+                    "buffs and carries the removal action, every spawned unit keeps the native " +
+                    "summon marker, and none of them retains any native template buff",
+                "appliedByGraph=" + appliedByGraph.Length + ";removalInGraph=" + removalInGraph +
+                    ";summoned=" + cast.Summoned.Length + ";markerCarriers=" + markerCarriers +
+                    ";residual=[" + string.Join(",", residual.ToArray()) + "]",
+                appliedByGraph.Length >= 1 && removalInGraph && cast.Summoned.Length >= 1 &&
+                    markerCarriers == cast.Summoned.Length && residual.Count == 0,
+                "the cast AbilityData's own graph; UnitDescriptor.Buffs on the spawned units");
+        }
+
         private IEnumerable<int> AltNaturalCastSelected(UnitEntityData caster,
             BlueprintAbilityResource resource, AltNaturalCast cast, List<UnitEntityData> summons)
         {
