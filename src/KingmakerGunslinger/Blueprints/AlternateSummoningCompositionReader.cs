@@ -43,6 +43,18 @@ namespace KingmakerGunslinger.Blueprints
                         new Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff[0])
                         .Select(value => value == null ? null : value.AssetGuid).ToArray()
                 };
+            // GS-AUD-0026: classified explicitly so the comparison covers the
+            // one action whose absence changes gameplay.
+            var removal = action as ContextActionRemoveInheritedSummonTemplates;
+            if (removal != null)
+                return new ComposedActionView {
+                    Kind = ComposedActionKind.TemplateRemoval,
+                    Type = action.GetType().FullName,
+                    OwningUnit = Guid(removal.OwningBlueprint),
+                    ReplacedNativeTemplateBuffs = (removal.NativeTemplates ??
+                        new Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff[0])
+                        .Select(value => value == null ? null : value.AssetGuid).ToArray()
+                };
             var alignment = action as ContextActionSetSummonAlignment;
             if (alignment != null)
                 return new ComposedActionView {
