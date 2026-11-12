@@ -169,6 +169,49 @@ namespace KingmakerGunslinger.DomainTests
             }
         }
 
+        internal static void DefaultOptionHidesOriginalBookRowsButKeepsSpecialAndForeignRows()
+        {
+            var parents = StandaloneElementalPresentationPolicy.All.Where(value => value.IsParent).ToArray();
+            var child = StandaloneElementalPresentationPolicy.All.First(value => !value.IsParent && !value.UniqueNpc);
+            string domain = parents[3].Guid;
+            var rows = new List<string> { "foreign-first", parents[0].Guid, "summon-monster-ii", child.Guid, domain,
+                StandaloneElementalPresentationPolicy.WrigglingManAbilityGuid, parents[0].Guid, "foreign-last" };
+            string[] snapshot = rows.ToArray();
+            int hidden;
+            var result = StandaloneElementalPresentationPolicy.HideOriginalBookRows(rows, value => value,
+                value => value == domain, out hidden);
+            Assertions.True(result.SequenceEqual(new[] { "foreign-first", "summon-monster-ii", domain,
+                StandaloneElementalPresentationPolicy.WrigglingManAbilityGuid, "foreign-last" }),
+                "Rank parents, element children and metamagic copies leave the book; a kept special/domain grant, the unique NPC ability and foreign rows stay in order.");
+            Assertions.Equal(3, hidden, "Exactly the three original rows are hidden.");
+            Assertions.True(rows.SequenceEqual(snapshot) && !ReferenceEquals(rows, result),
+                "Hiding returns a fresh presentation list; native known-spell data is never written.");
+            Assertions.True(parents.Length == 6 && parents.All(value => StandaloneElementalPresentationPolicy.IsOriginalSummonElemental(value.Guid)) &&
+                StandaloneElementalPresentationPolicy.All.Count(value => StandaloneElementalPresentationPolicy.IsOriginalSummonElemental(value.Guid)) == 30 &&
+                !StandaloneElementalPresentationPolicy.IsOriginalSummonElemental(StandaloneElementalPresentationPolicy.WrigglingManAbilityGuid) &&
+                !StandaloneElementalPresentationPolicy.IsOriginalSummonElemental(null),
+                "The hidden identity set is exactly the six original ranks and their 24 element children.");
+        }
+
+        internal static void DefaultOptionLearningFilterHidesEveryUnselectedOriginalRank()
+        {
+            // The runtime seam marks every unselected, unknown original row
+            // eligible (no per-list proof since 2026-11-12); the shared budget
+            // guard still keeps a mandatory choice reachable.
+            var parents = StandaloneElementalPresentationPolicy.All.Where(value => value.IsParent).Select(value => value.Guid).ToArray();
+            var original = new List<string> { "summon-monster-ii", parents[0], "glitterdust", parents[1], "web" };
+            string disposition;
+            var result = StandaloneElementalPresentationPolicy.FilterLearningRows(original, value => value,
+                Set(parents[0], parents[1]), Set(), Set(), Set(), 2, 0, true, out disposition);
+            Assertions.Equal("filtered-redundant-learning-rows", disposition, "Original rows must actually leave the learning list.");
+            Assertions.True(result.SequenceEqual(new[] { "summon-monster-ii", "glitterdust", "web" }),
+                "Only original Summon Elemental rows are removed; every other native row keeps its order.");
+            result = StandaloneElementalPresentationPolicy.FilterLearningRows(original, value => value,
+                Set(parents[1]), Set(parents[0]), Set(), Set(), 1, 0, true, out disposition);
+            Assertions.True(result.Contains(parents[0]) && !result.Contains(parents[1]),
+                "A pending original selection stays visible so the native list can still change it.");
+        }
+
         private static HashSet<string> Set(params string[] values)
         { return new HashSet<string>(values, StringComparer.Ordinal); }
 

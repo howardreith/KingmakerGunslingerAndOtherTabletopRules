@@ -57,20 +57,6 @@ namespace KingmakerGunslinger.Summoning
         internal static T NativeDebitPreparation<T>(IEnumerable<T> nativeOrder,Func<T,bool> available,Func<T,bool> matches) where T:class
         {return nativeOrder.LastOrDefault(value=>value!=null && available(value) && matches(value));}
 
-        internal static bool SourcesRemainEligible<T>(IEnumerable<T> sources,Func<T,bool> eligible) where T:class
-        {return sources.All(eligible);}
-        internal static List<T> ProjectOriginalSources<T>(IEnumerable<T> original,IEnumerable<T> sources,T header,bool expanded,
-            Func<T,bool> selected,Func<T,bool> eligible=null) where T:class
-        {
-            var exact=sources.Where(value=>eligible==null || eligible(value)).ToArray();var rows=new List<T>();bool inserted=false;
-            foreach(var row in original)
-            {
-                bool source=exact.Any(value=>ReferenceEquals(value,row));
-                if(source && !inserted){rows.Add(header);inserted=true;}
-                if(!source || expanded || selected(row))rows.Add(row);
-            }
-            return rows;
-        }
         internal static int SourceRank(string guid)
         {
             var spec=StandaloneElementalPresentationPolicy.All.FirstOrDefault(value=>value.IsParent &&
@@ -110,58 +96,6 @@ namespace KingmakerGunslinger.Summoning
         { return Capital(Rank(rank).CreatureKeys[0].Split('-')[0]) + " (" + rank + ")"; }
         private static string Capital(string value)
         { return char.ToUpperInvariant(value[0]) + value.Substring(1); }
-    }
-
-    // Source-aware transient visibility ownership, shared by native learning
-    // and preparation disclosures. The row object is never replaced.
-    internal sealed class ElementalRowVisibilityLease<T> where T:class
-    {
-        internal sealed class Row
-        {
-            internal T Native;
-            internal string ParentGuid;
-            internal Func<bool> Current,Selected,Visible;
-            internal Action<bool> SetVisible;
-            internal bool Original,Last,Written;
-        }
-        private readonly Row[] _rows;
-        internal int Count { get { return _rows.Length; } }
-        internal ElementalRowVisibilityLease(IEnumerable<Row> rows)
-        {
-            _rows=rows.Where(value=>value.Native!=null && ElementalSourceChooserPolicy.Parent(value.ParentGuid)!=null &&
-                value.Current() && value.Visible()).ToArray();
-            foreach(var row in _rows)row.Original=row.Last=row.Visible();
-        }
-        internal void Apply(bool expanded)
-        {
-            if(_rows.Any(value=>!value.Current()))throw new InvalidOperationException("Native source row generation changed.");
-            try
-            {
-                foreach(var row in _rows)
-                {
-                    bool visible=expanded || row.Selected();
-                    if(row.Visible()==visible)continue;
-                    // A later writer changing our last value is not erased.
-                    if(row.Written && row.Visible()!=row.Last)throw new InvalidOperationException("Native source visibility has another owner.");
-                    row.Last=visible;row.Written=true;row.SetVisible(visible);
-                }
-            }
-            catch { Release();throw; }
-        }
-        internal void Release()
-        {
-            var errors=new List<Exception>();
-            foreach(var row in _rows)
-            {
-                try
-                {
-                    if(row.Written && row.Current() && row.Visible()==row.Last)
-                    {row.SetVisible(row.Original);row.Written=false;}
-                }
-                catch(Exception error){errors.Add(error);}
-            }
-            if(errors.Count!=0)throw new AggregateException("Native row visibility restoration failed.",errors);
-        }
     }
 
     internal sealed class ElementalInvocationContextSnapshot
