@@ -1128,28 +1128,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var button = rows.Buttons[index];
                 var native = rows.Natives[index];
                 string warning = native == null ? "<no native control>" : native.DisableWarningMessage;
-                var enabledWarnings = Enumerable.Range(0, rows.Actions.Count)
+                // Rankable control rows, if the panel happens to contain any.
+                // The first run of this stage recorded rows=1 and enabledRows=0,
+                // so this set was EMPTY and an All(...) over it was vacuously
+                // true while the assertion text claimed those rows "stay
+                // interactable with no reason". Both the interactable value and
+                // the warning are captured now, and the claim below is scoped
+                // to what is actually checked.
+                int[] rankableRows = Enumerable.Range(0, rows.Actions.Count)
                     .Where(value => value != index && rows.Actions[value].ReaderResolved &&
-                        rows.Natives[value] != null)
+                        rows.Natives[value] != null).ToArray();
+                string[] enabledWarnings = rankableRows
                     .Select(value => rows.Natives[value].DisableWarningMessage ?? "").ToArray();
+                int rankableNotInteractable = rankableRows
+                    .Count(value => !rows.Buttons[value].interactable);
                 CaptureTeleportScrolls("unrankable-reader-row", new {
                     key = unranked.Key, readerResolved = unranked.ReaderResolved,
                     interactable = button.interactable, warning,
-                    rows = rows.Actions.Count, enabledRows = enabledWarnings.Length,
+                    rows = rows.Actions.Count, enabledRows = rankableRows.Length,
+                    rankableNotInteractable,
                     diagnostic = unranked.Source.ActivationChance == null ? null :
                         unranked.Source.ActivationChance.Diagnostic });
                 ScrollsAssert("unrankable-reader-row-offered-but-disabled",
                     "TeleportScrollReaderPolicy.Select fails closed on a real native AbilityScoreCheckBonus " +
                         "configured for Use Magic Device: usable readers with no rankable best one keep their visible row, which is made " +
-                        "non-interactable and carries a reason naming no party member, while every " +
-                        "still-rankable row in the same panel stays interactable with no reason",
+                        "non-interactable and carries a reason naming no party member. Any rankable " +
+                        "row that happens to share the panel must stay interactable with no reason - " +
+                        "the count is reported, and this panel may legitimately contain none, in " +
+                        "which case that half of the claim is vacuous and the reported enabledRows " +
+                        "says so",
                     "readerResolved=" + unranked.ReaderResolved + ";interactable=" + button.interactable +
                         ";warning=" + (string.IsNullOrEmpty(warning) ? "<empty>" : "set") +
-                        ";enabledRowsWithWarning=" + enabledWarnings.Count(value => value.Length > 0),
+                        ";enabledRows=" + rankableRows.Length +
+                        ";enabledRowsWithWarning=" + enabledWarnings.Count(value => value.Length > 0) +
+                        ";rankableNotInteractable=" + rankableNotInteractable,
                     !unranked.ReaderResolved && !button.interactable && native != null &&
                         !string.IsNullOrEmpty(warning) &&
                         !party.Any(value => warning.Contains(value.CharacterName)) &&
-                        enabledWarnings.All(value => value.Length == 0));
+                        enabledWarnings.All(value => value.Length == 0) &&
+                        rankableNotInteractable == 0);
 
                 int stockBefore = TeleportationScrollAdapter.Stock(player.Party, scroll);
                 var contextBefore = Game.Instance.Rulebook.Context;
