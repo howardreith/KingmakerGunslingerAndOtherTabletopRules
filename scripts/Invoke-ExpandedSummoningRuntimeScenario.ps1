@@ -73,6 +73,18 @@ if ($StageFeatureModulesReadOnly -and [string]::IsNullOrEmpty($StageFeatureModul
 if ($StageFeatureModulesPath -and -not (Test-Path -LiteralPath $StageFeatureModulesPath -PathType Leaf)) {
     throw "Staged FeatureModules.json is missing: $StageFeatureModulesPath"
 }
+# Staging a settings fixture and then not asking for the migration expectations
+# is always a mistake: the observation would not run and the scenario would pass
+# on its other gates, which is exactly what happened on the first attempt. Refuse
+# it rather than let a silent no-op look like evidence.
+if ($StageFeatureModulesPath -and -not (
+        $ScenarioParameters.ContainsKey('expectedSettingsSource') -and
+        $ScenarioParameters.ContainsKey('expectedMigrationWriteFailed') -and
+        $ScenarioParameters.ContainsKey('expectedRecovered'))) {
+    throw ('-StageFeatureModulesPath requires the expectedSettingsSource, ' +
+        'expectedMigrationWriteFailed and expectedRecovered scenario parameters, ' +
+        'otherwise the staged migration is never observed.')
+}
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 
 # The orchestration decisions - which evidence belongs to this run, how the

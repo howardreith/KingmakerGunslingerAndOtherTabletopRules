@@ -3045,6 +3045,19 @@ function New-KmgRuntimeRequest {
             if($Parameters.ContainsKey('sprint40DiagnosticRecovery')){
                 $moduleParameters.sprint40DiagnosticRecovery = $true
             }
+            # GS-AUD-0007 staged acceptance. This projection rebuilds the
+            # request parameters from an explicit list, so a key absent here is
+            # DROPPED SILENTLY no matter what the validators accept - which is
+            # how the first staged run produced 45 passing assertions while the
+            # observation it was for never ran at all.
+            if($Parameters.ContainsKey('expectedSettingsSource')){
+                $moduleParameters.expectedSettingsSource =
+                    [string]$Parameters.expectedSettingsSource
+                $moduleParameters.expectedMigrationWriteFailed =
+                    [bool]$Parameters.expectedMigrationWriteFailed
+                $moduleParameters.expectedRecovered =
+                    [bool]$Parameters.expectedRecovered
+            }
             $moduleParameters
         } elseif ($Scenario -ceq 'observe-expanded-summoning-module-boundary') {
             [ordered]@{ expandedSummoning = [bool]$Parameters.expandedSummoning }
