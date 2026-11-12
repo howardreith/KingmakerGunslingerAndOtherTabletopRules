@@ -323,6 +323,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (caster != null && !caster.Destroyed)
                     try { caster.Commands.InterruptAll(); }
                     catch (Exception error) { _altNaturalDiagnostics.Add("command cleanup: " + error.Message); }
+                // An affected creature is the first summon in this scenario
+                // that brings AURAS with it - the hound archon carries a magic
+                // circle against evil and Archon's Menace - and destroying a
+                // unit does not end the areas it spawned. Attribute them while
+                // their casters are still alive.
+                var ourUnitIds = new HashSet<string>(summons.Select(value => value.UniqueId));
+                if (caster != null) ourUnitIds.Add(caster.UniqueId);
+                var endedAreas = new List<string>();
+                foreach (AreaEffectEntityData area in game.State.AreaEffects.All
+                    .Except(areas).ToArray())
+                {
+                    UnitEntityData source = area.Context == null ? null : area.Context.MaybeCaster;
+                    if (source == null || !ourUnitIds.Contains(source.UniqueId)) continue;
+                    endedAreas.Add(area.Blueprint.name + ":attributed");
+                    area.ForceEnd();
+                }
                 foreach (UnitEntityData unit in summons)
                     if (!unit.Destroyed) CleanupExpandedSummoningUnit(unit);
                 foreach (UnitEntityData unit in game.State.Units.All.Except(units).ToArray())
@@ -341,6 +357,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 game.EntityDestroyer.Tick();
                 game.EntityDestroyer.Tick();
+                // Anything still new after that lost its caster when the unit
+                // went. It can only be ours: this fixture creates the only new
+                // units in the run, which the extraUnits census re-checks
+                // independently. Each one is named rather than quietly swept.
+                foreach (AreaEffectEntityData area in game.State.AreaEffects.All
+                    .Except(areas).ToArray())
+                {
+                    endedAreas.Add(area.Blueprint.name + ":orphaned");
+                    area.ForceEnd();
+                }
+                game.EntityDestroyer.Tick();
                 if (prototype != null) UnityEngine.Object.Destroy(prototype);
                 player.InvalidateCharacterLists();
                 player.UpdateCharacterLists();
@@ -358,6 +385,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["extraAreas"] = new JArray(extraAreas.Select(value => value.Blueprint.name)),
                     ["party"] = player.Party.SequenceEqual(party),
                     ["gameTimeAdvancedSeconds"] = (game.Player.GameTime - time).TotalSeconds,
+                    ["endedAreas"] = new JArray(endedAreas),
                     ["saveWriteObserved"] = _workingSaveSmoke.WriteObserved });
                 AltNaturalAssert("cleanup",
                     "the disposable summoner and every summon are gone; the original units, areas and party are unchanged; nothing was saved (native time advanced while unpaused, by design)",
@@ -606,14 +634,50 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Select(value => value.Blueprint.name).OrderBy(value => value,
                             StringComparer.Ordinal).ToArray()) + "]")) };
             AltNaturalCapture("inherited-template-removal", state);
+            // GS-AUD-0025, corrected by this cast. The first run of this
+            // observation measured appliedByGraph=0 on
+            // KMG_Summoning_Adapter_MasterSummoner_Tier4_HoundArchon_One - an
+            // affected creature, chosen by the removal action its own graph
+            // carries - and the spawned hound archon held no native template.
+            //
+            // So the alternate-caller child does not copy the native Summon
+            // Monster carrier at all; it is built from the alternate caller's
+            // own host template, which applies no celestial/fiendish buff
+            // anywhere in its graph. There is nothing on this path to inherit,
+            // and therefore nothing for the removal to strip. The finding's
+            // description - "an alternate caller's untemplated Summon Monster
+            // child kept the donor's template" - is NOT reproducible here.
+            //
+            // That makes the repair behaviour-neutral on the path it touches,
+            // which is worth knowing before merging rather than after: the
+            // summon was clean before the removal was added and is clean now.
+            // Its value is that the two paths can no longer diverge, so if the
+            // adapter ever starts copying a templated carrier the rule is
+            // already there.
+            //
+            // The assertion therefore pins what was measured instead of
+            // claiming a proof it cannot give. appliedByGraph is REQUIRED to be
+            // 0: if it ever becomes non-zero the adapter has started inheriting
+            // a template, the removal becomes load-bearing, and this fails so
+            // that someone looks. The product guarantee - a clean spawned unit
+            // that is still a real summon - is asserted hard and unchanged.
+            //
+            // It does NOT discharge an execution proof of removal efficacy.
+            // That can only come from the canonical ordinary-spell path, where
+            // inherited-template-removal-set-is-derived shows the apply really
+            // is present; it is queued, not claimed.
             AltNaturalAssert("inherited-template-removal",
-                "the cast row's graph still applies at least one of the four native template " +
-                    "buffs and carries the removal action, every spawned unit keeps the native " +
-                    "summon marker, and none of them retains any native template buff",
+                "the affected adapter child carries the removal action bound to its own unit, " +
+                    "every spawned unit keeps the native summon marker, and none retains a " +
+                    "native template buff. appliedByGraph is pinned at 0: the alternate-caller " +
+                    "path copies the caller's host template, not the native carrier, so it " +
+                    "inherits no template and the removal is a no-op here - this records that " +
+                    "the change is behaviour-neutral on this path and does NOT prove removal " +
+                    "efficacy, which only the canonical path can show",
                 "appliedByGraph=" + appliedByGraph.Length + ";removalInGraph=" + removalInGraph +
                     ";summoned=" + cast.Summoned.Length + ";markerCarriers=" + markerCarriers +
                     ";residual=[" + string.Join(",", residual.ToArray()) + "]",
-                appliedByGraph.Length >= 1 && removalInGraph && cast.Summoned.Length >= 1 &&
+                appliedByGraph.Length == 0 && removalInGraph && cast.Summoned.Length >= 1 &&
                     markerCarriers == cast.Summoned.Length && residual.Count == 0,
                 "the cast AbilityData's own graph; UnitDescriptor.Buffs on the spawned units");
         }
