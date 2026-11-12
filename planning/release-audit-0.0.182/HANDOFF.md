@@ -8,10 +8,10 @@ Everything below was actually executed in this campaign unless marked **not run*
 ```
 C:\Dev\KingmakerGunslingerLab\audits\KMG-AUD-20261111T170737Z\
   AUDIT-SUMMARY.md        read this first — standalone
-  AUDIT-FINDINGS.md       47 records, GS-AUD-0001..0047 (0027 and 0030 WITHDRAWN).
-                          NOT 47 defects - 6 active S2; read each entry's evidence strength
-  AUDIT-OUTCOMES.md       19 append-only events, EV-000001..EV-000019
-  AUDIT-COVERAGE.tsv      all 57 rows dispositioned
+  AUDIT-FINDINGS.md       48 records, GS-AUD-0001..0048 (0027 and 0030 WITHDRAWN).
+                          NOT 48 defects - 6 active S2; read each entry's evidence strength
+  AUDIT-OUTCOMES.md       21 append-only events, EV-000001..EV-000021
+  AUDIT-COVERAGE.tsv      all 59 rows dispositioned (57 planned + COV-058/059 added)
   AUDIT-RESTORATION.md    intake baseline + every transaction
   AUDIT-STATE.json        durable checkpoint, immutable deadline
   AUDIT-EVIDENCE-INDEX.tsv 23 retained artifacts with SHA-256
@@ -113,9 +113,15 @@ Read `AUDIT-SUMMARY.md` revision note first. In short:
    established. The worthwhile check is a disposable scenario asserting
    `Attacks[0].AttackRoll.AttackBonusPenalty == 2` (positive two), which would also pin the sign
    by behaviour instead of by the constant's literal value.
-0b. **GS-AUD-0044 — Dead Shot audio commits.** Re-run `disposable-firearm-wwise-audio` with the
-   committed-discharge counter logged as an explicit before/after pair, so the delta is recorded
-   rather than inferred from the `:N` diagnostic suffix.
+0b. **GS-AUD-0047 — the unresolved rig assertion.** Re-run
+   `disposable-firearm-visual-rigs` with `pistol-authored-marker-contract`'s three
+   sub-conditions (marker count, +Z muzzle, support IK) reported separately, and with the
+   item-binding predicate evaluated **independently of the 14-item count** so the
+   short-circuit cannot suppress it. **GS-AUD-0044 needs no investigation re-run** — its
+   diagnostic already prints an explicit `deadAfter - deadBefore` subtraction and eleven is
+   correct for the eleven volleys sampled; it needs the harness corrected to a per-volley
+   invariant.
+
 1. **Firearm cold-load token survival** (GS-AUD-0021) — load a firearm, damage it to Broken,
    save, **exit to desktop**, relaunch, reload, inspect rounds + degradation. One disposable
    save, one cold restart. This is the largest hole in the evidence.

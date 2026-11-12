@@ -56,8 +56,10 @@ never scheduled does not make the audit complete**. The explicit remaining queue
 > - **Scatter trace finished.** The clamping caveat is closed: no clamp exists anywhere on the
 >   penalty path, so the +2 / 4-point swing is established rather than inferred.
 > - **A20 was not human-only.** Three machine-observable presentation/audio scenarios were
->   admissible all along. Running them produced three native FAILs — all three of which
->   revision 4 then had to reclassify as stale assertions rather than product defects.
+>   admissible all along. Running them produced three native FAILs. Revision 4 reclassified
+>   all three as **stale assertions** rather than product defects — but **GS-AUD-0047**, the
+>   `pistol-authored-marker-contract` failure inside the visual-rig scenario, remains an
+>   **unresolved structural failure**, not a stale pin.
 >
 > ### Revision 2 — what the first owner review changed
 >
@@ -119,7 +121,7 @@ are unproven on this candidate.
 
 | ID | Sev | Kind | Problem | Evidence |
 |---|---|---|---|---|
-| **GS-AUD-0039** | **S2** | product | **Scatter Shot's documented −2 attack penalty is applied as a +2 bonus** — a 4-point swing on every scatter attack. `AttackBonusPenalty` is *subtracted* by the engine, so the `-2` constant is a bonus. Six other KMG sites write penalties as `+n`; scatter is the only one passing a negative. | source + **engine IL measured** |
+| **GS-AUD-0039** | **S2** | product | **Scatter Shot's documented −2 attack penalty is applied as a +2 bonus** — a 4-point swing on every scatter attack. `AttackBonusPenalty` is *subtracted* by the engine, so the `-2` constant is a bonus. Six other KMG sites write penalties as `+n`; Scatter and Dead Shot (GS-AUD-0048) are the only two passing a negative. | source + **engine IL measured** |
 | **GS-AUD-0006** | **S2** | product | A **failed settings-migration write** misclassifies a valid older `FeatureModules.json` as malformed and **resets all 13 modules to ON**, repeating every launch. Applies to any player whose schema is older than 12. | source |
 | **GS-AUD-0048** | **S2** | product | **Dead Shot's iterative probes receive +5/+10 bonuses instead of −5/−10 penalties** — the same sign error as GS-AUD-0039. A complete sweep shows these are the **only two** negative-penalty production sites. *(Found by the rev-3 review.)* | source + **engine IL measured** |
 | GS-AUD-0040 | S3 | doc | Shield Other's shipped **description** is stale. The distance-independent bond is the **approved** contract (`EXPANDED-SUMMONING-MISSION.md:71`); the code and the regression test are correct. *(Reclassified in rev 3 — not an owner decision.)* | source |
@@ -174,7 +176,8 @@ across seven traced triggers, and 36 further rows — all with file:line.
 | **A21** performance / repeated use | NOT_RUN | core candidate and restoration are valid, so it is admissible |
 | **27 of 28 module boundary states** | NOT_RUN | one state (all 13 ON) was observed, PASS 47/47 |
 | **COV-040** elemental appearance/equipment/motion | NOT_RUN | admissibility never assessed — and the *firearm* equivalents proved admissible |
-| **GS-AUD-0044 / 0047** | need one re-run | with the diagnostics instrumented to report the failing sub-condition |
+| **GS-AUD-0047** | needs one re-run | with the `pistol-authored-marker-contract` sub-conditions reported separately, so the structural failure can be attributed |
+| **GS-AUD-0045 / 0046 residue** | need one re-run | with the item-binding predicate and the policy-enchantment condition evaluated **independently of the counts**, so a count drift cannot suppress them |
 
 **Genuinely blocked, with the prerequisite named:**
 
@@ -193,7 +196,7 @@ across seven traced triggers, and 36 further rows — all with file:line.
 | **The incident** (GS-AUD-0003/0024) | Attribution impossible without it | The original `output_log.txt` |
 | **Summon roster presentation / audio / performance** (A09, A21, COV-027) | **Never attempted** — not blocked. The *firearm* presentation and audio scenarios were run (COV-058/059); the *summoning* ones were never assessed | Dedicated native sessions |
 | **A22** upgrade/persistence | genuinely **blocked** | a legitimate older save fixture |
-| `observe-feature-module-settings` | Would close the native 13-module boundary | Build the 13 Boolean parameters from the catalogue |
+| **27 of the 28 module boundary configurations** | `observe-feature-module-settings` has **already been run** (PASS 47/47, all 13 modules ON). The remaining 27 states and the coupled OFF/ON pairs are what is unrun | Generate them from `Get-KmgFeatureModuleConfigurations -Boundary` and run selected states |
 | **Better Vendors real merchants** (COV-051) | Declared BLOCKED | A kingdom-stage fixture |
 | **Nereid / Treacherous Earth** (GS-AUD-0020) | Owner-**waived** — a waiver is a gap | Admitted native runs |
 
@@ -209,7 +212,7 @@ expanded-summoning row COV-027, which is restored to `NOT_RUN`. No row is `NOT_A
 
 ## 8. Machine state
 
-**Fully restored and independently verified after every one of the eleven transactions.**
+**Fully restored and independently verified after every one of the fifteen transactions.**
 
 `KMG DLL (0.0.117) · FeatureModules.json · KMG_Firearms.bnk · UMM Params.xml · Assembly-CSharp.dll — ALL MATCH`
 

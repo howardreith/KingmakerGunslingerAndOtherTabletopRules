@@ -26,6 +26,16 @@ No fix was implemented, nothing was merged or published, and no save was opened 
 > gaps. **Active S2 count: 6.** Do not use it as a repair backlog without reading each entry's
 > evidence strength.
 
+Revision 5 is a **bounded documentation reconciliation only** — no finding, severity or
+disposition changed. The rev-4 review accepted every corrected finding body and found no new
+false positive, but the indexes, coverage explanations and next-action sections still carried the
+superseded conclusions. The consequential one: both the `GS-AUD-0046` index row and `COV-005`
+still implied the **12-enchantment expectation was wrong**, when 12 is correct — a repair agent
+reading only the index could have changed an already-correct guard. Also fixed: an obsolete audio
+re-run instruction, a settings row listing work that has since been run, two places still calling
+Scatter the only negative-penalty site, stale inventory counts, and a wording error in
+`GS-AUD-0048` that conflated an attack bonus with a hit probability.
+
 Corrected in revision 4:
 
 - **`GS-AUD-0044` (Dead Shot audio) — RECLASSIFIED S2 → S3 harness.** **Eleven notifications are
@@ -102,7 +112,7 @@ The correction is kept visible rather than edited away: see the banner at the to
 
 Kept local as private campaign evidence, per the audit's own evidence rules:
 
-- the append-only outcomes journal (20 events, ~130 KB of machine-local receipts, run IDs and
+- the append-only outcomes journal (21 events, ~130 KB of machine-local receipts, run IDs and
   deployment manifests)
 - the evidence index, with hashes and paths of machine-local artifacts
 - raw `output_log.txt` captures, runtime result JSON, worker reports, the campaign's bounded
