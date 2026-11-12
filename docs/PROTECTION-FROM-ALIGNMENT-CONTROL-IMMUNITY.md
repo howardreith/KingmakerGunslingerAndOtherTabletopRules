@@ -191,6 +191,8 @@ immune.
 | `Charm` | `9dc29118addce3d48ae9b92be953b5b4` | Buff | Vanilla | Authoritative faction-changing charm terminal | Yes | Yes |
 | `KMG.Summoning.Special.Succubus.Dominate` | `1662d63944d94cdeaa62562dc9ac9349` | Ability | Gunslinger | Expanded Summoning Succubus domination | Yes | Yes |
 | `KMG.Summoning.Special.Succubus.Domination` | `6e1f6eb3e773451dbda9e0ecd07486d9` | Buff | Gunslinger | Direct faction-changing terminal | Yes | Yes |
+| `KMG.Summoning.FeyCelestial.CharmBuff` | `caeb18d9d99d449a84001ae129cfd82a` | Buff | Gunslinger | Sprint 32 source-bound private native Charm faction-changing terminal, the same class of effect as the vanilla `Charm` row above | Yes | Yes |
+| `KMG.Summoning.FeyCelestial.SuggestionBuff` | `6635bf9bc37c4bbe9f52fc0a71c5d7f0` | Buff | Gunslinger | Sprint 32 Suggestion presence marker. **Registered today, but see the open question below: on the exclusion rule as written this entry looks wrong.** | Yes | Yes |
 | `ControlUndeadAbility` | `998469fa09314fd687b4ffa051a95c59` | Ability | Call of the Wild | Creator controls undead target | No | Yes locally; optional runtime |
 | `ControlUndeadBuff` | `21d20a30b93e4ae281a6d70d9ae1a64d` | Buff | Call of the Wild | Faction-changing terminal | No | Yes locally; optional runtime |
 | `ControlConstructAbility` | `efec86b954ff42e99893d55f99e51a5e` | Ability | Call of the Wild | Creator controls construct target | No | Yes locally; optional runtime |
@@ -227,6 +229,41 @@ one-command hostile compulsions, and other effects that do not let the creator
 direct, possess, or faction-convert the victim. Call of the Wild's Infectious
 Charms propagation markers and Dominate Arcane Eye infrastructure are also not
 control terminals.
+
+### Open question: does Sprint 32 Suggestion belong here? (GS-AUD-0041)
+
+This table and the shipped catalog disagreed: the catalog carries **23**
+entries and this table listed **21**, missing
+`KMG.Summoning.FeyCelestial.CharmBuff` and
+`KMG.Summoning.FeyCelestial.SuggestionBuff`. Both are now listed above so the
+table matches what ships.
+
+Charm is straightforward — it is a faction-changing terminal, the same class of
+effect as the vanilla `Charm` row, so it belongs.
+
+**Suggestion is not settled, and the registration looks inconsistent with the
+exclusion rule immediately above.** What the code actually does:
+
+- `KMG.Summoning.FeyCelestial.SuggestionBuff` carries exactly one component,
+  `Sprint32SuggestionPresence`. It is a **presence marker** whose job is to stop
+  an older save retaining an active suggestion; it imposes no control itself.
+- The effect comes from **CowWithHat's Custom Spells**, and the ability's own
+  shipped description calls it that mod's *"avoid-combat Suggestion
+  adaptation"*. The Satyr and Lillend abilities are `Hidden`, `Close` range,
+  enemy-targeted.
+- So the imposed behaviour is a **single fixed instruction — avoid combat**. It
+  does not let the creator direct, possess, or faction-convert the victim.
+
+On the rule as written, that is a one-command compulsion of the kind this
+document explicitly excludes, and its own catalog reason says as much:
+*"imposes the provider's fixed avoid-combat instruction"*.
+
+**No behaviour was changed.** Removing the entry would withdraw Protection from
+Alignment's immunity to this Suggestion, which is a gameplay change, and the
+repository holds no owner decision either way — the Sprint 32 records settle
+only Suggestion's *availability* (conditional on CowWithHat's Custom Spells),
+not whether it is a control effect. The entry therefore stays registered and
+the question is recorded for the owner rather than resolved here.
 
 ## Initialization diagnostics
 
