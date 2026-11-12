@@ -277,6 +277,10 @@ namespace KingmakerGunslinger.Spells.Teleportation
         private static float NativeLineHeight;
         internal IReadOnlyList<WorldMapPointSpellAction> Actions { get { return _rows.Select(value => value.Action).ToArray(); } }
         internal IReadOnlyList<Button> Buttons { get { return _rows.Select(value => value.Button).ToArray(); } }
+        /// <summary>GS-AUD-0035: the same controls as <see cref="Buttons"/>
+        /// where they are native ButtonPF, which is what carries
+        /// DisableWarningMessage. Observation only.</summary>
+        internal IReadOnlyList<ButtonPF> Natives { get { return _rows.Select(value => value.Native).ToArray(); } }
 
         internal static TeleportDestinationRows Create(GlobalMapMessageBox panel, CanvasGroup dialog, Button donor,
             IReadOnlyList<WorldMapPointSpellAction> actions)
