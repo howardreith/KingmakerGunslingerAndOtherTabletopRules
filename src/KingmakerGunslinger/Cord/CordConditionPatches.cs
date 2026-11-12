@@ -109,8 +109,22 @@ namespace KingmakerGunslinger.Cord
             // policy instead of being re-implemented here, so the tests that
             // cover CordSubstitutionPolicy cover what actually runs. The roll
             // itself stays here because it is an engine rule event.
+            //
+            // HPLeft is clamped at zero to keep this refactor exactly
+            // behaviour-preserving. The previous inline form was
+            // Math.Min(roll, Math.Max(0, HPLeft - 1)), so a non-positive
+            // HPLeft - which Kingmaker does produce for a dying or unconscious
+            // unit - yielded zero damage and returned early. The policy instead
+            // fails closed on a negative currentHitPoints, which is the right
+            // contract for a domain caller but would throw out of this Harmony
+            // patch on UnitState.AddCondition, inside an engine callback. I did
+            // not establish whether fatigue or exhaustion can actually reach
+            // this path at negative HP, so the safe reading is to preserve the
+            // old zero-damage outcome rather than rely on it being unreachable.
+            // Zero and one HP already produce zero damage through the policy's
+            // own HP-minus-one cap, so clamping changes nothing above zero.
             CordSubstitutionDecision decision = CordSubstitutionPolicy.Decide(
-                true, condition, roll, state.Owner.Unit.HPLeft);
+                true, condition, roll, Math.Max(0, state.Owner.Unit.HPLeft));
             int amount = decision.Damage;
             _lastRoll = roll;
             _lastAppliedDamage = 0;
