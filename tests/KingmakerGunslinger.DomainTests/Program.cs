@@ -1560,6 +1560,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("alternate-summoning.natural-verdict-group-bounds", AlternateSummoningNaturalVerdictTests.OutOfRangeGroupFails),
             Case("alternate-summoning.natural-verdict-assistance-and-accounting", AlternateSummoningNaturalVerdictTests.AssistanceAndAccountingFail),
             Case("alternate-summoning.natural-verdict-count-modifiers", AlternateSummoningNaturalVerdictTests.NativeCountModifiersAreExplicit),
+            Case("alternate-summoning.composition-missing-template-removal", AlternateSummoningCompositionTests.MissingTemplateRemovalFails),
+            Case("alternate-summoning.composition-template-removal-identity", AlternateSummoningCompositionTests.TemplateRemovalIdentityIsCompared),
             Case("alternate-summoning.composition-alignment-mode", AlternateSummoningCompositionTests.ChangedAlignmentModeFails),
             Case("alternate-summoning.composition-replaced-buffs", AlternateSummoningCompositionTests.ChangedReplacementBuffsFail),
             Case("alternate-summoning.composition-template-reference", AlternateSummoningCompositionTests.ChangedTemplateReferenceFails),

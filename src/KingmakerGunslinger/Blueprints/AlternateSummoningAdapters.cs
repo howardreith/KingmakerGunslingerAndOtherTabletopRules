@@ -509,7 +509,7 @@ namespace KingmakerGunslinger.Blueprints
                 BlueprintAbility target = shell(choice.Symbol);
                 if (choice.Kind == AlternateSummoningChoiceKind.Creature)
                     ConfigureCreature(target, template, owner.Root, choice, canonical,
-                        access);
+                        lookup, access);
                 else
                     ConfigureNative(target, template, owner.Root, choice, canonical,
                         lookup, access);
@@ -612,6 +612,7 @@ namespace KingmakerGunslinger.Blueprints
         private static void ConfigureCreature(BlueprintAbility target,
             BlueprintAbility template, BlueprintAbility root,
             AlternateSummoningChoice choice, ExpandedSummoningBlueprintSet canonical,
+            Func<string, BlueprintScriptableObject> lookup,
             BlueprintUnitFactAccess access)
         {
             SummonVariantSpec placement = choice.Placement;
@@ -652,6 +653,17 @@ namespace KingmakerGunslinger.Blueprints
                 int spawns = ExpandedSummoningAbilityBuilder.ReplaceSpawnUnits(
                     target.ComponentsArray, unit);
                 if (spawns < 1) throw Mismatch(choice, "no-spawn");
+                // GS-AUD-0025: the canonical ordinary spell strips the native
+                // carrier's inherited celestial/fiendish template for this
+                // scoped set of untemplated Summon Monster creatures. This
+                // branch previously omitted it, so an alternate caller's child
+                // kept a template the ordinary spell removes. Same shared rule,
+                // so the two paths cannot diverge again.
+                if (ExpandedSummoningAbilityBuilder.RequiresInheritedTemplateRemoval(
+                        placement.Family, placement.Creature))
+                    ExpandedSummoningAbilityBuilder.AppendInheritedTemplateRemoval(
+                        target.ComponentsArray, unit,
+                        ExpandedSummoningAbilityBuilder.ResolveNativeTemplateBuffs(lookup));
                 if (alignments.Length > 0)
                 {
                     SummonAlignmentMode mode = alignments[0].Mode;
