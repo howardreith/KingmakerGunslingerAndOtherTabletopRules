@@ -42,11 +42,28 @@ namespace KingmakerGunslinger.Blueprints
         internal static IReadOnlyList<string> NativeTemplateIds { get { return Array.AsReadOnly(NativeMonsterTemplateBuffs); } }
 
         /// <summary>
-        /// The Summon Monster creatures whose native carrier still applies a
-        /// celestial/fiendish template after spawn even though the project
-        /// creature is untemplated. Exactly these need the explicit removal
-        /// action. Every one of them is monsterTemplated=false in
-        /// ExpandedSummoningCatalog, so they take the untemplated path.
+        /// The DECLARED set of Summon Monster creatures given the explicit
+        /// inherited-template removal action. Every one is
+        /// monsterTemplated=false in ExpandedSummoningCatalog, so they take the
+        /// untemplated path.
+        ///
+        /// It is a declaration, NOT a measurement, and GS-REP-0002 records that
+        /// it disagrees with the installed library in both directions. Do not
+        /// read this list as "the creatures whose native carrier applies a
+        /// template" - that is what it was previously documented as, and the
+        /// per-placement observation
+        /// inherited-template-removal-wiring-per-placement reports a different
+        /// population. The discrepancy is pre-existing on master and is not
+        /// resolved here.
+        ///
+        /// The intended behaviour is not in doubt and is already executable:
+        /// SummonCreatureSpec.TemplatePolicy maps monsterTemplated=false to
+        /// SummonTemplatePolicy.None for every creature in the Summon Monster
+        /// roster, which ExpandedSummoningCatalogTests
+        /// .AlignmentPoliciesAreFamilyScoped asserts across the whole catalog.
+        /// So an untemplated creature is meant to receive no celestial or
+        /// fiendish template; what is open is when to correct this list and
+        /// whether any creature is a deliberate exception.
         /// </summary>
         private static readonly string[] InheritedTemplateRemovalCreatures = {
             "lemure", "dretch", "hound-archon", "lantern-archon",
@@ -58,9 +75,18 @@ namespace KingmakerGunslinger.Blueprints
         /// GS-AUD-0025: the one scoped rule for inherited-template removal.
         /// The canonical ordinary-spell builder and the alternate-caller
         /// adapter must agree, and previously only the canonical builder
-        /// applied it, so an alternate caller's untemplated Summon Monster
-        /// child kept the donor's template. Keeping the set here means the two
-        /// paths cannot diverge again.
+        /// applied it. Keeping the set here means the two paths cannot diverge
+        /// again.
+        ///
+        /// The finding's stated consequence - that an alternate caller's
+        /// untemplated child therefore "kept the donor's template" - is
+        /// WITHDRAWN and must not be repeated. Casting an affected adapter
+        /// child measured appliedByGraph=0: the alternate-caller child is built
+        /// from the caller's own host template, which applies no
+        /// celestial/fiendish buff anywhere in its graph, so on that route
+        /// there was nothing to inherit. Aligning the two paths is still worth
+        /// doing, but it is hygiene against future divergence rather than the
+        /// repair of a demonstrated defect on that route.
         ///
         /// Acceptance for this repair has TWO separate parts, and the first
         /// must never be allowed to close the second:
@@ -89,9 +115,16 @@ namespace KingmakerGunslinger.Blueprints
         ///    On this path there is nothing to inherit and nothing to strip,
         ///    and GS-AUD-0025's description - "an alternate caller's untemplated
         ///    Summon Monster child kept the donor's template" - is NOT
-        ///    reproducible. The repair is therefore behaviour-neutral where it
-        ///    applies: the summon was clean before it and is clean after. Its
-        ///    value is that the two paths can no longer diverge.
+        ///    reproducible on that route.
+        ///
+        ///    "Behaviour-neutral" here is an INFERENCE FROM SOURCE for the one
+        ///    route measured, not a two-version native comparison: no
+        ///    pre-repair build was deployed and observed. What was observed is
+        ///    one post-repair cast whose graph applies no native template and
+        ///    whose spawned unit carries none. Since the only change on that
+        ///    route is an added removal action and nothing applies a template
+        ///    there, the outcome cannot differ - but that last step is read
+        ///    from the source, not executed.
         ///
         ///    An execution proof of removal EFFICACY can only come from the
         ///    canonical ordinary-spell path, where
