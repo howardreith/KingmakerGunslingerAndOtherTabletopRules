@@ -31550,6 +31550,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             ItemEntityWeapon weapon = null;
             Deeds.DeadShotExecutionResult mixed = null;
             Deeds.DeadShotExecutionResult allMisfire = null;
+            // GS-AUD-0048: a fourth iterative probe, which the full-BAB
+            // gunslinger progression reaches at base attack bonus 16.
+            Deeds.DeadShotExecutionResult fourProbe = null;
             Deeds.DeadShotExecutionResult calibration = null, confirmed = null, unconfirmed = null,
                 immune = null, natural20 = null, natural20Control = null, natural1 = null,
                 natural1Control = null, partyOff = null, partyOn = null;
@@ -31607,6 +31610,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     target, 1, 1, 1);
                 gritAfterMisfire = attacker.Descriptor.Resources.GetResourceAmount(
                     gunslinger.Grit.Resource);
+
+                // GS-AUD-0048: the realised probe modifiers. RuleAttackRoll's
+                // fourth constructor argument is the native
+                // AttackBonusPenalty, which the engine SUBTRACTS, so the
+                // iterative progression must reach it as ascending POSITIVE
+                // penalties and the realised bonuses must step DOWN by exactly
+                // five. Base attack bonus 16 produces the fourth probe
+                // (penalty 15); the surrounding stages keep base attack bonus
+                // 11 and their three probes, so it is restored immediately.
+                stage = "probe-penalty-progression";
+                attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 16;
+                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 1);
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                fourProbe = Deeds.DeadShotRuntime.ExecuteForRuntimeTest(attacker,
+                    target, 10, 10, 10, 10);
+                attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 11;
 
                 // D2: two natural 20s threaten (the natural 1 is one misfire,
                 // not an aggregate misfire); Critical Focus's +4 and the -4
@@ -31776,6 +31798,46 @@ namespace KingmakerGunslinger.RuntimeTesting
                 allMisfire.Outcome.Misfires && !allMisfire.Outcome.IsHit &&
                 allMisfire.After.IsEmpty &&
                 allMisfire.After.Condition == FirearmCondition.Broken;
+            // GS-AUD-0048: the decisive sign assertion. Each probe's penalty
+            // must reach the engine as a positive index*5, and the realised
+            // attack bonuses must step down by exactly five. The successive
+            // differences are the signal: general modifiers move the absolute
+            // values, so the decision metadata's intended [11,6,1] is
+            // supplementary, never the proof.
+            Func<Deeds.DeadShotExecutionResult, string> describeProbeModifiers = value =>
+                value == null ? "missing" : "probes=" + value.Probes.Length + ";" +
+                string.Join(";", value.Probes.Select((probe, index) =>
+                    "probe" + index + "=penalty:" +
+                    (probe == null ? "<null>" : probe.AttackBonusPenalty.ToString()) +
+                    "/realised:" +
+                    (probe == null ? "<null>" : probe.AttackBonus.ToString())).ToArray());
+            Func<Deeds.DeadShotExecutionResult, int, bool> probeProgression =
+                (value, expectedProbes) =>
+            {
+                if (value == null || value.Probes.Length != expectedProbes) return false;
+                for (int index = 0; index < value.Probes.Length; index++)
+                {
+                    Kingmaker.RuleSystem.Rules.RuleAttackRoll probe = value.Probes[index];
+                    if (probe == null) return false;
+                    // Positive, ascending by five, at the native boundary.
+                    if (probe.AttackBonusPenalty != index * 5) return false;
+                    // Realised: each probe five LOWER than the one before it.
+                    if (index > 0 && probe.AttackBonus -
+                        value.Probes[index - 1].AttackBonus != -5) return false;
+                }
+                return true;
+            };
+            string probeObserved = "threeProbe[" +
+                describeProbeModifiers(mixed) + "];fourProbe[" +
+                describeProbeModifiers(fourProbe) + "];fourProbeBonuses=" +
+                (fourProbe == null ? "missing" :
+                    string.Join(",", fourProbe.Decision.AttackBonuses
+                        .Select(value => value.ToString()).ToArray()));
+            bool probeContract = probeProgression(mixed, 3) &&
+                probeProgression(fourProbe, 4) &&
+                fourProbe != null &&
+                fourProbe.Decision.AttackBonuses.SequenceEqual(new[] { 16, 11, 6, 1 }) &&
+                fourProbe.Probes[3].AttackBonusPenalty == 15;
             Func<Deeds.DeadShotExecutionResult, string> describeCritical = value =>
                 value == null || value.Outcome == null ? "missing" :
                 "threats=" + value.Outcome.ThreatCount + ";penalty=" + value.Outcome.ConfirmationPenalty +
@@ -31858,6 +31920,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "three natural 1 rolls; one chamber; Normal -> Broken",
                     observed, misfireContract,
                     "aggregate misfire and exact item-state transition"),
+                Assertion("dead-shot-realised-probe-progression",
+                    "probe penalties reach the engine as positive 0/5/10 and 0/5/10/15, and the realised attack bonuses step down by exactly 5",
+                    probeObserved, probeContract,
+                    "realised RuleAttackRoll.AttackBonus successive differences; decision metadata is supplementary, not the proof"),
                 Assertion("dead-shot-condition-combat-log",
                     "one concise combat-log attempt: Normal -> Broken (Dead Shot misfire)",
                     observed,
@@ -31925,6 +31991,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             ItemEntityWeapon weapon = null;
             Scatter.ScatterShotExecutionResult mixed = null, allMisfire = null;
             int targetCount = -1, registeredCount = -1;
+            // GS-AUD-0039 realised-modifier observations.
+            int scatterPenaltyField = int.MinValue, scatterRealisedBonus = int.MinValue,
+                controlNoPenalty = int.MinValue, controlScatterPenalty = int.MinValue;
             bool firstRegistered = false, secondRegistered = false,
                 cleaned = false, commandConstructed = false;
             long conditionLogsBefore = FirearmConditionCombatLog.Attempts;
@@ -31981,6 +32050,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     data, new TargetWrapper(first));
                 commandConstructed = command.CanStart && data.IsAvailable &&
                     ReferenceEquals(command.Spell.Blueprint, scatterAbility);
+                // GS-AUD-0039: a matched control pair measured in this exact
+                // state, immediately before the volley, so every modifier other
+                // than the penalty is held constant. The engine SUBTRACTS
+                // RuleCalculateAttackBonus's penalty argument
+                // (RuleCalculateAttackBonus::OnTrigger computes
+                // BaseAttackBonus - AttackBonusPenalty on the qualified
+                // reference assembly, with no clamp on the path), so the
+                // production constant must realise exactly two LESS than a
+                // no-penalty control. Asserting the constant's literal value
+                // instead is the trap that let the inversion ship.
+                controlNoPenalty = Kingmaker.RuleSystem.Rulebook.Trigger(
+                    new Kingmaker.RuleSystem.Rules.RuleCalculateAttackBonus(
+                        attacker, first, weapon, 0)).Result;
+                controlScatterPenalty = Kingmaker.RuleSystem.Rulebook.Trigger(
+                    new Kingmaker.RuleSystem.Rules.RuleCalculateAttackBonus(
+                        attacker, first, weapon,
+                        Scatter.ScatterAttackVolleyDecision.AttackPenalty)).Result;
                 int mixedIndex = 0;
                 int[] mixedRolls = { 10, 1 };
                 mixed = Scatter.ScatterShotRuntime.Execute(attacker, first,
@@ -31990,6 +32076,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                             mixedRolls[mixedIndex++]));
                         Kingmaker.RuleSystem.Rulebook.Trigger(attack);
                     }, mixedRolls);
+                // The real volley's own realised modifier, read from the
+                // production attack the deed actually triggered.
+                if (mixed != null && mixed.Attacks.Length > 0 &&
+                    mixed.Attacks[0] != null && mixed.Attacks[0].AttackRoll != null)
+                {
+                    scatterPenaltyField =
+                        mixed.Attacks[0].AttackRoll.AttackBonusPenalty;
+                    scatterRealisedBonus = mixed.Attacks[0].AttackRoll.AttackBonus;
+                }
 
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                     FirearmState.CurrentSchemaVersion, 1,
@@ -32069,8 +32164,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintBootstrap.MagicFirearms.Reliable)) &&
                 !fallbackEnchantments.Any(value => value != null &&
                     value.AssetGuid == "690e762f7704e1f4aa1ac69ef0ce6a96");
+            // GS-AUD-0039: the decisive sign assertion. Expressed as the
+            // realised attack-modifier DIFFERENCE against a matched no-penalty
+            // control, because general modifiers move the absolute values while
+            // the difference is the signal.
+            string penaltyObserved = "penaltyField=" + scatterPenaltyField +
+                ";realisedBonus=" + scatterRealisedBonus +
+                ";controlNoPenalty=" + controlNoPenalty +
+                ";controlScatterPenalty=" + controlScatterPenalty +
+                ";controlDifference=" + (controlNoPenalty == int.MinValue ||
+                    controlScatterPenalty == int.MinValue ? int.MinValue :
+                    controlScatterPenalty - controlNoPenalty) +
+                ";realisedDifference=" + (controlNoPenalty == int.MinValue ||
+                    scatterRealisedBonus == int.MinValue ? int.MinValue :
+                    scatterRealisedBonus - controlNoPenalty);
+            bool scatterPenaltySign =
+                scatterPenaltyField == 2 &&
+                controlNoPenalty != int.MinValue &&
+                controlScatterPenalty != int.MinValue &&
+                scatterRealisedBonus != int.MinValue &&
+                controlScatterPenalty - controlNoPenalty == -2 &&
+                scatterRealisedBonus - controlNoPenalty == -2;
             var assertions = new List<RuntimeTestAssertion>
             {
+                Assertion("scatter-realised-attack-penalty",
+                    "the volley realises a -2 attack modifier against a matched no-penalty control, and reaches the engine as a positive 2",
+                    penaltyObserved, scatterPenaltySign,
+                    "realised RuleCalculateAttackBonus results on the qualified reference assembly; a constant's literal value is not evidence of the realised sign"),
                 Assertion("scatter-command-contract-and-transaction",
                     "granted command constructs; isolated transaction attacks two targets",
                     observed, transaction,
