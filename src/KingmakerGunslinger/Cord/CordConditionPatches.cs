@@ -128,8 +128,17 @@ namespace KingmakerGunslinger.Cord
         {
             string source = condition == UnitCondition.Exhausted ?
                 "exhaustion" : "fatigue";
+            // GS-AUD-0017. Kingmaker 2.1.7b has no usable native nonlethal
+            // damage path, so the owner-approved adaptation is untyped
+            // self-damage capped so the Cord can never reduce its wearer below
+            // 1 HP (README; CHANGELOG 0.0.75 calls it "nonlethal-equivalent").
+            // Saying plain "nonlethal damage" here invited the player to expect
+            // true nonlethal behaviour - separate healing, different DR and
+            // immunity interactions - which this is not. The wording now
+            // matches every other owner-approved text. The mechanic is
+            // unchanged: DirectDamage through RuleDealDamage, floored at 1 HP.
             string message = string.Format(CultureInfo.InvariantCulture,
-                "Cord of Stubborn Resolve: {0} becomes {1} nonlethal damage{2}.",
+                "Cord of Stubborn Resolve: {0} becomes {1} nonlethal-equivalent damage{2}.",
                 source, damage, damage == 0 ? " (1 HP floor)" : string.Empty);
             if (NativeCombatLog.Publish("cord", "substitution-log.failed",
                     message,
