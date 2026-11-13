@@ -246,7 +246,6 @@
     <Compile Include="UrbanBarbarian\ControlledRageIconPolicy.cs" />
     <Compile Include="UrbanBarbarian\ControlledRageSelectionState.cs" />
     <Compile Include="UrbanBarbarian\UnitPartControlledRageSelection.cs" />
-    <Compile Include="UrbanBarbarian\ControlledRageHitPointPolicy.cs" />
     <Compile Include="UrbanBarbarian\CrowdControlPolicy.cs" />
     <Compile Include="UrbanBarbarian\UrbanCotwCompatibilityPolicy.cs" />
     <Compile Include="UrbanBarbarian\UrbanCotwCompatibilityRuntime.cs" />

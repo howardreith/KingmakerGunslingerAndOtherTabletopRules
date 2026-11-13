@@ -191,6 +191,8 @@ immune.
 | `Charm` | `9dc29118addce3d48ae9b92be953b5b4` | Buff | Vanilla | Authoritative faction-changing charm terminal | Yes | Yes |
 | `KMG.Summoning.Special.Succubus.Dominate` | `1662d63944d94cdeaa62562dc9ac9349` | Ability | Gunslinger | Expanded Summoning Succubus domination | Yes | Yes |
 | `KMG.Summoning.Special.Succubus.Domination` | `6e1f6eb3e773451dbda9e0ecd07486d9` | Buff | Gunslinger | Direct faction-changing terminal | Yes | Yes |
+| `KMG.Summoning.FeyCelestial.CharmBuff` | `caeb18d9d99d449a84001ae129cfd82a` | Buff | Gunslinger | Sprint 32 source-bound private native Charm faction-changing terminal, the same class of effect as the vanilla `Charm` row above | Yes | Yes |
+| `KMG.Summoning.FeyCelestial.SuggestionBuff` | `6635bf9bc37c4bbe9f52fc0a71c5d7f0` | Buff | Gunslinger | Sprint 32 Suggestion terminal state. After provider binding this buff carries the provider's complete terminal component graph, validated graph-equal to the native Rainbow Pattern donor, plus the presence, caster-missing and cleanup components. Deliberate and pinned by `Sprint32SuggestionUsesLiveAlignmentAndExactTerminal` | Yes | Yes |
 | `ControlUndeadAbility` | `998469fa09314fd687b4ffa051a95c59` | Ability | Call of the Wild | Creator controls undead target | No | Yes locally; optional runtime |
 | `ControlUndeadBuff` | `21d20a30b93e4ae281a6d70d9ae1a64d` | Buff | Call of the Wild | Faction-changing terminal | No | Yes locally; optional runtime |
 | `ControlConstructAbility` | `efec86b954ff42e99893d55f99e51a5e` | Ability | Call of the Wild | Creator controls construct target | No | Yes locally; optional runtime |
@@ -227,6 +229,51 @@ one-command hostile compulsions, and other effects that do not let the creator
 direct, possess, or faction-convert the victim. Call of the Wild's Infectious
 Charms propagation markers and Dominate Arcane Eye infrastructure are also not
 control terminals.
+
+### Why Sprint 32 Suggestion and Charm are registered (GS-AUD-0041)
+
+This table and the shipped catalog disagreed: the catalog carries **23**
+entries and this table listed **21**, missing
+`KMG.Summoning.FeyCelestial.CharmBuff` and
+`KMG.Summoning.FeyCelestial.SuggestionBuff`. Both are now listed above so the
+table matches what ships. That was the whole defect.
+
+**Charm** is a faction-changing terminal, the same class of effect as the
+vanilla `Charm` row, so it belongs for the same reason.
+
+**Suggestion also belongs, and the intent is pinned by a test.** Two things
+matter here, and both are easy to get wrong by reading only the unavailable
+configuration:
+
+- `ConfigureSuggestion32` builds the owned buff with a single
+  `Sprint32SuggestionPresence` component and `Hidden` abilities. That is the
+  **placeholder**, used when CowWithHat's Custom Spells is absent and the
+  effect is unavailable.
+- `BindSuggestionProvider32` is what runs when the provider IS present. It
+  validates the provider's terminal graph as **graph-equal to the native
+  Rainbow Pattern donor** (`6477ae917b0ec7a4ca76bc9f36b023ac`), deep-clones
+  that complete terminal component graph into the owned buff, adds the
+  presence, `RemoveBuffIfCasterIsMissing` and `FeyControlCasterCleanup32`
+  components, sets the staged abilities `Hidden = false`, and publishes them
+  into the registered identities.
+
+So the live effect is not a bare marker: it is the provider's full terminal
+state, equivalent to a native pattern-compulsion terminal, with a
+caster-bound lifetime.
+
+`ProtectionFromAlignmentControlImmunityTests.Sprint32SuggestionUsesLiveAlignmentAndExactTerminal`
+pins exactly this intent: Protection from Chaos **must** reject either Sprint 32
+caster's imposed Suggestion instruction; Suggestion is **not** blanket immunity
+against a non-matching caster alignment; and registering the private Suggestion
+must **not** classify its native Rainbow Pattern donor as control.
+
+That last assertion is the important one for anyone tempted to "simplify" this:
+the private terminal is registered, the native donor deliberately is not.
+
+There is therefore no open question and no owner decision pending. The catalog
+reason string — *"imposes the provider's fixed avoid-combat instruction"* —
+describes the player-visible instruction, not the whole terminal, and should
+not be read as placing the entry under the one-command exclusion above.
 
 ## Initialization diagnostics
 

@@ -896,8 +896,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return "scenario-timeouts-not-allowed";
                 bool diagnosticRecovery = request.Parameters != null &&
                     request.Parameters.Property("sprint40DiagnosticRecovery") != null;
+                // GS-AUD-0007 staged acceptance adds an all-or-nothing trio of
+                // migration expectations. All three or none: a partial set would
+                // silently observe less than the caller asked for.
+                bool stagedMigration = request.Parameters != null &&
+                    (request.Parameters.Property("expectedSettingsSource") != null ||
+                     request.Parameters.Property("expectedMigrationWriteFailed") != null ||
+                     request.Parameters.Property("expectedRecovered") != null);
+                if (stagedMigration && (
+                        request.Parameters.Property("expectedSettingsSource") == null ||
+                        request.Parameters["expectedSettingsSource"].Type != JTokenType.String ||
+                        string.IsNullOrWhiteSpace(
+                            (string)request.Parameters["expectedSettingsSource"]) ||
+                        request.Parameters.Property("expectedMigrationWriteFailed") == null ||
+                        request.Parameters["expectedMigrationWriteFailed"].Type !=
+                            JTokenType.Boolean ||
+                        request.Parameters.Property("expectedRecovered") == null ||
+                        request.Parameters["expectedRecovered"].Type != JTokenType.Boolean))
+                    return "feature-module-staged-migration-parameters-invalid";
                 if (request.Parameters == null ||
-                    request.Parameters.Count != (diagnosticRecovery ? 14 : 13) ||
+                    request.Parameters.Count != (diagnosticRecovery ? 14 : 13) +
+                        (stagedMigration ? 3 : 0) ||
                     (diagnosticRecovery &&
                         (request.Parameters["sprint40DiagnosticRecovery"].Type !=
                             JTokenType.Boolean ||

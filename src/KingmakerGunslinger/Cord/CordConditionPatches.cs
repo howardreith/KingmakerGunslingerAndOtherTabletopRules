@@ -85,7 +85,7 @@ namespace KingmakerGunslinger.Cord
                 throw new InvalidOperationException(
                     "Canonical Cord substitution requires the exact equipped Cord.");
             _resolvedSubstitutions++;
-            int damage = DealNonlethalEquivalent(state);
+            int damage = DealNonlethalEquivalent(state, condition);
             PublishSubstitution(condition == CordConditionKind.Exhaustion
                 ? UnitCondition.Exhausted : UnitCondition.Fatigued, damage);
         }
@@ -100,12 +100,32 @@ namespace KingmakerGunslinger.Cord
                     BlueprintBootstrap.CordOfStubbornResolve);
         }
 
-        private static int DealNonlethalEquivalent(UnitState state)
+        private static int DealNonlethalEquivalent(UnitState state,
+            CordConditionKind condition)
         {
             int roll = Rulebook.Trigger(new RuleRollDice(state.Owner.Unit,
                 new DiceFormula(1, DiceType.D6))).Result;
-            int amount = Math.Min(roll,
-                Math.Max(0, state.Owner.Unit.HPLeft - 1));
+            // GS-AUD-0018: the capping rule now comes from the one shared
+            // policy instead of being re-implemented here, so the tests that
+            // cover CordSubstitutionPolicy cover what actually runs. The roll
+            // itself stays here because it is an engine rule event.
+            //
+            // HPLeft is clamped at zero to keep this refactor exactly
+            // behaviour-preserving. The previous inline form was
+            // Math.Min(roll, Math.Max(0, HPLeft - 1)), so a non-positive
+            // HPLeft - which Kingmaker does produce for a dying or unconscious
+            // unit - yielded zero damage and returned early. The policy instead
+            // fails closed on a negative currentHitPoints, which is the right
+            // contract for a domain caller but would throw out of this Harmony
+            // patch on UnitState.AddCondition, inside an engine callback. I did
+            // not establish whether fatigue or exhaustion can actually reach
+            // this path at negative HP, so the safe reading is to preserve the
+            // old zero-damage outcome rather than rely on it being unreachable.
+            // Zero and one HP already produce zero damage through the policy's
+            // own HP-minus-one cap, so clamping changes nothing above zero.
+            CordSubstitutionDecision decision = CordSubstitutionPolicy.Decide(
+                true, condition, roll, Math.Max(0, state.Owner.Unit.HPLeft));
+            int amount = decision.Damage;
             _lastRoll = roll;
             _lastAppliedDamage = 0;
             if (amount == 0) return 0;
@@ -128,8 +148,17 @@ namespace KingmakerGunslinger.Cord
         {
             string source = condition == UnitCondition.Exhausted ?
                 "exhaustion" : "fatigue";
+            // GS-AUD-0017. Kingmaker 2.1.7b has no usable native nonlethal
+            // damage path, so the owner-approved adaptation is untyped
+            // self-damage capped so the Cord can never reduce its wearer below
+            // 1 HP (README; CHANGELOG 0.0.75 calls it "nonlethal-equivalent").
+            // Saying plain "nonlethal damage" here invited the player to expect
+            // true nonlethal behaviour - separate healing, different DR and
+            // immunity interactions - which this is not. The wording now
+            // matches every other owner-approved text. The mechanic is
+            // unchanged: DirectDamage through RuleDealDamage, floored at 1 HP.
             string message = string.Format(CultureInfo.InvariantCulture,
-                "Cord of Stubborn Resolve: {0} becomes {1} nonlethal damage{2}.",
+                "Cord of Stubborn Resolve: {0} becomes {1} nonlethal-equivalent damage{2}.",
                 source, damage, damage == 0 ? " (1 HP floor)" : string.Empty);
             if (NativeCombatLog.Publish("cord", "substitution-log.failed",
                     message,

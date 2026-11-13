@@ -612,8 +612,18 @@ namespace KingmakerGunslinger.DomainTests
                     "The authoritative boundary runtime matrix contract is missing: " + token);
             string common = File.ReadAllText(Path.Combine(root, "scripts",
                 "RuntimeAutomation.Common.ps1"));
+            // GS-AUD-0007. The count is still exactly thirteen module states
+            // (fourteen with the Sprint 40 recovery flag); the staged-migration
+            // trio is an all-or-nothing THREE on top of it, never a relaxation
+            // of the module requirement. The pin names both halves so neither
+            // can drift, and the all-or-nothing guard above it is pinned too -
+            // a partial trio must stay a refusal, because the silent-no-op it
+            // prevents is what let a staged run report 45 passing assertions
+            // while the observation it was for never ran.
             Assertions.True(common.Contains(
-                    "$Parameters.Count -ne $(if($sprint40Recovery){14}else{13})") &&
+                    "$Parameters.Count -ne ($(if($sprint40Recovery){14}else{13}) + " +
+                    "$(if($stagedMigration){3}else{0}))") &&
+                common.Contains("$stagedMigration = $Parameters.ContainsKey('expectedSettingsSource') -or") &&
                 common.Contains(
                     "$sprint40Recovery = $Parameters.ContainsKey('sprint40DiagnosticRecovery')") &&
                 common.Contains("expandedSummoning = [bool]$Parameters.expandedSummoning") &&
@@ -738,6 +748,178 @@ namespace KingmakerGunslinger.DomainTests
                 actual.ProtectionFromAlignmentControlImmunity &&
                 actual.ElementalRaces == elementalRaces,
                 "Feature-module values changed during " + label + ".");
+        }
+
+        /// <summary>
+        /// GS-AUD-0006. A valid older-schema file whose migration write fails
+        /// must keep its own parsed values for the session, leave the original
+        /// bytes untouched, avoid the malformed quarantine, and report a WRITE
+        /// failure. The fault is real, not mocked: the destination is made
+        /// read-only, which makes File.Replace throw UnauthorizedAccessException
+        /// while the read still succeeds. The read-only attribute is always
+        /// restored so the fixture cannot leak.
+        /// </summary>
+        internal static void FailedMigrationWritePreservesValidSettings()
+        {
+            WithDirectory(path =>
+            {
+                string settings = Path.Combine(path,
+                    FeatureModuleSettingsStore.FileName);
+                // A valid schema-10 file with a deliberate mix, including OFF
+                // values, so substituted all-ON defaults are unmistakable.
+                string original = new JObject
+                {
+                    ["schemaVersion"] = 10,
+                    ["gunslinger"] = true,
+                    ["acadamae-graduate"] = false,
+                    ["shield-other"] = true,
+                    ["expanded-summoning"] = false,
+                    ["elven-branched-spears"] = true,
+                    ["eastern-weapons"] = false,
+                    ["brown-fur-transmuter"] = true,
+                    ["urban-barbarian"] = false,
+                    ["bodyguard-feats"] = true,
+                    ["protection-from-alignment-control-immunity"] = false,
+                    ["elemental-races"] = true
+                }.ToString(Formatting.Indented);
+                File.WriteAllText(settings, original);
+
+                FileAttributes before = File.GetAttributes(settings);
+                string warning = null;
+                FeatureModuleSettingsState state;
+                try
+                {
+                    File.SetAttributes(settings, before | FileAttributes.ReadOnly);
+                    state = FeatureModuleSettingsStore.Load(path,
+                        value => warning = value);
+                }
+                finally
+                {
+                    // Restore the attribute even if the assertions below fail.
+                    if (File.Exists(settings)) File.SetAttributes(settings, before);
+                    // Clear read-only on anything the store may have produced
+                    // from a read-only source, so the shared directory cleanup
+                    // cannot fail and mask this test's real assertion message.
+                    foreach (string produced in Directory.GetFiles(path))
+                        File.SetAttributes(produced,
+                            File.GetAttributes(produced) & ~FileAttributes.ReadOnly);
+                }
+
+                // The parsed configuration, including every OFF value, stands.
+                Assertions.True(state.Active.Gunslinger &&
+                    !state.Active.AcadamaeGraduate && state.Active.ShieldOther &&
+                    !state.Active.ExpandedSummoning &&
+                    state.Active.ElvenBranchedSpears &&
+                    !state.Active.EasternWeapons &&
+                    state.Active.BrownFurTransmuter &&
+                    !state.Active.UrbanBarbarian && state.Active.BodyguardFeats &&
+                    !state.Active.ProtectionFromAlignmentControlImmunity &&
+                    state.Active.ElementalRaces,
+                    "A failed migration write discarded the parsed values of the file.");
+                // Not a malformed recovery.
+                Assertions.False(state.Recovered,
+                    "A valid file with an unwritable destination was reported as recovered.");
+                Assertions.True(state.MigrationWriteFailed,
+                    "The migration write failure was not reported on the state.");
+                Assertions.Equal("migrated-schema-10", state.Source,
+                    "A failed migration write changed the migrated source identity.");
+                // The original file is untouched and never quarantined.
+                Assertions.Equal(original, File.ReadAllText(settings),
+                    "A failed migration write altered the original settings bytes.");
+                Assertions.Equal(0, Directory.GetFiles(path,
+                    "FeatureModules.json.malformed.*").Length,
+                    "A valid file was quarantined as malformed.");
+                Assertions.Equal(0, Directory.GetFiles(path,
+                    "FeatureModules.json.tmp").Length,
+                    "A failed migration write left its temporary file behind.");
+                // The warning names a write failure, not a malformed file.
+                Assertions.True(warning != null &&
+                    warning.Contains("Could not write the migrated") &&
+                    !warning.Contains("Malformed") &&
+                    !warning.Contains("recovered defaults (all modules ON)"),
+                    "A failed migration write did not report an accurate write failure.");
+            });
+        }
+
+        /// <summary>
+        /// GS-AUD-0006 negative control: the same valid schema-10 input on a
+        /// writable destination must migrate, persist schema 12 and report no
+        /// failure at all. Without this, the test above could pass against a
+        /// repair that simply never writes.
+        /// </summary>
+        internal static void SuccessfulMigrationWriteStillPersists()
+        {
+            WithDirectory(path =>
+            {
+                string settings = Path.Combine(path,
+                    FeatureModuleSettingsStore.FileName);
+                File.WriteAllText(settings, new JObject
+                {
+                    ["schemaVersion"] = 10,
+                    ["gunslinger"] = true,
+                    ["acadamae-graduate"] = false,
+                    ["elemental-races"] = true
+                }.ToString(Formatting.Indented));
+                string warning = null;
+                FeatureModuleSettingsState state = FeatureModuleSettingsStore.Load(
+                    path, value => warning = value);
+                Assertions.False(state.MigrationWriteFailed,
+                    "A writable destination reported a migration write failure.");
+                Assertions.False(state.Recovered,
+                    "A valid migrating file was reported as recovered.");
+                Assertions.Equal("migrated-schema-10", state.Source,
+                    "The migrated source identity is wrong.");
+                Assertions.True(warning == null,
+                    "A successful migration emitted a warning.");
+                Assertions.Equal(12, (int)JObject.Parse(
+                    File.ReadAllText(settings))["schemaVersion"],
+                    "A successful migration did not persist schema 12.");
+                Assertions.False(state.Active.AcadamaeGraduate,
+                    "A successful migration lost an explicit OFF value.");
+            });
+        }
+
+        /// <summary>
+        /// GS-AUD-0006 negative control: a file already at the current schema
+        /// never attempts the migration write, so a read-only destination is
+        /// not a failure at all.
+        /// </summary>
+        internal static void CurrentSchemaNeedsNoMigrationWrite()
+        {
+            WithDirectory(path =>
+            {
+                string settings = Path.Combine(path,
+                    FeatureModuleSettingsStore.FileName);
+                File.WriteAllText(settings, new JObject
+                {
+                    ["schemaVersion"] = 12,
+                    ["gunslinger"] = true,
+                    ["acadamae-graduate"] = false
+                }.ToString(Formatting.Indented));
+                FileAttributes before = File.GetAttributes(settings);
+                string warning = null;
+                FeatureModuleSettingsState state;
+                try
+                {
+                    File.SetAttributes(settings, before | FileAttributes.ReadOnly);
+                    state = FeatureModuleSettingsStore.Load(path,
+                        value => warning = value);
+                }
+                finally
+                {
+                    if (File.Exists(settings)) File.SetAttributes(settings, before);
+                }
+                Assertions.False(state.MigrationWriteFailed,
+                    "A current-schema file attempted a migration write.");
+                Assertions.False(state.Recovered,
+                    "A current-schema read-only file was reported as recovered.");
+                Assertions.Equal("settings", state.Source,
+                    "A current-schema file did not report the settings source.");
+                Assertions.True(warning == null,
+                    "A current-schema read-only file emitted a warning.");
+                Assertions.False(state.Active.AcadamaeGraduate,
+                    "A current-schema read-only file lost an explicit OFF value.");
+            });
         }
 
         private static void WithDirectory(Action<string> action)

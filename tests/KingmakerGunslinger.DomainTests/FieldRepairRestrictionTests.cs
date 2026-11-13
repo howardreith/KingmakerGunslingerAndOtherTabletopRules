@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using KingmakerGunslinger.Actions;
 using KingmakerGunslinger.Firearms;
 
@@ -216,17 +217,70 @@ namespace KingmakerGunslinger.DomainTests
             {
                 string text = Read(parts);
                 Assertions.False(
-                    text.Contains("repair a Broken or Wrecked") ||
-                    text.Contains("Broken or Wrecked firearm to Normal") ||
-                    text.Contains("Broken or Wrecked firearm straight to Normal"),
+                    PromisesWreckedFieldRepair(text),
                     "Active user-facing text still promises unified Wrecked field repair: " +
                     parts[1]);
             }
 
             string manifest = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "blueprints", "blueprints.json"));
+            // GS-REP-0001, recorded rather than silently fixed. This assertion
+            // matches only the space-separated spelling. The manifest's entry
+            // for the Gunsmith's Kit carries the HYPHENATED form in its notes
+            // ("unified Broken-or-Wrecked-to-Normal firearm repair"), which
+            // slips past it. That text is stale: the field-repair action is
+            // Broken-only.
+            //
+            // It is deliberately not corrected here. That notes field sits
+            // inside the accepted 1913-entry prefix whose exact bytes -
+            // symbol, guid, plannedType, status, milestone AND notes - are
+            // pinned by BetterVendorsProgressionTests.ManifestPrefixSha256.
+            // Editing it means re-pinning an accepted block, which needs an
+            // approved catalog change, not a repair-campaign edit. Moving that
+            // pin to make a text correction pass would defeat the guard that
+            // protects released identities.
+            //
+            // The field is developer metadata, not a player-facing string;
+            // every shipped player-facing description was checked and is
+            // already correct. So this stays a known, documented gap with a
+            // named prerequisite. Normalising this particular assertion would
+            // turn it red until that approved change happens.
             Assertions.False(manifest.Contains("Broken or Wrecked"),
                 "The blueprint manifest still promises unified Wrecked field repair.");
+        }
+
+        /// <summary>
+        /// True when the text promises that the field-repair action handles a
+        /// Wrecked firearm. Hyphens, non-breaking hyphens and runs of
+        /// whitespace are all normalised to single spaces first, because the
+        /// same claim ships in both "Broken or Wrecked" and
+        /// "Broken-or-Wrecked-to-Normal" forms and only the first was caught.
+        /// This deliberately does not ban the phrase everywhere: a completed
+        /// full rest legitimately restores Broken AND Wrecked, so only the
+        /// field-repair promises are matched.
+        /// </summary>
+        private static bool PromisesWreckedFieldRepair(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return false;
+            var builder = new StringBuilder(text.Length);
+            bool pendingSeparator = false;
+            foreach (char character in text)
+            {
+                if (char.IsWhiteSpace(character) || character == '-' ||
+                    character == '‐' || character == '‑')
+                {
+                    pendingSeparator = builder.Length > 0;
+                    continue;
+                }
+                if (pendingSeparator) { builder.Append(' '); pendingSeparator = false; }
+                builder.Append(character);
+            }
+            string normalized = builder.ToString();
+            return normalized.Contains("repair a Broken or Wrecked") ||
+                normalized.Contains("Broken or Wrecked firearm to Normal") ||
+                normalized.Contains("Broken or Wrecked firearm straight to Normal") ||
+                normalized.Contains("Broken or Wrecked to Normal firearm repair") ||
+                normalized.Contains("unified Broken or Wrecked to Normal");
         }
 
         internal static void QuickClearRouteStaysCombatUsable()

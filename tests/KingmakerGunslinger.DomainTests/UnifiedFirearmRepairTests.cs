@@ -6,7 +6,8 @@ namespace KingmakerGunslinger.DomainTests
 {
     /// <summary>
     /// Regression coverage for the owner-approved unified firearm maintenance
-    /// design: one full-round Repair Firearm action restores Broken or Wrecked
+    /// design: one full-round Repair Firearm action, outside party combat,
+    /// restores Broken
     /// firearms directly to Normal with a reusable Gunsmith's Kit, consumes
     /// nothing, preserves surviving loaded ammunition, and the two retired
     /// consumable maintenance kits leave every shop while their blueprint

@@ -41,6 +41,217 @@ namespace KingmakerGunslinger.Blueprints
 
         internal static IReadOnlyList<string> NativeTemplateIds { get { return Array.AsReadOnly(NativeMonsterTemplateBuffs); } }
 
+        /// <summary>
+        /// The DECLARED set of Summon Monster creatures given the explicit
+        /// inherited-template removal action. Every one is
+        /// monsterTemplated=false in ExpandedSummoningCatalog, so they take the
+        /// untemplated path.
+        ///
+        /// It is a declaration, NOT a measurement, and GS-REP-0002 records that
+        /// it disagrees with the installed library in both directions. Do not
+        /// read this list as "the creatures whose native carrier applies a
+        /// template" - that is what it was previously documented as, and the
+        /// per-placement observation
+        /// inherited-template-removal-wiring-per-placement reports a different
+        /// population. The discrepancy is pre-existing on master and is not
+        /// resolved here.
+        ///
+        /// The intended behaviour is not in doubt and is already executable:
+        /// SummonCreatureSpec.TemplatePolicy maps monsterTemplated=false to
+        /// SummonTemplatePolicy.None for every creature in the Summon Monster
+        /// roster, which ExpandedSummoningCatalogTests
+        /// .AlignmentPoliciesAreFamilyScoped asserts across the whole catalog.
+        /// So an untemplated creature is meant to receive no celestial or
+        /// fiendish template; what is open is when to correct this list and
+        /// whether any creature is a deliberate exception.
+        /// </summary>
+        private static readonly string[] InheritedTemplateRemovalCreatures = {
+            "lemure", "dretch", "hound-archon", "lantern-archon",
+            "trumpet-archon", "astral-deva", "bearded-devil",
+            "kyton-chain-devil", "barbed-devil", "bone-devil", "babau",
+            "hezrou" };
+
+        /// <summary>
+        /// GS-AUD-0025: the one scoped rule for inherited-template removal.
+        /// The canonical ordinary-spell builder and the alternate-caller
+        /// adapter must agree, and previously only the canonical builder
+        /// applied it. Keeping the set here means the two paths cannot diverge
+        /// again.
+        ///
+        /// The finding's stated consequence - that an alternate caller's
+        /// untemplated child therefore "kept the donor's template" - is
+        /// WITHDRAWN and must not be repeated. Casting an affected adapter
+        /// child measured appliedByGraph=0: the alternate-caller child is built
+        /// from the caller's own host template, which applies no
+        /// celestial/fiendish buff anywhere in its graph, so on that route
+        /// there was nothing to inherit. Aligning the two paths is still worth
+        /// doing, but it is hygiene against future divergence rather than the
+        /// repair of a demonstrated defect on that route.
+        ///
+        /// Acceptance for this repair has TWO separate parts, and the first
+        /// must never be allowed to close the second:
+        ///
+        /// 1. Graph/reader verification. The removal action exists on each
+        ///    spawn branch, is bound to the correct creature unit, carries the
+        ///    exact native identities, and occupies the final composed
+        ///    position. This is what the alternate-summoning composition
+        ///    observation checks - and that scenario states its own limit:
+        ///    "Structural and graph evidence only... summon execution...
+        ///    not exercised". It casts nothing.
+        /// 2. Execution verification of removal on the adapter route.
+        ///    WITHDRAWN AND REPLACED - not outstanding, and never passed.
+        ///    The inherited-template-removal stage of
+        ///    disposable-alternate-summoning-natural casts an affected creature
+        ///    selected from the live native menu BY WHAT ITS OWN GRAPH CARRIES
+        ///    rather than by creature name, and inspects the spawned unit.
+        ///
+        ///    Measured on
+        ///    KMG_Summoning_Adapter_MasterSummoner_Tier4_HoundArchon_One:
+        ///    appliedByGraph=0, removalInGraph=true, one hound archon spawned
+        ///    carrying the native summon marker and NO native template.
+        ///
+        ///    So the alternate-caller child does not copy the native Summon
+        ///    Monster carrier; it is built from the caller's own host template,
+        ///    which applies no celestial/fiendish buff anywhere in its graph.
+        ///    On this path there is nothing to inherit and nothing to strip,
+        ///    and GS-AUD-0025's description - "an alternate caller's untemplated
+        ///    Summon Monster child kept the donor's template" - is NOT
+        ///    reproducible on that route.
+        ///
+        ///    "Behaviour-neutral" here is an INFERENCE FROM SOURCE for the one
+        ///    route measured, not a two-version native comparison: no
+        ///    pre-repair build was deployed and observed. What was observed is
+        ///    one post-repair cast whose graph applies no native template and
+        ///    whose spawned unit carries none. Since the only change on that
+        ///    route is an added removal action and nothing applies a template
+        ///    there, the outcome cannot differ - but that last step is read
+        ///    from the source, not executed.
+        ///
+        ///    WHY IT IS WITHDRAWN RATHER THAN OUTSTANDING. The requirement to
+        ///    demonstrate removal of an inherited template on this route was
+        ///    derived from the premise that this route inherited one. That
+        ///    premise is withdrawn by the measurement above, so the requirement
+        ///    went with it. It must never be recorded as a passed
+        ///    removal-efficacy test, and it must not be carried as debt against
+        ///    this change: there is nothing on this route to remove.
+        ///
+        ///    DEC-0004 is RESOLVED. Canonical application and removal efficacy
+        ///    are tracked separately as GS-REP-0002, the canonical-summoning
+        ///    investigation and repair card, which stays open for release
+        ///    triage and does not block this change. That card owns the
+        ///    canonical route, a measured native outcome and a bounded repair.
+        ///
+        /// So the accepted scope of THIS change is: the shared rule and
+        /// comparator hardening; the affected-subject graph controls; the
+        /// per-placement wiring invariant within its stated scope; the observed
+        /// clean native adapter route; and the bounded cleanup. The composition
+        /// controls' original subjects were a TEMPLATED creature and a Nature's
+        /// Ally creature and never entered the TemplateRemoval branch at all,
+        /// which is why part 1 needs an affected subject -
+        /// composition-affected-subject-positive-control and its four negative
+        /// controls supply it.
+        ///
+        /// Membership below is a DECLARATION, and GS-REP-0002 records that it
+        /// does not match the installed library. Do NOT read it as "the
+        /// creatures that inherit a template" - that is what this comment used
+        /// to say, and it is wrong in a way that matters:
+        ///
+        /// `inherited-template-removal-wiring-per-placement` measured 281
+        /// untemplated Summon Monster PLACEMENTS across 63 creatures. 81
+        /// placements contain a native-template apply action and 52 carry the
+        /// removal, overlapping on only 16. Crucially
+        /// `everyPlacementApplies=0`: not one creature applies on all of its
+        /// own placements, because the determinant is the native variant
+        /// NativeTemplate selects, keyed by (parent tier, multiplicity).
+        ///
+        /// So this declaration does not cover the placements that actually
+        /// apply a template, and a per-creature key list cannot DESCRIBE which
+        /// placements do.
+        ///
+        /// It does not follow that the repair must be structural, and an
+        /// earlier version of this comment wrongly said so. Two different
+        /// properties were being conflated:
+        ///
+        ///   - which placements CONTAIN a template-application action. That
+        ///     varies by (parent tier, multiplicity) and can only be
+        ///     established per placement.
+        ///   - which creatures should RETAIN a celestial/fiendish template.
+        ///     The approved contract is already per creature: TemplatePolicy
+        ///     maps monsterTemplated=false to SummonTemplatePolicy.None.
+        ///
+        /// ContextActionRemoveInheritedSummonTemplates revalidates its owner
+        /// and the four identities and then removes whichever of those buffs
+        /// are actually present - so on a placement that applies none it
+        /// removes nothing. A broader creature-based removal policy is
+        /// therefore a live option: it would strip the template where one is
+        /// applied and be inert elsewhere. Placement-aware wiring is another.
+        /// The measurements do not prove either necessary.
+        ///
+        /// What the repair must do is enforce the approved no-template contract
+        /// across the placements that apply one. Which implementation does that
+        /// is for DEC-0004 and its own card.
+        ///
+        /// What the observation asserts is the per-placement WIRING invariant
+        /// this code owns - the removal action is present exactly where its
+        /// creature is declared - which holds. It does NOT assert the set is
+        /// correct, and it does not "fail if a thirteenth creature inherits a
+        /// template", which the superseded creature-level version claimed.
+        /// </summary>
+        internal static bool RequiresInheritedTemplateRemoval(SummonFamily family,
+            SummonCreatureSpec creature)
+        {
+            if (creature == null) throw new ArgumentNullException("creature");
+            return family == SummonFamily.Monster && !creature.MonsterTemplated &&
+                Array.IndexOf(InheritedTemplateRemovalCreatures, creature.Key) >= 0;
+        }
+
+        /// <summary>
+        /// Appends the inherited-template removal to every spawn branch, bound
+        /// to its exact owning unit and the exact four native template
+        /// identities the action itself revalidates at run time. Appended last
+        /// so it is the final composed action of its branch, which is what the
+        /// composition contract compares.
+        /// </summary>
+        internal static void AppendInheritedTemplateRemoval(
+            BlueprintComponent[] components, BlueprintUnit unit,
+            BlueprintBuff[] nativeTemplateBuffs)
+        {
+            if (components == null) throw new ArgumentNullException("components");
+            if (unit == null) throw new ArgumentNullException("unit");
+            if (nativeTemplateBuffs == null)
+                throw new ArgumentNullException("nativeTemplateBuffs");
+            foreach (var spawn in AlternateSummoningGraph
+                .Objects<ContextActionSpawnMonster>(components))
+            {
+                if (spawn.AfterSpawn == null) spawn.AfterSpawn = new ActionList();
+                var remove = ScriptableObject
+                    .CreateInstance<ContextActionRemoveInheritedSummonTemplates>();
+                remove.OwningBlueprint = unit;
+                remove.NativeTemplates = (BlueprintBuff[])nativeTemplateBuffs.Clone();
+                spawn.AfterSpawn.Actions = (spawn.AfterSpawn.Actions ??
+                    Array.Empty<GameAction>())
+                    .Concat(new GameAction[] { remove }).ToArray();
+            }
+        }
+
+        /// <summary>Resolves the four native summon template buffs by their
+        /// exact identities, for a caller that has only a library lookup.</summary>
+        internal static BlueprintBuff[] ResolveNativeTemplateBuffs(
+            Func<string, BlueprintScriptableObject> lookup)
+        {
+            if (lookup == null) throw new ArgumentNullException("lookup");
+            var resolved = new BlueprintBuff[NativeMonsterTemplateBuffs.Length];
+            for (int index = 0; index < NativeMonsterTemplateBuffs.Length; index++)
+            {
+                resolved[index] = lookup(NativeMonsterTemplateBuffs[index]) as BlueprintBuff;
+                if (resolved[index] == null)
+                    throw new InvalidOperationException(
+                        "Native summon template buff missing: " +
+                        NativeMonsterTemplateBuffs[index]);
+            }
+            return resolved;
+        }
+
         internal static void Configure(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol)
         {
@@ -190,22 +401,14 @@ namespace KingmakerGunslinger.Blueprints
                     SpellDescriptor.Evil;
             }
             // Native SM carriers retain native celestial/fiendish after-spawn
-            // behavior even when the project creature is untemplated. Repair
-            // these six scoped creatures only, including the in-place Lantern
-            // upgrade; unrelated released graphs are untouched.
-            if (variant.Family == SummonFamily.Monster &&
-                (variant.Creature.Key == "lemure" || variant.Creature.Key == "dretch" || variant.Creature.Key == "hound-archon" || variant.Creature.Key == "lantern-archon" || variant.Creature.Key == "trumpet-archon" || variant.Creature.Key == "astral-deva" || variant.Creature.Key == "bearded-devil" || variant.Creature.Key == "kyton-chain-devil" || variant.Creature.Key == "barbed-devil" || variant.Creature.Key == "bone-devil" || variant.Creature.Key == "babau" || variant.Creature.Key == "hezrou"))
-            {
-                foreach (var spawn in AlternateSummoningGraph.Objects<ContextActionSpawnMonster>(target.ComponentsArray))
-                {
-                    if (spawn.AfterSpawn == null) spawn.AfterSpawn = new ActionList();
-                    var remove = ScriptableObject.CreateInstance<ContextActionRemoveInheritedSummonTemplates>();
-                    remove.OwningBlueprint = unit;
-                    remove.NativeTemplates = (BlueprintBuff[])replacedNativeTemplateBuffs.Clone();
-                    spawn.AfterSpawn.Actions = (spawn.AfterSpawn.Actions ?? Array.Empty<GameAction>())
-                        .Concat(new GameAction[] { remove }).ToArray();
-                }
-            }
+            // behavior even when the project creature is untemplated, so these
+            // scoped creatures need the removal action; unrelated released
+            // graphs are untouched. GS-AUD-0025: the scoped set and the append
+            // now live in one place so the alternate-caller adapter applies the
+            // same rule instead of silently omitting it.
+            if (RequiresInheritedTemplateRemoval(variant.Family, variant.Creature))
+                AppendInheritedTemplateRemoval(target.ComponentsArray, unit,
+                    replacedNativeTemplateBuffs);
             // The S30 Lemure has lawful/evil subtypes. Set the actual spell
             // descriptors on this new owned route, preserving class-specific
             // native eligibility rather than imposing a global caster alignment.

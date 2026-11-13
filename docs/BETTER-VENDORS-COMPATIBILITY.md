@@ -316,18 +316,39 @@ Vendors' are ordinary table entries, not `LootItemsPackFixed` rows. The 43 new
 variants never appear in any fixed row, so the native reconciliation in
 `SharedVendorTables.GetTable` never touches them.
 
-The seven reused +1 items are different. This mod already publishes fixed
-`SmithVendorTable` rows for them, one copy each while their module is on: the
-Pistol, Musket and Blunderbuss +1 through the capital publication, the
-Eastern +1 items through the Eastern campaign publication, and the +1 Elven
-Branched Spear through the spear campaign publication. The native
-reconciliation adjusts an item's combined stack by the change in its fixed
-rows. So when such a module is turned off and the game reloaded, that item's
-merchant stack drops by exactly one copy. If the fixed copy had already been
-sold, that copy is a progression copy. Turning the module back on adds it back.
-This is existing baseline vendor-row behaviour, not an action of this
-integration. The `better-vendors.reused-fixed-row-reconciliation` domain case
-pins it.
+The seven reused +1 items are different: this mod already publishes fixed
+vendor rows for them, one copy each while their module is on. **Which table
+depends on the item**, and the earlier wording here was wrong about four of the
+seven (GS-AUD-0031):
+
+- **Pistol, Musket and Blunderbuss +1** do get fixed capital `SmithVendorTable`
+  rows, published by `CapitalVendorBlueprints` alongside the rest of the
+  firearm stock.
+- **The three Eastern +1 items and the +1 Elven Branched Spear do NOT.** Their
+  capital `SmithVendorTable` specs are deliberately **empty arrays**, labelled
+  *"Model D capital retired generic stock"*
+  (`Blueprints/EasternWeaponCampaignBlueprints.cs`,
+  `Blueprints/ElvenBranchedSpearCampaignBlueprints.cs`), and the capital
+  publication actively strips such rows. These four reach players through the
+  **Dire Narlmarches village, Pitax town and both Beneath the Stolen Lands
+  "Honest Guy" tables**, whose specs use `AllGenericKinds()` /
+  `AllFoundationKinds()` and therefore include the `PlusOne` kind. When the
+  optional Better Vendors integration is active, Military rank I additionally
+  supplies capital blacksmith batches.
+
+These four items are **available**; only this document's description of where
+they come from was wrong. `planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md`
+already agreed with the source.
+
+The native reconciliation adjusts an item's combined stack by the change in its
+fixed rows. So when a module is turned off and the game reloaded, that item's
+merchant stack drops by exactly one copy **at whichever table carries its fixed
+row**. If the fixed copy had already been sold, that copy is a progression copy.
+Turning the module back on adds it back. This is existing baseline vendor-row
+behaviour, not an action of this integration. The
+`better-vendors.reused-fixed-row-reconciliation` domain case pins it, but note
+that it models only the Pistol and never asserts a destination table, so it
+cannot catch a wrong-table claim like the one corrected above.
 
 Craft Magic Items is not required. The new entries are not added to this mod's
 Craft Magic Items registration catalog and gain no crafting privileges.
@@ -391,7 +412,10 @@ UMM log lines use phase `better-vendors`:
    active.
 3. **Baseline effect: module off.** Turning a content module off can reduce a
    reused +1 weapon's merchant stock by one through the existing vendor-row
-   reconciliation (see [Other acquisition paths](#other-acquisition-paths)).
+   reconciliation, at whichever table carries that item's fixed row -- the
+   capital `SmithVendorTable` for the three firearms, and the Dire Narlmarches,
+   Pitax or BTSL tables for the three Eastern items and the Elven Branched
+   Spear (see [Other acquisition paths](#other-acquisition-paths)).
 4. **Not tested: Craft Magic Items** handling of the new variants.
 
 ## Merchant and persistence acceptance (NOT RUN, waived for 0.0.138)

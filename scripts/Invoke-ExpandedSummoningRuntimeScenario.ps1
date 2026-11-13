@@ -53,11 +53,49 @@ param(
     [ValidateRange(5, 600)]
     [int]$ObserverStartupTimeoutSeconds = 180,
     [ValidateRange(5, 1800)]
-    [int]$CompletionTimeoutSeconds = 180
+    [int]$CompletionTimeoutSeconds = 180,
+    # GS-AUD-0007 staged acceptance. Replaces FeatureModules.json inside the
+    # deployed tree with this exact file, AFTER deployment and BEFORE launch, so
+    # the candidate loads it at startup. Both the original bytes and the original
+    # file ATTRIBUTES are recorded and put back; the read-only switch below is
+    # applied to the STAGED fixture only and is always cleared before the tree is
+    # restored, so the owner's real settings file is never left read-only.
+    [string]$StageFeatureModulesPath,
+    # Forces the migration write to fail by making the staged fixture read-only.
+    [switch]$StageFeatureModulesReadOnly
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+if ($StageFeatureModulesReadOnly -and [string]::IsNullOrEmpty($StageFeatureModulesPath)) {
+    throw '-StageFeatureModulesReadOnly requires -StageFeatureModulesPath.'
+}
+if ($StageFeatureModulesPath -and -not (Test-Path -LiteralPath $StageFeatureModulesPath -PathType Leaf)) {
+    throw "Staged FeatureModules.json is missing: $StageFeatureModulesPath"
+}
+# Staging a settings fixture and then not asking for the migration expectations
+# is always a mistake: the observation would not run and the scenario would pass
+# on its other gates, which is exactly what happened on the first attempt. Refuse
+# it rather than let a silent no-op look like evidence.
+if ($StageFeatureModulesPath -and -not (
+        $ScenarioParameters.ContainsKey('expectedSettingsSource') -and
+        $ScenarioParameters.ContainsKey('expectedMigrationWriteFailed') -and
+        $ScenarioParameters.ContainsKey('expectedRecovered'))) {
+    throw ('-StageFeatureModulesPath requires the expectedSettingsSource, ' +
+        'expectedMigrationWriteFailed and expectedRecovered scenario parameters, ' +
+        'otherwise the staged migration is never observed.')
+}
+# The staging action lives inside the explicit-package deployment route. Without
+# -PackagePath this script takes the ordinary build/deploy path, where nothing
+# stages the fixture and nothing forwards it to the nested launcher - so the
+# expectations would reach the runtime request while the staging silently never
+# happened. Refuse here, before any backup or deployment, rather than accept a
+# staging instruction that cannot be carried out.
+if ($StageFeatureModulesPath -and -not $PackagePath) {
+    throw ('-StageFeatureModulesPath requires an explicit -PackagePath: staging only ' +
+        'occurs on the explicit-candidate deployment route, so without it the fixture ' +
+        'would never be staged.')
+}
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 
 # The orchestration decisions - which evidence belongs to this run, how the
@@ -125,8 +163,14 @@ try {
 } finally { Exit-KmgRuntimeLease $ummScope }
 $installationRestorationFailed = $false
 $ummRestorationFailed = $false
+$stagedSettingsRestorationFailed = $false
+$settingsOriginalSha256 = $null
+$settingsStagedSha256 = $null
 Write-Host "UMM Params.xml protected: existed=$($ummReceipt.existed) sha256=$($ummReceipt.intakeSha256) receipt=$($ummReceipt.receiptPath)"
 
+$settingsStagedTarget = $null
+$settingsOriginalBytes = $null
+$settingsOriginalAttributes = [IO.FileAttributes]::Normal
 $before = Get-KmgTreeFingerprint -Directory $LiveModDirectory
 Write-Host "Pre-run live tree: files=$($before.Files) sha256=$($before.Sha256)"
 
@@ -211,6 +255,41 @@ try {
         $reuseManifest = (Resolve-Path -LiteralPath $deploymentOutput[0]).Path
         $record.explicitPackage = $reusePackage
         $record.explicitDeploymentManifest = $reuseManifest
+        if ($StageFeatureModulesPath) {
+            $stagedTarget = Join-Path $LiveModDirectory 'FeatureModules.json'
+            if (-not (Test-Path -LiteralPath $stagedTarget -PathType Leaf)) {
+                throw "Deployed tree has no FeatureModules.json to stage over: $stagedTarget"
+            }
+            # Bytes AND attributes, so the restore can put back exactly what was
+            # there. The snapshot already covers the bytes; attributes are the
+            # part a tree restore does not carry.
+            $settingsOriginalBytes = [IO.File]::ReadAllBytes($stagedTarget)
+            $settingsOriginalAttributes = [IO.File]::GetAttributes($stagedTarget)
+            $settingsStagedTarget = $stagedTarget
+            # Hashed from the SAVED ORIGINAL BYTES. Reading the target back after
+            # the overwrite recorded the staged hash under originalSha256, which
+            # made the two indistinguishable in the receipt whenever they
+            # differed - which is the whole point of the field.
+            $settingsOriginalSha256 = [BitConverter]::ToString(
+                [Security.Cryptography.SHA256]::Create().ComputeHash($settingsOriginalBytes)
+                ).Replace('-', '')
+            [IO.File]::SetAttributes($stagedTarget, [IO.FileAttributes]::Normal)
+            [IO.File]::WriteAllBytes($stagedTarget, [IO.File]::ReadAllBytes($StageFeatureModulesPath))
+            if ($StageFeatureModulesReadOnly) {
+                [IO.File]::SetAttributes($stagedTarget, [IO.FileAttributes]::ReadOnly)
+            }
+            $settingsStagedSha256 = (Get-FileHash -LiteralPath $StageFeatureModulesPath `
+                -Algorithm SHA256).Hash
+            $record.stagedFeatureModules = [ordered]@{
+                source = (Resolve-Path -LiteralPath $StageFeatureModulesPath).Path
+                target = $stagedTarget
+                readOnly = [bool]$StageFeatureModulesReadOnly
+                originalSha256 = $settingsOriginalSha256
+                originalAttributes = $settingsOriginalAttributes.ToString()
+                stagedSha256 = $settingsStagedSha256
+                stagedAttributes = ([IO.File]::GetAttributes($stagedTarget)).ToString() }
+            Write-Host "Staged FeatureModules.json (readOnly=$([bool]$StageFeatureModulesReadOnly)): $stagedTarget"
+        }
         if (-not [string]::IsNullOrEmpty($DevelopmentPurpose)) {
             $record.developmentPurpose = $DevelopmentPurpose
             $record.developmentDeploymentManifest = $reuseManifest
@@ -399,8 +478,165 @@ finally {
     # or inherits the startup-protection lease this wrapper still holds.
     $ummParentLease = if ($startupPeerScope) { $startupPeerScope.Lease } else { $null }
     $cleanup = Invoke-KmgIndependentInstallationAndUmmRestoration -UmmReceipt $ummReceipt -ParentLease $ummParentLease -RestoreInstallation {
+        $restorationScope = $null
+        try {
+
+        # The process-exit and ownership boundary comes FIRST, before any disk
+        # capture and before any mutation.
+        #
+        # Moving the staged settings cleanup out of the content-fingerprint
+        # branch fixed the attribute-only case but put the settings write ahead
+        # of this guard, so the wrapper could rewrite live settings while
+        # Kingmaker was still shutting down - a window this script already
+        # acknowledges - and could capture the disk state before shutdown writes
+        # had settled. Nothing below touches the installation until the game is
+        # gone.
+        $restorationBoundary = $true
+        try {
+            # The harness returns while Kingmaker is still shutting down, and a
+            # restore during that window is refused. Wait for the process to go
+            # rather than treating the race as a restoration failure.
+            $exitDeadline = [DateTime]::UtcNow.AddSeconds(120)
+            while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and
+                [DateTime]::UtcNow -lt $exitDeadline) {
+                Start-Sleep -Milliseconds 500
+            }
+
+            # A run that aborted mid-transaction can leave its own compatibility
+            # lock behind. Release it only when this batch owns it; the helper
+            # throws if the recorded owner differs.
+            $compatibilityLock = 'C:\Dev\KingmakerGunslingerLab\compatibility-state\compatibility.lock'
+            if (-not $startupPeerScope -and (Test-Path -LiteralPath $compatibilityLock -PathType Leaf)) {
+                $lockOwner = (Get-Content -LiteralPath $compatibilityLock -Raw).Trim()
+                if (Test-KmgCompatibilityLockOwned -LockOwner $lockOwner `
+                    -BatchStartedUtc ([DateTime]$record.startedAtUtc)) {
+                    . (Join-Path $PSScriptRoot 'compatibility\CompatibilityProfile.Common.ps1')
+                    Remove-KmgCompatibilityOwnedLock -LockPath $compatibilityLock -RunId $lockOwner
+                    $record.releasedStaleCompatibilityLock = $lockOwner
+                } else {
+                    $record.foreignCompatibilityLock = $lockOwner
+                }
+            }
+
+            # The process check alone does not reserve the installation. Hold
+            # shared ownership before inspecting or changing staged settings,
+            # and lend that same lease to the whole-tree restoration below.
+            $restorationScope = Enter-KmgRuntimeLease -ParentLease $ummParentLease `
+                -Purpose 'expanded-summoning installation restoration'
+            Assert-KmgNotRunning
+        }
+        catch {
+            # Still alive, or ownership could not be established. Deliberately
+            # change NOTHING: restoration stays failed with the snapshot and
+            # receipt intact so the owner can recover deterministically.
+            $restorationBoundary = $false
+            $record.restoration = 'FAILED'
+            $record.restorationError = 'Process-exit/ownership boundary not established: ' +
+                $_.Exception.Message
+            $record.restorationDeferred = [ordered]@{
+                reason = 'kingmaker-still-running-or-unowned'
+                snapshot = $snapshot.Destination
+                stagedSettingsTarget = $settingsStagedTarget
+                recover = 'scripts\Restore-Live-Mod.ps1 -BackupDirectory <snapshot> -Confirm:$false' }
+            Write-Warning ("Restoration boundary not established; nothing was modified. " +
+                "Snapshot retained at $($snapshot.Destination): $($_.Exception.Message)")
+        }
+
+        if ($restorationBoundary) {
         $deployed = Get-KmgTreeFingerprint -Directory $LiveModDirectory
         $record.liveAfterScenario = [ordered]@{ files = $deployed.Files; sha256 = $deployed.Sha256 }
+
+        # The staged settings file is handled HERE, before and independently of
+        # the content-fingerprint decision below.
+        #
+        # Get-KmgTreeFingerprint hashes paths and contents and does NOT include
+        # file attributes, so Resolve-KmgRestorationNeeded can legitimately
+        # report 'not-needed' while a staged ReadOnly attribute is still set -
+        # for instance when the migration write fails without changing any
+        # bytes. The previous version put this cleanup inside the else branch,
+        # so in that case it would have left the owner's settings file
+        # read-only while reporting that nothing needed restoring.
+        #
+        # The disk observation is also taken before anything is rewritten,
+        # because the startup assertion reports what the mod LOADED and cannot
+        # show what the failed write left on disk.
+        if ($settingsStagedTarget) {
+            try {
+                $observedPresent = Test-Path -LiteralPath $settingsStagedTarget -PathType Leaf
+                $observedSha = if ($observedPresent) {
+                    (Get-FileHash -LiteralPath $settingsStagedTarget -Algorithm SHA256).Hash } else { $null }
+                $observedAttributes = if ($observedPresent) {
+                    ([IO.File]::GetAttributes($settingsStagedTarget)).ToString() } else { $null }
+                $observedSchema = $null
+                if ($observedPresent) {
+                    try {
+                        $observedSchema = (Get-Content -LiteralPath $settingsStagedTarget -Raw |
+                            ConvertFrom-Json).schemaVersion
+                    } catch { $observedSchema = 'unreadable' }
+                }
+                # A malformed-file recovery would quarantine beside the file,
+                # and an interrupted write can leave its temporary behind.
+                $settingsDirectory = Split-Path -Parent $settingsStagedTarget
+                $settingsLeaf = Split-Path -Leaf $settingsStagedTarget
+                $residue = @(Get-ChildItem -LiteralPath $settingsDirectory -File `
+                        -ErrorAction SilentlyContinue |
+                    Where-Object { $_.Name -ne $settingsLeaf -and
+                        $_.Name -like ($settingsLeaf + '*') } |
+                    ForEach-Object { $_.Name })
+                $record.stagedFeatureModulesObserved = [ordered]@{
+                    present = $observedPresent
+                    sha256 = $observedSha
+                    attributes = $observedAttributes
+                    schemaVersion = $observedSchema
+                    byteIdenticalToStaged = ($observedSha -eq $settingsStagedSha256)
+                    byteIdenticalToOriginal = ($observedSha -eq $settingsOriginalSha256)
+                    residueBesideSettings = $residue }
+            }
+            catch {
+                $record.stagedFeatureModulesObserved = 'FAILED: ' + $_.Exception.Message
+                Write-Warning "Staged FeatureModules.json observation failed: $($_.Exception.Message)"
+            }
+
+            # Restore bytes and attributes, then VERIFY the attributes actually
+            # came back. An unresolved failure here is retained and fails the
+            # run; a later successful content restore must not mask it.
+            try {
+                if (Test-Path -LiteralPath $settingsStagedTarget -PathType Leaf) {
+                    [IO.File]::SetAttributes($settingsStagedTarget, [IO.FileAttributes]::Normal)
+                }
+                [IO.File]::WriteAllBytes($settingsStagedTarget, $settingsOriginalBytes)
+                [IO.File]::SetAttributes($settingsStagedTarget, $settingsOriginalAttributes)
+                $finalSha = (Get-FileHash -LiteralPath $settingsStagedTarget -Algorithm SHA256).Hash
+                $finalAttributes = [IO.File]::GetAttributes($settingsStagedTarget)
+                $attributesVerified = ($finalAttributes -eq $settingsOriginalAttributes)
+                $bytesVerified = ($finalSha -eq $settingsOriginalSha256)
+                # Intermediate: this is the staged-file cleanup verified at THIS
+                # point. The whole-tree restore below can still replace the file,
+                # so the machine-state claim is stagedFeatureModulesFinal further
+                # down, taken after the last replacement.
+                $record.stagedFeatureModulesRestored = [ordered]@{
+                    sha256 = $finalSha
+                    attributes = $finalAttributes.ToString()
+                    expectedAttributes = $settingsOriginalAttributes.ToString()
+                    bytesVerified = $bytesVerified
+                    attributesVerified = $attributesVerified
+                    stage = 'before-tree-restore' }
+                if ($bytesVerified -and $attributesVerified) {
+                    Write-Host ('Restored staged FeatureModules.json bytes and attributes: ' +
+                        "attributes=$($finalAttributes)")
+                } else {
+                    $script:stagedSettingsRestorationFailed = $true
+                    Write-Warning ('Staged FeatureModules.json restoration did not verify: ' +
+                        "bytes=$bytesVerified attributes=$attributesVerified " +
+                        "(expected $($settingsOriginalAttributes), got $($finalAttributes))")
+                }
+            }
+            catch {
+                $script:stagedSettingsRestorationFailed = $true
+                $record.stagedFeatureModulesRestored = 'FAILED: ' + $_.Exception.Message
+                Write-Warning "Staged FeatureModules.json restore failed: $($_.Exception.Message)"
+            }
+        }
 
         if (-not (Resolve-KmgRestorationNeeded -BeforeSha256 $before.Sha256 `
             -AfterScenarioSha256 $deployed.Sha256)) {
@@ -409,34 +645,8 @@ finally {
         }
         else {
             try {
-                # The harness returns while Kingmaker is still shutting down, and a
-                # restore during that window is refused. Wait for the process to go
-                # rather than treating the race as a restoration failure.
-                $exitDeadline = [DateTime]::UtcNow.AddSeconds(120)
-                while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and
-                    [DateTime]::UtcNow -lt $exitDeadline) {
-                    Start-Sleep -Milliseconds 500
-                }
-
-                # A run that aborted mid-transaction can leave its own compatibility
-                # lock behind. Release it only when this batch owns it; the helper
-                # throws if the recorded owner differs.
-                $compatibilityLock = 'C:\Dev\KingmakerGunslingerLab\compatibility-state\compatibility.lock'
-                if (-not $startupPeerScope -and (Test-Path -LiteralPath $compatibilityLock -PathType Leaf)) {
-                    $lockOwner = (Get-Content -LiteralPath $compatibilityLock -Raw).Trim()
-                    if (Test-KmgCompatibilityLockOwned -LockOwner $lockOwner `
-                        -BatchStartedUtc ([DateTime]$record.startedAtUtc)) {
-                        . (Join-Path $PSScriptRoot 'compatibility\CompatibilityProfile.Common.ps1')
-                        Remove-KmgCompatibilityOwnedLock -LockPath $compatibilityLock -RunId $lockOwner
-                        $record.releasedStaleCompatibilityLock = $lockOwner
-                    } else {
-                        $record.foreignCompatibilityLock = $lockOwner
-                    }
-                }
-
-                Assert-KmgNotRunning
                 $restoreArguments=@{BackupDirectory=$snapshot.Destination;LiveModDirectory=$LiveModDirectory;Confirm=$false}
-                if($startupPeerScope){$restoreArguments.RuntimeLease=$startupPeerScope.Lease}
+                $restoreArguments.RuntimeLease = $restorationScope.Lease
                 & (Join-Path $PSScriptRoot 'Restore-Live-Mod.ps1') @restoreArguments | Out-Null
                 $after = Get-KmgTreeFingerprint -Directory $LiveModDirectory
                 $record.liveAfterRestore = [ordered]@{ files = $after.Files; sha256 = $after.Sha256 }
@@ -454,6 +664,43 @@ finally {
                 Write-Warning "Restoration failed. The snapshot is intact at $($snapshot.Destination): $($_.Exception.Message)"
             }
         }
+
+        # The FINAL settings observation, taken after the last replacement of
+        # the tree. The earlier check verifies the staged cleanup at its own
+        # point; only this one is a claim about the machine the owner is left
+        # with, because Restore-Live-Mod can replace the file again.
+        if ($settingsStagedTarget) {
+            try {
+                $endSha = (Get-FileHash -LiteralPath $settingsStagedTarget -Algorithm SHA256).Hash
+                $endAttributes = [IO.File]::GetAttributes($settingsStagedTarget)
+                $endBytesOk = ($endSha -eq $settingsOriginalSha256)
+                $endAttributesOk = ($endAttributes -eq $settingsOriginalAttributes)
+                $record.stagedFeatureModulesFinal = [ordered]@{
+                    stage = 'after-tree-restore'
+                    sha256 = $endSha
+                    attributes = $endAttributes.ToString()
+                    expectedSha256 = $settingsOriginalSha256
+                    expectedAttributes = $settingsOriginalAttributes.ToString()
+                    bytesVerified = $endBytesOk
+                    attributesVerified = $endAttributesOk }
+                if (-not ($endBytesOk -and $endAttributesOk)) {
+                    $script:stagedSettingsRestorationFailed = $true
+                    Write-Warning ('Final FeatureModules.json state does not match intake: ' +
+                        "bytes=$endBytesOk attributes=$endAttributesOk " +
+                        "(expected $($settingsOriginalAttributes), got $($endAttributes))")
+                } else {
+                    Write-Host ('Final FeatureModules.json verified against intake: ' +
+                        "attributes=$($endAttributes)")
+                }
+            }
+            catch {
+                $script:stagedSettingsRestorationFailed = $true
+                $record.stagedFeatureModulesFinal = 'FAILED: ' + $_.Exception.Message
+                Write-Warning "Final FeatureModules.json verification failed: $($_.Exception.Message)"
+            }
+        }
+        }
+        } finally { Exit-KmgRuntimeLease $restorationScope }
     }
     if ($cleanup.installationError) {
         $record.restoration = 'FAILED'
@@ -517,5 +764,6 @@ finally {
     Write-Host "Restoration record: $recordPath"
 }
 if($startupRestorationFailed){throw 'Sprint40 startup restoration failed; inspect the exact restoration receipt before any further dispatch.'}
+if($stagedSettingsRestorationFailed){throw ('Staged FeatureModules.json bytes/attributes did not restore to their recorded original; restoration is not PASS. The snapshot and restoration record are retained, and the observed/restored attributes are in the run record.')}
 if($installationRestorationFailed){throw 'Live installation restoration was not verified; restoration is not PASS. The snapshot and restoration record are retained.'}
 if($ummRestorationFailed){throw 'UMM Params.xml restoration failed; restoration is not PASS. Recover with scripts\Restore-UmmParams.ps1 from the retained receipt.'}

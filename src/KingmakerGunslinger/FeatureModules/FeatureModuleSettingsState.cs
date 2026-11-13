@@ -28,6 +28,16 @@ namespace KingmakerGunslinger.FeatureModules
         internal string Path { get; private set; }
         internal string Source { get; private set; }
         internal bool Recovered { get; private set; }
+        /// <summary>
+        /// True when this state came from a valid settings file whose schema
+        /// migration could not be WRITTEN back. The parsed values are still in
+        /// effect and the original file is unchanged; only persistence failed.
+        /// This is deliberately distinct from <see cref="Recovered"/>, which
+        /// means the file was malformed and defaults were substituted.
+        /// </summary>
+        internal bool MigrationWriteFailed { get; private set; }
+
+        internal void MarkMigrationWriteFailed() { MigrationWriteFailed = true; }
         internal bool RestartRequired { get { return !Active.Equals(Pending); } }
 
         // Presentation option, not a feature module: no restart; close and
