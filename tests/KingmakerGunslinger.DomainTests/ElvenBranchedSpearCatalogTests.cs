@@ -408,8 +408,9 @@ namespace KingmakerGunslinger.DomainTests
                 "Fixed-loot placement count changed.");
 
             // Owner playtest repair (2026-11-11). Oleg's own table publishes
-            // only the ordinary and masterwork spears; every later vendor that
-            // offered all four foundation spears still does.
+            // only the ordinary and masterwork spears. Since 2026-11-12 the
+            // Dire Narlmarches and Pitax traders publish none, so only the two
+            // Honest Guy tables keep the complete foundation set.
             string normalized = source.Replace("\r\n", "\n");
             int olegStart = normalized.IndexOf("new VendorSpec(\"f720440559fc00949900bfa1575196ac\"",
                 StringComparison.Ordinal);
@@ -424,9 +425,9 @@ namespace KingmakerGunslinger.DomainTests
                 "Oleg lost his ordinary or masterwork branched spear.");
             Assertions.False(oleg.Contains("ColdIron") || oleg.Contains("AllFoundationKinds"),
                 "Oleg still stocks a cold iron branched spear.");
-            Assertions.Equal(5, normalized.Split(new[] { "AllFoundationKinds()" },
+            Assertions.Equal(3, normalized.Split(new[] { "AllFoundationKinds()" },
                 StringSplitOptions.None).Length - 1,
-                "Later vendors' complete foundation stock (Dire Narlmarches, Pitax, two Honest Guy tables) changed.");
+                "Complete foundation stock (definition plus the two Honest Guy tables) changed.");
 
             // Thornstep is retired from acquisition: no active placement, its
             // exact former Riverine Rise source is a cleanup target, and its

@@ -1,4 +1,19 @@
-# Hide original Summon Elemental: merged and released in v0.0.184 / STOP
+# Regional vendor melee withdrawal: draft PR, focused checks pass, native NOT RUN / STOP
+
+Current (2026-11-12). See `planning/regional-vendor-melee-withdrawal/STATUS.md`. Branch
+`codex/regional-vendor-melee-withdrawal` from master `dd6a3ade75`. Nothing merged, released or installed.
+- The Dire Narlmarches village and Pitax traders publish empty Eastern/spear stock. That retires 36 rows,
+  12 Eastern + 6 spear each. Both tables stay exact cleanup targets.
+- Existing saves rely on native `SharedVendorTables.GetTable` reconciliation. A sold-back copy is removed,
+  as for Oleg.
+- Focused gate: compile PASS, 128/128. The unfiltered built domain exe ran 2,927/2,950; the 23 failures are a
+  missing machine-local IL file in the fresh worktree.
+- `observe-model-d-vendors` was extended and Oleg's stale four-spear expectation corrected. Native: NOT RUN.
+- Next: owner review. A native run or merge happens only on separate instruction.
+
+---
+
+# (previous) Hide original Summon Elemental: merged and released in v0.0.184 / STOP
 
 Current (2026-11-12). See `planning/hide-original-summon-elemental/STATUS.md`.
 - The owner approved and asked for a merge and release.
