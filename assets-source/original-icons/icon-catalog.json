@@ -786,7 +786,15 @@
     {
       "path": "src/KingmakerGunslinger/CustomWeapons/CustomWeaponSelectorRuntime.cs",
       "sha256": "4516034a2cb69bcd5761061c82b659dab3de309d9a0877e744e228990639666e",
-      "scope": "Preserve exact baseline assignment logic. A hash gate is source evidence, not a substitute for live reference-equality checks."
+      "scope": "Preserve exact baseline assignment logic. A hash gate is source evidence, not a substitute for live reference-equality checks.",
+      "hashEncoding": "UTF-8 with LF newlines",
+      "authorizedAssignmentEdits": [
+        {
+          "before": "            IEnumerable<FeatureUIData> source = (__result ??\n                Enumerable.Empty<IFeatureSelectionItem>()).OfType<FeatureUIData>();\n            __result = CustomWeaponSelectorRuntime.Append(__instance, source)\n                .Cast<IFeatureSelectionItem>();",
+          "after": "            // GS-AUD-0034: filter only the entries this project understands\n            // and never discard another mod's implementation.\n            __result = Compatibility.SelectionBoundaryPreservation.Merge(\n                __result,\n                value => value is FeatureUIData,\n                understood => CustomWeaponSelectorRuntime.Append(__instance,\n                        understood.Cast<FeatureUIData>())\n                    .Cast<IFeatureSelectionItem>().ToArray());"
+        }
+      ],
+      "authorization": "GS-AUD-0034 audit repair R08, campaign KMG-REP-20261112T130318Z. One selection-postfix body replaced by a delegation to Compatibility.SelectionBoundaryPreservation.Merge so a foreign mod's entries are preserved instead of discarded. Art-neutral: no icon, sprite, monogram or texture is referenced, and the Append methods that construct FeatureUIData with option.Monogram are untouched. The pinned baseline hash is unchanged and must still be reproduced after this hunk is reversed. Exactly one hunk is authorized; a missing, duplicated or unlisted change is rejected."
     },
     {
       "path": "src/KingmakerGunslinger/Blueprints/ShieldOtherBlueprints.cs",
@@ -13248,7 +13256,13 @@
       "baselineSha256": "bc22787d2838a418dd22b656b87554a5e3be8d25c9f9b420c3d2a07e3410bc75",
       "before": "                result.Add(new FeatureUIData(feature, new FeatureParam(parameter),\n                    displayName, parameter.Description, parameter.Icon,\n                    displayName));",
       "after": "                // Match the native/eastern selector path. Only this UI entry\n                // uses text; the saved blueprint parameter and its sprite stay\n                // intact for selected-feature consumers with different contracts.\n                result.Add(new FeatureUIData(feature, new FeatureParam(parameter),\n                    displayName, parameter.Description, null,\n                    displayName.Substring(0, 1)));",
-      "authorization": "Icon overhaul v2 mission section 6; exact UI constructor only. Entire remaining source must match baseline."
+      "authorization": "Icon overhaul v2 mission section 6; exact UI constructor only. Entire remaining source must match baseline. GS-AUD-0034 audit repair R08, campaign KMG-REP-20261112T130318Z. One selection-postfix body replaced by a delegation to Compatibility.SelectionBoundaryPreservation.Merge so a foreign mod's entries are preserved instead of discarded. Art-neutral: no icon, sprite, monogram or texture is referenced, and the Append methods that construct FeatureUIData with option.Monogram are untouched. The pinned baseline hash is unchanged and must still be reproduced after this hunk is reversed. Exactly one hunk is authorized; a missing, duplicated or unlisted change is rejected.",
+      "authorizedFeatureEdits": [
+        {
+          "before": "            IEnumerable<FeatureUIData> source = (__result ??\n                Enumerable.Empty<IFeatureSelectionItem>()).OfType<FeatureUIData>();\n            __result = NativeFirearmFeatIntegration.Append(__instance, source,\n                    previewUnit ?? beforeLevelUpUnit)\n                .Cast<IFeatureSelectionItem>();",
+          "after": "            // GS-AUD-0034: filter only the entries this project understands\n            // and never discard another mod's implementation.\n            __result = Compatibility.SelectionBoundaryPreservation.Merge(\n                __result,\n                value => value is FeatureUIData,\n                understood => NativeFirearmFeatIntegration.Append(__instance,\n                        understood.Cast<FeatureUIData>(),\n                        previewUnit ?? beforeLevelUpUnit)\n                    .Cast<IFeatureSelectionItem>().ToArray());"
+        }
+      ]
     },
     {
       "path": "src/KingmakerGunslinger/Blueprints/ProjectAssetIcons.cs",

@@ -979,6 +979,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var expectedTie = Array.IndexOf(party, trained) < Array.IndexOf(party, second) ? trained : second;
                 ScrollsAssert("native-reader-ties-stable", "equal native activation probabilities choose stable traveling-party order on every refresh",
                     "winner=" + current().Source.CasterId, Enumerable.Range(0, 12).All(index => current().Source.CasterId == expectedTie.UniqueId));
+                // GS-AUD-0035 must run HERE, while trained and second are both
+                // genuinely UMD readers and every class-list reader carries the
+                // 100% failure fact. After the restoration below, second reads
+                // by class list again, which is a proven no-check success and
+                // would rank the group.
+                foreach (int tick in QualifyUnrankableScrollReaderRow(panel, target, trained, second, current))
+                    yield return tick;
                 foreach (var reader in affected) reader.Descriptor.RemoveFact(failure); affected.Clear();
                 foreach (var modifier in modifiers) secondStat.RemoveModifier(modifier); modifiers.Clear();
                 secondStat.BaseValue = secondBase;
@@ -1060,6 +1067,169 @@ namespace KingmakerGunslinger.RuntimeTesting
                 panel.Hide();
             }
         }
+        /// <summary>
+        /// GS-AUD-0035. The audit claimed this row had no readers. It does have
+        /// readers - what it can lack is a RANKING. TeleportScrollReaderPolicy
+        /// fails closed when two or more eligible readers include one whose
+        /// activation chance cannot be forecast and none is a proven no-check
+        /// success, so the group has usable readers and no best one.
+        ///
+        /// That is a different state from the no-eligible-reader case this
+        /// scenario already covers, and R08 required the row to be excluded or
+        /// properly disabled rather than offered as executable. It stays
+        /// VISIBLE - hiding a scroll the player owns would be worse - and is
+        /// made non-interactable with the native DisableWarningMessage set,
+        /// which is the convention ButtonPF.OnPointerClick already uses.
+        ///
+        /// The unforecastable condition is armed with a real native component,
+        /// not a stub: AbilityScoreCheckBonus configured for Use Magic Device
+        /// is exactly what the production adapter refuses to forecast.
+        ///
+        /// Note what is and is not observed here. Invoking the UnityEvent
+        /// directly bypasses Selectable.interactable, so that call exercises the
+        /// race guard in Choose rather than the native warning path; the
+        /// assertion below says the message is SET, which is what makes
+        /// ButtonPF raise it, and does not claim to have seen it rendered.
+        /// </summary>
+        private IEnumerable<int> QualifyUnrankableScrollReaderRow(
+            Kingmaker.UI.GlobalMap.GlobalMapMessageBox panel, GlobalMapLocation target,
+            Kingmaker.EntitySystem.Entities.UnitEntityData trained,
+            Kingmaker.EntitySystem.Entities.UnitEntityData second,
+            Func<WorldMapPointSpellAction> current)
+        {
+            var player = Game.Instance.Player;
+            var party = player.Party.ToArray();
+            var scroll = BlueprintBootstrap.TeleportationScrolls.Teleport;
+            var unknown = ScriptableObject.CreateInstance<BlueprintFeature>();
+            unknown.name = "KMG_Disposable_UnforecastableUmd"; unknown.Ranks = 1;
+            var unknownComponent = ScriptableObject
+                .CreateInstance<Kingmaker.Designers.Mechanics.Facts.AbilityScoreCheckBonus>();
+            unknownComponent.Stat = StatType.SkillUseMagicDevice;
+            unknown.ComponentsArray = new Kingmaker.Blueprints.BlueprintComponent[] { unknownComponent };
+            bool armed = false;
+            try
+            {
+                WorldMapPointSpellAction rankable = current();
+                if (!rankable.ReaderResolved)
+                    throw new InvalidOperationException(
+                        "The control requires a rankable group before the unforecastable reader is armed.");
+                if (second.Descriptor.AddFact(unknown) == null)
+                    throw new InvalidOperationException("The disposable unforecastable UMD fact was rejected.");
+                armed = true;
+                for (int frame = 0; frame < 4; frame++) yield return 0;
+
+                WorldMapPointSpellAction unranked = current();
+                SelectTeleportationCastingPoint(panel, target);
+                foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+                var rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                int index = rows.Actions.ToList().FindIndex(value => value.Key == unranked.Key);
+                if (index < 0) throw new InvalidOperationException(
+                    "The unrankable group stopped offering its row; it must stay visible.");
+                var button = rows.Buttons[index];
+                var native = rows.Natives[index];
+                string warning = native == null ? "<no native control>" : native.DisableWarningMessage;
+                // Rankable control rows, if the panel happens to contain any.
+                // The first run of this stage recorded rows=1 and enabledRows=0,
+                // so this set was EMPTY and an All(...) over it was vacuously
+                // true while the assertion text claimed those rows "stay
+                // interactable with no reason". Both the interactable value and
+                // the warning are captured now, and the claim below is scoped
+                // to what is actually checked.
+                int[] rankableRows = Enumerable.Range(0, rows.Actions.Count)
+                    .Where(value => value != index && rows.Actions[value].ReaderResolved &&
+                        rows.Natives[value] != null).ToArray();
+                string[] enabledWarnings = rankableRows
+                    .Select(value => rows.Natives[value].DisableWarningMessage ?? "").ToArray();
+                int rankableNotInteractable = rankableRows
+                    .Count(value => !rows.Buttons[value].interactable);
+                CaptureTeleportScrolls("unrankable-reader-row", new {
+                    key = unranked.Key, readerResolved = unranked.ReaderResolved,
+                    interactable = button.interactable, warning,
+                    rows = rows.Actions.Count, enabledRows = rankableRows.Length,
+                    rankableNotInteractable,
+                    diagnostic = unranked.Source.ActivationChance == null ? null :
+                        unranked.Source.ActivationChance.Diagnostic });
+                ScrollsAssert("unrankable-reader-row-offered-but-disabled",
+                    "TeleportScrollReaderPolicy.Select fails closed on a real native AbilityScoreCheckBonus " +
+                        "configured for Use Magic Device: usable readers with no rankable best one keep their visible row, which is made " +
+                        "non-interactable and carries a reason naming no party member. Any rankable " +
+                        "row that happens to share the panel must stay interactable with no reason - " +
+                        "the count is reported, and this panel may legitimately contain none, in " +
+                        "which case that half of the claim is vacuous and the reported enabledRows " +
+                        "says so",
+                    "readerResolved=" + unranked.ReaderResolved + ";interactable=" + button.interactable +
+                        ";warning=" + (string.IsNullOrEmpty(warning) ? "<empty>" : "set") +
+                        ";enabledRows=" + rankableRows.Length +
+                        ";enabledRowsWithWarning=" + enabledWarnings.Count(value => value.Length > 0) +
+                        ";rankableNotInteractable=" + rankableNotInteractable,
+                    !unranked.ReaderResolved && !button.interactable && native != null &&
+                        !string.IsNullOrEmpty(warning) &&
+                        !party.Any(value => warning.Contains(value.CharacterName)) &&
+                        enabledWarnings.All(value => value.Length == 0) &&
+                        rankableNotInteractable == 0);
+
+                int stockBefore = TeleportationScrollAdapter.Stock(player.Party, scroll);
+                var contextBefore = Game.Instance.Rulebook.Context;
+                var rngBefore = UnityEngine.Random.state;
+                using (var notifications = new TeleportNotificationObserver())
+                {
+                    button.onClick.Invoke(); button.onClick.Invoke();
+                    // Sampled HERE, before yielding. The first run asserted RNG
+                    // and rule-context stability across four rendered frames,
+                    // which measures the game's own update loop rather than this
+                    // click: everything about spending held (pending=False,
+                    // stock=3/3, messages=0) and the assertion still failed. The
+                    // claim is about the click path, so it is sampled around the
+                    // click path.
+                    bool quietInvocation =
+                        ReferenceEquals(contextBefore, Game.Instance.Rulebook.Context) &&
+                        rngBefore.Equals(UnityEngine.Random.state);
+                    for (int frame = 0; frame < 4; frame++) yield return 0;
+                    ScrollsAssert("unrankable-reader-row-click-spends-nothing",
+                        "the production race guard in Choose refuses a direct event invocation twice over: no confirmation " +
+                            "opens, no scroll is consumed, and the invocation itself changes no rule context or RNG",
+                        "pending=" + TeleportContextConfirmationPresenter.Pending + ";stock=" +
+                            TeleportationScrollAdapter.Stock(player.Party, scroll) + "/" + stockBefore +
+                            ";messages=" + notifications.Text.Count +
+                            ";quietInvocation=" + quietInvocation,
+                        !TeleportContextConfirmationPresenter.Pending &&
+                            TeleportContextConfirmationPresenter.Current == null &&
+                            TeleportationScrollAdapter.Stock(player.Party, scroll) == stockBefore &&
+                            quietInvocation);
+                }
+
+                // Re-evaluated per refresh, not latched at construction: the row
+                // becomes executable again as soon as a best reader can be bound.
+                second.Descriptor.RemoveFact(unknown); armed = false;
+                var refresh = typeof(TeleportDestinationRows).GetMethod("Update",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                for (int read = 0; read < 4; read++) { refresh.Invoke(rows, null); yield return 0; }
+                int again = rows.Actions.ToList().FindIndex(value => value.Key == rankable.Key);
+                var recovered = again < 0 ? null : rows.Actions[again];
+                string recoveredWarning = again < 0 || rows.Natives[again] == null ? null :
+                    rows.Natives[again].DisableWarningMessage;
+                ScrollsAssert("unrankable-reader-row-recovers-on-refresh",
+                    "TeleportDestinationRows.Update re-applies reader availability, so removing the unforecastable reader effect makes the same row interactable again " +
+                        "on an ordinary refresh, with its reason cleared and its button object kept",
+                    "found=" + (again >= 0) + ";readerResolved=" +
+                        (recovered == null ? "<none>" : recovered.ReaderResolved.ToString()) +
+                        ";interactable=" + (again < 0 ? "<none>" : rows.Buttons[again].interactable.ToString()) +
+                        ";warning=" + (string.IsNullOrEmpty(recoveredWarning) ? "<empty>" : "set") +
+                        ";sameButton=" + (again == index),
+                    again >= 0 && recovered.ReaderResolved && rows.Buttons[again].interactable &&
+                        string.IsNullOrEmpty(recoveredWarning) &&
+                        ReferenceEquals(button, rows.Buttons[again]));
+            }
+            finally
+            {
+                if (armed) second.Descriptor.RemoveFact(unknown);
+                if (TeleportContextConfirmationPresenter.Pending && DialogMessageBox.Instance.IsShown)
+                    TeleportationFixtureDialogButton("m_ButtonNo").onClick.Invoke();
+                UnityEngine.Object.Destroy(unknown);
+                UnityEngine.Object.Destroy(unknownComponent);
+            }
+        }
+
         private IEnumerable<int> QualifyConsumedRecallFailure(Kingmaker.UI.GlobalMap.GlobalMapMessageBox panel,
             GlobalMapLocation origin, GlobalMapLocation sanctuary, Kingmaker.EntitySystem.Entities.UnitEntityData reader,
             BlueprintItemEquipmentUsable selectedScroll = null)
