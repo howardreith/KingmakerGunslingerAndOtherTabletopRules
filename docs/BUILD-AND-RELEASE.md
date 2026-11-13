@@ -1,5 +1,41 @@
 # Build, package, and publish
 
+## 0.0.187 publication authorization
+
+On 2026-11-13 Howie wrote: "Please merge all 3 PRs and then cut a new release." PRs #149 (project-level
+Claude Code attribution settings), #148 (Unity Mod Manager display name) and #150 (commit-id map after
+the 2026-11-13 history rewrite) merged in that order. No channel was named, so this follows v0.0.186 as
+the next stable patch, v0.0.187, from master `ca6f4c0543`.
+
+- **Reviewed product.** Master `ca6f4c0543`. The only product change from v0.0.186 is the `Info.json`
+  `DisplayName`, from "Kingmaker Gunslinger" to "Mr. Bard's Tabletop Rules Expansion". The mod `Id`,
+  assembly, entry point, settings keys and identities are unchanged.
+  `tools/validate_umm_display_name_release187.py` pins it:
+  - the reviewed product differs from the v0.0.186 tag target only in the Info `DisplayName`, with no
+    change under `src/KingmakerGunslinger`, `assets`, `assets-source`, `blueprints` or `Directory.Build.props`;
+  - only the three AssemblyInfo version attributes and the Info and props version values may change;
+  - all 7,933 released identities stay exact and in order, and none is appended;
+  - the creature catalog is unchanged, with only the owner-withdrawn Stirge withheld (1,208 public choices);
+  - the disclosed inherited-template membership still equals v0.0.186's twelve keys;
+  - one static release record is added.
+  Three executable controls each FAIL: a stray product edit, a different display name and a changed
+  release record. The intended tree PASSes.
+- **Native evidence.** None. The compiled source changes only in its version attributes. The new name is
+  not observed in the Unity Mod Manager window; this is disclosed in the notes.
+- **Commit ids.** v0.0.186 and earlier tags were moved by the 2026-11-13 rewrite. The ids in this section
+  and in the release187 validator are post-rewrite ids. Older sections keep their original ids; translate
+  them with `docs/history/commit-id-map-2026-11-13.tsv`.
+- **Preparation.** On the release branch, the repository wrapper (dispatched to the release187 validator,
+  PASS) plus the complete suite (2,971/2,971, 0 failures) took 780 s.
+- **Publication path.** Use the ordinary exact-reference publisher from clean, pushed master with
+  `docs/RELEASE-NOTES-0.0.187.md`. It runs the complete gate and two deterministic builds, then publishes.
+  Planning budget: 30 minutes, excluding necessary safe completion.
+
+```powershell
+.\scripts\Publish-Release.ps1 -ReferenceBundleDir '<private build references>' `
+  -ReleaseNotesPath 'docs\RELEASE-NOTES-0.0.187.md' -Publish -ConfirmReleaseReady
+```
+
 ## 0.0.186 publication authorization
 
 **Published (completed).** Stable
