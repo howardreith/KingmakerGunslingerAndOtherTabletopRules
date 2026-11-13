@@ -199,8 +199,14 @@ namespace KingmakerGunslinger.DomainTests
                 });
             Assertions.Equal(2, decision.TargetCount, "Volley target count mismatch.");
             Assertions.Equal(1, decision.HitCount, "Volley hit count mismatch.");
-            Assertions.Equal(-2, ScatterAttackVolleyDecision.AttackPenalty,
-                "Scatter attack penalty changed.");
+            // The native convention: RuleAttackWithWeapon.AttackBonusPenalty is
+            // a POSITIVE quantity the engine subtracts, so the documented -2
+            // attack penalty is carried as positive 2 (GS-AUD-0039). This pins
+            // the constant against an accidental re-inversion; the decisive
+            // proof is the realised attack modifier in the native
+            // `scatter-realised-attack-penalty` assertion, not this literal.
+            Assertions.Equal(2, ScatterAttackVolleyDecision.AttackPenalty,
+                "Scatter attack penalty must stay the positive native penalty magnitude.");
         }
 
         private static void ScatterVolleyAllMisfire()
