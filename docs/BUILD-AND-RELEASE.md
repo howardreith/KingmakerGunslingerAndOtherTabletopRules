@@ -1,5 +1,42 @@
 # Build, package, and publish
 
+## 0.0.186 publication authorization
+
+**Authorized, not yet published.** Next stable patch after v0.0.185, from master `2c7ff93be9` after the
+seven v0.0.182-audit repair PRs.
+
+- **Reviewed product.** Master `2c7ff93be9eb`. The seven PRs were reviewed at their own heads and merged
+  in the order #134 -> #136 -> #137 -> #139 -> #135 -> #138 -> #140, each pinned with
+  `--match-head-commit`. `tools/validate_gunslinger_audit_repairs_release186.py` pins the release:
+  - only the three AssemblyInfo version attributes and the Info and props version values may change;
+  - all 7,933 released identities stay exact and in order, and none is appended;
+  - the creature catalog is unchanged, with only the owner-withdrawn Stirge withheld (1,208 public choices);
+  - the DISCLOSED inherited-template membership must still equal v0.0.185's twelve keys, so the release
+    cannot quietly change what it discloses as pre-existing;
+  - one static release record is added.
+- **Gate.** Complete suite 2,971/2,971 with 0 failures on `1de8b5c7305d`, and 2,954/2,954 on post-merge
+  master `ffc40bd2b` before #140. Focused gate 33/33 on
+  `selection-boundary;crafting-compensation;gunsmithing;ammunition`.
+- **Native evidence.** Guarded save-free runs with the installation snapshot-restored and verified after
+  each: `disposable-gunslinger-scatter-dead-shot` 50/0 on `6c866f83a1dd`;
+  `observe-feature-module-settings` staged writable and read-only on `468391fc06a3`;
+  `disposable-firearm-dependent-feats` 17/17 and `disposable-paper-cartridge-crafting-vendors` 13/13 on
+  `1de8b5c7305d`. The crafting budget cap was also demonstrated against negative control
+  `a6fcd6e51d3b`, where the observation FAILS. No save was named in any run.
+- **Release triage.** GS-REP-0002 (inherited-template set) is **pre-existing and unchanged** — membership
+  byte-identical to v0.0.185 — so it does not block. Disclosed in `KNOWN-ISSUES.md` and the notes. The two
+  failing feature-module publication gates reproduce identically on released master `a3912f569ac5`, so
+  they are pre-existing; their mechanism is untraced and they are disclosed.
+- **Disclosed limits.** In `KNOWN-ISSUES.md` and the notes: the Cord clamp is not natively observed, the
+  composition repair's neutrality is a source inference for the measured route, and the selection-boundary
+  evidence uses a SYNTHETIC foreign row because no installed mod supplies one.
+- **Publication path.** Ordinary exact-reference publisher from clean, pushed master.
+
+```powershell
+.\scripts\Publish-Release.ps1 -ReferenceBundleDir '<private build references>' `
+  -ReleaseNotesPath 'docs\RELEASE-NOTES-0.0.186.md' -Publish -ConfirmReleaseReady
+```
+
 ## 0.0.185 publication authorization
 
 **Published (completed).** Stable
