@@ -9450,6 +9450,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
                     "Unity Mod Manager ModEntry.Info.Version")
             };
+            // GS-AUD-0034: the two real selection postfixes, exercised directly
+            // on the installed engine's types. Separate evidence from the
+            // native selection-flow checks above.
+            ObserveSelectionBoundaryHandlers(assertions, native[0]);
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
