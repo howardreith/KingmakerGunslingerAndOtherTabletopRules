@@ -25,11 +25,17 @@ namespace KingmakerGunslinger.Blueprints
             new VendorSpec(CapitalVendorBlueprints.TableGuid,
                 CapitalVendorBlueprints.ExpectedTableName,
                 new ElvenBranchedSpearItemKind[0], null),
+            // Owner acquisition decision (2026-11-12): the Dire Narlmarches
+            // village and Pitax traders stock no authored branched spears. Both
+            // exact targets stay with empty desired stock so publication removes
+            // project-owned fixed rows and native known-item reconciliation
+            // decrements already generated, unsold stocked copies.
             new VendorSpec("f072a8f6889b5f345b7f4e7c74cb3e4c",
-                "DireNarlmarchesVillageVendorTable", AllFoundationKinds(), null),
+                "DireNarlmarchesVillageVendorTable",
+                new ElvenBranchedSpearItemKind[0], null),
             new VendorSpec("e5ab1fccf37c55f41a20a80c6ba6a460",
-                "PitaxTownVendorTable", AllFoundationKinds(),
-                null),
+                "PitaxTownVendorTable",
+                new ElvenBranchedSpearItemKind[0], null),
             new VendorSpec(BeneathStolenLandsVendorBlueprints
                     .StandaloneHonestGuyTableGuid,
                 BeneathStolenLandsVendorBlueprints.ExpectedNames[0],

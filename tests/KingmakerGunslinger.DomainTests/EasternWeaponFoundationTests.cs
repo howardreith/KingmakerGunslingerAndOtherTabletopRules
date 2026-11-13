@@ -491,7 +491,7 @@ namespace KingmakerGunslinger.DomainTests
                 "eastern-btsl-vendor-publication",
                 "eastern-named-campaign-publication",
                 "expectedEasternCommerce",
-                "42 + easternBtslHonestGuyTables * 12 : 0",
+                "6 + easternBtslHonestGuyTables * 12 : 0",
                 "expectedEasternCommerce ? 24 : 0",
                 "easternNamedBtslRows == 0",
                 "expectedEasternCommerce ? 18 : 0",
