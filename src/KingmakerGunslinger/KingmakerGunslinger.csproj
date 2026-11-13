@@ -316,7 +316,7 @@
     <Compile Include="Summoning\ElementalSourceChooserRuntime.cs" />
     <Compile Include="Summoning\ElementalSourceChooserView.cs" />
     <Compile Include="Summoning\ElementalSourceChooserPatch.cs" />
-    <Compile Include="Summoning\ElementalNativeRowsPresentationPatch.cs" />
+    <Compile Include="Summoning\OriginalSummonElementalVisibility.cs" />
     <Compile Include="Summoning\ElementalSourceChooserConsolePatch.cs" />
     <Compile Include="Summoning\ElementalConsoleBookPresentationPatch.cs" />
     <Compile Include="Summoning\DruidSummonConversionVariantPatch.cs" />
