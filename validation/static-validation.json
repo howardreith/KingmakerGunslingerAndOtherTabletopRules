@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.186-gunslinger-audit-repairs",
+  "milestone": "0.0.187-umm-display-name",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.186",
+  "version": "0.0.187",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2961,6 +2961,19 @@
     "releaseVersion": "0.0.186",
     "releasedIdentityChanges": 0,
     "reviewedProductSource": "2c7ff93be9ebd50b3548618eda88e9d1171238c3",
+    "visibleChoiceTotal": 1208
+  },
+  "ummDisplayNameRelease187": {
+    "appendedIdentities": 0,
+    "baseStableVersion": "0.0.186",
+    "change": "Unity Mod Manager now lists the mod as \"Mr. Bard's Tabletop Rules Expansion\" instead of \"Kingmaker Gunslinger\". Only the Info.json DisplayName changes in the product. The mod Id, assembly, entry point, settings keys, blueprint identities, the roster, prices, merchants, loot and crafting recipes are unchanged, so existing installs, module settings and saves carry over. Repository-only changes since v0.0.186: project-level Claude Code settings that disable co-author attribution, and the 2026-11-13 commit-id map with the checks that resolve commits pointed at the rewritten history.",
+    "deferredCoverage": "Not observed natively: the Unity Mod Manager mod list rendering the new name. GS-REP-0002 (the hand-maintained inherited-template removal set, membership unchanged from v0.0.186) and the two pre-existing feature-module publication gates carry over unchanged and stay disclosed in KNOWN-ISSUES.md.",
+    "nativeEvidence": "None. The compiled source differs from v0.0.186 only in its version attributes; the change is a Unity Mod Manager metadata string. Info.json parses in Windows PowerShell 5.1 and Python with the new DisplayName.",
+    "ownerPublicationAuthority": "Howie Reith, 2026-11-13: 'Please merge all 3 PRs and then cut a new release.' Published as the next stable patch, as v0.0.186 was.",
+    "releaseInformationalVersion": "0.0.187-umm-display-name",
+    "releaseVersion": "0.0.187",
+    "releasedIdentityChanges": 0,
+    "reviewedProductSource": "ca6f4c0543498a50954d5624e7ebf95fb5647bac",
     "visibleChoiceTotal": 1208
   }
 }

@@ -164,6 +164,7 @@ VALIDATORS = {
     "0.0.184": "validate_hide_original_summon_elemental_release184.py",
     "0.0.185": "validate_regional_vendor_withdrawal_release185.py",
     "0.0.186": "validate_gunslinger_audit_repairs_release186.py",
+    "0.0.187": "validate_umm_display_name_release187.py",
 }
 
 
