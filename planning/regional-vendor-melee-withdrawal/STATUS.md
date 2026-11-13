@@ -1,7 +1,7 @@
 # Regional vendor melee withdrawal: status
 
-Current (2026-11-12). Branch `codex/regional-vendor-melee-withdrawal`, from master `dd6a3ade75` (v0.0.184
-publication). Ordinary focused development checkpoint. Nothing merged, released or installed.
+Current (2026-11-12). **Released in v0.0.185** (see Publication below). Developed on branch
+`codex/regional-vendor-melee-withdrawal` from master `dd6a3ade75` (v0.0.184 publication).
 
 ## Owner decision
 
@@ -108,3 +108,20 @@ Exact remaining check, in a no-Kingmaker window on DATA, from this branch's comm
    repository's guarded launcher and exact restoration.
 
 A saved-stock check needs a separately authorized disposable fixture.
+
+## Publication
+
+- Owner review of #143 found no blocking defect and one P3: the Eastern manifest's "Current 0.0.143 publication"
+  paragraph still listed 12 regional rows. It was repaired as `4455a418c6`, and the historical Pitax named-row label
+  was corrected too.
+- Owner: "Repair that one issue then merge and cut a release please." PR #143 was merged as `70eeed101a`.
+- Release PR #144 (version metadata, release185 validator, notes, record): repository wrapper PASS plus complete
+  suite 2,950/2,950 in 421 s. The owner merged it as `c136527a99`.
+- `Publish-Release.ps1` from clean master took 1,363 s: complete suite 2,950/2,950, two identical builds, then
+  publication. v0.0.185 is Latest:
+  - tag `49bd4a6bc8`;
+  - package `c48be70e6aef546e23c8414abec3090af77225248e150eef3bad97259eec5ccf`;
+  - DLL `5dc21d40a1a3474d3a0f6fc4cbb8012c664fd0848d280ca62a3109fab4dfa694`;
+  - MVID `8c11f422-481b-4a0b-8573-b75bb786fa8f`.
+  A fresh public download matched.
+- The native rows above remain NOT RUN; the release disclosed them.
