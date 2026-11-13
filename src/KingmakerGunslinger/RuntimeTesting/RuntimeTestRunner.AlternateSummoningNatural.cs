@@ -21,6 +21,7 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.Mechanics.Actions;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
@@ -289,6 +290,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in AltNaturalCastSelected(caster, resource, recent, summons)) yield return frame;
                 AltNaturalAssertCast(recent, tierSeven, 7);
 
+                // GS-AUD-0025 execution half. The composition observation is
+                // graph/reader evidence and says so itself; this casts an
+                // actually affected creature through the alternate caller and
+                // inspects the SPAWNED UNIT.
+                Ability tierFour = PlayerPathRootFact(caster, family, 4);
+                // This is the fourth cast in the scenario and the resource was
+                // restored once during setup, so top the disposable caster's
+                // own pool back up rather than depend on it still having a use
+                // left. Each cast still asserts that exactly one use is spent -
+                // the per-cast before/after is captured after this point - so
+                // nothing is weakened by it.
+                caster.Descriptor.Resources.Restore(resource);
+                var inherited = new AltNaturalCast { Label = "inherited-template-removal-tier4" };
+                foreach (int frame in AltNaturalChoose(caster, tierFour,
+                    AltNaturalPick.InheritedTemplateCreature, inherited)) yield return frame;
+                foreach (int frame in AltNaturalCastSelected(caster, resource, inherited, summons))
+                    yield return frame;
+                AltNaturalAssertCast(inherited, tierFour, 4);
+                AltNaturalAssertInheritedTemplateRemoved(inherited);
+
                 foreach (int frame in AltNaturalDismiss(caster, recent)) yield return frame;
             }
             finally
@@ -302,6 +323,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (caster != null && !caster.Destroyed)
                     try { caster.Commands.InterruptAll(); }
                     catch (Exception error) { _altNaturalDiagnostics.Add("command cleanup: " + error.Message); }
+                // An affected creature is the first summon in this scenario
+                // that brings AURAS with it - the hound archon carries a magic
+                // circle against evil and Archon's Menace - and destroying a
+                // unit does not end the areas it spawned.
+                //
+                // Ownership is established HERE, while the casters still exist,
+                // and the attributed entities are RETAINED. An earlier version
+                // of this cleanup ended every remaining new area in a second
+                // pass, on the reasoning that this fixture creates the only new
+                // units. That reasoning is wrong: the scenario deliberately
+                // unpauses the game while casting, so an existing unit can
+                // spawn an area during the run. Ending it would have destroyed
+                // somebody else's entity and then reported extraAreas=0, so a
+                // clean census would no longer have meant the cleanup was
+                // bounded. Nothing is ended unless it was attributed to one of
+                // our own units.
+                var ourUnitIds = new HashSet<string>(summons.Select(value => value.UniqueId));
+                if (caster != null) ourUnitIds.Add(caster.UniqueId);
+                var ownedAreas = new List<AreaEffectEntityData>();
+                var endedAreas = new List<string>();
+                foreach (AreaEffectEntityData area in game.State.AreaEffects.All
+                    .Except(areas).ToArray())
+                {
+                    UnitEntityData source = area.Context == null ? null : area.Context.MaybeCaster;
+                    if (source == null || !ourUnitIds.Contains(source.UniqueId)) continue;
+                    ownedAreas.Add(area);
+                    endedAreas.Add(area.Blueprint.name + ":attributed");
+                    EndDisposableArea(area);
+                }
+                game.EntityDestroyer.Tick();
                 foreach (UnitEntityData unit in summons)
                     if (!unit.Destroyed) CleanupExpandedSummoningUnit(unit);
                 foreach (UnitEntityData unit in game.State.Units.All.Except(units).ToArray())
@@ -320,6 +371,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 game.EntityDestroyer.Tick();
                 game.EntityDestroyer.Tick();
+                // A retry for the areas ALREADY ATTRIBUTED above, whose
+                // casters have since been destroyed. It is keyed on those
+                // retained identities, so it cannot reach an area this fixture
+                // does not own.
+                foreach (AreaEffectEntityData area in ownedAreas
+                    .Where(value => game.State.AreaEffects.All.Contains(value)).ToArray())
+                {
+                    endedAreas.Add(area.Blueprint.name + ":retried");
+                    EndDisposableArea(area);
+                }
+                game.EntityDestroyer.Tick();
                 if (prototype != null) UnityEngine.Object.Destroy(prototype);
                 player.InvalidateCharacterLists();
                 player.UpdateCharacterLists();
@@ -337,18 +399,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["extraAreas"] = new JArray(extraAreas.Select(value => value.Blueprint.name)),
                     ["party"] = player.Party.SequenceEqual(party),
                     ["gameTimeAdvancedSeconds"] = (game.Player.GameTime - time).TotalSeconds,
+                    ["endedAreas"] = new JArray(endedAreas),
+                    // New areas this fixture could NOT attribute to itself. They
+                    // are left alone and reported, never swept to make the
+                    // census look clean.
+                    ["unattributedAreas"] = new JArray(extraAreas
+                        .Where(value => !ownedAreas.Contains(value))
+                        .Select(value => value.Blueprint.name)),
                     ["saveWriteObserved"] = _workingSaveSmoke.WriteObserved });
                 AltNaturalAssert("cleanup",
-                    "the disposable summoner and every summon are gone; the original units, areas and party are unchanged; nothing was saved (native time advanced while unpaused, by design)",
+                    "the disposable summoner and every summon are gone; the original units, areas and party are unchanged; nothing was saved (native time advanced while unpaused, by design). Only areas attributed to this fixture's own units are ever ended, so a clean area census means the cleanup was bounded as well as complete - an unattributed new area is reported and fails this instead of being swept",
                     "extraUnits=" + extra.Length + ";missingUnits=" + missing.Length + ";extraAreas=" +
-                        extraAreas.Length + ";party=" + player.Party.SequenceEqual(party),
+                        extraAreas.Length + ";unattributedAreas=" + extraAreas
+                            .Count(value => !ownedAreas.Contains(value)) +
+                        ";party=" + player.Party.SequenceEqual(party),
                     extra.Length == 0 && missing.Length == 0 && extraAreas.Length == 0 &&
                         player.Party.SequenceEqual(party) && !_workingSaveSmoke.WriteObserved,
                     "Game.State.Units/AreaEffects census; Player.Party; working-save write guard");
             }
         }
 
-        private enum AltNaturalPick { FirstProjectCreature, LastRow, Tyrannosaurus }
+        private enum AltNaturalPick { FirstProjectCreature, LastRow, Tyrannosaurus,
+            InheritedTemplateCreature }
 
         private static string AltNaturalSpawnName(AbilityData data)
         {
@@ -420,6 +492,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (scroll != null) scroll.verticalNormalizedPosition = 0f;
                 for (int frame = 0; frame < 6; frame++) yield return 0;
                 chosenRow = rows.LastOrDefault();
+            }
+            else if (pick == AltNaturalPick.InheritedTemplateCreature)
+            {
+                // GS-AUD-0025. The row is identified by what its OWN graph
+                // carries - an inherited-template removal action - rather than
+                // by a creature name, so the fixture cannot drift onto an
+                // unaffected creature and still look like it passed. The
+                // offered menu itself decides which row is affected.
+                ActionBarSlot[] matches = rows.Where(row =>
+                {
+                    var data = (AbilityData)row.MechanicSlot.GetContentData();
+                    return AlternateSummoningGraph
+                        .Objects<Summoning.ContextActionRemoveInheritedSummonTemplates>(
+                            data.Blueprint.ComponentsArray).Any();
+                }).ToArray();
+                chosenRow = matches.FirstOrDefault();
+                if (chosenRow != null && !AltNaturalRowVisible(popup, chosenRow))
+                {
+                    ScrollRect scroll = popup.GetComponentInChildren<ScrollRect>(true);
+                    if (scroll != null) scroll.verticalNormalizedPosition =
+                        1f - (float)Array.IndexOf(rows, chosenRow) / Math.Max(1, rows.Length - 1);
+                    for (int frame = 0; frame < 6; frame++) yield return 0;
+                }
             }
             else if (pick == AltNaturalPick.Tyrannosaurus)
             {
@@ -504,6 +599,136 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// through the native click handler and lets native time run until
         /// the command ends and the caster's standard-action cooldown has
         /// passed.</summary>
+        /// <summary>
+        /// GS-AUD-0025 execution verification. Two halves, and both are needed:
+        ///
+        /// 1. There really was a template to remove. The cast row's own graph
+        ///    still contains the native carrier's ContextActionApplyBuff for one
+        ///    of the four native template identities - that apply action is what
+        ///    the project copies, and it is the defect's actual source. Without
+        ///    this half, a summon that never received an inherited template
+        ///    could not prove the template was removed.
+        /// 2. The spawned unit does not carry any of the four. And it still
+        ///    carries the native summon marker, so this is a real summon that
+        ///    was stripped, not a failed spawn with no buffs at all.
+        /// </summary>
+        private void AltNaturalAssertInheritedTemplateRemoved(AltNaturalCast cast)
+        {
+            var nativeIds = new HashSet<string>(
+                Blueprints.ExpandedSummoningAbilityBuilder.NativeTemplateIds,
+                StringComparer.Ordinal);
+            string[] appliedByGraph = cast.Selected == null ? new string[0] :
+                AlternateSummoningGraph.Objects<ContextActionApplyBuff>(
+                    cast.Selected.Blueprint.ComponentsArray)
+                    .Where(action => action.Buff != null &&
+                        nativeIds.Contains(action.Buff.AssetGuid))
+                    .Select(action => action.Buff.AssetGuid)
+                    .Distinct(StringComparer.Ordinal)
+                    .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            bool removalInGraph = cast.Selected != null && AlternateSummoningGraph
+                .Objects<Summoning.ContextActionRemoveInheritedSummonTemplates>(
+                    cast.Selected.Blueprint.ComponentsArray).Any();
+
+            var residual = new List<string>();
+            int markerCarriers = 0;
+            foreach (UnitEntityData unit in cast.Summoned)
+            {
+                Buff[] buffs = unit.Descriptor.Buffs.RawFacts.OfType<Buff>().ToArray();
+                if (buffs.Any(value => ReferenceEquals(value.Blueprint,
+                        BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff)))
+                    markerCarriers++;
+                foreach (Buff buff in buffs)
+                    if (buff.Blueprint != null && nativeIds.Contains(buff.Blueprint.AssetGuid))
+                        residual.Add(unit.Blueprint.name + ":" + buff.Blueprint.name);
+            }
+
+            var state = new JObject {
+                ["row"] = cast.Selected == null ? null :
+                    cast.Selected.Blueprint.AssetGuid + ":" + cast.Selected.Blueprint.name,
+                ["appliedByGraph"] = new JArray(appliedByGraph),
+                ["removalInGraph"] = removalInGraph,
+                ["summoned"] = cast.Summoned.Length,
+                ["markerCarriers"] = markerCarriers,
+                ["residualTemplates"] = new JArray(residual),
+                ["units"] = new JArray(cast.Summoned.Select(unit => unit.Blueprint.name + ":[" +
+                    string.Join(",", unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                        .Where(value => value.Blueprint != null)
+                        .Select(value => value.Blueprint.name).OrderBy(value => value,
+                            StringComparer.Ordinal).ToArray()) + "]")) };
+            AltNaturalCapture("inherited-template-removal", state);
+            // GS-AUD-0025, corrected by this cast. The first run of this
+            // observation measured appliedByGraph=0 on
+            // KMG_Summoning_Adapter_MasterSummoner_Tier4_HoundArchon_One - an
+            // affected creature, chosen by the removal action its own graph
+            // carries - and the spawned hound archon held no native template.
+            //
+            // So the alternate-caller child does not copy the native Summon
+            // Monster carrier at all; it is built from the alternate caller's
+            // own host template, which applies no celestial/fiendish buff
+            // anywhere in its graph. There is nothing on this path to inherit,
+            // and therefore nothing for the removal to strip. The finding's
+            // description - "an alternate caller's untemplated Summon Monster
+            // child kept the donor's template" - is NOT reproducible here.
+            //
+            // The repair is therefore inert on this route. Stated precisely,
+            // because the distinction matters: that is an INFERENCE FROM
+            // SOURCE, not a two-version native comparison. No pre-repair build
+            // was deployed and observed. What is observed is one post-repair
+            // cast whose graph applies no native template and whose spawned
+            // unit carries none; the step from there to "the previous build
+            // behaved identically" is read from the source, where the only
+            // change on this route is the added removal action.
+            //
+            // Its value is that the two paths can no longer diverge, so if the
+            // adapter ever starts copying a templated carrier the rule is
+            // already there.
+            //
+            // The assertion therefore pins what was measured instead of
+            // claiming a proof it cannot give. appliedByGraph is REQUIRED to be
+            // 0: if it ever becomes non-zero the adapter has started inheriting
+            // a template, the removal becomes load-bearing, and this fails so
+            // that someone looks. The product guarantee - a clean spawned unit
+            // that is still a real summon - is asserted hard and unchanged.
+            //
+            // It does NOT discharge an execution proof of removal efficacy.
+            // That can only come from the canonical ordinary-spell path, where
+            // inherited-template-removal-wiring-per-placement shows the apply
+            // action is present in the registered graph. That is GRAPH evidence
+            // - it casts nothing - so it shows an apply action exists, not that
+            // it executes or leaves a buff behind. The execution proof is
+            // queued, not claimed.
+            AltNaturalAssert("inherited-template-removal",
+                "the affected adapter child carries the removal action bound to its own unit, " +
+                    "every spawned unit keeps the native summon marker, and none retains a " +
+                    "native template buff. appliedByGraph is pinned at 0: the alternate-caller " +
+                    "path copies the caller's host template, not the native carrier, so it " +
+                    "inherits no template and the removal is a no-op here - this records that " +
+                    "the change is inert on this path - inferred from source for this route, not " +
+                    "from a two-version native comparison - and does NOT prove removal " +
+                    "efficacy, which only the canonical path can show",
+                "appliedByGraph=" + appliedByGraph.Length + ";removalInGraph=" + removalInGraph +
+                    ";summoned=" + cast.Summoned.Length + ";markerCarriers=" + markerCarriers +
+                    ";residual=[" + string.Join(",", residual.ToArray()) + "]",
+                appliedByGraph.Length == 0 && removalInGraph && cast.Summoned.Length >= 1 &&
+                    markerCarriers == cast.Summoned.Length && residual.Count == 0,
+                "the cast AbilityData's own graph; UnitDescriptor.Buffs on the spawned units");
+        }
+
+        /// <summary>
+        /// ForceEnd alone only marks an area; the first run force-ended both of
+        /// the hound archon's auras twice and the census still listed them. The
+        /// area's own Tick is what actually retires it, which is the pairing the
+        /// existing native area fixtures already use.
+        /// </summary>
+        private static void EndDisposableArea(AreaEffectEntityData area)
+        {
+            if (area == null) return;
+            area.ForceEnd();
+            area.Tick();
+            area.Tick();
+            Game.Instance.EntityCreator.Tick();
+        }
+
         private IEnumerable<int> AltNaturalCastSelected(UnitEntityData caster,
             BlueprintAbilityResource resource, AltNaturalCast cast, List<UnitEntityData> summons)
         {
