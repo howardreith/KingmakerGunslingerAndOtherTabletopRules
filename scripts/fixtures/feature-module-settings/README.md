@@ -6,19 +6,27 @@ if a migration failure ever caused defaults to be substituted it would come back
 ON and the startup observation would fail on that module's gate rather than
 passing quietly. One OFF value is enough to prove non-substitution.
 
-**Why only `shield-other`, and why not a wider mix.** The first version turned
-off `acadamae-graduate` and `urban-barbarian`. Both runs then failed two
-unrelated gates in this scenario -
-`feature-module-expanded-summoning-publication-gate` with `unclassified=38`
-against a hard-coded `unclassified=0`, and
-`feature-module-brown-fur-publication-gate` - while the per-module gates
-themselves agreed exactly with the staged values. Those two gates carry
-structural expectations calibrated for the all-ON configuration
-(`ExpandedSummoningBoundaryExpectation` hard-codes `unclassified=0` regardless
-of module state), so an arbitrary OFF combination fails them for reasons that
-have nothing to do with the settings migration. `shield-other` is a single spell
-with no archetype and no summon rows, so it cannot move either. The wider mix is
-covered by the domain tests, which have no such coupling.
+**Why only `shield-other` - and a correction.** The first version turned off
+`acadamae-graduate` and `urban-barbarian`, and both runs failed two unrelated
+gates: `feature-module-expanded-summoning-publication-gate` with
+`unclassified=38` against a hard-coded `unclassified=0`, and
+`feature-module-brown-fur-publication-gate`. I narrowed the fixture believing
+those OFF values caused it.
+
+**That hypothesis was wrong, and a control disproved it.** Running this scenario
+with NO staging at all and every module ON reproduces both failures identically
+- `unclassified=38`, and the Brown-Fur gate failing with `active=` all true.
+They are a property of THIS INSTALLATION, which carries ten other mods
+(CallOfTheWild, RacesUnleashed, TweakOrTreat, CraftMagicItems and others)
+contributing 38 unclassified host summon rows and `foreign:14` archetypes. The
+gate hard-codes `unclassified=0`, so it cannot pass on a multi-mod installation
+regardless of settings.
+
+So the wider mix would have been fine too. `shield-other` is kept because it is
+the version actually verified, and one OFF value is sufficient to prove
+non-substitution. The two failing gates are **not** evidence about the settings
+migration in either fixture, and neither gate is claimed to be defective - they
+are calibrated for a single-mod installation.
 
 It omits `teleportation-spells` and `magic-circle-spells`, which schema 10
 predates. `FeatureModuleSettingsStore.ReadDefaultOn` gives an absent key ON, so
