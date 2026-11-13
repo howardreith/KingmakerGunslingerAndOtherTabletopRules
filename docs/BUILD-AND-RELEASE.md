@@ -1,5 +1,54 @@
 # Build, package, and publish
 
+## 0.0.185 publication authorization
+
+**Published (completed).** Stable
+[v0.0.185](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.185)
+is Latest and not a prerelease. The annotated tag `49bd4a6bc8` peels to the
+release commit `c136527a99`.
+
+- **Gate.** The complete suite passed 2,950/2,950 with 0 failures.
+- **Builds.** Two deterministic exact-reference builds produced identical
+  archives:
+  - package SHA-256
+    `c48be70e6aef546e23c8414abec3090af77225248e150eef3bad97259eec5ccf`;
+  - DLL SHA-256
+    `5dc21d40a1a3474d3a0f6fc4cbb8012c664fd0848d280ca62a3109fab4dfa694`;
+  - MVID `8c11f422-481b-4a0b-8573-b75bb786fa8f`.
+- **Reference bundle.** `artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references`.
+- **Public download.** A fresh download matched `SHA256SUMS.txt`, the manifest names the release commit, and the
+  embedded `Info.json` reads 0.0.185 with the matching DLL.
+- **Timing.** The publisher took 1,363 s; with the 421 s release-branch preparation the release spent about
+  1,784 s, within its 30-minute planning budget.
+- **Installation.** The installed mod is untouched and still reads 0.0.140.
+- **Merges.** PR #143 was merged as `70eeed101a`. The owner merged release PR #144 as `c136527a99`.
+
+On 2026-11-12 Howie wrote: "Repair that one issue then merge and cut a release please." The review P3 (stale
+Eastern manifest paragraph) was repaired as `4455a418c6`. PR #143 was marked ready and merged as `70eeed101a`. No
+channel was named, so this follows v0.0.184 as the next stable patch, v0.0.185, from master after PR #143.
+
+- **Reviewed product.** Master `70eeed101a`; its tree equals the reviewed branch head `4455a418c6`.
+  `tools/validate_regional_vendor_withdrawal_release185.py` pins it:
+  - only the three AssemblyInfo version attributes and the Info and props version values may change;
+  - all 7,933 released identities stay exact and in order, and none is appended;
+  - the creature catalog is unchanged, with only the owner-withdrawn Stirge withheld (1,208 public choices);
+  - one static release record is added.
+- **Native evidence.** None. Focused gate 128 of 2,950 with 0 failures, production compilation and the decompiled
+  2.1.7b `SharedVendorTables` contract only. The native rows in `planning/regional-vendor-melee-withdrawal/STATUS.md`
+  stay NOT RUN.
+- **Disclosed migration limits.** The sold-back decrement and the missing-history case are in `KNOWN-ISSUES.md`
+  and the notes.
+- **Preparation.** On the release branch, the repository wrapper (dispatched to the release185 validator, PASS)
+  plus the complete suite (2,950/2,950, 0 failures) took 421 s.
+- **Publication path.** Use the ordinary exact-reference publisher from clean, pushed master with
+  `docs/RELEASE-NOTES-0.0.185.md`. It runs the complete gate and two deterministic builds, then publishes.
+  Planning budget: 30 minutes, excluding necessary safe completion.
+
+```powershell
+.\scripts\Publish-Release.ps1 -ReferenceBundleDir '<private build references>' `
+  -ReleaseNotesPath 'docs\RELEASE-NOTES-0.0.185.md' -Publish -ConfirmReleaseReady
+```
+
 ## 0.0.184 publication authorization
 
 **Published (completed).** Stable

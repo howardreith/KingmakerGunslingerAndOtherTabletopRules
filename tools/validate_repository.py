@@ -162,6 +162,7 @@ VALIDATORS = {
     "0.0.182": "validate_summon_menu_order_release182.py",
     "0.0.183": "validate_gunslinger_playtest_release183.py",
     "0.0.184": "validate_hide_original_summon_elemental_release184.py",
+    "0.0.185": "validate_regional_vendor_withdrawal_release185.py",
 }
 
 
