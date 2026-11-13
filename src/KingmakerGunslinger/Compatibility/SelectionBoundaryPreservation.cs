@@ -27,10 +27,17 @@ namespace KingmakerGunslinger.Compatibility
     ///   original relative order, never reordered among themselves and never
     ///   removed.
     ///
-    /// Unfamiliar entries cannot be interleaved by display name, because the
-    /// selection interface exposes only Feature, Param and NameForAcronim -
-    /// there is no general display name to sort on. Appending them is the most
-    /// that can be done without inventing an order for another mod's rows.
+    /// Unfamiliar entries are appended rather than interleaved. The original
+    /// reason given here was that the interface exposes no display name to sort
+    /// on; that is WRONG, and was found to be wrong while building the native
+    /// boundary observation. IFeatureSelectionItem inherits Name, Description
+    /// and Icon from IUIDataProvider, so a name is available.
+    ///
+    /// The actual reason stands on its own: sorting another publisher's rows in
+    /// among ours would impose OUR ordering on THEIR entries, which is a
+    /// presentation decision that is not this project's to make. Appending
+    /// leaves their relative order exactly as the host produced it. That is a
+    /// deliberate choice, not a limitation of the interface.
     ///
     /// This type is deliberately generic and free of engine dependencies so the
     /// boundary rule itself is directly testable.
