@@ -94,28 +94,64 @@ namespace KingmakerGunslinger.RuntimeTesting
             List<RuntimeTestAssertion> assertions, UnitDescriptor descriptor,
             BlueprintParametrizedFeature contributing)
         {
-            // A parametrized feature neither handler extends, found by asking
-            // the handlers themselves rather than by assuming a name. Its rows
-            // are therefore pure native rows, which is what makes them a sound
-            // host sequence for the direct test.
-            BlueprintParametrizedFeature inert = BlueprintBootstrap.Library
-                .GetAllBlueprints().OfType<BlueprintParametrizedFeature>()
-                .FirstOrDefault(feature => feature != null &&
-                    !ReferenceEquals(feature, contributing) &&
-                    CustomWeapons.CustomWeaponSelectorRuntime.Append(feature,
-                        Enumerable.Empty<FeatureUIData>()).Count() == 0 &&
-                    Feats.NativeFirearmFeatIntegration.Append(feature,
-                        Enumerable.Empty<FeatureUIData>(), descriptor).Count() == 0);
+            // A parametrized feature that BOTH handlers leave alone AND that
+            // still offers native rows of its own. Found by asking the handlers
+            // themselves rather than by assuming a name, and by actually
+            // enumerating the candidate rather than assuming any parametrized
+            // feature produces rows for this owner - the first version of this
+            // observation assumed that and the run ERRORed on a feature whose
+            // own row set was empty for this descriptor, which is legitimate
+            // (several parametrized features enumerate from the owner's spell
+            // lists or known selections and are empty on a fresh chargen unit).
+            //
+            // Its rows are pure native rows, which is what makes them a sound
+            // host sequence: the composed result then contains exactly the
+            // native rows, the handler's own contributions and the synthetic
+            // foreign rows, with nothing of unknown provenance.
+            BlueprintParametrizedFeature inert = null;
+            FeatureUIData[] nativeRows = null;
+            int examined = 0, unextended = 0, enumerationFaults = 0;
+            foreach (BlueprintParametrizedFeature feature in BlueprintBootstrap.Library
+                .GetAllBlueprints().OfType<BlueprintParametrizedFeature>())
+            {
+                if (feature == null || ReferenceEquals(feature, contributing)) continue;
+                examined++;
+                if (CustomWeapons.CustomWeaponSelectorRuntime.Append(feature,
+                        Enumerable.Empty<FeatureUIData>()).Count() != 0) continue;
+                if (Feats.NativeFirearmFeatIntegration.Append(feature,
+                        Enumerable.Empty<FeatureUIData>(), descriptor).Count() != 0) continue;
+                unextended++;
+                FeatureUIData[] rows;
+                try
+                {
+                    rows = feature.ExtractSelectionItems(descriptor, descriptor)
+                        .OfType<FeatureUIData>().Where(value => value != null)
+                        .Take(3).ToArray();
+                }
+                catch (Exception)
+                {
+                    // A blueprint whose own enumeration throws for a bare
+                    // chargen descriptor cannot serve as the host sequence. It
+                    // is counted and reported, not silently ignored: this is
+                    // fixture selection, and the count is part of the evidence
+                    // so a rise in it cannot pass unnoticed.
+                    enumerationFaults++;
+                    continue;
+                }
+                if (rows.Length == 0) continue;
+                inert = feature;
+                nativeRows = rows;
+                break;
+            }
             if (inert == null) throw new InvalidOperationException(
-                "No parametrized feature is left unextended by both handlers; " +
-                "the no-contribution control cannot be constructed honestly.");
-
-            FeatureUIData[] nativeRows = inert
-                .ExtractSelectionItems(descriptor, descriptor)
-                .OfType<FeatureUIData>().Where(value => value != null)
-                .Take(3).ToArray();
-            if (nativeRows.Length == 0) throw new InvalidOperationException(
-                "The inert parametrized feature offered no native rows to compose with.");
+                "No parametrized feature is both left unextended by the two handlers and " +
+                "able to offer native rows for this owner, so the host sequence and the " +
+                "no-contribution control cannot be constructed honestly. examined=" +
+                examined + ";unextended=" + unextended +
+                ";enumerationFaults=" + enumerationFaults);
+            string inertEvidence = "inert=" + inert.name + ";examined=" + examined +
+                ";unextended=" + unextended + ";enumerationFaults=" + enumerationFaults +
+                ";nativeRows=" + nativeRows.Length;
 
             var foreignFirst = new SyntheticForeignSelectionItem("KMG_SYNTHETIC_FOREIGN_1");
             var foreignSecond = new SyntheticForeignSelectionItem("KMG_SYNTHETIC_FOREIGN_2");
@@ -179,7 +215,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         noDuplicateReferences && understoodOrdered,
                     "the production " + patch.FullName + ".Postfix invoked directly on native " +
                         "FeatureUIData rows mixed with a SYNTHETIC foreign IFeatureSelectionItem; " +
-                        "no installed mod has been shown to supply such a row"));
+                        "no installed mod has been shown to supply such a row. " + inertEvidence));
 
                 // ---- no contribution ----
                 IFeatureSelectionItem[] untouched = InvokeSelectionPostfix(
@@ -197,7 +233,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";referenceIdenticalInOrder=" + identicalSequence,
                     identicalSequence,
                     "the production " + patch.FullName + ".Postfix invoked directly with a " +
-                        "parametrized feature neither handler extends"));
+                        "parametrized feature neither handler extends. " + inertEvidence));
             }
 
             // ---- both handlers composed, in the order Harmony would apply them ----
