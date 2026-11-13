@@ -152,8 +152,7 @@
   persists only item types and counts. If the stocked cold iron spear was bought and a
   cold iron spear was later sold back to Oleg, the engine's update removes that sold
   copy from his stock. Player inventory is never touched. Not observed natively.
-- Dire Narlmarches and Pitax regional weapon stock (withdrawn on branch
-  `codex/regional-vendor-melee-withdrawal`, unreleased). It has the same native limitation as Oleg's spears:
+- Dire Narlmarches and Pitax regional weapon stock (withdrawn in v0.0.185). It has the same native limitation as Oleg's spears:
   if a stocked Eastern weapon or spear was bought and a matching one was later sold back to that trader,
   the engine's update removes the sold copy. A save with no persisted known-item history keeps the old
   stocked copy. Player inventory is never touched. Not observed natively.
