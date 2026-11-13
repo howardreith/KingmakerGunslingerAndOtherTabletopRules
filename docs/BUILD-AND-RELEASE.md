@@ -1,5 +1,35 @@
 # Build, package, and publish
 
+## 0.0.185 publication authorization
+
+**Prepared, not yet published.**
+
+On 2026-11-12 Howie wrote: "Repair that one issue then merge and cut a release please." The review P3 (stale
+Eastern manifest paragraph) was repaired as `4455a418c6`. PR #143 was marked ready and merged as `70eeed101a`. No
+channel was named, so this follows v0.0.184 as the next stable patch, v0.0.185, from master after PR #143.
+
+- **Reviewed product.** Master `70eeed101a`; its tree equals the reviewed branch head `4455a418c6`.
+  `tools/validate_regional_vendor_withdrawal_release185.py` pins it:
+  - only the three AssemblyInfo version attributes and the Info and props version values may change;
+  - all 7,933 released identities stay exact and in order, and none is appended;
+  - the creature catalog is unchanged, with only the owner-withdrawn Stirge withheld (1,208 public choices);
+  - one static release record is added.
+- **Native evidence.** None. Focused gate 128 of 2,950 with 0 failures, production compilation and the decompiled
+  2.1.7b `SharedVendorTables` contract only. The native rows in `planning/regional-vendor-melee-withdrawal/STATUS.md`
+  stay NOT RUN.
+- **Disclosed migration limits.** The sold-back decrement and the missing-history case are in `KNOWN-ISSUES.md`
+  and the notes.
+- **Preparation.** On the release branch, the repository wrapper (dispatched to the release185 validator, PASS)
+  plus the complete suite (2,950/2,950, 0 failures) took 421 s.
+- **Publication path.** Use the ordinary exact-reference publisher from clean, pushed master with
+  `docs/RELEASE-NOTES-0.0.185.md`. It runs the complete gate and two deterministic builds, then publishes.
+  Planning budget: 30 minutes, excluding necessary safe completion.
+
+```powershell
+.\scripts\Publish-Release.ps1 -ReferenceBundleDir '<private build references>' `
+  -ReleaseNotesPath 'docs\RELEASE-NOTES-0.0.185.md' -Publish -ConfirmReleaseReady
+```
+
 ## 0.0.184 publication authorization
 
 **Published (completed).** Stable
