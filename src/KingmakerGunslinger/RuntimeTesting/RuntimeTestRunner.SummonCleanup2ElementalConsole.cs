@@ -745,7 +745,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Cleanup2Check("elemental-console-preparation-no-disclosure",ordinary,new JObject { ["noOwnedHeaderRow"]=noHeader,
                     ["originalSourcesListedAsOrdinaryRows"]=sourcesListed,["authoritativeKnownVMReferencesExact"]=owned.SpellBookKnownSpells.KnownSpells.SequenceEqual(authority),
                     ["sourceCount"]=sources.Length,["nativeSources"]=new JArray(sources.Select(value=>value.SpellData.Blueprint.AssetGuid)),
-                    ["renderedRows"]=renderedModels.Length,["budgetExact"]=before.Unchanged(),["pinsExact"]=pins.IsRestored(),["outcome"]=ElementalConsoleBookPresentation.Outcome },
+                    ["renderedRows"]=renderedModels.Length,["budgetExact"]=before.Unchanged(),["pinsExact"]=pins.IsRestored(),["outcome"]=OriginalSummonElementalVisibility.BookOutcome },
                     "The real native console spellbook lists every original elemental source as an ordinary known-spell row; no disclosure header exists and no budget or pin changes.");
                 if(!ordinary)throw new InvalidOperationException("Console spellbook shows a withdrawn disclosure or hides an original source row.");
                 foreach(int frame in screens.Capture("elementals-console-native-preparation",new JObject {

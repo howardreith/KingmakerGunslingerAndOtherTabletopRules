@@ -717,7 +717,6 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static bool Cleanup2OffNoOwnedPresentation(Component owner)
         {
             return owner != null && !ElementalSourceChooserView.IsOpen &&
-                !owner.GetComponentsInChildren<ElementalNativeSourceFold>(true).Any(value => value.HasFold) &&
                 !owner.GetComponentsInChildren<ActionBarSlot>(true).Any(value => value.MechanicSlot is ElementalChooserLauncher || value.MechanicSlot is ElementalConsoleNode) &&
                 !owner.GetComponentsInChildren<Transform>(true).Any(value => value.name == "KMG_ElementalSourceDisclosure" || value.name == "KMG_ElementalSourceChooser");
         }
