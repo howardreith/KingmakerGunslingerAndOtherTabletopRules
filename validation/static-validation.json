@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.185-regional-vendor-melee-withdrawal",
+  "milestone": "0.0.186-gunslinger-audit-repairs",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.185",
+  "version": "0.0.186",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2949,5 +2949,18 @@
     "nativeEvidence": "None. No development candidate was built or run. Evidence: production compilation, focused gate 128 of 2,950 with 0 failures on the reviewed branch, a supplementary unfiltered run of 2,927 of 2,950 whose 23 failures were a missing machine-local IL file in that worktree, and inspection of the decompiled 2.1.7b SharedVendorTables contract. The extended observe-model-d-vendors and corrected observe-vendor-table-contracts observers were compiled but not run.",
     "deferredCoverage": "Not observed natively: fresh regional table stock, reconciliation of already generated merchant stock, reopening trade and save/reload. Known migration limits of the native count-based reconciliation, as for Oleg in v0.0.183: a matching weapon sold back to either trader after the stocked copy was bought is decremented; a save with no persisted known-item history keeps the old stocked copy.",
     "ownerPublicationAuthority": "Howie Reith, 2026-11-12: 'Repair that one issue then merge and cut a release please.' Published as the next stable patch, as v0.0.184 was."
+  },
+  "gunslingerAuditRepairsRelease186": {
+    "appendedIdentities": 0,
+    "baseStableVersion": "0.0.185",
+    "change": "Repair tranche from the accepted v0.0.182 release audit (PR #132, report cd71d8973). Corrects an inverted attack-penalty sign convention in the scatter volley and the Dead Shot iterative probes, which realised BONUSES where penalties were intended; stops a failed feature-module settings migration write from quarantining a valid file and substituting all-ON defaults; puts the Cord of Stubborn Resolve on one live substitution policy and clamps its outcome at non-positive hit points; makes firearm crafting account for partially committed output and cap its compensation at what the transaction requested; preserves another publisher's level-up selection rows across both of this mod's selection postfixes; presents an unrankable teleport scroll row as visibly disabled with its reason instead of as an executable offer; and shares one inherited-template removal rule between the canonical and alternate summoning builders. Creature identities, the roster, prices, merchants, loot and crafting recipes are unchanged.",
+    "deferredCoverage": "Not observed natively: the Cord clamp at non-positive hit points, whose four existing assertions pass without it; the summoning composition repair's behaviour-neutrality across every possible caller, which remains a source inference for the measured route; and a third-party mod actually supplying a non-FeatureUIData selection row, which no installed mod does, so the selection-boundary evidence uses a synthetic foreign row and demonstrates preservation rather than the repair of an observed breakage. GS-REP-0002 stays open: the inherited-template removal set is a hand-maintained list of twelve creature keys whose membership is byte-identical to v0.0.185 and disagrees with the installed library in both directions. It is pre-existing, unchanged by this release and separately tracked. Two feature-module publication gates fail on this installation; a matched baseline on released master a3912f569ac5 reproduces both with identical measured values, so they are pre-existing and not caused by this tranche, and their mechanism is untraced.",
+    "nativeEvidence": "Guarded save-free native runs on development candidates built from this lineage, with the installation snapshot-restored and verified after each. disposable-gunslinger-scatter-dead-shot 50 assertions 0 non-PASS on 6c866f83a1dd (penaltyField=2 with a realised 32 against a matched control 34; probes 0/5/10 and 0/5/10/15 realising 16,11,6,1). observe-feature-module-settings staged twice on 468391fc06a3: the writable case persisted schemaVersion 12 and the controlled write failure left the file byte-identical at schemaVersion 10 with no quarantine artifact, both reporting recovered=False. disposable-firearm-dependent-feats 17/17 and disposable-paper-cartridge-crafting-vendors 13/13 on 1de8b5c7305d, the crafting set including an actual repeat refusal, two faults compensating exactly, a compensation failure retaining both causes, and an external surplus left in place and reported. The crafting budget cap was additionally demonstrated against a negative control a6fcd6e51d3b that reverts only the cap, where that observation FAILS.",
+    "ownerPublicationAuthority": "Howie Reith, 2026-11-13: 'Approved. Please merge #140 as well and cut a release.' Published as the next stable patch, as v0.0.185 was.",
+    "releaseInformationalVersion": "0.0.186-gunslinger-audit-repairs",
+    "releaseVersion": "0.0.186",
+    "releasedIdentityChanges": 0,
+    "reviewedProductSource": "2c7ff93be9ebd50b3548618eda88e9d1171238c3",
+    "visibleChoiceTotal": 1208
   }
 }
