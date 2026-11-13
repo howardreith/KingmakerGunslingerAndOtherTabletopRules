@@ -3,6 +3,7 @@ using KingmakerGunslinger.Development;
 using KingmakerGunslinger.UrbanBarbarian;
 using KingmakerGunslinger.AidAnotherCompatibility;
 using KingmakerGunslinger.CraftMagicItemsCompatibility;
+using KingmakerGunslinger.Summoning;
 using UnityModManagerNet;
 
 namespace KingmakerGunslinger.FeatureModules
@@ -31,6 +32,14 @@ namespace KingmakerGunslinger.FeatureModules
                 "Shield Other");
             bool expandedSummoning = ImmediateModeGui.Toggle(
                 _state.Pending.ExpandedSummoning, "Expanded Summoning");
+            bool showOriginalSummonElemental = ImmediateModeGui.Toggle(
+                _state.ShowOriginalSummonElemental,
+                "    Show original Summon Elemental spells (no restart; close and reopen the spell list to apply)");
+            if (showOriginalSummonElemental != _state.ShowOriginalSummonElemental)
+            {
+                _state.SetShowOriginalSummonElemental(showOriginalSummonElemental);
+                OriginalSummonElementalVisibility.Show = showOriginalSummonElemental;
+            }
             bool elvenBranchedSpears = ImmediateModeGui.Toggle(
                 _state.Pending.ElvenBranchedSpears, "Elven Branched Spears");
             bool easternWeapons = ImmediateModeGui.Toggle(

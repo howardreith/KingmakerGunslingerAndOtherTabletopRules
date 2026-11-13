@@ -14,6 +14,7 @@ using Kingmaker.Enums;
 using Kingmaker.UI._ConsoleUI.CharGen;
 using Kingmaker.UI._ConsoleUI.CharGen.Phases.Base;
 using Kingmaker.UI._ConsoleUI.CharGen.Phases.Spells;
+using Kingmaker.UI._ConsoleUI.Common;
 using Kingmaker.UI._ConsoleUI.Context;
 using Kingmaker.UI._ConsoleUI.Context.InGame;
 using Kingmaker.UI._ConsoleUI.Models;
@@ -213,7 +214,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool released=owned!=null && owned.IsDisposed && bookField.GetValue(service)==null && Cleanup2LearningModuleState(off);
             Cleanup2Check("elemental-console-native-preparation-closed-no-disclosure",released,new JObject {
                 ["nativeBookDisposed"]=owned!=null && owned.IsDisposed,["serviceBookFieldCleared"]=bookField.GetValue(service)==null,
-                ["presentationOutcome"]=ElementalConsoleBookPresentation.Outcome,["freshModuleOff"]=off,
+                ["bookOutcome"]=OriginalSummonElementalVisibility.BookOutcome,["freshModuleOff"]=off,
                 ["scope"]="Actual native close of the exact owned console book; the spellbook has no owned disclosure header or context to retire." },
                 "Closing the native console book disposes it and clears the service field; no withdrawn disclosure state exists to retire.");
             if(!released)throw new InvalidOperationException("Native console spellbook did not close exactly.");
@@ -367,10 +368,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for(int frame=0;frame<8;frame++)yield return 0;
                 var detail=root.GetComponentsInChildren<CharGenSpellsPhaseDetailedView>(true).Single(value=>value.gameObject.activeInHierarchy && ReferenceEquals(ElementalConsoleBookPresentation.Model(value),phase));
                 var selector=detail.GetComponentsInChildren<CharGenSpellsSelectorView>(true).Single(value=>ReferenceEquals(ElementalConsoleBookPresentation.Model(value),phase.SpellsSelector.Value));
-                var context=ElementalConsoleBookPresentation.LearningFor(selector);
-                if((!off && (context==null || !context.Current)) || (off && (context!=null ||
-                    selector.GetComponentsInChildren<CharGenSpellSelectorItemView>(true).Any(value=>value.GetViewModelClass() is ElementalConsoleBookPresentation.LearningHeader))))
-                    throw new InvalidOperationException("Actual native console learning source/module-OFF row contract failed: "+ElementalConsoleBookPresentation.Outcome);
+                // The console learning disclosure was withdrawn (2026-11-12).
+                // This phase runs with the option revealed in memory (see the
+                // dispatcher), so the original spell is an ordinary native VM.
+                Func<bool> noOwnedHeader=()=>!phase.SpellsSelector.Value.VisibleCollection.Any(value=>value!=null &&
+                        value.GetType().Assembly==typeof(ElementalConsoleBookPresentation).Assembly) &&
+                    !selector.GetComponentsInChildren<CharGenSpellSelectorItemView>(true).Any(value=>value.GetViewModelClass()!=null &&
+                        value.GetViewModelClass().GetType().Assembly==typeof(ElementalConsoleBookPresentation).Assembly);
                 var selectionField=typeof(CharGenSpellsPhaseVM).GetField("m_SelectionData",Cleanup2Fields);
                 Func<SpellSelectionData> currentSelection=()=>selectionField.GetValue(phase) as SpellSelectionData;
                 Func<SpellSelectionData,bool> nativeBudgetOwner=value=>value!=null && !phase.IsDisposed && owned.Phases.Any(item=>ReferenceEquals(item,phase)) &&
@@ -378,48 +382,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.ExtraMaxLevel==2 && !value.ExtraByStat && value.ExtraSelected!=null && value.ExtraSelected.Length>0 &&
                     backend.State.SpellSelections.Any(item=>ReferenceEquals(item,value)) && ReferenceEquals(phase.MechanicSelectedSpells,value.ExtraSelected);
                 var selection=currentSelection();
-                if(!nativeBudgetOwner(selection) || (!off && !ReferenceEquals(context.SelectionData,selection)))
+                if(!nativeBudgetOwner(selection))
                     throw new InvalidOperationException("Exact native console learning allocation unavailable.");
                 var authoritative=phase.SpellsSelector.Value.VisibleCollection.ToArray();
                 var nativeSelected=phase.UIChosenSpells.ToArray();var extraBudget=selection.ExtraSelected;var pending=extraBudget.ToArray();
                 var detailNavigation=(ConsoleMultiNavigationCollection)typeof(CharGenSpellsPhaseDetailedView).GetField("m_ConsoleMultiNavigationCollection",Cleanup2Fields).GetValue(detail);
-                if(!ownsLearning())throw new InvalidOperationException("Native console learning owner changed before disclosure.");
-                CharGenSpellSelectorItemView nativeHeader=null;
-                if(!off)
-                {
-                    // Native44: the virtual list may not realize the header's row;
-                    // scroll it with the list's own method, selecting nothing.
-                    if(!selector.GetComponentsInChildren<CharGenSpellSelectorItemView>(false).Any(value=>ReferenceEquals(value.GetViewModelClass(),context.Header)))
-                    {
-                        ElementalConsoleBookPresentation.LearningView.GetMethod("TryScrollToChosenEntity",Cleanup2Fields,null,
-                            new[]{typeof(CharGenSpellSelectorItemVM)},null).Invoke(selector,new object[]{context.Header});
-                        for(int frame=0;frame<8;frame++)yield return 0;
-                    }
-                    nativeHeader=selector.GetComponentsInChildren<CharGenSpellSelectorItemView>(false).Single(value=>ReferenceEquals(value.GetViewModelClass(),context.Header));
-                    detailNavigation.SetCurrentEntityManual(nativeHeader);typeof(CharGenView).GetMethod("ConfirmPressed",Cleanup2Fields).Invoke(root,null);
-                    for(int frame=0;frame<5;frame++)yield return 0;
-                }
-                bool expanded=(off ? context==null && !authoritative.Any(value=>value is ElementalConsoleBookPresentation.LearningHeader) :
-                    context.Expanded && context.Current && context.Header.CanChoose.Value==false && !authoritative.Contains(context.Header)) &&
+                if(!ownsLearning())throw new InvalidOperationException("Native console learning owner changed before the ordinary-row check.");
+                // Seam-level (not rendered) default-hidden check: the exact
+                // transpiled GetSpellsCollection list read, with this real phase
+                // and controller, omits the original spell when the option is off.
+                bool revealed=OriginalSummonElementalVisibility.Show;List<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility> hiddenRows;
+                try{OriginalSummonElementalVisibility.Show=false;hiddenRows=StandaloneElementalDiscovery.ConsoleLearningSpells(wizard.Spellbook.SpellList,2,phase,backend);}
+                finally{OriginalSummonElementalVisibility.Show=revealed;}
+                var revealedRows=StandaloneElementalDiscovery.ConsoleLearningSpells(wizard.Spellbook.SpellList,2,phase,backend);
+                bool ordinary=(off || revealed) && noOwnedHeader() && authoritative.Count(value=>ReferenceEquals(value.Spell,legacy))==1 &&
+                    (off || !hiddenRows.Any(value=>value!=null && StandaloneElementalPresentationPolicy.IsOriginalSummonElemental(value.AssetGuid)) &&
+                        revealedRows.Count(value=>ReferenceEquals(value,legacy))==1) &&
                     phase.UIChosenSpells.SequenceEqual(nativeSelected) && ReferenceEquals(currentSelection(),selection) && nativeBudgetOwner(selection) &&
                     ReferenceEquals(selection.ExtraSelected,extraBudget) && extraBudget.SequenceEqual(pending) &&
-                    phase.SpellsSelector.Value.VisibleCollection.SequenceEqual(authoritative);
-                Cleanup2Check("elemental-console-real-learning-disclosure-no-allocation",expanded,new JObject { ["expanded"]=!off && context.Expanded,
-                    ["authoritativeVMReferencesExact"]=phase.SpellsSelector.Value.VisibleCollection.SequenceEqual(authoritative),
-                    ["headerNotAllocatable"]=!off && !context.Header.CanChoose.Value,["allocationObjectsExact"]=phase.UIChosenSpells.SequenceEqual(nativeSelected),
+                    phase.SpellsSelector.Value.VisibleCollection.SequenceEqual(authoritative) && Cleanup2LearningModuleState(off);
+                Cleanup2Check("elemental-console-real-learning-revealed-ordinary-row",ordinary,new JObject { ["optionRevealed"]=revealed,
+                    ["sourceVmCount"]=authoritative.Count(value=>ReferenceEquals(value.Spell,legacy)),["noOwnedHeader"]=noOwnedHeader(),
+                    ["seamHiddenOriginalElementals"]=hiddenRows.Count(value=>value!=null && StandaloneElementalPresentationPolicy.IsOriginalSummonElemental(value.AssetGuid)),
+                    ["seamRevealedSourceRows"]=revealedRows.Count(value=>ReferenceEquals(value,legacy)),
+                    ["allocationObjectsExact"]=phase.UIChosenSpells.SequenceEqual(nativeSelected),
                     ["nativePendingBudgetExact"]=ReferenceEquals(selection.ExtraSelected,extraBudget) && extraBudget.SequenceEqual(pending),
-                    ["nativeMechanicBudgetAliasExact"]=ReferenceEquals(phase.MechanicSelectedSpells,extraBudget),["budgetKind"]="native-Wizard-ExtraSelected",
-                    ["nativeHeaderValid"]=nativeHeader!=null && nativeHeader.IsValid(),["freshModuleOff"]=off,["ownedProjectionAbsent"]=off && context==null,
-                    ["nativeInput"]=off?"Original native console learning row, no disclosure":"Actual CharGenView.ConfirmPressed/phase disclosure" },
-                    "The real native console Wizard learning disclosure is focusable and expands original source VM references without allocating or consuming a learning choice.");
-                if(!expanded)throw new InvalidOperationException("Native console learning disclosure changed allocation authority.");
+                    ["budgetKind"]="native-Wizard-ExtraSelected",["freshModuleOff"]=off,
+                    ["scope"]="Rendered list: revealed option only. Default-hidden: seam-level call on the real phase, not a rendered observation." },
+                    "Revealed, the real native console Wizard learning list holds the original spell as one ordinary VM with no owned header; the default option omits it at the exact learning seam.");
+                if(!ordinary)throw new InvalidOperationException("Native console learning does not show the original spell as one ordinary row.");
                 var source=authoritative.Single(value=>ReferenceEquals(value.Spell,legacy));
                 // Native42 fresh OFF: no disclosure places the source beside a
                 // header, so the virtual native list has no active row for it.
                 // Scroll with the list's own method; nothing is selected here.
                 if(!selector.GetComponentsInChildren<CharGenSpellSelectorItemView>(false).Any(value=>ReferenceEquals(value.GetViewModelClass(),source)))
                 {
-                    ElementalConsoleBookPresentation.LearningView.GetMethod("TryScrollToChosenEntity",Cleanup2Fields,null,
+                    typeof(SelectorEntitiesGroupView<CharGenSpellSelectorItemVM,CharGenSpellSelectorItemView>).GetMethod("TryScrollToChosenEntity",Cleanup2Fields,null,
                         new[]{typeof(CharGenSpellSelectorItemVM)},null).Invoke(selector,new object[]{source});
                     for(int frame=0;frame<8;frame++)yield return 0;
                 }

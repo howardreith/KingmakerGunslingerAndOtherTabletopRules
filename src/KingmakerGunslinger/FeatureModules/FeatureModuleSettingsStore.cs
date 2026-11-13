@@ -10,6 +10,9 @@ namespace KingmakerGunslinger.FeatureModules
     {
         internal const int CurrentSchemaVersion = 12;
         internal const string FileName = "FeatureModules.json";
+        // Optional default-OFF presentation key. Not a schema change: earlier
+        // releases ignore an unknown key, and a missing key means hidden.
+        internal const string ShowOriginalSummonElementalId = "show-original-summon-elemental";
 
         internal static FeatureModuleSettingsState Load(string modPath,
             Action<string> warning = null, Func<DateTime> utcNow = null)
@@ -58,6 +61,8 @@ namespace KingmakerGunslinger.FeatureModules
                     FeatureModuleConfiguration.TeleportationSpellsId);
                 bool magicCircleSpells = ReadDefaultOn(root,
                     FeatureModuleConfiguration.MagicCircleSpellsId);
+                bool showOriginalSummonElemental = ReadDefaultOff(root,
+                    ShowOriginalSummonElementalId);
                 var state = new FeatureModuleSettingsState(
                     new FeatureModuleConfiguration(gunslinger, acadamae,
                         shieldOther, expandedSummoning, elvenBranchedSpears,
@@ -66,7 +71,7 @@ namespace KingmakerGunslinger.FeatureModules
                         protectionFromAlignmentControlImmunity,
                         elementalRaces, teleportationSpells, magicCircleSpells), path,
                     schema < CurrentSchemaVersion ? "migrated-schema-" + schema :
-                        "settings", false);
+                        "settings", false, showOriginalSummonElemental);
                 if (schema < CurrentSchemaVersion) Save(state);
                 return state;
             }
@@ -127,7 +132,8 @@ namespace KingmakerGunslinger.FeatureModules
                 [FeatureModuleConfiguration.TeleportationSpellsId] =
                     state.Pending.TeleportationSpells,
                 [FeatureModuleConfiguration.MagicCircleSpellsId] =
-                    state.Pending.MagicCircleSpells
+                    state.Pending.MagicCircleSpells,
+                [ShowOriginalSummonElementalId] = state.ShowOriginalSummonElemental
             };
             string temporary = state.Path + ".tmp";
             string backup = state.Path + ".previous";
@@ -147,6 +153,15 @@ namespace KingmakerGunslinger.FeatureModules
         {
             JToken token = root[key];
             if (token == null) return true;
+            if (token.Type != JTokenType.Boolean)
+                throw new JsonException("Feature-module key '" + key + "' must be boolean.");
+            return token.Value<bool>();
+        }
+
+        private static bool ReadDefaultOff(JObject root, string key)
+        {
+            JToken token = root[key];
+            if (token == null) return false;
             if (token.Type != JTokenType.Boolean)
                 throw new JsonException("Feature-module key '" + key + "' must be boolean.");
             return token.Value<bool>();

@@ -113,13 +113,16 @@ namespace KingmakerGunslinger.Bootstrap
             ModContext context = new ModContext(modEntry, assembly, logger);
             context.FeatureModules = FeatureModuleSettingsStore.Load(modEntry.Path,
                 message => logger.Warning("settings", "load.recovered", message));
+            KingmakerGunslinger.Summoning.OriginalSummonElementalVisibility.Show =
+                context.FeatureModules.ShowOriginalSummonElemental;
             logger.Info("settings", "load.complete", string.Format(
                 System.Globalization.CultureInfo.InvariantCulture,
-                "schema={0};path={1};source={2};active={3};recovered={4};restartPending={5}",
+                "schema={0};path={1};source={2};active={3};recovered={4};restartPending={5};showOriginalSummonElemental={6}",
                 FeatureModuleSettingsStore.CurrentSchemaVersion,
                 context.FeatureModules.Path, context.FeatureModules.Source,
                 context.FeatureModules.Active, context.FeatureModules.Recovered,
-                context.FeatureModules.RestartRequired));
+                context.FeatureModules.RestartRequired,
+                context.FeatureModules.ShowOriginalSummonElemental));
             return context;
         }
 
