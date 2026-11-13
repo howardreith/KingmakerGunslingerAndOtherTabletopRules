@@ -155,11 +155,32 @@ namespace KingmakerGunslinger.Blueprints
         /// own placements, because the determinant is the native variant
         /// NativeTemplate selects, keyed by (parent tier, multiplicity).
         ///
-        /// So a per-CREATURE list cannot express this property at any
-        /// membership, and no correction to these twelve keys would fix it.
-        /// RequiresInheritedTemplateRemoval takes only family and creature and
-        /// so cannot express it either; the repair is structural and belongs to
-        /// its own card under DEC-0004.
+        /// So this declaration does not cover the placements that actually
+        /// apply a template, and a per-creature key list cannot DESCRIBE which
+        /// placements do.
+        ///
+        /// It does not follow that the repair must be structural, and an
+        /// earlier version of this comment wrongly said so. Two different
+        /// properties were being conflated:
+        ///
+        ///   - which placements CONTAIN a template-application action. That
+        ///     varies by (parent tier, multiplicity) and can only be
+        ///     established per placement.
+        ///   - which creatures should RETAIN a celestial/fiendish template.
+        ///     The approved contract is already per creature: TemplatePolicy
+        ///     maps monsterTemplated=false to SummonTemplatePolicy.None.
+        ///
+        /// ContextActionRemoveInheritedSummonTemplates revalidates its owner
+        /// and the four identities and then removes whichever of those buffs
+        /// are actually present - so on a placement that applies none it
+        /// removes nothing. A broader creature-based removal policy is
+        /// therefore a live option: it would strip the template where one is
+        /// applied and be inert elsewhere. Placement-aware wiring is another.
+        /// The measurements do not prove either necessary.
+        ///
+        /// What the repair must do is enforce the approved no-template contract
+        /// across the placements that apply one. Which implementation does that
+        /// is for DEC-0004 and its own card.
         ///
         /// What the observation asserts is the per-placement WIRING invariant
         /// this code owns - the removal action is present exactly where its
