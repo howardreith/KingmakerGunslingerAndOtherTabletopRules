@@ -22,14 +22,19 @@ namespace KingmakerGunslinger.Blueprints
                 CapitalVendorBlueprints.ExpectedTableName, new EasternWeaponGenericKind[0],
                 new EasternWeaponNamedKind[0], false,
                 "Model D capital retired generic stock"),
+            // Owner acquisition decision (2026-11-12): the Dire Narlmarches
+            // village and Pitax traders stock no authored Eastern weapons. Both
+            // exact targets stay here with empty desired stock so publication
+            // removes any project-owned fixed row; native SharedVendorTables
+            // known-item reconciliation then decrements already generated stock.
             new EasternVendorSpec("f072a8f6889b5f345b7f4e7c74cb3e4c",
-                "DireNarlmarchesVillageVendorTable", AllGenericKinds(),
+                "DireNarlmarchesVillageVendorTable", new EasternWeaponGenericKind[0],
                 new EasternWeaponNamedKind[0], false,
-                "later regional replacement stock"),
+                "retired regional stock cleanup"),
             new EasternVendorSpec("e5ab1fccf37c55f41a20a80c6ba6a460",
-                "PitaxTownVendorTable", AllGenericKinds(),
+                "PitaxTownVendorTable", new EasternWeaponGenericKind[0],
                 new EasternWeaponNamedKind[0], false,
-                "Pitax specialist generic stock"),
+                "retired Pitax stock cleanup"),
             new EasternVendorSpec(
                 BeneathStolenLandsVendorBlueprints.StandaloneHonestGuyTableGuid,
                 BeneathStolenLandsVendorBlueprints.ExpectedNames[0],
