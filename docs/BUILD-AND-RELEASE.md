@@ -2,7 +2,26 @@
 
 ## 0.0.185 publication authorization
 
-**Prepared, not yet published.**
+**Published (completed).** Stable
+[v0.0.185](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.185)
+is Latest and not a prerelease. The annotated tag `49bd4a6bc8` peels to the
+release commit `c136527a99`.
+
+- **Gate.** The complete suite passed 2,950/2,950 with 0 failures.
+- **Builds.** Two deterministic exact-reference builds produced identical
+  archives:
+  - package SHA-256
+    `c48be70e6aef546e23c8414abec3090af77225248e150eef3bad97259eec5ccf`;
+  - DLL SHA-256
+    `5dc21d40a1a3474d3a0f6fc4cbb8012c664fd0848d280ca62a3109fab4dfa694`;
+  - MVID `8c11f422-481b-4a0b-8573-b75bb786fa8f`.
+- **Reference bundle.** `artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references`.
+- **Public download.** A fresh download matched `SHA256SUMS.txt`, the manifest names the release commit, and the
+  embedded `Info.json` reads 0.0.185 with the matching DLL.
+- **Timing.** The publisher took 1,363 s; with the 421 s release-branch preparation the release spent about
+  1,784 s, within its 30-minute planning budget.
+- **Installation.** The installed mod is untouched and still reads 0.0.140.
+- **Merges.** PR #143 was merged as `70eeed101a`. The owner merged release PR #144 as `c136527a99`.
 
 On 2026-11-12 Howie wrote: "Repair that one issue then merge and cut a release please." The review P3 (stale
 Eastern manifest paragraph) was repaired as `4455a418c6`. PR #143 was marked ready and merged as `70eeed101a`. No
