@@ -175,6 +175,76 @@ namespace KingmakerGunslinger.DomainTests
                 "Structured runtime diagnostics were accepted in player feedback.");
         }
 
+
+        /// <summary>
+        /// True when the source REFERENCES the native warning handler in code.
+        /// Comments are removed first - string and character literals are
+        /// honoured so a // inside a literal cannot blind the scan - because
+        /// the boundary being guarded is what production CALLS, not what it
+        /// documents.
+        /// </summary>
+        private static bool ReferencesWarningHandlerInCode(string source)
+        {
+            string code = StripComments(source);
+            return code.Contains("IWarningNotificationUIHandler") ||
+                code.Contains("HandleWarning");
+        }
+
+        private static string StripComments(string source)
+        {
+            var builder = new System.Text.StringBuilder(source.Length);
+            bool inLine = false, inBlock = false, inString = false,
+                inChar = false, inVerbatim = false;
+            for (int index = 0; index < source.Length; index++)
+            {
+                char current = source[index];
+                char next = index + 1 < source.Length ? source[index + 1] : '\0';
+                if (inLine)
+                {
+                    if (current == '\n') { inLine = false; builder.Append(current); }
+                    continue;
+                }
+                if (inBlock)
+                {
+                    if (current == '*' && next == '/') { inBlock = false; index++; }
+                    else if (current == '\n') builder.Append(current);
+                    continue;
+                }
+                if (inString)
+                {
+                    builder.Append(current);
+                    if (inVerbatim)
+                    {
+                        if (current == '"' && next == '"') { builder.Append(next); index++; }
+                        else if (current == '"') { inString = false; inVerbatim = false; }
+                    }
+                    else if (current == '\\' && index + 1 < source.Length)
+                    { builder.Append(next); index++; }
+                    else if (current == '"') inString = false;
+                    continue;
+                }
+                if (inChar)
+                {
+                    builder.Append(current);
+                    if (current == '\\' && index + 1 < source.Length)
+                    { builder.Append(next); index++; }
+                    else if (current == '\'') inChar = false;
+                    continue;
+                }
+                if (current == '/' && next == '/') { inLine = true; index++; continue; }
+                if (current == '/' && next == '*') { inBlock = true; index++; continue; }
+                if (current == '@' && next == '"')
+                {
+                    inString = true; inVerbatim = true;
+                    builder.Append(current); builder.Append(next); index++; continue;
+                }
+                if (current == '"') { inString = true; builder.Append(current); continue; }
+                if (current == '\'') { inChar = true; builder.Append(current); continue; }
+                builder.Append(current);
+            }
+            return builder.ToString();
+        }
+
         internal static void ProductionUsesNativeWarningHelperOnly()
         {
             string root = RepositoryRoot();
@@ -193,12 +263,36 @@ namespace KingmakerGunslinger.DomainTests
                             "Runtime notification observers must never publish notifications.");
                         return false;
                     }
-                    return source.Contains("IWarningNotificationUIHandler") ||
-                        source.Contains("HandleWarning");
+                    return ReferencesWarningHandlerInCode(source);
                 }).ToArray();
             Assertions.Equal(0, offenders.Length,
                 "Production bypasses the stable native warning helper: " +
                 string.Join(", ", offenders));
+
+            // The scan is over CODE, not prose. A doc comment that names the
+            // native handler in order to explain WHY production routes its
+            // warnings through UIUtility.SendWarning is documentation, and
+            // flagging it would drive accurate documentation out of the file
+            // without making the boundary one bit stronger. These two controls
+            // keep that honest: a real reference in code is still caught, and a
+            // reference that exists only in a comment is not.
+            Assertions.True(ReferencesWarningHandlerInCode(
+                    "class X : IWarningNotificationUIHandler { void HandleWarning() { } }"),
+                "The warning-handler scan no longer catches a real reference in code.");
+            Assertions.True(ReferencesWarningHandlerInCode(
+                    "void X() { /* note */ Handle(); }\nvoid HandleWarning() { }"),
+                "The warning-handler scan missed a reference beside a comment.");
+            Assertions.False(ReferencesWarningHandlerInCode(
+                    "/// ButtonPF.OnPointerClick raises IWarningNotificationUIHandler with\n" +
+                    "/// DisableWarningMessage when the control is not interactable.\n" +
+                    "private static void ApplyReaderAvailability() { }"),
+                "A comment-only mention was treated as a bypass.");
+            Assertions.False(ReferencesWarningHandlerInCode(
+                    "/* HandleWarning is the native route */\nvoid X() { }"),
+                "A block-comment mention was treated as a bypass.");
+            Assertions.True(ReferencesWarningHandlerInCode(
+                    "string note = \"// HandleWarning\"; void HandleWarning() { }"),
+                "A // inside a string literal hid real code from the scan.");
 
             string[] helperCallers = Directory.GetFiles(sourceRoot, "*.cs",
                     SearchOption.AllDirectories).Where(path =>
