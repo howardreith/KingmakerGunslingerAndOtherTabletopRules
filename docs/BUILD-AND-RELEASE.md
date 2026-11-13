@@ -2,6 +2,31 @@
 
 ## 0.0.187 publication authorization
 
+**Published (completed).** Stable
+[v0.0.187](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.187)
+is Latest and not a prerelease. The annotated tag `191004ddef` peels to the release commit `bfaac01f52`,
+which is `origin/master`.
+
+- **Gate.** The complete suite passed 2,971/2,971 with 0 failures.
+- **Builds.** Two deterministic exact-reference builds produced identical archives:
+  - package SHA-256 `230e9298afdc534d6017fd2914101649827d7d53ffaed10056361cbade1fa48c`;
+  - DLL SHA-256 `7b23241c3a219153e688041c905f8485ea70a7f36abb6f6a94e8beb7bbafc368`.
+- **Reference bundle.** `artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references`,
+  as for v0.0.185. A first publisher attempt with the `private/refresh-2026-10-15` extracted bundle stopped
+  after 5 s on the provenance check (`Managed/UniRx.dll` missing), before any build, tag or upload.
+- **Public download test.** A fresh download of all three assets matched `SHA256SUMS.txt`, the manifest
+  names the release commit `bfaac01f522080aa43a8f89b9c119de1e1a744ae`, and the embedded `Info.json` reads
+  0.0.187 with `DisplayName` "Mr. Bard's Tabletop Rules Expansion", `Id` `KingmakerGunslinger`, and the
+  DLL hash above (458 files in the package).
+- **Timing.** The publisher took 1,102 s; with the 780 s release-branch preparation the release spent about
+  1,882 s, about 80 s over its 30-minute planning budget.
+- **Installation.** The installed mod is untouched and still reads 0.0.140; the publisher performed no
+  deployment.
+- **Merges.** PRs #149, #148 and #150 merged as `d949d83c9b`, `f7a9143a95` and `ca6f4c0543`. The owner
+  merged release PR #151 as `bfaac01f52`.
+
+Originally authorized as follows.
+
 On 2026-11-13 Howie wrote: "Please merge all 3 PRs and then cut a new release." PRs #149 (project-level
 Claude Code attribution settings), #148 (Unity Mod Manager display name) and #150 (commit-id map after
 the 2026-11-13 history rewrite) merged in that order. No channel was named, so this follows v0.0.186 as
