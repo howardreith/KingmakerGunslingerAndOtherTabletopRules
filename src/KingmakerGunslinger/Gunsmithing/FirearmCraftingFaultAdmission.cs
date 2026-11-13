@@ -33,15 +33,20 @@ namespace KingmakerGunslinger.Gunsmithing
         private readonly UnitDescriptor _caster;
         private readonly string _trigger;
         private readonly bool _faultCompensation;
+        private readonly string _interferencePoint;
+        private readonly Action _interference;
         private readonly List<string> _tripped = new List<string>();
         private bool _disposed;
 
         private FirearmCraftingFaultAdmission(UnitDescriptor caster, string trigger,
-            bool faultCompensation)
+            bool faultCompensation, string interferencePoint, Action interference)
         {
             _caster = caster; _trigger = trigger; _faultCompensation = faultCompensation;
+            _interferencePoint = interferencePoint; _interference = interference;
         }
 
+        private bool _interferenceRun;
+        internal bool InterferenceRun { get { return _interferenceRun; } }
         internal bool Tripped { get { return _tripped.Count > 0; } }
         internal bool TrippedAt(string point) { return _tripped.Contains(point); }
         internal string TrippedPoints
@@ -57,6 +62,37 @@ namespace KingmakerGunslinger.Gunsmithing
         internal static FirearmCraftingFaultAdmission Admit(UnitDescriptor caster,
             string trigger)
         { return Admit(caster, trigger, false); }
+
+        /// <summary>
+        /// Admits an INTERFERENCE rather than a fault: at the named point the
+        /// supplied action runs and the transaction then continues normally.
+        ///
+        /// It exists for one observation that cannot be built any other way.
+        /// The service measures each output's committed insertion against a
+        /// count taken at the start of the transaction, so a change made by
+        /// something else BETWEEN that count and the insertion is the case that
+        /// decides whether the transaction can over-claim. Arranging that from
+        /// outside is impossible - the window is entirely inside Complete.
+        ///
+        /// It carries the same guards as a fault admission: exactly one live
+        /// admission, the exact admitted caster by reference, internal, nothing
+        /// serialised, disarmed in Dispose. The action is supplied by the
+        /// caller and is never stored anywhere a save or setting can reach.
+        /// </summary>
+        internal static FirearmCraftingFaultAdmission AdmitInterference(
+            UnitDescriptor caster, string point, Action interference)
+        {
+            if (caster == null) throw new ArgumentNullException("caster");
+            if (interference == null) throw new ArgumentNullException("interference");
+            if (point != AfterDebitBeforeOutput && point != AfterFirstOutput)
+                throw new ArgumentOutOfRangeException("point",
+                    "Unrecognised crafting interference point: " + point);
+            if (_current != null) throw new InvalidOperationException(
+                "A crafting fault admission is already live; they must not stack.");
+            _current = new FirearmCraftingFaultAdmission(caster, null, false,
+                point, interference);
+            return _current;
+        }
 
         /// <summary>
         /// Admits one TRIGGER fault - a point on the forward path, which is the
@@ -85,7 +121,8 @@ namespace KingmakerGunslinger.Gunsmithing
                     "Unrecognised crafting fault trigger: " + trigger);
             if (_current != null) throw new InvalidOperationException(
                 "A crafting fault admission is already live; they must not stack.");
-            _current = new FirearmCraftingFaultAdmission(caster, trigger, faultCompensation);
+            _current = new FirearmCraftingFaultAdmission(caster, trigger,
+                faultCompensation, null, null);
             return _current;
         }
 
@@ -100,6 +137,17 @@ namespace KingmakerGunslinger.Gunsmithing
             FirearmCraftingFaultAdmission live = _current;
             if (live == null || live._disposed) return;
             if (!ReferenceEquals(live._caster, caster)) return;
+            if (live._interference != null &&
+                string.Equals(live._interferencePoint, point, StringComparison.Ordinal))
+            {
+                // Runs once, then the transaction continues. Recorded like a
+                // trip so the observation can prove it actually happened.
+                live._tripped.Add(point);
+                Action interference = live._interference;
+                live._interferenceRun = true;
+                interference();
+                return;
+            }
             if (string.Equals(point, DuringCompensation, StringComparison.Ordinal))
             {
                 if (!live._faultCompensation) return;

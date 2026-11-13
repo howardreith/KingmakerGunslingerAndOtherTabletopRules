@@ -28,12 +28,30 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// observation is taken first.
         ///
         /// The fault points are admitted through
-        /// <see cref="FirearmCraftingFaultAdmission"/>, which throws only for
-        /// the exact disposable descriptor admitted here and is disarmed in a
-        /// finally. The faults sit at NATIVE boundaries - after the debit and
-        /// after the first committed output - not after the service's own
-        /// bookkeeping, which would have proved nothing about the boundary in
-        /// question.
+        /// <see cref="FirearmCraftingFaultAdmission"/>, which acts only for the
+        /// exact disposable descriptor admitted here and is disarmed in a
+        /// finally.
+        ///
+        /// WHERE THE FAULTS ACTUALLY SIT, stated precisely because an earlier
+        /// version of this comment overstated it. Neither point is a throw from
+        /// inside a native call:
+        ///
+        /// - AfterDebitBeforeOutput fires after the native money debit has
+        ///   committed and before any output is inserted. Nothing about the
+        ///   outputs has been recorded yet, so this does exercise compensation
+        ///   of a committed native mutation the service has not accounted for.
+        /// - AfterFirstOutput fires after Inventory.Add has returned AND after
+        ///   the finally has recorded committedAdds for that output. It
+        ///   exercises rollback of an output that is already committed and
+        ///   already accounted. It does NOT simulate a throw from inside
+        ///   ItemsCollection.Add, and no claim is made that it does.
+        ///
+        /// The partial-insertion case the accounting repair exists for - a
+        /// throw part-way through the non-stackable Add loop - is established
+        /// by DISASSEMBLY of the installed assembly, not by this scenario.
+        /// What this scenario establishes about that repair is the budget
+        /// invariant: see the external-surplus observation below, which drives
+        /// a real inventory change into the service's own measurement window.
         /// </summary>
         private sealed class CraftingProbe
         {
@@ -204,9 +222,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ";cleanupCause=" + (string.IsNullOrEmpty(cleanup) ?
                                     "<none>" : "present"),
                             admissionFired && threw && compensated,
-                            "an admitted fault at a NATIVE mutation boundary, not after the " +
-                                "service's own bookkeeping; product state captured before " +
-                                "fixture cleanup"));
+                            "an admitted fault after a committed native mutation; for " +
+                                "after-first-output the service has already recorded that " +
+                                "output's committedAdds, so this is rollback of an accounted " +
+                                "commit and NOT a throw from inside ItemsCollection.Add. " +
+                                "Product state captured before fixture cleanup"));
                     }
                     finally
                     {
@@ -316,9 +336,104 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ";residualExact=" + residualExact,
                             singlePointRefused && bothTripped && outerNamesBothFailures &&
                                 bothCausesRetained && residualExact,
-                            "two admitted faults at NATIVE mutation boundaries - one on the " +
-                                "forward path and one inside the service's compensation - with " +
-                                "product state captured before fixture cleanup"));
+                            "two admitted faults - one on the forward path, after the first " +
+                                "output was committed and recorded, and one inside the " +
+                                "service's compensation - with product state captured before " +
+                                "fixture cleanup"));
+                    }
+                    finally
+                    {
+                        if (admission != null) admission.Dispose();
+                        unit.Dispose();
+                    }
+                }
+
+                // ---- 7: a surplus this transaction did not create is not removed ----
+                //
+                // The service measures each output's committed insertion as
+                // Count(output) - countsBefore[index], and countsBefore is
+                // taken before the output loop. Anything else that raises the
+                // same item's count inside that window lands in the same
+                // difference. Uncapped, the transaction claims the surplus as
+                // its own, the compensation plan removes it, and the policy's
+                // external-surplus invariant never fires because the service
+                // told it the whole difference was its own work.
+                //
+                // That window is entirely inside Complete, so this is driven by
+                // an admitted INTERFERENCE - the one case the seam exists for
+                // that is not a fault. Five extra lead balls are added after
+                // the debit and before the outputs; the recipe then inserts its
+                // own batch of twenty; the service's own verification fails
+                // because twenty-five is not twenty; and compensation runs.
+                //
+                // The correct outcome is exact: the first output is removed in
+                // full, the second is reduced by this transaction's twenty and
+                // NOT by the five it never created, the gold comes back, no
+                // entitlement is granted, and the residual five is REPORTED.
+                {
+                    var unit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                        Kingmaker.Blueprints.Root.BlueprintRoot.Instance
+                            .DefaultPlayerCharacter).Unit;
+                    FirearmCraftingFaultAdmission admission = null;
+                    const int surplus = 5;
+                    try
+                    {
+                        CraftingProbe before = CaptureCrafting(
+                            unit.Descriptor, basicOutputs, marker);
+                        admission = FirearmCraftingFaultAdmission.AdmitInterference(
+                            unit.Descriptor,
+                            FirearmCraftingFaultAdmission.AfterDebitBeforeOutput,
+                            () => player.Inventory.Add(basicOutputs[1], surplus));
+
+                        string outerMessage = null, originalCause = null;
+                        try { basicLogic.Complete(unit.Descriptor); }
+                        catch (Exception error)
+                        {
+                            outerMessage = error.Message ?? string.Empty;
+                            originalCause = error.InnerException == null ? string.Empty :
+                                error.InnerException.Message ?? string.Empty;
+                        }
+                        // Captured BEFORE any fixture restoration.
+                        CraftingProbe after = CaptureCrafting(
+                            unit.Descriptor, basicOutputs, marker);
+
+                        bool interfered = admission.InterferenceRun;
+                        bool firstOutputRemoved =
+                            after.Counts[0] == before.Counts[0];
+                        bool surplusPreserved =
+                            after.Counts[1] == before.Counts[1] + surplus;
+                        bool moneyRestored = after.Money == before.Money;
+                        bool residualReported = outerMessage != null &&
+                            outerMessage.IndexOf("surplus was not made here",
+                                StringComparison.OrdinalIgnoreCase) >= 0;
+                        bool originalRetained = originalCause != null &&
+                            originalCause.IndexOf("inventory verification failed",
+                                StringComparison.OrdinalIgnoreCase) >= 0;
+
+                        assertions.Add(Assertion("crafting-service-external-surplus-preserved",
+                            "when something else raises an output's count inside the service's " +
+                                "own measurement window, compensation removes only this " +
+                                "transaction's own batch, LEAVES the surplus it did not create, " +
+                                "restores the gold, grants no entitlement, and REPORTS the " +
+                                "residual while retaining the original cause. Asserted on real " +
+                                "native inventory, before any fixture cleanup",
+                            "interferenceRan=" + interfered + ";surplus=" + surplus +
+                                ";countsBefore=" + string.Join(",", before.Counts) +
+                                ";countsAfter=" + string.Join(",", after.Counts) +
+                                ";firstOutputRemoved=" + firstOutputRemoved +
+                                ";surplusPreserved=" + surplusPreserved +
+                                ";moneyBefore=" + before.Money +
+                                ";moneyAfter=" + after.Money +
+                                ";moneyRestored=" + moneyRestored +
+                                ";markerAfter=" + after.Marker +
+                                ";residualReported=" + residualReported +
+                                ";originalCauseRetained=" + originalRetained,
+                            interfered && firstOutputRemoved && surplusPreserved &&
+                                moneyRestored && !after.Marker && residualReported &&
+                                originalRetained,
+                            "an admitted non-throwing interference inside the service's own " +
+                                "measurement window - the only place this case can be " +
+                                "constructed - against the real player inventory"));
                     }
                     finally
                     {

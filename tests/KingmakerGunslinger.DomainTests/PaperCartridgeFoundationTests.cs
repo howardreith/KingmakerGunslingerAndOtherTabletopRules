@@ -217,7 +217,7 @@ namespace KingmakerGunslinger.DomainTests
                 "SpendMoney(goldCost)", "caster.RemoveFact(marker)",
                 "FirearmCraftingCompensationPolicy.Plan(",
                 "plan.GoldToRestore > 0", "player.GainMoney(plan.GoldToRestore)",
-                "committedAdds[index] = Math.Max(0,", "countsBefore[index]",
+                "committedAdds[index] = Math.Min(amounts[index],", "countsBefore[index]",
                 "ammunition-craft.committed" })
                 Assertions.True(transaction.Contains(token),
                     "shared rollback: " + token);
