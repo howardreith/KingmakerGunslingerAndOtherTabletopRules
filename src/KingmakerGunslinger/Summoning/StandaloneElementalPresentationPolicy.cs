@@ -90,6 +90,45 @@ namespace KingmakerGunslinger.Summoning
         { return OrdinaryClassLists.Contains(guid ?? ""); }
 
         /// <summary>
+        /// An original Summon Elemental spell (one of the six rank parents or
+        /// their 24 element children). The unique Wriggling Man NPC ability is
+        /// never a player spell and is excluded.
+        /// </summary>
+        /// <summary>The shared hide decision: only with the UMM option off and
+        /// Expanded Summoning (which replaces these spells) active.</summary>
+        internal static bool OriginalRowsHidden(bool showOption, bool moduleActive)
+        { return !showOption && moduleActive; }
+
+        internal static bool IsOriginalSummonElemental(string guid)
+        {
+            StandaloneElementalAbilitySpec spec = Find(guid);
+            return spec != null && !spec.UniqueNpc;
+        }
+
+        /// <summary>
+        /// Owner directive (2026-11-12): with the UMM option off, original
+        /// Summon Elemental rows leave the player's spellbook presentation.
+        /// A fresh copy is returned; kept rows (domain/special grants whose
+        /// slot may have no other choice) and every other row keep their order.
+        /// Known spells, preparations and saves are never touched here.
+        /// </summary>
+        internal static List<T> HideOriginalBookRows<T>(IEnumerable<T> rows, Func<T, string> identity,
+            Func<T, bool> keep, out int hidden)
+        {
+            if (rows == null) throw new ArgumentNullException("rows");
+            if (identity == null) throw new ArgumentNullException("identity");
+            var result = new List<T>();
+            hidden = 0;
+            foreach (T row in rows)
+            {
+                if (row != null && IsOriginalSummonElemental(identity(row)) && (keep == null || !keep(row)))
+                { hidden++; continue; }
+                result.Add(row);
+            }
+            return result;
+        }
+
+        /// <summary>
         /// The exact copy/filter decision shared by both native learning UI
         /// helpers. Selected and already-known legacy rows remain visible.
         /// Counting distinct unselected, unknown rows prevents a UI filter

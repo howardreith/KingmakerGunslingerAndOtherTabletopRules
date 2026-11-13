@@ -1,5 +1,22 @@
 # Eastern Weapons placement manifest
 
+## Regional stock withdrawn, 2026-11-12 (unreleased, branch `codex/regional-vendor-melee-withdrawal`)
+
+The Dire Narlmarches village trader (`DireNarlmarchesVillageVendorTable` / `f072a8f6889b5f345b7f4e7c74cb3e4c`)
+and the Pitax trader (`PitaxTownVendorTable` / `e5ab1fccf37c55f41a20a80c6ba6a460`) no longer stock any generic
+Eastern weapon. Each loses 12 rows: ordinary, masterwork, cold iron and +1 Wakizashi, Katana and Nodachi. Both
+tables stay publication targets with empty desired stock, so stale project-owned rows are still removed.
+Current generic Eastern stock:
+- Oleg: the six ordinary and masterwork rows.
+- Each installed BTSL Honest Guy table: all 12.
+- The capital, the two regional traders and Xelliren: none.
+
+No named Eastern weapon is sold; all 18 remain fixed world loot. Generic cold iron and +1 Eastern weapons
+therefore have no base-campaign merchant. The +1 to +5 capital progression exists only through the optional
+Better Vendors integration. Existing saves rely on native `SharedVendorTables.GetTable` reconciliation. See
+the [acquisition inventory](../planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md) for that behavior and its
+sold-back limitation. Not observed natively. The merchant table below is history.
+
 ## Current 0.0.143 publication
 
 All 18 named Eastern weapons use 18 distinct world-loot targets, with one intended
@@ -24,9 +41,9 @@ Wriggling Man, Knurly Witch and Third Nyrissa keys. Keys were supplied only as
 disposable story prerequisites; organic key/puzzle/Nyrissa progression remains
 unverified. Gate flags and check outcomes were not overridden.
 
-Generic merchant stock is unchanged: Oleg has six mundane/masterwork family
-rows; the capital has zero mod-owned generic Eastern rows under Model D; Dire
-Narlmarches village and Pitax each have the 12 generic rows. Each installed
+Generic merchant stock: Oleg has six mundane/masterwork family rows; the
+capital has zero mod-owned generic Eastern rows under Model D; Dire Narlmarches
+village and Pitax have zero since 2026-11-12 (formerly 12 each). Each installed
 Honest Guy BTSL table has 12; Xelliren tables have zero. None receives a named
 Eastern weapon. Native replenishment and prior serialized stock remain native;
 there is no guaranteed refresh.
@@ -75,8 +92,8 @@ restores the exact pre-publication arrays if no later foreign mutation occurs.
 |---|---|---|---|---|
 | Act I | Oleg | `C11_OlegVendorTable` / `f720440559fc00949900bfa1575196ac` | mundane and masterwork Wakizashi, Katana, and Nodachi | one fixed row each under native restock semantics; direct refs from `OTP_Oleg` and `OTP_Oleg_FirstVisit`; no named Eastern weapon remains in this table |
 | Act II onward | Capital blacksmith | `SmithVendorTable` / `7de959347266092448d8a72089ef9778` | all 12 generic items; Quiet Current, Winter Reed, Cloud-Cleaver | one fixed row each under the recurring capital merchant lifecycle; direct refs from `CapitalOwlbearAttack_Blacksmith` and `VerdelBlacksmith` |
-| later replacement | Dire Narlmarches village trader | `DireNarlmarchesVillageVendorTable` / `f072a8f6889b5f345b7f4e7c74cb3e4c` | all 12 generic items | one fixed row each under native restock semantics; direct ref from `DireNarlmarchesVillageTrader` |
-| Act V | Pitax specialist | `PitaxTownVendorTable` / `e5ab1fccf37c55f41a20a80c6ba6a460` | all 12 generic items; Empty Sleeve, Moonlit Crossing, Unfixed Form | one fixed row each under native restock semantics; direct ref from `PitaxTown_Trader` |
+| later replacement | Dire Narlmarches village trader | `DireNarlmarchesVillageVendorTable` / `f072a8f6889b5f345b7f4e7c74cb3e4c` | none since 2026-11-12 (formerly all 12 generic items) | exact project-owned stale-row cleanup; direct ref from `DireNarlmarchesVillageTrader` |
+| Act V | Pitax specialist | `PitaxTownVendorTable` / `e5ab1fccf37c55f41a20a80c6ba6a460` | none since 2026-11-12 (formerly all 12 generic items; its named rows moved to fixed loot earlier) | exact project-owned stale-row cleanup; direct ref from `PitaxTown_Trader` |
 
 The four required tables contain 48 feature-owned rows when the module is on:
 42 generic rows and six named rows. Tier-two and tier-five progression is
@@ -106,7 +123,7 @@ No named Eastern weapon is placed in ordinary BTSL stock.
 | Act II | Quiet Current | Winter Reed | Cloud-Cleaver | recurring capital blacksmith stock |
 | Act III | Falling Petal | Drawn Horizon | none | distinct Silverstep Grotto fixed chests `5b8346d4fc947624e9f8728fe7a12535` and `040bad335c144784798a580e41b5410f` |
 | Act IV | Storm Over Stone / Duelist's Rebuttal | Foxfire Whisper / Viper's Reach | Thunder at the Gate / Mountain-Sunder | paired fixed targets across Varnhold, Vordakai's Tomb, and Armag's Tomb; see `docs/GUNSLINGER-ACQUISITION-REBALANCE.md` |
-| Act V | Empty Sleeve | Moonlit Crossing | Unfixed Form | recurring Pitax specialist stock |
+| Act V | Empty Sleeve | Moonlit Crossing | Unfixed Form | historical: formerly recurring Pitax specialist stock; now fixed world loot (see the acquisition inventory) |
 | late game | Night Without Moon | Heaven's Measure | World-Tree Severer | `RichHuman_Loot_1` / `7e6448d1d8a7e4f4d9cc340b8f15e732` in `FinalDungeon` |
 
 The five fixed containers receive 12 named count-one rows. They are important
