@@ -336,6 +336,56 @@ foreach ($bad in @(
 # watchdog silently remained at its default.
 $wrapperPath = Join-Path $ScriptRoot 'Invoke-ExpandedSummoningRuntimeScenario.ps1'
 $wrapperSource = Get-Content -LiteralPath $wrapperPath -Raw
+
+# GS-AUD-0007 staged settings: ORDER inside the installation-restoration block.
+# The staged cleanup was once inside the content-fingerprint branch, where an
+# attribute-only change could be skipped; moving it out then put the settings
+# write AHEAD of the process-exit guard, so the wrapper could rewrite live
+# settings while Kingmaker was still shutting down. Both are pinned here by
+# position, because either regression reads as harmless in isolation.
+$orderBoundary = $wrapperSource.IndexOf('$restorationBoundary = $true')
+$orderAssert = $wrapperSource.IndexOf('Assert-KmgNotRunning', $orderBoundary)
+$orderCapture = $wrapperSource.IndexOf('$record.stagedFeatureModulesObserved = [ordered]@{')
+$orderMutate = $wrapperSource.IndexOf('[IO.File]::WriteAllBytes($settingsStagedTarget, $settingsOriginalBytes)')
+$orderTree = $wrapperSource.IndexOf("Restore-Live-Mod.ps1') @restoreArguments")
+$orderFinal = $wrapperSource.IndexOf('$record.stagedFeatureModulesFinal = [ordered]@{')
+Assert-True ($orderBoundary -gt 0 -and $orderAssert -gt 0 -and $orderCapture -gt 0 -and
+    $orderMutate -gt 0 -and $orderTree -gt 0 -and $orderFinal -gt 0) `
+    'the staged-settings restoration landmarks are all present'
+Assert-True ($orderAssert -lt $orderCapture) `
+    'the process-exit boundary is established before the staged disk capture'
+Assert-True ($orderAssert -lt $orderMutate) `
+    'no staged settings mutation occurs before the process-exit boundary'
+Assert-True ($orderCapture -lt $orderMutate) `
+    'the disk outcome is captured before the staged file is rewritten'
+Assert-True ($orderMutate -lt $orderTree) `
+    'the staged settings are restored before the whole-tree replacement'
+Assert-True ($orderTree -lt $orderFinal) `
+    'the final settings verification happens after the last tree replacement'
+# The staged cleanup must NOT be reachable only through the content-equality
+# branch: Resolve-KmgRestorationNeeded compares contents and ignores attributes.
+$orderNeeded = $wrapperSource.IndexOf('Resolve-KmgRestorationNeeded -BeforeSha256')
+Assert-True ($orderMutate -lt $orderNeeded) `
+    'the staged settings cleanup is independent of the content-fingerprint decision'
+Assert-True ($wrapperSource.Contains('$record.restorationDeferred = [ordered]@{')) `
+    'a boundary that cannot be established defers restoration with recovery information'
+
+# The process assertion does not reserve the installation, so shared ownership
+# must be held across the protected interval and lent to the nested restore.
+$orderLease = $wrapperSource.IndexOf('$restorationScope = Enter-KmgRuntimeLease')
+$orderLeaseExit = $wrapperSource.IndexOf('finally { Exit-KmgRuntimeLease $restorationScope }')
+Assert-True ($orderLease -gt 0 -and $orderLeaseExit -gt 0) `
+    'the staged restoration acquires and releases a runtime lease scope'
+Assert-True ($orderLease -lt $orderCapture) `
+    'the runtime lease is held before the staged disk capture'
+Assert-True ($orderLease -lt $orderMutate) `
+    'the runtime lease is held before any staged settings mutation'
+Assert-True ($orderLease -lt $orderAssert) `
+    'the lease is acquired before the process assertion, which cannot reserve the installation'
+Assert-True ($orderFinal -lt $orderLeaseExit) `
+    'the lease is still held for the final settings verification'
+Assert-True ($wrapperSource.Contains('$restoreArguments.RuntimeLease = $restorationScope.Lease')) `
+    'the whole-tree restoration runs under the same held lease'
 foreach ($contract in @(
     '[int]$ObserverStartupTimeoutSeconds = 180',
     '[int]$CompletionTimeoutSeconds = 180',

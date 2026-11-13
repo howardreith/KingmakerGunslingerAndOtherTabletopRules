@@ -15753,6 +15753,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             MidgamePublicationContracts(assertions, expectedGunslinger);
             ObserveTeleportationSpellPublication(assertions);
+            ObserveStagedSettingsMigration(assertions);
             var iconEvidenceFiles = new List<string>();
             FirearmMonogramEvidence.Exercise(_request, assertions, iconEvidenceFiles);
             ObserveSprint40GeneratedDiagnostic(assertions, iconEvidenceFiles);
@@ -15760,6 +15761,56 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "PASS" : "FAIL", assertions, null);
             result.EvidenceFiles = iconEvidenceFiles;
             return result;
+        }
+
+        /// <summary>
+        /// GS-AUD-0007 staged acceptance. The settings repair isolates the
+        /// schema-migration write so a failed write preserves valid settings
+        /// instead of substituting defaults, and records
+        /// MigrationWriteFailed. The domain tests cover the store against a
+        /// real filesystem, but the closeout mission required this observed at
+        /// STARTUP, on the candidate's own effective settings - and said that
+        /// repeating the store test does not discharge it. It is right to
+        /// insist: the store tests construct the store directly, whereas this
+        /// reads what ModContext actually loaded from modEntry.Path and what the
+        /// rest of the mod then published from it.
+        ///
+        /// Runs only when the caller supplies the three expectation parameters,
+        /// so every existing caller of this scenario is unaffected. The staging
+        /// wrapper owns the fixture: it backs up the live settings file's BYTES
+        /// AND ATTRIBUTES, writes the staged schema, optionally marks it
+        /// read-only to force the write failure, and restores both afterwards.
+        /// Nothing here makes the owner's real settings file permanently
+        /// read-only.
+        /// </summary>
+        private void ObserveStagedSettingsMigration(List<RuntimeTestAssertion> assertions)
+        {
+            if (_request.Parameters == null ||
+                _request.Parameters.Property("expectedSettingsSource") == null) return;
+            string expectedSource = (string)_request.Parameters["expectedSettingsSource"];
+            bool expectedWriteFailed =
+                (bool)_request.Parameters["expectedMigrationWriteFailed"];
+            bool expectedRecovered = (bool)_request.Parameters["expectedRecovered"];
+
+            FeatureModules.FeatureModuleSettingsState state = _context.FeatureModules;
+            string observed = "source=" + state.Source +
+                ";migrationWriteFailed=" + state.MigrationWriteFailed +
+                ";recovered=" + state.Recovered +
+                ";restartRequired=" + state.RestartRequired +
+                ";path=" + (string.IsNullOrEmpty(state.Path) ? "<none>" : "set");
+            assertions.Add(Assertion("feature-module-staged-migration",
+                "the candidate's loaded settings report the expected migration diagnosis " +
+                    "(source=" + expectedSource + "), the expected migration-write outcome " +
+                    "(migrationWriteFailed=" + expectedWriteFailed + "), and NO malformed-file " +
+                    "recovery (recovered=" + expectedRecovered + ") - so a failed migration write " +
+                    "is distinguished from a corrupt file rather than being reported as one",
+                observed,
+                string.Equals(state.Source, expectedSource, StringComparison.Ordinal) &&
+                    state.MigrationWriteFailed == expectedWriteFailed &&
+                    state.Recovered == expectedRecovered,
+                "ModContext.FeatureModules as loaded from modEntry.Path at startup; the " +
+                    "per-module effective values are asserted separately by this scenario's " +
+                    "own module gates, which is what shows the staged OFF values survived"));
         }
 
         private RuntimeTestResult RunShieldOtherInventoryObservation()
