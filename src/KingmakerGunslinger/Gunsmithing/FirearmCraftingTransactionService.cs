@@ -46,6 +46,8 @@ namespace KingmakerGunslinger.Gunsmithing
                     player.Money != moneyBefore - goldCost)
                     throw new InvalidOperationException(
                         "Crafting gold removal failed.");
+                FirearmCraftingFaultAdmission.Trip(
+                    FirearmCraftingFaultAdmission.AfterDebitBeforeOutput, caster);
                 for (int index = 0; index < outputs.Length; index++)
                 {
                     // GS-AUD-0036. Record the OBSERVED delta, not the requested
@@ -71,6 +73,9 @@ namespace KingmakerGunslinger.Gunsmithing
                             player.Inventory.Count(outputs[index]) -
                             countsBefore[index]);
                     }
+                    if (index == 0)
+                        FirearmCraftingFaultAdmission.Trip(
+                            FirearmCraftingFaultAdmission.AfterFirstOutput, caster);
                 }
                 for (int index = 0; index < outputs.Length; index++)
                     if (player.Inventory.Count(outputs[index]) !=
@@ -110,6 +115,8 @@ namespace KingmakerGunslinger.Gunsmithing
                     var countsNow = new int[outputs.Length];
                     for (int index = 0; index < outputs.Length; index++)
                         countsNow[index] = player.Inventory.Count(outputs[index]);
+                    FirearmCraftingFaultAdmission.Trip(
+                        FirearmCraftingFaultAdmission.DuringCompensation, caster);
                     FirearmCraftingCompensationPlan plan =
                         FirearmCraftingCompensationPolicy.Plan(moneyBefore,
                             player.Money, goldCost, countsBefore, countsNow,
