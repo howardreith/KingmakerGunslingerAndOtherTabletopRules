@@ -12115,11 +12115,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "exact installed shared-vendor table identities and additive fixed-item rows"),
                 Assertion("eastern-vendor-publication",
                     expectedEasternCommerce ?
-                        "four required base merchants plus both installed Honest Guy tables contain each exact desired Eastern item once; Xelliren contains none" :
+                        "Oleg's six ordinary/masterwork rows plus 12 on each installed Honest Guy table, each exact item once; the capital, Dire Narlmarches, Pitax and Xelliren targets contain none" :
                         "module OFF publishes zero Eastern vendor rows while retaining table identities",
+                    // Four required targets stay in the cleanup path. The capital
+                    // (0.0.142) and the Dire Narlmarches/Pitax traders (2026-11-12)
+                    // publish empty desired stock; only Oleg keeps six rows.
                     observed, easternVendorTargets == 4 + easternBtslTables &&
                         easternVendorRows == (expectedEasternCommerce ?
-                        42 + easternBtslHonestGuyTables * 12 : 0) &&
+                        6 + easternBtslHonestGuyTables * 12 : 0) &&
                         invalidEasternVendorRows == 0,
                     "exact Eastern vendor specs, names, item references, and fixed-entry counts"),
                 Assertion("eastern-btsl-vendor-publication",

@@ -97,8 +97,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool turnBased = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool appearanceWait = _sprint25WaitingForUnityAppearance;
             object levelController = null;
+            bool showOriginalElementals = OriginalSummonElementalVisibility.Show;
             try
             {
+                // Historical source-row phases exercise original Summon
+                // Elemental spellbook rows, which the default option now hides
+                // (owner directive 2026-11-12). They run with the option
+                // revealed in memory only; FeatureModules.json is never written.
+                // elementals-learning observes both option states itself.
+                if (phase == "elementals-sources" || phase == "elementals-pin" || phase == "elementals-console")
+                    OriginalSummonElementalVisibility.Show = true;
                 Game.Instance.IsPaused = true;
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
                 Game.Instance.TurnBasedCombatController.Activate();
@@ -207,6 +215,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                OriginalSummonElementalVisibility.Show = showOriginalElementals;
                 try { if (levelController != null) levelController.GetType().GetMethod("Cancel").Invoke(levelController, null); }
                 finally
                 {
