@@ -178,12 +178,51 @@ namespace KingmakerGunslinger.DomainTests
         // observations; they are not presented as gameplay or tooltip evidence.
         internal static void RegionalEasternAndNamedLootUnchanged()
         {
-            AssertHash(Slice(Source("Blueprints/EasternWeaponCampaignBlueprints.cs"), "private static readonly EasternVendorSpec[] Vendors", "private static readonly EasternLootSpec[] Loot"), "4c237e4cf073a8afa35d6d3609059b180938028ecc419eefeb274cd72c25216c", "Eastern merchant contracts");
+            AssertHash(Slice(Source("Blueprints/EasternWeaponCampaignBlueprints.cs"), "private static readonly EasternVendorSpec[] Vendors", "private static readonly EasternLootSpec[] Loot"), "69ebe34418adee38340b29cd0c44279b1544c0e27e1bbc874d3a139f09b962a2", "Eastern merchant contracts");
         }
         internal static void RegionalSpearsAndNamedLootUnchanged()
         {
-            AssertHash(Source("Blueprints/ElvenBranchedSpearCampaignBlueprints.cs").Replace("CapitalVendorBlueprints.ExpectedTableName,\n                new ElvenBranchedSpearItemKind[0], null)", "CapitalVendorBlueprints.ExpectedTableName,\n                AllFoundationKinds(), null)"), "c61975658e163476c0f25f8cf7dd73ae7585dd29b868eb624c20d02846198e77", "Blueprints/ElvenBranchedSpearCampaignBlueprints.cs");
+            AssertHash(Source("Blueprints/ElvenBranchedSpearCampaignBlueprints.cs"), "3d74e392847d905ece7c47a0e7cc92647511d350f46bd57b55f0cebbe3437874", "Blueprints/ElvenBranchedSpearCampaignBlueprints.cs");
         }
+        // Owner acquisition decision (2026-11-12). Domain tests cannot load the
+        // Kingmaker vendor types, so this pins the spec data. The registered-table
+        // behavior (zero owned rows, stale-row cleanup, idempotence and native
+        // known-item reconciliation) is observed by observe-model-d-vendors.
+        internal static void RegionalTradersPublishNoAuthoredMelee()
+        {
+            string eastern = Source("Blueprints/EasternWeaponCampaignBlueprints.cs");
+            string spear = Source("Blueprints/ElvenBranchedSpearCampaignBlueprints.cs");
+            foreach (string[] target in new[] {
+                new[] { "f072a8f6889b5f345b7f4e7c74cb3e4c", "DireNarlmarchesVillageVendorTable" },
+                new[] { "e5ab1fccf37c55f41a20a80c6ba6a460", "PitaxTownVendorTable" } })
+            {
+                Assertions.True(Flat(Spec(eastern, "new EasternVendorSpec(\"" + target[0] + "\"", "new EasternVendorSpec("))
+                    .Contains("\"" + target[1] + "\",newEasternWeaponGenericKind[0],newEasternWeaponNamedKind[0],false,"),
+                    "Eastern cleanup target lost its exact identity or regained stock: " + target[1]);
+                Assertions.True(Flat(Spec(spear, "new VendorSpec(\"" + target[0] + "\"", "new VendorSpec("))
+                    .Contains("\"" + target[1] + "\",newElvenBranchedSpearItemKind[0],null)"),
+                    "Spear cleanup target lost its exact identity or regained stock: " + target[1]);
+            }
+            Assertions.True(Flat(Spec(eastern, "new EasternVendorSpec(\"f720440559fc00949900bfa1575196ac\"", "new EasternVendorSpec("))
+                .Contains("\"C11_OlegVendorTable\",EarlyGenericKinds(),"), "Oleg keeps ordinary/masterwork Eastern stock.");
+            foreach (string guid in new[] { ".StandaloneHonestGuyTableGuid", ".CampaignHonestGuyTableGuid" })
+            {
+                Assertions.True(Spec(eastern, guid, "new EasternVendorSpec(").Contains("AllGenericKinds()"),
+                    "Honest Guy keeps every generic Eastern weapon: " + guid);
+                Assertions.True(Spec(spear, guid, "new VendorSpec(").Contains("AllFoundationKinds()"),
+                    "Honest Guy keeps every generic spear: " + guid);
+            }
+        }
+        private static string Spec(string source, string start, string next)
+        {
+            int a = source.IndexOf(start, StringComparison.Ordinal);
+            Assertions.True(a >= 0, "Vendor spec not found: " + start);
+            int b = source.IndexOf(next, a + 1, StringComparison.Ordinal);
+            Assertions.True(b > a, "Vendor spec end not found: " + start);
+            return source.Substring(a, b - a);
+        }
+        private static string Flat(string value)
+        { return new string(value.Where(c => !char.IsWhiteSpace(c)).ToArray()); }
         internal static void BtslUnchanged()
         {
             AssertHash(Source("Blueprints/BeneathStolenLandsVendorBlueprints.cs"), "9cc28999f8b2426930c86897db554c1cae4e93d830be13e43bf1416f26c4d063", "Blueprints/BeneathStolenLandsVendorBlueprints.cs");
