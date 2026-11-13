@@ -48,8 +48,29 @@ namespace KingmakerGunslinger.Gunsmithing
                         "Crafting gold removal failed.");
                 for (int index = 0; index < outputs.Length; index++)
                 {
-                    player.Inventory.Add(outputs[index], amounts[index]);
-                    committedAdds[index] = amounts[index];
+                    // GS-AUD-0036. Record the OBSERVED delta, not the requested
+                    // amount, and record it even when Add throws.
+                    //
+                    // ItemsCollection.Add(BlueprintItem, int) is not atomic for
+                    // a non-stackable item: disassembly of the installed
+                    // assembly shows that path looping over
+                    // Add(ItemEntity, bool) once per item, decrementing the
+                    // count. A throw partway therefore leaves items already in
+                    // the inventory while the assignment after the call never
+                    // runs - so committedAdds would stay 0, the compensation
+                    // plan would be told nothing was added, and those items
+                    // would be left behind permanently.
+                    //
+                    // The stackable path creates one entity and adds it once,
+                    // so it cannot partially commit; this is correct for both
+                    // because it asks the inventory instead of assuming.
+                    try { player.Inventory.Add(outputs[index], amounts[index]); }
+                    finally
+                    {
+                        committedAdds[index] = Math.Max(0,
+                            player.Inventory.Count(outputs[index]) -
+                            countsBefore[index]);
+                    }
                 }
                 for (int index = 0; index < outputs.Length; index++)
                     if (player.Inventory.Count(outputs[index]) !=
