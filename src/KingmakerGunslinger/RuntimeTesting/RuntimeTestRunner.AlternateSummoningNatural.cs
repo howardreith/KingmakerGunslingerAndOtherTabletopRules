@@ -692,8 +692,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             //
             // It does NOT discharge an execution proof of removal efficacy.
             // That can only come from the canonical ordinary-spell path, where
-            // inherited-template-removal-set-is-derived shows the apply really
-            // is present; it is queued, not claimed.
+            // inherited-template-removal-wiring-per-placement shows the apply
+            // action is present in the registered graph. That is GRAPH evidence
+            // - it casts nothing - so it shows an apply action exists, not that
+            // it executes or leaves a buff behind. The execution proof is
+            // queued, not claimed.
             AltNaturalAssert("inherited-template-removal",
                 "the affected adapter child carries the removal action bound to its own unit, " +
                     "every spawned unit keeps the native summon marker, and none retains a " +

@@ -128,8 +128,12 @@ namespace KingmakerGunslinger.Blueprints
         ///
         ///    An execution proof of removal EFFICACY can only come from the
         ///    canonical ordinary-spell path, where
-        ///    inherited-template-removal-set-is-derived shows the apply really
-        ///    is present. That is queued, not claimed here.
+        ///    inherited-template-removal-wiring-per-placement shows the apply
+        ///    action is present in the registered graph. That observation is
+        ///    GRAPH evidence: it reads action graphs and casts nothing, so it
+        ///    establishes that an apply action exists, not that it executes or
+        ///    leaves a buff behind. The execution proof is queued, not claimed
+        ///    here.
         ///
         /// A passing graph observation alone leaves part 2 outstanding. Note
         /// also that the composition controls' original subjects were a
@@ -138,12 +142,30 @@ namespace KingmakerGunslinger.Blueprints
         /// an affected subject, which composition-affected-subject-positive-
         /// control and its four negative controls supply.
         ///
-        /// Membership below is a claim about the INSTALLED NATIVE LIBRARY, not
-        /// about this catalog: 63 Summon Monster creatures are untemplated and
-        /// only these twelve inherit a template. The
-        /// inherited-template-removal-set-is-derived observation re-derives the
-        /// set from the registered graphs at mod load and fails if a
-        /// thirteenth creature inherits a template without being declared.
+        /// Membership below is a DECLARATION, and GS-REP-0002 records that it
+        /// does not match the installed library. Do NOT read it as "the
+        /// creatures that inherit a template" - that is what this comment used
+        /// to say, and it is wrong in a way that matters:
+        ///
+        /// `inherited-template-removal-wiring-per-placement` measured 281
+        /// untemplated Summon Monster PLACEMENTS across 63 creatures. 81
+        /// placements contain a native-template apply action and 52 carry the
+        /// removal, overlapping on only 16. Crucially
+        /// `everyPlacementApplies=0`: not one creature applies on all of its
+        /// own placements, because the determinant is the native variant
+        /// NativeTemplate selects, keyed by (parent tier, multiplicity).
+        ///
+        /// So a per-CREATURE list cannot express this property at any
+        /// membership, and no correction to these twelve keys would fix it.
+        /// RequiresInheritedTemplateRemoval takes only family and creature and
+        /// so cannot express it either; the repair is structural and belongs to
+        /// its own card under DEC-0004.
+        ///
+        /// What the observation asserts is the per-placement WIRING invariant
+        /// this code owns - the removal action is present exactly where its
+        /// creature is declared - which holds. It does NOT assert the set is
+        /// correct, and it does not "fail if a thirteenth creature inherits a
+        /// template", which the superseded creature-level version claimed.
         /// </summary>
         internal static bool RequiresInheritedTemplateRemoval(SummonFamily family,
             SummonCreatureSpec creature)
