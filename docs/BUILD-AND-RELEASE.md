@@ -2,7 +2,30 @@
 
 ## 0.0.186 publication authorization
 
-**Authorized, not yet published.** Next stable patch after v0.0.185, from master `2c7ff93be9` after the
+**Published (completed).** Stable
+[v0.0.186](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.186)
+is Latest and not a prerelease. The tag peels to the release commit `0d5f95e3a5`, which is
+`origin/master`.
+
+- **Builds.** Two deterministic exact-reference builds produced identical archives:
+  - package SHA-256 `6c1aad978cd31b47518b1fe9b59317fd9ea169fd4e0c3b88b8538d3c125373b4`;
+  - DLL SHA-256 `4450f6fa6ed9ebcb0bdcb02d996a0dd0c62bcd4e39a1be81b1b16ad1f3596bec`.
+- **Reference bundle.** The lab's private extracted-references bundle, as for v0.0.185. Its path is
+  machine-local and deliberately not recorded here.
+- **Public download test.** A fresh download of all three assets matched `SHA256SUMS.txt`, the manifest
+  names the release commit `0d5f95e3a5cb11eff25ceb216681125356bef3de`, and the embedded `Info.json`
+  reads 0.0.186 with the DLL hash above (458 files in the package).
+- **Installation.** The installed mod is untouched and still reads 0.0.117, 136 files, DLL
+  `FD2FC61C…`, settings `A06601C5…` at `Archive`, beside the same eleven mod folders.
+- **Merges.** The seven repair PRs merged as above; release PR #146 merged as `0d5f95e3a5`.
+- **One prerequisite, recorded because it changed local state.** The publisher's
+  `git fetch --prune --tags origin master` failed: eighteen local tags (v0.0.136-v0.0.153) still held
+  the pre-lineage-rewrite SHAs and would have been clobbered. They were aligned to the remote with
+  `git fetch --tags --force origin`, which only updates local refs and touches no remote. The two
+  local-only tags (`safety/sprint21-checkpoint-b1ca8539`, `v0.0.30-runtime-qualified`) were deliberately
+  preserved; `--prune-tags` was NOT used.
+
+Originally authorized as the next stable patch after v0.0.185, from master `2c7ff93be9` after the
 seven v0.0.182-audit repair PRs.
 
 - **Reviewed product.** Master `2c7ff93be9eb`. The seven PRs were reviewed at their own heads and merged
