@@ -1,4 +1,18 @@
-# Regional vendor melee withdrawal: draft PR, focused checks pass, native NOT RUN / STOP
+# Regional vendor melee withdrawal: merged and released in v0.0.185 / STOP
+
+Current (2026-11-12). See `planning/regional-vendor-melee-withdrawal/STATUS.md`.
+- The owner asked for the review P3 repair, a merge and a release.
+- PR #143 was merged as `70eeed101a`; release PR #144 as `c136527a99`.
+- Stable v0.0.185 is Latest: tag `49bd4a6bc8`, package `c48be70e...5ccf`, DLL `5dc21d40...4694`, MVID
+  `8c11f422-481b-4a0b-8573-b75bb786fa8f`.
+- Two deterministic builds; complete suite 2,950/2,950; public download verified.
+- The installed mod still reads 0.0.140.
+- Native merchant checks remain NOT RUN (fresh stock, saved stock, reopening trade, save/reload).
+- No further build, native run, release or permanent install follows without explicit owner authorization.
+
+---
+
+# (superseded) Regional vendor melee withdrawal: draft PR, focused checks pass, native NOT RUN / STOP
 
 Current (2026-11-12). See `planning/regional-vendor-melee-withdrawal/STATUS.md`. Branch
 `codex/regional-vendor-melee-withdrawal` from master `dd6a3ade75`. Nothing merged, released or installed.
