@@ -166,6 +166,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("model-d.ModuleCombinationsAndIndependentOleg", ModelDVendorTests.ModuleCombinationsAndIndependentOleg),
             Case("model-d.RegionalEasternAndNamedLootUnchanged", ModelDVendorTests.RegionalEasternAndNamedLootUnchanged),
             Case("model-d.RegionalSpearsAndNamedLootUnchanged", ModelDVendorTests.RegionalSpearsAndNamedLootUnchanged),
+            Case("model-d.RegionalTradersPublishNoAuthoredMelee", ModelDVendorTests.RegionalTradersPublishNoAuthoredMelee),
             Case("model-d.BtslUnchanged", ModelDVendorTests.BtslUnchanged),
             Case("model-d.BetterVendorsCatalogScheduleAndLedgerUnchanged", ModelDVendorTests.BetterVendorsCatalogScheduleAndLedgerUnchanged),
             Case("model-d.SalesmanNamedLootAndStarterUnchanged", ModelDVendorTests.SalesmanNamedLootAndStarterUnchanged),
