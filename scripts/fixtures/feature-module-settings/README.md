@@ -13,14 +13,22 @@ gates: `feature-module-expanded-summoning-publication-gate` with
 `feature-module-brown-fur-publication-gate`. I narrowed the fixture believing
 those OFF values caused it.
 
-**That hypothesis was wrong, and a control disproved it.** Running this scenario
+**That hypothesis was wrong, and a control refuted it.** Running this scenario
 with NO staging at all and every module ON reproduces both failures identically
 - `unclassified=38`, and the Brown-Fur gate failing with `active=` all true.
-They are a property of THIS INSTALLATION, which carries ten other mods
-(CallOfTheWild, RacesUnleashed, TweakOrTreat, CraftMagicItems and others)
-contributing 38 unclassified host summon rows and `foreign:14` archetypes. The
-gate hard-codes `unclassified=0`, so it cannot pass on a multi-mod installation
-regardless of settings.
+
+**What that control does and does not establish.** It was run on the SAME
+repaired candidate, so it establishes that **staging is not required to
+reproduce the failures** - which is what the fixture question needed. It does
+NOT establish that they predate the repair or that they originate solely in the
+installed mods: a candidate-wide regression would also appear in that control.
+Attribution remains OPEN unless separately established by a matched baseline
+comparison or a precise source trace.
+
+The ten other mods present (CallOfTheWild, RacesUnleashed, TweakOrTreat,
+CraftMagicItems and others) and the hard-coded `unclassified=0` in
+`ExpandedSummoningBoundaryExpectation` are a plausible explanation, not a
+demonstrated one.
 
 So the wider mix would have been fine too. `shield-other` is kept because it is
 the version actually verified, and one OFF value is sufficient to prove
