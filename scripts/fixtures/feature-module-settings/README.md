@@ -32,9 +32,15 @@ demonstrated one.
 
 So the wider mix would have been fine too. `shield-other` is kept because it is
 the version actually verified, and one OFF value is sufficient to prove
-non-substitution. The two failing gates are **not** evidence about the settings
-migration in either fixture, and neither gate is claimed to be defective - they
-are calibrated for a single-mod installation.
+non-substitution.
+
+The two failing gates are **not** evidence about the settings migration in
+either fixture, and neither is claimed to be defective. Their CAUSE is also not
+established: "calibrated for a single-mod installation" is one candidate
+explanation, and this README previously stated it as fact. The control cannot
+separate it from a candidate-wide regression, so the gates remain open
+obligations with attribution unsettled until a matched baseline comparison or a
+precise source trace decides it.
 
 It omits `teleportation-spells` and `magic-circle-spells`, which schema 10
 predates. `FeatureModuleSettingsStore.ReadDefaultOn` gives an absent key ON, so

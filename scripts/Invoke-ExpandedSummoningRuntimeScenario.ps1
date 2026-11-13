@@ -478,8 +478,8 @@ finally {
     # or inherits the startup-protection lease this wrapper still holds.
     $ummParentLease = if ($startupPeerScope) { $startupPeerScope.Lease } else { $null }
     $cleanup = Invoke-KmgIndependentInstallationAndUmmRestoration -UmmReceipt $ummReceipt -ParentLease $ummParentLease -RestoreInstallation {
-        $deployed = Get-KmgTreeFingerprint -Directory $LiveModDirectory
-        $record.liveAfterScenario = [ordered]@{ files = $deployed.Files; sha256 = $deployed.Sha256 }
+        $restorationScope = $null
+        try {
 
         # The process-exit and ownership boundary comes FIRST, before any disk
         # capture and before any mutation.
@@ -518,6 +518,11 @@ finally {
                 }
             }
 
+            # The process check alone does not reserve the installation. Hold
+            # shared ownership before inspecting or changing staged settings,
+            # and lend that same lease to the whole-tree restoration below.
+            $restorationScope = Enter-KmgRuntimeLease -ParentLease $ummParentLease `
+                -Purpose 'expanded-summoning installation restoration'
             Assert-KmgNotRunning
         }
         catch {
@@ -538,6 +543,8 @@ finally {
         }
 
         if ($restorationBoundary) {
+        $deployed = Get-KmgTreeFingerprint -Directory $LiveModDirectory
+        $record.liveAfterScenario = [ordered]@{ files = $deployed.Files; sha256 = $deployed.Sha256 }
 
         # The staged settings file is handled HERE, before and independently of
         # the content-fingerprint decision below.
@@ -639,7 +646,7 @@ finally {
         else {
             try {
                 $restoreArguments=@{BackupDirectory=$snapshot.Destination;LiveModDirectory=$LiveModDirectory;Confirm=$false}
-                if($startupPeerScope){$restoreArguments.RuntimeLease=$startupPeerScope.Lease}
+                $restoreArguments.RuntimeLease = $restorationScope.Lease
                 & (Join-Path $PSScriptRoot 'Restore-Live-Mod.ps1') @restoreArguments | Out-Null
                 $after = Get-KmgTreeFingerprint -Directory $LiveModDirectory
                 $record.liveAfterRestore = [ordered]@{ files = $after.Files; sha256 = $after.Sha256 }
@@ -693,6 +700,7 @@ finally {
             }
         }
         }
+        } finally { Exit-KmgRuntimeLease $restorationScope }
     }
     if ($cleanup.installationError) {
         $record.restoration = 'FAILED'

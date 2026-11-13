@@ -369,6 +369,23 @@ Assert-True ($orderMutate -lt $orderNeeded) `
     'the staged settings cleanup is independent of the content-fingerprint decision'
 Assert-True ($wrapperSource.Contains('$record.restorationDeferred = [ordered]@{')) `
     'a boundary that cannot be established defers restoration with recovery information'
+
+# The process assertion does not reserve the installation, so shared ownership
+# must be held across the protected interval and lent to the nested restore.
+$orderLease = $wrapperSource.IndexOf('$restorationScope = Enter-KmgRuntimeLease')
+$orderLeaseExit = $wrapperSource.IndexOf('finally { Exit-KmgRuntimeLease $restorationScope }')
+Assert-True ($orderLease -gt 0 -and $orderLeaseExit -gt 0) `
+    'the staged restoration acquires and releases a runtime lease scope'
+Assert-True ($orderLease -lt $orderCapture) `
+    'the runtime lease is held before the staged disk capture'
+Assert-True ($orderLease -lt $orderMutate) `
+    'the runtime lease is held before any staged settings mutation'
+Assert-True ($orderLease -lt $orderAssert) `
+    'the lease is acquired before the process assertion, which cannot reserve the installation'
+Assert-True ($orderFinal -lt $orderLeaseExit) `
+    'the lease is still held for the final settings verification'
+Assert-True ($wrapperSource.Contains('$restoreArguments.RuntimeLease = $restorationScope.Lease')) `
+    'the whole-tree restoration runs under the same held lease'
 foreach ($contract in @(
     '[int]$ObserverStartupTimeoutSeconds = 180',
     '[int]$CompletionTimeoutSeconds = 180',
