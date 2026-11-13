@@ -13,8 +13,8 @@ import expanded_summoning_manifest as manifest
 # Reviewed product: master after the seven v0.0.182-audit repair PRs
 # (#134, #136, #137, #139, #135, #138, #140), each reviewed at its own head and
 # merged in that order. RELEASED is the v0.0.185 tag target.
-PRODUCT = "2c7ff93be9ebd50b3548618eda88e9d1171238c3"
-RELEASED = "c136527a999b9fa22227e630d4a8bee57e593b9a"
+PRODUCT = "ace0d5ab0d12674e84499d4e1e634bb11583848c"
+RELEASED = "8b5b1cb1c6385b4b2cc848005483b364363e6665"
 VERSION = "0.0.186"
 INFORMATIONAL = VERSION + "-gunslinger-audit-repairs"
 OLD_INFORMATIONAL = "0.0.185-regional-vendor-melee-withdrawal"

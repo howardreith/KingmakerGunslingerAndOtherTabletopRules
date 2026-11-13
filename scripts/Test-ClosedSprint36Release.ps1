@@ -13,7 +13,7 @@ $ErrorActionPreference = 'Stop'
 # where the surface it pins is still the current one.
 
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
-$reviewedSprint36Merge = 'b1cf3a3dd97a4df7d4838961bdea97a254a576d8'
+$reviewedSprint36Merge = '94472a54f1ae1e9ae078c636ff8ae2ef40b86d9a'
 $protectedSprint36Files = @(
     'scripts/Sprint36QualifiedRelease.Common.ps1',
     'scripts/Test-Sprint36Release.ps1'

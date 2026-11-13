@@ -14,7 +14,7 @@ $ErrorActionPreference = 'Stop'
 # clone checked out at that merge, where the surface it pins is still current.
 
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
-$reviewedSprint37Merge = '2af6f60858b23fef58e981da78725c5e6d8cde73'
+$reviewedSprint37Merge = 'ecc3584b972c3b255c346cbdcd6b4fe700468ad6'
 $protectedSprint37Files = @(
     'scripts/Sprint37QualifiedRelease.Common.ps1',
     'scripts/Test-Sprint37Release.ps1'

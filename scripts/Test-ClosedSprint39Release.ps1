@@ -7,7 +7,7 @@ $ErrorActionPreference = 'Stop'
 # Sprint 39 is released. Preserve its exact publisher/refusal contracts and
 # execute its frozen roster assertions at the reviewed product merge.
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
-$reviewedSprint39Merge = '6782721cf08c75c0377f777a265b2f8b01f2cbad'
+$reviewedSprint39Merge = '59331720a7f507dc1df772823bf473655d3821fe'
 $protectedSprint39Files = @(
     'scripts/Sprint39QualifiedRelease.Common.ps1',
     'scripts/Test-Sprint39Release.ps1'
