@@ -721,6 +721,34 @@ and In Harms Way**, **Protection from Alignment: control immunity**, and
 **World-Map Teleportation Spells** and **Magic Circle Spells**. All thirteen modules
 default enabled. Older settings migrate to schema 12 while preserving every
 explicit value. Any absent module key, including Magic Circle, migrates ON.
+If the migration cannot be written back -- a read-only `FeatureModules.json`,
+an unwritable `Mods` tree, or a transient antivirus lock -- the file's own
+settings still take effect for that session, the file is left exactly as it
+is, and the log records a write failure. Your choices are never reset by a
+failed write.
+
+### Downgrading after running a newer build
+
+`FeatureModules.json` records the schema version that wrote it. A build
+**refuses to load** when it finds a settings schema newer than the one it
+understands, rather than guessing what the unknown keys mean. So if you run
+a newer Gunslinger build and then roll back to an older one, the older build
+will not start, and Unity Mod Manager will show no Gunslinger panel. The log
+line is `[bootstrap][load.failed]`.
+
+This is deliberate: silently reinterpreting a newer settings file could
+enable or disable content behind your back. To recover, keep a copy of your
+settings and let the older build recreate the file:
+
+```
+cd "<game>\Mods\KingmakerGunslinger"
+move FeatureModules.json FeatureModules.json.from-newer-build
+```
+
+The older build then starts with all modules enabled and writes a fresh file
+at its own schema. Your original stays beside it, so you can read your
+previous choices and re-tick the boxes, and it is still there if you upgrade
+again. Do not delete it until you have done so.
 
 The Teleportation exploration-guard checkpoint passed its 26 module boundary
 configurations (897 assertions), plus desktop/gamepad casting and
@@ -866,7 +894,7 @@ A first misfire consumes the loaded round, forces a miss, and changes only the e
 Firearm Proficiency now grants two separate full-round abilities:
 
 ```text
-Repair Firearm: Broken or Wrecked + shared Gunsmith's Kit â†’ Normal
+Repair Firearm (outside combat): Broken only + shared Gunsmith's Kit â†’ Normal
 Reload Firearm: empty + powder + Lead Ball â†’ loaded
 ```
 

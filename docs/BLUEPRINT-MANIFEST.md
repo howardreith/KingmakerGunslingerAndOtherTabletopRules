@@ -230,7 +230,7 @@ one-round mind-affecting Confusion buff. Earlier additions remain append-only:
 Startling Shot, Dead Shot, Gun Training, Utility Shot, Pistol-Whip, Initiative,
 Nimble, the level-one deeds and grit, the production class, and firearms.
 
-- `KMG.Test.RepairAbility` — full-round personal unified repair: Broken or Wrecked to Normal with one reusable shared-inventory Gunsmith's Kit; consumes nothing and preserves loaded ammunition.
+- `KMG.Test.RepairAbility` — full-round personal repair, outside party combat only: **Broken** to Normal with one reusable shared-inventory Gunsmith's Kit; consumes nothing and preserves loaded ammunition. A Wrecked firearm is rejected and is restored only by a completed full rest.
 
 The Sprint 28 repair-kit and Overhaul identities remain active for save compatibility but are retired from normal acquisition:
 

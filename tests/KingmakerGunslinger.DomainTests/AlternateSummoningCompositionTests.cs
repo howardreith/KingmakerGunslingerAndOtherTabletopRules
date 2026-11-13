@@ -22,6 +22,18 @@ namespace KingmakerGunslinger.DomainTests
                 Type = "Alignment", AlignmentMode = mode };
         }
 
+        /// <summary>
+        /// GS-AUD-0026: inherited-template removal, the action that used to be
+        /// classified as Other and therefore never compared.
+        /// </summary>
+        private static ComposedActionView Removal(string owner, params string[] native)
+        {
+            return new ComposedActionView {
+                Kind = ComposedActionKind.TemplateRemoval, Type = "TemplateRemoval",
+                OwningUnit = owner, ReplacedNativeTemplateBuffs = native
+            };
+        }
+
         private static IReadOnlyList<IReadOnlyList<ComposedActionView>> Branches(
             params ComposedActionView[][] branches)
         {
@@ -47,6 +59,129 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(null, AlternateSummoningComposition.Verify(Branches(
                 new[] { ComposedActionView.Other("Host.After") }), null),
                 "A child that composes nothing passes with no composed action.");
+        }
+
+        /// <summary>
+        /// GS-AUD-0025 / GS-AUD-0026. This is the regression the old comparator
+        /// could not express: the canonical child removes the donor's inherited
+        /// template, the adapter child does not, and before this repair the
+        /// removal action was classified as Other and excluded from comparison,
+        /// so a child missing it compared as equal.
+        /// </summary>
+        internal static void MissingTemplateRemovalFails()
+        {
+            ComposedActionView expected = Removal("unit-hound-archon",
+                "native-a", "native-b", "native-c", "native-d");
+
+            // The defect: the child composes nothing at all.
+            Assertions.Equal(
+                "placement:branch0:expected-one-final-templateremoval;actual=[Host.After]",
+                AlternateSummoningComposition.Verify(Branches(
+                    new[] { ComposedActionView.Other("Host.After") }), expected),
+                "A child that omits the inherited-template removal must fail.");
+
+            // An empty branch is also a failure, not a pass.
+            Assertions.Equal(
+                "placement:branch0:expected-one-final-templateremoval;actual=[]",
+                AlternateSummoningComposition.Verify(Branches(
+                    new ComposedActionView[0]), expected),
+                "A child with no after-spawn action at all must fail.");
+
+            // A second branch that omits it is reported even when the first is correct.
+            Assertions.Equal(
+                "placement:branch1:expected-one-final-templateremoval;actual=[Host.After]",
+                AlternateSummoningComposition.Verify(Branches(
+                    new[] { Removal("unit-hound-archon", "native-a", "native-b",
+                        "native-c", "native-d") },
+                    new[] { ComposedActionView.Other("Host.After") }), expected),
+                "Every spawn branch is evaluated, not just the first.");
+        }
+
+        internal static void TemplateRemovalIdentityIsCompared()
+        {
+            ComposedActionView expected = Removal("unit-hound-archon",
+                "native-a", "native-b", "native-c", "native-d");
+
+            // Correct composition passes, and the native identities carry no order.
+            Assertions.Equal(null, AlternateSummoningComposition.Verify(Branches(
+                new[] { ComposedActionView.Other("Host.After"),
+                    Removal("unit-hound-archon", "native-d", "native-c",
+                        "native-b", "native-a") }), expected),
+                "A correct removal bound to the same unit and identities passes.");
+
+            // Bound to the wrong unit: a removal that would never run.
+            Assertions.Equal(
+                "branch0:template-removal-owner:expected=unit-hound-archon;actual=unit-lemure",
+                AlternateSummoningComposition.Verify(Branches(
+                    new[] { Removal("unit-lemure", "native-a", "native-b",
+                        "native-c", "native-d") }), expected),
+                "A removal bound to a different unit is reported exactly.");
+
+            // A missing native identity changes which buffs are stripped.
+            Assertions.Equal(
+                "branch0:template-removal-native-buffs:expected=[native-a,native-b,native-c,native-d];" +
+                "actual=[native-a,native-b,native-c]",
+                AlternateSummoningComposition.Verify(Branches(
+                    new[] { Removal("unit-hound-archon", "native-a", "native-b",
+                        "native-c") }), expected),
+                "A dropped native template identity is reported exactly.");
+
+            // A DUPLICATED identity is also a failure. The run-time action
+            // requires exactly the four native identities and throws on a
+            // five-entry array, so a set comparison here would have passed a
+            // composition that cannot execute.
+            Assertions.Equal(
+                "branch0:template-removal-native-buffs:expected=[native-a,native-b,native-c,native-d];" +
+                "actual=[native-a,native-a,native-b,native-c,native-d]",
+                AlternateSummoningComposition.Verify(Branches(
+                    new[] { Removal("unit-hound-archon", "native-a", "native-b",
+                        "native-c", "native-d", "native-a") }), expected),
+                "A duplicated native template identity must fail, not pass as an equal set.");
+
+            // A repeated identity standing in for a missing one must also fail.
+            Assertions.Equal(
+                "branch0:template-removal-native-buffs:expected=[native-a,native-b,native-c,native-d];" +
+                "actual=[native-a,native-b,native-c,native-c]",
+                AlternateSummoningComposition.Verify(Branches(
+                    new[] { Removal("unit-hound-archon", "native-a", "native-b",
+                        "native-c", "native-c") }), expected),
+                "A repeated identity must not substitute for a missing one.");
+
+            Assertions.Equal(
+                "branch0:template-removal-native-buffs:null-entry",
+                AlternateSummoningComposition.Verify(Branches(
+                    new[] { Removal("unit-hound-archon", "native-a", null,
+                        "native-c", "native-d") }), expected),
+                "A null native template identity is rejected.");
+
+            // Ordering and nesting matter: the removal must be the final action.
+            Assertions.Equal(
+                "placement:branch0:expected-one-final-templateremoval;actual=[templateremoval,Host.After]",
+                AlternateSummoningComposition.Verify(Branches(
+                    new[] { Removal("unit-hound-archon", "native-a", "native-b",
+                        "native-c", "native-d"),
+                        ComposedActionView.Other("Host.After") }), expected),
+                "A removal that is not the final after-spawn action is reported.");
+
+            // A removal where none is expected is a divergence too.
+            Assertions.Equal("placement:branch0:unexpected-templateremoval",
+                AlternateSummoningComposition.Verify(Branches(
+                    new[] { Removal("unit-boar", "native-a") }), null),
+                "An unexpected removal on a child that should compose nothing is reported.");
+
+            // The removal is distinguished from the other composed kinds rather
+            // than collapsing into them.
+            Assertions.Equal(
+                "placement:branch0:expected-one-final-templateremoval;actual=[alignment]",
+                AlternateSummoningComposition.Verify(Branches(
+                    new[] { Alignment("Caster") }), expected),
+                "An alignment action must not satisfy an expected removal.");
+            Assertions.Equal(
+                "placement:branch0:expected-one-final-alignment;actual=[templateremoval]",
+                AlternateSummoningComposition.Verify(Branches(
+                    new[] { Removal("unit-hound-archon", "native-a") }),
+                    Alignment("Caster")),
+                "A removal action must not satisfy an expected alignment.");
         }
 
         internal static void ChangedAlignmentModeFails()

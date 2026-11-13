@@ -4,15 +4,21 @@ using System.Linq;
 
 namespace KingmakerGunslinger.Summoning
 {
-    internal enum ComposedActionKind { Template, Alignment, Other }
+    internal enum ComposedActionKind { Template, Alignment, TemplateRemoval, Other }
 
     /// <summary>
     /// One after-spawn action of a summon, reduced to the values its
-    /// behavior depends on. Only this module's two composed actions carry
-    /// values: the caster-selected template (its four template and smite
-    /// buffs, the neutral-mode buff and the native template buffs it
-    /// replaces) and the summon alignment (its mode). Any other action is
-    /// kept as its exact type.
+    /// behavior depends on. This module's composed actions carry values: the
+    /// caster-selected template (its four template and smite buffs, the
+    /// neutral-mode buff and the native template buffs it replaces), the
+    /// summon alignment (its mode), and inherited-template removal (its
+    /// owning unit and the exact native template identities it removes).
+    /// Any other action is kept as its exact type.
+    ///
+    /// GS-AUD-0026: inherited-template removal used to fall through to
+    /// <see cref="ComposedActionKind.Other"/>, which the comparison excludes.
+    /// The one action whose absence changes gameplay was the one action never
+    /// compared, which is why no automated check caught GS-AUD-0025.
     /// </summary>
     internal sealed class ComposedActionView
     {
@@ -25,6 +31,8 @@ namespace KingmakerGunslinger.Summoning
         internal string NeutralFiendishMode;
         internal string[] ReplacedNativeTemplateBuffs = new string[0];
         internal string AlignmentMode;
+        /// <summary>Removal only: the unit this removal is bound to.</summary>
+        internal string OwningUnit;
 
         internal static ComposedActionView Other(string type)
         { return new ComposedActionView { Kind = ComposedActionKind.Other, Type = type }; }
@@ -112,6 +120,35 @@ namespace KingmakerGunslinger.Summoning
 
         private static string Compare(ComposedActionView expected, ComposedActionView actual)
         {
+            if (expected.Kind == ComposedActionKind.TemplateRemoval)
+            {
+                if (!string.Equals(expected.OwningUnit, actual.OwningUnit,
+                        StringComparison.Ordinal))
+                    return "template-removal-owner:expected=" + expected.OwningUnit +
+                        ";actual=" + actual.OwningUnit;
+                string[] removed = actual.ReplacedNativeTemplateBuffs ?? new string[0];
+                if (removed.Any(value => value == null))
+                    return "template-removal-native-buffs:null-entry";
+                // Compared as a MULTISET, not a set: order may differ but
+                // cardinality may not. ContextActionRemoveInheritedSummonTemplates
+                // revalidates at run time that NativeTemplates has exactly the
+                // four native identities and throws otherwise, so a duplicated
+                // or repeated entry is a composition that will fail to execute.
+                // Set comparison would have called [a,b,c,d,a] equal to
+                // [a,b,c,d] and passed an action that throws before removing
+                // any buff.
+                string[] expectedRemoved = (expected.ReplacedNativeTemplateBuffs ??
+                    new string[0]).OrderBy(value => value, StringComparer.Ordinal).ToArray();
+                string[] actualRemoved = removed
+                    .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+                if (expectedRemoved.Length != actualRemoved.Length ||
+                    expectedRemoved.Where((value, index) => !string.Equals(value,
+                        actualRemoved[index], StringComparison.Ordinal)).Any())
+                    return "template-removal-native-buffs:expected=[" +
+                        string.Join(",", expectedRemoved) + "];actual=[" +
+                        string.Join(",", actualRemoved) + "]";
+                return null;
+            }
             if (expected.Kind == ComposedActionKind.Alignment)
                 return string.Equals(expected.AlignmentMode, actual.AlignmentMode,
                     StringComparison.Ordinal) ? null : "alignment-mode:expected=" +
@@ -146,6 +183,10 @@ namespace KingmakerGunslinger.Summoning
             if (value.Kind == ComposedActionKind.Other) return value.Type;
             if (value.Kind == ComposedActionKind.Alignment) return "alignment{mode=" +
                 value.AlignmentMode + "}";
+            if (value.Kind == ComposedActionKind.TemplateRemoval)
+                return "template-removal{owner=" + value.OwningUnit + ";native=" +
+                    string.Join(",", (value.ReplacedNativeTemplateBuffs ?? new string[0])
+                        .OrderBy(entry => entry, StringComparer.Ordinal).ToArray()) + "}";
             return "template{celestial=" + value.CelestialTemplate + ";fiendish=" +
                 value.FiendishTemplate + ";celestialSmite=" + value.CelestialSmite +
                 ";fiendishSmite=" + value.FiendishSmite + ";neutral=" +

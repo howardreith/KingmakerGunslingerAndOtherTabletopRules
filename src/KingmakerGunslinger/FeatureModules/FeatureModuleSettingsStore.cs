@@ -72,7 +72,8 @@ namespace KingmakerGunslinger.FeatureModules
                         elementalRaces, teleportationSpells, magicCircleSpells), path,
                     schema < CurrentSchemaVersion ? "migrated-schema-" + schema :
                         "settings", false, showOriginalSummonElemental);
-                if (schema < CurrentSchemaVersion) Save(state);
+                if (schema < CurrentSchemaVersion)
+                    PersistMigration(state, schema, warning);
                 return state;
             }
             catch (Exception exception)
@@ -99,6 +100,39 @@ namespace KingmakerGunslinger.FeatureModules
                 return new FeatureModuleSettingsState(
                     FeatureModuleConfiguration.Defaults, path,
                     "malformed-recovery", true);
+            }
+        }
+
+        /// <summary>
+        /// Persists a successful schema migration as a best-effort step.
+        /// A write failure must never change this session's configuration:
+        /// the file parsed cleanly, so its own ON/OFF values stand, the
+        /// original file is left exactly as it was, and the failure is
+        /// reported as a WRITE failure rather than as a malformed file.
+        /// Previously this Save ran inside the parse try, so any I/O failure
+        /// here was caught by the generic malformed handler, which quarantined
+        /// a perfectly valid file, reset every module to ON and told the player
+        /// the file was malformed when it was not. Reachable causes include a
+        /// read-only settings file, an unwritable Program Files Mods tree, and
+        /// a transient antivirus or backup lock; Save uses File.Replace, which
+        /// throws UnauthorizedAccessException on a read-only destination.
+        /// </summary>
+        private static void PersistMigration(FeatureModuleSettingsState state,
+            int schema, Action<string> warning)
+        {
+            try
+            {
+                Save(state);
+            }
+            catch (Exception exception)
+            {
+                state.MarkMigrationWriteFailed();
+                if (warning != null) warning(
+                    "Could not write the migrated feature-module settings from schema " +
+                    schema + " to " + CurrentSchemaVersion + " at " + state.Path +
+                    "; the settings file is valid and its own values remain in effect " +
+                    "for this session, and the original file was left unchanged; error=" +
+                    exception.GetType().FullName + ":" + exception.Message);
             }
         }
 

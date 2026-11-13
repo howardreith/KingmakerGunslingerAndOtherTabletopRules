@@ -213,14 +213,14 @@ namespace KingmakerGunslinger.DomainTests
         internal static void CordFatigueAndExhaustion()
         {
             CordSubstitutionDecision absent = CordSubstitutionPolicy.Decide(false,
-                CordConditionKind.Fatigue, 6, 20, false);
+                CordConditionKind.Fatigue, 6, 20);
             Assertions.False(absent.Substituted, "Inventory-only Cord must do nothing.");
             CordSubstitutionDecision fatigue = CordSubstitutionPolicy.Decide(true,
-                CordConditionKind.Fatigue, 6, 20, false);
+                CordConditionKind.Fatigue, 6, 20);
             Assertions.True(fatigue.Substituted && fatigue.Damage == 6 &&
                 !fatigue.ApplyFatigue, "Fatigue substitution contract failed.");
             CordSubstitutionDecision exhaustion = CordSubstitutionPolicy.Decide(true,
-                CordConditionKind.Exhaustion, 1, 20, false);
+                CordConditionKind.Exhaustion, 1, 20);
             Assertions.True(exhaustion.Substituted && exhaustion.Damage == 1 &&
                 exhaustion.ApplyFatigue, "Exhaustion downgrade contract failed.");
         }
@@ -441,18 +441,47 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void CordDamageBoundaries()
         {
+            // These now exercise the rule the shipped mod runs: production
+            // calls CordSubstitutionPolicy.Decide (GS-AUD-0018).
             Assertions.Equal(0, CordSubstitutionPolicy.Decide(true,
-                CordConditionKind.Fatigue, 6, 1, false).Damage,
-                "Fallback damage must preserve 1 HP.");
+                CordConditionKind.Fatigue, 6, 1).Damage,
+                "Capped damage must preserve 1 HP.");
             Assertions.Equal(2, CordSubstitutionPolicy.Decide(true,
-                CordConditionKind.Fatigue, 6, 3, false).Damage,
-                "Fallback damage must cap at HP minus one.");
-            Assertions.Equal(6, CordSubstitutionPolicy.Decide(true,
-                CordConditionKind.Fatigue, 6, 1, true).Damage,
-                "Native nonlethal must retain the full roll.");
+                CordConditionKind.Fatigue, 6, 3).Damage,
+                "Capped damage must cap at HP minus one.");
+            Assertions.Equal(5, CordSubstitutionPolicy.Decide(true,
+                CordConditionKind.Fatigue, 6, 6).Damage,
+                "Capped damage must cap at HP minus one at the boundary.");
+            Assertions.Equal(4, CordSubstitutionPolicy.Decide(true,
+                CordConditionKind.Fatigue, 4, 20).Damage,
+                "An uncapped roll must be applied in full.");
+            Assertions.Equal("capped-equivalent", CordSubstitutionPolicy.Decide(
+                true, CordConditionKind.Fatigue, 4, 20).Status,
+                "The substitution status must name the capped-equivalent contract.");
             Assertions.Throws<ArgumentOutOfRangeException>(() =>
                 CordSubstitutionPolicy.Decide(true, CordConditionKind.Fatigue,
-                    0, 10, false), "A d6 roll below one must fail.");
+                    0, 10), "A d6 roll below one must fail.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                CordSubstitutionPolicy.Decide(true, CordConditionKind.Fatigue,
+                    7, 10), "A d6 roll above six must fail.");
+            // The 1 HP floor at the boundary. The live patch clamps HPLeft at
+            // zero before calling this, because the previous inline form
+            // returned zero damage for a non-positive HPLeft and the policy
+            // instead fails closed on a negative value; clamping keeps the
+            // refactor behaviour-preserving for a dying or unconscious wearer.
+            Assertions.Equal(0, CordSubstitutionPolicy.Decide(true,
+                CordConditionKind.Fatigue, 6, 0).Damage,
+                "Zero hit points must substitute zero damage, not negative damage.");
+            Assertions.True(CordSubstitutionPolicy.Decide(true,
+                CordConditionKind.Fatigue, 6, 0).Substituted,
+                "An equipped Cord still substitutes at zero hit points, for zero damage.");
+            Assertions.Equal(0, CordSubstitutionPolicy.Decide(true,
+                CordConditionKind.Fatigue, 1, 1).Damage,
+                "One hit point must substitute zero damage.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                CordSubstitutionPolicy.Decide(true, CordConditionKind.Fatigue,
+                    6, -1),
+                "A negative hit-point total must fail closed for a domain caller.");
         }
 
         internal static void CordNativeConditionSourceContract()
@@ -464,7 +493,14 @@ namespace KingmakerGunslinger.DomainTests
                 "ReferenceEquals(state.Owner.Unit.Body.Belt.Item.Blueprint",
                 "BlueprintBootstrap.CordOfStubbornResolve",
                 "new RuleRollDice(state.Owner.Unit",
-                "state.Owner.Unit.HPLeft - 1",
+                // GS-AUD-0018: the 1 HP floor used to be re-implemented inline
+                // here as "state.Owner.Unit.HPLeft - 1", duplicating
+                // CordSubstitutionPolicy, which had no production caller at
+                // all. Production now delegates to that one policy, so this
+                // pins the delegation and the policy's own tests - which now
+                // cover live behaviour - pin the arithmetic.
+                "CordSubstitutionPolicy.Decide(",
+                "state.Owner.Unit.HPLeft)",
                 "new DirectDamage(new DiceFormula(0, DiceType.D6)",
                 "IgnoreDamageReduction = true",
                 "NativeCombatLog.Publish(\"cord\"",

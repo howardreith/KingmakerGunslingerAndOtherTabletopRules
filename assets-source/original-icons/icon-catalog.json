@@ -799,7 +799,15 @@
     {
       "path": "src/KingmakerGunslinger/Blueprints/ShieldOtherBlueprints.cs",
       "sha256": "45945a5c9370442dad1582e840e49dac184d3de9205b006bedc4ccf6f97e3673",
-      "scope": "Preserve exact baseline assignment logic. A hash gate is source evidence, not a substitute for live reference-equality checks."
+      "scope": "Preserve exact baseline assignment logic. A hash gate is source evidence, not a substitute for live reference-equality checks.",
+      "authorizedAssignmentEdits": [
+        {
+          "before": "                    \"This spell wards one allied creature. The subject gains a +1 deflection bonus to AC and a +1 resistance bonus on all saving throws. While the subject remains within close range, half of its finalized hit point damage is transferred to you.\"),",
+          "after": "                    // GS-AUD-0040. The approved contract (planning/EXPANDED-SUMMONING-MISSION.md:71) is that close range applies\n                    // when CASTING and an established bond then does NOT depend on distance. ShieldOtherLinkValidityPolicy\n                    // matches that: it computes close range but never compares a distance to it. Only this description was\n                    // stale. Do not reintroduce a post-cast range check; the \"post-cast-range-preservation\" runtime\n                    // assertion exists to protect the approved behaviour.\n                    \"This spell wards one allied creature. The subject gains a +1 deflection bonus to AC and a +1 resistance bonus on all saving throws. You must be within close range to cast it; once the bond is established, half of the subject's finalized hit point damage is transferred to you regardless of how far apart you move. The bond ends if it expires or is dispelled, if either of you leaves the area, or if you die.\"),"
+        }
+      ],
+      "hashEncoding": "UTF-8 with LF newlines",
+      "authorization": "GS-AUD-0040 audit repair R06, campaign KMG-REP-20261112T130318Z. One player-facing description string plus an explanatory comment. No icon, sprite, monogram, texture or assignment change: the icon variable is passed through untouched, and the pinned sha256 above is unchanged and must still be reproduced after this hunk is reversed. Exactly one hunk is authorized; a missing, duplicated or unlisted change is rejected."
     }
   ],
   "protectedAssignmentRequirements": [

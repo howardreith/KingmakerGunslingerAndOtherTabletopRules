@@ -2726,7 +2726,24 @@ function Assert-KmgRuntimeScenarioPreflight {
     }
     elseif ($Scenario -ceq 'observe-feature-module-settings') {
         $sprint40Recovery = $Parameters.ContainsKey('sprint40DiagnosticRecovery')
-        if ($Parameters.Count -ne $(if($sprint40Recovery){14}else{13}) -or
+        # GS-AUD-0007 staged acceptance. The same all-or-nothing trio the
+        # request validator accepts, mirrored here so the preflight does not
+        # refuse a request the runtime would admit. All three or none: a partial
+        # set would silently observe less than the caller asked for.
+        $stagedMigration = $Parameters.ContainsKey('expectedSettingsSource') -or
+            $Parameters.ContainsKey('expectedMigrationWriteFailed') -or
+            $Parameters.ContainsKey('expectedRecovered')
+        if ($stagedMigration -and (
+            -not $Parameters.ContainsKey('expectedSettingsSource') -or
+            $Parameters.expectedSettingsSource -isnot [string] -or
+            [string]::IsNullOrWhiteSpace($Parameters.expectedSettingsSource) -or
+            -not $Parameters.ContainsKey('expectedMigrationWriteFailed') -or
+            $Parameters.expectedMigrationWriteFailed -isnot [bool] -or
+            -not $Parameters.ContainsKey('expectedRecovered') -or
+            $Parameters.expectedRecovered -isnot [bool])) {
+            throw "$Scenario staged-migration expectations require exact String expectedSettingsSource and Boolean expectedMigrationWriteFailed and expectedRecovered parameters, all three or none."
+        }
+        if ($Parameters.Count -ne ($(if($sprint40Recovery){14}else{13}) + $(if($stagedMigration){3}else{0})) -or
             ($sprint40Recovery -and ($Parameters.sprint40DiagnosticRecovery -isnot [bool] -or
                 $Parameters.sprint40DiagnosticRecovery -ne $true)) -or
             -not $Parameters.ContainsKey('gunslinger') -or
@@ -3027,6 +3044,19 @@ function New-KmgRuntimeRequest {
             }
             if($Parameters.ContainsKey('sprint40DiagnosticRecovery')){
                 $moduleParameters.sprint40DiagnosticRecovery = $true
+            }
+            # GS-AUD-0007 staged acceptance. This projection rebuilds the
+            # request parameters from an explicit list, so a key absent here is
+            # DROPPED SILENTLY no matter what the validators accept - which is
+            # how the first staged run produced 45 passing assertions while the
+            # observation it was for never ran at all.
+            if($Parameters.ContainsKey('expectedSettingsSource')){
+                $moduleParameters.expectedSettingsSource =
+                    [string]$Parameters.expectedSettingsSource
+                $moduleParameters.expectedMigrationWriteFailed =
+                    [bool]$Parameters.expectedMigrationWriteFailed
+                $moduleParameters.expectedRecovered =
+                    [bool]$Parameters.expectedRecovered
             }
             $moduleParameters
         } elseif ($Scenario -ceq 'observe-expanded-summoning-module-boundary') {
