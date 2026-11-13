@@ -224,6 +224,11 @@ Model D leaves seven. Oleg retains six Eastern and four spear rows, then adds
 five Gunslinger rows. Dire Narlmarches and Pitax retain 12 Eastern and six spear
 rows each. No claim that all merchants carry only a handful is made.
 
+**Later changes (not part of the Model D record).** On 2026-11-11 Oleg lost his two cold iron spear rows.
+On 2026-11-12 Dire Narlmarches and Pitax lost all 12 Eastern and six spear rows each. Both regional tables
+remain empty cleanup targets. See the current
+[acquisition inventory](../../planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md).
+
 `OlegFirearmVendorBlueprints` publishes directly under the Gunslinger gate.
 Capital owns retired mundane/Eastern/spear identities for cleanup even when
 those modules are disabled. Regional publishers keep their exact non-capital

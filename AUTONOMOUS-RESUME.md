@@ -1,4 +1,119 @@
-# Gunslinger playtest repairs: merged and released in v0.0.183 / STOP
+# Regional vendor melee withdrawal: merged and released in v0.0.185 / STOP
+
+Current (2026-11-12). See `planning/regional-vendor-melee-withdrawal/STATUS.md`.
+- The owner asked for the review P3 repair, a merge and a release.
+- PR #143 was merged as `70eeed101a`; release PR #144 as `c136527a99`.
+- Stable v0.0.185 is Latest: tag `49bd4a6bc8`, package `c48be70e...5ccf`, DLL `5dc21d40...4694`, MVID
+  `8c11f422-481b-4a0b-8573-b75bb786fa8f`.
+- Two deterministic builds; complete suite 2,950/2,950; public download verified.
+- The installed mod still reads 0.0.140.
+- Native merchant checks remain NOT RUN (fresh stock, saved stock, reopening trade, save/reload).
+- No further build, native run, release or permanent install follows without explicit owner authorization.
+
+---
+
+# (superseded) Regional vendor melee withdrawal: draft PR, focused checks pass, native NOT RUN / STOP
+
+Current (2026-11-12). See `planning/regional-vendor-melee-withdrawal/STATUS.md`. Branch
+`codex/regional-vendor-melee-withdrawal` from master `dd6a3ade75`. Nothing merged, released or installed.
+- The Dire Narlmarches village and Pitax traders publish empty Eastern/spear stock. That retires 36 rows,
+  12 Eastern + 6 spear each. Both tables stay exact cleanup targets.
+- Existing saves rely on native `SharedVendorTables.GetTable` reconciliation. A sold-back copy is removed,
+  as for Oleg.
+- Focused gate: compile PASS, 128/128. The unfiltered built domain exe ran 2,927/2,950; the 23 failures are a
+  missing machine-local IL file in the fresh worktree.
+- `observe-model-d-vendors` was extended and Oleg's stale four-spear expectation corrected. Native: NOT RUN.
+- Next: owner review. A native run or merge happens only on separate instruction.
+
+---
+
+# (previous) Hide original Summon Elemental: merged and released in v0.0.184 / STOP
+
+Current (2026-11-12). See `planning/hide-original-summon-elemental/STATUS.md`.
+- The owner approved and asked for a merge and release.
+- PR #133 was merged as `9469105336`; release PR #141 as `6d033bc4d9`.
+- Stable v0.0.184 is Latest: tag `1b2eaa3bee`, package `1496ead5...2c76`, DLL `9251118e...5fee`, MVID
+  `7b0d2325-988c-4dd2-8aef-c053b1899904`.
+- Two deterministic builds; complete suite 2,949/2,949; public download verified.
+- The installed mod still reads 0.0.140.
+
+- Native evidence stays with development candidate `60d2d1b618` (PASS 22/22). Earlier candidates keep their FAIL
+  results. Controller coverage is compile, target and shared tests only.
+- No further build, native run, release or permanent install follows without explicit owner authorization.
+
+---
+
+# (superseded) Hide original Summon Elemental by default: PR #133 ready for final review, native PASS 22/22 / STOP
+
+Current (2026-11-12). See `planning/hide-original-summon-elemental/STATUS.md` ("Targeted verification"). Branch
+`codex/hide-original-summon-elemental`, draft PR #133. Nothing merged, released or permanently installed.
+
+- Observer `60d2d1b618`:
+  - live-state replacement safeguards;
+  - the book/metamagic cell first, gated on fixture restoration;
+  - one revealed learning session.
+
+  Feature code is unchanged.
+- Focused 26/2,949; targets 50/50.
+- Candidate: package `8353c5b6...0c3c`, DLL `cd62c823...278a`, MVID `dd2fbe1c-84a8-49f1-bddf-9b1770814748`.
+- Native PASS 22/22:
+  - mixed book and metamagic tab hidden/revealed (lists and rendered rows), preparation/undo, fixture restored;
+  - revealed learning: allocation, then native replacement (live pending `[source,–]` → `[Acid Arrow,–]`; the
+    preview knows only the replacement);
+  - normal cancellation, with no fallback.
+- Restoration exact. Ledger about 3,108 of 3,600 s.
+- Earlier candidates keep their FAIL results.
+- Next: owner final review. Merge, release or install only on separate instruction.
+
+---
+
+# (superseded) Hide original Summon Elemental by default: PR #133 verification, native FAIL 12/1 (deselection) / STOP
+
+Current (2026-11-12). See `planning/hide-original-summon-elemental/STATUS.md` ("Verification continuation"). Branch
+`codex/hide-original-summon-elemental`, draft PR #133. Nothing merged, released or permanently installed.
+
+- Source `0d944a262f`:
+  - two-session learning observer;
+  - stronger book/metamagic verdicts;
+  - wording "no restart; close and reopen the spell list to apply".
+- Focused 26/2,949; targets 50/50.
+- Candidate: package `41043db7...39f0c4`, DLL `84c2917a...67b9`, MVID `f34ca190-0bbd-4707-a880-74a700947a9e`.
+- Native result 12 PASS / 1 FAIL:
+  - real Wizard "Choose Spells" hidden with the option off, then (after reopening with it on) the ordinary row,
+    native selection and retained slot switch;
+  - native deselection by replacement did not settle (state not recorded);
+  - the book/metamagic cells were not reached.
+- Restoration exact.
+- Diagnosis: native `UnselectSpell` rebuilds `LevelUpState`, so the observer polled a stale selection object. The
+  observer fix (live state, bounded, recorded) is committed; focused passed; not built or run.
+- Ledger about 2,299 of 2,400 s.
+- Next, owner authorization required: a new allowance for one build plus one guarded run, or review as-is.
+
+---
+
+# (superseded) Hide original Summon Elemental by default: PR #133 corrections, native FAIL (observer design) / STOP
+
+Current (2026-11-12). See `planning/hide-original-summon-elemental/STATUS.md` ("Review corrections"). Branch
+`codex/hide-original-summon-elemental`, draft PR #133. Nothing merged, released or permanently installed.
+
+- Review corrections `312bb462e8`:
+  - the PC metamagic tab is now covered (`SetUpFavorite` call-site copy);
+  - the special keep matches any level;
+  - shared hide decision;
+  - observer strengthened.
+- Focused 26/2,949 and patch targets 50/50.
+- Candidate `312bb462e8`: package `1f3eb684...fb8a`, DLL `40d94cb5...d239`, MVID `268ffcd7-0894-4f35-88fa-caf9ce63fab4`.
+- One guarded run: FAIL 8/2.
+  - The owner's Wizard "Choose Spells" screen was observed hidden by default: 82 rows, 0 elementals, no disclosure,
+    screenshot inspected.
+  - The reveal cell failed because a native slot round trip never rebuilds a same-list layer (`FillSpellLightUpdate`
+    only). This is an observer-design defect. The book and metamagic cells were not reached.
+- Restoration exact (after an unrelated machine crash and reboot before the run). Ledger about 1,314 of 1,800 s.
+- Next, owner authorization required: two-session observer correction plus wording ("applies the next time a spell
+  list is opened"), with a new allowance for one build and run; or review as-is.
+---
+
+# (superseded) Gunslinger playtest repairs: merged and released in v0.0.183 / STOP
 
 Current (2026-11-11). See `planning/gunslinger-playtest-repairs/STATUS.md`. The owner accepted the corrected
 review. PR #129 was merged as `57d8640323` and release PR #130 as `6365ddb261`. Stable v0.0.183 is Latest, from

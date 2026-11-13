@@ -1,5 +1,21 @@
 # Elven Branched Spear placement manifest
 
+## Regional stock withdrawn, 2026-11-12 (unreleased, branch `codex/regional-vendor-melee-withdrawal`)
+
+The Dire Narlmarches village trader (`DireNarlmarchesVillageVendorTable` / `f072a8f6889b5f345b7f4e7c74cb3e4c`)
+and the Pitax trader (`PitaxTownVendorTable` / `e5ab1fccf37c55f41a20a80c6ba6a460`) no longer stock any generic
+spear. Each loses six rows: ordinary, masterwork, cold iron, masterwork cold iron, +1 and +1 cold iron. Both
+tables stay publication targets with empty desired stock, so stale project-owned rows are still removed.
+Current generic spear stock:
+- Oleg: ordinary and masterwork.
+- Each installed BTSL Honest Guy table: all six.
+- The capital, the two regional traders and Xelliren: none.
+
+Generic cold iron and +1 spears therefore have no base-campaign merchant. The +1 to +5 capital progression
+exists only through the optional Better Vendors integration. Existing saves rely on native
+`SharedVendorTables.GetTable` reconciliation, with the same limits as for Oleg. See the
+[acquisition inventory](../planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md). Not observed natively.
+
 ## Owner playtest repair, 2026-11-11 (unreleased, branch `codex/gunslinger-playtest-repairs`)
 
 **Five active named placements.** Thornstep's Riverine Rise placement is retired, with no replacement, because
@@ -9,8 +25,8 @@ project cleanup target. Boughkeeper and the other four placements are unchanged.
 
 **Oleg stocks only the mundane and masterwork spears.** The two cold iron variants leave
 `C11_OlegVendorTable`, which both `OTP_Oleg` and `OTP_Oleg_FirstVisit` reference. Every other vendor row is
-unchanged. Generic cold iron is therefore first purchasable from the Dire Narlmarches village trader, Pitax
-or BTSL Honest Guy, not in Act I.
+unchanged. Generic cold iron was then first purchasable from the Dire Narlmarches village trader, Pitax
+or BTSL Honest Guy, not in Act I. Since 2026-11-12 only BTSL Honest Guy remains (above).
 
 **Existing saves.**
 - **Oleg.** The native 2.1.7b known-item reconciliation (`SharedVendorTables.GetTable`) removes Oleg's
@@ -43,10 +59,10 @@ revisit and fresh-process reload. Optional map discovery and the Blutmond lead
 remain reference evidence. The other spear gates are recorded individually in
 the qualification report; no name or loot-table resolution implies a route PASS.
 
-Generic vendor stock remains four mundane/masterwork/cold-iron variants at Oleg,
-zero mod-owned generic spear rows at the capital under Model D, six generic
-versions each at Dire Narlmarches village/Pitax and each installed Honest Guy
-BTSL table, and none at Xelliren. Native replenishment is not guaranteed; no
+Generic vendor stock is now the ordinary and masterwork spear at Oleg (cold iron
+removed 2026-11-11), zero mod-owned generic spear rows at the capital under
+Model D and at the Dire Narlmarches village/Pitax traders (withdrawn 2026-11-12),
+six generic versions on each installed Honest Guy BTSL table, and none at Xelliren. Native replenishment is not guaranteed; no
 named spear is sold in ordinary recurring stock or created from a crafting base.
 
 Transactions append one mod-owned row after normalization while preserving
@@ -74,16 +90,16 @@ pre-publication arrays if no foreign mutation intervened.
 |---|---|---|---|---|---|
 | Act I | Oleg | `C11_OlegVendorTable` / `f720440559fc00949900bfa1575196ac` | mundane, masterwork (cold iron and masterwork cold iron removed 2026-11-11) | one fixed vendor-table entry each; native merchant restock semantics | guarded `observe-vendor-table-contracts` found direct refs from `OTP_Oleg` and `OTP_Oleg_FirstVisit` |
 | Act II onward | Capital blacksmith | `SmithVendorTable` / `7de959347266092448d8a72089ef9778` | all six generic versions | one each; native restock semantics | guarded observer found direct refs from `CapitalOwlbearAttack_Blacksmith` and `VerdelBlacksmith` |
-| later fallback | Dire Narlmarches village trader | `DireNarlmarchesVillageVendorTable` / `f072a8f6889b5f345b7f4e7c74cb3e4c` | all six generic versions | one each; native restock semantics | guarded observer found direct ref from `DireNarlmarchesVillageTrader` |
-| Act V | Pitax specialist trader | `PitaxTownVendorTable` / `e5ab1fccf37c55f41a20a80c6ba6a460` | all six generic versions | one each; native restock semantics | guarded observer found direct ref from `PitaxTown_Trader` |
+| later fallback | Dire Narlmarches village trader | `DireNarlmarchesVillageVendorTable` / `f072a8f6889b5f345b7f4e7c74cb3e4c` | none since 2026-11-12 (formerly all six generic versions) | exact project-owned stale spear cleanup; unrelated rows retained | guarded observer found direct ref from `DireNarlmarchesVillageTrader` |
+| Act V | Pitax specialist trader | `PitaxTownVendorTable` / `e5ab1fccf37c55f41a20a80c6ba6a460` | none since 2026-11-12 (formerly all six generic versions) | exact project-owned stale spear cleanup; unrelated rows retained | guarded observer found direct ref from `PitaxTown_Trader` |
 | BTSL standalone | Honest Guy weapons merchant | `RogueLike_NPCVendorTable` / `a6bae621a7bd96b4fb3c1511cd2f9fac` | all six generic versions | one fixed catalog entry each; native standalone vendor refresh semantics | installed table and `DungeonVendorItemsComponent` verified; guarded observer found six singular spear rows |
 | BTSL standalone | Xelliren/Dragon support merchant | `RogueLike_DragonVendorTable` / `08e090bb2038e3d47be56d8752d5dcaf` | none | exact project-owned stale spear cleanup; unrelated rows retained | installed table and `DungeonVendorItemsComponent` verified |
 | BTSL campaign | Honest Guy weapons merchant | `DLC3_VendorFirstTable` / `45f027c06962df249b8c014a4b4e95e3` | all six generic versions | one fixed catalog entry each; native campaign vendor refresh semantics | exact installed campaign table verified; guarded observer found six singular spear rows |
 | BTSL campaign | Xelliren support merchant | `DLC3_VendorSecondTable` / `420f1da6c2523f64eba810b9b484f60f` | none | exact project-owned stale spear cleanup; unrelated rows retained | exact installed campaign table verified |
 
 The inexpensive weapon is therefore available in Act I. Since 2026-11-11 generic
-cold iron is no longer an Act I Oleg purchase (it remains at the later regional
-traders); previously it was available before the main fey escalation, and masterwork cold iron is available no
+cold iron is no longer an Act I Oleg purchase, and since 2026-11-12 it is no longer
+at the regional traders either (BTSL Honest Guy only); previously it was available before the main fey escalation, and masterwork cold iron is available no
 later than the capital, and the +1 cold-iron version has two continuing
 purchase paths. Vendor rows are append/normalize operations, not replacements.
 
