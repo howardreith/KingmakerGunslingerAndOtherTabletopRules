@@ -1,11 +1,56 @@
 # Project Magic Item Acquisition Inventory
 
-## Current findability contract (0.0.143, Thornstep retired 2026-11-11)
+## Current findability contract (0.0.143, Thornstep retired 2026-11-11, regional melee stock withdrawn 2026-11-12)
 
 This is the active location inventory. It supersedes the 0.0.105 and 0.0.87
 directions below. It contains **28 named world-loot weapons**: five firearms,
 18 Eastern weapons and five Elven Branched Spears. Cord of Stubborn Resolve is
 the separate twenty-ninth item. Roadwarden and Dead Reckoning are merchant-only.
+
+**Regional melee stock withdrawn, 2026-11-12 (branch `codex/regional-vendor-melee-withdrawal`,
+not yet released).** The owner judged these regional merchants inappropriate sellers for the added weapon
+families.
+- **Retired rows.** The Dire Narlmarches village trader (`DireNarlmarchesVillageVendorTable` /
+  `f072a8f6889b5f345b7f4e7c74cb3e4c`) and the Pitax trader (`PitaxTownVendorTable` /
+  `e5ab1fccf37c55f41a20a80c6ba6a460`) no longer stock this mod's weapons. Each table loses 18 count-one rows,
+  36 in total:
+  - 12 Eastern rows: Wakizashi, Masterwork Wakizashi, Cold Iron Wakizashi, +1 Wakizashi, and the same four
+    for the Katana and the Nodachi;
+  - 6 spear rows: Elven Branched Spear, Masterwork, Cold Iron, Masterwork Cold Iron, +1, and +1 Cold Iron.
+
+  No firearm publisher supplied either table.
+- **What did not change.** Both tables stay in the Eastern and spear publication paths with empty desired
+  stock. Exact GUID/name validation, stale-row cleanup, rollback and idempotence are therefore unchanged.
+  - Every item blueprint, GUID, enchantment, price, model and compatibility registration is unchanged.
+  - Nothing was moved to another merchant, and Better Vendors ranks are unchanged.
+  - Players can still sell any weapon to these merchants as ordinary trade.
+- **Resulting availability of the generic melee weapons.**
+  - Ordinary and masterwork Wakizashi, Katana, Nodachi and Elven Branched Spear: Oleg (Act I).
+  - Cold iron and +1 variants: BTSL Honest Guy only. That is campaign Tenebrous Depths (`DLC3_VendorFirstTable`)
+    and standalone Beneath the Stolen Lands (`RogueLike_NPCVendorTable`), so it requires that DLC. No
+    base-campaign merchant sells them any more.
+  - +1 to +5 at the capital: only through the optional Better Vendors integration's progression catalog.
+    The capital's baseline fixed stock is the three +1 firearms, ammunition and the Gunsmith's Kit. It has no
+    Eastern or spear rows.
+  - Named loot, controlled recovery, starting firearms, the Skeletal Salesman (Roadwarden, Dead Reckoning),
+    Xelliren and crafting routes are unchanged. Thornstep stays retired.
+- **Existing saves.** Read from the decompiled installed 2.1.7b `SharedVendorTables.GetTable`, as for Oleg
+  below. On the first access to each table per loaded game, it compares the saved `KnownItems` with the
+  current fixed rows. It decrements the saved blueprint/count entries by blueprint, never below zero, and
+  never adds for a removal. Then it stores the current fixed rows as `KnownItems`. No new code is involved.
+  - **Untouched stocked copy:** removed.
+  - **Purchased copy:** nothing to remove. The player's copy is never part of this path.
+  - **Bought, then a matching weapon sold back:** that sold copy is removed (1 → 0). Shared stock keeps no
+    provenance. Copies beyond the stocked one survive (3 → 2).
+  - **Repeat:** once saved, `KnownItems` is current, so reopening trade, reloading or republishing subtracts
+    nothing more. Reloading an older unsaved save repeats the same single subtraction.
+  - **Missing known-item history:** native code skips the comparison, so the copy is kept.
+  - Player inventory, equipment, party storage, companions and the stash are never touched. Future sales
+    to these merchants work as before.
+- **Evidence boundary.** Source-derived conclusions and focused offline checks only. The
+  `observe-model-d-vendors` observer was extended for both tables (zero rows, stale-row cleanup, repeat
+  publication, and the native reconciliation statics), but it has **not been run natively**. No merchant UI or
+  saved stock has been observed.
 
 **Owner playtest repair, 2026-11-11 (branch `codex/gunslinger-playtest-repairs`,
 not yet released).**
@@ -17,8 +62,8 @@ not yet released).**
   `Forest_GoodLoot01` / `NorthNarlmarchesRegionLair01` (Riverine Rise), is a project cleanup target.
   Boughkeeper's Old Mesa placement is unchanged.
 - **Oleg stocks no cold iron branched spears.** `C11_OlegVendorTable` now publishes only the ordinary and
-  masterwork Elven Branched Spear. Both cold iron variants remain registered items and stay in Dire
-  Narlmarches, Pitax and BTSL Honest Guy stock.
+  masterwork Elven Branched Spear. Both cold iron variants remain registered items and stay in BTSL Honest
+  Guy stock. Their Dire Narlmarches and Pitax rows were withdrawn on 2026-11-12 (above).
 - **Existing saves.** Both removals rely on the native known-item reconciliation of Kingmaker 2.1.7b,
   inspected in the installed `Assembly-CSharp`:
   - **Oleg.** `SharedVendorTables.GetTable` subtracts the removed fixed rows from Oleg's persisted
@@ -192,7 +237,8 @@ merchant-only midgame firearms. See the exact regional stock and purchase
 acceptance in [the firearm manual](../docs/RARE-FIREARMS-MANUAL-ACCEPTANCE.md).
 Model D generic stock remains Oleg's mundane firearms/ammunition, the capital's
 +1 firearms/ammunition/Gunsmith's Kit, and Bokken's ammunition. Generic Eastern
-and spear regional/BTSL stock remain their existing contracts. Better Vendors
+and spear stock is Oleg's ordinary/masterwork rows plus the BTSL Honest Guy
+tables; the Dire Narlmarches and Pitax traders stock none since 2026-11-12. Better Vendors
 progression is an optional integration with its own qualification; its absence
 does not fail base-mod publication. Fixed stock can deplete and is not promised
 to regenerate.
