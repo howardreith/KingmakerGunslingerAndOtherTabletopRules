@@ -41,9 +41,9 @@ Wriggling Man, Knurly Witch and Third Nyrissa keys. Keys were supplied only as
 disposable story prerequisites; organic key/puzzle/Nyrissa progression remains
 unverified. Gate flags and check outcomes were not overridden.
 
-Generic merchant stock is unchanged: Oleg has six mundane/masterwork family
-rows; the capital has zero mod-owned generic Eastern rows under Model D; Dire
-Narlmarches village and Pitax each have the 12 generic rows. Each installed
+Generic merchant stock: Oleg has six mundane/masterwork family rows; the
+capital has zero mod-owned generic Eastern rows under Model D; Dire Narlmarches
+village and Pitax have zero since 2026-11-12 (formerly 12 each). Each installed
 Honest Guy BTSL table has 12; Xelliren tables have zero. None receives a named
 Eastern weapon. Native replenishment and prior serialized stock remain native;
 there is no guaranteed refresh.
@@ -123,7 +123,7 @@ No named Eastern weapon is placed in ordinary BTSL stock.
 | Act II | Quiet Current | Winter Reed | Cloud-Cleaver | recurring capital blacksmith stock |
 | Act III | Falling Petal | Drawn Horizon | none | distinct Silverstep Grotto fixed chests `5b8346d4fc947624e9f8728fe7a12535` and `040bad335c144784798a580e41b5410f` |
 | Act IV | Storm Over Stone / Duelist's Rebuttal | Foxfire Whisper / Viper's Reach | Thunder at the Gate / Mountain-Sunder | paired fixed targets across Varnhold, Vordakai's Tomb, and Armag's Tomb; see `docs/GUNSLINGER-ACQUISITION-REBALANCE.md` |
-| Act V | Empty Sleeve | Moonlit Crossing | Unfixed Form | recurring Pitax specialist stock |
+| Act V | Empty Sleeve | Moonlit Crossing | Unfixed Form | historical: formerly recurring Pitax specialist stock; now fixed world loot (see the acquisition inventory) |
 | late game | Night Without Moon | Heaven's Measure | World-Tree Severer | `RichHuman_Loot_1` / `7e6448d1d8a7e4f4d9cc340b8f15e732` in `FinalDungeon` |
 
 The five fixed containers receive 12 named count-one rows. They are important
