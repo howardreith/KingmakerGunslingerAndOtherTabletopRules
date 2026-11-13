@@ -207,9 +207,17 @@ namespace KingmakerGunslinger.DomainTests
                 "AmmunitionCraftingCostPolicy.ForCombinedBatch",
                 "FirearmCraftingTransactionService.Complete", "Not enough gold." })
                 Assertions.True(basic.Contains(token), "basic craft: " + token);
+            // GS-AUD-0036. The refund is no longer the whole observed money
+            // difference: it is the amount the compensation POLICY plans from
+            // what this transaction actually committed, clamped to what it
+            // could have debited, so an over-refund is impossible by
+            // construction. The pin follows the repair rather than holding the
+            // superseded GainMoney(missingMoney) shape.
             foreach (string token in new[] { "moneyBefore < goldCost",
                 "SpendMoney(goldCost)", "caster.RemoveFact(marker)",
-                "GainMoney(missingMoney)", "countsBefore[index]",
+                "FirearmCraftingCompensationPolicy.Plan(",
+                "plan.GoldToRestore > 0", "player.GainMoney(plan.GoldToRestore)",
+                "committedAdds[index] = Math.Max(0,", "countsBefore[index]",
                 "ammunition-craft.committed" })
                 Assertions.True(transaction.Contains(token),
                     "shared rollback: " + token);
