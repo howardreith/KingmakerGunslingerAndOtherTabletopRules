@@ -152,6 +152,21 @@
   persists only item types and counts. If the stocked cold iron spear was bought and a
   cold iron spear was later sold back to Oleg, the engine's update removes that sold
   copy from his stock. Player inventory is never touched. Not observed natively.
+- Inherited summon templates: the removal set is a hand-maintained list (v0.0.186). Twelve creature
+  keys are declared as needing an inherited celestial or fiendish template stripped. Measured against
+  the installed library across all 281 untemplated Summon Monster placements, that list disagrees in
+  both directions: 81 placements' registered graphs contain a native template apply action, 52 carry
+  the removal, only 16 contain both, 65 apply with no removal and 36 carry a removal with no apply.
+  Those are GRAPH observations - the graphs were read, not cast - so they establish that 65 graphs are
+  SHAPED to apply a template with nothing removing it, not that each delivers one in play. The
+  membership is byte-identical to v0.0.185, so v0.0.186 neither introduces nor worsens it. Tracked
+  separately as GS-REP-0002 and not fixed by this release.
+- Two feature-module publication self-checks fail on a heavily modded installation (v0.0.186):
+  `feature-module-expanded-summoning-publication-gate` reports `unclassified=38` against a hard-coded
+  expectation of 0, and `feature-module-brown-fur-publication-gate` fails alongside it. A matched
+  baseline built from released master reproduces both with identical measured values, so they are
+  pre-existing and are not caused by the v0.0.186 repairs. Their mechanism is not traced. They are
+  internal consistency checks and do not affect play.
 - Dire Narlmarches and Pitax regional weapon stock (withdrawn in v0.0.185). It has the same native limitation as Oleg's spears:
   if a stocked Eastern weapon or spear was bought and a matching one was later sold back to that trader,
   the engine's update removes the sold copy. A save with no persisted known-item history keeps the old
