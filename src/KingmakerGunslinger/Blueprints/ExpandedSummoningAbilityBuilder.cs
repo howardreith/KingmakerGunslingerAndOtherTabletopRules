@@ -98,7 +98,8 @@ namespace KingmakerGunslinger.Blueprints
         ///    observation checks - and that scenario states its own limit:
         ///    "Structural and graph evidence only... summon execution...
         ///    not exercised". It casts nothing.
-        /// 2. Execution verification. ATTEMPTED AND CORRECTED, not discharged.
+        /// 2. Execution verification of removal on the adapter route.
+        ///    WITHDRAWN AND REPLACED - not outstanding, and never passed.
         ///    The inherited-template-removal stage of
         ///    disposable-alternate-summoning-natural casts an affected creature
         ///    selected from the live native menu BY WHAT ITS OWN GRAPH CARRIES
@@ -126,21 +127,29 @@ namespace KingmakerGunslinger.Blueprints
         ///    there, the outcome cannot differ - but that last step is read
         ///    from the source, not executed.
         ///
-        ///    An execution proof of removal EFFICACY can only come from the
-        ///    canonical ordinary-spell path, where
-        ///    inherited-template-removal-wiring-per-placement shows the apply
-        ///    action is present in the registered graph. That observation is
-        ///    GRAPH evidence: it reads action graphs and casts nothing, so it
-        ///    establishes that an apply action exists, not that it executes or
-        ///    leaves a buff behind. The execution proof is queued, not claimed
-        ///    here.
+        ///    WHY IT IS WITHDRAWN RATHER THAN OUTSTANDING. The requirement to
+        ///    demonstrate removal of an inherited template on this route was
+        ///    derived from the premise that this route inherited one. That
+        ///    premise is withdrawn by the measurement above, so the requirement
+        ///    went with it. It must never be recorded as a passed
+        ///    removal-efficacy test, and it must not be carried as debt against
+        ///    this change: there is nothing on this route to remove.
         ///
-        /// A passing graph observation alone leaves part 2 outstanding. Note
-        /// also that the composition controls' original subjects were a
-        /// TEMPLATED creature and a Nature's Ally creature, so they never
-        /// entered the TemplateRemoval comparison branch at all; part 1 needs
-        /// an affected subject, which composition-affected-subject-positive-
-        /// control and its four negative controls supply.
+        ///    DEC-0004 is RESOLVED. Canonical application and removal efficacy
+        ///    are tracked separately as GS-REP-0002, the canonical-summoning
+        ///    investigation and repair card, which stays open for release
+        ///    triage and does not block this change. That card owns the
+        ///    canonical route, a measured native outcome and a bounded repair.
+        ///
+        /// So the accepted scope of THIS change is: the shared rule and
+        /// comparator hardening; the affected-subject graph controls; the
+        /// per-placement wiring invariant within its stated scope; the observed
+        /// clean native adapter route; and the bounded cleanup. The composition
+        /// controls' original subjects were a TEMPLATED creature and a Nature's
+        /// Ally creature and never entered the TemplateRemoval branch at all,
+        /// which is why part 1 needs an affected subject -
+        /// composition-affected-subject-positive-control and its four negative
+        /// controls supply it.
         ///
         /// Membership below is a DECLARATION, and GS-REP-0002 records that it
         /// does not match the installed library. Do NOT read it as "the
