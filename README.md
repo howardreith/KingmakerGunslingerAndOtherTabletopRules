@@ -712,7 +712,7 @@ project-owned cord-and-clasp artwork instead of the donor belt icon.
 
 ## Feature modules
 
-Open Unity Mod Manager's Kingmaker Gunslinger panel to find thirteen checkboxes:
+Open the Mr. Bard's Tabletop Rules Expansion panel in Unity Mod Manager to find thirteen checkboxes:
 **Gunslinger**, **Acadamae Graduate**, **Shield Other**, **Expanded
 Summoning**, **Elven Branched Spears**, **Eastern Weapons**, **Brown-Fur
 Transmuter -- requires Call of the Wild**, **Urban Barbarian**, **Bodyguard
@@ -733,7 +733,7 @@ failed write.
 **refuses to load** when it finds a settings schema newer than the one it
 understands, rather than guessing what the unknown keys mean. So if you run
 a newer Gunslinger build and then roll back to an older one, the older build
-will not start, and Unity Mod Manager will show no Gunslinger panel. The log
+will not start, and Unity Mod Manager will show no Mr. Bard's Tabletop Rules Expansion panel. The log
 line is `[bootstrap][load.failed]`.
 
 This is deliberate: silently reinterpreting a newer settings file could
