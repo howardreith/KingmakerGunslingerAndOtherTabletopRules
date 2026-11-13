@@ -37,6 +37,29 @@ def presentation_delta_matches(text, record):
     restored = text.replace(record["after"], record["before"])
     return hashlib.sha256(restored.encode("utf-8")).hexdigest() == record["baselineSha256"]
 
+def assignment_edits_match(text, record):
+    """Reverse the exact authorized non-art hunks, then require the ORIGINAL
+    pinned hash.
+
+    protectedAssignmentFiles is otherwise a bare whole-file hash, which leaves
+    only two options for an art-neutral gameplay edit: re-pin the hash, which
+    throws the baseline evidence away, or withdraw the edit. This is the same
+    bounded mechanism authorizedPresentationDeltas already uses, applied to the
+    whole-file records: the declared hunks are reversed and the result must hash
+    to the record's EXISTING sha256, so the baseline is still the thing being
+    proved.
+
+    Rejects a hunk that is missing or appears more than once, so a listed edit
+    cannot be silently duplicated. Any unlisted change - including an altered
+    icon assignment - survives the reversal and breaks the hash.
+    """
+    text = text.replace("\r\n", "\n")
+    for edit in record["authorizedAssignmentEdits"]:
+        if text.count(edit["after"]) != 1:
+            return False
+        text = text.replace(edit["after"], edit["before"])
+    return hashlib.sha256(text.encode("utf-8")).hexdigest() == record["sha256"]
+
 def inside(root, value):
     if not isinstance(value, str) or not value or "\\" in value:
         raise ValueError("Expected nonempty repository-relative forward-slash path")
@@ -206,7 +229,44 @@ def validate(root, catalog=None, pilot=None, references=None, registry=None, pro
         for record in catalog[group]:
             require(record["path"] not in seen, "Duplicate " + group + ": " + record["path"])
             seen.add(record["path"])
-            file_check(record["path"], record["sha256"])
+            # A record may declare exact authorized non-art hunks. Only
+            # protectedAssignmentFiles may do so, and the pinned sha256 is still
+            # the baseline that has to be reproduced after reversing them.
+            edits = record.get("authorizedAssignmentEdits")
+            if not edits:
+                file_check(record["path"], record["sha256"])
+                continue
+            # Every precondition must hold BEFORE the file is read as text: a
+            # record in the wrong group may well be a PNG, and reading it as
+            # UTF-8 would raise rather than report.
+            if group != "protectedAssignmentFiles":
+                errors.append(
+                    "authorizedAssignmentEdits is only valid on protectedAssignmentFiles: "
+                    + record["path"])
+                file_check(record["path"], record["sha256"])
+                continue
+            if not (isinstance(edits, list) and bool(edits)
+                    and all(isinstance(e, dict) and isinstance(e.get("before"), str)
+                            and isinstance(e.get("after"), str) and e["before"] != e["after"]
+                            and e["after"].strip() for e in edits)):
+                errors.append("Malformed authorizedAssignmentEdits: " + record["path"])
+                continue
+            if not (isinstance(record.get("authorization"), str)
+                    and record["authorization"].strip()):
+                errors.append(
+                    "authorizedAssignmentEdits requires a recorded authorization: "
+                    + record["path"])
+                continue
+            target = file_check(record["path"])
+            if target:
+                try:
+                    text = target.read_text(encoding="utf-8")
+                except (ValueError, OSError) as exc:
+                    errors.append("Unreadable authorized assignment source: "
+                                  + record["path"] + ": " + str(exc))
+                    continue
+                require(assignment_edits_match(text, record),
+                        "Change outside authorized assignment edit: " + record["path"])
     file_check(catalog["baseline"]["registryPath"], catalog["baseline"]["registrySha256"])
     for delta in catalog["authorizedPresentationDeltas"]:
         target = file_check(delta["path"])

@@ -83,8 +83,15 @@ Source:
    - Every other host option, including other mods' options, stays by
      reference. Creature choices sort with the rest of the menu; a row not
      recognized as a creature choice stays at the end in its relative order.
-   - The final menu uses `SummonDisplayOrderPolicy`: creature name as
-     displayed (family-first), then one, 1d3, 1d4+1, then identity.
+   - The final menu uses `SummonDisplayOrderPolicy`: **base multiplicity
+     group first** (every single summon, then every 1d3, then every 1d4+1),
+     then the displayed family-first creature name, then identity. This is the
+     owner decision of 2026-11-10 and supersedes the earlier name-first rule
+     this document used to state. The multiplicity is the row's base metadata,
+     never a rolled or feat-increased count; a creature row whose base
+     multiplicity is unknown follows the three groups, alphabetized among its
+     kind. Comparison is ordinal, so it does not vary with the machine's
+     culture.
    - A direct root becomes a menu parent whose children include a frozen copy
      of its original cast. There is no parent/child cycle and no duplicate
      cast action.
