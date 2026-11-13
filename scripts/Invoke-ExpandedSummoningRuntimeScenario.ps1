@@ -481,6 +481,64 @@ finally {
         $deployed = Get-KmgTreeFingerprint -Directory $LiveModDirectory
         $record.liveAfterScenario = [ordered]@{ files = $deployed.Files; sha256 = $deployed.Sha256 }
 
+        # The process-exit and ownership boundary comes FIRST, before any disk
+        # capture and before any mutation.
+        #
+        # Moving the staged settings cleanup out of the content-fingerprint
+        # branch fixed the attribute-only case but put the settings write ahead
+        # of this guard, so the wrapper could rewrite live settings while
+        # Kingmaker was still shutting down - a window this script already
+        # acknowledges - and could capture the disk state before shutdown writes
+        # had settled. Nothing below touches the installation until the game is
+        # gone.
+        $restorationBoundary = $true
+        try {
+            # The harness returns while Kingmaker is still shutting down, and a
+            # restore during that window is refused. Wait for the process to go
+            # rather than treating the race as a restoration failure.
+            $exitDeadline = [DateTime]::UtcNow.AddSeconds(120)
+            while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and
+                [DateTime]::UtcNow -lt $exitDeadline) {
+                Start-Sleep -Milliseconds 500
+            }
+
+            # A run that aborted mid-transaction can leave its own compatibility
+            # lock behind. Release it only when this batch owns it; the helper
+            # throws if the recorded owner differs.
+            $compatibilityLock = 'C:\Dev\KingmakerGunslingerLab\compatibility-state\compatibility.lock'
+            if (-not $startupPeerScope -and (Test-Path -LiteralPath $compatibilityLock -PathType Leaf)) {
+                $lockOwner = (Get-Content -LiteralPath $compatibilityLock -Raw).Trim()
+                if (Test-KmgCompatibilityLockOwned -LockOwner $lockOwner `
+                    -BatchStartedUtc ([DateTime]$record.startedAtUtc)) {
+                    . (Join-Path $PSScriptRoot 'compatibility\CompatibilityProfile.Common.ps1')
+                    Remove-KmgCompatibilityOwnedLock -LockPath $compatibilityLock -RunId $lockOwner
+                    $record.releasedStaleCompatibilityLock = $lockOwner
+                } else {
+                    $record.foreignCompatibilityLock = $lockOwner
+                }
+            }
+
+            Assert-KmgNotRunning
+        }
+        catch {
+            # Still alive, or ownership could not be established. Deliberately
+            # change NOTHING: restoration stays failed with the snapshot and
+            # receipt intact so the owner can recover deterministically.
+            $restorationBoundary = $false
+            $record.restoration = 'FAILED'
+            $record.restorationError = 'Process-exit/ownership boundary not established: ' +
+                $_.Exception.Message
+            $record.restorationDeferred = [ordered]@{
+                reason = 'kingmaker-still-running-or-unowned'
+                snapshot = $snapshot.Destination
+                stagedSettingsTarget = $settingsStagedTarget
+                recover = 'scripts\Restore-Live-Mod.ps1 -BackupDirectory <snapshot> -Confirm:$false' }
+            Write-Warning ("Restoration boundary not established; nothing was modified. " +
+                "Snapshot retained at $($snapshot.Destination): $($_.Exception.Message)")
+        }
+
+        if ($restorationBoundary) {
+
         # The staged settings file is handled HERE, before and independently of
         # the content-fingerprint decision below.
         #
@@ -545,12 +603,17 @@ finally {
                 $finalAttributes = [IO.File]::GetAttributes($settingsStagedTarget)
                 $attributesVerified = ($finalAttributes -eq $settingsOriginalAttributes)
                 $bytesVerified = ($finalSha -eq $settingsOriginalSha256)
+                # Intermediate: this is the staged-file cleanup verified at THIS
+                # point. The whole-tree restore below can still replace the file,
+                # so the machine-state claim is stagedFeatureModulesFinal further
+                # down, taken after the last replacement.
                 $record.stagedFeatureModulesRestored = [ordered]@{
                     sha256 = $finalSha
                     attributes = $finalAttributes.ToString()
                     expectedAttributes = $settingsOriginalAttributes.ToString()
                     bytesVerified = $bytesVerified
-                    attributesVerified = $attributesVerified }
+                    attributesVerified = $attributesVerified
+                    stage = 'before-tree-restore' }
                 if ($bytesVerified -and $attributesVerified) {
                     Write-Host ('Restored staged FeatureModules.json bytes and attributes: ' +
                         "attributes=$($finalAttributes)")
@@ -575,32 +638,6 @@ finally {
         }
         else {
             try {
-                # The harness returns while Kingmaker is still shutting down, and a
-                # restore during that window is refused. Wait for the process to go
-                # rather than treating the race as a restoration failure.
-                $exitDeadline = [DateTime]::UtcNow.AddSeconds(120)
-                while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and
-                    [DateTime]::UtcNow -lt $exitDeadline) {
-                    Start-Sleep -Milliseconds 500
-                }
-
-                # A run that aborted mid-transaction can leave its own compatibility
-                # lock behind. Release it only when this batch owns it; the helper
-                # throws if the recorded owner differs.
-                $compatibilityLock = 'C:\Dev\KingmakerGunslingerLab\compatibility-state\compatibility.lock'
-                if (-not $startupPeerScope -and (Test-Path -LiteralPath $compatibilityLock -PathType Leaf)) {
-                    $lockOwner = (Get-Content -LiteralPath $compatibilityLock -Raw).Trim()
-                    if (Test-KmgCompatibilityLockOwned -LockOwner $lockOwner `
-                        -BatchStartedUtc ([DateTime]$record.startedAtUtc)) {
-                        . (Join-Path $PSScriptRoot 'compatibility\CompatibilityProfile.Common.ps1')
-                        Remove-KmgCompatibilityOwnedLock -LockPath $compatibilityLock -RunId $lockOwner
-                        $record.releasedStaleCompatibilityLock = $lockOwner
-                    } else {
-                        $record.foreignCompatibilityLock = $lockOwner
-                    }
-                }
-
-                Assert-KmgNotRunning
                 $restoreArguments=@{BackupDirectory=$snapshot.Destination;LiveModDirectory=$LiveModDirectory;Confirm=$false}
                 if($startupPeerScope){$restoreArguments.RuntimeLease=$startupPeerScope.Lease}
                 & (Join-Path $PSScriptRoot 'Restore-Live-Mod.ps1') @restoreArguments | Out-Null
@@ -619,6 +656,42 @@ finally {
                 $record.restorationError = $_.Exception.Message
                 Write-Warning "Restoration failed. The snapshot is intact at $($snapshot.Destination): $($_.Exception.Message)"
             }
+        }
+
+        # The FINAL settings observation, taken after the last replacement of
+        # the tree. The earlier check verifies the staged cleanup at its own
+        # point; only this one is a claim about the machine the owner is left
+        # with, because Restore-Live-Mod can replace the file again.
+        if ($settingsStagedTarget) {
+            try {
+                $endSha = (Get-FileHash -LiteralPath $settingsStagedTarget -Algorithm SHA256).Hash
+                $endAttributes = [IO.File]::GetAttributes($settingsStagedTarget)
+                $endBytesOk = ($endSha -eq $settingsOriginalSha256)
+                $endAttributesOk = ($endAttributes -eq $settingsOriginalAttributes)
+                $record.stagedFeatureModulesFinal = [ordered]@{
+                    stage = 'after-tree-restore'
+                    sha256 = $endSha
+                    attributes = $endAttributes.ToString()
+                    expectedSha256 = $settingsOriginalSha256
+                    expectedAttributes = $settingsOriginalAttributes.ToString()
+                    bytesVerified = $endBytesOk
+                    attributesVerified = $endAttributesOk }
+                if (-not ($endBytesOk -and $endAttributesOk)) {
+                    $script:stagedSettingsRestorationFailed = $true
+                    Write-Warning ('Final FeatureModules.json state does not match intake: ' +
+                        "bytes=$endBytesOk attributes=$endAttributesOk " +
+                        "(expected $($settingsOriginalAttributes), got $($endAttributes))")
+                } else {
+                    Write-Host ('Final FeatureModules.json verified against intake: ' +
+                        "attributes=$($endAttributes)")
+                }
+            }
+            catch {
+                $script:stagedSettingsRestorationFailed = $true
+                $record.stagedFeatureModulesFinal = 'FAILED: ' + $_.Exception.Message
+                Write-Warning "Final FeatureModules.json verification failed: $($_.Exception.Message)"
+            }
+        }
         }
     }
     if ($cleanup.installationError) {
