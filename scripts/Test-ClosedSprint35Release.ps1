@@ -5,7 +5,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
-$reviewedSprint35Merge = 'e58bb50ab6a835cad266ca2abe95efddba911058'
+$reviewedSprint35Merge = '1ddc27cf709d2ff4cd44ea01013dec14ece82d57'
 $protectedSprint35Files = @(
     'scripts/Sprint35QualifiedRelease.Common.ps1',
     'scripts/Test-Sprint35Release.ps1'
@@ -29,6 +29,13 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Could not create the isolated Sprint 35 validation clone.' }
     & git -C $isolatedRoot checkout --detach --quiet $reviewedSprint35Merge
     if ($LASTEXITCODE -ne 0) { throw 'Could not select the reviewed Sprint 35 merge.' }
+    # The 2026-11-13 history rewrite (docs/history/HISTORY-REWRITE-2026-11-13.md)
+    # renamed the prior Sprint 35 candidate that the frozen suite diffs against.
+    # Resolve its pre-rewrite id to the rewritten commit (identical tree) in this
+    # throwaway clone only.
+    & git -C $isolatedRoot update-ref refs/replace/f785c3035662c7baeae5e0c5f82e85973e03e489 `
+        1c4067ec683b450d12fdc21596120662b6e8f481
+    if ($LASTEXITCODE -ne 0) { throw 'Could not map the rewritten prior Sprint 35 candidate.' }
 
     & powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
         (Join-Path $isolatedRoot 'scripts/Test-Sprint35Release.ps1')

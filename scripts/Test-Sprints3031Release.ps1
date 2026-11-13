@@ -115,7 +115,7 @@ Refuse 'missing native observation' {$args[0].coverage[0].evidenceSources[0].req
 Refuse 'hidden mandatory failure' {$args[0].coverage[0].result='FAIL'}
 Refuse 'claim with wrong run' {$args[0].coverage[0].claims[0].runId='unobserved'}
 Refuse 'claim without its observation' {$args[0].coverage[0].claims[0].assertions=@('unobserved')}
-$prior=(& git -C (Split-Path -Parent $PSScriptRoot) rev-parse '3a30c700c2fab164081522d001f48c9afe3290a2').Trim()
+$prior=(& git -C (Split-Path -Parent $PSScriptRoot) rev-parse '536c546e3bca748a313f77f39d6348545f6734df').Trim()
 $changedPath='src/KingmakerGunslinger/Blueprints/ExpandedSummoningPublication.cs'
 $oldBlob=Get-KmgSprints3031Blob $prior $changedPath
 $newBlob=Get-KmgSprints3031Blob $head $changedPath
