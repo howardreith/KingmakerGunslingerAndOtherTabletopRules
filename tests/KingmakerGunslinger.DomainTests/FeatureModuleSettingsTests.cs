@@ -612,8 +612,18 @@ namespace KingmakerGunslinger.DomainTests
                     "The authoritative boundary runtime matrix contract is missing: " + token);
             string common = File.ReadAllText(Path.Combine(root, "scripts",
                 "RuntimeAutomation.Common.ps1"));
+            // GS-AUD-0007. The count is still exactly thirteen module states
+            // (fourteen with the Sprint 40 recovery flag); the staged-migration
+            // trio is an all-or-nothing THREE on top of it, never a relaxation
+            // of the module requirement. The pin names both halves so neither
+            // can drift, and the all-or-nothing guard above it is pinned too -
+            // a partial trio must stay a refusal, because the silent-no-op it
+            // prevents is what let a staged run report 45 passing assertions
+            // while the observation it was for never ran.
             Assertions.True(common.Contains(
-                    "$Parameters.Count -ne $(if($sprint40Recovery){14}else{13})") &&
+                    "$Parameters.Count -ne ($(if($sprint40Recovery){14}else{13}) + " +
+                    "$(if($stagedMigration){3}else{0}))") &&
+                common.Contains("$stagedMigration = $Parameters.ContainsKey('expectedSettingsSource') -or") &&
                 common.Contains(
                     "$sprint40Recovery = $Parameters.ContainsKey('sprint40DiagnosticRecovery')") &&
                 common.Contains("expandedSummoning = [bool]$Parameters.expandedSummoning") &&
