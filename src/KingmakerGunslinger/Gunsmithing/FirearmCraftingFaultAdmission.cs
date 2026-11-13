@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Kingmaker.UnitLogic;
 
 namespace KingmakerGunslinger.Gunsmithing
@@ -30,14 +31,21 @@ namespace KingmakerGunslinger.Gunsmithing
     {
         private static FirearmCraftingFaultAdmission _current;
         private readonly UnitDescriptor _caster;
-        private readonly string _point;
+        private readonly string _trigger;
+        private readonly bool _faultCompensation;
+        private readonly List<string> _tripped = new List<string>();
         private bool _disposed;
-        private bool _tripped;
 
-        private FirearmCraftingFaultAdmission(UnitDescriptor caster, string point)
-        { _caster = caster; _point = point; }
+        private FirearmCraftingFaultAdmission(UnitDescriptor caster, string trigger,
+            bool faultCompensation)
+        {
+            _caster = caster; _trigger = trigger; _faultCompensation = faultCompensation;
+        }
 
-        internal bool Tripped { get { return _tripped; } }
+        internal bool Tripped { get { return _tripped.Count > 0; } }
+        internal bool TrippedAt(string point) { return _tripped.Contains(point); }
+        internal string TrippedPoints
+        { get { return string.Join("+", _tripped.ToArray()); } }
 
         /// <summary>The fault points the service recognises. Named rather than
         /// positional so a moved call site cannot silently change which
@@ -46,31 +54,58 @@ namespace KingmakerGunslinger.Gunsmithing
         internal const string AfterFirstOutput = "after-first-output";
         internal const string DuringCompensation = "during-compensation";
 
-        internal static FirearmCraftingFaultAdmission Admit(UnitDescriptor caster, string point)
+        internal static FirearmCraftingFaultAdmission Admit(UnitDescriptor caster,
+            string trigger)
+        { return Admit(caster, trigger, false); }
+
+        /// <summary>
+        /// Admits one TRIGGER fault - a point on the forward path, which is the
+        /// only kind that can make a transaction fail - and optionally a second
+        /// fault inside the service's compensation.
+        ///
+        /// faultCompensation exists because <see cref="DuringCompensation"/> is
+        /// NOT a trigger: that trip sits inside the service's catch block, so it
+        /// is unreachable unless the transaction has already failed for some
+        /// other reason. A run that admitted it alone observed exactly that -
+        /// the transaction simply succeeded and the admission never fired - so
+        /// admitting it as a trigger is refused here rather than left to produce
+        /// a vacuous observation.
+        /// </summary>
+        internal static FirearmCraftingFaultAdmission Admit(UnitDescriptor caster,
+            string trigger, bool faultCompensation)
         {
             if (caster == null) throw new ArgumentNullException("caster");
-            if (point != AfterDebitBeforeOutput && point != AfterFirstOutput &&
-                point != DuringCompensation)
-                throw new ArgumentOutOfRangeException("point",
-                    "Unrecognised crafting fault point: " + point);
+            if (string.Equals(trigger, DuringCompensation, StringComparison.Ordinal))
+                throw new ArgumentOutOfRangeException("trigger",
+                    DuringCompensation + " is not a trigger: the compensation trip is inside " +
+                    "the service catch block and cannot be reached unless the transaction has " +
+                    "already failed. Admit a forward-path trigger with faultCompensation:true.");
+            if (trigger != AfterDebitBeforeOutput && trigger != AfterFirstOutput)
+                throw new ArgumentOutOfRangeException("trigger",
+                    "Unrecognised crafting fault trigger: " + trigger);
             if (_current != null) throw new InvalidOperationException(
                 "A crafting fault admission is already live; they must not stack.");
-            _current = new FirearmCraftingFaultAdmission(caster, point);
+            _current = new FirearmCraftingFaultAdmission(caster, trigger, faultCompensation);
             return _current;
         }
 
         /// <summary>
-        /// Throws only for the exact admitted caster at the exact admitted
-        /// point. Every other caller - including any real player unit - passes
-        /// through untouched.
+        /// Throws only for the exact admitted caster, and only at the admitted
+        /// trigger or - when a compensation fault was admitted as well - inside
+        /// compensation. Every other caller, including any real player unit,
+        /// passes through untouched.
         /// </summary>
         internal static void Trip(string point, UnitDescriptor caster)
         {
             FirearmCraftingFaultAdmission live = _current;
             if (live == null || live._disposed) return;
             if (!ReferenceEquals(live._caster, caster)) return;
-            if (!string.Equals(live._point, point, StringComparison.Ordinal)) return;
-            live._tripped = true;
+            if (string.Equals(point, DuringCompensation, StringComparison.Ordinal))
+            {
+                if (!live._faultCompensation) return;
+            }
+            else if (!string.Equals(live._trigger, point, StringComparison.Ordinal)) return;
+            live._tripped.Add(point);
             throw new InvalidOperationException(
                 "Admitted crafting fault at " + point + " for the disposable fixture.");
         }

@@ -86,14 +86,20 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 // ---- 1 and 2: the two recipes succeed exactly ----
                 foreach (var recipe in new[] {
-                    Tuple.Create("basic", (object)basicLogic, basicOutputs,
-                        (long)basicLogic.GoldCost),
-                    Tuple.Create("paper", (object)paperLogic, paperOutputs,
-                        (long)paperLogic.GoldCost) })
+                    Tuple.Create("basic", basicOutputs, (long)basicLogic.GoldCost,
+                        CraftBasicAmmunitionAbilityLogic.BatchSize),
+                    Tuple.Create("paper", paperOutputs, (long)paperLogic.GoldCost,
+                        CraftPaperCartridgesAbilityLogic.BatchSize) })
                 {
                     string id = recipe.Item1;
-                    BlueprintItem[] outputs = recipe.Item3;
-                    long cost = recipe.Item4;
+                    BlueprintItem[] outputs = recipe.Item2;
+                    long cost = recipe.Item3;
+                    // The recipe's OWN batch constant, read from the production
+                    // logic rather than restated here. The first version of this
+                    // observation expected one item per output and the run
+                    // reported outputsExact=False against a correct product that
+                    // had delivered the full batch of 20.
+                    int batch = recipe.Item4;
                     var unit = new Kingmaker.UI.LevelUp.ChargenUnit(
                         Kingmaker.Blueprints.Root.BlueprintRoot.Instance
                             .DefaultPlayerCharacter).Unit;
@@ -107,7 +113,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                         bool debitExact = after.Money == before.Money - cost;
                         bool outputsExact = outputs.Select((value, index) =>
-                            after.Counts[index] == before.Counts[index] + 1).All(value => value);
+                            after.Counts[index] == before.Counts[index] + batch)
+                            .All(value => value);
                         bool markerOnce = !before.Marker && after.Marker;
                         bool toolPreserved = player.Inventory.Count(tool) == toolCountBefore;
 
@@ -122,13 +129,13 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                         assertions.Add(Assertion("crafting-service-" + id + "-success",
                             "the real recipe debits exactly its cost through native money, " +
-                                "increments every output by one, grants the entitlement marker " +
-                                "once, preserves the tool, and then REFUSES an actual repeat " +
-                                "invocation with no further debit, award or marker change - " +
-                                "refusal is observed by invoking it again, not by reading an " +
-                                "availability flag",
+                                "increments every output by exactly the recipe's own batch " +
+                                "constant, grants the entitlement marker once, preserves the " +
+                                "tool, and then REFUSES an actual repeat invocation with no " +
+                                "further debit, award or marker change - refusal is observed by " +
+                                "invoking it again, not by reading an availability flag",
                             "debitExact=" + debitExact + ";cost=" + cost +
-                                ";outputsExact=" + outputsExact +
+                                ";batch=" + batch + ";outputsExact=" + outputsExact +
                                 ";markerGrantedOnce=" + markerOnce +
                                 ";toolPreserved=" + toolPreserved +
                                 ";repeatRefusal=" + (repeatRefusal ?? "<none>") +
@@ -142,11 +149,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     finally { unit.Dispose(); }
                 }
 
-                // ---- 4, 5 and 6: failures at native boundaries ----
+                // ---- 4 and 5: failures at native boundaries on the forward path ----
                 foreach (var fault in new[] {
                     Tuple.Create("after-debit", FirearmCraftingFaultAdmission.AfterDebitBeforeOutput),
-                    Tuple.Create("after-first-output", FirearmCraftingFaultAdmission.AfterFirstOutput),
-                    Tuple.Create("during-compensation", FirearmCraftingFaultAdmission.DuringCompensation) })
+                    Tuple.Create("after-first-output", FirearmCraftingFaultAdmission.AfterFirstOutput) })
                 {
                     string id = fault.Item1;
                     var unit = new Kingmaker.UI.LevelUp.ChargenUnit(
@@ -182,23 +188,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         bool noMarker = !after.Marker;
                         bool causeDiscoverable = threw &&
                             failure.IndexOf("crafting", StringComparison.OrdinalIgnoreCase) >= 0;
-
-                        // The compensation-failure case is the one where product
-                        // state may legitimately remain dirty. What must hold is
-                        // that both causes are discoverable and the residual is
-                        // recorded, not that the state is clean.
-                        bool compensated = id == "during-compensation"
-                            ? causeDiscoverable
-                            : moneyRestored && noOutput && noMarker;
+                        bool compensated = moneyRestored && noOutput && noMarker;
 
                         assertions.Add(Assertion("crafting-service-fault-" + id,
-                            id == "during-compensation"
-                                ? "a failure DURING compensation still surfaces a discoverable " +
-                                  "cause, and the residual product state is recorded here before " +
-                                  "the fixture restores anything"
-                                : "a failure at this native boundary restores the owned debit " +
-                                  "exactly, leaves no output and no entitlement marker, and the " +
-                                  "state is observed before the fixture restores anything",
+                            "a failure at this native boundary restores the owned debit " +
+                                "exactly, leaves no output and no entitlement marker, and the " +
+                                "state is observed before the fixture restores anything",
                             "admissionFired=" + admissionFired + ";threw=" + threw +
                                 ";causeDiscoverable=" + causeDiscoverable +
                                 ";moneyBefore=" + before.Money + ";moneyAfter=" + after.Money +
@@ -212,6 +207,118 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "an admitted fault at a NATIVE mutation boundary, not after the " +
                                 "service's own bookkeeping; product state captured before " +
                                 "fixture cleanup"));
+                    }
+                    finally
+                    {
+                        if (admission != null) admission.Dispose();
+                        unit.Dispose();
+                    }
+                }
+
+                // ---- 6: a fault INSIDE compensation, reached the only way it can be ----
+                //
+                // The compensation trip lives in the service's catch block, so a
+                // transaction must already have failed before it can be reached.
+                // An earlier run admitted it on its own: nothing failed, the
+                // admission never fired, the transaction committed normally, and
+                // the observation was vacuous. It is now admitted as a SECOND
+                // fault alongside a forward-path trigger, and the admission
+                // itself refuses the old single-point form.
+                //
+                // The residual here is asserted EXACTLY rather than merely
+                // recorded. The trigger fires after the first output commits, so
+                // compensation is entered with the debit taken and one batch of
+                // the first output in the inventory, and the compensation fault
+                // throws before the plan is built: nothing is removed, nothing is
+                // refunded. That residual is precisely predictable, and asserting
+                // it is what makes the case evidence rather than an anecdote.
+                {
+                    var unit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                        Kingmaker.Blueprints.Root.BlueprintRoot.Instance
+                            .DefaultPlayerCharacter).Unit;
+                    FirearmCraftingFaultAdmission admission = null;
+                    try
+                    {
+                        CraftingProbe before = CaptureCrafting(
+                            unit.Descriptor, basicOutputs, marker);
+                        bool singlePointRefused = false;
+                        try
+                        {
+                            FirearmCraftingFaultAdmission.Admit(unit.Descriptor,
+                                FirearmCraftingFaultAdmission.DuringCompensation);
+                        }
+                        catch (ArgumentOutOfRangeException) { singlePointRefused = true; }
+                        admission = FirearmCraftingFaultAdmission.Admit(unit.Descriptor,
+                            FirearmCraftingFaultAdmission.AfterFirstOutput, true);
+
+                        string outerMessage = null;
+                        string[] retainedCauses = new string[0];
+                        try { basicLogic.Complete(unit.Descriptor); }
+                        catch (Exception error)
+                        {
+                            outerMessage = error.Message ?? string.Empty;
+                            var aggregate = error.InnerException as AggregateException;
+                            if (aggregate != null)
+                                retainedCauses = aggregate.InnerExceptions
+                                    .Select(value => value.Message ?? string.Empty).ToArray();
+                        }
+                        // Captured BEFORE any fixture restoration.
+                        CraftingProbe after = CaptureCrafting(
+                            unit.Descriptor, basicOutputs, marker);
+
+                        bool bothTripped =
+                            admission.TrippedAt(FirearmCraftingFaultAdmission.AfterFirstOutput) &&
+                            admission.TrippedAt(FirearmCraftingFaultAdmission.DuringCompensation);
+                        bool bothCausesRetained = retainedCauses.Length == 2 &&
+                            retainedCauses.All(value => value.IndexOf(
+                                FirearmCraftingFaultAdmission.AfterFirstOutput,
+                                StringComparison.Ordinal) >= 0 || value.IndexOf(
+                                FirearmCraftingFaultAdmission.DuringCompensation,
+                                StringComparison.Ordinal) >= 0) &&
+                            retainedCauses.Any(value => value.IndexOf(
+                                FirearmCraftingFaultAdmission.AfterFirstOutput,
+                                StringComparison.Ordinal) >= 0) &&
+                            retainedCauses.Any(value => value.IndexOf(
+                                FirearmCraftingFaultAdmission.DuringCompensation,
+                                StringComparison.Ordinal) >= 0);
+                        bool outerNamesBothFailures = outerMessage != null &&
+                            outerMessage.IndexOf("compensation also failed",
+                                StringComparison.OrdinalIgnoreCase) >= 0;
+                        // Exact residual: the debit stands, the first output's
+                        // committed batch stands, the second output was never
+                        // reached, and the entitlement was never granted.
+                        bool residualExact =
+                            after.Money == before.Money - basicLogic.GoldCost &&
+                            after.Counts[0] == before.Counts[0] +
+                                CraftBasicAmmunitionAbilityLogic.BatchSize &&
+                            after.Counts[1] == before.Counts[1] && !after.Marker;
+
+                        assertions.Add(Assertion("crafting-service-fault-during-compensation",
+                            "when compensation itself fails, the service retains BOTH causes - " +
+                                "the original failure and the compensation failure - in an " +
+                                "AggregateException under an outer error that says so, grants no " +
+                                "entitlement, and leaves exactly the state that had committed " +
+                                "when compensation was entered: the debit and the first output's " +
+                                "batch, nothing more. Asserted exactly, and captured before the " +
+                                "fixture restores anything. The compensation point is also " +
+                                "refused as a standalone trigger, because alone it is unreachable",
+                            "singlePointRefused=" + singlePointRefused +
+                                ";tripped=" + admission.TrippedPoints +
+                                ";bothTripped=" + bothTripped +
+                                ";outerNamesBothFailures=" + outerNamesBothFailures +
+                                ";retainedCauses=" + retainedCauses.Length +
+                                ";bothCausesRetained=" + bothCausesRetained +
+                                ";moneyBefore=" + before.Money + ";moneyAfter=" + after.Money +
+                                ";cost=" + basicLogic.GoldCost +
+                                ";countsBefore=" + string.Join(",", before.Counts) +
+                                ";countsAfter=" + string.Join(",", after.Counts) +
+                                ";markerAfter=" + after.Marker +
+                                ";residualExact=" + residualExact,
+                            singlePointRefused && bothTripped && outerNamesBothFailures &&
+                                bothCausesRetained && residualExact,
+                            "two admitted faults at NATIVE mutation boundaries - one on the " +
+                                "forward path and one inside the service's compensation - with " +
+                                "product state captured before fixture cleanup"));
                     }
                     finally
                     {
