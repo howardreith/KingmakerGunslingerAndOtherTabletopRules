@@ -27796,6 +27796,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
                     "Unity Mod Manager ModEntry.Info.Version")
             };
+            // GS-AUD-0036: the finite service observations - both recipes'
+            // success, an actual repeat invocation, and failures at native
+            // mutation boundaries with product state captured before cleanup.
+            ObserveCraftingTransactionService(assertions);
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS") ?
                 RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
