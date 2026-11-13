@@ -50,29 +50,47 @@ namespace KingmakerGunslinger.Gunsmithing
                     FirearmCraftingFaultAdmission.AfterDebitBeforeOutput, caster);
                 for (int index = 0; index < outputs.Length; index++)
                 {
-                    // GS-AUD-0036. Record the OBSERVED delta, not the requested
-                    // amount, and record it even when Add throws.
+                    // GS-AUD-0036. Record the OBSERVED delta rather than the
+                    // requested amount, record it even when Add throws, and
+                    // cap it at what was requested.
                     //
-                    // ItemsCollection.Add(BlueprintItem, int) is not atomic for
-                    // a non-stackable item: disassembly of the installed
-                    // assembly shows that path looping over
+                    // Why observed. ItemsCollection.Add(BlueprintItem, int) is
+                    // not atomic for a non-stackable item: disassembly of the
+                    // installed assembly shows that path looping over
                     // Add(ItemEntity, bool) once per item, decrementing the
                     // count. A throw partway therefore leaves items already in
                     // the inventory while the assignment after the call never
                     // runs - so committedAdds would stay 0, the compensation
                     // plan would be told nothing was added, and those items
-                    // would be left behind permanently.
+                    // would be left behind permanently. The stackable path
+                    // creates one entity and adds it once, so it cannot
+                    // partially commit; asking the inventory is correct for
+                    // both because it assumes nothing.
                     //
-                    // The stackable path creates one entity and adds it once,
-                    // so it cannot partially commit; this is correct for both
-                    // because it asks the inventory instead of assuming.
+                    // Why capped. The observed difference is measured against
+                    // countsBefore, which was taken before this loop, so it
+                    // also absorbs any increase of the same item that something
+                    // else made in between. Uncapped, this transaction would
+                    // claim that surplus as its own and the compensation plan
+                    // would remove it - deleting items the craft never created,
+                    // and suppressing the external-surplus invariant the policy
+                    // exists to report. The transaction can never have inserted
+                    // more than it asked for, so amounts[index] is its true
+                    // maximum removal budget. Anything above that belongs to
+                    // someone else: the policy leaves it in place and reports
+                    // it as a residual.
                     try { player.Inventory.Add(outputs[index], amounts[index]); }
                     finally
                     {
-                        committedAdds[index] = Math.Max(0,
-                            player.Inventory.Count(outputs[index]) -
-                            countsBefore[index]);
+                        committedAdds[index] = Math.Min(amounts[index],
+                            Math.Max(0, player.Inventory.Count(outputs[index]) -
+                                countsBefore[index]));
                     }
+                    // NOTE on ordering, for anyone reading the evidence: this
+                    // trip fires AFTER the finally above has recorded
+                    // committedAdds. It exercises rollback of an output that
+                    // was already committed and already accounted; it does NOT
+                    // simulate a throw from inside the native Add call itself.
                     if (index == 0)
                         FirearmCraftingFaultAdmission.Trip(
                             FirearmCraftingFaultAdmission.AfterFirstOutput, caster);
