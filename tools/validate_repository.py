@@ -166,6 +166,7 @@ VALIDATORS = {
     "0.0.186": "validate_gunslinger_audit_repairs_release186.py",
     "0.0.187": "validate_umm_display_name_release187.py",
     "0.0.188": "validate_umm_minimum_release188.py",
+    "0.0.189": "validate_elementals_launcher_release189.py",
 }
 
 

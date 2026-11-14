@@ -1,5 +1,31 @@
 # Build, package, and publish
 
+## 0.0.189 publication authorization
+
+On 2026-11-14 Howie wrote: "Please merge this and cut a new release." Draft PR #156 (the Expanded Summoning
+action-bar Elementals launcher repair) was marked ready and merged as `784b5e27ec`. No channel was named, so this
+follows v0.0.188 as the next stable patch, v0.0.189, from master `784b5e27ec`.
+
+- **Reviewed product.** Master `784b5e27ec`. PR #156 was reviewed at `7298937558`, `b7029441cf` and `d548b150d8`. The
+  only product change from v0.0.188 is in three files: `ElementalSourceChooserPolicy.cs`,
+  `ElementalSourceChooserRuntime.cs` and `ElementalSourceChooserView.cs`. `tools/validate_elementals_launcher_release189.py`
+  pins it:
+  - the product delta from the v0.0.188 tag target under `src/KingmakerGunslinger`, `assets`, `assets-source`,
+    `blueprints` and `Directory.Build.props` is exactly those three files;
+  - `Info.json`, the UMM 0.31.1 loader pins and the build inputs are unchanged from v0.0.188 and the reviewed master;
+  - only the three AssemblyInfo version attributes and the Info and props version values may change;
+  - all 7,933 released identities stay exact and in order, and none is appended;
+  - the creature catalog is unchanged, with only the owner-withdrawn Stirge withheld (1,208 public choices);
+  - the disclosed inherited-template membership still equals v0.0.188's twelve keys;
+  - one static release record is added.
+- **Offline evidence.** At `d548b150d8`, the focused gate compiled production and passed 44/44 related tests, and
+  `Test-SummonCleanup2ConsolePatchTargets.ps1` passed 50/50 against the installed game and Harmony12.
+- **Native evidence.** None. No development candidate or released build of this change ran in the game before
+  publication. The release notes disclose this, along with the unchanged controller path.
+- **Publication path.** Use the ordinary exact-reference publisher from clean, pushed master with
+  `docs/RELEASE-NOTES-0.0.189.md` and the explicit summon-overhaul-baseline reference bundle. It runs the complete
+  gate and two deterministic builds, then publishes.
+
 ## 0.0.188 publication authorization
 
 **Published (completed).** Stable
