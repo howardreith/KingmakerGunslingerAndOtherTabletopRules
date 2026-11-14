@@ -52,7 +52,6 @@ $paths = Get-LcCopyPaths $copyRoot
 $sessionId = [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ') + '-' + $LoaderProfile + '-' + $session.name
 $evidence = Join-Path $script:LcEvidenceRoot $sessionId
 $profileDir = Join-Path $evidence 'profile'
-$candidateInfo = $null
 
 Assert-LcPreflight
 Enter-LcLock $sessionId
@@ -75,6 +74,9 @@ try {
     Initialize-LcGameCopy $paths
     $summary.loaderInstall = Install-LcLoaderProfile $paths $LoaderProfile
     $summary.stagedMods = Set-LcGameCopyMods $paths @($session.ownerMods) $CandidateZip $HarnessDir
+    # The product's guarded request must name the staged candidate's own version.
+    $candidateVersion = [string](Get-Content -LiteralPath (Join-Path $paths.ModsDir 'KingmakerGunslinger\Info.json') -Raw | ConvertFrom-Json).Version
+    $summary.candidateVersion = $candidateVersion
     foreach ($name in @($session.fixtureSaves | Where-Object { $_ })) {
         Copy-Item -LiteralPath (Join-Path $FixtureDir $name) -Destination (Join-Path $profileDir "Saved Games\$name")
     }
@@ -120,7 +122,7 @@ try {
             $runId = ('lc-' + $sessionId + '-' + $label) -replace '[^A-Za-z0-9._-]', '-'
             if ($runId.Length -gt 100) { $runId = $runId.Substring($runId.Length - 100) }
             $request = [ordered]@{ schemaVersion = 1; enabled = $true; runId = $runId; scenario = $product.Value.scenario
-                expectedModVersion = '0.0.187'; evidenceDirectory = $productEvidence
+                expectedModVersion = $candidateVersion; evidenceDirectory = $productEvidence
                 timeoutSeconds = [int]$(if ($product.Value.PSObject.Properties['timeoutSeconds']) { $product.Value.timeoutSeconds } else { 600 })
                 startupTimeoutSeconds = 300; exitAfterCompletion = $true
                 parameters = $(if ($product.Value.PSObject.Properties['parameters']) { $product.Value.parameters } else { [ordered]@{} }) }

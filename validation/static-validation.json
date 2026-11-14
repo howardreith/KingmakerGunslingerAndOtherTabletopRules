@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.187-umm-display-name",
+  "milestone": "0.0.188-umm-0311-minimum",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.187",
+  "version": "0.0.188",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2974,6 +2974,19 @@
     "releaseVersion": "0.0.187",
     "releasedIdentityChanges": 0,
     "reviewedProductSource": "ca6f4c0543498a50954d5624e7ebf95fb5647bac",
+    "visibleChoiceTotal": 1208
+  },
+  "ummMinimumRelease188": {
+    "appendedIdentities": 0,
+    "baseStableVersion": "0.0.187",
+    "change": "Info.json ManagerVersion drops from 0.32.4 to 0.31.1, so Unity Mod Manager 0.31.1 loads the mod. The DLL is now compiled against the pinned UMM 0.31.1 UnityModManager.dll and 0Harmony12.dll (scripts/loader-reference-pins.json) instead of the locally installed loader; package validation requires ManagerVersion to equal that floor. No product source, asset, blueprint identity, setting key or gameplay change: the bound UMM/Harmony member set is identical to v0.0.187 and present in UMM 0.31.1, 0.32.4 and 0.33.0. Repository-only additions since v0.0.187: loader-pin provenance tests, the test-only loader-compatibility harness and session runner, and docs/UMM-LOADER-COMPATIBILITY.md.",
+    "deferredCoverage": "Not run: UMM 0.27.x, other 0.31.x, 0.32.0-0.32.3, 0.33.1 and later, the original Nexus installer ZIPs for 0.31.1 and 0.32.4, Harmony 2.3.5, Call of the Wild/Favored Class on 0.32.4, combat with a Craft Magic Items-crafted firearm and the owner's full mod stack. GS-REP-0002 (the inherited-template removal set, membership unchanged) and the two pre-existing feature-module publication gates carry over unchanged and stay disclosed in KNOWN-ISSUES.md.",
+    "nativeEvidence": "Development candidate umm-0311-compat at b9400333e5 (ZIP c82c73abf3efb62e740ee42687127a93355a711a7646e39863a846879c44867a, DLL 7fa421d7a783512e60d8efe56d65c8da758b3529d18cebed6b833c5e7266ab1b), whose product source equals this release's except the version attributes: eight native sessions PASS in a disposable game copy on UMM 0.31.1 and 0.32.4 (component-assembled) and 0.33.0 (owner Nexus install) with exact in-process loader/Harmony identities, alone, with Craft Magic Items 2.1.0 and Kingmaker Bugfixes 1.3.3, and with Call of the Wild and Favored Class on 0.31.1 and 0.33.0 (docs/UMM-LOADER-COMPATIBILITY.md). The released DLL differs from that candidate by its version attributes and commit stamp and was not part of that matrix.",
+    "ownerPublicationAuthority": "Howie Reith, 2026-11-13: 'Thank you. Please merge and cut a new release.' (PR #153 merged as 99fd8fa04a). Published as the next stable patch, as v0.0.187 was.",
+    "releaseInformationalVersion": "0.0.188-umm-0311-minimum",
+    "releaseVersion": "0.0.188",
+    "releasedIdentityChanges": 0,
+    "reviewedProductSource": "99fd8fa04a91330c4dcd32014f8cabec3fd79778",
     "visibleChoiceTotal": 1208
   }
 }
