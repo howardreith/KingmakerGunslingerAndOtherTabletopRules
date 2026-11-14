@@ -2,6 +2,38 @@
 
 ## 0.0.188 publication authorization
 
+**Published (completed).** Stable
+[v0.0.188](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.188)
+is Latest and not a prerelease. The annotated tag `6bf87d0004` peels to the release commit `097e522f9f`,
+which is `origin/master`.
+
+- **Gate.** The complete suite passed 2,971/2,971 with 0 failures.
+- **Builds.** Two deterministic exact-reference builds against the pinned UMM 0.31.1 loader references
+  produced identical archives:
+  - package SHA-256 `64d83955478c3824c5fee485f4189b7d0be1141938a89e70e4cdab037461d412`;
+  - DLL SHA-256 `0eb2f0027f1b8639cb8988f24fffda263cf92bfdadd180f40b1aebe79019b151`.
+- **Reference bundle.** `artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references`,
+  as for v0.0.187.
+- **Public download test.** A fresh download of all three assets matched `SHA256SUMS.txt`, and the manifest
+  names the release commit `097e522f9fa0a8fdc8a773fb51fc3cfbf91d115c`. The embedded `Info.json` reads 0.0.188 with
+  `ManagerVersion` 0.31.1 and `Id` `KingmakerGunslinger`, alongside the DLL hash above (458 files). The published DLL
+  references `UnityModManager 0.31.1.0`. Its bound loader members are identical to the tested candidate and all
+  present in UMM 0.31.1, 0.32.4 and 0.33.0.
+- **Native check of the published bytes.** On UMM 0.31.1 (component-assembled, Harmony 2.3.1.1) in the disposable
+  game copy, both sessions ran the published ZIP and passed with in-process DLL `0eb2f002…`. Owner saves, installation
+  and settings were unchanged or restored.
+  - `alone`, 11 launches (`20261114T031843Z`);
+  - `cmi-bugfixes`, 4 launches (`20261114T033120Z`).
+  0.32.4, 0.33.0 and Call of the Wild/Favored Class were not repeated on these bytes; their results are on the
+  development candidate (same product source).
+- **Timing.** The publisher took 1,158 s, after 431 s of release-branch preparation; the post-publication native
+  check took 1,055 s.
+- **Installation.** The installed mod is untouched and still reads 0.0.140; the publisher performed no
+  deployment.
+- **Merges.** PR #153 merged as `99fd8fa04a`; release PR #154 merged as `097e522f9f`.
+
+Originally authorized as follows.
+
 On 2026-11-13 Howie wrote: "Thank you. Please merge and cut a new release." PR #153 (UMM 0.31.1 minimum,
 pinned loader references and the loader-compatibility matrix) merged as `99fd8fa04a`. No channel was named, so
 this follows v0.0.187 as the next stable patch, v0.0.188, from master `99fd8fa04a`.
