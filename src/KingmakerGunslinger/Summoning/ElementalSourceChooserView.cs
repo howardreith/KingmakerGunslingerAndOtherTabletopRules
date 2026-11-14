@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
-using Kingmaker.GameModes;
 using Kingmaker.UI;
 using Kingmaker.Utility;
 using TMPro;
@@ -26,12 +25,13 @@ namespace KingmakerGunslinger.Summoning
         private string _creature;
         private GameObject _previousSelection;
         private bool _closing;
-        private KeyboardAccess _keyboard;
-        private CountingGuard _keyboardGuard;
-        private bool _keyboardGuardOwned;
-        internal static bool LastKeyboardRestored = true;
-        internal static string KeyboardOutcome = "not-acquired";
-        internal static bool KeyboardGuardHeld {get{return _owned!=null&&_owned._keyboardGuardOwned;}}
+        // One process-wide lease: a release that could not be verified stays
+        // recorded with its exact keyboard context after the view is gone.
+        private static readonly ElementalKeyboardLease Lease=new ElementalKeyboardLease();
+        internal static bool LastKeyboardRestored {get{return Lease.Restored;}}
+        internal static bool KeyboardReleaseUnresolved {get{return Lease.Unresolved;}}
+        internal static string KeyboardOutcome {get{return Lease.Outcome;}}
+        internal static bool KeyboardGuardHeld {get{return _owned!=null&&Lease.Held;}}
         private readonly Dictionary<int,Button> _rankButtons=new Dictionary<int,Button>();
         private readonly Dictionary<string,Button> _elementButtons=new Dictionary<string,Button>();
         private readonly Dictionary<ElementalNativeSource,Button> _sourceButtons=new Dictionary<ElementalNativeSource,Button>();
@@ -46,11 +46,20 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Open(ElementalChooserSession session)
         {
-            if (session==null || !session.Current || session.Sources.Count == 0 || Game.Instance.IsControllerGamepad ||
-                Game.Instance.CurrentMode != GameModeType.Default || !session.Owner.gameObject.activeInHierarchy ||
-                EventSystem.current == null || EventSystem.current.currentInputModule == null)
-            { ElementalSourceChooserRuntime.Outcome="preserve-native-input:chooser-surface-not-ready"; return; }
-            if(!CloseOwned("reopen"))return;
+            // An open view releases its own count first. Whether that release
+            // verified is recorded by the lease and judged by Admit below; a
+            // stale failure no longer refuses a fresh, provably free context.
+            CloseOwned("reopen");
+            bool current=session!=null && session.Current;
+            bool surface=current && session.Sources.Count>0 && session.Owner.gameObject.activeInHierarchy &&
+                EventSystem.current!=null && EventSystem.current.currentInputModule!=null;
+            string reason;
+            var route=ElementalChooserGate.Launcher(current,Game.Instance.IsControllerGamepad,ElementalSourceChooserRuntime.ModeName,
+                surface,current?KeyboardRefusal():null,out reason);
+            if(route==ElementalLauncherRoute.Stale)
+            { ElementalSourceChooserRuntime.Outcome="preserve-native-input:"+reason; return; }
+            if(route==ElementalLauncherRoute.NativeRows)
+            { ElementalSourceChooserRuntime.RequestNativeRows(session,reason); return; }
             GameObject root=null;
             try
             {
@@ -73,35 +82,31 @@ namespace KingmakerGunslinger.Summoning
             {
                 bool restored=CloseOwned("chooser-build-refused-no-spend");
                 if(root!=null)Destroy(root);
-                ElementalSourceChooserRuntime.Outcome="chooser-build-refused-no-spend:"+error.Message+"; keyboardRestored="+restored;
+                ElementalSourceChooserRuntime.RequestNativeRows(session,"chooser-build-refused:"+error.Message+";keyboardRestored="+restored);
             }
         }
 
-        private void AcquireKeyboard()
+        // Live Game.Keyboard.Disabled. CountingGuard.Value acquires/releases
+        // one count, not a boolean assignment; nothing here Resets it or
+        // writes another UI's count. Native Assembly-CSharp only reads it.
+        private static ElementalKeyboardContext LiveKeyboard()
         {
-            _keyboard=Game.Instance.Keyboard;
-            _keyboardGuard=_keyboard==null?null:_keyboard.Disabled;
-            if(_keyboardGuard==null || _keyboardGuard.GuardCount!=0)
-                throw new InvalidOperationException("Native keyboard is absent or already owned by another UI.");
-            // CountingGuard.Value acquires/releases one count, not a boolean
-            // assignment. Never Reset or overwrite another UI's count.
-            _keyboardGuard.Value=true;_keyboardGuardOwned=true;
-            LastKeyboardRestored=false;KeyboardOutcome="owned-native-keyboard-count-acquired";
-            if(_keyboardGuard.GuardCount!=1)throw new InvalidOperationException("Native keyboard acquisition did not add exactly one count.");
+            var keyboard=Game.Instance==null?null:Game.Instance.Keyboard;
+            CountingGuard guard=keyboard==null?null:keyboard.Disabled;
+            return guard==null?null:new ElementalKeyboardContext(keyboard,guard,()=>guard.GuardCount,
+                ()=>guard.Value=true,()=>guard.Value=false);
         }
 
-        private bool ReleaseKeyboard()
+        /// <summary>Null when the chooser could take the keyboard now.</summary>
+        internal static string KeyboardRefusal(){return Lease.Admit(LiveKeyboard());}
+
+        private void AcquireKeyboard()
         {
-            if(!_keyboardGuardOwned)return true;
-            if(Game.Instance==null || !ReferenceEquals(Game.Instance.Keyboard,_keyboard) ||
-                !ReferenceEquals(_keyboard.Disabled,_keyboardGuard) || _keyboardGuard.GuardCount<1)
-            {KeyboardOutcome="keyboard-context-changed-no-foreign-write";LastKeyboardRestored=false;return false;}
-            int count=_keyboardGuard.GuardCount;
-            _keyboardGuard.Value=false;_keyboardGuardOwned=false;
-            LastKeyboardRestored=_keyboardGuard.GuardCount==count-1;
-            KeyboardOutcome=LastKeyboardRestored?"owned-native-keyboard-count-released":"native-keyboard-release-unverified";
-            return LastKeyboardRestored;
+            if(!Lease.Acquire(LiveKeyboard()))
+                throw new InvalidOperationException("Native keyboard unavailable: "+Lease.Outcome);
         }
+
+        private bool ReleaseKeyboard(){return Lease.Release(LiveKeyboard());}
 
         private void Build()
         {
@@ -239,8 +244,8 @@ namespace KingmakerGunslinger.Summoning
         private void Update()
         {
             if(_closing)return;
-            if(!_session.Current || Game.Instance.CurrentMode!=GameModeType.Default || Game.Instance.IsControllerGamepad ||
-                !_session.Owner.gameObject.activeInHierarchy)
+            if(!ElementalChooserGate.KeepOpen(_session.Current,Game.Instance.IsControllerGamepad,
+                ElementalSourceChooserRuntime.ModeName,_session.Owner.gameObject.activeInHierarchy))
             {CloseOwned("source-context-changed-no-spend");return;}
             if(Input.GetKeyDown(KeyCode.Escape)){CloseOwned("cancelled-no-spend");return;}
             if(_selection.Selected!=null)_cast.interactable=ElementalSourceChooserRuntime.Validate(_session,_selection.Selected)==null;
