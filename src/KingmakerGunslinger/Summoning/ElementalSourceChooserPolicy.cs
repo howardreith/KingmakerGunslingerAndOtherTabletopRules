@@ -196,9 +196,30 @@ namespace KingmakerGunslinger.Summoning
         /// <summary>
         /// Open view, once per frame. Default and Pause transitions keep the
         /// same view and session; any other change closes it with no spend.
+        /// Each live read runs only after every earlier check passed, so a
+        /// missing game or session, or a destroyed action-bar owner, is never
+        /// dereferenced: the caller closes instead.
         /// </summary>
-        internal static bool KeepOpen(bool current, bool gamepad, string mode, bool ownerActive)
-        { return current && !gamepad && WorldMode(mode) && ownerActive; }
+        internal static bool KeepOpen(Func<bool> current, Func<bool> gamepad, Func<string> mode, Func<bool> ownerActive)
+        { return current() && !gamepad() && WorldMode(mode()) && ownerActive(); }
+
+        /// <summary>
+        /// The view's close steps: cancel the selection (no spend), restore
+        /// focus, and in every case release exactly the chooser's own keyboard
+        /// count. True when the release verified (or nothing was held).
+        /// </summary>
+        internal static bool CloseNoSpend<T>(ElementalSourceSelection<T> selection, Action restoreFocus,
+            ElementalKeyboardLease lease, Func<ElementalKeyboardContext> live) where T : class
+        {
+            bool released = false;
+            try
+            {
+                if (selection != null && !selection.Closed) selection.Cancel();
+                if (restoreFocus != null) restoreFocus();
+            }
+            finally { released = lease.Release(live()); }
+            return released;
+        }
     }
 
     /// <summary>

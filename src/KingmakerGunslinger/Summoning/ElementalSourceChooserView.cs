@@ -106,8 +106,6 @@ namespace KingmakerGunslinger.Summoning
                 throw new InvalidOperationException("Native keyboard unavailable: "+Lease.Outcome);
         }
 
-        private bool ReleaseKeyboard(){return Lease.Release(LiveKeyboard());}
-
         private void Build()
         {
             var canvasRect=_session.Canvas.rootCanvas.transform as RectTransform;
@@ -244,8 +242,17 @@ namespace KingmakerGunslinger.Summoning
         private void Update()
         {
             if(_closing)return;
-            if(!ElementalChooserGate.KeepOpen(_session.Current,Game.Instance.IsControllerGamepad,
-                ElementalSourceChooserRuntime.ModeName,_session.Owner.gameObject.activeInHierarchy))
+            var session=_session;
+            // Lazy, in order: once the game, session or (Unity-destroyed)
+            // owner is gone, nothing later is read and the view still closes,
+            // cancelling and releasing its own keyboard count. The overlay
+            // lives on the root canvas, so the owner's destruction alone
+            // would not remove it.
+            if(!ElementalChooserGate.KeepOpen(
+                ()=>Game.Instance!=null && session!=null && _selection!=null && session.Current,
+                ()=>Game.Instance.IsControllerGamepad,
+                ()=>ElementalSourceChooserRuntime.ModeName,
+                ()=>session.Owner!=null && session.Owner.gameObject.activeInHierarchy))
             {CloseOwned("source-context-changed-no-spend");return;}
             if(Input.GetKeyDown(KeyCode.Escape)){CloseOwned("cancelled-no-spend");return;}
             if(_selection.Selected!=null)_cast.interactable=ElementalSourceChooserRuntime.Validate(_session,_selection.Selected)==null;
@@ -264,14 +271,14 @@ namespace KingmakerGunslinger.Summoning
             bool restored=false;
             try
             {
-                if(view._selection!=null&&!view._selection.Closed)view._selection.Cancel();
-                if(EventSystem.current!=null&&EventSystem.current.currentSelectedGameObject!=null&&
-                    EventSystem.current.currentSelectedGameObject.transform.IsChildOf(view.transform))
-                    EventSystem.current.SetSelectedGameObject(view._previousSelection!=null&&view._previousSelection.activeInHierarchy?view._previousSelection:null);
+                restored=ElementalChooserGate.CloseNoSpend(view._selection,()=>{
+                    if(EventSystem.current!=null&&EventSystem.current.currentSelectedGameObject!=null&&
+                        EventSystem.current.currentSelectedGameObject.transform.IsChildOf(view.transform))
+                        EventSystem.current.SetSelectedGameObject(view._previousSelection!=null&&view._previousSelection.activeInHierarchy?view._previousSelection:null);
+                },Lease,LiveKeyboard);
             }
             finally
             {
-                restored=view.ReleaseKeyboard();
                 ElementalSourceChooserRuntime.Outcome=reason+"; "+KeyboardOutcome;
                 if(destroy)Destroy(view.gameObject);
             }

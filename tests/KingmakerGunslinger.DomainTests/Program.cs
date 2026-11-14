@@ -1428,6 +1428,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.cleanup2-elemental-chooser-keyboard-recovery", Cleanup2ElementalChooserLifecycleTests.FailedRestorationRecoversOnlyOnAProvablySafeContext),
             Case("expanded-summoning.cleanup2-elemental-chooser-foreign-keyboard-owner", Cleanup2ElementalChooserLifecycleTests.ForeignKeyboardOwnerIsNeverStolenOrCleared),
             Case("expanded-summoning.cleanup2-elemental-chooser-native-rows-fallback", Cleanup2ElementalChooserLifecycleTests.RefusedLauncherRestoresTheOriginalNativeTileOnce),
+            Case("expanded-summoning.cleanup2-elemental-chooser-destroyed-owner", Cleanup2ElementalChooserLifecycleTests.DestroyedOwnerOrMissingGameClosesWithoutDereference),
             Case("expanded-summoning.cleanup2-elemental-learning-budget", Cleanup2ElementalPresentationTests.LearningBudgetCountsDistinctUnknownSelectableRowsAndExtraSlots),
             Case("expanded-summoning.cleanup2-elemental-learning-refusal", Cleanup2ElementalPresentationTests.UnverifiedLearningContextAlwaysReturnsIndependentOriginalCopy),
             Case("expanded-summoning.original-summon-elemental-book-hidden", Cleanup2ElementalPresentationTests.DefaultOptionHidesOriginalBookRowsButKeepsSpecialAndForeignRows),

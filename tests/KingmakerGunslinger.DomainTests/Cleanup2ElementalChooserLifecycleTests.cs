@@ -11,7 +11,13 @@ namespace KingmakerGunslinger.DomainTests
     // Desk only replays the call order of the Unity glue that cannot compile
     // here: ElementalSourceChooserRuntime.Begin/End (fill), launcher OnClick ->
     // ElementalSourceChooserView.Open (click), View.Update (frame) and
-    // View.Close (cancel/close). Guard mirrors the decompiled native
+    // View.Close (cancel/close). Frame calls the production lazy KeepOpen and
+    // Close calls the production CloseNoSpend, as the view does. Desk does
+    // NOT run ElementalSourceChooserRuntime.Dispatch: it records the
+    // selection's handoff of a Row only. It neither builds the native
+    // converted-spell slot, nor reproduces production's release-before-
+    // native-handoff order, nor performs any spell expenditure; these tests
+    // prove no native preparation spend. Guard mirrors the decompiled native
     // Kingmaker.Utility.CountingGuard used by Game.Keyboard.Disabled
     // (canGoNegative=false; Value=true/false adds/removes one count).
     internal static class Cleanup2ElementalChooserLifecycleTests
@@ -24,6 +30,17 @@ namespace KingmakerGunslinger.DomainTests
             internal void Acquire() { Writes++; Count++; }
             internal void Release() { Writes++; if (!SwallowRelease && Count > 0) Count--; }
             internal void Reset() { Count = 0; }
+        }
+
+        // Stand-ins for the live reads View.Update makes. Reading a destroyed
+        // owner's gameObject throws, as Unity's MissingReferenceException does.
+        private sealed class GameState { internal bool Gamepad = false; internal string Mode = "Default"; }
+        private sealed class Owner
+        {
+            internal bool Destroyed, Active = true;
+            internal int Reads;
+            internal bool GameObjectActive
+            { get { Reads++; if (Destroyed) throw new InvalidOperationException("Destroyed action-bar owner was dereferenced."); return Active; } }
         }
 
         private sealed class Keyboard
@@ -55,6 +72,8 @@ namespace KingmakerGunslinger.DomainTests
         private sealed class Desk
         {
             internal Keyboard Keyboard = new Keyboard();
+            internal GameState Game = new GameState();
+            internal Owner Owner = new Owner();
             internal readonly ElementalKeyboardLease Lease = new ElementalKeyboardLease();
             internal readonly Row Legacy = new Row(MediumElemental, "Summon Medium Elemental");
             internal readonly Row SummonMonster = new Row(SummonMonsterIV, "Summon Monster IV");
@@ -105,10 +124,24 @@ namespace KingmakerGunslinger.DomainTests
                 return route;
             }
 
-            // View.Update.
-            internal void Frame(string mode)
+            // LiveKeyboard(): no context without a game.
+            internal ElementalKeyboardContext Live() { return Game == null ? null : Keyboard.Live(); }
+
+            internal void Frame(string mode) { if (Game != null) Game.Mode = mode; Frame(); }
+
+            // View.Update. The reads are the b7029441cf call site's unguarded
+            // expressions (game.Gamepad, owner.gameObject), so only the gate's
+            // own short-circuit order keeps them from being evaluated.
+            internal void Frame()
             {
-                if (View != null && !ElementalChooserGate.KeepOpen(SessionCurrent, false, mode, true)) Close("source-context-changed-no-spend");
+                if (View == null) return;
+                var game = Game; var owner = Owner; var view = View;
+                if (!ElementalChooserGate.KeepOpen(
+                    () => game != null && view != null && SessionCurrent && !owner.Destroyed,
+                    () => game.Gamepad,
+                    () => game.Mode,
+                    () => owner.GameObjectActive))
+                    Close("source-context-changed-no-spend");
             }
 
             // View.Close (cancel, Esc, context change, reopen, rebuild).
@@ -116,13 +149,13 @@ namespace KingmakerGunslinger.DomainTests
             {
                 if (View == null) return true;
                 var view = View; View = null;
-                if (!view.Closed) view.Cancel();
                 LastOutcome = reason;
-                return Lease.Release(Keyboard.Live());
+                return ElementalChooserGate.CloseNoSpend(view, null, Lease, Live);
             }
 
-            // View.Cast -> ElementalSourceChooserRuntime.Dispatch: the view
-            // closes (releasing its count) before the native handoff.
+            // Selection handoff only (see the class comment): production
+            // Dispatch's native slot, release-before-handoff and expenditure
+            // are not exercised.
             internal bool Cast()
             {
                 var view = View;
@@ -158,7 +191,7 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(desk.Lease.Held && desk.Keyboard.Disabled.Count == 1, mode + ": the chooser holds exactly one keyboard count.");
                 Assertions.True(desk.View.Select(desk.Legacy) && desk.Cast(), mode + ": the original source can be cast.");
                 Assertions.True(desk.Dispatched.Count == 1 && ReferenceEquals(desk.Dispatched[0], desk.Legacy),
-                    mode + ": exactly one handoff, with the selected original source.");
+                    mode + ": the selection hands off exactly once, with the selected original source (no native spend is exercised).");
                 Assertions.False(desk.Cast(), mode + ": a repeated Cast cannot hand off twice.");
                 Assertions.True(desk.Close("cast-native-source") && desk.Keyboard.Disabled.Count == 0 && desk.Lease.Restored,
                     mode + ": the view releases exactly its count.");
@@ -172,7 +205,8 @@ namespace KingmakerGunslinger.DomainTests
                 string reason;
                 Assertions.Equal(ElementalLauncherRoute.NativeRows, ElementalChooserGate.Launcher(true, false, mode, true, null, out reason),
                     mode + ": a launcher clicked in an unsupported mode restores native rows instead of doing nothing.");
-                Assertions.False(ElementalChooserGate.KeepOpen(true, false, mode, true), mode + ": an open view closes.");
+                string current = mode;
+                Assertions.False(ElementalChooserGate.KeepOpen(() => true, () => false, () => current, () => true), mode + ": an open view closes.");
             }
         }
 
@@ -308,9 +342,65 @@ namespace KingmakerGunslinger.DomainTests
             string kept = desk.Fill("Default");
             Assertions.True(kept != null && kept.StartsWith("native-rows-requested:"), "The next fill keeps native rows: " + kept);
             Assertions.True(desk.Shown.SequenceEqual(desk.NativeRow) && ReferenceEquals(desk.Shown[2], desk.Legacy),
-                "The exact original tile returns in place, with its own native mechanism and native single expenditure.");
+                "The exact original tile object returns in place; casting it is then entirely native (not exercised here).");
             Assertions.Equal(0, desk.Dispatched.Count, "The fallback dispatches nothing itself.");
             Assertions.True(desk.Fill("Default") == null && desk.LauncherShown, "The request is consumed once; a later fill consolidates again.");
+        }
+
+        internal static void DestroyedOwnerOrMissingGameClosesWithoutDereference()
+        {
+            foreach (string mode in ElementalChooserGate.WorldModes)
+            {
+                // The tab owner is destroyed while the root-canvas overlay is
+                // open, after another UI also took a keyboard count.
+                var desk = new Desk(true);
+                desk.Game.Mode = mode;
+                desk.Fill(mode); desk.Click(mode);
+                var view = desk.View;
+                Assertions.True(view.Select(desk.Legacy), mode + ": a source is selected.");
+                desk.Keyboard.Disabled.Acquire();
+                desk.Owner.Destroyed = true; desk.SessionCurrent = false;
+                int reads = desk.Owner.Reads;
+                desk.Frame();
+                Assertions.Equal(reads, desk.Owner.Reads, mode + ": the destroyed owner is not dereferenced.");
+                Assertions.True(desk.View == null && view.Closed && view.Selected == null && view.Outcome == "cancelled-no-spend",
+                    mode + ": the view closes and cancels its selection.");
+                Assertions.Equal(0, desk.Dispatched.Count, mode + ": nothing is handed off.");
+                Assertions.True(desk.Keyboard.Disabled.Count == 1 && desk.Lease.Restored,
+                    mode + ": exactly the chooser's count is released; the other UI's count stays.");
+                desk.Frame();
+                Assertions.Equal(1, desk.Keyboard.Disabled.Count, mode + ": a later frame writes nothing.");
+            }
+
+            // An inactive (not destroyed) owner is read, then closes.
+            var hidden = new Desk(true);
+            hidden.Fill("Pause"); hidden.Click("Pause");
+            hidden.Owner.Active = false;
+            hidden.Frame();
+            Assertions.True(hidden.View == null && hidden.Keyboard.Disabled.Count == 0 && hidden.Lease.Restored,
+                "A hidden owner closes the view and releases its count.");
+
+            // No game: nothing is read and the view still closes. Without a
+            // live keyboard context the release cannot be verified, so it is
+            // recorded as unresolved and the guard is not written.
+            var gone = new Desk(true);
+            gone.Fill("Default"); gone.Click("Default");
+            var orphan = gone.View;
+            int writes = gone.Keyboard.Disabled.Writes;
+            gone.Game = null;
+            gone.Frame();
+            Assertions.True(gone.View == null && orphan.Closed && orphan.Outcome == "cancelled-no-spend" && gone.Dispatched.Count == 0,
+                "Without a game the view closes and cancels without a handoff.");
+            Assertions.True(gone.Lease.Unresolved && gone.Keyboard.Disabled.Writes == writes,
+                "The unverifiable release is recorded, not guessed.");
+
+            // A valid paused context keeps the view (shared Default/Pause policy).
+            var valid = new Desk(true);
+            valid.Fill("Pause"); valid.Click("Pause");
+            var kept = valid.View;
+            valid.Frame("Pause"); valid.Frame("Default"); valid.Frame("Pause");
+            Assertions.True(ReferenceEquals(valid.View, kept) && valid.Keyboard.Disabled.Count == 1,
+                "A valid owner keeps the view across Default/Pause.");
         }
     }
 }
