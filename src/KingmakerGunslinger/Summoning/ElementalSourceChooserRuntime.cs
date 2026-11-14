@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Kingmaker;
 using Kingmaker.EntitySystem.Entities;
-using Kingmaker.GameModes;
+using Kingmaker.PubSubSystem;
 using Kingmaker.UI.ActionBar;
 using Kingmaker.UI.UnitSettings;
 using Kingmaker.UnitLogic;
@@ -137,12 +137,25 @@ namespace KingmakerGunslinger.Summoning
         internal static ElementalChooserSession Session(ActionBarGroupElement owner)
         { ElementalChooserSession value; return owner != null && Sessions.TryGetValue(owner,out value) ? value : null; }
 
+        // Native GameModeType name, judged by ElementalChooserGate.WorldModes.
+        internal static string ModeName { get { return Game.Instance.CurrentMode.ToString(); } }
+
         internal static void Begin(ActionBarGroupElement owner)
         {
             ElementalSourceChooserView.CloseOwned("native-tab-rebuilt");
             Sessions.Remove(owner);
-            if (!Active || Game.Instance.IsControllerGamepad || Game.Instance.CurrentMode!=GameModeType.Default ||
-                (ActionBarSlotType)TypeField.GetValue(owner) != ActionBarSlotType.Spell) return;
+            var existing=owner.GetComponent<ElementalChooserTabLifetime>();
+            string request=existing==null?null:existing.ConsumeNativeRows();
+            if(existing!=null)existing.Session=null;
+            bool spellTab=(ActionBarSlotType)TypeField.GetValue(owner)==ActionBarSlotType.Spell;
+            bool active=Active,gamepad=Game.Instance.IsControllerGamepad;
+            string kept=ElementalChooserGate.Consolidation(active,gamepad,ModeName,spellTab,request,
+                ElementalSourceChooserView.KeyboardRefusal);
+            if (kept!=null)
+            {
+                if(active && spellTab && !gamepad)Outcome="desktop-tab-native-rows-kept:"+kept;
+                return;
+            }
             UnitEntityData unit = SelectedField.GetValue(owner) as UnitEntityData;
             Canvas canvas = owner.GetComponentInParent<Canvas>();
             TMP_FontAsset font = canvas == null ? null : canvas.GetComponentsInChildren<TextMeshProUGUI>(true)
@@ -195,17 +208,19 @@ namespace KingmakerGunslinger.Summoning
                 }
                 if(destination==null || session.Consolidated.Any(value=>originals.Values.Sum(rows=>rows.Count(row=>ReferenceEquals(row,value)))!=1))
                     throw new InvalidOperationException("Exact native source slots or destination level are missing.");
-                var launch=new ElementalChooserLauncher(session);launch.UpdateResourceCount();
-                foreach(var pair in originals)
+                var levels=originals.Keys.ToList();
+                var rowsByLevel=ElementalSourceChooserPolicy.StageLauncherRows<MechanicActionBarSlot>(
+                    levels.Select(value=>originals[value]).ToList(),levels.IndexOf(destination),session.Consolidated,
+                    ()=>{var launch=new ElementalChooserLauncher(session);launch.UpdateResourceCount();return launch;});
+                if(rowsByLevel==null)
                 {
-                    var rows=pair.Value.Where(value=>!session.Consolidated.Any(source=>ReferenceEquals(value,source))).ToList();
-                    if(ReferenceEquals(pair.Key,destination))
-                    {
-                        int first=Array.FindIndex(pair.Value,value=>session.Consolidated.Any(source=>ReferenceEquals(value,source)));
-                        rows.Insert(first<0?rows.Count:Math.Min(first,rows.Count),launch);
-                    }
-                    staged.Add(pair.Key,rows.ToArray());
+                    // Nothing to consolidate: the native rows stay exactly as
+                    // FillSlots built them, with no launcher slot of any kind.
+                    session.Ready=true;
+                    Outcome="desktop-tab-native-rows-unchanged:no-original-elemental-tile;sources="+session.Sources.Count;
+                    return;
                 }
+                for(int index=0;index<levels.Count;index++)staged.Add(levels[index],rowsByLevel[index]);
                 if(originals.Any(pair=>!pair.Key.SequenceEqual(pair.Value)))throw new InvalidOperationException("Foreign native slot collection change.");
                 foreach(var pair in staged)
                 {written.Add(pair.Key);pair.Key.Clear();pair.Key.AddRange(pair.Value);}
@@ -306,6 +321,21 @@ namespace KingmakerGunslinger.Summoning
             return source.Validate();
         }
 
+        // A launcher that cannot open its chooser must not stand in for the
+        // original spells. The next frame refills this tab once with native
+        // rows (the lifetime component, never inside the native click call),
+        // so every original tile returns with its own native mechanism.
+        internal static void RequestNativeRows(ElementalChooserSession session,string reason)
+        {
+            Outcome="launcher-refused-native-rows-requested:"+reason;
+            var lifetime=session==null || session.Owner==null?null:session.Owner.GetComponent<ElementalChooserTabLifetime>();
+            if(lifetime==null || !ReferenceEquals(lifetime.Session,session))return;
+            lifetime.NativeRowsReason=reason;
+            try{EventBus.RaiseEvent<IWarningNotificationUIHandler>(handler=>handler.HandleWarning(
+                "The Elementals chooser is unavailable right now. The original Summon Elemental spells are back in this row.",false));}
+            catch(Exception){}
+        }
+
         internal static void Dispatch(ElementalChooserSession session,ElementalNativeSource source)
         {
             // This is exactly the slot the native variant popup constructs.
@@ -324,13 +354,19 @@ namespace KingmakerGunslinger.Summoning
     internal sealed class ElementalChooserTabLifetime : MonoBehaviour
     {
         internal ElementalChooserSession Session;
+        internal string NativeRowsReason;
+        internal string ConsumeNativeRows(){var reason=NativeRowsReason;NativeRowsReason=null;return reason;}
         private void Update()
         {
             var session=Session;
-            if(session==null || ElementalSourceChooserRuntime.Active)return;
-            Session=null;ElementalSourceChooserView.CloseOwned("module-off-no-spend");
+            if(session==null)return;
+            if(ElementalSourceChooserRuntime.Active && NativeRowsReason==null)return;
+            Session=null;
+            if(!ElementalSourceChooserRuntime.Active){NativeRowsReason=null;ElementalSourceChooserView.CloseOwned("module-off-no-spend");}
+            // Begin consumes NativeRowsReason and keeps every native row.
             if(session.Owner!=null && ReferenceEquals(ElementalSourceChooserRuntime.SelectedField.GetValue(session.Owner),session.Unit) &&
                 ReferenceEquals(ElementalSourceChooserRuntime.Session(session.Owner),session))session.Owner.Fill(session.Unit);
+            else NativeRowsReason=null;
         }
     }
 

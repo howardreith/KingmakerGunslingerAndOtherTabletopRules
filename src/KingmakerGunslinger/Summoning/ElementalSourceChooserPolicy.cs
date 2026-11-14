@@ -92,10 +92,233 @@ namespace KingmakerGunslinger.Summoning
             return null;
         }
 
+        /// <summary>
+        /// The desktop Spells tab's launcher staging, applied to the native
+        /// per-level rows (m_LevelButtonPairs order) after FillSlots. Each
+        /// consolidated original standalone Summon Elemental tile leaves its
+        /// row, and one launcher takes the first one's place at the destination
+        /// level (or the end of that row). Every other row, including Summon
+        /// Monster and Summon Nature's Ally tiles with their native variant
+        /// popups, keeps its order. Input rows are never written.
+        /// Returns null, leaving the native rows untouched, when no original
+        /// tile is consolidated: every collected source is then a Summon
+        /// Monster/Nature's Ally row that already offers the same children,
+        /// so a launcher would only add a duplicate entry.
+        /// </summary>
+        internal static List<T[]> StageLauncherRows<T>(IList<T[]> levels,int destination,
+            ICollection<T> consolidated,Func<T> launcher) where T:class
+        {
+            if(levels==null)throw new ArgumentNullException("levels");
+            if(consolidated==null)throw new ArgumentNullException("consolidated");
+            if(launcher==null)throw new ArgumentNullException("launcher");
+            if(consolidated.Count==0)return null;
+            if(destination<0 || destination>=levels.Count)throw new InvalidOperationException("Exact native destination level is missing.");
+            var staged=new List<T[]>(levels.Count);
+            for(int index=0;index<levels.Count;index++)
+            {
+                T[] original=levels[index];
+                var rows=original.Where(value=>!consolidated.Any(source=>ReferenceEquals(value,source))).ToList();
+                if(index==destination)
+                {
+                    T tile=launcher();
+                    if(tile==null)throw new InvalidOperationException("Launcher construction failed.");
+                    int first=Array.FindIndex(original,value=>consolidated.Any(source=>ReferenceEquals(value,source)));
+                    rows.Insert(first<0?rows.Count:Math.Min(first,rows.Count),tile);
+                }
+                staged.Add(rows.ToArray());
+            }
+            return staged;
+        }
+
         internal static string RankTitle(int rank)
         { return Capital(Rank(rank).CreatureKeys[0].Split('-')[0]) + " (" + rank + ")"; }
         private static string Capital(string value)
         { return char.ToUpperInvariant(value[0]) + value.Substring(1); }
+    }
+
+    internal enum ElementalLauncherRoute { Stale, Chooser, NativeRows }
+
+    /// <summary>
+    /// The desktop chooser's admission and lifetime decisions. The runtime's
+    /// FillSlots prefix (Begin), the launcher click (Open) and the open view's
+    /// Update read the live game state and decide only through these gates.
+    /// </summary>
+    internal static class ElementalChooserGate
+    {
+        /// <summary>
+        /// Native KeyboardAccess GameModesGroup.World. Game.SetupPublicControllers
+        /// installs ClickWithSelectedAbilityHandler only in these two modes, and
+        /// native DoStartMode starts Pause only over Default, so a paused game
+        /// keeps native targeting. Every other mode (dialog, cutscene, rest,
+        /// full-screen UI, global map, kingdom, Esc menu, game over) is refused.
+        /// </summary>
+        internal static readonly string[] WorldModes = { "Default", "Pause" };
+
+        internal static bool WorldMode(string mode) { return mode != null && Array.IndexOf(WorldModes, mode) >= 0; }
+
+        /// <summary>
+        /// FillSlots prefix. Null: this fill may consolidate original tiles
+        /// behind a launcher. Otherwise the reason the native rows are kept,
+        /// so every original spell keeps its own native tile in this fill.
+        /// The keyboard is probed last, only for a fill that could otherwise
+        /// consolidate: a launcher is never built that could not open.
+        /// </summary>
+        internal static string Consolidation(bool active, bool gamepad, string mode, bool spellTab,
+            string nativeRowsRequest, Func<string> keyboard)
+        {
+            if (!active) return "module-off";
+            if (gamepad) return "controller-input";
+            if (!spellTab) return "not-spell-tab";
+            if (!WorldMode(mode)) return "unsupported-game-mode:" + mode;
+            if (nativeRowsRequest != null) return "native-rows-requested:" + nativeRowsRequest;
+            string refusal = keyboard();
+            return refusal == null ? null : "chooser-input-unavailable:" + refusal;
+        }
+
+        /// <summary>
+        /// Launcher click. A stale launcher belongs to a tab that is being
+        /// rebuilt and does nothing. Any other refusal restores the native
+        /// rows, so the original spells the launcher replaced become
+        /// clickable again in their own native tiles.
+        /// </summary>
+        internal static ElementalLauncherRoute Launcher(bool current, bool gamepad, string mode,
+            bool surfaceReady, string keyboardRefusal, out string reason)
+        {
+            reason = null;
+            if (!current) { reason = "stale-launcher"; return ElementalLauncherRoute.Stale; }
+            if (gamepad) { reason = "controller-input"; return ElementalLauncherRoute.Stale; }
+            if (!WorldMode(mode)) reason = "unsupported-game-mode:" + mode;
+            else if (!surfaceReady) reason = "chooser-surface-not-ready";
+            else if (keyboardRefusal != null) reason = keyboardRefusal;
+            return reason == null ? ElementalLauncherRoute.Chooser : ElementalLauncherRoute.NativeRows;
+        }
+
+        /// <summary>
+        /// Open view, once per frame. Default and Pause transitions keep the
+        /// same view and session; any other change closes it with no spend.
+        /// Each live read runs only after every earlier check passed, so a
+        /// missing game or session, or a destroyed action-bar owner, is never
+        /// dereferenced: the caller closes instead.
+        /// </summary>
+        internal static bool KeepOpen(Func<bool> current, Func<bool> gamepad, Func<string> mode, Func<bool> ownerActive)
+        { return current() && !gamepad() && WorldMode(mode()) && ownerActive(); }
+
+        /// <summary>
+        /// The view's close steps: cancel the selection (no spend), restore
+        /// focus, and in every case release exactly the chooser's own keyboard
+        /// count. True when the release verified (or nothing was held).
+        /// </summary>
+        internal static bool CloseNoSpend<T>(ElementalSourceSelection<T> selection, Action restoreFocus,
+            ElementalKeyboardLease lease, Func<ElementalKeyboardContext> live) where T : class
+        {
+            bool released = false;
+            try
+            {
+                if (selection != null && !selection.Closed) selection.Cancel();
+                if (restoreFocus != null) restoreFocus();
+            }
+            finally { released = lease.Release(live()); }
+            return released;
+        }
+    }
+
+    /// <summary>
+    /// One live native keyboard context: Game.Keyboard and its Disabled
+    /// CountingGuard, read and written only through these delegates.
+    /// </summary>
+    internal sealed class ElementalKeyboardContext
+    {
+        internal readonly object Keyboard, Guard;
+        private readonly Func<int> _count;
+        private readonly Action _acquire, _release;
+        internal ElementalKeyboardContext(object keyboard, object guard, Func<int> count, Action acquire, Action release)
+        { Keyboard = keyboard; Guard = guard; _count = count; _acquire = acquire; _release = release; }
+        internal int Count { get { return _count(); } }
+        internal void AcquireOne() { _acquire(); }
+        internal void ReleaseOne() { _release(); }
+        internal bool Same(ElementalKeyboardContext other)
+        { return other != null && ReferenceEquals(Keyboard, other.Keyboard) && ReferenceEquals(Guard, other.Guard); }
+    }
+
+    /// <summary>
+    /// The chooser's single keyboard count, with ownership-aware recovery.
+    /// The native guard cannot go negative, so a live count of zero proves
+    /// that nobody (this chooser included) holds the keyboard. A release that
+    /// could not be verified is remembered with its exact context. The lease
+    /// never resets the guard, never releases a count it does not hold, and
+    /// never acquires while any count is present.
+    /// </summary>
+    internal sealed class ElementalKeyboardLease
+    {
+        private ElementalKeyboardContext _held, _unresolved;
+        private bool _unresolvedCountMayRemain;
+        internal string Outcome { get; private set; }
+        internal bool Held { get { return _held != null; } }
+        internal bool Unresolved { get { return _unresolved != null; } }
+        internal bool Restored { get { return _held == null && _unresolved == null; } }
+
+        internal ElementalKeyboardLease() { Outcome = "not-acquired"; }
+
+        /// <summary>Null when one fresh count may be acquired on the live context.</summary>
+        internal string Admit(ElementalKeyboardContext live)
+        {
+            if (live == null || live.Guard == null) return Outcome = "refused:native-keyboard-absent";
+            if (_held != null) return Outcome = "refused:keyboard-already-held-by-chooser";
+            if (_unresolved != null)
+            {
+                if (!_unresolved.Same(live))
+                {
+                    // The unverified count, if any, lives on a guard that no
+                    // longer gates input. It is left untouched.
+                    _unresolved = null;
+                    Outcome = "retired-unresolved-release:keyboard-context-replaced-no-write";
+                }
+                else if (live.Count == 0)
+                {
+                    _unresolved = null;
+                    Outcome = "retired-unresolved-release:same-context-provably-free-no-write";
+                }
+                else return Outcome = "refused:unresolved-release-on-same-keyboard-context;count=" + live.Count +
+                    (_unresolvedCountMayRemain ? ";chooser-count-may-remain" : ";foreign-count");
+            }
+            if (live.Count != 0) return Outcome = "refused:keyboard-owned-by-another-ui;count=" + live.Count;
+            return null;
+        }
+
+        internal bool Acquire(ElementalKeyboardContext live)
+        {
+            if (Admit(live) != null) return false;
+            live.AcquireOne(); _held = live;
+            Outcome = "owned-native-keyboard-count-acquired";
+            if (live.Count == 1) return true;
+            Release(live);
+            Outcome = "refused:acquisition-did-not-add-exactly-one-count;" + Outcome;
+            return false;
+        }
+
+        /// <summary>True when nothing is held or exactly the held count was released.</summary>
+        internal bool Release(ElementalKeyboardContext live)
+        {
+            if (_held == null) return true;
+            var held = _held; _held = null;
+            if (!held.Same(live))
+            {
+                _unresolved = held; _unresolvedCountMayRemain = true;
+                Outcome = "keyboard-context-changed-no-foreign-write"; return false;
+            }
+            int count = live.Count;
+            if (count < 1)
+            {
+                // Something else cleared the guard; the chooser's count is gone.
+                _unresolved = held; _unresolvedCountMayRemain = false;
+                Outcome = "owned-count-already-cleared-no-foreign-write"; return false;
+            }
+            live.ReleaseOne();
+            if (live.Count == count - 1) { Outcome = "owned-native-keyboard-count-released"; return true; }
+            // One release was issued but the count did not drop by one.
+            _unresolved = held; _unresolvedCountMayRemain = true;
+            Outcome = "native-keyboard-release-unverified"; return false;
+        }
     }
 
     internal sealed class ElementalInvocationContextSnapshot
