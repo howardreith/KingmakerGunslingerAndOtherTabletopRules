@@ -5,6 +5,10 @@ param(
     # release version or development derived from that exact released tag.
     [string]$ExpectedVersion,
     [string]$ReferenceBundleDir,
+    # Pinned loader references (scripts/loader-reference-pins.json). Absent
+    # files are fetched from their pinned upstream source; differing files are
+    # refused. Never the installed or bundled loader.
+    [string]$LoaderReferenceDir,
     [string]$KingmakerInstallDir = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker',
     # Prints a descriptive plan only; it does not prove actual child counts
     # or qualify an artifact. Tests must observe the executed nested calls.
@@ -107,9 +111,15 @@ if (-not $ReferenceBundleDir) {
 if (-not (Test-Path -LiteralPath $ReferenceBundleDir -PathType Container)) {
     throw "Qualified private reference bundle is missing: $ReferenceBundleDir"
 }
+if (-not $LoaderReferenceDir) {
+    $LoaderReferenceDir = Join-Path $root 'artifacts\references\loader'
+}
+[void](Initialize-KmgPinnedLoaderReferences -LoaderReferenceDir $LoaderReferenceDir)
+$loaderPins = Get-KmgLoaderReferencePins
 $referenceIdentity = @(Assert-KmgReferenceBundleMatchesInstall `
     -ReferenceBundleDir $ReferenceBundleDir `
-    -KingmakerInstallDir $KingmakerInstallDir)
+    -KingmakerInstallDir $KingmakerInstallDir `
+    -LoaderReferenceDir $LoaderReferenceDir)
 
 if (-not $development) {
     $releaseLayout = Get-KmgLocalCandidateLayout -RepositoryRoot $root -Commit $git.Commit `
@@ -223,6 +233,7 @@ if (-not $development) {
 }
 & $python (Join-Path $root 'tools\build_mod_from_private_references.py') `
     --reference-bundle-dir $ReferenceBundleDir --dotnet $dotnet `
+    --loader-reference-dir $LoaderReferenceDir --loader-pins $loaderPins.Path `
     --csc $csc.FullName --net47-ref-dir $net47 --output-dir $exactRoot `
     --configuration Release --git-commit $git.Commit
 if ($LASTEXITCODE -ne 0) { throw "Exact-reference Release build failed with exit code $LASTEXITCODE." }
@@ -484,6 +495,9 @@ if ($development) {
         references = [ordered]@{
             bundleDirectory = $ReferenceBundleDir
             installDirectory = $KingmakerInstallDir
+            loaderDirectory = $LoaderReferenceDir
+            loaderPinsSha256 = $loaderPins.Sha256
+            minimumManagerVersion = $loaderPins.MinimumManagerVersion
             files = @($referenceIdentity)
         }
         validation = [ordered]@{
@@ -538,6 +552,9 @@ $manifest = [ordered]@{
 $manifest.references = [ordered]@{
     bundleDirectory = $ReferenceBundleDir
     installDirectory = $KingmakerInstallDir
+    loaderDirectory = $LoaderReferenceDir
+    loaderPinsSha256 = $loaderPins.Sha256
+    minimumManagerVersion = $loaderPins.MinimumManagerVersion
     files = @($referenceIdentity)
 }
 $manifestPath = Get-KmgPackageManifestPath -PackagePath $packagePath

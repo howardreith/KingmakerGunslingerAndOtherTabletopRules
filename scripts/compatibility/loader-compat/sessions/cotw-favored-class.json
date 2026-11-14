@@ -1,0 +1,58 @@
+{
+  "name": "cotw-favored-class",
+  "description": "Candidate with Call of the Wild and Favored Class (ZFavoredClass): startup/publication, Gunslinger published once, Favored Class Gunslinger menus, Brown-Fur contract.",
+  "ownerMods": [
+    "CallOfTheWild",
+    "ZFavoredClass"
+  ],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "startup-publication",
+      "harness": {
+        "steps": [
+          {
+            "op": "expectMods",
+            "match": "KingmakerGunslinger,CallOfTheWild,ZFavoredClass,KmgLoaderCompatHarness",
+            "expect": "CraftMagicItems,KingmakerBugfixes"
+          },
+          {
+            "op": "kmgBootstrap",
+            "match": "abca4797366d4df0831a418eee39069a,a303d71d244640959827e9464df5a867,6c9cdfa2d47e4894847fa85d5319fbd2",
+            "type": "abca4797366d4df0831a418eee39069a"
+          },
+          {
+            "op": "ummPanel",
+            "label": "kmg-panel",
+            "match": "KingmakerGunslinger",
+            "seconds": 3
+          }
+        ]
+      }
+    },
+    {
+      "label": "favored-class-gunslinger-menus",
+      "product": {
+        "scenario": "disposable-favored-class-gunslinger-menus",
+        "parameters": {},
+        "timeoutSeconds": 900
+      }
+    },
+    {
+      "label": "brown-fur-cotw-contract",
+      "product": {
+        "scenario": "observe-brown-fur-cotw-contract",
+        "parameters": {},
+        "timeoutSeconds": 600
+      }
+    },
+    {
+      "label": "favored-class-host-state",
+      "product": {
+        "scenario": "observe-favored-class-host-state",
+        "parameters": {},
+        "timeoutSeconds": 600
+      }
+    }
+  ]
+}

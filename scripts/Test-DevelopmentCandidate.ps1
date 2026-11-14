@@ -75,8 +75,12 @@ try {
         packageSha256 = Get-KmgSha256 -Path $layout.PackagePath
         dllSha256 = ('c' * 64); dllMvid = '0f0e0d0c-0b0a-4908-8706-050403020100'
         firearmManifestSha256 = ('d' * 64); firearmSoundBankSha256 = ('e' * 64)
-        references = [ordered]@{ files = @($script:KmgPrivateReferencePaths | ForEach-Object {
-            [ordered]@{ relativePath = $_.Replace('\', '/'); sha256 = ('f' * 64) } }) }
+        references = [ordered]@{ files = @(@($script:KmgInstalledReferencePaths | ForEach-Object {
+            [ordered]@{ relativePath = $_.Replace('\', '/'); sha256 = ('f' * 64); role = 'installed-game' } }) +
+            @((Get-KmgLoaderReferencePins).References | ForEach-Object {
+            [ordered]@{ relativePath = [string]$_.relativePath; sha256 = [string]$_.sha256; role = 'pinned-loader'
+                assemblyVersion = [string]$_.assemblyVersion; source = [string]$_.url
+                pinsSha256 = (Get-KmgLoaderReferencePins).Sha256 } })) }
         validation = [ordered]@{ validator = 'tools/validate_development_candidate.py'
             purpose = $purpose; releaseQualification = $false; baselineVersion = '0.0.156'
             identities = 10; summarySha256 = Get-KmgSha256 -Path $layout.ValidationSummaryPath }
@@ -117,6 +121,7 @@ try {
     Test-ReceiptRefusal { param($r) $r.packageSha256 = '0' * 64 } 'mismatched-package-hash-refused' '*package hash*'
     Test-ReceiptRefusal { param($r) $r.commit = 'b' * 40 } 'other-commit-location-refused' '*development-only location*'
     Test-ReceiptRefusal { param($r) $r.references.files = @($r.references.files | Select-Object -Skip 1) } 'missing-reference-identity-refused' '*private reference identity*'
+    Test-ReceiptRefusal { param($r) ($r.references.files | Where-Object relativePath -ceq 'UnityModManager/UnityModManager.dll').sha256 = '63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691' } 'installed-loader-identity-refused' '*does not match the current pin*'
     Test-ReceiptRefusal { param($r) $r.validation.purpose = 'other-purpose' } 'validation-purpose-refused' '*development source validation*'
     Test-ReceiptRefusal { param($r) $r.selectedTests.selected = 2 } 'test-count-drift-refused' '*test counts differ*'
     Test-ReceiptRefusal { param($r) $r.selectedTests.failures = 1 } 'failed-tests-refused' '*selected domain-test evidence*'
@@ -336,6 +341,21 @@ sys.exit(3)
             "reference $relative" | Set-Content -LiteralPath $path
         }
     }
+    # Pinned loader references: the fixture's own pins over fixture bytes, so
+    # the build never reaches the network and never reads the loader copies
+    # placed in the bundle and install above.
+    $loaderDir = Join-Path $boundary 'loader'
+    $loaderPins = [Collections.Generic.List[object]]::new()
+    foreach ($relative in $script:KmgPinnedLoaderReferencePaths) {
+        $path = Join-Path $loaderDir $relative
+        New-Item -ItemType Directory -Path (Split-Path $path) -Force | Out-Null
+        "pinned loader $relative" | Set-Content -LiteralPath $path
+        $loaderPins.Add([ordered]@{ relativePath = $relative.Replace('\', '/'); assemblyVersion = '0.31.1.0'
+            url = 'https://fixture.invalid/loader'; archiveSha256 = $null; archiveEntry = $null
+            sha256 = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant() })
+    }
+    ([ordered]@{ schemaVersion = 1; minimumManagerVersion = '0.31.1'; references = @($loaderPins) } |
+        ConvertTo-Json -Depth 4) | Set-Content (Join-Path $fixtureScripts 'loader-reference-pins.json')
     $msbuildFixture = Join-Path $boundary 'msbuild-fixture.exe'
     'not executed' | Set-Content $msbuildFixture
     & git -C $fixture init --quiet
@@ -345,7 +365,7 @@ sys.exit(3)
     $fixtureBuild = Join-Path $fixtureScripts 'Build-Local.ps1'
     $buildArguments = @{ DevelopmentPurpose = $purpose; DevelopmentTestFilter = 'selected-behavior'
         ReferenceBundleDir = $bundle; KingmakerInstallDir = $install; MSBuildPath = $msbuildFixture
-        ExpectedVersion = $fixtureVersion }
+        LoaderReferenceDir = $loaderDir; ExpectedVersion = $fixtureVersion }
     $env:KMG_TEST_FILTER = 'prior'
     $buildArguments.ExpectedVersion = '0.0.157'
     $message = Get-Refusal { & $fixtureBuild @buildArguments }
@@ -372,6 +392,8 @@ sys.exit(3)
     $outputIndex = if ($builds.Count -eq 1) { [Array]::IndexOf([string[]]$builds[0].arguments, '--output-dir') } else { -1 }
     Assert-That ($builds.Count -eq 1 -and $outputIndex -ge 0 -and
         $builds[0].arguments[$outputIndex + 1] -ceq $fixtureLayout.ExactBuildRoot) 'build-used-development-output'
+    $loaderIndex = if ($builds.Count -eq 1) { [Array]::IndexOf([string[]]$builds[0].arguments, '--loader-reference-dir') } else { -1 }
+    Assert-That ($loaderIndex -ge 0 -and $builds[0].arguments[$loaderIndex + 1] -ceq $loaderDir) 'build-compiled-against-pinned-loader-references'
     Assert-That (-not (Test-Path (Join-Path $fixture 'artifacts\local-runtime'))) 'build-left-release-location-untouched'
     Assert-That ($env:KMG_TEST_FILTER -ceq 'prior') 'build-restored-filter'
 
@@ -402,6 +424,14 @@ sys.exit(3)
     $buildArguments.DevelopmentTestFilter = 'selected-behavior'
 
     Remove-Item -LiteralPath $env:KMG_DEVELOPMENT_FIXTURE_TRACE
+    $pinnedUmm = Join-Path $loaderDir 'UnityModManager\UnityModManager.dll'
+    $pinnedBytes = [IO.File]::ReadAllBytes($pinnedUmm)
+    [IO.File]::AppendAllText($pinnedUmm, 'newer local loader')
+    $message = Get-Refusal { & $fixtureBuild @buildArguments }
+    [IO.File]::WriteAllBytes($pinnedUmm, $pinnedBytes)
+    Assert-That ($message -like '*differs from its pin*' -and
+        -not (Test-Path -LiteralPath $env:KMG_DEVELOPMENT_FIXTURE_TRACE)) 'tampered-loader-reference-refused-before-children'
+
     'dirty' | Set-Content (Join-Path $fixture 'untracked-change.txt')
     $message = Get-Refusal { & $fixtureBuild @buildArguments }
     Assert-That ($message -like '*exactly clean commit*' -and

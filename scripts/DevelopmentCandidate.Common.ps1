@@ -229,6 +229,8 @@ function Assert-KmgDevelopmentReceipt {
         @($referenceFiles | Where-Object { [string](Get-KmgOptionalProperty $_ 'sha256') -cnotmatch '^[0-9a-f]{64}$' }).Count -ne 0) {
         throw 'Development receipt lacks the exact private reference identity.'
     }
+    # Loader references are bound to the pinned floor, not the local install.
+    Assert-KmgReceiptLoaderReferencesMatchPins -ReferenceFiles $referenceFiles
     $validation = $Receipt.validation
     if ((Get-KmgOptionalProperty $validation 'validator') -cne 'tools/validate_development_candidate.py' -or
         (Get-KmgOptionalProperty $validation 'purpose') -cne $Purpose -or
