@@ -2,6 +2,32 @@
 
 ## 0.0.189 publication authorization
 
+**Published (completed).** Stable
+[v0.0.189](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.189)
+is Latest and not a prerelease. The annotated tag `13f90daad0` peels to the release commit `90bbfbb08d`,
+which is `origin/master`.
+
+- **First run refused.** On master `46cc185f16` the publisher's complete suite failed `mission.native-warning-route`
+  (2,982/2,983) before any build, tag or publication. PR #159 (`fabe5d211b` plus the validator repin) repaired it;
+  the owner approved merging it.
+- **Gate.** The complete suite passed 2,983/2,983 with 0 failures.
+- **Builds.** Two deterministic exact-reference builds against the pinned UMM 0.31.1 loader references
+  produced identical archives:
+  - package SHA-256 `23eccbe657548dca0decbf335eaed9785d6238e846987e1f1bb20a2e1ac8013d`;
+  - DLL SHA-256 `f963c6158bbd8b58dda7baba29644889d53adc055757b08fb266879f5aa12e1d`.
+- **Reference bundle.** `artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references`,
+  as for v0.0.188.
+- **Public download test.** A fresh download of all three assets matched `SHA256SUMS.txt`, and the manifest
+  names the release commit `90bbfbb08d7b56decf60c5f3f68a315d20c4e0e0`. The embedded `Info.json` reads 0.0.189 with
+  `ManagerVersion` 0.31.1 and `Id` `KingmakerGunslinger`, alongside the DLL hash above (458 files).
+- **Native check.** None, on the published bytes or any candidate. This is disclosed in the release notes.
+- **Timing.** The successful publisher run took 1,216 s.
+- **Installation.** The installed mod is untouched and still reads 0.0.140; the publisher performed no
+  deployment.
+- **Merges.** PR #156 merged as `784b5e27ec`; release PR #158 as `46cc185f16`; PR #159 as `90bbfbb08d`.
+
+Originally authorized as follows.
+
 On 2026-11-14 Howie wrote: "Please merge this and cut a new release." Draft PR #156 (the Expanded Summoning
 action-bar Elementals launcher repair) was marked ready and merged as `784b5e27ec`. No channel was named, so this
 follows v0.0.188 as the next stable patch, v0.0.189, from master `784b5e27ec`.
