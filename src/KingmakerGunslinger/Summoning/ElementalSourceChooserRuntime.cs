@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Kingmaker;
 using Kingmaker.EntitySystem.Entities;
-using Kingmaker.PubSubSystem;
+using Kingmaker.UI.Common;
 using Kingmaker.UI.ActionBar;
 using Kingmaker.UI.UnitSettings;
 using Kingmaker.UnitLogic;
@@ -331,8 +331,9 @@ namespace KingmakerGunslinger.Summoning
             var lifetime=session==null || session.Owner==null?null:session.Owner.GetComponent<ElementalChooserTabLifetime>();
             if(lifetime==null || !ReferenceEquals(lifetime.Session,session))return;
             lifetime.NativeRowsReason=reason;
-            try{EventBus.RaiseEvent<IWarningNotificationUIHandler>(handler=>handler.HandleWarning(
-                "The Elementals chooser is unavailable right now. The original Summon Elemental spells are back in this row.",false));}
+            // The project's stable native warning route (UIUtility.SendWarning).
+            try{UIUtility.SendWarning(
+                "The Elementals chooser is unavailable right now. The original Summon Elemental spells are back in this row.");}
             catch(Exception){}
         }
 
