@@ -38,7 +38,40 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--configuration", choices=("Debug", "Release"), default="Release")
     parser.add_argument("--git-commit", required=True)
+    # Loader assemblies come only from the pinned floor, never from the bundle
+    # or the installed loader: see scripts/loader-reference-pins.json.
+    parser.add_argument("--loader-reference-dir", required=True, type=Path)
+    parser.add_argument("--loader-pins", type=Path,
+                        default=Path(__file__).resolve().parents[1] / "scripts" / "loader-reference-pins.json")
     return parser.parse_args()
+
+
+def pinned_loader_references(loader_dir: Path, pins_path: Path) -> tuple[list[Path], dict]:
+    """Every pinned loader reference, verified against its pin. A missing or
+    differing file is an error; there is no substitute."""
+    pins = json.loads(pins_path.read_text(encoding="utf-8-sig"))
+    expected = ["UnityModManager/UnityModManager.dll", "UnityModManager/0Harmony12.dll"]
+    if not isinstance(pins, dict):
+        raise ValueError("Loader reference pins must be a JSON object.")
+    rows = pins.get("references")
+    if (pins.get("schemaVersion") != 1 or not isinstance(rows, list) or
+            [row.get("relativePath") for row in rows] != expected):
+        raise ValueError("Loader reference pins must name exactly: " + ", ".join(expected))
+    paths: list[Path] = []
+    identity = {"pinsSha256": sha256(pins_path),
+                "minimumManagerVersion": pins.get("minimumManagerVersion"), "files": {}}
+    for row in rows:
+        path = loader_dir / row["relativePath"]
+        if not path.is_file():
+            raise FileNotFoundError(f"Pinned loader reference is missing: {path}")
+        actual = sha256(path)
+        if actual != row.get("sha256"):
+            raise ValueError(f"Pinned loader reference differs from its pin: {row['relativePath']}; "
+                             f"pinnedSha256={row.get('sha256')}; actualSha256={actual}")
+        paths.append(path)
+        identity["files"][row["relativePath"]] = {
+            "sha256": actual, "assemblyVersion": row.get("assemblyVersion"), "source": row.get("url")}
+    return paths, identity
 
 
 def compile_files(project: Path) -> list[Path]:
@@ -113,11 +146,11 @@ def main() -> int:
         managed / "UnityEngine.UI.dll",
         managed / "UnityEngine.UIModule.dll",
         managed / "UnityEngine.TextRenderingModule.dll",
-        managed / "UnityModManager" / "UnityModManager.dll",
-        managed / "UnityModManager" / "0Harmony12.dll",
     ]
+    loader_refs, loader_identity = pinned_loader_references(args.loader_reference_dir.resolve(),
+                                                            args.loader_pins.resolve())
     framework_refs = [args.net47_ref_dir / name for name in ("mscorlib.dll", "System.dll", "System.Core.dll", "System.Xml.dll")]
-    for path in [args.dotnet, args.csc, *framework_refs, *private_refs]:
+    for path in [args.dotnet, args.csc, *framework_refs, *private_refs, *loader_refs]:
         if not path.is_file():
             raise FileNotFoundError(path)
 
@@ -147,7 +180,7 @@ def main() -> int:
         "/optimize+" if optimize else "/optimize-",
         "/define:TRACE" if optimize else "/define:DEBUG;TRACE",
         f"/out:{dll}",
-        *(f"/reference:{path}" for path in [*framework_refs, *private_refs]),
+        *(f"/reference:{path}" for path in [*framework_refs, *private_refs, *loader_refs]),
         *(str(path) for path in compile_files(project)),
         str(generated_identity),
     ]
@@ -195,6 +228,7 @@ def main() -> int:
         "packageSha256": sha256(zip_path),
         "blueprintManifestSha256": sha256(root / "blueprints" / "blueprints.json"),
         "privateReferenceHashes": {path.relative_to(bundle).as_posix(): sha256(path) for path in private_refs},
+        "pinnedLoaderReferences": loader_identity,
         "readyForKingmakerSmokeTest": True,
         "nextSprintGateDecision": "Sprint30Blocked_PendingCompleteMaintenanceLoopRuntimeGate",
     }

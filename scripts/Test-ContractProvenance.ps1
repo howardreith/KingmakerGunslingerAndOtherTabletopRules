@@ -72,8 +72,22 @@ try {
         [IO.File]::WriteAllText($bundleFile, "fixture:$relative")
         [IO.File]::WriteAllText($installFile, "fixture:$relative")
     }
+    # Loader references are pinned separately (Test-LoaderReferencePins.ps1).
+    $loader = Join-Path $fixture 'loader'
+    $loaderRows = foreach ($relative in $script:KmgPinnedLoaderReferencePaths) {
+        $path = Join-Path $loader $relative
+        New-Item -ItemType Directory -Path (Split-Path -Parent $path) -Force | Out-Null
+        [IO.File]::WriteAllText($path, "pinned:$relative")
+        [ordered]@{ relativePath = $relative.Replace('\', '/'); assemblyVersion = 'fixture'
+            url = 'https://fixture.invalid/'; archiveSha256 = $null; archiveEntry = $null
+            sha256 = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant() }
+    }
+    $pins = Join-Path $fixture 'pins.json'
+    ([ordered]@{ schemaVersion = 1; minimumManagerVersion = '0.31.1'; references = @($loaderRows) } |
+        ConvertTo-Json -Depth 4) | Set-Content -LiteralPath $pins
+    $loaderArgs = @{ LoaderReferenceDir = $loader; PinsPath = $pins }
     $matched = @(Assert-KmgReferenceBundleMatchesInstall `
-        -ReferenceBundleDir $bundle -KingmakerInstallDir $install)
+        -ReferenceBundleDir $bundle -KingmakerInstallDir $install @loaderArgs)
     $expectedPaths=@($script:KmgPrivateReferencePaths | ForEach-Object {$_.Replace('\','/')} | Sort-Object)
     $observedPaths=@($matched | ForEach-Object {$_.relativePath} | Sort-Object)
     Assert-True (($expectedPaths -join '|') -ceq ($observedPaths -join '|')) 'all-explicit-references-match'
@@ -81,24 +95,24 @@ try {
     $clothBytes = [IO.File]::ReadAllBytes($clothBundle)
     [IO.File]::AppendAllText($clothBundle, 'mismatch')
     Assert-Throws {
-        Assert-KmgReferenceBundleMatchesInstall -ReferenceBundleDir $bundle -KingmakerInstallDir $install
+        Assert-KmgReferenceBundleMatchesInstall -ReferenceBundleDir $bundle -KingmakerInstallDir $install @loaderArgs
     } 'mismatched-cloth-reference-fails'
     [IO.File]::WriteAllBytes($clothBundle, $clothBytes)
     Remove-Item -LiteralPath $clothBundle
     Assert-Throws {
-        Assert-KmgReferenceBundleMatchesInstall -ReferenceBundleDir $bundle -KingmakerInstallDir $install
+        Assert-KmgReferenceBundleMatchesInstall -ReferenceBundleDir $bundle -KingmakerInstallDir $install @loaderArgs
     } 'missing-cloth-reference-fails'
     [IO.File]::WriteAllBytes($clothBundle, $clothBytes)
     $physicsBundle = Join-Path $bundle 'Managed\UnityEngine.PhysicsModule.dll'
     $physicsBytes = [IO.File]::ReadAllBytes($physicsBundle)
     [IO.File]::AppendAllText($physicsBundle, 'mismatch')
     Assert-Throws {
-        Assert-KmgReferenceBundleMatchesInstall -ReferenceBundleDir $bundle -KingmakerInstallDir $install
+        Assert-KmgReferenceBundleMatchesInstall -ReferenceBundleDir $bundle -KingmakerInstallDir $install @loaderArgs
     } 'mismatched-physics-reference-fails'
     [IO.File]::WriteAllBytes($physicsBundle, $physicsBytes)
     Remove-Item -LiteralPath $physicsBundle
     Assert-Throws {
-        Assert-KmgReferenceBundleMatchesInstall -ReferenceBundleDir $bundle -KingmakerInstallDir $install
+        Assert-KmgReferenceBundleMatchesInstall -ReferenceBundleDir $bundle -KingmakerInstallDir $install @loaderArgs
     } 'missing-physics-reference-fails'
     [IO.File]::WriteAllBytes($physicsBundle, $physicsBytes)
     [IO.File]::AppendAllText(
@@ -106,13 +120,13 @@ try {
         'mismatch')
     Assert-Throws {
         Assert-KmgReferenceBundleMatchesInstall `
-            -ReferenceBundleDir $bundle -KingmakerInstallDir $install
+            -ReferenceBundleDir $bundle -KingmakerInstallDir $install @loaderArgs
     } 'mismatched-private-reference-fails'
     Remove-Item -LiteralPath (
         Join-Path $install 'Kingmaker_Data\Managed\Assembly-CSharp.dll') -Force
     Assert-Throws {
         Assert-KmgReferenceBundleMatchesInstall `
-            -ReferenceBundleDir $bundle -KingmakerInstallDir $install
+            -ReferenceBundleDir $bundle -KingmakerInstallDir $install @loaderArgs
     } 'missing-installed-required-reference-fails'
 }
 finally {

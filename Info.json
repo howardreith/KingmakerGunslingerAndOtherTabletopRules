@@ -3,7 +3,7 @@
   "DisplayName": "Mr. Bard's Tabletop Rules Expansion",
   "Author": "Howie",
   "Version": "0.0.187",
-  "ManagerVersion": "0.32.4",
+  "ManagerVersion": "0.31.1",
   "Requirements": [],
   "AssemblyName": "KingmakerGunslinger.dll",
   "EntryMethod": "KingmakerGunslinger.Main.Load"

@@ -156,6 +156,11 @@ if ($LASTEXITCODE -ne 0) { throw 'Summon overhaul OFF admission checks failed.' 
 & (Join-Path $PSScriptRoot 'compatibility/Test-SuggestionProfileSelection.ps1')
 & (Join-Path $PSScriptRoot 'Test-ExplicitCandidateReuse.ps1')
 & (Join-Path $PSScriptRoot 'Test-DevelopmentCandidate.ps1')
+# Pinned Unity Mod Manager build floor: declared minimum, pin verification,
+# receipt identity and refusal of copied runtime dependencies. Offline.
+& (Join-Path $PSScriptRoot 'Test-LoaderReferencePins.ps1')
+& $python.Source (Join-Path $repositoryRoot 'tools\test_loader_reference_pins.py')
+if ($LASTEXITCODE -ne 0) { throw 'Pinned loader reference builder checks failed.' }
 # Named batch policy is independent of the active released version used for a
 # hidden development build; it does not change another sprint's acceptance.
 & (Join-Path $PSScriptRoot 'Test-Sprints3031Release.ps1')

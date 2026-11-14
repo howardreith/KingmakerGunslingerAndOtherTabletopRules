@@ -17,6 +17,7 @@ try {
 
 . (Join-Path $PSScriptRoot 'common.ps1')
 . (Join-Path $PSScriptRoot 'IconCatalog.Common.ps1')
+. (Join-Path $PSScriptRoot 'ReferenceProvenance.Common.ps1')
 $repositoryRoot = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $repositoryRoot
 
@@ -423,28 +424,9 @@ try {
         throw 'Packaged Info.json names an unexpected mod assembly.'
     }
 
-    $binaryFiles = @(
-        Get-ChildItem -LiteralPath $modDirectory -Recurse -File |
-            Where-Object { $_.Extension -in @('.dll', '.exe', '.pdb', '.mdb') }
-    )
-    if ($binaryFiles.Count -ne 1 -or $binaryFiles[0].Name -ne 'KingmakerGunslinger.dll') {
-        throw 'The standalone UMM package must contain exactly one binary: KingmakerGunslinger.dll.'
-    }
-
-    $forbiddenNames = @(
-        '0Harmony.dll',
-        '0Harmony12.dll',
-        'Assembly-CSharp.dll',
-        'Assembly-CSharp-firstpass.dll',
-        'Newtonsoft.Json.dll',
-        'UnityEngine.dll',
-        'UnityModManager.dll'
-    )
-    foreach ($name in $forbiddenNames) {
-        if (Get-ChildItem -LiteralPath $modDirectory -Recurse -File -Filter $name -ErrorAction SilentlyContinue) {
-            throw "Install package contains a private or foreign runtime assembly: $name"
-        }
-    }
+    # Declared loader floor equals the pinned build floor; exactly one binary;
+    # no loader, Harmony, game or Unity assembly copied into the mod.
+    Assert-KmgPackagedLoaderContract -ModDirectory $modDirectory
     $audioArtifacts=@(Get-ChildItem -LiteralPath $modDirectory -Recurse -File | Where-Object {$_.Extension -in @('.bnk','.wem')})
     if($audioArtifacts.Count -gt 1 -or ($audioArtifacts.Count -eq 1 -and $audioArtifacts[0].Name -cne 'KMG_Firearms.bnk')){throw 'Package contains forbidden or unexpected Wwise artifacts.'}
     if(Get-ChildItem -LiteralPath $modDirectory -Recurse -File | Where-Object {$_.Name -ieq 'Init.bnk'}){throw 'Package contains forbidden Init.bnk.'}

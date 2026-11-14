@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "description": "Loader assemblies the distributable compiles against, pinned to the oldest supported Unity Mod Manager instead of whichever loader is installed locally. A tracked product input: changing it changes the source state and invalidates existing build receipts. Each file is fetched from its upstream source into artifacts/references/loader, verified by SHA-256 and never committed, bundled or packaged. Info.json ManagerVersion must equal minimumManagerVersion.",
+  "minimumManagerVersion": "0.31.1",
+  "references": [
+    {
+      "relativePath": "UnityModManager/UnityModManager.dll",
+      "assemblyName": "UnityModManager",
+      "assemblyVersion": "0.31.1.0",
+      "source": "NuGet package UnityModManager 0.31.1 (author newman55)",
+      "url": "https://api.nuget.org/v3-flatcontainer/unitymodmanager/0.31.1/unitymodmanager.0.31.1.nupkg",
+      "archiveSha256": "05a82b66bc44d56d1246f146d16e9fa8f9a42c450c5bc334bcfa9efddbdb53c9",
+      "archiveEntry": "lib/net35/UnityModManager.dll",
+      "sha256": "2e038ff23ab01d538dfef792096e1f5c04802d1edac3660db20d0d54c167c2c4"
+    },
+    {
+      "relativePath": "UnityModManager/0Harmony12.dll",
+      "assemblyName": "0Harmony12",
+      "assemblyVersion": "1.2.0.1",
+      "source": "newman55/unity-mod-manager lib/Harmony/1.2 at the 0.31.1 commit 10cfb1cc; byte-identical in UMM 0.31.1, 0.32.4 and 0.33.0",
+      "url": "https://raw.githubusercontent.com/newman55/unity-mod-manager/10cfb1cce51914a5114928c5bc6a06d1d2c31fe2/lib/Harmony/1.2/0Harmony12.dll",
+      "archiveSha256": null,
+      "archiveEntry": null,
+      "sha256": "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292"
+    }
+  ]
+}
