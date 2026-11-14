@@ -1,0 +1,11 @@
+{
+  "Id": "KmgLoaderCompatHarness",
+  "DisplayName": "Tabletop Rules Expansion loader-compatibility harness (test only)",
+  "Author": "Howie",
+  "Version": "0.1.0",
+  "ManagerVersion": "0.27.0",
+  "Requirements": [],
+  "LoadAfter": ["KingmakerGunslinger"],
+  "AssemblyName": "KmgLoaderCompatHarness.dll",
+  "EntryMethod": "KmgLoaderCompatHarness.HarnessMain.Load"
+}

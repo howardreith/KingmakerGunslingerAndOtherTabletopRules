@@ -1,0 +1,211 @@
+{
+  "name": "alone",
+  "description": "Candidate alone (optional integrations absent): bootstrap, panel, module disable across restarts, firearm save and fresh-process reload, and the candidate's own native gameplay scenarios.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "startup-panel-disable",
+      "harness": {
+        "steps": [
+          {
+            "op": "expectMods",
+            "match": "KingmakerGunslinger,KmgLoaderCompatHarness",
+            "expect": "CraftMagicItems,KingmakerBugfixes,CallOfTheWild,ZFavoredClass"
+          },
+          {
+            "op": "kmgBootstrap",
+            "match": "abca4797366d4df0831a418eee39069a,a303d71d244640959827e9464df5a867,6c9cdfa2d47e4894847fa85d5319fbd2",
+            "type": "abca4797366d4df0831a418eee39069a"
+          },
+          {
+            "op": "kmgModules",
+            "label": "initial",
+            "match": ""
+          },
+          {
+            "op": "ummPanel",
+            "label": "click-urban-barbarian",
+            "match": "KingmakerGunslinger",
+            "type": "Urban Barbarian",
+            "save": true,
+            "seconds": 3
+          },
+          {
+            "op": "kmgModules",
+            "label": "after-save",
+            "match": "",
+            "expect": "urban-barbarian=false"
+          }
+        ]
+      }
+    },
+    {
+      "label": "restart-module-persisted",
+      "harness": {
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "restarted",
+            "match": "UrbanBarbarian=false",
+            "expect": "urban-barbarian=false"
+          },
+          {
+            "op": "ummPanel",
+            "label": "plain-panel-save",
+            "match": "KingmakerGunslinger",
+            "save": true,
+            "seconds": 3
+          },
+          {
+            "op": "kmgModules",
+            "label": "after-plain-save",
+            "match": "UrbanBarbarian=false",
+            "expect": "urban-barbarian=false"
+          }
+        ]
+      }
+    },
+    {
+      "label": "fixture-firearm-save",
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "giveWeapon",
+            "label": "pistol",
+            "match": "a303d71d244640959827e9464df5a867"
+          },
+          {
+            "op": "expectWeapon",
+            "label": "given-default-state",
+            "match": "a303d71d244640959827e9464df5a867",
+            "expect": "none"
+          },
+          {
+            "op": "setStateToken",
+            "label": "loaded",
+            "match": "a303d71d244640959827e9464df5a867",
+            "type": "a6344f33e7344d4aab249485faedf7fd"
+          },
+          {
+            "op": "expectWeapon",
+            "label": "loaded-state",
+            "match": "a303d71d244640959827e9464df5a867",
+            "expect": "a6344f33e7344d4aab249485faedf7fd"
+          },
+          {
+            "op": "saveGame",
+            "label": "KMGLCALONE"
+          },
+          {
+            "op": "loadLastSave"
+          },
+          {
+            "op": "expectWeapon",
+            "label": "same-process-reload",
+            "match": "a303d71d244640959827e9464df5a867",
+            "expect": "a6344f33e7344d4aab249485faedf7fd"
+          }
+        ]
+      }
+    },
+    {
+      "label": "fresh-process-reload",
+      "harness": {
+        "save": "$written:KMGLCALONE",
+        "steps": [
+          {
+            "op": "expectLoadedFrom",
+            "match": "KMGLCALONE"
+          },
+          {
+            "op": "expectWeapon",
+            "label": "fresh-process",
+            "match": "a303d71d244640959827e9464df5a867",
+            "expect": "a6344f33e7344d4aab249485faedf7fd"
+          },
+          {
+            "op": "kmgModules",
+            "label": "in-game",
+            "match": "UrbanBarbarian=false"
+          }
+        ]
+      }
+    },
+    {
+      "product": {
+        "scenario": "mod-load-smoke",
+        "parameters": {},
+        "timeoutSeconds": 300
+      },
+      "label": "mod-load-smoke"
+    },
+    {
+      "product": {
+        "scenario": "observe-feature-module-settings",
+        "parameters": {
+          "gunslinger": true,
+          "acadamaeGraduate": true,
+          "shieldOther": true,
+          "expandedSummoning": true,
+          "elvenBranchedSpears": true,
+          "easternWeapons": true,
+          "brownFurTransmuter": true,
+          "urbanBarbarian": false,
+          "bodyguardFeats": true,
+          "protectionFromAlignmentControlImmunity": true,
+          "elementalRaces": true,
+          "teleportationSpells": true,
+          "magicCircleSpells": true
+        },
+        "timeoutSeconds": 600
+      },
+      "label": "observe-feature-module-settings"
+    },
+    {
+      "product": {
+        "scenario": "disposable-gunslinger-creation-commit",
+        "parameters": {},
+        "timeoutSeconds": 600
+      },
+      "label": "gunslinger-creation-commit"
+    },
+    {
+      "product": {
+        "scenario": "disposable-gunslinger-levelup-commit",
+        "parameters": {},
+        "timeoutSeconds": 600
+      },
+      "label": "gunslinger-levelup-commit"
+    },
+    {
+      "product": {
+        "scenario": "disposable-paper-cartridge-reload",
+        "parameters": {},
+        "timeoutSeconds": 600
+      },
+      "label": "paper-cartridge-reload"
+    },
+    {
+      "product": {
+        "scenario": "disposable-paper-cartridge-full-attack",
+        "parameters": {},
+        "timeoutSeconds": 600
+      },
+      "label": "paper-cartridge-full-attack"
+    },
+    {
+      "product": {
+        "scenario": "disposable-expanded-summoning-sprints30-31-native-review",
+        "parameters": {
+          "reviewPhase": "public-routes"
+        },
+        "timeoutSeconds": 1500
+      },
+      "label": "summon-public-routes"
+    }
+  ]
+}

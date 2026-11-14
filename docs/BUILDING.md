@@ -99,10 +99,20 @@ python tools/build_mod_from_private_references.py \
   --csc <Roslyn-csc.dll> \
   --net47-ref-dir <.NETFramework/v4.7> \
   --output-dir <output> \
-  --configuration Release
+  --configuration Release \
+  --git-commit <40-hex-commit> \
+  --loader-reference-dir <pinned-loader-directory>
 ```
 
-This path compiles against the same exact private assemblies without redistributing them.
+This path compiles against the same exact private game and Unity assemblies without redistributing them.
+
+Loader references are pinned separately. `UnityModManager.dll` and `0Harmony12.dll` come from
+`scripts/loader-reference-pins.json` (UMM 0.31.1, the declared minimum), never from the installed loader:
+`Build-Local.ps1` fetches each absent file from its pinned upstream URL into `artifacts/references/loader`,
+verifies its SHA-256, refuses a present file with different bytes, and records role, assembly version, source
+and the pins hash in the build receipt. The compiler re-verifies the pins itself. Game and Unity references keep
+their exact bundle-equals-installation check. `Info.json` `ManagerVersion` must equal the pinned floor, which
+package validation enforces. See [UMM-LOADER-COMPATIBILITY.md](UMM-LOADER-COMPATIBILITY.md).
 
 ## Package contract
 

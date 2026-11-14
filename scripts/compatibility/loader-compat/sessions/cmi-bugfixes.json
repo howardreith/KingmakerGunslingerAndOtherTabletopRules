@@ -1,0 +1,116 @@
+{
+  "name": "cmi-bugfixes",
+  "description": "Candidate with Craft Magic Items 2.1.0 and Kingmaker Bugfixes 1.3.3: CMI crafting interface, CMI's own firearm upgrade, save and fresh-process reload, Bugfixes behaviour, and the candidate's CMI scenarios.",
+  "ownerMods": [
+    "CraftMagicItems",
+    "KingmakerBugfixes"
+  ],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "cmi-craft-save",
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "expectMods",
+            "match": "KingmakerGunslinger,CraftMagicItems,KingmakerBugfixes,KmgLoaderCompatHarness",
+            "expect": "CallOfTheWild,ZFavoredClass"
+          },
+          {
+            "op": "kmgBootstrap",
+            "match": "abca4797366d4df0831a418eee39069a,a303d71d244640959827e9464df5a867,6c9cdfa2d47e4894847fa85d5319fbd2",
+            "type": "abca4797366d4df0831a418eee39069a"
+          },
+          {
+            "op": "probeBlueprint",
+            "label": "bugfixes-dart-light",
+            "match": "BlueprintWeaponType:Dart",
+            "type": "IsLight",
+            "expect": "True"
+          },
+          {
+            "op": "ummPanel",
+            "label": "cmi-crafting-panel",
+            "match": "CraftMagicItems",
+            "seconds": 4
+          },
+          {
+            "op": "ummPanel",
+            "label": "kmg-panel",
+            "match": "KingmakerGunslinger",
+            "seconds": 2
+          },
+          {
+            "op": "giveWeapon",
+            "label": "base-pistol",
+            "match": "a303d71d244640959827e9464df5a867"
+          },
+          {
+            "op": "setStateToken",
+            "label": "loaded",
+            "match": "a303d71d244640959827e9464df5a867",
+            "type": "a6344f33e7344d4aab249485faedf7fd"
+          },
+          {
+            "op": "cmiUpgrade",
+            "match": "a303d71d244640959827e9464df5a867",
+            "type": "Enhancement1",
+            "expect": "a6344f33e7344d4aab249485faedf7fd"
+          },
+          {
+            "op": "saveGame",
+            "label": "KMGLCCMI"
+          },
+          {
+            "op": "loadLastSave"
+          },
+          {
+            "op": "cmiVerify",
+            "label": "same-process-reload",
+            "match": "a303d71d244640959827e9464df5a867",
+            "type": "Enhancement1",
+            "expect": "a6344f33e7344d4aab249485faedf7fd"
+          }
+        ]
+      }
+    },
+    {
+      "label": "cmi-fresh-process-reload",
+      "harness": {
+        "save": "$written:KMGLCCMI",
+        "steps": [
+          {
+            "op": "expectLoadedFrom",
+            "match": "KMGLCCMI"
+          },
+          {
+            "op": "cmiVerify",
+            "label": "fresh-process",
+            "match": "a303d71d244640959827e9464df5a867",
+            "type": "Enhancement1",
+            "expect": "a6344f33e7344d4aab249485faedf7fd"
+          }
+        ]
+      }
+    },
+    {
+      "label": "observe-cmi-compatibility",
+      "product": {
+        "scenario": "observe-craft-magic-items-compatibility",
+        "parameters": {},
+        "timeoutSeconds": 600
+      }
+    },
+    {
+      "label": "observe-cmi-ammunition-ui",
+      "product": {
+        "scenario": "observe-craft-magic-items-ammunition-ui",
+        "parameters": {},
+        "timeoutSeconds": 600
+      }
+    }
+  ]
+}
