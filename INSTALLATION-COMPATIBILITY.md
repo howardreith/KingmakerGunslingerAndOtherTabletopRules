@@ -211,9 +211,18 @@ processes do not qualify breath-bearing persistence or the final release-wide
 matrix. Visual Adjustments remains absent/NOT-RUN; inherited native diagnostics
 remain recorded instead of being declared clean.
 
-This build is qualified against Pathfinder: Kingmaker Enhanced Plus Edition
-2.1.7b on Windows through Steam, with Unity Mod Manager 0.32.4 or later in the
-0.32.x line. Every real qualification launch used Steam App ID 640820.
+This build targets Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b on
+Windows through Steam. Every real qualification launch used Steam App ID 640820.
+
+Unity Mod Manager: `Info.json` declares **0.31.1** as the minimum. The build
+compiles against the pinned UMM 0.31.1 API surface. One candidate package was
+tested natively on UMM 0.31.1, 0.32.4 and 0.33.0. The 0.31.1 and 0.32.4 loaders
+were assembled from verified upstream components rather than taken from the
+Nexus installer ZIPs; 0.33.0 was the Nexus installation. Other versions,
+including 0.27.x, other 0.31.x, 0.32.0-0.32.3 and anything after 0.33.0, were
+not tested. A working newer loader does not need to be downgraded. See
+[UMM loader compatibility](docs/UMM-LOADER-COMPATIBILITY.md) for the audit,
+the matrix and its limits. (Builds through v0.0.187 declared 0.32.4.)
 
 The package has no bundled gameplay-library dependency. It requires the game,
 its supported Unity Mod Manager installation, and the Harmony compatibility
