@@ -1,5 +1,37 @@
 # Build, package, and publish
 
+## 0.0.188 publication authorization
+
+On 2026-11-13 Howie wrote: "Thank you. Please merge and cut a new release." PR #153 (UMM 0.31.1 minimum,
+pinned loader references and the loader-compatibility matrix) merged as `99fd8fa04a`. No channel was named, so
+this follows v0.0.187 as the next stable patch, v0.0.188, from master `99fd8fa04a`.
+
+- **Reviewed product.** Master `99fd8fa04a`. The only product change from v0.0.187 is `Info.json`
+  `ManagerVersion` 0.32.4 -> 0.31.1. The DLL is compiled against the pinned UMM 0.31.1 loader references
+  (`scripts/loader-reference-pins.json`) instead of the installed loader. `tools/validate_umm_minimum_release188.py`
+  pins it:
+  - the reviewed product differs from the v0.0.187 tag target only in the Info `ManagerVersion`, with no
+    change under `src/KingmakerGunslinger`, `assets`, `assets-source`, `blueprints` or `Directory.Build.props`;
+  - the reviewed pins name the verified UMM 0.31.1 `UnityModManager.dll` and `0Harmony12.dll` hashes, and the
+    pins and build inputs (`Build-Local.ps1`, `ReferenceProvenance.Common.ps1`, `validate-package.ps1`,
+    `DevelopmentCandidate.Common.ps1`, the exact-reference compiler) equal the reviewed master;
+  - only the three AssemblyInfo version attributes and the Info and props version values may change, and
+    `ManagerVersion` stays 0.31.1;
+  - all 7,933 released identities stay exact and in order, and none is appended;
+  - the creature catalog is unchanged, with only the owner-withdrawn Stirge withheld (1,208 public choices);
+  - the disclosed inherited-template membership still equals v0.0.187's twelve keys;
+  - one static release record is added.
+  Four executable controls each FAIL: a stray product edit, `ManagerVersion` back at 0.32.4, a changed
+  release record and a changed loader pin. The intended tree PASSes.
+- **Native evidence.** The development candidate `umm-0311-compat` (`b9400333e5`, ZIP `c82c73ab…`, DLL `7fa421d7…`)
+  has the same product source apart from version attributes. Eight sessions passed on UMM 0.31.1, 0.32.4 and
+  0.33.0 in a disposable game copy, with exact in-process loader identities (`docs/UMM-LOADER-COMPATIBILITY.md`).
+  The released DLL differs from it in its version attributes and commit stamp; any native run on the published
+  bytes is recorded with the publication.
+- **Publication path.** Use the ordinary exact-reference publisher from clean, pushed master with
+  `docs/RELEASE-NOTES-0.0.188.md` and the explicit summon-overhaul-baseline reference bundle. It runs the complete
+  gate and two deterministic builds, then publishes.
+
 ## 0.0.187 publication authorization
 
 **Published (completed).** Stable
