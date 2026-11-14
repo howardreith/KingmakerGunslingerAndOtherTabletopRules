@@ -6,8 +6,12 @@ On 2026-11-14 Howie wrote: "Please merge this and cut a new release." Draft PR #
 action-bar Elementals launcher repair) was marked ready and merged as `784b5e27ec`. No channel was named, so this
 follows v0.0.188 as the next stable patch, v0.0.189, from master `784b5e27ec`.
 
-- **Reviewed product.** Master `784b5e27ec`. PR #156 was reviewed at `7298937558`, `b7029441cf` and `d548b150d8`. The
-  only product change from v0.0.188 is in three files: `ElementalSourceChooserPolicy.cs`,
+- **Reviewed product.** `fabe5d211b`: master `784b5e27ec` plus a one-line repair. PR #156 was reviewed at
+  `7298937558`, `b7029441cf` and `d548b150d8`. The first publisher run on `784b5e27ec` refused in its complete suite:
+  `mission.native-warning-route` failed (2,982/2,983) because `RequestNativeRows` raised the native warning event
+  directly. Nothing was built, tagged or published. `fabe5d211b` routes that warning through `UIUtility.SendWarning`
+  with the same text, and the complete suite then passed 2,983/2,983. The only product change from v0.0.188 is in
+  three files: `ElementalSourceChooserPolicy.cs`,
   `ElementalSourceChooserRuntime.cs` and `ElementalSourceChooserView.cs`. `tools/validate_elementals_launcher_release189.py`
   pins it:
   - the product delta from the v0.0.188 tag target under `src/KingmakerGunslinger`, `assets`, `assets-source`,
