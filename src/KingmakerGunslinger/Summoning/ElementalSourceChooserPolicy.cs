@@ -92,6 +92,44 @@ namespace KingmakerGunslinger.Summoning
             return null;
         }
 
+        /// <summary>
+        /// The desktop Spells tab's launcher staging, applied to the native
+        /// per-level rows (m_LevelButtonPairs order) after FillSlots. Each
+        /// consolidated original standalone Summon Elemental tile leaves its
+        /// row, and one launcher takes the first one's place at the destination
+        /// level (or the end of that row). Every other row, including Summon
+        /// Monster and Summon Nature's Ally tiles with their native variant
+        /// popups, keeps its order. Input rows are never written.
+        /// Returns null, leaving the native rows untouched, when no original
+        /// tile is consolidated: every collected source is then a Summon
+        /// Monster/Nature's Ally row that already offers the same children,
+        /// so a launcher would only add a duplicate entry.
+        /// </summary>
+        internal static List<T[]> StageLauncherRows<T>(IList<T[]> levels,int destination,
+            ICollection<T> consolidated,Func<T> launcher) where T:class
+        {
+            if(levels==null)throw new ArgumentNullException("levels");
+            if(consolidated==null)throw new ArgumentNullException("consolidated");
+            if(launcher==null)throw new ArgumentNullException("launcher");
+            if(consolidated.Count==0)return null;
+            if(destination<0 || destination>=levels.Count)throw new InvalidOperationException("Exact native destination level is missing.");
+            var staged=new List<T[]>(levels.Count);
+            for(int index=0;index<levels.Count;index++)
+            {
+                T[] original=levels[index];
+                var rows=original.Where(value=>!consolidated.Any(source=>ReferenceEquals(value,source))).ToList();
+                if(index==destination)
+                {
+                    T tile=launcher();
+                    if(tile==null)throw new InvalidOperationException("Launcher construction failed.");
+                    int first=Array.FindIndex(original,value=>consolidated.Any(source=>ReferenceEquals(value,source)));
+                    rows.Insert(first<0?rows.Count:Math.Min(first,rows.Count),tile);
+                }
+                staged.Add(rows.ToArray());
+            }
+            return staged;
+        }
+
         internal static string RankTitle(int rank)
         { return Capital(Rank(rank).CreatureKeys[0].Split('-')[0]) + " (" + rank + ")"; }
         private static string Capital(string value)

@@ -195,17 +195,19 @@ namespace KingmakerGunslinger.Summoning
                 }
                 if(destination==null || session.Consolidated.Any(value=>originals.Values.Sum(rows=>rows.Count(row=>ReferenceEquals(row,value)))!=1))
                     throw new InvalidOperationException("Exact native source slots or destination level are missing.");
-                var launch=new ElementalChooserLauncher(session);launch.UpdateResourceCount();
-                foreach(var pair in originals)
+                var levels=originals.Keys.ToList();
+                var rowsByLevel=ElementalSourceChooserPolicy.StageLauncherRows<MechanicActionBarSlot>(
+                    levels.Select(value=>originals[value]).ToList(),levels.IndexOf(destination),session.Consolidated,
+                    ()=>{var launch=new ElementalChooserLauncher(session);launch.UpdateResourceCount();return launch;});
+                if(rowsByLevel==null)
                 {
-                    var rows=pair.Value.Where(value=>!session.Consolidated.Any(source=>ReferenceEquals(value,source))).ToList();
-                    if(ReferenceEquals(pair.Key,destination))
-                    {
-                        int first=Array.FindIndex(pair.Value,value=>session.Consolidated.Any(source=>ReferenceEquals(value,source)));
-                        rows.Insert(first<0?rows.Count:Math.Min(first,rows.Count),launch);
-                    }
-                    staged.Add(pair.Key,rows.ToArray());
+                    // Nothing to consolidate: the native rows stay exactly as
+                    // FillSlots built them, with no launcher slot of any kind.
+                    session.Ready=true;
+                    Outcome="desktop-tab-native-rows-unchanged:no-original-elemental-tile;sources="+session.Sources.Count;
+                    return;
                 }
+                for(int index=0;index<levels.Count;index++)staged.Add(levels[index],rowsByLevel[index]);
                 if(originals.Any(pair=>!pair.Key.SequenceEqual(pair.Value)))throw new InvalidOperationException("Foreign native slot collection change.");
                 foreach(var pair in staged)
                 {written.Add(pair.Key);pair.Key.Clear();pair.Key.AddRange(pair.Value);}
