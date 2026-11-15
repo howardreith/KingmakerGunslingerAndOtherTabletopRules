@@ -1506,8 +1506,8 @@
       "source": "src/KingmakerGunslinger/Blueprints/ProjectAssetIcons.cs",
       "assignment": "Apply assigns Require(elven-branched-spear) to the spear items and proficiencies and, through BlueprintUnitFactAccess.SetIcon, to the Boughkeeper armor-class buff.",
       "nativeDonorGuid": null,
-      "evidenceClass": "source-inspection",
-      "liveStatus": "not-yet-captured"
+      "evidenceClass": "source-inspection; native buff slot and tooltip on a development candidate",
+      "liveStatus": "Boughkeeper buff slot and tooltip captured; spear items and proficiencies not captured here"
     }
   },
   "concepts": [
@@ -4628,7 +4628,7 @@
       "sharingReason": "Boughkeeper's dodge buff is the effect of that spear's own attack-of-opportunity hit, so it shows the spear that grants it. The 128px export is the existing protectedFiles record assets/game/icons/elven-branched-spear.png, unchanged; no new painting, cache key or export.",
       "exportProfile": "none",
       "assetAuthority": null,
-      "technicalStatus": "source-integrated binding; native portrait-slot and tooltip rendering not yet captured",
+      "technicalStatus": "source-integrated binding; native portrait buff slot and tooltip PASS on a development candidate (reports/boughkeeper-buff-icon/NATIVE-UI-CHECK.json); owner visual review of the 19px slot pending",
       "visualReview": {
         "status": "not-reviewed",
         "reviewedExportSha256": null,
@@ -12851,7 +12851,8 @@
       "currentArt": "elven-branched-spear",
       "concept": "elven-branched-spear",
       "disposition": "intentional-family-share",
-      "reason": "Owner-directed 2026-11-15: the visible one-round +1 dodge AC buff reuses the existing Elven Branched Spear art of the weapon that grants it. Hidden once-per-round named-spear markers stay hidden and have no icon consumer."
+      "reason": "Owner-directed 2026-11-15: the visible one-round +1 dodge AC buff reuses the existing Elven Branched Spear art of the weapon that grants it. Hidden once-per-round named-spear markers stay hidden and have no icon consumer.",
+      "technicalEvidence": "reports/boughkeeper-buff-icon/NATIVE-UI-CHECK.json"
     }
   ],
   "uiEntries": [
