@@ -146,7 +146,8 @@ namespace KmgLoaderCompatHarness
                     ["fromWeaponAttackRule"] = evt.RuleAttackWithWeapon != null,
                     ["distanceMeters"] = Math.Round(meters, 3), ["distanceFeet"] = Math.Round(meters / 0.3048, 2),
                     ["rangeBonusFeet"] = Convert.ToInt32(Product(RangeContext).GetMethod("GetBonusFeet", Any).Invoke(null, new object[] { evt }), CultureInfo.InvariantCulture),
-                    ["natural"] = (int)evt.Roll, ["attackBonus"] = evt.AttackBonus, ["attackBonusPenalty"] = evt.AttackBonusPenalty, ["result"] = evt.Result.ToString(), ["hit"] = evt.IsHit,
+                    ["natural"] = (int)evt.Roll, ["attackBonus"] = evt.AttackBonus, ["attackBonusPenalty"] = evt.AttackBonusPenalty,
+                    ["shootingIntoMeleePenalty"] = evt.AttackBonusRule == null ? null : (JToken)evt.AttackBonusRule.ShootIntoCombatBonus, ["result"] = evt.Result.ToString(), ["hit"] = evt.IsHit,
                     ["targetHitPointsLeft"] = target.HPLeft,
                     ["selectedArmorClass"] = evt.TargetAC, ["targetFlatFooted"] = flatFooted, ["targetOrdinaryArmorClass"] = ordinary, ["targetTouchArmorClass"] = touch,
                     ["selected"] = evt.TargetAC == touch && touch != ordinary ? "touch" : evt.TargetAC == ordinary && touch != ordinary ? "ordinary" : "undetermined",
@@ -998,7 +999,7 @@ namespace KmgLoaderCompatHarness
         /// A spot for the shooter and one for the target the given distance away, joined by a straight walkable line, so
         /// that the attack command has both a clear line of fire and room to close to its weapon's range.
         /// </summary>
-        private bool ClearLine(double meters, out Vector3 from, out Vector3 to)
+        private bool ClearLine(double meters, bool clearOfUnits, out Vector3 from, out Vector3 to)
         {
             Vector3 main = Game.Instance.Player.MainCharacter.Value.Position;
             foreach (Vector3 offset in new[] { new Vector3(3f, 0f, 3f), new Vector3(-3f, 0f, 3f), new Vector3(3f, 0f, -3f), new Vector3(-3f, 0f, -3f), Vector3.zero })
@@ -1011,6 +1012,9 @@ namespace KmgLoaderCompatHarness
                     Vector3 end = start + new Vector3((float)(Math.Cos(angle) * meters), 0f, (float)(Math.Sin(angle) * meters));
                     Vector3 reached = Kingmaker.View.ObstacleAnalyzer.TraceAlongNavmesh(start, end);
                     if (new Vector2(reached.x - end.x, reached.z - end.z).magnitude > 0.05f) continue;
+                    // Nobody from the save within 20 ft of the target's spot: a bystander next to the target would
+                    // engage it once the fight starts, and the game then takes 4 off every shot into that melee.
+                    if (clearOfUnits && Game.Instance.State.Units.Any(unit => unit != null && unit.DistanceTo(reached) < 6.1f)) continue;
                     from = start;
                     to = reached;
                     return true;
@@ -1055,12 +1059,17 @@ namespace KmgLoaderCompatHarness
             record["requestedNatural"] = natural;
             record["distanceFeetWhenOrdered"] = Math.Round(shooter.DistanceTo(target) * FeetPerMeter, 2);
             shooter.Commands.Run(command);
+            record["commandTakenByTheUnit"] = shooter.Commands.Raw.Any(queued => ReferenceEquals(queued, command));
             yield return Until("the attack command to resolve an attack roll", () => observer.Shots.Count > before, 25);
-            yield return GameSeconds(0.3);
             CancelNatural();
+            // The command is left to end by itself. An attack command still in the unit's slot absorbs the next attack
+            // order instead of being replaced by it, and that order then never runs.
+            double rolledAt = Now();
+            yield return Until("the attack command to end", () => command.IsFinished || Now() >= rolledAt + 5d, 60);
             record["commandStarted"] = command.IsStarted;
             record["commandActed"] = command.IsActed;
             record["commandFinished"] = command.IsFinished;
+            record["commandEndedAfterGameSeconds"] = Math.Round(Now() - rolledAt, 2);
             record["commandResult"] = command.Result.ToString();
             record["attackRollsResolved"] = observer.Shots.Count - before;
             record["gritBefore"] = gritBefore;
@@ -1073,6 +1082,8 @@ namespace KmgLoaderCompatHarness
             }
 
             shooter.Commands.InterruptAll(true);
+            double interruptedAt = Now();
+            yield return Until("the unit's attack slot to clear", () => !shooter.Commands.Raw.Any(queued => queued is UnitAttack && !queued.IsFinished) || Now() >= interruptedAt + 2d, 30);
         }
 
         /// <summary>The same shot through the weapon attack rule alone, for the cases that must resolve at once.</summary>
@@ -1135,7 +1146,8 @@ namespace KmgLoaderCompatHarness
             Game.Instance.IsPaused = true;
 
             Vector3 from, to;
-            if (!ClearLine(startFeet / FeetPerMeter, out from, out to)) throw new InvalidOperationException("no straight walkable line of " + startFeet + " ft was found near the main character");
+            bool clearOfUnits = ClearLine(startFeet / FeetPerMeter, true, out from, out to);
+            if (!clearOfUnits && !ClearLine(startFeet / FeetPerMeter, false, out from, out to)) throw new InvalidOperationException("no straight walkable line of " + startFeet + " ft was found near the main character");
             UnitEntityData actor = Gunslinger("SteadyGunslinger", from, 1, 20, archetype);
             UnitEntityData bystander = Gunslinger("OtherGunslinger", from + (from - to).normalized * 0.01f + Vector3.Cross(Vector3.up, (to - from).normalized) * 1.2f, 1, 20, archetype);
             UnitEntityData hostile = SpawnHostile(actor, to);
@@ -1155,7 +1167,7 @@ namespace KmgLoaderCompatHarness
             ItemEntityWeapon otherMusket = Equip(bystander, Firearm("Musket"));
             Record["fixture"] = new JObject
             {
-                ["archetype"] = archetype.name, ["firearm"] = musket.Blueprint.name, ["firearmRangeFeet"] = musket.Blueprint.Type.AttackRange.Value,
+                ["archetype"] = archetype.name, ["targetSpotClearOfOtherUnits"] = clearOfUnits, ["firearm"] = musket.Blueprint.name, ["firearmRangeFeet"] = musket.Blueprint.Type.AttackRange.Value,
                 ["requestedDistanceFeet"] = startFeet, ["distanceFeetAtStart"] = Math.Round(actor.DistanceTo(hostile) * FeetPerMeter, 2),
                 ["targetOrdinaryArmorClass"] = hostile.Stats.AC.ModifiedValue, ["targetTouchArmorClass"] = hostile.Stats.AC.Touch,
                 ["targetFlatFootedArmorClass"] = hostile.Stats.AC.FlatFooted, ["targetFlatFootedTouchArmorClass"] = hostile.Stats.AC.FlatFootedTouch,
