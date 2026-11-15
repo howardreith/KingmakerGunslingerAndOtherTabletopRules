@@ -1,6 +1,6 @@
 {
   "name": "named-spear-buffs",
-  "description": "Native check of the eight named Elven Branched Spear buffs after they received effect links. First the product's own disposable spear combat scenario runs, so every named effect is still granted by its real trigger. Then, on a disposable fixture save, each of the eight buffs is put on the main character for one round with the game's own AddBuff: activation must complete, the four visible buffs must be in the portrait's buff bar and the four hidden round markers must not, and once play resumes every buff must end by itself within three rounds of game time, with armor class, speed and Reflex back at their earlier values. On a build where the buffs have no effect links the second launch fails by design.",
+  "description": "Native check of the eight named Elven Branched Spear buffs after they received effect links. First the product's own disposable spear combat scenario runs, so every named effect is still granted by its real trigger. Then, on a disposable fixture save, each of the eight buffs is put on the main character for one round with the game's own AddBuff: activation must complete, the four visible buffs must be in the portrait's buff bar, each drawing the Elven Branched Spear sprite its blueprint carries, and the four hidden round markers must not, and once play resumes every buff must end by itself within three rounds of game time, with armor class, speed and Reflex back at their earlier values. On a build where the buffs have no effect links, or a visible one has no icon, the second launch fails by design.",
   "ownerMods": [],
   "fixtureSaves": [
     "KMCS_AFTER_NORMAL_012_MODONLY.zks"
@@ -36,6 +36,7 @@
             "label": "named-spears",
             "type": "064feb1123cfb1ae4f541ef5e4d138a1,339e83672ea2116e55640d175fec0c84,7e2b2d36433396535555d39cc4066763,6ac410ab82b81915d64249a213e1815a,dcc7832d9ed7558111ee97da668522fe,89cea1f236074e36051a68ece37aa05c,1bb02c32918071bfa8333a12de4d7e94,27d76fe829cc0234b7e120b19462848b",
             "match": "6",
+            "expect": "KMG_Icon_elven-branched-spear",
             "timeoutSeconds": 180,
             "continueOnFailure": true
           }
