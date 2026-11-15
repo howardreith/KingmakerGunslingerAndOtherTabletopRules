@@ -35860,7 +35860,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 buffIcon = false, activeReactivationUnavailable = false;
             int buffRank = -1;
             string commandResult = "<not-run>";
-            string deliveryAfterCommand = "<not-run>";
+            bool buffNotDispelable = false;
             long ownedModifiersWhileActive = -1, ownedModifiersAfterRemoval = -1;
             int gritAfterActiveReactivation = -1;
             string stage = "construct-disposables";
@@ -35938,7 +35938,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "Native Dodge command did not finish; result=" +
                         commandResult + ".");
                 // The command only queues the ability's execution process;
-                // Kingmaker's ability controller runs the deed's delivery on
+                // Kingmaker's ability controller runs the ability's effect on
                 // a later tick. Drive that process here, as the other
                 // native-command fixtures do, before reading its effects.
                 if (command.ExecutionProcess == null)
@@ -35951,8 +35951,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!command.ExecutionProcess.IsEnded)
                     throw new InvalidOperationException(
                         "Native Dodge delivery did not end.");
-                deliveryAfterCommand =
-                    GunslingerDodgeRuntimeDiagnostics.DeliveryEvidence;
                 afterApplied = defender.Descriptor.Resources.GetResourceAmount(grit);
                 armedAfter = defender.Descriptor.HasFact(
                     gunslinger.Dodge.ArmedProneMarker);
@@ -35967,6 +35965,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 buffEndTime = liveBuff.EndTime;
                 buffRemaining = liveBuff.TimeLeft;
                 buffPermanent = liveBuff.IsPermanent;
+                buffNotDispelable = liveBuff.IsNotDispelable;
                 buffRank = liveBuff.GetRank();
                 exactBuffBlueprint = ReferenceEquals(liveBuff.Blueprint,
                     gunslinger.Dodge.ArmorClassBuff);
@@ -36065,13 +36064,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ownedModifiersAfterRemoval == 0 &&
                     acAfterRemoval == acBefore,
                     "Buff-owned modifier lifecycle"),
-                Assertion("dodge-delivery-completed",
-                    "the deed's own delivery created the buff and ended without a fault",
-                    "deliveryAfterCommand=" + deliveryAfterCommand,
-                    deliveryAfterCommand.StartsWith(
-                        "deliverEntered=true;buffCreated=True;deliveryFault=false;",
-                        StringComparison.Ordinal),
-                    "GunslingerDodgeProneAbilityLogic.Deliver through the native execution process"),
+                // The ability applies its buff through the native apply-buff
+                // action, which marks the buff only when AddBuff hands it
+                // back. AddBuff hands nothing back when activation is cut
+                // short, so the mark shows that activation completed.
+                Assertion("dodge-native-apply-completed",
+                    "the native apply-buff action received the buff and marked it not dispelable",
+                    "buffNotDispelable=" + buffNotDispelable, buffNotDispelable,
+                    "ContextActionApplyBuff through the native execution process"),
                 Assertion("dodge-active-reactivation-atomic",
                     "active Dodge is unavailable and spends no Grit", observed,
                     activeReactivationUnavailable &&
