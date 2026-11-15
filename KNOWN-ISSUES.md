@@ -1,17 +1,52 @@
 # Known issues and conservative adaptations
 
-- Several project buffs are built without `FxOnStart` and `FxOnRemove` links. Kingmaker's buff activation
-  dereferences `FxOnStart` after the buff is already active, and the rule that applies the buff swallows the error:
-  the buff works, but the "buff added" notification and expiry scheduling do not run, so it does not appear in the
-  party bar and a buff that ends itself can linger. v0.0.190 repaired the eleven buffs behind the missing Gunslinger
-  class report (see `docs/GUNSLINGER-MISSING-CLASS-REPAIR.md`). Read from source, and neither applied nor observed,
-  the same construction remains in Deadeye Armed, Gunslinger's Dodge, the four Bleeding Wound bleeds applied to a
-  target, Startling Shot, Targeting (Head), the Pistolero and Musket Master armed buffs, and one buff each in
-  `EasternWeaponNamedBlueprints` and `ExpandedSummoningSpecialBuilder.Suggestion32`. Gunslinger's Dodge has its own
-  expiry guard built around the existing behaviour, so each of these needs its own change and native check. The eight
-  named Elven Branched Spear buffs were repaired and observed separately: without the links Boughkeeper's buff stayed
-  on the character, with its +1 AC, after three rounds; with them all eight activate fully and end after one round
-  (`reports/boughkeeper-buff-icon/NATIVE-UI-CHECK.json`).
+- Buffs built without `FxOnStart` and `FxOnRemove` links. Kingmaker's buff activation dereferences `FxOnStart` after
+  the buff is already on the unit, and the rule that applies the buff swallows the error: the buff's components work,
+  but `AddBuff` hands nothing back, the "buff added" notice is not raised and no end or tick is scheduled until some
+  other buff on the same unit is added or removed.
+  - Released: the eleven buffs behind the first missing Gunslinger class report (v0.0.190,
+    `docs/GUNSLINGER-MISSING-CLASS-REPAIR.md`) and the eight named Elven Branched Spear buffs (v0.0.191,
+    `reports/boughkeeper-buff-icon/`).
+  - Repaired on branch `codex/def02-buff-effect-links`, not merged and not released: Deadeye Armed, Gunslinger's
+    Dodge, the four Bleeding Wound bleeds applied to a target, Startled (Startling Shot), Targeted Head, Up Close and
+    Deadly Armed, Steady Aim Armed, and the four buffs in `EasternWeaponNamedBlueprints` (Falling Petal, the
+    Mountain-Sunder round marker and the two retained Wayfarer's Oath and Moonlit Crossing shells). Record and evidence:
+    `docs/GUNSLINGER-EFFECT-FREE-BUFF-LINKS.md`.
+  - **Still in the published v0.0.191**, observed in a loaded game on the published package: a Bleeding Wound bleed is
+    put on the target and did not tick in two rounds; Startled did not end in more than two rounds, so the target
+    stayed flat-footed; the Mountain-Sunder round marker did not end, so a hit in the next round got no force damage;
+    Gunslinger's Dodge works and ends on time only through its own expiry guard, raises no "buff added" notice and is
+    not marked not-dispelable. From the engine's code, scheduling resumes the next time another buff on the same unit
+    is added or removed, so the effect in play is irregular.
+- Deadeye spends grit and arms nothing in the published v0.0.191. From source, this dates from the ability's move to
+  native actions in August 2026 (`c2b5f98010`). The ability's apply-buff action had a duration with no dice count;
+  Kingmaker cannot calculate it, the action faults inside the game's action list, and Deadeye Armed is never applied. Observed in a loaded game on the
+  published package: grit 5 to 4, no buff, no notice. Repaired on branch `codex/def02-buff-effect-links` (not merged,
+  not released), where the same use arms the state, an eligible firearm shot consumes it and an unused one ends after
+  one round with no refund. The product's own `disposable-gunslinger-deadeye` scenario adds the buff directly and so
+  never showed this.
+- Steady Aim's armed state is never consumed by a shot and never grants its 10 feet. `SteadyAimAttackHandler` reads
+  `RuleAttackWithWeapon.AttackRoll` before the rule has triggered, where Kingmaker has not created the roll yet, and
+  returns. Observed in a loaded game on the branch candidate with a Musket Master and a musket: the state arms, a
+  qualifying shot leaves it in place, and it runs out after one round. From source, the published v0.0.191 is the same
+  (the handler is unchanged); it was not run there. Not repaired; it needs a change to the deed's rule hook.
+- Deadeye can be used again while Deadeye Armed is up: it spends another grit and replaces the state. The registered
+  ability has no "not already armed" restriction (Gunslinger's Dodge, Up Close and Deadly and Steady Aim each refuse a
+  second use). Left as a design question.
+- Six visible buffs have no icon and draw a blank square where a buff list shows them: Deadeye Armed, the four
+  Bleeding Wound bleeds and Falling Petal. With the effect links they are announced on first application, so the blank
+  square is now seen reliably on that branch. Not repaired; icon assignments are an art decision and go through the
+  icon catalog.
+- The optional Suggestion buff (`KMG.Summoning.FeyCelestial.SuggestionBuff`) was listed with the buffs above from its
+  source. Without the provider its final blueprint has both effect links (empty), read in the game. With CowWithHat
+  Custom Spells present the builder copies the provider's own links into it; that final blueprint has not been read,
+  because the provider is not installed on the lab machine. The native Rainbow Pattern buff the provider's buff is
+  checked against has a start effect and an empty remove link.
+- `GunslingerDodgeProneAbilityLogic`'s custom delivery and its `RecordDeliveryEntered`/`RecordDeliveryApplied`
+  diagnostics are not part of the registered Dodge ability, which applies its buff with the native apply-buff action
+  (`AbilityResourceLogic`, `DodgeGritCostCalculator`, `AbilityCasterHasNoFacts`, `AbilityEffectRunAction`). A real
+  activation leaves the diagnostic at `deliverEntered=false`. The class still holds the live cost calculator. The dead
+  delivery and the dead pre-AC reaction diagnostic were left alone.
 - Three hidden Expanded Summoning abilities have no stored description:
   `KMG_Summoning_Infernal_BarbedDevil_OrdersWrath`, `KMG_Summoning_Infernal_BarbedDevil_Pyrotechnics` and
   `KMG_Summoning_Infernal_BoneDevil_DimensionalAnchor`. On a stock game Kingmaker shows `<null>` for such text. On an
@@ -24,13 +59,20 @@
   action), Utility Shot, Startling Shot or Lightning Reload, which are in the same position. It also counts remaining
   grit in units of 1 whatever a deed costs. Both are released behaviour, preserved by the recipient repair and left
   as a design question.
-- In the disposable loader-compat game copy, `disposable-gunslinger-dodge` errors before its assertions ("The native
-  Dodge command completed without its timed Buff fact") on the published v0.0.190 package and on current source. In
-  `disposable-pistolero-deeds`, the damage assertion `up-close-critical` is intermittent on the grit UI recipient
+- In the disposable loader-compat game copy, `disposable-gunslinger-dodge` errors before its assertions. It runs from
+  the main menu on a unit that is in no loaded area, and Kingmaker interrupts the ability command there before
+  anything is cast. On the published packages the scenario then read the missing buff ("The native Dodge command
+  completed without its timed Buff fact"); on branch `codex/def02-buff-effect-links` it stops at the cause ("Native
+  Dodge command produced no execution process; result=Interrupt"). This is the fixture, not the deed: in a loaded game
+  the real ability spends one grit, adds 2 to armor class against an incoming attack and ends after one round on the
+  published v0.0.191 and on the branch (`docs/GUNSLINGER-EFFECT-FREE-BUFF-LINKS.md`). The scenario's new
+  `dodge-native-apply-completed` assertion has therefore not been exercised.
+- In `disposable-pistolero-deeds`, the damage assertion `up-close-critical` is intermittent on the grit UI recipient
   candidate: two of three identical runs failed (observed damage `6,3`) and one passed (`3,3`). The published v0.0.190
   package was run once and passed, which does not show whether it is intermittent there. The cause is not established.
-  The scenario's grit assertions passed in every run. Neither was investigated. The Dodge buff is one of those built
-  without effect links (first entry above).
+  The scenario's grit assertions passed in every run. It was not investigated or run again. Separately, in a loaded
+  game on the branch candidate, Up Close and Deadly armed through its ability spent nothing at arming and exactly one
+  grit after a hit, and an unused state ended after one round with no charge; damage was not judged there.
 - Rapid Reload's parent proficiency gate reads only the registered firearm
   proficiency features, so any future independent proficiency source satisfies
   it without further changes. `FirearmProficiencyScopeReconciler` remains a
