@@ -1,5 +1,42 @@
 # Build, package, and publish
 
+## 0.0.191 publication authorization
+
+**Authorized, not yet published.**
+
+On 2026-11-15 Howie sent the review of PR #166 and wrote: "Please address the minor issues identified, then merge this
+and cut a new release. Thank you." The review's two corrections were made on the PR branch (`e99888c4ad`), and PR #166
+(the grit UI recipient repair for the second missing Gunslinger class report) was merged as `b8ba915d36`. No channel
+was named, so this follows v0.0.190 as the next stable patch, v0.0.191, from master `b8ba915d36`.
+
+- **Reviewed product.** Master `b8ba915d36`. PR #166 was reviewed at `21387ac767`; the review follow-ups, which touch
+  only the test harness, a session description and the records, landed in `e99888c4ad`. The release also carries the
+  two named Elven Branched Spear buff changes that were merged after v0.0.190 at the owner's direction and held for
+  this release: PR #164 (`30e9fdf68b`, effect links on all eight named-spear buffs and Boughkeeper's icon) and PR #165
+  (`ce3d0be334`, the spear icon on the three visible penalty buffs). The product change from v0.0.190 is six files,
+  listed in `tools/validate_grit_ui_recipient_release191.py`, which pins it:
+  - the product delta from the v0.0.190 tag target under `src/KingmakerGunslinger`, `assets`, `assets-source`,
+    `blueprints` and `Directory.Build.props` is exactly those six files;
+  - `Info.json`, the UMM 0.31.1 loader pins and the build inputs are unchanged from v0.0.190 and the reviewed master;
+  - only the three AssemblyInfo version attributes and the Info and props version values may change;
+  - all 7,933 released identities stay exact and in order, and none is appended;
+  - the creature catalog is unchanged, with only the owner-withdrawn Stirge withheld (1,208 public choices);
+  - the disclosed inherited-template membership still equals v0.0.190's twelve keys;
+  - one static release record is added.
+- **Offline evidence.** At `4acb7055c9` (the same product source as the reviewed master), the complete domain suite
+  passed 2,993/2,993 and the development candidate build passed its validation and strict package validation.
+- **Native evidence.** Development candidate `4acb7055c92c` (DLL `4611260e...`) ran in the disposable loader-compat
+  game copy on Unity Mod Manager 0.33.0, with the published v0.0.190 package failing the same launches. See
+  `docs/GUNSLINGER-GRIT-UI-RECIPIENT-REPAIR.md` for the sessions, and `reports/boughkeeper-buff-icon/` for the
+  named-spear checks. The release build differs from that candidate by version metadata and build stamps. It is run
+  in the game after publication and the result is added here.
+- **Not established.** Which ability failed on the reporting installation and what makes text resolve to null there.
+  The reporter's setup was not reproduced. Gunslinger's Dodge has no passing spend check, and one Pistolero damage
+  assertion is intermittent on the candidate with its cause not established.
+- **Publication path.** Use the ordinary exact-reference publisher from clean, pushed master with
+  `docs/RELEASE-NOTES-0.0.191.md` and the explicit summon-overhaul-baseline reference bundle. It runs the complete
+  gate and two deterministic builds, then publishes.
+
 ## 0.0.190 publication authorization
 
 **Published (completed).** Stable
