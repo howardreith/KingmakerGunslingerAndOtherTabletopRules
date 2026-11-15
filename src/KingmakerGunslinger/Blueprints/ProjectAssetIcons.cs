@@ -173,6 +173,9 @@ namespace KingmakerGunslinger.Blueprints
             foreach (NamedSpearBlueprintEntry entry in
                 elvenBranchedSpears.Named.Entries)
                 items.SetIcon(entry.Item, spearIcon);
+            // Boughkeeper's visible AC buff shares its spear's art.
+            factAccess.SetIcon(
+                elvenBranchedSpears.Named.Buffs.Boughkeeper, spearIcon);
             ApplyEasternWeapons(easternWeapons, items, factAccess);
             ValidateDistinctSupplyIcons(ammunition, repairKit, supplies);
         }

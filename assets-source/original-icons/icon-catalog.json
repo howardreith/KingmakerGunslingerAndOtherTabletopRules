@@ -1501,6 +1501,13 @@
     "sprint26-emblems": {
       "source": "tools/icon-art/New-BuletteLeapEmblem.ps1",
       "scope": "Original combat-emblem-64; HumanReview NOT_PERFORMED_NONBLOCKING."
+    },
+    "elven-branched-spear": {
+      "source": "src/KingmakerGunslinger/Blueprints/ProjectAssetIcons.cs",
+      "assignment": "Apply assigns Require(elven-branched-spear) to the spear items and proficiencies and, through BlueprintUnitFactAccess.SetIcon, to the Boughkeeper armor-class buff.",
+      "nativeDonorGuid": null,
+      "evidenceClass": "source-inspection",
+      "liveStatus": "not-yet-captured"
     }
   },
   "concepts": [
@@ -4612,6 +4619,20 @@
         "path": "assets/game/icons/bulette-leap.png",
         "installedPath": "assets/icons/bulette-leap.png",
         "cacheKey": "bulette-leap"
+      }
+    },
+    {
+      "key": "elven-branched-spear",
+      "name": "Elven Branched Spear (existing weapon art)",
+      "family": "protected-weapon-art",
+      "sharingReason": "Boughkeeper's dodge buff is the effect of that spear's own attack-of-opportunity hit, so it shows the spear that grants it. The 128px export is the existing protectedFiles record assets/game/icons/elven-branched-spear.png, unchanged; no new painting, cache key or export.",
+      "exportProfile": "none",
+      "assetAuthority": null,
+      "technicalStatus": "source-integrated binding; native portrait-slot and tooltip rendering not yet captured",
+      "visualReview": {
+        "status": "not-reviewed",
+        "reviewedExportSha256": null,
+        "evidence": null
       }
     }
   ],
@@ -12818,6 +12839,19 @@
       "disposition": "original-required",
       "reason": "Original physical jump action emblem.",
       "technicalEvidence": "planning/EXPANDED-SUMMONING-SPRINT26-CONTRACT.md"
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.BoughkeeperArmorClassBuff",
+      "guid": "064feb1123cfb1ae4f541ef5e4d138a1",
+      "type": "BlueprintBuff",
+      "name": "Boughkeeper",
+      "module": "ElvenBranchedSpear",
+      "publication": "published visible buff; previously shipped with a null icon, drawn by the game as a white square",
+      "surface": "party portrait buff slot and buff tooltip",
+      "currentArt": "elven-branched-spear",
+      "concept": "elven-branched-spear",
+      "disposition": "intentional-family-share",
+      "reason": "Owner-directed 2026-11-15: the visible one-round +1 dodge AC buff reuses the existing Elven Branched Spear art of the weapon that grants it. Hidden once-per-round named-spear markers stay hidden and have no icon consumer."
     }
   ],
   "uiEntries": [
@@ -13271,7 +13305,14 @@
       "baselineSha256": "52e202c2ed23a97ba38bdf7fb14a91bc453f360bb6301ddc184b9816881db7f7",
       "before": "            foreach (string name in names)\n",
       "after": "            names = names.Concat(OwnedIconAssignments.IconKeys).ToArray();\n            foreach (string name in names)\n",
-      "authorization": "Icon overhaul v2 mission section 7; exact cache extension / post-registration owned mapping and guarded read-only census. Entire remaining source must match baseline."
+      "authorization": "Icon overhaul v2 mission section 7; exact cache extension / post-registration owned mapping and guarded read-only census. Entire remaining source must match baseline.",
+      "authorizedFeatureEdits": [
+        {
+          "before": "                items.SetIcon(entry.Item, spearIcon);\n            ApplyEasternWeapons(easternWeapons, items, factAccess);\n",
+          "after": "                items.SetIcon(entry.Item, spearIcon);\n            // Boughkeeper's visible AC buff shares its spear's art.\n            factAccess.SetIcon(\n                elvenBranchedSpears.Named.Buffs.Boughkeeper, spearIcon);\n            ApplyEasternWeapons(easternWeapons, items, factAccess);\n",
+          "authorization": "Owner direction 2026-11-15, Boughkeeper white-square buff repair: one exact presentation assignment of the existing cached elven-branched-spear sprite to KMG.ElvenBranchedSpear.BoughkeeperArmorClassBuff (064feb1123cfb1ae4f541ef5e4d138a1) through the existing BlueprintUnitFactAccess.SetIcon. No new cache key, PNG, helper or other assignment; reversed first, so the original baseline and every other assignment stay enforced."
+        }
+      ]
     },
     {
       "path": "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs",
