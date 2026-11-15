@@ -749,6 +749,8 @@ namespace KmgLoaderCompatHarness
             BlueprintBuff blueprint = Blueprint<BlueprintBuff>("buff");
             int gritAtArm = int.Parse(Id("gritAtArm"), CultureInfo.InvariantCulture);
             int gritAtShot = int.Parse(Id("gritAtShot"), CultureInfo.InvariantCulture);
+            // "refusedWhileArmed" is "true" for an ability whose own logic refuses a second use while its state is up.
+            bool refusedWhileArmed = Id("refusedWhileArmed") == "true";
             Watch(blueprint);
             Record["blueprint"] = BuffCensus.Describe(blueprint);
             Game.Instance.IsPaused = true;
@@ -781,7 +783,7 @@ namespace KmgLoaderCompatHarness
             Expect(armed != null, blueprint.name + " is not on the gunslinger after the ability was used");
             Expect(Grit(actor) == gritBefore - gritAtArm, "arming changed grit from " + gritBefore + " to " + Grit(actor) + ", expected " + gritAtArm + " spent");
             Expect((int)consumed["buffAddedNotices"] == 1, "the game raised " + consumed["buffAddedNotices"] + " buff-added notices for " + blueprint.name + ", expected 1");
-            Expect(!(bool)consumed["availableWhileArmed"], "the ability can be used again while armed");
+            if (refusedWhileArmed) Expect(!(bool)consumed["availableWhileArmed"], "the ability can be used again while armed");
             int gritBeforeShot = Grit(actor);
             RuleAttackWithWeapon shot = Attack(actor, hostile, firearm, 15, true, shots);
             consumed["shotHit"] = shot.AttackRoll.IsHit;
@@ -925,6 +927,12 @@ namespace KmgLoaderCompatHarness
             }
 
             // 3. The supported cure: the Utility Shot deed's Stop Bleeding, one loaded shot per bleed, no grit.
+            if (ids.ContainsKey("cure") && ids["cure"] == "false")
+            {
+                Record["cure"] = "not run in this step";
+                yield break;
+            }
+
             var cured = new JArray();
             Record["cured"] = cured;
             var curedAt = new double[4];
@@ -941,6 +949,11 @@ namespace KmgLoaderCompatHarness
                     continue;
                 }
 
+                // A standard action leaves the gunslinger on cooldown for the rest of its round. The fixture clears
+                // that between cures; it is not part of what is being judged.
+                actor.CombatState.Cooldown.StandardAction = 0f;
+                actor.CombatState.Cooldown.MoveAction = 0f;
+                actor.CombatState.Cooldown.SwiftAction = 0f;
                 LoadRound(firearm);
                 int gritBefore = Grit(actor);
                 double startedAt = Now();
@@ -948,6 +961,7 @@ namespace KmgLoaderCompatHarness
                 BlueprintBuff bleedBlueprint = bleeds[index];
                 UnitUseAbility cure = Use(actor, stopBleeding, victim, row);
                 yield return Until("Stop Bleeding to remove the " + kinds[index] + " bleed", () => OnUnit(victim, bleedBlueprint) == null, 25);
+                yield return Until("the Stop Bleeding command to finish", () => cure.IsFinished, 10);
                 row.Merge(Used(cure));
                 curedAt[index] = EventAt("removed", bleedBlueprint, victim, startedAt) ?? Now();
                 atCure[index] = Suffered(victim, kinds[index]);

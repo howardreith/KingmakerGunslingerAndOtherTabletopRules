@@ -82,7 +82,8 @@
               "gritAtArm": "1",
               "gritAtShot": "0",
               "class": "abca4797366d4df0831a418eee39069a",
-              "grit": "9876b3e744dd422b9c259d19861ad222"
+              "grit": "9876b3e744dd422b9c259d19861ad222",
+              "refusedWhileArmed": "false"
             },
             "timeoutSeconds": 240,
             "continueOnFailure": true
@@ -99,7 +100,8 @@
               "gritAtArm": "0",
               "gritAtShot": "1",
               "class": "abca4797366d4df0831a418eee39069a",
-              "grit": "9876b3e744dd422b9c259d19861ad222"
+              "grit": "9876b3e744dd422b9c259d19861ad222",
+              "refusedWhileArmed": "true"
             },
             "timeoutSeconds": 240,
             "continueOnFailure": true
@@ -116,7 +118,8 @@
               "gritAtArm": "0",
               "gritAtShot": "0",
               "class": "abca4797366d4df0831a418eee39069a",
-              "grit": "9876b3e744dd422b9c259d19861ad222"
+              "grit": "9876b3e744dd422b9c259d19861ad222",
+              "refusedWhileArmed": "true"
             },
             "timeoutSeconds": 240,
             "continueOnFailure": true
