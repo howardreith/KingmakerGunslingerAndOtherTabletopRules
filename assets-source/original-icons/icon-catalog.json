@@ -1504,10 +1504,10 @@
     },
     "elven-branched-spear": {
       "source": "src/KingmakerGunslinger/Blueprints/ProjectAssetIcons.cs",
-      "assignment": "Apply assigns Require(elven-branched-spear) to the spear items and proficiencies and, through BlueprintUnitFactAccess.SetIcon, to the Boughkeeper armor-class buff.",
+      "assignment": "Apply assigns Require(elven-branched-spear) to the spear items and proficiencies and, through BlueprintUnitFactAccess.SetIcon, to the Boughkeeper armor-class buff and the Thornstep, Viper's Reach and First Branch's Reprisal penalty buffs.",
       "nativeDonorGuid": null,
       "evidenceClass": "source-inspection; native buff slot and tooltip on a development candidate",
-      "liveStatus": "Boughkeeper buff slot and tooltip captured; spear items and proficiencies not captured here"
+      "liveStatus": "Boughkeeper buff slot and tooltip captured; the three penalty buff slots captured on the player's portrait; spear items and proficiencies not captured here"
     }
   },
   "concepts": [
@@ -4625,7 +4625,7 @@
       "key": "elven-branched-spear",
       "name": "Elven Branched Spear (existing weapon art)",
       "family": "protected-weapon-art",
-      "sharingReason": "Boughkeeper's dodge buff is the effect of that spear's own attack-of-opportunity hit, so it shows the spear that grants it. The 128px export is the existing protectedFiles record assets/game/icons/elven-branched-spear.png, unchanged; no new painting, cache key or export.",
+      "sharingReason": "Boughkeeper's dodge buff is the effect of that spear's own attack-of-opportunity hit, so it shows the spear that grants it; the Thornstep, Viper's Reach and First Branch's Reprisal penalties likewise show the spear that inflicted them. The 128px export is the existing protectedFiles record assets/game/icons/elven-branched-spear.png, unchanged; no new painting, cache key or export.",
       "exportProfile": "none",
       "assetAuthority": null,
       "technicalStatus": "source-integrated binding; native portrait buff slot (after the first hit), tooltip and one-round end PASS on a development candidate (reports/boughkeeper-buff-icon/NATIVE-UI-CHECK.json); owner visual review of the 19px slot pending",
@@ -12853,6 +12853,48 @@
       "disposition": "intentional-family-share",
       "reason": "Owner-directed 2026-11-15: the visible one-round +1 dodge AC buff reuses the existing Elven Branched Spear art of the weapon that grants it. Hidden once-per-round named-spear markers stay hidden and have no icon consumer.",
       "technicalEvidence": "reports/boughkeeper-buff-icon/NATIVE-UI-CHECK.json"
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.ThornstepSpeedPenaltyBuff",
+      "guid": "339e83672ea2116e55640d175fec0c84",
+      "type": "BlueprintBuff",
+      "name": "Thornstep",
+      "module": "ElvenBranchedSpear",
+      "publication": "published visible buff; previously shipped with a null icon, drawn by the game as a white square",
+      "surface": "buff bar slot and buff tooltip of the unit the named spear hit",
+      "currentArt": "elven-branched-spear",
+      "concept": "elven-branched-spear",
+      "disposition": "intentional-family-share",
+      "reason": "Owner-directed 2026-11-15: the visible one-round Thornstep speed penalty reuses the existing Elven Branched Spear art of the weapon that inflicts it. Its hidden once-per-round marker stays hidden and has no icon consumer.",
+      "technicalEvidence": "reports/boughkeeper-buff-icon/PENALTY-BUFF-ICONS-NATIVE-CHECK.json"
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.VipersReachReflexPenaltyBuff",
+      "guid": "6ac410ab82b81915d64249a213e1815a",
+      "type": "BlueprintBuff",
+      "name": "Viper's Reach",
+      "module": "ElvenBranchedSpear",
+      "publication": "published visible buff; previously shipped with a null icon, drawn by the game as a white square",
+      "surface": "buff bar slot and buff tooltip of the unit the named spear hit",
+      "currentArt": "elven-branched-spear",
+      "concept": "elven-branched-spear",
+      "disposition": "intentional-family-share",
+      "reason": "Owner-directed 2026-11-15: the visible one-round Viper's Reach Reflex penalty reuses the existing Elven Branched Spear art of the weapon that inflicts it. Its hidden once-per-round marker stays hidden and has no icon consumer.",
+      "technicalEvidence": "reports/boughkeeper-buff-icon/PENALTY-BUFF-ICONS-NATIVE-CHECK.json"
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.FirstBranchSpeedPenaltyBuff",
+      "guid": "27d76fe829cc0234b7e120b19462848b",
+      "type": "BlueprintBuff",
+      "name": "First Branch's Reprisal",
+      "module": "ElvenBranchedSpear",
+      "publication": "published visible buff; previously shipped with a null icon, drawn by the game as a white square",
+      "surface": "buff bar slot and buff tooltip of the unit the named spear hit",
+      "currentArt": "elven-branched-spear",
+      "concept": "elven-branched-spear",
+      "disposition": "intentional-family-share",
+      "reason": "Owner-directed 2026-11-15: the visible one-round First Branch's Reprisal speed penalty reuses the existing Elven Branched Spear art of the weapon that inflicts it. Its hidden once-per-round marker stays hidden and has no icon consumer.",
+      "technicalEvidence": "reports/boughkeeper-buff-icon/PENALTY-BUFF-ICONS-NATIVE-CHECK.json"
     }
   ],
   "uiEntries": [
@@ -13308,6 +13350,11 @@
       "after": "            names = names.Concat(OwnedIconAssignments.IconKeys).ToArray();\n            foreach (string name in names)\n",
       "authorization": "Icon overhaul v2 mission section 7; exact cache extension / post-registration owned mapping and guarded read-only census. Entire remaining source must match baseline.",
       "authorizedFeatureEdits": [
+        {
+          "before": "                elvenBranchedSpears.Named.Buffs.Boughkeeper, spearIcon);\n            ApplyEasternWeapons(easternWeapons, items, factAccess);\n",
+          "after": "                elvenBranchedSpears.Named.Buffs.Boughkeeper, spearIcon);\n            // So do the visible penalties the other named spears inflict.\n            factAccess.SetIcon(\n                elvenBranchedSpears.Named.Buffs.ThornPenalty, spearIcon);\n            factAccess.SetIcon(\n                elvenBranchedSpears.Named.Buffs.ViperPenalty, spearIcon);\n            factAccess.SetIcon(\n                elvenBranchedSpears.Named.Buffs.FirstPenalty, spearIcon);\n            ApplyEasternWeapons(easternWeapons, items, factAccess);\n",
+          "authorization": "Owner direction 2026-11-15, named-spear penalty buff icons: three exact presentation assignments of the existing cached elven-branched-spear sprite to KMG.ElvenBranchedSpear.ThornstepSpeedPenaltyBuff (339e83672ea2116e55640d175fec0c84), KMG.ElvenBranchedSpear.VipersReachReflexPenaltyBuff (6ac410ab82b81915d64249a213e1815a) and KMG.ElvenBranchedSpear.FirstBranchSpeedPenaltyBuff (27d76fe829cc0234b7e120b19462848b) through the existing BlueprintUnitFactAccess.SetIcon. No new cache key, PNG, helper or other assignment. Listed first so it is reversed before the Boughkeeper hunk, whose record is unchanged."
+        },
         {
           "before": "                items.SetIcon(entry.Item, spearIcon);\n            ApplyEasternWeapons(easternWeapons, items, factAccess);\n",
           "after": "                items.SetIcon(entry.Item, spearIcon);\n            // Boughkeeper's visible AC buff shares its spear's art.\n            factAccess.SetIcon(\n                elvenBranchedSpears.Named.Buffs.Boughkeeper, spearIcon);\n            ApplyEasternWeapons(easternWeapons, items, factAccess);\n",
