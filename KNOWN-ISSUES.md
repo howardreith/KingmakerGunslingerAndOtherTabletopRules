@@ -6,13 +6,14 @@
   party bar and a buff that ends itself can linger. v0.0.190 repaired the eleven buffs behind the missing Gunslinger
   class report (see `docs/GUNSLINGER-MISSING-CLASS-REPAIR.md`). Read from source, and neither applied nor observed,
   the same construction remains in Deadeye Armed, Gunslinger's Dodge, the four Bleeding Wound bleeds applied to a
-  target, Startling Shot, Targeting (Head), the Pistolero and Musket Master armed buffs, one buff each in
-  `EasternWeaponNamedBlueprints` and `ExpandedSummoningSpecialBuilder.Suggestion32`, and seven in
-  `ElvenBranchedSpearNamedBlueprints`: the Thornstep, Viper's Reach and First Branch penalties and the four hidden
-  round markers. Gunslinger's Dodge has its own expiry guard built around the existing behaviour, so each of these
-  needs its own change and native check. Boughkeeper's armor-class buff was repaired and observed separately: without
-  the links it stayed on the character, with its +1 AC, after three rounds; with them it shows in the portrait after
-  the first hit and ends after one round (`reports/boughkeeper-buff-icon/NATIVE-UI-CHECK.json`).
+  target, Startling Shot, Targeting (Head), the Pistolero and Musket Master armed buffs, and one buff each in
+  `EasternWeaponNamedBlueprints` and `ExpandedSummoningSpecialBuilder.Suggestion32`. Gunslinger's Dodge has its own
+  expiry guard built around the existing behaviour, so each of these needs its own change and native check. The eight
+  named Elven Branched Spear buffs were repaired and observed separately: without the links Boughkeeper's buff stayed
+  on the character, with its +1 AC, after three rounds; with them all eight activate fully and end after one round
+  (`reports/boughkeeper-buff-icon/NATIVE-UI-CHECK.json`).
+- The three visible named-spear penalty buffs (Thornstep, Viper's Reach and First Branch's Reprisal) have no icon and
+  are drawn as white squares wherever a buff bar shows them. Boughkeeper's own buff has the spear's icon.
 - Rapid Reload's parent proficiency gate reads only the registered firearm
   proficiency features, so any future independent proficiency source satisfies
   it without further changes. `FirearmProficiencyScopeReconciler` remains a
