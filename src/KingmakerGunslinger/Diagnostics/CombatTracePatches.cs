@@ -78,6 +78,10 @@ namespace KingmakerGunslinger.Diagnostics
             DeadShotRuntime.ConfigureDelivery(
                 __instance as RuleAttackRoll);
             FirearmDischargeRuntime.BeforeAttackRoll(__instance);
+            // After the discharge step, which decides whether this roll is a
+            // shot; before Deadeye and the AC frame, which read its range.
+            Archetypes.SteadyAimRuntime.BeforeAttackRoll(
+                __instance as RuleAttackRoll);
             DeadeyeRuntime.BeforeAttackRoll(
                 __instance as RuleAttackRoll);
             FirearmArmorClassRuntime.BeforeAttackRoll(__instance);
