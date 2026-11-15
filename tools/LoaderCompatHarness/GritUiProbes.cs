@@ -285,9 +285,11 @@ namespace KmgLoaderCompatHarness
         /// <summary>
         /// Calls the product's own integration a second time on the live blueprints and then feeds its recipient-level
         /// entry point malformed recipients. A repeat must succeed and replace no component array; each malformed case
-        /// must be refused with the offender's identity and leave every real recipient untouched.
+        /// must be refused with an InvalidOperationException that states the violated rule and the offender's identity,
+        /// and must leave every real recipient untouched. The repeat must return expectedShared, the session's own
+        /// count of shared-indicator recipients.
         /// </summary>
-        public static JObject Reapply(string gritGuid, out string problem)
+        public static JObject Reapply(string gritGuid, int expectedShared, out string problem)
         {
             problem = null;
             List<string> problems = new List<string>();
@@ -316,6 +318,7 @@ namespace KmgLoaderCompatHarness
             string[] replaced = Replaced(before);
             result["repeat"] = new JObject { ["returned"] = bound, ["arraysReplaced"] = new JArray(replaced.Cast<object>().ToArray()) };
             if (replaced.Length != 0) problems.Add("a repeated integration replaced " + replaced.Length + " component arrays: " + string.Join(", ", replaced));
+            if (bound != expectedShared) problems.Add("a repeated integration returned " + bound + " shared recipients, expected " + expectedShared);
 
             Array real = (Array)recipientsOf.Invoke(null, new[] { set });
             result["recipients"] = real.Length;
@@ -326,9 +329,10 @@ namespace KmgLoaderCompatHarness
             JArray refusals = new JArray();
             try
             {
-                Refusal(refusals, problems, core, grit, recipientType, new object[0], "no recipients", new string[0]);
+                Refusal(refusals, problems, core, grit, recipientType, new object[0], "no recipients", "has no recipients", new string[0]);
                 Refusal(refusals, problems, core, grit, recipientType,
-                    With(real, create.Invoke(new[] { "Harness Missing Deed", null, sharedContract })), "missing required ability", new[] { "Harness Missing Deed" });
+                    With(real, create.Invoke(new[] { "Harness Missing Deed", null, sharedContract })), "missing required ability",
+                    "is missing: no ability blueprint was constructed", new[] { "Harness Missing Deed" });
 
                 BlueprintAbility foreign = Fabricate(fabricated, "KMG_Harness_ForeignGritLogic", "4b4d47484152000000000000000000a1");
                 AbilityResourceLogic spending = UnityEngine.ScriptableObject.CreateInstance<AbilityResourceLogic>();
@@ -340,17 +344,19 @@ namespace KmgLoaderCompatHarness
                 foreign.ComponentsArray = new BlueprintComponent[] { spending };
                 BlueprintComponent[] foreignArray = foreign.ComponentsArray;
                 Refusal(refusals, problems, core, grit, recipientType, With(real, create.Invoke(new object[] { "Harness Foreign Logic", foreign, sharedContract })),
-                    "shared recipient already carrying a spending grit component", new[] { foreign.name, foreign.AssetGuid });
+                    "shared recipient already carrying a spending grit component",
+                    "already carries grit resource logic other than one shared indicator", new[] { "Harness Foreign Logic", foreign.name, foreign.AssetGuid });
                 if (!ReferenceEquals(foreign.ComponentsArray, foreignArray)) problems.Add("a refused recipient's component array was replaced");
 
                 BlueprintAbility bare = Fabricate(fabricated, "KMG_Harness_NoOwnLogic", "4b4d47484152000000000000000000a2");
                 Refusal(refusals, problems, core, grit, recipientType, With(real, create.Invoke(new object[] { "Harness Own Logic", bare, ownContract })),
-                    "own-logic recipient with no grit resource logic", new[] { bare.name, bare.AssetGuid });
+                    "own-logic recipient with no grit resource logic",
+                    "must carry exactly one grit resource component of its own", new[] { "Harness Own Logic", bare.name, bare.AssetGuid });
 
                 BlueprintAbility unlisted = Fabricate(fabricated, "KMG_Harness_Unregistered", "4b4d47484152000000000000000000a3");
                 object unlistedRecipient = create.Invoke(new object[] { "Harness Twice", unlisted, sharedContract });
                 Refusal(refusals, problems, core, grit, recipientType, With(With(real, unlistedRecipient), unlistedRecipient),
-                    "the same ability listed twice", new[] { unlisted.name, unlisted.AssetGuid });
+                    "the same ability listed twice", "is listed more than once", new[] { "Harness Twice", unlisted.name, unlisted.AssetGuid });
                 if ((unlisted.ComponentsArray ?? new BlueprintComponent[0]).Length != 0) problems.Add("a refused duplicate recipient received a component");
             }
             finally
@@ -382,15 +388,24 @@ namespace KmgLoaderCompatHarness
         }
 
         private static void Refusal(JArray refusals, List<string> problems, MethodInfo core, BlueprintAbilityResource grit, Type recipientType,
-            object[] recipients, string label, string[] mustName)
+            object[] recipients, string label, string reason, string[] mustName)
         {
             Array typed = Array.CreateInstance(recipientType, recipients.Length);
             for (int index = 0; index < recipients.Length; index++) typed.SetValue(recipients[index], index);
-            string message = null;
+            Exception thrown = null;
             try { core.Invoke(null, new object[] { grit, typed }); }
-            catch (TargetInvocationException exception) { message = exception.InnerException.GetType().Name + ": " + exception.InnerException.Message; }
-            refusals.Add(new JObject { ["case"] = label, ["refusedWith"] = message });
-            if (message == null) { problems.Add(label + " was accepted"); return; }
+            catch (TargetInvocationException exception) { thrown = exception.InnerException ?? exception; }
+            string message = thrown == null ? null : thrown.Message;
+            refusals.Add(new JObject { ["case"] = label, ["exceptionType"] = thrown == null ? null : thrown.GetType().FullName, ["refusedWith"] = message });
+            if (thrown == null) { problems.Add(label + " was accepted"); return; }
+            // The product's own contract refusal, not whatever else the malformed input might provoke.
+            if (thrown.GetType() != typeof(InvalidOperationException))
+            {
+                problems.Add(label + " raised " + thrown.GetType().FullName + " instead of the contract refusal: " + message);
+                return;
+            }
+
+            if (message.IndexOf(reason, StringComparison.Ordinal) < 0) problems.Add(label + " was refused for another reason than '" + reason + "': " + message);
             foreach (string wanted in mustName)
                 if (message.IndexOf(wanted, StringComparison.Ordinal) < 0) problems.Add(label + " was refused without naming " + wanted + ": " + message);
         }

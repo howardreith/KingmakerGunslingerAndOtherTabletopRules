@@ -56,6 +56,7 @@
             "op": "kmgGritUiReapply",
             "label": "stock",
             "match": "9876b3e744dd422b9c259d19861ad222",
+            "expect": "22",
             "continueOnFailure": true
           }
         ]

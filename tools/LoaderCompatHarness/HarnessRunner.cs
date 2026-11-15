@@ -364,9 +364,11 @@ namespace KmgLoaderCompatHarness
 
                 case "kmgGritUiReapply":
                 {
-                    // "match" is the grit resource guid. Runs the product's integration again on the live blueprints
-                    // and then offers it malformed recipients; see GritUiProbes.Reapply.
-                    JObject reapplied = GritUiProbes.Reapply(step.Match, out string problem);
+                    // "match" is the grit resource guid; "expect" is the number of shared-indicator recipients the
+                    // repeat must return. Runs the product's integration again on the live blueprints and then offers
+                    // it malformed recipients; see GritUiProbes.Reapply.
+                    if (string.IsNullOrEmpty(step.Expect)) return Fail("kmgGritUiReapply needs expect=<shared recipient count>");
+                    JObject reapplied = GritUiProbes.Reapply(step.Match, int.Parse(step.Expect, System.Globalization.CultureInfo.InvariantCulture), out string problem);
                     result["kmgGritUiReapply_" + (step.Label ?? stepIndex.ToString())] = reapplied;
                     return problem == null ? StepStatus.Done : Fail(problem);
                 }

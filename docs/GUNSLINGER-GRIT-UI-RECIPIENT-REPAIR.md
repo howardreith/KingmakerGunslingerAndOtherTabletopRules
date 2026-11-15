@@ -178,7 +178,7 @@ Session `gunslinger-grit-ui-recipients.json`, the same seven launches on both:
 
 | Launch | Baseline `20261115T170712Z` | Repaired `20261115T171454Z` |
 |---|---|---|
-| `stock-recipients` | FAIL: recipients are the expected 24, but the pass read 2,113 ability descriptions, and the product has no recipient-level entry point to repeat | PASS: 22 shared and 2 own, no other ability carries either; the pass replaced exactly those 22 arrays and read 0 descriptions; a second run returned 22 and replaced none; five malformed recipient lists refused by name and GUID with nothing changed |
+| `stock-recipients` | initialization completes, the class is published once and the recipients are the expected 24. FAIL only on the new requirements: the pass read 2,113 ability descriptions, and the product has no recipient-level entry point to repeat | PASS: 22 shared and 2 own, no other ability carries either; the pass replaced exactly those 22 arrays and read 0 descriptions; a second run returned 22 and replaced none; five malformed recipient lists refused by name and GUID with nothing changed |
 | `unassigned-text-null` | FAIL: the reported exception; class published 0 times | PASS: `initialize.complete`; class published once; 22 shared and 2 own; 0 descriptions read |
 | `unassigned-text-null-class-screen` | FAIL: the reported stack exactly; the class screen lists the Gunslinger 0 times | observations correct, launch FAIL on a harness screenshot check; PASS on the rerun below |
 | `unassigned-text-null-creation` (`disposable-gunslinger-creation-commit`) | FAIL | PASS: native creation selected and committed a Gunslinger |
@@ -208,9 +208,11 @@ Grit spending, the product's own guarded scenarios on the repaired candidate (ea
 | `disposable-pistolero-deeds` | `20261115T172457Z`, `20261115T173518Z` | grit assertions PASS in all three runs (one grit for Up Close and Deadly on a hit and on a miss, none against precision immunity, one for Twin Shot Knockdown). The damage assertion `up-close-critical` is unstable: on the same candidate it failed twice (observed damage `6,3`) and passed once (`3,3`), and it passed once on the published package (`3,3`, `20261115T173211Z`) |
 | `disposable-gunslinger-dodge` | `20261115T172457Z` | ERROR before any assertion: "The native Dodge command completed without its timed Buff fact". The published package gives the same error (`20261115T173211Z`) |
 
-The Dodge error and the unstable Pistolero damage assertion are not caused by this change and were not repaired
-here; both are recorded in `KNOWN-ISSUES.md`. Because of them, Gunslinger's Dodge has no passing spend check in this
-record. The census shows its component array untouched and its own grit component still the only one. The committed
+Dodge reproduces on the published baseline. The Pistolero damage assertion is intermittent on the repaired
+candidate; its cause remains unestablished. One passing run of the published package does not show whether it is
+intermittent there too. All recorded Pistolero grit assertions passed. The production change touches no damage code,
+which is a reason not to suspect it and not a demonstration. Neither was repaired here; both are recorded in
+`KNOWN-ISSUES.md`. Gunslinger's Dodge has no passing spend check in this record. The census shows its component array untouched and its own grit component still the only one. The committed
 `gunslinger-grit-spending.json` holds the five scenarios with a stable verdict; Dodge and the Pistolero deeds were in
 the file for the run above and were taken out afterwards, and Deadeye was added and run on its own.
 
@@ -240,6 +242,22 @@ The previous repair still holds on this candidate: the null and blank launches l
 `rollback.incomplete`, and the complete suite includes `armed-presentation.*` and `protection-alignment.*`. The
 earlier sessions `gunslinger-missing-class*.json` were not run again; their product code is untouched.
 
+## Review follow-ups
+
+The review of PR #166 at `21387ac767` found no blocking defect and listed two corrections, both done on the branch:
+
+- **Evidence wording.** The record and the spending session's description said the unstable Pistolero damage
+  assertion was not caused by this change. The runs do not show that. The wording above now states what they do show.
+- **Refusal checks.** The harness accepted any exception as a refusal, and the repeat probe recorded the returned
+  count without checking it. A refusal must now be an `InvalidOperationException` whose message states the violated
+  rule and names the deed, and the internal name and GUID where there is an ability. The repeat must return the
+  session's own count of shared recipients, 22. The `stock-recipients` launch was run again alone, unchanged, on the
+  same candidate (`20261115T183438Z`, session name `gunslinger-grit-ui-recipients-stock`): PASS, with all five
+  refusals of the intended type and reason and the repeat returning 22.
+
+The review also confirmed that the bootstrap call-site edit was already authorized by the task and that reversing the
+catalog's authorized edits reproduces the pinned baseline hash.
+
 ## Limits and remaining checks
 
 - The reporter's installation, translation and mod list were not reproduced. Null resolution of unassigned text is a
@@ -253,8 +271,9 @@ earlier sessions `gunslinger-missing-class*.json` were not run again; their prod
   consumes; `disposable-gunslinger-grit-resource` reads the native count and availability for one granted deed.
 - Spending was checked for Deadeye, Dead Shot, Expert Loading, both Slinger's Luck variants and the two Pistolero
   deeds. The other recipients were not each spent in the game; their spending code is untouched.
-- `disposable-gunslinger-dodge` errors in the disposable copy on the published package too, and one Pistolero
-  damage assertion is unstable. Neither was investigated further.
+- `disposable-gunslinger-dodge` errors in the disposable copy, on the published package too. One Pistolero damage
+  assertion is intermittent on the repaired candidate, and whether this change has any part in that is not
+  established. Neither was investigated further.
 - Design question, not changed: Steady Aim needs grit and spends none, and carries the indicator. Quick Clear
   (standard action), Utility Shot, Startling Shot and Lightning Reload are in the same position and do not. The
   indicator also counts remaining grit in units of 1 whatever the deed costs. Both are released behaviour and were

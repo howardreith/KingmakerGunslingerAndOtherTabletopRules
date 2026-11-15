@@ -26,9 +26,11 @@
   as a design question.
 - In the disposable loader-compat game copy, `disposable-gunslinger-dodge` errors before its assertions ("The native
   Dodge command completed without its timed Buff fact") on the published v0.0.190 package and on current source. In
-  `disposable-pistolero-deeds`, the damage assertion `up-close-critical` varies between identical runs of the same
-  bytes (observed damage `6,3` fails, `3,3` passes); its grit assertions are stable. Neither was investigated. The
-  Dodge buff is one of those built without effect links (first entry above).
+  `disposable-pistolero-deeds`, the damage assertion `up-close-critical` is intermittent on the grit UI recipient
+  candidate: two of three identical runs failed (observed damage `6,3`) and one passed (`3,3`). The published v0.0.190
+  package was run once and passed, which does not show whether it is intermittent there. The cause is not established.
+  The scenario's grit assertions passed in every run. Neither was investigated. The Dodge buff is one of those built
+  without effect links (first entry above).
 - Rapid Reload's parent proficiency gate reads only the registered firearm
   proficiency features, so any future independent proficiency source satisfies
   it without further changes. `FirearmProficiencyScopeReconciler` remains a
