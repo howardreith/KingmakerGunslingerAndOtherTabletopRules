@@ -41,6 +41,8 @@ namespace KmgLoaderCompatHarness
         private string craftedGuid;
         private ChargenClassScreenProbe chargenProbe;
         private BuffUiProbe buffProbe;
+        private OpportunityBuffUiProbe opportunityProbe;
+        private TimedBuffProbe timedBuffProbe;
         private readonly System.Collections.Generic.List<string> deferredFailures = new System.Collections.Generic.List<string>();
 
         public HarnessRunner(HarnessRequest request, Evidence evidence, JObject result)
@@ -301,6 +303,37 @@ namespace KmgLoaderCompatHarness
                     if (outcome == null) return StepStatus.Running;
                     result["kmgBuffUi_" + (step.Label ?? stepIndex.ToString())] = buffProbe.Result;
                     buffProbe = null;
+                    return outcome.Length == 0 ? StepStatus.Done : Fail(outcome);
+                }
+
+                case "kmgOpportunityBuffUi":
+                {
+                    // "type" is the weapon the loaded save's main character is armed with; "match" is the buff its
+                    // attack-of-opportunity hit must grant; "expect" names the icon that buff must show; "contains"
+                    // lists text the buff's tooltip must draw. Reads the portrait's buff slot and the tooltip it opens.
+                    if (opportunityProbe == null) opportunityProbe = new OpportunityBuffUiProbe(evidence.Directory, step.Label ?? stepIndex.ToString(), step.Type, step.Match, step.Expect, step.Contains);
+                    string outcome;
+                    try { outcome = opportunityProbe.Poll(); }
+                    catch (Exception exception) { outcome = exception.ToString(); }
+                    if (outcome == null) return StepStatus.Running;
+                    result["kmgOpportunityBuffUi_" + (step.Label ?? stepIndex.ToString())] = opportunityProbe.Result;
+                    opportunityProbe = null;
+                    return outcome.Length == 0 ? StepStatus.Done : Fail(outcome);
+                }
+
+                case "kmgTimedBuffs":
+                {
+                    // "type" lists buff guids put on the loaded save's main character; "match" is their duration in
+                    // seconds. Each must activate fully, show in the portrait only if it is visible, and end by itself.
+                    if (timedBuffProbe == null)
+                        timedBuffProbe = new TimedBuffProbe(evidence.Directory, step.Label ?? stepIndex.ToString(), List(step.Type),
+                            double.Parse(step.Match, System.Globalization.CultureInfo.InvariantCulture));
+                    string outcome;
+                    try { outcome = timedBuffProbe.Poll(); }
+                    catch (Exception exception) { outcome = exception.ToString(); }
+                    if (outcome == null) return StepStatus.Running;
+                    result["kmgTimedBuffs_" + (step.Label ?? stepIndex.ToString())] = timedBuffProbe.Result;
+                    timedBuffProbe = null;
                     return outcome.Length == 0 ? StepStatus.Done : Fail(outcome);
                 }
 

@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "subject": "Boughkeeper armor-class buff icon (KMG.ElvenBranchedSpear.BoughkeeperArmorClassBuff, 064feb1123cfb1ae4f541ef5e4d138a1) and effect links on all eight named Elven Branched Spear buffs",
+  "status": "PASS on a development candidate, within the stated scope: Boughkeeper's portrait buff slot, tooltip and one-round end; completed activation, portrait visibility and one-round end of all eight named-spear buffs; the product's spear combat scenario",
+  "ownerApproval": "Not given by this record. Whether the spear reads well enough at the 19px slot is the owner's visual decision.",
+  "date": "2026-11-15",
+  "host": "DATA",
+  "route": "scripts/compatibility/loader-compat/Invoke-LoaderCompatSession.ps1, sessions boughkeeper-buff-icon and named-spear-buffs, loader profile owner-0.33.0, disposable game copy C:/Dev/KingmakerGunslingerLab/game-copies/loader-compat, saves and area cache redirected to a per-session profile, fixture save KMCS_AFTER_NORMAL_012_MODONLY.zks",
+  "candidate": {
+    "kind": "development candidate, never a release",
+    "productSourceCommit": "15ccbaafe7",
+    "builtAtCommit": "d4181b1abb7e430dde5c66abd479c0ec677d032a",
+    "packageSha256": "8f4888aaa0844bca5a65a0e6be8f8437605595ab7dc72278966222ef0f18590f",
+    "dllSha256": "c00f3a4ece76d3dde23a4ac84f22c28e010f9c19058ff389f290020b47d9c81a",
+    "version": "0.0.190"
+  },
+  "harness": {
+    "source": "tools/LoaderCompatHarness at d4181b1abb7e430dde5c66abd479c0ec677d032a (test-only, not in the product package)",
+    "dllSha256": "4b8e931df6163281c84a22f53457193e1529813c5bd515e178d6a7f8710fcbbe"
+  },
+  "boughkeeper": {
+    "method": "The fixture save's main character is armed with Boughkeeper. UnitCombatState.AttackOfOpportunity queues the game's own UnitAttackOfOpportunity command against a disposable hostile target (a copy of the default player character in the Mobs faction, kept alive) and the test harness runs that command's action while the game is paused. The base attack bonus is raised to 100 for the attack so the hit is certain, and restored. The verdict comes from the game's view objects; the screenshots are for a person to look at. After the tooltip the fight is ended, the target removed and play resumed; the game's automatic pauses are lifted and the buff is given three rounds of game time to end by itself.",
+    "session": "20261115T153646Z-owner-0.33.0-boughkeeper-buff-icon",
+    "verdict": "PASS",
+    "seconds": 90,
+    "screen": "1920x1200",
+    "attacks": "one attack of opportunity with Boughkeeper: Hit",
+    "armorClass": {
+      "before": 17,
+      "withBuff": 18,
+      "afterBuffEnded": 17
+    },
+    "inPartyBarAfterFirstHit": true,
+    "blueprintIcon": "KMG_Icon_elven-branched-spear (128x128 texture)",
+    "partyBarSlot": {
+      "shownIcon": "KMG_Icon_elven-branched-spear",
+      "sameSpriteAsBlueprint": true,
+      "drawnAtPixels": "19x19 at x=676.9 y=1075.4",
+      "hiddenBuffWidgets": 0
+    },
+    "tooltip": {
+      "type": "Buff",
+      "title": "Boughkeeper",
+      "timer": "6s",
+      "text": "+1 dodge bonus to Armor Class until the beginning of the wielder's next turn."
+    },
+    "buffEnd": {
+      "endedByItself": true,
+      "gameSecondsAfterResume": 6.0,
+      "automaticPausesLifted": 1
+    },
+    "screenshots": [
+      {
+        "file": "boughkeeper-party-bar.png",
+        "sha256": "4aeb7a8db106ffa89933791cad01305d9551655aa7d6edecbe2a5cfd89b4f6eb"
+      },
+      {
+        "file": "boughkeeper-tooltip.png",
+        "sha256": "2f3706bf3f2df37fe2b52e9836a0f1064680c6dc1a9c7921bf9b4fd4b348f48d"
+      }
+    ]
+  },
+  "namedSpearBuffs": {
+    "session": "20261115T153418Z-owner-0.33.0-named-spear-buffs",
+    "verdict": "PASS",
+    "seconds": 148,
+    "combatScenario": {
+      "scenario": "disposable-elven-branched-spear-combat (the product's own save-free scenario)",
+      "result": "PASS, 24 assertions, including the five named effects granted by their real triggers: Boughkeeper, Thornstep, Viper's Reach, Briar-Crowned and First Branch. The scenario removes buffs itself and does not let time run."
+    },
+    "timedBuffs": {
+      "method": "Each of the eight buffs is put on the fixture save's main character for 6 s with BuffCollection.AddBuff, the call the product's effect component makes, then play resumes and game time runs.",
+      "buffs": [
+        "KMG_Boughkeeper_AC_Buff (visible)",
+        "KMG_Thornstep_Speed_Penalty (visible)",
+        "KMG_Thornstep_Round_Marker (hidden)",
+        "KMG_VipersReach_Reflex_Penalty (visible)",
+        "KMG_VipersReach_Round_Marker (hidden)",
+        "KMG_BriarCrowned_Round_Marker (hidden)",
+        "KMG_FirstBranch_Round_Marker (hidden)",
+        "KMG_FirstBranch_Speed_Penalty (visible)"
+      ],
+      "effectLinksAssigned": "all eight",
+      "activationCompleted": "all eight (AddBuff returned the buff)",
+      "partyBar": "the four visible buffs shown, the four hidden markers not shown",
+      "ends": "all eight ended by themselves at 6.0 s of game time",
+      "stats": {
+        "before": "AC 18, speed 20, Reflex 2",
+        "withBuffs": "AC 18, speed 5, Reflex 0",
+        "afterEnd": "AC 18, speed 20, Reflex 2"
+      },
+      "screenshots": [
+        {
+          "file": "named-spears-party-bar.png",
+          "sha256": "93a6de19ce5af2edde4763055886814b5a49d21adc511bf82076b035357f0c00"
+        }
+      ]
+    },
+    "baseline": {
+      "build": "previous development candidate with links on Boughkeeper's buff only (package 31089dd217f977d4a04656f49c3a344b1b2fe89a0d7e909baa6c7d2e0f1de8ae, DLL 9abb5c9aec865230d66377e7f146941ed4d85ce5ba70af5bc7bcf548873da074)",
+      "session": "20261115T152417Z-owner-0.33.0-named-spear-buffs",
+      "verdict": "FAIL by design: the combat scenario passed its 24 assertions, and the game did not finish activating any of the other seven buffs (AddBuff returned nothing).",
+      "note": "In that run the seven still showed in the portrait and ended at 6.0 s, because Boughkeeper's linked buff, applied in the same frame, raised the portrait's redraw and scheduled the collection's next end. It does not show how the seven behave alone; for a buff alone, see the Boughkeeper comparisons."
+    }
+  },
+  "boughkeeperComparisons": [
+    {
+      "build": "development candidate with both Boughkeeper repairs (package 31089dd217f977d4a04656f49c3a344b1b2fe89a0d7e909baa6c7d2e0f1de8ae, DLL 9abb5c9aec865230d66377e7f146941ed4d85ce5ba70af5bc7bcf548873da074)",
+      "session": "20261115T151218Z-owner-0.33.0-boughkeeper-buff-icon",
+      "verdict": "PASS with harness 51a6bfece2: same observations as the final candidate."
+    },
+    {
+      "build": "icon-only development candidate (product source 6b72c8e28f, package ac90263b40aeb87337f344f8696d8c04cd67e2c4b175b7377baaa5bf51a85801, DLL 3c6aab561ae9b95b6e6d3fff7dd4ea2373c09159a8e675733246d7b462ff3c22)",
+      "session": "20261115T151357Z-owner-0.33.0-boughkeeper-buff-icon",
+      "verdict": "FAIL by design: no effect links. The spear icon is drawn, but the buff is absent from the portrait after the first hit and appears only after a second one; after three rounds of game time (18.0 s) it is still on the character and the armor class is still 18.",
+      "earlierPass": "The same package passed 20261115T143318Z-owner-0.33.0-boughkeeper-buff-icon with the earlier harness (70049bb3fa), which checked the icon and tooltip only."
+    },
+    {
+      "build": "published v0.0.190 ZIP (sha256 1f1f31fa161ea251396733f6ee45d6f7df20930f89431a4c9d91771bd4446de6, DLL 88ab89933746fb1072a0b1c68ddad8a105320d911cccc202204c97fe0bc3df9c)",
+      "session": "20261115T143738Z-owner-0.33.0-boughkeeper-buff-icon",
+      "verdict": "FAIL by design with the earlier harness (70049bb3fa): the buff blueprint has no icon and the slot is drawn as a white square. Not repeated with the later harness.",
+      "screenshots": [
+        {
+          "file": "boughkeeper-party-bar.png",
+          "sha256": "36d57ee69a11ce60454a76a1c6ad62389f36697b4e3f9fef5c64c968623f7961"
+        },
+        {
+          "file": "boughkeeper-tooltip.png",
+          "sha256": "8a3d62145969039ee5105def653aab4f40bb55eb0f511684b291af17bc7c6803"
+        }
+      ]
+    }
+  ],
+  "discardedRuns": [
+    "20261115T143444Z: published package, same structured failure, both screenshots black frames; repeated once.",
+    "20261115T150713Z and 20261115T150913Z: harness 9043d68b24 counted wall-clock seconds while the game had paused itself again, so no game time ran and their 'did not end' findings say nothing about the buff. Their first-hit observations agree with the runs above."
+  ],
+  "machineProtection": "Every session reported the owner's 95 save files and installation unchanged and the game's registry settings restored. No guarded run of the live installation and no save was written.",
+  "observations": [
+    "The three visible penalty buffs (Thornstep, Viper's Reach, First Branch's Reprisal) have no icon and are drawn as white squares in a buff bar. This change does not give them one."
+  ],
+  "limits": [
+    "One fixture save, one loader profile, standalone mod set, desktop UI, enGB.",
+    "The character sheet's Buffs row, controller UI and the owner's own installation were not exercised.",
+    "Boughkeeper's opportunity attack was run from its native command while paused, not provoked by enemy movement in live play.",
+    "Buff ends were observed out of combat in real-time mode; turn-based mode was not exercised.",
+    "The seven other buffs were timed on the player's character by direct application, not on an enemy after their real triggers; the real triggers were exercised only by the combat scenario, which does not let time run.",
+    "Whether a once-per-round effect can be used again in the following round of a live fight was not played."
+  ]
+}

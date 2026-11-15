@@ -280,6 +280,10 @@ namespace KingmakerGunslinger.Blueprints
             result.Stacking = StackingType.Replace;
             result.IsClassFeature = false;
             result.ComponentsArray = components ?? Array.Empty<BlueprintComponent>();
+            // Without effect links activation is cut short: the portrait
+            // does not show a visible buff and no buff's end is scheduled,
+            // so a one-round effect or marker outlasts its round.
+            BlueprintUnitFactAccess.UseEmptyBuffEffects(result);
             SetBuffFlags(result, hidden, harmful);
             BlueprintUnitFactAccess.Resolve().Configure(result,
                 LocalizationService.Create(internalName + ".Name", name),

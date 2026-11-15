@@ -7,9 +7,13 @@
   class report (see `docs/GUNSLINGER-MISSING-CLASS-REPAIR.md`). Read from source, and neither applied nor observed,
   the same construction remains in Deadeye Armed, Gunslinger's Dodge, the four Bleeding Wound bleeds applied to a
   target, Startling Shot, Targeting (Head), the Pistolero and Musket Master armed buffs, and one buff each in
-  `EasternWeaponNamedBlueprints`, `ElvenBranchedSpearNamedBlueprints` and
-  `ExpandedSummoningSpecialBuilder.Suggestion32`. Gunslinger's Dodge has its own expiry guard built around the
-  existing behaviour, so each of these needs its own change and native check.
+  `EasternWeaponNamedBlueprints` and `ExpandedSummoningSpecialBuilder.Suggestion32`. Gunslinger's Dodge has its own
+  expiry guard built around the existing behaviour, so each of these needs its own change and native check. The eight
+  named Elven Branched Spear buffs were repaired and observed separately: without the links Boughkeeper's buff stayed
+  on the character, with its +1 AC, after three rounds; with them all eight activate fully and end after one round
+  (`reports/boughkeeper-buff-icon/NATIVE-UI-CHECK.json`).
+- The three visible named-spear penalty buffs (Thornstep, Viper's Reach and First Branch's Reprisal) have no icon and
+  are drawn as white squares wherever a buff bar shows them. Boughkeeper's own buff has the spear's icon.
 - Rapid Reload's parent proficiency gate reads only the registered firearm
   proficiency features, so any future independent proficiency source satisfies
   it without further changes. `FirearmProficiencyScopeReconciler` remains a
