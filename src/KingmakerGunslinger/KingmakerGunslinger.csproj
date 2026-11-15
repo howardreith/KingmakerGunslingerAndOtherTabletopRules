@@ -615,6 +615,8 @@
     <Compile Include="Acquisition\BetterVendors\BetterVendorsCompatibilityCoordinator.cs" />
     <Compile Include="Blueprints\ProgressionWeaponBlueprints.cs" />
     <Compile Include="Presentation\PlayerFacingTextPolicy.cs" />
+    <Compile Include="Presentation\PlayerFacingTextAssignment.cs" />
+    <Compile Include="FeatureModules\ContentInitializationStatus.cs" />
     <Compile Include="Presentation\GunslingerClassAppearanceCatalog.cs" />
     <Compile Include="Presentation\GunslingerClassAppearance.cs" />
     <Compile Include="ElementalRaces\ElementalRaceDiagnosticIdentityCatalog.cs" />
@@ -722,6 +724,7 @@
     <Compile Include="Blueprints\BeneathStolenLandsVendorBlueprints.cs" />
     <Compile Include="Blueprints\BlueprintItemAccess.cs" />
     <Compile Include="Blueprints\BlueprintUnitFactAccess.cs" />
+    <Compile Include="Blueprints\OwnedMutationRollback.cs" />
     <Compile Include="Blueprints\BlueprintCloneService.cs" />
     <Compile Include="Blueprints\AcadamaeGraduateBlueprints.cs" />
     <Compile Include="Blueprints\BrownFurBlueprints.cs" />

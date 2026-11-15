@@ -52,11 +52,19 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_LightningReload_Used";
+            BlueprintUnitFactAccess.UseEmptyBuffEffects(result);
             result.IsClassFeature = true;
             result.Stacking = StackingType.Replace;
             var reset = ScriptableObject.CreateInstance<LightningReloadRoundMarker>();
             reset.name = "$KMG_LightningReload_RoundReset";
             result.ComponentsArray = new BlueprintComponent[] { reset };
+            // Shown on the gunslinger for the rest of the round.
+            BlueprintUnitFactAccess.Resolve().Configure(result,
+                LocalizationService.Create("KMG.LightningReload.Used.Name",
+                    "Lightning Reload Used"),
+                LocalizationService.Create("KMG.LightningReload.Used.Description",
+                    "You have used Lightning Reload this round. It is available again at the start of your next round."),
+                null);
             return result;
         }
 

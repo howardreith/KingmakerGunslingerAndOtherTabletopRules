@@ -71,6 +71,40 @@ namespace KingmakerGunslinger.Blueprints
             return result;
         }
 
+        /// <summary>
+        /// What this process displays for a localized string that was never
+        /// stored. Kingmaker 2.1.7b returns "&lt;null&gt;"; another mod or a
+        /// modified conversion may return something else, including nothing.
+        /// </summary>
+        internal static string ResolveUnassigned()
+        {
+            LocalizedString unassigned = null;
+            return unassigned;
+        }
+
+        /// <summary>
+        /// One-line localization context for a diagnostic record: the active
+        /// locale and how unassigned text resolves in this process.
+        /// </summary>
+        internal static string DescribeEnvironment()
+        {
+            try
+            {
+                LocalizationPack pack = CurrentPackField == null ? null :
+                    CurrentPackField.GetValue(null) as LocalizationPack;
+                string unassigned = ResolveUnassigned();
+                return "locale=" + LocalizationManager.CurrentLocale +
+                    ";pack-locale=" + (pack == null ? "<none>" : pack.Locale.ToString()) +
+                    ";unassigned-text-resolves-to=" +
+                    (unassigned == null ? "<null-reference>" : "\"" + unassigned + "\"");
+            }
+            catch (Exception exception)
+            {
+                return "localization-environment-unavailable=" +
+                    exception.GetType().Name;
+            }
+        }
+
         private static int RegisterInPack(
             FieldInfo packField,
             string key,

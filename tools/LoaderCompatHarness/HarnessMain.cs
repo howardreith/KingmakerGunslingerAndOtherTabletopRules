@@ -36,7 +36,13 @@ namespace KmgLoaderCompatHarness
                 return true;
             }
 
-            HarnessRequest request = JsonConvert.DeserializeObject<HarnessRequest>(File.ReadAllText(requestPath));
+            // Not JsonConvert: another mod may replace its process-wide default settings (Kingmaker Bugfixes installs
+            // converters that read a dictionary as an array), which must not change how a request is read.
+            HarnessRequest request;
+            using (JsonTextReader reader = new JsonTextReader(new StringReader(File.ReadAllText(requestPath))))
+            {
+                request = JsonSerializer.Create(new JsonSerializerSettings()).Deserialize<HarnessRequest>(reader);
+            }
             Directory.CreateDirectory(request.EvidenceDir);
             evidence = new Evidence(request.EvidenceDir);
             JObject result = new JObject { ["runId"] = request.RunId, ["requestPath"] = requestPath, ["startedUtc"] = DateTime.UtcNow.ToString("o") };
@@ -46,6 +52,7 @@ namespace KmgLoaderCompatHarness
                 result["isolation"] = ProfileIsolation.Apply(harmony, request.ProfileDir);
                 LoggedExceptions.Install(harmony);
                 result["loggerExceptionHooks"] = LoggedExceptions.Patched;
+                result["conditions"] = ReproductionConditions.Apply(harmony, request.Conditions);
             }
             catch (Exception exception)
             {
@@ -74,6 +81,8 @@ namespace KmgLoaderCompatHarness
                     productHooksInstalled = true;
                     try { ToggleClick.Install(harmony); }
                     catch (Exception exception) { evidence.Event("toggleHookUnavailable", exception.Message); }
+                    try { PanelText.Install(harmony); }
+                    catch (Exception exception) { evidence.Event("panelTextHookUnavailable", exception.Message); }
                 }
 
                 runner?.Tick();
@@ -91,6 +100,8 @@ namespace KmgLoaderCompatHarness
     {
         private readonly string directory;
         private readonly string eventsPath;
+
+        public string Directory => directory;
 
         public Evidence(string directory)
         {

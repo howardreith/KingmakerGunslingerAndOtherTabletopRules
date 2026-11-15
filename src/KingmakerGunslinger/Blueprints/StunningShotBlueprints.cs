@@ -70,6 +70,7 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_StunningShot_Armed";
+            BlueprintUnitFactAccess.UseEmptyBuffEffects(result);
             result.IsClassFeature = true;
             result.Stacking = StackingType.Replace;
             var handler = ScriptableObject.CreateInstance<StunningShotAttackHandler>();
@@ -77,6 +78,13 @@ namespace KingmakerGunslinger.Blueprints
             handler.Grit = grit; handler.GunslingerClass = gunslingerClass;
             handler.StunnedBuff = stunned;
             result.ComponentsArray = new BlueprintComponent[] { handler };
+            // Shown on the gunslinger until the next firearm attack.
+            BlueprintUnitFactAccess.Resolve().Configure(result,
+                LocalizationService.Create("KMG.StunningShot.Armed.Name",
+                    "Stunning Shot Armed"),
+                LocalizationService.Create("KMG.StunningShot.Armed.Description",
+                    "Your next firearm attack is armed with Stunning Shot. On an eligible hit, you spend 2 grit and the target must succeed at a Fortitude save or be Stunned for 1 round. This effect ends after that firearm attack, even if it misses."),
+                null);
             return result;
         }
 

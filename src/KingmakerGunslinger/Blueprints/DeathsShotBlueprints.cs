@@ -53,6 +53,7 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_DeathsShot_DeathEffect";
+            BlueprintUnitFactAccess.UseEmptyBuffEffects(result);
             result.Stacking = StackingType.Replace;
             var descriptor = ScriptableObject.CreateInstance<SpellDescriptorComponent>();
             descriptor.Descriptor = SpellDescriptor.Death;
@@ -60,6 +61,11 @@ namespace KingmakerGunslinger.Blueprints
             actions.Activated = new ActionList
                 { Actions = new GameAction[] { new ContextActionKillTarget() } };
             result.ComponentsArray = new BlueprintComponent[] { descriptor, actions };
+            // A retained internal identity: Death's Shot resolves its save
+            // and marks the target itself, and nothing applies this buff to a
+            // unit. It is hidden through Kingmaker's own buff flag rather
+            // than given text no player would ever read.
+            BlueprintUnitFactAccess.HideBuffInUi(result);
             return result;
         }
         private static BlueprintBuff CreateMarker(BlueprintAbilityResource grit,
@@ -67,11 +73,19 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_DeathsShot_Armed";
+            BlueprintUnitFactAccess.UseEmptyBuffEffects(result);
             result.Stacking = StackingType.Replace;
             var handler = ScriptableObject.CreateInstance<DeathsShotAttackHandler>();
             handler.Grit = grit; handler.GunslingerClass = gunslingerClass;
             handler.DeathEffect = death;
             result.ComponentsArray = new BlueprintComponent[] { handler };
+            // Shown on the gunslinger until the next firearm attack.
+            BlueprintUnitFactAccess.Resolve().Configure(result,
+                LocalizationService.Create("KMG.DeathsShot.Armed.Name",
+                    "Death's Shot Armed"),
+                LocalizationService.Create("KMG.DeathsShot.Armed.Description",
+                    "Your next firearm attack is armed with Death's Shot. If it is a confirmed critical hit, you spend 1 grit and the target must succeed at a Fortitude save or die. This effect ends after that firearm attack, even if it misses."),
+                null);
             return result;
         }
         private static BlueprintAbility CreateAbility(BlueprintBuff marker,

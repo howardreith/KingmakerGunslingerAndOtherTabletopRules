@@ -49,9 +49,18 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_ExpertLoading_Armed";
+            BlueprintUnitFactAccess.UseEmptyBuffEffects(result);
             result.IsClassFeature = true;
             result.Stacking = StackingType.Replace;
             result.ComponentsArray = Array.Empty<BlueprintComponent>();
+            // The armed state is shown on the gunslinger until the next
+            // firearm attack, so it carries its own name and description.
+            BlueprintUnitFactAccess.Resolve().Configure(result,
+                LocalizationService.Create("KMG.ExpertLoading.Armed.Name",
+                    "Expert Loading Armed"),
+                LocalizationService.Create("KMG.ExpertLoading.Armed.Description",
+                    "Your next firearm attack is armed with Expert Loading. If it misfires with a Broken early firearm that would explode, you spend 1 grit to keep the firearm Broken and prevent the explosion. This effect ends after that firearm attack."),
+                null);
             return result;
         }
 

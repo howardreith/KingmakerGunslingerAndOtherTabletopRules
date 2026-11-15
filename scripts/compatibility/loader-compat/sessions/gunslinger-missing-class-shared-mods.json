@@ -1,0 +1,145 @@
+{
+  "name": "gunslinger-missing-class-shared-mods",
+  "description": "The missing Gunslinger class regression with the twelve mods that are both in the v0.0.189 report's mod list and in this lab's pristine set, at the lab's versions. It checks that the stricter presentation validation finds no unassigned visible project fact when those mods are loaded, with and without the controlled blank-resolution condition, and records how unassigned text resolves with them loaded. It is not the reporter's installation: about forty of the reported mods and the reporter's translation are absent.",
+  "ownerMods": [
+    "BagOfTricks",
+    "BetterVendors",
+    "CallOfTheWild",
+    "CheatMenu",
+    "CraftMagicItems",
+    "EddicKingmakerRespec",
+    "KingmakerBugfixes",
+    "ProperFlanking2",
+    "RacesUnleashed",
+    "SkipIntro",
+    "TweakOrTreat",
+    "ZFavoredClass"
+  ],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "shared-mods-stock",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]",
+          "rollback-failed]",
+          "[rollback.incomplete]"
+        ]
+      },
+      "harness": {
+        "steps": [
+          {
+            "op": "expectMods",
+            "match": "KingmakerGunslinger,KmgLoaderCompatHarness,BagOfTricks,BetterVendors,CallOfTheWild,CheatMenu,CraftMagicItems,EddicKingmakerRespec,KingmakerBugfixes,ProperFlanking2,RacesUnleashed,SkipIntro,TweakOrTreat,ZFavoredClass",
+            "expect": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "shared",
+            "expect": "completed",
+            "type": "enGB",
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgClassCatalog",
+            "label": "shared",
+            "match": "abca4797366d4df0831a418eee39069a",
+            "expect": "1",
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgPresentationCensus",
+            "label": "shared",
+            "match": "abca4797366d4df0831a418eee39069a",
+            "type": "e563e8cdec324c59959c4dc8b9449702,74749a03f92e4fabaec2830bd66f7731,cd51a3e250094365b54929490a1d64b6,479e8f2c4dc7480cac9664ac10232e21,5a21b3ff5940476f97fe5f7844fa4509,b35b22a49a4c4645a1b730698d35837d,841a2ca5e4994da48fadcc4f3a3c3579,e553eb5c573b4b178f4b973850f5a0e3,dfc8df775a53441292502d05f13334e4,c2b6f72548824ce2aff95c21cfbe81b3",
+            "hidden": [
+              "b3ed104593874cdc9a0f5bbf99d26cd2"
+            ],
+            "invariants": {
+              "e563e8cdec324c59959c4dc8b9449702": "type=BlueprintBuff,stacking=Replace,isClassFeature=True,componentCount=0,icon=KMG_Icon_deeds",
+              "74749a03f92e4fabaec2830bd66f7731": "type=BlueprintBuff,stacking=Replace,isClassFeature=True,componentCount=0,icon=KMG_Icon_deeds",
+              "cd51a3e250094365b54929490a1d64b6": "type=BlueprintBuff,stacking=Replace,isClassFeature=True,componentCount=0,icon=KMG_Icon_deeds",
+              "479e8f2c4dc7480cac9664ac10232e21": "type=BlueprintBuff,stacking=Replace,isClassFeature=True,componentCount=0,icon=KMG_Icon_deeds",
+              "5a21b3ff5940476f97fe5f7844fa4509": "type=BlueprintBuff,stacking=Replace,isClassFeature=True,componentCount=0,icon=KMG_Icon_deeds",
+              "b35b22a49a4c4645a1b730698d35837d": "type=BlueprintBuff,stacking=Replace,isClassFeature=True,componentCount=1,icon=KMG_Icon_reload-firearm",
+              "841a2ca5e4994da48fadcc4f3a3c3579": "type=BlueprintBuff,stacking=Replace,isClassFeature=True,componentCount=1,icon=KMG_Icon_deeds",
+              "e553eb5c573b4b178f4b973850f5a0e3": "type=BlueprintBuff,stacking=Replace,isClassFeature=True,componentCount=1,icon=KMG_Icon_deeds",
+              "dfc8df775a53441292502d05f13334e4": "type=BlueprintBuff,stacking=Replace,isClassFeature=False,componentCount=1,icon=KMG_Icon_deeds",
+              "c2b6f72548824ce2aff95c21cfbe81b3": "type=BlueprintBuff,stacking=Replace,isClassFeature=True,componentCount=1,icon=KMG_Icon_deeds",
+              "b3ed104593874cdc9a0f5bbf99d26cd2": "type=BlueprintBuff,stacking=Replace,isClassFeature=False,componentCount=2,icon=KMG_Icon_deeds"
+            },
+            "continueOnFailure": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "shared-mods-unassigned-text-blank",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "unassignedTextResolvesBlank": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]",
+          "rollback-failed]",
+          "[rollback.incomplete]"
+        ]
+      },
+      "harness": {
+        "steps": [
+          {
+            "op": "kmgInitialization",
+            "label": "shared-blank",
+            "expect": "completed",
+            "type": "enGB",
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgClassCatalog",
+            "label": "shared-blank",
+            "match": "abca4797366d4df0831a418eee39069a",
+            "expect": "1",
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgPresentationCensus",
+            "label": "shared-blank",
+            "match": "abca4797366d4df0831a418eee39069a",
+            "type": "e563e8cdec324c59959c4dc8b9449702,74749a03f92e4fabaec2830bd66f7731,cd51a3e250094365b54929490a1d64b6,479e8f2c4dc7480cac9664ac10232e21,5a21b3ff5940476f97fe5f7844fa4509,b35b22a49a4c4645a1b730698d35837d,841a2ca5e4994da48fadcc4f3a3c3579,e553eb5c573b4b178f4b973850f5a0e3,dfc8df775a53441292502d05f13334e4,c2b6f72548824ce2aff95c21cfbe81b3",
+            "hidden": [
+              "b3ed104593874cdc9a0f5bbf99d26cd2"
+            ],
+            "invariants": {
+              "e563e8cdec324c59959c4dc8b9449702": "type=BlueprintBuff,stacking=Replace,isClassFeature=True,componentCount=0,icon=KMG_Icon_deeds",
+              "74749a03f92e4fabaec2830bd66f7731": "type=BlueprintBuff,stacking=Replace,isClassFeature=True,componentCount=0,icon=KMG_Icon_deeds",
+              "cd51a3e250094365b54929490a1d64b6": "type=BlueprintBuff,stacking=Replace,isClassFeature=True,componentCount=0,icon=KMG_Icon_deeds",
+              "479e8f2c4dc7480cac9664ac10232e21": "type=BlueprintBuff,stacking=Replace,isClassFeature=True,componentCount=0,icon=KMG_Icon_deeds",
+              "5a21b3ff5940476f97fe5f7844fa4509": "type=BlueprintBuff,stacking=Replace,isClassFeature=True,componentCount=0,icon=KMG_Icon_deeds",
+              "b35b22a49a4c4645a1b730698d35837d": "type=BlueprintBuff,stacking=Replace,isClassFeature=True,componentCount=1,icon=KMG_Icon_reload-firearm",
+              "841a2ca5e4994da48fadcc4f3a3c3579": "type=BlueprintBuff,stacking=Replace,isClassFeature=True,componentCount=1,icon=KMG_Icon_deeds",
+              "e553eb5c573b4b178f4b973850f5a0e3": "type=BlueprintBuff,stacking=Replace,isClassFeature=True,componentCount=1,icon=KMG_Icon_deeds",
+              "dfc8df775a53441292502d05f13334e4": "type=BlueprintBuff,stacking=Replace,isClassFeature=False,componentCount=1,icon=KMG_Icon_deeds",
+              "c2b6f72548824ce2aff95c21cfbe81b3": "type=BlueprintBuff,stacking=Replace,isClassFeature=True,componentCount=1,icon=KMG_Icon_deeds",
+              "b3ed104593874cdc9a0f5bbf99d26cd2": "type=BlueprintBuff,stacking=Replace,isClassFeature=False,componentCount=2,icon=KMG_Icon_deeds"
+            },
+            "continueOnFailure": true
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -11,7 +11,8 @@ $csc = Get-ChildItem (Join-Path (Split-Path $dotnet) 'sdk') -Filter csc.dll -Rec
 $net47 = 'C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7'
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 $refs = @("$net47\mscorlib.dll", "$net47\System.dll", "$net47\System.Core.dll") +
-    @('Assembly-CSharp', 'Assembly-CSharp-firstpass', 'Newtonsoft.Json', 'UnityEngine', 'UnityEngine.CoreModule', 'UnityEngine.IMGUIModule', 'UniRx') |
+    @('Assembly-CSharp', 'Assembly-CSharp-firstpass', 'Newtonsoft.Json', 'UnityEngine', 'UnityEngine.CoreModule', 'UnityEngine.IMGUIModule', 'UnityEngine.UI', 'UnityEngine.UIModule',
+    'UnityEngine.ScreenCaptureModule', 'UniRx') |
     ForEach-Object { if ($_ -like '*\*') { $_ } else { Join-Path $ManagedDir "$_.dll" } }
 $refs += @((Join-Path $LoaderReferenceDir 'UnityModManager\UnityModManager.dll'), (Join-Path $LoaderReferenceDir 'UnityModManager\0Harmony12.dll'))
 $args = @('/noconfig', '/nostdlib+', '/langversion:7.3', '/target:library', '/deterministic+', '/optimize+', '/nowarn:CS1701,CS1702',

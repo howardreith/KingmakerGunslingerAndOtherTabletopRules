@@ -39,6 +39,9 @@ namespace KmgLoaderCompatHarness
         private long savedMoney;
         private string lastSaveLabel;
         private string craftedGuid;
+        private ChargenClassScreenProbe chargenProbe;
+        private BuffUiProbe buffProbe;
+        private readonly System.Collections.Generic.List<string> deferredFailures = new System.Collections.Generic.List<string>();
 
         public HarnessRunner(HarnessRequest request, Evidence evidence, JObject result)
         {
@@ -126,7 +129,7 @@ namespace KmgLoaderCompatHarness
         {
             if (stepIndex >= request.Steps.Count)
             {
-                Finish(true, null);
+                Finish(deferredFailures.Count == 0, deferredFailures.Count == 0 ? null : string.Join(" || ", deferredFailures.ToArray()));
                 return;
             }
 
@@ -163,11 +166,19 @@ namespace KmgLoaderCompatHarness
             if (status == StepStatus.Failed)
             {
                 evidence.Event("stepFailed", step + ": " + stepFailure);
-                Finish(false, step + ": " + stepFailure);
-                return;
-            }
+                if (!step.ContinueOnFailure)
+                {
+                    deferredFailures.Add(step + ": " + stepFailure);
+                    Finish(false, string.Join(" || ", deferredFailures.ToArray()));
+                    return;
+                }
 
-            evidence.Event("stepDone", step.ToString());
+                deferredFailures.Add(step + ": " + stepFailure);
+            }
+            else
+            {
+                evidence.Event("stepDone", step.ToString());
+            }
             stepIndex++;
             stepBegun = false;
         }
@@ -218,6 +229,90 @@ namespace KmgLoaderCompatHarness
                     result["kmgBootstrap"] = ProductProbes.Bootstrap(List(step.Match), List(step.Type));
                     return StepStatus.Done;
 
+                case "kmgInitialization":
+                {
+                    // The product's own state after its one initialization attempt: expect=completed, or expect=failed
+                    // with "match" naming text the retained failure chain must contain.
+                    JObject state = PresentationProbes.InitializationState();
+                    state["environment"] = PresentationProbes.Environment();
+                    result["kmgInitialization_" + (step.Label ?? stepIndex.ToString())] = state;
+                    string problem = PresentationProbes.AssertInitialization(state, step.Expect, step.Match);
+                    // "type" names the locale this launch must actually be running in.
+                    string locale = (string)state["environment"]["currentLocale"];
+                    if (problem == null && !string.IsNullOrEmpty(step.Type) && !string.Equals(locale, step.Type, StringComparison.Ordinal))
+                        problem = "the active locale is " + locale + ", expected " + step.Type;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
+                case "kmgClassCatalog":
+                {
+                    // "match" is a character-class guid; "expect" is how often the native class catalog must hold it.
+                    JObject catalog = PresentationProbes.ClassCatalog(step.Match);
+                    result["kmgClassCatalog_" + (step.Label ?? stepIndex.ToString())] = catalog;
+                    int wanted = int.Parse(step.Expect, System.Globalization.CultureInfo.InvariantCulture);
+                    if ((int)catalog["publishedCount"] != wanted) return Fail("class " + step.Match + " is published " + catalog["publishedCount"] + " times, expected " + wanted);
+                    if ((bool)catalog["blueprintResolves"] != (wanted > 0)) return Fail("class " + step.Match + " blueprint resolves=" + catalog["blueprintResolves"]);
+                    return StepStatus.Done;
+                }
+
+                case "kmgPresentationCensus":
+                {
+                    // "match" is the class guid; "type" lists unit facts that must be reachable, visible, carry assigned
+                    // name and description text and an icon. No visible project fact may rely on placeholder text.
+                    JObject census = PresentationProbes.Census(step.Match, List(step.Type), step.Hidden, step.Invariants, out string problem);
+                    evidence.WriteJson("presentation-census-" + (step.Label ?? stepIndex.ToString()) + ".json", census);
+                    JObject summary = new JObject();
+                    foreach (string name in new[] { "environment", "class", "visitedFacts", "projectFacts", "visibleProjectFacts", "hiddenProjectFacts", "offenderCount", "offenders", "required" })
+                        if (census[name] != null) summary[name] = census[name];
+                    result["kmgPresentationCensus_" + (step.Label ?? stepIndex.ToString())] = summary;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
+                case "kmgPresentationContract":
+                {
+                    JObject contract = PresentationProbes.PresentationContract(out string problem);
+                    result["kmgPresentationContract_" + (step.Label ?? stepIndex.ToString())] = contract;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
+                case "kmgChargenClassScreen":
+                {
+                    // "match" is the class guid; "contains" lists text its drawn label must contain. Runs at the main
+                    // menu: opens the real new-character creator, reads its class list, clicks the class, presses Next.
+                    if (chargenProbe == null) chargenProbe = new ChargenClassScreenProbe(evidence.Directory, step.Label ?? stepIndex.ToString(), step.Match, step.Contains);
+                    string outcome;
+                    try { outcome = chargenProbe.Poll(); }
+                    catch (Exception exception) { outcome = exception.ToString(); }
+                    if (outcome == null) return StepStatus.Running;
+                    result["kmgChargenClassScreen_" + (step.Label ?? stepIndex.ToString())] = chargenProbe.Result;
+                    chargenProbe = null;
+                    return outcome.Length == 0 ? StepStatus.Done : Fail(outcome);
+                }
+
+                case "kmgBuffUi":
+                {
+                    // "type" lists buff guids applied to the loaded save's main character; "contains" lists the names
+                    // the character sheet must draw; "expect" names one of them that must end by itself at the next
+                    // round. Reads the party bar and the sheet's Buffs and Conditions rows.
+                    if (buffProbe == null) buffProbe = new BuffUiProbe(evidence.Directory, step.Label ?? stepIndex.ToString(), List(step.Type), step.Contains, step.Expect);
+                    string outcome;
+                    try { outcome = buffProbe.Poll(); }
+                    catch (Exception exception) { outcome = exception.ToString(); }
+                    if (outcome == null) return StepStatus.Running;
+                    result["kmgBuffUi_" + (step.Label ?? stepIndex.ToString())] = buffProbe.Result;
+                    buffProbe = null;
+                    return outcome.Length == 0 ? StepStatus.Done : Fail(outcome);
+                }
+
+                case "kmgRollbackResidue":
+                {
+                    // Needs the captureOriginals condition: exact restoration is judged against identities recorded
+                    // before the product ran.
+                    JObject residue = PresentationProbes.RollbackResidue(out string problem);
+                    result["kmgRollbackResidue_" + (step.Label ?? stepIndex.ToString())] = residue;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
                 case "kmgModules":
                 {
                     JObject state = ProductProbes.ModuleState();
@@ -248,6 +343,7 @@ namespace KmgLoaderCompatHarness
                     if (panelProbe == null)
                     {
                         LoggedExceptions.Arm();
+                        PanelText.Arm();
                         if (!string.IsNullOrEmpty(step.Type)) ToggleClick.Arm(step.Type);
                         UnityModManager.UI.Instance?.ToggleWindow(true);
                         GameObject holder = new GameObject("KmgLoaderCompatPanelProbe");
@@ -271,16 +367,22 @@ namespace KmgLoaderCompatHarness
                         failure = failure ?? LoggedExceptions.First;
                         UnityModManager.UI.Instance?.ToggleWindow(false);
                         LoggedExceptions.Disarm();
+                        PanelText.Disarm();
                         JObject panel = new JObject
                         {
                             ["mod"] = probe.ModId, ["draws"] = draws, ["repaints"] = repaints, ["onGuiCalls"] = probe.Calls,
                             ["exitGui"] = probe.ExitGui, ["gameMode"] = Game.Instance?.CurrentMode.ToString(), ["clicked"] = ToggleClick.Clicked,
-                            ["savedThroughLoader"] = step.Save, ["failure"] = failure
+                            ["savedThroughLoader"] = step.Save, ["failure"] = failure,
+                            ["labels"] = new JArray(PanelText.Labels.Select(text => (object)(text.Length > 400 ? text.Substring(0, 400) : text)).ToArray())
                         };
                         result["ummPanel_" + (step.Label ?? stepIndex.ToString())] = panel;
                         if (failure != null) return Fail("panel failed: " + failure);
                         if (repaints < 30) return Fail("panel completed only " + repaints + " repaints");
                         if (!string.IsNullOrEmpty(step.Type) && ToggleClick.Clicked == null) return Fail("toggle '" + step.Type + "' was never drawn");
+                        foreach (string wanted in step.Contains)
+                            if (!PanelText.Labels.Any(text => text.IndexOf(wanted, StringComparison.Ordinal) >= 0)) return Fail("no panel label contains '" + wanted + "'");
+                        foreach (string unwanted in step.Absent)
+                            if (PanelText.Labels.Any(text => text.IndexOf(unwanted, StringComparison.Ordinal) >= 0)) return Fail("a panel label contains '" + unwanted + "'");
                         return StepStatus.Done;
                     }
 
