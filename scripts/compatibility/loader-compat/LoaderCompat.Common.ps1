@@ -205,7 +205,10 @@ function Set-LcGameCopyMods($Paths, [string[]]$OwnerMods, [string]$CandidateZip,
         Copy-Item -LiteralPath $source -Destination $Paths.ModsDir -Recurse
         $info = Get-Content -LiteralPath (Join-Path $source 'Info.json') -Raw | ConvertFrom-Json
         $dll = Get-ChildItem -LiteralPath $source -Filter '*.dll' -File | Where-Object { $_.Name -eq $(if ($info.PSObject.Properties['AssemblyName'] -and $info.AssemblyName) { $info.AssemblyName } else { "$name.dll" }) }
-        $staged[$name] = [ordered]@{ version = $info.Version; managerVersion = $info.ManagerVersion; dllSha256 = $(if ($dll) { Get-LcSha256 $dll.FullName }) }
+        # ManagerVersion is optional in a mod's Info.json.
+        $staged[$name] = [ordered]@{ version = $info.Version
+            managerVersion = $(if ($info.PSObject.Properties['ManagerVersion']) { $info.ManagerVersion })
+            dllSha256 = $(if ($dll) { Get-LcSha256 $dll.FullName }) }
     }
     Expand-Archive -LiteralPath $CandidateZip -DestinationPath $Paths.ModsDir
     $staged['KingmakerGunslinger'] = [ordered]@{ zipSha256 = Get-LcSha256 $CandidateZip

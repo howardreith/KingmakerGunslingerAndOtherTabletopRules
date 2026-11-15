@@ -299,8 +299,9 @@ namespace KmgLoaderCompatHarness
             Type presentation = product.GetType("KingmakerGunslinger.Blueprints.PlayerFacingPresentation", true);
             MethodInfo apply = presentation.GetMethod("Apply", Any, null, new[] { typeof(BlueprintProgression), typeof(UnityEngine.Sprite) }, null);
             if (apply == null) throw new MissingMethodException(presentation.FullName, "Apply(BlueprintProgression, Sprite)");
-            UnityEngine.Sprite icon = BlueprintRoot.Instance.Progression.CharacterClasses.Where(c => c != null && c.Icon != null).Select(c => c.Icon).FirstOrDefault();
-            if (icon == null) throw new InvalidOperationException("no native class icon is available as a fallback icon");
+            // Any native icon serves as the fallback; the product's own class may be absent after a failed start.
+            UnityEngine.Sprite icon = ResourcesLibrary.GetBlueprints<BlueprintFeature>().Where(f => f != null && f.Icon != null).Select(f => f.Icon).FirstOrDefault();
+            if (icon == null) throw new InvalidOperationException("no native feature icon is available as a fallback icon");
             LocalizationPack pack = LocalizationManager.CurrentPack;
             if (pack == null || pack.Strings == null) throw new InvalidOperationException("no current localization pack");
             const string nameKey = "KmgLoaderCompatHarness.Contract.Name";
