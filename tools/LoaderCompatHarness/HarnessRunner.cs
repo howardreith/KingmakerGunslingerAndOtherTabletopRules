@@ -42,6 +42,7 @@ namespace KmgLoaderCompatHarness
         private ChargenClassScreenProbe chargenProbe;
         private BuffUiProbe buffProbe;
         private OpportunityBuffUiProbe opportunityProbe;
+        private TimedBuffProbe timedBuffProbe;
         private readonly System.Collections.Generic.List<string> deferredFailures = new System.Collections.Generic.List<string>();
 
         public HarnessRunner(HarnessRequest request, Evidence evidence, JObject result)
@@ -317,6 +318,22 @@ namespace KmgLoaderCompatHarness
                     if (outcome == null) return StepStatus.Running;
                     result["kmgOpportunityBuffUi_" + (step.Label ?? stepIndex.ToString())] = opportunityProbe.Result;
                     opportunityProbe = null;
+                    return outcome.Length == 0 ? StepStatus.Done : Fail(outcome);
+                }
+
+                case "kmgTimedBuffs":
+                {
+                    // "type" lists buff guids put on the loaded save's main character; "match" is their duration in
+                    // seconds. Each must activate fully, show in the portrait only if it is visible, and end by itself.
+                    if (timedBuffProbe == null)
+                        timedBuffProbe = new TimedBuffProbe(evidence.Directory, step.Label ?? stepIndex.ToString(), List(step.Type),
+                            double.Parse(step.Match, System.Globalization.CultureInfo.InvariantCulture));
+                    string outcome;
+                    try { outcome = timedBuffProbe.Poll(); }
+                    catch (Exception exception) { outcome = exception.ToString(); }
+                    if (outcome == null) return StepStatus.Running;
+                    result["kmgTimedBuffs_" + (step.Label ?? stepIndex.ToString())] = timedBuffProbe.Result;
+                    timedBuffProbe = null;
                     return outcome.Length == 0 ? StepStatus.Done : Fail(outcome);
                 }
 

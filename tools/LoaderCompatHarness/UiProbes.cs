@@ -832,4 +832,166 @@ namespace KmgLoaderCompatHarness
             };
         }
     }
+
+    /// <summary>
+    /// Puts timed buffs on the loaded save's main character with the game's own AddBuff, then requires what a timed buff
+    /// owes the player: activation that completes, a portrait slot for each visible buff and none for a hidden one, and
+    /// an end that comes by itself once time runs, taking its stat changes with it. Nothing is saved.
+    /// </summary>
+    internal sealed class TimedBuffProbe : ScreenProbe
+    {
+        private enum Stage { Start, PartyBar, Resume, WaitEnd, Finish }
+
+        private readonly string[] guids;
+        private readonly double seconds;
+        private readonly List<BlueprintBuff> blueprints = new List<BlueprintBuff>();
+        private readonly Dictionary<BlueprintBuff, double> endedAt = new Dictionary<BlueprintBuff, double>();
+        private readonly List<string> findings = new List<string>();
+        private Stage stage = Stage.Start;
+        private UnitEntityData unit;
+        private JObject statsBefore;
+        private double resumedAt;
+        private TimeSpan resumedAtGameTime;
+        private int pausesLifted;
+
+        public TimedBuffProbe(string directory, string label, IEnumerable<string> guids, double seconds) : base(directory, label)
+        {
+            this.guids = guids.ToArray();
+            this.seconds = seconds;
+        }
+
+        protected override string Step()
+        {
+            switch (stage)
+            {
+                case Stage.Start:
+                {
+                    unit = Game.Instance.Player.MainCharacter.Value;
+                    if (unit == null) return "no main character; this probe needs a loaded save";
+                    if (guids.Length == 0) return "no buffs were named";
+                    if (seconds <= 0) return "the duration must be positive";
+                    Record["unit"] = unit.CharacterName;
+                    Record["durationSeconds"] = seconds;
+                    Game.Instance.IsPaused = true;
+                    statsBefore = Stats();
+                    Record["statsBefore"] = statsBefore;
+                    JArray applied = new JArray();
+                    foreach (string guid in guids)
+                    {
+                        BlueprintBuff blueprint = ResourcesLibrary.TryGetBlueprint(guid) as BlueprintBuff;
+                        if (blueprint == null) return "buff " + guid + " does not resolve";
+                        if (OnUnit(blueprint) != null) return "the main character already has " + blueprint.name;
+                        // AddBuff returns null when Kingmaker's rule swallowed a failure while activating the buff.
+                        Buff buff = unit.Descriptor.Buffs.AddBuff(blueprint, unit, TimeSpan.FromSeconds(seconds));
+                        Buff present = OnUnit(blueprint);
+                        applied.Add(new JObject
+                        {
+                            ["guid"] = guid, ["blueprint"] = blueprint.name, ["name"] = blueprint.Name, ["hiddenInUi"] = blueprint.IsHiddenInUI,
+                            ["fxOnStartAssigned"] = blueprint.FxOnStart != null, ["fxOnRemoveAssigned"] = blueprint.FxOnRemove != null,
+                            ["addBuffReturnedBuff"] = buff != null, ["onUnit"] = present != null, ["active"] = present != null && present.Active
+                        });
+                        if (present == null) return "buff " + blueprint.name + " is not on the unit after AddBuff";
+                        if (buff == null) findings.Add("Kingmaker did not finish activating " + blueprint.name + " (AddBuff returned nothing)");
+                        blueprints.Add(blueprint);
+                    }
+
+                    Record["applied"] = applied;
+                    Record["statsWithBuffs"] = Stats();
+                    GroupController.Instance.SelectUnit(unit);
+                    stage = Stage.PartyBar;
+                    Wait(45);
+                    return null;
+                }
+
+                case Stage.PartyBar:
+                {
+                    GroupCharacter portrait = UnityEngine.Object.FindObjectsOfType<GroupCharacter>()
+                        .FirstOrDefault(candidate => ReferenceEquals(candidate.GetType().GetProperty("Unit", Any).GetValue(candidate, null), unit));
+                    if (portrait == null) return "the party bar has no portrait for the main character";
+                    GroupCharacterBuffs bar = portrait.GetComponentInChildren<GroupCharacterBuffs>(true);
+                    if (bar == null) return "the portrait has no buff bar";
+                    List<BuffController> widgets = Field<List<BuffController>>(bar, "m_Buffs");
+                    JArray slots = new JArray();
+                    foreach (BlueprintBuff blueprint in blueprints)
+                    {
+                        bool shown = widgets.Any(candidate => candidate != null && candidate.Buff != null && ReferenceEquals(candidate.Buff.Blueprint, blueprint));
+                        slots.Add(new JObject { ["blueprint"] = blueprint.name, ["hiddenInUi"] = blueprint.IsHiddenInUI, ["inPartyBar"] = shown });
+                        if (shown && blueprint.IsHiddenInUI) findings.Add("hidden buff " + blueprint.name + " is in the party bar");
+                        if (!shown && !blueprint.IsHiddenInUI) findings.Add(blueprint.name + " is not in the party bar");
+                    }
+
+                    Record["partyBar"] = slots;
+                    Record["partyBarWidgets"] = widgets.Count;
+                    if (widgets.Count >= 6) bar.OnTriggerPointerEnter();
+                    stage = Stage.Resume;
+                    Wait(15);
+                    return null;
+                }
+
+                case Stage.Resume:
+                    Capture("party-bar");
+                    Game.Instance.IsPaused = false;
+                    resumedAt = Time.realtimeSinceStartup;
+                    resumedAtGameTime = Game.Instance.TimeController.GameTime;
+                    stage = Stage.WaitEnd;
+                    return null;
+
+                case Stage.WaitEnd:
+                {
+                    // The game's own automatic pauses are lifted, and the wait is measured in game time: three durations.
+                    if (Game.Instance.IsPaused)
+                    {
+                        pausesLifted++;
+                        Game.Instance.IsPaused = false;
+                    }
+
+                    double elapsed = Time.realtimeSinceStartup - resumedAt;
+                    double gameSeconds = (Game.Instance.TimeController.GameTime - resumedAtGameTime).TotalSeconds;
+                    foreach (BlueprintBuff blueprint in blueprints)
+                        if (!endedAt.ContainsKey(blueprint) && OnUnit(blueprint) == null) endedAt[blueprint] = Math.Round(gameSeconds, 1);
+                    if (endedAt.Count < blueprints.Count && gameSeconds < seconds * 3 && elapsed < 60.0) return null;
+                    JArray ends = new JArray();
+                    foreach (BlueprintBuff blueprint in blueprints)
+                    {
+                        bool ended = endedAt.ContainsKey(blueprint);
+                        ends.Add(new JObject { ["blueprint"] = blueprint.name, ["ended"] = ended, ["gameSecondsAfterResume"] = ended ? (JToken)endedAt[blueprint] : null });
+                        if (!ended && gameSeconds >= seconds * 3) findings.Add(blueprint.name + " did not end by itself within " + seconds * 3 + " s of game time");
+                    }
+
+                    if (endedAt.Count < blueprints.Count && gameSeconds < seconds * 3)
+                        findings.Add("game time did not run: " + Math.Round(gameSeconds, 1) + " s in " + Math.Round(elapsed, 1) + " s of play");
+                    JObject statsAfter = Stats();
+                    Record["afterTimeRuns"] = new JObject
+                    {
+                        ["ends"] = ends, ["gameSeconds"] = Math.Round(gameSeconds, 1), ["realSeconds"] = Math.Round(elapsed, 1), ["pausesLifted"] = pausesLifted,
+                        ["stats"] = statsAfter, ["gameMode"] = Game.Instance.CurrentMode.ToString()
+                    };
+                    if (endedAt.Count == blueprints.Count && !JToken.DeepEquals(statsAfter, statsBefore))
+                        findings.Add("stats after the buffs ended are " + statsAfter.ToString(Newtonsoft.Json.Formatting.None) + ", before them " + statsBefore.ToString(Newtonsoft.Json.Formatting.None));
+                    Game.Instance.IsPaused = true;
+                    stage = Stage.Finish;
+                    return null;
+                }
+
+                default:
+                    string missing = MissingScreenshots();
+                    if (missing != null) findings.Add(missing);
+                    return findings.Count == 0 ? string.Empty : string.Join("; ", findings.ToArray());
+            }
+        }
+
+        private Buff OnUnit(BlueprintBuff blueprint)
+        {
+            return unit.Descriptor.Buffs.RawFacts.OfType<Buff>().FirstOrDefault(candidate => ReferenceEquals(candidate.Blueprint, blueprint));
+        }
+
+        private JObject Stats()
+        {
+            return new JObject
+            {
+                ["armorClass"] = unit.Descriptor.Stats.AC.ModifiedValue, ["speed"] = unit.Descriptor.Stats.Speed.ModifiedValue,
+                ["reflex"] = unit.Descriptor.Stats.SaveReflex.ModifiedValue
+            };
+        }
+    }
 }
