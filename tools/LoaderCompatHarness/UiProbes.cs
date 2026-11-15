@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Kingmaker;
 using Kingmaker.Assets.UI.LevelUp;
 using Kingmaker.Blueprints;
@@ -652,12 +653,13 @@ namespace KmgLoaderCompatHarness
                 case Stage.TooltipShown:
                 {
                     TooltipData data = trigger.Data;
+                    // Only what the tooltip itself draws, with the markup of its decorated first letter removed; the
+                    // combat log also names the weapon.
                     JArray texts = new JArray();
-                    foreach (TextMeshProUGUI text in UnityEngine.Object.FindObjectsOfType<TextMeshProUGUI>())
+                    foreach (TextMeshProUGUI text in Game.Instance.UI.TooltipsController.GetComponentsInChildren<TextMeshProUGUI>(false))
                     {
                         if (!text.isActiveAndEnabled || string.IsNullOrEmpty(text.text)) continue;
-                        if (text.text.Contains(blueprint.Name) || text.text.Contains(blueprint.Description))
-                            texts.Add(new JObject { ["path"] = PathOf(text.transform), ["text"] = text.text });
+                        texts.Add(new JObject { ["path"] = PathOf(text.transform), ["text"] = Regex.Replace(text.text, "<[^>]+>", string.Empty) });
                     }
 
                     JArray images = new JArray();
