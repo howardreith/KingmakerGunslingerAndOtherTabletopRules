@@ -52,7 +52,7 @@ hidden because of its name.
 
 The check was `string.IsNullOrWhiteSpace(fact.Name)`. In Kingmaker 2.1.7b the conversion of a `LocalizedString` that
 was never stored returns the literal text `<null>` (decompiled `LocalizedString.op_Implicit`), which is not empty. So
-on a stock game the eleven buffs passed, and players saw a buff called `<null>`. The reported installation resolved
+on a stock game the eleven buffs passed with `<null>` as their name and description. The reported installation resolved
 the same unstored string to an empty value, and the first of the eleven failed the check.
 
 The check now asks whether text was *assigned*: a stored string whose key resolves to real text. An unstored string,
