@@ -217,6 +217,8 @@ Recorded in `KNOWN-ISSUES.md`. None is repaired here except the first.
    `RuleAttackWithWeapon.AttackRoll` in `OnEventAboutToTrigger`; Kingmaker creates the roll inside `OnTrigger`, so it
    is null there and the handler returns. Moving the hook is a firearm-rules change with its own risks (probe rolls,
    scatter volleys) and is left for its own cut.
+   Later repaired as its own cut on a branch stacked on this one: `docs/GUNSLINGER-STEADY-AIM-RANGE.md`. The
+   verdicts recorded here are for this cut's candidate and stand as recorded.
 3. **Deadeye reports itself available while Deadeye Armed is up.** That is the observation (availability check, twice,
    runs 6 and 9). What a second use would do was not run. From source: the registered ability has no "not already
    armed" restriction, its resource logic spends grit on every use, and the armed buff's stacking is Replace; so a
