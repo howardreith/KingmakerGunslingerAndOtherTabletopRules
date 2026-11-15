@@ -2,7 +2,45 @@
 
 ## 0.0.191 publication authorization
 
-**Authorized, not yet published.**
+**Published (completed).** Stable
+[v0.0.191](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.191)
+is Latest and not a prerelease. The annotated tag `360478b00e` peels to the release commit `3e13965d9d`,
+which was `origin/master` when the publisher ran.
+
+- **Preparation.** On the release branch, the repository wrapper (dispatched to the release191 validator, PASS) plus
+  the complete suite (2,993/2,993, 0 failures) took 736 s.
+- **Gate.** The publisher's complete suite passed 2,993/2,993 with 0 failures.
+- **Builds.** Two deterministic exact-reference builds against the pinned UMM 0.31.1 loader references
+  produced identical archives:
+  - package SHA-256 `c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb`;
+  - DLL SHA-256 `7c3b0324f40e32b0a476c24e9e66a63a2ecefd8908dc3902bed8ec81a5d87287`.
+- **Reference bundle.** `artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references`,
+  as for v0.0.190.
+- **Public download test.** A fresh download of all three assets matched `SHA256SUMS.txt`, and the manifest
+  names the release commit `3e13965d9dfda843a18e19758e4689e3d3d95e91`. The embedded `Info.json` reads 0.0.191 with
+  `ManagerVersion` 0.31.1 and `Id` `KingmakerGunslinger`, alongside the DLL hash above (458 files).
+- **Native check on the published bytes.** After publication, the downloaded public package ran in the disposable
+  loader-compat game copy on Unity Mod Manager 0.33.0, with the harness built from master `3e13965d9d`, and the game
+  loaded the DLL above. All three sessions passed:
+  - `gunslinger-grit-ui-recipients` (`20261115T191036Z`, seven launches): with unassigned text resolving to null,
+    initialization completes, the Gunslinger is published once, the class screen lists it once and its toggle selects
+    it, and native creation commits one; exactly the 24 audited abilities carry the grit contract; the pass reads no
+    ability description; a repeat returns 22 and replaces nothing; five malformed recipient lists are refused.
+  - `gunslinger-grit-spending` (`20261115T191716Z`, five launches): the indicator count and no-op Spend, Deadeye,
+    Dead Shot, Expert Loading and both Slinger's Luck variants.
+  - `named-spear-buffs` (`20261115T192229Z`, two launches): the spear combat scenario and the eight timed buffs.
+
+  The owner's saves and installation were unchanged and the registry settings restored after each. The release notes
+  say the release build is checked after publication; this is that check. The other disclosures in the notes stand:
+  the reporting installation was not reproduced, Gunslinger's Dodge has no passing spend check, the Pistolero deeds
+  scenario was not run on the published bytes (one of its damage assertions is intermittent, cause not established),
+  and the three hidden summoning abilities still have no stored description.
+- **Timing.** The publisher run took 910 s.
+- **Installation.** The installed mod is untouched and still reads 0.0.140; the publisher performed no
+  deployment.
+- **Merges.** PR #166 merged as `b8ba915d36`; release PR #167 as `3e13965d9d`.
+
+Originally authorized as follows.
 
 On 2026-11-15 Howie sent the review of PR #166 and wrote: "Please address the minor issues identified, then merge this
 and cut a new release. Thank you." The review's two corrections were made on the PR branch (`e99888c4ad`), and PR #166

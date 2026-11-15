@@ -1,8 +1,8 @@
 # Missing Gunslinger class, second report (against v0.0.190): grit UI recipients
 
-Status: **development repair, reviewable, not released.** This record covers one review branch and one development
-candidate. Nothing here is a release qualification, and v0.0.190 stays published and unchanged. The first report and
-its repair are in `docs/GUNSLINGER-MISSING-CLASS-REPAIR.md`.
+Status: **released as v0.0.191.** This record was written for the review branch and its development candidate and
+is kept as written below. The release, and the check of the published bytes in the game, are recorded in
+`docs/BUILD-AND-RELEASE.md`. The first report and its repair are in `docs/GUNSLINGER-MISSING-CLASS-REPAIR.md`.
 
 ## The report
 
