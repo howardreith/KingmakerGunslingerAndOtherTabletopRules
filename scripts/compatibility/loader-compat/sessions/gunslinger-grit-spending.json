@@ -1,0 +1,74 @@
+{
+  "name": "gunslinger-grit-spending",
+  "description": "The product's own guarded deed scenarios, run in the disposable game copy to show that grit is still shown and gated through the shared indicator and still spent exactly once by each deed's own transaction. Covered: the action-bar count and the indicator's no-op Spend (grit resource); a deed with its own resource logic (Dodge); a deed that spends when used through its transaction and has no resource field on its ability (Dead Shot); deeds that arm a marker and spend later (Expert Loading, Slinger's Luck for both the saving-throw and the skill-check variant); and the Pistolero archetype deeds. Each launch is a fresh process.",
+  "ownerMods": [],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "grit-resource",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-gunslinger-grit-resource",
+        "parameters": {},
+        "timeoutSeconds": 600
+      }
+    },
+    {
+      "label": "dodge",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-gunslinger-dodge",
+        "parameters": {},
+        "timeoutSeconds": 600
+      }
+    },
+    {
+      "label": "dead-shot",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-gunslinger-dead-shot",
+        "parameters": {},
+        "timeoutSeconds": 600
+      }
+    },
+    {
+      "label": "expert-loading",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-gunslinger-expert-loading",
+        "parameters": {},
+        "timeoutSeconds": 600
+      }
+    },
+    {
+      "label": "slingers-luck",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-gunslinger-slingers-luck",
+        "parameters": {},
+        "timeoutSeconds": 600
+      }
+    },
+    {
+      "label": "pistolero-deeds",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-pistolero-deeds",
+        "parameters": {},
+        "timeoutSeconds": 600
+      }
+    }
+  ]
+}

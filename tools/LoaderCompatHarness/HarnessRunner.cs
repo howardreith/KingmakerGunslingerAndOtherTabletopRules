@@ -338,6 +338,39 @@ namespace KmgLoaderCompatHarness
                     return outcome.Length == 0 ? StepStatus.Done : Fail(outcome);
                 }
 
+                case "kmgGritUiCensus":
+                {
+                    // "match" is the grit resource guid; "type" lists the abilities that must carry the shared grit
+                    // indicator exactly once; "own" lists those that must keep their own grit resource logic. No
+                    // other project ability may carry either. With the observeGritUiPass condition, the product's
+                    // first pass must also have replaced exactly the shared recipients' component arrays, and "expect"
+                    // is the most project ability descriptions that pass may have read.
+                    JObject census = GritUiProbes.Census(step.Match, List(step.Type), step.Own.ToArray(), out string problem);
+                    if (!string.IsNullOrEmpty(step.Expect))
+                    {
+                        int reads = GritUiPass.DescriptionReads.Values.Sum();
+                        string excess = !GritUiPass.Installed ? "the grit UI pass was not observed (observeGritUiPass)" :
+                            reads > int.Parse(step.Expect, System.Globalization.CultureInfo.InvariantCulture)
+                                ? "the grit UI pass read " + reads + " project ability descriptions, at most " + step.Expect + " allowed" : null;
+                        if (excess != null) problem = problem == null ? excess : problem + "; " + excess;
+                    }
+                    evidence.WriteJson("grit-ui-census-" + (step.Label ?? stepIndex.ToString()) + ".json", census);
+                    JObject summary = new JObject();
+                    foreach (string name in new[] { "gritResolves", "pass", "projectAbilities", "shared", "own", "changedByFirstPass", "unstoredDescriptions" })
+                        if (census[name] != null) summary[name] = census[name];
+                    result["kmgGritUiCensus_" + (step.Label ?? stepIndex.ToString())] = summary;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
+                case "kmgGritUiReapply":
+                {
+                    // "match" is the grit resource guid. Runs the product's integration again on the live blueprints
+                    // and then offers it malformed recipients; see GritUiProbes.Reapply.
+                    JObject reapplied = GritUiProbes.Reapply(step.Match, out string problem);
+                    result["kmgGritUiReapply_" + (step.Label ?? stepIndex.ToString())] = reapplied;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
                 case "kmgRollbackResidue":
                 {
                     // Needs the captureOriginals condition: exact restoration is judged against identities recorded

@@ -21,6 +21,21 @@ namespace KmgLoaderCompatHarness
         /// <summary>An unassigned (null) LocalizedString resolves to an empty string instead of Kingmaker's "&lt;null&gt;".</summary>
         public const string UnassignedTextResolvesBlank = "unassignedTextResolvesBlank";
 
+        /// <summary>
+        /// An unassigned (null) LocalizedString resolves to a null string. Kingmaker's own ability description getter
+        /// passes that straight to UIUtilityTexts.GetLongOrShortText, which dereferences it.
+        /// </summary>
+        public const string UnassignedTextResolvesNull = "unassignedTextResolvesNull";
+
+        /// <summary>Records which project ability descriptions the product's grit UI pass reads and which component arrays it replaces.</summary>
+        public const string ObserveGritUiPass = "observeGritUiPass";
+
+        /// <summary>Abilities (guid list) whose description getter throws while the product's grit UI pass runs. Implies observeGritUiPass.</summary>
+        public const string AbilityDescriptionThrowsAtGritUi = "abilityDescriptionThrowsAtGritUi";
+
+        /// <summary>Abilities (guid list) whose description reads "Spend 1 grit ..." while the product's grit UI pass runs. Implies observeGritUiPass.</summary>
+        public const string AbilityDescriptionMentionsGritSpend = "abilityDescriptionMentionsGritSpend";
+
         /// <summary>Unit facts (guid list) whose description is replaced by an empty-key LocalizedString before the product runs.</summary>
         public const string BlankOriginalDescription = "blankOriginalDescription";
 
@@ -68,6 +83,11 @@ namespace KmgLoaderCompatHarness
 
         public static int BlankResolutions { get; private set; }
 
+        public static int NullResolutions { get; private set; }
+
+        /// <summary>The library the game loaded, once its dictionary is ready; null before that or when no condition asked for it.</summary>
+        public static LibraryScriptableObject Library => library;
+
         /// <summary>Every fact a session asked to have recorded before the product ran.</summary>
         public static string[] RequestedCaptures => captureGuids;
 
@@ -79,7 +99,8 @@ namespace KmgLoaderCompatHarness
             string[] known =
             {
                 UnassignedTextResolvesBlank, BlankOriginalDescription, ForeignDescriptionAfterProtectionPublish,
-                ForeignComponentsAfterProtectionPublish, CaptureOriginals, FailAtArchetypePresentation, FailProtectionDescriptionWrite
+                ForeignComponentsAfterProtectionPublish, CaptureOriginals, FailAtArchetypePresentation, FailProtectionDescriptionWrite,
+                UnassignedTextResolvesNull, ObserveGritUiPass, AbilityDescriptionThrowsAtGritUi, AbilityDescriptionMentionsGritSpend
             };
             foreach (string name in conditions.Keys)
             {
@@ -95,12 +116,25 @@ namespace KmgLoaderCompatHarness
                 applied[UnassignedTextResolvesBlank] = "postfix on LocalizedString.op_Implicit: a null string resolves to \"\"";
             }
 
+            if (Enabled(conditions, UnassignedTextResolvesNull))
+            {
+                if (Enabled(conditions, UnassignedTextResolvesBlank)) throw new InvalidOperationException("unassigned text cannot resolve both blank and null");
+                MethodInfo conversion = typeof(LocalizedString).GetMethod("op_Implicit", BindingFlags.Static | BindingFlags.Public, null,
+                    new[] { typeof(LocalizedString) }, null);
+                if (conversion == null || conversion.ReturnType != typeof(string)) throw new MissingMethodException(typeof(LocalizedString).FullName, "op_Implicit");
+                harmony.Patch(conversion, null, new HarmonyMethod(typeof(ReproductionConditions).GetMethod(nameof(NullUnassignedPostfix), Any)));
+                applied[UnassignedTextResolvesNull] = "postfix on LocalizedString.op_Implicit: a null string resolves to null";
+            }
+
             blankGuids = List(conditions, BlankOriginalDescription);
             foreignDescriptionGuids = List(conditions, ForeignDescriptionAfterProtectionPublish);
             foreignComponentGuids = List(conditions, ForeignComponentsAfterProtectionPublish);
             captureGuids = List(conditions, CaptureOriginals).Concat(blankGuids).Concat(foreignDescriptionGuids).Concat(foreignComponentGuids)
                 .Distinct().ToArray();
-            if (captureGuids.Length > 0)
+            string[] throwingDescriptions = List(conditions, AbilityDescriptionThrowsAtGritUi);
+            string[] gritSpendDescriptions = List(conditions, AbilityDescriptionMentionsGritSpend);
+            bool observeGritUi = Enabled(conditions, ObserveGritUiPass) || throwingDescriptions.Length + gritSpendDescriptions.Length > 0;
+            if (captureGuids.Length > 0 || observeGritUi)
             {
                 MethodInfo load = typeof(LibraryScriptableObject).GetMethod("LoadDictionary", Any);
                 if (load == null) throw new MissingMethodException(typeof(LibraryScriptableObject).FullName, "LoadDictionary");
@@ -111,6 +145,7 @@ namespace KmgLoaderCompatHarness
 
             Assembly product = ProductProbes.Entry().Assembly;
             if (product == null) throw new InvalidOperationException("the product assembly is not loaded before the harness");
+            if (observeGritUi) applied[ObserveGritUiPass] = GritUiPass.Install(harmony, product, throwingDescriptions, gritSpendDescriptions);
             if (foreignDescriptionGuids.Length + foreignComponentGuids.Length > 0)
             {
                 Type publication = product.GetType("KingmakerGunslinger.Spells.ProtectionFromAlignment.ProtectionFromAlignmentPublication", true);
@@ -148,6 +183,8 @@ namespace KmgLoaderCompatHarness
             return new JObject
             {
                 ["blankResolutions"] = BlankResolutions,
+                ["nullResolutions"] = NullResolutions,
+                ["gritUiPass"] = GritUiPass.Describe(),
                 ["libraryPrepared"] = libraryPrepared,
                 ["nativeDescriptions"] = NativeDescriptions,
                 ["events"] = new JArray(Events.Cast<object>().ToArray())
@@ -176,6 +213,13 @@ namespace KmgLoaderCompatHarness
             if (__0 != null) return;
             __result = string.Empty;
             BlankResolutions++;
+        }
+
+        private static void NullUnassignedPostfix(LocalizedString __0, ref string __result)
+        {
+            if (__0 != null) return;
+            __result = null;
+            NullResolutions++;
         }
 
         // Runs before the product's own LoadDictionary postfix (priority 400), so the product sees these values as the

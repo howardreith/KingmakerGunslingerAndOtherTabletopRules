@@ -1873,6 +1873,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("armed-presentation.rollback-verified-repeatable", ArmedPresentationRepairTests.RollbackVerifiesAndIsRepeatable),
             Case("armed-presentation.rollback-part-way-write", ArmedPresentationRepairTests.RollbackCoversAWriteThatFailedPartWay),
             Case("armed-presentation.content-status", ArmedPresentationRepairTests.ContentStatusSeparatesLoaderActivityFromContent),
+            Case("grit-ui-recipients.session-expects-audited-identities", GritUiRecipientContractTests.SessionExpectsExactlyTheAuditedIdentities),
+            Case("grit-ui-recipients.membership-not-from-displayed-text", GritUiRecipientContractTests.MembershipDoesNotComeFromDisplayedText),
             Case("acquisition.distributed-campaign", PlayerFacingPresentationAndDiscoverabilityTests.DistributedCampaignPassesDiscoverabilityPolicy),
             Case("acquisition.weapon-physical-evidence-gates", WeaponFindabilityTests.MissingPhysicalEvidenceNeverPasses),
             Case("acquisition.weapon-curated-measured-gates", WeaponFindabilityTests.CuratedCountsRequireTheirOwnMeasuredGates),
