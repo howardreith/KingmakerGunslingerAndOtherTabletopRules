@@ -12,8 +12,6 @@
   named Elven Branched Spear buffs were repaired and observed separately: without the links Boughkeeper's buff stayed
   on the character, with its +1 AC, after three rounds; with them all eight activate fully and end after one round
   (`reports/boughkeeper-buff-icon/NATIVE-UI-CHECK.json`).
-- The three visible named-spear penalty buffs (Thornstep, Viper's Reach and First Branch's Reprisal) have no icon and
-  are drawn as white squares wherever a buff bar shows them. Boughkeeper's own buff has the spear's icon.
 - Rapid Reload's parent proficiency gate reads only the registered firearm
   proficiency features, so any future independent proficiency source satisfies
   it without further changes. `FirearmProficiencyScopeReconciler` remains a

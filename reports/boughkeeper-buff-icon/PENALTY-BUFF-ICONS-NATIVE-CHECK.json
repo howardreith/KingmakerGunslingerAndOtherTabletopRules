@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "subject": "Elven Branched Spear icon on the three visible named-spear penalty buffs: Thornstep (339e83672ea2116e55640d175fec0c84), Viper's Reach (6ac410ab82b81915d64249a213e1815a) and First Branch's Reprisal (27d76fe829cc0234b7e120b19462848b)",
+  "status": "PASS on a development candidate, within the stated scope",
+  "ownerApproval": "The owner directed the reuse of the spear art on 2026-11-15. Whether the spear reads well enough at the 19px slot remains the owner's visual decision.",
+  "date": "2026-11-15",
+  "host": "DATA",
+  "route": "scripts/compatibility/loader-compat/Invoke-LoaderCompatSession.ps1, session named-spear-buffs, loader profile owner-0.33.0, disposable game copy C:/Dev/KingmakerGunslingerLab/game-copies/loader-compat, saves and area cache redirected to a per-session profile, fixture save KMCS_AFTER_NORMAL_012_MODONLY.zks",
+  "method": "The product's own save-free spear combat scenario runs first. Then each of the eight named-spear buffs is put on the fixture save's main character for 6 s with BuffCollection.AddBuff; the portrait's buff bar is read from the game's view objects, play resumes and game time runs. The verdict comes from those objects; the screenshot is for a person to look at.",
+  "candidate": {
+    "kind": "development candidate, never a release",
+    "productSourceCommit": "f00d289b03",
+    "builtAtCommit": "6d46fbeeb8b5ef1631e884cde72520b93ee10fa1",
+    "packageSha256": "149a0ed019f98de8f85bd3d0e2b637813a4d65ba2d991d8e227a05b35f7ad752",
+    "dllSha256": "6ef1806a3261de92ee4dd568aab9f231b0040f8caae6527f146b67cb498d8d67",
+    "version": "0.0.190"
+  },
+  "harness": {
+    "source": "tools/LoaderCompatHarness at 6d46fbeeb8b5ef1631e884cde72520b93ee10fa1 (test-only, not in the product package)",
+    "dllSha256": "dcf9f94332bb316c950d9a7b5b311147081fb55e7e22ca5f87be01c29d19b08f"
+  },
+  "result": {
+    "session": "20261115T160344Z-owner-0.33.0-named-spear-buffs",
+    "verdict": "PASS",
+    "seconds": 149,
+    "screen": "1920x1200",
+    "combatScenario": "disposable-elven-branched-spear-combat PASS, 24 assertions",
+    "visibleBuffSlots": {
+      "KMG_Boughkeeper_AC_Buff": "KMG_Icon_elven-branched-spear",
+      "KMG_Thornstep_Speed_Penalty": "KMG_Icon_elven-branched-spear",
+      "KMG_VipersReach_Reflex_Penalty": "KMG_Icon_elven-branched-spear",
+      "KMG_FirstBranch_Speed_Penalty": "KMG_Icon_elven-branched-spear"
+    },
+    "slotSpriteIsBlueprintSprite": "all four",
+    "hiddenMarkers": "none of the four hidden round markers is in the buff bar",
+    "activationCompleted": "all eight",
+    "ends": "all eight ended by themselves at 6.0 s of game time",
+    "stats": {
+      "before": "AC 18, speed 20, Reflex 2",
+      "withBuffs": "AC 18, speed 5, Reflex 0",
+      "afterEnd": "AC 18, speed 20, Reflex 2"
+    },
+    "screenshots": [
+      {
+        "file": "named-spears-party-bar.png",
+        "sha256": "c246246df0231e67089378b496b8be868e50ae788639ef47436db48eb6d8a6e2"
+      }
+    ]
+  },
+  "baseline": {
+    "build": "development candidate of the source merged as 30e9fdf68b (package 8f4888aaa0844bca5a65a0e6be8f8437605595ab7dc72278966222ef0f18590f, DLL c00f3a4ece76d3dde23a4ac84f22c28e010f9c19058ff389f290020b47d9c81a)",
+    "session": "20261115T160612Z-owner-0.33.0-named-spear-buffs",
+    "verdict": "FAIL by design: the three penalty buffs have no icon and their slots have no sprite; everything else as above.",
+    "screenshots": [
+      {
+        "file": "named-spears-party-bar.png",
+        "sha256": "74268782a730b2f34f34eec26d26651880de7d3fe371862bae45122cdffcd5da"
+      }
+    ]
+  },
+  "machineProtection": "Both sessions reported the owner's 95 save files and installation unchanged and the game's registry settings restored. No guarded run of the live installation and no save was written.",
+  "limits": [
+    "One fixture save, one loader profile, standalone mod set, desktop UI, enGB.",
+    "The penalties were shown on the player's own portrait by direct application. In play they sit on the enemy that was hit; an enemy's buff list (inspection or hover) was not opened.",
+    "Their tooltips, the character sheet's Buffs row, controller UI, turn-based mode and the owner's own installation were not exercised."
+  ]
+}

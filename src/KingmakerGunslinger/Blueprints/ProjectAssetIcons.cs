@@ -176,6 +176,13 @@ namespace KingmakerGunslinger.Blueprints
             // Boughkeeper's visible AC buff shares its spear's art.
             factAccess.SetIcon(
                 elvenBranchedSpears.Named.Buffs.Boughkeeper, spearIcon);
+            // So do the visible penalties the other named spears inflict.
+            factAccess.SetIcon(
+                elvenBranchedSpears.Named.Buffs.ThornPenalty, spearIcon);
+            factAccess.SetIcon(
+                elvenBranchedSpears.Named.Buffs.ViperPenalty, spearIcon);
+            factAccess.SetIcon(
+                elvenBranchedSpears.Named.Buffs.FirstPenalty, spearIcon);
             ApplyEasternWeapons(easternWeapons, items, factAccess);
             ValidateDistinctSupplyIcons(ammunition, repairKit, supplies);
         }

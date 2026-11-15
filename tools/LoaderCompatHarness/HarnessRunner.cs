@@ -324,10 +324,11 @@ namespace KmgLoaderCompatHarness
                 case "kmgTimedBuffs":
                 {
                     // "type" lists buff guids put on the loaded save's main character; "match" is their duration in
-                    // seconds. Each must activate fully, show in the portrait only if it is visible, and end by itself.
+                    // seconds; "expect", when given, names the icon every visible one must draw. Each must activate
+                    // fully, show in the portrait with its icon only if it is visible, and end by itself.
                     if (timedBuffProbe == null)
                         timedBuffProbe = new TimedBuffProbe(evidence.Directory, step.Label ?? stepIndex.ToString(), List(step.Type),
-                            double.Parse(step.Match, System.Globalization.CultureInfo.InvariantCulture));
+                            double.Parse(step.Match, System.Globalization.CultureInfo.InvariantCulture), step.Expect);
                     string outcome;
                     try { outcome = timedBuffProbe.Poll(); }
                     catch (Exception exception) { outcome = exception.ToString(); }

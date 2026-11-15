@@ -844,6 +844,7 @@ namespace KmgLoaderCompatHarness
 
         private readonly string[] guids;
         private readonly double seconds;
+        private readonly string expectedIcon;
         private readonly List<BlueprintBuff> blueprints = new List<BlueprintBuff>();
         private readonly Dictionary<BlueprintBuff, double> endedAt = new Dictionary<BlueprintBuff, double>();
         private readonly List<string> findings = new List<string>();
@@ -854,10 +855,11 @@ namespace KmgLoaderCompatHarness
         private TimeSpan resumedAtGameTime;
         private int pausesLifted;
 
-        public TimedBuffProbe(string directory, string label, IEnumerable<string> guids, double seconds) : base(directory, label)
+        public TimedBuffProbe(string directory, string label, IEnumerable<string> guids, double seconds, string expectedIcon) : base(directory, label)
         {
             this.guids = guids.ToArray();
             this.seconds = seconds;
+            this.expectedIcon = expectedIcon;
         }
 
         protected override string Step()
@@ -914,10 +916,20 @@ namespace KmgLoaderCompatHarness
                     JArray slots = new JArray();
                     foreach (BlueprintBuff blueprint in blueprints)
                     {
-                        bool shown = widgets.Any(candidate => candidate != null && candidate.Buff != null && ReferenceEquals(candidate.Buff.Blueprint, blueprint));
-                        slots.Add(new JObject { ["blueprint"] = blueprint.name, ["hiddenInUi"] = blueprint.IsHiddenInUI, ["inPartyBar"] = shown });
+                        BuffController widget = widgets.FirstOrDefault(candidate => candidate != null && candidate.Buff != null && ReferenceEquals(candidate.Buff.Blueprint, blueprint));
+                        bool shown = widget != null;
+                        Sprite sprite = !shown || widget.Icon == null ? null : widget.Icon.sprite;
+                        slots.Add(new JObject
+                        {
+                            ["blueprint"] = blueprint.name, ["hiddenInUi"] = blueprint.IsHiddenInUI, ["inPartyBar"] = shown,
+                            ["shownIcon"] = sprite == null ? null : sprite.name, ["blueprintIcon"] = blueprint.Icon == null ? null : blueprint.Icon.name
+                        });
                         if (shown && blueprint.IsHiddenInUI) findings.Add("hidden buff " + blueprint.name + " is in the party bar");
-                        if (!shown && !blueprint.IsHiddenInUI) findings.Add(blueprint.name + " is not in the party bar");
+                        if (blueprint.IsHiddenInUI) continue;
+                        if (!shown) findings.Add(blueprint.name + " is not in the party bar");
+                        else if (sprite == null) findings.Add(blueprint.name + " has no icon, so its slot draws a blank square");
+                        else if (!ReferenceEquals(sprite, blueprint.Icon)) findings.Add(blueprint.name + " party-bar icon is " + sprite.name + ", not its blueprint's");
+                        else if (!string.IsNullOrEmpty(expectedIcon) && sprite.name != expectedIcon) findings.Add(blueprint.name + " icon is " + sprite.name + ", expected " + expectedIcon);
                     }
 
                     Record["partyBar"] = slots;
