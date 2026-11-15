@@ -39,6 +39,8 @@ namespace KmgLoaderCompatHarness
         private long savedMoney;
         private string lastSaveLabel;
         private string craftedGuid;
+        private ChargenClassScreenProbe chargenProbe;
+        private BuffUiProbe buffProbe;
         private readonly System.Collections.Generic.List<string> deferredFailures = new System.Collections.Generic.List<string>();
 
         public HarnessRunner(HarnessRequest request, Evidence evidence, JObject result)
@@ -271,6 +273,35 @@ namespace KmgLoaderCompatHarness
                     JObject contract = PresentationProbes.PresentationContract(out string problem);
                     result["kmgPresentationContract_" + (step.Label ?? stepIndex.ToString())] = contract;
                     return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
+                case "kmgChargenClassScreen":
+                {
+                    // "match" is the class guid; "contains" lists text its drawn label must contain. Runs at the main
+                    // menu: opens the real new-character creator, reads its class list, clicks the class, presses Next.
+                    if (chargenProbe == null) chargenProbe = new ChargenClassScreenProbe(evidence.Directory, step.Label ?? stepIndex.ToString(), step.Match, step.Contains);
+                    string outcome;
+                    try { outcome = chargenProbe.Poll(); }
+                    catch (Exception exception) { outcome = exception.ToString(); }
+                    if (outcome == null) return StepStatus.Running;
+                    result["kmgChargenClassScreen_" + (step.Label ?? stepIndex.ToString())] = chargenProbe.Result;
+                    chargenProbe = null;
+                    return outcome.Length == 0 ? StepStatus.Done : Fail(outcome);
+                }
+
+                case "kmgBuffUi":
+                {
+                    // "type" lists buff guids applied to the loaded save's main character; "contains" lists the names
+                    // the character sheet must draw; "expect" names one of them that must end by itself at the next
+                    // round. Reads the party bar and the sheet's Buffs and Conditions rows.
+                    if (buffProbe == null) buffProbe = new BuffUiProbe(evidence.Directory, step.Label ?? stepIndex.ToString(), List(step.Type), step.Contains, step.Expect);
+                    string outcome;
+                    try { outcome = buffProbe.Poll(); }
+                    catch (Exception exception) { outcome = exception.ToString(); }
+                    if (outcome == null) return StepStatus.Running;
+                    result["kmgBuffUi_" + (step.Label ?? stepIndex.ToString())] = buffProbe.Result;
+                    buffProbe = null;
+                    return outcome.Length == 0 ? StepStatus.Done : Fail(outcome);
                 }
 
                 case "kmgRollbackResidue":

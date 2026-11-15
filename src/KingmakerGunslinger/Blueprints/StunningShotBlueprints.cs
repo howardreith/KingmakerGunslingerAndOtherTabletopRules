@@ -70,6 +70,7 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_StunningShot_Armed";
+            BlueprintUnitFactAccess.UseEmptyBuffEffects(result);
             result.IsClassFeature = true;
             result.Stacking = StackingType.Replace;
             var handler = ScriptableObject.CreateInstance<StunningShotAttackHandler>();

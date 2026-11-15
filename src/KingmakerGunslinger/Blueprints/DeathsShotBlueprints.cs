@@ -53,6 +53,7 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_DeathsShot_DeathEffect";
+            BlueprintUnitFactAccess.UseEmptyBuffEffects(result);
             result.Stacking = StackingType.Replace;
             var descriptor = ScriptableObject.CreateInstance<SpellDescriptorComponent>();
             descriptor.Descriptor = SpellDescriptor.Death;
@@ -72,6 +73,7 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_DeathsShot_Armed";
+            BlueprintUnitFactAccess.UseEmptyBuffEffects(result);
             result.Stacking = StackingType.Replace;
             var handler = ScriptableObject.CreateInstance<DeathsShotAttackHandler>();
             handler.Grit = grit; handler.GunslingerClass = gunslingerClass;

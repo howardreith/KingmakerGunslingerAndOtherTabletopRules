@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Localization;
+using Kingmaker.ResourceLinks;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using KingmakerGunslinger.Presentation;
 using UnityEngine;
@@ -160,6 +161,24 @@ namespace KingmakerGunslinger.Blueprints
             if (!buff.IsHiddenInUI)
                 throw new InvalidOperationException(
                     "The buff UI-visibility flag did not verify.");
+        }
+
+        /// <summary>
+        /// Gives a buff that has no visual effect the empty effect links
+        /// Kingmaker expects. Buff activation loads FxOnStart without a null
+        /// check; on a buff built without the link it throws after the buff
+        /// is already active, the rule that applied it swallows the error,
+        /// and the "buff added" notification and expiry scheduling never
+        /// run, so the buff works but is missing from the party bar. An
+        /// empty link loads nothing and spawns nothing.
+        /// </summary>
+        internal static void UseEmptyBuffEffects(BlueprintBuff buff)
+        {
+            if (buff == null) throw new ArgumentNullException("buff");
+            if (buff.FxOnStart == null) buff.FxOnStart = new PrefabLink();
+            if (buff.FxOnRemove == null) buff.FxOnRemove = new PrefabLink();
+            if (buff.ResourceAssetIds == null)
+                buff.ResourceAssetIds = Array.Empty<string>();
         }
 
         private static bool IsStored(LocalizedString value)

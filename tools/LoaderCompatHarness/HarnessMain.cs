@@ -101,6 +101,8 @@ namespace KmgLoaderCompatHarness
         private readonly string directory;
         private readonly string eventsPath;
 
+        public string Directory => directory;
+
         public Evidence(string directory)
         {
             this.directory = directory;

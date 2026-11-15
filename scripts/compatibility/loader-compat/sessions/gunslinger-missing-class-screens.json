@@ -1,0 +1,136 @@
+{
+  "name": "gunslinger-missing-class-screens",
+  "description": "Screen-level and partial-publication checks for the missing Gunslinger class repair. The new-character creator is opened the way the New Game window opens it for a custom character, with unassigned text resolving blank: the class screen must list the Gunslinger exactly once with a real label, its own toggle must select it, and Next must leave the screen with it selected. The ten visible armed and used buffs are applied to the main character of a disposable fixture save: each must appear in the party bar with its icon and on the character sheet with its drawn name, tooltip text and icon. A failure injected after a Protection from Alignment description has been stored, but before its setter returns, must be rolled back exactly while the rest of initialization continues. Screenshots are written beside the harness result for a person to look at; the verdict comes from the game's own view objects.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "chargen-class-screen",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "unassignedTextResolvesBlank": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]",
+          "[class-catalog.chargen-selector-result]"
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "steps": [
+          {
+            "op": "kmgInitialization",
+            "label": "chargen",
+            "expect": "completed",
+            "type": "enGB",
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgChargenClassScreen",
+            "label": "chargen",
+            "match": "abca4797366d4df0831a418eee39069a",
+            "contains": [
+              "Gunslinger"
+            ],
+            "timeoutSeconds": 180,
+            "continueOnFailure": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "buff-ui",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]",
+          "rollback-failed]",
+          "[rollback.incomplete]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgBuffUi",
+            "label": "buffs",
+            "type": "e563e8cdec324c59959c4dc8b9449702,74749a03f92e4fabaec2830bd66f7731,cd51a3e250094365b54929490a1d64b6,479e8f2c4dc7480cac9664ac10232e21,5a21b3ff5940476f97fe5f7844fa4509,b35b22a49a4c4645a1b730698d35837d,841a2ca5e4994da48fadcc4f3a3c3579,e553eb5c573b4b178f4b973850f5a0e3,dfc8df775a53441292502d05f13334e4,c2b6f72548824ce2aff95c21cfbe81b3",
+            "contains": [
+              "Bleeding Wound Armed \u2014 Hit Points",
+              "Bleeding Wound Armed \u2014 Strength",
+              "Bleeding Wound Armed \u2014 Dexterity",
+              "Bleeding Wound Armed \u2014 Constitution",
+              "Expert Loading Armed",
+              "Lightning Reload Used",
+              "Slinger's Luck Armed - Saving Throw",
+              "Slinger's Luck Armed - Skill Check",
+              "Death's Shot Armed",
+              "Stunning Shot Armed"
+            ],
+            "expect": "b35b22a49a4c4645a1b730698d35837d",
+            "timeoutSeconds": 180,
+            "continueOnFailure": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "protection-description-write-failure",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "captureOriginals": "433b1faf4d02cc34abb0ade5ceda47c4,eee384c813b6d74498d1b9cc720d61f4,2ac7637daeb2aa143a3bae860095b63e,c3aafbbb6e8fc754fb8c82ede3280051,1eaf1020e82028d4db55e6e464269e00,2cadf6c6350e4684baa109d067277a45,93f391b0c5a99e04e83bbfbe3bb6db64,5bfd4cce1557d5744914f8f6d85959a4,8b8ccc9763e3cc74bbf5acc9c98557b9,0ec75ec95d9e39d47a23610123ba1bad,4a6911969911ce9499bf27dde9bfcedc,b19e788487556aa4397080ef3dbb3619,744bec63273df53438c6b76aaaa78382,a4742d7afde0f4f47b380abed025b219,8deb9d5cef3472646ac5199eb9edfb87",
+        "failProtectionDescriptionWrite": "c3aafbbb6e8fc754fb8c82ede3280051"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]",
+          "[protection-from-alignment][publication.failed]",
+          "KmgLoaderCompatHarness injected description write failure"
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "steps": [
+          {
+            "op": "kmgInitialization",
+            "label": "write-failure",
+            "expect": "completed",
+            "type": "enGB",
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgClassCatalog",
+            "label": "write-failure",
+            "match": "abca4797366d4df0831a418eee39069a",
+            "expect": "1",
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgRollbackResidue",
+            "label": "write-failure",
+            "continueOnFailure": true
+          }
+        ]
+      }
+    }
+  ]
+}

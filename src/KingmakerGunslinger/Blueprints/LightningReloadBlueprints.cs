@@ -52,6 +52,7 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_LightningReload_Used";
+            BlueprintUnitFactAccess.UseEmptyBuffEffects(result);
             result.IsClassFeature = true;
             result.Stacking = StackingType.Replace;
             var reset = ScriptableObject.CreateInstance<LightningReloadRoundMarker>();

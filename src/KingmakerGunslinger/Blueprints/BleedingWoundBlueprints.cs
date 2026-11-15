@@ -67,6 +67,9 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Deeds.BleedingWoundConstitutionBuff" };
         private static readonly string[] Labels = {
             "Hit Points", "Strength", "Dexterity", "Constitution" };
+        // How each kind reads inside a sentence.
+        private static readonly string[] BleedTargets = {
+            "hit points", "Strength", "Dexterity", "Constitution" };
 
         internal static BleedingWoundBlueprintSet Register(
             BlueprintRegistry registry)
@@ -101,6 +104,7 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_BleedingWound_" + kind + "_Armed";
+            BlueprintUnitFactAccess.UseEmptyBuffEffects(result);
             result.IsClassFeature = true;
             result.Stacking = StackingType.Replace;
             result.ComponentsArray = Array.Empty<BlueprintComponent>();
@@ -111,7 +115,7 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.BleedingWound." + kind +
                     ".Armed.Name", "Bleeding Wound Armed — " + Labels[(int)kind]),
                 LocalizationService.Create("KMG.BleedingWound." + kind +
-                    ".Armed.Description", "Your next firearm attack is armed with Bleeding Wound. On an eligible hit, you spend " + cost + " grit and the target takes recurring " + Labels[(int)kind] + " bleed. This effect ends after that firearm attack, even if it misses."),
+                    ".Armed.Description", "Your next firearm attack is armed with Bleeding Wound. On an eligible hit, you spend " + cost + " grit and the target takes ongoing bleed damage to " + BleedTargets[(int)kind] + ". This effect ends after that firearm attack, even if it misses."),
                 null);
             return result;
         }

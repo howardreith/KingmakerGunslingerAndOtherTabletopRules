@@ -93,6 +93,7 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_SlingersLuck_" + suffix + "_Armed";
+            BlueprintUnitFactAccess.UseEmptyBuffEffects(result);
             result.IsClassFeature = true;
             result.Stacking = StackingType.Replace;
             // Shown on the gunslinger until the armed roll is rerolled.

@@ -283,6 +283,9 @@ namespace KmgLoaderCompatHarness
             }
 
             if (entries.Count == 0) problems.Add("no original state was captured before the product ran");
+            // A session that names a fact expects it judged: an unresolved guid must not shrink the check silently.
+            string[] uncaptured = ReproductionConditions.RequestedCaptures.Where(guid => !ReproductionConditions.OriginalDescriptions.ContainsKey(guid)).ToArray();
+            if (uncaptured.Length > 0) problems.Add("requested originals were not captured: " + string.Join(", ", uncaptured));
             failure = problems.Count == 0 ? null : problems.Count + " rollback residue problem(s): " + string.Join("; ", problems.ToArray());
             return new JObject { ["entries"] = entries, ["conditions"] = ReproductionConditions.Describe() };
         }

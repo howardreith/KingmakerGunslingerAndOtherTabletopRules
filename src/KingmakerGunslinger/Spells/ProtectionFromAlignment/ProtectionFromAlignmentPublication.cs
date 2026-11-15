@@ -154,9 +154,11 @@ namespace KingmakerGunslinger.Spells.ProtectionFromAlignment
                             protection.Spec.ProtectedAgainst;
                         BlueprintComponent[] published = before.Concat(
                             new BlueprintComponent[] { component }).ToArray();
-                        protection.Buff.ComponentsArray = published;
+                        // Journal first, then write: rollback can only
+                        // restore a mutation it was told about.
                         componentMutations.Add(new ComponentMutation(
                             protection.Buff, original, published));
+                        protection.Buff.ComponentsArray = published;
                         patched++;
                         Validate(protection);
                     }
@@ -187,9 +189,14 @@ namespace KingmakerGunslinger.Spells.ProtectionFromAlignment
                             Validate(description);
                             continue;
                         }
-                        factAccess.SetDescription(description.Fact, published);
+                        // Journal first, then write. SetDescription stores
+                        // the field before it verifies it, so a failure
+                        // inside it can leave the description changed. A
+                        // journalled entry that was never written is seen by
+                        // rollback as still original and left alone.
                         descriptionMutations.Add(new DescriptionMutation(
                             description.Fact, original, published));
+                        factAccess.SetDescription(description.Fact, published);
                         descriptionsPatched++;
                         Validate(description);
                     }

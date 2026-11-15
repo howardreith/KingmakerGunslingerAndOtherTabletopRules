@@ -201,6 +201,42 @@ namespace KingmakerGunslinger.DomainTests
                 "An unreadable slot was not reported as failed: " + unreadable.Describe());
         }
 
+        internal static void RollbackCoversAWriteThatFailedPartWay()
+        {
+            // The publication journals a mutation before it writes it. A
+            // setter that stores the value and then throws leaves the slot
+            // changed; one that throws first leaves it untouched. Rollback
+            // must restore the first and leave the second alone.
+            var writtenOriginal = new Slot { Text = "written-original" };
+            var untouchedOriginal = new Slot { Text = "untouched-original" };
+            var written = new Holder(writtenOriginal);
+            var untouched = new Holder(untouchedOriginal);
+            var writtenPublished = new Slot { Text = "published" };
+            var untouchedPublished = new Slot { Text = "published" };
+            Assertions.Throws<InvalidOperationException>(() =>
+            {
+                written.Value = writtenPublished;
+                throw new InvalidOperationException("failed after the write");
+            }, "The controlled part-way write did not fail.");
+
+            var rollback = new OwnedMutationRollback();
+            rollback.Restore("untouched", () => untouched.Value,
+                value => { throw new InvalidOperationException("must not write"); },
+                untouchedPublished, untouchedOriginal);
+            rollback.Restore("written", () => written.Value,
+                value => written.Value = value, writtenPublished, writtenOriginal);
+            OwnedMutationRollbackReport report = rollback.Complete();
+
+            Assertions.True(ReferenceEquals(written.Value, writtenOriginal),
+                "A value written before its setter failed was not restored.");
+            Assertions.True(ReferenceEquals(untouched.Value, untouchedOriginal),
+                "A journalled entry that was never written was disturbed.");
+            Assertions.True(report.IsComplete &&
+                report.Entries[0].Status == OwnedMutationRollbackStatus.AlreadyOriginal &&
+                report.Entries[1].Status == OwnedMutationRollbackStatus.Restored,
+                "The part-way write was not reported exactly: " + report.Describe());
+        }
+
         internal static void ContentStatusSeparatesLoaderActivityFromContent()
         {
             Assertions.Equal(ContentInitializationStatus.Initialized,

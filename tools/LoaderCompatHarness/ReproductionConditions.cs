@@ -36,7 +36,14 @@ namespace KmgLoaderCompatHarness
         /// <summary>The product's archetype presentation step throws, so the bootstrap's failure cleanup runs.</summary>
         public const string FailAtArchetypePresentation = "failAtArchetypePresentation";
 
+        /// <summary>
+        /// Unit facts (guid list) for which the product's validating description setter throws after it has stored
+        /// the new description, as a failure between the write and the setter's return would.
+        /// </summary>
+        public const string FailProtectionDescriptionWrite = "failProtectionDescriptionWrite";
+
         public const string InjectedFailureMessage = "KmgLoaderCompatHarness injected initialization failure";
+        public const string InjectedWriteFailureMessage = "KmgLoaderCompatHarness injected description write failure";
 
         private const BindingFlags Any = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
         private static readonly FieldInfo DescriptionField = typeof(BlueprintUnitFact).GetField("m_Description", Any);
@@ -45,6 +52,7 @@ namespace KmgLoaderCompatHarness
         private static string[] foreignDescriptionGuids = new string[0];
         private static string[] foreignComponentGuids = new string[0];
         private static string[] captureGuids = new string[0];
+        private static string[] failingWriteGuids = new string[0];
         private static LibraryScriptableObject library;
         private static bool libraryPrepared;
 
@@ -60,6 +68,9 @@ namespace KmgLoaderCompatHarness
 
         public static int BlankResolutions { get; private set; }
 
+        /// <summary>Every fact a session asked to have recorded before the product ran.</summary>
+        public static string[] RequestedCaptures => captureGuids;
+
         public static JObject Apply(HarmonyInstance harmony, IDictionary<string, string> conditions)
         {
             JObject applied = new JObject();
@@ -68,7 +79,7 @@ namespace KmgLoaderCompatHarness
             string[] known =
             {
                 UnassignedTextResolvesBlank, BlankOriginalDescription, ForeignDescriptionAfterProtectionPublish,
-                ForeignComponentsAfterProtectionPublish, CaptureOriginals, FailAtArchetypePresentation
+                ForeignComponentsAfterProtectionPublish, CaptureOriginals, FailAtArchetypePresentation, FailProtectionDescriptionWrite
             };
             foreach (string name in conditions.Keys)
             {
@@ -108,6 +119,16 @@ namespace KmgLoaderCompatHarness
                 harmony.Patch(publish, null, new HarmonyMethod(typeof(ReproductionConditions).GetMethod(nameof(AfterProtectionPublishPostfix), Any)));
                 applied[ForeignDescriptionAfterProtectionPublish] = new JArray(foreignDescriptionGuids.Cast<object>().ToArray());
                 applied[ForeignComponentsAfterProtectionPublish] = new JArray(foreignComponentGuids.Cast<object>().ToArray());
+            }
+
+            failingWriteGuids = List(conditions, FailProtectionDescriptionWrite);
+            if (failingWriteGuids.Length > 0)
+            {
+                Type access = product.GetType("KingmakerGunslinger.Blueprints.BlueprintUnitFactAccess", true);
+                MethodInfo setter = access.GetMethod("SetDescription", Any, null, new[] { typeof(BlueprintUnitFact), typeof(LocalizedString) }, null);
+                if (setter == null) throw new MissingMethodException(access.FullName, "SetDescription");
+                harmony.Patch(setter, null, new HarmonyMethod(typeof(ReproductionConditions).GetMethod(nameof(FailingWritePostfix), Any)));
+                applied[FailProtectionDescriptionWrite] = new JArray(failingWriteGuids.Cast<object>().ToArray());
             }
 
             if (Enabled(conditions, FailAtArchetypePresentation))
@@ -222,6 +243,15 @@ namespace KmgLoaderCompatHarness
                 ForeignComponents[guid] = foreign;
                 Events.Add("foreign component array after publication: " + fact.name);
             }
+        }
+
+        // A postfix runs after the setter's body: the field is already stored when this throws.
+        private static void FailingWritePostfix(BlueprintUnitFact __0, LocalizedString __1)
+        {
+            if (__0 == null || !failingWriteGuids.Contains(__0.AssetGuid)) return;
+            if (!ReferenceEquals(CurrentDescription(__0), __1)) return;
+            Events.Add("description write failure thrown after the write: " + __0.name);
+            throw new InvalidOperationException(InjectedWriteFailureMessage);
         }
 
         private static bool InjectedFailurePrefix()

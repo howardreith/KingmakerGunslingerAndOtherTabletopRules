@@ -1871,6 +1871,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("armed-presentation.rollback-exact-original", ArmedPresentationRepairTests.RollbackRestoresTheExactCapturedOriginal),
             Case("armed-presentation.rollback-foreign-and-continue", ArmedPresentationRepairTests.RollbackKeepsForeignChangesAndContinues),
             Case("armed-presentation.rollback-verified-repeatable", ArmedPresentationRepairTests.RollbackVerifiesAndIsRepeatable),
+            Case("armed-presentation.rollback-part-way-write", ArmedPresentationRepairTests.RollbackCoversAWriteThatFailedPartWay),
             Case("armed-presentation.content-status", ArmedPresentationRepairTests.ContentStatusSeparatesLoaderActivityFromContent),
             Case("acquisition.distributed-campaign", PlayerFacingPresentationAndDiscoverabilityTests.DistributedCampaignPassesDiscoverabilityPolicy),
             Case("acquisition.weapon-physical-evidence-gates", WeaponFindabilityTests.MissingPhysicalEvidenceNeverPasses),

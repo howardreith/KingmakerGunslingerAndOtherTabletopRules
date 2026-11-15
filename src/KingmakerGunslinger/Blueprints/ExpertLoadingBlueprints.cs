@@ -49,6 +49,7 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_ExpertLoading_Armed";
+            BlueprintUnitFactAccess.UseEmptyBuffEffects(result);
             result.IsClassFeature = true;
             result.Stacking = StackingType.Replace;
             result.ComponentsArray = Array.Empty<BlueprintComponent>();
