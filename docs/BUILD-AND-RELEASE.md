@@ -2,6 +2,37 @@
 
 ## 0.0.190 publication authorization
 
+**Published (completed).** Stable
+[v0.0.190](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.190)
+is Latest and not a prerelease. The annotated tag `40ef1191c0` peels to the release commit `27244257b1`,
+which was `origin/master` when the publisher ran.
+
+- **Gate.** The complete suite passed 2,991/2,991 with 0 failures.
+- **Builds.** Two deterministic exact-reference builds against the pinned UMM 0.31.1 loader references
+  produced identical archives:
+  - package SHA-256 `1f1f31fa161ea251396733f6ee45d6f7df20930f89431a4c9d91771bd4446de6`;
+  - DLL SHA-256 `88ab89933746fb1072a0b1c68ddad8a105320d911cccc202204c97fe0bc3df9c`.
+- **Reference bundle.** `artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references`,
+  as for v0.0.189.
+- **Public download test.** A fresh download of all three assets matched `SHA256SUMS.txt`, and the manifest
+  names the release commit `27244257b1ba6f823f999611bd28cecbb1d329fb`. The embedded `Info.json` reads 0.0.190 with
+  `ManagerVersion` 0.31.1 and `Id` `KingmakerGunslinger`, alongside the DLL hash above (458 files).
+- **Native check on the published bytes.** After publication, the downloaded public package ran in the disposable
+  loader-compat game copy on Unity Mod Manager 0.33.0, and the game loaded the DLL above. All three sessions passed:
+  `gunslinger-missing-class` (`20261115T070459Z`, six launches), `gunslinger-missing-class-screens`
+  (`20261115T071116Z`, three launches) and `gunslinger-missing-class-shared-mods` (`20261115T071504Z`, two launches).
+  The owner's saves and installation were unchanged and the registry settings restored after each. The published
+  release notes were written before this run and still say the released build was not run in the game; that
+  statement is now out of date. The other disclosures in the notes stand: the reporting installation was not
+  reproduced, the buffs were not armed through their abilities or spent in combat, and the other buffs built without
+  effect links are unchanged.
+- **Timing.** The publisher run took 916 s.
+- **Installation.** The installed mod is untouched and still reads 0.0.140; the publisher performed no
+  deployment.
+- **Merges.** PR #161 merged as `268a934192`; release PR #162 as `27244257b1`.
+
+Originally authorized as follows.
+
 On 2026-11-15 Howie sent the review of PR #161 and wrote: "Could you do the thing mentioned in this review, then merge
 and cut a new release please?" The review's items were done on the PR branch, PR #161 (the missing Gunslinger class
 repair) was marked ready and merged as `268a934192`. No channel was named, so this follows v0.0.189 as the next stable
