@@ -466,11 +466,12 @@ namespace KmgLoaderCompatHarness
     /// <summary>
     /// Arms the loaded save's main character with one weapon, has the game queue a real attack of opportunity against a
     /// disposable hostile target and runs that native command, then reads the buff the hit granted where a player sees
-    /// it: the portrait's buff slot and the tooltip that slot opens. Nothing is saved.
+    /// it: the portrait's buff slot and the tooltip that slot opens. It then ends the fight, lets time run and requires
+    /// the buff to end by itself. Nothing is saved.
     /// </summary>
     internal sealed class OpportunityBuffUiProbe : ScreenProbe
     {
-        private enum Stage { Start, PartyBar, Tooltip, TooltipShown, Finish }
+        private enum Stage { Start, PartyBar, Tooltip, TooltipShown, Resume, WaitEnd, Finish }
 
         private sealed class AttackObserver : IGlobalRulebookHandler<RuleAttackWithWeapon>
         {
@@ -508,6 +509,8 @@ namespace KmgLoaderCompatHarness
         private int attackBonusBefore;
         private bool attackBonusRaised;
         private bool refreshed;
+        private int armorClassBefore;
+        private double resumedAt;
 
         public OpportunityBuffUiProbe(string directory, string label, string weaponGuid, string buffGuid, string expectedIcon, IEnumerable<string> expectedTexts) : base(directory, label)
         {
@@ -565,7 +568,7 @@ namespace KmgLoaderCompatHarness
                     unit.Descriptor.Stats.BaseAttackBonus.BaseValue = CertainHitAttackBonus;
                     attackBonusRaised = true;
                     Record["attackBonusRaisedForCertainHit"] = CertainHitAttackBonus;
-                    int armorClassBefore = unit.Descriptor.Stats.AC.ModifiedValue;
+                    armorClassBefore = unit.Descriptor.Stats.AC.ModifiedValue;
                     EventBus.Subscribe(observer);
                     string refused = null;
                     for (int attempt = 0; attempt < 5 && refused == null && OnUnit() == null; attempt++) refused = Opportunity();
@@ -610,6 +613,7 @@ namespace KmgLoaderCompatHarness
                     }
 
                     if (!refreshed) Record["inPartyBarAfterFirstHit"] = true;
+                    else if (widget != null) findings.Add(blueprint.name + " was not in the party bar after the first hit; it appeared only after a second one");
                     Sprite shown = widget == null || widget.Icon == null ? null : widget.Icon.sprite;
                     Record["partyBar"] = new JObject
                     {
@@ -634,7 +638,7 @@ namespace KmgLoaderCompatHarness
 
                 case Stage.Tooltip:
                     Capture("party-bar");
-                    stage = Stage.Finish;
+                    stage = Stage.Resume;
                     if (widget != null)
                     {
                         trigger = widget.GetComponent<TooltipTrigger>() ?? widget.GetComponentInChildren<TooltipTrigger>(true);
@@ -677,14 +681,44 @@ namespace KmgLoaderCompatHarness
                     foreach (string expected in expectedTexts)
                         if (!texts.Any(entry => ((string)entry["text"]).Contains(expected))) findings.Add("no drawn tooltip text contains '" + expected + "'");
                     Capture("tooltip");
-                    stage = Stage.Finish;
+                    stage = Stage.Resume;
                     Wait(30);
                     return null;
                 }
 
-                default:
+                case Stage.Resume:
+                    // The fight is over before time runs, so nothing can hit again and renew the buff.
                     if (trigger != null) trigger.OnPointerExit(null);
                     Restore();
+                    unit.Commands.InterruptAll(true);
+                    target.CombatState.LeaveCombat();
+                    unit.CombatState.LeaveCombat();
+                    target.Dispose();
+                    Game.Instance.IsPaused = false;
+                    resumedAt = Time.realtimeSinceStartup;
+                    stage = Stage.WaitEnd;
+                    return null;
+
+                case Stage.WaitEnd:
+                {
+                    // A timed buff must end once time runs, without help, and take its bonus with it.
+                    bool present = OnUnit() != null;
+                    double elapsed = Time.realtimeSinceStartup - resumedAt;
+                    if (present && elapsed < 25.0) return null;
+                    int armorClassAfterEnd = unit.Descriptor.Stats.AC.ModifiedValue;
+                    Record["afterTimeRuns"] = new JObject
+                    {
+                        ["ended"] = !present, ["secondsAfterResume"] = Math.Round(elapsed, 1), ["armorClass"] = armorClassAfterEnd,
+                        ["gameMode"] = Game.Instance.CurrentMode.ToString()
+                    };
+                    if (present) findings.Add(blueprint.name + " did not end by itself within 25 s of unpaused play");
+                    else if (armorClassAfterEnd != armorClassBefore) findings.Add("armor class is " + armorClassAfterEnd + " after the buff ended, " + armorClassBefore + " before it");
+                    Game.Instance.IsPaused = true;
+                    stage = Stage.Finish;
+                    return null;
+                }
+
+                default:
                     string missing = MissingScreenshots();
                     if (missing != null) findings.Add(missing);
                     return findings.Count == 0 ? string.Empty : string.Join("; ", findings.ToArray());
