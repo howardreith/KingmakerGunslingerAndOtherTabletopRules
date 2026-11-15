@@ -494,6 +494,13 @@ namespace KmgLoaderCompatHarness
                 (string)token["unit"] == unit.Blueprint.name && (double)token["gameSeconds"] >= Math.Round(since, 2) - 0.011);
         }
 
+        /// <summary>Every notice of this kind the game has raised for this buff on this unit so far.</summary>
+        private int Notices(string kind, BlueprintBuff blueprint, UnitEntityData unit)
+        {
+            return observer.BuffEvents.Count(token => (string)token["event"] == kind && (string)token["guid"] == blueprint.AssetGuid &&
+                (string)token["unit"] == unit.Blueprint.name);
+        }
+
         private double? EventAt(string kind, BlueprintBuff blueprint, UnitEntityData unit, double since)
         {
             JToken last = observer.BuffEvents.LastOrDefault(token => (string)token["event"] == kind && (string)token["guid"] == blueprint.AssetGuid &&
@@ -738,13 +745,14 @@ namespace KmgLoaderCompatHarness
             var earlierRow = new JObject();
             recast["earlierActivation"] = earlierRow;
             int gritBeforeEarlier = Grit(actor);
+            int addedBeforeEarlier = Notices("added", blueprint, actor);
             double earlierCastAt = Now();
             command = Use(actor, ability, actor, earlierRow);
             yield return Finished(command);
             earlierRow.Merge(Used(command));
             Buff earlier = OnUnit(actor, blueprint);
             earlierRow["buffOnUnit"] = earlier != null;
-            earlierRow["buffAddedNotices"] = Events("added", blueprint, actor, earlierCastAt);
+            earlierRow["buffAddedNotices"] = Notices("added", blueprint, actor) - addedBeforeEarlier;
             earlierRow["gritSpent"] = gritBeforeEarlier - Grit(actor);
             bool earlierHappened = command.IsFinished && command.Result == Kingmaker.UnitLogic.Commands.Base.UnitCommand.ResultType.Success &&
                 command.ExecutionProcess != null && command.ExecutionProcess.IsEnded && earlier != null &&
@@ -759,12 +767,13 @@ namespace KmgLoaderCompatHarness
             recast["earlyRemovalByFixture"] = removalRow;
             Buff beforeRemoval = OnUnit(actor, blueprint);
             bool sameAsEarlier = earlier != null && ReferenceEquals(beforeRemoval, earlier);
+            int removedBeforeRemoval = Notices("removed", blueprint, actor);
             if (beforeRemoval != null) actor.Descriptor.Buffs.RemoveFact(beforeRemoval);
             bool earlierGone = earlier != null && !actor.Descriptor.Buffs.RawFacts.Contains(earlier) && OnUnit(actor, blueprint) == null;
             removalRow["afterGameSeconds"] = Math.Round(Now() - earlierCastAt, 2);
             removalRow["instanceOnUnitWasTheEarlierOne"] = sameAsEarlier;
             removalRow["earlierInstanceGone"] = earlierGone;
-            removalRow["buffRemovedNotices"] = Events("removed", blueprint, actor, earlierCastAt);
+            removalRow["buffRemovedNotices"] = Notices("removed", blueprint, actor) - removedBeforeRemoval;
             removalRow["armorClassAfter"] = actor.Descriptor.Stats.AC.ModifiedValue;
             bool earlierRemoved = sameAsEarlier && earlierGone && (int)removalRow["buffRemovedNotices"] == 1 &&
                 actor.Descriptor.Stats.AC.ModifiedValue == armorClassBase;
@@ -777,6 +786,7 @@ namespace KmgLoaderCompatHarness
             recast["laterActivation"] = laterRow;
             double laterCastAt = Now();
             int gritBeforeLater = Grit(actor);
+            int addedBeforeLater = Notices("added", blueprint, actor);
             command = Use(actor, ability, actor, laterRow);
             yield return Finished(command);
             laterRow.Merge(Used(command));
@@ -785,7 +795,7 @@ namespace KmgLoaderCompatHarness
             laterRow["buffOnUnit"] = later != null;
             laterRow["isANewInstance"] = later != null && !ReferenceEquals(later, earlier);
             laterRow["timeLeftSeconds"] = TimeLeft(later);
-            laterRow["buffAddedNotices"] = Events("added", blueprint, actor, laterCastAt);
+            laterRow["buffAddedNotices"] = Notices("added", blueprint, actor) - addedBeforeLater;
             laterRow["gritSpent"] = gritBeforeLater - Grit(actor);
             bool laterHappened = command.IsFinished && command.Result == Kingmaker.UnitLogic.Commands.Base.UnitCommand.ResultType.Success &&
                 command.ExecutionProcess != null && command.ExecutionProcess.IsEnded && later != null && !ReferenceEquals(later, earlier) &&
