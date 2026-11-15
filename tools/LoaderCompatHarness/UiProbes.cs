@@ -85,6 +85,16 @@ namespace KmgLoaderCompatHarness
             Screenshots.Add(path);
         }
 
+        private double screenshotsAwaitedFrom = -1;
+
+        /// <summary>True while a requested picture is still being written, for at most ten seconds of real time.</summary>
+        protected bool AwaitingScreenshots()
+        {
+            if (MissingScreenshots() == null) return false;
+            if (screenshotsAwaitedFrom < 0) screenshotsAwaitedFrom = Time.realtimeSinceStartup;
+            return Time.realtimeSinceStartup - screenshotsAwaitedFrom < 10.0;
+        }
+
         protected string MissingScreenshots()
         {
             string[] missing = Screenshots.Select(token => (string)token).Where(path => !File.Exists(path) || new FileInfo(path).Length == 0).ToArray();
@@ -236,6 +246,8 @@ namespace KmgLoaderCompatHarness
                 }
 
                 default:
+                    // Unity writes a picture at the end of a later frame; a fixed frame count can end first.
+                    if (AwaitingScreenshots()) return null;
                     return MissingScreenshots() ?? string.Empty;
             }
         }
