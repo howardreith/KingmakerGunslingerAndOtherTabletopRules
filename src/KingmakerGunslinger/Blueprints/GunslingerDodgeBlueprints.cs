@@ -73,6 +73,10 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_GunslingerDodge_ArmorClass_Buff";
+            // Effect-free: without links activation is cut short after the
+            // buff is attached, AddBuff returns nothing and the deed's own
+            // delivery faults although the bonus is already applied.
+            BlueprintUnitFactAccess.UseEmptyBuffEffects(result);
             result.IsClassFeature = false;
             result.Stacking = StackingType.Replace;
             var bonus = ScriptableObject.CreateInstance<

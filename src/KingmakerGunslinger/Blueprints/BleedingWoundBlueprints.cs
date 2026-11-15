@@ -124,6 +124,9 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_BleedingWound_" + kind + "_Buff";
+            // Effect-free: empty links let activation finish, so the bleed
+            // is announced on the target and its recurring tick is scheduled.
+            BlueprintUnitFactAccess.UseEmptyBuffEffects(result);
             result.IsClassFeature = false;
             result.Stacking = StackingType.Replace;
             var descriptor = ScriptableObject.CreateInstance<SpellDescriptorComponent>();

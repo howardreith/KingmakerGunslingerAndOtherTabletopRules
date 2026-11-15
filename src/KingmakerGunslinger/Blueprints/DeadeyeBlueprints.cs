@@ -70,6 +70,9 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_Deadeye_Armed_Buff";
+            // Effect-free: empty links let activation finish, so the armed
+            // state reaches the party bar and its one-round end is scheduled.
+            BlueprintUnitFactAccess.UseEmptyBuffEffects(result);
             result.IsClassFeature = true;
             result.Stacking = StackingType.Replace;
             result.ComponentsArray = Array.Empty<BlueprintComponent>();
