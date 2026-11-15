@@ -110,9 +110,15 @@ namespace KingmakerGunslinger.Blueprints
             var apply = new ContextActionApplyBuff
             {
                 Buff = armedBuff,
+                // Kingmaker evaluates the dice count as well as the bonus.
+                // Without it the duration cannot be calculated, the action
+                // faults inside the game's action list, and the ability
+                // spends grit without arming anything.
                 DurationValue = new ContextDurationValue
                 {
                     Rate = DurationRate.Rounds,
+                    DiceType = Kingmaker.RuleSystem.DiceType.Zero,
+                    DiceCountValue = 0,
                     BonusValue = 1
                 },
                 IsNotDispelable = true
