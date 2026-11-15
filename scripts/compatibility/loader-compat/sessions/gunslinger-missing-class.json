@@ -17,7 +17,7 @@
           "[initialize.root-cause]",
           "[initialize.failed]",
           "rollback-failed]",
-          "rollback-incomplete]"
+          "[rollback.incomplete]"
         ]
       },
       "harness": {
@@ -102,7 +102,7 @@
           "[initialize.root-cause]",
           "[initialize.failed]",
           "rollback-failed]",
-          "rollback-incomplete]"
+          "[rollback.incomplete]"
         ]
       },
       "harness": {
@@ -182,12 +182,12 @@
         "present": [
           "[blueprints][initialize.root-cause]",
           "KmgLoaderCompatHarness injected initialization failure",
-          "[protection-from-alignment.rollback-incomplete]"
+          "[protection-from-alignment][rollback.incomplete]"
         ],
         "absent": [
           "[blueprints][initialize.complete]",
           "[protection-from-alignment.rollback-failed]",
-          "[protection-from-alignment.rollback-complete]"
+          "[protection-from-alignment][rollback.complete]"
         ]
       },
       "harness": {
@@ -242,12 +242,12 @@
       "expectLog": {
         "present": [
           "[blueprints][initialize.root-cause]",
-          "[protection-from-alignment.rollback-complete]"
+          "[protection-from-alignment][rollback.complete]"
         ],
         "absent": [
           "[blueprints][initialize.complete]",
           "[protection-from-alignment.rollback-failed]",
-          "[protection-from-alignment.rollback-incomplete]"
+          "[protection-from-alignment][rollback.incomplete]"
         ]
       },
       "harness": {
@@ -287,7 +287,7 @@
           "[initialize.root-cause]",
           "[initialize.failed]",
           "rollback-failed]",
-          "rollback-incomplete]"
+          "[rollback.incomplete]"
         ]
       },
       "harness": {

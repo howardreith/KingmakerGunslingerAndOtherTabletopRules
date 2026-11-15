@@ -30,7 +30,7 @@
           "[initialize.root-cause]",
           "[initialize.failed]",
           "rollback-failed]",
-          "rollback-incomplete]"
+          "[rollback.incomplete]"
         ]
       },
       "harness": {
@@ -96,7 +96,7 @@
           "[initialize.root-cause]",
           "[initialize.failed]",
           "rollback-failed]",
-          "rollback-incomplete]"
+          "[rollback.incomplete]"
         ]
       },
       "harness": {

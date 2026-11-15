@@ -18,15 +18,18 @@ namespace KingmakerGunslinger.Spells.ProtectionFromAlignment
     {
         private readonly List<ComponentMutation> _componentMutations;
         private readonly List<DescriptionMutation> _descriptionMutations;
+        private readonly ModLogger _logger;
 
         private ProtectionFromAlignmentPublication(
             List<ComponentMutation> componentMutations,
             List<DescriptionMutation> descriptionMutations,
-            ProtectionFromAlignmentPublicationSummary summary)
+            ProtectionFromAlignmentPublicationSummary summary,
+            ModLogger logger)
         {
             _componentMutations = componentMutations;
             _descriptionMutations = descriptionMutations;
             Summary = summary;
+            _logger = logger;
         }
 
         internal ProtectionFromAlignmentPublicationSummary Summary
@@ -102,7 +105,7 @@ namespace KingmakerGunslinger.Spells.ProtectionFromAlignment
                         string.Join(" | ", requiredIssues.ToArray()));
                 return new ProtectionFromAlignmentPublication(
                     new List<ComponentMutation>(),
-                    new List<DescriptionMutation>(), failed);
+                    new List<DescriptionMutation>(), failed, logger);
             }
 
             var componentMutations = new List<ComponentMutation>();
@@ -200,7 +203,7 @@ namespace KingmakerGunslinger.Spells.ProtectionFromAlignment
                     optionalCount > 0 && optionalResolved == optionalCount);
                 LogSummary(logger, summary);
                 return new ProtectionFromAlignmentPublication(
-                    componentMutations, descriptionMutations, summary);
+                    componentMutations, descriptionMutations, summary, logger);
             }
             catch (Exception publicationException)
             {
@@ -225,13 +228,23 @@ namespace KingmakerGunslinger.Spells.ProtectionFromAlignment
 
         /// <summary>
         /// Puts every description and component array this publication
-        /// replaced back to the exact object captured before publication.
-        /// The report says what was restored and what was left; the caller
-        /// must not describe an incomplete report as a completed rollback.
+        /// replaced back to the exact object captured before publication,
+        /// and records the outcome itself: complete only when nothing is
+        /// left, incomplete with each unresolved entry otherwise. A conflict
+        /// is reported, not thrown, so the caller's remaining cleanup runs.
         /// </summary>
         internal OwnedMutationRollbackReport Rollback()
         {
-            return RollbackAll(_componentMutations, _descriptionMutations);
+            OwnedMutationRollbackReport report =
+                RollbackAll(_componentMutations, _descriptionMutations);
+            if (report.IsComplete)
+                _logger.Info("protection-from-alignment", "rollback.complete",
+                    report.Describe());
+            else
+                _logger.Failure("protection-from-alignment", "rollback.incomplete",
+                    "Protection from Alignment rollback left changes in place. " +
+                    report.Describe(), null);
+            return report;
         }
 
         internal static ProtectionFromAlignmentPublicationObservation Observe(
