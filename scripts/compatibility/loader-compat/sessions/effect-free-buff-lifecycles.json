@@ -56,7 +56,10 @@
             "type": "2fd1feb61e7b53af8c8aee70eb85d5b8,596a9b06c478572d8d82414ad8d78935,4ca1d8e286dd5c82a2ee8ce369146d57",
             "match": "6",
             "timeoutSeconds": 180,
-            "continueOnFailure": true
+            "continueOnFailure": true,
+            "invariants": {
+              "whileActive": "unchanged"
+            }
           },
           {
             "op": "kmgDeedLifecycle",

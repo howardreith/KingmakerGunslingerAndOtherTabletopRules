@@ -867,11 +867,14 @@ namespace KmgLoaderCompatHarness
         private TimeSpan resumedAtGameTime;
         private int pausesLifted;
 
-        public TimedBuffProbe(string directory, string label, IEnumerable<string> guids, double seconds, string expectedIcon) : base(directory, label)
+        private readonly bool unchangedWhileActive;
+
+        public TimedBuffProbe(string directory, string label, IEnumerable<string> guids, double seconds, string expectedIcon, bool unchangedWhileActive = false) : base(directory, label)
         {
             this.guids = guids.ToArray();
             this.seconds = seconds;
             this.expectedIcon = expectedIcon;
+            this.unchangedWhileActive = unchangedWhileActive;
         }
 
         protected override string Step()
@@ -910,7 +913,13 @@ namespace KmgLoaderCompatHarness
                     }
 
                     Record["applied"] = applied;
-                    Record["statsWithBuffs"] = Stats();
+                    JObject statsWithBuffs = Stats();
+                    Record["statsWithBuffs"] = statsWithBuffs;
+                    Record["expectUnchangedWhileActive"] = unchangedWhileActive;
+                    // Only where the step says its buffs are inert: a buff that grants a bonus changes these on purpose.
+                    if (unchangedWhileActive && !JToken.DeepEquals(statsWithBuffs, statsBefore))
+                        findings.Add("stats while the buffs are active are " + statsWithBuffs.ToString(Newtonsoft.Json.Formatting.None) + ", before them " +
+                            statsBefore.ToString(Newtonsoft.Json.Formatting.None) + "; these buffs must change none of them");
                     GroupController.Instance.SelectUnit(unit);
                     stage = Stage.PartyBar;
                     Wait(45);

@@ -43,7 +43,7 @@ namespace KmgLoaderCompatHarness
         private BuffUiProbe buffProbe;
         private OpportunityBuffUiProbe opportunityProbe;
         private TimedBuffProbe timedBuffProbe;
-        private DeedLifecycleProbe deedProbe;
+        private readonly ProbeSlot probes = new ProbeSlot();
         private readonly System.Collections.Generic.List<string> deferredFailures = new System.Collections.Generic.List<string>();
 
         public HarnessRunner(HarnessRequest request, Evidence evidence, JObject result)
@@ -165,25 +165,97 @@ namespace KmgLoaderCompatHarness
             }
 
             if (status == StepStatus.Running) return;
-            ((JArray)result["steps"]).Add(new JObject { ["step"] = step.ToString(), ["status"] = status.ToString(), ["failure"] = stepFailure });
+
+            // The step is over, however it ended: by its own verdict, by timeout or by an exception. Whatever it
+            // started is ended here, under this step's identity, before another step is considered.
+            bool isolationRestored = EndStepProbes(step, ref status);
+            ((JArray)result["steps"]).Add(new JObject
+            {
+                ["step"] = step.ToString(), ["status"] = status.ToString(), ["failure"] = stepFailure, ["isolationRestored"] = isolationRestored
+            });
             if (status == StepStatus.Failed)
             {
                 evidence.Event("stepFailed", step + ": " + stepFailure);
-                if (!step.ContinueOnFailure)
-                {
-                    deferredFailures.Add(step + ": " + stepFailure);
-                    Finish(false, string.Join(" || ", deferredFailures.ToArray()));
-                    return;
-                }
-
                 deferredFailures.Add(step + ": " + stepFailure);
             }
             else
             {
                 evidence.Event("stepDone", step.ToString());
             }
+
+            if (ProbeSlot.Decide(status == StepStatus.Failed, step.ContinueOnFailure, isolationRestored) == StepContinuation.StopLaunch)
+            {
+                if (!isolationRestored)
+                {
+                    evidence.Event("isolationNotRestored", step.ToString());
+                    deferredFailures.Add(step + ": the launch stops here; what the step's probe owned could not all be released");
+                }
+
+                Finish(false, string.Join(" || ", deferredFailures.ToArray()));
+                return;
+            }
+
             stepIndex++;
             stepBegun = false;
+        }
+
+        /// <summary>The identity a step's probe and its result are kept under: the step's position and its result key.</summary>
+        private string StepIdentity(HarnessStep step)
+        {
+            return stepIndex + "|" + step.Op + "_" + (step.Label ?? stepIndex.ToString());
+        }
+
+        /// <summary>Writes a probe's record and how it ended under the step that started it, never under the current one.</summary>
+        private void RecordProbe(ProbeOutcome outcome)
+        {
+            JObject recorded = outcome.Result as JObject ?? new JObject();
+            recorded["termination"] = new JObject
+            {
+                ["step"] = outcome.Owner, ["testFailure"] = outcome.TestFailure, ["passed"] = outcome.Passed,
+                ["isolationRestored"] = outcome.IsolationRestored,
+                ["cleanupAttempted"] = new JArray(outcome.Cleanup.Attempted.Cast<object>().ToArray()),
+                ["cleanupFailures"] = new JArray(outcome.Cleanup.Failures.Cast<object>().ToArray())
+            };
+            result[outcome.Owner.Substring(outcome.Owner.IndexOf('|') + 1)] = recorded;
+        }
+
+        /// <summary>
+        /// Ends everything the finished step started. Idempotent for a probe that already reported its verdict. Returns
+        /// whether the game is back to what it was before the step's probe.
+        /// </summary>
+        private bool EndStepProbes(HarnessStep step, ref StepStatus status)
+        {
+            if (status == StepStatus.Failed)
+            {
+                // These probes clear themselves when they report a verdict. One left behind by a timeout or an
+                // exception must not be picked up by a later step.
+                chargenProbe = null;
+                buffProbe = null;
+                opportunityProbe = null;
+                timedBuffProbe = null;
+            }
+
+            ProbeOutcome ended = probes.Terminate(StepIdentity(step), stepFailure ?? "the step ended without its probe's verdict");
+            if (ended != null)
+            {
+                RecordProbe(ended);
+                if (!ended.Passed)
+                {
+                    stepFailure = ended.Failure;
+                    status = StepStatus.Failed;
+                }
+            }
+
+            // Not reachable while every step ends its own probe; kept so that an active probe is never left behind.
+            ProbeOutcome orphan = probes.Abandon("left active when step " + StepIdentity(step) + " ended");
+            if (orphan != null)
+            {
+                RecordProbe(orphan);
+                stepFailure = (stepFailure == null ? string.Empty : stepFailure + "; ") + "a probe of step " + orphan.Owner + " was still active";
+                status = StepStatus.Failed;
+            }
+
+            return probes.IsolationRestored;
         }
 
         private StepStatus Fail(string message)
@@ -327,9 +399,15 @@ namespace KmgLoaderCompatHarness
                     // "type" lists buff guids put on the loaded save's main character; "match" is their duration in
                     // seconds; "expect", when given, names the icon every visible one must draw. Each must activate
                     // fully, show in the portrait with its icon only if it is visible, and end by itself.
+                    // "invariants": { "whileActive": "unchanged" } adds, for buffs that must be inert, that armor class,
+                    // speed, Reflex and Initiative are the same while the buffs are on as before them.
                     if (timedBuffProbe == null)
+                    {
+                        string whileActive;
                         timedBuffProbe = new TimedBuffProbe(evidence.Directory, step.Label ?? stepIndex.ToString(), List(step.Type),
-                            double.Parse(step.Match, System.Globalization.CultureInfo.InvariantCulture), step.Expect);
+                            double.Parse(step.Match, System.Globalization.CultureInfo.InvariantCulture), step.Expect,
+                            step.Invariants != null && step.Invariants.TryGetValue("whileActive", out whileActive) && whileActive == "unchanged");
+                    }
                     string outcome;
                     try { outcome = timedBuffProbe.Poll(); }
                     catch (Exception exception) { outcome = exception.ToString(); }
@@ -354,14 +432,14 @@ namespace KmgLoaderCompatHarness
                     // "match" names the script (dodge, armed, bleeds, condition, fallingPetal, mountainSunder);
                     // "invariants" carries the blueprint identities and expected costs that script needs. Each runs
                     // the effect's real trigger on disposable units in the loaded save, with time running.
-                    if (deedProbe == null) deedProbe = new DeedLifecycleProbe(evidence.Directory, step.Label ?? stepIndex.ToString(), step.Match, step.Invariants);
-                    string outcome;
-                    try { outcome = deedProbe.Poll(); }
-                    catch (Exception exception) { outcome = exception.ToString(); }
+                    // The probe lives in the slot under this step's identity. The slot ends it when it reports a verdict
+                    // or throws; TickSteps ends it when the step times out.
+                    string identity = StepIdentity(step);
+                    if (!probes.IsActive) probes.Begin(identity, new DeedLifecycleProbe(evidence.Directory, step.Label ?? stepIndex.ToString(), step.Match, step.Invariants));
+                    ProbeOutcome outcome = probes.Poll(identity);
                     if (outcome == null) return StepStatus.Running;
-                    result["kmgDeedLifecycle_" + (step.Label ?? stepIndex.ToString())] = deedProbe.Result;
-                    deedProbe = null;
-                    return outcome.Length == 0 ? StepStatus.Done : Fail(outcome);
+                    RecordProbe(outcome);
+                    return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
                 }
 
                 case "kmgGritUiCensus":
@@ -607,6 +685,18 @@ namespace KmgLoaderCompatHarness
         {
             if (stage == Stage.Finished) return;
             stage = Stage.Finished;
+
+            // A run that ends while a probe is active (run timeout, harness exception) still releases what it owns.
+            ProbeOutcome left = probes.Abandon("the run ended: " + (failure ?? "no failure"));
+            if (left != null)
+            {
+                RecordProbe(left);
+                passed = false;
+                failure = (failure == null ? string.Empty : failure + " || ") + "probe of step " + left.Owner + " was active when the run ended" +
+                    (left.IsolationRestored ? string.Empty : ": " + left.Failure);
+            }
+
+            result["isolationRestored"] = probes.IsolationRestored;
             result["status"] = passed ? "passed" : "failed";
             result["failure"] = failure;
             result["finishedUtc"] = DateTime.UtcNow.ToString("o");

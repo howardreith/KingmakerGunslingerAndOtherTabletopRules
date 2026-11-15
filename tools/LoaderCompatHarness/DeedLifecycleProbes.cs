@@ -93,7 +93,7 @@ namespace KmgLoaderCompatHarness
     /// through Kingmaker's level-up controller. Abilities are used with the game's own ability command; weapon attacks
     /// are the game's own RuleAttackWithWeapon with the equipped weapon. Nothing is saved.
     /// </summary>
-    internal sealed class DeedLifecycleProbe : ScreenProbe
+    internal sealed class DeedLifecycleProbe : ScreenProbe, IOwnedProbe
     {
         private const string Bootstrap = "KingmakerGunslinger.Bootstrap.BlueprintBootstrap";
         private const string DodgeDiagnostics = "KingmakerGunslinger.Deeds.GunslingerDodgeRuntimeDiagnostics";
@@ -193,7 +193,7 @@ namespace KmgLoaderCompatHarness
 
                 bool done;
                 try { done = pending(); }
-                catch (Exception exception) { return End(exception.ToString()); }
+                catch (Exception exception) { return Verdict(exception.ToString()); }
                 if (!done && Time.realtimeSinceStartup < pendingDeadline) return null;
                 if (!done) findings.Add("timed out waiting for " + pendingName);
                 pending = null;
@@ -214,47 +214,89 @@ namespace KmgLoaderCompatHarness
                     case "condition": routine = Condition(); break;
                     case "fallingPetal": routine = FallingPetal(); break;
                     case "mountainSunder": routine = MountainSunder(); break;
-                    default: return End("unknown deed lifecycle script " + script);
+                    default: return Verdict("unknown deed lifecycle script " + script);
                 }
             }
 
             bool more;
             try { more = routine.MoveNext(); }
-            catch (Exception exception) { return End(exception.ToString()); }
-            if (more) return null;
-            return End(findings.Count == 0 ? string.Empty : string.Join("; ", findings.ToArray()));
+            catch (Exception exception) { return Verdict(exception.ToString()); }
+            return more ? null : Verdict(null);
         }
 
-        private string End(string outcome)
+        object IOwnedProbe.Result
         {
+            get { return Record; }
+        }
+
+        /// <summary>The probe's own verdict: every finding so far, then the fault that stopped it, if one did. Releases nothing.</summary>
+        private string Verdict(string fault)
+        {
+            var parts = new List<string>(findings);
+            if (!string.IsNullOrEmpty(fault)) parts.Add(fault);
+            return string.Join("; ", parts.ToArray());
+        }
+
+        /// <summary>
+        /// Gives back everything this probe put into the game: its event subscription, a queued forced roll, the pause
+        /// it lifted, each spawned unit and each blueprint clone. Each is attempted on its own and each failure is
+        /// reported; the slot calls this once, whether the probe finished, timed out or threw.
+        /// </summary>
+        public CleanupReport Release(string testFailure)
+        {
+            // What was observed is recorded first, so that no release below can lose it.
             Record["buffEvents"] = observer.BuffEvents;
             Record["attackRollsOnWatchedUnits"] = observer.AttackRolls;
             Record["damageOnWatchedUnits"] = observer.Damage;
             Record["pausesLifted"] = pausesLifted;
-            Record["turnBasedCombat"] = CombatController.IsInTurnBasedCombat();
             Record["findings"] = new JArray(findings.Cast<object>().ToArray());
-            if (subscribed) EventBus.Unsubscribe(observer);
-            subscribed = false;
-            try
+            Record["endedBecause"] = testFailure;
+            try { Record["turnBasedCombat"] = CombatController.IsInTurnBasedCombat(); }
+            catch (Exception exception) { Record["turnBasedCombat"] = "not readable: " + exception.Message; }
+
+            var releases = new List<KeyValuePair<string, Action>>
             {
-                Product("KingmakerGunslinger.Misfires.FirearmMisfireRuntime").GetMethod("CancelForcedNaturalRoll", Any).Invoke(null, null);
-                Game.Instance.IsPaused = true;
-                foreach (UnitEntityData unit in spawned)
+                new KeyValuePair<string, Action>("event subscription", () =>
                 {
+                    if (!subscribed) return;
+                    EventBus.Unsubscribe(observer);
+                    subscribed = false;
+                }),
+                new KeyValuePair<string, Action>("forced natural roll", () =>
+                {
+                    Type misfire = Product("KingmakerGunslinger.Misfires.FirearmMisfireRuntime");
+                    misfire.GetMethod("CancelForcedNaturalRoll", Any).Invoke(null, null);
+                    object stillPending = ProductStatic("KingmakerGunslinger.Misfires.FirearmMisfireRuntime", "PendingForcedNaturalRoll");
+                    if (stillPending != null) throw new InvalidOperationException("a forced natural roll of " + stillPending + " is still queued");
+                }),
+                new KeyValuePair<string, Action>("pause", () => Game.Instance.IsPaused = true)
+            };
+            for (int index = 0; index < spawned.Count; index++)
+            {
+                UnitEntityData unit = spawned[index];
+                releases.Add(new KeyValuePair<string, Action>("unit " + (index + 1) + " of " + spawned.Count, () =>
+                {
+                    observer.Units.Remove(unit);
                     unit.Commands.InterruptAll(true);
                     unit.Dispose();
-                }
-
-                foreach (BlueprintUnit clone in clones) UnityEngine.Object.DestroyImmediate(clone);
+                }));
             }
-            catch (Exception exception)
+
+            for (int index = 0; index < clones.Count; index++)
             {
-                Record["cleanupFault"] = exception.Message;
+                BlueprintUnit clone = clones[index];
+                releases.Add(new KeyValuePair<string, Action>("blueprint clone " + (index + 1) + " of " + clones.Count, () =>
+                {
+                    UnityEngine.Object.DestroyImmediate(clone);
+                    if (clone != null) throw new InvalidOperationException("the clone still exists after it was destroyed");
+                }));
             }
 
+            CleanupReport report = ProbeCleanup.RunAll(releases);
             spawned.Clear();
             clones.Clear();
-            return outcome;
+            pending = null;
+            return report;
         }
 
         // ---- waiting ----
@@ -687,52 +729,105 @@ namespace KmgLoaderCompatHarness
             first["incomingAttackArmorClass"]["afterDodge"] = after.AttackRoll.TargetAC;
 
             // 2. An early end, then a new activation before the first one's deadline: nothing owed to the first
-            //    activation may end the second.
+            //    activation may end the second. The check means something only if both activations really happened
+            //    and the first one's own instance was really gone before the second; each is required first.
             var recast = new JObject();
             Record["recastBeforeEarlierDeadline"] = recast;
             guardBefore = Counter(DodgeGuard, "ExpiredRemovals");
+
+            var earlierRow = new JObject();
+            recast["earlierActivation"] = earlierRow;
+            int gritBeforeEarlier = Grit(actor);
             double earlierCastAt = Now();
-            command = Use(actor, ability, actor, recast);
+            command = Use(actor, ability, actor, earlierRow);
             yield return Finished(command);
+            earlierRow.Merge(Used(command));
             Buff earlier = OnUnit(actor, blueprint);
-            recast["earlierOnUnit"] = earlier != null;
+            earlierRow["buffOnUnit"] = earlier != null;
+            earlierRow["buffAddedNotices"] = Events("added", blueprint, actor, earlierCastAt);
+            earlierRow["gritSpent"] = gritBeforeEarlier - Grit(actor);
+            bool earlierHappened = command.IsFinished && command.Result == Kingmaker.UnitLogic.Commands.Base.UnitCommand.ResultType.Success &&
+                command.ExecutionProcess != null && command.ExecutionProcess.IsEnded && earlier != null &&
+                (int)earlierRow["buffAddedNotices"] == 1 && gritBeforeEarlier - Grit(actor) == 1;
+            earlierRow["completed"] = earlierHappened;
+            Expect(earlierHappened, "the earlier activation of the recast check did not complete as required (command " + earlierRow["commandResult"] +
+                ", delivery ended " + earlierRow["deliveryEnded"] + ", buff on unit " + earlierRow["buffOnUnit"] + ", notices " + earlierRow["buffAddedNotices"] +
+                ", grit spent " + earlierRow["gritSpent"] + ")");
+
             yield return GameSeconds(2.0);
-            earlier = OnUnit(actor, blueprint);
-            if (earlier != null) actor.Descriptor.Buffs.RemoveFact(earlier);
-            recast["earlierRemovedByFixtureAfterGameSeconds"] = Math.Round(Now() - earlierCastAt, 2);
-            recast["armorClassAfterEarlyRemoval"] = actor.Descriptor.Stats.AC.ModifiedValue;
+            var removalRow = new JObject();
+            recast["earlyRemovalByFixture"] = removalRow;
+            Buff beforeRemoval = OnUnit(actor, blueprint);
+            bool sameAsEarlier = earlier != null && ReferenceEquals(beforeRemoval, earlier);
+            if (beforeRemoval != null) actor.Descriptor.Buffs.RemoveFact(beforeRemoval);
+            bool earlierGone = earlier != null && !actor.Descriptor.Buffs.RawFacts.Contains(earlier) && OnUnit(actor, blueprint) == null;
+            removalRow["afterGameSeconds"] = Math.Round(Now() - earlierCastAt, 2);
+            removalRow["instanceOnUnitWasTheEarlierOne"] = sameAsEarlier;
+            removalRow["earlierInstanceGone"] = earlierGone;
+            removalRow["buffRemovedNotices"] = Events("removed", blueprint, actor, earlierCastAt);
+            removalRow["armorClassAfter"] = actor.Descriptor.Stats.AC.ModifiedValue;
+            bool earlierRemoved = sameAsEarlier && earlierGone && (int)removalRow["buffRemovedNotices"] == 1 &&
+                actor.Descriptor.Stats.AC.ModifiedValue == armorClassBase;
+            removalRow["verified"] = earlierRemoved;
+            Expect(earlierRemoved, "the earlier activation's own instance was not verifiably removed before the later one (same instance " + sameAsEarlier +
+                ", gone " + earlierGone + ", removed notices " + removalRow["buffRemovedNotices"] + ", armor class " + removalRow["armorClassAfter"] + ")");
+
             yield return GameSeconds(0.5);
+            var laterRow = new JObject();
+            recast["laterActivation"] = laterRow;
             double laterCastAt = Now();
             int gritBeforeLater = Grit(actor);
-            command = Use(actor, ability, actor, recast);
+            command = Use(actor, ability, actor, laterRow);
             yield return Finished(command);
+            laterRow.Merge(Used(command));
             Buff later = OnUnit(actor, blueprint);
-            recast["laterCastAfterGameSeconds"] = Math.Round(laterCastAt - earlierCastAt, 2);
-            recast["laterOnUnit"] = later != null;
-            recast["laterTimeLeftSeconds"] = TimeLeft(later);
-            recast["gritSpentByLater"] = gritBeforeLater - Grit(actor);
-            int laterIdentity = later == null ? 0 : RuntimeHelpers.GetHashCode(later);
-            Expect(later != null, "the second activation left no buff");
-            yield return Until("the earlier activation's deadline", () => Now() >= earlierCastAt + 6.6, 60);
-            Buff atEarlierDeadline = OnUnit(actor, blueprint);
-            recast["atEarlierDeadline"] = new JObject
+            laterRow["castAfterEarlierGameSeconds"] = Math.Round(laterCastAt - earlierCastAt, 2);
+            laterRow["buffOnUnit"] = later != null;
+            laterRow["isANewInstance"] = later != null && !ReferenceEquals(later, earlier);
+            laterRow["timeLeftSeconds"] = TimeLeft(later);
+            laterRow["buffAddedNotices"] = Events("added", blueprint, actor, laterCastAt);
+            laterRow["gritSpent"] = gritBeforeLater - Grit(actor);
+            bool laterHappened = command.IsFinished && command.Result == Kingmaker.UnitLogic.Commands.Base.UnitCommand.ResultType.Success &&
+                command.ExecutionProcess != null && command.ExecutionProcess.IsEnded && later != null && !ReferenceEquals(later, earlier) &&
+                (int)laterRow["buffAddedNotices"] == 1 && gritBeforeLater - Grit(actor) == 1;
+            laterRow["completed"] = laterHappened;
+            Expect(laterHappened, "the later activation of the recast check did not complete as required (command " + laterRow["commandResult"] +
+                ", delivery ended " + laterRow["deliveryEnded"] + ", buff on unit " + laterRow["buffOnUnit"] + ", new instance " + laterRow["isANewInstance"] +
+                ", notices " + laterRow["buffAddedNotices"] + ", grit spent " + laterRow["gritSpent"] + ")");
+
+            bool prerequisites = earlierHappened && earlierRemoved && laterHappened;
+            recast["prerequisitesMet"] = prerequisites;
+            if (!prerequisites)
             {
-                ["gameSecondsAfterEarlierCast"] = Math.Round(Now() - earlierCastAt, 2), ["laterStillOnUnit"] = atEarlierDeadline != null,
-                ["sameInstance"] = atEarlierDeadline != null && RuntimeHelpers.GetHashCode(atEarlierDeadline) == laterIdentity,
-                ["timeLeftSeconds"] = TimeLeft(atEarlierDeadline), ["armorClass"] = actor.Descriptor.Stats.AC.ModifiedValue,
-                ["expiryGuardRemovals"] = Counter(DodgeGuard, "ExpiredRemovals") - guardBefore
-            };
-            Expect(atEarlierDeadline != null && RuntimeHelpers.GetHashCode(atEarlierDeadline) == laterIdentity,
-                "the second activation was gone when the first one's deadline passed");
-            Expect(actor.Descriptor.Stats.AC.ModifiedValue == armorClassBase + 2, "armor class is " + actor.Descriptor.Stats.AC.ModifiedValue + " at the first deadline, expected the second activation's +2");
-            yield return Ended(blueprint, actor);
-            double? laterLasted = Lasted(blueprint, actor, laterCastAt);
-            recast["laterEndedAfterGameSeconds"] = Seconds(laterLasted);
-            recast["armorClassAfterEnd"] = actor.Descriptor.Stats.AC.ModifiedValue;
-            recast["expiryGuardRemovals"] = Counter(DodgeGuard, "ExpiredRemovals") - guardBefore;
-            recast["activeBonusModifiers"] = Counter(DodgeBonus, "ActiveModifiers");
-            Expect(OneRound(laterLasted), laterLasted.HasValue ? "the second activation lasted " + laterLasted + " s of game time, expected one round" : "the second activation did not end by itself");
-            Expect(actor.Descriptor.Stats.AC.ModifiedValue == armorClassBase, "armor class is " + actor.Descriptor.Stats.AC.ModifiedValue + " after the second activation ended, " + armorClassBase + " before any");
+                recast["isolation"] = "not judged";
+                findings.Add("the recast isolation check was not judged: an activation or the early removal it depends on is missing");
+                if (OnUnit(actor, blueprint) != null) yield return Ended(blueprint, actor);
+            }
+            else
+            {
+                yield return Until("the earlier activation's deadline", () => Now() >= earlierCastAt + 6.6, 60);
+                Buff atEarlierDeadline = OnUnit(actor, blueprint);
+                recast["atEarlierDeadline"] = new JObject
+                {
+                    ["gameSecondsAfterEarlierCast"] = Math.Round(Now() - earlierCastAt, 2), ["laterStillOnUnit"] = atEarlierDeadline != null,
+                    ["sameInstance"] = atEarlierDeadline != null && ReferenceEquals(atEarlierDeadline, later),
+                    ["timeLeftSeconds"] = TimeLeft(atEarlierDeadline), ["armorClass"] = actor.Descriptor.Stats.AC.ModifiedValue,
+                    ["expiryGuardRemovals"] = Counter(DodgeGuard, "ExpiredRemovals") - guardBefore
+                };
+                Expect(atEarlierDeadline != null && ReferenceEquals(atEarlierDeadline, later), "the second activation was gone when the first one's deadline passed");
+                Expect(actor.Descriptor.Stats.AC.ModifiedValue == armorClassBase + 2,
+                    "armor class is " + actor.Descriptor.Stats.AC.ModifiedValue + " at the first deadline, expected the second activation's +2");
+                yield return Ended(blueprint, actor);
+                double? laterLasted = Lasted(blueprint, actor, laterCastAt);
+                recast["laterEndedAfterGameSeconds"] = Seconds(laterLasted);
+                recast["armorClassAfterEnd"] = actor.Descriptor.Stats.AC.ModifiedValue;
+                recast["expiryGuardRemovals"] = Counter(DodgeGuard, "ExpiredRemovals") - guardBefore;
+                recast["activeBonusModifiers"] = Counter(DodgeBonus, "ActiveModifiers");
+                recast["isolation"] = "judged";
+                Expect(OneRound(laterLasted), laterLasted.HasValue ? "the second activation lasted " + laterLasted + " s of game time, expected one round" : "the second activation did not end by itself");
+                Expect(actor.Descriptor.Stats.AC.ModifiedValue == armorClassBase,
+                    "armor class is " + actor.Descriptor.Stats.AC.ModifiedValue + " after the second activation ended, " + armorClassBase + " before any");
+            }
 
             // 3. With no grit the ability is refused before anything is spent or applied.
             int remaining = Grit(actor);
@@ -960,9 +1055,13 @@ namespace KmgLoaderCompatHarness
                 UnitEntityData victim = victims[index];
                 BlueprintBuff bleedBlueprint = bleeds[index];
                 UnitUseAbility cure = Use(actor, stopBleeding, victim, row);
-                yield return Until("Stop Bleeding to remove the " + kinds[index] + " bleed", () => OnUnit(victim, bleedBlueprint) == null, 25);
-                yield return Until("the Stop Bleeding command to finish", () => cure.IsFinished, 10);
+                // The whole command and its delivery, not just the bleed's disappearance: the next cure must not
+                // interrupt a command that is still finishing.
+                yield return Finished(cure);
                 row.Merge(Used(cure));
+                Expect(cure.IsFinished && cure.Result == Kingmaker.UnitLogic.Commands.Base.UnitCommand.ResultType.Success && cure.ExecutionProcess != null &&
+                    cure.ExecutionProcess.IsEnded, "the Stop Bleeding command for the " + kinds[index] + " bleed did not complete (" + row["commandResult"] +
+                    ", delivery ended " + row["deliveryEnded"] + ")");
                 curedAt[index] = EventAt("removed", bleedBlueprint, victim, startedAt) ?? Now();
                 atCure[index] = Suffered(victim, kinds[index]);
                 row["bleedOnTargetAfter"] = OnUnit(victim, bleedBlueprint) != null;
