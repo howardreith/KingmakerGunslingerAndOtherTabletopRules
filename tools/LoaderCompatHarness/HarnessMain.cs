@@ -36,7 +36,13 @@ namespace KmgLoaderCompatHarness
                 return true;
             }
 
-            HarnessRequest request = JsonConvert.DeserializeObject<HarnessRequest>(File.ReadAllText(requestPath));
+            // Not JsonConvert: another mod may replace its process-wide default settings (Kingmaker Bugfixes installs
+            // converters that read a dictionary as an array), which must not change how a request is read.
+            HarnessRequest request;
+            using (JsonTextReader reader = new JsonTextReader(new StringReader(File.ReadAllText(requestPath))))
+            {
+                request = JsonSerializer.Create(new JsonSerializerSettings()).Deserialize<HarnessRequest>(reader);
+            }
             Directory.CreateDirectory(request.EvidenceDir);
             evidence = new Evidence(request.EvidenceDir);
             JObject result = new JObject { ["runId"] = request.RunId, ["requestPath"] = requestPath, ["startedUtc"] = DateTime.UtcNow.ToString("o") };
