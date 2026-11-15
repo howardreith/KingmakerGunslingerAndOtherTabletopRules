@@ -35860,6 +35860,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 buffIcon = false, activeReactivationUnavailable = false;
             int buffRank = -1;
             string commandResult = "<not-run>";
+            string deliveryAfterCommand = "<not-run>";
             long ownedModifiersWhileActive = -1, ownedModifiersAfterRemoval = -1;
             int gritAfterActiveReactivation = -1;
             string stage = "construct-disposables";
@@ -35936,6 +35937,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "Native Dodge command did not finish; result=" +
                         commandResult + ".");
+                // The command only queues the ability's execution process;
+                // Kingmaker's ability controller runs the deed's delivery on
+                // a later tick. Drive that process here, as the other
+                // native-command fixtures do, before reading its effects.
+                if (command.ExecutionProcess == null)
+                    throw new InvalidOperationException(
+                        "Native Dodge command produced no execution process; result=" +
+                        commandResult + ".");
+                for (int tick = 0; tick < 500 &&
+                    !command.ExecutionProcess.IsEnded; tick++)
+                    command.ExecutionProcess.Tick();
+                if (!command.ExecutionProcess.IsEnded)
+                    throw new InvalidOperationException(
+                        "Native Dodge delivery did not end.");
+                deliveryAfterCommand =
+                    GunslingerDodgeRuntimeDiagnostics.DeliveryEvidence;
                 afterApplied = defender.Descriptor.Resources.GetResourceAmount(grit);
                 armedAfter = defender.Descriptor.HasFact(
                     gunslinger.Dodge.ArmedProneMarker);
@@ -36048,6 +36065,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ownedModifiersAfterRemoval == 0 &&
                     acAfterRemoval == acBefore,
                     "Buff-owned modifier lifecycle"),
+                Assertion("dodge-delivery-completed",
+                    "the deed's own delivery created the buff and ended without a fault",
+                    "deliveryAfterCommand=" + deliveryAfterCommand,
+                    deliveryAfterCommand.StartsWith(
+                        "deliverEntered=true;buffCreated=True;deliveryFault=false;",
+                        StringComparison.Ordinal),
+                    "GunslingerDodgeProneAbilityLogic.Deliver through the native execution process"),
                 Assertion("dodge-active-reactivation-atomic",
                     "active Dodge is unavailable and spends no Grit", observed,
                     activeReactivationUnavailable &&
