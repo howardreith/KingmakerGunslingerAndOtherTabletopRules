@@ -560,6 +560,7 @@
     <Compile Include="AcadamaeCordPolicyTests.cs" />
     <Compile Include="PlayerFacingPresentationAndDiscoverabilityTests.cs" />
     <Compile Include="ArmedPresentationRepairTests.cs" />
+    <Compile Include="GritUiRecipientContractTests.cs" />
     <Compile Include="WeaponFindabilityTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\HeirloomNodachiIconObservation.cs"><Link>RuntimeTesting\HeirloomNodachiIconObservation.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\WeaponFindabilitySaveContract.cs"><Link>RuntimeTesting\WeaponFindabilitySaveContract.cs</Link></Compile>

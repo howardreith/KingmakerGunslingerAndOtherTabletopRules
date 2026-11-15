@@ -41,6 +41,8 @@ namespace KingmakerGunslinger.Blueprints
         internal BlueprintFeature ClippingShot { get; private set; }
         internal BlueprintBuff ClippingShotBuff { get; private set; }
         internal BlueprintAbilityResource FortuneResource { get; private set; }
+        internal BlueprintAbility FocusedAimAbility { get; set; }
+        internal BlueprintAbility ClippingShotAbility { get; set; }
         internal int Count { get { return 17; } }
         internal bool TryIgnoreMisfire(UnitDescriptor owner)
         {
@@ -95,7 +97,8 @@ namespace KingmakerGunslinger.Blueprints
                     nimble, lucky, gunTraining, fortune, bleedingWound, clipping));
             cls.Archetypes=cls.Archetypes.Concat(new[]{archetype}).ToArray();
             return new MysteriousStrangerBlueprintSet(archetype,grit,focused,focusedBuff,lucky,
-                fortune,fortuneBuff,clipping,clippingBuff,fortuneResource);
+                fortune,fortuneBuff,clipping,clippingBuff,fortuneResource)
+                { FocusedAimAbility=focusedAbility, ClippingShotAbility=clippingAbility };
         }
 
         private static BlueprintArchetype CreateArchetype(BlueprintCharacterClass cls,

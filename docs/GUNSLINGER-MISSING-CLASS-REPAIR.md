@@ -3,6 +3,9 @@
 Status: **development repair, reviewable, not released.** This record covers one review branch and one development
 candidate. Nothing here is a release qualification, and v0.0.189 stays published and unchanged.
 
+This repair was released as v0.0.190. The same player then reported the class still missing, with a different
+failure later in startup; see `docs/GUNSLINGER-GRIT-UI-RECIPIENT-REPAIR.md`.
+
 ## The report
 
 A player on Pathfinder: Kingmaker 2.1.7b, Unity Mod Manager 0.33.3.0 and mod 0.0.189 (DLL SHA-256

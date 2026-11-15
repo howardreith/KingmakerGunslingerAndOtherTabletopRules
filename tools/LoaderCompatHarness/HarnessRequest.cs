@@ -47,6 +47,9 @@ namespace KmgLoaderCompatHarness
         /// <summary>kmgPresentationCensus: per-guid "field=value,..." mechanics that must hold in the census record.</summary>
         [JsonProperty("invariants")] public Dictionary<string, string> Invariants = new Dictionary<string, string>();
 
+        /// <summary>kmgGritUiCensus: abilities that must carry their own grit resource logic and no shared indicator.</summary>
+        [JsonProperty("own")] public List<string> Own = new List<string>();
+
         /// <summary>A failure of this step is recorded and fails the run, but the remaining steps still execute.</summary>
         [JsonProperty("continueOnFailure")] public bool ContinueOnFailure;
 

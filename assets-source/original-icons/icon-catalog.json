@@ -13372,6 +13372,11 @@
       "authorization": "Icon overhaul v2 mission section 7; exact cache extension / post-registration owned mapping and guarded read-only census. Entire remaining source must match baseline.",
       "authorizedFeatureEdits": [
         {
+          "before": "                int gritUiAbilities = Grit.GritAbilityUiIntegration.Apply(\n                    library, gunslingerClassBlueprints.Grit.Resource,\n                    gunslingerClassBlueprints.Dodge.ProneAbility);\n",
+          "after": "                int gritUiAbilities = Grit.GritAbilityUiIntegration.Apply(\n                    gunslingerClassBlueprints);\n",
+          "authorization": "Owner task 2026-11-15, missing Gunslinger class report against v0.0.190 (grit UI recipient contract): one exact call-site edit. The shared grit UI pass receives the constructed Gunslinger blueprint set instead of the library, the grit resource and the Dodge ability, so its recipients are typed blueprint identities and no displayed description is read. The owner's task directs the authorized process for the precise required delta when a pinned file must change. Art-neutral: no icon, sprite or assignment is referenced, and the surrounding log line and the ProjectAssetIcons.Apply call are untouched. Reversed first; the pinned baseline hash is unchanged."
+        },
+        {
           "before": "                ShieldOtherBlueprintSet shieldOther =\n",
           "after": "                // Register the shared spell implementation before binding the\n                // hidden Hound's constant native carrier; fail closed if absent.\n                ExpandedSummoningSpecialBuilder.BindArchonMagicCircle(expandedSummoning, _magicCircles);\n\n                ShieldOtherBlueprintSet shieldOther =\n",
           "authorization": "S30/S31 owner mission and explicit shared-Magic-Circle direction: exact late binding of the hidden Hound to the existing canonical carrier/area; fail closed on a missing dependency. No icon assignment or other bootstrap hunk changes. Reverse this newest exact non-art feature hunk first before enforcing the original presentation baseline."

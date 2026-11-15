@@ -12,6 +12,25 @@
   named Elven Branched Spear buffs were repaired and observed separately: without the links Boughkeeper's buff stayed
   on the character, with its +1 AC, after three rounds; with them all eight activate fully and end after one round
   (`reports/boughkeeper-buff-icon/NATIVE-UI-CHECK.json`).
+- Three hidden Expanded Summoning abilities have no stored description:
+  `KMG_Summoning_Infernal_BarbedDevil_OrdersWrath`, `KMG_Summoning_Infernal_BarbedDevil_Pyrotechnics` and
+  `KMG_Summoning_Infernal_BoneDevil_DimensionalAnchor`. On a stock game Kingmaker shows `<null>` for such text. On an
+  installation where it resolves to a null string, Kingmaker's own ability description getter throws for them. The
+  shared grit UI pass used to read every project ability's description and failed there (second missing Gunslinger
+  class report, `docs/GUNSLINGER-GRIT-UI-RECIPIENT-REPAIR.md`); it no longer reads any. The three abilities are
+  unchanged, so any other code that asks one of them for its displayed description on such an installation would
+  still throw. Startup, the class screen and character creation were observed to complete under that condition.
+- The shared grit indicator is on Steady Aim, which needs grit and spends none, and not on Quick Clear (standard
+  action), Utility Shot, Startling Shot or Lightning Reload, which are in the same position. It also counts remaining
+  grit in units of 1 whatever a deed costs. Both are released behaviour, preserved by the recipient repair and left
+  as a design question.
+- In the disposable loader-compat game copy, `disposable-gunslinger-dodge` errors before its assertions ("The native
+  Dodge command completed without its timed Buff fact") on the published v0.0.190 package and on current source. In
+  `disposable-pistolero-deeds`, the damage assertion `up-close-critical` is intermittent on the grit UI recipient
+  candidate: two of three identical runs failed (observed damage `6,3`) and one passed (`3,3`). The published v0.0.190
+  package was run once and passed, which does not show whether it is intermittent there. The cause is not established.
+  The scenario's grit assertions passed in every run. Neither was investigated. The Dodge buff is one of those built
+  without effect links (first entry above).
 - Rapid Reload's parent proficiency gate reads only the registered firearm
   proficiency features, so any future independent proficiency source satisfies
   it without further changes. `FirearmProficiencyScopeReconciler` remains a

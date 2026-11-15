@@ -1,0 +1,326 @@
+{
+  "name": "gunslinger-grit-ui-recipients",
+  "description": "Regression for the missing Gunslinger class report against v0.0.190 (a NullReferenceException in Kingmaker's ability description getter, reached from the shared grit UI pass). The same launches FAIL on the published v0.0.190 package and PASS on a repaired candidate. They cover: on a stock game, exactly the audited abilities carry the shared grit indicator or keep their own grit resource logic, the pass reads no ability description, a second application changes nothing and malformed recipients are refused by name and GUID; initialization completes and the Gunslinger is published once when unassigned text resolves to null and when it resolves blank; under the null condition the class screen lists the Gunslinger and lets it be selected, and native creation commits one; an unrelated ability whose description getter throws during the pass is left alone; and an unrelated ability whose description says \"spend grit\" does not become a recipient. The expected ability identities are listed here by GUID and are not read from the product. The conditions are controlled stand-ins applied by the test-only harness. They do not reproduce any reporter's translation or mod set.",
+  "ownerMods": [],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "stock-recipients",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeGritUiPass": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]",
+          "[grit][ui.shared-resource-ready]"
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]",
+          "rollback-failed]",
+          "[rollback.incomplete]"
+        ]
+      },
+      "harness": {
+        "steps": [
+          {
+            "op": "kmgInitialization",
+            "label": "stock-recipients",
+            "expect": "completed",
+            "type": "enGB",
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgClassCatalog",
+            "label": "stock-recipients",
+            "match": "abca4797366d4df0831a418eee39069a",
+            "expect": "1",
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgGritUiCensus",
+            "label": "stock-recipients",
+            "match": "9876b3e744dd422b9c259d19861ad222",
+            "type": "a6ea61a048ca4d18899c2bbf78e70411,9c011fb0a9d34a78b93f6bec673f8210,c6e2147ab3f84aa9812d37c9650be421,5d194f9f2c9a46fc9c1dfe5aef7972b8,54de8261f0c348389b88058e83028920,7be232b60e2848cbbe7ff93a65331314,c9685e2bbebd4dfd89d27a67d184c7ad,3107264a6fdf4cebb70e20f593327eee,0beb35e712f749abb660f593e790ab39,9d8b076131364a7394aa225b4306419c,41fde8c96f7d468d9f9e6ad4d9b60fb0,a964315c427c4421bdf24c6ccea8700e,d981c72e9df94d1989530453669ea3b5,f0305fc5463f4068a19d96e6f4e02c67,f759c4b6fba246f4bb9f34b2c30ab7b5,effaa5da710e486c87e6e3637c00e1ed,b1a5e61437714bd19ee84b10bead70a2,11f6a6be9741419e829b657854c37404,5b5aa8c8e2434509a46d464d87b97316,0fb1ef47da6040088db3946815419723,87d1967bdbbd4ab98fe65e8bb9838eb8,6309970e44b949db80bfd2fda8b62e31",
+            "own": [
+              "984386dce5bf4788b508e9f61c7568e5",
+              "9eec64400c8c47c5924552279ce45c77"
+            ],
+            "expect": "0",
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgGritUiReapply",
+            "label": "stock",
+            "match": "9876b3e744dd422b9c259d19861ad222",
+            "expect": "22",
+            "continueOnFailure": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "unassigned-text-null",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "unassignedTextResolvesNull": "true",
+        "observeGritUiPass": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]",
+          "[grit][ui.shared-resource-ready]"
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]",
+          "rollback-failed]",
+          "[rollback.incomplete]"
+        ]
+      },
+      "harness": {
+        "steps": [
+          {
+            "op": "kmgInitialization",
+            "label": "unassigned-text-null",
+            "expect": "completed",
+            "type": "enGB",
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgClassCatalog",
+            "label": "unassigned-text-null",
+            "match": "abca4797366d4df0831a418eee39069a",
+            "expect": "1",
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgGritUiCensus",
+            "label": "unassigned-text-null",
+            "match": "9876b3e744dd422b9c259d19861ad222",
+            "type": "a6ea61a048ca4d18899c2bbf78e70411,9c011fb0a9d34a78b93f6bec673f8210,c6e2147ab3f84aa9812d37c9650be421,5d194f9f2c9a46fc9c1dfe5aef7972b8,54de8261f0c348389b88058e83028920,7be232b60e2848cbbe7ff93a65331314,c9685e2bbebd4dfd89d27a67d184c7ad,3107264a6fdf4cebb70e20f593327eee,0beb35e712f749abb660f593e790ab39,9d8b076131364a7394aa225b4306419c,41fde8c96f7d468d9f9e6ad4d9b60fb0,a964315c427c4421bdf24c6ccea8700e,d981c72e9df94d1989530453669ea3b5,f0305fc5463f4068a19d96e6f4e02c67,f759c4b6fba246f4bb9f34b2c30ab7b5,effaa5da710e486c87e6e3637c00e1ed,b1a5e61437714bd19ee84b10bead70a2,11f6a6be9741419e829b657854c37404,5b5aa8c8e2434509a46d464d87b97316,0fb1ef47da6040088db3946815419723,87d1967bdbbd4ab98fe65e8bb9838eb8,6309970e44b949db80bfd2fda8b62e31",
+            "own": [
+              "984386dce5bf4788b508e9f61c7568e5",
+              "9eec64400c8c47c5924552279ce45c77"
+            ],
+            "expect": "0",
+            "continueOnFailure": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "unassigned-text-null-class-screen",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "unassignedTextResolvesNull": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]",
+          "[class-catalog.chargen-selector-result]"
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "steps": [
+          {
+            "op": "kmgInitialization",
+            "label": "class-screen",
+            "expect": "completed",
+            "type": "enGB",
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgChargenClassScreen",
+            "label": "class-screen",
+            "match": "abca4797366d4df0831a418eee39069a",
+            "contains": [
+              "Gunslinger"
+            ],
+            "timeoutSeconds": 180,
+            "continueOnFailure": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "unassigned-text-null-creation",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "unassignedTextResolvesNull": "true"
+      },
+      "product": {
+        "scenario": "disposable-gunslinger-creation-commit",
+        "parameters": {},
+        "timeoutSeconds": 600
+      }
+    },
+    {
+      "label": "unassigned-text-blank",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "unassignedTextResolvesBlank": "true",
+        "observeGritUiPass": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]",
+          "[grit][ui.shared-resource-ready]"
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]",
+          "rollback-failed]",
+          "[rollback.incomplete]"
+        ]
+      },
+      "harness": {
+        "steps": [
+          {
+            "op": "kmgInitialization",
+            "label": "unassigned-text-blank",
+            "expect": "completed",
+            "type": "enGB",
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgClassCatalog",
+            "label": "unassigned-text-blank",
+            "match": "abca4797366d4df0831a418eee39069a",
+            "expect": "1",
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgGritUiCensus",
+            "label": "unassigned-text-blank",
+            "match": "9876b3e744dd422b9c259d19861ad222",
+            "type": "a6ea61a048ca4d18899c2bbf78e70411,9c011fb0a9d34a78b93f6bec673f8210,c6e2147ab3f84aa9812d37c9650be421,5d194f9f2c9a46fc9c1dfe5aef7972b8,54de8261f0c348389b88058e83028920,7be232b60e2848cbbe7ff93a65331314,c9685e2bbebd4dfd89d27a67d184c7ad,3107264a6fdf4cebb70e20f593327eee,0beb35e712f749abb660f593e790ab39,9d8b076131364a7394aa225b4306419c,41fde8c96f7d468d9f9e6ad4d9b60fb0,a964315c427c4421bdf24c6ccea8700e,d981c72e9df94d1989530453669ea3b5,f0305fc5463f4068a19d96e6f4e02c67,f759c4b6fba246f4bb9f34b2c30ab7b5,effaa5da710e486c87e6e3637c00e1ed,b1a5e61437714bd19ee84b10bead70a2,11f6a6be9741419e829b657854c37404,5b5aa8c8e2434509a46d464d87b97316,0fb1ef47da6040088db3946815419723,87d1967bdbbd4ab98fe65e8bb9838eb8,6309970e44b949db80bfd2fda8b62e31",
+            "own": [
+              "984386dce5bf4788b508e9f61c7568e5",
+              "9eec64400c8c47c5924552279ce45c77"
+            ],
+            "expect": "0",
+            "continueOnFailure": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "unrelated-description-throws",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "abilityDescriptionThrowsAtGritUi": "fee1b66488064c8cac11ce26323e982c,3bf6d00c24d94d32a69c1f700a6eeb36"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]",
+          "[grit][ui.shared-resource-ready]"
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]",
+          "rollback-failed]",
+          "[rollback.incomplete]"
+        ]
+      },
+      "harness": {
+        "steps": [
+          {
+            "op": "kmgInitialization",
+            "label": "unrelated-description-throws",
+            "expect": "completed",
+            "type": "enGB",
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgClassCatalog",
+            "label": "unrelated-description-throws",
+            "match": "abca4797366d4df0831a418eee39069a",
+            "expect": "1",
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgGritUiCensus",
+            "label": "unrelated-description-throws",
+            "match": "9876b3e744dd422b9c259d19861ad222",
+            "type": "a6ea61a048ca4d18899c2bbf78e70411,9c011fb0a9d34a78b93f6bec673f8210,c6e2147ab3f84aa9812d37c9650be421,5d194f9f2c9a46fc9c1dfe5aef7972b8,54de8261f0c348389b88058e83028920,7be232b60e2848cbbe7ff93a65331314,c9685e2bbebd4dfd89d27a67d184c7ad,3107264a6fdf4cebb70e20f593327eee,0beb35e712f749abb660f593e790ab39,9d8b076131364a7394aa225b4306419c,41fde8c96f7d468d9f9e6ad4d9b60fb0,a964315c427c4421bdf24c6ccea8700e,d981c72e9df94d1989530453669ea3b5,f0305fc5463f4068a19d96e6f4e02c67,f759c4b6fba246f4bb9f34b2c30ab7b5,effaa5da710e486c87e6e3637c00e1ed,b1a5e61437714bd19ee84b10bead70a2,11f6a6be9741419e829b657854c37404,5b5aa8c8e2434509a46d464d87b97316,0fb1ef47da6040088db3946815419723,87d1967bdbbd4ab98fe65e8bb9838eb8,6309970e44b949db80bfd2fda8b62e31",
+            "own": [
+              "984386dce5bf4788b508e9f61c7568e5",
+              "9eec64400c8c47c5924552279ce45c77"
+            ],
+            "expect": "0",
+            "continueOnFailure": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "unrelated-description-says-spend-grit",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "abilityDescriptionMentionsGritSpend": "df0f9d05341a4eb59af8c369e447843f,c191d9cac2b349d1b9cb79e4172664be"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]",
+          "[grit][ui.shared-resource-ready]"
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]",
+          "rollback-failed]",
+          "[rollback.incomplete]"
+        ]
+      },
+      "harness": {
+        "steps": [
+          {
+            "op": "kmgInitialization",
+            "label": "unrelated-description-says-spend-grit",
+            "expect": "completed",
+            "type": "enGB",
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgClassCatalog",
+            "label": "unrelated-description-says-spend-grit",
+            "match": "abca4797366d4df0831a418eee39069a",
+            "expect": "1",
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgGritUiCensus",
+            "label": "unrelated-description-says-spend-grit",
+            "match": "9876b3e744dd422b9c259d19861ad222",
+            "type": "a6ea61a048ca4d18899c2bbf78e70411,9c011fb0a9d34a78b93f6bec673f8210,c6e2147ab3f84aa9812d37c9650be421,5d194f9f2c9a46fc9c1dfe5aef7972b8,54de8261f0c348389b88058e83028920,7be232b60e2848cbbe7ff93a65331314,c9685e2bbebd4dfd89d27a67d184c7ad,3107264a6fdf4cebb70e20f593327eee,0beb35e712f749abb660f593e790ab39,9d8b076131364a7394aa225b4306419c,41fde8c96f7d468d9f9e6ad4d9b60fb0,a964315c427c4421bdf24c6ccea8700e,d981c72e9df94d1989530453669ea3b5,f0305fc5463f4068a19d96e6f4e02c67,f759c4b6fba246f4bb9f34b2c30ab7b5,effaa5da710e486c87e6e3637c00e1ed,b1a5e61437714bd19ee84b10bead70a2,11f6a6be9741419e829b657854c37404,5b5aa8c8e2434509a46d464d87b97316,0fb1ef47da6040088db3946815419723,87d1967bdbbd4ab98fe65e8bb9838eb8,6309970e44b949db80bfd2fda8b62e31",
+            "own": [
+              "984386dce5bf4788b508e9f61c7568e5",
+              "9eec64400c8c47c5924552279ce45c77"
+            ],
+            "expect": "0",
+            "continueOnFailure": true
+          }
+        ]
+      }
+    }
+  ]
+}

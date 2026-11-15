@@ -1127,8 +1127,7 @@ namespace KingmakerGunslinger.Bootstrap
                 ClassCatalogDiagnostics.Capture("after-registration", library,
                     gunslingerClassBlueprints.CharacterClass);
                 int gritUiAbilities = Grit.GritAbilityUiIntegration.Apply(
-                    library, gunslingerClassBlueprints.Grit.Resource,
-                    gunslingerClassBlueprints.Dodge.ProneAbility);
+                    gunslingerClassBlueprints);
                 context.Logger.Info("grit", "ui.shared-resource-ready",
                     "Bound the native shared-grit indicator to " +
                     gritUiAbilities + " deed abilities.");
