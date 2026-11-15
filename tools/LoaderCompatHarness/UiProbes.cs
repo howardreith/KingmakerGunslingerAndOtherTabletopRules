@@ -511,6 +511,8 @@ namespace KmgLoaderCompatHarness
         private bool refreshed;
         private int armorClassBefore;
         private double resumedAt;
+        private TimeSpan resumedAtGameTime;
+        private int pausesLifted;
 
         public OpportunityBuffUiProbe(string directory, string label, string weaponGuid, string buffGuid, string expectedIcon, IEnumerable<string> expectedTexts) : base(directory, label)
         {
@@ -696,22 +698,32 @@ namespace KmgLoaderCompatHarness
                     target.Dispose();
                     Game.Instance.IsPaused = false;
                     resumedAt = Time.realtimeSinceStartup;
+                    resumedAtGameTime = Game.Instance.TimeController.GameTime;
                     stage = Stage.WaitEnd;
                     return null;
 
                 case Stage.WaitEnd:
                 {
-                    // A timed buff must end once time runs, without help, and take its bonus with it.
+                    // A timed buff must end once time runs, without help, and take its bonus with it. The game's own
+                    // automatic pauses are lifted, and the wait is measured in game time: three rounds.
+                    if (Game.Instance.IsPaused)
+                    {
+                        pausesLifted++;
+                        Game.Instance.IsPaused = false;
+                    }
+
                     bool present = OnUnit() != null;
                     double elapsed = Time.realtimeSinceStartup - resumedAt;
-                    if (present && elapsed < 25.0) return null;
+                    double gameSeconds = (Game.Instance.TimeController.GameTime - resumedAtGameTime).TotalSeconds;
+                    if (present && gameSeconds < 18.0 && elapsed < 60.0) return null;
                     int armorClassAfterEnd = unit.Descriptor.Stats.AC.ModifiedValue;
                     Record["afterTimeRuns"] = new JObject
                     {
-                        ["ended"] = !present, ["secondsAfterResume"] = Math.Round(elapsed, 1), ["armorClass"] = armorClassAfterEnd,
-                        ["gameMode"] = Game.Instance.CurrentMode.ToString()
+                        ["ended"] = !present, ["gameSecondsAfterResume"] = Math.Round(gameSeconds, 1), ["realSecondsAfterResume"] = Math.Round(elapsed, 1),
+                        ["pausesLifted"] = pausesLifted, ["armorClass"] = armorClassAfterEnd, ["gameMode"] = Game.Instance.CurrentMode.ToString()
                     };
-                    if (present) findings.Add(blueprint.name + " did not end by itself within 25 s of unpaused play");
+                    if (present && gameSeconds < 18.0) findings.Add("game time did not run: " + Math.Round(gameSeconds, 1) + " s in " + Math.Round(elapsed, 1) + " s of play");
+                    else if (present) findings.Add(blueprint.name + " did not end by itself within three rounds of game time");
                     else if (armorClassAfterEnd != armorClassBefore) findings.Add("armor class is " + armorClassAfterEnd + " after the buff ended, " + armorClassBefore + " before it");
                     Game.Instance.IsPaused = true;
                     stage = Stage.Finish;
