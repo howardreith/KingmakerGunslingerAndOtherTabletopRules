@@ -43,6 +43,7 @@ namespace KmgLoaderCompatHarness
         private BuffUiProbe buffProbe;
         private OpportunityBuffUiProbe opportunityProbe;
         private TimedBuffProbe timedBuffProbe;
+        private DeedLifecycleProbe deedProbe;
         private readonly System.Collections.Generic.List<string> deferredFailures = new System.Collections.Generic.List<string>();
 
         public HarnessRunner(HarnessRequest request, Evidence evidence, JObject result)
@@ -335,6 +336,31 @@ namespace KmgLoaderCompatHarness
                     if (outcome == null) return StepStatus.Running;
                     result["kmgTimedBuffs_" + (step.Label ?? stepIndex.ToString())] = timedBuffProbe.Result;
                     timedBuffProbe = null;
+                    return outcome.Length == 0 ? StepStatus.Done : Fail(outcome);
+                }
+
+                case "kmgBuffCensus":
+                {
+                    // "type" lists buffs that must resolve; "own" lists buffs this stack may not publish. Records what
+                    // each final blueprint holds. With "expect": "linked", an absent effect link is a failure.
+                    var census = new JObject();
+                    System.Collections.Generic.List<string> failures = BuffCensus.Run(List(step.Type), step.Own, step.Expect == "linked", census);
+                    result["kmgBuffCensus_" + (step.Label ?? stepIndex.ToString())] = census;
+                    return failures.Count == 0 ? StepStatus.Done : Fail(string.Join("; ", failures.ToArray()));
+                }
+
+                case "kmgDeedLifecycle":
+                {
+                    // "match" names the script (dodge, armed, bleeds, condition, fallingPetal, mountainSunder);
+                    // "invariants" carries the blueprint identities and expected costs that script needs. Each runs
+                    // the effect's real trigger on disposable units in the loaded save, with time running.
+                    if (deedProbe == null) deedProbe = new DeedLifecycleProbe(evidence.Directory, step.Label ?? stepIndex.ToString(), step.Match, step.Invariants);
+                    string outcome;
+                    try { outcome = deedProbe.Poll(); }
+                    catch (Exception exception) { outcome = exception.ToString(); }
+                    if (outcome == null) return StepStatus.Running;
+                    result["kmgDeedLifecycle_" + (step.Label ?? stepIndex.ToString())] = deedProbe.Result;
+                    deedProbe = null;
                     return outcome.Length == 0 ? StepStatus.Done : Fail(outcome);
                 }
 

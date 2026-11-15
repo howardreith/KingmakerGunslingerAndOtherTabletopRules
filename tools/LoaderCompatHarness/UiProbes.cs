@@ -1014,7 +1014,7 @@ namespace KmgLoaderCompatHarness
             return new JObject
             {
                 ["armorClass"] = unit.Descriptor.Stats.AC.ModifiedValue, ["speed"] = unit.Descriptor.Stats.Speed.ModifiedValue,
-                ["reflex"] = unit.Descriptor.Stats.SaveReflex.ModifiedValue
+                ["reflex"] = unit.Descriptor.Stats.SaveReflex.ModifiedValue, ["initiative"] = unit.Descriptor.Stats.Initiative.ModifiedValue
             };
         }
     }

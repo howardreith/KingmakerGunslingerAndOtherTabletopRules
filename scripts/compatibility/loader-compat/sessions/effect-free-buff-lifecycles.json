@@ -1,0 +1,213 @@
+{
+  "name": "effect-free-buff-lifecycles",
+  "description": "Native check of the fourteen deed and Eastern named-weapon buffs that were built without effect links (Deadeye Armed, Gunslinger's Dodge, the four Bleeding Wound target bleeds, Startled, Targeted Head, Up Close and Deadly Armed, Steady Aim Armed, Falling Petal, the Mountain-Sunder round marker and the two retained Wayfarer's Oath and Moonlit Crossing shells), plus a census of the optional Suggestion buff. In one loaded fixture save: first the final blueprints are read (both effect links, visibility, stacking, components, icon). Then ten of the buffs are put on the main character for one round with the game's own AddBuff, to read activation, the portrait's buff bar and the unaided end; the two shells must leave armor class, speed, Reflex and Initiative unchanged. Then each effect runs through its real trigger on disposable units with time running: the Dodge, Deadeye, Up Close and Deadly, Steady Aim, Bleeding Wound, Stop Bleeding, Startling Shot and Targeting (Head) abilities through the game's ability command on gunslingers levelled by the level-up controller, and firearm, Falling Petal and Mountain-Sunder attacks through the game's weapon attack rule with the equipped weapon. Each records the game's buff-added and buff-removed notices, grit, the mechanical effect, consumption or cure, the end that comes by itself and the stats afterwards. The second launch is the product's own Dodge scenario. On a build without the links the first launch fails by design. Two steps fail on current source for reasons that are not effect links and are recorded in KNOWN-ISSUES.md: 'direct-visible-without-icons' (Deadeye Armed and Falling Petal have no icon) and 'steady-aim' (the armed state is never consumed by a shot).",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "blueprints-direct-and-real-triggers",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgBuffCensus",
+            "label": "final-blueprints",
+            "expect": "linked",
+            "continueOnFailure": true,
+            "type": "88ca4220e3944b65b2b9fb3afea35b08,bbd7d42117cc4c23b3e22af3a71621d9,7fcfa24d2dcb4044bc2fbe23a1937626,fe07b11676904019b1471905708764eb,9252d6155b3e4c258cbc7a1e794b8a5a,de789d99a1a742b5a7ac3da9c666a804,816825ffcd7a4ed18288bb82bfad2805,1a99dc0d5365452192494b0a9059b65b,b881cfed156749dca0c7db968f626656,f1457546b92d497d9c5924296d358a18,2fd1feb61e7b53af8c8aee70eb85d5b8,921d9f64271d507c9ae00c74a405b937,596a9b06c478572d8d82414ad8d78935,4ca1d8e286dd5c82a2ee8ce369146d57",
+            "own": [
+              "6635bf9bc37c4bbe9f52fc0a71c5d7f0",
+              "6477ae917b0ec7a4ca76bc9f36b023ac"
+            ]
+          },
+          {
+            "op": "kmgTimedBuffs",
+            "label": "direct-visible-with-icons",
+            "type": "bbd7d42117cc4c23b3e22af3a71621d9,b881cfed156749dca0c7db968f626656,f1457546b92d497d9c5924296d358a18,816825ffcd7a4ed18288bb82bfad2805,1a99dc0d5365452192494b0a9059b65b",
+            "match": "6",
+            "timeoutSeconds": 180,
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgTimedBuffs",
+            "label": "direct-visible-without-icons",
+            "type": "88ca4220e3944b65b2b9fb3afea35b08,921d9f64271d507c9ae00c74a405b937",
+            "match": "6",
+            "timeoutSeconds": 180,
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgTimedBuffs",
+            "label": "direct-hidden",
+            "type": "2fd1feb61e7b53af8c8aee70eb85d5b8,596a9b06c478572d8d82414ad8d78935,4ca1d8e286dd5c82a2ee8ce369146d57",
+            "match": "6",
+            "timeoutSeconds": 180,
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgDeedLifecycle",
+            "label": "dodge",
+            "match": "dodge",
+            "invariants": {
+              "ability": "9eec64400c8c47c5924552279ce45c77",
+              "buff": "bbd7d42117cc4c23b3e22af3a71621d9",
+              "class": "abca4797366d4df0831a418eee39069a",
+              "grit": "9876b3e744dd422b9c259d19861ad222"
+            },
+            "timeoutSeconds": 300,
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgDeedLifecycle",
+            "label": "deadeye",
+            "match": "armed",
+            "invariants": {
+              "ability": "984386dce5bf4788b508e9f61c7568e5",
+              "buff": "88ca4220e3944b65b2b9fb3afea35b08",
+              "firearm": "Pistol",
+              "gritAtArm": "1",
+              "gritAtShot": "0",
+              "class": "abca4797366d4df0831a418eee39069a",
+              "grit": "9876b3e744dd422b9c259d19861ad222"
+            },
+            "timeoutSeconds": 240,
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgDeedLifecycle",
+            "label": "up-close-and-deadly",
+            "match": "armed",
+            "invariants": {
+              "ability": "0fb1ef47da6040088db3946815419723",
+              "buff": "b881cfed156749dca0c7db968f626656",
+              "firearm": "Pistol",
+              "archetype": "32a41699a7bf42dbbe7ae755d68d73cb",
+              "gritAtArm": "0",
+              "gritAtShot": "1",
+              "class": "abca4797366d4df0831a418eee39069a",
+              "grit": "9876b3e744dd422b9c259d19861ad222"
+            },
+            "timeoutSeconds": 240,
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgDeedLifecycle",
+            "label": "steady-aim",
+            "match": "armed",
+            "invariants": {
+              "ability": "6309970e44b949db80bfd2fda8b62e31",
+              "buff": "f1457546b92d497d9c5924296d358a18",
+              "firearm": "Musket",
+              "archetype": "468ebf7536f04f498749869396189fbd",
+              "gritAtArm": "0",
+              "gritAtShot": "0",
+              "class": "abca4797366d4df0831a418eee39069a",
+              "grit": "9876b3e744dd422b9c259d19861ad222"
+            },
+            "timeoutSeconds": 240,
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgDeedLifecycle",
+            "label": "bleeding-wound",
+            "match": "bleeds",
+            "invariants": {
+              "abilities": "0beb35e712f749abb660f593e790ab39,9d8b076131364a7394aa225b4306419c,41fde8c96f7d468d9f9e6ad4d9b60fb0,a964315c427c4421bdf24c6ccea8700e",
+              "markers": "e563e8cdec324c59959c4dc8b9449702,74749a03f92e4fabaec2830bd66f7731,cd51a3e250094365b54929490a1d64b6,479e8f2c4dc7480cac9664ac10232e21",
+              "bleeds": "7fcfa24d2dcb4044bc2fbe23a1937626,fe07b11676904019b1471905708764eb,9252d6155b3e4c258cbc7a1e794b8a5a,de789d99a1a742b5a7ac3da9c666a804",
+              "stopBleeding": "6c9cebcc46604ec09d3c0ea49e48bdad",
+              "class": "abca4797366d4df0831a418eee39069a",
+              "grit": "9876b3e744dd422b9c259d19861ad222"
+            },
+            "timeoutSeconds": 420,
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgDeedLifecycle",
+            "label": "startling-shot",
+            "match": "condition",
+            "invariants": {
+              "ability": "19a40245da23459ba478e6333df031c8",
+              "buff": "816825ffcd7a4ed18288bb82bfad2805",
+              "condition": "LoseDexterityToAC",
+              "gritCost": "0",
+              "class": "abca4797366d4df0831a418eee39069a",
+              "grit": "9876b3e744dd422b9c259d19861ad222"
+            },
+            "timeoutSeconds": 240,
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgDeedLifecycle",
+            "label": "targeting-head",
+            "match": "condition",
+            "invariants": {
+              "ability": "54de8261f0c348389b88058e83028920",
+              "buff": "1a99dc0d5365452192494b0a9059b65b",
+              "condition": "Confusion",
+              "gritCost": "1",
+              "class": "abca4797366d4df0831a418eee39069a",
+              "grit": "9876b3e744dd422b9c259d19861ad222"
+            },
+            "timeoutSeconds": 240,
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgDeedLifecycle",
+            "label": "falling-petal",
+            "match": "fallingPetal",
+            "invariants": {
+              "weapon": "c56dd11c12355a83b1cd9d833b2e5321",
+              "otherWeapon": "b61ee7e62bc9288004eb0121c8f5d37e",
+              "buff": "921d9f64271d507c9ae00c74a405b937",
+              "class": "abca4797366d4df0831a418eee39069a",
+              "grit": "9876b3e744dd422b9c259d19861ad222"
+            },
+            "timeoutSeconds": 240,
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgDeedLifecycle",
+            "label": "mountain-sunder",
+            "match": "mountainSunder",
+            "invariants": {
+              "weapon": "5867c9be30e15d3a8a22e0f442959d03",
+              "buff": "4ca1d8e286dd5c82a2ee8ce369146d57",
+              "powerAttackFeature": "9972f33f977fc724c838e59641b2fca5",
+              "powerAttackToggle": "a7b339e4f6ff93a4697df5d7a87ff619",
+              "class": "abca4797366d4df0831a418eee39069a",
+              "grit": "9876b3e744dd422b9c259d19861ad222"
+            },
+            "timeoutSeconds": 240,
+            "continueOnFailure": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "dodge-scenario",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-gunslinger-dodge",
+        "parameters": {},
+        "timeoutSeconds": 600
+      }
+    }
+  ]
+}
