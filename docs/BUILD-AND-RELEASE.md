@@ -1,5 +1,36 @@
 # Build, package, and publish
 
+## 0.0.190 publication authorization
+
+On 2026-11-15 Howie sent the review of PR #161 and wrote: "Could you do the thing mentioned in this review, then merge
+and cut a new release please?" The review's items were done on the PR branch, PR #161 (the missing Gunslinger class
+repair) was marked ready and merged as `268a934192`. No channel was named, so this follows v0.0.189 as the next stable
+patch, v0.0.190, from master `268a934192`.
+
+- **Reviewed product.** Master `268a934192`. PR #161 was reviewed at `42d8230b4c`; the review follow-ups landed in
+  `cb3d383178`. The product change from v0.0.189 is sixteen files under `src/KingmakerGunslinger`, listed in
+  `tools/validate_missing_gunslinger_class_release190.py`, which pins it:
+  - the product delta from the v0.0.189 tag target under `src/KingmakerGunslinger`, `assets`, `assets-source`,
+    `blueprints` and `Directory.Build.props` is exactly those sixteen files;
+  - `Info.json`, the UMM 0.31.1 loader pins and the build inputs are unchanged from v0.0.189 and the reviewed master;
+  - only the three AssemblyInfo version attributes and the Info and props version values may change;
+  - all 7,933 released identities stay exact and in order, and none is appended;
+  - the creature catalog is unchanged, with only the owner-withdrawn Stirge withheld (1,208 public choices);
+  - the disclosed inherited-template membership still equals v0.0.189's twelve keys;
+  - one static release record is added.
+- **Offline evidence.** At `cb3d383178`, the complete domain suite passed 2,991/2,991, and the development candidate
+  build passed its validation and strict package validation.
+- **Native evidence.** Development candidate `cb3d383178c3` (DLL `39a6ca1d…`, the same product source as the reviewed
+  master) ran in the disposable loader-compat game copy on Unity Mod Manager 0.33.0, with the published v0.0.189
+  package failing the same launches. See `docs/GUNSLINGER-MISSING-CLASS-REPAIR.md` for the sessions. The release
+  build differs from that candidate by version metadata and build stamps and was not itself run in the game; the
+  release notes say so.
+- **Not established.** What made unstored text resolve blank on the reporting installation. The reporter's setup was
+  not reproduced.
+- **Publication path.** Use the ordinary exact-reference publisher from clean, pushed master with
+  `docs/RELEASE-NOTES-0.0.190.md` and the explicit summon-overhaul-baseline reference bundle. It runs the complete
+  gate and two deterministic builds, then publishes.
+
 ## 0.0.189 publication authorization
 
 **Published (completed).** Stable

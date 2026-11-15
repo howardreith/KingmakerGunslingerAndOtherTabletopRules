@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.189-elementals-launcher-repair",
+  "milestone": "0.0.190-missing-gunslinger-class-repair",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.189",
+  "version": "0.0.190",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -3001,5 +3001,18 @@
     "nativeEvidence": "None. No development candidate or released build of this change ran in the game before publication; the owner directed publication after the offline review. Offline only: the complete domain suite passed 2983/2983 at fabe5d211b; at d548b150d8 the focused gate compiled production and passed 44/44 related tests, and the patch-target check passed 50/50 against the installed game and Harmony12. The first publisher run on 784b5e27ec refused in its complete suite (mission.native-warning-route) before any build or publication; fabe5d211b repairs that.",
     "deferredCoverage": "Not observed in the game: the launcher being omitted from a PC spell popup with no consolidated original; paused clicks and casts and the spend of the prepared spell; the native-rows fallback, its refilled level tab and warning text; keyboard recovery after a fault; the chooser closing after its action-bar owner is destroyed. Controller parity is open: the controller chooser can still insert an Elementals entry when nothing is consolidated. GS-REP-0002 (inherited-template removal set, membership unchanged) and the two pre-existing feature-module publication gates carry over unchanged and stay disclosed in KNOWN-ISSUES.md.",
     "ownerPublicationAuthority": "Howie Reith, 2026-11-14: 'Please merge this and cut a new release.' (PR #156 merged as 784b5e27ec). Published as the next stable patch, as v0.0.188 was."
+  },
+  "missingGunslingerClassRelease190": {
+    "releaseVersion": "0.0.190",
+    "releaseInformationalVersion": "0.0.190-missing-gunslinger-class-repair",
+    "baseStableVersion": "0.0.189",
+    "reviewedProductSource": "268a934192ecb4d10a1191c63600462b21c9fde8",
+    "appendedIdentities": 0,
+    "releasedIdentityChanges": 0,
+    "visibleChoiceTotal": 1208,
+    "change": "Missing Gunslinger class repair (PR #161, reviewed at 42d8230b4c; review follow-ups at cb3d383178). A v0.0.189 report showed blueprint initialization aborting with 'Player-facing fact has incomplete localization: KMG_BleedingWound_HitPoints_Armed', which removed the Gunslinger class and the rest of the content for that process, followed by a Protection from Alignment rollback failure. Eleven buffs reached by the Gunslinger presentation traversal had no name or description; Kingmaker resolves unstored text to the non-empty placeholder '<null>', so the non-empty check accepted them on a stock game and failed where the same gap resolved to nothing. Ten visible buffs now carry names and descriptions (Bleeding Wound armed for Hit Points, Strength, Dexterity and Constitution; Expert Loading Armed; Lightning Reload Used; Slinger's Luck armed for saving throw and skill check; Death's Shot Armed; Stunning Shot Armed); the Death's Shot death carrier, which nothing applies to a unit, is hidden with Kingmaker's HiddenInUi buff flag. The presentation check requires assigned text and honours a buff's native visibility flag. The eleven buffs also get empty effect links: built without them, Kingmaker's buff activation threw after the buff was active and the applying rule swallowed it, so the buffs worked but never appeared in the party bar and expiry scheduling was skipped (Lightning Reload Used could linger past its round). Protection from Alignment publication journals each mutation before writing it and restores the exact captured objects entry by entry, leaving and reporting a later foreign change. The settings panel shows the loaded name and version and the content initialization state in place of a stale 0.0.154 label. Sixteen product files change; identities, grants, grit costs, stacking and marker consumption are unchanged and no art changes. Repository-only additions: 8 domain tests, the loader-compat harness conditions and probes with three sessions, and docs/GUNSLINGER-MISSING-CLASS-REPAIR.md.",
+    "nativeEvidence": "Development candidate cb3d383178c3 (package c5d3913ad9e68219f2c65ca600ff65302ffbd6719f220214bb6f3bc2a0c7febc, DLL 39a6ca1d0d314dd6a3cc1af6124c1f4730ccf3355f2f96959b8f7875a7c8d77f; the same product source as the reviewed master) ran in the disposable loader-compat game copy on Unity Mod Manager 0.33.0, with the published v0.0.189 package as the failing baseline for the same launches. Passed on the candidate, failed on v0.0.189: sessions gunslinger-missing-class (20261115T062258Z; six launches: presentation census, validator controls, settings panel, initialization and Gunslinger creation with unstored text resolving blank, rollback after an injected failure with a blank original and two foreign changes, rollback on native state, zhCN locale) and gunslinger-missing-class-screens (20261115T061857Z; the New Character class screen listing the Gunslinger once, selected by its own toggle, Next continuing; the ten visible buffs in the party bar and on the character sheet with names, tooltip text and icons, Lightning Reload Used ending after one round; exact rollback after a failure injected once a description was stored). Session gunslinger-missing-class-shared-mods (20261115T062915Z; twelve of the reported mods at the reported versions) passed on the candidate. The published release bytes themselves were not run in the game: the release build differs from the candidate by version metadata and build stamps. Offline at cb3d383178: complete domain suite 2991/2991.",
+    "deferredCoverage": "Not reproduced: the reporting installation, its translation and its full mod list; the failing condition was reproduced with a controlled test-only patch that makes unstored text resolve blank, and what produced that condition for the reporter is unknown. The lab loader was Unity Mod Manager 0.33.0, not the reported 0.33.3. The ten buffs were applied directly to a level 1 Fighter in a fixture save; arming them through their abilities as a Gunslinger and spending them on an attack was not played. Other project buffs built without effect links are unchanged and untested and are disclosed in KNOWN-ISSUES.md: Deadeye Armed, Gunslinger's Dodge, the Bleeding Wound bleeds on a target, Startling Shot, Targeting (Head), the Pistolero and Musket Master armed buffs, and one buff each in the Eastern Weapons, Elven Branched Spear and Expanded Summoning Suggestion builders. The new names and descriptions were reviewed for wording once (one copy edit applied) and have no separate owner sign-off. GS-REP-0002 and the two pre-existing feature-module publication gates carry over unchanged.",
+    "ownerPublicationAuthority": "Howie Reith, 2026-11-15, with the review of PR #161: 'Could you do the thing mentioned in this review, then merge and cut a new release please?' (PR #161 merged as 268a934192). Published as the next stable patch, as v0.0.189 was."
   }
 }
