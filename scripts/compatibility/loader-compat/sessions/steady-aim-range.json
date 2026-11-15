@@ -1,0 +1,47 @@
+{
+  "name": "steady-aim-range",
+  "description": "Native check of Steady Aim's range benefit (NEW-03), in one loaded fixture save with time running. A Musket Master levelled by the level-up controller stands 45 ft from a hostile target whose ordinary armor class is eight above its touch armor class, on a straight walkable line. Steady Aim is armed through the game's ability command. Shots are fired through the game's attack command (the unit closes to its musket's range if it has to, plays the attack, and the command triggers the weapon attack rule); three cases that must resolve at once use the weapon attack rule alone and say so. For every attack roll by the gunslingers the harness records, from the roll itself: the distance the game measured, the range bonus the product attached to that roll, the armor class it was resolved against beside the target's ordinary and touch values, the product's combat-log line, the natural roll and result, and whether the armed state was on the shooter as the roll started and ended. Covered: an unarmed control shot (ordinary armor class); an armed shot that hits (10 ft, touch armor class, state removed once, grit unchanged); the next shot (ordinary again); an armed shot that misses without misfiring; a one-handed firearm shot while armed (state kept) followed by the musket shot that uses it; another gunslinger's shot while the first is armed; a shot with Deadeye armed as well (Deadeye must read the lengthened increment); a shot after grit was lost (state removed, no bonus); and the state left unused for one round. On a build before the repair this step fails by design: no shot removes the state or carries the bonus.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "steady-aim-range",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgDeedLifecycle",
+            "label": "steady-aim-range",
+            "match": "steadyAim",
+            "invariants": {
+              "ability": "6309970e44b949db80bfd2fda8b62e31",
+              "buff": "f1457546b92d497d9c5924296d358a18",
+              "archetype": "468ebf7536f04f498749869396189fbd",
+              "deadeyeAbility": "984386dce5bf4788b508e9f61c7568e5",
+              "deadeyeBuff": "88ca4220e3944b65b2b9fb3afea35b08",
+              "startFeet": "45",
+              "class": "abca4797366d4df0831a418eee39069a",
+              "grit": "9876b3e744dd422b9c259d19861ad222"
+            },
+            "timeoutSeconds": 300,
+            "continueOnFailure": true
+          }
+        ]
+      }
+    }
+  ]
+}
