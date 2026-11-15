@@ -1,5 +1,15 @@
 # Known issues and conservative adaptations
 
+- Several project buffs are built without `FxOnStart` and `FxOnRemove` links. Kingmaker's buff activation
+  dereferences `FxOnStart` after the buff is already active, and the rule that applies the buff swallows the error:
+  the buff works, but the "buff added" notification and expiry scheduling do not run, so it does not appear in the
+  party bar and a buff that ends itself can linger. v0.0.190 repaired the eleven buffs behind the missing Gunslinger
+  class report (see `docs/GUNSLINGER-MISSING-CLASS-REPAIR.md`). Read from source, and neither applied nor observed,
+  the same construction remains in Deadeye Armed, Gunslinger's Dodge, the four Bleeding Wound bleeds applied to a
+  target, Startling Shot, Targeting (Head), the Pistolero and Musket Master armed buffs, and one buff each in
+  `EasternWeaponNamedBlueprints`, `ElvenBranchedSpearNamedBlueprints` and
+  `ExpandedSummoningSpecialBuilder.Suggestion32`. Gunslinger's Dodge has its own expiry guard built around the
+  existing behaviour, so each of these needs its own change and native check.
 - Rapid Reload's parent proficiency gate reads only the registered firearm
   proficiency features, so any future independent proficiency source satisfies
   it without further changes. `FirearmProficiencyScopeReconciler` remains a
