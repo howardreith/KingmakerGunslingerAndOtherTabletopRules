@@ -4628,7 +4628,7 @@
       "sharingReason": "Boughkeeper's dodge buff is the effect of that spear's own attack-of-opportunity hit, so it shows the spear that grants it. The 128px export is the existing protectedFiles record assets/game/icons/elven-branched-spear.png, unchanged; no new painting, cache key or export.",
       "exportProfile": "none",
       "assetAuthority": null,
-      "technicalStatus": "source-integrated binding; native portrait buff slot and tooltip PASS on a development candidate (reports/boughkeeper-buff-icon/NATIVE-UI-CHECK.json); owner visual review of the 19px slot pending",
+      "technicalStatus": "source-integrated binding; native portrait buff slot (after the first hit), tooltip and one-round end PASS on a development candidate (reports/boughkeeper-buff-icon/NATIVE-UI-CHECK.json); owner visual review of the 19px slot pending",
       "visualReview": {
         "status": "not-reviewed",
         "reviewedExportSha256": null,

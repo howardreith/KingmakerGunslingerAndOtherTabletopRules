@@ -1,36 +1,38 @@
 {
   "schemaVersion": 1,
-  "subject": "Boughkeeper armor-class buff icon (KMG.ElvenBranchedSpear.BoughkeeperArmorClassBuff, 064feb1123cfb1ae4f541ef5e4d138a1)",
-  "status": "PASS for the portrait buff slot and its tooltip on a development candidate, within the stated scope",
+  "subject": "Boughkeeper armor-class buff icon (KMG.ElvenBranchedSpear.BoughkeeperArmorClassBuff, 064feb1123cfb1ae4f541ef5e4d138a1): icon and effect links",
+  "status": "PASS for the portrait buff slot, its tooltip and the buff's own end on a development candidate, within the stated scope",
   "ownerApproval": "Not given by this record. Whether the spear reads well enough at the 19px slot is the owner's visual decision.",
   "date": "2026-11-15",
   "host": "DATA",
   "route": "scripts/compatibility/loader-compat/Invoke-LoaderCompatSession.ps1, session boughkeeper-buff-icon, loader profile owner-0.33.0, disposable game copy C:/Dev/KingmakerGunslingerLab/game-copies/loader-compat, saves and area cache redirected to a per-session profile, fixture save KMCS_AFTER_NORMAL_012_MODONLY.zks",
-  "method": "The fixture save's main character is armed with Boughkeeper. UnitCombatState.AttackOfOpportunity queues the game's own UnitAttackOfOpportunity command against a disposable hostile target (a copy of the default player character in the Mobs faction, kept alive) and the test harness runs that command's action while the game is paused. The base attack bonus is raised to 100 for the attack so the hit is certain, and restored. The verdict comes from the game's view objects; the screenshots are for a person to look at.",
+  "method": "The fixture save's main character is armed with Boughkeeper. UnitCombatState.AttackOfOpportunity queues the game's own UnitAttackOfOpportunity command against a disposable hostile target (a copy of the default player character in the Mobs faction, kept alive) and the test harness runs that command's action while the game is paused. The base attack bonus is raised to 100 for the attack so the hit is certain, and restored. The verdict comes from the game's view objects; the screenshots are for a person to look at. After the tooltip the fight is ended, the target removed and play resumed; the game's automatic pauses are lifted and the buff is given three rounds of game time to end by itself.",
   "candidate": {
     "kind": "development candidate, never a release",
-    "productSourceCommit": "6b72c8e28f",
-    "builtAtCommit": "13580879784586a437756465644de4c4cdc1ce54",
-    "packageSha256": "ac90263b40aeb87337f344f8696d8c04cd67e2c4b175b7377baaa5bf51a85801",
-    "dllSha256": "3c6aab561ae9b95b6e6d3fff7dd4ea2373c09159a8e675733246d7b462ff3c22",
-    "dllMvid": "ba6bc665-5360-4f89-a89d-3d27584b82d1",
+    "productSourceCommit": "f56e1a9007",
+    "builtAtCommit": "9043d68b2441d9a2ec4fb28a162df3d66f77e99a",
+    "packageSha256": "31089dd217f977d4a04656f49c3a344b1b2fe89a0d7e909baa6c7d2e0f1de8ae",
+    "dllSha256": "9abb5c9aec865230d66377e7f146941ed4d85ce5ba70af5bc7bcf548873da074",
     "version": "0.0.190"
   },
   "harness": {
-    "source": "tools/LoaderCompatHarness at 70049bb3fa729d7b2866a79335c593ab10becd68 (test-only, not in the product package)",
-    "dllSha256": "641e297b0bfc45baf196579bfa084cf2f451fd6c00d48da42e4d58aa66ce3d57"
+    "source": "tools/LoaderCompatHarness at 51a6bfece25fffde10e9a7946eec651868cb91ae (test-only, not in the product package)",
+    "dllSha256": "1cc3e1de95fec1b67ad6d2958c66c433d5d39639ba4bc4257c8a3f5d3ff3fdfb"
   },
-  "after": {
-    "session": "20261115T143318Z-owner-0.33.0-boughkeeper-buff-icon",
+  "candidateResult": {
+    "session": "20261115T151218Z-owner-0.33.0-boughkeeper-buff-icon",
     "verdict": "PASS",
-    "seconds": 86,
+    "seconds": 100,
     "screen": "1920x1200",
-    "attacks": "attack of opportunity with Boughkeeper: Hit; then Miss, Hit for the second application",
+    "attacks": "one attack of opportunity with Boughkeeper: Hit",
+    "effectLinksAssigned": true,
     "buffOnUnitAfterHit": true,
     "armorClass": {
       "before": 17,
-      "after": 18
+      "withBuff": 18,
+      "afterBuffEnded": 17
     },
+    "inPartyBarAfterFirstHit": true,
     "blueprintIcon": "KMG_Icon_elven-branched-spear (128x128 texture)",
     "partyBarSlot": {
       "shownIcon": "KMG_Icon_elven-branched-spear",
@@ -44,44 +46,55 @@
       "timer": "6s",
       "text": "+1 dodge bonus to Armor Class until the beginning of the wielder's next turn."
     },
+    "buffEnd": {
+      "endedByItself": true,
+      "gameSecondsAfterResume": 6.0,
+      "automaticPausesLifted": 1
+    },
     "screenshots": [
       {
         "file": "boughkeeper-party-bar.png",
-        "sha256": "227220f8ce0900181e562bb0a8bf3a307187c4ef4199297107f71a24d65aaaec"
+        "sha256": "d9e757687f8b39a5991ca4ea3bb956b77117cc36d176fb2379f4cc46eb423d57"
       },
       {
         "file": "boughkeeper-tooltip.png",
-        "sha256": "fdc7fa7106600ddb4e005a3102d70b92bceb31d96e148751ed626bad6c561511"
+        "sha256": "1fa39302e93a3b387de3a5554f13495a0eb1a05479ef1134d1fc2122cbf151f4"
       }
-    ],
-    "earlierRun": "20261115T143023Z-owner-0.33.0-boughkeeper-buff-icon passed on the same package with harness commit 1358087978, whose tooltip-name check also matched the combat log; superseded by the run above."
+    ]
   },
-  "before": {
-    "package": "published v0.0.190 ZIP, sha256 1f1f31fa161ea251396733f6ee45d6f7df20930f89431a4c9d91771bd4446de6, product DLL sha256 88ab89933746fb1072a0b1c68ddad8a105320d911cccc202204c97fe0bc3df9c",
-    "session": "20261115T143738Z-owner-0.33.0-boughkeeper-buff-icon",
-    "verdict": "FAIL by design: the buff blueprint has no icon and the slot's image has no sprite, drawn as a white square",
-    "seconds": 95,
-    "screen": "1920x1080",
-    "screenshots": [
-      {
-        "file": "boughkeeper-party-bar.png",
-        "sha256": "36d57ee69a11ce60454a76a1c6ad62389f36697b4e3f9fef5c64c968623f7961"
-      },
-      {
-        "file": "boughkeeper-tooltip.png",
-        "sha256": "8a3d62145969039ee5105def653aab4f40bb55eb0f511684b291af17bc7c6803"
-      }
-    ],
-    "earlierRun": "20261115T143444Z-owner-0.33.0-boughkeeper-buff-icon gave the same structured failure, but both screenshots were black frames; repeated once."
-  },
-  "machineProtection": "Every session reported the owner's 95 save files and installation unchanged and the game's registry settings restored. No guarded run of the live installation and no save was written.",
-  "observations": [
-    "On both builds the buff was absent from the portrait after the first hit and appeared after the second. The blueprint has no FxOnStart/FxOnRemove links (the construction recorded in KNOWN-ISSUES.md), so the game's buff-added event does not fire; the second hit removes and re-adds the buff, and the removal redraws the slot. This repair does not change that.",
-    "The two before-state runs used a 1920x1080 window and the candidate runs 1920x1200. The slot is 19x19 pixels in both."
+  "comparisons": [
+    {
+      "build": "icon-only development candidate (product source 6b72c8e28f, package ac90263b40aeb87337f344f8696d8c04cd67e2c4b175b7377baaa5bf51a85801, DLL 3c6aab561ae9b95b6e6d3fff7dd4ea2373c09159a8e675733246d7b462ff3c22)",
+      "session": "20261115T151357Z-owner-0.33.0-boughkeeper-buff-icon",
+      "verdict": "FAIL by design: no effect links. The spear icon is drawn, but the buff is absent from the portrait after the first hit and appears only after a second one; after three rounds of game time (18.0 s) it is still on the character and the armor class is still 18.",
+      "earlierPass": "The same package passed 20261115T143318Z-owner-0.33.0-boughkeeper-buff-icon with the earlier harness (70049bb3fa), which checked the icon and tooltip only."
+    },
+    {
+      "build": "published v0.0.190 ZIP (sha256 1f1f31fa161ea251396733f6ee45d6f7df20930f89431a4c9d91771bd4446de6, DLL 88ab89933746fb1072a0b1c68ddad8a105320d911cccc202204c97fe0bc3df9c)",
+      "session": "20261115T143738Z-owner-0.33.0-boughkeeper-buff-icon",
+      "verdict": "FAIL by design with the earlier harness (70049bb3fa): the buff blueprint has no icon and the slot is drawn as a white square. Not repeated with the later harness.",
+      "screenshots": [
+        {
+          "file": "boughkeeper-party-bar.png",
+          "sha256": "36d57ee69a11ce60454a76a1c6ad62389f36697b4e3f9fef5c64c968623f7961"
+        },
+        {
+          "file": "boughkeeper-tooltip.png",
+          "sha256": "8a3d62145969039ee5105def653aab4f40bb55eb0f511684b291af17bc7c6803"
+        }
+      ]
+    }
   ],
+  "discardedRuns": [
+    "20261115T143444Z: published package, same structured failure, both screenshots black frames; repeated once.",
+    "20261115T150713Z and 20261115T150913Z: harness 9043d68b24 counted wall-clock seconds while the game had paused itself again, so no game time ran and their 'did not end' findings say nothing about the buff. Their first-hit observations agree with the runs above."
+  ],
+  "machineProtection": "Every session reported the owner's 95 save files and installation unchanged and the game's registry settings restored. No guarded run of the live installation and no save was written.",
   "limits": [
     "One fixture save, one loader profile, standalone mod set, desktop UI, enGB.",
     "The character sheet's Buffs row, controller UI and the owner's own installation were not exercised.",
-    "The opportunity attack was run from its native command while paused, not provoked by enemy movement in live play."
+    "The opportunity attack was run from its native command while paused, not provoked by enemy movement in live play.",
+    "The buff's end was observed out of combat in real-time mode; turn-based mode was not exercised.",
+    "Only Boughkeeper's buff received effect links. The other seven named-spear buffs built by the same helper were not changed, applied or observed."
   ]
 }
