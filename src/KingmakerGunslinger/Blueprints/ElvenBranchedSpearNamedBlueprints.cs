@@ -123,9 +123,14 @@ namespace KingmakerGunslinger.Blueprints
                     var component = ScriptableObject.CreateInstance<
                         BoughkeeperArmorClassBonus>();
                     component.name = "$KMG_Boughkeeper_AC";
-                    return Buff("KMG_Boughkeeper_AC_Buff", "Boughkeeper",
+                    BlueprintBuff buff = Buff("KMG_Boughkeeper_AC_Buff", "Boughkeeper",
                         "+1 dodge bonus to Armor Class until the beginning of the wielder's next turn.",
                         false, false, component);
+                    // Without effect links activation is cut short: the
+                    // portrait does not show the buff and its end is not
+                    // scheduled.
+                    BlueprintUnitFactAccess.UseEmptyBuffEffects(buff);
+                    return buff;
                 });
             BlueprintBuff thornPenalty = registry.Register<BlueprintBuff>(
                 ThornstepPenaltySymbol, () => StatBuff(
