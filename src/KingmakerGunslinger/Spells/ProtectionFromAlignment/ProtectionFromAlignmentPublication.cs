@@ -204,23 +204,34 @@ namespace KingmakerGunslinger.Spells.ProtectionFromAlignment
             }
             catch (Exception publicationException)
             {
+                OwnedMutationRollbackReport rollback;
                 try
                 {
-                    RollbackAll(componentMutations, descriptionMutations);
+                    rollback = RollbackAll(componentMutations, descriptionMutations);
                 }
                 catch (Exception rollbackException)
                 {
                     throw new AggregateException(
-                        "Protection from Alignment publication failed and rollback was refused.",
+                        "Protection from Alignment publication failed and its rollback could not run.",
                         publicationException, rollbackException);
                 }
+                if (!rollback.IsComplete)
+                    throw new AggregateException(
+                        "Protection from Alignment publication failed and its rollback was incomplete: " +
+                        rollback.Describe(), publicationException);
                 throw;
             }
         }
 
-        internal void Rollback()
+        /// <summary>
+        /// Puts every description and component array this publication
+        /// replaced back to the exact object captured before publication.
+        /// The report says what was restored and what was left; the caller
+        /// must not describe an incomplete report as a completed rollback.
+        /// </summary>
+        internal OwnedMutationRollbackReport Rollback()
         {
-            RollbackAll(_componentMutations, _descriptionMutations);
+            return RollbackAll(_componentMutations, _descriptionMutations);
         }
 
         internal static ProtectionFromAlignmentPublicationObservation Observe(
@@ -407,31 +418,34 @@ namespace KingmakerGunslinger.Spells.ProtectionFromAlignment
                     " does not contain the expected player-facing protection description.");
         }
 
-        private static void RollbackAll(
+        // Restoration is not publication. The captured original goes back as
+        // the same object, without the display-text check SetDescription
+        // applies to new text: a native description may resolve to nothing in
+        // the active localization pack and is still the state to return to.
+        // Entries are independent, so a conflict on one never strands the rest.
+        private static OwnedMutationRollbackReport RollbackAll(
             IList<ComponentMutation> componentMutations,
             IList<DescriptionMutation> descriptionMutations)
         {
             BlueprintUnitFactAccess factAccess = BlueprintUnitFactAccess.Resolve();
+            var rollback = new OwnedMutationRollback();
             for (int index = descriptionMutations.Count - 1; index >= 0; index--)
             {
                 DescriptionMutation mutation = descriptionMutations[index];
-                if (!ReferenceEquals(factAccess.GetDescription(mutation.Fact),
-                    mutation.Published))
-                    throw new InvalidOperationException(
-                        mutation.Fact.name +
-                        " changed after protection-description publication; rollback refused.");
-                factAccess.SetDescription(mutation.Fact, mutation.Original);
+                rollback.Restore(mutation.Name + ".description",
+                    () => factAccess.GetDescription(mutation.Fact),
+                    value => factAccess.RestoreDescription(mutation.Fact, value),
+                    mutation.Published, mutation.Original);
             }
             for (int index = componentMutations.Count - 1; index >= 0; index--)
             {
                 ComponentMutation mutation = componentMutations[index];
-                if (!ReferenceEquals(mutation.Buff.ComponentsArray,
-                    mutation.Published))
-                    throw new InvalidOperationException(
-                        mutation.Buff.name +
-                        " changed after protection-control publication; rollback refused.");
-                mutation.Buff.ComponentsArray = mutation.Original;
+                rollback.Restore(mutation.Name + ".components",
+                    () => mutation.Buff.ComponentsArray,
+                    value => mutation.Buff.ComponentsArray = value,
+                    mutation.Published, mutation.Original);
             }
+            return rollback.Complete();
         }
 
         private static void LogSummary(ModLogger logger,
@@ -473,10 +487,12 @@ namespace KingmakerGunslinger.Spells.ProtectionFromAlignment
                 BlueprintComponent[] published)
             {
                 Buff = buff;
+                Name = buff.name;
                 Original = original;
                 Published = published;
             }
             internal BlueprintBuff Buff { get; private set; }
+            internal string Name { get; private set; }
             internal BlueprintComponent[] Original { get; private set; }
             internal BlueprintComponent[] Published { get; private set; }
         }
@@ -487,10 +503,12 @@ namespace KingmakerGunslinger.Spells.ProtectionFromAlignment
                 LocalizedString original, LocalizedString published)
             {
                 Fact = fact;
+                Name = fact.name;
                 Original = original;
                 Published = published;
             }
             internal BlueprintUnitFact Fact { get; private set; }
+            internal string Name { get; private set; }
             internal LocalizedString Original { get; private set; }
             internal LocalizedString Published { get; private set; }
         }

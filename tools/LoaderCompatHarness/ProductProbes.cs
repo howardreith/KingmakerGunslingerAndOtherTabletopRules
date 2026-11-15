@@ -199,4 +199,36 @@ namespace KmgLoaderCompatHarness
             pendingLabel = null;
         }
     }
+
+    /// <summary>
+    /// The text the product's settings panel actually drew: every string its own ImmediateModeGui.Label received while
+    /// a panel probe was armed. Reads the labels only; nothing in the product is changed.
+    /// </summary>
+    internal static class PanelText
+    {
+        private static bool armed;
+
+        public static List<string> Labels { get; } = new List<string>();
+
+        public static void Install(HarmonyInstance harmony)
+        {
+            Type gui = ProductProbes.Entry().Assembly.GetType("KingmakerGunslinger.Development.ImmediateModeGui", true);
+            MethodInfo label = gui.GetMethod("Label", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public, null, new[] { typeof(string) }, null);
+            if (label == null) throw new MissingMethodException(gui.FullName, "Label(string)");
+            harmony.Patch(label, new HarmonyMethod(typeof(PanelText).GetMethod(nameof(Prefix), BindingFlags.Static | BindingFlags.NonPublic)), null);
+        }
+
+        public static void Arm()
+        {
+            Labels.Clear();
+            armed = true;
+        }
+
+        public static void Disarm() => armed = false;
+
+        private static void Prefix(string __0)
+        {
+            if (armed && __0 != null && !Labels.Contains(__0)) Labels.Add(__0);
+        }
+    }
 }

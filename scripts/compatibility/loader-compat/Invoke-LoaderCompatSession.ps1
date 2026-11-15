@@ -97,6 +97,11 @@ try {
 
         # Harness request: its own steps, or isolation and identity only.
         $save = $null; $steps = @(); $harnessExits = $true
+        # Controlled pre-initialization conditions (ReproductionConditions.cs); they apply to product launches too.
+        $conditions = [ordered]@{}
+        if ($launch.PSObject.Properties['conditions'] -and $launch.conditions) {
+            foreach ($p in $launch.conditions.PSObject.Properties) { $conditions[$p.Name] = [string]$p.Value }
+        }
         if ($harness) {
             $steps = @($harness.Value.steps)
             if ($harness.Value.PSObject.Properties['save'] -and $harness.Value.save) {
@@ -111,10 +116,16 @@ try {
         }
         if ($product) { $harnessExits = $false }
         $harnessRequest = [ordered]@{ runId = "$sessionId-$label"; evidenceDir = (Join-Path $launchDir 'harness'); profileDir = $profileDir
-            save = $save; timeoutSeconds = $LaunchTimeoutSeconds - 60; exitAfterCompletion = $harnessExits; steps = $steps }
+            save = $save; timeoutSeconds = $LaunchTimeoutSeconds - 60; exitAfterCompletion = $harnessExits; steps = $steps; conditions = $conditions }
         $harnessRequestPath = Join-Path $launchDir 'harness-request.json'
-        Write-LcJson $harnessRequestPath $harnessRequest
+        # '$candidateVersion' in a step stands for the staged candidate's own Info.json version.
+        [IO.File]::WriteAllText($harnessRequestPath, ($harnessRequest | ConvertTo-Json -Depth 12).Replace('$candidateVersion', $candidateVersion),
+            (New-Object Text.UTF8Encoding($false)))
         $arguments = @("-kmgLoaderCompatRequest=$harnessRequestPath")
+        # Extra game arguments, for example -locale=zhCN, which Kingmaker's own startup reads.
+        if ($launch.PSObject.Properties['gameArguments']) { $arguments += @($launch.gameArguments | ForEach-Object { [string]$_ }) }
+        $record.conditions = $conditions
+        $record.gameArguments = @($arguments | Select-Object -Skip 1)
         $productEvidence = $null
         if ($product) {
             $productEvidence = Join-Path $launchDir 'product'
@@ -180,6 +191,24 @@ try {
                     failed = @($productResult.assertions | Where-Object { $_.status -ne 'PASS' } | ForEach-Object { $_.name + ': ' + $_.observed }) }
                 if ($productResult.status -ne 'PASS') { $record.problems += "product $($product.Value.scenario): $($productResult.status)" }
             } else { $record.problems += "no product result for $($product.Value.scenario)" }
+        }
+        # Product log lines this launch must and must not contain, read from the launch's own loader log copy.
+        if ($launch.PSObject.Properties['expectLog']) {
+            $logCopy = Join-Path $launchDir 'umm-log.txt'
+            if (-not (Test-Path -LiteralPath $logCopy)) { $record.problems += 'no loader log was captured for expectLog' }
+            else {
+                $logText = [IO.File]::ReadAllText($logCopy)
+                $record.log = [ordered]@{ present = @(); absent = @() }
+                foreach ($group in @('present', 'absent')) {
+                    if (-not $launch.expectLog.PSObject.Properties[$group]) { continue }
+                    foreach ($needle in @($launch.expectLog.$group | Where-Object { $_ })) {
+                        $count = ([regex]::Matches($logText, [regex]::Escape([string]$needle))).Count
+                        $record.log[$group] += "$needle x$count"
+                        if ($group -eq 'present' -and $count -eq 0) { $record.problems += "log lacks '$needle'" }
+                        if ($group -eq 'absent' -and $count -ne 0) { $record.problems += "log contains '$needle' ($count)" }
+                    }
+                }
+            }
         }
         $record.verdict = $(if ($record.problems.Count -eq 0) { 'PASS' } else { 'FAIL' })
         Write-LcJson (Join-Path $launchDir 'launch-summary.json') $record

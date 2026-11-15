@@ -46,6 +46,7 @@ namespace KmgLoaderCompatHarness
                 result["isolation"] = ProfileIsolation.Apply(harmony, request.ProfileDir);
                 LoggedExceptions.Install(harmony);
                 result["loggerExceptionHooks"] = LoggedExceptions.Patched;
+                result["conditions"] = ReproductionConditions.Apply(harmony, request.Conditions);
             }
             catch (Exception exception)
             {
@@ -74,6 +75,8 @@ namespace KmgLoaderCompatHarness
                     productHooksInstalled = true;
                     try { ToggleClick.Install(harmony); }
                     catch (Exception exception) { evidence.Event("toggleHookUnavailable", exception.Message); }
+                    try { PanelText.Install(harmony); }
+                    catch (Exception exception) { evidence.Event("panelTextHookUnavailable", exception.Message); }
                 }
 
                 runner?.Tick();

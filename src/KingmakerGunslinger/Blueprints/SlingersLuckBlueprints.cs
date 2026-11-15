@@ -68,7 +68,7 @@ namespace KingmakerGunslinger.Blueprints
         private static BlueprintBuff CreateSavingMarker(
             BlueprintAbilityResource grit, BlueprintCharacterClass gunslingerClass)
         {
-            var result = CreateMarker("SavingThrow");
+            var result = CreateMarker("SavingThrow", "Saving Throw", 2);
             var logic = ScriptableObject.CreateInstance<
                 SlingersLuckSavingThrowReroll>();
             logic.name = "$KMG_SlingersLuck_SavingReroll";
@@ -80,7 +80,7 @@ namespace KingmakerGunslinger.Blueprints
         private static BlueprintBuff CreateSkillMarker(BlueprintAbilityResource grit,
             BlueprintCharacterClass gunslingerClass)
         {
-            var result = CreateMarker("SkillCheck");
+            var result = CreateMarker("SkillCheck", "Skill Check", 1);
             var logic = ScriptableObject.CreateInstance<SlingersLuckSkillCheckReroll>();
             logic.name = "$KMG_SlingersLuck_SkillReroll";
             logic.Grit = grit; logic.GunslingerClass = gunslingerClass;
@@ -88,12 +88,22 @@ namespace KingmakerGunslinger.Blueprints
             return result;
         }
 
-        private static BlueprintBuff CreateMarker(string suffix)
+        private static BlueprintBuff CreateMarker(string suffix, string label,
+            int cost)
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_SlingersLuck_" + suffix + "_Armed";
             result.IsClassFeature = true;
             result.Stacking = StackingType.Replace;
+            // Shown on the gunslinger until the armed roll is rerolled.
+            BlueprintUnitFactAccess.Resolve().Configure(result,
+                LocalizationService.Create("KMG.SlingersLuck." + suffix +
+                    ".Armed.Name", "Slinger's Luck Armed - " + label),
+                LocalizationService.Create("KMG.SlingersLuck." + suffix +
+                    ".Armed.Description", "Your next " + label.ToLowerInvariant() +
+                    " is armed with Slinger's Luck. When you roll it, you spend exactly " +
+                    cost + " grit to reroll and always keep the second result, even if lower. This effect ends after that reroll."),
+                null);
             return result;
         }
 

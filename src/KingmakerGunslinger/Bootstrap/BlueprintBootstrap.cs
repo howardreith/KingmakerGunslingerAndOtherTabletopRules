@@ -1574,12 +1574,25 @@ namespace KingmakerGunslinger.Bootstrap
                 }
                 if (protectionFromAlignmentPublication != null)
                 {
-                    try { protectionFromAlignmentPublication.Rollback(); }
+                    try
+                    {
+                        OwnedMutationRollbackReport protectionRollback =
+                            protectionFromAlignmentPublication.Rollback();
+                        if (protectionRollback.IsComplete)
+                            context.Logger.Info("blueprints",
+                                "protection-from-alignment.rollback-complete",
+                                protectionRollback.Describe());
+                        else
+                            context.Logger.Failure("blueprints",
+                                "protection-from-alignment.rollback-incomplete",
+                                "Blueprint initialization failed and Protection from Alignment rollback left changes in place. " +
+                                protectionRollback.Describe(), null);
+                    }
                     catch (Exception protectionRollbackException)
                     {
                         context.Logger.Failure("blueprints",
                             "protection-from-alignment.rollback-failed",
-                            "Blueprint initialization failed and Protection from Alignment control-immunity rollback was refused.",
+                            "Blueprint initialization failed and Protection from Alignment rollback could not run.",
                             protectionRollbackException);
                     }
                 }

@@ -7,7 +7,9 @@ using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
+using KingmakerGunslinger.Presentation;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
@@ -99,20 +101,13 @@ namespace KingmakerGunslinger.Blueprints
             HashSet<BlueprintUnitFact> visited)
         {
             if (fact == null || !visited.Add(fact)) return;
-            var feature = fact as BlueprintFeature;
-            var ability = fact as BlueprintAbility;
-            bool hidden = (feature != null && feature.HideInUI) ||
-                (ability != null && ability.Hidden);
             bool projectOwned = fact.name != null &&
                 fact.name.StartsWith("KMG_", StringComparison.Ordinal);
-            if (projectOwned && !hidden)
+            if (projectOwned && !IsHiddenInUi(fact))
             {
-                if (string.IsNullOrWhiteSpace(fact.Name) ||
-                    string.IsNullOrWhiteSpace(fact.Description))
-                    throw new InvalidOperationException(
-                        "Player-facing fact has incomplete localization: " + fact.name);
-                BlueprintUnitFactAccess.Resolve().SetIconIfMissing(fact,
-                    fallbackIcon);
+                BlueprintUnitFactAccess access = BlueprintUnitFactAccess.Resolve();
+                RequireAssignedText(fact, access);
+                access.SetIconIfMissing(fact, fallbackIcon);
             }
             var selection = fact as BlueprintFeatureSelection;
             if (selection != null && selection.AllFeatures != null)
@@ -122,6 +117,39 @@ namespace KingmakerGunslinger.Blueprints
             foreach (BlueprintComponent component in fact.ComponentsArray)
                 foreach (BlueprintUnitFact child in ReferencedFacts(component))
                     Visit(child, fallbackIcon, visited);
+        }
+
+        /// <summary>
+        /// Kingmaker's own per-type UI visibility: a feature's HideInUI, an
+        /// ability's Hidden, and a buff's HiddenInUi flag. A project fact that
+        /// none of these hides is shown to the player and must carry text.
+        /// </summary>
+        internal static bool IsHiddenInUi(BlueprintUnitFact fact)
+        {
+            var feature = fact as BlueprintFeature;
+            var ability = fact as BlueprintAbility;
+            var buff = fact as BlueprintBuff;
+            return (feature != null && feature.HideInUI) ||
+                (ability != null && ability.Hidden) ||
+                (buff != null && buff.IsHiddenInUI);
+        }
+
+        // Text counts only when it was assigned. Kingmaker shows "<null>" for
+        // a string that was never stored, so a non-empty test alone accepts a
+        // fact with no name; other installations resolve the same gap to an
+        // empty string and fail it.
+        private static void RequireAssignedText(BlueprintUnitFact fact,
+            BlueprintUnitFactAccess access)
+        {
+            PlayerFacingTextState name = access.GetNameState(fact);
+            PlayerFacingTextState description = access.GetDescriptionState(fact);
+            if (name == PlayerFacingTextState.Assigned &&
+                description == PlayerFacingTextState.Assigned) return;
+            throw new InvalidOperationException(
+                "Player-facing fact has incomplete localization: " + fact.name +
+                " (name=" + PlayerFacingTextAssignment.Describe(name) +
+                ";description=" + PlayerFacingTextAssignment.Describe(description) +
+                ";" + LocalizationService.DescribeEnvironment() + ")");
         }
 
         private static IEnumerable<BlueprintUnitFact> ReferencedFacts(

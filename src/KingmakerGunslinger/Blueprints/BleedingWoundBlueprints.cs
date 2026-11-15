@@ -104,6 +104,15 @@ namespace KingmakerGunslinger.Blueprints
             result.IsClassFeature = true;
             result.Stacking = StackingType.Replace;
             result.ComponentsArray = Array.Empty<BlueprintComponent>();
+            // The armed state is shown on the gunslinger until the next
+            // firearm attack, so it carries its own name and description.
+            int cost = kind == BleedingWoundKind.HitPoints ? 1 : 2;
+            BlueprintUnitFactAccess.Resolve().Configure(result,
+                LocalizationService.Create("KMG.BleedingWound." + kind +
+                    ".Armed.Name", "Bleeding Wound Armed — " + Labels[(int)kind]),
+                LocalizationService.Create("KMG.BleedingWound." + kind +
+                    ".Armed.Description", "Your next firearm attack is armed with Bleeding Wound. On an eligible hit, you spend " + cost + " grit and the target takes recurring " + Labels[(int)kind] + " bleed. This effect ends after that firearm attack, even if it misses."),
+                null);
             return result;
         }
 

@@ -1,4 +1,5 @@
 using System;
+using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Development;
 using KingmakerGunslinger.UrbanBarbarian;
 using KingmakerGunslinger.AidAnotherCompatibility;
@@ -23,6 +24,11 @@ namespace KingmakerGunslinger.FeatureModules
 
         private static void Draw(UnityModManager.ModEntry entry)
         {
+            ImmediateModeGui.Label(ContentInitializationStatus.Header(
+                entry == null || entry.Info == null ? null : entry.Info.DisplayName,
+                entry == null || entry.Info == null ? null : entry.Info.Version));
+            ImmediateModeGui.Label(ContentInitializationStatus.Describe(
+                BlueprintBootstrap.IsInitialized, BlueprintBootstrap.IsFailed));
             ImmediateModeGui.Label("Feature modules (changes take effect after a complete Kingmaker restart)");
             bool gunslinger = ImmediateModeGui.Toggle(_state.Pending.Gunslinger,
                 "Gunslinger");
