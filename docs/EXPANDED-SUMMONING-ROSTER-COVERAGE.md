@@ -136,8 +136,8 @@ No native cast was exercised for any placement in this cut.
 
 `planning/EXPANDED-SUMMONING-IDEAL-ROSTER.md` was already stale at the accepted base: it was last regenerated on
 2026-11-06 (`8289dc0bc1`) and the Stirge withdrawal of 2026-11-07 (`8472fcafa0`) changed what it should say. No active
-validation path runs the generator's `--check`, so nothing noticed. The new focused tests include a check that the
-committed documents are current; that test is not yet part of any active validation path either.
+validation path ran the generator's `--check`, so nothing noticed. Since the review corrections, the focused suite,
+which includes that freshness check, runs in the normal source-validation path (see "Review corrections").
 
 ## Verification
 
@@ -167,6 +167,67 @@ anything is published.
 
 The C# domain suite was not run: no C# changed and no C# test reads these documents.
 
+## Review corrections (review of `4d2e1bfb10`)
+
+The review accepted the placement comparison and the current census in principle and found three things to
+correct. They are made in `d06e3b7626`. The figures for the current sources are unchanged: 1,232 ideal placements;
+1,188 project choices and 29 native wrappers; 1,208 admitted; nine Stirge placements deliberately withheld; fifteen
+missing under POL-04 and POL-05; no unexplained placement. The native evidence above is unchanged, and no native
+casting was established.
+
+**1. Unrecorded withholding was not counted as unexplained.** A withheld placement with no recorded reason was
+labelled "no recorded reason", but the unexplained count matched only dispositions beginning "Unexplained", so it
+dropped out of the headline and of "Unpublished placements without a recorded disposition". Each unpublished
+placement now carries an explicit `recorded` flag, independent of its state and of the wording shown: a placement
+may be withheld or missing, and either may be explained or not. POL-04 and POL-05 stay keyed by exact placement, and
+the Stirge withdrawal stays recorded. The unexplained total is split by state, and the discrepancy table gains a
+"Decision on record" column.
+
+**2. Creature availability was read from display strings.** A family with none published, some withheld and some
+missing was labelled "Partial 0/N", and anything labelled "Partial" counted as published. Each creature's covered,
+withheld and missing placements are now counted, and its label, its category and the "available somewhere" count
+are derived from those counts. Available somewhere requires a covered placement; complete requires every one. A
+category is added for none published with withheld and missing placements mixed, and registered-withheld placements
+are never described as unregistered. Partial labels now give the unpublished placements by state, for example
+"Partial 3/9 (6 missing)".
+
+**3. The suite is in the normal source-validation path.** `tools/test_expanded_summoning_ideal_roster.py` runs once in
+the unconditional source fixtures of `scripts/validate-repository.ps1`, before the deterministic-package fixtures,
+with a non-zero exit code turned into a thrown failure as the wrapper's other fixtures are. Its
+`test_the_committed_documents_are_current` is the freshness check; it is not run a second time, and nothing
+regenerates the documents during validation. A current report that accurately shows 1,208 of 1,232 passes; a stale
+one fails.
+
+What the reviewed head produced on the review's fixtures, through the production `build()` on coherent in-memory
+sources (recorded before any change):
+
+| Fixture | Reviewed head `4d2e1bfb10` | After correction |
+|---|---|---|
+| Brachiosaurus withheld beside Stirge, withheld count 9 to 12 | 3 withheld SNA placements labelled "no recorded reason", yet 0 unexplained in the summary and in the table; Brachiosaurus under "No ideal placement published or registered" | 3 unexplained (3 withheld, 0 missing); the 9 Stirge placements explained; Brachiosaurus "Missing 0/3" and "Withheld 0/3", in the mixed category; 143 available somewhere |
+| Stirge registered at SNA II, constants 1,188 to 1,187, 9 to 8, 588 to 587 | "Partial 0/9", listed under "Some ideal placements published", 145 available somewhere | "Unpublished 0/9 (6 withheld, 3 missing)", mixed category, 144 available somewhere |
+
+On the second fixture the review expected eight withheld placements and one missing. Exact matching gives six
+withheld, three missing and two extra choices. Registered at II, Stirge's choices are II single, III 1d3 and IV to IX
+1d4+1, because the quantity follows the registered tier; against the ideal I single, II 1d3 and III to IX 1d4+1, only
+IV to IX match. The tests assert what exact matching yields. The behaviour the review asked for holds: no covered
+Stirge placement, a mixed withheld and missing state described as such, and 144 creatures available somewhere.
+
+### Verification of the corrections
+
+| Check | Result | Time |
+|---|---|---|
+| Review fixtures through `build()` on the reviewed head | the three wrong summaries above reproduced | under 1 s |
+| `python -B tools/test_expanded_summoning_ideal_roster.py -v` | 22 of 22 pass, none skipped (18 earlier, 4 new) | 1 s |
+| The same suite against the reviewed head's reporter | 9 of 22 fail (3 failures, 6 errors on the new fields) | 1 s |
+| Generator, write then `--check` | regenerated deterministically; current; coverage line unchanged | under 1 s |
+| `powershell -File scripts/Test-RepositoryValidatorDispatch.ps1` | PASS, 46 checks (39 existing, 7 new): suite referenced once; run once by the source fixtures, before the deterministic-package fixtures; its failure throws and nothing downstream runs; neither version dispatch runs it again | 1 s |
+| The dispatch test on a wrapper copy whose roster call lost its exit-code check | FAILED, 2 of 46: the failure does not stop validation, and downstream fixtures run | 1 s |
+| The suite in a disposable source copy with a stale report | fails on `test_the_committed_documents_are_current` only; the stale copy is not regenerated | 1 s |
+| The suite in the same copy before the report was altered | passes | 1 s |
+| `powershell -File scripts/validate-repository.ps1 -DevelopmentPurpose roster-coverage-report -DevelopmentSummaryPath <scratch>` | PASS, exit 0: the roster suite ran once (22 of 22) in the source fixtures; development validation accepted the branch; the wrapper's dispatch regression passed 46 checks; every other child passed | 428 s |
+
+The earlier results under "Verification" belong to head `4d2e1bfb10` and stay as recorded.
+
 ## Limits
 
 - Source-derived publication only. Native menu observation rests on the retained v0.0.191 census above; native
@@ -174,4 +235,5 @@ The C# domain suite was not run: no C# changed and no C# test reads these docume
 - Assumptions: the Expanded Summoning module enabled; the source's own publication policy; no optional provider in
   the core population.
 - POL-04 and POL-05 remain open decisions; the report labels their placements and does not decide them.
-- The freshness test is not wired into any active validation path.
+- The freshness check runs in source validation, which `Build-Local` runs; it does not run on its own schedule, so a
+  stale report is caught when validation next runs, not when a catalog changes.

@@ -315,8 +315,9 @@ Brachiosaurus; the reconciliation table only needs its row renamed to say
 *Later (2026-11-16, INT-08):* `coverage()` was replaced by a placement-level
 comparison and the row renamed to *Ideal quantity placements*; see
 `docs/EXPANDED-SUMMONING-ROSTER-COVERAGE.md`. The figures in this document stay
-as measured on `b2be3ebe`, before Stirge's withdrawal of 2026-11-07; today's
-1,208 published and 24 unpublished placements are those figures less Stirge's 9.
+as measured on `b2be3ebe`, before Stirge's withdrawal of 2026-11-07. The current
+figures are 1,208 published placements (1,217 − 9) and 24 unpublished placements
+(15 + 9).
 
 ## Scope of this document
 
