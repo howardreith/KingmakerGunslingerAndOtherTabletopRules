@@ -207,11 +207,8 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void RecastNeedsItsPrerequisites()
         {
-            Assertions.True(GunslingerDodgeScenarioVerdict.Recast(null, null, null, true, 16,
-                true, 6.01d, 14, 14) == null, "A judged, isolated recast was not accepted.");
-
             // Each missing prerequisite alone makes the check "not judged",
-            // even when everything observed afterwards looks right.
+            // even when every time and everything observed afterwards is right.
             foreach (string[] missing in new[]
             {
                 new[] { "the command ended Interrupt", null, null },
@@ -220,23 +217,13 @@ namespace KingmakerGunslinger.DomainTests
             })
             {
                 string verdict = GunslingerDodgeScenarioVerdict.Recast(missing[0],
-                    missing[1], missing[2], true, 16, true, 6d, 14, 14);
+                    missing[1], missing[2], TimelyRecast(), 14);
                 Rejected(verdict, GunslingerDodgeScenarioVerdict.NotJudged,
                     "A recast without a prerequisite was judged.");
             }
-
-            Rejected(GunslingerDodgeScenarioVerdict.Recast(null, null, null, false, 14, true,
-                6d, 14, 14), "was gone when the earlier one's deadline passed",
-                "A later activation ended by the earlier deadline passed.");
-            Rejected(GunslingerDodgeScenarioVerdict.Recast(null, null, null, true, 16, true,
-                3.5d, 14, 14), "one round of its own",
-                "A later activation cut short passed.");
-            Rejected(GunslingerDodgeScenarioVerdict.Recast(null, null, null, true, 16, false,
-                -1d, 14, 16), "did not end by itself",
-                "A later activation that never ended passed.");
-            Rejected(GunslingerDodgeScenarioVerdict.Recast(null, null, null, true, 16, true,
-                6d, 14, 16), "after the later activation ended",
-                "A bonus left after the recast passed.");
+            Assertions.Throws<ArgumentNullException>(() =>
+                GunslingerDodgeScenarioVerdict.Recast(null, null, null, null, 14),
+                "A recast without its measured times was judged.");
 
             Assertions.True(GunslingerDodgeScenarioVerdict.EarlyRemoval(true, true, 1, 14,
                 14) == null, "A verified early removal was not accepted.");
@@ -249,6 +236,346 @@ namespace KingmakerGunslinger.DomainTests
                 "buff-removed notices", "A removal counted twice passed.");
             Rejected(GunslingerDodgeScenarioVerdict.EarlyRemoval(true, true, 1, 14, 16),
                 "after the removal", "A bonus left after the removal passed.");
+        }
+
+        // ---- review corrections: recast timing, waits, finalization, admission ----
+
+        private static DodgeWait Wait(string name, bool reached)
+        {
+            var wait = new DodgeWait(name, 60d);
+            // Through the production poll: either the condition holds, or
+            // the real-time limit runs out with the condition still false.
+            wait.Poll(reached, reached ? 1.5d : 60d);
+            return wait;
+        }
+
+        /// <summary>
+        /// A timely recast: cast at 100, deadline 106, removed at 102, later
+        /// cast at 102.5, unit read at 106.6, later ended at 108.52.
+        /// </summary>
+        private static DodgeRecastObservation TimelyRecast()
+        {
+            return new DodgeRecastObservation
+            {
+                EarlierDeadlineCaptured = true, EarlierAddedAt = 100d,
+                EarlierDeadline = 106d, EarlierRemovedAt = 102d,
+                LaterAddedAt = 102.5d, DeadlineWait = Wait("deadline", true),
+                SurvivalObservedAt = 106.6d, LaterInstanceOnUnit = true,
+                ArmorClassAtObservation = 16, EndWait = Wait("end", true),
+                LaterEnded = true, LaterEndedAt = 108.52d, ArmorClassAfterEnd = 14
+            };
+        }
+
+        private static string Recast(DodgeRecastObservation timing)
+        {
+            return GunslingerDodgeScenarioVerdict.Recast(null, null, null, timing, 14);
+        }
+
+        internal static void RecastTimelyOverlapPasses()
+        {
+            Assertions.True(Recast(TimelyRecast()) == null,
+                "A timely recast read after the earlier deadline was not accepted: " +
+                Recast(TimelyRecast()));
+            string evidence = TimelyRecast().Describe();
+            foreach (string part in new[] { "earlierDeadline=106", "earlierRemovedAt=102",
+                "laterAddedAt=102.5", "survivalObservedAt=106.6", "deadline=reached" })
+                Assertions.True(evidence.Contains(part),
+                    "The recast evidence does not carry " + part + ": " + evidence);
+        }
+
+        internal static void RecastAfterTheOldDeadlineFails()
+        {
+            // Every activation succeeded and the later buff behaves, but it
+            // was applied after the earlier deadline: nothing overlapped.
+            DodgeRecastObservation late = TimelyRecast();
+            late.LaterAddedAt = 106.4d;
+            late.SurvivalObservedAt = 107d;
+            late.LaterEndedAt = 112.41d;
+            Rejected(Recast(late), GunslingerDodgeScenarioVerdict.NotJudged,
+                "A recast applied after the earlier deadline was judged.");
+            Rejected(Recast(late), "so nothing overlapped",
+                "The late recast's reason does not say that nothing overlapped.");
+
+            DodgeRecastObservation removedLate = TimelyRecast();
+            removedLate.EarlierRemovedAt = 106.2d;
+            removedLate.LaterAddedAt = 106.3d;
+            Rejected(Recast(removedLate), "was not removed early",
+                "A removal after the earlier deadline counted as early.");
+
+            DodgeRecastObservation unknown = TimelyRecast();
+            unknown.EarlierDeadlineCaptured = false;
+            Rejected(Recast(unknown), "deadline was not captured",
+                "A recast without the earlier deadline was judged.");
+        }
+
+        internal static void RecastDeadlineWaitMustReachItsDeadline()
+        {
+            // The wait ran out its real-time limit while game time was still
+            // short of the deadline. The later buff then expired normally,
+            // which must not rescue the check.
+            DodgeRecastObservation stalled = TimelyRecast();
+            stalled.DeadlineWait = Wait("recast-earlier-deadline", false);
+            stalled.SurvivalObservedAt = 104.1d;
+            Assertions.True(stalled.LaterEnded && stalled.EndWait.Reached,
+                "The stand-in no longer has a normally ending later buff.");
+            Rejected(Recast(stalled), GunslingerDodgeScenarioVerdict.NotJudged,
+                "A deadline wait that ran out was treated as having reached the deadline.");
+            Rejected(Recast(stalled), "did not reach it",
+                "The stalled wait's reason does not name the wait.");
+
+            // The wait reports reached but the unit was read too soon after
+            // the deadline for the scheduling margin.
+            DodgeRecastObservation early = TimelyRecast();
+            early.SurvivalObservedAt = 106.2d;
+            Rejected(Recast(early), GunslingerDodgeScenarioVerdict.NotJudged,
+                "A reading inside the scheduling margin was judged.");
+
+            DodgeRecastObservation notStarted = TimelyRecast();
+            notStarted.DeadlineWait = null;
+            Rejected(Recast(notStarted), "not started",
+                "A recast with no deadline wait was judged.");
+
+            // With the overlap established, the outcome itself still decides.
+            DodgeRecastObservation gone = TimelyRecast();
+            gone.LaterInstanceOnUnit = false;
+            gone.ArmorClassAtObservation = 14;
+            Rejected(Recast(gone), "was not on the unit once the earlier one's deadline had passed",
+                "A later instance ended by the earlier deadline passed.");
+            DodgeRecastObservation cutShort = TimelyRecast();
+            cutShort.LaterEndedAt = 106.9d;
+            Rejected(Recast(cutShort), "one round of its own",
+                "A later activation cut short passed.");
+            DodgeRecastObservation neverEnded = TimelyRecast();
+            neverEnded.EndWait = Wait("end", false);
+            neverEnded.LaterEnded = false;
+            Rejected(Recast(neverEnded), "did not end by itself",
+                "A later activation that never ended passed.");
+            DodgeRecastObservation leftBehind = TimelyRecast();
+            leftBehind.ArmorClassAfterEnd = 16;
+            Rejected(Recast(leftBehind), "after the later activation ended",
+                "A bonus left after the recast passed.");
+        }
+
+        internal static void WaitsRecordWhyTheyEnded()
+        {
+            var reached = new DodgeWait("buff-gone", 30d);
+            Assertions.False(reached.Poll(false, 1d), "A wait ended with time left and no condition.");
+            Assertions.True(reached.Poll(true, 2d), "A wait did not end on its condition.");
+            Assertions.True(reached.Reached && reached.Ended, "A met condition was not recorded.");
+
+            var ranOut = new DodgeWait("deadline", 30d);
+            Assertions.False(ranOut.Poll(false, 29.9d), "A wait ended before its limit.");
+            Assertions.True(ranOut.Poll(false, 30d), "A wait did not end at its limit.");
+            Assertions.True(ranOut.Ended && !ranOut.Reached,
+                "A wait that ran out its limit counts as reached.");
+            // The answer is final: a condition that holds later changes nothing.
+            Assertions.True(ranOut.Poll(true, 31d) && !ranOut.Reached,
+                "A wait that had run out was reached afterwards.");
+            Assertions.True(ranOut.Describe().Contains("ran-out"),
+                "The evidence does not say the wait ran out: " + ranOut.Describe());
+
+            Assertions.True(GunslingerDodgeScenarioVerdict.Waits(new[] { reached }) == null,
+                "Reached waits were rejected.");
+            Rejected(GunslingerDodgeScenarioVerdict.Waits(new[] { reached, ranOut }),
+                "deadline", "A wait that ran out did not fail the scenario.");
+            Rejected(GunslingerDodgeScenarioVerdict.Waits(new DodgeWait[] { null }),
+                "<missing>", "A missing wait passed.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() => new DodgeWait("x", 0d),
+                "A wait with no limit was accepted.");
+        }
+
+        private sealed class Row
+        {
+            internal string Name;
+            internal bool Passed;
+            internal string Observed;
+        }
+
+        private static DodgeScenarioSession<Row> Session()
+        {
+            return new DodgeScenarioSession<Row>((name, expected, observed) =>
+                new Row { Name = name, Passed = false, Observed = observed });
+        }
+
+        /// <summary>
+        /// Stand-in for the scenario's steps, with the same shape: work that
+        /// records assertions as it goes, and a finally block that releases
+        /// what it owns and records the cleanup result.
+        /// </summary>
+        private static System.Collections.Generic.IEnumerator<int> Steps(
+            DodgeScenarioSession<Row> session, int[] disposals, bool failingRelease,
+            bool throwingCleanup)
+        {
+            try
+            {
+                session.Stage = "accepted-activation";
+                session.Assertions.Add(new Row { Name = "dodge-accepted-activation", Passed = true });
+                yield return 0;
+                session.Stage = "recast";
+                session.Assertions.Add(new Row { Name = "dodge-unused-expiry", Passed = true });
+                yield return 0;
+                session.Stage = "cleanup";
+            }
+            finally
+            {
+                disposals[0]++;
+                var releases = new DodgeReleases();
+                releases.Run("pause", () => { });
+                releases.Run("unit attacker", () =>
+                {
+                    if (failingRelease) throw new InvalidOperationException("the unit would not go");
+                });
+                releases.Run("unit defender", () => { });
+                session.Assertions.Add(new Row
+                {
+                    Name = "dodge-cleanup", Passed = releases.Failures.Count == 0,
+                    Observed = releases.Describe()
+                });
+                if (throwingCleanup) throw new InvalidOperationException("cleanup itself broke");
+            }
+        }
+
+        internal static void OuterAbortKeepsScenarioAndCleanupEvidence()
+        {
+            DodgeScenarioSession<Row> session = Session();
+            var disposals = new int[1];
+            var steps = Steps(session, disposals, false, false);
+            session.Begin(steps);
+            steps.MoveNext();
+            steps.MoveNext();
+
+            // The runner completes with a result of its own.
+            var outer = new System.Collections.Generic.List<Row>
+            {
+                new Row { Name = "no-save-writing-api", Passed = false, Observed = "a save write was observed" }
+            };
+            DodgeFinalization finalization = session.Finish(outer);
+            Assertions.True(finalization.Aborted && finalization.DisposalFailure == null,
+                "A scenario cut off by the runner was not recorded as aborted.");
+            string names = string.Join(",", outer.ConvertAll(row => row.Name).ToArray());
+            Assertions.Equal(
+                "no-save-writing-api,dodge-accepted-activation,dodge-unused-expiry,dodge-scenario-aborted,dodge-cleanup",
+                names, "The outer result does not hold its own failure, the partial observations and the cleanup result.");
+            Assertions.Equal("a save write was observed", outer[0].Observed,
+                "The outer failure's reason changed.");
+            Assertions.True(outer[3].Observed.Contains("stage recast"),
+                "The abort does not name the stage the scenario was at: " + outer[3].Observed);
+            Assertions.True(outer[4].Passed, "A clean cleanup was recorded as failed.");
+            Assertions.Equal(4, finalization.Attached, "The attached count is wrong.");
+            Assertions.Equal(1, disposals[0], "The steps were not disposed exactly once.");
+            Assertions.False(session.Active || session.HasUnattached,
+                "The session still has something to finish.");
+
+            // Finalization again, with the same result and with another one.
+            DodgeFinalization again = session.Finish(outer);
+            Assertions.True(!again.Aborted && again.Attached == 0 && outer.Count == 5,
+                "A second finalization changed the result.");
+            var other = new System.Collections.Generic.List<Row>();
+            session.Finish(other);
+            Assertions.Equal(0, other.Count, "A later result received assertions already published.");
+            Assertions.Equal(1, disposals[0], "A second finalization disposed the steps again.");
+            Assertions.Equal(1, session.Disposals, "The session counted more than one disposal.");
+        }
+
+        internal static void CleanupFailureAppearsBesideTheAbortReason()
+        {
+            DodgeScenarioSession<Row> session = Session();
+            var disposals = new int[1];
+            var steps = Steps(session, disposals, true, true);
+            session.Begin(steps);
+            steps.MoveNext();
+            var outer = new System.Collections.Generic.List<Row>
+            {
+                new Row { Name = "working-save-guard", Passed = false, Observed = "baseline was loaded" }
+            };
+            DodgeFinalization finalization = session.Finish(outer);
+            Assertions.True(finalization.Aborted && finalization.DisposalFailure != null,
+                "The exception raised while ending the steps was lost.");
+            Assertions.Equal("working-save-guard", outer[0].Name, "The outer failure moved.");
+            Assertions.Equal("baseline was loaded", outer[0].Observed, "The outer reason changed.");
+            Row cleanup = outer.Find(row => row.Name == "dodge-cleanup");
+            Assertions.True(cleanup != null && !cleanup.Passed &&
+                cleanup.Observed.Contains("unit attacker: the unit would not go") &&
+                cleanup.Observed.Contains("attempted=pause,unit attacker,unit defender"),
+                "The failing release, or the releases attempted after it, are not in the result: " +
+                (cleanup == null ? "<no cleanup row>" : cleanup.Observed));
+            Row disposal = outer.Find(row => row.Name == "dodge-cleanup-disposal");
+            Assertions.True(disposal != null && !disposal.Passed &&
+                disposal.Observed.Contains("cleanup itself broke"),
+                "The disposal exception is not in the result.");
+            Assertions.True(outer.Exists(row => row.Name == "dodge-scenario-aborted"),
+                "The abort is not in the result.");
+            Assertions.Equal(1, disposals[0], "The steps were not disposed exactly once.");
+            session.Finish(outer);
+            Assertions.Equal(1, disposals[0], "A second finalization disposed the steps again.");
+
+            // One release that throws does not stop the others.
+            var releases = new DodgeReleases();
+            int ran = 0;
+            releases.Run("first", () => ran++);
+            releases.Run("second", () => { throw new InvalidOperationException("no"); });
+            releases.Run("third", () => ran++);
+            Assertions.True(ran == 2 && releases.Attempted.Count == 3 &&
+                releases.Failures.Count == 1 && releases.Failures[0] == "second: no",
+                "A failing release stopped the releases after it: " + releases.Describe());
+        }
+
+        internal static void NormalCompletionDoesNotDuplicate()
+        {
+            // The scenario finishes by itself and its result is built on its
+            // own list; the runner's finalization then has nothing to add.
+            DodgeScenarioSession<Row> session = Session();
+            var disposals = new int[1];
+            var steps = Steps(session, disposals, false, false);
+            session.Begin(steps);
+            while (steps.MoveNext()) { }
+            Assertions.True(session.End() == null, "Ending finished steps raised.");
+            session.Assertions.Add(new Row { Name = "loaded-mod-version", Passed = true });
+            session.MarkPublished();
+            int count = session.Assertions.Count;
+            DodgeFinalization same = session.Finish(session.Assertions);
+            Assertions.True(!same.Aborted && same.Attached == 0 &&
+                session.Assertions.Count == count,
+                "Finalizing a result built on the scenario's own list added to it.");
+            var copy = new System.Collections.Generic.List<Row>(session.Assertions);
+            DodgeFinalization copied = session.Finish(copy);
+            Assertions.True(copied.Attached == 0 && copy.Count == count,
+                "Finalizing a published result duplicated its assertions.");
+            Assertions.Equal(4, count, "The finished scenario's assertions are not the expected four.");
+            Assertions.Equal(1, disposals[0], "The finished steps were not disposed exactly once.");
+            Assertions.True(session.End() == null && session.Disposals == 1,
+                "Ending the steps a second time disposed them again.");
+
+            // A session that never ran leaves any result alone.
+            var untouched = new System.Collections.Generic.List<Row> { new Row { Name = "other" } };
+            DodgeFinalization idle = Session().Finish(untouched);
+            Assertions.True(!idle.Aborted && idle.Attached == 0 && untouched.Count == 1,
+                "A scenario that never ran changed another scenario's result.");
+            Assertions.Throws<InvalidOperationException>(() =>
+            {
+                DodgeScenarioSession<Row> twice = Session();
+                twice.Begin(Steps(twice, new int[1], false, false));
+                twice.Begin(Steps(twice, new int[1], false, false));
+            }, "Two sets of steps were allowed to run at once.");
+        }
+
+        internal static void AdmissionRequiresAutomaticExit()
+        {
+            Assertions.Equal(RuntimeTestScenarioCatalog.DisposableGunslingerDodge,
+                GunslingerDodgeScenarioAdmission.Scenario,
+                "The admission rule names a different scenario from the catalog.");
+            Assertions.Equal(GunslingerDodgeScenarioAdmission.ExitRequired,
+                GunslingerDodgeScenarioAdmission.Rejection(
+                    RuntimeTestScenarioCatalog.DisposableGunslingerDodge, false),
+                "A Dodge request that does not exit was admitted.");
+            Assertions.True(GunslingerDodgeScenarioAdmission.Rejection(
+                RuntimeTestScenarioCatalog.DisposableGunslingerDodge, true) == null,
+                "A Dodge request with automatic exit was refused.");
+            // The rule is Dodge's own.
+            foreach (string other in new[] { RuntimeTestScenarioCatalog.WorkingSaveSmoke,
+                RuntimeTestScenarioCatalog.DisposableGunslingerDeadeye, "", null })
+                Assertions.True(GunslingerDodgeScenarioAdmission.Rejection(other, false) == null,
+                    "The Dodge exit rule refused another scenario: " + other);
         }
     }
 }

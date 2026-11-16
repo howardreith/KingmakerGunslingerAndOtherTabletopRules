@@ -2408,6 +2408,9 @@ function Assert-KmgRuntimeScenarioPreflight {
     if ($Scenario -cin @('disposable-magic-circle-profile', 'disposable-magic-circle-terrain') -and -not $ExitAfterCompletion) {
         throw 'The native Magic Circle profile fixture requires automatic exit.'
     }
+    if ($Scenario -ceq 'disposable-gunslinger-dodge' -and -not $ExitAfterCompletion) {
+        throw "The Gunslinger's Dodge scenario requires automatic exit: it leaves a loaded game with time having run and nothing to hand over."
+    }
     if ($Scenario -cin @('disposable-expanded-summoning-native-profile',
             'disposable-alternate-summoning-player-paths') -and
         (-not $ExitAfterCompletion -or $Parameters.Count -ne 0)) {

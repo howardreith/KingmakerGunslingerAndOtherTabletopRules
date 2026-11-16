@@ -43,9 +43,10 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private IEnumerator<int> _dodgeSteps;
         private Stopwatch _dodgeWatch;
-        private string _dodgeStage = "not-started";
-        private readonly List<RuntimeTestAssertion> _dodgeAssertions =
-            new List<RuntimeTestAssertion>();
+        private readonly DodgeScenarioSession<RuntimeTestAssertion> _dodge =
+            new DodgeScenarioSession<RuntimeTestAssertion>((name, expected, observed) =>
+                Assertion(name, expected, observed, false, DodgeExecution));
+        private readonly List<DodgeWait> _dodgeWaits = new List<DodgeWait>();
         private readonly List<string> _dodgeDiagnostics = new List<string>();
 
         internal const string DodgeExecution =
@@ -103,73 +104,93 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (LoadingProcess.Instance.IsLoadingInProcess ||
                     LoadingProcess.Instance.IsLoadingScreenActive) return;
                 if (_dodgeSteps == null)
+                {
                     _dodgeSteps = RunGunslingerDodge().GetEnumerator();
+                    _dodge.Begin(_dodgeSteps);
+                }
                 try { if (_dodgeSteps.MoveNext()) return; }
                 catch (Exception error) { failure = error; }
             }
 
-            // Disposing the steps runs the scenario's cleanup, whether it
+            // Ending the steps runs the scenario's cleanup, whether it
             // finished, threw or ran out of time.
-            if (_dodgeSteps != null)
-            {
-                try { _dodgeSteps.Dispose(); }
-                catch (Exception error)
-                {
-                    failure = failure == null ? error :
-                        new AggregateException(failure, error);
-                }
-                _dodgeSteps = null;
-            }
-
+            string stage = _dodge.Stage;
+            Exception disposal = _dodge.End();
+            _dodgeSteps = null;
+            if (disposal != null)
+                failure = failure == null ? disposal :
+                    new AggregateException(failure, disposal);
             if (timedOut)
-                _dodgeAssertions.Add(Assertion("dodge-scenario-completed",
+                _dodge.Assertions.Add(Assertion("dodge-scenario-completed",
                     "the scenario finishes inside its completion timeout",
                     "timed out after " + _request.CompletionTimeoutSeconds +
-                        " s at stage " + _dodgeStage, false, DodgeExecution));
+                        " s at stage " + stage, false, DodgeExecution));
             WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
-            _dodgeAssertions.Add(Assertion("exact-working-save",
+            _dodge.Assertions.Add(Assertion("exact-working-save",
                 "stable exact working-save load", evidence.StableFingerprint,
                 evidence.CompletionCallbackObserved &&
                     evidence.DescriptorReferenceCorrelated &&
                     !string.IsNullOrWhiteSpace(evidence.StableFingerprint),
                 "qualified receiver-bound working-save path"));
-            _dodgeAssertions.Add(Assertion("loaded-mod-version",
+            _dodge.Assertions.Add(Assertion("loaded-mod-version",
                 _request.ExpectedModVersion, _context.ModEntry.Info.Version,
                 _request.ExpectedModVersion == _context.ModEntry.Info.Version,
                 "Unity Mod Manager ModEntry.Info.Version"));
             string status = failure != null ? RuntimeTestStatuses.Error :
                 timedOut ? RuntimeTestStatuses.Timeout :
-                _dodgeAssertions.All(value => value.Status == "PASS")
+                _dodge.Assertions.All(value => value.Status == "PASS")
                     ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail;
-            RuntimeTestResult result = CreateResult(status, _dodgeAssertions,
-                failure == null ? null : "stage " + _dodgeStage + ": " + failure);
+            RuntimeTestResult result = CreateResult(status, _dodge.Assertions,
+                failure == null ? null : "stage " + stage + ": " + failure);
+            // The result is built on the scenario's own list.
+            _dodge.MarkPublished();
             result.WorkingSaveSmoke = evidence;
             result.Diagnostics.AddRange(_dodgeDiagnostics);
             Complete(result);
         }
 
+        /// <summary>
+        /// Called for every result the runner completes with. When the
+        /// runner ends with a result of its own while the scenario is still
+        /// running, that result keeps its own status, reason and assertions
+        /// and receives the scenario's observations so far, its cleanup
+        /// result and any exception that ending it raised.
+        /// </summary>
         private void StopGunslingerDodge(RuntimeTestResult result)
         {
-            if (_dodgeSteps == null) return;
-            IEnumerator<int> steps = _dodgeSteps;
+            if (!_dodge.HasUnattached) return;
+            string stage = _dodge.Stage;
+            if (result.Assertions == null)
+                result.Assertions = new List<RuntimeTestAssertion>();
+            DodgeFinalization finalization = _dodge.Finish(result.Assertions);
             _dodgeSteps = null;
-            string error = "Runner completed before the Gunslinger's Dodge scenario finished (stage " +
-                _dodgeStage + ").";
-            try { steps.Dispose(); }
-            catch (Exception failure)
-            {
-                error += " " + failure;
-                result.Status = RuntimeTestStatuses.Error;
-            }
-            result.Diagnostics.Add(error);
+            if (!finalization.Aborted && finalization.Attached == 0) return;
+            if (finalization.Aborted)
+                result.Diagnostics.Add(
+                    "Runner completed before the Gunslinger's Dodge scenario finished (stage " +
+                    stage + "); its observations and cleanup result were added to this result.");
+            if (finalization.DisposalFailure != null)
+                result.Diagnostics.Add("Ending the Gunslinger's Dodge scenario raised: " +
+                    finalization.DisposalFailure);
+            result.Diagnostics.AddRange(_dodgeDiagnostics);
+            // An aborted scenario is never a pass; a failing status and its reason stay as they are.
+            if (result.Status == RuntimeTestStatuses.Pass)
+                result.Status = RuntimeTestStatuses.Fail;
         }
 
         private void DodgeAssert(string name, string expected, string observed,
             string verdict, string evidence)
         {
-            _dodgeAssertions.Add(Assertion(name, expected,
+            _dodge.Assertions.Add(Assertion(name, expected,
                 verdict == null ? observed : verdict + " | " + observed,
                 verdict == null, evidence + " | " + DodgeExecution));
+        }
+
+        private DodgeWait DodgeNewWait(string name, double limitRealSeconds)
+        {
+            var wait = new DodgeWait(name, limitRealSeconds);
+            _dodgeWaits.Add(wait);
+            return wait;
         }
 
         private static int DodgeBuffCount(UnitEntityData unit, BlueprintBuff blueprint)
@@ -184,22 +205,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value => ReferenceEquals(value.Blueprint, blueprint));
         }
 
-        /// <summary>Frames pass, with time running, until the condition holds or the real-time limit is reached.</summary>
-        private static IEnumerable<int> DodgeUntil(Func<bool> condition,
-            double realSeconds)
+        /// <summary>
+        /// Frames pass, with time running, until the wait is over. The wait
+        /// itself records whether its condition held or its real-time limit
+        /// ran out; returning from here says nothing about which.
+        /// </summary>
+        private static IEnumerable<int> DodgeUntil(Func<bool> condition, DodgeWait wait)
         {
             Stopwatch watch = Stopwatch.StartNew();
-            while (!condition() && watch.Elapsed.TotalSeconds < realSeconds)
+            while (!wait.Poll(condition(), watch.Elapsed.TotalSeconds))
             {
                 if (Game.Instance.IsPaused) Game.Instance.IsPaused = false;
                 yield return 0;
             }
         }
 
-        private static IEnumerable<int> DodgeGameSeconds(double seconds)
+        private IEnumerable<int> DodgeGameSeconds(string name, double seconds)
         {
             double end = DodgeNow() + seconds;
-            return DodgeUntil(() => DodgeNow() >= end, seconds * 4d + 30d);
+            return DodgeUntil(() => DodgeNow() >= end,
+                DodgeNewWait(name, seconds * 4d + 30d));
         }
 
         /// <summary>
@@ -234,9 +259,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// command is issued whether or not the ability reads as available,
         /// and the observation records what the game then did.
         /// </summary>
-        private IEnumerable<int> DodgeUse(UnitEntityData unit, Ability ability,
-            BlueprintBuff buffBlueprint, BlueprintAbilityResource grit,
-            DodgeNotices notices, DodgeCommandObservation use)
+        private IEnumerable<int> DodgeUse(string label, UnitEntityData unit,
+            Ability ability, BlueprintBuff buffBlueprint,
+            BlueprintAbilityResource grit, DodgeNotices notices,
+            DodgeCommandObservation use)
         {
             Buff[] before = unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(
                 value => ReferenceEquals(value.Blueprint, buffBlueprint)).ToArray();
@@ -251,10 +277,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             var command = new UnitUseAbility(data, new TargetWrapper(unit));
             command.IgnoreCooldown(null);
             unit.Commands.Run(command);
-            Func<bool> settled = () => command.IsFinished &&
-                (command.ExecutionProcess == null || command.ExecutionProcess.IsEnded);
-            foreach (int frame in DodgeUntil(settled, 30d)) yield return frame;
-            use.TimedOut = !settled();
+            DodgeWait settled = DodgeNewWait(label + "-command", 30d);
+            foreach (int frame in DodgeUntil(() => command.IsFinished &&
+                (command.ExecutionProcess == null || command.ExecutionProcess.IsEnded),
+                settled)) yield return frame;
+            use.TimedOut = !settled.Reached;
             use.CommandStarted = command.IsStarted;
             use.CommandFinished = command.IsFinished;
             use.CommandResult = command.Result.ToString();
@@ -321,7 +348,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Game game = Game.Instance;
             Player player = game.Player;
             GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
-            _dodgeStage = "fixture-admission";
+            _dodge.Stage = "fixture-admission";
             UnitEntityData anchor = player.Party.FirstOrDefault(value =>
                 value.HoldingState != null && value.IsInGame);
             bool turnBased = TurnBased.Controllers.CombatController.IsInTurnBasedCombat();
@@ -350,7 +377,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool subscribed = false;
             try
             {
-                _dodgeStage = "spawn-and-level";
+                _dodge.Stage = "spawn-and-level";
                 game.IsPaused = true;
                 BlueprintUnit prototype = UnityEngine.Object.Instantiate(
                     BlueprintRoot.Instance.DefaultPlayerCharacter);
@@ -404,10 +431,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     attacker.Body.EmptyHandWeapon;
                 if (weapon == null) throw new InvalidOperationException(
                     "The disposable attacker has no weapon to attack with.");
-                foreach (int frame in DodgeGameSeconds(0.5d)) yield return frame;
+                foreach (int frame in DodgeGameSeconds("settle", 0.5d)) yield return frame;
 
                 // 1. An accepted activation, seen by an incoming attack.
-                _dodgeStage = "accepted-activation";
+                _dodge.Stage = "accepted-activation";
                 int armorClassBase = defender.Descriptor.Stats.AC.ModifiedValue;
                 DodgeIncomingAttack before = DodgeIncoming(attacker, defender, weapon);
                 long guardBefore = GunslingerDodgeExpirationPatch.ExpiredRemovals;
@@ -415,8 +442,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 long offBefore = GunslingerDodgeArmorClassBonus.TurnedOff;
                 int removedBefore = notices.Removed;
                 var accepted = new DodgeCommandObservation();
-                foreach (int frame in DodgeUse(defender, ability, buffBlueprint,
-                    grit, notices, accepted)) yield return frame;
+                foreach (int frame in DodgeUse("accepted", defender, ability,
+                    buffBlueprint, grit, notices, accepted)) yield return frame;
                 string acceptedVerdict = GunslingerDodgeScenarioVerdict.Accepted(accepted, 1);
                 double acceptedAt = notices.LastAddedAt;
                 Buff first = DodgeBuffOn(defender, buffBlueprint);
@@ -429,10 +456,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // 2. While it is active: the availability reading, then an
                 //    actual command, which the game must refuse before it
                 //    spends or applies anything.
-                _dodgeStage = "refused-while-active";
+                _dodge.Stage = "refused-while-active";
                 var whileActive = new DodgeCommandObservation();
-                foreach (int frame in DodgeUse(defender, ability, buffBlueprint,
-                    grit, notices, whileActive)) yield return frame;
+                foreach (int frame in DodgeUse("while-active", defender, ability,
+                    buffBlueprint, grit, notices, whileActive)) yield return frame;
                 string whileActiveVerdict = acceptedVerdict != null
                     ? GunslingerDodgeScenarioVerdict.NotJudged + "no activation was active"
                     : GunslingerDodgeScenarioVerdict.Refused(whileActive) ??
@@ -444,10 +471,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "AbilityData.IsAvailable (queried); UnitUseAbility (attempted)");
 
                 // 3. Left alone, it ends after one round and takes its bonus away once.
-                _dodgeStage = "unused-expiry";
+                _dodge.Stage = "unused-expiry";
+                DodgeWait expiryWait = DodgeNewWait("unused-expiry", 60d);
                 foreach (int frame in DodgeUntil(() => DodgeBuffOn(defender,
-                    buffBlueprint) == null, 60d)) yield return frame;
-                bool ended = DodgeBuffOn(defender, buffBlueprint) == null;
+                    buffBlueprint) == null, expiryWait)) yield return frame;
+                bool ended = expiryWait.Reached;
                 double lasted = ended && acceptedAt >= 0d
                     ? notices.LastRemovedAt - acceptedAt : -1d;
                 int armorClassAfterEnd = defender.Descriptor.Stats.AC.ModifiedValue;
@@ -455,12 +483,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "ends by itself after one round; one removal; armor class restored; bonus on once and off once",
                     string.Format(CultureInfo.InvariantCulture,
                         "ended={0};lastedGameSeconds={1:0.##};removedNotices={2};ac={3}->{4};" +
-                        "bonusOn={5};bonusOff={6};activeModifiers={7};expiryGuardRemovals={8}",
+                        "bonusOn={5};bonusOff={6};activeModifiers={7};expiryGuardRemovals={8};{9}",
                         ended, lasted, notices.Removed - removedBefore, armorClassBase,
                         armorClassAfterEnd, GunslingerDodgeArmorClassBonus.TurnedOn - onBefore,
                         GunslingerDodgeArmorClassBonus.TurnedOff - offBefore,
                         GunslingerDodgeArmorClassBonus.ActiveModifiers,
-                        GunslingerDodgeExpirationPatch.ExpiredRemovals - guardBefore),
+                        GunslingerDodgeExpirationPatch.ExpiredRemovals - guardBefore,
+                        expiryWait.Describe()),
                     acceptedVerdict != null
                         ? GunslingerDodgeScenarioVerdict.NotJudged + "the activation did not complete"
                         : GunslingerDodgeScenarioVerdict.Expiry(ended, lasted,
@@ -481,83 +510,91 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "RuleAttackWithWeapon; RuleAttackRoll.TargetAC and IsTargetFlatFooted");
 
                 // 4. Early removal, then a new activation before the earlier
-                //    one's deadline. Each prerequisite is established first.
-                _dodgeStage = "recast";
+                //    one's deadline. Each prerequisite is established first,
+                //    and the times that make it an overlap are measured: the
+                //    earlier buff's own deadline is read before it is removed.
+                _dodge.Stage = "recast";
                 guardBefore = GunslingerDodgeExpirationPatch.ExpiredRemovals;
+                var timing = new DodgeRecastObservation();
                 var earlier = new DodgeCommandObservation();
-                foreach (int frame in DodgeUse(defender, ability, buffBlueprint,
-                    grit, notices, earlier)) yield return frame;
+                foreach (int frame in DodgeUse("recast-earlier", defender, ability,
+                    buffBlueprint, grit, notices, earlier)) yield return frame;
                 string earlierVerdict = GunslingerDodgeScenarioVerdict.Accepted(earlier, 1);
-                double earlierAt = notices.LastAddedAt;
                 Buff earlierBuff = DodgeBuffOn(defender, buffBlueprint);
-                foreach (int frame in DodgeGameSeconds(2d)) yield return frame;
+                if (earlierVerdict == null && earlierBuff != null && !earlierBuff.IsPermanent)
+                {
+                    timing.EarlierAddedAt = notices.LastAddedAt;
+                    timing.EarlierDeadline = earlierBuff.EndTime.TotalSeconds;
+                    timing.EarlierDeadlineCaptured = true;
+                }
+                foreach (int frame in DodgeGameSeconds("recast-before-removal", 2d))
+                    yield return frame;
                 Buff onUnit = DodgeBuffOn(defender, buffBlueprint);
                 bool sameInstance = earlierBuff != null && ReferenceEquals(onUnit, earlierBuff);
                 removedBefore = notices.Removed;
                 if (onUnit != null) defender.Descriptor.Buffs.RemoveFact(onUnit);
+                timing.EarlierRemovedAt = DodgeNow();
                 bool earlierGone = earlierBuff != null &&
                     !defender.Descriptor.Buffs.RawFacts.Contains(earlierBuff) &&
                     DodgeBuffOn(defender, buffBlueprint) == null;
                 int removalNotices = notices.Removed - removedBefore;
                 int armorClassAfterRemoval = defender.Descriptor.Stats.AC.ModifiedValue;
-                double removedAfter = DodgeNow() - earlierAt;
                 string removalVerdict = GunslingerDodgeScenarioVerdict.EarlyRemoval(
                     sameInstance, earlierGone, removalNotices, armorClassBase,
                     armorClassAfterRemoval);
-                foreach (int frame in DodgeGameSeconds(0.5d)) yield return frame;
+                foreach (int frame in DodgeGameSeconds("recast-before-later", 0.5d))
+                    yield return frame;
                 var later = new DodgeCommandObservation();
-                foreach (int frame in DodgeUse(defender, ability, buffBlueprint,
-                    grit, notices, later)) yield return frame;
+                foreach (int frame in DodgeUse("recast-later", defender, ability,
+                    buffBlueprint, grit, notices, later)) yield return frame;
                 Buff laterBuff = DodgeBuffOn(defender, buffBlueprint);
                 string laterVerdict = GunslingerDodgeScenarioVerdict.Accepted(later, 1) ??
                     (laterBuff != null && !ReferenceEquals(laterBuff, earlierBuff)
                         ? null : "the later activation did not produce a different instance");
-                double laterAt = notices.LastAddedAt;
-                bool prerequisites = earlierVerdict == null && removalVerdict == null &&
-                    laterVerdict == null;
-                bool laterAtDeadline = false, laterEnded = false;
-                int armorClassAtDeadline = -1, armorClassAfterLater = -1;
-                double atDeadline = -1d, laterLasted = -1d;
-                if (prerequisites)
+                if (laterVerdict == null) timing.LaterAddedAt = notices.LastAddedAt;
+                if (earlierVerdict == null && removalVerdict == null &&
+                    laterVerdict == null && timing.EarlierDeadlineCaptured)
                 {
-                    foreach (int frame in DodgeUntil(() => DodgeNow() >= earlierAt + 6.6d,
-                        60d)) yield return frame;
-                    atDeadline = DodgeNow() - earlierAt;
-                    laterAtDeadline = ReferenceEquals(DodgeBuffOn(defender, buffBlueprint),
-                        laterBuff);
-                    armorClassAtDeadline = defender.Descriptor.Stats.AC.ModifiedValue;
+                    // Read the unit only once game time is past the earlier
+                    // deadline by more than the margin the verdict asks for.
+                    double readAt = timing.EarlierDeadline +
+                        GunslingerDodgeScenarioVerdict.DeadlineMarginSeconds + 0.1d;
+                    timing.DeadlineWait = DodgeNewWait("recast-earlier-deadline", 60d);
+                    foreach (int frame in DodgeUntil(() => DodgeNow() >= readAt,
+                        timing.DeadlineWait)) yield return frame;
+                    timing.SurvivalObservedAt = DodgeNow();
+                    timing.LaterInstanceOnUnit = laterBuff != null && ReferenceEquals(
+                        DodgeBuffOn(defender, buffBlueprint), laterBuff);
+                    timing.ArmorClassAtObservation =
+                        defender.Descriptor.Stats.AC.ModifiedValue;
                 }
                 removedBefore = notices.Removed;
+                timing.EndWait = DodgeNewWait("recast-later-end", 60d);
                 foreach (int frame in DodgeUntil(() => DodgeBuffOn(defender,
-                    buffBlueprint) == null, 60d)) yield return frame;
-                laterEnded = DodgeBuffOn(defender, buffBlueprint) == null &&
+                    buffBlueprint) == null, timing.EndWait)) yield return frame;
+                timing.LaterEnded = timing.EndWait.Reached &&
                     notices.Removed - removedBefore == 1;
-                if (laterEnded) laterLasted = notices.LastRemovedAt - laterAt;
-                armorClassAfterLater = defender.Descriptor.Stats.AC.ModifiedValue;
+                if (timing.LaterEnded) timing.LaterEndedAt = notices.LastRemovedAt;
+                timing.ArmorClassAfterEnd = defender.Descriptor.Stats.AC.ModifiedValue;
                 DodgeAssert("dodge-recast-isolation",
-                    "after the earlier instance is removed early, a later activation survives the earlier deadline and ends after a round of its own",
-                    string.Format(CultureInfo.InvariantCulture,
-                        "earlier[{0}];removal[afterGameSeconds={1:0.##};sameInstance={2};gone={3};" +
-                        "removedNotices={4};ac={5}];later[{6}];atEarlierDeadline[gameSeconds={7:0.##};" +
-                        "laterOnUnit={8};ac={9}];laterEnded={10};laterLastedGameSeconds={11:0.##};" +
-                        "acAfter={12};expiryGuardRemovals={13}",
-                        earlier.Describe(), removedAfter, sameInstance, earlierGone,
-                        removalNotices, armorClassAfterRemoval, later.Describe(), atDeadline,
-                        laterAtDeadline, armorClassAtDeadline, laterEnded, laterLasted,
-                        armorClassAfterLater,
-                        GunslingerDodgeExpirationPatch.ExpiredRemovals - guardBefore),
+                    "the earlier instance is removed before its own deadline, a later activation is applied before that deadline, is still on the unit after it and ends after a round of its own",
+                    "timing[" + timing.Describe() + "];earlier[" + earlier.Describe() +
+                        "];removal[sameInstance=" + sameInstance + ";gone=" + earlierGone +
+                        ";removedNotices=" + removalNotices + ";ac=" + armorClassAfterRemoval +
+                        "];later[" + later.Describe() + "];armorClassBase=" + armorClassBase +
+                        ";expiryGuardRemovals=" +
+                        (GunslingerDodgeExpirationPatch.ExpiredRemovals - guardBefore),
                     GunslingerDodgeScenarioVerdict.Recast(earlierVerdict, removalVerdict,
-                        laterVerdict, laterAtDeadline, armorClassAtDeadline, laterEnded,
-                        laterLasted, armorClassBase, armorClassAfterLater),
-                    "exact Buff instances; IUnitBuffHandler game-time notices");
+                        laterVerdict, timing, armorClassBase),
+                    "exact Buff instances; Buff.EndTime read before removal; IUnitBuffHandler game-time notices");
 
                 // 5. With no grit: the availability reading, then an actual command.
-                _dodgeStage = "refused-without-grit";
+                _dodge.Stage = "refused-without-grit";
                 int remaining = defender.Descriptor.Resources.GetResourceAmount(grit);
                 if (remaining > 0) defender.Descriptor.Resources.Spend(grit, remaining);
                 var withoutGrit = new DodgeCommandObservation();
-                foreach (int frame in DodgeUse(defender, ability, buffBlueprint,
-                    grit, notices, withoutGrit)) yield return frame;
+                foreach (int frame in DodgeUse("without-grit", defender, ability,
+                    buffBlueprint, grit, notices, withoutGrit)) yield return frame;
                 DodgeAssert("dodge-refused-without-grit",
                     "reads unavailable at 0 grit; an attempted command delivers nothing, applies no buff and leaves grit at 0",
                     withoutGrit.Describe(),
@@ -565,24 +602,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ? GunslingerDodgeScenarioVerdict.NotJudged + "grit was not 0"
                         : GunslingerDodgeScenarioVerdict.Refused(withoutGrit),
                     "AbilityData.IsAvailable (queried); UnitUseAbility (attempted)");
-                _dodgeStage = "cleanup";
+
+                // Every wait must have ended on its condition, not on its limit.
+                DodgeAssert("dodge-waits-reached",
+                    "every wait ended because its condition held",
+                    string.Join(";", _dodgeWaits.Select(value => value.Describe()).ToArray()),
+                    GunslingerDodgeScenarioVerdict.Waits(_dodgeWaits),
+                    "DodgeWait: condition against real-time limit");
+                _dodge.Stage = "cleanup";
             }
             finally
             {
                 // Each owned thing is released on its own; every failure is kept.
-                var failures = new List<string>();
-                Action<string, Action> release = (name, action) =>
-                {
-                    try { action(); }
-                    catch (Exception error) { failures.Add(name + ": " + error.Message); }
-                };
-                release("pause", () => game.IsPaused = true);
-                release("buff notices", () =>
+                var releases = new DodgeReleases();
+                releases.Run("pause", () => game.IsPaused = true);
+                releases.Run("buff notices", () =>
                 {
                     if (subscribed) EventBus.Unsubscribe(notices);
                     subscribed = false;
                 });
-                release("level-up controller", () =>
+                releases.Run("level-up controller", () =>
                 {
                     if (levelController != null)
                         levelController.GetType().GetMethod("Cancel").Invoke(levelController, null);
@@ -591,14 +630,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     UnitEntityData owned = unit;
                     if (owned == null) continue;
-                    release("unit " + owned.Blueprint.name, () =>
+                    releases.Run("unit " + owned.Blueprint.name, () =>
                     {
                         if (owned.Destroyed) return;
                         owned.Commands.InterruptAll(true);
                         owned.Destroy();
                     });
                 }
-                release("entity destroyer", () =>
+                releases.Run("entity destroyer", () =>
                 {
                     game.EntityDestroyer.Tick();
                     game.EntityDestroyer.Tick();
@@ -606,24 +645,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (BlueprintUnit owned in prototypes)
                 {
                     BlueprintUnit prototype = owned;
-                    release("prototype " + prototype.name, () =>
+                    releases.Run("prototype " + prototype.name, () =>
                         UnityEngine.Object.Destroy(prototype));
                 }
-                release("restore pause", () => game.IsPaused = paused);
+                releases.Run("restore pause", () => game.IsPaused = paused);
                 UnitEntityData[] extra = game.State.Units.All.Except(units).ToArray();
                 UnitEntityData[] missing = units.Except(game.State.Units.All).ToArray();
                 bool sameParty = player.Party.SequenceEqual(party);
-                bool clean = failures.Count == 0 && extra.Length == 0 &&
+                bool clean = releases.Failures.Count == 0 && extra.Length == 0 &&
                     missing.Length == 0 && sameParty && !_workingSaveSmoke.WriteObserved &&
                     GunslingerDodgeArmorClassBonus.ActiveModifiers == 0;
-                _dodgeAssertions.Add(Assertion("dodge-cleanup",
+                _dodge.Assertions.Add(Assertion("dodge-cleanup",
                     "every owned unit, prototype and subscription released; original units and party unchanged; no Dodge modifier left; nothing saved",
-                    "releaseFailures=" + (failures.Count == 0 ? "none" :
-                        string.Join(" || ", failures.ToArray())) + ";extraUnits=" +
-                        extra.Length + ";missingUnits=" + missing.Length + ";party=" +
-                        sameParty + ";activeModifiers=" +
+                    releases.Describe() + ";extraUnits=" + extra.Length + ";missingUnits=" +
+                        missing.Length + ";party=" + sameParty + ";activeModifiers=" +
                         GunslingerDodgeArmorClassBonus.ActiveModifiers + ";saveWriteObserved=" +
-                        _workingSaveSmoke.WriteObserved + ";endedAtStage=" + _dodgeStage,
+                        _workingSaveSmoke.WriteObserved + ";endedAtStage=" + _dodge.Stage,
                     clean, "Game.State.Units census; Player.Party; working-save write guard | " +
                         DodgeExecution));
             }

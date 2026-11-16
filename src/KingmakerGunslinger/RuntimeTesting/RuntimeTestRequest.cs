@@ -392,6 +392,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return "sprint26-native-review-phase-and-exit-required";
             if (request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather && !request.ExitAfterCompletion)
                 return "whiteout-observation-exit-required";
+            // Refused here, before any save is loaded.
+            string dodgeRejection = GunslingerDodgeScenarioAdmission.Rejection(
+                request.Scenario, request.ExitAfterCompletion);
+            if (dodgeRejection != null) return dodgeRejection;
             if ((request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations || request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits) && !request.ExitAfterCompletion)
                 return "race-trait-foundation-exit-required";

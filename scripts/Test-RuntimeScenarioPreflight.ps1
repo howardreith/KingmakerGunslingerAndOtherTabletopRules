@@ -554,6 +554,27 @@ foreach ($invalid in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'}, @{saveName='S
     @{saveName='KMG_AUTOMATION_WORKING'; saveWrite='true'})) {
     Assert-Throws { New-KmgRuntimeRequest @dodgeArguments -Parameters $invalid } 'gunslinger-dodge-rejects-missing-baseline-other-or-extra-parameters'
 }
+# An otherwise valid request that does not exit when it completes is refused before launch. The same request
+# with automatic exit is the valid one built above.
+$dodgeNoExitArguments = $dodgeArguments.Clone()
+$dodgeNoExitArguments.ExitAfterCompletion = $false
+Assert-True $dodgeArguments.ExitAfterCompletion 'gunslinger-dodge-valid-request-exits'
+Assert-True $dodgeRequest.exitAfterCompletion 'gunslinger-dodge-valid-request-carries-automatic-exit'
+Assert-Throws { New-KmgRuntimeRequest @dodgeNoExitArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'} } 'gunslinger-dodge-request-requires-automatic-exit'
+Assert-Throws {
+    Assert-KmgRuntimeScenarioPreflight -Scenario 'disposable-gunslinger-dodge' -ExpectedVersion $dodgeArguments.ExpectedVersion `
+        -TimeoutSeconds 600 -ExitAfterCompletion $false -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+} 'gunslinger-dodge-preflight-requires-automatic-exit'
+$dodgeNoExitMessage = ''
+try { New-KmgRuntimeRequest @dodgeNoExitArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'} | Out-Null }
+catch { $dodgeNoExitMessage = $_.Exception.Message }
+Assert-True ($dodgeNoExitMessage -like "*Gunslinger's Dodge scenario requires automatic exit*") 'gunslinger-dodge-no-exit-refusal-names-its-reason'
+# The rule is Dodge's own: a working-save scenario without it still accepts a non-exiting request.
+$smokeNoExitArguments = $dodgeNoExitArguments.Clone()
+$smokeNoExitArguments.Scenario = 'working-save-smoke'
+$smokeNoExitArguments.EvidenceDirectory = Join-Path $script:KmgRuntimeEvidenceRoot 'working-save-smoke-no-exit-preflight-test'
+$smokeNoExitRequest = New-KmgRuntimeRequest @smokeNoExitArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+Assert-True (-not $smokeNoExitRequest.exitAfterCompletion) 'working-save-smoke-admission-unchanged-by-dodge-rule'
 Assert-True (-not $midgameDisposable.RequiresSaveName -and
     -not $midgameDisposable.RequiresManualInteraction) `
     'midgame-firearms-is-autonomous-save-free'
