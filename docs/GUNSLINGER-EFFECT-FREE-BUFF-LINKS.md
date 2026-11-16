@@ -172,6 +172,10 @@ dead delivery component was not activated. Its class file also holds `DodgeGritC
 the cost calculator on the registered ability. Any later removal of the dead delivery and its `RecordDelivery*`
 diagnostics (INT-03) must keep that calculator.
 
+Later, as its own cut on a branch stacked on this one and on PR #170, the scenario was moved to a loaded save and
+the unused delivery and diagnostics were removed with the calculator kept: `docs/GUNSLINGER-DODGE-SCENARIO.md`. What
+is recorded here is this cut's candidate and stands as recorded.
+
 **The earlier failure is the fixture's.** `disposable-gunslinger-dodge` runs from the main menu on a unit that is in
 no loaded area. Kingmaker interrupts the ability command there before anything is cast, so there is no buff to read.
 With the scenario now driving the execution process, it stops at that cause: "Native Dodge command produced no

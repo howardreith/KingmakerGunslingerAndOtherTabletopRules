@@ -38,7 +38,7 @@ superseded by the owner's later instruction to cut v0.0.191.
 | NEW-01 (S2 T4) | Three visible spear penalties without icons | PR #165: spear sprite, owner-directed | `reports/boughkeeper-buff-icon/PENALTY-BUFF-ICONS-NATIVE-CHECK.json`; published bytes as above | `ce3d0be334` | v0.0.191 | **Released; technically verified.** Visual approval of the sprite at slot size is separate and the owner's |
 | DEF-02, BUFF-01 to BUFF-14 (S2 T1) | Fourteen deed and Eastern buffs without effect links | Branch `codex/def02-buff-effect-links`, draft PR #169: `UseEmptyBuffEffects` at eight construction sites (`a479f87f59`) | Candidate `96dbf78fac0c` against the published v0.0.191: `docs/GUNSLINGER-EFFECT-FREE-BUFF-LINKS.md` | no | no | **Implemented: all fourteen have the links, read in the game. Native verified for stated scope, which differs per identity.** Complete through the real trigger in real-time play: Dodge, the four bleeds (including Stop Bleeding), Startled, Targeted Head, the Mountain-Sunder marker. Partial: Up Close and Deadly (damage not judged), Falling Petal and Deadeye Armed (icon check fails), Steady Aim Armed (consumption check fails, NEW-03). The two shells: direct application only. Open for all: baseline real triggers for four identities; turn-based, controller, save and load, other stacks; the shells in an old save |
 | RISK-07 (S2 T3) | Suggestion buff's final effect links | none | Provider absent: both links present (empty), read in the game. Native donor has a start effect | no | no | **Blocked.** CowWithHat Custom Spells is not on the lab machine; the provider-present final blueprint was not read. Neither confirmed nor disproved |
-| INT-03 (S3 T3) | Dead pre-AC Dodge diagnostic | none in the product | New: the real Dodge activation observed in a loaded game on the published v0.0.191 and the candidate: grit, AC against an incoming attack, end, recast | no | no | **Investigating.** New facts: the registered ability does not use `GunslingerDodgeProneAbilityLogic.Deliver` or its `RecordDelivery*` diagnostics at all; the earlier scenario failure is the fixture's. The dead diagnostic and dead delivery are untouched and were not activated; the same file's `DodgeGritCostCalculator` is live and must be kept by any cleanup. `disposable-gunslinger-dodge` still has no verdict in the loader-compat copy |
+| INT-03 (S3 T3) | Dead pre-AC Dodge diagnostic; the product's Dodge scenario gave no verdict | Branch `codex/int03-dodge-scenario` (`c014e5c999`), stacked on PR #170: `disposable-gunslinger-dodge` is a working-save scenario that uses the registered ability through the game's ability command; the unused delivery class, attack-time runtime and their diagnostics are removed; `DodgeGritCostCalculator` kept | Candidate `df7f11156a01` in the disposable game copy, run `20261116T012451Z`: the scenario PASSES, 11 of 11 (`docs/GUNSLINGER-DODGE-SCENARIO.md`) | no | no | **Implemented; native verified for stated scope.** Observed through the real ability in the loaded working save: grit 5 to 4, armor class 10 to 12, incoming attack 10, 12, 10, attempted command refused while active and at 0 grit, unaided end at 6.02 s, recast isolation with all prerequisites. Gameplay unchanged; registered blueprints, the legacy armed marker and the expiry guard kept. Not run: turn-based, controller, save and load, True Grit in the game, the live guarded launcher on the owner's installation, the comprehensive aggregate after it lost its Dodge slice. The legacy-marker cleanup was already unreachable (since `93193c5170`) and is gone with the runtime; the tabletop reaction policy (`GunslingerDodgeService`) remains, uncalled |
 | REP-02 (S4 T2) | `up-close-critical` damage assertion intermittent | none | New, grit only: armed through its real ability on a Pistolero, nothing spent at arming, exactly one grit after a hit, unused state ends after a round with no charge | no | no | **Investigating.** Damage not judged; the assertion was not run or attributed |
 
 ## Findings added by this work
@@ -51,7 +51,7 @@ superseded by the owner's later instruction to cut v0.0.191.
 | NEW-08 | With Steady Aim and Deadeye both armed inside the lengthened first increment, the shot uses up Deadeye's state and its grit while Deadeye authorizes nothing | **Design question** (Deadeye pricing). Observed on the NEW-03 branch. Not changed |
 | NEW-04 | Six visible buffs have no icon: Deadeye Armed, four Bleeding Wound bleeds, Falling Petal | **Open.** Needs an art decision and an authorized catalog change |
 | NEW-05 | Deadeye reports itself available while armed (observed, availability check only). From source a second use would spend another grit and replace the state; that was not run | **Design question.** Policy unchanged |
-| NEW-06 | The product's deed scenarios add armed buffs directly and call runtime hooks on units with no view, so they cannot see activation or real-ability defects | **Open coverage gap.** The loader-compat `kmgDeedLifecycle` probe covers the real triggers used here |
+| NEW-06 | The product's deed scenarios add armed buffs directly and call runtime hooks on units with no view, so they cannot see activation or real-ability defects | **Open coverage gap, closed for Gunslinger's Dodge only** (INT-03: its scenario now uses the registered ability in a loaded save). The other deed scenarios are unchanged; the loader-compat `kmgDeedLifecycle` probe covers the real triggers used so far |
 
 ## Next bounded items
 
@@ -60,9 +60,10 @@ step with the corrected expectation).
 
 NEW-03 was then worked as its own cut on a branch stacked on PR #169 (`docs/GUNSLINGER-STEADY-AIM-RANGE.md`).
 
+INT-03 was then worked as its own cut on a branch stacked on PR #170 (`docs/GUNSLINGER-DODGE-SCENARIO.md`).
+
 1. NEW-04, icons for the six visible buffs, once the art choice is made.
-2. S3 T3 (INT-03): retire the dead Dodge diagnostic and delivery (keeping `DodgeGritCostCalculator`), and give the
-   Dodge scenario a route that can run its command.
-3. RISK-07 with its provider; the broader compatibility and save-and-load work.
-4. NEW-05 and NEW-08 (Deadeye's re-arm rule and pricing) and NEW-07 (range measurement), each a decision before any
+2. RISK-07 with its provider; the broader compatibility and save-and-load work.
+3. NEW-05 and NEW-08 (Deadeye's re-arm rule and pricing) and NEW-07 (range measurement), each a decision before any
    change. Up Close and Deadly's damage is still not judged.
+4. NEW-06 for the remaining deed scenarios, which the Dodge scenario's working-save pattern now shows how to do.
