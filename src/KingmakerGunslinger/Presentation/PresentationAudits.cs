@@ -36,9 +36,20 @@ namespace KingmakerGunslinger.Presentation
             Key = key; Label = label ?? "<unnamed>"; Fault = fault;
         }
 
+        /// <summary>
+        /// Not an entry at all: a source that could not be obtained, or that
+        /// stopped part-way. It is reported apart from malformed entries and
+        /// is not counted as an observed identity.
+        /// </summary>
+        internal static AuditIdentity UnavailableSource(string source, string detail)
+        {
+            return new AuditIdentity(null, source, detail) { SourceLevel = true };
+        }
+
         internal string Key { get; private set; }
         internal string Label { get; private set; }
         internal string Fault { get; private set; }
+        internal bool SourceLevel { get; private set; }
     }
 
     /// <summary>
@@ -64,6 +75,8 @@ namespace KingmakerGunslinger.Presentation
         internal IList<string> UnresolvedExpected { get; private set; }
         /// <summary>Observed entries that had no usable identity.</summary>
         internal IList<string> MalformedObserved { get; private set; }
+        /// <summary>Sources that could not be obtained or stopped part-way.</summary>
+        internal IList<string> SourceFaults { get; private set; }
 
         internal bool CountMatches { get { return ExpectedCount == ObservedCount; } }
         internal bool MembershipMatches
@@ -72,7 +85,8 @@ namespace KingmakerGunslinger.Presentation
             {
                 return Missing.Count == 0 && Unexpected.Count == 0 &&
                     DuplicateObserved.Count == 0 && DuplicateExpected.Count == 0 &&
-                    UnresolvedExpected.Count == 0 && MalformedObserved.Count == 0;
+                    UnresolvedExpected.Count == 0 && MalformedObserved.Count == 0 &&
+                    SourceFaults.Count == 0;
             }
         }
         internal bool Exact { get { return CountMatches && MembershipMatches; } }
@@ -86,12 +100,14 @@ namespace KingmakerGunslinger.Presentation
             AuditIdentity[] seen = observed.ToArray();
             var census = new IdentityCensus
             {
-                ExpectedCount = wanted.Length, ObservedCount = seen.Length,
+                ExpectedCount = wanted.Length,
+                ObservedCount = seen.Count(value => value == null || !value.SourceLevel),
                 Missing = new List<string>(), Unexpected = new List<string>(),
                 DuplicateObserved = new List<string>(),
                 DuplicateExpected = new List<string>(),
                 UnresolvedExpected = new List<string>(),
-                MalformedObserved = new List<string>()
+                MalformedObserved = new List<string>(),
+                SourceFaults = new List<string>()
             };
             var wantedByKey = new Dictionary<string, AuditIdentity>(StringComparer.Ordinal);
             foreach (AuditIdentity identity in wanted)
@@ -110,6 +126,12 @@ namespace KingmakerGunslinger.Presentation
             var seenLabels = new Dictionary<string, string>(StringComparer.Ordinal);
             foreach (AuditIdentity identity in seen)
             {
+                if (identity != null && identity.SourceLevel)
+                {
+                    census.SourceFaults.Add(identity.Label + "(" +
+                        (identity.Fault ?? "unavailable") + ")");
+                    continue;
+                }
                 if (identity == null || string.IsNullOrEmpty(identity.Key))
                 {
                     census.MalformedObserved.Add(identity == null ? "<null>" :
@@ -147,7 +169,8 @@ namespace KingmakerGunslinger.Presentation
                 List(";observedMoreThanOnce=", DuplicateObserved) +
                 List(";declaredMoreThanOnce=", DuplicateExpected) +
                 List(";unresolvedExpected=", UnresolvedExpected) +
-                List(";malformedObserved=", MalformedObserved);
+                List(";malformedObserved=", MalformedObserved) +
+                List(";sourceFaults=", SourceFaults);
         }
 
         private static string List(string prefix, IList<string> values)
@@ -174,6 +197,30 @@ namespace KingmakerGunslinger.Presentation
         internal string ModelName;
         internal bool ModelIsVariantPrefab;
         internal string Fault;
+        /// <summary>Which source the observation was read from, when known.</summary>
+        internal string Source;
+        /// <summary>The entry's position in a catalog source; null outside one.</summary>
+        internal int? EntryIndex;
+        /// <summary>
+        /// The entry's own metadata could not be read, so the fields above
+        /// are only what could be. <see cref="Fault"/> says what was missing.
+        /// </summary>
+        internal bool Malformed;
+        /// <summary>
+        /// Not an item: the source could not be obtained or stopped part-way.
+        /// </summary>
+        internal bool SourceUnavailable;
+
+        /// <summary>Where the observation came from, for one with no symbol.</summary>
+        internal string Locator
+        {
+            get
+            {
+                return EntryIndex.HasValue
+                    ? SourceReader.Locate(Source, EntryIndex.Value)
+                    : Source ?? ItemName ?? "<unreadable source>";
+            }
+        }
     }
 
     /// <summary>The outcome of inspecting one firearm item's visual binding.</summary>
@@ -229,6 +276,21 @@ namespace KingmakerGunslinger.Presentation
             if (item == null) return new FirearmVisualBindingResult("<null>", null,
                 "no observation");
             string variant;
+            if (item.Malformed)
+            {
+                // The entry's metadata was not read. What it is bound to
+                // cannot be judged, and nothing is assumed about it.
+                variant = null;
+                if (!string.IsNullOrEmpty(item.Symbol))
+                    WeaponVisualVariantCatalog.TryGet(item.Symbol, out variant);
+                return new FirearmVisualBindingResult(
+                    string.IsNullOrEmpty(item.Symbol) ? item.Locator : item.Symbol,
+                    variant, "malformed entry: " + (item.Fault ?? "no detail") +
+                        (item.ItemName == null ? string.Empty :
+                            "; item read as " + item.ItemName) +
+                        (item.ModelName == null ? string.Empty :
+                            "; model read as " + item.ModelName));
+            }
             if (string.IsNullOrEmpty(item.Symbol) ||
                 !WeaponVisualVariantCatalog.TryGet(item.Symbol, out variant))
                 return new FirearmVisualBindingResult(item.Symbol ?? "<no symbol>",
@@ -267,9 +329,10 @@ namespace KingmakerGunslinger.Presentation
                 roster.Select(value => new AuditIdentity(value.Symbol, value.Symbol)),
                 items.Select(value => value == null
                     ? new AuditIdentity(null, "<null>", "no observation")
-                    : new AuditIdentity(value.Symbol, value.Symbol ??
-                        value.ItemName ?? "<unreadable source>",
-                        value.Fault ?? "no symbol")));
+                    : value.SourceUnavailable
+                        ? AuditIdentity.UnavailableSource(value.Source, value.Fault)
+                        : new AuditIdentity(value.Symbol, value.Symbol ??
+                            value.Locator, value.Fault ?? "no symbol")));
 
             // Every observed item is inspected. An expected identity that was
             // not observed is a binding failure of its own as well: nothing
@@ -279,8 +342,18 @@ namespace KingmakerGunslinger.Presentation
             foreach (FirearmVisualRosterEntry entry in roster)
                 kindBySymbol[entry.Symbol] = entry.Kind;
             var inspected = new HashSet<string>(StringComparer.Ordinal);
+            var sourceFaults = new List<string>();
             foreach (FirearmVisualBindingObservation item in items)
             {
+                // A source fault is not an item; there is nothing to inspect.
+                // The identities it should have supplied are reported below
+                // as not observed.
+                if (item != null && item.SourceUnavailable)
+                {
+                    sourceFaults.Add((item.Source ?? "<unnamed source>") + "(" +
+                        (item.Fault ?? "unavailable") + ")");
+                    continue;
+                }
                 FirearmVisualBindingResult result = Inspect(item);
                 FirearmKind declared;
                 if (result.Bound && item != null &&
@@ -308,19 +381,22 @@ namespace KingmakerGunslinger.Presentation
                 Census = census, Bindings = bindings,
                 Roster = new AuditOutcome(RosterName,
                     "exactly the " + roster.Length +
-                        " firearm items that carry their own visual variant: " +
+                        " firearm items this scenario reads (the Test Musket, the production firearms and the magic firearms): " +
                         string.Join("|", roster.Select(value => value.Symbol).ToArray()),
                     census.Describe(), census.Exact),
                 BindingOutcome = new AuditOutcome(BindingsName,
                     "every firearm item's model is the prefab of the variant approved for its symbol, inside its own firearm family",
                     "inspected=" + bindings.Count + ";bound=" +
                         (bindings.Count - failed.Length) + ";failed=" + failed.Length +
+                        (sourceFaults.Count == 0 ? string.Empty : ";sourceFaults=" +
+                            string.Join("|", sourceFaults.ToArray())) +
                         (failed.Length == 0 ? string.Empty : ";failures=" +
                             string.Join("|", failed.Select(value =>
                                 value.Describe()).ToArray())) +
                         ";all=" + string.Join("|", bindings.Select(value =>
                             value.Describe()).ToArray()),
-                    failed.Length == 0 && bindings.Count != 0)
+                    failed.Length == 0 && bindings.Count != 0 &&
+                        sourceFaults.Count == 0)
             };
         }
     }

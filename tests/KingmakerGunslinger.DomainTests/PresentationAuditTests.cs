@@ -91,8 +91,9 @@ namespace KingmakerGunslinger.DomainTests
             }
 
             // The visual catalog's firearm mappings are this roster plus the
-            // generic progression firearms, which are built elsewhere and are
-            // not part of the roster.
+            // generic progression firearms. Those receive their item variants
+            // through the same registration helper; the scenario does not read
+            // them, so they are not part of its roster.
             string[] catalogFirearms = WeaponVisualVariantCatalog.Snapshot()
                 .Where(pair => FirearmFamilies.Any(family =>
                     pair.Value.StartsWith(family, StringComparison.Ordinal)))

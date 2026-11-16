@@ -7,7 +7,7 @@ using KingmakerGunslinger.Firearms;
 
 namespace KingmakerGunslinger.Presentation
 {
-    /// <summary>One firearm item that carries its own approved visual variant.</summary>
+    /// <summary>One firearm item the firearm visual-rig scenario reads.</summary>
     internal sealed class FirearmVisualRosterEntry
     {
         internal FirearmVisualRosterEntry(string symbol, FirearmKind kind,
@@ -28,15 +28,19 @@ namespace KingmakerGunslinger.Presentation
     /// a running game reports. The observers compare what they see against
     /// these; nothing observed can supply its own expectation.
     ///
-    /// Firearm item visuals (16): the items whose builders apply an exact
-    /// item visual variant. That is the development Test Musket, the five
-    /// production firearms, the eight magic firearms declared by the magic
-    /// firearm builder and the two midgame firearms that builder appends from
-    /// <see cref="MidgameFirearmCatalog"/>. The count was 14 before the two
-    /// midgame firearms were added. The generic progression firearms (+2 to
-    /// +5 and Reliable) have visual-catalog mappings as well but are built by
-    /// the progression builder, which applies no item variant of its own;
-    /// they are not part of this roster.
+    /// Firearm item visuals (16): the population the firearm visual-rig
+    /// scenario selects and reads. That is the development Test Musket, the
+    /// five production firearms, the eight magic firearms declared by the
+    /// magic firearm builder and the two midgame firearms that builder
+    /// appends from <see cref="MidgameFirearmCatalog"/>. The count was 14
+    /// before the two midgame firearms were added. It is not every firearm
+    /// item with an item variant: the 27 generic progression firearms (+2 to
+    /// +5 and Reliable) receive theirs through the same helper,
+    /// ProgressionWeaponBlueprints.RegisterFirearm calling
+    /// MagicFirearmBlueprints.RegisterItem, which calls
+    /// FirearmWeaponPresentation.ApplyItemVariant. The scenario does not
+    /// read them, so they are outside this roster and outside what it
+    /// establishes.
     ///
     /// Presentation weapons (57): the five production firearms, the ten
     /// magic firearms (eight plus the two midgame), the twelve generic and
@@ -126,7 +130,11 @@ namespace KingmakerGunslinger.Presentation
             get { return DeclaredMagicFirearms.Concat(MidgameFirearms).ToArray(); }
         }
 
-        /// <summary>Every firearm item that carries its own visual variant.</summary>
+        /// <summary>
+        /// The firearm items the visual-rig scenario reads: the Test Musket,
+        /// the production firearms and the magic firearms. The progression
+        /// firearms also receive item variants and are not read here.
+        /// </summary>
         internal static FirearmVisualRosterEntry[] FirearmItemVisuals
         {
             get

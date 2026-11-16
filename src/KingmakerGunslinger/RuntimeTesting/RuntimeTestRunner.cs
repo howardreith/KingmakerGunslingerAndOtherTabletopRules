@@ -9095,49 +9095,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                         symbol => new KeyValuePair<string, Type>(symbol,
                             typeof(BlueprintWeaponEnchantment))));
 
-            // What the game has. A catalog that cannot be read is reported as
-            // a malformed observation and the others are still read.
-            var observedWeapons = new List<Presentation.AuditIdentity>();
-            var weapons = new List<BlueprintItemWeapon>();
-            var sources = new[]
-            {
-                new KeyValuePair<string, Func<IEnumerable<BlueprintItemWeapon>>>(
-                    "production firearms", () => BlueprintBootstrap.ProductionFirearms
-                        .Entries.Select(value => value.Item)),
-                new KeyValuePair<string, Func<IEnumerable<BlueprintItemWeapon>>>(
-                    "magic firearms", () => BlueprintBootstrap.MagicFirearms
-                        .Entries.Select(value => value.Item)),
-                new KeyValuePair<string, Func<IEnumerable<BlueprintItemWeapon>>>(
-                    "Eastern weapons", () => BlueprintBootstrap.EasternWeapons
-                        .Entries.Select(value => value.Item)),
-                new KeyValuePair<string, Func<IEnumerable<BlueprintItemWeapon>>>(
-                    "named Eastern weapons", () => BlueprintBootstrap.EasternWeapons
-                        .Named.Entries.Select(value => value.Item)),
-                new KeyValuePair<string, Func<IEnumerable<BlueprintItemWeapon>>>(
-                    "Elven branched spears", () => BlueprintBootstrap
-                        .ElvenBranchedSpears.Entries.Select(value => value.Item)),
-                new KeyValuePair<string, Func<IEnumerable<BlueprintItemWeapon>>>(
-                    "named Elven branched spears", () => BlueprintBootstrap
-                        .ElvenBranchedSpears.Named.Entries.Select(value => value.Item))
-            };
-            foreach (KeyValuePair<string, Func<IEnumerable<BlueprintItemWeapon>>>
-                source in sources)
-            {
-                try
-                {
-                    foreach (BlueprintItemWeapon weapon in source.Value().ToArray())
-                    {
-                        observedWeapons.Add(ObservedProjectIdentity(weapon,
-                            source.Key + " entry"));
-                        if (weapon != null) weapons.Add(weapon);
-                    }
-                }
-                catch (Exception error)
-                {
-                    observedWeapons.Add(new Presentation.AuditIdentity(null,
-                        source.Key, "catalog unavailable: " + error.Message));
-                }
-            }
+            // What the game has. Obtaining a source and reading one of its
+            // entries are separate failure boundaries: a malformed entry costs
+            // that entry, the readable entries on either side of it go on to
+            // the identity, text and enchantment checks, and a source that
+            // cannot be obtained or stops part-way is reported as that while
+            // the other sources are still read.
+            var collected =
+                new Presentation.ProjectItemObservations<BlueprintItemWeapon>();
+            Func<BlueprintItemWeapon, Presentation.AuditIdentity> identify =
+                weapon => ObservedProjectIdentity(weapon, "weapon");
+            Presentation.ProjectItemCollection.ReadSource(collected,
+                "production firearms",
+                () => BlueprintBootstrap.ProductionFirearms.Entries,
+                (ProductionFirearmBlueprintEntry entry) => entry.Item, identify);
+            Presentation.ProjectItemCollection.ReadSource(collected,
+                "magic firearms", () => BlueprintBootstrap.MagicFirearms.Entries,
+                (MagicFirearmBlueprintEntry entry) => entry.Item, identify);
+            Presentation.ProjectItemCollection.ReadSource(collected,
+                "Eastern weapons", () => BlueprintBootstrap.EasternWeapons.Entries,
+                (EasternWeaponBlueprintEntry entry) => entry.Item, identify);
+            Presentation.ProjectItemCollection.ReadSource(collected,
+                "named Eastern weapons",
+                () => BlueprintBootstrap.EasternWeapons.Named.Entries,
+                (EasternWeaponNamedBlueprintEntry entry) => entry.Item, identify);
+            Presentation.ProjectItemCollection.ReadSource(collected,
+                "Elven branched spears",
+                () => BlueprintBootstrap.ElvenBranchedSpears.Entries,
+                (ElvenBranchedSpearBlueprintEntry entry) => entry.Item, identify);
+            Presentation.ProjectItemCollection.ReadSource(collected,
+                "named Elven branched spears",
+                () => BlueprintBootstrap.ElvenBranchedSpears.Named.Entries,
+                (NamedSpearBlueprintEntry entry) => entry.Item, identify);
+            IList<Presentation.AuditIdentity> observedWeapons = collected.Identities;
+            IList<BlueprintItemWeapon> weapons = collected.Items;
             BlueprintItem cord = null;
             var observedItems = new List<Presentation.AuditIdentity>(observedWeapons);
             try
@@ -9157,19 +9148,31 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintItem[] items = distinctWeapons.Cast<BlueprintItem>().Concat(
                 cord == null ? new BlueprintItem[0] : new[] { cord }).ToArray();
             var issues = new List<string>();
-            HashSet<BlueprintItem> optionalFlavor;
-            try
+            // The generic magic firearms may leave their flavor blank. Read
+            // entry by entry: a malformed entry is already in the census, and
+            // it must not turn the rule off for the entries that can be read.
+            var optionalFlavor = new HashSet<BlueprintItem>();
+            Presentation.SourceRead<MagicFirearmBlueprintEntry> flavorSource =
+                Presentation.SourceReader.Read("magic firearms",
+                    () => BlueprintBootstrap.MagicFirearms.Entries);
+            foreach (Presentation.SourceSlot<MagicFirearmBlueprintEntry> slot in
+                flavorSource.Slots)
             {
-                optionalFlavor = new HashSet<BlueprintItem>(
-                    BlueprintBootstrap.MagicFirearms.GenericEntries.Select(
-                        value => (BlueprintItem)value.Item));
+                MagicFirearmBlueprintEntry entry = slot.Value;
+                if (entry == null) continue;
+                BlueprintItem generic;
+                string flavorFault;
+                if (!Presentation.SourceReader.TryRead(() =>
+                        entry.Spec.IsNamedCampaignUnique
+                            ? null : (BlueprintItem)entry.Item,
+                        out generic, out flavorFault))
+                    issues.Add(Presentation.SourceReader.Locate("magic firearms",
+                        slot.Index) + ":flavor-rule-unreadable=" + flavorFault);
+                else if (generic != null) optionalFlavor.Add(generic);
             }
-            catch (Exception error)
-            {
-                optionalFlavor = new HashSet<BlueprintItem>();
-                issues.Add("generic magic firearms unavailable for the flavor rule: " +
-                    error.Message);
-            }
+            if (flavorSource.SourceFault != null)
+                issues.Add("magic firearms:flavor-rule-source=" +
+                    flavorSource.SourceFault.Detail);
             BlueprintItemAccess access = BlueprintItemAccess.Resolve();
             foreach (BlueprintItem item in items)
             {
@@ -9253,14 +9256,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static void AppendPlayerTextIssue(ICollection<string> issues,
             string owner, string field, string text, bool required)
         {
-            if (required && string.IsNullOrWhiteSpace(text))
-            {
-                issues.Add(owner + ":" + field + "=blank");
-                return;
-            }
-            string issue = PlayerFacingTextPolicy.FindIssue(text);
-            if (issue != null)
-                issues.Add(owner + ":" + field + "=" + issue);
+            Presentation.PlayerTextAudit.Append(issues, owner, field, text, required);
         }
 
         private RuntimeTestResult RunNativeWeaponFeatContractObservation()
@@ -14071,28 +14067,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static void AppendFirearmItemVariantAssertions(
             List<RuntimeTestAssertion> assertions)
         {
-            // What the game has, read source by source. A source that
-            // cannot be read is reported and the others are still read.
+            // What the game has. Every item, and every entry of the magic
+            // firearm catalog, is its own failure boundary: an entry whose
+            // metadata cannot be read is recorded as malformed at its
+            // position and the entries after it are read as usual. Only a
+            // catalog that cannot be obtained or stepped is a source fault.
             var observed = new List<Presentation.FirearmVisualBindingObservation>();
             Action<string, string, FirearmKind, Func<BlueprintItemWeapon>> read =
-                (source, symbol, kind, item) =>
-                {
-                    Presentation.FirearmVisualBindingObservation observation;
-                    try
-                    {
-                        observation = FirearmWeaponPresentation.ObserveItemVariant(
-                            item(), symbol, kind);
-                    }
-                    catch (Exception error)
-                    {
-                        observation = new Presentation.FirearmVisualBindingObservation
-                        {
-                            Symbol = symbol, Kind = kind,
-                            Fault = source + " unavailable: " + error.Message
-                        };
-                    }
-                    observed.Add(observation);
-                };
+                (source, symbol, kind, item) => observed.Add(
+                    Presentation.FirearmVisualCollection.ReadItem(source, symbol,
+                        kind, item, FirearmWeaponPresentation.ObserveItemVariant));
             read("test musket", TestMusketBlueprints.ItemSymbol, FirearmKind.Musket,
                 () => BlueprintBootstrap.TestMusketItem);
             read("production firearms", ProductionFirearmBlueprints.PistolItemSymbol,
@@ -14112,23 +14096,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ProductionFirearmBlueprints.AdvancedRevolverItemSymbol,
                 FirearmKind.Revolver,
                 () => BlueprintBootstrap.ProductionFirearms.AdvancedRevolver.Item);
-            try
-            {
-                foreach (MagicFirearmBlueprintEntry entry in
-                    BlueprintBootstrap.MagicFirearms.Entries)
-                {
-                    MagicFirearmBlueprintEntry current = entry;
-                    read("magic firearms", current.Spec.Symbol, current.Spec.Kind,
-                        () => current.Item);
-                }
-            }
-            catch (Exception error)
-            {
-                observed.Add(new Presentation.FirearmVisualBindingObservation
-                {
-                    Fault = "magic firearm catalog unavailable: " + error.Message
-                });
-            }
+            Presentation.FirearmVisualCollection.ReadEntries(observed,
+                "magic firearms",
+                () => BlueprintBootstrap.MagicFirearms.Entries,
+                (MagicFirearmBlueprintEntry entry) => entry.Spec,
+                (MagicFirearmItemSpec spec) => spec.Symbol,
+                (MagicFirearmItemSpec spec) => spec.Kind,
+                (MagicFirearmBlueprintEntry entry) => entry.Item,
+                (BlueprintItemWeapon item, string symbol, FirearmKind kind) =>
+                    FirearmWeaponPresentation.ObserveItemVariant(item, symbol, kind));
 
             // The roster is the declared one; the census and the per-item
             // bindings are separate results and neither stops the other.
