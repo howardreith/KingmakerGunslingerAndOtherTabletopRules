@@ -1964,12 +1964,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
-                    RuntimeTestScenarioCatalog.DisposableGunslingerDodge)
-                {
-                    Complete(RunDisposableGunslingerDodge());
-                    return;
-                }
-                if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.DisposableGunslingerQuickClear)
                 {
                     Complete(RunDisposableGunslingerQuickClear());
@@ -2239,6 +2233,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableAlternateSummoningNatural ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableGunslingerDodge ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                     IsTeleportationCoexistenceFixture ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
@@ -2369,6 +2364,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableAlternateSummoningNatural ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableGunslingerDodge ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                     IsTeleportationCoexistenceFixture ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
@@ -3122,6 +3118,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableAlternateSummoningNatural)
                 { PollAlternateSummoningNatural(); }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableGunslingerDodge)
+                { PollGunslingerDodge(); }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableInHarmsWayHumanRepro)
                 {
@@ -14680,8 +14679,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RunDisposableGunslingerGritRecovery);
             AppendAcceptanceSlice(assertions, "deadeye", ref slices,
                 RunDisposableGunslingerDeadeye);
-            AppendAcceptanceSlice(assertions, "dodge", ref slices,
-                RunDisposableGunslingerDodge);
+            // Gunslinger's Dodge is not a slice here: its ability command
+            // cannot execute without a loaded area. It is covered by the
+            // working-save scenario disposable-gunslinger-dodge.
             AppendAcceptanceSlice(assertions, "quick-clear", ref slices,
                 RunDisposableGunslingerQuickClear);
             AppendAcceptanceSlice(assertions, "nimble", ref slices,
@@ -14726,8 +14726,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 () => RunDisposableGunslingerStunningShot(true));
             AppendAcceptanceSlice(assertions, "production-switching", ref slices,
                 RunDisposableProductionFirearmSwitching);
-            assertions.Add(Assertion("acceptance-slice-count", "33 qualified slices",
-                "slices=" + slices, slices == 33,
+            assertions.Add(Assertion("acceptance-slice-count", "32 qualified slices",
+                "slices=" + slices, slices == 32,
                 "explicit save-free comprehensive acceptance catalog"));
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
@@ -35829,275 +35829,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
 
-        private RuntimeTestResult RunDisposableGunslingerDodge()
-        {
-            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
-            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
-            BlueprintAbilityResource grit = gunslinger.Grit.Resource;
-            BlueprintItemArmor lightArmor = BlueprintBootstrap.Library.GetAllBlueprints()
-                .OfType<BlueprintItemArmor>()
-                .Where(value => value.Type != null && value.Type.IsArmor &&
-                    value.Type.ProficiencyGroup == ArmorProficiencyGroup.Light)
-                .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).FirstOrDefault();
-            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
-            object state = ReadExactMember(Kingmaker.Game.Instance, "State");
-            object party = ReadExactMember(player, "Party");
-            object allUnits = ReadExactMember(state, "AllUnits");
-            object[] partyBefore = SnapshotReferences(party);
-            object[] unitsBefore = SnapshotReferences(allUnits);
-            Kingmaker.EntitySystem.Entities.UnitEntityData defender = null;
-            Kingmaker.EntitySystem.SceneEntitiesState disposableScene = null;
-            object controller = null;
-            int initial = -1, afterApplied = -1, acBefore = -1,
-                acAfter = -1, acAfterRemoval = -1, afterRejected = -1,
-                rejectedAc = -1;
-            bool armedBefore = false, armedAfter = true, proneAfter = false,
-                armorClassBuffAfter = false,
-                rejectedProne = true, rejectedConsumed = false, cleaned = false;
-            TimeSpan buffStartTime = TimeSpan.Zero, buffEndTime = TimeSpan.Zero,
-                buffRemaining = TimeSpan.Zero;
-            bool buffPermanent = true, exactBuffBlueprint = false,
-                buffIcon = false, activeReactivationUnavailable = false;
-            int buffRank = -1;
-            string commandResult = "<not-run>";
-            bool buffNotDispelable = false;
-            long ownedModifiersWhileActive = -1, ownedModifiersAfterRemoval = -1;
-            int gritAfterActiveReactivation = -1;
-            string stage = "construct-disposables";
-            try
-            {
-                if (lightArmor == null) throw new InvalidOperationException(
-                    "No exact native light armor blueprint was available.");
-                disposableScene = new Kingmaker.EntitySystem.SceneEntitiesState(
-                    "KMG_Dodge_Runtime_Fixture");
-                defender = Kingmaker.Game.Instance.EntityCreator.SpawnUnit(
-                    source, Vector3.zero, Quaternion.identity, disposableScene);
-                if (defender == null || defender.View == null)
-                    throw new InvalidOperationException(
-                        "Native entity creation did not produce a live unit view.");
-                defender.Descriptor.Stats.Wisdom.BaseValue = 14;
-                Type controllerType = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
-                MethodInfo start = controllerType.GetMethods(BindingFlags.Public |
-                    BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
-                        value.Name == "StartWithoutAssigningStaticInstance" &&
-                        value.GetParameters().Length == 5);
-                MethodInfo selectClass = controllerType.GetMethod("SelectClass",
-                    BindingFlags.Public | BindingFlags.Instance, null,
-                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
-                MethodInfo mechanics = controllerType.GetMethod("ApplyClassMechanics",
-                    BindingFlags.Public | BindingFlags.Instance);
-                MethodInfo applyLevelup = controllerType.GetMethod("ApplyLevelup",
-                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                MethodInfo cancel = controllerType.GetMethod("Cancel",
-                    BindingFlags.Public | BindingFlags.Instance);
-                object charGen = Enum.Parse(start.GetParameters()[4].ParameterType,
-                    "CharGen", false);
-                controller = start.Invoke(null,
-                    new object[] { defender.Descriptor, false, null, null, charGen });
-                if (!(bool)selectClass.Invoke(controller,
-                    new object[] { gunslinger.CharacterClass, false }))
-                    throw new InvalidOperationException("Dodge Gunslinger selection failed.");
-                mechanics.Invoke(controller, null);
-                applyLevelup.Invoke(controller, new object[] { defender.Descriptor });
-                cancel.Invoke(controller, null); controller = null;
-
-                stage = "equip-light-armor";
-                defender.Body.Armor.InsertItem(new ItemEntityArmor(lightArmor));
-                if (!defender.Body.Armor.HasArmor ||
-                    defender.Body.Armor.Armor.Blueprint.Type.ProficiencyGroup !=
-                        ArmorProficiencyGroup.Light ||
-                    defender.Descriptor.Encumbrance != Encumbrance.Light)
-                    throw new InvalidOperationException(
-                        "Detached light-armor/light-load contract was not observable.");
-
-                stage = "activate-immediate-dodge";
-                GunslingerDodgeRuntimeDiagnostics.Reset();
-                GunslingerDodgeArmorClassBonus.ResetDiagnostics();
-                initial = defender.Descriptor.Resources.GetResourceAmount(grit);
-                acBefore = defender.Descriptor.Stats.AC.ModifiedValue;
-                buffStartTime = Kingmaker.Game.Instance.TimeController.GameTime;
-                armedBefore = !defender.Descriptor.HasFact(
-                    gunslinger.Dodge.ArmedProneMarker);
-                Kingmaker.UnitLogic.Abilities.Ability granted =
-                    defender.Descriptor.Abilities.GetAbility(
-                        gunslinger.Dodge.ProneAbility);
-                if (granted == null) throw new InvalidOperationException(
-                    "Gunslinger's Dodge was not granted by the level-up path.");
-                var data = new Kingmaker.UnitLogic.Abilities.AbilityData(granted);
-                var command = new Kingmaker.UnitLogic.Commands.UnitUseAbility(
-                    data, new TargetWrapper(defender));
-                if (!command.CanStart || !data.IsAvailable) throw new InvalidOperationException(
-                    "Native Dodge command was not available for the leveled unit.");
-                command.IgnoreCooldown(TimeSpan.Zero);
-                defender.Commands.Run(command);
-                for (int tick = 0; tick < 500 && !command.IsFinished; tick++)
-                    command.Tick();
-                commandResult = command.Result.ToString();
-                if (!command.IsFinished)
-                    throw new InvalidOperationException(
-                        "Native Dodge command did not finish; result=" +
-                        commandResult + ".");
-                // The command only queues the ability's execution process;
-                // Kingmaker's ability controller runs the ability's effect on
-                // a later tick. Drive that process here, as the other
-                // native-command fixtures do, before reading its effects.
-                if (command.ExecutionProcess == null)
-                    throw new InvalidOperationException(
-                        "Native Dodge command produced no execution process; result=" +
-                        commandResult + ".");
-                for (int tick = 0; tick < 500 &&
-                    !command.ExecutionProcess.IsEnded; tick++)
-                    command.ExecutionProcess.Tick();
-                if (!command.ExecutionProcess.IsEnded)
-                    throw new InvalidOperationException(
-                        "Native Dodge delivery did not end.");
-                afterApplied = defender.Descriptor.Resources.GetResourceAmount(grit);
-                armedAfter = defender.Descriptor.HasFact(
-                    gunslinger.Dodge.ArmedProneMarker);
-                proneAfter = defender.Descriptor.State.HasCondition(UnitCondition.Prone);
-                armorClassBuffAfter = defender.Descriptor.HasFact(
-                    gunslinger.Dodge.ArmorClassBuff);
-                acAfter = defender.Descriptor.Stats.AC.ModifiedValue;
-                Buff liveBuff = defender.Descriptor.Buffs.GetBuff(
-                    gunslinger.Dodge.ArmorClassBuff);
-                if (liveBuff == null) throw new InvalidOperationException(
-                    "The native Dodge command completed without its timed Buff fact.");
-                buffEndTime = liveBuff.EndTime;
-                buffRemaining = liveBuff.TimeLeft;
-                buffPermanent = liveBuff.IsPermanent;
-                buffNotDispelable = liveBuff.IsNotDispelable;
-                buffRank = liveBuff.GetRank();
-                exactBuffBlueprint = ReferenceEquals(liveBuff.Blueprint,
-                    gunslinger.Dodge.ArmorClassBuff);
-                buffIcon = liveBuff.Blueprint.Icon != null &&
-                    string.Equals(liveBuff.Blueprint.Icon.name,
-                        "KMG_Icon_gunslingers-dodge", StringComparison.Ordinal);
-                ownedModifiersWhileActive =
-                    GunslingerDodgeArmorClassBonus.ActiveModifiers;
-                var activeData = new Kingmaker.UnitLogic.Abilities.AbilityData(granted);
-                activeReactivationUnavailable = !activeData.IsAvailable;
-                gritAfterActiveReactivation = defender.Descriptor.Resources
-                    .GetResourceAmount(grit);
-
-                stage = "insufficient-rejection";
-                if (defender.Descriptor.HasFact(gunslinger.Dodge.ArmorClassBuff))
-                    defender.Descriptor.RemoveFact(
-                        gunslinger.Dodge.ArmorClassBuff);
-                acAfterRemoval = defender.Descriptor.Stats.AC.ModifiedValue;
-                ownedModifiersAfterRemoval =
-                    GunslingerDodgeArmorClassBonus.ActiveModifiers;
-                defender.Descriptor.State.RemoveCondition(UnitCondition.Prone);
-                defender.Descriptor.Resources.Spend(grit, afterApplied);
-                afterRejected = defender.Descriptor.Resources.GetResourceAmount(grit);
-                rejectedProne = defender.Descriptor.State.HasCondition(UnitCondition.Prone);
-                var rejectedData = new Kingmaker.UnitLogic.Abilities.AbilityData(
-                    granted);
-                rejectedConsumed = !rejectedData.IsAvailable;
-                rejectedAc = defender.Descriptor.Stats.AC.ModifiedValue;
-            }
-            catch (Exception exception)
-            {
-                throw new InvalidOperationException(
-                    "Disposable Gunslinger's Dodge failed at stage " + stage + ".",
-                    exception);
-            }
-            finally
-            {
-                MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController)
-                    .GetMethod("Cancel", BindingFlags.Public | BindingFlags.Instance);
-                if (controller != null && cancel != null) cancel.Invoke(controller, null);
-                if (defender != null && defender.Body != null &&
-                    defender.Body.Armor != null && defender.Body.Armor.HasArmor)
-                    defender.Body.Armor.RemoveItem(false);
-                if (defender != null) defender.Dispose();
-                if (disposableScene != null) disposableScene.Dispose();
-                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
-                    SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
-                    (defender == null || !ContainsReference(allUnits, defender));
-            }
-            string observed = "commandResult=" + commandResult + ";initial=" + initial +
-                ";afterApplied=" + afterApplied + ";armedAfter=" + armedAfter +
-                ";proneAfter=" + proneAfter + ";acBuff=" + armorClassBuffAfter +
-                ";acBefore=" + acBefore + ";acAfter=" + acAfter +
-                ";acAfterRemoval=" + acAfterRemoval +
-                ";afterRejected=" + afterRejected +
-                ";rejectedProne=" + rejectedProne + ";rejectedConsumed=" +
-                rejectedConsumed + ";rejectedAc=" + rejectedAc + ";applied=" +
-                GunslingerDodgeRuntimeDiagnostics.Applied + ";rejected=" +
-                GunslingerDodgeRuntimeDiagnostics.Rejected + ";duplicates=" +
-                GunslingerDodgeRuntimeDiagnostics.Duplicates + ";faults=" +
-                GunslingerDodgeRuntimeDiagnostics.Faults +
-                ";buffStart=" + buffStartTime + ";buffEnd=" + buffEndTime +
-                ";buffRemaining=" + buffRemaining + ";buffPermanent=" +
-                buffPermanent + ";buffRank=" + buffRank + ";exactBuff=" +
-                exactBuffBlueprint + ";buffIcon=" + buffIcon +
-                ";modifierTurnedOn=" + GunslingerDodgeArmorClassBonus.TurnedOn +
-                ";modifierTurnedOff=" + GunslingerDodgeArmorClassBonus.TurnedOff +
-                ";ownedModifiersWhileActive=" + ownedModifiersWhileActive +
-                ";ownedModifiersAfterRemoval=" + ownedModifiersAfterRemoval +
-                ";activeReactivationUnavailable=" + activeReactivationUnavailable +
-                ";gritAfterActiveReactivation=" + gritAfterActiveReactivation +
-                ";delivery=" + GunslingerDodgeRuntimeDiagnostics.DeliveryEvidence;
-            var assertions = new List<RuntimeTestAssertion>
-            {
-                Assertion("dodge-native-reaction", "armed; grit 2 -> 1; standing with +2 dodge buff",
-                    observed, initial == 2 && armedBefore && afterApplied == 1 &&
-                    !armedAfter && !proneAfter && armorClassBuffAfter,
-                    "persisted marker, exact shared grit, one-round BlueprintBuff"),
-                Assertion("dodge-trigger-ac",
-                    "actual AC increases by exactly 2 and returns after buff removal",
-                    observed, acAfter == acBefore + 2 &&
-                    acAfterRemoval == acBefore,
-                    "GunslingerDodgeArmorClassBonus owned buff component"),
-                Assertion("dodge-native-timed-buff",
-                    "exact visible non-permanent rank-1 buff with six seconds remaining",
-                    observed, exactBuffBlueprint && buffIcon && !buffPermanent &&
-                    buffRank == 1 && buffEndTime - buffStartTime ==
-                        TimeSpan.FromSeconds(6d) && buffRemaining > TimeSpan.Zero &&
-                    buffRemaining <= TimeSpan.FromSeconds(6d),
-                    "BuffCollection.AddBuff bounded six-second duration"),
-                Assertion("dodge-modifier-lifecycle",
-                    "one OnTurnOn and one OnTurnOff; AC returns exactly to baseline",
-                    observed, GunslingerDodgeArmorClassBonus.TurnedOn == 1 &&
-                    GunslingerDodgeArmorClassBonus.TurnedOff == 1 &&
-                    ownedModifiersWhileActive == 1 &&
-                    ownedModifiersAfterRemoval == 0 &&
-                    acAfterRemoval == acBefore,
-                    "Buff-owned modifier lifecycle"),
-                // The ability applies its buff through the native apply-buff
-                // action, which marks the buff only when AddBuff hands it
-                // back. AddBuff hands nothing back when activation is cut
-                // short, so the mark shows that activation completed.
-                Assertion("dodge-native-apply-completed",
-                    "the native apply-buff action received the buff and marked it not dispelable",
-                    "buffNotDispelable=" + buffNotDispelable, buffNotDispelable,
-                    "ContextActionApplyBuff through the native execution process"),
-                Assertion("dodge-active-reactivation-atomic",
-                    "active Dodge is unavailable and spends no Grit", observed,
-                    activeReactivationUnavailable &&
-                    gritAfterActiveReactivation == afterApplied,
-                    "IAbilityAvailabilityProvider active exact-buff rejection"),
-                Assertion("dodge-insufficient-atomic",
-                    "grit 0; unavailable; standing; AC remains at baseline", observed,
-                    afterRejected == 0 && rejectedConsumed && !rejectedProne &&
-                    rejectedAc == acBefore,
-                    "native AbilityResourceLogic availability and exact AC state"),
-                Assertion("dodge-no-legacy-reaction",
-                    "no legacy armed marker or reaction mutation", observed,
-                    armedBefore && !armedAfter && !proneAfter,
-                    "immediate one-round BlueprintBuff contract"),
-                Assertion("external-isolation", "unchanged party and global-unit snapshots",
-                    "cleaned=" + cleaned, cleaned,
-                    "armor removed and detached unit disposed"),
-                Assertion("loaded-mod-version", _request.ExpectedModVersion,
-                    _context.ModEntry.Info.Version,
-                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
-                    "Unity Mod Manager ModEntry.Info.Version")
-            };
-            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
-                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
-        }
-
         private RuntimeTestResult RunDisposableGunslingerDeadeye()
         {
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
@@ -36711,6 +36442,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             StopTeleportationSpellbookUi(result);
             StopMagicCircleUi(result);
             StopAlternateSummoningNatural(result);
+            StopGunslingerDodge(result);
             StopWhiteoutWeather(result);
             StopWhiteoutDisposableFixture(result);
             StopTeleportationLoadDiagnostics(result);

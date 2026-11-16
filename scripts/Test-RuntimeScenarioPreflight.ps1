@@ -534,6 +534,26 @@ foreach ($invalid in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'},
     @{saveName='KMG_AUTOMATION_WORKING'; saveWrite='true'})) {
     Assert-Throws { New-KmgRuntimeRequest @snakeFinalArguments -Parameters $invalid } 'snake-final-rejects-extra-scope-and-save-authority'
 }
+# Gunslinger's Dodge runs its ability command in the loaded working save; a request without that save,
+# with the baseline or with anything extra is refused before launch.
+$dodgeArguments = $snakeFinalArguments.Clone()
+$dodgeArguments.Scenario = 'disposable-gunslinger-dodge'
+$dodgeArguments.EvidenceDirectory = Join-Path $script:KmgRuntimeEvidenceRoot 'gunslinger-dodge-preflight-test'
+$dodgeMetadata = Get-KmgRuntimeScenarioMetadata $dodgeArguments.Scenario
+$dodgeRequest = New-KmgRuntimeRequest @dodgeArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+Assert-True ($dodgeMetadata.RequiresSaveName -and $dodgeMetadata.UsesWorkingStageTimeouts -and
+    $dodgeMetadata.UsesCatalogTimeout -and $dodgeMetadata.UsesSelectionTimeouts -and
+    $dodgeMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    $dodgeMetadata.ReadinessBehavior -ceq 'autonomous-working-save' -and
+    -not $dodgeMetadata.RequiresManualInteraction -and
+    $dodgeRequest.scenario -ceq 'disposable-gunslinger-dodge' -and
+    $dodgeRequest.parameters.saveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    $dodgeRequest.completionTimeoutSeconds -gt 0 -and $dodgeRequest.fingerprintTimeoutSeconds -gt 0) `
+    'gunslinger-dodge-is-autonomous-working-save-only'
+foreach ($invalid in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'}, @{saveName='SOME_OTHER_SAVE'},
+    @{saveName='KMG_AUTOMATION_WORKING'; saveWrite='true'})) {
+    Assert-Throws { New-KmgRuntimeRequest @dodgeArguments -Parameters $invalid } 'gunslinger-dodge-rejects-missing-baseline-other-or-extra-parameters'
+}
 Assert-True (-not $midgameDisposable.RequiresSaveName -and
     -not $midgameDisposable.RequiresManualInteraction) `
     'midgame-firearms-is-autonomous-save-free'
@@ -1405,6 +1425,8 @@ Assert-True ($orchestrator.Contains("'disposable-brown-fur-native-cast',")) `
     'brown-fur-native-cast-uses-working-save-result-deadline'
 Assert-True ($orchestrator.Contains("'disposable-alternate-summoning-natural',")) `
     'alternate-summoning-natural-uses-working-save-result-deadline'
+Assert-True ($orchestrator.Contains("'disposable-gunslinger-dodge',")) `
+    'gunslinger-dodge-uses-working-save-result-deadline'
 Assert-True ($orchestrator.Contains("'working-save-brown-fur-prepare',") -and
     $orchestrator.Contains("'working-save-brown-fur-verify-cleanup',")) `
     'brown-fur-persistence-uses-working-save-result-deadline'

@@ -1732,10 +1732,10 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
     'disposable-gunslinger-dodge' = [pscustomobject]@{
-        RequiresSaveName = $false; PermittedSaveName = $null
-        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
-        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
-        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
     'disposable-gunslinger-quick-clear' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null

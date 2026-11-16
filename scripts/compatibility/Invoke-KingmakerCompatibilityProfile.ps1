@@ -554,6 +554,7 @@ try {
         if ($name -in @('musket-master-mechanics-and-starter',
             'disposable-expanded-summoning',
             'working-save-smoke', 'working-save-expanded-summoning-creature-review', 'disposable-brown-fur-native-cast',
+            'disposable-gunslinger-dodge',
             'disposable-magic-circle-evil', 'disposable-magic-circle-ui', 'disposable-magic-circle-terrain',
             'observe-teleportation-world-map', 'disposable-teleportation-familiarity',
             'disposable-teleportation-resources',

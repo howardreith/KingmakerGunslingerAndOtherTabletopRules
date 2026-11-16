@@ -471,6 +471,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestScenarioCatalog.IsMagicCirclePersistence(request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableAlternateSummoningNatural ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableGunslingerDodge ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCoexistence ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCoexistenceGamepad ||

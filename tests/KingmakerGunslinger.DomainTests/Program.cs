@@ -1880,6 +1880,12 @@ namespace KingmakerGunslinger.DomainTests
             Case("loader-compat-probe.one-failing-cleanup-does-not-stop-others", LoaderCompatProbeLifecycleTests.OneFailingCleanupDoesNotStopTheOthers),
             Case("loader-compat-probe.cleanup-failure-cannot-pass", LoaderCompatProbeLifecycleTests.CleanupFailureCannotPass),
             Case("loader-compat-probe.next-probe-only-after-isolation-restored", LoaderCompatProbeLifecycleTests.NextProbeStartsOnlyAfterIsolationIsRestored),
+            Case("dodge-scenario.accepted-activation", GunslingerDodgeScenarioVerdictTests.AcceptedActivation),
+            Case("dodge-scenario.accepted-activation-effects", GunslingerDodgeScenarioVerdictTests.AcceptedActivationEffects),
+            Case("dodge-scenario.refused-attempt", GunslingerDodgeScenarioVerdictTests.RefusedAttemptChargesAndGrantsNothing),
+            Case("dodge-scenario.incoming-attack", GunslingerDodgeScenarioVerdictTests.IncomingAttackReadsTheBonus),
+            Case("dodge-scenario.unused-expiry", GunslingerDodgeScenarioVerdictTests.UnusedExpiry),
+            Case("dodge-scenario.recast-prerequisites", GunslingerDodgeScenarioVerdictTests.RecastNeedsItsPrerequisites),
             Case("acquisition.distributed-campaign", PlayerFacingPresentationAndDiscoverabilityTests.DistributedCampaignPassesDiscoverabilityPolicy),
             Case("acquisition.weapon-physical-evidence-gates", WeaponFindabilityTests.MissingPhysicalEvidenceNeverPasses),
             Case("acquisition.weapon-curated-measured-gates", WeaponFindabilityTests.CuratedCountsRequireTheirOwnMeasuredGates),
@@ -3326,12 +3332,16 @@ namespace KingmakerGunslinger.DomainTests
 
         private static void ThirdPlaytestDodgeNoProne()
         {
+            // The live path: the registered ability's native apply-buff
+            // action and the buff's own armor-class component.
             string source = ThirdPlaytestSource(
-                "src/KingmakerGunslinger/Deeds/GunslingerDodgeRuntime.cs") +
+                "src/KingmakerGunslinger/Blueprints/GunslingerDodgeBlueprints.cs") +
                 ThirdPlaytestSource(
-                "src/KingmakerGunslinger/Deeds/GunslingerDodgeProneAbilityLogic.cs");
+                "src/KingmakerGunslinger/Deeds/GunslingerDodgeArmorClassBonus.cs") +
+                ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Deeds/DodgeGritCostCalculator.cs");
             Assertions.True(!source.Contains("AddCondition(UnitCondition.Prone") &&
-                source.Contains("m_ArmorClassBuff"),
+                source.Contains("applyBuff.Buff = armorClassBuff"),
                 "Gunslinger's Dodge still applies Prone.");
         }
 
