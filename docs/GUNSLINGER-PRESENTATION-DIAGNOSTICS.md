@@ -9,6 +9,12 @@ INT-04 (audit finding GS-AUD-0045) and INT-05 (GS-AUD-0046). Current status is k
 `planning/GUNSLINGER-REMEDIATION-STATUS.md`. It repairs two diagnostics. Gameplay, released identities and authored
 assets are unchanged.
 
+The record was revised after the review of PR #172 at `3881533ef1`. The review accepted the declared rosters, the
+independent evaluation, the evaluator tests and the healthy-catalog native results, and found two things to correct:
+a malformed catalog entry could still stop readable items reaching the evaluator, and the explanation of why the 27
+progression firearms are outside the visual roster was wrong. Both corrections, their tests and the new run are
+under "Review corrections" below. The first candidate's results are kept as recorded.
+
 ## What was wrong
 
 **`disposable-firearm-visual-rigs`** judged the firearm items' visuals with
@@ -46,16 +52,20 @@ Nothing a running game reports supplies its own expectation.
 | Presentation items | **58** | the 57 weapons and the Cord of Stubborn Resolve |
 | Custom weapon enchantments | **12** | Reliable; Seeking; the Falling Petal, Mountain-Sunder and Unfixed Form effect enchantments; the Eastern proficiency policy enchantment (policy-only, blank text); the spear's movement-opportunity accuracy; the Boughkeeper, Thornstep, Viper's Reach, Briar-Crowned and First Branch enchantments |
 
-Why sixteen and not fourteen: the firearm roster is the items whose builders apply an exact item visual variant.
-Those builders are the Test Musket's, the production firearms' and the magic firearms'. The magic builder gained the
-two midgame firearms in 0.0.116, and the pin was not moved. For the same reason the presentation counts are 57 and 58
-and not 55 and 56. The Test Musket is development-only; it is in the visual roster by design and is not a
-presentation weapon.
+Why sixteen and not fourteen: the firearm roster is the population this scenario selects and reads, which is the
+Test Musket, the production firearms and the magic firearm catalog. That catalog gained the two midgame firearms in
+0.0.116, and the pin was not moved. For the same reason the presentation counts are 57 and 58 and not 55 and 56. The
+Test Musket is development-only; it is in the visual roster by design and is not a presentation weapon.
 
 What is not in the firearm roster: the 27 generic progression firearms (+2 to +5 and Reliable +1 to +5 for pistol,
-musket and blunderbuss). They have visual-catalog mappings too, but they are built by the progression builder, which
-applies no item variant of its own, and this scenario has never read them. A domain test pins the arithmetic: the
-visual catalog's firearm mappings are exactly the sixteen and those twenty-seven.
+musket and blunderbuss). They receive item variants as well, through the same registration helper:
+`ProgressionWeaponBlueprints.RegisterFirearm` calls `MagicFirearmBlueprints.RegisterItem`, which calls
+`FirearmWeaponPresentation.ApplyItemVariant` with the item's own symbol, and the visual catalog maps each of them to
+its family's Service variant. The sixteen are therefore not "the items that have an item variant"; they are the
+items this scenario reads. The 27 are outside its observations, and nothing here establishes whether their bindings
+hold in the game. A domain test pins the arithmetic: the visual catalog's firearm mappings are exactly the sixteen
+and those twenty-seven. (An earlier version of this record said the progression builder applies no item variant.
+That was wrong.)
 
 Each declared symbol is an active entry of its type in `blueprints/blueprints.json`, the manifest the game deploys
 (checked by a domain test: 71 distinct GUIDs for the 58 items, the Test Musket and the 12 enchantments). In the game,
@@ -78,9 +88,9 @@ stop the sets being compared, and a matching count does not excuse a replacement
   symbol; the variant's prefab is not loaded; the item has no visual parameters; the item's model is X, not the
   variant prefab Y. An expected identity that was not observed is a binding failure of its own.
 
-The game's items are read source by source. A source that cannot be read becomes a malformed observation in the
-census and the other sources are still read. `FirearmWeaponPresentation.HasExactItemVariant` now goes through the
-same inspection and no longer throws. `pistol-three-variant-separation` reports an unreadable input instead of
+The game's items are read source by source and, since the review correction, entry by entry (see "Review
+corrections"). `FirearmWeaponPresentation.HasExactItemVariant` now goes through the same inspection and no longer
+throws. `pistol-three-variant-separation` reports an unreadable input instead of
 ending the scenario.
 
 **INT-05: `ProjectItemPresentationAudit`.** Five assertions, then the aggregate under the name the check has always
@@ -168,11 +178,117 @@ So the failing condition is the muzzle's position, the same on both prefabs. Whe
 position is wrong is not established: that is S3 T8's question and was not worked here. The assertion, its verdict
 and the assets are unchanged.
 
+## Review corrections (PR #172 at `3881533ef1`)
+
+Correction commit `bb205b774b`. Roster sizes, gameplay, identities and assets are unchanged.
+
+### 1. Collection before evaluation
+
+What the review found, confirmed in the code:
+
+- **INT-04.** The magic firearm loop evaluated `current.Spec.Symbol` and `current.Spec.Kind` before entering the
+  per-item wrapper. A null entry or a null Spec raised into the catalog-wide catch, the loop ended, and every later
+  entry was reported as not observed whatever its real binding was.
+- **INT-05.** Each source was projected with `value.Item` and materialized with `ToArray()` before anything was
+  recorded. One malformed entry discarded the whole source's readable items, which then never reached their
+  identity, text or enchantment checks.
+
+Collection now goes through one small shared reader (`Presentation/SourceCollection.cs`, engine-free) and the two
+collectors built on it, `FirearmVisualCollection` and `ProjectItemCollection`. The runner calls these with the live
+catalogs; the tests call the same routines with stand-in entries. There are three separate failure boundaries:
+
+| Boundary | When it fails | What is kept | Where it is reported |
+|---|---|---|---|
+| obtaining the source | the catalog cannot be read, or is null | nothing from that source; the other sources are still read | `sourceFaults=source(reason)` |
+| stepping the source | enumeration raises part-way | every entry read before the stop, with its real results | `sourceFaults=source(enumeration stopped after N entries: reason)` |
+| one field of one entry | the entry is null, has no Spec, has no symbol, has no item, or a field raises | every other field of that entry that could be read, and every other entry | `malformedObserved=source[index](reason)` |
+
+A malformed entry and a source fault are never under the same heading. A malformed entry is an entry that was
+there, so it counts in `observed=`; a source fault is not an entry and does not. No identity is invented: an entry
+whose symbol could not be read has none, is located as `source[index]`, and the identity it should have supplied is
+reported as missing.
+
+For the firearm check, an entry's Spec, symbol, kind and item are read separately. With the metadata unreadable, the
+item is still read and what was read of it is in the result (`malformed entry: the entry has no Spec; item read as
+...`). With the metadata sound and the item unreadable, the entry keeps its symbol and variant and reports `the item
+could not be read`. A source fault adds no binding of its own, since there is no item to inspect; the binding
+assertion fails, says `sourceFaults=...`, and lists the identities that source should have supplied as not observed.
+
+For the item check, a readable item goes on to the text and enchantment checks even if its identity cannot be
+read. The flavor rule for generic magic firearms is read entry by entry as well, so a malformed entry no longer turns
+the rule off for the readable ones.
+
+### 2. The progression firearms
+
+Corrected above under "The expected identity sets", in the comments of `ProjectItemRosters.cs`, in the roster
+assertion's expected text (now "the N firearm items this scenario reads") and in `KNOWN-ISSUES.md`. The roster stays
+at sixteen. No native case was added for the 27.
+
+### Tests
+
+`.\scripts\Invoke-KmgGate.ps1 -Filter 'presentation-collection;presentation-audit;firearm-fit;eastern-weapons;elven-branched-spear;weapon-visual'`:
+production compiled; 60 of 3,032 registered tests selected, 0 failures (16 s). The candidate build's own selection:
+74 of 3,032, 0 failures. The ten `presentation-audit.*` tests are unchanged and pass.
+
+Seven tests are new (`presentation-collection.*`). Each starts from raw catalog entries and runs the production
+collector, then the production evaluation.
+
+| Test | What it shows |
+|---|---|
+| `firearm-entries-healthy-catalog-collects-everything` | sixteen collected, the ten catalog entries located by position, both assertions pass, no malformed entry or source fault reported |
+| `firearm-entries-malformed-entry-does-not-hide-later-binding` | a valid entry, then a null entry, then an item with the wrong model, and further on an entry with no Spec: all sixteen positions are collected; the valid entry is bound; the null entry and the entry with no Spec are reported at `magic firearms[1]` and `magic firearms[4]`, the second with the item name that was read; the wrong model is reported as `the item's model is KMG_Firearm_Pistol_Service` against `Blunderbuss.Service`, not as "not observed"; the six later entries are bound; the two unsupplied identities are missing; no source fault |
+| `firearm-entries-partial-metadata-and-item-faults` | an unreadable Spec, a Spec with no symbol, an unreadable kind (the symbol that was read is kept) and a sound entry with an unreadable item (symbol and variant kept): each reported with its reason, the entries between them bound, and the last entry's wrong model still reported |
+| `firearm-entries-source-faults-are-not-entry-faults` | an unobtainable catalog and a null catalog are source faults, not malformed entries, are not counted as observed, and the six items outside the catalog are still bound; a catalog that stops after three entries keeps those three with their results, including a wrong model among them |
+| `item-sources-healthy-catalogs-collect-everything` | 57 collected from the six sources, no fault, all assertions pass |
+| `item-sources-keep-entries-around-a-malformed-entry` | in one run, a null entry between readable ones, an entry with no item, an entry whose item raises, a later item with a blank name, a later item outside the roster, and an unobtainable source followed by a healthy one: the 48 readable items are retained in order, including those on both sides of each malformed entry and the whole source after the unavailable one; the three entry faults and the one source fault are recorded by kind and place; the census reports `malformedObserved`, `sourceFaults`, the unexpected weapon and exactly the unsupplied identities as missing; the text assertion still reports the blank name; the aggregate names both failed parts |
+| `item-sources-enumeration-stop-and-unreadable-identity` | a source that stops after two entries keeps those two and the later sources are read in full; an item whose identity cannot be read is still retained for its checks and reported at its place |
+
+The stand-ins are an entry with a Spec and an item, and an item with a name, a model, a key and a display name. The
+runner's own wiring of the live catalogs to these collectors is not exercised by the domain tests; the native run
+below exercises it on healthy catalogs.
+
+### Native run on the corrected candidate
+
+Same session file, same route: the disposable game copy, loader profile `owner-0.33.0`, no other mods, no save.
+Candidate `bb205b774b58`, session `20261116T052756Z` (137 s).
+
+| Scenario | Result |
+|---|---|
+| `disposable-firearm-visual-rigs` | **FAIL, 1 of 67 not passing**: `pistol-authored-marker-contract` only |
+| `observe-gunslinger-presentation` | **PASS, 14 of 14** |
+
+- `firearm-item-visual-roster`: PASS, `expected=16;observed=16;count=match;membership=match`.
+- `firearm-item-visual-bindings`: PASS, `inspected=16;bound=16;failed=0`.
+- `project-item-weapon-census` 57 of 57, `project-item-census` 58 of 58, `project-custom-enchantment-census` 12 of
+  12, each `count=match;membership=match`; `project-policy-enchantment` PASS (among the weapons' enchantments, name
+  and description length 0); `project-item-player-facing-text` PASS, `issues=<none>`; the aggregate
+  `weapons=57/57;items=58/58;customEnchantments=12/12;issues=<none>;failed=<none>`.
+- `pistol-authored-marker-contract`: FAIL, unchanged. Both prefabs: four markers once each, no support-hand target,
+  `Muzzle` at (-0.148261815, -0.2356837, 0.0520571172) against (0, 0, 0.264).
+
+No malformed catalog was injected in the game; the review did not ask for one. The failure paths are established by
+the collection tests, and this run establishes that the corrected collectors read the live catalogs as before. The
+baseline comparison was not repeated.
+
+| Item | Identity |
+|---|---|
+| Correction commit | `bb205b774b` |
+| Candidate | built once at `bb205b774b58`, 412 s; package SHA-256 `38ef755c028d24d7c0dca1138f5f80d72161c1d0fdd55b7341fe2aa914e6f206`, DLL `07523ecc5631efab319db7750bee13aa03360e6b6fe9f38cb9d73eca7b43549a` |
+| Session file | unchanged, SHA-256 `18a3c6b2a4adf8aca5fbe3301c0ea6d26526bfa48ae40b3b1c47d53036e3327e` |
+| Harness | unchanged, DLL `50989f667d8f3fcd4c77b59a3881a5b2d961cae0cfa2f6dc53f337e7aa38cbf5` |
+| Fixture | none: no save, no other mods |
+
+The session reported the owner's 95 save files and installation unchanged and the registry restored. Its verdict is
+FAIL because of the marker assertion, kept as it is.
+
+Validation time for the corrections: about 10 minutes (gate runs 16, 4 and 16 s, candidate build 412 s, session
+137 s).
+
 ## Identities
 
 | Item | Identity |
 |---|---|
-| Product commit | `baad52d579` (the only product change after `7c4cb8ad44`) |
+| Product commit | `baad52d579` (the first candidate; the correction commit and its candidate are under "Review corrections") |
 | Candidate | built once at `35049ef6fde7`, 415 s; package SHA-256 `aae60220ea5e8b3348f9bc7d0149baaa80e5a63f5bc7f7b0fedb8959d3ec9141`, DLL `6af1435ab99dfd27e1dae2cea0486426b998c0455fcca9be793bee01f62220c5` |
 | Baseline | PR #171's candidate `15767a89ad2b`, package `462696cc2bd30874d89df251a7bdcb289080e6fb7c8eb79c2948a1c9a3e7eedc`, DLL `9519bb86b864480de2d21f3bd0330317d96dc5a879a451da614d3e02ff5fc5a3`, not rebuilt |
 | Session file | `presentation-diagnostics.json`, SHA-256 `18a3c6b2a4adf8aca5fbe3301c0ea6d26526bfa48ae40b3b1c47d53036e3327e`, commit `35049ef6fd` |
@@ -189,9 +305,12 @@ session 133 s).
 
 - Both scenarios ran with no other mods. They were not run in the owner's mod stack or through the live guarded
   launcher.
-- No failing census or binding was produced in the game; the failure reports are covered by the domain tests.
+- No failing census or binding, and no malformed or unavailable catalog, was produced in the game; those reports
+  are covered by the domain tests. The runner's wiring of the live catalogs to the collectors is exercised only on
+  healthy catalogs.
 - The firearm roster is matched on the symbol each runtime entry carries, not on GUID.
-- The 27 progression firearms' visuals are still read by no scenario.
+- The 27 progression firearms receive item variants through the shared registration helper and are read by no
+  scenario; whether their bindings hold in the game is not established.
 - A structured check of identities, model references and text. It establishes nothing about how anything looks.
 - `pistol-authored-marker-contract` still fails; its cause is not established.
 - The complete domain suite was not run for this cut.

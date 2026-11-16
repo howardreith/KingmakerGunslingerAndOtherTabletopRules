@@ -110,8 +110,10 @@
   support-hand target, but their `Muzzle` is at local (-0.1483, -0.2357, 0.0521) where the assertion expects
   (0, 0, 0.264). Whether the prefabs or the expectation is wrong is not established, and what a player would see of
   it (a muzzle-flash origin) has not been looked at. Not repaired.
-- The 27 generic progression firearms (+2 to +5 and Reliable, for pistol, musket and blunderbuss) have approved
-  visual mappings that no scenario reads. They share their family's generic model.
+- The 27 generic progression firearms (+2 to +5 and Reliable, for pistol, musket and blunderbuss) receive an item
+  visual variant through the same registration helper as the magic firearms, each mapped to its family's Service
+  variant. No scenario reads them, so whether those bindings hold in the game is not established. The sixteen-item
+  roster of `disposable-firearm-visual-rigs` is the population that scenario reads, not every firearm with a variant.
 - In `disposable-pistolero-deeds`, the damage assertion `up-close-critical` is intermittent on the grit UI recipient
   candidate: two of three identical runs failed (observed damage `6,3`) and one passed (`3,3`). The published v0.0.190
   package was run once and passed, which does not show whether it is intermittent there. The cause is not established.
