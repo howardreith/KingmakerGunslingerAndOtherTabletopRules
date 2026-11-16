@@ -3597,15 +3597,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _captureScheduleIndex++;
                 }
 
-                if (_captureScheduleIndex < AttackCaptureUpdates.Length) return;
                 bool attackObserved = IsFirearm(value)
                     ? FirearmDischargeRuntimeDiagnostics.Fired -
                         _firedBefore >= 1
                     : _commandRunningObserved && _animationObserved;
                 bool actedCaptureObserved = !_handgunMotion ||
                     _actedCaptureTaken;
-                if ((!attackObserved || !actedCaptureObserved) &&
-                    _attackUpdates < MaximumSettleUpdates) return;
+                if (!MotionAttackSequence.MayEnd(
+                    _captureScheduleIndex >= AttackCaptureUpdates.Length,
+                    attackObserved, actedCaptureObserved,
+                    _lifecycle.PauseOwned, _attackCommand.IsFinished,
+                    _attackUpdates, MaximumSettleUpdates)) return;
+                _diagnostics.Add(value.Variant + ":sequenceEnd=update=" +
+                    _attackUpdates + ";commandFinished=" +
+                    _attackCommand.IsFinished + ";pauseOwned=" +
+                    _lifecycle.PauseOwned);
                 RecordOutcome(value);
                 string removalRole;
                 _removedPresentation = ResolveActivePresentation(_actor,

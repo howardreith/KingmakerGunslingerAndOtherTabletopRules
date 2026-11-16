@@ -50,6 +50,36 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
     }
 
+    /// <summary>When the sampling of one attack may stop.</summary>
+    internal static class MotionAttackSequence
+    {
+        /// <summary>
+        /// The fixed samples are counted in updates, but the attack runs on
+        /// game time, so how far it has got by the last sample depends on
+        /// the frame rate. The engine does not interrupt an attack that has
+        /// acted while its animation is still playing, and under a pause
+        /// the session holds between sequences such a command never ends:
+        /// it stays in the unit's command slot, where the engine queues a
+        /// later command behind it instead of running it. So where the
+        /// session owns the pause, the sequence ends when its command has
+        /// finished. The settle limit ends it regardless.
+        /// </summary>
+        /// <param name="samplesTaken">Every fixed sample has been captured.</param>
+        /// <param name="attackObserved">The attack was seen to happen.</param>
+        /// <param name="actedSampleTaken">The acted-frame sample, where one is required, was captured.</param>
+        /// <param name="pauseOwned">The session holds the pause between sequences.</param>
+        /// <param name="commandFinished">The session's attack command has finished.</param>
+        internal static bool MayEnd(bool samplesTaken, bool attackObserved,
+            bool actedSampleTaken, bool pauseOwned, bool commandFinished,
+            int updates, int settleLimit)
+        {
+            if (!samplesTaken) return false;
+            if (updates >= settleLimit) return true;
+            return attackObserved && actedSampleTaken &&
+                (!pauseOwned || commandFinished);
+        }
+    }
+
     /// <summary>What ending a motion session from outside did.</summary>
     internal sealed class MotionTermination
     {

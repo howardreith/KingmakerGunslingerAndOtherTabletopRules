@@ -415,6 +415,45 @@ namespace KingmakerGunslinger.DomainTests
                 "A failed pause restoration passed the cleanup record.");
         }
 
+        internal static void AttackSequenceEndsWhenItsCommandHasUnderAnOwnedPause()
+        {
+            const int limit = 300;
+            // Every fixed sample comes first, whatever else is true.
+            Assertions.False(MotionAttackSequence.MayEnd(false, true, true, true, true, 95, limit),
+                "A sequence ended before its fixed samples were taken.");
+            Assertions.False(MotionAttackSequence.MayEnd(false, true, true, false, true, limit, limit),
+                "The settle limit ended a sequence before its fixed samples were taken.");
+
+            // At a high frame rate the last fixed sample comes while the
+            // attack is still playing. Under an owned pause the sequence
+            // goes on until the command has finished.
+            Assertions.False(MotionAttackSequence.MayEnd(true, true, true, true, false, 96, limit),
+                "A sequence ended under an owned pause with its command still running.");
+            Assertions.False(MotionAttackSequence.MayEnd(true, true, true, true, false, 140, limit),
+                "A sequence ended under an owned pause with its command still running.");
+            Assertions.True(MotionAttackSequence.MayEnd(true, true, true, true, true, 141, limit),
+                "A sequence did not end once its command had finished.");
+            // At a lower frame rate the command has finished by the last sample.
+            Assertions.True(MotionAttackSequence.MayEnd(true, true, true, true, true, 96, limit),
+                "A sequence whose command had finished by the last sample did not end there.");
+
+            // A game the session found running is sampled as it always was.
+            Assertions.True(MotionAttackSequence.MayEnd(true, true, true, false, false, 96, limit),
+                "A session that owns no pause waited for its command.");
+
+            // The existing conditions are kept.
+            Assertions.False(MotionAttackSequence.MayEnd(true, false, true, false, true, 96, limit),
+                "A sequence ended before the attack was observed.");
+            Assertions.False(MotionAttackSequence.MayEnd(true, true, false, false, true, 96, limit),
+                "A sequence ended before its acted sample was taken.");
+
+            // The settle limit ends a sequence that would otherwise wait.
+            Assertions.True(MotionAttackSequence.MayEnd(true, true, true, true, false, limit, limit),
+                "The settle limit did not end a sequence whose command never finished.");
+            Assertions.True(MotionAttackSequence.MayEnd(true, false, false, true, false, limit, limit),
+                "The settle limit did not end a sequence whose attack was never observed.");
+        }
+
         internal static void OuterAbortDrillIsItsOwnRequestAndFiresOnlyUnderAReleasedPause()
         {
             const string drill = MotionOuterAbortDrill.AttackSampling;

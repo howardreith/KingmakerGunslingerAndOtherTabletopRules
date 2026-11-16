@@ -1927,6 +1927,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("motion-session-lifecycle.initially-running-session-owns-no-pause", MotionSessionLifecycleTests.InitiallyRunningSessionOwnsNoPause),
             Case("motion-session-lifecycle.cleanup-failure-is-reported-and-the-abort-reason-kept", MotionSessionLifecycleTests.CleanupFailureIsReportedAndTheAbortReasonKept),
             Case("motion-session-lifecycle.outer-abort-drill-is-its-own-request", MotionSessionLifecycleTests.OuterAbortDrillIsItsOwnRequestAndFiresOnlyUnderAReleasedPause),
+            Case("motion-session-lifecycle.attack-sequence-ends-when-its-command-has-under-an-owned-pause", MotionSessionLifecycleTests.AttackSequenceEndsWhenItsCommandHasUnderAnOwnedPause),
             Case("acquisition.distributed-campaign", PlayerFacingPresentationAndDiscoverabilityTests.DistributedCampaignPassesDiscoverabilityPolicy),
             Case("acquisition.weapon-physical-evidence-gates", WeaponFindabilityTests.MissingPhysicalEvidenceNeverPasses),
             Case("acquisition.weapon-curated-measured-gates", WeaponFindabilityTests.CuratedCountsRequireTheirOwnMeasuredGates),
