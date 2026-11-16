@@ -113,9 +113,14 @@
   attack both pistols' bores are aligned with the target at the frame the shot fires. Corrected on branch
   `codex/rep03-named-pistol-muzzle` (not merged, not released); no model or bundle changed
   (`docs/GUNSLINGER-NAMED-PISTOL-MUZZLE.md`). How the pistols look was not reviewed.
+- On that branch only (the published line does not contain this code): the weapon motion evidence scenarios release a
+  paused game while an attack is sampled. As first written on the branch, a run that the runner ended early left the
+  game unpaused and its disposable units in place, and a high frame rate could leave an attack command running that
+  blocked the next weapon's. The corrected marker diagnostic also let a marker that was not a finite number pass.
+  All three are corrected on the branch and await review. These are diagnostics; none of this is player-facing.
 - The engine launches a firearm's projectile from the unit's left-palm locator, inherited from the native light
-  crossbow's projectile, not from the weapon's muzzle. At the frame a handgun shot fires, that point is 1.5 to 1.8 m
-  from the muzzle (service pistol, both named pistols and the revolver). The mod intends to hide the projectile's
+  crossbow's projectile, not from the weapon's muzzle. At the frame a handgun shot fires, that point is 1.4 to 1.8 m
+  from the muzzle over two runs (service pistol, both named pistols and the revolver). The mod intends to hide the projectile's
   model; whether it does, and so whether a player sees anything leave from the left hand, has not been examined. Long
   guns were not sampled. Observed, not classified, not changed.
 - The 27 generic progression firearms (+2 to +5 and Reliable, for pistol, musket and blunderbuss) receive an item
