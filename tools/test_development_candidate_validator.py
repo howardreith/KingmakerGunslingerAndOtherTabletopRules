@@ -130,6 +130,208 @@ class DevelopmentCandidateValidatorTests(unittest.TestCase):
                 gate.check_purpose(purpose)
 
 
+# The one authorized released-row correction, stated here independently of
+# the validator so that any widening of its constant is caught.
+KIT_POSITION = 206
+KIT = dict(symbol="KMG.Gunsmithing.GunsmithKit",
+           guid="d52aacb753434691b1ed85a16cc87104",
+           plannedType="BlueprintItem", status="active",
+           milestone="Sixth Playtest 0.0.66")
+FROZEN_NOTE = ("Stable non-consumable Gunsmith's Kit required for basic ammunition "
+               "crafting and for unified Broken-or-Wrecked-to-Normal firearm repair.")
+APPROVED_NOTE = ("Stable non-consumable Gunsmith's Kit required for basic ammunition "
+                 "crafting and for Broken-to-Normal field repair. Wrecked firearms "
+                 "are restored only by a completed full rest.")
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def ledger(kit_note, size=210):
+    """A synthetic released-shaped ledger with the Gunsmith's Kit record at
+    its real position and every other row distinct and well formed."""
+    rows = [dict(symbol="KMG.Fixture.Row%03d" % index, guid="%032x" % (index + 1),
+                 plannedType="BlueprintUnit", status="active",
+                 milestone="Sprint 1", notes="fixture note %d" % index)
+            for index in range(size)]
+    rows[KIT_POSITION] = dict(KIT, notes=kit_note)
+    return rows
+
+
+class AuthorizedNoteCorrectionTests(unittest.TestCase):
+    """The development comparator's one authorized released-row
+    correction, and everything it must still refuse."""
+
+    def setUp(self):
+        self.frozen = ledger(FROZEN_NOTE)
+        self.approved = ledger(APPROVED_NOTE)
+
+    def refuses(self, released, current):
+        with self.assertRaises(AssertionError):
+            gate.check_development_ledger(released, current)
+
+    def test_the_authorization_is_exactly_one_row_one_field_one_direction(self):
+        self.assertEqual(1, len(gate.AUTHORIZED_RELEASED_ROW_CORRECTIONS))
+        correction = gate.AUTHORIZED_RELEASED_ROW_CORRECTIONS[0]
+        self.assertEqual(KIT_POSITION, correction["position"])
+        self.assertEqual(dict(KIT, notes=FROZEN_NOTE), correction["before"])
+        self.assertEqual(dict(KIT, notes=APPROVED_NOTE), correction["after"])
+        self.assertEqual({"position", "authorization", "before", "after"},
+                         set(correction))
+
+    def test_frozen_to_approved_passes_with_no_appended_identity(self):
+        appended, corrections = gate.check_development_ledger(self.frozen, self.approved)
+        self.assertEqual(0, appended)
+        self.assertEqual(1, len(corrections))
+        record = corrections[0]
+        self.assertEqual((KIT_POSITION, KIT["symbol"], KIT["guid"], ["notes"]),
+                         (record["position"], record["symbol"], record["guid"],
+                          record["fields"]))
+        self.assertEqual({"notes": FROZEN_NOTE}, record["before"])
+        self.assertEqual({"notes": APPROVED_NOTE}, record["after"])
+        self.assertIn("INT-07", record["authorization"])
+
+    def test_correction_with_a_valid_appended_row_reports_the_append(self):
+        current = self.approved + [row("KMG.Added.New", "e" * 32)]
+        appended, corrections = gate.check_development_ledger(self.frozen, current)
+        self.assertEqual(1, appended)
+        self.assertEqual([KIT_POSITION], [value["position"] for value in corrections])
+
+    def test_identical_historical_rows_pass_with_no_correction(self):
+        self.assertEqual((0, []), gate.check_development_ledger(
+            self.frozen, copy.deepcopy(self.frozen)))
+
+    def test_a_baseline_already_approved_passes_an_identical_approved_row(self):
+        self.assertEqual((0, []), gate.check_development_ledger(
+            self.approved, copy.deepcopy(self.approved)))
+        current = self.approved + [row("KMG.Added.New", "e" * 32)]
+        self.assertEqual((1, []), gate.check_development_ledger(self.approved, current))
+
+    def test_approved_back_to_frozen_fails(self):
+        self.refuses(self.approved, self.frozen)
+
+    def test_unrecognized_wording_fails_in_either_place(self):
+        for before, after in (
+                (FROZEN_NOTE, "Stable non-consumable Gunsmith's Kit."),
+                (FROZEN_NOTE, APPROVED_NOTE + " "),
+                (FROZEN_NOTE, APPROVED_NOTE.lower()),
+                (FROZEN_NOTE, APPROVED_NOTE.replace("Broken-to-Normal", "Broken to Normal")),
+                (FROZEN_NOTE, ""),
+                (FROZEN_NOTE + " ", APPROVED_NOTE),
+                ("Some other released wording.", APPROVED_NOTE),
+                (APPROVED_NOTE + " (draft)", APPROVED_NOTE)):
+            self.refuses(ledger(before), ledger(after))
+
+    def test_the_approved_wording_gains_nothing_on_another_row_or_position(self):
+        # Another record at position 206 taking the approved note.
+        released = ledger(FROZEN_NOTE)
+        current = ledger(APPROVED_NOTE)
+        released[KIT_POSITION] = dict(released[KIT_POSITION - 1])
+        released[KIT_POSITION - 1] = dict(KIT, notes=FROZEN_NOTE)
+        current[KIT_POSITION] = dict(released[KIT_POSITION], notes=APPROVED_NOTE)
+        current[KIT_POSITION - 1] = dict(KIT, notes=FROZEN_NOTE)
+        self.refuses(released, current)
+        # The Kit record itself at another position.
+        released = ledger(FROZEN_NOTE)
+        current = ledger(APPROVED_NOTE)
+        for rows in (released, current):
+            rows[KIT_POSITION - 1], rows[KIT_POSITION] = rows[KIT_POSITION], rows[KIT_POSITION - 1]
+        self.refuses(released, current)
+        # The approved wording on another record, Kit unchanged or corrected.
+        for kit_note in (FROZEN_NOTE, APPROVED_NOTE):
+            current = ledger(kit_note)
+            current[10]["notes"] = APPROVED_NOTE
+            self.refuses(self.frozen, current)
+        # The frozen wording on another record changing to the approved one.
+        released = ledger(FROZEN_NOTE)
+        current = ledger(APPROVED_NOTE)
+        released[10]["notes"] = FROZEN_NOTE
+        current[10]["notes"] = APPROVED_NOTE
+        self.refuses(released, current)
+
+    def test_any_other_field_of_the_kit_record_fails(self):
+        changes = {"symbol": "KMG.Gunsmithing.GunsmithKit2",
+                   "guid": "d52aacb753434691b1ed85a16cc87105",
+                   "plannedType": "BlueprintItemEquipment", "status": "retired",
+                   "milestone": "Seventh Playtest"}
+        for field, value in changes.items():
+            for note in (APPROVED_NOTE, FROZEN_NOTE):
+                current = ledger(note)
+                current[KIT_POSITION][field] = value
+                self.refuses(self.frozen, current)
+
+    def test_another_released_change_fails_beside_the_correction(self):
+        for field, value in (("notes", "fixture note 10 changed"),
+                             ("guid", "f" * 32), ("symbol", "KMG.Fixture.Other"),
+                             ("plannedType", "BlueprintItem"), ("status", "reserved"),
+                             ("milestone", "Sprint 2")):
+            current = copy.deepcopy(self.approved)
+            current[10][field] = value
+            self.refuses(self.frozen, current)
+
+    def test_reorder_removal_truncation_malformed_and_duplicates_fail(self):
+        current = copy.deepcopy(self.approved)
+        current[3], current[4] = current[4], current[3]
+        self.refuses(self.frozen, current)
+        self.refuses(self.frozen, self.approved[:3] + self.approved[4:])
+        self.refuses(self.frozen, self.approved[:KIT_POSITION + 1])
+        current = copy.deepcopy(self.approved)
+        del current[20]["notes"]
+        self.refuses(self.frozen, current)
+        current = copy.deepcopy(self.approved)
+        current[20]["extra"] = 1
+        self.refuses(self.frozen, current)
+        current = copy.deepcopy(self.approved)
+        current[20]["guid"] = "BAD"
+        self.refuses(self.frozen, current)
+        self.refuses(self.frozen, self.approved + [row("KMG.Added.New", KIT["guid"])])
+        self.refuses(self.frozen, self.approved + [row(KIT["symbol"], "e" * 32)])
+
+    def test_the_historical_comparator_is_unchanged(self):
+        # The release validators import check_append_only; it still allows
+        # no released row to change, including this one.
+        with self.assertRaises(AssertionError):
+            gate.check_append_only(self.frozen, self.approved)
+        self.assertEqual(0, gate.check_append_only(self.frozen, copy.deepcopy(self.frozen)))
+
+
+class ReleasedLedgerCorrectionTests(unittest.TestCase):
+    """The authorization against the actual released ledger of v0.0.191."""
+
+    @classmethod
+    def setUpClass(cls):
+        found = subprocess.run(["git", "-c", "core.longpaths=true", "show",
+                                "v0.0.191:blueprints/blueprints.json"],
+                               cwd=ROOT, capture_output=True, check=False)
+        cls.released = None if found.returncode else \
+            json.loads(found.stdout.decode("utf-8-sig"))["entries"]
+
+    def setUp(self):
+        if self.released is None:
+            self.skipTest("release tag v0.0.191 is not available; fetch it with "
+                          "git fetch --tags origin")
+
+    def test_the_released_row_is_the_authorized_before(self):
+        self.assertEqual(dict(KIT, notes=FROZEN_NOTE), self.released[KIT_POSITION])
+
+    def test_the_released_ledger_against_itself_passes(self):
+        self.assertEqual((0, []), gate.check_development_ledger(
+            self.released, copy.deepcopy(self.released)))
+
+    def test_the_released_ledger_with_only_the_correction_passes(self):
+        current = copy.deepcopy(self.released)
+        current[KIT_POSITION]["notes"] = APPROVED_NOTE
+        appended, corrections = gate.check_development_ledger(self.released, current)
+        self.assertEqual(0, appended)
+        self.assertEqual([(KIT_POSITION, ["notes"])],
+                         [(value["position"], value["fields"]) for value in corrections])
+
+    def test_the_released_ledger_with_one_more_note_change_fails(self):
+        current = copy.deepcopy(self.released)
+        current[KIT_POSITION]["notes"] = APPROVED_NOTE
+        current[KIT_POSITION + 1]["notes"] += " changed"
+        with self.assertRaises(AssertionError):
+            gate.check_development_ledger(self.released, current)
+
+
 class ReleaseBaselineTests(unittest.TestCase):
     """The baseline is the publisher's `v<version>` tag, found in a real
     Git history, so no validator edit is needed after a release."""
