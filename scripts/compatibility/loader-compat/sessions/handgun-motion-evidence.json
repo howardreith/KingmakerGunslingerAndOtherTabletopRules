@@ -1,0 +1,57 @@
+{
+  "name": "handgun-motion-evidence",
+  "description": "The product's weapon-presentation-handgun-motion-evidence scenario, run in the disposable game copy through the product's guarded working-save route, for REP-03. It loads KMG_AUTOMATION_WORKING read-only, equips a disposable actor with the service pistol, Duelist's Rebuttal, The Last Word and the revolver in turn (and the native light crossbow and shortspear as controls), issues the game's own attack command at a disposable target, and records the live held model's Grip, Muzzle and bore at the ready and at the frame the attack acts, together with where the engine's projectile source bone is at that sample. The save loads paused in this route; the scenario releases time for the attack samples and restores the pause at cleanup. The two automation saves are fixtures: run with -FixtureDir pointing at a folder that holds copies of Manual_298_KMG_AUTOMATION_BASELINE.zks and Manual_299_KMG_AUTOMATION_WORKING.zks; the owner's own files are only read to make those copies. The working save was made with the owner's mod stack and does not load without it, so the owner's other mods are staged from the copy's pristine snapshot.",
+  "ownerMods": [
+    "BagOfTricks",
+    "BetterVendors",
+    "CallOfTheWild",
+    "CheatMenu",
+    "CraftMagicItems",
+    "EddicKingmakerRespec",
+    "KingmakerBugfixes",
+    "ProperFlanking2",
+    "RacesUnleashed",
+    "SkipIntro",
+    "TweakOrTreat",
+    "ZFavoredClass"
+  ],
+  "fixtureSaves": [
+    "Manual_298_KMG_AUTOMATION_BASELINE.zks",
+    "Manual_299_KMG_AUTOMATION_WORKING.zks"
+  ],
+  "launches": [
+    {
+      "label": "handgun-motion",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]"
+        ]
+      },
+      "product": {
+        "scenario": "weapon-presentation-handgun-motion-evidence",
+        "parameters": {
+          "saveName": "KMG_AUTOMATION_WORKING"
+        },
+        "timeoutSeconds": 1200,
+        "timeouts": {
+          "catalogTimeoutSeconds": 180,
+          "selectionTimeoutSeconds": 300,
+          "completionTimeoutSeconds": 900,
+          "mainMenuTimeoutSeconds": 180,
+          "actionResolutionTimeoutSeconds": 180,
+          "actionInvocationTimeoutSeconds": 30,
+          "descriptorResolutionTimeoutSeconds": 30,
+          "loadEntryTimeoutSeconds": 30,
+          "fingerprintTimeoutSeconds": 180
+        }
+      }
+    }
+  ]
+}

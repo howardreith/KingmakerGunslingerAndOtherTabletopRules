@@ -14155,8 +14155,17 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             var instances = new List<GameObject>();
             bool renderable = true;
-            bool exactPistolMarkers = true;
-            var pistolMarkerDetail = new List<string>();
+            // The named pistols' marker contract. The source coordinates are
+            // the generator's; the held anchor and forward are the donor
+            // frame the bundle builder is declared to place them in. Every
+            // position is compared in the prefab root frame.
+            var pistolRigs = new List<Presentation.AuthoredMarkerRigAudit>();
+            Presentation.AuthoredMarkerRigExpectation pistolExpectation =
+                Presentation.AuthoredMarkerRigExpectation.NamedPistol(
+                    FramePointOf(WeaponPresentationDonorFrames
+                        .PiercingOneHandedHeldPosition),
+                    FramePointOf(WeaponPresentationDonorFrames
+                        .PiercingOneHandedFirearmForward));
             bool cleaned = false;
             try
             {
@@ -14174,55 +14183,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                         FirearmAssetRuntime.HasValidatedItemVariant(variant);
                     if (variant == WeaponVisualVariantCatalog.PistolDuelist ||
                         variant == WeaponVisualVariantCatalog.PistolLastWord)
-                    {
-                        Transform visual = instance == null ? null :
-                            instance.transform.Find("Visual");
-                        Transform[] hierarchy = visual == null
-                            ? Array.Empty<Transform>()
-                            : visual.GetComponentsInChildren<Transform>(true);
-                        exactPistolMarkers &= new[] { "KMG_Grip", "KMG_Support",
-                            "KMG_Butt", "KMG_Muzzle" }.All(marker =>
-                                hierarchy.Count(value => value.name == marker) == 1);
-                        exactPistolMarkers &= instance != null &&
-                            instance.transform.Find("SupportHandTarget") == null &&
-                            instance.transform.Find("Muzzle") != null &&
-                            Vector3.Distance(instance.transform.Find("Muzzle")
-                                .localPosition, new Vector3(0f, 0f, 0.264f)) <
-                                0.0001f;
-                        // Each sub-condition as read, so that a failure can
-                        // be attributed. The verdict above is unchanged.
-                        Transform muzzle = instance == null ? null :
-                            instance.transform.Find("Muzzle");
-                        pistolMarkerDetail.Add(variant + "[instance=" +
-                            (instance != null) + ";visual=" + (visual != null) +
-                            ";markers=" + string.Join(",", new[] { "KMG_Grip",
-                                "KMG_Support", "KMG_Butt", "KMG_Muzzle" }.Select(
-                                    marker => marker + ":" + hierarchy.Count(
-                                        value => value.name == marker)).ToArray()) +
-                            ";supportHandTarget=" + (instance != null &&
-                                instance.transform.Find("SupportHandTarget") != null) +
-                            ";muzzle=" + (muzzle == null ? "<absent>" :
-                                muzzle.localPosition.x.ToString("R",
-                                    System.Globalization.CultureInfo.InvariantCulture) + "," +
-                                muzzle.localPosition.y.ToString("R",
-                                    System.Globalization.CultureInfo.InvariantCulture) + "," +
-                                muzzle.localPosition.z.ToString("R",
-                                    System.Globalization.CultureInfo.InvariantCulture)) +
-                            ";expectedMuzzle=0,0,0.264]");
-                    }
+                        pistolRigs.Add(Presentation.AuthoredMarkerRigAudit.Evaluate(
+                            ObserveAuthoredMarkerRig(variant, instance),
+                            pistolExpectation));
                 }
                 assertions.Add(Assertion("firearm-seven-approved-variant-prefabs",
                     "seven exact reusable variants instantiate visibly",
                     "variants=" + string.Join("|", variants),
                     variants.Length == 7 && renderable,
                     "runtime-loaded exact variant prefab set"));
-                assertions.Add(Assertion("pistol-authored-marker-contract",
-                    "Duelist and LastWord retain exactly four authored markers, +Z muzzle, and no support IK",
-                    "exact=" + exactPistolMarkers + ";" + (pistolMarkerDetail.Count == 0
-                        ? "noPistolVariantInstantiated" :
-                        string.Join(";", pistolMarkerDetail.ToArray())),
-                    exactPistolMarkers,
-                    "runtime-loaded source marker hierarchy"));
+                // Each relationship is its own assertion; the aggregate keeps
+                // the name the check has always had. Until REP-03 this
+                // compared the root Muzzle's position in the prefab root
+                // frame with the marker's coordinate in the source model's
+                // frame (0, 0, 0.264), which only agree while the Visual
+                // placement is the identity.
+                Presentation.AuditOutcome pistolAggregate;
+                foreach (Presentation.AuditOutcome outcome in
+                    Presentation.AuthoredMarkerRigAudit.Combine(pistolRigs,
+                        out pistolAggregate))
+                    assertions.Add(Assertion(outcome.Name, outcome.Expected,
+                        outcome.Observed, outcome.Passed,
+                        "runtime-loaded item variant prefab; positions compared in the prefab root frame"));
+                bool bothNamedPistols = pistolRigs.Select(value => value.Variant)
+                    .Distinct(StringComparer.Ordinal).OrderBy(value => value,
+                        StringComparer.Ordinal).SequenceEqual(new[] {
+                            WeaponVisualVariantCatalog.PistolDuelist,
+                            WeaponVisualVariantCatalog.PistolLastWord }.OrderBy(
+                                value => value, StringComparer.Ordinal));
+                assertions.Add(Assertion(pistolAggregate.Name,
+                    "Duelist and LastWord: " + pistolAggregate.Expected,
+                    pistolAggregate.Observed + ";bothNamedPistolsInspected=" +
+                        bothNamedPistols,
+                    pistolAggregate.Passed && bothNamedPistols,
+                    "runtime-loaded item variant prefabs against the generator's source markers and the declared held donor frame"));
+                AppendFirearmProjectileSourceAssertion(assertions, instances);
             }
             finally
             {
@@ -14234,6 +14229,119 @@ namespace KingmakerGunslinger.RuntimeTesting
             assertions.Add(Assertion("firearm-item-variant-cleanup", "destroyed",
                 cleaned.ToString(), cleaned,
                 "finally-owned transient exact variant instances"));
+        }
+
+        private static Presentation.FramePoint FramePointOf(Vector3 value)
+        {
+            return new Presentation.FramePoint(value.x, value.y, value.z);
+        }
+
+        /// <summary>
+        /// Reads one marker-authored prefab for its marker contract: the
+        /// authored markers in the Visual frame, the Visual placement in the
+        /// prefab root frame, and the root's own markers in the prefab root
+        /// frame. It never throws.
+        /// </summary>
+        private static Presentation.AuthoredMarkerRigObservation
+            ObserveAuthoredMarkerRig(string variant, GameObject instance)
+        {
+            var observation = new Presentation.AuthoredMarkerRigObservation
+            {
+                Variant = variant, InstancePresent = instance != null
+            };
+            try
+            {
+                if (instance == null) return observation;
+                Transform root = instance.transform;
+                Transform visual = root.Find("Visual");
+                observation.VisualPresent = visual != null;
+                Transform[] hierarchy = visual == null
+                    ? Array.Empty<Transform>()
+                    : visual.GetComponentsInChildren<Transform>(true);
+                foreach (string marker in
+                    Presentation.AuthoredMarkerRigExpectation.AuthoredMarkers)
+                {
+                    Transform[] matches = hierarchy.Where(value =>
+                        value.name == marker).ToArray();
+                    observation.AuthoredMarkerCounts[marker] = matches.Length;
+                    if (matches.Length == 1)
+                        observation.AuthoredInVisual[marker] = FramePointOf(
+                            visual.InverseTransformPoint(matches[0].position));
+                }
+                observation.SupportHandTargetPresent =
+                    root.Find("SupportHandTarget") != null;
+                if (visual != null)
+                    observation.Visual = new Presentation.FramePlacement(
+                        FramePointOf(visual.localPosition), visual.localRotation.x,
+                        visual.localRotation.y, visual.localRotation.z,
+                        visual.localRotation.w, FramePointOf(visual.localScale));
+                foreach (KeyValuePair<string, string> pair in
+                    Presentation.AuthoredMarkerRigExpectation.RootToAuthored)
+                {
+                    Transform marker = root.Find(pair.Key);
+                    if (marker != null)
+                        observation.RootMarkers[pair.Key] = FramePointOf(
+                            marker.localPosition);
+                }
+            }
+            catch (Exception error)
+            {
+                observation.Fault = error.GetType().Name + ": " + error.Message;
+            }
+            return observation;
+        }
+
+        /// <summary>
+        /// What the engine launches a firearm projectile from. Kingmaker's
+        /// ProjectileController.CreateView resolves the launch position as
+        /// the transform under the launcher's view named by the projectile
+        /// blueprint's SourceBone. This reports that name for the firearm
+        /// projectile and whether any item variant prefab carries a
+        /// transform of that name, which is the only way a weapon prefab
+        /// could supply or displace the origin.
+        /// </summary>
+        private static void AppendFirearmProjectileSourceAssertion(
+            List<RuntimeTestAssertion> assertions, IList<GameObject> instances)
+        {
+            string observed;
+            bool passed = false;
+            try
+            {
+                BlueprintProjectile projectile = FirearmProjectileBlueprints.Projectile;
+                if (projectile == null) observed = "projectile=<unregistered>";
+                else
+                {
+                    string bone = projectile.SourceBone ?? string.Empty;
+                    var carriers = new List<string>();
+                    foreach (GameObject instance in instances)
+                        if (instance != null && bone.Length != 0 &&
+                            Kingmaker.Utility.ObjectExtensions.FindChildRecursive(
+                                instance.transform, bone) != null)
+                            carriers.Add(instance.name);
+                    observed = "projectile=" + projectile.name + ";sourceBone=" +
+                        (bone.Length == 0 ? "<unit view root>" : bone) +
+                        ";sourceBoneCorpulenceOffset=" +
+                        projectile.SourceBoneCorpulenceOffset.ToString("R",
+                            System.Globalization.CultureInfo.InvariantCulture) +
+                        ";sourceBoneOffsetAtTarget=" +
+                        projectile.SourceBoneOffsetAtTarget +
+                        ";weaponMuzzleIsSourceBone=" + (bone == "Muzzle") +
+                        ";variantPrefabsInspected=" + instances.Count(value =>
+                            value != null) + ";variantPrefabsCarryingSourceBone=" +
+                        (carriers.Count == 0 ? "<none>" :
+                            string.Join("|", carriers.ToArray()));
+                    passed = bone != "Muzzle" && carriers.Count == 0 &&
+                        instances.Any(value => value != null);
+                }
+            }
+            catch (Exception error)
+            {
+                observed = "unreadable=" + error.GetType().Name + ": " + error.Message;
+            }
+            assertions.Add(Assertion("firearm-projectile-launch-source",
+                "the firearm projectile's source bone is not the weapon prefab's Muzzle and no item variant prefab carries a transform of that name",
+                observed, passed,
+                "KMG_FirearmProjectile blueprint fields, read against ProjectileController.CreateView (launch position = the launcher view's transform named SourceBone)"));
         }
 
         private static void AppendDiagnosticMusketRigAssertions(

@@ -618,6 +618,7 @@
     <Compile Include="Presentation\ProjectItemRosters.cs" />
     <Compile Include="Presentation\PresentationAudits.cs" />
     <Compile Include="Presentation\SourceCollection.cs" />
+    <Compile Include="Presentation\AuthoredMarkerRigContract.cs" />
     <Compile Include="Presentation\PlayerFacingTextAssignment.cs" />
     <Compile Include="FeatureModules\ContentInitializationStatus.cs" />
     <Compile Include="Presentation\GunslingerClassAppearanceCatalog.cs" />

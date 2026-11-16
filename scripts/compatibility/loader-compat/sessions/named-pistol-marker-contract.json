@@ -1,0 +1,19 @@
+{
+  "name": "named-pistol-marker-contract",
+  "description": "The product's disposable-firearm-visual-rigs scenario in a fresh process at the main menu with no save and no other mods, for REP-03. The named pistols' marker contract is reported as separate relationships (authored marker set, required transforms, support-target policy, imported marker geometry, root markers at the authored markers in the prefab root frame, the declared held donor frame) and then as the aggregate pistol-authored-marker-contract. firearm-projectile-launch-source reports which unit transform the engine launches the firearm projectile from.",
+  "ownerMods": [],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "firearm-visual-rigs",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-firearm-visual-rigs",
+        "parameters": {},
+        "timeoutSeconds": 600
+      }
+    }
+  ]
+}

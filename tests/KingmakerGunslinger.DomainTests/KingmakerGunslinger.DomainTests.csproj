@@ -565,9 +565,11 @@
     <Compile Include="GunslingerDodgeScenarioVerdictTests.cs" />
     <Compile Include="PresentationAuditTests.cs" />
     <Compile Include="PresentationCollectionTests.cs" />
+    <Compile Include="AuthoredMarkerRigContractTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Presentation\ProjectItemRosters.cs"><Link>Presentation\ProjectItemRosters.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Presentation\PresentationAudits.cs"><Link>Presentation\PresentationAudits.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Presentation\SourceCollection.cs"><Link>Presentation\SourceCollection.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Presentation\AuthoredMarkerRigContract.cs"><Link>Presentation\AuthoredMarkerRigContract.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\EasternWeapons\EasternWeaponNamedCatalog.cs"><Link>EasternWeapons\EasternWeaponNamedCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\GunslingerDodgeScenarioVerdict.cs"><Link>RuntimeTesting\GunslingerDodgeScenarioVerdict.cs</Link></Compile>
     <Compile Include="..\..\tools\LoaderCompatHarness\ProbeLifecycle.cs"><Link>LoaderCompatHarness\ProbeLifecycle.cs</Link></Compile>

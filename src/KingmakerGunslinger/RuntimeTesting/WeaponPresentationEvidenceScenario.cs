@@ -2974,6 +2974,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             private const int MaximumSettleUpdates = 300;
             private const int ReadySettleUpdates = 30;
+            // The attack animation advances on Unity's scaled time, which
+            // stands still while the game is paused. A save that loads
+            // paused would otherwise hold every attack at its first frame.
+            private bool _pauseCaptured;
+            private bool _pausedBeforeAttacks;
             private readonly ModContext _context;
             private readonly RuntimeTestRequest _request;
             private readonly DateTime _started = DateTime.UtcNow;
@@ -3494,6 +3499,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 EvidenceCase value = _cases[_caseIndex];
                 _stage = "sample-native-attack-" + value.Variant;
+                if (Game.Instance.IsPaused)
+                {
+                    if (!_pauseCaptured)
+                    {
+                        _pauseCaptured = true;
+                        _pausedBeforeAttacks = true;
+                        _diagnostics.Add("attackSampling=game was paused; " +
+                            "time released for the attack samples and the " +
+                            "pause restored at cleanup");
+                    }
+                    Game.Instance.IsPaused = false;
+                }
                 Game.Instance.EntityCreator.Tick();
                 _target.Commands.InterruptAll(true);
                 if (_actor.View.AnimationManager != null)
@@ -4209,6 +4226,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (_cleanupStarted) return;
                 _stage = "motion-request-cleanup";
+                if (_pauseCaptured && _pausedBeforeAttacks &&
+                    !Game.Instance.IsPaused)
+                    Game.Instance.IsPaused = true;
                 if (_actor != null)
                 {
                     _actor.Commands.InterruptAll(true);
@@ -5926,6 +5946,61 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Vector3.Dot(bore, targetDirection);
             record["physicalMuzzleLeadsGripTowardTarget"] =
                 Vector3.Dot(muzzleOffset, targetDirection) > 0f;
+            DescribeNativeProjectileSource(record, model, actor, muzzle, bore);
+        }
+
+        /// <summary>
+        /// Where the engine would launch this unit's firearm projectile from
+        /// at this sample, by the rule in ProjectileController.CreateView:
+        /// the transform under the launcher's view named by the projectile
+        /// blueprint's SourceBone. It is computed here from the live
+        /// hierarchy. It is not read from a launched projectile.
+        /// </summary>
+        private static void DescribeNativeProjectileSource(JObject record,
+            Transform model, UnitEntityData actor, Transform muzzle,
+            Vector3 normalizedBore)
+        {
+            try
+            {
+                BlueprintProjectile projectile =
+                    FirearmProjectileBlueprints.Projectile;
+                record["nativeProjectileSourceRule"] =
+                    "ProjectileController.CreateView: Launcher.View.transform." +
+                    "FindChildRecursive(Blueprint.SourceBone); computed at this " +
+                    "sample, not read from a launched projectile";
+                if (projectile == null)
+                {
+                    record["nativeProjectileSourceResolved"] = false;
+                    return;
+                }
+                string bone = projectile.SourceBone ?? string.Empty;
+                Transform view = actor.View.transform;
+                Transform source = bone.Length == 0 ? view :
+                    Kingmaker.Utility.ObjectExtensions.FindChildRecursive(view,
+                        bone);
+                record["nativeProjectileSourceBone"] = bone;
+                record["nativeProjectileSourceCorpulenceOffset"] =
+                    projectile.SourceBoneCorpulenceOffset;
+                record["nativeProjectileSourceResolved"] = source != null;
+                if (source == null) return;
+                record["nativeProjectileSourcePath"] = TransformPath(source, view);
+                record["nativeProjectileSourceInsideWeaponModel"] =
+                    source == model || source.IsChildOf(model);
+                record["nativeProjectileSourceIsWeaponMuzzle"] =
+                    ReferenceEquals(source, muzzle);
+                record["nativeProjectileSourceWorldPosition"] =
+                    source.position.ToString("R");
+                Vector3 toMuzzle = muzzle.position - source.position;
+                record["nativeProjectileSourceToMuzzleMeters"] =
+                    toMuzzle.magnitude;
+                record["nativeProjectileSourceToMuzzleAlongBoreMeters"] =
+                    Vector3.Dot(toMuzzle, normalizedBore);
+            }
+            catch (Exception error)
+            {
+                record["nativeProjectileSourceFault"] =
+                    error.GetType().Name + ": " + error.Message;
+            }
         }
 
         private static void DescribePiercingOneHandedDonorFrame(
