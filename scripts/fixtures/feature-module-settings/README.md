@@ -55,8 +55,13 @@ gate's reader predates them and had no class for them. The row identities of the
 recovered; the matching count, Races Unleashed's presence in them and the matching Brown-Fur value strongly support
 the same cause. The published v0.0.191 reproduces `unclassified=38` with Races Unleashed as the only other mod, and
 both recorded values beside twelve of the owner's mods. The gate is corrected on its own branch; see
-`docs/EXPANDED-SUMMONING-PUBLICATION-BOUNDARY.md`. The paragraphs above are left as written. The Brown-Fur gate is
-still untraced (INT-02).
+`docs/EXPANDED-SUMMONING-PUBLICATION-BOUNDARY.md`. The paragraphs above are left as written.
+
+**Later (2026-11-16, INT-02): the Brown-Fur gate's mechanism is traced, separately.** Of its predicates one fails:
+it required the transaction's counts to equal the final selector's (`before=14;after=15`), and the transaction,
+which now runs before Favored Class adds its eight combined archetypes, rightly recorded `before=6;after=7`. The
+Brown-Fur value quoted in the table above is that same reading. The gate is corrected on its own branch; see
+`docs/BROWN-FUR-PUBLICATION-BOUNDARY.md`.
 
 So the wider mix would have been fine too. `shield-other` is kept because it is
 the version actually verified, and one OFF value is sufficient to prove
