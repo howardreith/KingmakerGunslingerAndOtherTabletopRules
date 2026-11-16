@@ -333,7 +333,7 @@
   serves "unified Broken-or-Wrecked-to-Normal firearm repair". That was stale developer metadata: field repair has
   been Broken-only since 0.0.127 and a Wrecked firearm is restored only by a completed full rest. No player-facing
   text carried the claim and nothing in play was affected. Corrected under the owner's authorization on branch
-  `codex/int07-gunsmith-kit-manifest-note` (awaiting review; not merged, not released), with the historical
+  `codex/int07-gunsmith-kit-manifest-note` (accepted in review at `a37a712e85`; not merged, not released), with the historical
   1,913-record prefix hash unchanged and one exact, named exception for this note
   (`docs/BLUEPRINT-MANIFEST.md`). By the owner's later decision the development-candidate validator recognizes this
   one exact transition and accepts the branch again; the v0.0.191 release validator is unchanged, and the next
