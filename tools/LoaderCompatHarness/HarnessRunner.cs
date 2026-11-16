@@ -436,6 +436,15 @@ namespace KmgLoaderCompatHarness
                     return unreadableParents.Count == 0 ? StepStatus.Done : Fail(string.Join("; ", unreadableParents.ToArray()));
                 }
 
+                case "kmgArchetypeCensus":
+                {
+                    // "match" lists character classes. Records the archetypes each offers, in order; changes nothing.
+                    var archetypeCensus = new JObject();
+                    System.Collections.Generic.List<string> unreadableClasses = ArchetypeCensus.Run(List(step.Match), archetypeCensus);
+                    result["kmgArchetypeCensus_" + (step.Label ?? stepIndex.ToString())] = archetypeCensus;
+                    return unreadableClasses.Count == 0 ? StepStatus.Done : Fail(string.Join("; ", unreadableClasses.ToArray()));
+                }
+
                 case "kmgDeedLifecycle":
                 {
                     // "match" names the script (dodge, armed, bleeds, condition, fallingPetal, mountainSunder);

@@ -1,0 +1,126 @@
+{
+  "name": "brown-fur-publication-boundary",
+  "description": "INT-02. The Brown-Fur publication check beside twelve of the owner's mods from the lab snapshot, Call of the Wild and Favored Class among them: the product's own feature-module observation with every module on, a harness listing of the Call of the Wild Arcanist archetype selector, the Brown-Fur module switched off through the loader panel, the product's observation with it off, and the listing again in a fresh process. The harness listing reads the loaded library and does not use the product. This is the lab's twelve-mod snapshot, not the eleven-mod installation of the original report.",
+  "ownerMods": [
+    "BagOfTricks",
+    "BetterVendors",
+    "CallOfTheWild",
+    "CheatMenu",
+    "CraftMagicItems",
+    "EddicKingmakerRespec",
+    "KingmakerBugfixes",
+    "ProperFlanking2",
+    "RacesUnleashed",
+    "SkipIntro",
+    "TweakOrTreat",
+    "ZFavoredClass"
+  ],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "publication-module-on",
+      "product": {
+        "scenario": "observe-feature-module-settings",
+        "parameters": {
+          "gunslinger": true,
+          "acadamaeGraduate": true,
+          "shieldOther": true,
+          "expandedSummoning": true,
+          "elvenBranchedSpears": true,
+          "easternWeapons": true,
+          "brownFurTransmuter": true,
+          "urbanBarbarian": true,
+          "bodyguardFeats": true,
+          "protectionFromAlignmentControlImmunity": true,
+          "elementalRaces": true,
+          "teleportationSpells": true,
+          "magicCircleSpells": true
+        },
+        "timeoutSeconds": 600
+      }
+    },
+    {
+      "label": "selector-on-then-disable",
+      "harness": {
+        "steps": [
+          {
+            "op": "expectMods",
+            "match": "KingmakerGunslinger,KmgLoaderCompatHarness,BagOfTricks,BetterVendors,CallOfTheWild,CheatMenu,CraftMagicItems,EddicKingmakerRespec,KingmakerBugfixes,ProperFlanking2,RacesUnleashed,SkipIntro,TweakOrTreat,ZFavoredClass",
+            "expect": ""
+          },
+          {
+            "op": "kmgModules",
+            "label": "initial",
+            "match": ""
+          },
+          {
+            "op": "kmgArchetypeCensus",
+            "label": "module-on",
+            "match": "19c3cf3d51cf4cbf9a136a600c26585a",
+            "continueOnFailure": true
+          },
+          {
+            "op": "ummPanel",
+            "label": "click-brown-fur",
+            "match": "KingmakerGunslinger",
+            "type": "Brown-Fur Transmuter  requires Call of the Wild",
+            "save": true,
+            "seconds": 3
+          },
+          {
+            "op": "kmgModules",
+            "label": "after-save",
+            "match": "",
+            "expect": "brown-fur-transmuter=false"
+          }
+        ]
+      }
+    },
+    {
+      "label": "publication-module-off",
+      "product": {
+        "scenario": "observe-feature-module-settings",
+        "parameters": {
+          "gunslinger": true,
+          "acadamaeGraduate": true,
+          "shieldOther": true,
+          "expandedSummoning": true,
+          "elvenBranchedSpears": true,
+          "easternWeapons": true,
+          "brownFurTransmuter": false,
+          "urbanBarbarian": true,
+          "bodyguardFeats": true,
+          "protectionFromAlignmentControlImmunity": true,
+          "elementalRaces": true,
+          "teleportationSpells": true,
+          "magicCircleSpells": true
+        },
+        "timeoutSeconds": 600
+      }
+    },
+    {
+      "label": "selector-module-off",
+      "harness": {
+        "steps": [
+          {
+            "op": "expectMods",
+            "match": "KingmakerGunslinger,KmgLoaderCompatHarness,BagOfTricks,BetterVendors,CallOfTheWild,CheatMenu,CraftMagicItems,EddicKingmakerRespec,KingmakerBugfixes,ProperFlanking2,RacesUnleashed,SkipIntro,TweakOrTreat,ZFavoredClass",
+            "expect": ""
+          },
+          {
+            "op": "kmgModules",
+            "label": "restarted",
+            "match": "BrownFurTransmuter=false",
+            "expect": "brown-fur-transmuter=false"
+          },
+          {
+            "op": "kmgArchetypeCensus",
+            "label": "module-off",
+            "match": "19c3cf3d51cf4cbf9a136a600c26585a",
+            "continueOnFailure": true
+          }
+        ]
+      }
+    }
+  ]
+}
