@@ -338,6 +338,15 @@
   (`docs/BLUEPRINT-MANIFEST.md`). By the owner's later decision the development-candidate validator recognizes this
   one exact transition and accepts the branch again; the v0.0.191 release validator is unchanged, and the next
   release's validator will have to account for the approved note.
+- The Expanded Summoning planning report (`planning/EXPANDED-SUMMONING-IDEAL-ROSTER.md`) overstated coverage up to
+  and including the accepted INT-07 head: it counted a creature as published in a spell family because its identity
+  was registered, and counted any native wrapper in a family as covering every tier. It showed Summon Monster 120 of
+  120, and Brachiosaurus as published in Summon Monster, where it has no choice. The committed copy was also stale
+  since Stirge's withdrawal on 2026-11-07. Developer documentation only; nothing in play was affected. Corrected on
+  branch `codex/int08-summoning-roster-coverage` (awaiting review; not merged, not released): coverage is now
+  compared placement by placement and reads, from source, 1,208 of 1,232 ideal placements published, 9 withheld
+  (Stirge, owner withdrawal) and 15 missing (Brachiosaurus in Summon Monster, POL-04; twelve wrapper placements,
+  POL-05) (`docs/EXPANDED-SUMMONING-ROSTER-COVERAGE.md`). POL-04 and POL-05 remain open decisions.
 - Dire Narlmarches and Pitax regional weapon stock (withdrawn in v0.0.185). It has the same native limitation as Oleg's spears:
   if a stocked Eastern weapon or spear was bought and a matching one was later sold back to that trader,
   the engine's update removes the sold copy. A save with no persisted known-item history keeps the old
