@@ -92,7 +92,7 @@ catalogs read here.
 | Declared choices not in the ideal roster (extra) | 0 |
 | Placements declared more than once (duplicate) | 0 |
 | Declared choices without an active registered identity | 0 |
-| Unpublished placements without a recorded disposition | 0 |
+| Unpublished placements without a recorded disposition | 0 (0 withheld, 0 missing) |
 
 Cross-checked against the totals the source states for itself:
 
@@ -107,32 +107,32 @@ Cross-checked against the totals the source states for itself:
 
 ### Ideal placements not published
 
-| Creature | Family | Parent | Quantity | State | Disposition |
-|---|---|---|---|---|---|
-| Axiomite | Summon Monster | SM IX | 1d4+1 | No declared choice | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
-| Brachiosaurus | Summon Monster | SM VII | single | No declared choice | POL-04 / Sprint 5 T3: Brachiosaurus is registered only in Summon Nature's Ally; whether Summon Monster offers it is an open charter decision |
-| Brachiosaurus | Summon Monster | SM VIII | 1d3 | No declared choice | POL-04 / Sprint 5 T3: Brachiosaurus is registered only in Summon Nature's Ally; whether Summon Monster offers it is an open charter decision |
-| Brachiosaurus | Summon Monster | SM IX | 1d4+1 | No declared choice | POL-04 / Sprint 5 T3: Brachiosaurus is registered only in Summon Nature's Ally; whether Summon Monster offers it is an open charter decision |
-| Manticore | Summon Nature's Ally | SNA VIII | 1d4+1 | No declared choice | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
-| Manticore | Summon Nature's Ally | SNA IX | 1d4+1 | No declared choice | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
-| Mite | Summon Nature's Ally | SNA IV | 1d4+1 | No declared choice | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
-| Mite | Summon Nature's Ally | SNA V | 1d4+1 | No declared choice | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
-| Mite | Summon Nature's Ally | SNA VI | 1d4+1 | No declared choice | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
-| Mite | Summon Nature's Ally | SNA VII | 1d4+1 | No declared choice | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
-| Mite | Summon Nature's Ally | SNA VIII | 1d4+1 | No declared choice | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
-| Mite | Summon Nature's Ally | SNA IX | 1d4+1 | No declared choice | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
-| Redcap | Summon Monster | SM VIII | 1d4+1 | No declared choice | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
-| Redcap | Summon Monster | SM IX | 1d4+1 | No declared choice | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
-| Soul Eater | Summon Monster | SM IX | 1d4+1 | No declared choice | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
-| Stirge | Summon Nature's Ally | SNA I | single | Registered, withheld | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
-| Stirge | Summon Nature's Ally | SNA II | 1d3 | Registered, withheld | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
-| Stirge | Summon Nature's Ally | SNA III | 1d4+1 | Registered, withheld | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
-| Stirge | Summon Nature's Ally | SNA IV | 1d4+1 | Registered, withheld | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
-| Stirge | Summon Nature's Ally | SNA V | 1d4+1 | Registered, withheld | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
-| Stirge | Summon Nature's Ally | SNA VI | 1d4+1 | Registered, withheld | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
-| Stirge | Summon Nature's Ally | SNA VII | 1d4+1 | Registered, withheld | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
-| Stirge | Summon Nature's Ally | SNA VIII | 1d4+1 | Registered, withheld | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
-| Stirge | Summon Nature's Ally | SNA IX | 1d4+1 | Registered, withheld | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
+| Creature | Family | Parent | Quantity | State | Decision on record | Disposition |
+|---|---|---|---|---|---|---|
+| Axiomite | Summon Monster | SM IX | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Brachiosaurus | Summon Monster | SM VII | single | No declared choice | yes | POL-04 / Sprint 5 T3: Brachiosaurus is registered only in Summon Nature's Ally; whether Summon Monster offers it is an open charter decision |
+| Brachiosaurus | Summon Monster | SM VIII | 1d3 | No declared choice | yes | POL-04 / Sprint 5 T3: Brachiosaurus is registered only in Summon Nature's Ally; whether Summon Monster offers it is an open charter decision |
+| Brachiosaurus | Summon Monster | SM IX | 1d4+1 | No declared choice | yes | POL-04 / Sprint 5 T3: Brachiosaurus is registered only in Summon Nature's Ally; whether Summon Monster offers it is an open charter decision |
+| Manticore | Summon Nature's Ally | SNA VIII | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Manticore | Summon Nature's Ally | SNA IX | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Mite | Summon Nature's Ally | SNA IV | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Mite | Summon Nature's Ally | SNA V | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Mite | Summon Nature's Ally | SNA VI | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Mite | Summon Nature's Ally | SNA VII | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Mite | Summon Nature's Ally | SNA VIII | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Mite | Summon Nature's Ally | SNA IX | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Redcap | Summon Monster | SM VIII | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Redcap | Summon Monster | SM IX | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Soul Eater | Summon Monster | SM IX | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Stirge | Summon Nature's Ally | SNA I | single | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
+| Stirge | Summon Nature's Ally | SNA II | 1d3 | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
+| Stirge | Summon Nature's Ally | SNA III | 1d4+1 | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
+| Stirge | Summon Nature's Ally | SNA IV | 1d4+1 | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
+| Stirge | Summon Nature's Ally | SNA V | 1d4+1 | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
+| Stirge | Summon Nature's Ally | SNA VI | 1d4+1 | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
+| Stirge | Summon Nature's Ally | SNA VII | 1d4+1 | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
+| Stirge | Summon Nature's Ally | SNA VIII | 1d4+1 | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
+| Stirge | Summon Nature's Ally | SNA IX | 1d4+1 | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
 
 ### Declared choices not in the ideal roster
 
@@ -154,13 +154,14 @@ None.
 
 | Creature coverage | Creatures | Which |
 |---|---|---|
-| Every ideal placement published | 138 | |
+| Every ideal placement published | 138 |  |
 | Some ideal placements published, some not | 6 | Axiomite, Brachiosaurus, Manticore, Mite, Redcap, Soul Eater |
-| Every ideal placement registered and withheld | 1 | Stirge |
+| No ideal placement published; every one registered and withheld | 1 | Stirge |
+| No ideal placement published; some registered and withheld, some with no declared choice | 0 |  |
 | No ideal placement published or registered | 0 |  |
 
-Available somewhere: 144 creatures have at least one published ideal placement. That is
-not complete coverage; the partial row above is the difference.
+Available somewhere: 144 creatures have at least one published ideal placement (the first
+two rows). That is not complete coverage; the partial row is the difference.
 
 ### Registered unit identity
 
@@ -179,7 +180,9 @@ Identity reuse: 145 existing creature identities are reused in place (charter de
 ## Creatures
 
 Placement columns count published ideal placements of that creature in that
-family: Complete, Partial, Withheld (registered, not admitted) or Missing.
+family: Complete; Partial (some published); Withheld (all registered, none
+admitted); Missing (none declared); Unpublished (none published, some withheld and
+some missing). The parenthesis gives the unpublished placements by state.
 
 | Creature | SM | SNA | Sprint | Priority | Effort | Unit identity | SM placements | SNA placements | Asset package |
 |---|---|---|---|---|---|---|---|---|---|
@@ -188,7 +191,7 @@ family: Complete, Partial, Withheld (registered, not admitted) or Missing.
 | Ape | 3 | 3 | S18 | Strong | High | ProjectOwned | Complete 7/7 | Complete 7/7 | Primate rig family |
 | Astral Deva | 9 | - | S31 | Essential | Medium | ProjectOwned | Complete 1/1 | - | Outsiders |
 | Aurochs | 3 | 3 | S11 | Essential | Medium | ProjectOwned | Complete 7/7 | Complete 7/7 | Equines & ungulates |
-| Axiomite | 6 | - | complete | Variety | - | NativeWrapper | Partial 3/4 | - | Outsiders |
+| Axiomite | 6 | - | complete | Variety | - | NativeWrapper | Partial 3/4 (1 missing) | - | Outsiders |
 | Babau | 5 | - | S36 | Strong | High | ProjectOwned | Complete 5/5 | - | Outsiders |
 | Barbed Devil | 8 | - | S35 | Strong | High | ProjectOwned | Complete 2/2 | - | Outsiders |
 | Bearded Devil | 5 | - | S34 | Strong | High | ProjectOwned | Complete 5/5 | - | Outsiders |
@@ -278,13 +281,13 @@ family: Complete, Partial, Withheld (registered, not admitted) or Missing.
 | Lillend Azata | 6 | - | S32 | Essential | VeryHigh | ProjectOwned | Complete 4/4 | - | Outsiders |
 | Lion | 4 | 4 | S7 | Essential | Medium | ProjectOwned | Complete 6/6 | Complete 6/6 | Big-cat family |
 | Magma Mephit | 4 | 4 | S5 | Variety | Low | ProjectOwned | Complete 6/6 | Complete 6/6 | Mephit family |
-| Manticore | - | 5 | complete | Essential | - | NativeWrapper | - | Partial 3/5 | Hybrid magical beasts |
+| Manticore | - | 5 | complete | Essential | - | NativeWrapper | - | Partial 3/5 (2 missing) | Hybrid magical beasts |
 | Mastodon | 7 | 7 | complete | Strong | - | ProjectOwned | Complete 3/3 | Complete 3/3 | Proboscideans |
 | Medium Air Elemental | 4 | 4 | complete | Strong | - | ProjectOwned | Complete 6/6 | Complete 6/6 | Classic elementals |
 | Medium Earth Elemental | 4 | 4 | complete | Strong | - | ProjectOwned | Complete 6/6 | Complete 6/6 | Classic elementals |
 | Medium Fire Elemental | 4 | 4 | complete | Variety | - | ProjectOwned | Complete 6/6 | Complete 6/6 | Classic elementals |
 | Medium Water Elemental | 4 | 4 | complete | Variety | - | ProjectOwned | Complete 6/6 | Complete 6/6 | Classic elementals |
-| Mite | - | 1 | complete | Strong | - | NativeWrapper | - | Partial 3/9 | Fey |
+| Mite | - | 1 | complete | Strong | - | NativeWrapper | - | Partial 3/9 (6 missing) | Fey |
 | Monitor Lizard | 3 | 3 | S6 | Strong | Low | ProjectOwned | Complete 7/7 | Complete 7/7 | Individual creature |
 | Movanic Deva | 8 | - | complete | Essential | - | NativeWrapper | Complete 2/2 | - | Outsiders |
 | Nalfeshnee | 9 | - | S39 | Essential | VeryHigh | ProjectOwned | Complete 1/1 | - | Outsiders |
@@ -296,7 +299,7 @@ family: Complete, Partial, Withheld (registered, not admitted) or Missing.
 | Pony | 1 | 1 | S3 | Essential | Low | ProjectOwned | Complete 9/9 | Complete 9/9 | Equines & ungulates |
 | Pteranodon | 4 | 4 | S2 | Essential | High | ProjectOwned | Complete 6/6 | Complete 6/6 | Flying creature rigs |
 | Purple Worm | - | 8 | S4 | Essential | Medium | ProjectOwned | - | Complete 2/2 | Burrowers & huge monsters |
-| Redcap | 5 | - | complete | Variety | - | NativeWrapper | Partial 3/5 | - | Fey |
+| Redcap | 5 | - | complete | Variety | - | NativeWrapper | Partial 3/5 (2 missing) | - | Fey |
 | Rhinoceros | 4 | 4 | S11 | Strong | Medium | ProjectOwned | Complete 6/6 | Complete 6/6 | Equines & ungulates |
 | Roc | 7 | 7 | complete | Essential | - | ProjectOwned | Complete 3/3 | Complete 3/3 | Flying creature rigs |
 | Salamander | 5 | - | S17 | Strong | High | ProjectOwned | Complete 5/5 | - | Outsiders |
@@ -309,7 +312,7 @@ family: Complete, Partial, Withheld (registered, not admitted) or Missing.
 | Small Earth Elemental | 2 | 2 | complete | Essential | - | ProjectOwned | Complete 8/8 | Complete 8/8 | Classic elementals |
 | Small Fire Elemental | 2 | 2 | complete | Variety | - | ProjectOwned | Complete 8/8 | Complete 8/8 | Classic elementals |
 | Small Water Elemental | 2 | 2 | complete | Variety | - | ProjectOwned | Complete 8/8 | Complete 8/8 | Classic elementals |
-| Soul Eater | 6 | - | complete | Strong | - | NativeWrapper | Partial 3/4 | - | Outsiders |
+| Soul Eater | 6 | - | complete | Strong | - | NativeWrapper | Partial 3/4 (1 missing) | - | Outsiders |
 | Steam Mephit | 4 | 4 | S5 | Strong | Low | ProjectOwned | Complete 6/6 | Complete 6/6 | Mephit family |
 | Stegosaurus | - | 6 | S23 | Strong | High | ProjectOwned | - | Complete 4/4 | Armored dinosaurs |
 | Stirge | - | 1 | S10 | Strong | High | ProjectOwned | - | Withheld 0/9 | Flying creature rigs |

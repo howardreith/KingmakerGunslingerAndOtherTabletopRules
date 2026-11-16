@@ -93,6 +93,7 @@ class CurrentSourceTests(unittest.TestCase):
             self.assertTrue(disposition(self.cov, placement).startswith(expected), placement)
         for placement in EXPECTED_WITHHELD:
             self.assertTrue(disposition(self.cov, placement).startswith("Owner withdrawal"), placement)
+        self.assertTrue(all(u.recorded for u in self.cov["unpublished"]))
         self.assertEqual([], self.cov["stale_dispositions"])
 
     def test_positive_ladders_are_complete(self):
@@ -104,7 +105,7 @@ class CurrentSourceTests(unittest.TestCase):
         self.assertEqual({"sm": "Complete 2/2", "sna": "Complete 3/3"}, status["frost-giant"])
         self.assertEqual({"sm": "Complete 3/3", "sna": "-"}, status["bogeyman"])
         self.assertEqual("Withheld 0/9", status["stirge"]["sna"])
-        self.assertEqual("Partial 3/9", status["mite"]["sna"])
+        self.assertEqual("Partial 3/9 (6 missing)", status["mite"]["sna"])
 
     def test_optional_provider_choices_are_not_core_coverage(self):
         # Spider Summoner rows (Races Unleashed) are not in either catalog read here.
@@ -143,7 +144,7 @@ class MutationTests(unittest.TestCase):
         self.assertTrue(disposition(cov, P("axiomite", "sm", 8, D41)).startswith("Unexplained"))
         self.assertEqual("covered", cov["states"][P("axiomite", "sm", 6, "One")])
         self.assertEqual("covered", cov["states"][P("axiomite", "sm", 7, "OneD3")])
-        self.assertEqual("Partial 2/4", cov["family_status"]["axiomite"]["sm"])
+        self.assertEqual("Partial 2/4 (2 missing)", cov["family_status"]["axiomite"]["sm"])
 
     def test_a_wrong_quantity_fails_its_placement(self):
         cov = judge(wrappers=replace(SOURCES["wrappers"],
@@ -202,8 +203,7 @@ class MutationTests(unittest.TestCase):
                                        'new[] { "stirge", "brachiosaurus" }'))
         for placement in BRACHIOSAURUS_SNA:
             self.assertEqual("withheld", cov["states"][placement])
-            self.assertEqual("Withheld by the visibility catalog; no recorded reason",
-                             disposition(cov, placement))
+            self.assertFalse(next(u for u in cov["unpublished"] if u.placement == placement).recorded)
         for placement in {p for p in EXPECTED_MISSING if p.key == "brachiosaurus"}:
             self.assertEqual("missing", cov["states"][placement])
         # Stirge's registration removed altogether: missing, not withheld.
@@ -229,6 +229,124 @@ class MutationTests(unittest.TestCase):
                                                  t["duplicates"], t["unregistered"]))
         self.assertEqual(sorted(EXPECTED_MISSING), cov["stale_dispositions"])
         self.assertIn("is complete", roster.coverage_summary(cov))
+
+
+def withheld_brachiosaurus(sources):
+    """Brachiosaurus withheld beside Stirge, with the source's own withheld
+    count moved from 9 to 12 so the inputs stay coherent."""
+    s = dict(sources)
+    s["visibility"] = replace(replace(s["visibility"], 'new[] { "stirge" }',
+                                      'new[] { "stirge", "brachiosaurus" }'),
+                              "SuppressedLogicalPlacementCount = 9;", "SuppressedLogicalPlacementCount = 12;")
+    return s
+
+
+def stirge_at_tier_two(sources):
+    """Stirge still withdrawn, registered at Nature's Ally II instead of I, with
+    the source's own totals moved to match (1,188 to 1,187 registered, 9 to 8
+    withheld, 588 to 587 in Nature's Ally). The ideal roster is unchanged."""
+    s = dict(sources)
+    s["project"] = replace(replace(s["project"], 'C("stirge","Stirge",null,false,1)',
+                                   'C("stirge","Stirge",null,false,2)'),
+                           "ValidateFamily(SummonFamily.NaturesAlly, 105, 588)",
+                           "ValidateFamily(SummonFamily.NaturesAlly, 105, 587)")
+    s["visibility"] = replace(replace(s["visibility"], "RegisteredLogicalPlacementCount = 1188;",
+                                      "RegisteredLogicalPlacementCount = 1187;"),
+                              "SuppressedLogicalPlacementCount = 9;", "SuppressedLogicalPlacementCount = 8;")
+    return s
+
+
+def rows(document, prefix):
+    return [line for line in document.splitlines() if line.startswith(prefix)]
+
+
+class ReviewControlTests(unittest.TestCase):
+    """The review's two summary failures, through the production build and
+    generation path on coherent in-memory sources."""
+
+    def test_unrecorded_withholding_counts_as_unexplained(self):
+        _entries, _d, cov, document, _trace = roster.build(withheld_brachiosaurus(SOURCES))
+        unexplained = [u for u in cov["unpublished"] if not u.recorded]
+        self.assertEqual(BRACHIOSAURUS_SNA, {u.placement for u in unexplained})
+        self.assertTrue(all(u.state == "withheld" for u in unexplained))
+        self.assertEqual((3, 3, 0), (cov["totals"]["unexplained"], cov["totals"]["unexplained_withheld"],
+                                     cov["totals"]["unexplained_missing"]))
+        for placement in EXPECTED_WITHHELD:
+            u = next(x for x in cov["unpublished"] if x.placement == placement)
+            self.assertEqual(("withheld", True), (u.state, u.recorded))
+            self.assertTrue(u.disposition.startswith("Owner withdrawal"))
+        for placement in {p for p in EXPECTED_MISSING if p.key == "brachiosaurus"}:
+            u = next(x for x in cov["unpublished"] if x.placement == placement)
+            self.assertEqual(("missing", True), (u.state, u.recorded))
+        self.assertEqual((1205, 12, 15), (cov["totals"]["covered"], cov["totals"]["withheld"],
+                                          cov["totals"]["missing"]))
+        # Summary and rendered tables agree with the structured result.
+        self.assertIn("12 withheld; 15 missing; 0 extra; 0 duplicate; 3 unexplained",
+                      roster.coverage_summary(cov))
+        self.assertEqual(["| Unpublished placements without a recorded disposition | 3 (3 withheld, 0 missing) |"],
+                         rows(document, "| Unpublished placements without a recorded disposition"))
+        brachiosaurus = rows(document, "| Brachiosaurus | Summon Nature's Ally |")
+        self.assertEqual(3, len(brachiosaurus))
+        self.assertTrue(all("| Registered, withheld | no | Unexplained" in row for row in brachiosaurus))
+        self.assertEqual(9, len([row for row in rows(document, "| Stirge | Summon Nature's Ally |")
+                                 if "| Registered, withheld | yes | Owner withdrawal" in row]))
+
+    def test_mixed_missing_and_withheld_brachiosaurus_is_not_called_unregistered(self):
+        _entries, _d, cov, document, _trace = roster.build(withheld_brachiosaurus(SOURCES))
+        self.assertEqual({"sm": {"covered": 0, "withheld": 0, "missing": 3, "total": 3},
+                          "sna": {"covered": 0, "withheld": 3, "missing": 0, "total": 3}},
+                         cov["placement_counts"]["brachiosaurus"])
+        self.assertEqual({"sm": "Missing 0/3", "sna": "Withheld 0/3"}, cov["family_status"]["brachiosaurus"])
+        self.assertEqual("mixed", cov["creature_category"]["brachiosaurus"])
+        self.assertEqual(143, cov["available_somewhere"])
+        self.assertEqual(["| No ideal placement published; some registered and withheld, some with no "
+                          "declared choice | 1 | Brachiosaurus |"],
+                         rows(document, "| No ideal placement published; some registered"))
+        self.assertEqual(["| No ideal placement published or registered | 0 |  |"],
+                         rows(document, "| No ideal placement published or registered"))
+        self.assertNotIn("Brachiosaurus", rows(document, "| Some ideal placements published")[0])
+
+    def test_withdrawn_stirge_with_a_shifted_tier_is_not_available(self):
+        _entries, _d, cov, document, _trace = roster.build(stirge_at_tier_two(SOURCES))
+        # Registered at II, Stirge's choices are II single, III 1d3 and IV-IX
+        # 1d4+1. Against its ideal I single, II 1d3 and III-IX 1d4+1, six
+        # match (withheld), three have no choice and two choices are extra.
+        self.assertEqual({"sna": {"covered": 0, "withheld": 6, "missing": 3, "total": 9}, "sm": None},
+                         cov["placement_counts"]["stirge"])
+        self.assertEqual({P("stirge", "sna", 1, "One"), P("stirge", "sna", 2, "OneD3"),
+                          P("stirge", "sna", 3, D41)},
+                         {u.placement for u in cov["unpublished"] if u.placement.key == "stirge"
+                          and u.state == "missing"})
+        self.assertEqual(["KMG.Summoning.Ability.SNA.Tier2.Stirge.One",
+                          "KMG.Summoning.Ability.SNA.Tier3.Stirge.OneD3"], [c.symbol for c in cov["extra"]])
+        self.assertEqual("Unpublished 0/9 (6 withheld, 3 missing)", cov["family_status"]["stirge"]["sna"])
+        self.assertEqual("mixed", cov["creature_category"]["stirge"])
+        self.assertEqual(144, cov["available_somewhere"])
+        self.assertIn("Available somewhere: 144 creatures", document)
+        self.assertNotIn("Stirge", rows(document, "| Some ideal placements published")[0])
+        self.assertEqual(1, len([row for row in rows(document, "| Stirge | - | 1 |")
+                                 if "| Unpublished 0/9 (6 withheld, 3 missing) |" in row]))
+        self.assertEqual((3, 0, 3), (cov["totals"]["unexplained"], cov["totals"]["unexplained_withheld"],
+                                     cov["totals"]["unexplained_missing"]))
+
+    def test_creature_categories_follow_the_placement_counts(self):
+        cov = judge()
+        self.assertEqual("complete", cov["creature_category"]["tyrannosaurus"])
+        self.assertEqual("partial", cov["creature_category"]["mite"])
+        self.assertEqual("withheld", cov["creature_category"]["stirge"])
+        self.assertEqual(144, cov["available_somewhere"])
+        # A creature with no choice at all: Hamadryad's only wrapper removed.
+        cov = judge(wrappers=replace(
+            SOURCES["wrappers"],
+            '            A(9,"Hamadryad","hamadryad","Hamadryad",SummonMultiplicity.One,\n'
+            '                "f6751c3b22dbd884093e350a37420368","32a7776fb5bb9fa408b97757c04d4247"),\n', ""))
+        self.assertEqual("missing", cov["creature_category"]["hamadryad"])
+        self.assertEqual("Missing 0/1", cov["family_status"]["hamadryad"]["sna"])
+        self.assertEqual(143, cov["available_somewhere"])
+        for key, counts in cov["placement_counts"].items():
+            category = cov["creature_category"][key]
+            covered = sum(c["covered"] for c in counts.values() if c)
+            self.assertEqual(covered > 0, category in ("complete", "partial"), key)
 
 
 class ReadDiagnosticTests(unittest.TestCase):

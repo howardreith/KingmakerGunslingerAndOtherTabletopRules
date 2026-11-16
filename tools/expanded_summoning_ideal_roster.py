@@ -233,7 +233,9 @@ def roster_doc(entries, d, cov):
         "## Creatures",
         "",
         "Placement columns count published ideal placements of that creature in that",
-        "family: Complete, Partial, Withheld (registered, not admitted) or Missing.",
+        "family: Complete; Partial (some published); Withheld (all registered, none",
+        "admitted); Missing (none declared); Unpublished (none published, some withheld and",
+        "some missing). The parenthesis gives the unpublished placements by state.",
         "",
         "| Creature | SM | SNA | Sprint | Priority | Effort | Unit identity | SM placements | SNA placements | Asset package |",
         "|---|---|---|---|---|---|---|---|---|---|",
@@ -314,6 +316,10 @@ class ReadError(Exception):
 
 Placement = namedtuple("Placement", "key family parent quantity")
 Choice = namedtuple("Choice", "placement source symbol admitted")
+# One ideal placement that is not published. `state` is what the source does
+# with it (withheld or missing); `recorded` is whether a decision on record
+# explains it. The two are independent: either state may be explained or not.
+Unpublished = namedtuple("Unpublished", "placement state disposition symbols recorded")
 
 QUANTITIES = ("One", "OneD3", "OneD4PlusOne")
 FAMILIES = ("sm", "sna")
@@ -506,9 +512,19 @@ def declared_choices(creatures, wrappers, suppressed):
 
 
 def withheld_disposition(key):
+    """(text, recorded) for a withheld placement of this creature."""
     note = OWNER_WITHDRAWAL_NOTES.get(key)
-    return ("Owner withdrawal: " + note) if note else \
-        "Withheld by the visibility catalog; no recorded reason"
+    if note:
+        return "Owner withdrawal: " + note, True
+    return "Unexplained: withheld by the visibility catalog with no recorded reason", False
+
+
+def missing_disposition(placement):
+    """(text, recorded) for a placement with no declared choice. Only an exact
+    placement on record is explained."""
+    if placement in RECORDED_DISPOSITIONS:
+        return RECORDED_DISPOSITIONS[placement], True
+    return "Unexplained: no declared choice and no recorded decision", False
 
 
 def compare(ideal, choices, registered_symbols, declared):
@@ -528,13 +544,10 @@ def compare(ideal, choices, registered_symbols, declared):
         states[placement] = state
         if state == "covered":
             continue
-        if state == "withheld":
-            disposition = withheld_disposition(placement.key)
-        else:
-            disposition = RECORDED_DISPOSITIONS.get(
-                placement, "Unexplained: no declared choice and no recorded decision")
-        unpublished.append((placement, state, disposition,
-                            [c.symbol for c in offered]))
+        disposition, recorded = withheld_disposition(placement.key) if state == "withheld" \
+            else missing_disposition(placement)
+        unpublished.append(Unpublished(placement, state, disposition,
+                                       [c.symbol for c in offered], recorded))
 
     project = [c for c in choices if c.source == "project"]
     wrappers = [c for c in choices if c.source == "native-wrapper"]
@@ -555,11 +568,13 @@ def compare(ideal, choices, registered_symbols, declared):
     duplicates = sorted((p, [c.symbol for c in cs]) for p, cs in by_placement.items() if len(cs) > 1)
     ideal_duplicates = sorted(p for p, n in ideal_count.items() if n > 1)
     unregistered = [c for c in choices if c.symbol not in registered_symbols]
-    unexplained = [u for u in unpublished if u[2].startswith("Unexplained")]
+    unexplained = [u for u in unpublished if not u.recorded]
     stale = sorted(p for p in RECORDED_DISPOSITIONS if states.get(p) == "covered")
     totals.update({"extra": len(extra), "duplicates": len(duplicates),
                    "ideal_duplicates": len(ideal_duplicates),
-                   "unregistered": len(unregistered), "unexplained": len(unexplained)})
+                   "unregistered": len(unregistered), "unexplained": len(unexplained),
+                   "unexplained_withheld": sum(1 for u in unexplained if u.state == "withheld"),
+                   "unexplained_missing": sum(1 for u in unexplained if u.state == "missing")})
     cross = [
         ("Project creatures (`UnitCount`)", declared["units"], declared["project_creatures"]),
         ("Registered project placements (`RegisteredLogicalPlacementCount`)",
@@ -576,21 +591,60 @@ def compare(ideal, choices, registered_symbols, declared):
             "ideal_count": ideal_count}
 
 
-def family_status(comparison, key, family, tier):
-    """One creature in one family: how many of its ideal placements are
-    published. Never 'complete' unless every one of them is."""
+def placement_counts(comparison, key, family, tier):
+    """Covered, withheld and missing ideal placements of one creature in one
+    family; None where the ideal roster does not place it there."""
     if tier is None:
+        return None
+    states = [comparison["states"][p] for p in ladder(key, family, tier)]
+    return {"covered": states.count("covered"), "withheld": states.count("withheld"),
+            "missing": states.count("missing"), "total": len(states)}
+
+
+def describe_counts(counts):
+    """The label shown for one family, read from the counts only. Partial
+    means at least one placement is published."""
+    if counts is None:
         return "-"
-    placements = ladder(key, family, tier)
-    states = [comparison["states"][p] for p in placements]
-    covered, withheld, total = states.count("covered"), states.count("withheld"), len(states)
+    covered, withheld, missing, total = (counts["covered"], counts["withheld"],
+                                         counts["missing"], counts["total"])
     if covered == total:
         return "Complete %d/%d" % (covered, total)
-    if covered == 0 and withheld == total:
+    if withheld == total:
         return "Withheld 0/%d" % total
-    if covered == 0 and withheld == 0:
+    if missing == total:
         return "Missing 0/%d" % total
-    return "Partial %d/%d" % (covered, total)
+    rest = ", ".join(part for part in ("%d withheld" % withheld if withheld else "",
+                                       "%d missing" % missing if missing else "") if part)
+    return "%s %d/%d (%s)" % ("Partial" if covered else "Unpublished", covered, total, rest)
+
+
+CREATURE_CATEGORIES = (
+    ("complete", "Every ideal placement published"),
+    ("partial", "Some ideal placements published, some not"),
+    ("withheld", "No ideal placement published; every one registered and withheld"),
+    ("mixed", "No ideal placement published; some registered and withheld, some with no declared choice"),
+    ("missing", "No ideal placement published or registered"),
+)
+
+
+def creature_category(counts_by_family):
+    """A creature's category across every family the ideal roster places it
+    in, from the placement counts alone."""
+    counts = [c for c in counts_by_family.values() if c is not None]
+    covered = sum(c["covered"] for c in counts)
+    withheld = sum(c["withheld"] for c in counts)
+    missing = sum(c["missing"] for c in counts)
+    total = sum(c["total"] for c in counts)
+    if covered == total:
+        return "complete"
+    if covered:
+        return "partial"
+    if withheld == total:
+        return "withheld"
+    if missing == total:
+        return "missing"
+    return "mixed"
 
 
 def coverage(entries, project_text, wrapper_text, visibility_text, identity_text, ledger_text):
@@ -620,8 +674,16 @@ def coverage(entries, project_text, wrapper_text, visibility_text, identity_text
         "project_keys": sorted(project_keys),
         "wrapper_only": sorted(wrapper_keys - project_keys),
         "unrepresented": sum(1 for e in entries if e.key not in project_keys | wrapper_keys),
-        "family_status": {e.key: {f: family_status(comparison, e.key, f, e.tier(f))
-                                  for f in FAMILIES} for e in entries},
+    })
+    counts = {e.key: {f: placement_counts(comparison, e.key, f, e.tier(f)) for f in FAMILIES}
+              for e in entries}
+    comparison.update({
+        "placement_counts": counts,
+        "family_status": {key: {f: describe_counts(value[f]) for f in FAMILIES}
+                          for key, value in counts.items()},
+        "creature_category": {key: creature_category(value) for key, value in counts.items()},
+        "available_somewhere": sum(1 for value in counts.values()
+                                   if any(c and c["covered"] for c in value.values())),
     })
     return comparison
 
@@ -680,7 +742,8 @@ def coverage_section(entries, cov):
         "| Declared choices not in the ideal roster (extra) | %d |" % t["extra"],
         "| Placements declared more than once (duplicate) | %d |" % t["duplicates"],
         "| Declared choices without an active registered identity | %d |" % t["unregistered"],
-        "| Unpublished placements without a recorded disposition | %d |" % t["unexplained"],
+        "| Unpublished placements without a recorded disposition | %d (%d withheld, %d missing) |" % (
+            t["unexplained"], t["unexplained_withheld"], t["unexplained_missing"]),
         "",
         "Cross-checked against the totals the source states for itself:",
         "",
@@ -690,14 +753,14 @@ def coverage_section(entries, cov):
     lines += ["| %s | %s | %s |" % (label, format(a, ","), format(b, ",")) for label, a, b in cov["cross"]]
     lines += ["", "### Ideal placements not published", ""]
     if cov["unpublished"]:
-        lines += ["| Creature | Family | Parent | Quantity | State | Disposition |",
-                  "|---|---|---|---|---|---|"]
-        for placement, state, disposition, _symbols in cov["unpublished"]:
-            lines.append("| %s | %s | %s %s | %s | %s | %s |" % (
-                names[placement.key], FAMILY_NAME[placement.family], FAMILY_SYMBOL[placement.family],
-                ROMAN[placement.parent], QUANTITY_LABEL[placement.quantity],
-                "Registered, withheld" if state == "withheld" else "No declared choice",
-                disposition))
+        lines += ["| Creature | Family | Parent | Quantity | State | Decision on record | Disposition |",
+                  "|---|---|---|---|---|---|---|"]
+        for u in cov["unpublished"]:
+            lines.append("| %s | %s | %s %s | %s | %s | %s | %s |" % (
+                names[u.placement.key], FAMILY_NAME[u.placement.family], FAMILY_SYMBOL[u.placement.family],
+                ROMAN[u.placement.parent], QUANTITY_LABEL[u.placement.quantity],
+                "Registered, withheld" if u.state == "withheld" else "No declared choice",
+                "yes" if u.recorded else "no", u.disposition))
     else:
         lines.append("None.")
     for title, rows in (
@@ -713,39 +776,19 @@ def coverage_section(entries, cov):
         lines += ["", "### " + title, ""]
         lines += ["- " + row for row in rows] if rows else ["None."]
 
-    statuses = cov["family_status"]
-
-    def overall(e):
-        values = [statuses[e.key][f] for f in FAMILIES if e.tier(f)]
-        if all(v.startswith("Complete") for v in values):
-            return "complete"
-        if all(v.startswith("Withheld") for v in values):
-            return "withheld"
-        if any(v.startswith(("Complete", "Partial")) for v in values):
-            return "partial"
-        return "none"
-
     groups = defaultdict(list)
     for e in sorted(entries, key=lambda x: x.key):
-        groups[overall(e)].append(e.name)
-    somewhere = len(groups["complete"]) + len(groups["partial"])
+        groups[cov["creature_category"][e.key]].append(e.name)
+    lines += ["", "### Coverage by creature", "",
+              "| Creature coverage | Creatures | Which |", "|---|---|---|"]
+    for key, label in CREATURE_CATEGORIES:
+        lines.append("| %s | %d | %s |" % (
+            label, len(groups[key]), "" if key == "complete" else ", ".join(groups[key])))
     lines += [
         "",
-        "### Coverage by creature",
-        "",
-        "| Creature coverage | Creatures | Which |",
-        "|---|---|---|",
-        "| Every ideal placement published | %d | |" % len(groups["complete"]),
-        "| Some ideal placements published, some not | %d | %s |" % (
-            len(groups["partial"]), ", ".join(groups["partial"])),
-        "| Every ideal placement registered and withheld | %d | %s |" % (
-            len(groups["withheld"]), ", ".join(groups["withheld"])),
-        "| No ideal placement published or registered | %d | %s |" % (
-            len(groups["none"]), ", ".join(groups["none"])),
-        "",
-        "Available somewhere: %d creatures have at least one published ideal placement. That is"
-        % somewhere,
-        "not complete coverage; the partial row above is the difference.",
+        "Available somewhere: %d creatures have at least one published ideal placement (the first"
+        % cov["available_somewhere"],
+        "two rows). That is not complete coverage; the partial row is the difference.",
         "",
         "### Registered unit identity",
         "",

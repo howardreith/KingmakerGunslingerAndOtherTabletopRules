@@ -110,6 +110,48 @@ function Invoke-Dispatch {
     return [pscustomobject]@{ Selected = $selected; Thrown = $thrown }
 }
 
+# The unconditional source-fixture block: every top-level statement from the
+# first fixture invocation up to the version-or-development dispatch. It is
+# executed as real source extents too, so a fixture added there is observed
+# rather than assumed.
+$allStatements = @($ast.EndBlock.Statements)
+$fixtureStart = -1
+$fixtureEnd = -1
+for ($index = 0; $index -lt $allStatements.Count; $index++) {
+    $text = $allStatements[$index].Extent.Text
+    if ($fixtureStart -lt 0 -and $text -match 'test_repository_validator\.py') { $fixtureStart = $index }
+    if ($fixtureStart -ge 0 -and $text -match '^if \(\[string\]::IsNullOrEmpty\(\$DevelopmentPurpose\)\)') {
+        $fixtureEnd = $index
+        break
+    }
+}
+if ($fixtureStart -lt 0 -or $fixtureEnd -le $fixtureStart) {
+    throw 'The unconditional source-fixture block could not be located.'
+}
+$fixtureStatements = @($allStatements[$fixtureStart..($fixtureEnd - 1)])
+
+function Invoke-SourceFixtures {
+    param([string]$FailOnChild)
+    Set-Content -LiteralPath $script:childLog -Value $null
+    $failMarker = Join-Path $script:root 'fail-on.txt'
+    if ($FailOnChild) { Set-Content -LiteralPath $failMarker -Value $FailOnChild -Encoding UTF8 }
+    elseif (Test-Path -LiteralPath $failMarker) { Remove-Item -LiteralPath $failMarker -Force }
+    $repositoryRoot = 'C:\kmg-dispatch-fixture'
+    $python = [pscustomobject]@{ Source = $script:shim }
+    $global:LASTEXITCODE = 0
+    $thrown = $null
+    foreach ($statement in $script:fixtureStatements) {
+        try { & ([ScriptBlock]::Create($statement.Extent.Text)) }
+        catch { $thrown = $_.Exception.Message; break }
+    }
+    $selected = @()
+    if (Test-Path -LiteralPath $script:childLog) {
+        $selected = @(Get-Content -LiteralPath $script:childLog |
+            Where-Object { $_ -ne '' } | ForEach-Object { Split-Path -Leaf $_ })
+    }
+    return [pscustomobject]@{ Selected = $selected; Thrown = $thrown }
+}
+
 $results = New-Object System.Collections.ArrayList
 $failures = 0
 function Check {
@@ -273,6 +315,36 @@ try {
     Check 'a failing Sprint36 release child stops validation' `
         ($null -ne $failed174.Thrown -and $failed174.Thrown -match 'Sprint36 release source corruption fixtures failed') `
         ([string]$failed174.Thrown)
+
+    # The roster coverage suite (INT-08) is an unconditional source fixture.
+    $roster = 'test_expanded_summoning_ideal_roster.py'
+    $rosterReferences = [regex]::Matches((Get-Content -Raw -LiteralPath $validatorFull),
+        [regex]::Escape($roster)).Count
+    Check 'the roster coverage suite is invoked from exactly one place' ($rosterReferences -eq 1) `
+        "$rosterReferences references"
+    $fixtures = Invoke-SourceFixtures
+    Check 'the source fixtures run the roster coverage suite exactly once' `
+        ((@($fixtures.Selected | Where-Object { $_ -eq $roster }).Count -eq 1) -and $null -eq $fixtures.Thrown) `
+        ($fixtures.Selected -join ', ')
+    Check 'the roster suite runs before the deterministic-package fixtures' `
+        ([array]::IndexOf($fixtures.Selected, $roster) -ge 0 -and
+         [array]::IndexOf($fixtures.Selected, $roster) -lt
+            [array]::IndexOf($fixtures.Selected, 'test_deterministic_package.py')) `
+        ($fixtures.Selected -join ', ')
+    $failedRoster = Invoke-SourceFixtures -FailOnChild $roster
+    Check 'a failing roster coverage suite stops validation' `
+        ($null -ne $failedRoster.Thrown -and
+         $failedRoster.Thrown -match 'Expanded Summoning roster coverage fixtures failed') `
+        ([string]$failedRoster.Thrown)
+    Check 'nothing downstream runs after the roster suite fails' `
+        ($failedRoster.Selected[-1] -eq $roster -and
+         $failedRoster.Selected -notcontains 'test_deterministic_package.py') `
+        ($failedRoster.Selected -join ', ')
+    foreach ($version in @('0.0.191', '0.0.159')) {
+        $versioned = Invoke-Dispatch -Version $version
+        Check "$version version dispatch does not run the roster suite again" `
+            ($versioned.Selected -notcontains $roster) ($versioned.Selected -join ', ')
+    }
 
     # No dispatch statement may be nested inside another: that is the defect.
     $nested = @()
