@@ -1,9 +1,10 @@
 # The Brown-Fur publication check: a transaction judged against a later moment (INT-02)
 
-Status: **development change on a review branch, awaiting review. Not merged, not released.** Branch
-`codex/int02-brown-fur-publication-attribution`, stacked on draft PR #174 at its accepted head `e2a716c59e` (which is
-stacked on #173, #172, #171, #170 and #169). The published v0.0.191 does not contain it. Nothing here is a release
-qualification.
+Status: **development item closed: the review accepted draft PR #175 at `6ddd4802c2` for its stated INT-02
+publication-observer scope. Not merged, not released.** Branch `codex/int02-brown-fur-publication-attribution`,
+stacked on draft PR #174 at its accepted head `e2a716c59e` (which is stacked on #173, #172, #171, #170 and #169). The
+published v0.0.191 does not contain it. Nothing here is a release qualification. See "Review acceptance and
+closeout".
 
 This is one bounded cut of the Gunslinger remediation epic of 2026-11-15: story S3 T2, inventory record INT-02.
 Current status is kept in `planning/GUNSLINGER-REMEDIATION-STATUS.md`. It was traced on its own evidence; nothing
@@ -13,8 +14,11 @@ was carried over from INT-01 but the configuration that reproduces it.
 
 **Observer defect, corrected. Publication is right and behaves as before.**
 
-`feature-module-brown-fur-publication-gate` fails whenever the Favored Class mod is installed beside Call of the
-Wild. One predicate of its ten fails. The check required the publication transaction's evidence to say that it had
+On the observed twelve-mod stack, with Brown-Fur enabled, Call of the Wild 1.14.4c-2.1 and Favored Class 1.3.1, the
+old gate fails because Brown-Fur publishes before Favored Class adds the combined archetypes. Its expected transaction
+counts are derived from the later selector state.
+
+One predicate of the old gate's ten fails. The check required the publication transaction's evidence to say that it had
 found as many foreign archetypes as the Arcanist selector holds *now* (`before=14;after=15`). The transaction found
 six and left seven, and its evidence says so (`before=6;after=7`). Eight more archetypes are added afterwards by
 Favored Class. The transaction and the final selector are two different moments, and the check compared them as
@@ -101,7 +105,10 @@ final selector.
 
 The August run's transaction evidence was not re-read; that row is what its recorded positions and its pass imply.
 
-## One thing found on the way, not classified (NEW-10)
+## One thing found on the way (NEW-10)
+
+Decision recorded at the closeout of this item: **Preserve the existing Favored Class-generated combinations. Gameplay compatibility qualification is pending; their presence is neither a confirmed defect nor verified gameplay support.** See "Review
+acceptance and closeout" for what that leaves to be done. The paragraph below is the observation as first written.
 
 Because the module now publishes before Favored Class combines archetypes, Favored Class builds three combined
 archetypes *from Brown-Fur*: "Unlettered Arcanist / Spell Specialist / Brown-Fur Transmuter", "Unlettered Arcanist /
@@ -286,6 +293,42 @@ Kept as it happened:
 | Session `brown-fur-publication-boundary-absent-provider.json` | SHA-256 `0ff8dbf7d0c00da376d0ff9f8a8ebf8fc11239da751589f4bf8f6d0d315f5a12` |
 | Game | Pathfinder: Kingmaker 2.1.7b, disposable copy `game-copies/loader-compat`, loader profile `owner-0.33.0` |
 
+## Review acceptance and closeout
+
+The review of draft PR #175 at `6ddd4802c2acfcb7ec5b0d8237575cc07920ff80` accepted it for its stated INT-02
+publication-observer scope. INT-02 / S3 T2 is closed as a development item. Nothing was rebuilt or rerun for this
+closeout; the native evidence stands under its original candidates and sessions, as listed above.
+
+Review acceptance, merge and release are separate states. This is the first only: PR #175 is still an open draft
+with no reviewers, nothing is merged and nothing is released.
+
+**Scope of the finding, corrected.** This record had said the gate fails "whenever" Favored Class is installed
+beside Call of the Wild. What was observed is narrower, and the "Disposition" now says so: one stack, one pair of
+provider versions, Brown-Fur enabled. Other versions and other load orders were not run.
+
+**A deferred audit issue.** The transaction result checks that the evidence text agrees with the transaction's
+identity record by looking for the expected text inside each evidence line (`Contains`). Text ending `index=6` is
+also found inside a line ending `index=60`, so a record at position 6 would be accepted against evidence saying 60.
+The current producer writes the text and the record from the same insertion value, so they cannot differ today, and
+no publication regression was established. A future Brown-Fur diagnostic change should compare the exact record or
+its tokens and add a focused negative control. Not changed here.
+
+**NEW-10: the decision.** Preserve the existing Favored Class-generated combinations. Gameplay compatibility qualification is pending; their presence is neither a confirmed defect nor verified gameplay support.
+
+| Identity | Internal name | Shown as |
+|---|---|---|
+| `1e94108befebb3728ec03be1a6ee70db` | `UnletteredArcanistArchetypeSpellSpecialistArcanistArchetypeKMG_BrownFurTransmuter_Archetype` | Unlettered Arcanist / Spell Specialist / Brown-Fur Transmuter |
+| `c152b2a965d9f4f0105d562aeba2ac44` | `UnletteredArcanistArchetypeKMG_BrownFurTransmuter_Archetype` | Unlettered Arcanist / Brown-Fur Transmuter |
+| `753ccc40ae29f6c71c433293315b4fb6` | `SpellSpecialistArcanistArchetypeKMG_BrownFurTransmuter_Archetype` | Spell Specialist / Brown-Fur Transmuter |
+
+Observed with Favored Class 1.3.1 (`ZFavoredClass`) and Call of the Wild 1.14.4c-2.1. The choices are not
+suppressed, their identities are not changed, no third-party blueprint is patched and the startup order is not
+changed. Their qualification is a task of its own, to be done beside the planned Brown-Fur compatibility and
+lifecycle work: inspect progression and feature-replacement compatibility, then verify selection in the game and the
+abilities it affects. None of that was done here.
+
+Unchanged by the closeout: the limits below; NEW-09; INT-08 / S3 T7 still open, so Sprint 3 is not closed.
+
 ## Limits and what is not established
 
 - The owner's installation was not used, and the original report's eleven-mod installation was not reproduced. The
@@ -298,6 +341,8 @@ Kept as it happened:
   archetypes present first) is covered by tests and by the August record, not by a run here.
 - No failing Brown-Fur boundary was produced in the game; those reports are covered by the tests.
 - Brown-Fur was not selected or played in any run. This check is about the archetype in the selector.
-- NEW-10, the three archetypes Favored Class builds from Brown-Fur, is observed and not classified.
+- NEW-10, the three archetypes Favored Class builds from Brown-Fur: preserved by decision; neither a confirmed
+  defect nor verified gameplay support. Their qualification is pending.
+- The evidence-text comparison in the transaction result uses `Contains` (see "Review acceptance and closeout").
 - `observe-brown-fur-cotw-contract`, which has its own two publication assertions, was not changed and not run.
 - The complete domain suite, the compatibility matrix and the other module states were not run.
