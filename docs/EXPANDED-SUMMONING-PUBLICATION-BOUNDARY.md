@@ -1,9 +1,10 @@
 # The Expanded Summoning publication check: 38 choices it could count and not name (INT-01)
 
-Status: **development change on a review branch, awaiting review. Not merged, not released.** Branch
+Status: **development item closed: the review accepted draft PR #174 at `e2a716c59e` for its stated INT-01
+publication-boundary diagnostic scope. Not merged, not released.** Branch
 `codex/int01-summoning-publication-attribution`, stacked on draft PR #173 at its accepted head `6f1590d31d` (which is
 stacked on #172, #171, #170 and #169). The published v0.0.191 does not contain it. Nothing here is a release
-qualification.
+qualification. See "Review acceptance and closeout".
 
 This is one bounded cut of the Gunslinger remediation epic of 2026-11-15: story S3 T1, inventory record INT-01.
 Current status is kept in `planning/GUNSLINGER-REMEDIATION-STATUS.md`. It repairs a diagnostic. Publication, gameplay
@@ -14,14 +15,17 @@ and released identities are unchanged.
 **Observer defect, corrected. Publication was right and was not changed.**
 
 `feature-module-expanded-summoning-publication-gate` reported `unclassified=38` whenever Races Unleashed was
-installed. The 38 are the project's own generated Spider Summoner rows: one for each of Races Unleashed's four spider
+installed. The 38 reproduced here are the project's own generated Spider Summoner rows: one for each of Races Unleashed's four spider
 species at every tier above the species' base tier, in both spell families. Each is under its declared parent, once,
 behind the Spider Summoner feat. The check sorted choices by the prefix of their internal name. It was written on
 2026-09-23, and the spider rows were added on 2026-11-09 under a prefix it had no class for, so it counted them as
 unclassified against an expectation of none.
 
-All 38 of the originally reported entries are accounted for: every one is a required, correctly placed project
-choice. None was unexpected, duplicated, missing or unreadable.
+All 38 entries reproduced in the current comparisons are accounted for as required, correctly placed Spider
+Summoner rows. The matching count, known Races Unleashed presence, matching Brown-Fur observation, and source history
+strongly support this as the cause of the historical report. The original row identities were not recovered.
+
+None of the reproduced entries was unexpected, duplicated, missing or unreadable.
 
 ## The finding as first reported
 
@@ -284,10 +288,31 @@ took it over, and it is the run that matched the original report's second value.
 | Recorded lists used by the tests | `tests/fixtures/summoning-publication/races-unleashed-parent-census.json`, SHA-256 `ef540df1868ba5be731178b2290d61bd538f131fd9b7f03c253b07ffde13156f`, from session `20261116T181244Z` |
 | Game | Pathfinder: Kingmaker 2.1.7b, disposable copy `game-copies/loader-compat`, loader profile `owner-0.33.0` |
 
+## Review acceptance and closeout
+
+The review of draft PR #174 at `e2a716c59e8c11fc40ace8e79183f6a95953e5f0` accepted the implementation for its stated
+INT-01 publication-boundary diagnostic scope. INT-01 / S3 T1 is closed as a development item. Nothing was rebuilt or
+rerun for this closeout; the evidence is the five sessions listed above, each under its own package.
+
+Review acceptance, merge and release are separate states. This is the first only: PR #174 is still an open draft
+with no reviewers, nothing is merged and nothing is released.
+
+The review asked for one correction to this record, made in the closeout: it had said that all 38 of the
+*originally reported* entries were accounted for. What was listed entry by entry is the 38 reproduced now, on the
+published v0.0.191. The conclusion under "Disposition" is worded accordingly, and the status register, the fixture
+note, `KNOWN-ISSUES.md` and the PR description were brought into line with it. Nothing else in the record changed.
+
+Unchanged by the closeout:
+
+- The twelve-mod snapshot is not the original eleven-mod installation, and v0.0.185 was not rerun.
+- The limits below all stand, including the repeated `racesUnleashedRows` label in the ledger assertion's text; the
+  ledger file distinguishes the two quantities, and nothing was rebuilt for that wording.
+- INT-02 (Brown-Fur), S3 T6 and S3 T7 are separate and open; Sprint 3 is not closed. NEW-09 is unchanged.
+
 ## Limits and what is not established
 
-- The original report's raw results and mod list were not recovered. The 38 of that report are identified with the
-  38 here because the count matches, the Brown-Fur value recorded beside it matches, the spider rows are the only
+- The original report's raw results and mod list were not recovered, so the original row identities are not known.
+  That the 38 of that report are the 38 here is strongly supported, not shown: the count matches, the Brown-Fur value recorded beside it matches, the spider rows are the only
   project choices the old reader had no class for, and Races Unleashed was among the mods the report names. That is
   an identification by evidence, not a re-reading of the original files.
 - The original baseline was v0.0.185; the baseline here is the published v0.0.191. v0.0.185 was not rebuilt.

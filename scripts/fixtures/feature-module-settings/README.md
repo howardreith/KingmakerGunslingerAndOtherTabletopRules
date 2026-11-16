@@ -49,9 +49,11 @@ remain a plausible explanation, not a demonstrated one, and "calibrated for a
 single-mod installation" - which this README once stated as fact - is still
 only a candidate explanation.
 
-**Later (2026-11-16, INT-01): the summoning gate's mechanism is traced.** The 38 are this project's own generated
-Spider Summoner rows, published whenever Races Unleashed is installed; the gate's reader predates them and had no
-class for them. The published v0.0.191 reproduces `unclassified=38` with Races Unleashed as the only other mod, and
+**Later (2026-11-16, INT-01): the summoning gate's mechanism is traced.** The 38 entries reproduced on the published
+v0.0.191 are this project's own generated Spider Summoner rows, published whenever Races Unleashed is installed; the
+gate's reader predates them and had no class for them. The row identities of the runs described above were not
+recovered; the matching count, Races Unleashed's presence in them and the matching Brown-Fur value strongly support
+the same cause. The published v0.0.191 reproduces `unclassified=38` with Races Unleashed as the only other mod, and
 both recorded values beside twelve of the owner's mods. The gate is corrected on its own branch; see
 `docs/EXPANDED-SUMMONING-PUBLICATION-BOUNDARY.md`. The paragraphs above are left as written. The Brown-Fur gate is
 still untraced (INT-02).
