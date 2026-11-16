@@ -1,0 +1,30 @@
+{
+  "name": "presentation-diagnostics",
+  "description": "The two product scenarios whose diagnostics INT-04 and INT-05 repair, each in a fresh process at the main menu with no save and no other mods. disposable-firearm-visual-rigs now reports the firearm item visual roster (the declared sixteen identities against what the game has) and every item's visual binding as two separate assertions. observe-gunslinger-presentation now reports the weapon census, the item census, the custom enchantment census, the policy-only enchantment and the player-facing text separately, and then their aggregate under its established name. A scenario may still fail on an assertion these changes do not touch; each assertion's own result is what is read.",
+  "ownerMods": [],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "firearm-visual-rigs",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-firearm-visual-rigs",
+        "parameters": {},
+        "timeoutSeconds": 600
+      }
+    },
+    {
+      "label": "gunslinger-presentation",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "observe-gunslinger-presentation",
+        "parameters": {},
+        "timeoutSeconds": 600
+      }
+    }
+  ]
+}
