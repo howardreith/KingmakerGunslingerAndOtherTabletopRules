@@ -325,6 +325,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonDisplayOrderPolicy.cs"><Link>Summoning\SummonDisplayOrderPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonClericAlignmentPolicy.cs"><Link>Summoning\SummonClericAlignmentPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SpiderSummonerCatalog.cs"><Link>Summoning\SpiderSummonerCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningPublicationAudit.cs"><Link>Summoning\ExpandedSummoningPublicationAudit.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonForeignRowContracts.cs"><Link>Summoning\SummonForeignRowContracts.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonNativeOptionCatalog.cs"><Link>Summoning\SummonNativeOptionCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonNativeExpansionCatalog.cs"><Link>Summoning\SummonNativeExpansionCatalog.cs</Link></Compile>
@@ -574,6 +575,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\GunslingerDodgeScenarioVerdict.cs"><Link>RuntimeTesting\GunslingerDodgeScenarioVerdict.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\MotionSessionLifecycle.cs"><Link>RuntimeTesting\MotionSessionLifecycle.cs</Link></Compile>
     <Compile Include="MotionSessionLifecycleTests.cs" />
+    <Compile Include="SummoningPublicationBoundaryTests.cs" />
     <Compile Include="..\..\tools\LoaderCompatHarness\ProbeLifecycle.cs"><Link>LoaderCompatHarness\ProbeLifecycle.cs</Link></Compile>
     <Compile Include="WeaponFindabilityTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\HeirloomNodachiIconObservation.cs"><Link>RuntimeTesting\HeirloomNodachiIconObservation.cs</Link></Compile>

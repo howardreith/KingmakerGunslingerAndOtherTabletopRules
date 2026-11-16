@@ -16059,6 +16059,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             ObserveTeleportationSpellPublication(assertions);
             ObserveStagedSettingsMigration(assertions);
             var iconEvidenceFiles = new List<string>();
+            // The choice-by-choice results stand directly after the totals
+            // they explain.
+            assertions.InsertRange(assertions.FindIndex(value => value.Name ==
+                "feature-module-expanded-summoning-publication-gate") + 1,
+                ExpandedSummoningBoundaryDetail(
+                    "feature-module-expanded-summoning-publication",
+                    summoningBoundary, iconEvidenceFiles));
             FirearmMonogramEvidence.Exercise(_request, assertions, iconEvidenceFiles);
             ObserveSprint40GeneratedDiagnostic(assertions, iconEvidenceFiles);
             var result = CreateResult(assertions.All(value => value.Status == "PASS") ?
