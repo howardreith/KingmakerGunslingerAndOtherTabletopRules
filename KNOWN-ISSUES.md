@@ -91,8 +91,9 @@
   released): the scenario now loads `KMG_AUTOMATION_WORKING` through the product's guarded read-only route and uses
   the registered ability through the game's ability command. It passed in the disposable game copy: grit 5 to 4,
   armor class 10 to 12, an incoming attack resolved against 10, 12 and 10, an attempted command refused while active
-  and with no grit with nothing spent or applied, the buff ended after 6.02 s, and a recast after an early removal
-  outlived the earlier deadline. Record and limits: `docs/GUNSLINGER-DODGE-SCENARIO.md`. It needs the mods the
+  and with no grit with nothing spent or applied, the buff ended after one round, and a recast after an early removal
+  outlived the earlier deadline (after the review corrections: the later buff was applied 3.46 s before that deadline
+  and was still on the unit 0.62 s after it). Record and limits: `docs/GUNSLINGER-DODGE-SCENARIO.md`. It needs the mods the
   working save was made with, and it was not run through the live guarded launcher on the owner's installation.
 - `disposable-gunslinger-comprehensive-acceptance` has no Dodge slice on branch `codex/int03-dodge-scenario` (32
   slices, was 33): the slice could not execute the ability at the main menu. The aggregate was not rerun.
