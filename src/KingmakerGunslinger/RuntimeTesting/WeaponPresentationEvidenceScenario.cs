@@ -2977,6 +2977,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             // The attack animation advances on Unity's scaled time, which
             // stands still while the game is paused. A save that loads
             // paused would otherwise hold every attack at its first frame.
+            // Time is released for each attack sequence only: left running
+            // between them, the game acts on the newly equipped weapon
+            // itself and the firearm is empty before its own sample.
             private bool _pauseCaptured;
             private bool _pausedBeforeAttacks;
             private readonly ModContext _context;
@@ -3082,6 +3085,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         PollCleanup();
                         return;
                     }
+                    if (_pauseCaptured && _pausedBeforeAttacks && _phase != 3 &&
+                        !Game.Instance.IsPaused)
+                        Game.Instance.IsPaused = true;
                     if (_phase == 0)
                     {
                         Initialize();
@@ -3506,8 +3512,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _pauseCaptured = true;
                         _pausedBeforeAttacks = true;
                         _diagnostics.Add("attackSampling=game was paused; " +
-                            "time released for the attack samples and the " +
-                            "pause restored at cleanup");
+                            "time released during each attack sequence and " +
+                            "the pause held between them and restored at " +
+                            "cleanup");
                     }
                     Game.Instance.IsPaused = false;
                 }
