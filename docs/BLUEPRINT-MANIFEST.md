@@ -667,8 +667,33 @@ conditions, and its historical value is unchanged. Nothing else in it changed.
 - `assets-source/original-icons/icon-catalog.json` records the manifest's whole-file SHA-256
   (`baseline.registrySha256`), which `tools/validate_icon_catalog.py` requires. It was moved to the new file hash,
   as it is for any manifest change. It pins the exact new bytes.
-- `tools/validate_development_candidate.py` requires every released row at the active version's tag (`v0.0.191`),
-  notes included, to be unchanged. **It refuses this branch**: "A released identity row changed, moved or was
-  removed". It was not changed, because the authorization named the prefix guard and a rule in that validator is
-  the owner's to change. Until it is decided, no development candidate can be built from this branch or from one
-  stacked on it. A release validator that holds the same rule would meet the same row.
+- `tools/validate_development_candidate.py`, the validator `Build-Local -DevelopmentPurpose` runs, required every
+  released row at the active version's tag (`v0.0.191`), notes included, to be unchanged, and at `2fcac7387b` it
+  refused this branch: "A released identity row changed, moved or was removed". **Decision (owner, 2026-11-16, review
+  of `2fcac7387b`):** that validator recognizes this exact authorized transition. It now compares the released
+  ledger with `check_development_ledger`, which is the earlier exact, append-only comparison with one permitted
+  difference, listed in `AUTHORIZED_RELEASED_ROW_CORRECTIONS`: at position 206, the whole six-field row exactly as
+  released (frozen note) may become the whole six-field row with exactly the approved note. Every other released
+  row must still be identical. The reverse transition fails, and so does any other wording before or after, the
+  approved wording on another row or at another position, and any other field of the record. A released ledger
+  that already holds the approved note is simply identical and passes. A corrected row is not an appended
+  identity. The summary lists each correction under `authorizedReleasedRowCorrections`, and `ledgerSha256` is the
+  hash of the actual candidate manifest. `check_append_only`, which the historical release validators import, is
+  unchanged, so they keep describing their own releases exactly.
+- `tools/validate_grit_ui_recipient_release191.py`, the v0.0.191 release validator, is unchanged and still
+  requires its exact reviewed ledger. **A prospective release validator must account for the approved note
+  explicitly when the next release is prepared**; that is outside this change.
+
+**Verification of the development path (2026-11-16, after the decision).** No `Build-Local` run, product DLL,
+package or game launch.
+
+| Check | Result |
+|---|---|
+| `python tools/test_development_candidate_validator.py` | 47 of 47 pass (unittest), none skipped, 3 s |
+| `python tools/validate_development_candidate.py --root . --purpose gunsmith-note-guard --summary <scratch>` | PASS, exit 0, 6 s: baseline v0.0.191, 7,933 identities, 0 appended, one authorized correction (row 206, notes); ledgerSha256 is the actual file's hash 094dfa7d1d47... |
+| `scripts/validate-repository.ps1 -DevelopmentPurpose gunsmith-note-guard -DevelopmentSummaryPath <scratch>` | PASS, exit 0, 504 s: development validation accepted; every other child passed (the 47 fixtures again among them) |
+| `tools/validate_grit_ui_recipient_release191.py` | unchanged (SHA-256 `6b33f9994168a7362ca119f53d74de2cf5f964da23da3580853c3b6e7d0320cb` before and after) |
+
+The fixtures include the actual released ledger from tag `v0.0.191`: its row 206 is exactly the authorized
+"before"; the ledger against itself passes with no correction; with only the approved note it passes with one
+correction and no appended identity; with one more note changed it fails.

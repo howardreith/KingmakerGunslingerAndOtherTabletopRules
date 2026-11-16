@@ -335,9 +335,9 @@
   text carried the claim and nothing in play was affected. Corrected under the owner's authorization on branch
   `codex/int07-gunsmith-kit-manifest-note` (awaiting review; not merged, not released), with the historical
   1,913-record prefix hash unchanged and one exact, named exception for this note
-  (`docs/BLUEPRINT-MANIFEST.md`). Open consequence: the development-candidate validator requires every released
-  manifest row, notes included, to be unchanged, so it refuses that branch; it was left as it is for the owner to
-  decide, and until then no development candidate can be built from that branch or one stacked on it.
+  (`docs/BLUEPRINT-MANIFEST.md`). By the owner's later decision the development-candidate validator recognizes this
+  one exact transition and accepts the branch again; the v0.0.191 release validator is unchanged, and the next
+  release's validator will have to account for the approved note.
 - Dire Narlmarches and Pitax regional weapon stock (withdrawn in v0.0.185). It has the same native limitation as Oleg's spears:
   if a stocked Eastern weapon or spear was bought and a matching one was later sold back to that trader,
   the engine's update removes the sold copy. A save with no persisted known-item history keeps the old
