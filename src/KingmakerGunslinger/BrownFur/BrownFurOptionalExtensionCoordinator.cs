@@ -26,6 +26,7 @@ namespace KingmakerGunslinger.BrownFur
         private static BlueprintRegistry _registry;
         private static BrownFurBlueprintSet _blueprints;
         private static BrownFurPublicationTransaction _publication;
+        private static string[] _reconciledSelector;
         private static bool _installed;
         private static bool _firstUpdateAttached;
         private static bool _reconciling;
@@ -47,6 +48,36 @@ namespace KingmakerGunslinger.BrownFur
                 lock (Gate)
                     return _publication == null ? new string[0] :
                         _publication.Evidence.ToArray();
+            }
+        }
+
+        /// <summary>What the publication transaction held of each list
+        /// surface when it applied, by identity; empty when nothing was
+        /// published.</summary>
+        internal static IReadOnlyList<BrownFurSurfaceObservation> PublicationObservations
+        {
+            get
+            {
+                lock (Gate)
+                    return _publication == null ?
+                        new BrownFurSurfaceObservation[0] :
+                        _publication.Observations.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// The Arcanist archetype selector, by identity and in order, as it
+        /// stood when this module first reached its decision to publish or
+        /// not: before any Brown-Fur change, and before anything another
+        /// mod added afterwards. Null until that moment.
+        /// </summary>
+        internal static IReadOnlyList<string> ReconciledSelector
+        {
+            get
+            {
+                lock (Gate)
+                    return _reconciledSelector == null ? null :
+                        _reconciledSelector.ToArray();
             }
         }
 
@@ -217,6 +248,13 @@ namespace KingmakerGunslinger.BrownFur
                     lock (Gate) Startup.AwaitLibrary();
                     return;
                 }
+
+                string[] selector = (resolution.Contract.ArcanistClass.Archetypes ??
+                    new Kingmaker.Blueprints.Classes.BlueprintArchetype[0])
+                    .Select(value => value == null ? null : value.AssetGuid)
+                    .ToArray();
+                lock (Gate)
+                    if (_reconciledSelector == null) _reconciledSelector = selector;
 
                 bool published = context.FeatureModules.Active
                     .BrownFurTransmuter && EnsurePublished(context,

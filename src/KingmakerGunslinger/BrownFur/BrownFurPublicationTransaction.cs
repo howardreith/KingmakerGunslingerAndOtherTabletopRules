@@ -5,6 +5,34 @@ using System.Linq;
 namespace KingmakerGunslinger.BrownFur
 {
     /// <summary>
+    /// What one list surface held when the transaction applied to it, by
+    /// identity and in order. The evidence text beside it carries only the
+    /// two counts, and a count cannot show which entries were there or
+    /// that the same ones remain later.
+    /// </summary>
+    internal sealed class BrownFurSurfaceObservation
+    {
+        internal BrownFurSurfaceObservation(string key, string action,
+            IEnumerable<string> before, IEnumerable<string> after,
+            bool boundaryFound, int index)
+        {
+            Key = key; Action = action; Before = before.ToArray();
+            After = after.ToArray(); BoundaryFound = boundaryFound;
+            Index = index;
+        }
+
+        internal string Key { get; private set; }
+        /// <summary><c>published</c> or <c>unchanged</c>.</summary>
+        internal string Action { get; private set; }
+        internal string[] Before { get; private set; }
+        internal string[] After { get; private set; }
+        /// <summary>The additions went in ahead of an entry the boundary named.</summary>
+        internal bool BoundaryFound { get; private set; }
+        /// <summary>Where the additions went.</summary>
+        internal int Index { get; private set; }
+    }
+
+    /// <summary>
     /// Brown-Fur-owned transaction for optional blueprint registration and
     /// publication surfaces.  It preserves foreign ordering, records every
     /// mutation, and rolls back only state that it can still prove it owns.
@@ -13,6 +41,8 @@ namespace KingmakerGunslinger.BrownFur
     {
         private readonly List<IMutation> _mutations = new List<IMutation>();
         private readonly List<string> _evidence = new List<string>();
+        private readonly List<BrownFurSurfaceObservation> _observations =
+            new List<BrownFurSurfaceObservation>();
         private readonly HashSet<string> _keys = new HashSet<string>(
             StringComparer.Ordinal);
         private bool _committed;
@@ -20,6 +50,11 @@ namespace KingmakerGunslinger.BrownFur
 
         internal IReadOnlyList<string> Evidence
         { get { return _evidence.AsReadOnly(); } }
+
+        /// <summary>One entry for each list surface the transaction
+        /// applied to, in the order they were applied.</summary>
+        internal IReadOnlyList<BrownFurSurfaceObservation> Observations
+        { get { return _observations.AsReadOnly(); } }
 
         internal bool IsCommitted { get { return _committed; } }
 
@@ -29,7 +64,7 @@ namespace KingmakerGunslinger.BrownFur
             where T : class
         {
             Add(new AppendMutation<T>(key, read, write, additions, identity,
-                Record));
+                Record, Observe));
             return this;
         }
 
@@ -40,7 +75,7 @@ namespace KingmakerGunslinger.BrownFur
             where T : class
         {
             Add(new InsertBeforeMutation<T>(key, read, write, additions,
-                identity, boundary, Record));
+                identity, boundary, Record, Observe));
             return this;
         }
 
@@ -130,6 +165,9 @@ namespace KingmakerGunslinger.BrownFur
 
         private void Record(string value) { _evidence.Add(value); }
 
+        private void Observe(BrownFurSurfaceObservation value)
+        { _observations.Add(value); }
+
         private interface IMutation
         {
             string Key { get; }
@@ -144,14 +182,17 @@ namespace KingmakerGunslinger.BrownFur
             private readonly T[] _additions;
             private readonly Func<T, string> _identity;
             private readonly Action<string> _record;
+            private readonly Action<BrownFurSurfaceObservation> _observe;
             private IList<T> _before;
             private IList<T> _after;
             private bool _attempted;
 
             internal AppendMutation(string key, Func<IList<T>> read,
                 Action<IList<T>> write, IEnumerable<T> additions,
-                Func<T, string> identity, Action<string> record)
+                Func<T, string> identity, Action<string> record,
+                Action<BrownFurSurfaceObservation> observe)
             {
+                _observe = observe;
                 if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException(
                     "A publication surface key is required.", "key");
                 Key = key;
@@ -190,6 +231,9 @@ namespace KingmakerGunslinger.BrownFur
                 {
                     _record("surface=" + Key + ";action=unchanged;count=" +
                         _before.Count);
+                    _observe(new BrownFurSurfaceObservation(Key, "unchanged",
+                        _before.Select(Identity), _before.Select(Identity),
+                        false, _before.Count));
                     return;
                 }
                 _after = next;
@@ -199,6 +243,9 @@ namespace KingmakerGunslinger.BrownFur
                     InvalidOperationException("Brown-Fur publication write was not retained: " + Key);
                 _record("surface=" + Key + ";action=published;before=" +
                     _before.Count + ";after=" + _after.Count);
+                _observe(new BrownFurSurfaceObservation(Key, "published",
+                    _before.Select(Identity), _after.Select(Identity), false,
+                    _before.Count));
             }
 
             public void Rollback()
@@ -266,6 +313,7 @@ namespace KingmakerGunslinger.BrownFur
             private readonly Func<T, string> _identity;
             private readonly Func<T, bool> _boundary;
             private readonly Action<string> _record;
+            private readonly Action<BrownFurSurfaceObservation> _observe;
             private IList<T> _before;
             private IList<T> _after;
             private bool _attempted;
@@ -273,8 +321,10 @@ namespace KingmakerGunslinger.BrownFur
             internal InsertBeforeMutation(string key, Func<IList<T>> read,
                 Action<IList<T>> write, IEnumerable<T> additions,
                 Func<T, string> identity, Func<T, bool> boundary,
-                Action<string> record)
+                Action<string> record,
+                Action<BrownFurSurfaceObservation> observe)
             {
+                _observe = observe;
                 if (string.IsNullOrWhiteSpace(key))
                     throw new ArgumentException(
                         "A publication surface key is required.", "key");
@@ -371,6 +421,9 @@ namespace KingmakerGunslinger.BrownFur
                     _record("surface=" + Key + ";action=unchanged;count=" +
                         _before.Count + ";boundary=" + boundaryFound +
                         ";index=" + insertion);
+                    _observe(new BrownFurSurfaceObservation(Key, "unchanged",
+                        _before.Select(Identity), _before.Select(Identity),
+                        boundaryFound, insertion));
                     return;
                 }
                 _after = next;
@@ -382,6 +435,9 @@ namespace KingmakerGunslinger.BrownFur
                 _record("surface=" + Key + ";action=published;before=" +
                     _before.Count + ";after=" + _after.Count + ";boundary=" +
                     boundaryFound + ";index=" + insertion);
+                _observe(new BrownFurSurfaceObservation(Key, "published",
+                    _before.Select(Identity), _after.Select(Identity),
+                    boundaryFound, insertion));
             }
 
             private void ValidateUnique(IEnumerable<T> values, string source)

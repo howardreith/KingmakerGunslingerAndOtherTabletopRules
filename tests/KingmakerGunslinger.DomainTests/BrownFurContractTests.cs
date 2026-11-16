@@ -352,11 +352,11 @@ namespace KingmakerGunslinger.DomainTests
                     token);
             foreach (string token in new[] {
                 "feature-module-brown-fur-publication-gate",
-                "foreignCotwArchetypes >= 6", "cotwArchetypesUnique",
+                "cotwArchetypesUnique",
                 "brownFurSelectorReferences", "brownFurGuidReferences",
                 "BrownFurOptionalExtensionCoordinator.PublicationEvidence",
-                "brownFurExpectedBefore", "brownFurExpectedAfter",
-                "brownFurExpectedPublication" })
+                "ObserveBrownFurPublication(expectedBrownFurTransmuter)",
+                "brownFurAudit.Passed", "BrownFurPublicationDetail(" })
                 Assertions.True(runtimeRunner.Contains(token),
                     "Feature-module matrix observer lacks Brown-Fur publication token: " +
                     token);
