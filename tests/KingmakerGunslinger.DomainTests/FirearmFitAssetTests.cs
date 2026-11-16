@@ -166,7 +166,7 @@ namespace KingmakerGunslinger.DomainTests
                 presentation.Contains("HasExactItemVariant") &&
                 presentation.Contains("maps across its qualified firearm family boundary") &&
                 magic.Contains("ApplyItemVariant(clone") &&
-                runner.Contains("firearm-all-14-item-visual-identities") &&
+                runner.Contains("FirearmVisualRigAudit.Evaluate(") &&
                 runner.Contains("pistol-three-variant-separation") &&
                 runner.Contains("firearm-item-variant-cleanup"),
                 "Exact item binding or fail-closed runtime observation is incomplete.");
