@@ -2526,6 +2526,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException(
                     "A request-scoped observation hook failed; original game behavior was preserved.",
                     _workingSaveSmoke.ScenarioException);
+            ThrowIfMotionOuterAbortDrillDue();
             if (_workingSaveSmoke.Stage == "main-menu-readiness" &&
                 _workingStartupStage != "main-menu-search-start")
             {
@@ -3164,7 +3165,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 _context, _request);
                     _weaponPresentationMotionEvidence.Poll();
                     if (_weaponPresentationMotionEvidence.Complete)
-                        Complete(_weaponPresentationMotionEvidence.Result);
+                        Complete(MotionOuterAbortDrillNotReached(
+                            _weaponPresentationMotionEvidence.Result));
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .WeaponPresentationTransitionMotionEvidence)
@@ -36710,6 +36712,86 @@ namespace KingmakerGunslinger.RuntimeTesting
             return "{armor=" + armor + ";weapons=" + weapons + "}";
         }
 
+        /// <summary>
+        /// Every result the runner completes with passes through here. A
+        /// motion session that is still running when the result is not its
+        /// own is ended now: after this the runner takes no further update,
+        /// so nothing else would give back the pause the session released
+        /// or the units it created. The session's own result arrives with
+        /// the session already ended and is left as it is.
+        /// </summary>
+        private void StopWeaponPresentationMotion(RuntimeTestResult result)
+        {
+            WeaponPresentationEvidenceScenario.MotionSession session =
+                _weaponPresentationMotionEvidence;
+            if (session == null || result == null) return;
+            try
+            {
+                MotionTermination termination = session.Terminate(result);
+                if (termination.Performed)
+                    _trace.Record("motion-session-terminated",
+                        "stage=" + termination.Stage + ";pauseOwned=" +
+                        termination.PauseOwned + ";pauseRestored=" +
+                        termination.PauseRestored + ";releaseFailures=" +
+                        termination.Failures.Count);
+            }
+            catch (Exception failure)
+            {
+                if (result.Diagnostics == null)
+                    result.Diagnostics = new List<string>();
+                result.Diagnostics.Add(
+                    "Ending the weapon presentation motion session raised: " + failure);
+                if (result.Status == RuntimeTestStatuses.Pass)
+                    result.Status = RuntimeTestStatuses.Fail;
+            }
+        }
+
+        private bool MotionOuterAbortDrillRequested()
+        {
+            return _request.Parameters != null &&
+                _request.Parameters[MotionOuterAbortDrill.Parameter] != null;
+        }
+
+        /// <summary>
+        /// The drill's abort. It is raised where a failed observation hook
+        /// is raised and leaves the same way: through the update's own
+        /// exception handling into the post-readiness error result and
+        /// <see cref="Complete"/>. It happens between two session updates,
+        /// while the session is sampling an attack and the pause it
+        /// released is off.
+        /// </summary>
+        private void ThrowIfMotionOuterAbortDrillDue()
+        {
+            WeaponPresentationEvidenceScenario.MotionSession session =
+                _weaponPresentationMotionEvidence;
+            if (session == null || !MotionOuterAbortDrillRequested()) return;
+            if (!MotionOuterAbortDrill.Due(true, session.Lifecycle.Ended,
+                session.Lifecycle.Sampling, session.Lifecycle.PauseOwned,
+                Game.Instance.IsPaused, session.Lifecycle.SamplingUpdates))
+                return;
+            _trace.Record("motion-outer-abort-drill",
+                "samplingUpdates=" + session.Lifecycle.SamplingUpdates +
+                ";paused=" + Game.Instance.IsPaused);
+            throw new InvalidOperationException(MotionOuterAbortDrill.Reason);
+        }
+
+        /// <summary>A drill request whose session ran to its own end did not drill anything.</summary>
+        private RuntimeTestResult MotionOuterAbortDrillNotReached(
+            RuntimeTestResult result)
+        {
+            if (result == null || !MotionOuterAbortDrillRequested()) return result;
+            if (result.Assertions == null)
+                result.Assertions = new List<RuntimeTestAssertion>();
+            result.Assertions.Add(Assertion(MotionOuterAbortDrill.NotReachedName,
+                "the runner aborts while an attack sample has released the pause",
+                "the session ran to its own end: the game was never found paused " +
+                    "at an attack sample, so there was no released pause to abort under",
+                false, "request parameter " + MotionOuterAbortDrill.Parameter));
+            if (result.Status == RuntimeTestStatuses.Pass)
+                result.Status = RuntimeTestStatuses.Fail;
+            return result;
+        }
+
         private void Complete(RuntimeTestResult result)
         {
             _sprint26PersistenceRolls?.Dispose(); _sprint26PersistenceRolls = null;
@@ -36741,6 +36823,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             StopMagicCircleUi(result);
             StopAlternateSummoningNatural(result);
             StopGunslingerDodge(result);
+            StopWeaponPresentationMotion(result);
             StopWhiteoutWeather(result);
             StopWhiteoutDisposableFixture(result);
             StopTeleportationLoadDiagnostics(result);

@@ -1,0 +1,57 @@
+{
+  "name": "handgun-motion-outer-abort-drill",
+  "description": "A deliberate failure. The product's weapon-presentation-handgun-motion-evidence scenario with the request parameter outerAbortDrill=attack-sampling, run in the disposable game copy through the same guarded working-save route and the same fixtures as handgun-motion-evidence. Once the motion session has sampled the first attack for eight updates with the pause it released off, the runner raises an exception of its own where it raises a failed observation hook, and completes with that error while the session is still running. The run is recorded as an error by design and can never pass. What it is for is read from the result beside the error: weapon-presentation-motion-terminated (the session was ended, and where), weapon-presentation-motion-pause-restored (the pause the session released is in force again), weapon-presentation-motion-termination-cleanup (every owned release attempted, none raised) and weapon-presentation-motion-termination-residue (the party and global unit lists as before the session). Nothing is saved: the working save is loaded read-only and the save-write sentinels stay armed until the runner completes.",
+  "ownerMods": [
+    "BagOfTricks",
+    "BetterVendors",
+    "CallOfTheWild",
+    "CheatMenu",
+    "CraftMagicItems",
+    "EddicKingmakerRespec",
+    "KingmakerBugfixes",
+    "ProperFlanking2",
+    "RacesUnleashed",
+    "SkipIntro",
+    "TweakOrTreat",
+    "ZFavoredClass"
+  ],
+  "fixtureSaves": [
+    "Manual_298_KMG_AUTOMATION_BASELINE.zks",
+    "Manual_299_KMG_AUTOMATION_WORKING.zks"
+  ],
+  "launches": [
+    {
+      "label": "handgun-motion-outer-abort",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]"
+        ]
+      },
+      "product": {
+        "scenario": "weapon-presentation-handgun-motion-evidence",
+        "parameters": {
+          "outerAbortDrill": "attack-sampling"
+        },
+        "timeoutSeconds": 1200,
+        "timeouts": {
+          "catalogTimeoutSeconds": 180,
+          "selectionTimeoutSeconds": 300,
+          "completionTimeoutSeconds": 900,
+          "mainMenuTimeoutSeconds": 180,
+          "actionResolutionTimeoutSeconds": 180,
+          "actionInvocationTimeoutSeconds": 30,
+          "descriptorResolutionTimeoutSeconds": 30,
+          "loadEntryTimeoutSeconds": 30,
+          "fingerprintTimeoutSeconds": 180
+        }
+      }
+    }
+  ]
+}

@@ -396,6 +396,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             string dodgeRejection = GunslingerDodgeScenarioAdmission.Rejection(
                 request.Scenario, request.ExitAfterCompletion);
             if (dodgeRejection != null) return dodgeRejection;
+            // The outer-abort drill is its own request and is refused here
+            // unless it is exactly that.
+            JToken abortDrill = request.Parameters == null ? null :
+                request.Parameters[MotionOuterAbortDrill.Parameter];
+            string abortDrillRejection = MotionOuterAbortDrill.Rejection(
+                request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationMotionEvidence ||
+                request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationHandgunMotionEvidence ||
+                request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationSpearMotionEvidence ||
+                request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationEasternMotionEvidence,
+                abortDrill != null,
+                abortDrill != null && abortDrill.Type == JTokenType.String
+                    ? (string)abortDrill : null,
+                request.Parameters == null ? 0 : request.Parameters.Count,
+                request.ExitAfterCompletion);
+            if (abortDrillRejection != null) return abortDrillRejection;
             if ((request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations || request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits) && !request.ExitAfterCompletion)
                 return "race-trait-foundation-exit-required";

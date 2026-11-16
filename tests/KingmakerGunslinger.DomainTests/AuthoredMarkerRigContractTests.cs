@@ -387,5 +387,174 @@ namespace KingmakerGunslinger.DomainTests
                 out aggregate);
             Assertions.False(aggregate.Passed, "No prefab at all passed the contract.");
         }
+
+        internal static void NonFiniteAuthoredMarkerFailsWhatDependsOnIt()
+        {
+            // The valid rotated rig with one change: the authored KMG_Butt
+            // has a coordinate that is not a number. Counts, root transforms,
+            // the support policy and the held frame do not read it.
+            var cases = new[]
+            {
+                new KeyValuePair<double, string>(double.NaN, "(NaN,0,-0.075)"),
+                new KeyValuePair<double, string>(double.PositiveInfinity,
+                    "(Infinity,0,-0.075)")
+            };
+            foreach (KeyValuePair<double, string> value in cases)
+            {
+                AuthoredMarkerRigObservation rig = ValidRig("Pistol.Duelist");
+                rig.AuthoredInVisual["KMG_Butt"] =
+                    new FramePoint(value.Key, 0, -0.075);
+                AuthoredMarkerRigAudit audit = AuthoredMarkerRigAudit.Evaluate(rig,
+                    Expectation());
+                OnlyFails(audit, AuthoredMarkerRigAudit.ImportedGeometryName,
+                    AuthoredMarkerRigAudit.RootMarkersName);
+                string unusable = "KMG_Butt is not finite in the Visual frame " +
+                    value.Value;
+
+                AuditOutcome geometry = audit.Outcome(
+                    AuthoredMarkerRigAudit.ImportedGeometryName);
+                Contains(geometry.Observed,
+                    "KMG_Grip-KMG_Butt not evaluated: " + unusable,
+                    "The grip-to-butt span does not name the unusable marker.");
+                Contains(geometry.Observed,
+                    "KMG_Butt-KMG_Muzzle not evaluated: " + unusable,
+                    "The butt-to-muzzle span does not name the unusable marker.");
+                Contains(geometry.Observed,
+                    "KMG_Grip-KMG_Butt:declared=0.075,observed=<unusable>",
+                    "An unusable measurement was reported as a distance.");
+                // The span that does not involve the marker is still measured.
+                Contains(geometry.Observed,
+                    "KMG_Grip-KMG_Muzzle:declared=0.264,observed=0.264,difference=0",
+                    "The span between the two sound markers was not evaluated.");
+
+                AuditOutcome roots = audit.Outcome(
+                    AuthoredMarkerRigAudit.RootMarkersName);
+                Contains(roots.Observed, "Butt against KMG_Butt not evaluated: " + unusable,
+                    "The root Butt's correspondence does not name the unusable marker.");
+                Contains(roots.Observed,
+                    "Butt:expected=<unusable>,observed=(0.425,-0.25,2)",
+                    "An unusable expected position was reported as a position.");
+                Contains(roots.Observed,
+                    "Grip:expected=(0.5,-0.25,2),observed=(0.5,-0.25,2),difference=0",
+                    "The Grip was not evaluated beside the unusable marker.");
+                Contains(roots.Observed,
+                    "Muzzle:expected=(0.764,-0.25,2),observed=(0.764,-0.25,2),difference=0",
+                    "The Muzzle was not evaluated beside the unusable marker.");
+
+                // The relationships that do not read the marker keep their verdicts.
+                Contains(audit.Outcome(AuthoredMarkerRigAudit.MarkerSetName).Observed,
+                    "KMG_Grip:1,KMG_Support:1,KMG_Butt:1,KMG_Muzzle:1",
+                    "The marker counts are not reported.");
+                Assertions.True(
+                    audit.Outcome(AuthoredMarkerRigAudit.MarkerSetName).Passed &&
+                    audit.Outcome(AuthoredMarkerRigAudit.TransformsName).Passed &&
+                    audit.Outcome(AuthoredMarkerRigAudit.SupportPolicyName).Passed &&
+                    audit.Outcome(AuthoredMarkerRigAudit.HeldFrameName).Passed,
+                    "A relationship that does not read KMG_Butt lost its verdict.");
+                Contains(audit.Outcome(AuthoredMarkerRigAudit.HeldFrameName).Observed,
+                    "angleDegrees=0", "The held frame was not evaluated.");
+
+                AuditOutcome aggregate;
+                AuthoredMarkerRigAudit.Combine(new[]
+                {
+                    audit,
+                    AuthoredMarkerRigAudit.Evaluate(ValidRig("Pistol.LastWord"),
+                        Expectation())
+                }, out aggregate);
+                Assertions.False(aggregate.Passed,
+                    "The aggregate passed with a marker that is not finite.");
+                Contains(aggregate.Observed,
+                    "exact=False;prefabs=Pistol.Duelist,Pistol.LastWord;failed=" +
+                    "pistol-imported-marker-geometry|pistol-root-markers-in-held-frame",
+                    "The aggregate does not name the two failed relationships.");
+            }
+        }
+
+        internal static void NonFiniteRootMarkersAndDerivedValuesCannotPass()
+        {
+            // A root Muzzle that is not a number: the required transforms,
+            // its correspondence and the bore fail; the grip anchor and the
+            // imported geometry, which do not read it, are still judged.
+            AuthoredMarkerRigObservation muzzle = ValidRig("Pistol.LastWord");
+            muzzle.RootMarkers["Muzzle"] = new FramePoint(double.NaN, -0.25, 2);
+            AuthoredMarkerRigAudit first = AuthoredMarkerRigAudit.Evaluate(muzzle,
+                Expectation());
+            OnlyFails(first, AuthoredMarkerRigAudit.TransformsName,
+                AuthoredMarkerRigAudit.RootMarkersName,
+                AuthoredMarkerRigAudit.HeldFrameName);
+            const string badMuzzle =
+                "the root Muzzle is not finite in the prefab root frame (NaN,-0.25,2)";
+            Contains(first.Outcome(AuthoredMarkerRigAudit.TransformsName).Observed,
+                "problems=" + badMuzzle, "The unusable root Muzzle is not named.");
+            Contains(first.Outcome(AuthoredMarkerRigAudit.RootMarkersName).Observed,
+                "Muzzle against KMG_Muzzle not evaluated: " + badMuzzle,
+                "The root Muzzle's correspondence does not name it.");
+            Contains(first.Outcome(AuthoredMarkerRigAudit.HeldFrameName).Observed,
+                "bore not evaluated: " + badMuzzle, "The bore does not name it.");
+            Contains(first.Outcome(AuthoredMarkerRigAudit.HeldFrameName).Observed,
+                "grip:expected=(0.5,-0.25,2),observed=(0.5,-0.25,2),difference=0",
+                "The grip anchor was not evaluated beside the unusable Muzzle.");
+
+            // A root Grip at infinity.
+            AuthoredMarkerRigObservation grip = ValidRig("Pistol.LastWord");
+            grip.RootMarkers["Grip"] =
+                new FramePoint(0.5, double.NegativeInfinity, 2);
+            AuthoredMarkerRigAudit second = AuthoredMarkerRigAudit.Evaluate(grip,
+                Expectation());
+            OnlyFails(second, AuthoredMarkerRigAudit.TransformsName,
+                AuthoredMarkerRigAudit.RootMarkersName,
+                AuthoredMarkerRigAudit.HeldFrameName);
+            Contains(second.Outcome(AuthoredMarkerRigAudit.HeldFrameName).Observed,
+                "grip anchor not evaluated: the root Grip is not finite in the prefab root frame (0.5,-Infinity,2)",
+                "The grip anchor does not name the unusable Grip.");
+
+            // A finite authored coordinate that does not stay finite through
+            // the placement: 1e308 at twice its size.
+            AuthoredMarkerRigObservation overflow = ValidRig("Pistol.Duelist");
+            overflow.Visual = QuarterTurnAboutY(Anchor, 2);
+            overflow.AuthoredInVisual["KMG_Muzzle"] = new FramePoint(0, 0, 1e308);
+            AuthoredMarkerRigAudit third = AuthoredMarkerRigAudit.Evaluate(overflow,
+                Expectation());
+            AuditOutcome carriedRoots = third.Outcome(
+                AuthoredMarkerRigAudit.RootMarkersName);
+            AuditOutcome carriedGeometry = third.Outcome(
+                AuthoredMarkerRigAudit.ImportedGeometryName);
+            Assertions.False(carriedRoots.Passed || carriedGeometry.Passed,
+                "A marker that left the finite numbers in the placement passed.");
+            Contains(carriedRoots.Observed,
+                "Muzzle against KMG_Muzzle not evaluated: KMG_Muzzle is not finite once carried into the prefab root frame",
+                "The derived position is not named.");
+            Contains(carriedGeometry.Observed,
+                "KMG_Grip-KMG_Muzzle not evaluated: KMG_Muzzle is not finite once carried into the prefab root frame",
+                "The span does not name the derived position.");
+
+            // A Visual placement that is not finite: nothing can be carried.
+            AuthoredMarkerRigObservation placement = ValidRig("Pistol.Duelist");
+            placement.Visual = QuarterTurnAboutY(
+                new FramePoint(0.5, double.NaN, 2), 1);
+            OnlyFails(AuthoredMarkerRigAudit.Evaluate(placement, Expectation()),
+                AuthoredMarkerRigAudit.TransformsName,
+                AuthoredMarkerRigAudit.ImportedGeometryName,
+                AuthoredMarkerRigAudit.RootMarkersName);
+
+            // A declared held forward that is not a number fails the held
+            // frame alone; it is not read anywhere else.
+            AuthoredMarkerRigAudit forward = AuthoredMarkerRigAudit.Evaluate(
+                ValidRig("Pistol.Duelist"), AuthoredMarkerRigExpectation.NamedPistol(
+                    Anchor, new FramePoint(double.NaN, 0, 0)));
+            OnlyFails(forward, AuthoredMarkerRigAudit.HeldFrameName);
+            Contains(forward.Outcome(AuthoredMarkerRigAudit.HeldFrameName).Observed,
+                "bore not evaluated: the declared held forward is not finite",
+                "The unusable declared forward is not named.");
+
+            // A tolerance that is not a number admits nothing.
+            AuthoredMarkerRigExpectation loose = Expectation();
+            loose.PositionTolerance = double.NaN;
+            loose.AngleToleranceDegrees = double.NaN;
+            OnlyFails(AuthoredMarkerRigAudit.Evaluate(ValidRig("Pistol.Duelist"), loose),
+                AuthoredMarkerRigAudit.ImportedGeometryName,
+                AuthoredMarkerRigAudit.RootMarkersName,
+                AuthoredMarkerRigAudit.HeldFrameName);
+        }
     }
 }

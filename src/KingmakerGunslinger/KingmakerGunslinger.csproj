@@ -1639,6 +1639,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoningNatural.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.GunslingerDodge.cs" />
     <Compile Include="RuntimeTesting\GunslingerDodgeScenarioVerdict.cs" />
+    <Compile Include="RuntimeTesting\MotionSessionLifecycle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoningComposition.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SelectionBoundaryNative.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.CraftingTransactionNative.cs" />

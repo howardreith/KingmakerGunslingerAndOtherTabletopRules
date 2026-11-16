@@ -67,6 +67,12 @@ namespace KingmakerGunslinger.Presentation
         {
             return value.ToString("0.#######", CultureInfo.InvariantCulture);
         }
+
+        /// <summary>A number a measurement can be judged by: not NaN and not infinite.</summary>
+        internal static bool IsFinite(double value)
+        {
+            return !(double.IsNaN(value) || double.IsInfinity(value));
+        }
     }
 
     /// <summary>
@@ -232,6 +238,11 @@ namespace KingmakerGunslinger.Presentation
     /// another position in the same frame: an authored marker is first
     /// carried through the Visual placement into the prefab root frame, and
     /// only then compared with the root marker that stands for it.
+    ///
+    /// A coordinate, distance or angle that is not a finite number is not a
+    /// measurement. It is never compared with a tolerance: the relationship
+    /// that needs it fails and names it, and the relationships that do not
+    /// need it are judged as usual.
     /// </summary>
     internal sealed class AuthoredMarkerRigAudit
     {
@@ -288,17 +299,26 @@ namespace KingmakerGunslinger.Presentation
             if (!rig.VisualPresent || !rig.Visual.HasValue) missing.Add("Visual");
             else if (!rig.Visual.Value.Valid)
                 missing.Add("Visual placement is not a finite positive-scale placement");
+            var unusableRoots = new List<string>();
             foreach (KeyValuePair<string, string> pair in
                 AuthoredMarkerRigExpectation.RootToAuthored)
-                if (!rig.RootMarkers.ContainsKey(pair.Key)) missing.Add(pair.Key);
+            {
+                FramePoint rootMarker;
+                if (!rig.RootMarkers.TryGetValue(pair.Key, out rootMarker))
+                    missing.Add(pair.Key);
+                else if (!rootMarker.Finite)
+                    unusableRoots.Add(NotFiniteRoot(pair.Key, rootMarker));
+            }
+            List<string> transformProblems = missing.Select(value => value +
+                " is missing or unusable").ToList();
+            transformProblems.AddRange(unusableRoots);
             outcomes.Add(Outcome(TransformsName,
                 "Visual and the root's Grip, Muzzle and Butt are present",
                 "visual=" + (rig.Visual.HasValue ? rig.Visual.Value.Describe() :
                     "<absent>") + ";rootMarkers=" + string.Join(",",
                         rig.RootMarkers.Keys.OrderBy(value => value,
                             StringComparer.Ordinal).ToArray()),
-                missing.Select(value => value + " is missing or unusable").ToList(),
-                unread));
+                transformProblems, unread));
 
             // 3. The support-hand target policy.
             var support = new List<string>();
@@ -311,13 +331,35 @@ namespace KingmakerGunslinger.Presentation
                     : "no SupportHandTarget on the root",
                 "supportHandTarget=" + rig.SupportHandTargetPresent, support, unread));
 
-            // The authored markers carried into the prefab root frame.
+            // The authored markers carried into the prefab root frame. A
+            // marker whose coordinates are not finite, or which does not
+            // stay finite through the placement, has no position to carry:
+            // it is kept out, with the reason, for the relationships that
+            // would have read it.
             bool placed = rig.Visual.HasValue && rig.Visual.Value.Valid;
             var authoredInRoot = new Dictionary<string, FramePoint>(
                 StringComparer.Ordinal);
-            if (placed)
-                foreach (KeyValuePair<string, FramePoint> pair in rig.AuthoredInVisual)
-                    authoredInRoot[pair.Key] = rig.Visual.Value.ToParent(pair.Value);
+            var unusableAuthored = new Dictionary<string, string>(
+                StringComparer.Ordinal);
+            foreach (KeyValuePair<string, FramePoint> pair in rig.AuthoredInVisual)
+            {
+                if (!pair.Value.Finite)
+                {
+                    unusableAuthored[pair.Key] = pair.Key +
+                        " is not finite in the Visual frame " + pair.Value.Describe();
+                    continue;
+                }
+                if (!placed) continue;
+                FramePoint carried = rig.Visual.Value.ToParent(pair.Value);
+                if (!carried.Finite)
+                {
+                    unusableAuthored[pair.Key] = pair.Key +
+                        " is not finite once carried into the prefab root frame " +
+                        carried.Describe();
+                    continue;
+                }
+                authoredInRoot[pair.Key] = carried;
+            }
 
             // 4. Import kept the authored geometry. Distances between
             //    markers do not depend on the frame they are measured in,
@@ -344,6 +386,22 @@ namespace KingmakerGunslinger.Presentation
                     continue;
                 }
                 double declared = sourceFrom.DistanceTo(sourceTo);
+                if (!FramePoint.IsFinite(declared))
+                {
+                    geometry.Add(label + " not evaluated: its declared source distance is not finite");
+                    geometryDetail.Add(label + ":declared=" +
+                        FramePoint.Number(declared) + ",observed=<not-evaluated>");
+                    continue;
+                }
+                string unusableEnd;
+                if (unusableAuthored.TryGetValue(span[0], out unusableEnd) ||
+                    unusableAuthored.TryGetValue(span[1], out unusableEnd))
+                {
+                    geometry.Add(label + " not evaluated: " + unusableEnd);
+                    geometryDetail.Add(label + ":declared=" +
+                        FramePoint.Number(declared) + ",observed=<unusable>");
+                    continue;
+                }
                 if (!authoredInRoot.TryGetValue(span[0], out from) ||
                     !authoredInRoot.TryGetValue(span[1], out to))
                 {
@@ -353,10 +411,14 @@ namespace KingmakerGunslinger.Presentation
                     continue;
                 }
                 double measured = from.DistanceTo(to);
+                double gap = Math.Abs(measured - declared);
                 geometryDetail.Add(label + ":declared=" + FramePoint.Number(declared) +
                     ",observed=" + FramePoint.Number(measured) + ",difference=" +
-                    FramePoint.Number(Math.Abs(measured - declared)));
-                if (Math.Abs(measured - declared) > expected.PositionTolerance)
+                    FramePoint.Number(gap));
+                if (!FramePoint.IsFinite(measured) || !FramePoint.IsFinite(gap))
+                    geometry.Add(label + " distance is not finite (" +
+                        FramePoint.Number(measured) + " m)");
+                else if (!(gap <= expected.PositionTolerance))
                     geometry.Add(label + " is " + FramePoint.Number(measured) +
                         " m, declared " + FramePoint.Number(declared) + " m");
             }
@@ -374,14 +436,20 @@ namespace KingmakerGunslinger.Presentation
             {
                 FramePoint root, authored;
                 bool hasRoot = rig.RootMarkers.TryGetValue(pair.Key, out root);
+                bool rootFinite = hasRoot && root.Finite;
                 bool hasAuthored = authoredInRoot.TryGetValue(pair.Value, out authored);
-                if (!hasRoot || !hasAuthored)
+                string unusableMarker;
+                unusableAuthored.TryGetValue(pair.Value, out unusableMarker);
+                if (!hasRoot || !rootFinite || unusableMarker != null || !hasAuthored)
                 {
                     roots.Add(pair.Key + " against " + pair.Value + " not evaluated: " +
                         (!hasRoot ? "the root marker is missing"
+                            : !rootFinite ? NotFiniteRoot(pair.Key, root)
+                            : unusableMarker != null ? unusableMarker
                             : "the authored marker or the Visual placement is unavailable"));
                     rootDetail.Add(pair.Key + ":expected=" + (hasAuthored
-                        ? authored.Describe() : "<unavailable>") + ",observed=" +
+                        ? authored.Describe() : unusableMarker != null
+                            ? "<unusable>" : "<unavailable>") + ",observed=" +
                         (hasRoot ? root.Describe() : "<missing>"));
                     continue;
                 }
@@ -389,7 +457,10 @@ namespace KingmakerGunslinger.Presentation
                 rootDetail.Add(pair.Key + ":expected=" + authored.Describe() +
                     ",observed=" + root.Describe() + ",difference=" +
                     FramePoint.Number(difference));
-                if (difference > expected.PositionTolerance)
+                if (!FramePoint.IsFinite(difference))
+                    roots.Add(pair.Key + " distance from " + pair.Value +
+                        " carried into the prefab root frame is not finite");
+                else if (!(difference <= expected.PositionTolerance))
                     roots.Add(pair.Key + " is " + FramePoint.Number(difference) +
                         " m from " + pair.Value + " carried into the prefab root frame");
             }
@@ -409,18 +480,35 @@ namespace KingmakerGunslinger.Presentation
             double forwardLength = expected.HeldForward.Length;
             if (!hasGrip)
                 held.Add("grip anchor not evaluated: the root Grip is missing");
+            else if (!grip.Finite)
+                held.Add("grip anchor not evaluated: " + NotFiniteRoot(
+                    AuthoredMarkerRigExpectation.RootGrip, grip));
+            else if (!expected.HeldAnchor.Finite)
+                held.Add("grip anchor not evaluated: the declared held anchor is not finite " +
+                    expected.HeldAnchor.Describe());
             else
             {
                 double offset = grip.DistanceTo(expected.HeldAnchor);
                 heldDetail.Add("grip:expected=" + expected.HeldAnchor.Describe() +
                     ",observed=" + grip.Describe() + ",difference=" +
                     FramePoint.Number(offset));
-                if (offset > expected.PositionTolerance)
+                if (!FramePoint.IsFinite(offset))
+                    held.Add("the root Grip's distance from the held anchor is not finite");
+                else if (!(offset <= expected.PositionTolerance))
                     held.Add("the root Grip is " + FramePoint.Number(offset) +
                         " m from the held anchor");
             }
             if (!hasGrip || !hasMuzzle)
                 held.Add("bore not evaluated: the root Grip or Muzzle is missing");
+            else if (!grip.Finite || !muzzle.Finite)
+                held.Add("bore not evaluated: " + (!grip.Finite
+                    ? NotFiniteRoot(AuthoredMarkerRigExpectation.RootGrip, grip)
+                    : NotFiniteRoot(AuthoredMarkerRigExpectation.RootMuzzle, muzzle)));
+            else if (!expected.HeldForward.Finite || !FramePoint.IsFinite(forwardLength))
+                held.Add("bore not evaluated: the declared held forward is not finite " +
+                    expected.HeldForward.Describe());
+            else if (!FramePoint.IsFinite(muzzle.DistanceTo(grip)))
+                held.Add("bore not evaluated: the distance from the root Grip to the root Muzzle is not finite");
             else if (forwardLength < 0.5 || muzzle.DistanceTo(grip) < 0.000001)
                 held.Add("bore not evaluated: the declared forward or the observed bore is degenerate");
             else
@@ -428,13 +516,16 @@ namespace KingmakerGunslinger.Presentation
                 FramePoint bore = muzzle.Minus(grip);
                 double cosine = bore.Dot(expected.HeldForward) /
                     (bore.Length * forwardLength);
-                double angle = Math.Acos(Math.Max(-1.0, Math.Min(1.0, cosine))) *
-                    180.0 / Math.PI;
+                double angle = FramePoint.IsFinite(cosine)
+                    ? Math.Acos(Math.Max(-1.0, Math.Min(1.0, cosine))) * 180.0 / Math.PI
+                    : double.NaN;
                 heldDetail.Add("bore:expectedDirection=" + expected.HeldForward
                         .Times(1.0 / forwardLength).Describe() +
                     ",observedDirection=" + bore.Times(1.0 / bore.Length).Describe() +
                     ",angleDegrees=" + FramePoint.Number(angle));
-                if (angle > expected.AngleToleranceDegrees)
+                if (!FramePoint.IsFinite(angle))
+                    held.Add("the angle between the bore and the held forward is not finite");
+                else if (!(angle <= expected.AngleToleranceDegrees))
                     held.Add("the bore from Grip to Muzzle is " +
                         FramePoint.Number(angle) + " degrees off the held forward");
             }
@@ -493,6 +584,12 @@ namespace KingmakerGunslinger.Presentation
                 (unread == null ? string.Empty : ";unread=" + unread) +
                 (problems.Count == 0 ? string.Empty : ";problems=" +
                     string.Join("|", problems.ToArray())), passed);
+        }
+
+        private static string NotFiniteRoot(string name, FramePoint value)
+        {
+            return "the root " + name + " is not finite in the prefab root frame " +
+                value.Describe();
         }
 
         private static string Points(IDictionary<string, FramePoint> points)
