@@ -752,10 +752,13 @@ namespace KmgLoaderCompatHarness
             first["armorClassBefore"] = armorClassBase;
             first["armorClassAfter"] = actor.Descriptor.Stats.AC.ModifiedValue;
             // The registered ability applies the buff with the native apply-buff action, which marks the buff only when
-            // AddBuff hands it back; AddBuff hands nothing back when activation is cut short. The product's custom
-            // delivery class is recorded too: it is not one of the ability's components and is never entered.
+            // AddBuff hands it back; AddBuff hands nothing back when activation is cut short. Builds up to PR #170 also
+            // carry a custom delivery class that is not one of the ability's components and is never entered; its
+            // diagnostic is recorded where the build still has it.
             first["markedNotDispelableByNativeAction"] = buff != null && buff.IsNotDispelable;
-            first["customDeliveryClassEvidence"] = Convert.ToString(ProductStatic(DodgeDiagnostics, "DeliveryEvidence"), CultureInfo.InvariantCulture);
+            first["customDeliveryClassEvidence"] = ProductProbes.Entry().Assembly.GetType(DodgeDiagnostics, false) == null
+                ? "retired: this build has no custom delivery class"
+                : Convert.ToString(ProductStatic(DodgeDiagnostics, "DeliveryEvidence"), CultureInfo.InvariantCulture);
             first["buffAddedNotices"] = Events("added", blueprint, actor, castAt);
             first["availableWhileActive"] = Available(actor, ability);
             Expect(buff != null, "the Dodge buff is not on the gunslinger after the ability was used");

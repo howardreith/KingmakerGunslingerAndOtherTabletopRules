@@ -137,6 +137,11 @@ try {
                 timeoutSeconds = [int]$(if ($product.Value.PSObject.Properties['timeoutSeconds']) { $product.Value.timeoutSeconds } else { 600 })
                 startupTimeoutSeconds = 300; exitAfterCompletion = $true
                 parameters = $(if ($product.Value.PSObject.Properties['parameters']) { $product.Value.parameters } else { [ordered]@{} }) }
+            # A scenario that loads a save through the product's own working-save route must carry the
+            # request's catalog, selection, completion and stage timeouts; the product refuses it otherwise.
+            if ($product.Value.PSObject.Properties['timeouts'] -and $product.Value.timeouts) {
+                foreach ($p in $product.Value.timeouts.PSObject.Properties) { $request[$p.Name] = [int]$p.Value }
+            }
             $productRequestPath = Join-Path $launchDir 'product-request.json'
             Write-LcJson $productRequestPath $request
             $arguments += @('-kmgRuntimeTestRequest', $productRequestPath)

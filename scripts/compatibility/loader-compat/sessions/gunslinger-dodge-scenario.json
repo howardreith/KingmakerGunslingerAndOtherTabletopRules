@@ -1,0 +1,57 @@
+{
+  "name": "gunslinger-dodge-scenario",
+  "description": "The product's own disposable-gunslinger-dodge scenario, run in the disposable game copy through the product's guarded working-save route. The scenario loads KMG_AUTOMATION_WORKING read-only (the product checks the save's exact identity and that the baseline save is present and distinct, and watches for any save write), spawns a disposable gunslinger levelled by the level-up controller into the loaded area, and uses the registered Gunslinger's Dodge ability through the game's ability command with time running. It judges an accepted activation, the armor class an incoming attack is resolved against before, during and after, an attempted command while active and with no grit, the unaided end, and an early removal followed by a recast. The two automation saves are fixtures: run with -FixtureDir pointing at a folder that holds copies of Manual_298_KMG_AUTOMATION_BASELINE.zks and Manual_299_KMG_AUTOMATION_WORKING.zks; the owner's own files are only read to make those copies. The working save was made with the owner's mod stack and does not load without it, so the owner's other mods are staged from the copy's pristine snapshot.",
+  "ownerMods": [
+    "BagOfTricks",
+    "BetterVendors",
+    "CallOfTheWild",
+    "CheatMenu",
+    "CraftMagicItems",
+    "EddicKingmakerRespec",
+    "KingmakerBugfixes",
+    "ProperFlanking2",
+    "RacesUnleashed",
+    "SkipIntro",
+    "TweakOrTreat",
+    "ZFavoredClass"
+  ],
+  "fixtureSaves": [
+    "Manual_298_KMG_AUTOMATION_BASELINE.zks",
+    "Manual_299_KMG_AUTOMATION_WORKING.zks"
+  ],
+  "launches": [
+    {
+      "label": "dodge-scenario",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]"
+        ]
+      },
+      "product": {
+        "scenario": "disposable-gunslinger-dodge",
+        "parameters": {
+          "saveName": "KMG_AUTOMATION_WORKING"
+        },
+        "timeoutSeconds": 900,
+        "timeouts": {
+          "catalogTimeoutSeconds": 180,
+          "selectionTimeoutSeconds": 300,
+          "completionTimeoutSeconds": 240,
+          "mainMenuTimeoutSeconds": 180,
+          "actionResolutionTimeoutSeconds": 180,
+          "actionInvocationTimeoutSeconds": 30,
+          "descriptorResolutionTimeoutSeconds": 30,
+          "loadEntryTimeoutSeconds": 30,
+          "fingerprintTimeoutSeconds": 180
+        }
+      }
+    }
+  ]
+}
