@@ -329,6 +329,15 @@
   `c152b2a965d9f4f0105d562aeba2ac44` and `753ccc40ae29f6c71c433293315b4fb6`. Decision (NEW-10): Preserve the existing Favored Class-generated combinations. Gameplay
   compatibility qualification is pending; their presence is neither a confirmed defect nor verified gameplay support.
   Nothing is suppressed, renamed, patched or reordered. Whether they work in play has not been examined.
+- The identity manifest's note for the Gunsmith's Kit said, up to and including the published v0.0.191, that the kit
+  serves "unified Broken-or-Wrecked-to-Normal firearm repair". That was stale developer metadata: field repair has
+  been Broken-only since 0.0.127 and a Wrecked firearm is restored only by a completed full rest. No player-facing
+  text carried the claim and nothing in play was affected. Corrected under the owner's authorization on branch
+  `codex/int07-gunsmith-kit-manifest-note` (awaiting review; not merged, not released), with the historical
+  1,913-record prefix hash unchanged and one exact, named exception for this note
+  (`docs/BLUEPRINT-MANIFEST.md`). Open consequence: the development-candidate validator requires every released
+  manifest row, notes included, to be unchanged, so it refuses that branch; it was left as it is for the owner to
+  decide, and until then no development candidate can be built from that branch or one stacked on it.
 - Dire Narlmarches and Pitax regional weapon stock (withdrawn in v0.0.185). It has the same native limitation as Oleg's spears:
   if a stocked Eastern weapon or spear was bought and a matching one was later sold back to that trader,
   the engine's update removes the sold copy. A save with no persisted known-item history keeps the old
