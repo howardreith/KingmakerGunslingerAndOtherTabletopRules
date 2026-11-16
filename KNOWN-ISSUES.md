@@ -117,7 +117,8 @@
   paused game while an attack is sampled. As first written on the branch, a run that the runner ended early left the
   game unpaused and its disposable units in place, and a high frame rate could leave an attack command running that
   blocked the next weapon's. The corrected marker diagnostic also let a marker that was not a finite number pass.
-  All three are corrected on the branch and await review. These are diagnostics; none of this is player-facing.
+  All three are corrected on the branch, and the review of PR #173 at `6f1590d31d` accepted them (not merged, not
+  released). These are diagnostics; none of this is player-facing.
 - The engine launches a firearm's projectile from the unit's left-palm locator, inherited from the native light
   crossbow's projectile, not from the weapon's muzzle. At the frame a handgun shot fires, that point is 1.4 to 1.8 m
   from the muzzle over two runs (service pistol, both named pistols and the revolver). The mod intends to hide the projectile's
