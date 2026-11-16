@@ -537,6 +537,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurArchetypePlan.cs"><Link>BrownFur\BrownFurArchetypePlan.cs</Link></Compile>
     <Compile Include="BrownFurPublicationTransactionTests.cs" />
     <Compile Include="BrownFurPublicationBoundaryTests.cs" />
+    <Compile Include="ManifestNoteExceptionTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurPublicationTransaction.cs"><Link>BrownFur\BrownFurPublicationTransaction.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurArchetypeOrdering.cs"><Link>BrownFur\BrownFurArchetypeOrdering.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurPublicationAudit.cs"><Link>BrownFur\BrownFurPublicationAudit.cs</Link></Compile>

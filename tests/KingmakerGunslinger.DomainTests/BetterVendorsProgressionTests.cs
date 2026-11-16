@@ -25,6 +25,101 @@ namespace KingmakerGunslinger.DomainTests
         private const string ManifestPrefixSha256 =
             "43909eb0094d38862dfe26c61345554b5d364d523a2c1ce1b91b996760a52fd2";
         private const int PreservedManifestEntries = 1913;
+
+        /// <summary>
+        /// The one authorized exception to the historical prefix.
+        ///
+        /// The prefix hash above covers symbol, guid, plannedType, status,
+        /// milestone and notes of the first 1,913 records, and it is not
+        /// changed. On 2026-11-16 the owner authorized one correction to
+        /// one note inside that prefix (INT-07 / S3 T6, GS-REP-0001): the
+        /// Gunsmith's Kit record said the kit serves "unified
+        /// Broken-or-Wrecked-to-Normal firearm repair", and field repair
+        /// has been Broken-only since the maintenance redesign. Source
+        /// head when it was made: 6ddd4802c2acfcb7ec5b0d8237575cc07920ff80.
+        ///
+        /// The current manifest must hold exactly the approved note in
+        /// exactly this record at exactly this position. Only then, and
+        /// only for that record, the frozen note is put back when the
+        /// historical hash is computed. Every other field of that record,
+        /// and every other record, is hashed as it stands. The old and
+        /// new wording are not interchangeable: the old one fails, and so
+        /// does any other. See docs/BLUEPRINT-MANIFEST.md.
+        /// </summary>
+        internal static class AuthorizedNoteException
+        {
+            internal const int Position = 206;
+            internal const string Symbol = "KMG.Gunsmithing.GunsmithKit";
+            internal const string Guid = "d52aacb753434691b1ed85a16cc87104";
+            internal const string FrozenNote =
+                "Stable non-consumable Gunsmith's Kit required for basic ammunition crafting and for unified Broken-or-Wrecked-to-Normal firearm repair.";
+            internal const string ApprovedNote =
+                "Stable non-consumable Gunsmith's Kit required for basic ammunition crafting and for Broken-to-Normal field repair. Wrecked firearms are restored only by a completed full rest.";
+        }
+
+        /// <summary>
+        /// Why a manifest's first 1,913 records are not the preserved
+        /// prefix, or null when they are. This is the check the suite
+        /// runs on the working manifest; the exception tests run the same
+        /// method on changed copies.
+        /// </summary>
+        internal static string ManifestPrefixProblem(IList<JToken> entries)
+        {
+            if (entries == null || entries.Count < PreservedManifestEntries)
+                return "The manifest holds fewer than the " + PreservedManifestEntries +
+                    " preserved entries.";
+            string exception = AuthorizedNoteProblem(entries);
+            if (exception != null) return exception;
+            string prefix = string.Concat(HistoricalView(entries).Take(PreservedManifestEntries)
+                .Select(value => string.Join("|", new[] {
+                    (string)value["symbol"], (string)value["guid"],
+                    (string)value["plannedType"], (string)value["status"],
+                    (string)value["milestone"], (string)value["notes"] }) + "\n"));
+            return Sha256(prefix) == ManifestPrefixSha256 ? null :
+                "The preserved 1913-entry manifest prefix changed.";
+        }
+
+        /// <summary>
+        /// Why a manifest does not meet the conditions of the authorized
+        /// exception, or null when it does: the exact record at the exact
+        /// position, carrying exactly the approved note.
+        /// </summary>
+        internal static string AuthorizedNoteProblem(IList<JToken> entries)
+        {
+            if (entries == null || entries.Count <= AuthorizedNoteException.Position)
+                return "The manifest does not reach the record with the authorized note exception.";
+            JToken target = entries[AuthorizedNoteException.Position];
+            if (target == null || (string)target["symbol"] != AuthorizedNoteException.Symbol ||
+                (string)target["guid"] != AuthorizedNoteException.Guid)
+                return "The record with the authorized note exception is not at position " +
+                    AuthorizedNoteException.Position + ": found " +
+                    (target == null ? "nothing" : (string)target["symbol"] + " " + (string)target["guid"]) + ".";
+            string note = (string)target["notes"];
+            if (note == AuthorizedNoteException.FrozenNote)
+                return "The Gunsmith's Kit note is the stale frozen wording; the approved correction is required.";
+            if (note != AuthorizedNoteException.ApprovedNote)
+                return "The Gunsmith's Kit note is not the approved wording.";
+            return null;
+        }
+
+        /// <summary>
+        /// The records as the historical hashes were taken over them: the
+        /// one authorized note put back to its frozen wording, in a copy of
+        /// that one record, and everything else the very records given. It
+        /// refuses a manifest that does not meet the exception's conditions,
+        /// so no historical hash can be reached with the stale note, another
+        /// wording, or the record moved.
+        /// </summary>
+        internal static JToken[] HistoricalView(IList<JToken> entries)
+        {
+            string exception = AuthorizedNoteProblem(entries);
+            if (exception != null) throw new InvalidOperationException(exception);
+            JToken[] view = entries.ToArray();
+            JToken frozen = view[AuthorizedNoteException.Position].DeepClone();
+            frozen["notes"] = AuthorizedNoteException.FrozenNote;
+            view[AuthorizedNoteException.Position] = frozen;
+            return view;
+        }
         private const string CatalogManifestPath =
             "docs/better-vendors-progression-catalog.json";
 
@@ -162,13 +257,8 @@ namespace KingmakerGunslinger.DomainTests
                 (ExpandedSummoningSprint25Tests.AppendedLedgerIdentities + SummoningCurrentSurface.AppendedLedgerIdentityCount),
                 entries.Length,
                 "Manifest preserves accepted blocks and appends only approved Phase 2 identities.");
-            string prefix = string.Concat(entries.Take(PreservedManifestEntries)
-                .Select(value => string.Join("|", new[] {
-                    (string)value["symbol"], (string)value["guid"],
-                    (string)value["plannedType"], (string)value["status"],
-                    (string)value["milestone"], (string)value["notes"] }) + "\n"));
-            Assertions.Equal(ManifestPrefixSha256, Sha256(prefix),
-                "The preserved 1913-entry manifest prefix changed.");
+            string prefixProblem = ManifestPrefixProblem(entries);
+            Assertions.True(prefixProblem == null, prefixProblem);
             Assertions.Equal(entries.Length, entries.Select(value =>
                 (string)value["guid"]).Distinct(StringComparer.Ordinal).Count(),
                 "Manifest GUID collision.");

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using KingmakerGunslinger.Actions;
 using KingmakerGunslinger.Firearms;
+using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -222,31 +224,44 @@ namespace KingmakerGunslinger.DomainTests
                     parts[1]);
             }
 
-            string manifest = File.ReadAllText(Path.Combine(
-                Environment.CurrentDirectory, "blueprints", "blueprints.json"));
-            // GS-REP-0001, recorded rather than silently fixed. This assertion
-            // matches only the space-separated spelling. The manifest's entry
-            // for the Gunsmith's Kit carries the HYPHENATED form in its notes
-            // ("unified Broken-or-Wrecked-to-Normal firearm repair"), which
-            // slips past it. That text is stale: the field-repair action is
-            // Broken-only.
-            //
-            // It is deliberately not corrected here. That notes field sits
-            // inside the accepted 1913-entry prefix whose exact bytes -
-            // symbol, guid, plannedType, status, milestone AND notes - are
-            // pinned by BetterVendorsProgressionTests.ManifestPrefixSha256.
-            // Editing it means re-pinning an accepted block, which needs an
-            // approved catalog change, not a repair-campaign edit. Moving that
-            // pin to make a text correction pass would defeat the guard that
-            // protects released identities.
-            //
-            // The field is developer metadata, not a player-facing string;
-            // every shipped player-facing description was checked and is
-            // already correct. So this stays a known, documented gap with a
-            // named prerequisite. Normalising this particular assertion would
-            // turn it red until that approved change happens.
-            Assertions.False(manifest.Contains("Broken or Wrecked"),
-                "The blueprint manifest still promises unified Wrecked field repair.");
+            // GS-REP-0001. The Gunsmith's Kit record's note used to say the
+            // kit serves "unified Broken-or-Wrecked-to-Normal firearm
+            // repair". Only the space-separated spelling was checked here,
+            // so the hyphenated one slipped past. The note is corrected
+            // under the owner's authorization of 2026-11-16 (INT-07), with
+            // the historical prefix guarded by the one-record exception in
+            // BetterVendorsProgressionTests.AuthorizedNoteException, and the
+            // semantic check now reads the note itself and every active
+            // record's note.
+            JToken[] entries = ((JArray)JObject.Parse(File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "blueprints", "blueprints.json")))["entries"])
+                .ToArray();
+            JToken kit = entries.Single(value => (string)value["symbol"] ==
+                BetterVendorsProgressionTests.AuthorizedNoteException.Symbol);
+            Assertions.False(PromisesWreckedFieldRepair((string)kit["notes"]),
+                "The Gunsmith's Kit manifest note still promises Wrecked field repair: " +
+                (string)kit["notes"]);
+            foreach (JToken entry in entries.Where(value => (string)value["status"] == "active"))
+                Assertions.False(PromisesWreckedFieldRepair((string)entry["notes"]),
+                    "An active manifest note promises Wrecked field repair: " +
+                    (string)entry["symbol"]);
+
+            // The check tells the two claims apart: field repair of a
+            // Wrecked firearm is the promise it refuses, in either
+            // spelling; a completed full rest restoring Wrecked firearms is
+            // true and stays sayable.
+            Assertions.True(PromisesWreckedFieldRepair(
+                    BetterVendorsProgressionTests.AuthorizedNoteException.FrozenNote) &&
+                PromisesWreckedFieldRepair(
+                    "required for unified Broken or Wrecked to Normal firearm repair"),
+                "The stale note is no longer recognized as a Wrecked field-repair promise.");
+            Assertions.False(PromisesWreckedFieldRepair(
+                    BetterVendorsProgressionTests.AuthorizedNoteException.ApprovedNote) ||
+                PromisesWreckedFieldRepair(
+                    "A completed full rest restores carried Broken and Wrecked firearms to Normal.") ||
+                PromisesWreckedFieldRepair(
+                    "Repairs an equipped Broken firearm straight to Normal. A Wrecked firearm is restored only by a completed full rest."),
+                "An accurate description of completed-rest recovery was read as a field-repair promise.");
         }
 
         /// <summary>

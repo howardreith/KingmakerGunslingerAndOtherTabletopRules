@@ -1662,7 +1662,7 @@
       "plannedType": "BlueprintItem",
       "status": "active",
       "milestone": "Sixth Playtest 0.0.66",
-      "notes": "Stable non-consumable Gunsmith's Kit required for basic ammunition crafting and for unified Broken-or-Wrecked-to-Normal firearm repair."
+      "notes": "Stable non-consumable Gunsmith's Kit required for basic ammunition crafting and for Broken-to-Normal field repair. Wrecked firearms are restored only by a completed full rest."
     },
     {
       "symbol": "KMG.Gunsmithing.OverhaulKit",
