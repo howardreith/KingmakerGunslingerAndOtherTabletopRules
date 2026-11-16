@@ -37,6 +37,7 @@
       "product": {
         "scenario": "weapon-presentation-handgun-motion-evidence",
         "parameters": {
+          "saveName": "KMG_AUTOMATION_WORKING",
           "outerAbortDrill": "attack-sampling"
         },
         "timeoutSeconds": 1200,

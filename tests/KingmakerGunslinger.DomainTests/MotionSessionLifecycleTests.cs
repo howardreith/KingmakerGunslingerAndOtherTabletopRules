@@ -422,22 +422,26 @@ namespace KingmakerGunslinger.DomainTests
                 "An ordinary motion request was refused.");
             Assertions.Equal(null, MotionOuterAbortDrill.Rejection(false, false, null, 3, false),
                 "A request that does not ask for the drill was refused.");
-            Assertions.Equal(null, MotionOuterAbortDrill.Rejection(true, true, drill, 1, true),
+            // A drill request carries the working save's name and the drill.
+            Assertions.Equal(null, MotionOuterAbortDrill.Rejection(true, true, drill, 2, true),
                 "The drill request was refused.");
             Assertions.Equal(MotionOuterAbortDrill.Rejected,
-                MotionOuterAbortDrill.Rejection(true, true, drill, 1, false),
+                MotionOuterAbortDrill.Rejection(true, true, drill, 2, false),
                 "A drill that would leave the game running was admitted.");
             Assertions.Equal(MotionOuterAbortDrill.Rejected,
-                MotionOuterAbortDrill.Rejection(true, true, "attack", 1, true),
+                MotionOuterAbortDrill.Rejection(true, true, "attack", 2, true),
                 "An unknown drill point was admitted.");
             Assertions.Equal(MotionOuterAbortDrill.Rejected,
-                MotionOuterAbortDrill.Rejection(true, true, null, 1, true),
+                MotionOuterAbortDrill.Rejection(true, true, null, 2, true),
                 "A drill parameter that is not a string was admitted.");
             Assertions.Equal(MotionOuterAbortDrill.Rejected,
-                MotionOuterAbortDrill.Rejection(true, true, drill, 2, true),
+                MotionOuterAbortDrill.Rejection(true, true, drill, 3, true),
                 "The drill was admitted beside another parameter.");
             Assertions.Equal(MotionOuterAbortDrill.Rejected,
-                MotionOuterAbortDrill.Rejection(false, true, drill, 1, true),
+                MotionOuterAbortDrill.Rejection(true, true, drill, 1, true),
+                "The drill was admitted without the working save's name.");
+            Assertions.Equal(MotionOuterAbortDrill.Rejected,
+                MotionOuterAbortDrill.Rejection(false, true, drill, 2, true),
                 "The drill was admitted for a scenario with no motion session.");
 
             int enough = MotionOuterAbortDrill.SamplingUpdatesBeforeAbort;

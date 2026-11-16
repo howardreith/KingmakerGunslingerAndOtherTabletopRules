@@ -22,17 +22,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             "session is sampling an attack with the pause released. This failure is intended.";
         internal const string NotReachedName = "weapon-presentation-motion-outer-abort-drill";
 
+        /// <summary>The drill and the working save's name, which every motion request carries.</summary>
+        internal const int RequestParameterCount = 2;
+
         /// <summary>
         /// The reason a request is refused, or null. The drill is its own
-        /// request: it is the only parameter, it names the one supported
-        /// point, it belongs to a motion scenario, and the process must exit
-        /// when it completes.
+        /// request: it stands beside the working save's name and nothing
+        /// else, it names the one supported point, it belongs to a motion
+        /// scenario, and the process must exit when it completes. The save
+        /// name itself is checked where it always is.
         /// </summary>
         internal static string Rejection(bool motionScenario, bool parameterPresent,
             string value, int parameterCount, bool exitAfterCompletion)
         {
             if (!parameterPresent) return null;
-            return motionScenario && parameterCount == 1 &&
+            return motionScenario && parameterCount == RequestParameterCount &&
                 string.Equals(value, AttackSampling, StringComparison.Ordinal) &&
                 exitAfterCompletion ? null : Rejected;
         }
