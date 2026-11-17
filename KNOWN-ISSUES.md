@@ -138,7 +138,7 @@
 - Up to and including the published v0.0.191, the `up-close-critical` assertion of `disposable-pistolero-deeds`
   gives a pass or a fail by process on identical inputs (two of three runs on the grit UI recipient candidate failed
   with `6,3`, one passed with `3,3`; the published v0.0.190 passed once). Cause measured on branch
-  `codex/rep02-pistolero-damage-consumption` (awaiting review; not merged, not released): an invalid assumption in
+  `codex/rep02-pistolero-damage-consumption` (accepted in review at `9b8a755ec8`; not merged, not released): an invalid assumption in
   the component fixture, not a gameplay defect. Its "hit" stage really hits only when an unseeded d20 is 13 or more
   (then the full packet, 6), and its "critical" stage is always a miss in that order (half packet, 3); the assertion
   compared their hit-point losses. Damage matched each stage's actual outcome and cost and consumption were correct;
