@@ -168,7 +168,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Game.Instance.Player.Inventory.Items.Contains(kit) && f.Shots.Count == shots && f.Powder == powder &&
                     captured == 1 && CompletedRestMaintenancePatch.MaintenanceRuns == completions + 1 &&
                     BrokenSequenceSuppressionRuntime.Orders.Current(f.Actor) == null &&
-                    BrokenSequenceSuppressionRuntime.IsSuppressed(f.Actor, f.Weapon),
+                    // POL-01 (owner decision B): a completed rest restoring the gun to Normal releases the lock.
+                    !BrokenSequenceSuppressionRuntime.IsSuppressed(f.Actor, f.Weapon),
                     f.Describe() + ";nativeCompletionCaptured=" + captured +
                     ";maintenanceRuns=" + (CompletedRestMaintenancePatch.MaintenanceRuns - completions) +
                     ";completionSeen=" + CompletedRestMaintenancePatch.RestCompletionsSeen +

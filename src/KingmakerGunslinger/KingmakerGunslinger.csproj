@@ -1721,6 +1721,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmRepairWarnings.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmInputNegatives.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmManualInput.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmMisfireRecovery.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmAdditionalInput.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmReviewCoexistence.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmReviewCosts.cs" />

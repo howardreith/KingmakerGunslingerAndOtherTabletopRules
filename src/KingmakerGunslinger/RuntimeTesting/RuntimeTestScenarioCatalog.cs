@@ -38,6 +38,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string ObserveMagicCircleNativeContracts = "observe-magic-circle-native-contracts";
         internal const string DisposableFirearmBreakInterruption =
             "disposable-firearm-break-interruption";
+        internal const string DisposableFirearmMisfireRecovery =
+            "disposable-firearm-misfire-recovery";
         internal const string DisposableTeleportationResources = "disposable-teleportation-resources";
         internal const string DisposableTeleportationDisabled = "disposable-teleportation-disabled";
         internal const string DisposableTeleportationDestinations = "disposable-teleportation-destinations";
@@ -944,6 +946,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveWordOfRecallFavoredClass,
                 DisposableWordOfRecallFavoredClassPersistence,
                 DisposableFirearmBreakInterruption,
+                DisposableFirearmMisfireRecovery,
                 ObserveKmgCompatibilityAssetAttribution,
                 ObserveFeatureModuleSettings,
                 ObserveExpandedSummoningModuleBoundary,

@@ -191,8 +191,11 @@ namespace KingmakerGunslinger.DomainTests
             var f = new Fixture(); var first = f.Accept(); f.Misfire(); f.QuickClear();
             Assertions.True(!f.Ledger.IsCurrent(first) && f.State.Condition == FirearmCondition.Normal &&
                 f.Ledger.Epoch(f.Actor, f.Weapon) == 1, "Repaired to Normal; the generation is not reset.");
+            // The item transition alone never touches the ledger; under POL-01
+            // the committed-recovery release is a separate step, covered by
+            // FirearmMisfireRecoveryTests. This case is the explicit-order path.
             Assertions.True(f.Ledger.IsSuppressed(f.Actor, f.Weapon),
-                "Repair alone neither resurrects nor releases the cancelled order.");
+                "The item transition alone neither resurrects nor releases the cancelled order.");
             var order = f.Accept(); f.Ledger.Own(order, new object());
             Assertions.Equal(1, order.Epoch, "The new explicit order is accepted at the nonzero epoch.");
             Assertions.True(f.Ledger.Complete(order, false, true, f.State.Condition),

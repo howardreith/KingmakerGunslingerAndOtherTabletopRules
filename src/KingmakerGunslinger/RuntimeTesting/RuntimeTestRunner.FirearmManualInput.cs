@@ -101,13 +101,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int tick = 0; tick < 240 && (quickClear
                     ? f.State.Condition != FirearmCondition.Normal : f.State.IsEmpty); tick++)
                 { f.Pump(); f.Record(tick); yield return null; }
-                foreach (object step in DriveFirearmIdle(f)) yield return step;
+                // POL-01 (owner decision B): a committed Quick Clear to Normal
+                // releases the lock and permits fresh AI decisions, which the
+                // disposable-firearm-misfire-recovery lanes observe. This lane
+                // is the manual-order control, so the idle runs without the AI
+                // brain; a reload of the Broken gun releases nothing.
+                foreach (object step in (quickClear ? DriveFirearmIdleWithoutAi(f) : DriveFirearmIdle(f))) yield return step;
                 FirearmInputCheck(prefix + "alone-never-revives-old-order", f.Shots.Count == 1 &&
                     f.State.Condition == (quickClear ? FirearmCondition.Normal : FirearmCondition.Broken) &&
                     f.State.LoadedRounds == (quickClear ? 0 : 1) && f.Powder == powder - (quickClear ? 0 : 1) &&
                     f.SameItemIdentity &&
                     BrokenSequenceSuppressionRuntime.Orders.Current(f.Actor) == null &&
-                    BrokenSequenceSuppressionRuntime.IsSuppressed(f.Actor, f.Weapon) && command.IsActed &&
+                    BrokenSequenceSuppressionRuntime.IsSuppressed(f.Actor, f.Weapon) == !quickClear && command.IsActed &&
                     !command.Cutscene && !command.IsIgnoreCooldown && f.PeakActionCost(command) > 0 &&
                     grit == f.Actor.Descriptor.Resources.GetResourceAmount(gunslinger.Grit.Resource),
                     f.Describe() + ";action=" + command.Type + ";nativeCooldownPeak=" + f.PeakActionCost(command));

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using KingmakerGunslinger.Firearms;
 
@@ -6,12 +7,24 @@ namespace KingmakerGunslinger.Firing
 {
     /// <summary>
     /// Concrete-item command ownership. A proposal does not release suppression;
-    /// acceptance follows successful native submission. Never serialized.
+    /// acceptance follows successful native submission, and a committed
+    /// recovery of the exact item to Normal releases its misfire locks
+    /// (POL-01). Never serialized.
     /// </summary>
     internal sealed class FirearmAttackOrderLedger
     {
         private readonly ConditionalWeakTable<object, Actor> actors =
             new ConditionalWeakTable<object, Actor>();
+        // Misfire provenance by physical firearm: which actors hold a
+        // misfire lock on this exact item. Weak in both directions (the
+        // table does not keep the item alive, the entries do not keep the
+        // actors alive), never serialized, pruned whenever it is read.
+        private readonly ConditionalWeakTable<object, MisfireLocks> locks =
+            new ConditionalWeakTable<object, MisfireLocks>();
+        private sealed class MisfireLocks
+        {
+            internal readonly List<WeakReference> Actors = new List<WeakReference>();
+        }
         private sealed class Damage
         {
             // Monotonic generation: rejects work captured before a committed
@@ -123,6 +136,7 @@ namespace KingmakerGunslinger.Firing
             Actor actor = For(order.Actor);
             actor.Current = null;
             actor.Items.GetOrCreateValue(order.Weapon).RequiresOrder = false;
+            Forget(order.Actor, order.Weapon);
             return true;
         }
         internal void Cancel(Order order)
@@ -143,8 +157,68 @@ namespace KingmakerGunslinger.Firing
             checked { damage.Epoch++; }
             damage.Suppressed = true;
             damage.RequiresOrder = true;
+            Remember(actor, weapon);
             if (state.Current != null && ReferenceEquals(state.Current.Weapon, weapon))
                 Cancel(state.Current);
+        }
+        /// <summary>
+        /// POL-01 (owner decision B): a successful recovery of this exact
+        /// physical firearm, already committed to Normal, releases the
+        /// misfire locks every actor holds on it, wherever the item now is.
+        /// The epoch is kept, so every order, reload continuation and
+        /// callback captured before the break stays refused; no order is
+        /// created, accepted, cancelled or resumed, and nothing is submitted.
+        /// A later attack needs a new construction, so a fresh automatic
+        /// decision or a new player order. Any other committed condition
+        /// releases nothing. Idempotent. Returns the locks released.
+        /// </summary>
+        internal int Recover(object weapon, FirearmCondition committedCondition)
+        {
+            if (weapon == null || committedCondition != FirearmCondition.Normal) return 0;
+            MisfireLocks held;
+            if (!locks.TryGetValue(weapon, out held)) return 0;
+            int released = 0;
+            foreach (WeakReference reference in held.Actors.ToArray())
+            {
+                object owner = reference.Target;
+                Actor state;
+                Damage damage;
+                if (owner != null && actors.TryGetValue(owner, out state) &&
+                    state.Items.TryGetValue(weapon, out damage) &&
+                    (damage.Suppressed || damage.RequiresOrder))
+                {
+                    damage.Suppressed = false;
+                    damage.RequiresOrder = false;
+                    released++;
+                }
+            }
+            held.Actors.Clear();
+            locks.Remove(weapon);
+            return released;
+        }
+        /// <summary>Live actors still recorded against this exact firearm (diagnostics and tests).</summary>
+        internal int LockHolders(object weapon)
+        {
+            MisfireLocks held;
+            if (weapon == null || !locks.TryGetValue(weapon, out held)) return 0;
+            held.Actors.RemoveAll(reference => reference.Target == null);
+            return held.Actors.Count;
+        }
+        private void Remember(object actor, object weapon)
+        {
+            MisfireLocks held = locks.GetOrCreateValue(weapon);
+            held.Actors.RemoveAll(reference => reference.Target == null);
+            foreach (WeakReference reference in held.Actors)
+                if (ReferenceEquals(reference.Target, actor)) return;
+            held.Actors.Add(new WeakReference(actor));
+        }
+        private void Forget(object actor, object weapon)
+        {
+            MisfireLocks held;
+            if (actor == null || weapon == null || !locks.TryGetValue(weapon, out held)) return;
+            held.Actors.RemoveAll(reference => reference.Target == null ||
+                ReferenceEquals(reference.Target, actor));
+            if (held.Actors.Count == 0) locks.Remove(weapon);
         }
         internal long Submit(object actor)
         {

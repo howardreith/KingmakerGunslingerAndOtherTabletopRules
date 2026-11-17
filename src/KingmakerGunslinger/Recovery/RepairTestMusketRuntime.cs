@@ -143,6 +143,10 @@ namespace KingmakerGunslinger.Recovery
                 transaction,
                 availability.Firearm,
                 after);
+            // POL-01: the transaction has committed (it rolls back and throws
+            // otherwise); only a verified Normal releases the misfire locks.
+            if (result.Succeeded)
+                Firing.BrokenSequenceSuppressionRuntime.OnCommittedRecovery(availability.Weapon);
             if (result.Succeeded)
                 FirearmConditionCombatLog.Publish(
                     after.ItemDisplayName,
