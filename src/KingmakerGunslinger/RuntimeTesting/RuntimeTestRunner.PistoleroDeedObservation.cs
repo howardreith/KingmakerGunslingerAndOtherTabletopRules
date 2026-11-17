@@ -128,6 +128,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private struct RecoveryMark
         {
             internal int Applied;
+            internal int Ignored;
         }
 
         private static RecoveryMark MarkRecovery()
@@ -135,7 +136,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             return new RecoveryMark
             {
                 Applied = FirearmGritRecoveryRuntimeDiagnostics.CriticalApplied +
-                    FirearmGritRecoveryRuntimeDiagnostics.KillingBlowApplied
+                    FirearmGritRecoveryRuntimeDiagnostics.KillingBlowApplied,
+                Ignored = FirearmGritRecoveryRuntimeDiagnostics.Ignored
             };
         }
 
@@ -175,6 +177,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             int? restored = RestoredSince(mark);
             row["gritRestored"] = restored.HasValue ? (JToken)restored.Value : JValue.CreateNull();
+            row["recoveryIgnored"] = FirearmGritRecoveryRuntimeDiagnostics.Ignored - mark.Ignored;
             row["gritAfter"] = attacker.Descriptor.Resources.GetResourceAmount(grit);
             row["targetHitPointsAfter"] = target.HPLeft;
             row["targetDead"] = target.Descriptor.State.IsDead;
@@ -344,8 +347,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitEntityData unit = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
                 disposables.Add(unit);
                 unit.Descriptor.Stats.HitPoints.AddModifier(500, (GameLogicComponent)null, ModifierDescriptor.None);
+                // Deflection, because a firearm shot in its first range
+                // increment is resolved against touch armor class, which
+                // ignores natural armor.
                 if (armorBonus != 0)
-                    unit.Descriptor.Stats.AC.AddModifier(armorBonus, (GameLogicComponent)null, ModifierDescriptor.NaturalArmor);
+                    unit.Descriptor.Stats.AC.AddModifier(armorBonus, (GameLogicComponent)null, ModifierDescriptor.Deflection);
                 return unit;
             };
             Func<string, int, int, bool, bool, Func<UnitEntityData, RuleAttackWithWeapon, bool>, JObject> run =

@@ -1067,6 +1067,7 @@ namespace KmgLoaderCompatHarness
             record["armedBeforeShot"] = OnUnit(actor, blueprint) != null;
             int damageBefore = observer.Damage.Count;
             int recoveryMark = RecoveryApplied();
+            int ignoredMark = Convert.ToInt32(ProductStatic(RecoveryDiagnostics, "Ignored"), CultureInfo.InvariantCulture);
             int gritBefore = Grit(actor);
             var shot = new JObject();
             record["shot"] = shot;
@@ -1090,6 +1091,7 @@ namespace KmgLoaderCompatHarness
                 ["precisionImmune"] = roll == null ? null : roll["precisionImmune"],
                 ["deedPackets"] = deed,
                 ["gritBefore"] = gritBefore, ["gritRestored"] = RestoredSince(recoveryMark), ["gritAfter"] = Grit(actor),
+                ["recoveryIgnored"] = Convert.ToInt32(ProductStatic(RecoveryDiagnostics, "Ignored"), CultureInfo.InvariantCulture) - ignoredMark,
                 ["armedInstanceRemoved"] = arm ? (instance == null ? JValue.CreateNull() : (JToken)!actor.Descriptor.Buffs.RawFacts.Contains(instance)) : false,
                 ["attackRollsResolved"] = shot["attackRollsResolved"],
                 ["rollIsTheCommandsOwn"] = shot["rollIsTheCommandsOwn"],
@@ -1156,7 +1158,8 @@ namespace KmgLoaderCompatHarness
                 UpCloseExpectation("critical", "full", dice, 1, true), cases)) yield return wait;
 
             // 3. A non-misfire miss with the deed armed.
-            var armour = hostile.Descriptor.Stats.AC.AddModifier(500, (GameLogicComponent)null, Kingmaker.Enums.ModifierDescriptor.NaturalArmor);
+            // Deflection: the shot is resolved against touch armor class, which ignores natural armor.
+            var armour = hostile.Descriptor.Stats.AC.AddModifier(500, (GameLogicComponent)null, Kingmaker.Enums.ModifierDescriptor.Deflection);
             try
             {
                 foreach (object wait in UpCloseShot("miss", actor, hostile, pistol, ability, blueprint, true, 10, 5,
@@ -1192,11 +1195,15 @@ namespace KmgLoaderCompatHarness
             yield return GameSeconds(1.0);
             cancelled["attackRollsResolved"] = observer.Shots.Count - shotsBefore;
             cancelled["deedOrWeaponDamageEvents"] = observer.Damage.Count - damageBefore;
+            cancelled["damageEventsInWindow"] = new JArray(observer.Damage.Skip(damageBefore).ToArray());
+            cancelled["deedPacketsFromShooterInWindow"] = observer.Damage.Skip(damageBefore).Count(token =>
+                token["fromShooter"] != null && (bool)token["fromShooter"] && token["deedShape"] != null && (bool)token["deedShape"]);
             cancelled["armedInstanceRetainedAfterCancel"] = instance != null && actor.Descriptor.Buffs.RawFacts.Contains(instance);
             cancelled["gritBeforeOrder"] = gritBeforeOrder;
             cancelled["gritAfterCancel"] = Grit(actor);
             Expect(instance != null, "cancellation case: the state was not armed");
             Expect((int)cancelled["attackRollsResolved"] == 0, "cancellation case: the cancelled order still resolved " + cancelled["attackRollsResolved"] + " attack rolls");
+            Expect((int)cancelled["deedPacketsFromShooterInWindow"] == 0, "cancellation case: a deed packet was dealt after the order was cancelled");
             Expect((bool)cancelled["armedInstanceRetainedAfterCancel"], "cancellation case: the armed instance did not survive a cancelled order");
             Expect(Grit(actor) == gritBeforeOrder, "cancellation case: grit went from " + gritBeforeOrder + " to " + Grit(actor) + " after a cancelled order");
             yield return Ended(blueprint, actor);
