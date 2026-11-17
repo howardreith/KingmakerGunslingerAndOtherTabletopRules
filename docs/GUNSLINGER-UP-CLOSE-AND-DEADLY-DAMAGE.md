@@ -1,8 +1,10 @@
 # Up Close and Deadly: damage, grit and consumption observed apart (REP-02 / S4 T2)
 
-Status: **development change on a review branch, awaiting review. Not merged, not released.** Branch
-`codex/rep02-pistolero-damage-consumption`, stacked on draft PR #178 at its accepted head `2fe1b8af2c`. Nothing here is
-a release qualification. Gameplay is unchanged: the repair is to the diagnostic.
+Status: **development change on a review branch, awaiting review of the corrections asked for by the review of
+`3d6b4b0c19`. Not merged, not released.** Branch `codex/rep02-pistolero-damage-consumption`, stacked on draft PR #178
+at its accepted head `2fe1b8af2c`. Nothing here is a release qualification. Gameplay is unchanged: the repair is to the
+diagnostic. The review accepted the explanation of the reproduced split; see "Review corrections" for the four
+diagnostic corrections and their results.
 
 ## The historical split
 
@@ -53,9 +55,10 @@ both `3,3` PASS) and the same seeded stages.
 
 So the split is an invalid diagnostic assumption. The "critical" stage is, in this order, always an ordinary miss: the
 deed correctly applies half of one roll. The "hit" stage is a real hit only when its unseeded d20 is 13 or more, about
-two times in five; it then correctly applies the full packet, and the comparison fails. Both stages consumed the state
-and charged one grit each time. Neither damage delivery, grit nor marker removal differed between passing and failing
-runs; the actual hit or miss of the hit stage did. No production defect was found, and gameplay is unchanged.
+two times in five; it then correctly applies the full packet, and the comparison fails. In every replay the deed's
+damage matched each stage's actual hit or miss, and cost and consumption were correct (one grit and the state removed
+at each stage). The hit stage's damage amount itself differed between passing and failing replays (6 for a hit, 3 for
+a miss), because its actual outcome differed. No production defect was found, and gameplay is unchanged.
 
 ## The repair (diagnostic only)
 
@@ -64,9 +67,9 @@ runs; the actual hit or miss of the hit stage did. No production defect was foun
   consumption. The aggregate is computed only after all four. Missing or unreadable observations fail. The deed
   packet is read from its own `RuleDealDamage` (no attack roll, precision discovery disabled, one 1d6 physical or one
   fixed direct packet), never from hit-point loss; an unmultiplied critical is judged from that packet's critical
-  modifier and dice, never by comparing two rolls. The charge is `before + restored by recovery − after`, so
-  recovery can neither hide a missing charge nor fail a correct one. A critical flag set after resolution is not an
-  engine critical. The product scenario, the loader-compat probe (by reflection) and the domain tests all call it.
+  modifier and dice, never by comparing two rolls. A critical flag set after resolution is not an engine critical.
+  The product scenario, the loader-compat probe (by reflection) and the domain tests all call it. Its half-packet,
+  consumption, cost and cancellation rules were tightened after review; see "Review corrections".
 - **`disposable-pistolero-deeds`** is labelled a component fixture (AddBuff arming, hand-invoked handler, standalone
   rolls, detached units at the main menu). It replays the old order first as recorded evidence with no contract
   verdict (`up-close-original-sequence-measured`), then runs controlled cases, each on a fresh target with 500 extra
@@ -87,7 +90,12 @@ runs; the actual hit or miss of the hit stage did. No production defect was foun
 - `scripts/compatibility/loader-compat/sessions/pistolero-up-close-damage.json` runs the component scenario twice and
   the probe twice, each in a fresh process.
 
-## Results on the final candidate
+## Results on candidate `a06e989ee1d6` (before the review corrections)
+
+These results were judged by the evaluator as it stood at `a06e989ee1`: the miss packet was checked against the range
+of possible halves, not the actual roll; consumption was read from the buff's absence after the shot's waits; the
+cancellation case was checked by the probe's own expectations; and recovery read the global last before and after
+values. They stay as recorded; the corrected evaluator and probe were not run on these bytes.
 
 Candidate `a06e989ee1d6` (package `9f31014430b89b7f0b99ac6d913614bcf181a29f8859a682df8fe0531c6a6259`, DLL
 `fedf6314ed5e6e4c59307b6e8d211997568ad7536b1ce234e023363a4512a4a5`), harness `0278125b0785989e55c8ca7452f10f54b7c8b516c82efd627a3b5d69cba3b5c7`,
@@ -133,8 +141,8 @@ party's damage does not enter them; hit-point figures include it.
 | Harness build (`Build-LoaderCompatHarness.ps1`, game-copy references) | built; first `cdcecf3ea2e8…`, final `0278125b0785…` | under 10 s |
 | `scripts/Build-Local.ps1 -DevelopmentPurpose pistolero-damage-consumption`, first | candidate `27578ecf2172` (package `b79f42b6dc11…`, DLL `b554c986b3e9…`); development validation passed | 420 s |
 | Session on the first candidate, `20261117T051533Z` | FAIL, 4 of 4 launches: the controlled miss hit in both fixtures (see below); every other case passed | 332 s |
-| `scripts/Build-Local.ps1`, final | candidate `a06e989ee1d6` above; development validation passed | 405 s |
-| Session on the final candidate, `20261117T053001Z` | PASS, 4 of 4 | 318 s |
+| `scripts/Build-Local.ps1`, second | candidate `a06e989ee1d6` above; development validation passed | 405 s |
+| Session on the second candidate, `20261117T053001Z` | PASS, 4 of 4 | 318 s |
 
 The domain tests cover: correct damage with failed consumption fails only consumption; correct consumption with a
 multiplied or doubled packet fails only damage; an observed miss expected as a hit fails the outcome and the damage,
@@ -147,23 +155,112 @@ probe raised natural armor, but the shot was resolved against touch armor class 
 armor, so the requested miss hit and the full packet was correctly applied. The evaluator reported it as a failed
 outcome and failed damage with cost and consumption passing. Fixed in `a06e989ee1` with deflection; fixture setup only.
 
-Total validation time was about 25 minutes, over the 15-minute planning target and under the 30-minute ceiling,
-because the first candidate exposed the fixture error and a second build was needed.
+Total validation time for that pass was about 25 minutes, over the 15-minute planning target and under the 30-minute
+ceiling, because the first candidate exposed the fixture error and a second build was needed.
+
+## Review corrections (review of `3d6b4b0c19`)
+
+The review accepted the explanation of the reproduced split and asked for four diagnostic corrections, made in
+`e63f6e43b2`. Gameplay is unchanged.
+
+1. **Exact half.** The handler now keeps the d6 results it already draws for a miss, in the same order and with no
+   extra draw, in a weak record keyed by the exact attack and its owner
+   (`Archetypes/UpCloseAndDeadlyDeliveryRecords.cs`). The evaluator sums that record and requires the fixed packet to
+   equal `floor(total / 2)`; a missing, unreadable or wrong-length record fails. The total is never derived from the
+   packet.
+2. **Consumption inside the delivery.** The exact instance and its deadline are captured before the shot. Every
+   observed event is numbered in order: the shot's roll, the exact instance's removal (the game's buff-removed notice
+   for that reference), the deed's damage event. Consumption passes only when the removal falls after the roll and
+   before the deed's damage event (the handler removes the state before dealing it), or, with no damage event, inside
+   the hand-invoked delivery, and before the deadline. The buff's absence at the final read is recorded but never
+   decides consumption.
+3. **Admitted, interrupted cancellation.** `EvaluateCancellation` requires the exact new order to be admitted to the
+   actor's commands, not started, not acted, and ended `Interrupt`; a rejected or never-admitted order fails as an
+   unmet prerequisite even with no roll, damage or grit change. The probe now calls it.
+4. **Recovery attribution.** No recovery applied anywhere is a valid zero (`none-applied`). Any applied recovery is
+   `unattributed`, because the recovery diagnostics are global and do not name the unit they restored, and the cost
+   is then unknown. The evaluator accepts a nonzero amount only when attributed to the actor; the current readers
+   never claim that.
+
+Domain controls, through the same `Evaluate` and `EvaluateCancellation` the consumers call (37 of 37 focused tests):
+
+| Control | Result |
+|---|---|
+| Full roll 5, emitted 2 | damage passes |
+| Full roll 5, emitted 0; full roll 5, emitted 3 | damage fails; cost and consumption still pass |
+| Full roll 1, emitted 0 | damage passes |
+| Full roll missing; unreadable; two dice for a one-die deed | damage fails |
+| Exact instance removed after the roll, before the deed's damage, before its deadline | consumption passes |
+| Retained through delivery, gone only at its deadline (a final read finds no buff) | consumption fails |
+| Removed after the deed's damage event; another instance removed; identity, start, time or deadline missing; no bound on the window | consumption fails |
+| Admitted, not started, not acted, `Interrupt` | cancellation passes |
+| Never admitted, with no roll, no damage and no grit change | prerequisite fails (the quiet outcome is recorded apart); started, acted or a `Success` result also fail |
+| Another unit's recovery (unattributed) beside a missing charge | cost fails |
+| Attributed recovery offsetting a correct charge; capped recovery; no recovery | cost passes |
+| Attributed recovery hiding a missing charge; `none-applied` with a nonzero amount | cost fails |
+
+### Results on the corrected candidate
+
+Candidate `e63f6e43b214` (package `a83fc922c6d74b9c224dc8f628ec8e254a406a2fbfc026f662b147699a4c1598`, DLL
+`f382e7997960c8ee4c123b9321fad1febe603cc0481624e7c3022edf803fb53a`), harness
+`836770fb5cd5c463a798e6270b22dfe90aed74b7746ce410eaa524fdc5ec1755`, the same four-launch session file. Session
+`20261117T163622Z-owner-0.33.0-pistolero-up-close-damage`: PASS, 4 of 4 fresh launches; the probe reported no
+findings in either process and the component fixture 44 of 44 assertions in each. The session reports 95 owner saves
+unchanged, the owner installation unchanged and the registry restored.
+
+Real route, both processes:
+
+| Case | Deed packet | Full roll → half | Exact instance: removal order and time | Grit |
+|---|---|---|---|---|
+| Ordinary hit (natural 15) | physical 1d6, 5 | — | removed after the roll, before the deed's damage event; absent at that event; 43,232.17 s against a deadline of 43,237.37 s (launch 3) | 5 → 4, no recovery applied anywhere |
+| Engine-confirmed critical (natural 20; weapon ×4) | physical 1d6, 4, no critical modifier | — | the same order; 43,235.46 s against 43,240.82 s | 3 → 2, no recovery applied anywhere |
+| Miss (natural 10 against 510) | direct 2 | 5 → 2 | the same order; 43,238.70 s against 43,244.07 s | 2 → 1, no recovery applied anywhere |
+| Following unarmed shot | none | — | none armed | 1 → 1 |
+| Cancellation | none | — | order admitted, not started, not acted, `Interrupt`; no roll; instance retained; expired by itself after 6.03 s and 6.02 s | 1 → 1, 1 after expiry |
+
+Launch 4 matched in every verdict (removal at 43,232.20, 43,235.49 and 43,238.73 s against deadlines 5.2 to 5.4 s
+later). Every shot's roll was the attack command's own and the target survived throughout.
+
+Component fixture, both processes: hit, critical and the twice-invoked Dead Shot delivery each one packet, one grit,
+the exact instance removed inside the delivery before the deed's damage event; the miss a direct 1 from a recorded
+roll of 2; precision immunity and insufficient grit removed inside the delivery with no damage event and no charge;
+misfire and scatter retained with no charge. The replayed original order measured hit-stage naturals 13 and 14 (both
+real hits, 6 against the critical stage's 3, old aggregate FAIL in both); its miss and critical stages recorded the
+roll 6 and emitted 3.
+
+**Critical recovery inputs** (read when the confirmed critical's roll resolved, both processes): actor character level
+1, target character level 0 (the hostile is an unlevelled clone), both in combat, target not helpless, exact firearm,
+outcome qualifying. The product's recovery policy, re-evaluated on those inputs, decides `InsignificantTarget`
+(`targetHitDice * 2 < characterLevel`). That reading is consistent with no recovery having applied; it is the policy
+evaluated on observed inputs, not the runtime's own record of its decision.
+
+| Check | Result | Time |
+|---|---|---|
+| `scripts/Invoke-KmgGate.ps1 -Filter 'up-close;pistolero;archetype'` | production compilation passed (14 s); 37 of 37 | 17 s |
+| Harness build | `836770fb5cd5…` | under 10 s |
+| `scripts/Build-Local.ps1 -DevelopmentPurpose pistolero-damage-consumption` | candidate `e63f6e43b214`; development validation passed | 435 s |
+| Session `20261117T163622Z` | PASS, 4 of 4 | 343 s |
+
+About 13 minutes in total for this pass.
 
 ## Limits
 
-- **Critical recovery was not exercised.** On the real-route critical, at 3 of 5 grit, no recovery applied, so the
-  case shows the deed's own charge only, not a recovery offset. Why the recovery clause declined is not established:
-  the diagnostics' ignored counter is global and moved for other units' rolls in the save. The offset logic is covered
-  only by the evaluator's domain tests.
+- **No native recovery offset.** On the real-route critical, at 3 of 5 grit, no recovery applied, so the case shows
+  the deed's own charge only. The observed inputs (target character level 0 against actor level 1) make the policy
+  decide `InsignificantTarget`; that is a reading of the policy, not a confirmed runtime decision, and not a gameplay
+  defect. A native case with a significant target is a disclosed follow-up. Any applied recovery would now read as
+  unattributed and fail the cost, because the diagnostics cannot name the unit.
 - **Precision immunity, insufficient grit, misfire, scatter and duplicate delivery** are component-fixture results
   only (precision immunity is a flag set on the resolved roll), not real-route ones.
 - **Cancellation** covers an order interrupted before it started. An interruption after a shot has already resolved
   was not exercised.
 - **Controlled inputs.** The naturals were requested (forced roll and seeded generator), the attack bonus was raised to
-  100, and the miss used +500 deflection. The deed's own d6 was not controlled.
-- **Two matching runs** in fresh processes show the cases are not intermittent on this candidate under these
-  prerequisites; they are not statistical proof that no intermittency is possible.
+  100, and the miss used +500 deflection. The deed's own d6 was not controlled; the miss's roll is read from the
+  handler's own record of what it drew, a diagnostic inside the product, not an observation outside it.
+- **Consumption bound.** In the real route the delivery window is bounded by the deed's damage event; the end of the
+  outer attack rule cannot be observed from a global handler, which runs before the deed's initiator handler.
+- **Two matching runs** in fresh processes per candidate show the cases are not intermittent on those bytes under
+  these prerequisites; they are not statistical proof that no intermittency is possible.
 - **Level 1 only** (one die). Higher-level dice counts are covered by the existing policy tests, not observed.
 - The real-route target spot was not clear of the save's own units, and the save's party attacked the hostile. Their
   damage is recorded and excluded by initiator. The first candidate's run saw one damage event in its cancellation

@@ -141,10 +141,11 @@
   `codex/rep02-pistolero-damage-consumption` (awaiting review; not merged, not released): an invalid assumption in
   the component fixture, not a gameplay defect. Its "hit" stage really hits only when an unseeded d20 is 13 or more
   (then the full packet, 6), and its "critical" stage is always a miss in that order (half packet, 3); the assertion
-  compared their hit-point losses. On that branch the fixture judges outcome, deed damage, grit charge and
+  compared their hit-point losses. Damage matched each stage's actual outcome and cost and consumption were correct;
+  the hit stage's damage amount differed because its outcome did. On that branch the fixture judges outcome, deed damage, grit charge and
   consumption separately, and the registered ability and the attack command were observed on a Pistolero: an
-  ordinary hit and an engine-confirmed critical each apply one unmultiplied 1d6 deed packet, a miss applies half of
-  one roll, each charges one grit and consumes the armed state; a following unarmed shot and an order cancelled before
+  ordinary hit and an engine-confirmed critical each apply one unmultiplied 1d6 deed packet, a miss applies exactly
+  half of its recorded roll, each charges one grit and removes the exact armed instance before the deed's damage; a following unarmed shot and an order cancelled before
   it starts charge nothing, and the cancelled state expires by itself. Record:
   `docs/GUNSLINGER-UP-CLOSE-AND-DEADLY-DAMAGE.md`.
 - Rapid Reload's parent proficiency gate reads only the registered firearm
