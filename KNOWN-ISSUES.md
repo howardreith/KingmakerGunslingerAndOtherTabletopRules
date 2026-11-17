@@ -343,7 +343,7 @@
   was registered, and counted any native wrapper in a family as covering every tier. It showed Summon Monster 120 of
   120, and Brachiosaurus as published in Summon Monster, where it has no choice. The committed copy was also stale
   since Stirge's withdrawal on 2026-11-07. Developer documentation only; nothing in play was affected. Corrected on
-  branch `codex/int08-summoning-roster-coverage` (awaiting review; not merged, not released): coverage is now
+  branch `codex/int08-summoning-roster-coverage` (accepted in review at `dcea649f5e`; not merged, not released): coverage is now
   compared placement by placement and reads, from source, 1,208 of 1,232 ideal placements published, 9 withheld
   (Stirge, owner withdrawal) and 15 missing (Brachiosaurus in Summon Monster, POL-04; twelve wrapper placements,
   POL-05) (`docs/EXPANDED-SUMMONING-ROSTER-COVERAGE.md`). POL-04 and POL-05 remain open decisions.
