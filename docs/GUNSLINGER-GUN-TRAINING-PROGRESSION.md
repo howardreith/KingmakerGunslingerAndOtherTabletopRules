@@ -1,8 +1,9 @@
 # Gun Training: three supported types, four opportunities (DEF-04 / S4 T1)
 
-Status: **development change on a review branch, awaiting review. Not merged, not released.** Branch
-`codex/def04-gun-training-progression`, stacked on draft PR #177 at its accepted head `dcea649f5e`. Nothing here is a
-release qualification. Sprint 4 stays open; its other firearm-policy stories and the Sprint 5 roster decisions are
+Status: **development change on a review branch, awaiting final review of two wording corrections. Not merged, not
+released.** Branch `codex/def04-gun-training-progression`, stacked on draft PR #177 at its accepted head `dcea649f5e`.
+The review of `7c8e720542` accepted the policy, the implementation, the native level-up observer and the recorded
+qualification for their stated scope; see "Review corrections". Nothing here is a release qualification. Sprint 4 stays open; its other firearm-policy stories and the Sprint 5 roster decisions are
 outside this cut.
 
 ## The selected policy
@@ -56,28 +57,31 @@ So the defect was in presentation: the selection said only "Select one firearm t
 about a once-each limit, the fourth opportunity, the Mysterious Stranger's levels or the ranked replacements. The
 progression preview lists four Gun Training entries, which is accurate: there are four opportunities.
 
-The issue is an exhausted additional training opportunity. Level 17 is not empty (it carries the class's other
-level-17 features), and level-up is not blocked there; both are shown below.
+The issue is an exhausted additional training opportunity. The exhausted Gun Training opportunity grants no
+additional training fact or bonus, and normal level advancement completes; the native run below shows both.
 
 ## What changed
 
 Text only, in `src/KingmakerGunslinger/Blueprints`:
 
-| Description | Now says |
+| Description | Now says (current source) |
 |---|---|
-| Gun Training selection (`KMG.GunTraining.Selection.Description`) | "Select one supported firearm type: Pistol, Musket or Blunderbuss. You add your Dexterity modifier to damage when firing that type, and its Broken-state misfire increase is reduced from 4 to 2. Each type can be trained only once. A Gunslinger gets this choice at levels 5, 9, 13 and 17; once all three types are trained, a remaining opportunity grants nothing more: no further type and no additional bonus. A Mysterious Stranger gets it at levels 9, 13 and 17 instead. A Pistolero or Musket Master never gets it: Pistol Training or Musket Training replaces it and gains a rank at each of those levels." |
+| Gun Training selection (`KMG.GunTraining.Selection.Description`) | "Select one supported firearm type: Pistol, Musket or Blunderbuss. You add your Dexterity modifier to damage when firing that type, and its Broken-state misfire increase is reduced from 4 to 2. Each type can be trained only once. A Gunslinger gets this choice at levels 5, 9, 13 and 17; once all three types are trained, a remaining opportunity grants nothing more: no further type and no additional bonus. A Mysterious Stranger gets it at levels 9, 13 and 17 instead. A Pistolero or Musket Master never gets it: Pistol Training or Musket Training replaces it and gains a rank at levels 5, 9, 13 and 17." |
 | Mysterious Stranger | adds "Gun Training comes at levels 9, 13 and 17 instead of 5, 9, 13 and 17, so each of the three choices trains a firearm type." |
 | Pistolero | adds "Pistol Training replaces Gun Training at levels 5, 9, 13 and 17 and gains a rank each time." |
 | Musket Master | adds "Musket Training replaces Gun Training at levels 5, 9, 13 and 17 and gains a rank each time." |
 
-Blueprint identities, localization keys, ranks, progression entries and serialized facts are unchanged. The text has
+The ranked-replacement sentence was corrected after the native run (see "Review corrections"); the run observed
+the earlier wording, which ended "gains a rank at each of those levels". Blueprint identities, localization keys,
+ranks, progression entries and serialized facts are unchanged. The text has
 no translations in the repository. `scripts/Test-IconPolishRound2Assets.ps1` pins `GunTrainingBlueprints.cs` by hash
 to protect its selector icon assignments; the pin moves to the new bytes with a comment, as the D1 fix did.
 
 Tests and observers:
 
 - `gun-training.presentation-states-the-policy` (domain): the four descriptions carry the statements above and the old
-  selection text is gone; the official types are exactly Pistol, Musket, Blunderbuss.
+  selection text is gone; the official types are exactly Pistol, Musket, Blunderbuss. Since the review correction it
+  also requires the ranked-replacement sentence itself to state 5, 9, 13 and 17.
 - `disposable-gunslinger-gun-training` keeps its direct-fact controls (a Pistol fact added directly: +4 damage at
   Dexterity 18, Broken-state misfire) and now also runs `RuntimeTestRunner.GunTrainingLevelUps.cs`: detached chargen
   units levelled through real `LevelUpController` visits (the `FavoredClassLevelUpHarness` helpers; the
@@ -89,7 +93,8 @@ Tests and observers:
 
 ## Native level-up transactions
 
-Session `20261117T033517Z-owner-0.33.0-gunslinger-gun-training-levelups`: PASS, 12 of 12 assertions. Candidate
+Session `20261117T033517Z-owner-0.33.0-gunslinger-gun-training-levelups`: PASS, 12 of 12 assertions (the five the
+scenario already had, for its direct-fact controls, and the seven new grouped level-up assertions). Candidate
 `0c0f4f7b7708` (package `39a759e6cb53cbe38bdad69a26a4dabebdd8dd9c85365f727578dcbe4047e62b`, DLL
 `16abc5e7317dd100fab448e43ceddf70e1764882243a6cb16fb45d523788e8db`), UMM 0.33.0, Harmony 2.3.6, only the candidate and
 the loader harness (`41e4300c58a6…`) active. Raw evidence stays on the lab machine under
@@ -128,7 +133,9 @@ types, and Rifle or Revolver was never offered.
   Dexterity + 3 = 9 (entitlement and weapon bonus damage), Musket and Blunderbuss untrained.
 - **Musket Master:** the same with Musket Training; Musket and Blunderbuss 9, Pistol untrained. No Gun Training fact
   on either.
-- **Presentation:** the published blueprints' runtime descriptions carry the text above.
+- **Presentation:** the runtime descriptions of candidate `0c0f4f7b7708` carried the text of `0c0f4f7b77`. That
+  differs from the current source in one sentence: the ranked replacement then read "gains a rank at each of those
+  levels". The corrected sentence was not part of this run.
 - **Isolation:** six detached units, party and global unit lists unchanged.
 
 ## Validation
@@ -156,5 +163,38 @@ types, and Rifle or Revolver was never offered.
   from the runtime blueprints.
 - **One level-up path per character.** A single deterministic pick order per character; with three rank-one choices
   the order does not change the rule.
+- **No firing for the ranked training.** The Pistolero and Musket Master values are training entitlements and native
+  weapon-stats bonus damage; no shot was fired and no damage was delivered.
 - The scenario's existing direct-fact misfire and damage controls are unchanged and still pass; they are not
   level-up evidence.
+
+## Review corrections (review of `7c8e720542`)
+
+The review accepted the gameplay policy, the progression implementation, the native level-up observer and the
+recorded qualification for their stated scope, and asked for two wording corrections.
+
+1. **The ranked-training sentence.** The selection description ended "Pistol Training or Musket Training replaces it
+   and gains a rank at each of those levels", right after the Mysterious Stranger's 9, 13 and 17, so it could be read
+   as 9, 13 and 17. It now reads: "A Pistolero or Musket Master never gets it: Pistol Training or Musket Training
+   replaces it and gains a rank at levels 5, 9, 13 and 17." The file change is confined to that sentence.
+   `gun-training.presentation-states-the-policy` now extracts that sentence and requires it exactly; finding "5, 9, 13
+   and 17" elsewhere in the description no longer satisfies it. The `GunTrainingBlueprints.cs` pin in
+   `scripts/Test-IconPolishRound2Assets.ps1` moves to the corrected bytes
+   (`cd1d5cb477ae63c5357a1f61bb6ee9718e4b5cc338cf2d29c01a6a8e66053f0e`).
+2. **The level-17 statement.** This record said level 17 carries the class's other level-17 features and that the
+   run showed them. The class progression's named feature at that level is Gun Training, and the run did not examine
+   other features. The statement now reads: "The exhausted Gun Training opportunity grants no additional training
+   fact or bonus, and normal level advancement completes."
+
+The corrected sentence has source and domain-test verification only. Candidate `0c0f4f7b7708`, its package
+`39a759e6cb53…`, its DLL `16abc5e7317d…` and session `20261117T033517Z` keep their recorded results, which belong to
+the earlier wording. No package was built, the complete suite was not rerun and nothing was launched for this pass.
+The level-up observer is unchanged; its presentation assertion checks for "Pistol Training", "Musket Training" and
+"5, 9, 13 and 17" in the selection description, which the corrected text also satisfies.
+
+| Check | Result | Time |
+|---|---|---|
+| `scripts/Invoke-KmgGate.ps1 -Filter 'gun-training;firearm-feat-icons;mysterious-stranger;pistolero;musket-master'` | production compilation passed (14.9 s); 22 of 22 focused tests | 17 s |
+| The tightened test against the reviewed head's four description sources | fails: "The ranked replacements must state their own 5/9/13/17 schedule"; passes with the corrected `GunTrainingBlueprints.cs` | under 1 s |
+| `scripts/Test-IconPolishRound2Assets.ps1` | passed: 29 protected files | 1 s |
+| `python -B tools/validate_icon_catalog.py --root .` | passed | 4 s |

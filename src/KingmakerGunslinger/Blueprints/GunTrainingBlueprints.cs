@@ -121,7 +121,7 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.GunTraining.Selection.Name",
                     "Gun Training"),
                 LocalizationService.Create("KMG.GunTraining.Selection.Description",
-                    "Select one supported firearm type: Pistol, Musket or Blunderbuss. You add your Dexterity modifier to damage when firing that type, and its Broken-state misfire increase is reduced from 4 to 2. Each type can be trained only once. A Gunslinger gets this choice at levels 5, 9, 13 and 17; once all three types are trained, a remaining opportunity grants nothing more: no further type and no additional bonus. A Mysterious Stranger gets it at levels 9, 13 and 17 instead. A Pistolero or Musket Master never gets it: Pistol Training or Musket Training replaces it and gains a rank at each of those levels."),
+                    "Select one supported firearm type: Pistol, Musket or Blunderbuss. You add your Dexterity modifier to damage when firing that type, and its Broken-state misfire increase is reduced from 4 to 2. Each type can be trained only once. A Gunslinger gets this choice at levels 5, 9, 13 and 17; once all three types are trained, a remaining opportunity grants nothing more: no further type and no additional bonus. A Mysterious Stranger gets it at levels 9, 13 and 17 instead. A Pistolero or Musket Master never gets it: Pistol Training or Musket Training replaces it and gains a rank at levels 5, 9, 13 and 17."),
                 null);
             return selection;
         }
