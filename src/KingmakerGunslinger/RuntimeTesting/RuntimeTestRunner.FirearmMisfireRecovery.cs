@@ -112,7 +112,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             FirearmInputCheck(prefix + "recovery-commits-and-releases-only", f.State.Condition == FirearmCondition.Normal &&
                 (int)row["epoch"] == record.Epoch && (long)row["released"] == 1 && !(bool)row["suppressed"] &&
-                !(bool)row["requiresOrder"] && row["currentOrder"].Type == JTokenType.Null && (long)row["submissionDelta"] == 0 &&
+                !(bool)row["requiresOrder"] && BrokenSequenceSuppressionRuntime.Orders.Current(f.Actor) == null &&
+                (long)row["submissionDelta"] == 0 &&
                 (int)row["shotDelta"] == 0 && (int)row["powderDelta"] == 0 && (int)row["ballDelta"] == 0 &&
                 !(bool)row["preBreakOrderCurrent"], row.ToString(Newtonsoft.Json.Formatting.None));
             return row;
