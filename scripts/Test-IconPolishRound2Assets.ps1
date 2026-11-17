@@ -133,7 +133,8 @@ $protected = [ordered]@{
     # NativeFirearmFeatIntegration's explicitly authorized presentation delta is
     # checked against the original whole-file hash by validate_icon_catalog.py.
     # The canonical gate rejects every change outside that exact constructor site.
-    'src/KingmakerGunslinger/Blueprints/GunTrainingBlueprints.cs' = '46af6c6e66e53edbcdf0d54695e5c2f4d64d65158681626debec8f62f078ec03'
+    # DEF-04 (2026-11-16) changed only the Gun Training selection description text.
+    'src/KingmakerGunslinger/Blueprints/GunTrainingBlueprints.cs' = 'ba0c28812ebc2b9b0be741ef526fa242ec77570cd007bff5b70073d0080963ee'
     'src/KingmakerGunslinger/Firearms/ProductionFirearmCatalog.cs' = '75a8352c85c2e4fe5369ea02c414df9adc8a04f33c075f9176bd2f1138ad18dd'
     'src/KingmakerGunslinger/CraftMagicItemsCompatibility/CraftMagicItemsCompatibilityPolicy.cs' = '6236d4392435b397bf7312d58c1633bc9ab84a368ededc47abf30fd9e3b57ea3'
 }

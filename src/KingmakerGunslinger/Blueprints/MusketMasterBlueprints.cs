@@ -171,7 +171,7 @@ namespace KingmakerGunslinger.Blueprints
                 "KMG.MusketMaster.Name", "Musket Master");
             archetype.LocalizedDescription = LocalizationService.Create(
                 "KMG.MusketMaster.Description",
-                "A two-handed firearm specialist who masters long arms and rapid loading.");
+                "A two-handed firearm specialist who masters long arms and rapid loading. Musket Training replaces Gun Training at levels 5, 9, 13 and 17 and gains a rank each time.");
             archetype.OverrideAttributeRecommendations = true;
             archetype.RecommendedAttributes = new[] { StatType.Dexterity,
                 StatType.Wisdom };

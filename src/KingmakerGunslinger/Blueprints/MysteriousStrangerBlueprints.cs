@@ -109,7 +109,7 @@ namespace KingmakerGunslinger.Blueprints
         {
             var a=ScriptableObject.CreateInstance<BlueprintArchetype>(); a.name="KMG_MysteriousStranger_Archetype";
             a.LocalizedName=LocalizationService.Create("KMG.MysteriousStranger.Name","Mysterious Stranger");
-            a.LocalizedDescription=LocalizationService.Create("KMG.MysteriousStranger.Description","A force-of-personality gunslinger who relies on Charisma, luck, and an unwillingness to give up.");
+            a.LocalizedDescription=LocalizationService.Create("KMG.MysteriousStranger.Description","A force-of-personality gunslinger who relies on Charisma, luck, and an unwillingness to give up. Gun Training comes at levels 9, 13 and 17 instead of 5, 9, 13 and 17, so each of the three choices trains a firearm type.");
             a.OverrideAttributeRecommendations=true;a.RecommendedAttributes=new[]{StatType.Dexterity,StatType.Charisma};a.NotRecommendedAttributes=Array.Empty<StatType>();
             typeof(BlueprintArchetype).GetField("m_ParentClass",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(a,cls);
             a.RemoveFeatures=new[]{Entry(1,baseGrit,quickClear),Entry(2,nimble[0]),Entry(5,training),Entry(6,nimble[1]),Entry(10,nimble[2]),Entry(11,bleeding),Entry(14,nimble[3]),Entry(18,nimble[4])};
