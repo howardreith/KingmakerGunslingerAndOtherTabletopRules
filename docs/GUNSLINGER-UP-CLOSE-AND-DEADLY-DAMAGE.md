@@ -1,7 +1,7 @@
 # Up Close and Deadly: damage, grit and consumption observed apart (REP-02 / S4 T2)
 
-Status: **development change on a review branch, awaiting review of the corrections asked for by the review of
-`3d6b4b0c19`. Not merged, not released.** Branch `codex/rep02-pistolero-damage-consumption`, stacked on draft PR #178
+Status: **development change on a review branch, awaiting final review of the retention and unarmed-state
+corrections asked for by the review of `b4ceae0eae`. Not merged, not released.** Branch `codex/rep02-pistolero-damage-consumption`, stacked on draft PR #178
 at its accepted head `2fe1b8af2c`. Nothing here is a release qualification. Gameplay is unchanged: the repair is to the
 diagnostic. The review accepted the explanation of the reproduced split; see "Review corrections" for the four
 diagnostic corrections and their results.
@@ -242,6 +242,69 @@ evaluated on observed inputs, not the runtime's own record of its decision.
 | Session `20261117T163622Z` | PASS, 4 of 4 | 343 s |
 
 About 13 minutes in total for this pass.
+
+## Second review correction (review of `b4ceae0eae`)
+
+The review accepted the split's attribution, the exact-half verdict, the positive consumption checks, the admitted
+cancellation, the conservative recovery attribution and candidate `e63f6e43b214`'s hit, critical, miss and
+cancellation results. It found one false-pass path in the non-consumption branches, corrected in `d72746b81c`:
+
+- **Retention needed positive evidence.** A retained (armed, not consumed) case passed whenever no removal event was
+  seen, even with no delivery bounds, deadline or presence read. It now needs the exact instance identified before the
+  delivery, delivery start and end both observed, the deadline observed, no removal of that instance inside the
+  delivery, and the instance on the actor at an exact-reference read taken immediately after the delivery
+  (`armedInstance.presentAtDeliveryEnd`, before any fixture cleanup). The final read after cleanup stays supplementary.
+- **The unarmed state is read, not inferred.** The probe assigned an instance only when it armed, so the following
+  unarmed shot reported "not identified" by construction. It now reads the actor's armed state before every shot
+  (`armedInstance.presentBeforeShot`, and the count of armed instances); an expected-unarmed case passes only on an
+  explicit `presentBeforeShot == false`, and an armed case only when exactly one instance is present and it is the one
+  the ability created.
+
+Controls through the same evaluator (39 of 39 focused tests); run against `b4ceae0eae`'s evaluator, the two new
+groups fail, at "identified only" retention and at an instance present before an unarmed shot:
+
+| Control | Result |
+|---|---|
+| Identified, bounded, deadline, no removal inside, present at delivery end | retention passes |
+| Identified only; any one of start, end, deadline, end presence or identity missing | retention fails |
+| No removal event, but the instance absent at delivery end | retention fails |
+| Removed before the delivery, then absent | retention fails |
+| Removed inside the delivery | retention fails |
+| Removed after the delivery ended (its later expiry) | retention still passes |
+| Positive consumption (removal after the roll, before the deed's damage, before the deadline) | still passes |
+| Actual pre-shot absence | unarmed state passes |
+| An instance present before an "unarmed" shot | state fails; no packet and no charge still pass apart |
+| `identified=false` alone; an unreadable pre-shot read | state fails |
+
+Candidate `d72746b81c5d` (package `0a43cd8f3e3f7460539e2ff1241047541fd895ce53490befc77f6f657b85cb85`, DLL
+`99a19f16210d8a74097632885b97d90d367626fe88ef5dd151ba881199c12398`), harness
+`593a26d438f8cd68e5c0e9c6b5b7a387c583fb0e0c723a81af82857da5db1077`, session
+`20261117T183252Z-owner-0.33.0-pistolero-up-close-damage`: PASS, 4 of 4 fresh launches, identical verdicts in each pair;
+44 of 44 component assertions per launch and no probe findings. The session reports 95 owner saves unchanged, the
+owner installation unchanged and the registry restored.
+
+| Observation | Both processes |
+|---|---|
+| Component misfire | exact instance present before and at delivery end; no removal inside the delivery (sequence 1 to 2); deadline 6.0 s; no packet; grit 5 → 5 |
+| Component scatter | the same |
+| Real-route following unarmed shot | no armed instance on the actor before the order (count 0); no packet; grit 1 → 1 |
+| Real-route hit, critical, miss | exactly one armed instance before each shot, the ability's own; removed after the roll and before the deed's damage event, absent at it, 5.2 to 5.5 s before the deadline |
+| Exact half | real-route miss: recorded roll 5, packet 2; component miss: recorded roll 2, packet 1 |
+| Grit | hit 5 → 4, critical 3 → 2, miss 2 → 1; no recovery applied anywhere |
+| Cancellation | admitted, not started, not acted, `Interrupt`; no roll; retained; expired after 6.01 s; no charge |
+
+The earlier candidates' results are unchanged and were judged by the evaluators of their own commits. The DEF-01 row
+of the status register no longer calls the assertion unattributed.
+
+| Check | Result | Time |
+|---|---|---|
+| Focused gate | production compilation passed (15 s); 39 of 39 | 18 s |
+| The new controls against `b4ceae0eae`'s evaluator | 2 of 11 `up-close-verdict` tests fail, as intended; corrected evaluator restored and the gate rerun, 39 of 39 | 18 s each |
+| Harness build | `593a26d438f8…` | under 10 s |
+| `Build-Local.ps1` | candidate `d72746b81c5d`; development validation passed | 441 s |
+| Session `20261117T183252Z` | PASS, 4 of 4 | 339 s |
+
+About 14 minutes for this pass.
 
 ## Limits
 
