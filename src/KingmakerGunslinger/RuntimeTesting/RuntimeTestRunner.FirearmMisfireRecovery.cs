@@ -197,8 +197,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             var reload = firstAi as UnitUseAbility;
             lane["firstAiReloadActionCost"] = reload == null ? JValue.CreateNull() : (JToken)f.PeakActionCost(reload);
             lane["stateAfterShot"] = f.State.ToString();
-            FirearmInputCheck(prefix + "fresh-ai-decision-fires", firstAi != null && recoveryFrame < (int)gained
-                    .First(row => (string)row["command"] == Id(firstAi))["frame"] &&
+            // Every gained command is new since the snapshot taken after the recovery committed; the game clock
+            // (advanced by each native pump before the AI brain ticks) orders it after the recovery as well.
+            double recoveryGameSeconds = (double)lane["recovery"]["gameSeconds"];
+            lane["firstAiAfterRecoveryGameSeconds"] = firstAi == null ? JValue.CreateNull() : (JToken)((double)gained
+                .First(row => (string)row["command"] == Id(firstAi))["gameSeconds"] - recoveryGameSeconds);
+            FirearmInputCheck(prefix + "fresh-ai-decision-fires", firstAi != null &&
+                (double)lane["firstAiAfterRecoveryGameSeconds"] > 0 &&
                 !ReferenceEquals(firstAi, record.Command) && !ReferenceEquals(firstAi, record.StaleAttack) &&
                 shotCommand != null && !ReferenceEquals(shotCommand, record.Command) &&
                 (shotBinding == null || (shotBinding.Order == null && shotBinding.Epoch == record.Epoch)) &&
@@ -429,6 +434,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     row["reloadOnly"].ToString(Newtonsoft.Json.Formatting.None));
 
                 _firearmInputStage = prefix + "other-firearm";
+                f.Turns.Execute(() => { f.Actor.Commands.InterruptAll(true); f.Actor.Commands.RemoveFinishedAndUpdateQueue(); });
                 var original = f.Weapon;
                 var other = new ItemEntityWeapon(original.Blueprint);
                 FirearmRuntimeState.Service.Set(other, new FirearmState(FirearmState.CurrentSchemaVersion, 0, null, FirearmCondition.Broken));
@@ -451,6 +457,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Game.Instance.Player.Inventory.Remove(stack, stack.Count);
 
                 _firearmInputStage = prefix + "positive-control";
+                f.Turns.Execute(() => { f.Actor.Commands.InterruptAll(true); f.Actor.Commands.RemoveFinishedAndUpdateQueue(); });
                 f.Turns.Execute(() => f.Actor.CombatState.Cooldown.StandardAction = 0f);
                 var clear = f.ClickAbility(gunslinger.QuickClear.StandardAbility);
                 for (int tick = 0; tick < 240 && !clear.IsFinished; tick++) { f.Pump(false); yield return null; }
