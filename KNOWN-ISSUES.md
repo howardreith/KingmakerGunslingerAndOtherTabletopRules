@@ -45,7 +45,7 @@
   further type and no additional bonus; the level completes normally. This is the owner's selected policy (DEF-04),
   not a defect. A Mysterious Stranger trains its three at 9, 13 and 17; Pistolero and Musket Master use ranked Pistol
   or Musket Training instead. Up to and including the published v0.0.191 the descriptions did not say this; on
-  branch `codex/def04-gun-training-progression` (awaiting review; not merged, not released) the Gun Training,
+  branch `codex/def04-gun-training-progression` (accepted in review at `2fe1b8af2c`; not merged, not released) the Gun Training,
   Mysterious Stranger, Pistolero and Musket Master descriptions state it. Record: `docs/GUNSLINGER-GUN-TRAINING-PROGRESSION.md`.
 - With Steady Aim and Deadeye both armed inside the lengthened first increment, the shot uses up Deadeye's state
   (and the grit Deadeye cost to arm) while Deadeye authorizes nothing, because the range already gives touch armor
