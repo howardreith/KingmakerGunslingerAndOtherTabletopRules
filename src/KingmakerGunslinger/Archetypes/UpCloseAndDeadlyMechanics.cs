@@ -113,8 +113,16 @@ namespace KingmakerGunslinger.Archetypes
                     if (decision.Modifier < 1f)
                     {
                         int fullRoll = 0;
+                        var drawn = new int[decision.Dice];
                         for (int index = 0; index < decision.Dice; index++)
-                            fullRoll += RulebookEvent.Dice.D6;
+                        {
+                            drawn[index] = RulebookEvent.Dice.D6;
+                            fullRoll += drawn[index];
+                        }
+                        // Diagnostic only: the dice already drawn, for an
+                        // observer to check the exact half (REP-02).
+                        UpCloseAndDeadlyDeliveryRecords.RecordMissRoll(evt,
+                            Owner.Unit == null ? null : Owner.Unit.UniqueId, drawn);
                         packet = new DirectDamage(
                             new DiceFormula(0, DiceType.D6), fullRoll / 2);
                     }

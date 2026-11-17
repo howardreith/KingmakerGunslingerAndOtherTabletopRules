@@ -34500,7 +34500,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     " deed=" + (packets == null ? "not observed" : string.Join("+", packets.Select(packet =>
                         (string)packet["kind"] + ":" + packet["final"]).ToArray())) +
                     " grit=" + row["gritBefore"] + "->" + row["gritAfter"] + " (restored " + row["gritRestored"] + ")" +
-                    " removed=" + row["armedInstanceRemoved"];
+                    " removedDuringDelivery=" + (row["armedInstance"] == null ? "not observed" :
+                        "seq " + row["armedInstance"]["removalSequence"] + " in (" + row["armedInstance"]["deliveryStartSequence"] +
+                        "," + row["armedInstance"]["deliveryEndSequence"] + ")") +
+                    " missRoll=" + (row["missRoll"] == null || row["missRoll"].Type == JTokenType.Null ? "none" :
+                        row["missRoll"].ToString(Newtonsoft.Json.Formatting.None));
             }).ToArray()) + " | legacy=" + evidence["originalSequence"]["legacyAggregate"].ToString(Newtonsoft.Json.Formatting.None);
             assertions.Insert(0, Assertion("up-close-original-sequence-measured",
                 "every stage of the 2026-11-15 order measured (outcome, deed damage events, grit with recovery, exact armed instance); " +

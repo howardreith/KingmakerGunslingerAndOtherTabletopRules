@@ -34,20 +34,33 @@ namespace KingmakerGunslinger.RuntimeTesting
     /// </summary>
     internal sealed partial class RuntimeTestRunner
     {
-        /// <summary>Every RuleDealDamage this attacker deals while it is subscribed, sorted into the deed's own packet and the rest.</summary>
-        private sealed class UpCloseDamageCapture : IGlobalRulebookHandler<RuleDealDamage>, IDisposable
+        /// <summary>
+        /// Every RuleDealDamage this attacker deals while it is subscribed,
+        /// sorted into the deed's own packet and the rest, and the removal of
+        /// the exact armed instance, each numbered in the order it happened.
+        /// </summary>
+        private sealed class UpCloseDamageCapture : IGlobalRulebookHandler<RuleDealDamage>, IUnitBuffHandler, IDisposable
         {
             private readonly UnitEntityData _attacker;
+            private readonly Buff _armed;
             private bool _subscribed;
+            private int _sequence;
             internal readonly JArray Deed = new JArray();
             internal readonly JArray Other = new JArray();
+            internal int? RemovalSequence;
+            internal double? RemovalGameSeconds;
+            internal int? DeedDamageSequence;
+            internal int OtherInstanceRemovals;
 
-            internal UpCloseDamageCapture(UnitEntityData attacker)
+            internal UpCloseDamageCapture(UnitEntityData attacker, Buff armed)
             {
                 _attacker = attacker;
+                _armed = armed;
                 EventBus.Subscribe(this);
                 _subscribed = true;
             }
+
+            internal int Mark() { return ++_sequence; }
 
             public void OnEventAboutToTrigger(RuleDealDamage evt) { }
 
@@ -55,7 +68,31 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (evt == null || !ReferenceEquals(evt.Initiator, _attacker)) return;
                 JObject row = DescribeDamageEvent(evt);
-                if ((bool)row["deedShape"]) Deed.Add(row); else Other.Add(row);
+                int sequence = Mark();
+                row["sequence"] = sequence;
+                row["armedInstanceOnUnitAtThisEvent"] = _armed != null &&
+                    _attacker.Descriptor.Buffs.RawFacts.Contains(_armed);
+                if ((bool)row["deedShape"])
+                {
+                    Deed.Add(row);
+                    if (!DeedDamageSequence.HasValue) DeedDamageSequence = sequence;
+                }
+                else Other.Add(row);
+            }
+
+            public void HandleBuffDidAdded(Buff buff) { }
+
+            public void HandleBuffDidRemoved(Buff buff)
+            {
+                if (buff == null || _armed == null) return;
+                if (ReferenceEquals(buff, _armed))
+                {
+                    RemovalSequence = Mark();
+                    RemovalGameSeconds = Kingmaker.Game.Instance.TimeController.GameTime.TotalSeconds;
+                }
+                else if (ReferenceEquals(buff.Blueprint, _armed.Blueprint) &&
+                    buff.Owner != null && ReferenceEquals(buff.Owner.Unit, _attacker))
+                    OtherInstanceRemovals++;
             }
 
             public void Dispose()
@@ -141,16 +178,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
         }
 
-        /// <summary>Grit the recovery clauses actually restored since the mark; null when it cannot be told apart.</summary>
-        private static int? RestoredSince(RecoveryMark mark)
+        /// <summary>
+        /// Recovery since the mark. No recovery applied anywhere is a valid
+        /// zero for this actor. Any applied recovery is unknown: the recovery
+        /// diagnostics are global and do not name the unit they restored, so
+        /// the amount cannot be assigned to this actor.
+        /// </summary>
+        private static void RestoredSince(RecoveryMark mark, JObject row)
         {
             int applied = FirearmGritRecoveryRuntimeDiagnostics.CriticalApplied +
                 FirearmGritRecoveryRuntimeDiagnostics.KillingBlowApplied - mark.Applied;
-            if (applied == 0) return 0;
-            if (applied == 1)
-                return FirearmGritRecoveryRuntimeDiagnostics.LastAfter -
-                    FirearmGritRecoveryRuntimeDiagnostics.LastBefore;
-            return null;
+            row["recoveryAppliedAnywhere"] = applied;
+            if (applied == 0)
+            {
+                row["gritRestored"] = 0;
+                row["gritRestoredAttribution"] = UpCloseAndDeadlyCaseVerdict.NoRecoveryApplied;
+            }
+            else
+            {
+                row["gritRestored"] = JValue.CreateNull();
+                row["gritRestoredAttribution"] = "unattributed";
+            }
         }
 
         /// <summary>
@@ -159,29 +207,47 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// separated, hit points, and the exact armed instance.
         /// </summary>
         private static JObject ObserveUpCloseDelivery(UnitEntityData attacker, UnitEntityData target,
-            BlueprintAbilityResource grit, Buff marker, RuleAttackRoll roll, string criticalSource,
+            BlueprintAbilityResource grit, Buff marker, RuleAttackWithWeapon attack, string criticalSource,
             Action deliver)
         {
-            var row = ReadUpCloseRoll(roll);
+            var row = ReadUpCloseRoll(attack.AttackRoll);
             row["criticalSource"] = criticalSource;
-            row["armedInstanceOnUnitBefore"] = marker != null &&
-                attacker.Descriptor.Buffs.RawFacts.Contains(marker);
+            bool identified = marker != null && attacker.Descriptor.Buffs.RawFacts.Contains(marker);
+            row["armedInstanceOnUnitBefore"] = identified;
             row["gritBefore"] = attacker.Descriptor.Resources.GetResourceAmount(grit);
             row["targetHitPointsBefore"] = target.HPLeft;
+            double now = Kingmaker.Game.Instance.TimeController.GameTime.TotalSeconds;
+            JToken deadline = identified && !marker.IsPermanent
+                ? (JToken)(now + marker.TimeLeft.TotalSeconds) : JValue.CreateNull();
             RecoveryMark mark = MarkRecovery();
-            using (var capture = new UpCloseDamageCapture(attacker))
+            using (var capture = new UpCloseDamageCapture(attacker, marker))
             {
+                int start = capture.Mark();
                 deliver();
+                int end = capture.Mark();
                 row["deedPackets"] = capture.Deed;
                 row["otherDamage"] = capture.Other;
+                row["armedInstance"] = new JObject
+                {
+                    ["identified"] = identified,
+                    ["deliveryStartSequence"] = start,
+                    ["deliveryEndSequence"] = end,
+                    ["deedDamageSequence"] = capture.DeedDamageSequence.HasValue ? (JToken)capture.DeedDamageSequence.Value : JValue.CreateNull(),
+                    ["removalSequence"] = capture.RemovalSequence.HasValue ? (JToken)capture.RemovalSequence.Value : JValue.CreateNull(),
+                    ["removalGameSeconds"] = capture.RemovalGameSeconds.HasValue ? (JToken)capture.RemovalGameSeconds.Value : JValue.CreateNull(),
+                    ["expiryDeadlineGameSeconds"] = deadline,
+                    ["otherInstanceRemovals"] = capture.OtherInstanceRemovals
+                };
             }
-            int? restored = RestoredSince(mark);
-            row["gritRestored"] = restored.HasValue ? (JToken)restored.Value : JValue.CreateNull();
+            int[] drawn = Archetypes.UpCloseAndDeadlyDeliveryRecords.MissRollFor(attack, attacker.UniqueId);
+            row["missRoll"] = drawn == null ? JValue.CreateNull() : (JToken)new JObject { ["dice"] = new JArray(drawn) };
+            RestoredSince(mark, row);
             row["recoveryIgnored"] = FirearmGritRecoveryRuntimeDiagnostics.Ignored - mark.Ignored;
             row["gritAfter"] = attacker.Descriptor.Resources.GetResourceAmount(grit);
             row["targetHitPointsAfter"] = target.HPLeft;
             row["targetDead"] = target.Descriptor.State.IsDead;
-            row["armedInstanceRemoved"] = marker == null ? JValue.CreateNull() :
+            // The final read is recorded but never decides consumption.
+            row["armedInstanceAbsentAtFinalRead"] = marker == null ? JValue.CreateNull() :
                 (JToken)!attacker.Descriptor.Buffs.RawFacts.Contains(marker);
             return row;
         }
@@ -261,7 +327,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             var stages = new JObject();
             Func<Buff, RuleAttackWithWeapon, string, JObject> deliver = (marker, attack, source) =>
-                ObserveUpCloseDelivery(attacker, target, grit, marker, attack.AttackRoll, source, () =>
+                ObserveUpCloseDelivery(attacker, target, grit, marker, attack, source, () =>
                     marker.CallComponents<IInitiatorRulebookHandler<RuleAttackWithWeapon>>(
                         handler => handler.OnEventDidTrigger(attack)));
 
@@ -305,7 +371,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (JProperty stage in stages.Properties())
             {
                 var row = (JObject)stage.Value;
-                foreach (string key in new[] { "hit", "deedPackets", "gritBefore", "gritAfter", "gritRestored", "armedInstanceRemoved" })
+                foreach (string key in new[] { "hit", "deedPackets", "gritBefore", "gritAfter", "gritRestored", "armedInstance" })
                     if (row[key] == null || row[key].Type == JTokenType.Null)
                         unreadable.Add(stage.Name + "." + key);
             }
@@ -364,7 +430,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool keepGrit = prepare == null || prepare(target, attack);
                     if (!keepGrit)
                         attacker.Descriptor.Resources.Spend(grit, attacker.Descriptor.Resources.GetResourceAmount(grit));
-                    JObject row = ObserveUpCloseDelivery(attacker, target, grit, marker, attack.AttackRoll,
+                    JObject row = ObserveUpCloseDelivery(attacker, target, grit, marker, attack,
                         critical ? "engine" : "none", () =>
                         {
                             marker.CallComponents<IInitiatorRulebookHandler<RuleAttackWithWeapon>>(

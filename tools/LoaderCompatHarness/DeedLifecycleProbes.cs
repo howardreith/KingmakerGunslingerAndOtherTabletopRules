@@ -119,6 +119,13 @@ namespace KmgLoaderCompatHarness
             public readonly HashSet<UnitEntityData> Shooters = new HashSet<UnitEntityData>();
             public readonly List<KeyValuePair<RuleAttackRoll, JObject>> Shots = new List<KeyValuePair<RuleAttackRoll, JObject>>();
             public BlueprintBuff ArmedState;
+            /// <summary>Order of everything recorded below: rolls, damage events and the watched instance's removal.</summary>
+            public int Sequence;
+            /// <summary>The exact armed instance under observation, and what became of it.</summary>
+            public Buff WatchedInstance;
+            public int? WatchedRemovalSequence;
+            public double? WatchedRemovalGameSeconds;
+            public int OtherInstanceRemovals;
             /// <summary>A native generator seed for the next roll by a shooter, set as that roll starts so nothing else draws from it first.</summary>
             public int? NextSeed;
             private bool armedAtStart;
@@ -156,7 +163,11 @@ namespace KmgLoaderCompatHarness
                     ["completedWithoutMisfire"] = (bool)Product(Misfires).GetMethod("WasCompletedNonMisfire", Any).Invoke(null, new object[] { evt }),
                     ["autoHit"] = evt.AutoHit, ["criticalRoll"] = evt.IsCriticalRoll, ["criticalConfirmed"] = evt.IsCriticalConfirmed,
                     ["precisionImmune"] = evt.ImmuneToSneakAttack, ["initiatorInCombat"] = evt.Initiator.IsInCombat, ["targetInCombat"] = target.IsInCombat,
-                    ["armedWhenRollStarted"] = armedAtStart, ["armedWhenRollEnded"] = Armed(evt.Initiator), ["gameSeconds"] = Now()
+                    ["armedWhenRollStarted"] = armedAtStart, ["armedWhenRollEnded"] = Armed(evt.Initiator), ["gameSeconds"] = Now(),
+                    ["sequence"] = ++Sequence,
+                    ["initiatorCharacterLevel"] = evt.Initiator.Descriptor.Progression.CharacterLevel,
+                    ["targetCharacterLevel"] = target.Descriptor.Progression.CharacterLevel,
+                    ["targetHelpless"] = target.Descriptor.State.IsHelpless
                 };
                 Shots.Add(new KeyValuePair<RuleAttackRoll, JObject>(evt, row));
             }
@@ -172,7 +183,19 @@ namespace KmgLoaderCompatHarness
             }
 
             public void HandleBuffDidAdded(Buff buff) => Buff("added", buff);
-            public void HandleBuffDidRemoved(Buff buff) => Buff("removed", buff);
+            public void HandleBuffDidRemoved(Buff buff)
+            {
+                Buff("removed", buff);
+                if (buff == null || WatchedInstance == null) return;
+                if (ReferenceEquals(buff, WatchedInstance))
+                {
+                    WatchedRemovalSequence = ++Sequence;
+                    WatchedRemovalGameSeconds = Math.Round(Game.Instance.TimeController.GameTime.TotalSeconds, 3);
+                }
+                else if (ReferenceEquals(buff.Blueprint, WatchedInstance.Blueprint) && buff.Owner != null &&
+                    buff.Owner.Unit != null && Shooters.Contains(buff.Owner.Unit))
+                    OtherInstanceRemovals++;
+            }
             public void OnEventAboutToTrigger(RuleAttackRoll evt)
             {
                 if (evt.Initiator == null || !Shooters.Contains(evt.Initiator)) return;
@@ -205,7 +228,10 @@ namespace KmgLoaderCompatHarness
                     ["amount"] = evt.Damage, ["gameSeconds"] = Now(),
                     ["fromShooter"] = evt.Initiator != null && Shooters.Contains(evt.Initiator),
                     ["hasAttackRoll"] = evt.AttackRoll != null, ["precisionDisabled"] = evt.DisablePrecisionDamage,
-                    ["applied"] = evt.Damage, ["beforeDifficulty"] = evt.DamageBeforeDifficulty, ["targetHitPointsLeft"] = evt.Target.HPLeft
+                    ["applied"] = evt.Damage, ["beforeDifficulty"] = evt.DamageBeforeDifficulty, ["targetHitPointsLeft"] = evt.Target.HPLeft,
+                    ["sequence"] = ++Sequence,
+                    ["watchedInstanceOnUnitAtThisEvent"] = WatchedInstance != null && evt.Initiator != null &&
+                        evt.Initiator.Descriptor.Buffs.RawFacts.Contains(WatchedInstance)
                 };
                 var values = evt.ResultDamage;
                 if (values != null && values.Count > 0)
@@ -1027,19 +1053,58 @@ namespace KmgLoaderCompatHarness
         private static int RecoveryApplied() => Convert.ToInt32(ProductStatic(RecoveryDiagnostics, "CriticalApplied"), CultureInfo.InvariantCulture) +
             Convert.ToInt32(ProductStatic(RecoveryDiagnostics, "KillingBlowApplied"), CultureInfo.InvariantCulture);
 
-        /// <summary>Grit the recovery clauses actually restored since the mark; null when two or more cannot be told apart.</summary>
-        private static JToken RestoredSince(int mark)
+        /// <summary>
+        /// Recovery since the mark. None applied anywhere is a valid zero. Any applied recovery is unknown for this
+        /// actor: the recovery diagnostics are global and do not name the unit they restored.
+        /// </summary>
+        private static void RestoredSince(int mark, JObject observation)
         {
             int applied = RecoveryApplied() - mark;
-            if (applied == 0) return 0;
-            if (applied != 1) return JValue.CreateNull();
-            return Convert.ToInt32(ProductStatic(RecoveryDiagnostics, "LastAfter"), CultureInfo.InvariantCulture) -
-                Convert.ToInt32(ProductStatic(RecoveryDiagnostics, "LastBefore"), CultureInfo.InvariantCulture);
+            observation["recoveryAppliedAnywhere"] = applied;
+            observation["gritRestored"] = applied == 0 ? (JToken)0 : JValue.CreateNull();
+            observation["gritRestoredAttribution"] = applied == 0 ? "none-applied" : "unattributed";
         }
 
-        private static JObject UpCloseExpectation(string outcome, string damage, int dice, int charge, bool consume)
+        /// <summary>
+        /// The product's recovery policy re-evaluated on the inputs read when the roll resolved: what the critical
+        /// clause would decide for this actor. A reading, not the runtime's own record.
+        /// </summary>
+        private static JObject CriticalRecoveryDecision(RuleAttackRoll roll, JObject row)
         {
-            return new JObject { ["outcome"] = outcome, ["damage"] = damage, ["dice"] = dice, ["charge"] = charge, ["consume"] = consume, ["completedNonMisfire"] = true };
+            var inputs = new JObject();
+            try
+            {
+                bool exact = (bool)Member(Product("KingmakerGunslinger.Diagnostics.FirearmMarkerLookup").GetMethod("ReadFromRuleEvent", Any,
+                    null, new[] { typeof(RuleAttackRoll) }, null).Invoke(null, new object[] { roll }), "IsExactFirearm");
+                bool qualifying = roll.IsCriticalConfirmed;
+                bool initiatorInCombat = (bool)row["initiatorInCombat"], targetInCombat = (bool)row["targetInCombat"],
+                    helpless = (bool)row["targetHelpless"];
+                int targetLevel = Math.Max(0, (int)row["targetCharacterLevel"]), level = (int)row["initiatorCharacterLevel"];
+                inputs["qualifyingOutcome"] = qualifying;
+                inputs["exactFirearm"] = exact;
+                inputs["initiatorInCombat"] = initiatorInCombat;
+                inputs["targetHelplessOrNotInCombat"] = helpless || !targetInCombat;
+                inputs["targetHitDice"] = targetLevel;
+                inputs["characterLevel"] = level;
+                Type kind = Product("KingmakerGunslinger.Grit.GritRecoveryEventKind");
+                Type requestType = Product("KingmakerGunslinger.Grit.GritRecoveryRequest");
+                object request = requestType.GetConstructors(Any).Single(constructor => constructor.GetParameters().Length == 8).Invoke(new object[]
+                    { Enum.Parse(kind, "ConfirmedCritical"), qualifying, exact, initiatorInCombat, true, helpless || !targetInCombat, targetLevel, level });
+                object service = Activator.CreateInstance(Product("KingmakerGunslinger.Grit.GritRecoveryService"), true);
+                object decision = service.GetType().GetMethod("Evaluate", Any).Invoke(service, new[] { request });
+                inputs["policyDecision"] = Member(decision, "Status").ToString();
+            }
+            catch (Exception exception)
+            {
+                inputs["policyDecision"] = "not readable: " + exception.GetType().Name + ": " + exception.Message;
+            }
+            return inputs;
+        }
+
+        private static JObject UpCloseExpectation(string outcome, string damage, int dice, int charge, bool consume, bool armed = true)
+        {
+            return new JObject { ["outcome"] = outcome, ["damage"] = damage, ["dice"] = dice, ["charge"] = charge, ["consume"] = consume,
+                ["armed"] = armed, ["completedNonMisfire"] = true };
         }
 
         /// <summary>
@@ -1065,6 +1130,13 @@ namespace KmgLoaderCompatHarness
             int current = Grit(actor);
             if (current > gritAtShot) actor.Descriptor.Resources.Spend(gritResource, current - gritAtShot);
             record["armedBeforeShot"] = OnUnit(actor, blueprint) != null;
+            bool identified = instance != null && actor.Descriptor.Buffs.RawFacts.Contains(instance);
+            double? deadline = identified && !instance.IsPermanent ? Math.Round(Now() + instance.TimeLeft.TotalSeconds, 3) : (double?)null;
+            observer.WatchedInstance = identified ? instance : null;
+            observer.WatchedRemovalSequence = null;
+            observer.WatchedRemovalGameSeconds = null;
+            observer.OtherInstanceRemovals = 0;
+            int shotsBefore = observer.Shots.Count;
             int damageBefore = observer.Damage.Count;
             int recoveryMark = RecoveryApplied();
             int ignoredMark = Convert.ToInt32(ProductStatic(RecoveryDiagnostics, "Ignored"), CultureInfo.InvariantCulture);
@@ -1082,6 +1154,26 @@ namespace KmgLoaderCompatHarness
                 ["criticalModifier"] = token["criticalModifier"], ["rolled"] = token["rolled"], ["final"] = token["final"], ["applied"] = token["applied"]
             }).ToArray());
             record["weaponDamage"] = new JArray(rows.Where(token => token["deedShape"] == null || !(bool)token["deedShape"]).ToArray());
+            RuleAttackRoll rollRule = observer.Shots.Count > shotsBefore ? observer.Shots[shotsBefore].Key : null;
+            JToken deedRow = rows.FirstOrDefault(token => token["deedShape"] != null && (bool)token["deedShape"]);
+            var armedInstance = new JObject
+            {
+                ["identified"] = identified,
+                ["deliveryStartSequence"] = roll == null ? null : roll["sequence"],
+                ["deedDamageSequence"] = deedRow == null ? null : deedRow["sequence"],
+                ["deliveryEndSequence"] = JValue.CreateNull(),
+                ["removalSequence"] = observer.WatchedRemovalSequence.HasValue ? (JToken)observer.WatchedRemovalSequence.Value : JValue.CreateNull(),
+                ["removalGameSeconds"] = observer.WatchedRemovalGameSeconds.HasValue ? (JToken)observer.WatchedRemovalGameSeconds.Value : JValue.CreateNull(),
+                ["expiryDeadlineGameSeconds"] = deadline.HasValue ? (JToken)deadline.Value : JValue.CreateNull(),
+                ["instanceOnUnitAtDeedDamage"] = deedRow == null ? null : deedRow["watchedInstanceOnUnitAtThisEvent"],
+                ["otherInstanceRemovals"] = observer.OtherInstanceRemovals,
+                ["absentAtFinalRead"] = identified ? (JToken)!actor.Descriptor.Buffs.RawFacts.Contains(instance) : JValue.CreateNull()
+            };
+            observer.WatchedInstance = null;
+            string missRollJson = rollRule == null || rollRule.RuleAttackWithWeapon == null ? null :
+                (string)Product("KingmakerGunslinger.Archetypes.UpCloseAndDeadlyDeliveryRecords").GetMethod("MissRollJson", Any)
+                    .Invoke(null, new object[] { rollRule.RuleAttackWithWeapon, actor.UniqueId });
+            if (rollRule != null && roll != null && rollRule.IsCriticalConfirmed) record["criticalRecoveryInputs"] = CriticalRecoveryDecision(rollRule, roll);
             var observation = new JObject
             {
                 ["hit"] = roll == null ? null : roll["hit"],
@@ -1090,13 +1182,15 @@ namespace KmgLoaderCompatHarness
                 ["completedNonMisfire"] = roll == null ? null : roll["completedWithoutMisfire"],
                 ["precisionImmune"] = roll == null ? null : roll["precisionImmune"],
                 ["deedPackets"] = deed,
-                ["gritBefore"] = gritBefore, ["gritRestored"] = RestoredSince(recoveryMark), ["gritAfter"] = Grit(actor),
+                ["missRoll"] = missRollJson == null ? JValue.CreateNull() : (JToken)JObject.Parse(missRollJson),
+                ["gritBefore"] = gritBefore, ["gritAfter"] = Grit(actor),
                 ["recoveryIgnored"] = Convert.ToInt32(ProductStatic(RecoveryDiagnostics, "Ignored"), CultureInfo.InvariantCulture) - ignoredMark,
-                ["armedInstanceRemoved"] = arm ? (instance == null ? JValue.CreateNull() : (JToken)!actor.Descriptor.Buffs.RawFacts.Contains(instance)) : false,
+                ["armedInstance"] = armedInstance,
                 ["attackRollsResolved"] = shot["attackRollsResolved"],
                 ["rollIsTheCommandsOwn"] = shot["rollIsTheCommandsOwn"],
                 ["targetHitPointsLeft"] = hostile.HPLeft, ["targetDead"] = hostile.Descriptor.State.IsDead
             };
+            RestoredSince(recoveryMark, observation);
             record["observation"] = observation;
             string json = (string)Product(UpCloseVerdict).GetMethod("EvaluateJson", Any).Invoke(null, new object[] { expectation.ToString(), observation.ToString() });
             JObject verdict = JObject.Parse(json);
@@ -1169,7 +1263,7 @@ namespace KmgLoaderCompatHarness
 
             // 4. A following unarmed shot: no packet and no charge.
             foreach (object wait in UpCloseShot("unarmedAfter", actor, hostile, pistol, ability, blueprint, false, 15, 5,
-                UpCloseExpectation("hit", "none", dice, 0, false), cases)) yield return wait;
+                UpCloseExpectation("hit", "none", dice, 0, false, false), cases)) yield return wait;
 
             // 5. Armed, an attack order cancelled before it can start, then the state left to expire.
             var cancelled = new JObject();
@@ -1202,16 +1296,16 @@ namespace KmgLoaderCompatHarness
             cancelled["gritBeforeOrder"] = gritBeforeOrder;
             cancelled["gritAfterCancel"] = Grit(actor);
             Expect(instance != null, "cancellation case: the state was not armed");
-            Expect((int)cancelled["attackRollsResolved"] == 0, "cancellation case: the cancelled order still resolved " + cancelled["attackRollsResolved"] + " attack rolls");
-            Expect((int)cancelled["deedPacketsFromShooterInWindow"] == 0, "cancellation case: a deed packet was dealt after the order was cancelled");
-            Expect((bool)cancelled["armedInstanceRetainedAfterCancel"], "cancellation case: the armed instance did not survive a cancelled order");
-            Expect(Grit(actor) == gritBeforeOrder, "cancellation case: grit went from " + gritBeforeOrder + " to " + Grit(actor) + " after a cancelled order");
             yield return Ended(blueprint, actor);
             double? lasted = Lasted(blueprint, actor, armedAt);
             cancelled["endedAfterGameSeconds"] = Seconds(lasted);
             cancelled["gritAfterExpiry"] = Grit(actor);
-            Expect(OneRound(lasted), "cancellation case: the retained state lasted " + Seconds(lasted) + " s, expected to expire after one round");
-            Expect(Grit(actor) == gritBeforeOrder, "cancellation case: expiry changed grit from " + gritBeforeOrder + " to " + Grit(actor));
+            string cancellationJson = (string)Product(UpCloseVerdict).GetMethod("EvaluateCancellationJson", Any).Invoke(null, new object[] { cancelled.ToString() });
+            JObject cancellationVerdict = JObject.Parse(cancellationJson);
+            cancelled["verdict"] = cancellationVerdict;
+            foreach (string part in new[] { "prerequisite", "noShot", "retention", "cost", "expiry" })
+                Expect((bool)cancellationVerdict[part]["pass"], "cancellation " + part + ": expected " + cancellationVerdict[part]["expected"] +
+                    ", observed " + cancellationVerdict[part]["observed"]);
         }
 
         // ---- Steady Aim: the range of the next two-handed shot ----
