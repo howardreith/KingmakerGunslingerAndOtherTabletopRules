@@ -197,9 +197,14 @@
   the published v0.0.191, Quick Clear, Repair Firearm and rest do not lift
   that stop: a companion's own AI does not fire that firearm again until the
   player gives it a new attack order (or the game is saved and reloaded),
-  and nothing in the game says so. Whether to keep this with a visible
-  notice or to let a successful recovery allow fresh AI decisions is an open
-  owner decision (POL-01, `docs/GUNSLINGER-MISFIRE-AI-RECOVERY-POLICY.md`).
+  and nothing in the game says so. On branch `codex/pol01-sprint4-policy`
+  (owner decision B; awaiting review; not merged, not released), a
+  successful Quick Clear, Repair Firearm or completed rest that brings the
+  exact firearm back to Normal lifts it, so the AI may decide new attacks
+  with that gun; the interrupted sequence stays cancelled and nothing is
+  ordered by the recovery. The next release notes must state that v0.0.128's
+  "Recovery alone grants no new order" is superseded. Record:
+  `docs/GUNSLINGER-MISFIRE-AI-RECOVERY-POLICY.md`.
   Native runtime
   qualification status is tracked in
   `docs/FIREARM-MAINTENANCE-ACCEPTANCE.md`; human visual/play acceptance
