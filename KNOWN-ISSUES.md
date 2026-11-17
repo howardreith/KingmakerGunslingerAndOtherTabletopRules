@@ -40,6 +40,13 @@
   their centres. Against a Medium target the shooter stops at about 43 ft by the second measure, so the shot is
   resolved against ordinary armor class unless Steady Aim is armed. Observed in a loaded game on both the branch and
   its predecessor. Not changed; left as a question for the firearm-rules work.
+- Gun Training is a three-type adaptation: Pistol, Musket and Blunderbuss, each trained once, over four opportunities
+  (5, 9, 13 and 17). A base Gunslinger's opportunity at 17 finds all three trained and grants nothing more: no
+  further type and no additional bonus; the level completes normally. This is the owner's selected policy (DEF-04),
+  not a defect. A Mysterious Stranger trains its three at 9, 13 and 17; Pistolero and Musket Master use ranked Pistol
+  or Musket Training instead. Up to and including the published v0.0.191 the descriptions did not say this; on
+  branch `codex/def04-gun-training-progression` (awaiting review; not merged, not released) the Gun Training,
+  Mysterious Stranger, Pistolero and Musket Master descriptions state it. Record: `docs/GUNSLINGER-GUN-TRAINING-PROGRESSION.md`.
 - With Steady Aim and Deadeye both armed inside the lengthened first increment, the shot uses up Deadeye's state
   (and the grit Deadeye cost to arm) while Deadeye authorizes nothing, because the range already gives touch armor
   class. Observed on branch `codex/new03-steady-aim-attack-roll`. This is Deadeye's existing pricing; not changed.
