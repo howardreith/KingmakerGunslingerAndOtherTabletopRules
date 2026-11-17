@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
@@ -153,6 +154,8 @@ namespace KmgLoaderCompatHarness
                     ["selected"] = evt.TargetAC == touch && touch != ordinary ? "touch" : evt.TargetAC == ordinary && touch != ordinary ? "ordinary" : "undetermined",
                     ["productArmorClassMessage"] = messages > messagesAtStart ? (string)ProductStatic(ArmorClassLog, "LastMessage") : null,
                     ["completedWithoutMisfire"] = (bool)Product(Misfires).GetMethod("WasCompletedNonMisfire", Any).Invoke(null, new object[] { evt }),
+                    ["autoHit"] = evt.AutoHit, ["criticalRoll"] = evt.IsCriticalRoll, ["criticalConfirmed"] = evt.IsCriticalConfirmed,
+                    ["precisionImmune"] = evt.ImmuneToSneakAttack, ["initiatorInCombat"] = evt.Initiator.IsInCombat, ["targetInCombat"] = target.IsInCombat,
                     ["armedWhenRollStarted"] = armedAtStart, ["armedWhenRollEnded"] = Armed(evt.Initiator), ["gameSeconds"] = Now()
                 };
                 Shots.Add(new KeyValuePair<RuleAttackRoll, JObject>(evt, row));
@@ -196,11 +199,32 @@ namespace KmgLoaderCompatHarness
             public void OnEventDidTrigger(RuleDealDamage evt)
             {
                 if (evt.Target == null || !Units.Contains(evt.Target)) return;
-                Damage.Add(new JObject
+                var row = new JObject
                 {
                     ["kind"] = "hitPoints", ["source"] = evt.Initiator == null ? null : evt.Initiator.Blueprint.name, ["target"] = evt.Target.Blueprint.name,
-                    ["amount"] = evt.Damage, ["gameSeconds"] = Now()
-                });
+                    ["amount"] = evt.Damage, ["gameSeconds"] = Now(),
+                    ["fromShooter"] = evt.Initiator != null && Shooters.Contains(evt.Initiator),
+                    ["hasAttackRoll"] = evt.AttackRoll != null, ["precisionDisabled"] = evt.DisablePrecisionDamage,
+                    ["applied"] = evt.Damage, ["beforeDifficulty"] = evt.DamageBeforeDifficulty, ["targetHitPointsLeft"] = evt.Target.HPLeft
+                };
+                var values = evt.ResultDamage;
+                if (values != null && values.Count > 0)
+                {
+                    BaseDamage source = values[0].Source;
+                    string packet = source is PhysicalDamage ? "physical" : source is DirectDamage ? "direct" : "other";
+                    row["packets"] = values.Count;
+                    row["packetKind"] = packet;
+                    row["diceRolls"] = source.Dice.Rolls;
+                    row["diceSides"] = (int)source.Dice.Dice;
+                    row["bonus"] = source.Bonus;
+                    row["criticalModifier"] = source.CriticalModifier.HasValue ? (JToken)source.CriticalModifier.Value : JValue.CreateNull();
+                    row["rolled"] = values[0].RolledValue;
+                    row["final"] = values[0].FinalValue;
+                    row["deedShape"] = evt.AttackRoll == null && evt.DisablePrecisionDamage && values.Count == 1 &&
+                        ((packet == "physical" && source.Dice.Dice == DiceType.D6) || (packet == "direct" && source.Dice.Rolls == 0));
+                }
+                else row["deedShape"] = false;
+                Damage.Add(row);
             }
 
             public void OnEventAboutToTrigger(RuleDealStatDamage evt) { }
@@ -270,6 +294,7 @@ namespace KmgLoaderCompatHarness
                     case "fallingPetal": routine = FallingPetal(); break;
                     case "mountainSunder": routine = MountainSunder(); break;
                     case "steadyAim": routine = SteadyAim(); break;
+                    case "upCloseDamage": routine = UpCloseDamage(); break;
                     default: return Verdict("unknown deed lifecycle script " + script);
                 }
             }
@@ -992,6 +1017,194 @@ namespace KmgLoaderCompatHarness
             Attack(actor, hostile, firearm, 15, true, shots);
             Record["shotAfterEnd"] = new JObject { ["gritBefore"] = gritBeforeLate, ["gritAfter"] = Grit(actor), ["armedOnUnit"] = OnUnit(actor, blueprint) != null };
             Expect(Grit(actor) == gritBeforeLate, "a shot after the state ended changed grit from " + gritBeforeLate + " to " + Grit(actor));
+        }
+
+        // ---- Up Close and Deadly: damage, cost and consumption through the real route (REP-02) ----
+
+        private const string RecoveryDiagnostics = "KingmakerGunslinger.Grit.FirearmGritRecoveryRuntimeDiagnostics";
+        private const string UpCloseVerdict = "KingmakerGunslinger.RuntimeTesting.UpCloseAndDeadlyCaseVerdict";
+
+        private static int RecoveryApplied() => Convert.ToInt32(ProductStatic(RecoveryDiagnostics, "CriticalApplied"), CultureInfo.InvariantCulture) +
+            Convert.ToInt32(ProductStatic(RecoveryDiagnostics, "KillingBlowApplied"), CultureInfo.InvariantCulture);
+
+        /// <summary>Grit the recovery clauses actually restored since the mark; null when two or more cannot be told apart.</summary>
+        private static JToken RestoredSince(int mark)
+        {
+            int applied = RecoveryApplied() - mark;
+            if (applied == 0) return 0;
+            if (applied != 1) return JValue.CreateNull();
+            return Convert.ToInt32(ProductStatic(RecoveryDiagnostics, "LastAfter"), CultureInfo.InvariantCulture) -
+                Convert.ToInt32(ProductStatic(RecoveryDiagnostics, "LastBefore"), CultureInfo.InvariantCulture);
+        }
+
+        private static JObject UpCloseExpectation(string outcome, string damage, int dice, int charge, bool consume)
+        {
+            return new JObject { ["outcome"] = outcome, ["damage"] = damage, ["dice"] = dice, ["charge"] = charge, ["consume"] = consume, ["completedNonMisfire"] = true };
+        }
+
+        /// <summary>
+        /// One shot through the attack command, armed or not, observed for the product's case evaluator: the command's
+        /// own roll, the deed's damage event apart from the weapon's, grit with recovery separated, hit points, and
+        /// the exact armed instance.
+        /// </summary>
+        private IEnumerable<object> UpCloseShot(string name, UnitEntityData actor, UnitEntityData hostile, ItemEntityWeapon pistol,
+            BlueprintAbility ability, BlueprintBuff blueprint, bool arm, int natural, int gritAtShot, JObject expectation, JObject cases)
+        {
+            var record = new JObject { ["armedThroughTheAbility"] = arm, ["requestedNatural"] = natural };
+            cases[name] = record;
+            Buff instance = null;
+            if (arm)
+            {
+                var arming = new JObject();
+                record["arming"] = arming;
+                foreach (object wait in Arm(actor, ability, blueprint, arming)) yield return wait;
+                instance = OnUnit(actor, blueprint);
+            }
+
+            BlueprintAbilityResource gritResource = Blueprint<BlueprintAbilityResource>("grit");
+            int current = Grit(actor);
+            if (current > gritAtShot) actor.Descriptor.Resources.Spend(gritResource, current - gritAtShot);
+            record["armedBeforeShot"] = OnUnit(actor, blueprint) != null;
+            int damageBefore = observer.Damage.Count;
+            int recoveryMark = RecoveryApplied();
+            int gritBefore = Grit(actor);
+            var shot = new JObject();
+            record["shot"] = shot;
+            foreach (object wait in Shoot(actor, hostile, pistol, natural, shot)) yield return wait;
+            // The weapon's own damage arrives with its projectile, after the roll; the deed's packet comes first.
+            yield return GameSeconds(1.0);
+            JObject roll = shot["roll"] as JObject;
+            JArray rows = new JArray(observer.Damage.Skip(damageBefore).Where(token => token["fromShooter"] != null && (bool)token["fromShooter"]).ToArray());
+            JArray deed = new JArray(rows.Where(token => token["deedShape"] != null && (bool)token["deedShape"]).Select(token => new JObject
+            {
+                ["kind"] = token["packetKind"], ["diceRolls"] = token["diceRolls"], ["diceSides"] = token["diceSides"], ["bonus"] = token["bonus"],
+                ["criticalModifier"] = token["criticalModifier"], ["rolled"] = token["rolled"], ["final"] = token["final"], ["applied"] = token["applied"]
+            }).ToArray());
+            record["weaponDamage"] = new JArray(rows.Where(token => token["deedShape"] == null || !(bool)token["deedShape"]).ToArray());
+            var observation = new JObject
+            {
+                ["hit"] = roll == null ? null : roll["hit"],
+                ["criticalConfirmed"] = roll == null ? null : roll["criticalConfirmed"],
+                ["criticalSource"] = roll == null ? null : (JToken)"engine",
+                ["completedNonMisfire"] = roll == null ? null : roll["completedWithoutMisfire"],
+                ["precisionImmune"] = roll == null ? null : roll["precisionImmune"],
+                ["deedPackets"] = deed,
+                ["gritBefore"] = gritBefore, ["gritRestored"] = RestoredSince(recoveryMark), ["gritAfter"] = Grit(actor),
+                ["armedInstanceRemoved"] = arm ? (instance == null ? JValue.CreateNull() : (JToken)!actor.Descriptor.Buffs.RawFacts.Contains(instance)) : false,
+                ["attackRollsResolved"] = shot["attackRollsResolved"],
+                ["rollIsTheCommandsOwn"] = shot["rollIsTheCommandsOwn"],
+                ["targetHitPointsLeft"] = hostile.HPLeft, ["targetDead"] = hostile.Descriptor.State.IsDead
+            };
+            record["observation"] = observation;
+            string json = (string)Product(UpCloseVerdict).GetMethod("EvaluateJson", Any).Invoke(null, new object[] { expectation.ToString(), observation.ToString() });
+            JObject verdict = JObject.Parse(json);
+            record["expectation"] = expectation;
+            record["verdict"] = verdict;
+            foreach (string part in new[] { "outcome", "damage", "cost", "consumption" })
+                Expect((bool)verdict[part]["pass"], name + " " + part + ": expected " + verdict[part]["expected"] + ", observed " + verdict[part]["observed"]);
+            Expect(shot["attackRollsResolved"] != null && (int)shot["attackRollsResolved"] == 1, name + ": " + shot["attackRollsResolved"] + " attack rolls, expected exactly 1");
+            Expect(shot["rollIsTheCommandsOwn"] != null && (bool)shot["rollIsTheCommandsOwn"], name + ": the observed roll is not the attack command's own");
+            Expect(!hostile.Descriptor.State.IsDead && hostile.HPLeft > 0, name + ": the target did not survive the shot");
+        }
+
+        private IEnumerator<object> UpCloseDamage()
+        {
+            BlueprintAbility ability = Blueprint<BlueprintAbility>("ability");
+            BlueprintBuff blueprint = Blueprint<BlueprintBuff>("buff");
+            BlueprintArchetype archetype = Blueprint<BlueprintArchetype>("archetype");
+            Watch(blueprint);
+            observer.ArmedState = blueprint;
+            Record["blueprint"] = BuffCensus.Describe(blueprint);
+            Game.Instance.IsPaused = true;
+
+            Vector3 from, to;
+            bool clearOfUnits = ClearLine(3.0, true, out from, out to);
+            if (!clearOfUnits && !ClearLine(3.0, false, out from, out to)) throw new InvalidOperationException("no straight walkable line of 3 m was found near the main character");
+            UnitEntityData actor = Gunslinger("UpClosePistolero", from, 1, 20, archetype);
+            UnitEntityData hostile = SpawnHostile(actor, to);
+            // Hit points to spare, so that no shot is a killing blow; no movement; nobody acts for itself.
+            hostile.Descriptor.Stats.HitPoints.AddModifier(5000, (GameLogicComponent)null, Kingmaker.Enums.ModifierDescriptor.None);
+            hostile.Descriptor.State.AddCondition(UnitCondition.CantMove);
+            foreach (UnitEntityData unit in new[] { actor, hostile }) unit.IsBrainActive = false;
+            observer.Shooters.Add(actor);
+            ItemEntityWeapon pistol = Equip(actor, Firearm("Pistol"));
+            // A high attack bonus so the requested naturals hit and a threat confirms; the engine still makes each roll.
+            actor.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+            int level = actor.Descriptor.Progression.GetClassLevel(Blueprint<BlueprintCharacterClass>("class"));
+            int dice = Convert.ToInt32(Product("KingmakerGunslinger.Rules.UpCloseAndDeadlyPolicy").GetMethod("DiceAtLevel", Any).Invoke(null, new object[] { level }), CultureInfo.InvariantCulture);
+            Record["fixture"] = new JObject
+            {
+                ["archetype"] = archetype.name, ["gunslingerLevel"] = level, ["deedDice"] = dice,
+                ["abilityGrantedByProgression"] = actor.Descriptor.Abilities.GetAbility(ability) != null,
+                ["firearm"] = pistol.Blueprint.name, ["firearmCriticalEdge"] = pistol.Blueprint.CriticalRollEdge,
+                ["firearmCriticalMultiplier"] = pistol.Blueprint.CriticalModifier.ToString(),
+                ["targetSpotClearOfOtherUnits"] = clearOfUnits, ["distanceFeetAtStart"] = Math.Round(actor.DistanceTo(hostile) * FeetPerMeter, 2),
+                ["targetHitPoints"] = hostile.HPLeft, ["targetArmorClass"] = hostile.Stats.AC.ModifiedValue, ["grit"] = Grit(actor),
+                ["gritMaximum"] = Blueprint<BlueprintAbilityResource>("grit").GetMaxAmount(actor.Descriptor)
+            };
+            Expect(actor.Descriptor.Abilities.GetAbility(ability) != null, "the Pistolero's progression did not grant " + ability.name);
+            var cases = new JObject();
+            Record["cases"] = cases;
+            yield return GameSeconds(0.5);
+
+            // 1. An ordinary hit with the deed armed.
+            foreach (object wait in UpCloseShot("ordinaryHit", actor, hostile, pistol, ability, blueprint, true, 15, 5,
+                UpCloseExpectation("hit", "full", dice, 1, true), cases)) yield return wait;
+
+            // 2. An engine-confirmed critical with the deed armed, below the grit cap so that critical recovery can show.
+            foreach (object wait in UpCloseShot("confirmedCritical", actor, hostile, pistol, ability, blueprint, true, 20, 3,
+                UpCloseExpectation("critical", "full", dice, 1, true), cases)) yield return wait;
+
+            // 3. A non-misfire miss with the deed armed.
+            var armour = hostile.Descriptor.Stats.AC.AddModifier(500, (GameLogicComponent)null, Kingmaker.Enums.ModifierDescriptor.NaturalArmor);
+            try
+            {
+                foreach (object wait in UpCloseShot("miss", actor, hostile, pistol, ability, blueprint, true, 10, 5,
+                    UpCloseExpectation("miss", "half", dice, 1, true), cases)) yield return wait;
+            }
+            finally { armour.Remove(); }
+
+            // 4. A following unarmed shot: no packet and no charge.
+            foreach (object wait in UpCloseShot("unarmedAfter", actor, hostile, pistol, ability, blueprint, false, 15, 5,
+                UpCloseExpectation("hit", "none", dice, 0, false), cases)) yield return wait;
+
+            // 5. Armed, an attack order cancelled before it can start, then the state left to expire.
+            var cancelled = new JObject();
+            cases["cancelledBeforeDischarge"] = cancelled;
+            var arming = new JObject();
+            cancelled["arming"] = arming;
+            foreach (object wait in Arm(actor, ability, blueprint, arming)) yield return wait;
+            Buff instance = OnUnit(actor, blueprint);
+            double armedAt = Now();
+            int gritBeforeOrder = Grit(actor);
+            int shotsBefore = observer.Shots.Count, damageBefore = observer.Damage.Count;
+            LoadRound(pistol);
+            actor.CombatState.Cooldown.StandardAction = 0f;
+            actor.Commands.InterruptAll(true);
+            var order = new UnitAttack(hostile);
+            order.IgnoreCooldown(null);
+            actor.Commands.Run(order);
+            cancelled["orderTakenByTheUnit"] = actor.Commands.Raw.Any(queued => ReferenceEquals(queued, order));
+            actor.Commands.InterruptAll(true);
+            cancelled["orderStarted"] = order.IsStarted;
+            cancelled["orderActed"] = order.IsActed;
+            cancelled["orderResult"] = order.Result.ToString();
+            yield return GameSeconds(1.0);
+            cancelled["attackRollsResolved"] = observer.Shots.Count - shotsBefore;
+            cancelled["deedOrWeaponDamageEvents"] = observer.Damage.Count - damageBefore;
+            cancelled["armedInstanceRetainedAfterCancel"] = instance != null && actor.Descriptor.Buffs.RawFacts.Contains(instance);
+            cancelled["gritBeforeOrder"] = gritBeforeOrder;
+            cancelled["gritAfterCancel"] = Grit(actor);
+            Expect(instance != null, "cancellation case: the state was not armed");
+            Expect((int)cancelled["attackRollsResolved"] == 0, "cancellation case: the cancelled order still resolved " + cancelled["attackRollsResolved"] + " attack rolls");
+            Expect((bool)cancelled["armedInstanceRetainedAfterCancel"], "cancellation case: the armed instance did not survive a cancelled order");
+            Expect(Grit(actor) == gritBeforeOrder, "cancellation case: grit went from " + gritBeforeOrder + " to " + Grit(actor) + " after a cancelled order");
+            yield return Ended(blueprint, actor);
+            double? lasted = Lasted(blueprint, actor, armedAt);
+            cancelled["endedAfterGameSeconds"] = Seconds(lasted);
+            cancelled["gritAfterExpiry"] = Grit(actor);
+            Expect(OneRound(lasted), "cancellation case: the retained state lasted " + Seconds(lasted) + " s, expected to expire after one round");
+            Expect(Grit(actor) == gritBeforeOrder, "cancellation case: expiry changed grit from " + gritBeforeOrder + " to " + Grit(actor));
         }
 
         // ---- Steady Aim: the range of the next two-handed shot ----

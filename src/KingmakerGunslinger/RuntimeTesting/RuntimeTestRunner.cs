@@ -28,6 +28,7 @@ using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Commands;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Assets;
@@ -34385,6 +34386,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 assertions, null);
         }
 
+        /// <summary>
+        /// REP-02 / S4 T2. A component fixture: AddBuff arming and a hand-invoked
+        /// attack handler on standalone rolls. It first replays the 2026-11-15
+        /// order unchanged with every stage measured (attribution only), then
+        /// runs controlled cases on fresh targets with damage, cost and
+        /// consumption judged separately. The registered ability and the
+        /// attack command are qualified by the loader-compat probe instead.
+        /// </summary>
         private RuntimeTestResult RunDisposablePistoleroDeeds()
         {
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
@@ -34395,13 +34404,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             ItemEntityWeapon weapon = null;
             object controller = null;
             bool cleaned = false;
-            int hitDamage = 0, missDamage = 0, gritAfterHit = -1,
-                gritAfterMiss = -1, gritAfterImmune = -1, gritAfterTwin = -1;
-            bool hitConsumed = false, missConsumed = false,
-                immuneConsumed = false, twinProne = false,
-                twinDuplicateRejected = false, twinSecondTargetIsolated = false,
-                criticalUnmultiplied = false, misfireRetained = false,
-                scatterRetained = false, deadShotOnce = false;
+            int gritAfterTwin = -1;
+            bool twinProne = false, twinDuplicateRejected = false, twinSecondTargetIsolated = false;
+            var assertions = new List<RuntimeTestAssertion>();
+            var disposables = new List<UnitEntityData>();
+            var unreadable = new List<string>();
+            var evidence = new JObject
+            {
+                ["fixture"] = "component: detached chargen units at the main menu, AddBuff arming, hand-invoked deed handler",
+                ["difficultyCritsOnParty"] = Kingmaker.Game.Instance.Player.Difficulty.CritsOnParty.ToString()
+            };
             string stage = "setup";
             try
             {
@@ -34418,143 +34430,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var context = new MechanicsContext(attacker, attacker.Descriptor,
                     pistolero.UpCloseAbility, null, new TargetWrapper(attacker));
 
-                stage = "up-close-hit-arm";
-                Buff marker = attacker.Descriptor.Buffs.AddBuff(
-                    pistolero.UpCloseArmed, context, TimeSpan.FromSeconds(6d));
-                marker = marker ?? attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
-                    .FirstOrDefault(value => ReferenceEquals(value.Blueprint,
-                        pistolero.UpCloseArmed));
-                marker = marker ?? attacker.Descriptor.AddFact(
-                    pistolero.UpCloseArmed) as Buff;
-                if (marker == null) throw new InvalidOperationException(
-                    "Hit marker was rejected.");
-                stage = "up-close-hit-resolve";
-                int hp = target.HPLeft;
-                RuleAttackWithWeapon hit = CreateResolvedPistoleroAttack(attacker,
-                    target, weapon, true, false, 19);
-                UnityEngine.Random.InitState(FindNativeD6Seed(6));
-                marker.CallComponents<IInitiatorRulebookHandler<RuleAttackWithWeapon>>(
-                    handler => handler.OnEventDidTrigger(hit));
-                hitDamage = hp - target.HPLeft;
-                gritAfterHit = attacker.Descriptor.Resources.GetResourceAmount(
-                    gunslinger.Grit.Resource);
-                hitConsumed = !attacker.Descriptor.HasFact(pistolero.UpCloseArmed);
+                stage = "original-sequence";
+                JObject original = ReplayOriginalPistoleroSequence(attacker, target, weapon,
+                    pistolero, gunslinger.Grit.Resource, context, unreadable);
+                evidence["originalSequence"] = original;
 
-                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
-                    FirearmState.CurrentSchemaVersion, 1,
-                    FirearmStateTokenCatalog.DiagnosticLeadBall,
-                    FirearmCondition.Normal));
-                stage = "up-close-miss-arm";
-                marker = attacker.Descriptor.Buffs.AddBuff(
-                    pistolero.UpCloseArmed, context, TimeSpan.FromSeconds(6d));
-                marker = marker ?? attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
-                    .FirstOrDefault(value => ReferenceEquals(value.Blueprint,
-                        pistolero.UpCloseArmed));
-                marker = marker ?? attacker.Descriptor.AddFact(
-                    pistolero.UpCloseArmed) as Buff;
-                if (marker == null) throw new InvalidOperationException(
-                    "Miss marker was rejected.");
-                stage = "up-close-miss-resolve";
-                target.Descriptor.Stats.Dexterity.BaseValue = 100;
-                hp = target.HPLeft;
-                RuleAttackWithWeapon miss = CreateResolvedPistoleroAttack(attacker,
-                    target, weapon, false, false, 19);
-                UnityEngine.Random.InitState(FindNativeD6Seed(6));
-                marker.CallComponents<IInitiatorRulebookHandler<RuleAttackWithWeapon>>(
-                    handler => handler.OnEventDidTrigger(miss));
-                missDamage = hp - target.HPLeft;
-                gritAfterMiss = attacker.Descriptor.Resources.GetResourceAmount(
-                    gunslinger.Grit.Resource);
-                missConsumed = !attacker.Descriptor.HasFact(pistolero.UpCloseArmed);
-                target.Descriptor.Stats.Dexterity.BaseValue = 10;
-
-                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
-                    FirearmState.CurrentSchemaVersion, 1,
-                    FirearmStateTokenCatalog.DiagnosticLeadBall,
-                    FirearmCondition.Normal));
-                stage = "up-close-immune-arm";
-                marker = attacker.Descriptor.Buffs.AddBuff(
-                    pistolero.UpCloseArmed, context, TimeSpan.FromSeconds(6d));
-                marker = marker ?? attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
-                    .FirstOrDefault(value => ReferenceEquals(value.Blueprint,
-                        pistolero.UpCloseArmed));
-                marker = marker ?? attacker.Descriptor.AddFact(
-                    pistolero.UpCloseArmed) as Buff;
-                if (marker == null) throw new InvalidOperationException(
-                    "Immunity marker was rejected.");
-                stage = "up-close-immune-resolve";
-                RuleAttackWithWeapon immune = CreateResolvedPistoleroAttack(attacker,
-                    target, weapon, true, true, 19);
-                marker.CallComponents<IInitiatorRulebookHandler<RuleAttackWithWeapon>>(
-                    handler => handler.OnEventDidTrigger(immune));
-                gritAfterImmune = attacker.Descriptor.Resources.GetResourceAmount(
-                    gunslinger.Grit.Resource);
-                immuneConsumed = !attacker.Descriptor.HasFact(pistolero.UpCloseArmed);
-
-                stage = "up-close-critical";
-                marker = ArmPistoleroMarker(attacker, pistolero, context);
-                hp = target.HPLeft;
-                RuleAttackWithWeapon critical = CreateResolvedPistoleroAttack(
-                    attacker, target, weapon, true, false, 19);
-                SetExactProperty(critical.AttackRoll,
-                    "IsCriticalConfirmed", true);
-                UnityEngine.Random.InitState(FindNativeD6Seed(6));
-                marker.CallComponents<IInitiatorRulebookHandler<
-                    RuleAttackWithWeapon>>(handler =>
-                        handler.OnEventDidTrigger(critical));
-                criticalUnmultiplied = hp - target.HPLeft == hitDamage &&
-                    !attacker.Descriptor.HasFact(pistolero.UpCloseArmed);
-
-                stage = "up-close-misfire";
-                marker = ArmPistoleroMarker(attacker, pistolero, context);
-                int gritBeforeRejected = attacker.Descriptor.Resources
-                    .GetResourceAmount(gunslinger.Grit.Resource);
-                RuleAttackWithWeapon misfire = CreateResolvedPistoleroAttack(
-                    attacker, target, weapon, false, false, 1);
-                marker.CallComponents<IInitiatorRulebookHandler<
-                    RuleAttackWithWeapon>>(handler =>
-                        handler.OnEventDidTrigger(misfire));
-                misfireRetained = attacker.Descriptor.HasFact(
-                        pistolero.UpCloseArmed) &&
-                    attacker.Descriptor.Resources.GetResourceAmount(
-                        gunslinger.Grit.Resource) == gritBeforeRejected;
-                attacker.Descriptor.Buffs.RemoveFact(marker);
-
-                stage = "up-close-scatter";
-                marker = ArmPistoleroMarker(attacker, pistolero, context);
-                RuleAttackWithWeapon scatter = CreateResolvedPistoleroAttack(
-                    attacker, target, weapon, true, false, 19);
-                ScatterVolleyRuntime.Register(scatter, target, target.UniqueId,
-                    1, 19);
-                marker.CallComponents<IInitiatorRulebookHandler<
-                    RuleAttackWithWeapon>>(handler =>
-                        handler.OnEventDidTrigger(scatter));
-                scatterRetained = attacker.Descriptor.HasFact(
-                        pistolero.UpCloseArmed) &&
-                    attacker.Descriptor.Resources.GetResourceAmount(
-                        gunslinger.Grit.Resource) == gritBeforeRejected;
-                ScatterVolleyRuntime.Cancel(scatter);
-                attacker.Descriptor.Buffs.RemoveFact(marker);
-
-                stage = "up-close-dead-shot";
-                marker = ArmPistoleroMarker(attacker, pistolero, context);
-                RuleAttackWithWeapon deadShot = CreateResolvedPistoleroAttack(
-                    attacker, target, weapon, true, false, 19);
-                DeadShotRuntime.RegisterDelivery(deadShot, true, false, 0, 3);
-                int gritBeforeDeadShot = attacker.Descriptor.Resources
-                    .GetResourceAmount(gunslinger.Grit.Resource);
-                UnityEngine.Random.InitState(FindNativeD6Seed(6));
-                marker.CallComponents<IInitiatorRulebookHandler<
-                    RuleAttackWithWeapon>>(handler =>
-                        handler.OnEventDidTrigger(deadShot));
-                marker.CallComponents<IInitiatorRulebookHandler<
-                    RuleAttackWithWeapon>>(handler =>
-                        handler.OnEventDidTrigger(deadShot));
-                deadShotOnce = !attacker.Descriptor.HasFact(
-                        pistolero.UpCloseArmed) &&
-                    attacker.Descriptor.Resources.GetResourceAmount(
-                        gunslinger.Grit.Resource) == gritBeforeDeadShot - 1;
-                DeadShotRuntime.CancelDelivery(deadShot);
+                stage = "controlled-cases";
+                int dice = Rules.UpCloseAndDeadlyPolicy.DiceAtLevel(
+                    attacker.Descriptor.Progression.GetClassLevel(gunslinger.CharacterClass));
+                evidence["deedDice"] = dice;
+                evidence["controlledCases"] = RunControlledPistoleroCases(attacker, weapon,
+                    pistolero, gunslinger.Grit.Resource, context, dice, assertions, disposables);
 
                 stage = "twin-shot";
                 attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 5);
@@ -34569,11 +34455,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     TwinShotKnockdownRuntime.HitCount(attacker, target) == 2;
                 twinSecondTargetIsolated =
                     TwinShotKnockdownRuntime.HitCount(attacker, secondTarget) == 0;
+                int gritBeforeTwin = attacker.Descriptor.Resources.GetResourceAmount(
+                    gunslinger.Grit.Resource);
                 TwinShotKnockdownRuntime.Execute(attacker, target,
                     gunslinger.Grit.Resource);
                 twinProne = target.Descriptor.State.HasCondition(UnitCondition.Prone);
                 gritAfterTwin = attacker.Descriptor.Resources.GetResourceAmount(
                     gunslinger.Grit.Resource);
+                evidence["twinShot"] = new JObject
+                {
+                    ["gritBefore"] = gritBeforeTwin, ["gritAfter"] = gritAfterTwin, ["prone"] = twinProne
+                };
             }
             catch (Exception exception)
             {
@@ -34590,57 +34482,51 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
                         attacker.Body.PrimaryHand.RemoveItem(false);
                 }
+                foreach (UnitEntityData unit in disposables) unit.Dispose();
                 if (secondTarget != null) secondTarget.Dispose();
                 if (target != null) target.Dispose();
                 if (attacker != null) attacker.Dispose();
                 cleaned = true;
             }
-            string observed = "damage=" + hitDamage + "," + missDamage +
-                ";grit=" + gritAfterHit + "," + gritAfterMiss + "," +
-                gritAfterImmune + "," + gritAfterTwin +
-                ";twinProne=" + twinProne;
-            var assertions = new List<RuntimeTestAssertion>
+
+            var evidenceFiles = new List<string> { WriteFavoredClassEvidence("pistolero-deeds.json", evidence) };
+            JObject stages = (JObject)evidence["originalSequence"]["stages"];
+            string replay = string.Join(" | ", stages.Properties().Select(value =>
             {
-                Assertion("up-close-hit", "positive full damage, one grit, marker consumed",
-                    observed, hitDamage > 0 && gritAfterHit == 4 && hitConsumed,
-                    "native RuleDealDamage and exact armed marker"),
-                Assertion("up-close-miss", "positive half packet, one grit, marker consumed",
-                    observed, missDamage > 0 && missDamage <= hitDamage &&
-                    gritAfterMiss == 3 && missConsumed,
-                    "one full deed roll, integer half, then isolated RuleDealDamage"),
-                Assertion("up-close-precision-immunity",
-                    "marker consumed without grit", observed,
-                    gritAfterImmune == 3 && immuneConsumed,
-                    "RuleAttackRoll.ImmuneToSneakAttack"),
-                Assertion("up-close-critical",
-                    "extra packet is not multiplied on a critical",
-                    observed, criticalUnmultiplied,
-                    "separate fixed precision packet"),
-                Assertion("up-close-misfire-and-scatter",
-                    "misfire and scatter neither consume marker nor grit",
-                    observed, misfireRetained && scatterRetained,
-                    "completed-misfire ledger and scatter marker"),
-                Assertion("up-close-dead-shot-once",
-                    "final Dead Shot delivery spends/applies once despite duplicate callback",
-                    observed, deadShotOnce,
-                    "Dead Shot delivery marker and attack reference gate"),
-                Assertion("twin-shot-distinct-same-target",
-                    "two reference-distinct hits; duplicate ignored; other target isolated",
-                    observed, twinDuplicateRejected && twinSecondTargetIsolated,
-                    "owner/target reference-identity ledger"),
-                Assertion("twin-shot-prone", "native Prone and one grit spent",
-                    observed, twinProne && gritAfterTwin == 4,
-                    "native UnitCondition.Prone; disposables subsequently cleaned"),
-                Assertion("external-isolation", "disposables and ephemeral state cleaned",
-                    "cleaned=" + cleaned, cleaned, "request-local fixture cleanup"),
-                Assertion("loaded-mod-version", _request.ExpectedModVersion,
-                    _context.ModEntry.Info.Version,
-                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
-                    "Unity Mod Manager ModEntry.Info.Version")
-            };
-            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                var row = (JObject)value.Value;
+                var packets = row["deedPackets"] as JArray;
+                return value.Name + ": hit=" + row["hit"] + " natural=" + row["natural"] +
+                    " attackBonus=" + row["attackBonus"] + " targetAC=" + row["targetArmorClass"] +
+                    " deed=" + (packets == null ? "not observed" : string.Join("+", packets.Select(packet =>
+                        (string)packet["kind"] + ":" + packet["final"]).ToArray())) +
+                    " grit=" + row["gritBefore"] + "->" + row["gritAfter"] + " (restored " + row["gritRestored"] + ")" +
+                    " removed=" + row["armedInstanceRemoved"];
+            }).ToArray()) + " | legacy=" + evidence["originalSequence"]["legacyAggregate"].ToString(Newtonsoft.Json.Formatting.None);
+            assertions.Insert(0, Assertion("up-close-original-sequence-measured",
+                "every stage of the 2026-11-15 order measured (outcome, deed damage events, grit with recovery, exact armed instance); " +
+                "recorded for attribution, no contract verdict",
+                replay + (unreadable.Count == 0 ? "" : " | unreadable=" + string.Join(",", unreadable.ToArray())),
+                unreadable.Count == 0,
+                "component fixture replay; evidence file pistolero-deeds.json"));
+            string twinObserved = "grit after Twin Shot=" + gritAfterTwin + ";prone=" + twinProne;
+            assertions.Add(Assertion("twin-shot-distinct-same-target",
+                "two reference-distinct hits; duplicate ignored; other target isolated",
+                twinObserved, twinDuplicateRejected && twinSecondTargetIsolated,
+                "owner/target reference-identity ledger"));
+            assertions.Add(Assertion("twin-shot-prone", "native Prone and one grit spent",
+                twinObserved, twinProne && gritAfterTwin == 4,
+                "native UnitCondition.Prone; disposables subsequently cleaned"));
+            assertions.Add(Assertion("external-isolation", "disposables and ephemeral state cleaned",
+                "cleaned=" + cleaned + ";extraUnits=" + disposables.Count, cleaned, "request-local fixture cleanup"));
+            assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                _context.ModEntry.Info.Version,
+                _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                "Unity Mod Manager ModEntry.Info.Version"));
+            RuntimeTestResult result = CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+            result.EvidenceFiles.AddRange(evidenceFiles);
+            return result;
         }
 
         private static RuleAttackWithWeapon CreateResolvedPistoleroAttack(

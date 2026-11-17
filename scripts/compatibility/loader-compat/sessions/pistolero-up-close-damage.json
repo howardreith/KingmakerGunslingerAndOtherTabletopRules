@@ -1,0 +1,98 @@
+{
+  "name": "pistolero-up-close-damage",
+  "description": "REP-02 / S4 T2: Up Close and Deadly damage, grit and consumption observed apart. Launches 1 and 2 run the product's disposable-pistolero-deeds scenario, a component fixture at the main menu (AddBuff arming, the deed handler invoked by hand on standalone rolls): it first replays the 2026-11-15 order unchanged with every stage measured, then judges controlled cases on fresh targets. Launches 3 and 4 run the loader-compat upCloseDamage probe in the mod-only fixture save: a Pistolero levelled by the level-up controller, the registered ability through the game's ability command, and shots through the game's attack command, with the natural roll requested through the product's forced roll and a seeded native generator. Each launch is a fresh process; the second of each pair repeats the first under the same candidate, harness and prerequisites. The candidate runs alone.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "component-a",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-pistolero-deeds",
+        "parameters": {},
+        "timeoutSeconds": 600
+      }
+    },
+    {
+      "label": "component-b",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-pistolero-deeds",
+        "parameters": {},
+        "timeoutSeconds": 600
+      }
+    },
+    {
+      "label": "real-route-a",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgDeedLifecycle",
+            "label": "up-close-damage",
+            "match": "upCloseDamage",
+            "invariants": {
+              "ability": "0fb1ef47da6040088db3946815419723",
+              "buff": "b881cfed156749dca0c7db968f626656",
+              "archetype": "32a41699a7bf42dbbe7ae755d68d73cb",
+              "class": "abca4797366d4df0831a418eee39069a",
+              "grit": "9876b3e744dd422b9c259d19861ad222"
+            },
+            "timeoutSeconds": 300
+          }
+        ]
+      }
+    },
+    {
+      "label": "real-route-b",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgDeedLifecycle",
+            "label": "up-close-damage",
+            "match": "upCloseDamage",
+            "invariants": {
+              "ability": "0fb1ef47da6040088db3946815419723",
+              "buff": "b881cfed156749dca0c7db968f626656",
+              "archetype": "32a41699a7bf42dbbe7ae755d68d73cb",
+              "class": "abca4797366d4df0831a418eee39069a",
+              "grit": "9876b3e744dd422b9c259d19861ad222"
+            },
+            "timeoutSeconds": 300
+          }
+        ]
+      }
+    }
+  ]
+}
