@@ -193,7 +193,14 @@
   to the same checks, Quick Clear keeps its distinct in-combat Broken
   recovery, and a newly committed break during an attack sequence stops the
   remainder of that sequence and its automatic continuations while a later
-  deliberate attack with the Broken gun stays possible. Native runtime
+  deliberate attack with the Broken gun stays possible. Up to and including
+  the published v0.0.191, Quick Clear, Repair Firearm and rest do not lift
+  that stop: a companion's own AI does not fire that firearm again until the
+  player gives it a new attack order (or the game is saved and reloaded),
+  and nothing in the game says so. Whether to keep this with a visible
+  notice or to let a successful recovery allow fresh AI decisions is an open
+  owner decision (POL-01, `docs/GUNSLINGER-MISFIRE-AI-RECOVERY-POLICY.md`).
+  Native runtime
   qualification status is tracked in
   `docs/FIREARM-MAINTENANCE-ACCEPTANCE.md`; human visual/play acceptance
   remains separately pending.
