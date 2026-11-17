@@ -52,9 +52,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// observation: hit, criticalConfirmed, criticalSource,
         /// completedNonMisfire, deedPackets, missRoll {dice}, gritBefore,
         /// gritAfter, gritRestored, gritRestoredAttribution, armedInstance
-        /// {identified, removalSequence, removalGameSeconds,
-        /// expiryDeadlineGameSeconds, deliveryStartSequence,
-        /// deliveryEndSequence, deedDamageSequence}.
+        /// {identified, presentBeforeShot, presentAtDeliveryEnd,
+        /// removalSequence, removalGameSeconds, expiryDeadlineGameSeconds,
+        /// deliveryStartSequence, deliveryEndSequence, deedDamageSequence}.
         /// </summary>
         internal static JObject Evaluate(JObject expectation, JObject observation)
         {
@@ -234,16 +234,37 @@ namespace KingmakerGunslinger.RuntimeTesting
             var armed = observation["armedInstance"] as JObject;
             bool? identified = Bool(armed, "identified");
             if (!armedExpected)
-                return Verdict(identified == false, "no armed instance before the shot, so nothing to consume",
-                    "identified=" + Text(identified));
+            {
+                // The actor's real state, read before the shot: an explicit
+                // absence, not an identity the fixture never captured.
+                bool? presentBefore = Bool(armed, "presentBeforeShot");
+                return Verdict(presentBefore == false,
+                    "no armed instance on the actor when read before the shot",
+                    "presentBeforeShot=" + Text(presentBefore));
+            }
             string observed = "armed instance not observed";
             bool? during = null;
             if (armed != null) during = RemovedDuringDelivery(armed, out observed);
-            bool pass = identified == true && during.HasValue &&
-                (consume ? during.Value : !during.Value);
-            return Verdict(pass,
-                consume ? "the exact armed instance removed inside the qualifying delivery, before its own deadline"
-                    : "the exact armed instance not removed inside the delivery",
+            if (consume)
+                return Verdict(identified == true && during == true,
+                    "the exact armed instance removed inside the qualifying delivery, before its own deadline",
+                    observed);
+
+            // Retention needs positive evidence: the identified instance, a
+            // bounded delivery, its deadline, no removal of it inside the
+            // delivery, and the instance still on the actor when the delivery
+            // ended. A removal event that was simply not seen proves nothing.
+            int? start = Int(armed, "deliveryStartSequence"), end = Int(armed, "deliveryEndSequence"),
+                removal = Int(armed, "removalSequence");
+            double? deadline = Number(armed, "expiryDeadlineGameSeconds");
+            bool? presentAtEnd = Bool(armed, "presentAtDeliveryEnd");
+            observed += ";presentAtDeliveryEnd=" + Text(presentAtEnd);
+            bool removedInside = removal.HasValue && start.HasValue && end.HasValue &&
+                removal.Value > start.Value && removal.Value <= end.Value;
+            bool retained = identified == true && start.HasValue && end.HasValue && end.Value > start.Value &&
+                deadline.HasValue && !removedInside && presentAtEnd == true;
+            return Verdict(retained,
+                "the exact armed instance identified, not removed inside a bounded delivery, and still on the actor when it ended",
                 observed);
         }
 

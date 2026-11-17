@@ -2240,6 +2240,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("up-close-verdict.exact-half-of-the-recorded-roll", UpCloseAndDeadlyCaseVerdictTests.ExactHalfOfTheRecordedRoll),
             Case("up-close-verdict.consumption-inside-delivery", UpCloseAndDeadlyCaseVerdictTests.ConsumptionNeedsRemovalInsideDelivery),
             Case("up-close-verdict.cancellation-admitted-and-interrupted", UpCloseAndDeadlyCaseVerdictTests.CancellationNeedsAnAdmittedInterruptedOrder),
+            Case("up-close-verdict.retention-needs-positive-evidence", UpCloseAndDeadlyCaseVerdictTests.RetentionNeedsPositiveEvidence),
+            Case("up-close-verdict.unarmed-needs-actual-absence", UpCloseAndDeadlyCaseVerdictTests.UnarmedNeedsAnActualAbsence),
             Case("up-close-verdict.recovery-separated-from-charge", UpCloseAndDeadlyCaseVerdictTests.RecoveryIsSeparatedFromTheCharge),
             Case("up-close-verdict.missing-observations-fail", UpCloseAndDeadlyCaseVerdictTests.MissingObservationsFail),
             Case("dead-shot.bab-cadence", DeadShotBabCadence),

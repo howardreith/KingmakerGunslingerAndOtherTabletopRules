@@ -1129,8 +1129,14 @@ namespace KmgLoaderCompatHarness
             BlueprintAbilityResource gritResource = Blueprint<BlueprintAbilityResource>("grit");
             int current = Grit(actor);
             if (current > gritAtShot) actor.Descriptor.Resources.Spend(gritResource, current - gritAtShot);
-            record["armedBeforeShot"] = OnUnit(actor, blueprint) != null;
+            // The actor's real armed state, read before the order, whatever this case intended.
+            Buff presentBefore = OnUnit(actor, blueprint);
+            int armedInstancesBefore = actor.Descriptor.Buffs.RawFacts.OfType<Buff>().Count(candidate => ReferenceEquals(candidate.Blueprint, blueprint));
+            record["armedBeforeShot"] = presentBefore != null;
             bool identified = instance != null && actor.Descriptor.Buffs.RawFacts.Contains(instance);
+            if (!arm) Expect(presentBefore == null, name + ": an armed instance was on the actor before an unarmed shot");
+            else Expect(armedInstancesBefore == 1 && ReferenceEquals(presentBefore, instance),
+                name + ": " + armedInstancesBefore + " armed instances before the shot, expected exactly the one the ability created");
             double? deadline = identified && !instance.IsPermanent ? Math.Round(Now() + instance.TimeLeft.TotalSeconds, 3) : (double?)null;
             observer.WatchedInstance = identified ? instance : null;
             observer.WatchedRemovalSequence = null;
@@ -1159,6 +1165,9 @@ namespace KmgLoaderCompatHarness
             var armedInstance = new JObject
             {
                 ["identified"] = identified,
+                ["presentBeforeShot"] = presentBefore != null,
+                ["armedInstancesBeforeShot"] = armedInstancesBefore,
+                ["instanceBeforeShotIsTheArmedOne"] = instance != null && ReferenceEquals(presentBefore, instance),
                 ["deliveryStartSequence"] = roll == null ? null : roll["sequence"],
                 ["deedDamageSequence"] = deedRow == null ? null : deedRow["sequence"],
                 ["deliveryEndSequence"] = JValue.CreateNull(),

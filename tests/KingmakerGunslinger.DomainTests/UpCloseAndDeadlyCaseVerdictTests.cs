@@ -244,10 +244,78 @@ namespace KingmakerGunslinger.DomainTests
                 Observed(true, false, FullPacket(4), 5, 0, 4, RemovedInDelivery()).ToString());
             Assertions.True((bool)JObject.Parse(json)["pass"], "The reflection entry must agree with Evaluate.");
             var unarmed = new JObject(Expect("hit", "none", 0, false)) { ["armed"] = false };
-            Assertions.True(Pass(Judge(unarmed, Observed(true, false, null, 1, 0, 1, new JObject { ["identified"] = false })), UpCloseAndDeadlyCaseVerdict.Consumption),
-                "An unarmed shot with no instance passes consumption.");
             Assertions.True(!Pass(Judge(unarmed, Observed(true, false, null, 1, 0, 1, null)), UpCloseAndDeadlyCaseVerdict.Consumption),
                 "An unarmed shot with no instance evidence must fail consumption.");
+        }
+
+        /// <summary>Misfire and scatter style: armed, not consumed, with every piece of retention evidence.</summary>
+        private static JObject RetainedThroughDelivery()
+        {
+            return new JObject
+            {
+                ["identified"] = true, ["presentBeforeShot"] = true, ["deliveryStartSequence"] = 1, ["deliveryEndSequence"] = 2,
+                ["expiryDeadlineGameSeconds"] = 6.0, ["presentAtDeliveryEnd"] = true,
+                ["removalSequence"] = JValue.CreateNull(), ["removalGameSeconds"] = JValue.CreateNull()
+            };
+        }
+
+        private static bool Retains(JObject armed) => Pass(Judge(Expect("any", "none", 0, false),
+            Observed(false, false, null, 5, 0, 5, armed)), UpCloseAndDeadlyCaseVerdict.Consumption);
+
+        internal static void RetentionNeedsPositiveEvidence()
+        {
+            Assertions.True(Retains(RetainedThroughDelivery()),
+                "Identified, bounded, no removal inside, present at delivery end: retention must pass.");
+
+            Assertions.True(!Retains(new JObject { ["identified"] = true }),
+                "An identified instance with no bounds, deadline or end presence must fail retention.");
+            foreach (string key in new[] { "deliveryStartSequence", "deliveryEndSequence", "expiryDeadlineGameSeconds", "presentAtDeliveryEnd", "identified" })
+            {
+                JObject partial = RetainedThroughDelivery();
+                partial.Remove(key);
+                Assertions.True(!Retains(partial), "Retention without " + key + " must fail.");
+            }
+
+            JObject absent = RetainedThroughDelivery();
+            absent["presentAtDeliveryEnd"] = false;
+            Assertions.True(!Retains(absent), "No removal event seen but the instance gone at delivery end must fail retention.");
+
+            JObject removedBefore = RetainedThroughDelivery();
+            removedBefore["removalSequence"] = 0;
+            removedBefore["removalGameSeconds"] = 0.0;
+            removedBefore["presentAtDeliveryEnd"] = false;
+            Assertions.True(!Retains(removedBefore), "A removal outside the delivery followed by absence must fail retention.");
+
+            JObject removedInside = RetainedThroughDelivery();
+            removedInside["removalSequence"] = 2;
+            removedInside["deliveryEndSequence"] = 3;
+            removedInside["removalGameSeconds"] = 0.0;
+            Assertions.True(!Retains(removedInside), "A removal inside the delivery must fail retention even if presence was misread.");
+
+            JObject laterExpiry = RetainedThroughDelivery();
+            laterExpiry["removalSequence"] = 9;
+            laterExpiry["removalGameSeconds"] = 6.0;
+            Assertions.True(Retains(laterExpiry), "A removal after the delivery ended (its later expiry) does not undo a proven retention.");
+
+            JObject consumed = Judge(Expect("hit", "full", 1, true), Observed(true, false, FullPacket(4), 5, 0, 4, RemovedInDelivery()));
+            Assertions.True(Pass(consumed, UpCloseAndDeadlyCaseVerdict.Consumption), "Positive consumption must still pass: " + consumed);
+        }
+
+        internal static void UnarmedNeedsAnActualAbsence()
+        {
+            var unarmed = new JObject(Expect("hit", "none", 0, false)) { ["armed"] = false };
+            JObject absent = Judge(unarmed, Observed(true, false, null, 1, 0, 1, new JObject { ["identified"] = false, ["presentBeforeShot"] = false }));
+            Assertions.True(Pass(absent, UpCloseAndDeadlyCaseVerdict.Consumption), "An actual pre-shot absence must pass: " + absent);
+
+            JObject present = Judge(unarmed, Observed(true, false, null, 1, 0, 1, new JObject { ["identified"] = false, ["presentBeforeShot"] = true }));
+            Assertions.True(!Pass(present, UpCloseAndDeadlyCaseVerdict.Consumption), "An instance present before an 'unarmed' shot must fail: " + present);
+            Assertions.True(Pass(present, UpCloseAndDeadlyCaseVerdict.Damage) && Pass(present, UpCloseAndDeadlyCaseVerdict.Cost),
+                "No packet and no charge are judged apart from the state: " + present);
+
+            Assertions.True(!Pass(Judge(unarmed, Observed(true, false, null, 1, 0, 1, new JObject { ["identified"] = false })), UpCloseAndDeadlyCaseVerdict.Consumption),
+                "identified=false alone, with no pre-shot read, must fail.");
+            Assertions.True(!Pass(Judge(unarmed, Observed(true, false, null, 1, 0, 1, new JObject { ["presentBeforeShot"] = "unknown" })), UpCloseAndDeadlyCaseVerdict.Consumption),
+                "An unreadable pre-shot read must fail.");
         }
     }
 }

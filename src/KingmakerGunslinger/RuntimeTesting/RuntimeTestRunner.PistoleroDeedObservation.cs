@@ -214,6 +214,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["criticalSource"] = criticalSource;
             bool identified = marker != null && attacker.Descriptor.Buffs.RawFacts.Contains(marker);
             row["armedInstanceOnUnitBefore"] = identified;
+            bool anyArmedBefore = marker != null && attacker.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Any(value => ReferenceEquals(value.Blueprint, marker.Blueprint));
             row["gritBefore"] = attacker.Descriptor.Resources.GetResourceAmount(grit);
             row["targetHitPointsBefore"] = target.HPLeft;
             double now = Kingmaker.Game.Instance.TimeController.GameTime.TotalSeconds;
@@ -224,12 +226,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 int start = capture.Mark();
                 deliver();
+                // Exact-reference presence immediately after the delivery,
+                // before any fixture cleanup touches the instance.
+                bool presentAtEnd = marker != null && attacker.Descriptor.Buffs.RawFacts.Contains(marker);
                 int end = capture.Mark();
                 row["deedPackets"] = capture.Deed;
                 row["otherDamage"] = capture.Other;
                 row["armedInstance"] = new JObject
                 {
                     ["identified"] = identified,
+                    ["presentBeforeShot"] = anyArmedBefore,
+                    ["presentAtDeliveryEnd"] = presentAtEnd,
                     ["deliveryStartSequence"] = start,
                     ["deliveryEndSequence"] = end,
                     ["deedDamageSequence"] = capture.DeedDamageSequence.HasValue ? (JToken)capture.DeedDamageSequence.Value : JValue.CreateNull(),
