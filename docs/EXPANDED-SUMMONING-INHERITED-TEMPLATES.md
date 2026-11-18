@@ -1,8 +1,8 @@
 # Inherited summon templates per owned placement (DEF-05 / S5 T1)
 
-Status: **review corrections and the native-cast observer are implemented and built into one candidate; S5 T1 is not
-complete and not ready for principal review.** Both native sessions on that candidate are blocked by a Steam Cloud sync
-conflict for Kingmaker (see "Native status"). Branch
+Status: **the second review's five corrections are implemented, tested and built into a replacement candidate. S5 T1 is
+not complete and not ready for principal review:** both native sessions remain blocked by a Steam Cloud sync conflict
+for Kingmaker (see "Native status"). Branch
 `codex/def05-inherited-template-cleanup`, draft PR #186, stacked on the accepted Sprint 4 closure PR #185
 (`5c662d50b0`). Not merged, not released.
 
@@ -369,15 +369,117 @@ journal. The cast session was not attempted.
 | Missing Call of the Wild prerequisite | session `20261118T032657Z-owner-0.33.0-template-census-baseline` | FAIL, fixture prerequisite |
 | Failed first DEF-05 candidate | `f232c2df7ec3`, package `be98cd6c…6d46`, DLL `7afb74bd…b674`, session `20261118T035406Z` | FAIL, product defect (repaired in `0544169f86`) |
 | Repaired source, never built | `0544169f86` (its build was stopped for low memory; no package) | none |
-| Current candidate | `bab7e7dd43fc`, package `ce1be0a9…7865`, DLL `b607b92f…0d47`, MVID `5720c765-…5785` | built; **not executed** (cloud conflict) |
+| Built-but-unexecuted candidate | `bab7e7dd43fc`, package `ce1be0a9…7865`, DLL `b607b92f…0d47`, MVID `5720c765-…5785` | built; never loaded by the game; its census launch was refused at the Steam Cloud preflight (a safety refusal, not a gameplay run); superseded by the second review's corrections |
+| Replacement candidate | `0af2b30bd4c7`, package `336b88e0…c0f8`, DLL `6c44072b…390c`, MVID `63c5f429-…1daa0` | built; **not executed**: the cloud conflict persists, so no launch was attempted |
+
+## Second review corrections (third checkpoint)
+
+The review accepted the four earlier corrections at source and test level. Five more were made in `0af2b30bd4`. Each is
+judged by an engine-free contract in `Summoning/InheritedTemplateCastContracts.cs`, used by the native observers and
+exercised by focused negative controls.
+
+1. **Exact source debit.** Each cast window now records every native spend and restore on the caster's own sources:
+   - observer postfixes on `Spellbook.SpendInternal` and `Spellbook.RestoreSpontaneousSlots`;
+   - observer postfixes on `UnitAbilityResourceCollection.Spend` and its private `Restore`;
+   - each postfix is installed for the scenario and removed afterwards by method.
+
+   It also snapshots every spontaneous budget, raw slot, known and custom spell identity, and resource.
+   `InheritedSourceLedger` then requires exactly one spend event on the expected source, the expected fall on that
+   counter only, and no other change.
+
+   `Cleanup2SourceDebit` is reused: `ExactlyOneSpontaneous(book, level)` for the Sorcerer and `Unspent` for the
+   cancellation. It is extended narrowly with `ExactlyOneResource(resource, cost)` for the Master Summoner, whose
+   `CalculateCost` must be positive and equal the observed debit.
+
+   **Controls:** two uses spent and one restored; the wrong spell level; the expected resource plus an unrelated one; a
+   zero calculated cost; a cancellation with collateral mutation; a cancellation with a spend and matching restore.
+2. **Exact quantity.** The child graph is read with `SummonSignatureReader` before the cast:
+   - a single row is `Zero` dice plus a Simple bonus of 1;
+   - a quantity row is one `D3` or one `D4` (Simple count 1) plus the Rank bonus `ProjectilesCount`, evaluated
+     natively for the caster (0 for d3, 1 for d4+1);
+   - every branch must spawn the expected unit;
+   - the expected branch count comes from the recorded donor (canonical) or the untouched host row (Master Summoner).
+
+   The output must be distinct live units of that blueprint, within the expression's range. The exact engine roll is
+   not captured, so it is not claimed.
+
+   **Controls:** d4 instead of d4+1; d3+1 instead of d4+1; a fixed count that fell in range; the right expression on the
+   wrong unit; an extra spawn branch; a duplicate spawn event; a foreign unit.
+3. **Exact duration.** Each spawned unit must have exactly one duration observation:
+   - the level-20 Sorcerer: base 120 s and bonus 0;
+   - the Master Summoner: the untouched Call of the Wild host row's own duration (rate, Zero dice, and a Simple or
+     Rank bonus evaluated for the caster), stated before the cast;
+   - a cancellation: none.
+
+   **Controls:** a one-second duration; the right total from the wrong base and bonus; a missing duration in a quantity
+   summon; a duration on a different unit.
+4. **Exact template and smite sets** per unit:
+   - untemplated and Nature's Ally units: no native template, no project template and no project smite;
+   - a celestial or fiendish control: exactly its one project template and one smite, and nothing from the other side.
+
+   Project templates are every registered `KMG.Summoning.Template.*` identity; smites are `KMG.Summoning.Smite.Celestial*`
+   and `KMG.Summoning.Smite.Fiendish*`. Innate facts and the native summon marker are still required.
+
+   **Controls:** another template band; both smites; the opposite smite alone; a duplicate template; a missing smite; a
+   stray smite.
+5. **Exact alternate child sets.** The census builds each family's full output. It classifies actual creature children
+   from that output: not a preserved root copy, spawning a registered project unit, and associated with a placement
+   only when the unit is that placement's own. Native options and preserved roots are excluded by that classification.
+   - `InheritedChildSetContract` compares the expected and actual sets in both directions and reports missing-child,
+     extra-child, duplicate-placement (more children than the projection gives), null-placement and
+     wrong-placement-family.
+   - Every actual creature child is observed, or recorded as unclassifiable, which fails the census.
+   - A family passes only when its observed and actual counts equal the projection's.
+
+   **Controls:** every expected child plus one unexpected one (extra-child); missing; wrong family; null; duplicate.
+
+**Tests:**
+
+| Command | Result | Time |
+|---|---|---|
+| `Invoke-KmgGate.ps1 -Filter 'expanded-summoning.inherited-template'` | 15 of 15 (five new cases), twice | 30 s, under 30 s |
+| `Invoke-KmgGate.ps1 -Filter 'expanded-summoning.inherited-template;alternate-summoning;runtime-scenario;scenario-catalog;native-profile;cleanup2;source-debit'` | 107 of 107 | 19 s |
+| `Invoke-KmgGate.ps1 -Filter 'summon;alternate-summoning;expanded-summoning'` | 834 of 834 | 36 s |
+| `Test-RuntimeScenarioPreflight.ps1` | 1205 passed | 28 s |
+| `tools/validate_development_candidate.py --purpose def05-template-cleanup` | PASS | 7 s |
+| `tools/validate_icon_catalog.py`, `git diff --check` | PASS, clean | |
+
+One compile error during this work (a missing `using` for `BlueprintBuff`) was fixed before the runs above.
+
+**Replacement candidate**, built from `0af2b30bd4c76817f81815c2e492be98ea4bfee2`:
+- package `336b88e0fbd68aad561be95746d67f0a5327e143ae87110e43ed1545dea4c0f8`;
+- DLL `6c44072b228258cd4920961c66fe9a2de7ccfe21a52d116231f41a09afc9390c`;
+- MVID `63c5f429-cf60-4abd-b91a-9d11a6a1daa0`, read offline from the packaged DLL; no game has loaded it;
+- harness `c47e7f14d48edac88740b4c9bf1841e805c45a88043dc162789b4c86dbc1b089`;
+- build 13:33:37 to 13:43:18 UTC (9 min 41 s), development validation PASS, 834 of 834 selected.
+
+**Memory preflight**, compared with the last successful build:
+
+| | Now | Last successful build |
+|---|---|---|
+| Physical free | 4.9 of 31.7 GB | 6.6 GB |
+| Commit charge | 47.1 of 54.7 GB (86%) | 45.4 of 56.7 GB (80%) |
+
+The pagefile was 3.3 GB used, C: had 326 GB free, and no Kingmaker process was running. This session's idle compiler
+servers were shut down first. Nothing reported critical pressure, and the build completed.
+
+**Steam Cloud safety.** Before and after the build, Steam's cloud log for App ID 640820 still ended with the
+2026-11-17 23:02 local "Sync conflict" entries for `Quick_436.zks`, `Auto_1120.zks`, `Auto_1121.zks` and
+`steam-saves-release.json`, with no "Sync Disabled" among the last six.
+
+No launch was attempted, and no save, cloud copy or log was touched. The earlier refusal of `bab7e7dd43fc` stays a
+safety refusal, not a gameplay run.
 
 ## Remaining (S5 T1 is not complete)
 
-1. Native session 1 (census) and session 2 (representative casts), on candidate `bab7e7dd43fc` once the cloud
-   prerequisite is met. If either fails, keep the failure, repair only the observed defect, rebuild, and rerun only the
-   affected scenario.
-2. Then the review records. The graph census and the domain tests are not a substitute for native execution.
-3. Release obligation: the next release validator must account for the removed creature list. The v0.0.191 historical
+1. **The owner resolves the Kingmaker Steam Cloud conflict and establishes that sync is disabled for App ID 640820.** A
+   remote-newer timestamp is not authority to choose that copy.
+2. Run `inherited-template-census.json`, then `inherited-template-casts.json`, both with Call of the Wild, on the
+   unchanged replacement package `336b88e0…c0f8`. Keep any failure under its own identity, repair only the observed
+   boundary, rebuild, and rerun only the affected evidence.
+3. Then the review records, including the census totals by canonical family, alternate family, donor shape and branch.
+   None exists yet, because no census has run on a candidate with these corrections.
+4. Release obligation: the next release validator must account for the removed creature list. The v0.0.191 historical
    validator is unchanged.
 
 ## Limits
