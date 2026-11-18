@@ -131,6 +131,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var unresolved = new SortedSet<string>(StringComparer.Ordinal);
             var families = new JObject();
             var donors = new JObject();
+            var childFindings = new List<string>();
 
             foreach (SummonFamily family in new[] { SummonFamily.Monster, SummonFamily.NaturesAlly })
             foreach (SummonVariantSpec variant in ExpandedSummoningCatalog.GenerateVariants(family))
@@ -178,8 +179,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             created.Add(shell);
                             return shell;
                         }, resolved, AlternateSummoningRoster.Production(),
-                        ExpandedSummoningBlueprints.Registered,
-                        choice => choice.Kind == AlternateSummoningChoiceKind.Creature);
+                        ExpandedSummoningBlueprints.Registered);
                 }
                 catch (Exception exception)
                 {
@@ -188,18 +188,64 @@ namespace KingmakerGunslinger.RuntimeTesting
                     summary["observed"] = 0;
                     continue;
                 }
-                int observed = 0;
-                foreach (AlternateSummoningChoice choice in choices)
+                // Review correction 5: the actual creature children are classified from the builder's
+                // own output (not the projection): a built record that is not a preserved root copy and
+                // spawns a registered Expanded Summoning unit. Native options and preserved roots are
+                // excluded by that classification. Expected and actual sets are compared both ways.
+                var choiceBySymbol = choices.ToDictionary(choice => choice.Symbol, StringComparer.Ordinal);
+                var projectUnits = new HashSet<string>(ExpandedSummoningBlueprints.Registered.BySymbol
+                    .Where(entry => entry.Key.StartsWith("KMG.Summoning.Unit.", StringComparison.Ordinal) && entry.Value != null)
+                    .Select(entry => entry.Value.AssetGuid), StringComparer.Ordinal);
+                var preserved = new HashSet<BlueprintAbility>(built.Preserved.Values);
+                var expectedChildren = choices.ToDictionary(choice => choice.Symbol, choice => choice.Placement == null ?
+                    Tuple.Create((string)null, (SummonFamily?)null) :
+                    Tuple.Create(choice.Placement.StableKey, (SummonFamily?)choice.Placement.Family), StringComparer.Ordinal);
+                var actualChildren = new Dictionary<string, Tuple<string, SummonFamily?>>(StringComparer.Ordinal);
+                int nonCreature = 0;
+                foreach (KeyValuePair<string, BlueprintAbility> entry in built.BySymbol)
                 {
-                    BlueprintAbility child;
-                    if (!built.BySymbol.TryGetValue(choice.Symbol, out child)) continue;
-                    SummonVariantSpec placement = choice.Placement;
-                    if (placement == null || placement.Family != family.Family)
-                    { unresolved.Add("placement:" + choice.Symbol); continue; }
+                    SummonSpawn[] spawns = SummonSignatureReader.Read(entry.Value).Spawns().ToArray();
+                    if (preserved.Contains(entry.Value) || spawns.Length == 0 || !spawns.All(spawn => projectUnits.Contains(spawn.Unit)))
+                    { nonCreature++; continue; }
+                    AlternateSummoningChoice choice;
+                    choiceBySymbol.TryGetValue(entry.Key, out choice);
+                    string expectedUnit = null;
+                    if (choice != null && choice.Placement != null)
+                    {
+                        BlueprintScriptableObject unitBlueprint;
+                        if (ExpandedSummoningBlueprints.Registered.BySymbol.TryGetValue(
+                                ExpandedSummoningIdentityCatalog.UnitSymbol(choice.Placement.Creature), out unitBlueprint) && unitBlueprint != null)
+                            expectedUnit = unitBlueprint.AssetGuid;
+                    }
+                    // The placement association holds only when the built child spawns that placement's own unit.
+                    bool associated = expectedUnit != null && spawns.All(spawn => spawn.Unit == expectedUnit);
+                    actualChildren[entry.Key] = associated ?
+                        Tuple.Create(choice.Placement.StableKey, (SummonFamily?)choice.Placement.Family) :
+                        Tuple.Create((string)null, (SummonFamily?)null);
+                }
+                IList<string> childSet = InheritedChildSetContract.Compare(family.Key, family.Family, expectedChildren, actualChildren);
+                foreach (string finding in childSet) childFindings.Add(finding);
+                summary["actualCreatureChildren"] = actualChildren.Count;
+                summary["nonCreatureRecords"] = nonCreature;
+                summary["childSetFindings"] = childSet.Count;
+                int observed = 0;
+                foreach (string symbol in actualChildren.Keys.OrderBy(value => value, StringComparer.Ordinal))
+                {
+                    BlueprintAbility child = built.BySymbol[symbol];
+                    AlternateSummoningChoice choice;
+                    choiceBySymbol.TryGetValue(symbol, out choice);
+                    SummonVariantSpec placement = choice == null ? null : choice.Placement;
+                    if (actualChildren[symbol].Item1 == null || placement == null || placement.Family != family.Family)
+                    {
+                        // Uncensusable without a placement: recorded, and the child-set finding fails the census.
+                        rows.Add(new JObject { ["key"] = symbol, ["caller"] = "alternate:" + family.Key, ["placement"] = null,
+                            ["expected"] = "unclassifiable" });
+                        continue;
+                    }
                     BlueprintUnit unit = CensusUnit(placement, unresolved);
                     ExpandedSummoningAbilityBuilder.DonorRecord donor = CensusDonor(placement, unresolved, donors);
                     if (unit == null || donor == null) continue;
-                    observations.Add(CensusObservation(choice.Symbol, "alternate:" + family.Key, placement,
+                    observations.Add(CensusObservation(symbol, "alternate:" + family.Key, placement,
                         placement.Family == SummonFamily.Monster && placement.Creature.MonsterTemplated,
                         donor, false, child, unit, nativeIds, rows));
                     observed++;
@@ -223,6 +269,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool everyFamily = AlternateSummoningSourceCatalog.All.All(family =>
                 families[family.Key] != null && (string)families[family.Key]["status"] == "built" &&
                 (int)families[family.Key]["observed"] == (int)families[family.Key]["expected"] &&
+                (int)families[family.Key]["actualCreatureChildren"] == (int)families[family.Key]["expected"] &&
                 (int)families[family.Key]["expected"] > 0);
             record["inheritedTemplateCensus"] = rows;
             record["inheritedTemplateDonors"] = donors;
@@ -241,11 +288,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["deliberateTemplateAbilities"] = deliberate,
                 ["notRetainedDonorShapes"] = new JArray(result.NotRetainedShapes),
                 ["findings"] = new JArray(result.Findings),
+                ["childSetFindings"] = new JArray(childFindings),
                 ["justifiedRedundant"] = new JArray(result.JustifiedRedundant),
                 ["unresolved"] = new JArray(unresolved) };
             assertions.Add(Assertion("inherited-template-census-per-placement",
                 "every published Summon Monster and Nature's Ally ability, canonical and every child of all seven " +
-                    "alternate families, has the inherited-template disposition its placement requires: each recorded " +
+                    "alternate families (the builder's actual creature children equal the projection's, both ways, " +
+                    "with no missing, extra, duplicate, null or wrong-family placement), " +
+                    "has the inherited-template disposition its placement requires: each recorded " +
                     "donor matches the independent donor contract and its pre-clone receipt; every canonical spawn " +
                     "branch is paired once with its donor branch by shape; an untemplated Summon Monster branch " +
                     "whose donor applies removes exactly the native identities after the donor's applications, " +
@@ -260,9 +310,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";dispositions=" + dispositions.ToString(Newtonsoft.Json.Formatting.None) + ";quantityRemovals=" +
                     quantityRemovals + ";deliberateTemplateAbilities=" + deliberate + ";justifiedRedundant=" +
                     result.JustifiedRedundant.Count + ";notRetainedShapes=" + result.NotRetainedShapes.Count +
+                    ";childSetFindings=[" + string.Join(",", childFindings.Take(20).ToArray()) + "]" +
                     ";findings=[" + string.Join(",", result.Findings.Take(40).ToArray()) +
                     "];unresolved=[" + string.Join(",", unresolved.Take(20).ToArray()) + "]",
-                result.Passed && unresolved.Count == 0 && result.Observations == expected.Count && everyFamily &&
+                result.Passed && childFindings.Count == 0 && unresolved.Count == 0 && result.Observations == expected.Count && everyFamily &&
                     quantityRemovals > 0 && deliberate > 0,
                 "registered canonical abilities and production-built children of AlternateSummoningSourceCatalog.All; " +
                     "recorded donors with receipts; InheritedTemplateDonorContract; InheritedTemplateCensus. Graph evidence only"));

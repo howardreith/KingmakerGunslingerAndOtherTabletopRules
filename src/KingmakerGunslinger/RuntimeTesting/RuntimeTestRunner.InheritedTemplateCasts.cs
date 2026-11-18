@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
@@ -16,6 +18,7 @@ using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -27,18 +30,19 @@ using UnityEngine;
 namespace KingmakerGunslinger.RuntimeTesting
 {
     /// <summary>
-    /// S5 T1 / DEF-05 representative native casts. Save-free native first area
-    /// (the summoning native profile), disposable casters levelled natively:
-    /// a level-20 Sorcerer casting canonical Summon Monster and Nature's Ally
-    /// children through its own spontaneous slots (good or evil alignment as
-    /// each case needs), and a Call of the Wild Master Summoner casting an
-    /// adapter child through its real resource. Each completed cast records
-    /// the source parent and child, the committed debit, quantity, unit
-    /// identities, the four native template buffs and the project template by
-    /// exact identity, duration, innate facts, the native summon marker as the
-    /// unrelated-effect control, and the donor graph's own applications; one
-    /// cast is cancelled before commit. Donor receipts and two unrelated
-    /// published rows are compared before and after. Missing observations fail.
+    /// S5 T1 / DEF-05 representative native casts, second review. Save-free
+    /// native first area (the summoning native profile), disposable casters
+    /// levelled natively: a level-20 Sorcerer casting canonical Summon Monster
+    /// and Nature's Ally children through its own spontaneous slots, and a Call
+    /// of the Wild Master Summoner casting an adapter child through its real
+    /// resource; one Sorcerer cast is cancelled before commit. Each case is
+    /// judged by the engine-free contracts in InheritedTemplateCastContracts:
+    /// the exact source debit (snapshots plus every native spend and restore on
+    /// the caster during the cast window, and Cleanup2SourceDebit), the exact
+    /// quantity expression read before the cast and the actual output, the
+    /// exact duration per spawned unit, and the exact native/project template
+    /// and smite sets per unit. Donor receipts and two unrelated published rows
+    /// are compared before and after. Missing observations fail.
     /// </summary>
     internal sealed partial class RuntimeTestRunner
     {
@@ -47,6 +51,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const string InheritedSmVI = "e740afbab0147944dab35d83faa0ae1c";
         private const string InheritedSmVII = "ab167fd8203c1314bac6568932f1752f";
         private const string InheritedSnaII = "298148133cdc3fd42889b99c82711986";
+        /// <summary>The native Summon Monster and Nature's Ally duration at caster level 20: one round per level.</summary>
+        private const double InheritedSorcererDurationSeconds = 120d;
+
+        private static List<string> _inheritedEvents;
+        private static UnitEntityData _inheritedCaster;
 
         private sealed class InheritedCase
         {
@@ -56,16 +65,113 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string Parent;
             internal string ChildSymbol;
             internal string UnitSymbol;
+            internal SummonFamily Family = SummonFamily.Monster;
             internal SummonMultiplicity Quantity;
             /// <summary>"none", "celestial" or "fiendish": the project template the cast must leave.</summary>
             internal string ProjectTemplate = "none";
+        }
+
+        private sealed class InheritedExpectation
+        {
+            internal string SourceKey;
+            internal int Amount;
+            internal string Event;
+            internal Func<Cleanup2SourceDebit, bool> Native;
+            internal Func<Cleanup2SourceDebit, JObject> Describe;
+            internal int Branches;
+            internal double DurationBase;
+            internal double DurationBonus;
+            internal string DurationSource;
+        }
+
+        private static void InheritedSpendPostfix(Spellbook __instance, BlueprintAbility blueprint, bool doSpend, bool __result)
+        {
+            if (_inheritedEvents == null || _inheritedCaster == null || !doSpend || !__result) return;
+            if (_inheritedCaster.Descriptor.Spellbooks.Contains(__instance))
+                _inheritedEvents.Add("spend-spell|" + __instance.Blueprint.AssetGuid + "|1");
+        }
+
+        private static void InheritedRestoreSpontaneousPostfix(Spellbook __instance, int level, int count)
+        {
+            if (_inheritedEvents == null || _inheritedCaster == null) return;
+            if (_inheritedCaster.Descriptor.Spellbooks.Contains(__instance))
+                _inheritedEvents.Add("restore-spontaneous|" + __instance.Blueprint.AssetGuid + "|" + level + "|" + count);
+        }
+
+        private static void InheritedResourceSpendPostfix(UnitAbilityResourceCollection __instance,
+            BlueprintScriptableObject blueprint, int amount)
+        {
+            if (_inheritedEvents == null || _inheritedCaster == null) return;
+            if (ReferenceEquals(__instance, _inheritedCaster.Descriptor.Resources))
+                _inheritedEvents.Add("spend-resource|" + (blueprint == null ? "<null>" : blueprint.AssetGuid) + "|" + amount);
+        }
+
+        private static void InheritedResourceRestorePostfix(UnitAbilityResourceCollection __instance,
+            BlueprintScriptableObject blueprint, int amount, bool restoreFull)
+        {
+            if (_inheritedEvents == null || _inheritedCaster == null) return;
+            if (ReferenceEquals(__instance, _inheritedCaster.Descriptor.Resources))
+                _inheritedEvents.Add("restore-resource|" + (blueprint == null ? "<null>" : blueprint.AssetGuid) + "|" + amount + "|" + restoreFull);
+        }
+
+        /// <summary>The native spend and restore methods the cast window watches, with this observer's postfixes.</summary>
+        private static List<KeyValuePair<MethodInfo, MethodInfo>> InheritedHooks()
+        {
+            const BindingFlags any = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            const BindingFlags own = BindingFlags.Static | BindingFlags.NonPublic;
+            var hooks = new List<KeyValuePair<MethodInfo, MethodInfo>>
+            {
+                new KeyValuePair<MethodInfo, MethodInfo>(typeof(Spellbook).GetMethods(any).Single(value => value.Name == "SpendInternal"),
+                    typeof(RuntimeTestRunner).GetMethod("InheritedSpendPostfix", own)),
+                new KeyValuePair<MethodInfo, MethodInfo>(typeof(Spellbook).GetMethod("RestoreSpontaneousSlots", any, null,
+                    new[] { typeof(int), typeof(int) }, null), typeof(RuntimeTestRunner).GetMethod("InheritedRestoreSpontaneousPostfix", own)),
+                new KeyValuePair<MethodInfo, MethodInfo>(typeof(UnitAbilityResourceCollection).GetMethod("Spend", any, null,
+                    new[] { typeof(BlueprintScriptableObject), typeof(int) }, null), typeof(RuntimeTestRunner).GetMethod("InheritedResourceSpendPostfix", own)),
+                new KeyValuePair<MethodInfo, MethodInfo>(typeof(UnitAbilityResourceCollection).GetMethod("Restore", any, null,
+                    new[] { typeof(BlueprintScriptableObject), typeof(int), typeof(bool) }, null), typeof(RuntimeTestRunner).GetMethod("InheritedResourceRestorePostfix", own)),
+            };
+            if (hooks.Any(value => value.Key == null || value.Value == null))
+                throw new MissingMethodException("A native spend/restore method or observer postfix is missing.");
+            return hooks;
+        }
+
+        /// <summary>Every source counter and identity of the caster, for the engine-free ledger.</summary>
+        private static Dictionary<string, int> InheritedSources(UnitEntityData caster)
+        {
+            var sources = new Dictionary<string, int>(StringComparer.Ordinal);
+            Spellbook[] books = caster.Descriptor.Spellbooks.ToArray();
+            sources["identity|books"] = string.Join(",", books.Select(book => book.Blueprint.AssetGuid).ToArray()).GetHashCode();
+            for (int index = 0; index < books.Length; index++)
+            {
+                Spellbook book = books[index];
+                string key = book.Blueprint.AssetGuid + "#" + index;
+                for (int level = 0; level < 10; level++)
+                {
+                    if (book.Blueprint.Spontaneous) sources["spontaneous|" + book.Blueprint.AssetGuid + "|" + level] = book.GetSpontaneousSlots(level);
+                    List<SpellSlot> slots = RawSlots(book, level);
+                    for (int slot = 0; slot < slots.Count; slot++)
+                        sources["slot|" + key + "|" + level + "|" + slot] = slots[slot].Available ? 1 : 0;
+                    sources["identity|custom|" + key + "|" + level] = string.Join(",", book.GetCustomSpells(level)
+                        .Select(spell => spell.Blueprint.AssetGuid).ToArray()).GetHashCode();
+                }
+                sources["identity|known|" + key] = string.Join(",", book.GetAllKnownSpells()
+                    .Select(spell => spell.Blueprint.AssetGuid + ":" + spell.SpellLevel).ToArray()).GetHashCode();
+            }
+            var resources = new List<string>();
+            foreach (BlueprintScriptableObject resource in caster.Descriptor.Resources)
+            {
+                resources.Add(resource.AssetGuid);
+                sources["resource|" + resource.AssetGuid] = caster.Descriptor.Resources.GetResourceAmount(resource);
+            }
+            sources["identity|resources"] = string.Join(",", resources.ToArray()).GetHashCode();
+            return sources;
         }
 
         private RuntimeTestResult RunInheritedTemplateCasts()
         {
             WriteLifecycleStage("inherited-template-casts-start");
             var assertions = new List<RuntimeTestAssertion>();
-            var document = new JObject { ["scope"] = "Save-free native first area; disposable casters levelled by native LevelUpController visits; casts through spellbook slots or the Master Summoner resource and UnitUseAbility.", ["runId"] = _request.RunId };
+            var document = new JObject { ["scope"] = "Save-free native first area; disposable casters levelled by native LevelUpController visits; casts through spellbook slots or the Master Summoner resource and UnitUseAbility; exact contracts in InheritedTemplateCastContracts.", ["runId"] = _request.RunId };
             var cases = new JArray();
             document["cases"] = cases;
             ExpandedSummoningCorrectionFixture fixture = null;
@@ -73,6 +179,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             IList<string> donorBefore = null, donorAfter = null;
             var unrelated = new Dictionary<string, InheritedTemplateDonorReceipt>(StringComparer.Ordinal);
             var unrelatedDifferences = new List<string>();
+            List<KeyValuePair<MethodInfo, MethodInfo>> hooks = null;
+            var installed = new List<KeyValuePair<MethodInfo, MethodInfo>>();
             try
             {
                 AlternateSummoningFamilyStatus status = AlternateSummoningStatusRegistry.Find(
@@ -84,6 +192,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (string symbol in new[] { "KMG.Summoning.Ability.SM.Tier9.Lemure.OneD4PlusOne",
                     "KMG.Summoning.Ability.SNA.Tier4.Wolf.OneD4PlusOne" })
                     unrelated[symbol] = ExpandedSummoningAbilityBuilder.CaptureReceipt(InheritedAbility(symbol));
+                hooks = InheritedHooks();
+                foreach (KeyValuePair<MethodInfo, MethodInfo> hook in hooks)
+                {
+                    _context.Harmony.Patch(hook.Key, null, new HarmonyMethod(hook.Value), null);
+                    installed.Add(hook);
+                }
                 fixture = BeginExpandedSummoningCorrectionFixture("KMG_Runtime_InheritedTemplate_Casts");
                 fixture.CasterBlueprint.IsCheater = false;
 
@@ -95,9 +209,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Spellbook book = sorcerer.Descriptor.Spellbooks.Single(value => ReferenceEquals(value.Blueprint, sorcererClass.Spellbook));
                 while (book.CasterLevel < 20) book.AddCasterLevel();
                 book.UpdateAllSlotsSize(false);
-                book.Rest();
-                document["sorcerer"] = new JObject { ["classLevel"] = sorcerer.Descriptor.Progression.GetClassLevel(sorcererClass), ["casterLevel"] = book.CasterLevel };
-
                 var plan = new[]
                 {
                     new InheritedCase { Name = "good-tier4-single-mephit", Alignment = Alignment.NeutralGood, SpellLevel = 4, Parent = InheritedSmIV,
@@ -112,7 +223,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ChildSymbol = "KMG.Summoning.Ability.SM.Tier4.DireWolf.One", UnitSymbol = "KMG.Summoning.Unit.DireWolf", Quantity = SummonMultiplicity.One, ProjectTemplate = "fiendish" },
                     new InheritedCase { Name = "tier7-untemplated-no-inherited", Alignment = Alignment.NeutralGood, SpellLevel = 7, Parent = InheritedSmVII,
                         ChildSymbol = "KMG.Summoning.Ability.SM.Tier7.GreaterAirElemental.One", UnitSymbol = "KMG.Summoning.Unit.GreaterAirElemental", Quantity = SummonMultiplicity.One },
-                    new InheritedCase { Name = "natures-ally-preservation", Alignment = Alignment.NeutralGood, SpellLevel = 2, Parent = InheritedSnaII,
+                    new InheritedCase { Name = "natures-ally-preservation", Alignment = Alignment.NeutralGood, SpellLevel = 2, Parent = InheritedSnaII, Family = SummonFamily.NaturesAlly,
                         ChildSymbol = "KMG.Summoning.Ability.SNA.Tier2.Wolf.One", UnitSymbol = "KMG.Summoning.Unit.Wolf", Quantity = SummonMultiplicity.One },
                 };
                 foreach (InheritedCase item in plan)
@@ -121,26 +232,43 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!book.GetKnownSpells(item.SpellLevel).Any(value => ReferenceEquals(value.Blueprint, parent)))
                         book.AddKnown(item.SpellLevel, parent, true);
                 }
-                foreach (InheritedCase item in plan)
+                book.Rest();
+                document["sorcerer"] = new JObject { ["classLevel"] = sorcerer.Descriptor.Progression.GetClassLevel(sorcererClass),
+                    ["casterLevel"] = book.CasterLevel, ["book"] = book.Blueprint.AssetGuid };
+
+                foreach (InheritedCase item in plan.Concat(new[] { new InheritedCase { Name = "cancel-before-commit", Alignment = Alignment.NeutralGood,
+                    SpellLevel = 4, Parent = InheritedSmIV, ChildSymbol = "KMG.Summoning.Ability.SM.Tier4.AirMephit.One",
+                    UnitSymbol = "KMG.Summoning.Unit.AirMephit", Quantity = SummonMultiplicity.One } }))
                     InheritedTemplateSection(assertions, cases, item.Name, () =>
                     {
+                        bool cancel = item.Name == "cancel-before-commit";
                         sorcerer.Descriptor.Alignment.Set(item.Alignment);
                         var parent = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library, item.Parent, "native summon parent");
                         AbilityData known = book.GetKnownSpells(item.SpellLevel).Single(value => ReferenceEquals(value.Blueprint, parent));
                         BlueprintAbility child = InheritedAbility(item.ChildSymbol);
+                        SummonVariantSpec placement = ExpandedSummoningCatalog.GenerateVariants(item.Family).Single(value =>
+                            ExpandedSummoningIdentityCatalog.AbilitySymbol(value) == item.ChildSymbol);
+                        int donorBranches = AlternateSummoningGraph.Objects<Kingmaker.UnitLogic.Mechanics.Actions.ContextActionSpawnMonster>(
+                            ExpandedSummoningAbilityBuilder.RecordedDonor(placement).Ability.ComponentsArray).Count;
                         int level = item.SpellLevel;
-                        return InheritedCast(fixture, sorcerer, new AbilityData(known, child), parent, child, () => AvailableSlotsOf(book, level), 1, item, false);
+                        var expectation = new InheritedExpectation { Branches = donorBranches,
+                            DurationBase = cancel ? 0 : InheritedSorcererDurationSeconds, DurationBonus = 0,
+                            DurationSource = "native summon spell: one round per caster level at caster level 20" };
+                        if (!cancel)
+                        {
+                            expectation.SourceKey = "spontaneous|" + book.Blueprint.AssetGuid + "|" + level;
+                            expectation.Amount = 1;
+                            expectation.Event = "spend-spell|" + book.Blueprint.AssetGuid + "|1";
+                            expectation.Native = debit => debit.ExactlyOneSpontaneous(book, level);
+                            expectation.Describe = debit => debit.DescribeSpontaneous(book, level);
+                        }
+                        else
+                        {
+                            expectation.Native = debit => debit.Unspent;
+                            expectation.Describe = debit => debit.DescribeSpontaneous(book, level);
+                        }
+                        return InheritedCast(fixture, sorcerer, () => new AbilityData(known, child), parent, child, item, cancel, expectation, false);
                     });
-
-                InheritedTemplateSection(assertions, cases, "cancel-before-commit", () =>
-                {
-                    sorcerer.Descriptor.Alignment.Set(Alignment.NeutralGood);
-                    var parent = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library, InheritedSmIV, "native summon parent");
-                    AbilityData known = book.GetKnownSpells(4).Single(value => ReferenceEquals(value.Blueprint, parent));
-                    BlueprintAbility child = InheritedAbility("KMG.Summoning.Ability.SM.Tier4.AirMephit.One");
-                    return InheritedCast(fixture, sorcerer, new AbilityData(known, child), parent, child, () => AvailableSlotsOf(book, 4), 0,
-                        new InheritedCase { Name = "cancel-before-commit", Quantity = SummonMultiplicity.One, UnitSymbol = "KMG.Summoning.Unit.AirMephit" }, true);
-                });
 
                 InheritedTemplateSection(assertions, cases, "master-summoner-tier4-mephit", () =>
                 {
@@ -162,16 +290,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         if (value == null || !AlternateSummoningExposure.IsExposed(value.AssetGuid)) return false;
                         SummonSpawn[] spawns = SummonSignatureReader.Read(value).Spawns().ToArray();
-                        return spawns.Length > 0 && spawns[0].Unit == mephit.AssetGuid &&
-                            (spawns[0].CountDice == "Zero" || spawns[0].CountDice == "One");
+                        return spawns.Length > 0 && spawns[0].Unit == mephit.AssetGuid && spawns[0].CountDice == "Zero";
                     });
+                    // Expected duration and branch count from the untouched host row the child was built from.
+                    BlueprintAbility host = AlternateSummoningCoordinator.OriginalHostChildren(family.Key, root.Blueprint.AssetGuid)
+                        .FirstOrDefault(value => value != null && SummonSignatureReader.Read(value).Spawns().Any() &&
+                            SummonSignatureReader.Read(value).Spawns().All(spawn => spawn.CountDice == "Zero"));
+                    if (host == null) throw new InvalidOperationException("No untouched single-creature host row for Master Summoner tier IV.");
+                    SummonSpawn hostSpawn = SummonSignatureReader.Read(host).Spawns().First();
+                    double hostSeconds = InheritedDurationSeconds(caster, host, hostSpawn);
                     var parentData = new AbilityData(root);
-                    var data = new AbilityData(parentData, child);
+                    var expectation = new InheritedExpectation { Branches = SummonSignatureReader.Read(host).Spawns().Count(),
+                        DurationBase = hostSeconds, DurationBonus = 0,
+                        DurationSource = "untouched CotW host row " + host.AssetGuid + ": " + hostSpawn.DurationRate + " x " +
+                            hostSpawn.DurationDice + hostSpawn.DurationDiceCount + "+" + hostSpawn.DurationBonus };
+                    AbilityData probe = new AbilityData(parentData, child);
                     AbilityResourceLogic logic = child.ComponentsArray.OfType<AbilityResourceLogic>().SingleOrDefault();
-                    int cost = logic == null ? 0 : logic.CalculateCost(data);
-                    return InheritedCast(fixture, caster, data, root.Blueprint, child, () => caster.Descriptor.Resources.GetResourceAmount(resource), cost,
+                    int cost = logic == null ? 0 : logic.CalculateCost(probe);
+                    expectation.SourceKey = "resource|" + resource.AssetGuid;
+                    expectation.Amount = cost;
+                    expectation.Event = "spend-resource|" + resource.AssetGuid + "|" + cost;
+                    expectation.Native = debit => debit.ExactlyOneResource(resource, cost);
+                    expectation.Describe = debit => debit.DescribeResource(resource, cost);
+                    return InheritedCast(fixture, caster, () => new AbilityData(parentData, child), root.Blueprint, child,
                         new InheritedCase { Name = "master-summoner-tier4-mephit", Alignment = Alignment.NeutralGood, Quantity = SummonMultiplicity.One,
-                            UnitSymbol = "KMG.Summoning.Unit.AirMephit", ChildSymbol = child.name }, false, true);
+                            UnitSymbol = "KMG.Summoning.Unit.AirMephit", ChildSymbol = child.name }, false, expectation, true);
                 });
             }
             catch (Exception exception)
@@ -182,6 +325,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                _inheritedEvents = null;
+                _inheritedCaster = null;
+                foreach (KeyValuePair<MethodInfo, MethodInfo> hook in installed)
+                    try { _context.Harmony.Unpatch(hook.Key, hook.Value); }
+                    catch (Exception unpatch) { document["unpatchError"] = unpatch.Message; }
                 object levelController = _playerPathLevelController;
                 _playerPathLevelController = null;
                 if (levelController != null)
@@ -197,10 +345,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ExpandedSummoningAbilityBuilder.CaptureReceipt(InheritedAbility(entry.Key))))
                         unrelatedDifferences.Add(entry.Key + ":" + difference);
             }
-            int expectedCases = 9;
+            const int expectedCases = 9;
             assertions.Add(Assertion("inherited-casts-all-cases-observed",
                 "all nine representative cases produced a structured observation",
                 "cases=" + cases.Count, cases.Count == expectedCases, "one record per planned case"));
+            assertions.Add(Assertion("inherited-casts-hooks-removed",
+                "every spend/restore observer hook was installed and removed",
+                "installed=" + installed.Count + ";unpatchError=" + (document["unpatchError"] ?? "none"),
+                hooks != null && installed.Count == hooks.Count && document["unpatchError"] == null, "Harmony12 Patch/Unpatch by method"));
             assertions.Add(Assertion("inherited-casts-donors-unmodified",
                 "every recorded donor carrier matches its pre-clone receipt before and after all casts",
                 "before=[" + (donorBefore == null ? "<not read>" : string.Join(",", donorBefore.ToArray())) + "];after=[" +
@@ -230,10 +382,31 @@ namespace KingmakerGunslinger.RuntimeTesting
             return (BlueprintAbility)value;
         }
 
-        private static int AvailableSlotsOf(Spellbook book, int level)
+        private static int InheritedRank(UnitEntityData caster, BlueprintAbility ability, string rank)
         {
-            return book.Blueprint.Spontaneous ? book.GetSpontaneousSlots(level) :
-                book.GetMemorizedSpellSlots(level).Count(value => value != null && value.Available);
+            AbilityRankType type = (AbilityRankType)Enum.Parse(typeof(AbilityRankType), rank);
+            var context = new MechanicsContext(caster, caster.Descriptor, ability, null, new TargetWrapper(caster));
+            return context[type];
+        }
+
+        private static int InheritedValue(UnitEntityData caster, BlueprintAbility ability, SummonValue value)
+        {
+            if (value == null) return 0;
+            if (value.Kind == "Simple") return value.Value;
+            if (value.Kind == "Rank") return InheritedRank(caster, ability, value.Rank);
+            throw new InvalidOperationException("Unsupported value kind " + value.Kind);
+        }
+
+        /// <summary>Duration in seconds stated by a spawn row's own ContextDurationValue, evaluated for this caster.</summary>
+        private static double InheritedDurationSeconds(UnitEntityData caster, BlueprintAbility ability, SummonSpawn spawn)
+        {
+            if (spawn.DurationDice != "Zero")
+                throw new InvalidOperationException("A random duration cannot be an exact expectation: " + spawn.DurationDice);
+            double rate = spawn.DurationRate == "Rounds" ? 6d : spawn.DurationRate == "Minutes" ? 60d :
+                spawn.DurationRate == "TenMinutes" ? 600d : spawn.DurationRate == "Hours" ? 3600d :
+                spawn.DurationRate == "Days" ? 86400d : -1d;
+            if (rate < 0) throw new InvalidOperationException("Unknown duration rate " + spawn.DurationRate);
+            return rate * InheritedValue(caster, ability, spawn.DurationBonus);
         }
 
         private void InheritedTemplateSection(List<RuntimeTestAssertion> assertions, JArray cases, string name,
@@ -251,25 +424,56 @@ namespace KingmakerGunslinger.RuntimeTesting
                 record.ToString(Formatting.None), (bool)record["pass"], "native cast; structured observation"));
         }
 
-        private JObject InheritedCast(ExpandedSummoningCorrectionFixture fixture, UnitEntityData caster, AbilityData data,
-            BlueprintAbility parent, BlueprintAbility child, Func<int> resource, int expectedCost, InheritedCase item,
-            bool cancel, bool alternate = false)
+        private JObject InheritedCast(ExpandedSummoningCorrectionFixture fixture, UnitEntityData caster, Func<AbilityData> create,
+            BlueprintAbility parent, BlueprintAbility child, InheritedCase item, bool cancel, InheritedExpectation expected, bool alternate)
         {
             var failures = new List<string>();
             var record = new JObject { ["case"] = item.Name, ["parent"] = parent.AssetGuid + ":" + parent.name,
-                ["child"] = child.AssetGuid + ":" + child.name, ["caster"] = caster.Descriptor.Alignment.Value.ToString(),
-                ["alternate"] = alternate };
+                ["child"] = child.AssetGuid + ":" + child.name, ["casterAlignment"] = item.Alignment.ToString(), ["alternate"] = alternate };
+            var nativeIds = new HashSet<string>(ExpandedSummoningAbilityBuilder.NativeTemplateIds, StringComparer.Ordinal);
+            BlueprintScriptableObject expectedUnit;
+            ExpandedSummoningBlueprints.Registered.BySymbol.TryGetValue(item.UnitSymbol, out expectedUnit);
+            string unitGuid = expectedUnit == null ? "<unresolved>" : expectedUnit.AssetGuid;
+            record["expectedUnit"] = expectedUnit == null ? "<unresolved>" : unitGuid + ":" + expectedUnit.name;
+
+            // Quantity: the exact graph expression, read before the cast.
+            SummonSpawn[] spawns = SummonSignatureReader.Read(child).Spawns().ToArray();
+            int rankBonus = spawns.Length > 0 && spawns[0].CountBonus != null && spawns[0].CountBonus.Kind == "Rank"
+                ? InheritedRank(caster, child, spawns[0].CountBonus.Rank) : 0;
+            int minimum, maximum;
+            IList<string> expression = InheritedQuantityContract.Expression(item.Quantity, unitGuid,
+                spawns.Select(spawn => new InheritedSpawnExpression(spawn.Unit, spawn.CountDice,
+                    spawn.CountDiceCount == null ? "" : spawn.CountDiceCount.Kind, spawn.CountDiceCount == null ? 0 : spawn.CountDiceCount.Value,
+                    spawn.CountBonus == null ? "" : spawn.CountBonus.Kind, spawn.CountBonus == null ? 0 : spawn.CountBonus.Value,
+                    spawn.CountBonus == null ? "" : spawn.CountBonus.Rank)).ToList(), expected.Branches, rankBonus, out minimum, out maximum);
+            record["quantityExpression"] = new JArray(spawns.Select(spawn => spawn.Quantity()));
+            record["evaluatedRankBonus"] = rankBonus;
+            record["expectedBranches"] = expected.Branches;
+            record["quantityRange"] = minimum + ".." + maximum;
+            failures.AddRange(expression.Select(value => "expression:" + value));
+            record["expectedDuration"] = new JObject { ["base"] = expected.DurationBase, ["bonus"] = expected.DurationBonus,
+                ["source"] = expected.DurationSource };
+            string[] graphApplies = AlternateSummoningGraph.Objects<Kingmaker.UnitLogic.Mechanics.Actions.ContextActionApplyBuff>(child.ComponentsArray)
+                .Where(action => action.Buff != null && nativeIds.Contains(action.Buff.AssetGuid))
+                .Select(action => action.Buff.AssetGuid).Distinct().OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            record["childGraphNativeApplications"] = new JArray(graphApplies);
+            record["childGraphRemovals"] = AlternateSummoningGraph.Objects<ContextActionRemoveInheritedSummonTemplates>(child.ComponentsArray).Count;
+
             object[] before = SnapshotReferences(fixture.SceneEntities);
             ExpandedSummoningRuleCapture.Clear();
             ExpandedSummoningRuleDurationCapture.Clear();
+            AbilityData data = create();
             bool converted = data.ConvertedFrom != null && ReferenceEquals(data.ConvertedFrom.Blueprint, parent) &&
                 ReferenceEquals(data.Blueprint, child) && parent.HasVariant(child);
             record["sourceIsVariantOfParent"] = converted;
             if (!converted) failures.Add("the cast is not this child converted from this parent");
-            SummonSpawn[] spawnSpec = SummonSignatureReader.Read(child).Spawns().ToArray();
-            record["countDice"] = spawnSpec.Length == 0 ? "<none>" : spawnSpec[0].CountDice;
-            int debitBefore = resource();
-            record["resourceBefore"] = debitBefore;
+
+            // Debit: snapshots and the native spend/restore events of the caster during the window only.
+            Dictionary<string, int> sourcesBefore = InheritedSources(caster);
+            var debit = new Cleanup2SourceDebit(caster);
+            var events = new List<string>();
+            _inheritedCaster = caster;
+            _inheritedEvents = events;
             string result = "NotStarted";
             bool started = false, acted = false;
             try
@@ -305,30 +509,53 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
             catch (Exception exception) { failures.Add("cast threw " + exception.GetType().Name + ": " + exception.Message); }
+            finally
+            {
+                _inheritedEvents = null;
+                _inheritedCaster = null;
+            }
             Game.Instance.EntityCreator.Tick();
-            int debitAfter = resource();
-            UnitEntityData[] summoned = ExpandedSummoningRuleCapture.ToArray();
+            Dictionary<string, int> sourcesAfter = InheritedSources(caster);
+            IList<string> ledger = InheritedSourceLedger.Judge(events, sourcesBefore, sourcesAfter,
+                cancel ? null : expected.SourceKey, cancel ? 0 : expected.Amount, cancel ? null : expected.Event);
+            bool nativeDebit = expected.Native(debit);
             record["started"] = started; record["acted"] = acted; record["result"] = result;
-            record["resourceAfter"] = debitAfter; record["debit"] = debitBefore - debitAfter; record["expectedCost"] = expectedCost;
+            record["sourceEvents"] = new JArray(events);
+            record["sourceKey"] = expected.SourceKey;
+            record["expectedDebit"] = cancel ? 0 : expected.Amount;
+            record["observedDebit"] = expected.SourceKey == null ? 0 :
+                (sourcesBefore.ContainsKey(expected.SourceKey) ? sourcesBefore[expected.SourceKey] : 0) -
+                (sourcesAfter.ContainsKey(expected.SourceKey) ? sourcesAfter[expected.SourceKey] : 0);
+            record["sourceDebit"] = expected.Describe(debit);
+            record["nativeDebitVerdict"] = nativeDebit;
+            failures.AddRange(ledger.Select(value => "debit:" + value));
+            if (!nativeDebit) failures.Add("debit:Cleanup2SourceDebit refused");
+
+            UnitEntityData[] summoned = ExpandedSummoningRuleCapture.ToArray();
             record["summoned"] = summoned.Length;
+            var durations = ExpandedSummoningRuleDurationCapture.Select(value => Tuple.Create(
+                value.Unit == null ? "<null>" : value.Unit.UniqueId, value.BaseDuration.TotalSeconds, value.BonusDuration.TotalSeconds)).ToList();
+            record["durations"] = new JArray(durations.Select(value => new JObject { ["unit"] = value.Item1,
+                ["base"] = Math.Round(value.Item2, 2), ["bonus"] = Math.Round(value.Item3, 2) }));
             if (cancel)
             {
                 if (!started) failures.Add("the command was not admitted before the cancellation");
+                if (acted) failures.Add("the cancelled command acted");
                 if (result != "Interrupt") failures.Add("result " + result + ", expected Interrupt");
-                if (debitBefore != debitAfter) failures.Add("a cancelled cast debited " + (debitBefore - debitAfter));
                 if (summoned.Length != 0) failures.Add("a cancelled cast summoned " + summoned.Length);
+                if (durations.Count != 0) failures.Add("a cancelled cast produced a duration");
             }
             else
             {
                 if (result != "Success") failures.Add("result " + result);
-                if (debitBefore - debitAfter != expectedCost || expectedCost < 1)
-                    failures.Add("debit " + (debitBefore - debitAfter) + ", expected exactly " + expectedCost + " once");
-                int min = item.Quantity == SummonMultiplicity.One ? 1 : item.Quantity == SummonMultiplicity.OneD3 ? 1 : 2;
-                int max = item.Quantity == SummonMultiplicity.One ? 1 : item.Quantity == SummonMultiplicity.OneD3 ? 3 : 5;
-                record["quantityContract"] = min + ".." + max;
-                if (summoned.Length < min || summoned.Length > max) failures.Add("summoned " + summoned.Length + " outside " + min + ".." + max);
-                if (summoned.Distinct().Count() != summoned.Length) failures.Add("a unit was captured twice");
-                InheritedObserveUnits(fixture, summoned, child, item, record, failures);
+                bool[] live = summoned.Select(unit => unit != null && !unit.Destroyed && unit.IsInState &&
+                    ContainsReference(fixture.SceneEntities, unit)).ToArray();
+                failures.AddRange(InheritedQuantityContract.Output(minimum, maximum, unitGuid,
+                    summoned.Select(unit => unit == null ? "<null>" : unit.Blueprint.AssetGuid).ToList(),
+                    summoned.Select(unit => unit == null ? "<null>" : unit.UniqueId).ToList(), live).Select(value => "output:" + value));
+                failures.AddRange(InheritedDurationContract.Judge(summoned.Select(unit => unit == null ? "<null>" : unit.UniqueId).ToList(),
+                    durations, expected.DurationBase, expected.DurationBonus).Select(value => "duration:" + value));
+                InheritedObserveUnits(summoned, child, item, record, failures, nativeIds);
             }
             foreach (UnitEntityData unit in summoned) CleanupExpandedSummoningUnit(unit);
             DrainExpandedSummoningDestroyQueue(fixture.SceneEntities, before);
@@ -336,25 +563,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             record["lingeringAfterCleanup"] = lingering;
             if (lingering != 0) failures.Add(lingering + " fixture entities lingered");
             ExpandedSummoningRuleCapture.Clear();
+            ExpandedSummoningRuleDurationCapture.Clear();
             record["failures"] = new JArray(failures);
             record["pass"] = failures.Count == 0;
             return record;
         }
 
-        private static void InheritedObserveUnits(ExpandedSummoningCorrectionFixture fixture, UnitEntityData[] summoned,
-            BlueprintAbility child, InheritedCase item, JObject record, List<string> failures)
+        private static void InheritedObserveUnits(UnitEntityData[] summoned, BlueprintAbility child, InheritedCase item,
+            JObject record, List<string> failures, ICollection<string> nativeIds)
         {
-            var nativeIds = new HashSet<string>(ExpandedSummoningAbilityBuilder.NativeTemplateIds, StringComparer.Ordinal);
-            BlueprintScriptableObject expectedUnit;
-            ExpandedSummoningBlueprints.Registered.BySymbol.TryGetValue(item.UnitSymbol, out expectedUnit);
-            var projectTemplates = new HashSet<string>(ExpandedSummoningBlueprints.Registered.BySymbol
-                .Where(entry => entry.Key.StartsWith("KMG.Summoning.Template.", StringComparison.Ordinal) && entry.Value != null)
+            Func<string, HashSet<string>> registered = prefix => new HashSet<string>(ExpandedSummoningBlueprints.Registered.BySymbol
+                .Where(entry => entry.Key.StartsWith(prefix, StringComparison.Ordinal) && entry.Value != null)
                 .Select(entry => entry.Value.AssetGuid), StringComparer.Ordinal);
-            // The project template the child's own graph names for this caster.
+            HashSet<string> projectTemplates = registered("KMG.Summoning.Template.");
+            HashSet<string> celestialSmites = registered("KMG.Summoning.Smite.Celestial");
+            HashSet<string> fiendishSmites = registered("KMG.Summoning.Smite.Fiendish");
             string wantTemplate = null, wantSmite = null;
-            var byCaster = AlternateSummoningGraph.Objects<ContextActionApplySummonTemplateByCaster>(child.ComponentsArray).FirstOrDefault();
             if (item.ProjectTemplate != "none")
             {
+                ContextActionApplySummonTemplateByCaster byCaster = AlternateSummoningGraph
+                    .Objects<ContextActionApplySummonTemplateByCaster>(child.ComponentsArray).FirstOrDefault();
                 if (byCaster == null) failures.Add("the templated child names no caster-chosen project template");
                 else
                 {
@@ -363,51 +591,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                     wantSmite = (celestial ? byCaster.CelestialSmite : byCaster.FiendishSmite)?.AssetGuid;
                 }
             }
-            string[] graphApplies = AlternateSummoningGraph.Objects<Kingmaker.UnitLogic.Mechanics.Actions.ContextActionApplyBuff>(child.ComponentsArray)
-                .Where(action => action.Buff != null && nativeIds.Contains(action.Buff.AssetGuid))
-                .Select(action => action.Buff.AssetGuid).Distinct().OrderBy(value => value, StringComparer.Ordinal).ToArray();
-            record["childGraphNativeApplications"] = new JArray(graphApplies);
-            record["childGraphRemoval"] = AlternateSummoningGraph.Objects<ContextActionRemoveInheritedSummonTemplates>(child.ComponentsArray).Count;
-            record["expectedUnit"] = expectedUnit == null ? "<unresolved>" : expectedUnit.AssetGuid + ":" + expectedUnit.name;
+            record["expectedProjectTemplate"] = wantTemplate ?? "none";
+            record["expectedSmite"] = wantSmite ?? "none";
             BlueprintBuff marker = BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff;
-            var durations = new JArray();
-            foreach (var capture in ExpandedSummoningRuleDurationCapture)
-                durations.Add(Math.Round((capture.BaseDuration + capture.BonusDuration).TotalSeconds, 1));
-            record["durationSeconds"] = durations;
-            if (durations.Count != summoned.Length || durations.Any(value => (double)value <= 0))
-                failures.Add("duration missing or not positive for a summoned unit");
             var units = new JArray();
-            foreach (UnitEntityData unit in summoned)
+            foreach (UnitEntityData unit in summoned.Where(value => value != null))
             {
-                Buff[] buffs = unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value => value.Blueprint != null).ToArray();
-                string[] native = buffs.Where(value => nativeIds.Contains(value.Blueprint.AssetGuid)).Select(value => value.Blueprint.AssetGuid).ToArray();
-                string[] project = buffs.Where(value => projectTemplates.Contains(value.Blueprint.AssetGuid)).Select(value => value.Blueprint.AssetGuid).ToArray();
+                string[] buffs = unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value => value.Blueprint != null)
+                    .Select(value => value.Blueprint.AssetGuid).ToArray();
+                IList<string> sets = InheritedBuffSetContract.Judge(item.ProjectTemplate, buffs, nativeIds, projectTemplates,
+                    celestialSmites, fiendishSmites, wantTemplate, wantSmite);
                 BlueprintUnitFact[] innate = (unit.Blueprint.AddFacts ?? new BlueprintUnitFact[0]).Where(value => value != null).ToArray();
                 string[] missingInnate = innate.Where(fact => !unit.Descriptor.HasFact(fact)).Select(fact => fact.name).ToArray();
                 bool hasMarker = unit.Descriptor.HasFact(marker);
-                bool live = !unit.Destroyed && unit.IsInState && ContainsReference(fixture.SceneEntities, unit);
-                units.Add(new JObject { ["unit"] = unit.Blueprint.AssetGuid + ":" + unit.Blueprint.name, ["live"] = live,
-                    ["nativeTemplates"] = new JArray(native), ["projectTemplates"] = new JArray(project),
-                    ["innateFacts"] = innate.Length, ["missingInnate"] = new JArray(missingInnate), ["summonMarker"] = hasMarker });
-                if (expectedUnit == null || !ReferenceEquals(unit.Blueprint, expectedUnit)) failures.Add("unit " + unit.Blueprint.name + " is not the expected unit");
-                if (!live) failures.Add("a summoned unit is not live in the area");
-                if (native.Length != 0) failures.Add(unit.Blueprint.name + " carries native template " + string.Join(",", native));
+                units.Add(new JObject { ["unit"] = unit.UniqueId + ":" + unit.Blueprint.AssetGuid + ":" + unit.Blueprint.name,
+                    ["nativeTemplates"] = new JArray(buffs.Where(nativeIds.Contains)),
+                    ["projectTemplates"] = new JArray(buffs.Where(projectTemplates.Contains)),
+                    ["celestialSmites"] = new JArray(buffs.Where(celestialSmites.Contains)),
+                    ["fiendishSmites"] = new JArray(buffs.Where(fiendishSmites.Contains)),
+                    ["innateFacts"] = innate.Length, ["missingInnate"] = new JArray(missingInnate), ["summonMarker"] = hasMarker,
+                    ["buffCount"] = buffs.Length });
+                failures.AddRange(sets.Select(value => unit.Blueprint.name + ":buffs:" + value));
                 if (missingInnate.Length != 0) failures.Add(unit.Blueprint.name + " lost innate facts " + string.Join(",", missingInnate));
                 if (!hasMarker) failures.Add(unit.Blueprint.name + " lost the native summon marker");
-                if (item.ProjectTemplate == "none" && project.Length != 0) failures.Add(unit.Blueprint.name + " carries a project template " + string.Join(",", project));
-                if (item.ProjectTemplate != "none")
-                {
-                    if (wantTemplate == null || !buffs.Any(value => value.Blueprint.AssetGuid == wantTemplate))
-                        failures.Add(unit.Blueprint.name + " lacks the " + item.ProjectTemplate + " project template " + wantTemplate);
-                    if (wantSmite == null || !buffs.Any(value => value.Blueprint.AssetGuid == wantSmite))
-                        failures.Add(unit.Blueprint.name + " lacks the " + item.ProjectTemplate + " smite " + wantSmite);
-                    string other = item.ProjectTemplate == "celestial" ? byCaster?.FiendishTemplate?.AssetGuid : byCaster?.CelestialTemplate?.AssetGuid;
-                    if (other != null && buffs.Any(value => value.Blueprint.AssetGuid == other))
-                        failures.Add(unit.Blueprint.name + " carries the opposite project template");
-                }
             }
             record["units"] = units;
-            record["expectedProjectTemplate"] = wantTemplate ?? "none";
         }
     }
 }

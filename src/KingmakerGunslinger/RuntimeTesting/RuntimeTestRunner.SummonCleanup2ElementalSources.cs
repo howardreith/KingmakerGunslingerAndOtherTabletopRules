@@ -90,6 +90,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _spontaneous[bookIndex].Length == 0 || Enumerable.Range(0, 10).All(rank => book.GetSpontaneousSlots(rank) ==
                             _spontaneous[bookIndex][rank] - (bookIndex == index && rank == level ? 1 : 0))).All(value => value);
             }
+            /// <summary>
+            /// DEF-05: exactly one resource fell by exactly the given positive
+            /// cost; every other resource amount and identity, every book,
+            /// raw slot, spontaneous budget and known/custom spell unchanged.
+            /// </summary>
+            internal bool ExactlyOneResource(BlueprintScriptableObject expected, int cost)
+            {
+                var resources = new List<BlueprintScriptableObject>();
+                foreach (BlueprintScriptableObject resource in _actor.Descriptor.Resources) resources.Add(resource);
+                int index = Array.IndexOf(_resources, expected);
+                bool booksExact = _actor.Descriptor.Spellbooks.SequenceEqual(_books) &&
+                    _books.Select((book, bookIndex) => Enumerable.Range(0, 10).SelectMany(level => RawSlots(book, level)).SequenceEqual(_slots[bookIndex]) &&
+                        _slots[bookIndex].Select(slot => slot.Spell).SequenceEqual(_spells[bookIndex]) && book.GetAllKnownSpells().SequenceEqual(_known[bookIndex]) &&
+                        Enumerable.Range(0, 10).SelectMany(book.GetCustomSpells).SequenceEqual(_custom[bookIndex])).All(value => value);
+                return booksExact && SpontaneousUnchanged && Changed.Length == 0 && cost > 0 && index >= 0 &&
+                    resources.SequenceEqual(_resources) && _resources.Select((resource, resourceIndex) =>
+                        _actor.Descriptor.Resources.GetResourceAmount(resource) ==
+                            _amounts[resourceIndex] - (resourceIndex == index ? cost : 0)).All(value => value);
+            }
+
+            internal JObject DescribeResource(BlueprintScriptableObject expected, int cost)
+            {
+                return new JObject { ["exactlyOneResourceSpentByExactCost"] = ExactlyOneResource(expected, cost),
+                    ["expectedResource"] = expected == null ? null : expected.AssetGuid, ["cost"] = cost,
+                    ["allPreparedSlotsUnchanged"] = Changed.Length == 0, ["allSpontaneousBudgetsUnchanged"] = SpontaneousUnchanged,
+                    ["resources"] = new JArray(_resources.Select((resource, index) => new JObject { ["resource"] = resource.AssetGuid,
+                        ["before"] = _amounts[index], ["after"] = _actor.Descriptor.Resources.GetResourceAmount(resource) })) };
+            }
+
             internal JObject Describe(SpellSlot expected)
             { return new JObject { ["exactlyOneOriginalSlotSpent"] = ExactlyOne(expected), ["allBookSlotSpellKnownCustomAndResourceReferencesExact"] = Identities(),
                 ["books"] = new JArray(_books.Select(book => book.Blueprint.AssetGuid)), ["nativeSlotCount"] = _slots.Sum(slots => slots.Length),
