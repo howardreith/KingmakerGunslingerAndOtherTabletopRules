@@ -1591,6 +1591,7 @@
     <Compile Include="Summoning\ContextActionRemoveInheritedSummonTemplates.cs" />
     <Compile Include="Summoning\InheritedTemplatePolicy.cs" />
     <Compile Include="Summoning\InheritedTemplateCensus.cs" />
+    <Compile Include="Summoning\InheritedTemplateDonorContract.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint28Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2Review.cs" />

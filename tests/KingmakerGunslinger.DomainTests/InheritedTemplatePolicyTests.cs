@@ -250,5 +250,165 @@ namespace KingmakerGunslinger.DomainTests
                 SummonFamily.Monster, false, new[] { "0000000000000000000000000000beef" }, NativeSet),
                 "A non-native buff applied by a donor is not an inherited template and is not removed.");
         }
+
+        // ---- Review finding 1: the production donor is checked against an independent contract ----
+
+        private static InheritedTemplateObservation DonorObservation(string key, SummonFamily family, int tier,
+            SummonMultiplicity multiplicity, string donorName, string donorGuid, string[] applied)
+        {
+            bool applies = applied.Length > 0 && family == SummonFamily.Monster;
+            return new InheritedTemplateObservation(key, "canonical", family, false, false, applied,
+                new[] { new InheritedTemplateBranch(applies ? 0 : -1, applies ? new[] { 1 } : new int[0], true, true, false, 0, true) },
+                tier, multiplicity, donorGuid, donorName, new[] { applies });
+        }
+
+        private static IList<string> DonorFindings(params InheritedTemplateObservation[] graph)
+        {
+            return InheritedTemplateCensus.Evaluate(graph, graph.Select(value => value.Caller + "|" + value.Key), NativeSet, true).Findings;
+        }
+
+        internal static void TheProductionDonorIsCheckedIndependently()
+        {
+            // The contract agrees with the retained observation on every untemplated shape.
+            foreach (SummonVariantSpec variant in ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
+                .Where(value => !value.Creature.MonsterTemplated))
+            {
+                bool retained;
+                Assertions.Equal(null, InheritedTemplateDonorContract.Check(variant.Family, variant.ParentTier,
+                    variant.Multiplicity, "SummonMonsterCarrier", "g" + variant.ParentTier + variant.Multiplicity,
+                    Donor(variant), out retained), "Contract disagrees with the retained donor at " + variant.StableKey);
+                Assertions.True(retained, "Every untemplated shape has a retained signature: " + variant.StableKey);
+            }
+            Assertions.True(DonorFindings(DonorObservation("ok", SummonFamily.Monster, 4, SummonMultiplicity.One,
+                "SummonMonsterIVSingle", "g4s", new[] { FiendishI, CelestialII })).Count == 0, "The right donor passes.");
+            Func<IList<string>, string, bool> has = (findings, text) => findings.Any(value => value.Contains(text));
+            Assertions.True(has(DonorFindings(DonorObservation("single-gets-d3", SummonFamily.Monster, 4, SummonMultiplicity.One,
+                "SummonMonsterIVd3", "g4d3", new[] { CelestialI, FiendishI })), ":wrong-donor:signature"),
+                "Single and d3 carriers swapped (tier 4) must fail.");
+            Assertions.True(has(DonorFindings(DonorObservation("d3-gets-d4", SummonFamily.Monster, 5, SummonMultiplicity.OneD3,
+                "SummonMonsterVd4", "g5d4", new[] { CelestialI, FiendishI })), ":wrong-donor:signature"),
+                "d3 and d4+1 carriers swapped (tier 5) must fail.");
+            Assertions.True(has(DonorFindings(DonorObservation("wrong-pair", SummonFamily.Monster, 4, SummonMultiplicity.One,
+                "SummonMonsterIVSingle", "g4s", new[] { CelestialI, FiendishII })), ":wrong-donor:signature"),
+                "A donor with the wrong native-template pair must fail.");
+            Assertions.True(has(DonorFindings(DonorObservation("ally-on-monster", SummonFamily.NaturesAlly, 8, SummonMultiplicity.OneD3,
+                "SummonMonsterVIIId3", "g8d3", new string[0])), ":wrong-donor:family"),
+                "A Nature's Ally placement mapped to a Summon Monster carrier must fail, even with no template to show it.");
+            Assertions.True(has(DonorFindings(DonorObservation("tier-one", SummonFamily.Monster, 1, SummonMultiplicity.One,
+                "SummonMonsterISingle", "notTheParent", new string[0])), ":wrong-donor:tier-one-identity"),
+                "Tier one must use the native direct parent.");
+            Assertions.True(has(DonorFindings(
+                DonorObservation("a", SummonFamily.Monster, 3, SummonMultiplicity.One, "SummonMonsterIIISingle", "same", new[] { CelestialI, FiendishI }),
+                DonorObservation("b", SummonFamily.Monster, 3, SummonMultiplicity.OneD3, "SummonMonsterIIId3", "same", new[] { CelestialI, FiendishI })),
+                ":shapes-share-donor:"), "Two quantities of one tier on one carrier must fail (a swap the signature cannot see).");
+            Assertions.True(has(DonorFindings(
+                DonorObservation("a", SummonFamily.Monster, 3, SummonMultiplicity.One, "SummonMonsterIIISingle", "one", new[] { CelestialI, FiendishI }),
+                DonorObservation("b", SummonFamily.Monster, 3, SummonMultiplicity.One, "SummonMonsterIIISingle", "two", new[] { CelestialI, FiendishI })),
+                ":shape-donor-inconsistent:"), "One shape on two carriers must fail.");
+            bool shapeRetained;
+            Assertions.Equal(null, InheritedTemplateDonorContract.Check(SummonFamily.Monster, 2, SummonMultiplicity.OneD3,
+                "SummonMonsterIId3", "g2d3", new[] { CelestialI, FiendishI }, out shapeRetained), "An unretained shape is not failed.");
+            Assertions.False(shapeRetained, "An unretained shape is reported as recorded-now, not proved.");
+        }
+
+        // ---- Review finding 2: every expected alternate family child is accounted for ----
+
+        internal static void AMissingAlternateFamilyIsReportedPerChild()
+        {
+            List<string> expected;
+            List<InheritedTemplateObservation> graph = CorrectGraph(out expected);
+            string[] families = { "MonsterTactician", "Summoner", "MasterSummoner", "Occultist", "Naturalist", "FeralHunter", "Preservationist" };
+            SummonVariantSpec sample = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
+                .First(value => !value.Creature.MonsterTemplated && Donor(value).Length == 0);
+            foreach (string family in families)
+            {
+                expected.Add("alternate:" + family + "|" + family + ".child");
+                if (family != "Summoner")
+                    graph.Add(new InheritedTemplateObservation(family + ".child", "alternate:" + family, SummonFamily.Monster,
+                        false, false, new string[0], new[] { Branch(false, false) }));
+            }
+            IList<string> findings = Judge(graph, expected).Findings;
+            Assertions.Equal(1, findings.Count, "Exactly the missing family's child is reported: " + string.Join(",", findings.ToArray()));
+            Assertions.True(findings[0] == "alternate:Summoner|Summoner.child:skipped", "The family that produced nothing is named.");
+        }
+
+        // ---- Review finding 3: donor immutability receipts ----
+
+        private sealed class Node { internal string Buff; }
+
+        private static InheritedTemplateDonorReceipt Receipt(object array, object[] components, object[] spawns,
+            object[] afterArrays, object[][] afterElements, object[] actions, string[] types, string[] buffs)
+        {
+            return new InheritedTemplateDonorReceipt("guid", "SummonMonsterIVSingle", array, components, spawns, afterArrays,
+                afterElements, actions, types, buffs, buffs.Where(NativeSet.Contains).ToArray());
+        }
+
+        internal static void DonorReceiptsSeeMutations()
+        {
+            object array = new object(), component = new object(), spawn = new object(), after = new object();
+            object apply = new Node { Buff = CelestialI }, other = new Node(), replacement = new Node();
+            string[] types = { "Conditional", "ContextActionApplyBuff" };
+            InheritedTemplateDonorReceipt before = Receipt(array, new[] { component }, new[] { spawn }, new[] { after },
+                new[] { new[] { other, apply } }, new[] { other, apply }, types, new[] { CelestialI });
+            Assertions.Equal(0, InheritedTemplateDonorReceipt.Differences(before, Receipt(array, new[] { component },
+                new[] { spawn }, new[] { after }, new[] { new[] { other, apply } }, new[] { other, apply }, types,
+                new[] { CelestialI })).Count, "An unchanged donor has no differences.");
+            Assertions.True(InheritedTemplateDonorReceipt.Differences(before, Receipt(array, new[] { component }, new[] { spawn },
+                new[] { after }, new[] { new[] { other, replacement } }, new[] { other, replacement }, types, new[] { CelestialI }))
+                .Contains("actions"), "Same action count with one action replaced must differ.");
+            Assertions.True(InheritedTemplateDonorReceipt.Differences(before, Receipt(array, new[] { component }, new[] { spawn },
+                new[] { after }, new[] { new[] { apply, other } }, new[] { apply, other }, types, new[] { CelestialI }))
+                .Contains("after-spawn-actions"), "Changed action order must differ.");
+            Assertions.True(InheritedTemplateDonorReceipt.Differences(before, Receipt(array, new[] { component }, new[] { spawn },
+                new[] { after }, new[] { new[] { other, apply } }, new[] { other, apply }, types, new[] { FiendishI }))
+                .Contains("apply-buff-ids"), "An ApplyBuff's buff changed in place must differ.");
+            Assertions.True(InheritedTemplateDonorReceipt.Differences(before, Receipt(array, new[] { component }, new[] { spawn },
+                new[] { new object() }, new[] { new[] { other, apply } }, new[] { other, apply }, types, new[] { CelestialI }))
+                .Contains("after-spawn-arrays"), "An after-spawn array replaced by an equal-length one must differ.");
+        }
+
+        // ---- Review finding 4: branch-level pairing and redundancy ----
+
+        private static IList<string> BranchFindings(out IList<string> redundant, params InheritedTemplateBranch[] branches)
+        {
+            var value = new InheritedTemplateObservation("Monster.4.mephit.One", "canonical", SummonFamily.Monster, false, false,
+                new[] { FiendishI, CelestialII }, branches, 4, SummonMultiplicity.One, null, null, new[] { true, false });
+            InheritedTemplateCensusResult result = InheritedTemplateCensus.Evaluate(new[] { value },
+                new[] { "canonical|Monster.4.mephit.One" }, NativeSet);
+            redundant = result.JustifiedRedundant;
+            return result.Findings;
+        }
+
+        internal static void BranchesArePairedAndRedundancyIsExplicit()
+        {
+            IList<string> redundant;
+            // Donor: branch 0 applies, branch 1 does not. A correct clone removes on both (placement-level).
+            IList<string> correct = BranchFindings(out redundant,
+                new InheritedTemplateBranch(0, new[] { 1 }, true, true, false, 0, true),
+                new InheritedTemplateBranch(-1, new[] { 0 }, true, true, false, 1, true));
+            Assertions.True(correct.Count == 0, "A correct two-branch clone passes: " + string.Join(",", correct.ToArray()));
+            Assertions.True(redundant.Count == 1 && redundant[0].Contains("branch1:placement-removal-on-donor-branch-without-application"),
+                "The canonical removal with nothing to remove is listed, not hidden.");
+            Func<IList<string>, string, bool> has = (findings, text) => findings.Any(item => item.Contains(text));
+            Assertions.True(has(BranchFindings(out redundant,
+                new InheritedTemplateBranch(-1, new[] { 0 }, true, true, false, 0, true),
+                new InheritedTemplateBranch(-1, new[] { 0 }, true, true, false, 1, true)), "branch0:application-lost"),
+                "An applying donor branch whose clone lost the application must fail.");
+            Assertions.True(has(BranchFindings(out redundant,
+                new InheritedTemplateBranch(0, new[] { 1 }, true, true, false, 0, true)), "donor-branch1:branch-skipped"),
+                "A skipped donor branch must fail.");
+            Assertions.True(has(BranchFindings(out redundant,
+                new InheritedTemplateBranch(0, new[] { 1 }, true, true, false, 0, true),
+                new InheritedTemplateBranch(0, new[] { 1 }, true, true, false, 0, true)), "branch-duplicate-pairing"),
+                "Two generated branches on one donor branch must fail.");
+            Assertions.True(has(BranchFindings(out redundant,
+                new InheritedTemplateBranch(0, new int[0], true, true, false, 0, true),
+                new InheritedTemplateBranch(-1, new[] { 0 }, true, true, false, 1, true)), "branch0:omitted"),
+                "A removal only on the wrong branch must fail.");
+            Assertions.True(has(BranchFindings(out redundant,
+                new InheritedTemplateBranch(0, new[] { 1 }, true, true, false, -1, false),
+                new InheritedTemplateBranch(-1, new[] { 0 }, true, true, false, 1, true)), "branch0:branch-unpaired"),
+                "A generated branch whose shape matches no donor branch must fail.");
+        }
     }
 }

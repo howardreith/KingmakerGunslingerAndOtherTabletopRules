@@ -230,38 +230,66 @@ namespace KingmakerGunslinger.Blueprints
         /// native parents' menus with the project's choices, so the carrier
         /// cannot be resolved again from the parent afterwards (the first S5 T1
         /// candidate tried, and the alternate families failed closed). The
-        /// component array reference and its action count are kept so the
-        /// census can prove the donor was not mutated.
+        /// census can prove the donor was not mutated: an immutable receipt of its
+        /// references, action types and buff identities (DEF-05 review finding 3).
         /// </summary>
         internal sealed class DonorRecord
         {
             internal DonorRecord(BlueprintAbility ability)
             {
                 Ability = ability;
-                Components = ability.ComponentsArray;
-                ActionCount = AlternateSummoningGraph.Objects<GameAction>(ability.ComponentsArray).Count;
+                Receipt = CaptureReceipt(ability);
             }
 
             internal BlueprintAbility Ability { get; private set; }
-            internal BlueprintComponent[] Components { get; private set; }
-            internal int ActionCount { get; private set; }
+            /// <summary>Taken before the donor is cloned or any publication runs.</summary>
+            internal InheritedTemplateDonorReceipt Receipt { get; private set; }
 
-            internal bool Unchanged
+            /// <summary>Differences between the receipt and the donor now (DEF-05 review finding 3).</summary>
+            internal IList<string> Differences()
             {
-                get
-                {
-                    return ReferenceEquals(Ability.ComponentsArray, Components) &&
-                        AlternateSummoningGraph.Objects<GameAction>(Ability.ComponentsArray).Count == ActionCount;
-                }
+                return InheritedTemplateDonorReceipt.Differences(Receipt, CaptureReceipt(Ability));
             }
+        }
+
+        /// <summary>
+        /// The donor's identity, component, spawn, after-spawn and action
+        /// references in traversal order, action types, every ApplyBuff buff
+        /// identity and the native-template application sequence.
+        /// </summary>
+        internal static InheritedTemplateDonorReceipt CaptureReceipt(BlueprintAbility ability)
+        {
+            if (ability == null) throw new ArgumentNullException("ability");
+            BlueprintComponent[] components = ability.ComponentsArray ?? Array.Empty<BlueprintComponent>();
+            ContextActionSpawnMonster[] spawns = AlternateSummoningGraph
+                .Objects<ContextActionSpawnMonster>(components).ToArray();
+            GameAction[] actions = AlternateSummoningGraph.Objects<GameAction>(components).ToArray();
+            string[] applied = AlternateSummoningGraph.Objects<ContextActionApplyBuff>(components)
+                .Select(action => action.Buff == null ? "<null>" : action.Buff.AssetGuid).ToArray();
+            return new InheritedTemplateDonorReceipt(ability.AssetGuid, ability.name, ability.ComponentsArray,
+                components.Cast<object>().ToArray(), spawns.Cast<object>().ToArray(),
+                spawns.Select(spawn => spawn.AfterSpawn == null ? null : (object)spawn.AfterSpawn.Actions).ToArray(),
+                spawns.Select(spawn => spawn.AfterSpawn == null || spawn.AfterSpawn.Actions == null ? new object[0] :
+                    spawn.AfterSpawn.Actions.Cast<object>().ToArray()).ToArray(),
+                actions.Cast<object>().ToArray(), actions.Select(action => action.GetType().FullName).ToArray(),
+                applied, applied.Where(id => Array.IndexOf(NativeMonsterTemplateBuffs, id) >= 0).ToArray());
         }
 
         private static readonly Dictionary<string, DonorRecord> Donors =
             new Dictionary<string, DonorRecord>(StringComparer.Ordinal);
 
+        private static readonly Dictionary<BlueprintAbility, DonorRecord> DonorsByCarrier =
+            new Dictionary<BlueprintAbility, DonorRecord>();
+
         private static void RecordDonor(SummonVariantSpec variant, BlueprintAbility donor)
         {
-            lock (Donors) Donors[variant.StableKey] = new DonorRecord(donor);
+            lock (Donors)
+            {
+                DonorRecord record;
+                if (!DonorsByCarrier.TryGetValue(donor, out record))
+                    DonorsByCarrier[donor] = record = new DonorRecord(donor);
+                Donors[variant.StableKey] = record;
+            }
         }
 
         /// <summary>The donor carrier the canonical spell for this placement cloned; throws when none was recorded.</summary>
