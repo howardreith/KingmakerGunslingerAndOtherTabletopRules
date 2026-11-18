@@ -1,0 +1,21 @@
+{
+  "name": "inherited-template-census",
+  "description": "S5 T1 / DEF-05. It runs disposable-alternate-summoning-contracts with Call of the Wild staged (the contract fixture resolves CotW's Master Summoner and Naturalist). Its inherited-template-census-per-placement assertion judges every published Summon Monster and Nature's Ally ability, canonical (including the templated caster-chosen, celestial and fiendish abilities and every quantity and nested spawn branch) and every Master Summoner and Naturalist alternate child built through the production adapter, from separately read catalog intent, donor-carrier applications and generated branches. Graph evidence only; no save is loaded and nothing is cast.",
+  "ownerMods": [
+    "CallOfTheWild"
+  ],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "inherited-template-census",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-alternate-summoning-contracts",
+        "parameters": {},
+        "timeoutSeconds": 900
+      }
+    }
+  ]
+}
