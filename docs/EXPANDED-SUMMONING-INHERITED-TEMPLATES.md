@@ -1,8 +1,8 @@
 # Inherited summon templates per owned placement (DEF-05 / S5 T1)
 
-Status: **the third review's correction is implemented and tested, and it is built into the final replacement
-candidate, whose bytes are frozen. S5 T1 is not complete and not ready for principal review:** both native sessions
-remain blocked by a Steam Cloud sync conflict for Kingmaker (see "Native status"). Branch
+Status: **the native census ran on the frozen final candidate and FAILED on one diagnostic category. The cast session
+was not run. S5 T1 is not complete and not ready for principal review; it is stopped for review** (see "Native census
+on the frozen final candidate"). Branch
 `codex/def05-inherited-template-cleanup`, draft PR #186, stacked on the accepted Sprint 4 closure PR #185
 (`5c662d50b0`). Not merged, not released.
 
@@ -371,7 +371,7 @@ journal. The cast session was not attempted.
 | Repaired source, never built | `0544169f86` (its build was stopped for low memory; no package) | none |
 | Built-but-unexecuted candidate | `bab7e7dd43fc`, package `ce1be0a9…7865`, DLL `b607b92f…0d47`, MVID `5720c765-…5785` | built; never loaded by the game; its census launch was refused at the Steam Cloud preflight (a safety refusal, not a gameplay run); superseded by the second review's corrections |
 | Built-but-unexecuted candidate (second review) | `0af2b30bd4c7`, package `336b88e0…c0f8`, DLL `6c44072b…390c`, MVID `63c5f429-…1daa0` | built; never loaded by the game; superseded by the third review's correction |
-| **Final replacement candidate** (frozen) | `0d6006ac03a2`, package `f1fdd873…9dbd`, DLL `0575b4fc…7a45`, MVID `5e5ff7e5-…b8f7` | built; **not executed**: the cloud conflict persists, so no launch was attempted |
+| **Final replacement candidate** (frozen) | `0d6006ac03a2`, package `f1fdd873…9dbd`, DLL `0575b4fc…7a45`, MVID `5e5ff7e5-…b8f7` | census session `20261118T215938Z-owner-0.33.0-inherited-template-census` **FAIL** (170 donor-receipt findings on the two tier-one native parents; below); cast session not run |
 
 ## Second review corrections (third checkpoint)
 
@@ -535,15 +535,94 @@ candidate build selected and passed it: 835 of 835.
 23:02 local "Sync conflict" entries, with no "Sync Disabled" among the last six. No launch was attempted, and no save,
 cloud copy or log was touched.
 
+## Native census on the frozen final candidate
+
+**Precondition.** The owner disabled Steam Cloud for Kingmaker: Steam's setting `cloudenabled "0"` for App ID 640820 was
+written at 2026-11-18 16:34:49. The owner then launched and quit Kingmaker from Steam. A read-only check at 16:59:23
+local found `Starting sync (AC Exit,Sync Disabled,)` for App ID 640820 at 16:59:16 among the last six entries.
+
+The owner chose how to handle the conflicted owner files; I did not choose, move or edit any of them. The frozen
+package (`f1fdd873…9dbd`) and harness (`c47e7f14…b089`) hashes were verified before launch.
+
+**Session `20261118T215938Z-owner-0.33.0-inherited-template-census`** (`inherited-template-census.json`, Call of the Wild
+staged): FAIL.
+- Run 21:59:37–22:02:13 UTC; 131 s in game, 156 s in total.
+- Loaded build: DLL `0575b4fc…7a45`, MVID `5e5ff7e5-7ca8-4539-ba02-29334dfdb8f7`.
+- Active mods: Call of the Wild 1.14.4c-2.1, KingmakerGunslinger 0.0.191, KmgLoaderCompatHarness 0.1.0. Loader UMM
+  0.33.0, game 2.1.7b.
+- Restoration: the 95 owner saves, the owner installation and the registry were unchanged or restored. On the game
+  copy's exit Steam logged `AC Exit, Sync Disabled` (17:02:13) and no conflict.
+
+**What passed.** Every other contract and composition assertion of the fixture passed, and the census itself found:
+- **Observations:** 5,769 of 5,769 expected; none unresolved or skipped.
+  - Canonical: 1,826 (1,238 Summon Monster, 588 Nature's Ally).
+  - Alternate: 3,943.
+
+  | Alternate family | Children (expected = actual = observed) | Non-creature records excluded |
+  |---|---|---|
+  | Monster Tactician | 600 | 41 |
+  | Summoner | 600 | 18 |
+  | Master Summoner | 600 | 18 |
+  | Occultist | 600 | 18 |
+  | Naturalist | 588 | 13 |
+  | Feral Hunter | 588 | 13 |
+  | Preservationist | 367 | 9 |
+
+  No child-set finding.
+- **Dispositions:**
+
+  | Disposition | Canonical | Alternate |
+  |---|---|---|
+  | Remove inherited | 81 | 324 |
+  | Preserve the deliberate template | 957 | 1,276 |
+  | No inherited template | 200 | 800 |
+  | Outside Summon Monster (Nature's Ally) | 588 | 1,543 |
+
+  Templated abilities: 2,233. Quantity removals: 58.
+- **Quantity rows:**
+
+  | | One | 1d3 | 1d4+1 |
+  |---|---|---|---|
+  | Canonical | 315 | 307 | 1,204 |
+  | Alternate | 732 | 701 | 2,510 |
+
+- **Branches.** Canonical: 81 with a removal on an applying donor branch, 486 cloned applications on templated
+  abilities (replaced by the project template), and 1,695 with neither. Alternate: 405 removals on host branches that
+  apply nothing, and 5,318 with neither. 1,744 abilities have more than one branch.
+- **Donors:** 48 shapes, each recorded by identity and name. Every donor matched the independent donor contract. Three
+  shapes were never in the retained census (Monster tier 1 single, tier 2 d3 and tier 3 d4+1); their signatures,
+  Celestial I and Fiendish I, are recorded now and not proved.
+- **Justified redundancy:** 405, all `mirrored-canonical-removal;alternate-host-applies-none`. Master Summoner 162;
+  Monster Tactician, Summoner and Occultist 81 each.
+- **No other findings:** no wrong-donor, branch-pairing, omitted, extra, owner, identity, ordering or
+  deliberate-template finding.
+
+**The failure.** 170 findings, all `donor-mutated` on two donors only:
+- `components-array` and `components` on the native tier-one direct parents, `SummonMonsterISingle`
+  (`8fd74eddd9b6c224693d9ab241f25e84`) and `SummonNaturesAllyI` (`c6147854641924442a3bb736080cfeb6`);
+- reported on all 85 abilities that clone them: 30 canonical and 55 alternate tier-one children;
+- no action-reference, action-type or buff-identity difference.
+
+**Classification: diagnostic.** It is neither a DEF-05 gameplay defect nor an environment fault.
+- The receipt is taken when `Configure` clones the canonical spells, before publication.
+- The established publisher (`ExpandedSummoningPublication.PublishParent`, `47c6a4ab04`, 2026-08-12, "preserve native
+  tier-one casts") then turns these two direct parents into menus. It keeps the original casts as the separate
+  `NativeMonsterTierOneSymbol` and `NativeNaturesAllyTierOneSymbol` copies.
+- The receipt therefore correctly records a real, intended, pre-existing rewrite of those two native blueprints. The
+  census's contract that donors are never mutated does not account for that publication.
+
+**Possible correction, for review.** Compare the two tier-one donors against the publisher's recorded rewrite, with the
+original components unchanged, or against the preserved native copies. That is a decision about what the contract
+should allow, so nothing was changed.
+
+**The cast session** (`inherited-template-casts.json`) was not run, as instructed after a census failure.
+
 ## Remaining (S5 T1 is not complete)
 
-1. **The owner resolves the Kingmaker Steam Cloud conflict and establishes that sync is disabled for App ID 640820.** A
-   remote-newer timestamp is not authority to choose that copy.
-2. Run `inherited-template-census.json`, then `inherited-template-casts.json`, both with Call of the Wild, on the frozen
-   final package `f1fdd873…9dbd`. Keep any failure under its own identities, repair only the observed boundary, rebuild,
-   and rerun the affected evidence for the new DLL identity.
-3. Then the review records: the census totals by canonical family, alternate family, donor shape and branch, and each
-   representative cast's observations. None exist yet.
+1. Review the census failure above and decide the tier-one donor contract.
+2. If a correction is chosen: implement it, then rebuild and rerun the census, then run the cast session on the new
+   frozen package. Keep this session's failure under its own identities.
+3. Then the review records.
 4. Release obligation: the next release validator must account for the removed creature list. The v0.0.191 historical
    validator is unchanged.
 

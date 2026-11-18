@@ -333,9 +333,11 @@
   branch pairing) and a representative native-cast observer were built into `bab7e7dd43fc`, which was never executed.
   The second review's corrections (exact debit, quantity, duration, buff sets and alternate child sets) were built into
   `0af2b30bd4c7`, also never executed. The third review's correction (the deliberate template expectation derived
-  independently of the child graph) is built into the frozen final candidate `0d6006ac03a2`. Its native census and casts
-  remain blocked by a Steam Cloud sync conflict on Kingmaker owner saves, which was not touched, so nothing is claimed
-  fixed in play yet.
+  independently of the child graph) is built into the frozen final candidate `0d6006ac03a2`. After the owner disabled
+  Steam Cloud for Kingmaker, its native census (session `20261118T215938Z`) observed all 5,769 canonical and alternate
+  abilities across the seven families, but failed on 170 donor-receipt findings. These are diagnostic: the established
+  tier-one menu publication rewrites the two native tier-one parents after cloning. The cast session was not run, and
+  nothing is claimed fixed in play yet.
 - Two feature-module publication self-checks fail on a heavily modded installation (v0.0.186):
   `feature-module-expanded-summoning-publication-gate` reports `unclassified=38` against a hard-coded
   expectation of 0, and `feature-module-brown-fur-publication-gate` fails alongside it. A matched
