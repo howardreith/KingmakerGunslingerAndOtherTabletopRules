@@ -34,6 +34,7 @@ param(
         'observe-alternate-summoning-blocked-family',
         'disposable-alternate-summoning-contracts',
         'disposable-alternate-summoning-player-paths',
+        'disposable-inherited-template-casts',
         'observe-favored-class-host-state',
         'observe-optional-mod-compatibility',
         'observe-class-blueprint-contracts',

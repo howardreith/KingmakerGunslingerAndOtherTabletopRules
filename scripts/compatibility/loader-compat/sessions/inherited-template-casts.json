@@ -1,0 +1,21 @@
+{
+  "name": "inherited-template-casts",
+  "description": "S5 T1 / DEF-05 representative native casts. It runs disposable-inherited-template-casts with Call of the Wild staged, in the save-free native first area of the summoning native profile: a level-20 Sorcerer casts, through its own spontaneous slots, an affected tier-IV single mephit as a good and as an evil caster, a tier-VI d4+1 mephit, the caster-chosen Dire Wolf as a good (celestial) and an evil (fiendish) caster, a tier-VII Greater Air Elemental with no inherited template and a Nature's Ally II Wolf; a Call of the Wild Master Summoner casts its tier-IV mephit adapter child through its resource; one cast is cancelled before commit. Every completed cast records source, one debit, quantity, unit identities, the four native template buffs and the project template by identity, duration, innate facts and the native summon marker; donor receipts and two unrelated rows are compared before and after. No save is loaded.",
+  "ownerMods": [
+    "CallOfTheWild"
+  ],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "inherited-template-casts",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-inherited-template-casts",
+        "parameters": {},
+        "timeoutSeconds": 900
+      }
+    }
+  ]
+}

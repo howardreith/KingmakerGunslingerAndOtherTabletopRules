@@ -292,6 +292,14 @@ namespace KingmakerGunslinger.Blueprints
             }
         }
 
+        /// <summary>Every recorded donor carrier's receipt differences, prefixed by the carrier identity; empty when no donor changed.</summary>
+        internal static IList<string> DonorReceiptDifferences()
+        {
+            lock (Donors)
+                return DonorsByCarrier.Values.SelectMany(record => record.Differences()
+                    .Select(difference => record.Ability.AssetGuid + ":" + difference)).ToList();
+        }
+
         /// <summary>The donor carrier the canonical spell for this placement cloned; throws when none was recorded.</summary>
         internal static DonorRecord RecordedDonor(SummonVariantSpec placement)
         {

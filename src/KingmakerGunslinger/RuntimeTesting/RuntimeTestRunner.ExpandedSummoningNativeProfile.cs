@@ -250,6 +250,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _summoningProfileResult = _request.Scenario == RuntimeTestScenarioCatalog
                             .DisposableAlternateSummoningPlayerPaths
                         ? RunAlternateSummoningPlayerPaths()
+                        : _request.Scenario == RuntimeTestScenarioCatalog
+                            .DisposableInheritedTemplateCasts
+                        ? RunInheritedTemplateCasts()
                         : RunDisposableExpandedSummoning(false);
                     BeginSummoningProfileReset();
                     return;
