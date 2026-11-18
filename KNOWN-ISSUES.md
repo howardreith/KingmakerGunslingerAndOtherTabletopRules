@@ -336,8 +336,10 @@
   independently of the child graph) is built into the frozen final candidate `0d6006ac03a2`. After the owner disabled
   Steam Cloud for Kingmaker, its native census (session `20261118T215938Z`) observed all 5,769 canonical and alternate
   abilities across the seven families, but failed on 170 donor-receipt findings. These are diagnostic: the established
-  tier-one menu publication rewrites the two native tier-one parents after cloning. The cast session was not run, and
-  nothing is claimed fixed in play yet.
+  tier-one menu publication rewrites the two native tier-one parents after cloning. With the owner's tier-one donor
+  contract (`67704e6459`), the rerun (session `20261118T225322Z`) failed only one condition of that contract, "preserved
+  child exactly once in the menu". The publisher withholds that child by design when its lineage is replaced. The cast
+  session was not run, and nothing is claimed fixed in play yet.
 - Two feature-module publication self-checks fail on a heavily modded installation (v0.0.186):
   `feature-module-expanded-summoning-publication-gate` reports `unclassified=38` against a hard-coded
   expectation of 0, and `feature-module-brown-fur-publication-gate` fails alongside it. A matched

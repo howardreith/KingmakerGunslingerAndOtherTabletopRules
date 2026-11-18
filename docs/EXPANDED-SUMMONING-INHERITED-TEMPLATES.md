@@ -1,8 +1,8 @@
 # Inherited summon templates per owned placement (DEF-05 / S5 T1)
 
-Status: **the native census ran on the frozen final candidate and FAILED on one diagnostic category. The cast session
-was not run. S5 T1 is not complete and not ready for principal review; it is stopped for review** (see "Native census
-on the frozen final candidate"). Branch
+Status: **the owner-approved tier-one donor contract is implemented and built. Its census rerun FAILED on one condition
+of that contract, which contradicts released publication behaviour. The cast session was not run. S5 T1 is stopped for
+review and not ready for principal review** (see "Tier-one donor contract and census rerun"). Branch
 `codex/def05-inherited-template-cleanup`, draft PR #186, stacked on the accepted Sprint 4 closure PR #185
 (`5c662d50b0`). Not merged, not released.
 
@@ -371,7 +371,8 @@ journal. The cast session was not attempted.
 | Repaired source, never built | `0544169f86` (its build was stopped for low memory; no package) | none |
 | Built-but-unexecuted candidate | `bab7e7dd43fc`, package `ce1be0a9…7865`, DLL `b607b92f…0d47`, MVID `5720c765-…5785` | built; never loaded by the game; its census launch was refused at the Steam Cloud preflight (a safety refusal, not a gameplay run); superseded by the second review's corrections |
 | Built-but-unexecuted candidate (second review) | `0af2b30bd4c7`, package `336b88e0…c0f8`, DLL `6c44072b…390c`, MVID `63c5f429-…1daa0` | built; never loaded by the game; superseded by the third review's correction |
-| **Final replacement candidate** (frozen) | `0d6006ac03a2`, package `f1fdd873…9dbd`, DLL `0575b4fc…7a45`, MVID `5e5ff7e5-…b8f7` | census session `20261118T215938Z-owner-0.33.0-inherited-template-census` **FAIL** (170 donor-receipt findings on the two tier-one native parents; below); cast session not run |
+| Frozen candidate, first census | `0d6006ac03a2`, package `f1fdd873…9dbd`, DLL `0575b4fc…7a45`, MVID `5e5ff7e5-…b8f7` | census session `20261118T215938Z-owner-0.33.0-inherited-template-census` **FAIL**: 170 repeated donor-receipt findings, representing two unique tier-one parent transitions; cast session not run |
+| Tier-one contract candidate | `67704e6459ce`, package `ccfbf1d4…b961`, DLL `e30b2bd7…9d8a`, MVID `5151ff94-…b595` | census session `20261118T225322Z-owner-0.33.0-inherited-template-census` **FAIL**: both tier-one parents failed only `preserved-child-in-menu:0`; cast session not run |
 
 ## Second review corrections (third checkpoint)
 
@@ -617,11 +618,87 @@ should allow, so nothing was changed.
 
 **The cast session** (`inherited-template-casts.json`) was not run, as instructed after a census failure.
 
+## Tier-one donor contract and census rerun
+
+**Owner decision (after session `20261118T215938Z`).** The census allows one exact approved tier-one publication
+transition: Summon Monster I `8fd74eddd9b6c224693d9ab241f25e84` and Summon Nature's Ally I
+`c6147854641924442a3bb736080cfeb6`. Every other donor must match its receipt exactly.
+
+**Implementation (`67704e6459`).** `InheritedTierOnePublicationContract.Judge` (engine-free) is called once per recorded
+carrier by the native census. A difference counts as an approved transition only on those two parents, and only when
+every condition holds:
+1. the receipt's components are kept as the same references, in order;
+2. exactly one added component, an `AbilityVariants` named `$KMG_ExpandedSummoning_Variants`, with no second variants
+   component;
+3. the stable preserved child (`KMG.Summoning.Native.SM.Tier1` or `KMG.Summoning.Native.SNA.Tier1`) appears exactly once
+   in that menu, and is not the parent;
+4. the preserved child is semantically equal to the pre-publication donor (the `SummonSignature` render, action types
+   and buff identities) and shares no component or action instance with it;
+5. with the menu excluded, the live parent still equals the receipt;
+6. every expected owned tier-one child appears exactly once (foreign rows and order are free);
+7. the publisher's record agrees with the receipt and the live parent.
+
+Donor results are reported once per carrier. The census requires exactly 2 approved transitions and 0 mutations. To
+support this, `DonorRecord` keeps the pre-publication signature, `RecordedCarriers` lists the carriers, `CaptureReceipt`
+takes an explicit component list, and `ExpandedSummoningPublication` exposes its records and the last publication.
+
+**Controls**, in `InheritedTierOnePublicationTests` (four cases): every control named in the decision, plus the parent
+standing in for the preserved child, a preserved child with different native-template applications, and a publication
+record that disagrees with the receipt.
+
+**Tests:**
+
+| Command | Result | Time |
+|---|---|---|
+| `Invoke-KmgGate.ps1 -Filter 'expanded-summoning.inherited-template'` | 20 of 20 (after one missing `using` was fixed) | 19 s |
+| `Invoke-KmgGate.ps1 -Filter 'summon;alternate-summoning;expanded-summoning;publication'` | 891 of 891 | 19 s |
+| `Test-RuntimeScenarioPreflight.ps1` | 1205 passed | 26 s |
+| `tools/validate_development_candidate.py --purpose def05-template-cleanup` | PASS | 5 s |
+| `tools/validate_icon_catalog.py`, `git diff --check` | PASS, clean | |
+
+**Memory preflight:** 7.7 of 31.7 GB physical free; commit 40.3 of 54.7 GB (74%); pagefile 1.5 GB; C: 326 GB free. This
+session's idle compiler server was shut down first.
+
+**Candidate**, built from `67704e6459ce091a7c686f24ddd09a3207b2c10f`:
+- package `ccfbf1d481ee8e08cfba6eabc182e23e8eecb324901e118e3f0fcb6634d1b961`;
+- DLL `e30b2bd710b2a7faae3de2d70bdbe149e491e05ab2ccdbaab6ae008259999d8a`;
+- MVID `5151ff94-3d2e-4e82-bbf6-b58f64edb595`, as loaded in game;
+- harness `c47e7f14…b089`;
+- build 22:45:22 to 22:53:08 UTC, 891 of 891 selected.
+
+**Session `20261118T225322Z-owner-0.33.0-inherited-template-census`**: FAIL.
+- Run 22:53:22–22:55:34 UTC; 115 s in game, 132 s in total. Call of the Wild 1.14.4c-2.1, UMM 0.33.0, game 2.1.7b.
+- Steam Cloud stayed "Sync Disabled".
+- Saves (95), installation and registry unchanged or restored.
+
+**What passed:**
+- 5,769 of 5,769 observations: no placement findings, no child-set findings, nothing unresolved or skipped.
+- Donor carriers: 48, of which 46 were unchanged.
+
+**What failed:** the two tier-one parents, each with exactly one failed condition: `preserved-child-in-menu:0`. Conditions
+1, 2, 4, 5, 6 and 7 all passed for both parents. Approved transitions: 0, against the required 2.
+
+**Why: condition 3 contradicts released publication behaviour.**
+- `PublishParent` withholds any native original whose replacement coverage is complete
+  (`SummonNativeOptionCatalog.ReplacementCoverageIsComplete`).
+- `ExpandedSummoningPublicationAudit` catalogues the preserved tier-one child as a native option of class `Preservation`,
+  with a `Replaced` flag.
+- `docs/ALTERNATE-SUMMONING-SOURCES.md` documents it as "preserved tier-I cast | registered but withheld from the menu
+  (its lineage is replaced)".
+
+So the preserved child is registered but absent from the live menu by design.
+
+**Classification:** diagnostic (an owner-specified contract condition), not a gameplay defect.
+
+**Possible correction, for review.** Require the preserved child in the menu exactly once when the publication's own
+replacement rule keeps it, and absent (but registered, and proved semantically) when that rule withholds it. The rule
+would be evaluated independently, from the catalogs rather than from the publisher's record. That changes the owner's
+condition 3, so it was not made. The cast session was not run.
+
 ## Remaining (S5 T1 is not complete)
 
-1. Review the census failure above and decide the tier-one donor contract.
-2. If a correction is chosen: implement it, then rebuild and rerun the census, then run the cast session on the new
-   frozen package. Keep this session's failure under its own identities.
+1. The owner decides condition 3 for a withheld preserved tier-one child.
+2. Then implement, rebuild, rerun the census, and run the cast session on that unchanged package.
 3. Then the review records.
 4. Release obligation: the next release validator must account for the removed creature list. The v0.0.191 historical
    validator is unchanged.
