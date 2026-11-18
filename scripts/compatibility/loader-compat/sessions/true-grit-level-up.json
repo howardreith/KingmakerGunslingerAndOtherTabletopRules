@@ -1,0 +1,19 @@
+{
+  "name": "true-grit-level-up",
+  "description": "RISK-04 / S4 T6. It runs disposable-true-grit-level-up-transaction: a disposable Gunslinger advanced to 19 by the native level-up controller is taken through real level-20 visits holding the two True Grit states. A cancelled visit and a visit that throws after holding two deeds must leave it unchanged; the same deed is attempted in both states, before and after back navigation, with replacement, before a LevelUpState.IsComplete-gated commit that must leave exactly two different deeds at rank one; then a cancelled and a committed native respec. No save is loaded.",
+  "ownerMods": [],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "true-grit-level-up",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-true-grit-level-up-transaction",
+        "parameters": {},
+        "timeoutSeconds": 900
+      }
+    }
+  ]
+}
