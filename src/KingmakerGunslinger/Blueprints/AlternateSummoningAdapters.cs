@@ -654,7 +654,8 @@ namespace KingmakerGunslinger.Blueprints
                     target.ComponentsArray, unit);
                 if (spawns < 1) throw Mismatch(choice, "no-spawn");
                 // GS-AUD-0025 / DEF-05: the same placement rule as the canonical
-                // spell, decided from this placement's canonical donor, so the
+                // spell, decided from the donor the canonical spell recorded (the
+                // native parents are already republished here), so the
                 // two paths cannot diverge. It does NOT follow that an alternate
                 // child "kept a template the ordinary spell removes" (withdrawn,
                 // PR #138): this path composes from the caller's own host
@@ -663,7 +664,7 @@ namespace KingmakerGunslinger.Blueprints
                 // lists it). It guards against a future host template that
                 // carries one.
                 if (ExpandedSummoningAbilityBuilder.RequiresInheritedTemplateRemoval(placement,
-                        ExpandedSummoningAbilityBuilder.DonorTemplate(lookup, placement)))
+                        ExpandedSummoningAbilityBuilder.RecordedDonor(placement).Ability))
                     ExpandedSummoningAbilityBuilder.AppendInheritedTemplateRemoval(
                         target.ComponentsArray, unit,
                         ExpandedSummoningAbilityBuilder.ResolveNativeTemplateBuffs(lookup));

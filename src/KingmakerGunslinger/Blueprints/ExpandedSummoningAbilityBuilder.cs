@@ -66,7 +66,7 @@ namespace KingmakerGunslinger.Blueprints
         /// remove; census evidence retained in docs/EXPANDED-SUMMONING-INHERITED-TEMPLATES.md).
         /// The canonical builder passes the native carrier it clones; the
         /// alternate-caller adapter passes the same placement's canonical donor
-        /// (DonorTemplate), so both callers reach the same decision. PR #138's
+        /// (RecordedDonor), so both callers reach the same decision. PR #138's
         /// withdrawn allegation stands: an alternate child's own host graph
         /// applies no native template, so the mirrored removal there is a
         /// deliberate, harmless redundancy reported by the census.
@@ -153,6 +153,8 @@ namespace KingmakerGunslinger.Blueprints
                 BlueprintUnit unit = Require<BlueprintUnit>(bySymbol,
                     ExpandedSummoningIdentityCatalog.UnitSymbol(variant.Creature));
                 BlueprintAbility native = NativeTemplate(library, variant);
+                // Recorded before any publication rewrites the native parents' menus.
+                RecordDonor(variant, native);
                 if (family == SummonFamily.Monster &&
                     variant.Creature.MonsterTemplated)
                 {
@@ -222,8 +224,58 @@ namespace KingmakerGunslinger.Blueprints
             return DonorTemplate(AlternateSummoningHostResolver.LibraryLookup(library), variant);
         }
 
-        /// <summary>The native carrier a placement clones: its family's parent at the placement's parent tier, and the quantity child for d3 and d4+1.</summary>
-        internal static BlueprintAbility DonorTemplate(
+        /// <summary>
+        /// The native carrier each placement cloned, recorded by Configure
+        /// when the canonical spell is built. Publication later replaces the
+        /// native parents' menus with the project's choices, so the carrier
+        /// cannot be resolved again from the parent afterwards (the first S5 T1
+        /// candidate tried, and the alternate families failed closed). The
+        /// component array reference and its action count are kept so the
+        /// census can prove the donor was not mutated.
+        /// </summary>
+        internal sealed class DonorRecord
+        {
+            internal DonorRecord(BlueprintAbility ability)
+            {
+                Ability = ability;
+                Components = ability.ComponentsArray;
+                ActionCount = AlternateSummoningGraph.Objects<GameAction>(ability.ComponentsArray).Count;
+            }
+
+            internal BlueprintAbility Ability { get; private set; }
+            internal BlueprintComponent[] Components { get; private set; }
+            internal int ActionCount { get; private set; }
+
+            internal bool Unchanged
+            {
+                get
+                {
+                    return ReferenceEquals(Ability.ComponentsArray, Components) &&
+                        AlternateSummoningGraph.Objects<GameAction>(Ability.ComponentsArray).Count == ActionCount;
+                }
+            }
+        }
+
+        private static readonly Dictionary<string, DonorRecord> Donors =
+            new Dictionary<string, DonorRecord>(StringComparer.Ordinal);
+
+        private static void RecordDonor(SummonVariantSpec variant, BlueprintAbility donor)
+        {
+            lock (Donors) Donors[variant.StableKey] = new DonorRecord(donor);
+        }
+
+        /// <summary>The donor carrier the canonical spell for this placement cloned; throws when none was recorded.</summary>
+        internal static DonorRecord RecordedDonor(SummonVariantSpec placement)
+        {
+            if (placement == null) throw new ArgumentNullException("placement");
+            DonorRecord record;
+            lock (Donors)
+                if (Donors.TryGetValue(placement.StableKey, out record)) return record;
+            throw new InvalidOperationException("No recorded donor carrier for " + placement.StableKey + ".");
+        }
+
+        /// <summary>The native carrier a placement clones: its family's parent at the placement's parent tier, and the quantity child for d3 and d4+1. Valid only before publication rewrites the parents.</summary>
+        private static BlueprintAbility DonorTemplate(
             Func<string, BlueprintScriptableObject> lookup, SummonVariantSpec variant)
         {
             if (lookup == null) throw new ArgumentNullException("lookup");

@@ -228,9 +228,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static string[] CensusDonorApplied(Func<string, BlueprintScriptableObject> lookup,
             SummonVariantSpec variant, ICollection<string> nativeIds, ISet<string> unresolved)
         {
-            BlueprintAbility donor;
-            try { donor = ExpandedSummoningAbilityBuilder.DonorTemplate(lookup, variant); }
+            ExpandedSummoningAbilityBuilder.DonorRecord record;
+            try { record = ExpandedSummoningAbilityBuilder.RecordedDonor(variant); }
             catch (InvalidOperationException) { unresolved.Add("donor:" + variant.StableKey); return new string[0]; }
+            // Donor blueprints and their shared actions must never be mutated by the build.
+            if (!record.Unchanged) unresolved.Add("donor-mutated:" + variant.StableKey);
+            BlueprintAbility donor = record.Ability;
             return AlternateSummoningGraph.Objects<ContextActionApplyBuff>(donor.ComponentsArray)
                 .Where(action => action.Buff != null && nativeIds.Contains(action.Buff.AssetGuid))
                 .Select(action => action.Buff.AssetGuid).Distinct(StringComparer.Ordinal)
@@ -337,8 +340,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool match = choice.Kind == AlternateSummoningChoiceKind.Creature &&
                         choice.Multiplicity == SummonMultiplicity.One &&
                         ExpandedSummoningAbilityBuilder.RequiresInheritedTemplateRemoval(
-                            choice.Placement, ExpandedSummoningAbilityBuilder.DonorTemplate(
-                                lookup, choice.Placement));
+                            choice.Placement, ExpandedSummoningAbilityBuilder.RecordedDonor(
+                                choice.Placement).Ability);
                     if (match) affectedChoice = choice;
                     return match;
                 }, out canonicalAffected);
