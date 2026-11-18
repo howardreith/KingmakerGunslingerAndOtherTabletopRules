@@ -1,7 +1,8 @@
 # Inherited summon templates per owned placement (DEF-05 / S5 T1)
 
-Status: **source and graph-census checkpoint on a review branch. Not complete and not ready for principal review:** the
-native census and the representative native casts are still owed (see "Remaining"). Branch
+Status: **review corrections and the native-cast observer are implemented and built into one candidate; S5 T1 is not
+complete and not ready for principal review.** Both native sessions on that candidate are blocked by a Steam Cloud sync
+conflict for Kingmaker (see "Native status"). Branch
 `codex/def05-inherited-template-cleanup`, draft PR #186, stacked on the accepted Sprint 4 closure PR #185
 (`5c662d50b0`). Not merged, not released.
 
@@ -214,26 +215,170 @@ The v0.0.191 release validator's "inherited-template membership unchanged" check
 release disclosure check, not a development gate, and it already fails on the accepted stack for unrelated reasons. The
 next release validator must account for DEF-05 replacing the list.
 
+## Review corrections (second checkpoint)
+
+The review of the source checkpoint found four census false-pass paths. Each is repaired in `552a3d766f`, with focused
+controls.
+
+1. **Independently verified donor.** Before, the policy and the census both read `RecordedDonor`, so a wrong carrier
+   could pass all three checks together. `InheritedTemplateDonorContract` (diagnostic only; the policy never reads it)
+   states the retained native-template signature for each (family, parent tier, quantity). The signatures come from
+   session `20261118T032921Z`. It also checks the family name (`SummonMonster…` and `SummonNaturesAlly…`) and the
+   tier-one direct parents (`8fd74eddd9b6c224693d9ab241f25e84` for Summon Monster, `c6147854641924442a3bb736080cfeb6`
+   for Nature's Ally). The census checks every recorded donor against it and reports any of:
+   - `wrong-donor`;
+   - one shape on two carriers;
+   - two quantities of one tier sharing a carrier.
+
+   The retained census did not keep donor asset identities or names. The census now records them per shape, and only
+   the template signature, family name and tier-one parent are enforced. Shapes the retained census never saw (tier 1
+   single, tier 2 d3 and tier 3 d4+1, used only by templated creatures) are reported as recorded now, not proved.
+
+   **Controls:** single and d3 carriers swapped (tier 4), d3 and d4+1 swapped (tier 5), the wrong template pair, a
+   Nature's Ally placement on a Summon Monster carrier, the wrong tier-one parent, one shape on two carriers, and two
+   quantities on one carrier.
+
+   **Limit:** a full swap of two quantities with identical signatures, such as tier 3 single and d3, is visible only
+   through the per-shape identities the census now records.
+2. **All seven alternate families.** The census enumerates `AlternateSummoningSourceCatalog.All`: Monster Tactician,
+   Summoner, Master Summoner, Occultist, Naturalist, Feral Hunter and Preservationist.
+   - Expected children come from the projection, and actual children from the production adapter.
+   - A family that cannot be resolved or built is reported, and its children stay expected, so they show as skipped.
+   - Totals are given by family and by spell family.
+   - Every family must be built with observed children equal to expected.
+
+   The failed first candidate, which broke Monster Tactician and Summoner, is the direct evidence that checking only
+   Master Summoner was not enough.
+
+   **Control:** a whole missing family yields exactly its child as skipped.
+3. **Donor immutability receipts.** `DonorRecord` now keeps an immutable receipt taken before cloning:
+   - donor identity and name;
+   - the components array and component references;
+   - spawn references;
+   - each spawn's after-spawn array and its element references;
+   - every traversed action, by reference and type, in order;
+   - every `ApplyBuff` buff identity;
+   - the native application sequence.
+
+   Receipts are cached per carrier. The census and the cast scenario report every difference.
+
+   **Controls:** one action replaced with the count unchanged, a reordering, an `ApplyBuff` buff changed in place, and an
+   after-spawn array swapped for one of equal length.
+4. **Branch-level pairing and redundancy.** Approach B, branch-aware. Each canonical clone branch is paired with a donor
+   branch by after-spawn shape: the donor's action types must prefix the clone's, and the same traversal position is
+   preferred. Findings:
+   - `branch-count`, unpaired, duplicate pairing and skipped donor branch;
+   - `application-lost`: a donor branch's application missing from its clone;
+   - `application-not-in-donor`.
+
+   A removal with nothing to remove is listed in `JustifiedRedundant` with its reason for any caller, canonical as well
+   as alternate.
+
+   **Controls:** an applying donor branch whose clone lost the application, a skipped donor branch, two generated
+   branches on one donor branch, a removal only on the wrong branch, and an unpaired branch.
+
+**Tests:**
+
+| Command | Result | Time |
+|---|---|---|
+| `Invoke-KmgGate.ps1 -Filter 'expanded-summoning.inherited-template'` | 10 of 10 | 7 s |
+| `Invoke-KmgGate.ps1 -Filter 'summon;alternate-summoning;expanded-summoning'` | 829 of 829 (before and after the cast observer) | 38 s, 16 s |
+| `Invoke-KmgGate.ps1 -Filter 'expanded-summoning.inherited-template;alternate-summoning;runtime-scenario;scenario-catalog;native-profile'` | first: a compile error (missing `using`); then 55 of 55 | 17 s |
+| `Test-RuntimeScenarioPreflight.ps1` | 1205 passed | 27 s |
+| `tools/validate_development_candidate.py --purpose def05-template-cleanup` | PASS | 4 s |
+| `tools/validate_icon_catalog.py` | PASS | under 5 s |
+| `git diff --check` | clean | |
+
+No expected result in these tests is derived from `InheritedTemplatePolicy` or from the production `RecordedDonor`.
+
+## Representative native-cast observer
+
+`disposable-inherited-template-casts` (`bab7e7dd43`) runs in the save-free native first area of the summoning native
+profile, with Call of the Wild staged. Session file: `inherited-template-casts.json`.
+
+**Cases.** A level-20 Sorcerer casts through its own spontaneous slots:
+- the affected tier-IV single Air Mephit, as a good caster and as an evil caster;
+- a tier-VI d4+1 Air Mephit;
+- the caster-chosen Dire Wolf, as a good caster (celestial project template) and as an evil caster (fiendish);
+- a tier-VII Greater Air Elemental, with no inherited template;
+- a Nature's Ally II Wolf.
+
+A Call of the Wild Master Summoner (level 7) casts its tier-IV Air Mephit adapter child through its resource. One cast
+is cancelled before commit.
+
+**What each completed cast must show:**
+- the parent-to-child conversion;
+- exactly one debit;
+- the quantity contract (1, or 2–5 for d4+1);
+- exact unit identities;
+- none of the four native template buffs;
+- the project template and smite by exact identity, and not the opposite template;
+- positive durations;
+- every innate unit fact;
+- the native summon marker, as the unrelated-effect control;
+- the child graph's own native applications;
+- no duplicate capture and no lingering entity.
+
+**Cancellation must show:** the command admitted, the result `Interrupt`, no debit and no summon.
+
+**Global checks:** donor receipts before and after, two unrelated published rows (SM IX Lemure d4+1 and SNA IV Wolf
+d4+1) unchanged, and the fixture's exact unit, party and area snapshots restored.
+
+## Native status
+
+**The candidate.**
+- Source: `bab7e7dd43fc2e1b89ccf497cf45d6548a3fa51a`.
+- Package `ce1be0a9303c76e3597422916f8e622872d272f542b29f180e034b93eedc7865`.
+- DLL `b607b92ff68eae822fd02a091d7623bbd0b5904abb420371894d667a9f700d47`.
+- MVID `5720c765-9132-4289-b6df-1a3af67a5785`, read offline from the packaged DLL; no game has loaded it yet.
+- Harness `c47e7f14d48edac88740b4c9bf1841e805c45a88043dc162789b4c86dbc1b089`.
+- Build: 04:38:43 to 04:45:52 UTC (7 min 9 s), development validation PASS, 829 of 829 selected.
+
+**Memory preflight**, before the build, after the earlier stop:
+- physical 6.2 of 31.7 GB free;
+- commit charge 45.8 of 56.7 GB (about 81%);
+- pagefile 3.4 GB used;
+- C: 324 GB free;
+- no Kingmaker process;
+- this session's idle Roslyn and MSBuild servers (0.9 GB) shut down first, leaving 6.6 GB free and 45.4 GB committed.
+
+The largest consumers were browser processes and the WSL VM, which were left alone. No critical-pressure report was
+active, but no prior successful-build baseline was recorded to compare with. The build completed.
+
+**Both native sessions are blocked.** The loader-compat preflight refused to launch the census session: "Steam Cloud sync
+for Kingmaker is not proven disabled (cloud_log.txt)". Steam's cloud log for App ID 640820 shows, at 2026-11-17 23:02
+local (04:02 UTC):
+- "Sync conflict" for `Quick_436.zks`, `Auto_1120.zks`, `Auto_1121.zks` and `steam-saves-release.json`;
+- the remote copies newer than the local ones;
+- no "Sync Disabled" line among the last six entries.
+
+These are protected owner saves, and AGENTS.md requires a stop on cloud conflicts. Nothing was staged or launched, no
+save was touched, and the conflict was not resolved. The refusal happened before the session lock, so it left no
+journal. The cast session was not attempted.
+
+**Prerequisite to resume:** the owner resolves or confirms the Kingmaker Steam Cloud state, with sync disabled for App ID
+640820 so that the log records it. Then run, on this same unchanged package:
+`inherited-template-census.json`, followed by `inherited-template-casts.json`.
+
+## Evidence states, kept separate
+
+| State | Identity | Result |
+|---|---|---|
+| Retained v0.0.186 observation | PR #138, `RELEASE-NOTES-0.0.186.md` | 65 apply without removal, 36 removal without application |
+| Accepted Sprint 4 baseline reproduction | product `16708bd5e237`, session `20261118T032921Z-owner-0.33.0-template-census-baseline-cotw` | PASS; the same 281 rows |
+| Missing Call of the Wild prerequisite | session `20261118T032657Z-owner-0.33.0-template-census-baseline` | FAIL, fixture prerequisite |
+| Failed first DEF-05 candidate | `f232c2df7ec3`, package `be98cd6c…6d46`, DLL `7afb74bd…b674`, session `20261118T035406Z` | FAIL, product defect (repaired in `0544169f86`) |
+| Repaired source, never built | `0544169f86` (its build was stopped for low memory; no package) | none |
+| Current candidate | `bab7e7dd43fc`, package `ce1be0a9…7865`, DLL `b607b92f…0d47`, MVID `5720c765-…5785` | built; **not executed** (cloud conflict) |
+
 ## Remaining (S5 T1 is not complete)
 
-1. **Build one unchanged candidate at the current source head** (`0544169f86`, or a later records-only head) and run
-   `inherited-template-census`. It must report no findings and no unresolved or mutated donors, every expected
-   observation present, quantity removals and deliberate templates present, and the justified redundancy listed.
-2. **Representative native casts,** chosen from the classification above. Each must observe the source ability and
-   parent choice, one source debit, the spawned quantity and live units, the native template facts by exact identity,
-   duration, retained innate and foreign effects, cancellation, and no donor or unrelated-row change. Cases:
-   - an untemplated placement whose donor applies, cast by a good caster (inherited celestial removed), for example tier
-     4 single (Fiendish I + Celestial II) on a mephit or an elemental;
-   - the same with an evil caster (inherited fiendish removed);
-   - a quantity wrapper (tier 3 d3, or tier 6 d4+1, which uses the second-tier identities);
-   - a deliberate celestial and fiendish control on a templated creature;
-   - an alternate-caller child (Master Summoner, with Call of the Wild);
-   - a no-template control (tier 7+ untemplated);
-   - Summon Monster and Nature's Ally preservation controls (the preserved native tier I and an SNA row).
-
-   No existing fixture casts canonical placements with real spell slots across alignments, so this needs a new native
-   fixture. It did not fit this checkpoint.
-3. **Review records,** once both are done. S5 T1 must not be called complete before then.
+1. Native session 1 (census) and session 2 (representative casts), on candidate `bab7e7dd43fc` once the cloud
+   prerequisite is met. If either fails, keep the failure, repair only the observed defect, rebuild, and rerun only the
+   affected scenario.
+2. Then the review records. The graph census and the domain tests are not a substitute for native execution.
+3. Release obligation: the next release validator must account for the removed creature list. The v0.0.191 historical
+   validator is unchanged.
 
 ## Limits
 

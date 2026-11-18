@@ -329,7 +329,10 @@
   by a per-placement policy over the recorded donor, shared by canonical and alternate callers, with an independent
   census evaluator and mutation controls (`docs/EXPANDED-SUMMONING-INHERITED-TEMPLATES.md`). The first candidate
   failed natively on a product defect in that change (alternate families failed closed), and it is repaired in source.
-  The native census and representative casts are still owed, so nothing is claimed fixed in play yet.
+  The review's four census corrections (an independent donor contract, all seven alternate families, donor receipts,
+  branch pairing) and a representative native-cast observer are built into candidate `bab7e7dd43fc`. Its native census
+  and casts are blocked by a Steam Cloud sync conflict on Kingmaker owner saves, which was not touched, so nothing is
+  claimed fixed in play yet.
 - Two feature-module publication self-checks fail on a heavily modded installation (v0.0.186):
   `feature-module-expanded-summoning-publication-gate` reports `unclassified=38` against a hard-coded
   expectation of 0, and `feature-module-brown-fur-publication-gate` fails alongside it. A matched
