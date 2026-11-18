@@ -1,8 +1,8 @@
 # Inherited summon templates per owned placement (DEF-05 / S5 T1)
 
-Status: **the second review's five corrections are implemented, tested and built into a replacement candidate. S5 T1 is
-not complete and not ready for principal review:** both native sessions remain blocked by a Steam Cloud sync conflict
-for Kingmaker (see "Native status"). Branch
+Status: **the third review's correction is implemented and tested, and it is built into the final replacement
+candidate, whose bytes are frozen. S5 T1 is not complete and not ready for principal review:** both native sessions
+remain blocked by a Steam Cloud sync conflict for Kingmaker (see "Native status"). Branch
 `codex/def05-inherited-template-cleanup`, draft PR #186, stacked on the accepted Sprint 4 closure PR #185
 (`5c662d50b0`). Not merged, not released.
 
@@ -370,7 +370,8 @@ journal. The cast session was not attempted.
 | Failed first DEF-05 candidate | `f232c2df7ec3`, package `be98cd6c…6d46`, DLL `7afb74bd…b674`, session `20261118T035406Z` | FAIL, product defect (repaired in `0544169f86`) |
 | Repaired source, never built | `0544169f86` (its build was stopped for low memory; no package) | none |
 | Built-but-unexecuted candidate | `bab7e7dd43fc`, package `ce1be0a9…7865`, DLL `b607b92f…0d47`, MVID `5720c765-…5785` | built; never loaded by the game; its census launch was refused at the Steam Cloud preflight (a safety refusal, not a gameplay run); superseded by the second review's corrections |
-| Replacement candidate | `0af2b30bd4c7`, package `336b88e0…c0f8`, DLL `6c44072b…390c`, MVID `63c5f429-…1daa0` | built; **not executed**: the cloud conflict persists, so no launch was attempted |
+| Built-but-unexecuted candidate (second review) | `0af2b30bd4c7`, package `336b88e0…c0f8`, DLL `6c44072b…390c`, MVID `63c5f429-…1daa0` | built; never loaded by the game; superseded by the third review's correction |
+| **Final replacement candidate** (frozen) | `0d6006ac03a2`, package `f1fdd873…9dbd`, DLL `0575b4fc…7a45`, MVID `5e5ff7e5-…b8f7` | built; **not executed**: the cloud conflict persists, so no launch was attempted |
 
 ## Second review corrections (third checkpoint)
 
@@ -470,15 +471,79 @@ servers were shut down first. Nothing reported critical pressure, and the build 
 No launch was attempted, and no save, cloud copy or log was touched. The earlier refusal of `bab7e7dd43fc` stays a
 safety refusal, not a gameplay run.
 
+## Third review correction (fourth checkpoint)
+
+The review accepted the five second-review corrections at source and test level. One false-pass path remained, and
+`0d6006ac03` closes it.
+
+**The defect.** The cast observer took its expected project template and smite from the tested child's own
+`ContextActionApplySummonTemplateByCaster`. A child wired to the wrong band could therefore certify itself.
+
+**The fix.** For each deliberately templated case, before the cast:
+- the expected unit is resolved from `item.UnitSymbol`, and its hit dice are read from its own `AddClassLevels`;
+- the band comes from `InheritedDeliberateTemplateContract.Band`, which restates the established unit-HD contract
+  (below 5 Low, 5–10 Mid, above 10 High). A domain test checks it agrees with `SummonTemplateBandPolicy` from HD 0
+  to 30;
+- the identities are resolved directly from the registered stable symbols
+  `KMG.Summoning.Template.{Celestial,Fiendish}.<Band>` and `KMG.Summoning.Smite.{Celestial,Fiendish}.Available`;
+- the child graph must hold exactly one dynamic-template action, whose celestial and fiendish templates and smites
+  match those identities, with `ReplacedNativeTemplateBuffs` exactly the four native identities;
+- the live `InheritedBuffSetContract` check receives only the independent expectation;
+- both the independently expected identities and the identities wired into the child are recorded.
+
+The graph check and the live check fail independently.
+
+**Controls:**
+- a celestial action wired to the wrong band;
+- a celestial action wired to a fiendish template while keeping the celestial smite;
+- the right template with the wrong smite;
+- no dynamic-template action;
+- two dynamic-template actions;
+- incomplete or wrong replaced identities;
+- a live unit carrying exactly the wrong identity its defective child wired, which still fails;
+- the exact graph and the exact live set, which pass.
+
+**Tests:**
+
+| Command | Result | Time |
+|---|---|---|
+| `Invoke-KmgGate.ps1 -Filter 'expanded-summoning.inherited-template'` | 16 of 16 (one new case) | 26 s |
+| `Invoke-KmgGate.ps1 -Filter 'expanded-summoning.inherited-template;alternate-summoning;runtime-scenario;scenario-catalog;native-profile;template-band'` | 61 of 61 | 2 s (incremental) |
+| `Test-RuntimeScenarioPreflight.ps1` | 1205 passed | 28 s |
+| `tools/validate_development_candidate.py --purpose def05-template-cleanup` | PASS | 5 s |
+| `git diff --check` | clean | |
+
+The summoning suite was not rerun on its own, because the changed code is used only by the cast observer. The
+candidate build selected and passed it: 835 of 835.
+
+**Memory preflight:**
+- physical memory 4.9 of 31.7 GB free;
+- commit charge 44.6 of 55.0 GB (81%), in line with the last two successful builds;
+- pagefile 2.5 GB used;
+- C: 326 GB free;
+- no Kingmaker process;
+- this session's idle compiler servers were shut down first.
+
+**Final replacement candidate (frozen)**, built from `0d6006ac03a22a16b3ac6dec3197ac1eef68cfa6`:
+- package `f1fdd87313218ef858976b81ea1577c6afd53d2b9f0e671460b9043db59d9dbd`;
+- DLL `0575b4fc0103163560b9d85763bcbda3bbf711a8ec4a9f8aa21ea00976697a45`;
+- MVID `5e5ff7e5-7ca8-4539-ba02-29334dfdb8f7`, read offline from the packaged DLL; no game has loaded it;
+- harness `c47e7f14d48edac88740b4c9bf1841e805c45a88043dc162789b4c86dbc1b089`;
+- build 18:46:14 to 18:53:51 UTC (7 min 37 s), development validation PASS, 835 of 835 selected.
+
+**Steam Cloud safety.** Before and after the build, Steam's cloud log for App ID 640820 still ended with the 2026-11-17
+23:02 local "Sync conflict" entries, with no "Sync Disabled" among the last six. No launch was attempted, and no save,
+cloud copy or log was touched.
+
 ## Remaining (S5 T1 is not complete)
 
 1. **The owner resolves the Kingmaker Steam Cloud conflict and establishes that sync is disabled for App ID 640820.** A
    remote-newer timestamp is not authority to choose that copy.
-2. Run `inherited-template-census.json`, then `inherited-template-casts.json`, both with Call of the Wild, on the
-   unchanged replacement package `336b88e0…c0f8`. Keep any failure under its own identity, repair only the observed
-   boundary, rebuild, and rerun only the affected evidence.
-3. Then the review records, including the census totals by canonical family, alternate family, donor shape and branch.
-   None exists yet, because no census has run on a candidate with these corrections.
+2. Run `inherited-template-census.json`, then `inherited-template-casts.json`, both with Call of the Wild, on the frozen
+   final package `f1fdd873…9dbd`. Keep any failure under its own identities, repair only the observed boundary, rebuild,
+   and rerun the affected evidence for the new DLL identity.
+3. Then the review records: the census totals by canonical family, alternate family, donor shape and branch, and each
+   representative cast's observations. None exist yet.
 4. Release obligation: the next release validator must account for the removed creature list. The v0.0.191 historical
    validator is unchanged.
 

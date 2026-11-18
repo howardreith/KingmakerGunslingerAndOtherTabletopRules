@@ -331,9 +331,11 @@
   failed natively on a product defect in that change (alternate families failed closed), and it is repaired in source.
   The review's four census corrections (an independent donor contract, all seven alternate families, donor receipts,
   branch pairing) and a representative native-cast observer were built into `bab7e7dd43fc`, which was never executed.
-  The second review's corrections (exact debit, quantity, duration, buff sets and alternate child sets) are built into
-  the replacement candidate `0af2b30bd4c7`. Its native census and casts remain blocked by a Steam Cloud sync conflict on
-  Kingmaker owner saves, which was not touched, so nothing is claimed fixed in play yet.
+  The second review's corrections (exact debit, quantity, duration, buff sets and alternate child sets) were built into
+  `0af2b30bd4c7`, also never executed. The third review's correction (the deliberate template expectation derived
+  independently of the child graph) is built into the frozen final candidate `0d6006ac03a2`. Its native census and casts
+  remain blocked by a Steam Cloud sync conflict on Kingmaker owner saves, which was not touched, so nothing is claimed
+  fixed in play yet.
 - Two feature-module publication self-checks fail on a heavily modded installation (v0.0.186):
   `feature-module-expanded-summoning-publication-gate` reports `unclassified=38` against a hard-coded
   expectation of 0, and `feature-module-brown-fur-publication-gate` fails alongside it. A matched
