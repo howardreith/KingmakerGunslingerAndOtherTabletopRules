@@ -144,7 +144,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         flowFailures.Add("the committed facts are not exactly the two final deeds: " + TrueGritCompact(afterCommit));
                     TrueGritDecision kept = TrueGritRuntime.Evaluate(unit.Descriptor, committed.B, 1, false);
                     TrueGritDecision first = TrueGritRuntime.Evaluate(unit.Descriptor, committed.A, 1, false);
-                    afterCommit["chosenDeedCosts"] = first.EffectiveCost + "," + kept.EffectiveCost;
+                    // Recorded on the commit row, not on the snapshot the respec-cancel comparison reuses.
+                    commit["chosenDeedCosts"] = first.EffectiveCost + "," + kept.EffectiveCost;
                     if (first.EffectiveCost != 0 || kept.EffectiveCost != 0)
                         flowFailures.Add("a committed True Grit deed is not reduced: " + TrueGritCompact(afterCommit));
                 }
