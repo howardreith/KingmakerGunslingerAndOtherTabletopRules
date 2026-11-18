@@ -76,6 +76,11 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintItemAccess itemAccess = BlueprintItemAccess.Resolve();
             BlueprintProjectile firearmProjectile =
                 FirearmProjectileBlueprints.Register(registry, lightType);
+            // RISK-01: refuse any production firearm whose capacity the saved state cannot hold.
+            FirearmCapacityContainment.Validate(new[] {
+                ProductionFirearmCatalog.CreatePistol(), ProductionFirearmCatalog.CreateMusket(),
+                ProductionFirearmCatalog.CreateBlunderbuss(), ProductionFirearmCatalog.CreateAdvancedRifle(),
+                ProductionFirearmCatalog.CreateAdvancedRevolver() });
 
             ProductionFirearmBlueprintEntry pistol = RegisterOne(
                 registry,
@@ -170,6 +175,7 @@ namespace KingmakerGunslinger.Blueprints
             ValidateOne(catalog.AdvancedRifle, itemTypeAccess, mechanicalAccess);
             ValidateOne(catalog.AdvancedRevolver, itemTypeAccess, mechanicalAccess);
             ProductionFirearmBlueprintEntry[] entries = catalog.Entries;
+            FirearmCapacityContainment.Validate(entries.Select(entry => entry.Spec));
             if (entries.Select(entry => entry.WeaponType).Distinct().Count() != entries.Length ||
                 entries.Select(entry => entry.Item).Distinct().Count() != entries.Length)
             {
@@ -200,6 +206,8 @@ namespace KingmakerGunslinger.Blueprints
                 : "This firearm fires lead balls driven by black powder. It can misfire, and it must be reloaded to fire again.";
             descriptionText += " " + FirearmPenetrationPresentation.Describe(
                 spec.Definition);
+            if (FirearmCapacityContainment.IsContainedLegacy(spec))
+                descriptionText += " Unsupported legacy firearm: this mod cannot keep track of a six-round cylinder, so it cannot be equipped.";
             var name = LocalizationService.Create(localizationStem + ".Name", spec.DisplayName);
             var description = LocalizationService.Create(
                 localizationStem + ".Description",

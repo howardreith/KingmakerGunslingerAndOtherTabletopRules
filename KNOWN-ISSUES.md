@@ -391,3 +391,10 @@
   extra rows are not Spider Summoner behavior. Projecting or hiding them is an
   open design choice; nothing was changed (recorded 2026-11-11 in
   `planning/races-unleashed-compatibility/STATUS.md`).
+- The legacy Advanced Revolver declares six chambers, but saved firearm state holds one round, so its six-round reload
+  fails and restores ammunition and weapon state. No published release offered it (vendors only cleaned it up;
+  Craft Magic Items only recognized an owned one). On branch `codex/risk01-advanced-revolver` (not merged, not
+  released) it is contained as unsupported: it stays registered and loadable with its identities, cannot be equipped,
+  is no longer recognized by Craft Magic Items, says so in its description, and registration refuses any other firearm
+  whose capacity the saved state cannot hold (`docs/GUNSLINGER-ADVANCED-REVOLVER-CONTAINMENT.md`). One already equipped
+  through external means stays equipped and keeps failing its reloads safely.

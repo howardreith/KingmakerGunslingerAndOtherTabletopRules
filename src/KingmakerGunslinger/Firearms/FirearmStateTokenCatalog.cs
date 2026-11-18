@@ -95,9 +95,16 @@ namespace KingmakerGunslinger.Firearms
             }
         }
 
+        /// <summary>
+        /// The most lead-ball rounds a registered (saved) state token can hold.
+        /// Production registers CreateCapacityOneDiagnostic, so a firearm with a
+        /// larger capacity cannot be represented (see FirearmCapacityContainment).
+        /// </summary>
+        internal const int DurableLeadBallCapacity = 1;
+
         internal static FirearmStateTokenCatalog CreateCapacityOneDiagnostic()
         {
-            return CreateBasicCapacity(1);
+            return CreateBasicCapacity(DurableLeadBallCapacity);
         }
 
         internal static FirearmStateTokenCatalog CreateBasicCapacity(int capacity)

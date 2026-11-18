@@ -1229,6 +1229,10 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmStateTokenCatalog.cs">
       <Link>Domain\FirearmStateTokenCatalog.cs</Link>
     </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmCapacityContainment.cs">
+      <Link>Domain\FirearmCapacityContainment.cs</Link>
+    </Compile>
+    <Compile Include="FirearmCapacityContainmentTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmStateTokenDefinition.cs">
       <Link>Domain\FirearmStateTokenDefinition.cs</Link>
     </Compile>
