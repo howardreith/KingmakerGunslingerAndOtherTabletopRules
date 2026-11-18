@@ -254,9 +254,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(steady.UsesTouchArmorClass,
                 "Steady Aim effective increment did not reach touch AC.");
             DeadeyeDecision ordinaryDeadeye = new DeadeyeService().Evaluate(
-                new DeadeyeRequest(true, true, 1, musket, distance, 10, 0));
+                new DeadeyeRequest(true, true, 1, musket, distance, 0));
             DeadeyeDecision steadyDeadeye = new DeadeyeService().Evaluate(
-                new DeadeyeRequest(true, true, 1, musket, distance, 10, 10));
+                new DeadeyeRequest(true, true, 1, musket, distance, 10));
             Assertions.Equal(2, ordinaryDeadeye.RangeIncrement,
                 "Ordinary Deadeye increment changed.");
             Assertions.Equal(1, steadyDeadeye.RangeIncrement,
@@ -391,7 +391,7 @@ namespace KingmakerGunslinger.DomainTests
                     shot.RangeBonusFeet)).UsesTouchArmorClass;
             Func<SteadyAimShotDecision, DeadeyeDecision> deadeye = shot =>
                 new DeadeyeService().Evaluate(new DeadeyeRequest(true, true, 1,
-                    musket, distance, 10, shot.RangeBonusFeet));
+                    musket, distance, shot.RangeBonusFeet));
 
             SteadyAimShotDecision steady = SteadyShot(true, true,
                 FirearmKind.Musket, true);

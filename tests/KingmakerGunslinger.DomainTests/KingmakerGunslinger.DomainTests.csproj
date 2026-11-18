@@ -721,6 +721,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TrueGritRequest.cs"><Link>Deeds\TrueGritRequest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TrueGritDecision.cs"><Link>Deeds\TrueGritDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\TrueGritService.cs"><Link>Deeds\TrueGritService.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadeyeCostPolicy.cs"><Link>Deeds\DeadeyeCostPolicy.cs</Link></Compile>
+    <Compile Include="DeadeyeCostPolicyTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\CheatDeathStatus.cs"><Link>Deeds\CheatDeathStatus.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\CheatDeathRequest.cs"><Link>Deeds\CheatDeathRequest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\CheatDeathDecision.cs"><Link>Deeds\CheatDeathDecision.cs</Link></Compile>

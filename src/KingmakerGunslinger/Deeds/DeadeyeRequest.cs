@@ -6,25 +6,22 @@ namespace KingmakerGunslinger.Deeds
     internal sealed class DeadeyeRequest
     {
         internal DeadeyeRequest(bool isArmed, bool isExactFirearm,
-            int markerCount, FirearmDefinition definition, double distanceMeters,
-            int currentGrit)
+            int markerCount, FirearmDefinition definition, double distanceMeters)
             : this(isArmed, isExactFirearm, markerCount, definition,
-                distanceMeters, currentGrit, 0)
+                distanceMeters, 0)
         {
         }
 
         internal DeadeyeRequest(bool isArmed, bool isExactFirearm,
             int markerCount, FirearmDefinition definition, double distanceMeters,
-            int currentGrit, int rangeIncrementBonusFeet)
+            int rangeIncrementBonusFeet)
         {
             if (markerCount < 0) throw new ArgumentOutOfRangeException(nameof(markerCount));
-            if (currentGrit < 0) throw new ArgumentOutOfRangeException(nameof(currentGrit));
             IsArmed = isArmed;
             IsExactFirearm = isExactFirearm;
             MarkerCount = markerCount;
             Definition = definition;
             DistanceMeters = distanceMeters;
-            CurrentGrit = currentGrit;
             RangeIncrementBonusFeet = rangeIncrementBonusFeet;
         }
 
@@ -33,7 +30,6 @@ namespace KingmakerGunslinger.Deeds
         internal int MarkerCount { get; private set; }
         internal FirearmDefinition Definition { get; private set; }
         internal double DistanceMeters { get; private set; }
-        internal int CurrentGrit { get; private set; }
         internal int RangeIncrementBonusFeet { get; private set; }
     }
 }

@@ -927,7 +927,8 @@
     <Compile Include="Development\DevelopmentControls.cs" />
     <Compile Include="Development\FirearmConditionFixturePolicy.cs" />
     <Compile Include="Deeds\DeadeyeDecision.cs" />
-    <Compile Include="Deeds\DeadeyeAbilityLogic.cs" />
+    <Compile Include="Deeds\DeadeyeGritResourceLogic.cs" />
+    <Compile Include="Deeds\DeadeyeCostPolicy.cs" />
     <Compile Include="Deeds\DeadeyeRuntime.cs" />
     <Compile Include="Deeds\DeadeyeRuntimeDiagnostics.cs" />
     <Compile Include="Deeds\DeadeyeRequest.cs" />

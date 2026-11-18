@@ -5,8 +5,10 @@ using KingmakerGunslinger.Rules;
 namespace KingmakerGunslinger.Deeds
 {
     /// <summary>
-    /// Pure Deadeye range/cost policy. It authorizes only the touch-AC delta;
-    /// native range penalties remain in Kingmaker's ordinary attack pipeline.
+    /// Pure Deadeye range policy for an armed shot. It authorizes only the
+    /// touch-AC delta beyond the first range increment; native range
+    /// penalties remain in Kingmaker's ordinary attack pipeline. It decides
+    /// no cost: arming is paid once at activation (DeadeyeCostPolicy).
     /// </summary>
     internal sealed class DeadeyeService
     {
@@ -45,15 +47,12 @@ namespace KingmakerGunslinger.Deeds
 
             if (increment <= 1)
                 return Reject(DeadeyeStatus.WithinFirstIncrement, increment);
-            int cost = checked(increment - 1);
-            if (request.CurrentGrit < cost)
-                return Reject(DeadeyeStatus.InsufficientGrit, increment);
-            return new DeadeyeDecision(DeadeyeStatus.Eligible, increment, cost);
+            return new DeadeyeDecision(DeadeyeStatus.Eligible, increment);
         }
 
         private static DeadeyeDecision Reject(DeadeyeStatus status, int increment)
         {
-            return new DeadeyeDecision(status, increment, 0);
+            return new DeadeyeDecision(status, increment);
         }
     }
 }

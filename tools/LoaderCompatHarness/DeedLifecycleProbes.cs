@@ -321,6 +321,7 @@ namespace KmgLoaderCompatHarness
                     case "mountainSunder": routine = MountainSunder(); break;
                     case "steadyAim": routine = SteadyAim(); break;
                     case "upCloseDamage": routine = UpCloseDamage(); break;
+                    case "deadeyeCost": routine = DeadeyeCost(); break;
                     default: return Verdict("unknown deed lifecycle script " + script);
                 }
             }
@@ -1315,6 +1316,156 @@ namespace KmgLoaderCompatHarness
             foreach (string part in new[] { "prerequisite", "noShot", "retention", "cost", "expiry" })
                 Expect((bool)cancellationVerdict[part]["pass"], "cancellation " + part + ": expected " + cancellationVerdict[part]["expected"] +
                     ", observed " + cancellationVerdict[part]["observed"]);
+        }
+
+        // ---- Deadeye: the flat arming cost and the armed-state contract (POL-02) ----
+
+        /// <summary>Arms Deadeye through the registered ability and records the grit and the exact instance.</summary>
+        private IEnumerable<object> DeadeyeArm(UnitEntityData actor, BlueprintAbility ability, BlueprintBuff blueprint, JObject record)
+        {
+            actor.CombatState.Cooldown.StandardAction = 0f;
+            actor.CombatState.Cooldown.MoveAction = 0f;
+            actor.CombatState.Cooldown.SwiftAction = 0f;
+            int before = Grit(actor);
+            record["availableBeforeUse"] = Available(actor, ability);
+            UnitUseAbility command = Use(actor, ability, actor, record);
+            yield return Finished(command);
+            record.Merge(Used(command));
+            record["gritBefore"] = before;
+            record["gritAfter"] = Grit(actor);
+            record["armedOnUnit"] = OnUnit(actor, blueprint) != null;
+        }
+
+        private IEnumerator<object> DeadeyeCost()
+        {
+            BlueprintAbility ability = Blueprint<BlueprintAbility>("ability");
+            BlueprintBuff blueprint = Blueprint<BlueprintBuff>("buff");
+            BlueprintAbilityResource gritResource = Blueprint<BlueprintAbilityResource>("grit");
+            Watch(blueprint);
+            Record["blueprint"] = BuffCensus.Describe(blueprint);
+            Game.Instance.IsPaused = true;
+            Vector3 from, to;
+            bool clearOfUnits = ClearLine(45d / FeetPerMeter, true, out from, out to);
+            if (!clearOfUnits && !ClearLine(45d / FeetPerMeter, false, out from, out to)) throw new InvalidOperationException("no straight walkable line of 45 ft was found near the main character");
+            UnitEntityData actor = Gunslinger("DeadeyeGunslinger", from, 1, 20);
+            UnitEntityData far = SpawnHostile(actor, to);
+            UnitEntityData near = SpawnHostile(actor, from + (to - from).normalized * 2.5f + Vector3.Cross(Vector3.up, (to - from).normalized) * 1.5f);
+            foreach (UnitEntityData unit in new[] { far, near })
+            {
+                unit.Descriptor.Stats.HitPoints.AddModifier(5000, (GameLogicComponent)null, Kingmaker.Enums.ModifierDescriptor.None);
+                unit.Descriptor.State.AddCondition(UnitCondition.CantMove);
+                unit.IsBrainActive = false;
+            }
+            // Ordinary AC eight above touch on the far target, so the selected AC is identifiable.
+            far.Descriptor.Stats.AC.AddModifier(8, (GameLogicComponent)null, Kingmaker.Enums.ModifierDescriptor.NaturalArmor);
+            actor.IsBrainActive = false;
+            observer.Shooters.Add(actor);
+            observer.ArmedState = blueprint;
+            ItemEntityWeapon musket = Equip(actor, Firearm("Musket"));
+            actor.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+            Record["fixture"] = new JObject
+            {
+                ["firearm"] = musket.Blueprint.name, ["firearmRangeFeet"] = musket.Blueprint.Type.AttackRange.Value,
+                ["farDistanceFeet"] = Math.Round(actor.DistanceTo(far) * FeetPerMeter, 2),
+                ["nearDistanceFeet"] = Math.Round(actor.DistanceTo(near) * FeetPerMeter, 2),
+                ["targetSpotClearOfOtherUnits"] = clearOfUnits, ["gritMaximum"] = gritResource.GetMaxAmount(actor.Descriptor),
+                ["abilityGranted"] = actor.Descriptor.Abilities.GetAbility(ability) != null
+            };
+            Expect(actor.Descriptor.Abilities.GetAbility(ability) != null, "the Gunslinger was not granted Deadeye");
+            yield return GameSeconds(0.5);
+
+            // 1. Refused before commit: no grit, nothing spent, nothing armed.
+            var refused = new JObject();
+            Record["refusedWithoutGrit"] = refused;
+            actor.Descriptor.Resources.Spend(gritResource, Grit(actor));
+            foreach (object wait in DeadeyeArm(actor, ability, blueprint, refused)) yield return wait;
+            Expect(!(bool)refused["availableBeforeUse"], "Deadeye reported available with no grit");
+            Expect(!(bool)refused["armedOnUnit"] && (int)refused["gritAfter"] == 0, "a refused activation armed or changed grit: " + refused.ToString(Newtonsoft.Json.Formatting.None));
+
+            // 2. Activation spends one grit once; an armed shot beyond the first increment that hits uses touch AC and spends nothing.
+            actor.Descriptor.Resources.Restore(gritResource, 3);
+            var hit = new JObject();
+            Record["armedHitBeyondFirstIncrement"] = hit;
+            foreach (object wait in DeadeyeArm(actor, ability, blueprint, hit)) yield return wait;
+            Expect((bool)hit["armedOnUnit"] && (int)hit["gritBefore"] - (int)hit["gritAfter"] == 1, "activation did not spend exactly one grit and arm: " + hit.ToString(Newtonsoft.Json.Formatting.None));
+            Buff instance = OnUnit(actor, blueprint);
+            int gritAtShot = Grit(actor);
+            var hitShot = new JObject();
+            hit["shot"] = hitShot;
+            foreach (object wait in Shoot(actor, far, musket, 19, hitShot)) yield return wait;
+            hit["exactInstanceRemoved"] = instance != null && !actor.Descriptor.Buffs.RawFacts.Contains(instance);
+            hit["gritAfterShot"] = Grit(actor);
+            JObject roll = hitShot["roll"] as JObject;
+            Expect(roll != null && (bool)roll["hit"] && (string)roll["selected"] == "touch" && (double)roll["distanceFeet"] > 40d,
+                "the armed shot beyond the first increment did not hit against touch AC: " + (roll == null ? "no roll" : roll.ToString(Newtonsoft.Json.Formatting.None)));
+            Expect((bool)hit["exactInstanceRemoved"] && Grit(actor) == gritAtShot, "the hit did not consume the state or spent grit: " + hit.ToString(Newtonsoft.Json.Formatting.None));
+
+            // 3. An armed shot beyond the first increment that misses: consumed, no second debit.
+            var miss = new JObject();
+            Record["armedMissBeyondFirstIncrement"] = miss;
+            foreach (object wait in DeadeyeArm(actor, ability, blueprint, miss)) yield return wait;
+            instance = OnUnit(actor, blueprint);
+            gritAtShot = Grit(actor);
+            var armour = far.Descriptor.Stats.AC.AddModifier(500, (GameLogicComponent)null, Kingmaker.Enums.ModifierDescriptor.Deflection);
+            var missShot = new JObject();
+            miss["shot"] = missShot;
+            try { foreach (object wait in Shoot(actor, far, musket, 10, missShot)) yield return wait; }
+            finally { armour.Remove(); }
+            miss["exactInstanceRemoved"] = instance != null && !actor.Descriptor.Buffs.RawFacts.Contains(instance);
+            miss["gritAfterShot"] = Grit(actor);
+            roll = missShot["roll"] as JObject;
+            Expect((int)miss["gritBefore"] - (int)miss["gritAfter"] == 1, "the second activation did not spend exactly one grit");
+            Expect(roll != null && !(bool)roll["hit"] && (bool)roll["completedWithoutMisfire"], "the armed shot did not miss cleanly: " + (roll == null ? "no roll" : roll.ToString(Newtonsoft.Json.Formatting.None)));
+            Expect((bool)miss["exactInstanceRemoved"] && Grit(actor) == gritAtShot, "the miss did not consume the state or spent grit: " + miss.ToString(Newtonsoft.Json.Formatting.None));
+
+            // 4. A first-increment shot: consumed by the eligible firearm shot, no touch-AC benefit, no debit.
+            actor.Descriptor.Resources.Restore(gritResource, 3);
+            var nearCase = new JObject();
+            Record["armedShotWithinFirstIncrement"] = nearCase;
+            foreach (object wait in DeadeyeArm(actor, ability, blueprint, nearCase)) yield return wait;
+            instance = OnUnit(actor, blueprint);
+            gritAtShot = Grit(actor);
+            near.Descriptor.Stats.AC.AddModifier(8, (GameLogicComponent)null, Kingmaker.Enums.ModifierDescriptor.NaturalArmor);
+            var nearShot = new JObject();
+            nearCase["shot"] = nearShot;
+            foreach (object wait in Shoot(actor, near, musket, 19, nearShot)) yield return wait;
+            nearCase["exactInstanceRemoved"] = instance != null && !actor.Descriptor.Buffs.RawFacts.Contains(instance);
+            nearCase["gritAfterShot"] = Grit(actor);
+            roll = nearShot["roll"] as JObject;
+            Expect(roll != null && (double)roll["distanceFeet"] <= 40d, "the near shot was not within the first increment: " + (roll == null ? "no roll" : roll.ToString(Newtonsoft.Json.Formatting.None)));
+            Expect((bool)nearCase["exactInstanceRemoved"] && Grit(actor) == gritAtShot, "the first-increment shot did not consume the state or spent grit: " + nearCase.ToString(Newtonsoft.Json.Formatting.None));
+
+            // 5. Armed, then an attack order cancelled before it starts: kept, no refund; then its unaided end, no refund.
+            var cancelled = new JObject();
+            Record["armedThenCancelledAttack"] = cancelled;
+            foreach (object wait in DeadeyeArm(actor, ability, blueprint, cancelled)) yield return wait;
+            instance = OnUnit(actor, blueprint);
+            double armedAt = Now();
+            int paid = Grit(actor);
+            int shotsBefore = observer.Shots.Count;
+            LoadRound(musket);
+            actor.Commands.InterruptAll(true);
+            var order = new UnitAttack(far);
+            order.IgnoreCooldown(null);
+            actor.Commands.Run(order);
+            cancelled["orderTakenByTheUnit"] = actor.Commands.Raw.Any(queued => ReferenceEquals(queued, order));
+            actor.Commands.InterruptAll(true);
+            cancelled["orderStarted"] = order.IsStarted;
+            cancelled["orderActed"] = order.IsActed;
+            cancelled["orderResult"] = order.Result.ToString();
+            yield return GameSeconds(1.0);
+            cancelled["attackRollsResolved"] = observer.Shots.Count - shotsBefore;
+            cancelled["retainedAfterCancel"] = instance != null && actor.Descriptor.Buffs.RawFacts.Contains(instance);
+            cancelled["gritAfterCancel"] = Grit(actor);
+            yield return Ended(blueprint, actor);
+            double? lasted = Lasted(blueprint, actor, armedAt);
+            cancelled["endedAfterGameSeconds"] = Seconds(lasted);
+            cancelled["gritAfterExpiry"] = Grit(actor);
+            Expect((bool)cancelled["orderTakenByTheUnit"] && !(bool)cancelled["orderStarted"] && !(bool)cancelled["orderActed"] &&
+                (string)cancelled["orderResult"] == "Interrupt", "cancellation prerequisite not met: " + cancelled.ToString(Newtonsoft.Json.Formatting.None));
+            Expect((int)cancelled["attackRollsResolved"] == 0 && (bool)cancelled["retainedAfterCancel"] && (int)cancelled["gritAfterCancel"] == paid,
+                "the cancelled attack consumed the state or refunded grit: " + cancelled.ToString(Newtonsoft.Json.Formatting.None));
+            Expect(OneRound(lasted) && (int)cancelled["gritAfterExpiry"] == paid, "the unused state did not end after one round without a refund: " + cancelled.ToString(Newtonsoft.Json.Formatting.None));
         }
 
         // ---- Steady Aim: the range of the next two-handed shot ----
