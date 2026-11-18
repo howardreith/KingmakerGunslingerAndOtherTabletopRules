@@ -323,6 +323,13 @@
   SHAPED to apply a template with nothing removing it, not that each delivers one in play. The
   membership is byte-identical to v0.0.185, so v0.0.186 neither introduces nor worsens it. Tracked
   separately as GS-REP-0002 and not fixed by this release.
+  DEF-05 / S5 T1, in progress on `codex/def05-inherited-template-cleanup` (draft PR #186; not merged, not
+  released): the census was reproduced on the accepted Sprint 4 product (session `20261118T032921Z`), and it showed the
+  donor carrier, selected by parent tier and quantity, decides application whatever the creature. The list is replaced
+  by a per-placement policy over the recorded donor, shared by canonical and alternate callers, with an independent
+  census evaluator and mutation controls (`docs/EXPANDED-SUMMONING-INHERITED-TEMPLATES.md`). The first candidate
+  failed natively on a product defect in that change (alternate families failed closed), and it is repaired in source.
+  The native census and representative casts are still owed, so nothing is claimed fixed in play yet.
 - Two feature-module publication self-checks fail on a heavily modded installation (v0.0.186):
   `feature-module-expanded-summoning-publication-gate` reports `unclassified=38` against a hard-coded
   expectation of 0, and `feature-module-brown-fur-publication-gate` fails alongside it. A matched
