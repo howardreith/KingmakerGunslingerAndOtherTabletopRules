@@ -197,6 +197,69 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
+    /// <summary>The identities one caster-chosen project template action wires, as read from a child graph.</summary>
+    internal sealed class InheritedDynamicTemplateView
+    {
+        internal InheritedDynamicTemplateView(string celestialTemplate, string fiendishTemplate, string celestialSmite,
+            string fiendishSmite, string[] replacedNative)
+        {
+            CelestialTemplate = celestialTemplate; FiendishTemplate = fiendishTemplate;
+            CelestialSmite = celestialSmite; FiendishSmite = fiendishSmite;
+            ReplacedNative = replacedNative ?? new string[0];
+        }
+
+        internal string CelestialTemplate { get; private set; }
+        internal string FiendishTemplate { get; private set; }
+        internal string CelestialSmite { get; private set; }
+        internal string FiendishSmite { get; private set; }
+        internal string[] ReplacedNative { get; private set; }
+    }
+
+    /// <summary>
+    /// DEF-05 third review: the deliberate project template expected for a
+    /// templated control, derived independently of the child graph under test.
+    /// The band is restated from the established unit-HD contract (below 5 Low,
+    /// 5 to 10 Mid, above 10 High; SummonTemplateBandPolicy agrees, checked by a
+    /// domain test) from the unit's own class levels, and the identities are the
+    /// stable registered symbols KMG.Summoning.Template.{Celestial,Fiendish}.Band
+    /// and KMG.Summoning.Smite.{Celestial,Fiendish}.Available. The graph check
+    /// and the live buff-set check (InheritedBuffSetContract, fed these expected
+    /// identities) fail independently.
+    /// </summary>
+    internal static class InheritedDeliberateTemplateContract
+    {
+        internal static string Band(int hitDice)
+        {
+            if (hitDice < 0) throw new ArgumentOutOfRangeException("hitDice");
+            return hitDice < 5 ? "Low" : hitDice <= 10 ? "Mid" : "High";
+        }
+
+        internal static IList<string> Graph(IList<InheritedDynamicTemplateView> actions, string celestialTemplate,
+            string fiendishTemplate, string celestialSmite, string fiendishSmite, ICollection<string> nativeIds)
+        {
+            var failures = new List<string>();
+            if (actions == null || actions.Count != 1)
+            {
+                failures.Add("dynamic-template-actions:" + (actions == null ? 0 : actions.Count));
+                if (actions == null || actions.Count == 0) return failures;
+            }
+            InheritedDynamicTemplateView action = actions[0];
+            Action<string, string, string> same = (name, actual, expected) =>
+            {
+                if (string.IsNullOrEmpty(expected) || !string.Equals(actual, expected, StringComparison.Ordinal))
+                    failures.Add(name + ":" + (actual ?? "<null>") + "/" + (expected ?? "<unresolved>"));
+            };
+            same("celestial-template", action.CelestialTemplate, celestialTemplate);
+            same("fiendish-template", action.FiendishTemplate, fiendishTemplate);
+            same("celestial-smite", action.CelestialSmite, celestialSmite);
+            same("fiendish-smite", action.FiendishSmite, fiendishSmite);
+            if (action.ReplacedNative.Length != nativeIds.Count || action.ReplacedNative.Any(id => id == null || !nativeIds.Contains(id)) ||
+                action.ReplacedNative.Distinct(StringComparer.Ordinal).Count() != action.ReplacedNative.Length)
+                failures.Add("replaced-native:" + string.Join(",", action.ReplacedNative.Select(id => id ?? "<null>").ToArray()));
+            return failures;
+        }
+    }
+
     internal static class InheritedChildSetContract
     {
         /// <summary>

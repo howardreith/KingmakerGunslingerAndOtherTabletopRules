@@ -453,6 +453,42 @@ namespace KingmakerGunslinger.RuntimeTesting
             failures.AddRange(expression.Select(value => "expression:" + value));
             record["expectedDuration"] = new JObject { ["base"] = expected.DurationBase, ["bonus"] = expected.DurationBonus,
                 ["source"] = expected.DurationSource };
+            string expectTemplate = null, expectSmite = null;
+            if (item.ProjectTemplate != "none")
+            {
+                // Third review: the deliberate template is derived independently of the child graph:
+                // the band from the expected unit's own class levels through the restated HD contract,
+                // the identities from the stable registered symbols. Then the graph is checked against it.
+                var unitBlueprint = expectedUnit as BlueprintUnit;
+                int hitDice = unitBlueprint == null ? -1 : (unitBlueprint.ComponentsArray ?? new BlueprintComponent[0])
+                    .OfType<AddClassLevels>().Sum(component => component.Levels);
+                string band = hitDice < 0 ? null : InheritedDeliberateTemplateContract.Band(hitDice);
+                Func<string, string> registered = symbol =>
+                {
+                    BlueprintScriptableObject value;
+                    return ExpandedSummoningBlueprints.Registered.BySymbol.TryGetValue(symbol, out value) && value != null ? value.AssetGuid : null;
+                };
+                string celestialTemplate = band == null ? null : registered("KMG.Summoning.Template.Celestial." + band);
+                string fiendishTemplate = band == null ? null : registered("KMG.Summoning.Template.Fiendish." + band);
+                string celestialSmite = registered("KMG.Summoning.Smite.Celestial.Available");
+                string fiendishSmite = registered("KMG.Summoning.Smite.Fiendish.Available");
+                List<InheritedDynamicTemplateView> wired = AlternateSummoningGraph.Objects<ContextActionApplySummonTemplateByCaster>(child.ComponentsArray)
+                    .Select(action => new InheritedDynamicTemplateView(action.CelestialTemplate?.AssetGuid, action.FiendishTemplate?.AssetGuid,
+                        action.CelestialSmite?.AssetGuid, action.FiendishSmite?.AssetGuid,
+                        (action.ReplacedNativeTemplateBuffs ?? new BlueprintBuff[0]).Select(buff => buff?.AssetGuid).ToArray())).ToList();
+                failures.AddRange(InheritedDeliberateTemplateContract.Graph(wired, celestialTemplate, fiendishTemplate,
+                    celestialSmite, fiendishSmite, nativeIds).Select(value => "deliberate-graph:" + value));
+                bool celestial = item.ProjectTemplate == "celestial";
+                expectTemplate = celestial ? celestialTemplate : fiendishTemplate;
+                expectSmite = celestial ? celestialSmite : fiendishSmite;
+                record["deliberateTemplate"] = new JObject {
+                    ["unitHitDice"] = hitDice, ["band"] = band,
+                    ["independentlyExpected"] = new JObject { ["celestialTemplate"] = celestialTemplate, ["fiendishTemplate"] = fiendishTemplate,
+                        ["celestialSmite"] = celestialSmite, ["fiendishSmite"] = fiendishSmite, ["thisCast"] = expectTemplate + "+" + expectSmite },
+                    ["childGraph"] = new JArray(wired.Select(view => new JObject { ["celestialTemplate"] = view.CelestialTemplate,
+                        ["fiendishTemplate"] = view.FiendishTemplate, ["celestialSmite"] = view.CelestialSmite,
+                        ["fiendishSmite"] = view.FiendishSmite, ["replacedNative"] = new JArray(view.ReplacedNative) })) };
+            }
             string[] graphApplies = AlternateSummoningGraph.Objects<Kingmaker.UnitLogic.Mechanics.Actions.ContextActionApplyBuff>(child.ComponentsArray)
                 .Where(action => action.Buff != null && nativeIds.Contains(action.Buff.AssetGuid))
                 .Select(action => action.Buff.AssetGuid).Distinct().OrderBy(value => value, StringComparer.Ordinal).ToArray();
@@ -555,7 +591,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     summoned.Select(unit => unit == null ? "<null>" : unit.UniqueId).ToList(), live).Select(value => "output:" + value));
                 failures.AddRange(InheritedDurationContract.Judge(summoned.Select(unit => unit == null ? "<null>" : unit.UniqueId).ToList(),
                     durations, expected.DurationBase, expected.DurationBonus).Select(value => "duration:" + value));
-                InheritedObserveUnits(summoned, child, item, record, failures, nativeIds);
+                InheritedObserveUnits(summoned, item, record, failures, nativeIds, expectTemplate, expectSmite);
             }
             foreach (UnitEntityData unit in summoned) CleanupExpandedSummoningUnit(unit);
             DrainExpandedSummoningDestroyQueue(fixture.SceneEntities, before);
@@ -569,8 +605,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             return record;
         }
 
-        private static void InheritedObserveUnits(UnitEntityData[] summoned, BlueprintAbility child, InheritedCase item,
-            JObject record, List<string> failures, ICollection<string> nativeIds)
+        private static void InheritedObserveUnits(UnitEntityData[] summoned, InheritedCase item,
+            JObject record, List<string> failures, ICollection<string> nativeIds, string wantTemplate, string wantSmite)
         {
             Func<string, HashSet<string>> registered = prefix => new HashSet<string>(ExpandedSummoningBlueprints.Registered.BySymbol
                 .Where(entry => entry.Key.StartsWith(prefix, StringComparison.Ordinal) && entry.Value != null)
@@ -578,19 +614,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             HashSet<string> projectTemplates = registered("KMG.Summoning.Template.");
             HashSet<string> celestialSmites = registered("KMG.Summoning.Smite.Celestial");
             HashSet<string> fiendishSmites = registered("KMG.Summoning.Smite.Fiendish");
-            string wantTemplate = null, wantSmite = null;
-            if (item.ProjectTemplate != "none")
-            {
-                ContextActionApplySummonTemplateByCaster byCaster = AlternateSummoningGraph
-                    .Objects<ContextActionApplySummonTemplateByCaster>(child.ComponentsArray).FirstOrDefault();
-                if (byCaster == null) failures.Add("the templated child names no caster-chosen project template");
-                else
-                {
-                    bool celestial = item.ProjectTemplate == "celestial";
-                    wantTemplate = (celestial ? byCaster.CelestialTemplate : byCaster.FiendishTemplate)?.AssetGuid;
-                    wantSmite = (celestial ? byCaster.CelestialSmite : byCaster.FiendishSmite)?.AssetGuid;
-                }
-            }
+            // The expected identities are the independently derived ones, never the child's own references.
             record["expectedProjectTemplate"] = wantTemplate ?? "none";
             record["expectedSmite"] = wantSmite ?? "none";
             BlueprintBuff marker = BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff;

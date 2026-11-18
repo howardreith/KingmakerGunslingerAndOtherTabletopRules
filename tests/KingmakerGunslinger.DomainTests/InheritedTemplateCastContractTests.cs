@@ -141,6 +141,52 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(Has(judge("none", new[] { "smiteF" }, null, null), "project-smite"), "A stray smite on an untemplated unit must fail.");
         }
 
+        // ---- Third review: the deliberate template is derived independently of the child graph ----
+
+        internal static void DeliberateTemplateIsIndependent()
+        {
+            var native = new HashSet<string> { "n1", "n2", "n3", "n4" };
+            // Expected identities as the observer resolves them: band from unit class levels, then stable symbols.
+            Assertions.Equal("Low", InheritedDeliberateTemplateContract.Band(4), "HD 4 is the low band.");
+            Assertions.Equal("Mid", InheritedDeliberateTemplateContract.Band(5), "HD 5 is the mid band.");
+            Assertions.Equal("Mid", InheritedDeliberateTemplateContract.Band(10), "HD 10 is the mid band.");
+            Assertions.Equal("High", InheritedDeliberateTemplateContract.Band(11), "HD 11 is the high band.");
+            for (int hitDice = 0; hitDice <= 30; hitDice++)
+                Assertions.Equal(SummonTemplateBandPolicy.Select(hitDice).ToString(), InheritedDeliberateTemplateContract.Band(hitDice),
+                    "The restated band contract agrees with the production policy at HD " + hitDice);
+            const string celLow = "celLow", celMid = "celMid", fieLow = "fieLow", smiteC = "smiteC", smiteF = "smiteF";
+            Func<string, string, string, string, string[], InheritedDynamicTemplateView> view = (ct, ft, cs, fs, replaced) =>
+                new InheritedDynamicTemplateView(ct, ft, cs, fs, replaced);
+            string[] four = { "n1", "n2", "n3", "n4" };
+            Func<InheritedDynamicTemplateView[], IList<string>> graph = actions =>
+                InheritedDeliberateTemplateContract.Graph(actions, celLow, fieLow, smiteC, smiteF, native);
+            Assertions.Equal(0, graph(new[] { view(celLow, fieLow, smiteC, smiteF, four) }).Count, "The exact graph passes.");
+            Assertions.True(Has(graph(new[] { view(celMid, fieLow, smiteC, smiteF, four) }), "celestial-template:celMid/celLow"),
+                "A celestial action wired to the wrong band must fail.");
+            Assertions.True(Has(graph(new[] { view(fieLow, fieLow, smiteC, smiteF, four) }), "celestial-template:fieLow/celLow"),
+                "A celestial action wired to a fiendish template while keeping the celestial smite must fail.");
+            Assertions.True(Has(graph(new[] { view(celLow, fieLow, smiteF, smiteF, four) }), "celestial-smite:smiteF/smiteC"),
+                "The right template with the wrong smite must fail.");
+            Assertions.True(Has(graph(new InheritedDynamicTemplateView[0]), "dynamic-template-actions:0"),
+                "A missing dynamic-template action must fail.");
+            Assertions.True(Has(graph(new[] { view(celLow, fieLow, smiteC, smiteF, four), view(celLow, fieLow, smiteC, smiteF, four) }),
+                "dynamic-template-actions:2"), "Duplicate dynamic-template actions must fail.");
+            Assertions.True(Has(graph(new[] { view(celLow, fieLow, smiteC, smiteF, new[] { "n1", "n2", "n3" }) }), "replaced-native"),
+                "Incomplete replaced native identities must fail.");
+            Assertions.True(Has(graph(new[] { view(celLow, fieLow, smiteC, smiteF, new[] { "n1", "n2", "n3", "x" }) }), "replaced-native"),
+                "A wrong replaced native identity must fail.");
+            // The live check, fed the independent expectation, fails on the wrong band even though the
+            // defective child applied exactly what it wired.
+            var templates = new HashSet<string> { celLow, celMid, fieLow };
+            IList<string> live = InheritedBuffSetContract.Judge("celestial", new[] { celMid, smiteC }, native, templates,
+                new HashSet<string> { smiteC }, new HashSet<string> { smiteF }, celLow, smiteC);
+            Assertions.True(Has(live, "template-set:celMid/celLow"),
+                "A unit carrying exactly the wrong band its defective child wired must still fail.");
+            Assertions.Equal(0, InheritedBuffSetContract.Judge("celestial", new[] { celLow, smiteC }, native, templates,
+                new HashSet<string> { smiteC }, new HashSet<string> { smiteF }, celLow, smiteC).Count,
+                "The exact live set passes with the independent expectation.");
+        }
+
         // ---- Correction 5: no extra alternate child ----
 
         internal static void ExtraAlternateChildrenAreRejected()

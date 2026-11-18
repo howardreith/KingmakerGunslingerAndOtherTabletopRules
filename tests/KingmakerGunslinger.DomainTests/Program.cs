@@ -2510,6 +2510,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.inherited-template.duration-exact", InheritedTemplateCastContractTests.DurationIsExact),
             Case("expanded-summoning.inherited-template.template-smite-sets-exact", InheritedTemplateCastContractTests.TemplateAndSmiteSetsAreExact),
             Case("expanded-summoning.inherited-template.extra-alternate-children-rejected", InheritedTemplateCastContractTests.ExtraAlternateChildrenAreRejected),
+            Case("expanded-summoning.inherited-template.deliberate-template-independent", InheritedTemplateCastContractTests.DeliberateTemplateIsIndependent),
             Case("firearm-capacity.durable-capacity-matches-tokens", FirearmCapacityContainmentTests.DurableCapacityMatchesTheRegisteredTokens),
             Case("firearm-capacity.production-catalog-contained", FirearmCapacityContainmentTests.ProductionCatalogIsContained),
             Case("firearm-capacity.unrepresentable-capacity-refused", FirearmCapacityContainmentTests.UnrepresentableCapacityIsRefused),
