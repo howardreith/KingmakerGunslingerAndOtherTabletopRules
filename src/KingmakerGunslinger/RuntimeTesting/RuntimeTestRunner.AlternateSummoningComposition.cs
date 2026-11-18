@@ -99,161 +99,216 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             AlternateSummoningTemplateRemovalControls(assertions, record, lookup, tactician,
                 created);
-            InheritedTemplateRemovalSetIsDerived(assertions, record);
+            InheritedTemplateRemovalSetIsDerived(assertions, record, lookup, tactician, created);
         }
 
         /// <summary>
-        /// GS-AUD-0025 / GS-REP-0002. InheritedTemplateRemovalCreatures is a
-        /// hard-coded list of twelve creature KEYS, and 63 untemplated Summon
-        /// Monster creatures exist, so membership is not simply "untemplated".
-        /// The list asserts a property of the installed native library: that a
-        /// creature's native carrier still applies a celestial/fiendish
-        /// template after spawn. Nothing measured that.
+        /// S5 T1 / DEF-05: the full registered inherited-template census, one
+        /// observation per published ability: every canonical placement of both
+        /// families (a templated Summon Monster placement contributes its
+        /// caster-chosen, celestial and fiendish abilities), and every Master
+        /// Summoner and Naturalist alternate child built through the production
+        /// adapter. Each observation carries three separately read inputs:
+        /// intent from ExpandedSummoningCatalog, the native template identities
+        /// the placement's donor carrier applies (read here from the donor
+        /// graph), and the generated graph's spawn branches. The engine-free
+        /// InheritedTemplateCensus judges them with its own statement of the
+        /// contract, so InheritedTemplatePolicy does not certify itself.
         ///
-        /// This observation is deliberately kept PER PLACEMENT, not per
-        /// creature. ExpandedSummoningCatalog.GenerateVariants admits a
-        /// creature under every parent tier from its source tier to 9, so one
-        /// creature has up to eight placements and they need not agree. An
-        /// earlier version of this observation reduced everything to sets of
-        /// creature keys and then labelled each key with the ParentTier of its
-        /// FIRST variant - which is just its source tier - and on that basis a
-        /// "parent tier 2-4 versus 5-9" boundary was reported. That conclusion
-        /// was not supported: a creature-level set cannot say which of its
-        /// placements carries the action, and a creature-level set also cannot
-        /// notice a removal action disappearing from ONE placement while
-        /// another still has it.
-        ///
-        /// So each placement is recorded on its own with its StableKey, source
-        /// tier, parent tier, multiplicity, the native template identities its
-        /// graph applies, and whether it carries the removal. Creature-level
-        /// summaries are derived from those rows rather than replacing them.
-        ///
-        /// This is GRAPH evidence only. It says what a registered ability's
-        /// action graph contains. It is not evidence that any particular summon
-        /// retained or lost a buff at run time; the spawned-unit observation in
-        /// disposable-alternate-summoning-natural is a separate thing and
-        /// covers only the one route it casts.
+        /// Graph evidence only: a spawned unit's buffs are a native-cast
+        /// question. The v0.0.186 observation this replaces (65 apply without
+        /// removal, 36 removal without application) is retained under its own
+        /// session identity in docs/EXPANDED-SUMMONING-INHERITED-TEMPLATES.md.
         /// </summary>
         private static void InheritedTemplateRemovalSetIsDerived(
-            List<RuntimeTestAssertion> assertions, JObject record)
+            List<RuntimeTestAssertion> assertions, JObject record,
+            Func<string, BlueprintScriptableObject> lookup,
+            AlternateSummoningTacticianSources tactician, List<UnityEngine.Object> created)
         {
             var nativeIds = new HashSet<string>(
                 ExpandedSummoningAbilityBuilder.NativeTemplateIds, StringComparer.Ordinal);
+            var observations = new List<InheritedTemplateObservation>();
+            var expected = new List<string>();
             var rows = new JArray();
             var unresolved = new SortedSet<string>(StringComparer.Ordinal);
-            var creatureApplies = new Dictionary<string, int>(StringComparer.Ordinal);
-            var creaturePlacements = new Dictionary<string, int>(StringComparer.Ordinal);
-            var wiringMismatches = new List<string>();
-            var appliesByTierPair = new SortedDictionary<string, int>(StringComparer.Ordinal);
-            int placements = 0;
 
-            foreach (SummonVariantSpec variant in ExpandedSummoningCatalog
-                .GenerateVariants(SummonFamily.Monster))
+            foreach (SummonFamily family in new[] { SummonFamily.Monster, SummonFamily.NaturesAlly })
+            foreach (SummonVariantSpec variant in ExpandedSummoningCatalog.GenerateVariants(family))
             {
-                if (variant.Creature.MonsterTemplated) continue;
-                string key = variant.Creature.Key;
-                placements++;
-                creaturePlacements[key] = creaturePlacements.ContainsKey(key) ?
-                    creaturePlacements[key] + 1 : 1;
-                if (!creatureApplies.ContainsKey(key)) creatureApplies[key] = 0;
-
-                BlueprintScriptableObject registered;
-                if (!ExpandedSummoningBlueprints.Registered.BySymbol.TryGetValue(
-                        ExpandedSummoningIdentityCatalog.AbilitySymbol(variant), out registered))
-                { unresolved.Add(variant.StableKey); continue; }
-                var ability = registered as BlueprintAbility;
-                if (ability == null) { unresolved.Add(variant.StableKey); continue; }
-
-                string[] applied = AlternateSummoningGraph
-                    .Objects<ContextActionApplyBuff>(ability.ComponentsArray)
-                    .Where(action => action.Buff != null && nativeIds.Contains(action.Buff.AssetGuid))
-                    .Select(action => action.Buff.AssetGuid)
-                    .Distinct(StringComparer.Ordinal)
-                    .OrderBy(value => value, StringComparer.Ordinal).ToArray();
-                bool removal = AlternateSummoningGraph
-                    .Objects<ContextActionRemoveInheritedSummonTemplates>(
-                        ability.ComponentsArray).Any();
-                bool declared = ExpandedSummoningAbilityBuilder
-                    .RequiresInheritedTemplateRemoval(SummonFamily.Monster, variant.Creature);
-
-                if (applied.Length > 0)
+                string symbol = ExpandedSummoningIdentityCatalog.AbilitySymbol(variant);
+                bool templated = family == SummonFamily.Monster && variant.Creature.MonsterTemplated;
+                string[] donorApplied = CensusDonorApplied(lookup, variant, nativeIds, unresolved);
+                BlueprintUnit unit = CensusUnit(variant, unresolved);
+                foreach (string published in templated ?
+                    new[] { symbol, symbol + ".Celestial", symbol + ".Fiendish" } : new[] { symbol })
                 {
-                    creatureApplies[key] = creatureApplies[key] + 1;
-                    string pair = "source" + variant.SourceTier + "/parent" + variant.ParentTier;
-                    appliesByTierPair[pair] = appliesByTierPair.ContainsKey(pair) ?
-                        appliesByTierPair[pair] + 1 : 1;
+                    expected.Add("canonical|" + published);
+                    BlueprintScriptableObject registered;
+                    if (!ExpandedSummoningBlueprints.Registered.BySymbol.TryGetValue(published, out registered) ||
+                        !(registered is BlueprintAbility) || unit == null)
+                    { unresolved.Add(published); continue; }
+                    observations.Add(CensusObservation(published, "canonical", variant, templated,
+                        donorApplied, (BlueprintAbility)registered, unit, nativeIds, rows));
                 }
-                // Per PLACEMENT, which is what makes this able to see a single
-                // placement losing its removal action.
-                if (removal != declared)
-                    wiringMismatches.Add(variant.StableKey + ":removal=" + removal +
-                        ";declared=" + declared);
-
-                rows.Add(new JObject {
-                    ["stableKey"] = variant.StableKey,
-                    ["creature"] = key,
-                    ["sourceTier"] = variant.SourceTier,
-                    ["parentTier"] = variant.ParentTier,
-                    ["multiplicity"] = variant.Multiplicity.ToString(),
-                    ["appliedNativeTemplates"] = new JArray(applied),
-                    ["carriesRemoval"] = removal,
-                    ["declared"] = declared });
             }
 
-            string[] declaredKeys = creaturePlacements.Keys
-                .Where(key => ExpandedSummoningAbilityBuilder.RequiresInheritedTemplateRemoval(
-                    SummonFamily.Monster, ExpandedSummoningCatalog.GenerateVariants(
-                        SummonFamily.Monster).First(value => value.Creature.Key == key).Creature))
-                .OrderBy(value => value, StringComparer.Ordinal).ToArray();
-            // "Every placement applies" and "some placement applies" are
-            // different claims, so both are reported rather than conflated.
-            string[] allPlacementsApply = creatureApplies.Where(entry =>
-                entry.Value > 0 && entry.Value == creaturePlacements[entry.Key])
-                .Select(entry => entry.Key).OrderBy(value => value, StringComparer.Ordinal).ToArray();
-            string[] somePlacementsApply = creatureApplies.Where(entry =>
-                entry.Value > 0 && entry.Value < creaturePlacements[entry.Key])
-                .Select(entry => entry.Key).OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            foreach (string familyKey in new[] { AlternateSummoningSourceCatalog.MasterSummonerKey,
+                AlternateSummoningSourceCatalog.NaturalistKey })
+            {
+                AlternateSummoningFamilySpec family = AlternateSummoningSourceCatalog.Find(familyKey);
+                AlternateSummoningFamilyIdentity identity = AlternateSummoningSourceCatalog
+                    .Identities.Single(value => value.Key == family.Key);
+                AlternateSummoningResolvedFamily resolved = AlternateSummoningHostResolver.Resolve(
+                    lookup, family, identity, tactician, rootAbility =>
+                        AlternateSummoningCoordinator.OriginalHostChildren(family.Key, rootAbility.AssetGuid));
+                // Expected keys from the projection; actual children from the production builder.
+                AlternateSummoningChoice[] choices = AlternateSummoningProjection
+                    .Identities(identity, AlternateSummoningRoster.Production())
+                    .Where(choice => choice.Kind == AlternateSummoningChoiceKind.Creature).ToArray();
+                foreach (AlternateSummoningChoice choice in choices)
+                    expected.Add("alternate:" + familyKey + "|" + choice.Symbol);
+                AlternateSummoningBuiltFamily built = AlternateSummoningAdapterBuilder.Build(
+                    lookup, symbol =>
+                    {
+                        BlueprintAbility shell = AlternateSummoningAdapterBuilder.CreateShell(symbol);
+                        created.Add(shell);
+                        return shell;
+                    }, resolved, AlternateSummoningRoster.Production(),
+                    ExpandedSummoningBlueprints.Registered,
+                    choice => choice.Kind == AlternateSummoningChoiceKind.Creature);
+                foreach (AlternateSummoningChoice choice in choices)
+                {
+                    BlueprintAbility child;
+                    if (!built.BySymbol.TryGetValue(choice.Symbol, out child)) continue;
+                    SummonVariantSpec placement = choice.Placement;
+                    BlueprintUnit unit = CensusUnit(placement, unresolved);
+                    if (unit == null) continue;
+                    observations.Add(CensusObservation(choice.Symbol, "alternate:" + familyKey, placement,
+                        placement.Family == SummonFamily.Monster && placement.Creature.MonsterTemplated,
+                        CensusDonorApplied(lookup, placement, nativeIds, unresolved), child, unit, nativeIds, rows));
+                }
+            }
 
-            record["inheritedTemplatePlacements"] = rows;
-            record["inheritedTemplateSummary"] = new JObject {
-                ["placements"] = placements,
-                ["creatures"] = creaturePlacements.Count,
-                ["declaredCreatures"] = new JArray(declaredKeys),
-                ["everyPlacementApplies"] = new JArray(allPlacementsApply),
-                ["somePlacementsApply"] = new JArray(somePlacementsApply),
-                ["appliesByTierPair"] = new JObject(appliesByTierPair
-                    .Select(entry => new JProperty(entry.Key, entry.Value))),
-                ["wiringMismatches"] = new JArray(wiringMismatches),
+            InheritedTemplateCensusResult result = InheritedTemplateCensus.Evaluate(observations, expected, nativeIds);
+            var dispositions = new JObject(result.Dispositions.OrderBy(entry => entry.Key)
+                .Select(entry => new JProperty(entry.Key.ToString(), entry.Value)));
+            record["inheritedTemplateCensus"] = rows;
+            record["inheritedTemplateCensusSummary"] = new JObject {
+                ["observations"] = result.Observations,
+                ["expected"] = expected.Count,
+                ["canonical"] = observations.Count(value => value.Caller == "canonical"),
+                ["alternate"] = observations.Count(value => value.IsAlternate),
+                ["dispositions"] = dispositions,
+                ["findings"] = new JArray(result.Findings),
+                ["justifiedRedundant"] = new JArray(result.JustifiedRedundant),
                 ["unresolved"] = new JArray(unresolved) };
+            int quantityRemovals = observations.Count(value => value.Caller == "canonical" &&
+                value.Key.IndexOf("OneD", StringComparison.Ordinal) >= 0 &&
+                InheritedTemplateCensus.Expected(value, nativeIds) == InheritedTemplateDisposition.RemoveInherited);
+            int deliberate = observations.Count(value => value.DeliberateTemplateAbility);
+            assertions.Add(Assertion("inherited-template-census-per-placement",
+                "every published Summon Monster and Nature's Ally ability, canonical and alternate, has the " +
+                    "inherited-template disposition its own placement requires: an untemplated Summon Monster " +
+                    "placement whose donor applies a native celestial/fiendish template removes exactly the " +
+                    "native identities after the donor's applications, bound to its own unit; no other " +
+                    "placement carries a removal or keeps an unremoved native application; deliberately " +
+                    "templated abilities keep their project template; no expected placement is skipped; " +
+                    "every redundant removal is listed separately with its reason",
+                "observations=" + result.Observations + "/" + expected.Count + ";dispositions=" +
+                    dispositions.ToString(Newtonsoft.Json.Formatting.None) + ";quantityRemovals=" +
+                    quantityRemovals + ";deliberateTemplateAbilities=" + deliberate + ";justifiedRedundant=" +
+                    result.JustifiedRedundant.Count + ";findings=[" + string.Join(",", result.Findings.Take(40).ToArray()) +
+                    "];unresolved=[" + string.Join(",", unresolved.Take(20).ToArray()) + "]",
+                result.Passed && unresolved.Count == 0 && result.Observations == expected.Count &&
+                    quantityRemovals > 0 && deliberate > 0,
+                "registered canonical abilities and production-built alternate children in the installed " +
+                    "library; donor carriers read separately; InheritedTemplateCensus. Graph evidence only"));
+        }
 
-            // What is asserted here is only the WIRING invariant this branch is
-            // responsible for, per placement: the removal action is present on
-            // exactly the placements whose creature is declared. The
-            // declared-versus-measured discrepancy itself is GS-REP-0002, is
-            // pre-existing on master, and is reported as evidence above rather
-            // than asserted - the earlier version of this assertion pinned a
-            // creature-level summary and a tier boundary that the data does not
-            // establish.
-            assertions.Add(Assertion("inherited-template-removal-wiring-per-placement",
-                "every untemplated Summon Monster placement carries the inherited-template removal " +
-                    "action exactly when its creature is declared, checked per placement rather " +
-                    "than per creature so one placement losing the action cannot hide behind " +
-                    "another that keeps it; every symbol resolves; and more placements are " +
-                    "examined than there are creatures. The declared-versus-measured set " +
-                    "discrepancy is GS-REP-0002, recorded as evidence here and NOT asserted",
-                "placements=" + placements + ";creatures=" + creaturePlacements.Count +
-                    ";declaredCreatures=" + declaredKeys.Length +
-                    ";everyPlacementApplies=" + allPlacementsApply.Length +
-                    ";somePlacementsApply=" + somePlacementsApply.Length +
-                    ";wiringMismatches=[" + string.Join(",", wiringMismatches.ToArray()) +
-                    "];unresolved=[" + string.Join(",", unresolved.ToArray()) + "]",
-                unresolved.Count == 0 && wiringMismatches.Count == 0 &&
-                    placements > creaturePlacements.Count,
-                "registered canonical graphs in the installed library, one record per placement; " +
-                    "ContextActionApplyBuff identities compared against " +
-                    "ExpandedSummoningAbilityBuilder.NativeTemplateIds. Graph evidence only - it " +
-                    "is not evidence that any summon retained or lost a buff at run time"));
-        }        /// <summary>
+        private static string[] CensusDonorApplied(Func<string, BlueprintScriptableObject> lookup,
+            SummonVariantSpec variant, ICollection<string> nativeIds, ISet<string> unresolved)
+        {
+            BlueprintAbility donor;
+            try { donor = ExpandedSummoningAbilityBuilder.DonorTemplate(lookup, variant); }
+            catch (InvalidOperationException) { unresolved.Add("donor:" + variant.StableKey); return new string[0]; }
+            return AlternateSummoningGraph.Objects<ContextActionApplyBuff>(donor.ComponentsArray)
+                .Where(action => action.Buff != null && nativeIds.Contains(action.Buff.AssetGuid))
+                .Select(action => action.Buff.AssetGuid).Distinct(StringComparer.Ordinal)
+                .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+        }
+
+        private static BlueprintUnit CensusUnit(SummonVariantSpec variant, ISet<string> unresolved)
+        {
+            BlueprintScriptableObject unit;
+            if (ExpandedSummoningBlueprints.Registered.BySymbol.TryGetValue(
+                    ExpandedSummoningIdentityCatalog.UnitSymbol(variant.Creature), out unit) && unit is BlueprintUnit)
+                return (BlueprintUnit)unit;
+            unresolved.Add("unit:" + variant.Creature.Key);
+            return null;
+        }
+
+        private static InheritedTemplateObservation CensusObservation(string key, string caller,
+            SummonVariantSpec variant, bool templated, string[] donorApplied, BlueprintAbility ability,
+            BlueprintUnit unit, ICollection<string> nativeIds, JArray rows)
+        {
+            bool deliberateAbility = templated;
+            var branches = new List<InheritedTemplateBranch>();
+            var branchRows = new JArray();
+            foreach (ContextActionSpawnMonster spawn in AlternateSummoningGraph
+                .Objects<ContextActionSpawnMonster>(ability.ComponentsArray))
+            {
+                GameAction[] actions = spawn.AfterSpawn == null || spawn.AfterSpawn.Actions == null ?
+                    new GameAction[0] : spawn.AfterSpawn.Actions;
+                int lastApply = -1, deliberateIndex = -1;
+                var removals = new List<int>();
+                bool bound = true, exact = true;
+                for (int index = 0; index < actions.Length; index++)
+                {
+                    GameAction action = actions[index];
+                    if (action == null) continue;
+                    bool appliesNative = (action is ContextActionApplyBuff &&
+                            ((ContextActionApplyBuff)action).Buff != null &&
+                            nativeIds.Contains(((ContextActionApplyBuff)action).Buff.AssetGuid)) ||
+                        AlternateSummoningGraph.Objects<ContextActionApplyBuff>(action).Any(apply =>
+                            apply.Buff != null && nativeIds.Contains(apply.Buff.AssetGuid));
+                    if (appliesNative) lastApply = index;
+                    var removal = action as ContextActionRemoveInheritedSummonTemplates;
+                    if (removal != null)
+                    {
+                        removals.Add(index);
+                        bound &= ReferenceEquals(removal.OwningBlueprint, unit);
+                        string[] ids = (removal.NativeTemplates ?? new BlueprintBuff[0])
+                            .Select(buff => buff == null ? null : buff.AssetGuid).ToArray();
+                        exact &= ids.Length == nativeIds.Count && ids.All(id => id != null && nativeIds.Contains(id)) &&
+                            ids.Distinct(StringComparer.Ordinal).Count() == ids.Length;
+                    }
+                    var summonBuff = action as ContextActionApplySummonBuff;
+                    var byCaster = action as ContextActionApplySummonTemplateByCaster;
+                    BlueprintBuff[] replaced = summonBuff != null ? summonBuff.ReplacedNativeTemplateBuffs :
+                        byCaster != null ? byCaster.ReplacedNativeTemplateBuffs : null;
+                    if (replaced != null && replaced.Length == nativeIds.Count &&
+                        replaced.All(buff => buff != null && nativeIds.Contains(buff.AssetGuid)))
+                        deliberateIndex = index;
+                }
+                bool deliberate = deliberateIndex >= 0 && deliberateIndex > lastApply;
+                branches.Add(new InheritedTemplateBranch(lastApply, removals.ToArray(), bound, exact, deliberate));
+                branchRows.Add(new JObject { ["actions"] = actions.Length, ["lastNativeApply"] = lastApply,
+                    ["removals"] = new JArray(removals), ["bound"] = bound, ["exact"] = exact,
+                    ["deliberateTemplateAfterDonor"] = deliberate });
+            }
+            var observation = new InheritedTemplateObservation(key, caller, variant.Family, templated,
+                deliberateAbility, donorApplied, branches.ToArray());
+            rows.Add(new JObject {
+                ["key"] = key, ["caller"] = caller, ["family"] = variant.Family.ToString(),
+                ["creature"] = variant.Creature.Key, ["placement"] = variant.StableKey,
+                ["parentTier"] = variant.ParentTier, ["multiplicity"] = variant.Multiplicity.ToString(),
+                ["templated"] = templated, ["donorApplied"] = new JArray(donorApplied),
+                ["expected"] = InheritedTemplateCensus.Expected(observation, nativeIds).ToString(),
+                ["branches"] = branchRows });
+            return observation;
+        }
+
+        /// <summary>
         /// GS-AUD-0025. The controls above run on a templated creature and on a
         /// Nature's Ally creature, so NONE of them enters the TemplateRemoval
         /// comparison branch - which is the branch the inherited-template
@@ -282,7 +337,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool match = choice.Kind == AlternateSummoningChoiceKind.Creature &&
                         choice.Multiplicity == SummonMultiplicity.One &&
                         ExpandedSummoningAbilityBuilder.RequiresInheritedTemplateRemoval(
-                            choice.Placement.Family, choice.Placement.Creature);
+                            choice.Placement, ExpandedSummoningAbilityBuilder.DonorTemplate(
+                                lookup, choice.Placement));
                     if (match) affectedChoice = choice;
                     return match;
                 }, out canonicalAffected);
