@@ -4,6 +4,7 @@ using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.ElementsSystem;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using KingmakerGunslinger.Blueprints;
@@ -255,6 +256,37 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
 
             InheritedTemplateCensusResult result = InheritedTemplateCensus.Evaluate(observations, expected, nativeIds, true);
+            // Donor validation once per recorded carrier (owner decision: one approved tier-one publication transition).
+            var donorFindings = new List<string>();
+            var transitions = new JArray();
+            var donorCounts = new Dictionary<string, int>(StringComparer.Ordinal) {
+                { "unchanged", 0 }, { "approved-tier-one-publication", 0 }, { "mutated", 0 } };
+            foreach (ExpandedSummoningAbilityBuilder.DonorRecord carrier in ExpandedSummoningAbilityBuilder.RecordedCarriers()
+                .OrderBy(value => value.Ability.AssetGuid, StringComparer.Ordinal))
+            {
+                InheritedTierOneObservation donorView = CensusDonorView(carrier);
+                var failures = new List<string>();
+                string disposition = InheritedTierOnePublicationContract.Judge(donorView, failures);
+                donorCounts[disposition] = donorCounts[disposition] + 1;
+                foreach (string failure in failures) donorFindings.Add("donor|" + carrier.Ability.AssetGuid + ":" + failure);
+                if (disposition == "approved-tier-one-publication")
+                    transitions.Add(new JObject {
+                        ["parent"] = carrier.Ability.AssetGuid + ":" + carrier.Ability.name,
+                        ["receiptDifferences"] = new JArray(donorView.ReceiptDifferences),
+                        ["originalComponents"] = donorView.OriginalComponents.Count,
+                        ["currentComponents"] = new JArray(donorView.CurrentComponents.Select(view => view.Type + ":" + view.Name)),
+                        ["differencesExcludingMenu"] = new JArray(donorView.DifferencesExcludingMenu),
+                        ["preservedChild"] = donorView.PreservedGuid,
+                        ["menuChildren"] = donorView.MenuChildren.Count,
+                        ["expectedOwnedChildren"] = donorView.ExpectedOwnedChildren.Count,
+                        ["foreignMenuRows"] = donorView.MenuChildren.Count(child => child != donorView.PreservedGuid &&
+                            !donorView.ExpectedOwnedChildren.Contains(child)),
+                        ["preservedSignatureEqual"] = donorView.PreservedSignature == donorView.DonorSignature,
+                        ["preservedActionTypes"] = donorView.PreservedActionTypes.Count,
+                        ["preservedApplyBuffIds"] = new JArray(donorView.PreservedApplyBuffIds),
+                        ["preservedSharesInstances"] = donorView.PreservedSharesInstances,
+                        ["publicationRecord"] = donorView.RecordDisagreement ?? "consistent" });
+            }
             var dispositions = new JObject(result.Dispositions.OrderBy(entry => entry.Key)
                 .Select(entry => new JProperty(entry.Key.ToString(), entry.Value)));
             int canonicalBranches = observations.Where(value => !value.IsAlternate).Sum(value => value.Branches.Length);
@@ -289,6 +321,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["notRetainedDonorShapes"] = new JArray(result.NotRetainedShapes),
                 ["findings"] = new JArray(result.Findings),
                 ["childSetFindings"] = new JArray(childFindings),
+                ["donorValidation"] = new JObject { ["carriers"] = donorCounts.Values.Sum(),
+                    ["unchanged"] = donorCounts["unchanged"], ["approvedTierOnePublication"] = donorCounts["approved-tier-one-publication"],
+                    ["mutated"] = donorCounts["mutated"], ["findings"] = new JArray(donorFindings), ["approvedTransitions"] = transitions },
                 ["justifiedRedundant"] = new JArray(result.JustifiedRedundant),
                 ["unresolved"] = new JArray(unresolved) };
             assertions.Add(Assertion("inherited-template-census-per-placement",
@@ -311,12 +346,96 @@ namespace KingmakerGunslinger.RuntimeTesting
                     quantityRemovals + ";deliberateTemplateAbilities=" + deliberate + ";justifiedRedundant=" +
                     result.JustifiedRedundant.Count + ";notRetainedShapes=" + result.NotRetainedShapes.Count +
                     ";childSetFindings=[" + string.Join(",", childFindings.Take(20).ToArray()) + "]" +
+                    ";donors=" + donorCounts.Values.Sum() + ":unchanged=" + donorCounts["unchanged"] + ",approvedTierOne=" +
+                    donorCounts["approved-tier-one-publication"] + ",mutated=" + donorCounts["mutated"] +
+                    ";donorFindings=[" + string.Join(",", donorFindings.Take(20).ToArray()) + "]" +
                     ";findings=[" + string.Join(",", result.Findings.Take(40).ToArray()) +
                     "];unresolved=[" + string.Join(",", unresolved.Take(20).ToArray()) + "]",
-                result.Passed && childFindings.Count == 0 && unresolved.Count == 0 && result.Observations == expected.Count && everyFamily &&
+                result.Passed && childFindings.Count == 0 && donorFindings.Count == 0 && donorCounts["mutated"] == 0 &&
+                    donorCounts["approved-tier-one-publication"] == 2 &&
+                    unresolved.Count == 0 && result.Observations == expected.Count && everyFamily &&
                     quantityRemovals > 0 && deliberate > 0,
                 "registered canonical abilities and production-built children of AlternateSummoningSourceCatalog.All; " +
                     "recorded donors with receipts; InheritedTemplateDonorContract; InheritedTemplateCensus. Graph evidence only"));
+        }
+
+        /// <summary>
+        /// Everything the tier-one publication judge needs about one recorded donor carrier, read from the
+        /// pre-clone receipt, the live parent, the stable preserved child and, independently, the publisher's record.
+        /// </summary>
+        private static InheritedTierOneObservation CensusDonorView(ExpandedSummoningAbilityBuilder.DonorRecord carrier)
+        {
+            BlueprintAbility parent = carrier.Ability;
+            BlueprintComponent[] current = parent.ComponentsArray ?? new BlueprintComponent[0];
+            var view = new InheritedTierOneObservation {
+                ParentGuid = parent.AssetGuid,
+                ReceiptDifferences = carrier.Differences(),
+                OriginalComponents = carrier.Receipt.Components.ToList(),
+                CurrentComponents = current.Select(component => new InheritedComponentView(component,
+                    component == null ? "<null>" : component.GetType().FullName, component == null ? "" : component.name)).ToList() };
+            if (view.ReceiptDifferences.Count == 0) return view;
+            bool monster = parent.AssetGuid == InheritedTierOnePublicationContract.SummonMonsterI;
+            if (!monster && parent.AssetGuid != InheritedTierOnePublicationContract.SummonNaturesAllyI) return view;
+            BlueprintComponent[] added = current.Where(component => !carrier.Receipt.Components.Any(original =>
+                ReferenceEquals(original, component))).ToArray();
+            BlueprintComponent[] withoutAdded = current.Where(component => !added.Contains(component)).ToArray();
+            AbilityVariants menu = added.OfType<AbilityVariants>().FirstOrDefault();
+            view.MenuChildren = (menu == null || menu.Variants == null ? new BlueprintAbility[0] : menu.Variants)
+                .Select(child => child == null ? "<null>" : child.AssetGuid).ToList();
+            // The live parent with the one added component excluded, against the receipt. The components-array
+            // reference is the receipt's own: the array is replaced by design; its contents are what is compared.
+            view.DifferencesExcludingMenu = InheritedTemplateDonorReceipt.Differences(carrier.Receipt,
+                ExpandedSummoningAbilityBuilder.CaptureReceipt(parent.AssetGuid, parent.name, carrier.Receipt.ComponentsArray, withoutAdded));
+            BlueprintScriptableObject preservedObject;
+            ExpandedSummoningBlueprints.Registered.BySymbol.TryGetValue(monster ?
+                ExpandedSummoningIdentityCatalog.NativeMonsterTierOneSymbol :
+                ExpandedSummoningIdentityCatalog.NativeNaturesAllyTierOneSymbol, out preservedObject);
+            var preserved = preservedObject as BlueprintAbility;
+            view.PreservedIsAbility = preserved != null;
+            view.PreservedGuid = preservedObject == null ? null : preservedObject.AssetGuid;
+            view.DonorSignature = carrier.PrePublicationSignature;
+            view.DonorActionTypes = carrier.Receipt.ActionTypes.ToList();
+            view.DonorApplyBuffIds = carrier.Receipt.ApplyBuffIds.ToList();
+            if (preserved != null)
+            {
+                BlueprintComponent[] preservedComponents = preserved.ComponentsArray ?? new BlueprintComponent[0];
+                view.PreservedSignature = SummonSignatureReader.Read(preserved).Render();
+                GameAction[] preservedActions = AlternateSummoningGraph.Objects<GameAction>(preservedComponents).ToArray();
+                view.PreservedActionTypes = preservedActions.Select(action => action.GetType().FullName).ToList();
+                view.PreservedApplyBuffIds = AlternateSummoningGraph.Objects<ContextActionApplyBuff>(preservedComponents)
+                    .Select(action => action.Buff == null ? "<null>" : action.Buff.AssetGuid).ToList();
+                view.PreservedSharesInstances = preservedComponents.Any(component => carrier.Receipt.Components.Any(original =>
+                        ReferenceEquals(original, component))) ||
+                    preservedActions.Any(action => carrier.Receipt.Actions.Any(original => ReferenceEquals(original, action)));
+            }
+            SummonFamily family = monster ? SummonFamily.Monster : SummonFamily.NaturesAlly;
+            var owned = new List<string>();
+            foreach (SummonVariantSpec variant in ExpandedSummoningCatalog.GenerateVariants(family)
+                .Where(value => value.ParentTier == 1 && SummonVisibilityCatalog.IsPublished(value)))
+            {
+                BlueprintScriptableObject child;
+                owned.Add(ExpandedSummoningBlueprints.Registered.BySymbol.TryGetValue(
+                    ExpandedSummoningIdentityCatalog.AbilitySymbol(variant), out child) && child != null ? child.AssetGuid : "<unresolved>");
+            }
+            foreach (SummonNativeExpansionSpec spec in SummonNativeExpansionCatalog.For(family, 1))
+            {
+                BlueprintScriptableObject child;
+                owned.Add(ExpandedSummoningBlueprints.Registered.BySymbol.TryGetValue(spec.Symbol, out child) && child != null
+                    ? child.AssetGuid : "<unresolved>");
+            }
+            view.ExpectedOwnedChildren = owned;
+            // The publisher's own record, checked against the receipt and the live parent, never trusted alone.
+            ExpandedSummoningPublication publication = ExpandedSummoningPublisher.Last;
+            ExpandedSummoningPublication.Record record = publication == null ? null :
+                publication.Records.SingleOrDefault(value => ReferenceEquals(value.Parent, parent));
+            if (record == null) view.RecordDisagreement = "no-record";
+            else if (!(record.OriginalComponents ?? new BlueprintComponent[0]).Cast<object>().SequenceEqual(carrier.Receipt.Components))
+                view.RecordDisagreement = "original-components-differ-from-receipt";
+            else if (!ReferenceEquals(record.PublishedComponents, parent.ComponentsArray))
+                view.RecordDisagreement = "published-components-not-live";
+            else if (menu == null || !ReferenceEquals(record.PublishedVariants, menu))
+                view.RecordDisagreement = "published-variants-not-the-added-component";
+            return view;
         }
 
         private static ExpandedSummoningAbilityBuilder.DonorRecord CensusDonor(SummonVariantSpec variant,
@@ -417,7 +536,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var observation = new InheritedTemplateObservation(key, caller, variant.Family, templated,
                 templated, donorApplied, branches.ToArray(), variant.ParentTier, variant.Multiplicity,
                 donor.Ability.AssetGuid, donor.Ability.name, clone ? donorApplies : null,
-                donor.Differences().ToArray());
+                null);
             rows.Add(new JObject {
                 ["key"] = key, ["caller"] = caller, ["family"] = variant.Family.ToString(),
                 ["creature"] = variant.Creature.Key, ["placement"] = variant.StableKey,

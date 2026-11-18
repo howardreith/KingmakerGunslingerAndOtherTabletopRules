@@ -260,6 +260,117 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
+    /// <summary>One current component of a donor carrier, as seen by the census.</summary>
+    internal sealed class InheritedComponentView
+    {
+        internal InheritedComponentView(object reference, string type, string name)
+        { Reference = reference; Type = type ?? ""; Name = name ?? ""; }
+
+        internal object Reference { get; private set; }
+        internal string Type { get; private set; }
+        internal string Name { get; private set; }
+    }
+
+    /// <summary>Everything the census reads about one recorded donor carrier, once per carrier.</summary>
+    internal sealed class InheritedTierOneObservation
+    {
+        internal string ParentGuid;
+        /// <summary>Differences between the pre-clone receipt and the donor now (all components).</summary>
+        internal IList<string> ReceiptDifferences = new List<string>();
+        /// <summary>The receipt's component references, in order.</summary>
+        internal IList<object> OriginalComponents = new List<object>();
+        internal IList<InheritedComponentView> CurrentComponents = new List<InheritedComponentView>();
+        /// <summary>Receipt differences when the one added menu component is excluded from the current donor.</summary>
+        internal IList<string> DifferencesExcludingMenu = new List<string>();
+        /// <summary>Asset identities in the added menu component, in order.</summary>
+        internal IList<string> MenuChildren = new List<string>();
+        internal string PreservedGuid;
+        internal bool PreservedIsAbility;
+        internal string DonorSignature;
+        internal string PreservedSignature;
+        internal IList<string> DonorActionTypes = new List<string>();
+        internal IList<string> PreservedActionTypes = new List<string>();
+        internal IList<string> DonorApplyBuffIds = new List<string>();
+        internal IList<string> PreservedApplyBuffIds = new List<string>();
+        internal bool PreservedSharesInstances;
+        internal IList<string> ExpectedOwnedChildren = new List<string>();
+        /// <summary>Null when the publisher's own record agrees with the receipt and the live parent; otherwise why not.</summary>
+        internal string RecordDisagreement;
+    }
+
+    /// <summary>
+    /// DEF-05 owner decision: the one approved donor change. The established
+    /// tier-one menu publication (47c6a4ab04) turns the two native direct
+    /// tier-one parents into menus after the canonical spells are cloned from
+    /// them. Every other donor must match its receipt exactly. For the two exact
+    /// parents a difference is an approved transition only when every check
+    /// below holds; anything else stays a donor mutation.
+    /// </summary>
+    internal static class InheritedTierOnePublicationContract
+    {
+        internal const string SummonMonsterI = "8fd74eddd9b6c224693d9ab241f25e84";
+        internal const string SummonNaturesAllyI = "c6147854641924442a3bb736080cfeb6";
+        internal const string MenuComponentName = "$KMG_ExpandedSummoning_Variants";
+        internal const string MenuComponentType = "Kingmaker.UnitLogic.Abilities.Components.AbilityVariants";
+
+        /// <summary>"unchanged", "approved-tier-one-publication" or "mutated"; failures say why it is not approved.</summary>
+        internal static string Judge(InheritedTierOneObservation value, IList<string> failures)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            if (value.ReceiptDifferences.Count == 0) return "unchanged";
+            if (value.ParentGuid != SummonMonsterI && value.ParentGuid != SummonNaturesAllyI)
+            {
+                foreach (string difference in value.ReceiptDifferences) failures.Add("donor-mutated:" + difference);
+                return "mutated";
+            }
+            int before = failures.Count;
+            // 1 and 2: the original components kept in order, plus exactly one owned menu component.
+            InheritedComponentView[] added = value.CurrentComponents
+                .Where(component => !value.OriginalComponents.Any(original => ReferenceEquals(original, component.Reference))).ToArray();
+            object[] kept = value.CurrentComponents.Where(component => !added.Contains(component)).Select(component => component.Reference).ToArray();
+            if (value.CurrentComponents.Count != value.OriginalComponents.Count + 1)
+                failures.Add("component-count:" + value.CurrentComponents.Count + "/" + (value.OriginalComponents.Count + 1));
+            if (kept.Length != value.OriginalComponents.Count ||
+                kept.Where((reference, index) => !ReferenceEquals(reference, value.OriginalComponents[index])).Any())
+                failures.Add("original-components-not-kept-in-order");
+            if (added.Length != 1) failures.Add("added-components:" + added.Length);
+            else
+            {
+                if (added[0].Type != MenuComponentType) failures.Add("added-component-type:" + added[0].Type);
+                if (added[0].Name != MenuComponentName) failures.Add("added-component-name:" + added[0].Name);
+            }
+            int variants = value.CurrentComponents.Count(component => component.Type == MenuComponentType);
+            if (variants != 1) failures.Add("variants-components:" + variants);
+            // 3: the stable preserved native child, exactly once.
+            if (string.IsNullOrEmpty(value.PreservedGuid) || !value.PreservedIsAbility) failures.Add("preserved-child-unresolved");
+            else
+            {
+                if (value.PreservedGuid == value.ParentGuid) failures.Add("preserved-child-is-the-parent");
+                int preserved = value.MenuChildren.Count(child => child == value.PreservedGuid);
+                if (preserved != 1) failures.Add("preserved-child-in-menu:" + preserved);
+            }
+            // 4: the preserved child is the original direct cast, semantically, with no shared instances.
+            if (string.IsNullOrEmpty(value.DonorSignature) || value.PreservedSignature != value.DonorSignature)
+                failures.Add("preserved-signature-differs");
+            if (!value.PreservedActionTypes.SequenceEqual(value.DonorActionTypes, StringComparer.Ordinal))
+                failures.Add("preserved-action-types-differ");
+            if (!value.PreservedApplyBuffIds.SequenceEqual(value.DonorApplyBuffIds, StringComparer.Ordinal))
+                failures.Add("preserved-buff-identities-differ");
+            if (value.PreservedSharesInstances) failures.Add("preserved-shares-instances");
+            // 5: with the menu excluded, the live parent is still exactly the receipt.
+            foreach (string difference in value.DifferencesExcludingMenu) failures.Add("parent-graph-changed:" + difference);
+            // 6: every owned child exactly once; foreign rows and order are free.
+            foreach (string child in value.ExpectedOwnedChildren)
+            {
+                int count = value.MenuChildren.Count(row => row == child);
+                if (count != 1) failures.Add("owned-child:" + child + ":" + count);
+            }
+            // 7: the publisher's own record, cross-checked independently.
+            if (value.RecordDisagreement != null) failures.Add("publication-record:" + value.RecordDisagreement);
+            return failures.Count == before ? "approved-tier-one-publication" : "mutated";
+        }
+    }
+
     internal static class InheritedChildSetContract
     {
         /// <summary>

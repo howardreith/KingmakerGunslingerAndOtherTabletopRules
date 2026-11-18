@@ -239,7 +239,11 @@ namespace KingmakerGunslinger.Blueprints
             {
                 Ability = ability;
                 Receipt = CaptureReceipt(ability);
+                PrePublicationSignature = SummonSignatureReader.Read(ability).Render();
             }
+
+            /// <summary>The donor's semantic signature before any publication (spawns, quantity, duration, resources, actions).</summary>
+            internal string PrePublicationSignature { get; private set; }
 
             internal BlueprintAbility Ability { get; private set; }
             /// <summary>Taken before the donor is cloned or any publication runs.</summary>
@@ -260,13 +264,20 @@ namespace KingmakerGunslinger.Blueprints
         internal static InheritedTemplateDonorReceipt CaptureReceipt(BlueprintAbility ability)
         {
             if (ability == null) throw new ArgumentNullException("ability");
-            BlueprintComponent[] components = ability.ComponentsArray ?? Array.Empty<BlueprintComponent>();
+            return CaptureReceipt(ability.AssetGuid, ability.name, ability.ComponentsArray,
+                ability.ComponentsArray ?? Array.Empty<BlueprintComponent>());
+        }
+
+        /// <summary>The same receipt over an explicit component list (the census excludes one menu component with it).</summary>
+        internal static InheritedTemplateDonorReceipt CaptureReceipt(string guid, string name, object componentsArray,
+            BlueprintComponent[] components)
+        {
             ContextActionSpawnMonster[] spawns = AlternateSummoningGraph
                 .Objects<ContextActionSpawnMonster>(components).ToArray();
             GameAction[] actions = AlternateSummoningGraph.Objects<GameAction>(components).ToArray();
             string[] applied = AlternateSummoningGraph.Objects<ContextActionApplyBuff>(components)
                 .Select(action => action.Buff == null ? "<null>" : action.Buff.AssetGuid).ToArray();
-            return new InheritedTemplateDonorReceipt(ability.AssetGuid, ability.name, ability.ComponentsArray,
+            return new InheritedTemplateDonorReceipt(guid, name, componentsArray,
                 components.Cast<object>().ToArray(), spawns.Cast<object>().ToArray(),
                 spawns.Select(spawn => spawn.AfterSpawn == null ? null : (object)spawn.AfterSpawn.Actions).ToArray(),
                 spawns.Select(spawn => spawn.AfterSpawn == null || spawn.AfterSpawn.Actions == null ? new object[0] :
@@ -290,6 +301,12 @@ namespace KingmakerGunslinger.Blueprints
                     DonorsByCarrier[donor] = record = new DonorRecord(donor);
                 Donors[variant.StableKey] = record;
             }
+        }
+
+        /// <summary>Each recorded donor carrier once.</summary>
+        internal static IList<DonorRecord> RecordedCarriers()
+        {
+            lock (Donors) return DonorsByCarrier.Values.ToList();
         }
 
         /// <summary>Every recorded donor carrier's receipt differences, prefixed by the carrier identity; empty when no donor changed.</summary>

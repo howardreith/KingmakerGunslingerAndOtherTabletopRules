@@ -327,6 +327,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InheritedTemplateDonorContract.cs"><Link>Summoning\InheritedTemplateDonorContract.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InheritedTemplateCastContracts.cs"><Link>Summoning\InheritedTemplateCastContracts.cs</Link></Compile>
     <Compile Include="InheritedTemplateCastContractTests.cs" />
+    <Compile Include="InheritedTierOnePublicationTests.cs" />
     <Compile Include="InheritedTemplatePolicyTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVariantMergePolicy.cs"><Link>Summoning\SummonVariantMergePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVariantMenuLayoutPolicy.cs"><Link>Summoning\SummonVariantMenuLayoutPolicy.cs</Link></Compile>
