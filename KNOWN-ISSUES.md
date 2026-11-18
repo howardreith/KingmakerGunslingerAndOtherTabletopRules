@@ -153,7 +153,7 @@
   identity whoever granted them (Kingmaker facts carry no general provenance), sparing only the legacy Exotic Weapon
   Proficiency (Firearms) wrapper's full proficiency. No supported independent provider of these facts exists: they are
   granted only by the Gunslinger, Pistolero and Musket Master presentations and the legacy wrapper. On branch
-  `codex/risk05-proficiency-provenance` (not merged, not released) the scope rules are extracted to
+  `codex/risk05-proficiency-provenance` (accepted with Sprint 4 at `d53487a2a6`; not merged, not released) the scope rules are extracted to
   `FirearmProficiencyScopeRules` with tests, and the requirement for any future provider is recorded there and in
   `docs/GUNSLINGER-PROFICIENCY-PROVENANCE.md`: grant a provider-owned fact the proficiency policy is extended to
   recognize, or bring a recorded provenance the reconciler honours; never grant these blueprints directly. A provider
@@ -177,7 +177,7 @@
   also 11 of 11 on `fd4087c312bd`). The pending archetype change cleared the
   invalid one-handed child while keeping the parent, all 19 selection-flow
   cases ran without a cleanup error, and party and unit isolation held. No
-  defect was found. Not merged, not released; the level-up screen itself was
+  defect was found. Accepted with Sprint 4 (2026-11-18); not merged, not released; the level-up screen itself was
   not observed (`docs/GUNSLINGER-SPRINT4-CLOSURE.md`).
 - A Musket Master still qualifies for the Rapid Reload parent through
   two-handed firearm proficiency, so a pending archetype change may
@@ -395,8 +395,8 @@
   `planning/races-unleashed-compatibility/STATUS.md`).
 - The legacy Advanced Revolver declares six chambers, but saved firearm state holds one round, so its six-round reload
   fails and restores ammunition and weapon state. No published release offered it (vendors only cleaned it up;
-  Craft Magic Items only recognized an owned one). On branch `codex/risk01-advanced-revolver` (not merged, not
-  released) it is contained as unsupported: it stays registered and loadable with its identities, cannot be equipped,
+  Craft Magic Items only recognized an owned one). On branch `codex/risk01-advanced-revolver` (accepted with Sprint 4 at `e30b19e8fe`;
+  not merged, not released) it is contained as unsupported: it stays registered and loadable with its identities, cannot be equipped,
   is no longer recognized by Craft Magic Items, says so in its description, and registration refuses any other firearm
   whose capacity the saved state cannot hold (`docs/GUNSLINGER-ADVANCED-REVOLVER-CONTAINMENT.md`). One already equipped
   through external means stays equipped and keeps failing its reloads safely.

@@ -1,8 +1,8 @@
 # True Grit's two different deeds through native level-up (RISK-04 / S4 T6)
 
-Status: **observer and reframing on a review branch, awaiting review. Not merged, not released.** Branch
-`codex/risk04-true-grit-distinct`, stacked on the preceding stacked checkpoint `codex/risk01-advanced-revolver` (draft
-PR #182). The native result comes from the final Sprint 4 candidate and is recorded on the Sprint 4 closure branch.
+Status: **Accepted and closed for its reviewed development scope** as part of Sprint 4 (principal review, 2026-11-18). Acceptance is not merge or release: not merged, not released. Branch
+`codex/risk04-true-grit-distinct`, draft PR #183, accepted head `bb789b1891b5e76e21345b0dc6abd2ba8c70db7e`, stacked on
+`codex/risk01-advanced-revolver` (draft PR #182). The native result comes from the final Sprint 4 candidate and is recorded on the Sprint 4 closure branch.
 
 ## Contract
 

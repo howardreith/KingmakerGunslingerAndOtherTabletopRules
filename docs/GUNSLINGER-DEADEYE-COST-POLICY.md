@@ -1,7 +1,7 @@
 # Deadeye's cost: the flat one-grit adaptation (POL-02 / S4 T4)
 
-Status: **policy reconciliation on a review branch, awaiting review. Not merged, not released.** Branch
-`codex/pol02-deadeye-cost`, stacked on draft PR #180 at `ee65d09e9d`. Native evidence comes from the final Sprint 4
+Status: **Accepted and closed for its reviewed development scope** as part of Sprint 4 (principal review, 2026-11-18). Acceptance is not merge or release: not merged, not released. Branch
+`codex/pol02-deadeye-cost`, draft PR #181, accepted head `c638de23857724dfaea39c2270467f0a79b12b78`, stacked on draft PR #180 at `ee65d09e9d`. Native evidence comes from the final Sprint 4
 candidate (see "Native evidence").
 
 ## Contract
