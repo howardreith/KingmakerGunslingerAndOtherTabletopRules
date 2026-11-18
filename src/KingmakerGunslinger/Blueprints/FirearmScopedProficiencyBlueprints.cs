@@ -7,10 +7,17 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic;
+using KingmakerGunslinger.Firearms;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
 {
+    /// <summary>
+    /// Removes the firearm proficiency scopes its presentation does not grant
+    /// (FirearmProficiencyScopeRules), by blueprint identity, sparing the full
+    /// proficiency of a legacy-wrapper owner. See FirearmProficiencyScopeRules
+    /// for the extension boundary a future independent provider must respect.
+    /// </summary>
     public sealed class FirearmProficiencyScopeReconciler :
         OwnedGameLogicComponent<UnitDescriptor>
     {
@@ -96,14 +103,20 @@ namespace KingmakerGunslinger.Blueprints
                 full == null || scoped == null ||
                 legacyCompatibilityWrapper == null)
                 throw new ArgumentNullException("scope reconciliation blueprint");
-            AppendReconciler(basePresentation, full, full,
-                legacyCompatibilityWrapper, scoped.OneHanded, scoped.TwoHanded);
+            Func<FirearmProficiencyScope, BlueprintFeature> feature = scope =>
+                scope == FirearmProficiencyScope.Full ? full :
+                scope == FirearmProficiencyScope.OneHanded ? scoped.OneHanded : scoped.TwoHanded;
+            Func<FirearmProficiencyPresentation, BlueprintFeature[]> incompatible = presentation =>
+                FirearmProficiencyScopeRules.Incompatible(presentation).Select(feature).ToArray();
+            AppendReconciler(basePresentation,
+                feature(FirearmProficiencyScopeRules.Expected(FirearmProficiencyPresentation.Gunslinger)),
+                full, legacyCompatibilityWrapper, incompatible(FirearmProficiencyPresentation.Gunslinger));
             AppendReconciler(archetypePresentations.Pistolero,
-                scoped.OneHanded, full, legacyCompatibilityWrapper,
-                full, scoped.TwoHanded);
+                feature(FirearmProficiencyScopeRules.Expected(FirearmProficiencyPresentation.Pistolero)),
+                full, legacyCompatibilityWrapper, incompatible(FirearmProficiencyPresentation.Pistolero));
             AppendReconciler(archetypePresentations.MusketMaster,
-                scoped.TwoHanded, full, legacyCompatibilityWrapper,
-                full, scoped.OneHanded);
+                feature(FirearmProficiencyScopeRules.Expected(FirearmProficiencyPresentation.MusketMaster)),
+                full, legacyCompatibilityWrapper, incompatible(FirearmProficiencyPresentation.MusketMaster));
         }
 
         private static void AppendReconciler(BlueprintFeature presentation,

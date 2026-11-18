@@ -148,16 +148,16 @@
   half of its recorded roll, each charges one grit and removes the exact armed instance before the deed's damage; a following unarmed shot and an order cancelled before
   it starts charge nothing, and the cancelled state expires by itself. Record:
   `docs/GUNSLINGER-UP-CLOSE-AND-DEADLY-DAMAGE.md`.
-- Rapid Reload's parent proficiency gate reads only the registered firearm
-  proficiency features, so any future independent proficiency source satisfies
-  it without further changes. `FirearmProficiencyScopeReconciler` remains a
-  separate concern: it removes incompatible scoped proficiency facts from
-  characters carrying the base or archetype proficiency presentations, so a
-  future independent scoped source granted to a Gunslinger or one of its
-  archetypes could still be reconciled away before the gate ever evaluates it.
-  That reconciler was deliberately left unchanged by the Rapid Reload gate work
-  and would need its own design pass when independent proficiency sources are
-  introduced.
+- Firearm proficiency provenance (RISK-05). Rapid Reload's parent gate reads the registered firearm proficiency
+  features, and `FirearmProficiencyScopeReconciler` removes this mod's obsolete proficiency scopes by blueprint
+  identity whoever granted them (Kingmaker facts carry no general provenance), sparing only the legacy Exotic Weapon
+  Proficiency (Firearms) wrapper's full proficiency. No supported independent provider of these facts exists: they are
+  granted only by the Gunslinger, Pistolero and Musket Master presentations and the legacy wrapper. On branch
+  `codex/risk05-proficiency-provenance` (not merged, not released) the scope rules are extracted to
+  `FirearmProficiencyScopeRules` with tests, and the requirement for any future provider is recorded there and in
+  `docs/GUNSLINGER-PROFICIENCY-PROVENANCE.md`: grant a provider-owned fact the proficiency policy is extended to
+  recognize, or bring a recorded provenance the reconciler honours; never grant these blueprints directly. A provider
+  surviving a Gunslinger's reconciler is a future requirement, not verified compatibility.
 - The guarded `disposable-rapid-reload-proficiency-gate` runtime scenario is
   registered, compiled and catalog-synchronised, and both rounds of review
   findings are implemented: a real pending class/archetype change inside one
