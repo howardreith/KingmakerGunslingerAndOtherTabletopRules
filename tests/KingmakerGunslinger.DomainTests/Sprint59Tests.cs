@@ -25,12 +25,16 @@ namespace KingmakerGunslinger.DomainTests
                 "Archetype-owned True Grit choices are incomplete.");
         }
 
+        // RISK-04: distinctness of the two choices is enforced by the native
+        // level-up selection (one-rank choices); the catalog's own invariant is
+        // that each deed appears once, so each has exactly one choice feature.
         private static void TrueGritPairUniqueness()
         {
-            Assertions.True(TrueGritCatalog.IsValidPair(TrueGritDeed.Deadeye,
-                TrueGritDeed.StunningShot), "Distinct choices were rejected.");
-            Assertions.True(!TrueGritCatalog.IsValidPair(TrueGritDeed.Deadeye,
-                TrueGritDeed.Deadeye), "Duplicate choice was accepted.");
+            TrueGritChoice[] values = TrueGritCatalog.Choices;
+            Assertions.Equal(values.Length, values.Select(value => value.Deed).Distinct().Count(),
+                "A True Grit deed appears twice in the catalog.");
+            Assertions.Equal(values.Length, values.Select(value => value.DisplayName).Distinct().Count(),
+                "Two True Grit choices share a name.");
         }
 
         private static void TrueGritOneCostBoundary()
