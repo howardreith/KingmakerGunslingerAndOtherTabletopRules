@@ -73,5 +73,6 @@ New `firearm-proficiency-scope.*` tests:
   and Rapid Reload sees it" stays unverified by design. It is recorded as a future requirement, not as compatibility.
 - Rapid Reload's parent gate reads the registered proficiency features, so a provider-owned fact recognized by the
   policy would need that policy extended. The Rapid Reload transaction scenario run for S4 T8 includes the
-  request-local independent-source fixtures on non-Gunslinger characters. Those rows show native prerequisites
+  request-local independent-source fixtures on non-Gunslinger characters (final-candidate session
+  `20261118T014708Z`, cases `F.independent-source-full` and `F.independent-source-two-handed`, both acquiring a child). Those rows show native prerequisites
   accepting a separately granted fact. They are not a provider surviving a Gunslinger's reconciler.

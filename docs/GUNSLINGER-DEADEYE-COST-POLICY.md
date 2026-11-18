@@ -66,8 +66,21 @@ candidate: a Gunslinger levelled by the level-up controller, the registered abil
 musket shots through the attack command. Cases: refused activation with no grit; activation spends one grit once; an
 armed hit beyond the first increment uses touch AC, consumes the exact instance and spends nothing; an armed miss
 beyond it consumes and spends nothing; a first-increment shot consumes and spends nothing; an attack order cancelled
-before it starts keeps the state and refunds nothing, and its unaided end refunds nothing. Results are recorded on the
-Sprint 4 closure branch.
+before it starts keeps the state and refunds nothing, and its unaided end refunds nothing.
+
+Result on the final Sprint 4 candidate `16708bd5e237` (package `e017a5f3d8ec…`, DLL `cbca54912642…`, MVID `90ce7e7d-9c5a-46ec-9c95-c0734d2faaec`), session `20261118T014826Z-owner-0.33.0-deadeye-cost`, PASS (also passed on the first
+closure candidate `fd4087c312bd`, session `20261118T013600Z`). Musket, target 45 ft away, grit maximum 5:
+
+| Case | Observed |
+|---|---|
+| No grit | not available; command `Fail`; grit 0 to 0; not armed |
+| Armed hit beyond the first increment | grit 3 to 2 at activation; shot measured 43.2 ft, natural 19, hit against touch AC; exact instance removed; grit still 2 |
+| Armed miss beyond the first increment | grit 2 to 1; 43.2 ft, natural 10, missed against touch AC without misfiring; instance removed; grit still 1 |
+| Armed first-increment shot | grit 4 to 3; 7.18 ft, hit; instance removed; grit still 3 |
+| Order cancelled before it starts | grit 3 to 2; order taken, not started, not acted, `Interrupt`; no attack roll; state kept; grit 2; ended by itself after 6.01 s; grit still 2 |
+
+The first-increment shot is also resolved against touch AC: that is the ordinary first-increment firearm rule, not
+Deadeye, which authorizes touch AC only beyond the first increment.
 
 ## Limits
 
