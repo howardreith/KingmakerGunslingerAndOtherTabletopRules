@@ -135,7 +135,8 @@ $protected = [ordered]@{
     # The canonical gate rejects every change outside that exact constructor site.
     # DEF-04 (2026-11-16, corrected after review 2026-11-17) changed only the Gun Training selection description text.
     'src/KingmakerGunslinger/Blueprints/GunTrainingBlueprints.cs' = 'cd1d5cb477ae63c5357a1f61bb6ee9718e4b5cc338cf2d29c01a6a8e66053f0e'
-    'src/KingmakerGunslinger/Firearms/ProductionFirearmCatalog.cs' = '75a8352c85c2e4fe5369ea02c414df9adc8a04f33c075f9176bd2f1138ad18dd'
+    # RISK-01 (S4 T5, 2026-11-17) changed only the legacy Advanced Revolver's player-fireable flag (containment as unsupported content).
+    'src/KingmakerGunslinger/Firearms/ProductionFirearmCatalog.cs' = '3dc2c263d87931ea63922e5d53e8b9519d1c9639bb24bb7f7d4d9c4b48ad71f1'
     'src/KingmakerGunslinger/CraftMagicItemsCompatibility/CraftMagicItemsCompatibilityPolicy.cs' = '6236d4392435b397bf7312d58c1633bc9ab84a368ededc47abf30fd9e3b57ea3'
 }
 foreach ($entry in $protected.GetEnumerator()) {
