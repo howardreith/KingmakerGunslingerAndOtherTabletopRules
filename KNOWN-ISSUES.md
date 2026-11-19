@@ -348,8 +348,9 @@
   the census (session `20261119T201715Z`) and the cast session (`20261119T201938Z`, 15 of 15). With the d4 forced to
   2, `ProjectilesCount` 1 and three Air Mephits prove the d4+1 path. The Master Summoner's Default rank of 7 gives the
   420 s duration. The donor carriers are unchanged across the casts. The quantity is proved for the controlled roll
-  only. The branch is ready for principal review; it is not merged or released, so released versions still carry this
-  issue.
+  only. S5 T1 is accepted and closed for its reviewed development scope (principal review, 2026-11-19; qualified
+  product `8ceb08ccef29`). Acceptance is not merge or release: PR #186 stays a draft, so released versions still carry
+  this issue.
 - Two feature-module publication self-checks fail on a heavily modded installation (v0.0.186):
   `feature-module-expanded-summoning-publication-gate` reports `unclassified=38` against a hard-coded
   expectation of 0, and `feature-module-brown-fur-publication-gate` fails alongside it. A matched

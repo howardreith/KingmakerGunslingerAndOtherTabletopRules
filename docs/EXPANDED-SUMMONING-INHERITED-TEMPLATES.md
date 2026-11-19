@@ -1,7 +1,7 @@
 # Inherited summon templates per owned placement (DEF-05 / S5 T1)
 
-Status: **S5 T1 / DEF-05 is ready for principal review** (see "Cast observer repair: census PASS and cast PASS";
-every earlier failed session is kept below). Branch
+Status: **S5 T1 / DEF-05 is accepted and closed for its reviewed development scope** (principal review, 2026-11-19;
+see "Status" below; every earlier failed session is kept). Acceptance is not merge or release. Branch
 `codex/def05-inherited-template-cleanup`, draft PR #186, stacked on the accepted Sprint 4 closure PR #185
 (`5c662d50b0`). Not merged, not released.
 
@@ -925,7 +925,32 @@ and no other lab held a runtime lock.
 
 ## Status
 
-S5 T1 / DEF-05 is ready for principal review.
+**S5 T1 / DEF-05 is accepted and closed for its reviewed development scope (principal review, 2026-11-19).**
+Acceptance is not merge or release: PR #186 stays an open draft, and nothing is released, tagged or installed.
+
+Accepted identities:
+- PR #186, branch `codex/def05-inherited-template-cleanup`;
+- accepted base `5c662d50b0824bf5eabb02892bfbc172db8a7374`;
+- accepted records head `f59e3ed811a772c2d82ee33cc0b5eac28c6a96d8`;
+- qualified product/source `8ceb08ccef29f1029618ee86e4797f40480ec8d8`.
+
+Accepted artifacts:
+- package SHA-256 `3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb`;
+- DLL SHA-256 `e0dadbc9c854768bd83711324403fc9f5d61f82c8572b9b844249e5a0f14cc35`;
+- MVID `3806eb49-4581-4784-a01d-99c7cfec0659`;
+- harness SHA-256 `c47e7f14d48edac88740b4c9bf1841e805c45a88043dc162789b4c86dbc1b089`.
+
+Accepted native evidence:
+- census `20261119T201715Z-owner-0.33.0-inherited-template-census`: PASS;
+- representative casts `20261119T201938Z-owner-0.33.0-inherited-template-casts`: PASS, 15 of 15.
+
+Accepted limitations, unchanged:
+- the quantity is proved through one controlled d4 result, not statistical sampling;
+- the retained baseline lacks historical donor identities;
+- the next release validator must replace its obsolete creature-list expectation.
+
+Every earlier failed census, failed cast, unbuilt candidate and built-but-unexecuted candidate keeps its original
+identity in "Evidence states, kept separate" and in the sections above.
 
 ## Remaining
 
