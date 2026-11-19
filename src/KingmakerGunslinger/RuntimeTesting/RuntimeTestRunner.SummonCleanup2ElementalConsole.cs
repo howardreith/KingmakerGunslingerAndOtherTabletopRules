@@ -261,9 +261,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if(!party.Contains(fixture.Caster))
                 {player.PartyCharacters.Add(fixture.Caster);added=true;player.InvalidateCharacterLists();player.UpdateCharacterLists();}
                 ownedParty=player.Party.ToArray();
-                foreach(var parent in StandaloneElementalPresentationPolicy.All.Where(value=>value.IsParent))
-                    PrepareExpandedSummoningPlayerPathSpell(book,Cleanup2ElementalAbility(fixture,parent.Guid),
-                        Cleanup2ElementalAbility(fixture,parent.Guid),parent.CanonicalTier);
+                Action prepareStandalone=()=>{
+                    foreach(var parent in StandaloneElementalPresentationPolicy.All.Where(value=>value.IsParent))
+                        PrepareExpandedSummoningPlayerPathSpell(book,Cleanup2ElementalAbility(fixture,parent.Guid),
+                            Cleanup2ElementalAbility(fixture,parent.Guid),parent.CanonicalTier);};
+                if(off)prepareStandalone();
+                else
+                {
+                    // S5 T2 / DEF-06 native rows that must stay native: Summon Monster II
+                    // (an elemental source on the Wizard list), Summon Nature's Ally II and
+                    // an unrelated Magic Missile. The standalone originals follow lane A.
+                    var monster=Cleanup2ConsoleAbility(ElementalSourceChooserPolicy.Rank(2).MonsterParentGuid,"native Summon Monster II");
+                    var ally=Cleanup2ConsoleAbility(ElementalSourceChooserPolicy.Rank(2).NaturesAllyParentGuid,"native Summon Nature's Ally II");
+                    var missile=Cleanup2ConsoleAbility(Cleanup2ConsoleMagicMissile,"native Magic Missile");
+                    PrepareExpandedSummoningPlayerPathSpell(book,monster,monster,2);
+                    PrepareExpandedSummoningPlayerPathSpell(book,ally,ally,2);
+                    PrepareExpandedSummoningPlayerPathSpell(book,missile,missile,1);
+                }
                 selection.SelectUnit(fixture.Caster.View,true,true,false);
                 for(int frame=0;frame<12;frame++)yield return 0;
                 if(!ReferenceEquals(bar.Unit.Value,fixture.Caster) || !ReferenceEquals(selection.CurrentSelectUnitValue,fixture.Caster))
@@ -273,6 +287,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // Retain that established cohort; do not unlink other units
                 // or manufacture a one-element selection for this observer.
                 ownedSelection=selection.SelectedUnits.ToArray();
+                if(!off)
+                {
+                    // S5 T2 / DEF-06 lane A, before any original standalone row exists.
+                    selectorBaseLayers=GamePad.Instance.Layers.ToArray();
+                    _cleanup2ConsoleCollections=new List<KeyValuePair<ActionBarSelectorVm,ActionBarSelectorItemVm[]>>();
+                    hooks.Patch(typeof(ActionBarSelectorVm).GetMethod("CollectSpells",Cleanup2Fields),null,
+                        new HarmonyMethod(typeof(RuntimeTestRunner).GetMethod("Cleanup2ConsoleCollectionSnapshotPostfix",statics)){prioritiy=Priority.First},null);
+                    foreach(int frame in Cleanup2ConsoleNoConsolidation(fixture,book,bar,uiOwned,selectorInputOwned,ownedSelectors))yield return frame;
+                    prepareStandalone();
+                    for(int frame=0;frame<6;frame++)yield return 0;
+                    _cleanup2ConsoleCollections.Clear();
+                }
                 var input=new Cleanup2TooltipInputs(fixture.Caster);var pins=new TeleportationUiSettingsFixture(fixture.Caster.UISettings);
                 var layers=GamePad.Instance.Layers.ToArray();
                 selectorBaseLayers=layers;
@@ -298,6 +324,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 var context=ElementalSourceChooserConsole.Context(ownedSelector);
                 if(context==null || !context.Current)throw new InvalidOperationException("Actual console spell selector did not publish an owned source context: "+ElementalSourceChooserConsole.Outcome);
+                Cleanup2ConsoleConsolidationRows(ownedSelector,context,fixture.Caster);
                 var coverage=new JArray();
                 foreach(int rank in ElementalSourceChooserPolicy.Ranks)
                 foreach(string key in ElementalSourceChooserPolicy.Rank(rank).CreatureKeys)
@@ -319,6 +346,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ownedSelector=bar.SelectorVm.Value;
                 foreach(int frame in Cleanup2ConsoleChoose(bar,value=>value.Creature=="small-fire-elemental" && value.Source==null,false,uiOwned,selectorInputOwned,rememberSelector,ownedDispatched))yield return frame;
                 ownedSelector=bar.SelectorVm.Value;context=ElementalSourceChooserConsole.Context(ownedSelector);
+                var staleLeaf=ownedSelector.ItemVms.Select(value=>value.MechanicActionBarSlot as ElementalConsoleNode).Single(value=>value!=null &&
+                    value.Source!=null && value.Source.CreatureKey=="small-fire-elemental" && ReferenceEquals(value.Source.Book,book) &&
+                    ElementalSourceChooserPolicy.Parent(value.Source.Source.Blueprint.AssetGuid)!=null);
                 foreach(int frame in screens.Capture("elementals-console-native-original-sources",new JObject {
                     ["nativeInputMode"]="console",["renderedText"]=new JArray(context.BoundView.GetComponentsInChildren<TextMeshProUGUI>(false).Select(value=>value.text)),
                     ["originalSources"]=new JArray(context.Sources.Where(value=>value.Rank==2).Select(value=>new JObject {
@@ -332,6 +362,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["inputLayersExact"]=GamePad.Instance.Layers.SequenceEqual(layers),["originalSourceBudgetsExact"]=input.Unchanged(),["pinsExact"]=pins.IsRestored() },
                     "Native console rank/species/source traversal and the real native decline input spend nothing and restore the original input-layer stack.");
                 if(!cancelled)throw new InvalidOperationException("Native console cancellation restoration failed.");
+                Cleanup2ConsoleStaleNode(bar,staleLeaf,fixture.Caster);
 
                 foreach(int frame in Cleanup2ConsolePinOriginalSource(fixture,book,bar,mode,watch,uiOwned,selectorInputOwned,
                     rememberSelector,ownedSelectors,ownedDispatched,selectorBaseLayers))yield return frame;
@@ -348,7 +379,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ownedSelector=bar.SelectorVm.Value;
                 foreach(int frame in Cleanup2ConsoleChoose(bar,value=>value.Creature=="small-fire-elemental" && value.Source==null,false,uiOwned,selectorInputOwned,rememberSelector,ownedDispatched))yield return frame;
                 ownedSelector=bar.SelectorVm.Value;context=ElementalSourceChooserConsole.Context(ownedSelector);
-                var source=context.Sources.Single(value=>value.CreatureKey=="small-fire-elemental" && ReferenceEquals(value.Book,book));
+                var source=context.Sources.Single(value=>value.CreatureKey=="small-fire-elemental" && ReferenceEquals(value.Book,book) &&
+                    ElementalSourceChooserPolicy.Parent(value.Source.Blueprint.AssetGuid)!=null);
                 int before=CountAvailableExpandedSummoningSlots(book,2);string resources=Cleanup2ElementalResources(fixture.Caster);
                 ExpandedSummoningRuleCapture.Clear();ExpandedSummoningPlayerPathEvents.Clear();
                 _expandedSummoningPlayerPathRuleCastCount=0;_expandedSummoningPlayerPathSpawnActionCount=0;
@@ -380,7 +412,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["nativeMode"]=mode.Describe(),["manualCommandTicks"]=0,["forcedActs"]=0 },
                     "Native console Use hands off the exact original source child, one ordinary native cast spawns the expected actor and only its original preparation is debited.");
                 if(!cast)throw new InvalidOperationException("Native console explicit-source cast/debit failed.");
+                foreach(int frame in Cleanup2ConsoleExhaustedSource(fixture,book,bar,uiOwned,selectorInputOwned,rememberSelector,
+                    ownedSelectors,ownedDispatched))yield return frame;
                 foreach(int frame in Cleanup2ConsolePreparation(fixture,book,service,screens))yield return frame;
+                Cleanup2ConsoleNoLeaks(bar,ownedSelectors,ownedContexts);
                 // Native learning/preview entry is added below independently of
                 // the cast fixture; a real screen is required, never a headless VM.
             }
@@ -392,6 +427,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     _expandedSummoningPlayerPathCaptureActive=false;
                     restore("capture-hooks",()=>hooks.UnpatchAll(hooks.Id));
+                    _cleanup2ConsoleCollections=null;
                     restore("owned-targeting",()=>{
                         var ability=game.SelectedAbilityHandler?.Ability;
                         if(ability==null)return;
@@ -478,7 +514,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 selector=bar.SelectorVm.Value;var context=ElementalSourceChooserConsole.Context(selector);
                 if(!mode.Current || !uiOwned() || !selectorInputOwned() || context==null || !context.Current || !debit.Unspent || !snapshot.IsRestored())
                     throw new InvalidOperationException("Exact unchanged native source context required before Confirm pin.");
-                source=context.Sources.Single(value=>value.CreatureKey=="small-fire-elemental" && ReferenceEquals(value.Book,book));
+                source=context.Sources.Single(value=>value.CreatureKey=="small-fire-elemental" && ReferenceEquals(value.Book,book) &&
+                    ElementalSourceChooserPolicy.Parent(value.Source.Blueprint.AssetGuid)!=null);
                 var item=selector.ItemVms.Single(value=>value.MechanicActionBarSlot is ElementalConsoleNode node && ReferenceEquals(node.Source,source));
                 var row=context.BoundView.GetComponentsInChildren<ActionBarSelectorItemView>(false).Single(value=>ReferenceEquals(ElementalConsoleBookPresentation.Model(value),item));
                 var navigation=(ConsoleNavigationBehavior)typeof(ActionBarSelectorView).GetField("m_NavigationBehavior",Cleanup2Fields).GetValue(context.BoundView);
