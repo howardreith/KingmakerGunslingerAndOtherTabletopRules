@@ -136,6 +136,152 @@ namespace KingmakerGunslinger.Summoning
         { return char.ToUpperInvariant(value[0]) + value.Substring(1); }
     }
 
+    /// <summary>One admitted or refused controller selector transformation, staged without touching the live list.</summary>
+    internal sealed class ElementalConsoleStaging<T> where T : class
+    {
+        internal bool Admitted;
+        internal string Reason;
+        internal T[] Original = new T[0];
+        internal T[] Removed = new T[0];
+        internal T[] Staged;
+        internal int Position = -1;
+        internal T Launcher;
+    }
+
+    /// <summary>
+    /// S5 T2 / DEF-06: the controller spell selector is one native row list.
+    /// Its launcher is admitted only for an actual consolidation: a nonempty
+    /// source set and at least one original standalone Summon Elemental row
+    /// that is an exact, single member of this selector's own list, so an
+    /// exact first removed position exists. The staging itself is the shared
+    /// desktop StageLauncherRows over that one row; the desktop's end-of-row
+    /// fallback (a destination level holding no removed tile) can never apply
+    /// here, because every admitted removed row is in the one staged row.
+    /// </summary>
+    internal static class ElementalConsoleLauncherPolicy
+    {
+        private static bool Same<T>(T left, T right) where T : class { return ReferenceEquals(left, right); }
+
+        internal static ElementalConsoleStaging<T> Stage<T>(IList<T> original, IList<T> removed, int sources,
+            Func<T> launcher) where T : class
+        {
+            if (original == null) throw new ArgumentNullException("original");
+            if (removed == null) throw new ArgumentNullException("removed");
+            if (launcher == null) throw new ArgumentNullException("launcher");
+            var staging = new ElementalConsoleStaging<T> { Original = original.ToArray(), Removed = removed.ToArray() };
+            if (sources <= 0) return Refuse(staging, "no-sources");
+            if (staging.Removed.Length == 0) return Refuse(staging, "no-original-row-consolidated");
+            if (staging.Removed.Any(value => value == null) ||
+                staging.Removed.Where((value, index) => staging.Removed.Take(index).Any(prior => Same(prior, value))).Any())
+                return Refuse(staging, "removed-rows-not-distinct");
+            if (staging.Removed.Any(value => staging.Original.Count(row => Same(row, value)) != 1))
+                return Refuse(staging, "removed-row-not-exactly-once-in-original-selector");
+            int first = Array.FindIndex(staging.Original, row => staging.Removed.Any(value => Same(value, row)));
+            if (first < 0) return Refuse(staging, "no-exact-first-removed-position");
+            T built = null;
+            List<T[]> rows = ElementalSourceChooserPolicy.StageLauncherRows<T>(new List<T[]> { staging.Original }, 0,
+                staging.Removed, () => built = launcher());
+            T[] staged = rows == null ? null : rows[0];
+            if (staged == null || built == null || staged.Length != staging.Original.Length - staging.Removed.Length + 1 ||
+                !Same(staged[first], built) || staged.Count(value => Same(value, built)) != 1)
+                throw new InvalidOperationException("Controller launcher staging did not place one launcher at the first removed position.");
+            staging.Admitted = true; staging.Reason = "consolidated:" + staging.Removed.Length;
+            staging.Staged = staged; staging.Position = first; staging.Launcher = built;
+            return staging;
+        }
+
+        private static ElementalConsoleStaging<T> Refuse<T>(ElementalConsoleStaging<T> staging, string reason) where T : class
+        { staging.Admitted = false; staging.Reason = reason; return staging; }
+
+        /// <summary>The native write: the live list becomes the staged rows.</summary>
+        internal static void Write<T>(IList<T> live, IList<T> staged)
+        { live.Clear(); foreach (T value in staged) live.Add(value); }
+
+        /// <summary>
+        /// Commit an admitted staging to the live native list. revalidate returns
+        /// null when the selector, owner, unit and spellbooks are still those the
+        /// staging was built for. The live list must still be the exact original
+        /// reference sequence. On refusal or failure only the owned launcher is
+        /// disposed; native rows are never disposed, and the original list is
+        /// restored only while this transaction still owns the partial state.
+        /// Removed native rows are disposed once each, only after a complete commit.
+        /// </summary>
+        internal static string Commit<T>(ElementalConsoleStaging<T> staging, IList<T> live, Func<string> revalidate,
+            Action<IList<T>, IList<T>> write, Action register, Action unregister, Action<T> disposeOwned,
+            Action<T> disposeNative) where T : class
+        {
+            if (staging == null || !staging.Admitted) throw new InvalidOperationException("Only an admitted staging can commit.");
+            string stale = revalidate();
+            if (stale == null && !live.SequenceEqual(staging.Original, ElementalReferenceComparer<T>.Instance)) stale = "selector-rows-changed";
+            if (stale != null)
+            {
+                disposeOwned(staging.Launcher);
+                return "refuse-stale-console-collection-no-write:" + stale;
+            }
+            register();
+            try
+            {
+                write(live, staging.Staged);
+                if (!live.SequenceEqual(staging.Staged, ElementalReferenceComparer<T>.Instance))
+                    throw new InvalidOperationException("Written selector rows differ from the staged rows.");
+            }
+            catch (Exception error)
+            {
+                bool restored;
+                if (live.SequenceEqual(staging.Original, ElementalReferenceComparer<T>.Instance)) restored = true;
+                else if (live.Count <= staging.Staged.Length &&
+                    live.SequenceEqual(staging.Staged.Take(live.Count), ElementalReferenceComparer<T>.Instance))
+                {
+                    live.Clear(); foreach (T value in staging.Original) live.Add(value);
+                    restored = live.SequenceEqual(staging.Original, ElementalReferenceComparer<T>.Instance);
+                }
+                else restored = false;
+                unregister();
+                disposeOwned(staging.Launcher);
+                return "console-commit-failed:" + error.GetType().Name + ";originalRestored=" + restored +
+                    (restored ? "" : ";foreign-mutation-not-overwritten");
+            }
+            var failures = new List<string>();
+            foreach (T value in staging.Removed)
+                try { disposeNative(value); }
+                catch (Exception error) { failures.Add(error.GetType().Name); }
+            return "native-console-elementals-ready;removed=" + staging.Removed.Length + ";position=" + staging.Position +
+                (failures.Count == 0 ? "" : ";removedDisposeFailures=" + string.Join(",", failures.ToArray()));
+        }
+    }
+
+    internal sealed class ElementalReferenceComparer<T> : IEqualityComparer<T> where T : class
+    {
+        internal static readonly ElementalReferenceComparer<T> Instance = new ElementalReferenceComparer<T>();
+        public bool Equals(T left, T right) { return ReferenceEquals(left, right); }
+        public int GetHashCode(T value) { return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(value); }
+    }
+
+    internal enum ElementalConsoleResultRoute { NativePassThrough, RefuseStale, RestoreModuleOff, RefuseSource, PinSource, UseSource, Navigate }
+
+    /// <summary>
+    /// The controller Result decision for one selector node, from live facts read by the patch. Only a current,
+    /// owned, validated leaf with a free targeting owner reaches the native Result (pin or use); every other node
+    /// spends nothing.
+    /// </summary>
+    internal static class ElementalConsoleResultPolicy
+    {
+        internal static ElementalConsoleResultRoute Route(bool isNode, bool sameOwner, bool current, bool active,
+            bool leaf, Func<string> sourceError, bool execute, Func<bool> targetingFree, out string outcome)
+        {
+            outcome = null;
+            if (!isNode) return ElementalConsoleResultRoute.NativePassThrough;
+            if (!sameOwner || !current) { outcome = "refuse-stale-console-node-no-spend"; return ElementalConsoleResultRoute.RefuseStale; }
+            if (!active) return ElementalConsoleResultRoute.RestoreModuleOff;
+            if (!leaf) return ElementalConsoleResultRoute.Navigate;
+            string error = sourceError();
+            if (error != null || (execute && !targetingFree()))
+            { outcome = "refuse-console-source-no-spend:" + (error ?? "foreign-targeting-owner"); return ElementalConsoleResultRoute.RefuseSource; }
+            outcome = execute ? "native-console-explicit-source-use" : "native-console-explicit-source-pin";
+            return execute ? ElementalConsoleResultRoute.UseSource : ElementalConsoleResultRoute.PinSource;
+        }
+    }
+
     internal enum ElementalLauncherRoute { Stale, Chooser, NativeRows }
 
     /// <summary>
