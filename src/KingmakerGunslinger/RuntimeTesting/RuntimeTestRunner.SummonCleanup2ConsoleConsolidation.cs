@@ -172,7 +172,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             InvokeTeleportGamepadInput(view, "<GetInputLayer>b__11_1");
             for (int frame = 0; frame < 5; frame++) yield return 0;
             JObject owned = ownership.Compare();
-            bool closed = Cleanup2ConsoleOwnership.Exact(owned) && selector.IsDisposed && debit.Unspent && input.Unchanged() && pins.IsRestored() && uiOwned();
+            bool ownersExact = Cleanup2ConsoleOwnership.Exact(owned);
+            bool closed = ownersExact && selector.IsDisposed && debit.Unspent && input.Unchanged() && pins.IsRestored() && uiOwned();
             owned["selectorDisposedByNativeClose"] = selector.IsDisposed; owned["sourceBudgetsUnspent"] = debit.Unspent;
             owned["originalInputsExact"] = input.Unchanged(); owned["pinsExact"] = pins.IsRestored();
             owned["nativeClose"] = "ActionBarSelectorView decline input (native OnDecline)";
@@ -232,11 +233,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             MechanicActionBarSlot mechanism = stale;
             bar.Result(mechanism, true);
             JObject row = ownership.Compare();
+            // The ownership verdict covers exactly the ownership fields, before the other observations join the row.
+            bool owners = Cleanup2ConsoleOwnership.Exact(row);
+            row["ownershipExact"] = owners;
             row["contextCurrentBefore"] = current; row["outcome"] = ElementalSourceChooserConsole.Outcome;
             row["sourceBudgetsUnspent"] = debit.Unspent; row["commandQueued"] = !caster.Commands.Empty;
             row["nativeEntry"] = "ActionBarVM.Result(staleNode, execute=true): a delayed use of a leaf whose selector was declined";
             bool refused = !current && ElementalSourceChooserConsole.Outcome == "refuse-stale-console-node-no-spend" &&
-                Cleanup2ConsoleOwnership.Exact(row) && debit.Unspent && caster.Commands.Empty;
+                owners && debit.Unspent && caster.Commands.Empty;
             Cleanup2Check("elemental-console-stale-node-refused", refused, row,
                 "A leaf of a declined selector is refused at the native Result: nothing is dispatched or spent and every owner stays exact.");
             if (!refused) throw new InvalidOperationException("A stale console node was not refused with no spend.");
@@ -287,8 +291,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             InvokeTeleportGamepadInput(context.BoundView, "<GetInputLayer>b__11_1");
             for (int frame = 0; frame < 5; frame++) yield return 0;
             JObject owned = ownership.Compare(false);
+            bool ownersExact = Cleanup2ConsoleOwnership.Exact(owned);
+            owned["ownershipExact"] = ownersExact;
             owned["selectorDisposed"] = selector.IsDisposed; owned["sourceBudgetsUnspent"] = debit.Unspent;
-            bool closed = Cleanup2ConsoleOwnership.Exact(owned) && selector.IsDisposed && debit.Unspent;
+            bool closed = ownersExact && selector.IsDisposed && debit.Unspent;
             Cleanup2Check("elemental-console-exhausted-source-closed", closed, owned,
                 "After the refusal the native decline closes the selector with focus, pause, selection and input layers exact and nothing spent.");
             if (!closed) throw new InvalidOperationException("The console selector did not close after the exhausted-source refusal.");
