@@ -242,6 +242,32 @@ and one missing was mistaken: the quantity follows the registered tier.
 Unchanged by the closeout: the figures and evidence above under their original heads; the limits below; POL-04 and
 POL-05, which remain Sprint 5 decisions.
 
+## Later: POL-04 decided (S5 T3, 2026-11-19)
+
+The figures above stay as accepted at INT-08, under their original heads.
+
+**Decision:** the owner selected Alternative A, recorded as A-records (`docs/EXPANDED-SUMMONING-BRACHIOSAURUS-SCOPE.md`,
+draft PR #188). It reaffirms the 2026-10-15 decision recorded in the `ExpandedSummoningCatalog` comment. Brachiosaurus
+stays Summon Nature's Ally only.
+
+**Approved out of scope:** exactly the three original-charter placements Summon Monster VII single, VIII 1d3 and IX
+1d4+1. This is a deliberate product scope decision, not a gameplay repair and not fulfilment of those placements. The
+Core Rulebook Summon Monster VII table includes Brachiosaurus
+(<https://legacy.aonprd.com/coreRulebook/spells/summonMonster.html>), so the charter placement was rules-supported.
+
+**What the reporter shows now:**
+- The ideal roster and its 1,232 total are unchanged.
+- From unchanged source: 1,208 admitted + 9 withheld + 12 missing (POL-05 only) + 3 approved out of scope = 1,232.
+- The admitted count does not change.
+- Brachiosaurus is reported as published within the approved scope, not as having every original ideal placement
+  published.
+- An approved placement that the source nevertheless declares is a scope conflict, which `--validate-scope` refuses.
+
+**Native evidence:** the retained v0.0.191 parent census above is now also credited per identity in
+`planning/expanded-summoning-native-placement-evidence.json`, under its own session and package.
+
+POL-05 remains an open decision.
+
 ## Limits
 
 - Source-derived publication only. Native menu observation rests on the retained v0.0.191 census above; native

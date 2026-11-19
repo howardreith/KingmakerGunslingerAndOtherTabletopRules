@@ -421,7 +421,15 @@
   branch `codex/int08-summoning-roster-coverage` (accepted in review at `dcea649f5e`; not merged, not released): coverage is now
   compared placement by placement and reads, from source, 1,208 of 1,232 ideal placements published, 9 withheld
   (Stirge, owner withdrawal) and 15 missing (Brachiosaurus in Summon Monster, POL-04; twelve wrapper placements,
-  POL-05) (`docs/EXPANDED-SUMMONING-ROSTER-COVERAGE.md`). POL-04 and POL-05 remain open decisions.
+  POL-05) (`docs/EXPANDED-SUMMONING-ROSTER-COVERAGE.md`). POL-05 remains an open decision.
+- Brachiosaurus is not offered through Summon Monster (POL-04, scope decision, not a defect). The Core Rulebook Summon
+  Monster VII table includes it, and the original charter placed it at Summon Monster VII single, VIII 1d3 and IX 1d4+1.
+  The owner chose Nature's Ally only on 2026-10-15, because adding Monster placements later is additive while
+  withdrawing published ones is not, and reaffirmed it as S5 T3 / POL-04 Alternative A (A-records) on 2026-11-19 (draft
+  PR #188; not merged, not released; `docs/EXPANDED-SUMMONING-BRACHIOSAURUS-SCOPE.md`). Those three placements are
+  approved out of scope; they are not fulfilled. The roster report shows 1,208 admitted, 9 withheld, 12 missing and 3
+  approved out of scope against the unchanged 1,232 ideal. Brachiosaurus is available through Summon Nature's Ally
+  VII, VIII and IX, and the Naturalist, Feral Hunter and Preservationist adapters.
 - Dire Narlmarches and Pitax regional weapon stock (withdrawn in v0.0.185). It has the same native limitation as Oleg's spears:
   if a stocked Eastern weapon or spear was bought and a matching one was later sold back to that trader,
   the engine's update removes the sold copy. A save with no persisted known-item history keeps the old

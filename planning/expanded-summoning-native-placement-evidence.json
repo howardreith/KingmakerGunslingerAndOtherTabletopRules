@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "scope": "Native observations of exact Expanded Summoning ability identities, extracted read-only from accepted session files. 'graph' is an ability graph built in game; 'cast' is a native cast of that exact identity. No entry here is a per-placement native menu observation.",
+  "scope": "Native observations of exact Expanded Summoning ability identities, extracted read-only from accepted session files and the retained v0.0.191 parent census fixture. 'graph' is an ability graph built in game; 'menu' is the identity listed under its own parent spell by the loader harness; 'cast' is a native cast of that exact identity. Each row carries its own session and package; none is credited to other product bytes.",
   "entries": [
     {
       "symbol": "KMG.Summoning.Ability.SM.Tier4.AirMephit.One",
@@ -27,6 +27,14 @@
       "observation": "registered ability graph built and censused in game (RemoveInherited)"
     },
     {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.AirMephit.One",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonMonsterIVBase by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
       "symbol": "KMG.Summoning.Ability.SM.Tier4.DireWolf.One",
       "kind": "cast",
       "result": "PASS",
@@ -51,6 +59,14 @@
       "observation": "registered ability graph built and censused in game (RemoveInherited)"
     },
     {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.AirMephit.OneD3",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonMonsterVBase by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
       "symbol": "KMG.Summoning.Ability.SM.Tier6.AirMephit.OneD4PlusOne",
       "kind": "cast",
       "result": "PASS",
@@ -67,12 +83,28 @@
       "observation": "registered ability graph built and censused in game (RemoveInherited)"
     },
     {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.AirMephit.OneD4PlusOne",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonMonsterVIBase by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
       "symbol": "KMG.Summoning.Ability.SM.Tier7.AirMephit.OneD4PlusOne",
       "kind": "graph",
       "result": "PASS",
       "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
       "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
       "observation": "registered ability graph built and censused in game (NoInheritedTemplate)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.AirMephit.OneD4PlusOne",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonMonsterVIIBase by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
     },
     {
       "symbol": "KMG.Summoning.Ability.SM.Tier7.GreaterAirElemental.One",
@@ -89,6 +121,14 @@
       "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
       "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
       "observation": "registered ability graph built and censused in game (PreserveDeliberateTemplate)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Tyrannosaurus.One",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonMonsterVIIBase by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
     },
     {
       "symbol": "KMG.Summoning.Ability.SM.Tier7.Tyrannosaurus.One.Celestial",
@@ -115,12 +155,28 @@
       "observation": "registered ability graph built and censused in game (NoInheritedTemplate)"
     },
     {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.AirMephit.OneD4PlusOne",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonMonsterVIIIBase by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
       "symbol": "KMG.Summoning.Ability.SM.Tier8.Tyrannosaurus.OneD3",
       "kind": "graph",
       "result": "PASS",
       "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
       "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
       "observation": "registered ability graph built and censused in game (PreserveDeliberateTemplate)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Tyrannosaurus.OneD3",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonMonsterVIIIBase by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
     },
     {
       "symbol": "KMG.Summoning.Ability.SM.Tier8.Tyrannosaurus.OneD3.Celestial",
@@ -147,12 +203,28 @@
       "observation": "registered ability graph built and censused in game (NoInheritedTemplate)"
     },
     {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.AirMephit.OneD4PlusOne",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonMonsterIXBase by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
       "symbol": "KMG.Summoning.Ability.SM.Tier9.Tyrannosaurus.OneD4PlusOne",
       "kind": "graph",
       "result": "PASS",
       "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
       "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
       "observation": "registered ability graph built and censused in game (PreserveDeliberateTemplate)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Tyrannosaurus.OneD4PlusOne",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonMonsterIXBase by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
     },
     {
       "symbol": "KMG.Summoning.Ability.SM.Tier9.Tyrannosaurus.OneD4PlusOne.Celestial",
@@ -187,12 +259,28 @@
       "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
     },
     {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier4.AirMephit.One",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyIV by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
       "symbol": "KMG.Summoning.Ability.SNA.Tier5.AirMephit.OneD3",
       "kind": "graph",
       "result": "PASS",
       "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
       "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
       "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier5.AirMephit.OneD3",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyV by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
     },
     {
       "symbol": "KMG.Summoning.Ability.SNA.Tier6.AirMephit.OneD4PlusOne",
@@ -203,12 +291,28 @@
       "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
     },
     {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.AirMephit.OneD4PlusOne",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyVI by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
       "symbol": "KMG.Summoning.Ability.SNA.Tier6.Stegosaurus.One",
       "kind": "graph",
       "result": "PASS",
       "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
       "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
       "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.Stegosaurus.One",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyVI by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
     },
     {
       "symbol": "KMG.Summoning.Ability.SNA.Tier7.AirMephit.OneD4PlusOne",
@@ -219,12 +323,28 @@
       "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
     },
     {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.AirMephit.OneD4PlusOne",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyVII by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
       "symbol": "KMG.Summoning.Ability.SNA.Tier7.Brachiosaurus.One",
       "kind": "graph",
       "result": "PASS",
       "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
       "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
       "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.Brachiosaurus.One",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyVII by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
     },
     {
       "symbol": "KMG.Summoning.Ability.SNA.Tier7.Stegosaurus.OneD3",
@@ -235,12 +355,28 @@
       "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
     },
     {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.Stegosaurus.OneD3",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyVII by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
       "symbol": "KMG.Summoning.Ability.SNA.Tier7.Tyrannosaurus.One",
       "kind": "graph",
       "result": "PASS",
       "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
       "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
       "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.Tyrannosaurus.One",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyVII by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
     },
     {
       "symbol": "KMG.Summoning.Ability.SNA.Tier8.AirMephit.OneD4PlusOne",
@@ -251,12 +387,28 @@
       "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
     },
     {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.AirMephit.OneD4PlusOne",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyVIII by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
       "symbol": "KMG.Summoning.Ability.SNA.Tier8.Brachiosaurus.OneD3",
       "kind": "graph",
       "result": "PASS",
       "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
       "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
       "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.Brachiosaurus.OneD3",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyVIII by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
     },
     {
       "symbol": "KMG.Summoning.Ability.SNA.Tier8.Stegosaurus.OneD4PlusOne",
@@ -267,12 +419,28 @@
       "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
     },
     {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.Stegosaurus.OneD4PlusOne",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyVIII by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
       "symbol": "KMG.Summoning.Ability.SNA.Tier8.Tyrannosaurus.OneD3",
       "kind": "graph",
       "result": "PASS",
       "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
       "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
       "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.Tyrannosaurus.OneD3",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyVIII by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
     },
     {
       "symbol": "KMG.Summoning.Ability.SNA.Tier9.AirMephit.OneD4PlusOne",
@@ -283,12 +451,28 @@
       "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
     },
     {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.AirMephit.OneD4PlusOne",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyIX by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
       "symbol": "KMG.Summoning.Ability.SNA.Tier9.Brachiosaurus.OneD4PlusOne",
       "kind": "graph",
       "result": "PASS",
       "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
       "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
       "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.Brachiosaurus.OneD4PlusOne",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyIX by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
     },
     {
       "symbol": "KMG.Summoning.Ability.SNA.Tier9.Stegosaurus.OneD4PlusOne",
@@ -299,12 +483,28 @@
       "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
     },
     {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.Stegosaurus.OneD4PlusOne",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyIX by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
       "symbol": "KMG.Summoning.Ability.SNA.Tier9.Tyrannosaurus.OneD4PlusOne",
       "kind": "graph",
       "result": "PASS",
       "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
       "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
       "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.Tyrannosaurus.OneD4PlusOne",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyIX by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
     }
   ]
 }

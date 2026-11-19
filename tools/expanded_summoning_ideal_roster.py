@@ -16,14 +16,21 @@ compared exactly; a creature's identity never stands in for a placement.
 Generation and freshness are separate from coverage: `--check` passes when the
 documents are current, however incomplete the coverage they report.
 
+The ideal roster is the original charter reference and is never edited here.
 An ideal placement the owner has approved out of scope (APPROVED_OUT_OF_SCOPE)
-is reported as out of scope, never as covered and never as missing. `--cells`
-prints one decision row per ideal placement of the named creatures, with five
-independent facts: ideal scope, the exact family-specific ledger identity,
-the declared choice, its admission, and native evidence for that exact identity
-from planning/expanded-summoning-native-placement-evidence.json.
+is reported as an approved exclusion: never covered, never missing, and never
+counted as published. If the source nevertheless declares a choice for it, the
+actual declaration and admission are kept and the placement is a scope
+conflict, which --validate-scope refuses. `--check` verifies document
+freshness only; it is not a scope validation.
 
-Run:  python tools/expanded_summoning_ideal_roster.py [--check] [--cells key,key]
+`--cells` prints one decision row per ideal placement of the named creatures,
+with independent facts: original-ideal membership and approved scope, the exact
+family-specific ledger identity, the declared choice, its admission, and native
+evidence for that exact identity from
+planning/expanded-summoning-native-placement-evidence.json.
+
+Run:  python tools/expanded_summoning_ideal_roster.py [--check | --validate-scope | --cells key,key]
 """
 from __future__ import annotations
 
@@ -242,8 +249,9 @@ def roster_doc(entries, d, cov):
         "",
         "Placement columns count published ideal placements of that creature in that",
         "family: Complete; Partial (some published); Withheld (all registered, none",
-        "admitted); Missing (none declared); Unpublished (none published, some withheld and",
-        "some missing). The parenthesis gives the unpublished placements by state.",
+        "admitted); Missing (none declared); Approved out of scope (owner decision; not published);",
+        "Unpublished (none published, some withheld and some missing). The parenthesis gives the",
+        "unpublished placements by state.",
         "",
         "| Creature | SM | SNA | Sprint | Priority | Effort | Unit identity | SM placements | SNA placements | Asset package |",
         "|---|---|---|---|---|---|---|---|---|---|",
@@ -349,26 +357,35 @@ WRAPPER_A = re.compile(
 # Placements the ideal roster wants and the source does not offer, for which
 # a decision is already recorded. Keyed by exact placement, so a further
 # missing placement of the same creature is never covered by one of these.
-POL04 = ("POL-04 / Sprint 5 T3: Brachiosaurus is registered only in Summon Nature's Ally; "
-         "whether Summon Monster offers it is an open charter decision")
 POL05 = ("POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own "
          "options stop; whether to extend it is an open decision")
 RECORDED_DISPOSITIONS = dict(
-    [(Placement("brachiosaurus", "sm", 7, "One"), POL04),
-     (Placement("brachiosaurus", "sm", 8, "OneD3"), POL04),
-     (Placement("brachiosaurus", "sm", 9, "OneD4PlusOne"), POL04)] +
     [(Placement(key, family, parent, "OneD4PlusOne"), POL05) for key, family, parents in (
         ("redcap", "sm", (8, 9)), ("axiomite", "sm", (9,)), ("soul-eater", "sm", (9,)),
         ("manticore", "sna", (8, 9)), ("mite", "sna", (4, 5, 6, 7, 8, 9)))
      for parent in parents])
 
-# S5 T3 / POL-04: the three Summon Monster cells await the owner's choice between
-# keeping the shipped Nature's Ally-only scope (A) and publishing them (B).
-SCOPE_PENDING = {Placement("brachiosaurus", "sm", 7, "One"), Placement("brachiosaurus", "sm", 8, "OneD3"),
-                 Placement("brachiosaurus", "sm", 9, "OneD4PlusOne")}
-# Ideal placements the owner has explicitly approved out of scope, with the
-# decision on record. Empty until a decision is recorded; keyed by exact placement.
-APPROVED_OUT_OF_SCOPE = {}
+# Ideal placements awaiting an owner scope decision. Each is reported as
+# missing with this recorded disposition until it is decided.
+PENDING_SCOPE = "Pending owner scope decision"
+SCOPE_PENDING = set()
+
+# Ideal placements the owner has explicitly approved out of scope, keyed by exact
+# placement, each with its rationale and decision provenance. The ideal roster
+# keeps them; they are excluded from the selected development scope, never
+# published, and never counted as covered.
+POL04_DECISION = (
+    "POL-04 / S5 T3, Alternative A (A-records): product scope decision by the owner on 2026-10-15, "
+    "reaffirmed at the S5 T3 principal review on 2026-11-19. Brachiosaurus stays Summon Nature's Ally only "
+    "although the standard Summon Monster VII table includes it "
+    "(https://legacy.aonprd.com/coreRulebook/spells/summonMonster.html) and the ordinary spell progression "
+    "supports this placement; adding Monster placements later is additive, while withdrawing published ones "
+    "is not. Not a gameplay repair and not fulfilment of the original Monster placement")
+APPROVED_OUT_OF_SCOPE = {
+    Placement("brachiosaurus", "sm", 7, "One"): POL04_DECISION,
+    Placement("brachiosaurus", "sm", 8, "OneD3"): POL04_DECISION,
+    Placement("brachiosaurus", "sm", 9, "OneD4PlusOne"): POL04_DECISION,
+}
 
 
 def canonical(wrapper_key):
@@ -540,6 +557,8 @@ def missing_disposition(placement):
     placement on record is explained."""
     if placement in RECORDED_DISPOSITIONS:
         return RECORDED_DISPOSITIONS[placement], True
+    if placement in SCOPE_PENDING:
+        return PENDING_SCOPE, True
     return "Unexplained: no declared choice and no recorded decision", False
 
 
@@ -591,13 +610,17 @@ def compare(ideal, choices, registered_symbols, declared):
     unregistered = [c for c in choices if c.symbol not in registered_symbols]
     unexplained = [u for u in unpublished if not u.recorded]
     stale = sorted(p for p in RECORDED_DISPOSITIONS if states.get(p) == "covered")
-    # A placement approved out of scope that the source nevertheless declares contradicts the decision.
-    scope_conflicts = sorted(p for p in APPROVED_OUT_OF_SCOPE if by_placement.get(p))
+    # A placement approved out of scope that the source nevertheless declares contradicts the
+    # decision. Its actual state (covered or withheld) is kept; the verdict is a scope conflict.
+    scope_conflicts = sorted(p for p in APPROVED_OUT_OF_SCOPE if p in ideal_count and by_placement.get(p))
+    scope_verdicts = {p: ("scope-conflict" if p in scope_conflicts else "excluded")
+                      for p in APPROVED_OUT_OF_SCOPE if p in ideal_count}
     totals.update({"extra": len(extra), "duplicates": len(duplicates),
                    "ideal_duplicates": len(ideal_duplicates),
                    "unregistered": len(unregistered), "unexplained": len(unexplained),
                    "unexplained_withheld": sum(1 for u in unexplained if u.state == "withheld"),
-                   "unexplained_missing": sum(1 for u in unexplained if u.state == "missing")})
+                   "unexplained_missing": sum(1 for u in unexplained if u.state == "missing"),
+                   "approved": len(scope_verdicts), "scope_conflicts": len(scope_conflicts)})
     cross = [
         ("Project creatures (`UnitCount`)", declared["units"], declared["project_creatures"]),
         ("Registered project placements (`RegisteredLogicalPlacementCount`)",
@@ -611,7 +634,7 @@ def compare(ideal, choices, registered_symbols, declared):
     return {"totals": totals, "states": states, "unpublished": unpublished,
             "extra": extra, "duplicates": duplicates, "ideal_duplicates": ideal_duplicates,
             "unregistered": unregistered, "stale_dispositions": stale, "cross": cross,
-            "scope_conflicts": scope_conflicts,
+            "scope_conflicts": scope_conflicts, "scope_verdicts": scope_verdicts,
             "ideal_count": ideal_count}
 
 
@@ -653,6 +676,8 @@ def describe_counts(counts):
 
 CREATURE_CATEGORIES = (
     ("complete", "Every ideal placement published"),
+    ("scoped", "Every ideal placement in the approved scope published; the others approved out of scope, "
+               "not published"),
     ("partial", "Some ideal placements published, some not"),
     ("withheld", "No ideal placement published; every one registered and withheld"),
     ("mixed", "No ideal placement published; some registered and withheld, some with no declared choice"),
@@ -669,13 +694,15 @@ def creature_category(counts_by_family):
     missing = sum(c["missing"] for c in counts)
     total = sum(c["total"] for c in counts)
     out_of_scope = sum(c.get("out_of_scope", 0) for c in counts)
-    if covered == total or (covered and covered + out_of_scope == total):
+    if covered == total:
         return "complete"
+    if covered and covered + out_of_scope == total:
+        return "scoped"
     if covered:
         return "partial"
     if withheld == total:
         return "withheld"
-    if missing == total:
+    if missing + out_of_scope == total:
         return "missing"
     return "mixed"
 
@@ -721,15 +748,44 @@ def coverage(entries, project_text, wrapper_text, visibility_text, identity_text
     return comparison
 
 
-def coverage_summary(cov):
+def placement_label(p):
+    return "%s %s %s %s" % (p.key, FAMILY_SYMBOL[p.family], ROMAN[p.parent], p.quantity)
+
+
+def scope_clause(cov):
+    """The approved-scope part of every headline; empty when no exclusion is on record."""
     t = cov["totals"]
-    word = "complete" if t["covered"] + t["out_of_scope"] == t["ideal"] else "incomplete"
-    scope = ("; %d approved out of scope" % t["out_of_scope"]) if t["out_of_scope"] else ""
+    if not t["approved"]:
+        return ""
+    if cov["scope_conflicts"]:
+        return ("; scope contract: %s, %d SCOPE CONFLICT (declared despite approval: %s)" % (
+            exclusions(t["approved"]), t["scope_conflicts"],
+            ", ".join(placement_label(p) for p in cov["scope_conflicts"])))
+    return "; scope contract: %s, 0 scope conflicts" % exclusions(t["approved"])
+
+
+def exclusions(count):
+    return "%d approved exclusion%s" % (count, "" if count == 1 else "s")
+
+
+def coverage_summary(cov):
+    """Coverage of the original ideal: complete only when every ideal placement is published.
+    An approved exclusion is never counted as published."""
+    t = cov["totals"]
+    word = "complete" if t["covered"] == t["ideal"] else "incomplete"
+    scope = ("; %d approved out of scope" % t["out_of_scope"]) if t["approved"] else ""
     return ("Source-derived coverage is %s: %s of %s ideal placements admitted; %d withheld; "
-            "%d missing%s; %d extra; %d duplicate; %d unexplained. Native menus and casts are not "
+            "%d missing%s; %d extra; %d duplicate; %d unexplained%s. Native menus and casts are not "
             "established by this report." % (word, format(t["covered"], ","), format(t["ideal"], ","),
                                              t["withheld"], t["missing"], scope, t["extra"],
-                                             t["duplicates"], t["unexplained"]))
+                                             t["duplicates"], t["unexplained"], scope_clause(cov)))
+
+
+def scope_contract(cov):
+    """Problems with the approved scope: every approved exclusion must have no declared choice."""
+    return ["approved out of scope but declared: %s (%s)" % (
+        placement_label(p), "admitted" if cov["states"][p] == "covered" else "withheld")
+        for p in cov["scope_conflicts"]]
 
 
 def read_evidence(text):
@@ -779,8 +835,13 @@ def cell_report(entries, cov, choices, registered_symbols, evidence, keys):
                     rows_for = [row for symbol in symbols for row in evidence.get(symbol, []) if row["kind"] == kind]
                     if not rows_for:
                         return "none"
-                    return ",".join(sorted({row["result"] + ":" + row["session"] for row in rows_for}))
-                scope = ("approved out of scope" if placement in APPROVED_OUT_OF_SCOPE else
+                    # Each observation names its own session and product package; nothing is credited to other bytes.
+                    return ",".join(sorted({row["result"] + ":" + row["session"] +
+                                            ("@" + row["package"][:12] if row.get("package") else "")
+                                            for row in rows_for}))
+                verdict = cov["scope_verdicts"].get(placement)
+                scope = ("SCOPE CONFLICT: approved out of scope but declared" if verdict == "scope-conflict" else
+                         "approved out of scope" if verdict == "excluded" else
                          "pending owner decision" if placement in SCOPE_PENDING else "in scope")
                 rows.append(Cell(placement, True, scope, symbols[0],
                                  any(symbol in registered_symbols for symbol in symbols),
@@ -790,7 +851,7 @@ def cell_report(entries, cov, choices, registered_symbols, evidence, keys):
 
 
 def cell_table(rows):
-    lines = ["| Creature | Family | Parent | Quantity | Ideal | Scope | Exact identity | Registered | "
+    lines = ["| Creature | Family | Parent | Quantity | Original ideal | Scope | Exact identity | Registered | "
              "Declared | Admitted | Native graph | Native menu | Native cast |",
              "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     yes = lambda value: "yes" if value else "no"
@@ -812,7 +873,14 @@ def coverage_section(entries, cov):
         ("Coverage is **complete**: " if complete else "Coverage is **incomplete**: ") +
         "%s of %s ideal placements have a choice admitted by the current publication policy. "
         "%d are registered and withheld, and %d have no declared choice." % (
-            format(t["covered"], ","), format(t["ideal"], ","), t["withheld"], t["missing"]),
+            format(t["covered"], ","), format(t["ideal"], ","), t["withheld"], t["missing"]) +
+        (" %d are approved out of scope by owner decision: excluded from the selected development scope, "
+         "not published and not counted as covered." % t["out_of_scope"] if t["approved"] else ""),
+        "",
+        "Accounting against the original ideal: %s admitted + %d withheld + %d missing + %d approved out of "
+        "scope = %s ideal placements." % (format(t["covered"], ","), t["withheld"], t["missing"],
+                                          t["out_of_scope"], format(t["covered"] + t["withheld"] + t["missing"] +
+                                                                    t["out_of_scope"], ",")),
         "",
         "A placement is one creature in one spell family, under one parent spell, at one",
         "quantity. Every ideal placement is matched exactly against the choices the source",
@@ -843,6 +911,8 @@ def coverage_section(entries, cov):
         "| Ideal placements covered by an admitted choice | %s |" % format(t["covered"], ","),
         "| Ideal placements withheld by the publication policy | %d |" % t["withheld"],
         "| Ideal placements with no declared choice | %d |" % t["missing"],
+        "| Ideal placements approved out of scope (excluded, not published) | %d |" % t["out_of_scope"],
+        "| Approved exclusions contradicted by a declared choice (scope conflict) | %d |" % t["scope_conflicts"],
         "| Declared choices not in the ideal roster (extra) | %d |" % t["extra"],
         "| Placements declared more than once (duplicate) | %d |" % t["duplicates"],
         "| Declared choices without an active registered identity | %d |" % t["unregistered"],
@@ -863,8 +933,21 @@ def coverage_section(entries, cov):
             lines.append("| %s | %s | %s %s | %s | %s | %s | %s |" % (
                 names[u.placement.key], FAMILY_NAME[u.placement.family], FAMILY_SYMBOL[u.placement.family],
                 ROMAN[u.placement.parent], QUANTITY_LABEL[u.placement.quantity],
-                "Registered, withheld" if u.state == "withheld" else "No declared choice",
+                "Registered, withheld" if u.state == "withheld" else
+                "Approved out of scope" if u.state == "out-of-scope" else "No declared choice",
                 "yes" if u.recorded else "no", u.disposition))
+    else:
+        lines.append("None.")
+    lines += ["", "### Approved scope exclusions", ""]
+    if cov["scope_verdicts"]:
+        lines += ["| Creature | Family | Parent | Quantity | Verdict | Decision |", "|---|---|---|---|---|---|"]
+        for p in sorted(cov["scope_verdicts"]):
+            verdict = ("Excluded: no declared choice; not published" if cov["scope_verdicts"][p] == "excluded" else
+                       "**SCOPE CONFLICT**: declared despite the approval (%s)" % (
+                           "admitted" if cov["states"][p] == "covered" else "registered, withheld"))
+            lines.append("| %s | %s | %s %s | %s | %s | %s |" % (
+                names[p.key], FAMILY_NAME[p.family], FAMILY_SYMBOL[p.family], ROMAN[p.parent],
+                QUANTITY_LABEL[p.quantity], verdict, APPROVED_OUT_OF_SCOPE[p]))
     else:
         lines.append("None.")
     for title, rows in (
@@ -892,7 +975,8 @@ def coverage_section(entries, cov):
         "",
         "Available somewhere: %d creatures have at least one published ideal placement (the first"
         % cov["available_somewhere"],
-        "two rows). That is not complete coverage; the partial row is the difference.",
+        "three rows). That is not complete coverage of the original ideal: the approved-scope and",
+        "partial rows are the difference.",
         "",
         "### Registered unit identity",
         "",
@@ -962,9 +1046,11 @@ def run(check_only, sources=None, roster_path=ROSTER_DOC, trace_path=TRACE_DOC, 
         if stale:
             out("Generated documents are stale: " + ", ".join(stale))
             out(coverage_summary(cov))
+            out("Freshness only: the approved scope is validated by --validate-scope, not by --check.")
             return 1
         out("Ideal roster documents are current (freshness only; coverage below).")
         out(coverage_summary(cov))
+        out("Freshness only: the approved scope is validated by --validate-scope, not by --check.")
         return 0
     roster_path.write_bytes(roster.encode("utf-8"))
     trace_path.write_bytes(trace.encode("utf-8"))
@@ -975,12 +1061,31 @@ def run(check_only, sources=None, roster_path=ROSTER_DOC, trace_path=TRACE_DOC, 
     return 0
 
 
+def validate_scope(sources=None, out=print):
+    """Exit status 0 only when every approved exclusion has no declared choice."""
+    try:
+        _entries, _d, cov, _roster, _trace = build(sources or read_sources())
+    except ReadError as error:
+        out("Ideal roster input could not be read completely: " + str(error))
+        return 1
+    problems = scope_contract(cov)
+    if problems:
+        out("Scope contract INVALID: " + "; ".join(problems))
+        return 1
+    out("Scope contract valid: %s, none declared, admitted or published." % exclusions(cov["totals"]["approved"]))
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true",
                         help="verify the documents are current without writing")
     parser.add_argument("--cells", help="print decision rows for these comma-separated creature keys")
+    parser.add_argument("--validate-scope", action="store_true",
+                        help="refuse when an approved-out-of-scope placement has a declared choice")
     args = parser.parse_args()
+    if args.validate_scope:
+        return validate_scope()
     if args.cells:
         try:
             print(cell_table(cells([key.strip() for key in args.cells.split(",") if key.strip()])))
