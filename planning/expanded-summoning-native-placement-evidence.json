@@ -1,0 +1,310 @@
+{
+  "schemaVersion": 1,
+  "scope": "Native observations of exact Expanded Summoning ability identities, extracted read-only from accepted session files. 'graph' is an ability graph built in game; 'cast' is a native cast of that exact identity. No entry here is a per-placement native menu observation.",
+  "entries": [
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.AirMephit.One",
+      "kind": "cast",
+      "result": "PASS",
+      "session": "20261119T201938Z-owner-0.33.0-inherited-template-casts",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "native cast good-tier4-single-mephit: 1 unit(s), one source debit, through SummonMonsterIVBase"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.AirMephit.One",
+      "kind": "cast",
+      "result": "PASS",
+      "session": "20261119T201938Z-owner-0.33.0-inherited-template-casts",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "native cast evil-tier4-single-mephit: 1 unit(s), one source debit, through SummonMonsterIVBase"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.AirMephit.One",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (RemoveInherited)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.DireWolf.One",
+      "kind": "cast",
+      "result": "PASS",
+      "session": "20261119T201938Z-owner-0.33.0-inherited-template-casts",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "native cast celestial-project-template: 1 unit(s), one source debit, through SummonMonsterIVBase"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.DireWolf.One",
+      "kind": "cast",
+      "result": "PASS",
+      "session": "20261119T201938Z-owner-0.33.0-inherited-template-casts",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "native cast fiendish-project-template: 1 unit(s), one source debit, through SummonMonsterIVBase"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.AirMephit.OneD3",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (RemoveInherited)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.AirMephit.OneD4PlusOne",
+      "kind": "cast",
+      "result": "PASS",
+      "session": "20261119T201938Z-owner-0.33.0-inherited-template-casts",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "native cast quantity-tier6-d4plus1-mephit: 3 unit(s), one source debit, through SummonMonsterVIBase"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.AirMephit.OneD4PlusOne",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (RemoveInherited)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.AirMephit.OneD4PlusOne",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (NoInheritedTemplate)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.GreaterAirElemental.One",
+      "kind": "cast",
+      "result": "PASS",
+      "session": "20261119T201938Z-owner-0.33.0-inherited-template-casts",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "native cast tier7-untemplated-no-inherited: 1 unit(s), one source debit, through SummonMonsterVIIBase"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Tyrannosaurus.One",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (PreserveDeliberateTemplate)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Tyrannosaurus.One.Celestial",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (PreserveDeliberateTemplate)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Tyrannosaurus.One.Fiendish",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (PreserveDeliberateTemplate)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.AirMephit.OneD4PlusOne",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (NoInheritedTemplate)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Tyrannosaurus.OneD3",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (PreserveDeliberateTemplate)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Tyrannosaurus.OneD3.Celestial",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (PreserveDeliberateTemplate)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Tyrannosaurus.OneD3.Fiendish",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (PreserveDeliberateTemplate)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.AirMephit.OneD4PlusOne",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (NoInheritedTemplate)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Tyrannosaurus.OneD4PlusOne",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (PreserveDeliberateTemplate)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Tyrannosaurus.OneD4PlusOne.Celestial",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (PreserveDeliberateTemplate)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Tyrannosaurus.OneD4PlusOne.Fiendish",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (PreserveDeliberateTemplate)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier2.Wolf.One",
+      "kind": "cast",
+      "result": "PASS",
+      "session": "20261119T201938Z-owner-0.33.0-inherited-template-casts",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "native cast natures-ally-preservation: 1 unit(s), one source debit, through SummonNaturesAllyII"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier4.AirMephit.One",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier5.AirMephit.OneD3",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.AirMephit.OneD4PlusOne",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.Stegosaurus.One",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.AirMephit.OneD4PlusOne",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.Brachiosaurus.One",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.Stegosaurus.OneD3",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.Tyrannosaurus.One",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.AirMephit.OneD4PlusOne",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.Brachiosaurus.OneD3",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.Stegosaurus.OneD4PlusOne",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.Tyrannosaurus.OneD3",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.AirMephit.OneD4PlusOne",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.Brachiosaurus.OneD4PlusOne",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.Stegosaurus.OneD4PlusOne",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.Tyrannosaurus.OneD4PlusOne",
+      "kind": "graph",
+      "result": "PASS",
+      "session": "20261119T201715Z-owner-0.33.0-inherited-template-census",
+      "package": "3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb",
+      "observation": "registered ability graph built and censused in game (OutsideSummonMonster)"
+    }
+  ]
+}

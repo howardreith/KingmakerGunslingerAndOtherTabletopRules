@@ -349,6 +349,131 @@ class ReviewControlTests(unittest.TestCase):
             self.assertEqual(covered > 0, category in ("complete", "partial"), key)
 
 
+BRACHIOSAURUS_SM = [P("brachiosaurus", "sm", 7, "One"), P("brachiosaurus", "sm", 8, "OneD3"),
+                    P("brachiosaurus", "sm", 9, D41)]
+SM_SYMBOLS = ["KMG.Summoning.Ability.SM.Tier7.Brachiosaurus.One",
+              "KMG.Summoning.Ability.SM.Tier8.Brachiosaurus.OneD3",
+              "KMG.Summoning.Ability.SM.Tier9.Brachiosaurus.OneD4PlusOne"]
+CENSUS = "20261119T201715Z-owner-0.33.0-inherited-template-census"
+CASTS = "20261119T201938Z-owner-0.33.0-inherited-template-casts"
+
+
+def rows_by_placement(rows):
+    return {r.placement: r for r in rows}
+
+
+class DecisionPacketTests(unittest.TestCase):
+    """S5 T3 / POL-04 decision rows: registered identity, declared and admitted
+    choice, native evidence and ideal/approved scope are each read independently,
+    for the exact family-specific identity only."""
+
+    def setUp(self):
+        self.rows = rows_by_placement(roster.cells(["brachiosaurus", "tyrannosaurus", "air-mephit"], SOURCES))
+
+    def test_each_summon_monster_cell_is_reported_individually_and_unfilled(self):
+        for placement, symbol in zip(BRACHIOSAURUS_SM, SM_SYMBOLS):
+            row = self.rows[placement]
+            self.assertEqual((True, "pending owner decision", symbol), (row.ideal, row.scope, row.symbol), placement)
+            self.assertEqual((False, False, False, "none", "none", "none"),
+                             (row.registered, row.declared, row.admitted, row.graph, row.menu, row.cast), placement)
+
+    def test_a_registered_natures_ally_identity_never_fills_a_summon_monster_cell(self):
+        for placement in BRACHIOSAURUS_SNA:
+            row = self.rows[placement]
+            self.assertTrue(row.registered and row.admitted and row.graph.startswith("PASS:" + CENSUS), placement)
+        self.assertTrue(all("SNA" in self.rows[p].symbol for p in BRACHIOSAURUS_SNA))
+        self.assertFalse(any(self.rows[p].registered for p in BRACHIOSAURUS_SM))
+
+    def test_registration_declaration_and_native_evidence_are_independent(self):
+        # Alternative B in memory, catalog only: the three SM choices are declared and admitted
+        # but no ledger identity or native evidence exists for them.
+        project = replace(SOURCES["project"], 'C("brachiosaurus","Brachiosaurus",null,false,7,"Mastodon")',
+                          'C("brachiosaurus","Brachiosaurus",7,true,7,"Mastodon")')
+        rows = rows_by_placement(roster.cells(["brachiosaurus"], dict(SOURCES, project=project)))
+        for placement in BRACHIOSAURUS_SM:
+            row = rows[placement]
+            self.assertEqual((True, True, False, "none", "none"),
+                             (row.declared, row.admitted, row.registered, row.graph, row.cast), placement)
+
+    def test_native_cast_evidence_is_exact_to_the_identity(self):
+        cast = self.rows[P("air-mephit", "sm", 4, "One")]
+        self.assertEqual("PASS:" + CASTS, cast.cast)
+        self.assertEqual("none", self.rows[P("air-mephit", "sna", 4, "One")].cast,
+                         "A Summon Monster cast does not count for the Nature's Ally identity.")
+        self.assertEqual("none", self.rows[P("tyrannosaurus", "sm", 7, "One")].cast,
+                         "Graph evidence is not a cast.")
+        self.assertTrue(all(r.menu == "none" for r in self.rows.values()),
+                        "No per-placement native menu observation exists; none is invented.")
+
+    def test_a_failed_or_foreign_evidence_row_cannot_pass_a_cell(self):
+        evidence = ('{"schemaVersion":1,"entries":['
+                    '{"symbol":"KMG.Summoning.Ability.SNA.Tier7.Brachiosaurus.One","kind":"cast","result":"FAIL","session":"s1"},'
+                    '{"symbol":"KMG.Summoning.Ability.SM.Tier7.Brachiosaurusx.One","kind":"cast","result":"PASS","session":"s2"}]}')
+        rows = rows_by_placement(roster.cells(["brachiosaurus"], dict(SOURCES, evidence=evidence)))
+        self.assertEqual("FAIL:s1", rows[P("brachiosaurus", "sna", 7, "One")].cast)
+        self.assertEqual("none", rows[P("brachiosaurus", "sm", 7, "One")].cast)
+        with self.assertRaises(roster.ReadError):
+            roster.cells(["brachiosaurus"], dict(SOURCES, evidence='{"entries":[{"symbol":"x","kind":"seen","result":"PASS","session":"s"}]}'))
+
+
+class ScopeDecisionTests(unittest.TestCase):
+    """Alternative A is expressible: an approved-out-of-scope cell is neither covered nor missing."""
+
+    def setUp(self):
+        self.baseline = judge()["totals"]
+        self.saved = dict(roster.APPROVED_OUT_OF_SCOPE)
+
+    def tearDown(self):
+        roster.APPROVED_OUT_OF_SCOPE.clear()
+        roster.APPROVED_OUT_OF_SCOPE.update(self.saved)
+
+    def test_approved_out_of_scope_moves_exactly_those_cells(self):
+        for placement in BRACHIOSAURUS_SM:
+            roster.APPROVED_OUT_OF_SCOPE[placement] = "test decision"
+        cov = judge()
+        t = cov["totals"]
+        self.assertEqual(self.baseline["covered"], t["covered"], "Nothing becomes covered.")
+        self.assertEqual(self.baseline["missing"] - 3, t["missing"])
+        self.assertEqual(3, t["out_of_scope"])
+        self.assertEqual(set(BRACHIOSAURUS_SM), unpublished(cov, "out-of-scope"))
+        self.assertEqual("Approved out of scope 0/3", cov["family_status"]["brachiosaurus"]["sm"])
+        self.assertEqual("Complete 3/3", cov["family_status"]["brachiosaurus"]["sna"])
+        self.assertEqual("complete", cov["creature_category"]["brachiosaurus"])
+        self.assertEqual("Complete 3/3", cov["family_status"]["tyrannosaurus"]["sm"], "Unrelated control unchanged.")
+        self.assertEqual([], cov["scope_conflicts"])
+        self.assertIn("3 approved out of scope", roster.coverage_summary(cov))
+        rows = rows_by_placement(roster.cells(["brachiosaurus"], SOURCES))
+        self.assertTrue(all(rows[p].scope == "approved out of scope" and not rows[p].registered for p in BRACHIOSAURUS_SM))
+
+    def test_one_cell_out_of_scope_leaves_the_others_missing(self):
+        roster.APPROVED_OUT_OF_SCOPE[BRACHIOSAURUS_SM[0]] = "test decision"
+        cov = judge()
+        self.assertEqual({BRACHIOSAURUS_SM[0]}, unpublished(cov, "out-of-scope"))
+        self.assertTrue(set(BRACHIOSAURUS_SM[1:]) <= unpublished(cov, "missing"))
+
+    def test_a_declared_choice_contradicting_the_decision_is_a_conflict(self):
+        for placement in BRACHIOSAURUS_SM:
+            roster.APPROVED_OUT_OF_SCOPE[placement] = "test decision"
+        project = replace(SOURCES["project"], 'C("brachiosaurus","Brachiosaurus",null,false,7,"Mastodon")',
+                          'C("brachiosaurus","Brachiosaurus",7,true,7,"Mastodon")')
+        entries = roster.read_ideal(SOURCES["ideal"])
+        cov = roster.compare(roster.ideal_placements(entries),
+                             roster.declared_choices(roster.read_project(project), roster.read_wrappers(SOURCES["wrappers"]),
+                                                     roster.read_suppressed(SOURCES["visibility"])),
+                             roster.read_registered_symbols(SOURCES["ledger"]),
+                             dict(roster.read_declared(SOURCES["identities"], SOURCES["visibility"], project),
+                                  project_creatures=len(roster.read_project(project))))
+        self.assertEqual(sorted(BRACHIOSAURUS_SM), cov["scope_conflicts"])
+        self.assertEqual(SM_SYMBOLS, sorted(c.symbol for c in cov["unregistered"]
+                                            if "Brachiosaurus" in c.symbol and ".SM." in c.symbol),
+                         "Declared without a ledger identity stays unregistered.")
+
+    def test_the_current_decision_is_still_pending(self):
+        self.assertEqual({}, roster.APPROVED_OUT_OF_SCOPE)
+        self.assertEqual(set(BRACHIOSAURUS_SM), roster.SCOPE_PENDING)
+        self.assertEqual(set(BRACHIOSAURUS_SM), unpublished(judge(), "missing") & set(BRACHIOSAURUS_SM))
+
+
 class ReadDiagnosticTests(unittest.TestCase):
     def refused(self, **changes):
         messages = []

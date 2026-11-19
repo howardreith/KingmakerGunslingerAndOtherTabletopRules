@@ -16,7 +16,14 @@ compared exactly; a creature's identity never stands in for a placement.
 Generation and freshness are separate from coverage: `--check` passes when the
 documents are current, however incomplete the coverage they report.
 
-Run:  python tools/expanded_summoning_ideal_roster.py [--check]
+An ideal placement the owner has approved out of scope (APPROVED_OUT_OF_SCOPE)
+is reported as out of scope, never as covered and never as missing. `--cells`
+prints one decision row per ideal placement of the named creatures, with five
+independent facts: ideal scope, the exact family-specific ledger identity,
+the declared choice, its admission, and native evidence for that exact identity
+from planning/expanded-summoning-native-placement-evidence.json.
+
+Run:  python tools/expanded_summoning_ideal_roster.py [--check] [--cells key,key]
 """
 from __future__ import annotations
 
@@ -38,6 +45,7 @@ WRAPPERS = ROOT / "src/KingmakerGunslinger/Summoning/SummonNativeExpansionCatalo
 VISIBILITY = ROOT / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs"
 IDENTITIES = ROOT / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs"
 LEDGER = ROOT / "blueprints/blueprints.json"
+EVIDENCE = ROOT / "planning/expanded-summoning-native-placement-evidence.json"
 ROSTER_DOC = ROOT / "planning/EXPANDED-SUMMONING-IDEAL-ROSTER.md"
 TRACE_DOC = ROOT / "planning/EXPANDED-SUMMONING-CHARTER-TRACEABILITY.md"
 
@@ -354,6 +362,14 @@ RECORDED_DISPOSITIONS = dict(
         ("manticore", "sna", (8, 9)), ("mite", "sna", (4, 5, 6, 7, 8, 9)))
      for parent in parents])
 
+# S5 T3 / POL-04: the three Summon Monster cells await the owner's choice between
+# keeping the shipped Nature's Ally-only scope (A) and publishing them (B).
+SCOPE_PENDING = {Placement("brachiosaurus", "sm", 7, "One"), Placement("brachiosaurus", "sm", 8, "OneD3"),
+                 Placement("brachiosaurus", "sm", 9, "OneD4PlusOne")}
+# Ideal placements the owner has explicitly approved out of scope, with the
+# decision on record. Empty until a decision is recorded; keyed by exact placement.
+APPROVED_OUT_OF_SCOPE = {}
+
 
 def canonical(wrapper_key):
     """PascalCase wrapper key to the canonical kebab creature key, as
@@ -540,12 +556,16 @@ def compare(ideal, choices, registered_symbols, declared):
     for placement in sorted(ideal_count):
         offered = by_placement.get(placement, [])
         state = "covered" if any(c.admitted for c in offered) else \
-            "withheld" if offered else "missing"
+            "withheld" if offered else \
+            "out-of-scope" if placement in APPROVED_OUT_OF_SCOPE else "missing"
         states[placement] = state
         if state == "covered":
             continue
-        disposition, recorded = withheld_disposition(placement.key) if state == "withheld" \
-            else missing_disposition(placement)
+        if state == "out-of-scope":
+            disposition, recorded = "Approved out of scope: " + APPROVED_OUT_OF_SCOPE[placement], True
+        else:
+            disposition, recorded = withheld_disposition(placement.key) if state == "withheld" \
+                else missing_disposition(placement)
         unpublished.append(Unpublished(placement, state, disposition,
                                        [c.symbol for c in offered], recorded))
 
@@ -563,6 +583,7 @@ def compare(ideal, choices, registered_symbols, declared):
         "covered": sum(ideal_count[p] for p, s in states.items() if s == "covered"),
         "withheld": sum(ideal_count[p] for p, s in states.items() if s == "withheld"),
         "missing": sum(ideal_count[p] for p, s in states.items() if s == "missing"),
+        "out_of_scope": sum(ideal_count[p] for p, s in states.items() if s == "out-of-scope"),
     }
     extra = [c for c in choices if c.placement not in ideal_count]
     duplicates = sorted((p, [c.symbol for c in cs]) for p, cs in by_placement.items() if len(cs) > 1)
@@ -570,6 +591,8 @@ def compare(ideal, choices, registered_symbols, declared):
     unregistered = [c for c in choices if c.symbol not in registered_symbols]
     unexplained = [u for u in unpublished if not u.recorded]
     stale = sorted(p for p in RECORDED_DISPOSITIONS if states.get(p) == "covered")
+    # A placement approved out of scope that the source nevertheless declares contradicts the decision.
+    scope_conflicts = sorted(p for p in APPROVED_OUT_OF_SCOPE if by_placement.get(p))
     totals.update({"extra": len(extra), "duplicates": len(duplicates),
                    "ideal_duplicates": len(ideal_duplicates),
                    "unregistered": len(unregistered), "unexplained": len(unexplained),
@@ -588,6 +611,7 @@ def compare(ideal, choices, registered_symbols, declared):
     return {"totals": totals, "states": states, "unpublished": unpublished,
             "extra": extra, "duplicates": duplicates, "ideal_duplicates": ideal_duplicates,
             "unregistered": unregistered, "stale_dispositions": stale, "cross": cross,
+            "scope_conflicts": scope_conflicts,
             "ideal_count": ideal_count}
 
 
@@ -597,8 +621,12 @@ def placement_counts(comparison, key, family, tier):
     if tier is None:
         return None
     states = [comparison["states"][p] for p in ladder(key, family, tier)]
-    return {"covered": states.count("covered"), "withheld": states.count("withheld"),
-            "missing": states.count("missing"), "total": len(states)}
+    counts = {"covered": states.count("covered"), "withheld": states.count("withheld"),
+              "missing": states.count("missing"), "total": len(states)}
+    # Present only when an approved-out-of-scope decision applies, so earlier readers keep their shape.
+    if states.count("out-of-scope"):
+        counts["out_of_scope"] = states.count("out-of-scope")
+    return counts
 
 
 def describe_counts(counts):
@@ -614,8 +642,12 @@ def describe_counts(counts):
         return "Withheld 0/%d" % total
     if missing == total:
         return "Missing 0/%d" % total
+    out_of_scope = counts.get("out_of_scope", 0)
+    if out_of_scope == total:
+        return "Approved out of scope 0/%d" % total
     rest = ", ".join(part for part in ("%d withheld" % withheld if withheld else "",
-                                       "%d missing" % missing if missing else "") if part)
+                                       "%d missing" % missing if missing else "",
+                                       "%d approved out of scope" % out_of_scope if out_of_scope else "") if part)
     return "%s %d/%d (%s)" % ("Partial" if covered else "Unpublished", covered, total, rest)
 
 
@@ -636,7 +668,8 @@ def creature_category(counts_by_family):
     withheld = sum(c["withheld"] for c in counts)
     missing = sum(c["missing"] for c in counts)
     total = sum(c["total"] for c in counts)
-    if covered == total:
+    out_of_scope = sum(c.get("out_of_scope", 0) for c in counts)
+    if covered == total or (covered and covered + out_of_scope == total):
         return "complete"
     if covered:
         return "partial"
@@ -690,12 +723,83 @@ def coverage(entries, project_text, wrapper_text, visibility_text, identity_text
 
 def coverage_summary(cov):
     t = cov["totals"]
-    word = "complete" if t["covered"] == t["ideal"] else "incomplete"
+    word = "complete" if t["covered"] + t["out_of_scope"] == t["ideal"] else "incomplete"
+    scope = ("; %d approved out of scope" % t["out_of_scope"]) if t["out_of_scope"] else ""
     return ("Source-derived coverage is %s: %s of %s ideal placements admitted; %d withheld; "
-            "%d missing; %d extra; %d duplicate; %d unexplained. Native menus and casts are not "
+            "%d missing%s; %d extra; %d duplicate; %d unexplained. Native menus and casts are not "
             "established by this report." % (word, format(t["covered"], ","), format(t["ideal"], ","),
-                                             t["withheld"], t["missing"], t["extra"],
+                                             t["withheld"], t["missing"], scope, t["extra"],
                                              t["duplicates"], t["unexplained"]))
+
+
+def read_evidence(text):
+    """Native observations keyed by exact ability identity. A missing or empty ledger is no evidence."""
+    if not text:
+        return {}
+    try:
+        rows = json.loads(text)["entries"]
+        evidence = defaultdict(list)
+        for row in rows:
+            if row["kind"] not in ("graph", "menu", "cast") or row["result"] not in ("PASS", "FAIL"):
+                raise ReadError("evidence row has an unknown kind or result: " + row["symbol"])
+            evidence[row["symbol"]].append(row)
+        return dict(evidence)
+    except (ValueError, KeyError, TypeError) as error:
+        raise ReadError("native evidence ledger could not be read: " + str(error)) from error
+
+
+Cell = namedtuple("Cell", "placement ideal scope symbol registered declared admitted graph menu cast")
+
+
+def project_symbol(placement):
+    return "KMG.Summoning.Ability.%s.Tier%d.%s.%s" % (
+        FAMILY_SYMBOL[placement.family], placement.parent, token(placement.key), placement.quantity)
+
+
+def cell_report(entries, cov, choices, registered_symbols, evidence, keys):
+    """One row per ideal placement of each named creature, in both families.
+    Every fact is read independently from its own input and only for the exact
+    family-specific identity: another family's identity never fills a cell."""
+    by_placement = defaultdict(list)
+    for choice in choices:
+        by_placement[choice.placement].append(choice)
+    rows = []
+    for key in keys:
+        entry = next((e for e in entries if e.key == key), None)
+        if entry is None:
+            raise ReadError("creature absent from the ideal roster: " + key)
+        for family in FAMILIES:
+            tier = entry.tier(family)
+            if tier is None:
+                continue
+            for placement in ladder(key, family, tier):
+                offered = by_placement.get(placement, [])
+                symbols = [c.symbol for c in offered] or [project_symbol(placement)]
+                def native(kind):
+                    rows_for = [row for symbol in symbols for row in evidence.get(symbol, []) if row["kind"] == kind]
+                    if not rows_for:
+                        return "none"
+                    return ",".join(sorted({row["result"] + ":" + row["session"] for row in rows_for}))
+                scope = ("approved out of scope" if placement in APPROVED_OUT_OF_SCOPE else
+                         "pending owner decision" if placement in SCOPE_PENDING else "in scope")
+                rows.append(Cell(placement, True, scope, symbols[0],
+                                 any(symbol in registered_symbols for symbol in symbols),
+                                 bool(offered), any(c.admitted for c in offered),
+                                 native("graph"), native("menu"), native("cast")))
+    return rows
+
+
+def cell_table(rows):
+    lines = ["| Creature | Family | Parent | Quantity | Ideal | Scope | Exact identity | Registered | "
+             "Declared | Admitted | Native graph | Native menu | Native cast |",
+             "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    yes = lambda value: "yes" if value else "no"
+    for r in rows:
+        p = r.placement
+        lines.append("| %s | %s | %s | %s | %s | %s | `%s` | %s | %s | %s | %s | %s | %s |" % (
+            p.key, FAMILY_NAME[p.family], ROMAN[p.parent], QUANTITY_LABEL[p.quantity], yes(r.ideal), r.scope,
+            r.symbol, yes(r.registered), yes(r.declared), yes(r.admitted), r.graph, r.menu, r.cast))
+    return "\n".join(lines)
 
 
 def coverage_section(entries, cov):
@@ -806,9 +910,23 @@ def coverage_section(entries, cov):
 
 
 def read_sources():
-    return {name: path.read_bytes().decode("utf-8-sig") for name, path in (
+    sources = {name: path.read_bytes().decode("utf-8-sig") for name, path in (
         ("ideal", MANIFEST), ("project", SHIPPED), ("wrappers", WRAPPERS),
         ("visibility", VISIBILITY), ("identities", IDENTITIES), ("ledger", LEDGER))}
+    sources["evidence"] = EVIDENCE.read_bytes().decode("utf-8-sig") if EVIDENCE.exists() else ""
+    return sources
+
+
+def cells(keys, sources=None):
+    """The decision rows for the named creatures from the given (or real) sources."""
+    sources = sources or read_sources()
+    entries = read_ideal(sources["ideal"])
+    cov = coverage(entries, sources["project"], sources["wrappers"], sources["visibility"],
+                   sources["identities"], sources["ledger"])
+    choices = declared_choices(read_project(sources["project"]), read_wrappers(sources["wrappers"]),
+                               read_suppressed(sources["visibility"]))
+    return cell_report(entries, cov, choices, read_registered_symbols(sources["ledger"]),
+                       read_evidence(sources.get("evidence", "")), keys)
 
 
 def build(sources):
@@ -861,7 +979,15 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true",
                         help="verify the documents are current without writing")
+    parser.add_argument("--cells", help="print decision rows for these comma-separated creature keys")
     args = parser.parse_args()
+    if args.cells:
+        try:
+            print(cell_table(cells([key.strip() for key in args.cells.split(",") if key.strip()])))
+        except ReadError as error:
+            print("Decision rows could not be read completely: " + str(error))
+            return 1
+        return 0
     return run(args.check)
 
 
