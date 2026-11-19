@@ -1,8 +1,7 @@
 # Inherited summon templates per owned placement (DEF-05 / S5 T1)
 
-Status: **the owner-approved tier-one donor contract is implemented and built. Its census rerun FAILED on one condition
-of that contract, which contradicts released publication behaviour. The cast session was not run. S5 T1 is stopped for
-review and not ready for principal review** (see "Tier-one donor contract and census rerun"). Branch
+Status: **S5 T1 / DEF-05 is ready for principal review** (see "Cast observer repair: census PASS and cast PASS";
+every earlier failed session is kept below). Branch
 `codex/def05-inherited-template-cleanup`, draft PR #186, stacked on the accepted Sprint 4 closure PR #185
 (`5c662d50b0`). Not merged, not released.
 
