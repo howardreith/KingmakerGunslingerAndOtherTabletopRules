@@ -154,6 +154,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
 
+            // Every KMG-owned adapter ability identity, for the tier-one menu's unexpected-owned-row check.
+            var adapterGuids = new HashSet<string>(StringComparer.Ordinal);
             foreach (AlternateSummoningFamilySpec family in AlternateSummoningSourceCatalog.All)
             {
                 var summary = new JObject { ["spellFamily"] = family.Family.ToString() };
@@ -189,6 +191,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     summary["observed"] = 0;
                     continue;
                 }
+                foreach (BlueprintAbility owned in built.BySymbol.Values.Concat(built.Preserved.Values))
+                    if (owned != null) adapterGuids.Add(owned.AssetGuid);
                 // Review correction 5: the actual creature children are classified from the builder's
                 // own output (not the projection): a built record that is not a preserved root copy and
                 // spawns a registered Expanded Summoning unit. Native options and preserved roots are
@@ -261,14 +265,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             var transitions = new JArray();
             var donorCounts = new Dictionary<string, int>(StringComparer.Ordinal) {
                 { "unchanged", 0 }, { "approved-tier-one-publication", 0 }, { "mutated", 0 } };
+            int withheldTransitions = 0;
             foreach (ExpandedSummoningAbilityBuilder.DonorRecord carrier in ExpandedSummoningAbilityBuilder.RecordedCarriers()
                 .OrderBy(value => value.Ability.AssetGuid, StringComparer.Ordinal))
             {
-                InheritedTierOneObservation donorView = CensusDonorView(carrier);
+                InheritedTierOneObservation donorView = CensusDonorView(carrier, adapterGuids);
                 var failures = new List<string>();
                 string disposition = InheritedTierOnePublicationContract.Judge(donorView, failures);
                 donorCounts[disposition] = donorCounts[disposition] + 1;
                 foreach (string failure in failures) donorFindings.Add("donor|" + carrier.Ability.AssetGuid + ":" + failure);
+                if (disposition == "approved-tier-one-publication" &&
+                    donorView.Expectation.Disposition == InheritedPreservedExposure.WithholdCompleteReplacement) withheldTransitions++;
                 if (disposition == "approved-tier-one-publication")
                     transitions.Add(new JObject {
                         ["parent"] = carrier.Ability.AssetGuid + ":" + carrier.Ability.name,
@@ -276,11 +283,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["originalComponents"] = donorView.OriginalComponents.Count,
                         ["currentComponents"] = new JArray(donorView.CurrentComponents.Select(view => view.Type + ":" + view.Name)),
                         ["differencesExcludingMenu"] = new JArray(donorView.DifferencesExcludingMenu),
-                        ["preservedChild"] = donorView.PreservedGuid,
+                        ["preservedChild"] = new JObject { ["symbol"] = donorView.PreservedSymbol, ["guid"] = donorView.PreservedGuid,
+                            ["registeredObject"] = DescribeObject(donorView.PreservedReference) },
+                        ["expectedExposure"] = donorView.Expectation.Disposition.ToString(),
+                        ["replacementCoverageReason"] = donorView.Expectation.Reason,
+                        ["preservedInMenuByGuid"] = donorView.MenuChildren.Count(row => row.Guid == donorView.PreservedGuid),
+                        ["preservedInMenuByReference"] = donorView.MenuChildren.Count(row =>
+                            ReferenceEquals(row.Reference, donorView.PreservedReference)),
+                        ["requiredReplacements"] = new JArray(donorView.Expectation.Required.Select(row =>
+                        {
+                            object reference;
+                            donorView.RequiredReplacementReferences.TryGetValue(row.Symbol, out reference);
+                            return new JObject { ["kind"] = row.Kind, ["symbol"] = row.Symbol, ["guid"] = row.Guid,
+                                ["registeredObject"] = DescribeObject(reference),
+                                ["inMenuByGuid"] = donorView.MenuChildren.Count(menuRow => menuRow.Guid == row.Guid),
+                                ["inMenuByReference"] = donorView.MenuChildren.Count(menuRow =>
+                                    reference != null && ReferenceEquals(menuRow.Reference, reference)) };
+                        })),
                         ["menuChildren"] = donorView.MenuChildren.Count,
                         ["expectedOwnedChildren"] = donorView.ExpectedOwnedChildren.Count,
-                        ["foreignMenuRows"] = donorView.MenuChildren.Count(child => child != donorView.PreservedGuid &&
-                            !donorView.ExpectedOwnedChildren.Contains(child)),
+                        ["foreignMenuRows"] = donorView.MenuChildren.Count(row =>
+                            InheritedTierOnePublicationContract.Classify(donorView, row) == "foreign"),
+                        ["unexpectedOwnedMenuRows"] = donorView.MenuChildren.Count(row =>
+                            InheritedTierOnePublicationContract.Classify(donorView, row) == "unexpected-owned"),
+                        ["ownedIdentities"] = donorView.OwnedIdentityGuids.Count,
+                        ["originalComponentsKeptInOrder"] = donorView.CurrentComponents.Select(view => view.Reference)
+                            .Where(reference => donorView.OriginalComponents.Any(original => ReferenceEquals(original, reference)))
+                            .SequenceEqual(donorView.OriginalComponents, ReferenceIdentity.Instance),
+                        ["semanticProof"] = donorView.PreservedSignature == donorView.DonorSignature &&
+                            !donorView.PreservedSharesInstances ? "equal-and-independent" : "failed",
                         ["preservedSignatureEqual"] = donorView.PreservedSignature == donorView.DonorSignature,
                         ["preservedActionTypes"] = donorView.PreservedActionTypes.Count,
                         ["preservedApplyBuffIds"] = new JArray(donorView.PreservedApplyBuffIds),
@@ -323,7 +354,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["childSetFindings"] = new JArray(childFindings),
                 ["donorValidation"] = new JObject { ["carriers"] = donorCounts.Values.Sum(),
                     ["unchanged"] = donorCounts["unchanged"], ["approvedTierOnePublication"] = donorCounts["approved-tier-one-publication"],
-                    ["mutated"] = donorCounts["mutated"], ["findings"] = new JArray(donorFindings), ["approvedTransitions"] = transitions },
+                    ["mutated"] = donorCounts["mutated"], ["withholdCompleteReplacement"] = withheldTransitions,
+                    ["findings"] = new JArray(donorFindings), ["approvedTransitions"] = transitions },
                 ["justifiedRedundant"] = new JArray(result.JustifiedRedundant),
                 ["unresolved"] = new JArray(unresolved) };
             assertions.Add(Assertion("inherited-template-census-per-placement",
@@ -348,11 +380,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";childSetFindings=[" + string.Join(",", childFindings.Take(20).ToArray()) + "]" +
                     ";donors=" + donorCounts.Values.Sum() + ":unchanged=" + donorCounts["unchanged"] + ",approvedTierOne=" +
                     donorCounts["approved-tier-one-publication"] + ",mutated=" + donorCounts["mutated"] +
+                    ",withheld=" + withheldTransitions +
                     ";donorFindings=[" + string.Join(",", donorFindings.Take(20).ToArray()) + "]" +
                     ";findings=[" + string.Join(",", result.Findings.Take(40).ToArray()) +
                     "];unresolved=[" + string.Join(",", unresolved.Take(20).ToArray()) + "]",
                 result.Passed && childFindings.Count == 0 && donorFindings.Count == 0 && donorCounts["mutated"] == 0 &&
-                    donorCounts["approved-tier-one-publication"] == 2 &&
+                    donorCounts["approved-tier-one-publication"] == 2 && withheldTransitions == 2 &&
                     unresolved.Count == 0 && result.Observations == expected.Count && everyFamily &&
                     quantityRemovals > 0 && deliberate > 0,
                 "registered canonical abilities and production-built children of AlternateSummoningSourceCatalog.All; " +
@@ -363,12 +396,27 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// Everything the tier-one publication judge needs about one recorded donor carrier, read from the
         /// pre-clone receipt, the live parent, the stable preserved child and, independently, the publisher's record.
         /// </summary>
-        private static InheritedTierOneObservation CensusDonorView(ExpandedSummoningAbilityBuilder.DonorRecord carrier)
+        private sealed class ReferenceIdentity : IEqualityComparer<object>
+        {
+            internal static readonly ReferenceIdentity Instance = new ReferenceIdentity();
+            public new bool Equals(object left, object right) { return ReferenceEquals(left, right); }
+            public int GetHashCode(object value) { return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(value); }
+        }
+
+        private static string DescribeObject(object value)
+        {
+            var blueprint = value as BlueprintScriptableObject;
+            return blueprint == null ? null : blueprint.AssetGuid + ":" + blueprint.name + "#" +
+                System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(blueprint);
+        }
+
+        private static InheritedTierOneObservation CensusDonorView(ExpandedSummoningAbilityBuilder.DonorRecord carrier,
+            ICollection<string> adapterGuids)
         {
             BlueprintAbility parent = carrier.Ability;
             BlueprintComponent[] current = parent.ComponentsArray ?? new BlueprintComponent[0];
             var view = new InheritedTierOneObservation {
-                ParentGuid = parent.AssetGuid,
+                ParentGuid = parent.AssetGuid, ParentReference = parent,
                 ReceiptDifferences = carrier.Differences(),
                 OriginalComponents = carrier.Receipt.Components.ToList(),
                 CurrentComponents = current.Select(component => new InheritedComponentView(component,
@@ -381,16 +429,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintComponent[] withoutAdded = current.Where(component => !added.Contains(component)).ToArray();
             AbilityVariants menu = added.OfType<AbilityVariants>().FirstOrDefault();
             view.MenuChildren = (menu == null || menu.Variants == null ? new BlueprintAbility[0] : menu.Variants)
-                .Select(child => child == null ? "<null>" : child.AssetGuid).ToList();
+                .Select(child => new InheritedMenuRow(child, child == null ? "<null>" : child.AssetGuid)).ToList();
             // The live parent with the one added component excluded, against the receipt. The components-array
             // reference is the receipt's own: the array is replaced by design; its contents are what is compared.
             view.DifferencesExcludingMenu = InheritedTemplateDonorReceipt.Differences(carrier.Receipt,
                 ExpandedSummoningAbilityBuilder.CaptureReceipt(parent.AssetGuid, parent.name, carrier.Receipt.ComponentsArray, withoutAdded));
             BlueprintScriptableObject preservedObject;
-            ExpandedSummoningBlueprints.Registered.BySymbol.TryGetValue(monster ?
-                ExpandedSummoningIdentityCatalog.NativeMonsterTierOneSymbol :
-                ExpandedSummoningIdentityCatalog.NativeNaturesAllyTierOneSymbol, out preservedObject);
+            view.PreservedSymbol = monster ? ExpandedSummoningIdentityCatalog.NativeMonsterTierOneSymbol :
+                ExpandedSummoningIdentityCatalog.NativeNaturesAllyTierOneSymbol;
+            ExpandedSummoningBlueprints.Registered.BySymbol.TryGetValue(view.PreservedSymbol, out preservedObject);
             var preserved = preservedObject as BlueprintAbility;
+            view.PreservedReference = preserved;
             view.PreservedIsAbility = preserved != null;
             view.PreservedGuid = preservedObject == null ? null : preservedObject.AssetGuid;
             view.DonorSignature = carrier.PrePublicationSignature;
@@ -424,6 +473,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ? child.AssetGuid : "<unresolved>");
             }
             view.ExpectedOwnedChildren = owned;
+            // Revised condition 3: keep or withhold the preserved child, derived independently from the catalogs.
+            var registry = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (KeyValuePair<string, BlueprintScriptableObject> entry in ExpandedSummoningBlueprints.Registered.BySymbol)
+            {
+                if (entry.Value == null) continue;
+                registry[entry.Key] = entry.Value.AssetGuid;
+                if (entry.Value is BlueprintAbility) view.OwnedIdentityGuids.Add(entry.Value.AssetGuid);
+            }
+            foreach (string guid in adapterGuids) view.OwnedIdentityGuids.Add(guid);
+            SummonNativeOptionSpec[] tierOneOptions = SummonNativeOptionCatalog.All
+                .Where(value => value.Family == family && value.Tier == 1).ToArray();
+            view.Expectation = InheritedTierOneReplacementContract.Derive(tierOneOptions.Length == 1 ? tierOneOptions[0] : null,
+                family, 1, view.PreservedGuid,
+                ExpandedSummoningCatalog.GenerateVariants(family).Where(value => value.ParentTier == 1 &&
+                    SummonVisibilityCatalog.IsPublished(value)),
+                SummonNativeExpansionCatalog.For(family, 1), SummonNativeExpansionCatalog.All,
+                ExpandedSummoningIdentityCatalog.AbilitySymbol, registry);
+            foreach (InheritedRequiredReplacement row in view.Expectation.Required)
+            {
+                BlueprintScriptableObject reference;
+                if (ExpandedSummoningBlueprints.Registered.BySymbol.TryGetValue(row.Symbol, out reference) && reference != null)
+                    view.RequiredReplacementReferences[row.Symbol] = reference;
+            }
             // The publisher's own record, checked against the receipt and the live parent, never trusted alone.
             ExpandedSummoningPublication publication = ExpandedSummoningPublisher.Last;
             ExpandedSummoningPublication.Record record = publication == null ? null :

@@ -260,6 +260,176 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
+    /// <summary>Policy-dependent live-menu exposure of the preserved native tier-one child.</summary>
+    internal enum InheritedPreservedExposure
+    {
+        Keep = 1,
+        WithholdCompleteReplacement = 2,
+        KeepIncompleteReplacement = 3,
+        Invalid = 4
+    }
+
+    /// <summary>One replacement row the source catalogs require for a preserved native option.</summary>
+    internal sealed class InheritedRequiredReplacement
+    {
+        internal InheritedRequiredReplacement(string kind, string symbol, string guid, int published)
+        { Kind = kind; Symbol = symbol; Guid = guid; Published = published; }
+
+        /// <summary>"generated" or "native-expansion".</summary>
+        internal string Kind { get; private set; }
+        internal string Symbol { get; private set; }
+        /// <summary>The registered identity of the row, or null when unregistered or not published.</summary>
+        internal string Guid { get; private set; }
+        /// <summary>How many published catalog rows represent it.</summary>
+        internal int Published { get; private set; }
+    }
+
+    internal sealed class InheritedReplacementExpectation
+    {
+        internal InheritedPreservedExposure Disposition;
+        internal string Reason;
+        internal IList<InheritedRequiredReplacement> Required = new List<InheritedRequiredReplacement>();
+        internal IList<string> Findings = new List<string>();
+    }
+
+    /// <summary>
+    /// DEF-05 owner decision (condition 3 revised): whether the publication keeps or withholds the preserved
+    /// native child, derived independently from the source catalogs. It never reads the publication record,
+    /// the live menu or the production coverage method. Ambiguity is Invalid, never incomplete coverage.
+    /// </summary>
+    internal static class InheritedTierOneReplacementContract
+    {
+        internal static InheritedReplacementExpectation Derive(SummonNativeOptionSpec original,
+            SummonFamily family, int tier, string preservedGuid,
+            IEnumerable<SummonVariantSpec> publishedGenerated,
+            IEnumerable<SummonNativeExpansionSpec> publishedNative,
+            IEnumerable<SummonNativeExpansionSpec> nativeCatalog,
+            Func<SummonVariantSpec, string> generatedSymbol,
+            IDictionary<string, string> registeredGuidBySymbol)
+        {
+            if (publishedGenerated == null || publishedNative == null || nativeCatalog == null ||
+                generatedSymbol == null || registeredGuidBySymbol == null) throw new ArgumentNullException();
+            var result = new InheritedReplacementExpectation();
+            IList<string> findings = result.Findings;
+            if (original == null)
+            {
+                findings.Add("native-option-missing");
+                return Finish(result);
+            }
+            if (original.Family != family) findings.Add("option-wrong-family:" + original.Family);
+            if (original.Tier != tier) findings.Add("option-wrong-tier:" + original.Tier);
+            if (!string.Equals(original.Guid, preservedGuid, StringComparison.Ordinal))
+                findings.Add("option-wrong-source:" + original.Guid + "/" + preservedGuid);
+            SummonVariantSpec[] generated = publishedGenerated.ToArray();
+            SummonNativeExpansionSpec[] native = publishedNative.ToArray();
+            SummonNativeExpansionSpec[] catalog = nativeCatalog.ToArray();
+            // The inputs are this parent's own published rows: anything else is malformed input.
+            foreach (SummonVariantSpec value in generated)
+            {
+                if (value.Family != family) findings.Add("generated-wrong-family:" + value.StableKey);
+                if (value.ParentTier != tier) findings.Add("generated-wrong-tier:" + value.StableKey);
+            }
+            foreach (string symbol in generated.Select(generatedSymbol).GroupBy(value => value, StringComparer.Ordinal)
+                .Where(group => group.Count() > 1).Select(group => group.Key))
+                findings.Add("generated-duplicate-row:" + symbol);
+            foreach (SummonNativeExpansionSpec value in native)
+            {
+                if (value.Family != family) findings.Add("native-wrong-family:" + value.Symbol);
+                if (value.Tier != tier) findings.Add("native-wrong-tier:" + value.Symbol);
+            }
+            foreach (string symbol in catalog.Select(value => value.Symbol).GroupBy(value => value, StringComparer.Ordinal)
+                .Where(group => group.Count() > 1).Select(group => group.Key))
+                findings.Add("native-catalog-duplicate:" + symbol);
+            // 1. The generated replacement: exactly one published placement of the exact equivalent creature.
+            if (original.EquivalentCreatureKey != null)
+            {
+                SummonVariantSpec[] matches = generated.Where(value => value.Family == original.Family &&
+                    value.ParentTier == original.Tier && value.Multiplicity == original.Multiplicity &&
+                    value.Creature.Key == original.EquivalentCreatureKey).ToArray();
+                if (matches.Length > 1)
+                    findings.Add("generated-duplicate-replacement:" + original.EquivalentCreatureKey + "." + original.Multiplicity);
+                string symbol = matches.Length == 1 ? generatedSymbol(matches[0]) :
+                    "generated:" + original.EquivalentCreatureKey + "." + original.Multiplicity;
+                result.Required.Add(new InheritedRequiredReplacement("generated", symbol,
+                    matches.Length == 1 ? Registered(registeredGuidBySymbol, symbol) : null, matches.Length));
+            }
+            // 2. Native-expansion replacements: sourced from this exact option, not unit-replacing, each once.
+            SummonNativeExpansionSpec[] requiredNative = catalog.Where(value => value.Family == original.Family &&
+                value.Tier == original.Tier && string.Equals(value.SourceAbilityGuid, original.Guid, StringComparison.Ordinal) &&
+                !value.ReplacesSpawnUnit).ToArray();
+            foreach (SummonNativeExpansionSpec expected in requiredNative)
+            {
+                SummonNativeExpansionSpec[] matches = native.Where(value => value.Symbol == expected.Symbol).ToArray();
+                if (matches.Length > 1) findings.Add("native-duplicate-replacement:" + expected.Symbol);
+                foreach (SummonNativeExpansionSpec match in matches)
+                {
+                    if (!string.Equals(match.SourceAbilityGuid, original.Guid, StringComparison.Ordinal))
+                        findings.Add("native-wrong-source:" + match.Symbol + ":" + match.SourceAbilityGuid);
+                    if (match.ReplacesSpawnUnit) findings.Add("native-replaces-spawn-unit:" + match.Symbol);
+                    if (match.Multiplicity != expected.Multiplicity) findings.Add("native-wrong-quantity:" + match.Symbol);
+                }
+                result.Required.Add(new InheritedRequiredReplacement("native-expansion", expected.Symbol,
+                    matches.Length == 1 ? Registered(registeredGuidBySymbol, expected.Symbol) : null, matches.Length));
+            }
+            // A published row claiming this source that the catalog does not list as required is ambiguous.
+            foreach (SummonNativeExpansionSpec value in native.Where(value => value.Family == original.Family &&
+                value.Tier == original.Tier && string.Equals(value.SourceAbilityGuid, original.Guid, StringComparison.Ordinal) &&
+                !value.ReplacesSpawnUnit && !requiredNative.Any(expected => expected.Symbol == value.Symbol)))
+                findings.Add("native-uncatalogued-source-row:" + value.Symbol);
+            // 3. Registered identities of the represented rows must be exact and distinct.
+            foreach (InheritedRequiredReplacement row in result.Required.Where(row => row.Published == 1))
+            {
+                if (row.Guid == null) findings.Add("replacement-unregistered:" + row.Symbol);
+                else if (string.Equals(row.Guid, preservedGuid, StringComparison.Ordinal))
+                    findings.Add("replacement-is-preserved:" + row.Symbol);
+            }
+            foreach (string guid in result.Required.Where(row => row.Guid != null).GroupBy(row => row.Guid, StringComparer.Ordinal)
+                .Where(group => group.Count() > 1).Select(group => group.Key))
+                findings.Add("replacement-guid-duplicate:" + guid);
+            return Finish(result);
+        }
+
+        private static string Registered(IDictionary<string, string> registry, string symbol)
+        {
+            string guid;
+            return registry.TryGetValue(symbol, out guid) && !string.IsNullOrEmpty(guid) ? guid : null;
+        }
+
+        private static InheritedReplacementExpectation Finish(InheritedReplacementExpectation result)
+        {
+            if (result.Findings.Count > 0)
+            {
+                result.Disposition = InheritedPreservedExposure.Invalid;
+                result.Reason = "invalid:" + string.Join(",", result.Findings.ToArray());
+            }
+            else if (result.Required.Count == 0)
+            {
+                result.Disposition = InheritedPreservedExposure.Keep;
+                result.Reason = "no-required-replacement";
+            }
+            else if (result.Required.All(row => row.Published == 1))
+            {
+                result.Disposition = InheritedPreservedExposure.WithholdCompleteReplacement;
+                result.Reason = "complete-replacement:" + string.Join(",", result.Required.Select(row => row.Symbol).ToArray());
+            }
+            else
+            {
+                result.Disposition = InheritedPreservedExposure.KeepIncompleteReplacement;
+                result.Reason = "incomplete-replacement:missing=" + string.Join(",", result.Required
+                    .Where(row => row.Published == 0).Select(row => row.Symbol).ToArray());
+            }
+            return result;
+        }
+    }
+
+    /// <summary>One live menu row: the exact object and its asset identity.</summary>
+    internal sealed class InheritedMenuRow
+    {
+        internal InheritedMenuRow(object reference, string guid) { Reference = reference; Guid = guid ?? "<null>"; }
+        internal object Reference { get; private set; }
+        internal string Guid { get; private set; }
+    }
+
     /// <summary>One current component of a donor carrier, as seen by the census.</summary>
     internal sealed class InheritedComponentView
     {
@@ -275,6 +445,7 @@ namespace KingmakerGunslinger.Summoning
     internal sealed class InheritedTierOneObservation
     {
         internal string ParentGuid;
+        internal object ParentReference;
         /// <summary>Differences between the pre-clone receipt and the donor now (all components).</summary>
         internal IList<string> ReceiptDifferences = new List<string>();
         /// <summary>The receipt's component references, in order.</summary>
@@ -282,10 +453,19 @@ namespace KingmakerGunslinger.Summoning
         internal IList<InheritedComponentView> CurrentComponents = new List<InheritedComponentView>();
         /// <summary>Receipt differences when the one added menu component is excluded from the current donor.</summary>
         internal IList<string> DifferencesExcludingMenu = new List<string>();
-        /// <summary>Asset identities in the added menu component, in order.</summary>
-        internal IList<string> MenuChildren = new List<string>();
+        /// <summary>The added menu component's rows, in order: exact objects and identities.</summary>
+        internal IList<InheritedMenuRow> MenuChildren = new List<InheritedMenuRow>();
+        internal string PreservedSymbol;
         internal string PreservedGuid;
+        /// <summary>The exact registered preserved object.</summary>
+        internal object PreservedReference;
         internal bool PreservedIsAbility;
+        /// <summary>The independently derived keep/withhold expectation for the preserved child.</summary>
+        internal InheritedReplacementExpectation Expectation;
+        /// <summary>The exact registered object of each required replacement row, by symbol.</summary>
+        internal IDictionary<string, object> RequiredReplacementReferences = new Dictionary<string, object>(StringComparer.Ordinal);
+        /// <summary>Every registered KMG Expanded Summoning ability identity (canonical, native, preserved, adapter).</summary>
+        internal ICollection<string> OwnedIdentityGuids = new HashSet<string>(StringComparer.Ordinal);
         internal string DonorSignature;
         internal string PreservedSignature;
         internal IList<string> DonorActionTypes = new List<string>();
@@ -312,6 +492,14 @@ namespace KingmakerGunslinger.Summoning
         internal const string SummonNaturesAllyI = "c6147854641924442a3bb736080cfeb6";
         internal const string MenuComponentName = "$KMG_ExpandedSummoning_Variants";
         internal const string MenuComponentType = "Kingmaker.UnitLogic.Abilities.Components.AbilityVariants";
+
+        /// <summary>"preserved", "expected-owned", "unexpected-owned" or "foreign".</summary>
+        internal static string Classify(InheritedTierOneObservation value, InheritedMenuRow row)
+        {
+            if (row.Guid == value.PreservedGuid || ReferenceEquals(row.Reference, value.PreservedReference)) return "preserved";
+            if (value.ExpectedOwnedChildren.Contains(row.Guid)) return "expected-owned";
+            return value.OwnedIdentityGuids.Contains(row.Guid) ? "unexpected-owned" : "foreign";
+        }
 
         /// <summary>"unchanged", "approved-tier-one-publication" or "mutated"; failures say why it is not approved.</summary>
         internal static string Judge(InheritedTierOneObservation value, IList<string> failures)
@@ -341,13 +529,40 @@ namespace KingmakerGunslinger.Summoning
             }
             int variants = value.CurrentComponents.Count(component => component.Type == MenuComponentType);
             if (variants != 1) failures.Add("variants-components:" + variants);
-            // 3: the stable preserved native child, exactly once.
-            if (string.IsNullOrEmpty(value.PreservedGuid) || !value.PreservedIsAbility) failures.Add("preserved-child-unresolved");
+            // 3 (revised by the owner): the stable preserved child always resolves and is proved (4); its live-menu
+            // exposure follows the independently derived replacement expectation.
+            if (string.IsNullOrEmpty(value.PreservedGuid) || !value.PreservedIsAbility || value.PreservedReference == null)
+                failures.Add("preserved-child-unresolved");
             else
             {
-                if (value.PreservedGuid == value.ParentGuid) failures.Add("preserved-child-is-the-parent");
-                int preserved = value.MenuChildren.Count(child => child == value.PreservedGuid);
-                if (preserved != 1) failures.Add("preserved-child-in-menu:" + preserved);
+                if (value.PreservedGuid == value.ParentGuid || ReferenceEquals(value.PreservedReference, value.ParentReference))
+                    failures.Add("preserved-child-is-the-parent");
+                int byGuid = value.MenuChildren.Count(row => row.Guid == value.PreservedGuid);
+                int byReference = value.MenuChildren.Count(row => ReferenceEquals(row.Reference, value.PreservedReference));
+                InheritedReplacementExpectation expectation = value.Expectation;
+                if (expectation == null) failures.Add("replacement-expectation-missing");
+                else if (expectation.Disposition == InheritedPreservedExposure.Invalid)
+                {
+                    failures.Add("replacement-coverage-invalid");
+                    foreach (string finding in expectation.Findings) failures.Add("replacement-coverage:" + finding);
+                }
+                else if (expectation.Disposition == InheritedPreservedExposure.WithholdCompleteReplacement)
+                {
+                    if (byGuid != 0 || byReference != 0)
+                        failures.Add("preserved-child-withheld-but-in-menu:guid=" + byGuid + ",reference=" + byReference);
+                    foreach (InheritedRequiredReplacement row in expectation.Required)
+                    {
+                        object reference;
+                        value.RequiredReplacementReferences.TryGetValue(row.Symbol, out reference);
+                        if (row.Guid == null || reference == null) { failures.Add("replacement-unresolved:" + row.Symbol); continue; }
+                        int rowGuid = value.MenuChildren.Count(menuRow => menuRow.Guid == row.Guid);
+                        int rowReference = value.MenuChildren.Count(menuRow => ReferenceEquals(menuRow.Reference, reference));
+                        if (rowGuid != 1 || rowReference != 1)
+                            failures.Add("replacement-in-menu:" + row.Symbol + ":guid=" + rowGuid + ",reference=" + rowReference);
+                    }
+                }
+                else if (byGuid != 1 || byReference != 1)
+                    failures.Add("preserved-child-in-menu:guid=" + byGuid + ",reference=" + byReference + ",expected=1");
             }
             // 4: the preserved child is the original direct cast, semantically, with no shared instances.
             if (string.IsNullOrEmpty(value.DonorSignature) || value.PreservedSignature != value.DonorSignature)
@@ -359,12 +574,15 @@ namespace KingmakerGunslinger.Summoning
             if (value.PreservedSharesInstances) failures.Add("preserved-shares-instances");
             // 5: with the menu excluded, the live parent is still exactly the receipt.
             foreach (string difference in value.DifferencesExcludingMenu) failures.Add("parent-graph-changed:" + difference);
-            // 6: every owned child exactly once; foreign rows and order are free.
+            // 6: every expected owned child exactly once, no other KMG-owned row; genuine foreign rows and order are free.
             foreach (string child in value.ExpectedOwnedChildren)
             {
-                int count = value.MenuChildren.Count(row => row == child);
+                int count = value.MenuChildren.Count(row => row.Guid == child);
                 if (count != 1) failures.Add("owned-child:" + child + ":" + count);
             }
+            foreach (InheritedMenuRow row in value.MenuChildren)
+                if (InheritedTierOnePublicationContract.Classify(value, row) == "unexpected-owned")
+                    failures.Add("unexpected-owned-child:" + row.Guid);
             // 7: the publisher's own record, cross-checked independently.
             if (value.RecordDisagreement != null) failures.Add("publication-record:" + value.RecordDisagreement);
             return failures.Count == before ? "approved-tier-one-publication" : "mutated";
