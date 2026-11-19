@@ -374,6 +374,7 @@ journal. The cast session was not attempted.
 | Frozen candidate, first census | `0d6006ac03a2`, package `f1fdd873…9dbd`, DLL `0575b4fc…7a45`, MVID `5e5ff7e5-…b8f7` | census session `20261118T215938Z-owner-0.33.0-inherited-template-census` **FAIL**: 170 repeated donor-receipt findings, representing two unique tier-one parent transitions; cast session not run |
 | Tier-one contract candidate | `67704e6459ce`, package `ccfbf1d4…b961`, DLL `e30b2bd7…9d8a`, MVID `5151ff94-…b595` | census session `20261118T225322Z-owner-0.33.0-inherited-template-census` **FAIL**: both tier-one parents failed only `preserved-child-in-menu:0`; cast session not run |
 | Withhold-aware candidate | `540556bbf004`, package `59b24c5a…44c5`, DLL `14e32cb0…0d69`, MVID `caaba169-…987f` | census session `20261119T192806Z-owner-0.33.0-inherited-template-census` **PASS**; cast session `20261119T193054Z-owner-0.33.0-inherited-template-casts` **FAIL**, 3 of 15 assertions (observer rank reader, donor assertion); unresolved diagnostic |
+| Observer-repair candidate | `8ceb08ccef29`, package `3ef1bce7…7ccb`, DLL `e0dadbc9…cc35`, MVID `3806eb49-…0659` | census session `20261119T201715Z-owner-0.33.0-inherited-template-census` **PASS**; cast session `20261119T201938Z-owner-0.33.0-inherited-template-casts` **PASS**, 15 of 15 |
 
 ## Second review corrections (third checkpoint)
 
@@ -786,18 +787,158 @@ bare `MechanicsContext` and reads it without recalculation. Finding 3 is an asse
 approved transitions. Whether the d4+1 quantity is correct in play is not established. The cast session has not been
 rerun.
 
-## Remaining (S5 T1 is not complete)
+## Cast observer repair: census PASS and cast PASS
 
-1. Bounded observer repair (authorized): read ranks from the exact recalculated execution context; prove the d4+1 path
-   with a controlled d4 roll; derive the Master Summoner duration from the context's Default rank; compare donor
-   receipts across the cast window, accepting the two approved transitions.
-2. Then rebuild, rerun the census, and run the cast session on that unchanged package.
-3. Then the review records.
-4. Release obligation: the next release validator must account for the removed creature list. The v0.0.191 historical
+The owner authorized a bounded observer repair, with no gameplay change, after session `20261119T193054Z`. It was
+implemented in `8ceb08ccef`. The failed cast session above is retained as it was.
+
+**Correction 1: the actual execution context.** The bare, unrecalculated `MechanicsContext` rank reader and its
+duration evaluator are removed. For each cast the observer:
+1. creates the exact `AbilityData` the command uses, and one `TargetWrapper`;
+2. creates `data.CreateExecutionContext(target)` and calls `Recalculate()`;
+3. reads ranks only from that context.
+
+Each case records:
+- the associated blueprint;
+- the `ConvertedFrom` chain;
+- the spellbook or resource fact;
+- caster level and `Params.RankBonus`;
+- the recalculated `Default` and `ProjectilesCount` ranks.
+
+**Correction 2: a controlled d4+1** (`InheritedControlledQuantityContract`).
+- The case asserts the caster lacks Superior Summoning (`0477936c…`) and records the child's `ProjectilesCount`
+  `ContextRankConfig`.
+- It forces the exact caster's first d4 roll to 2 and records every roll by that caster.
+- The expected count is the forced die plus the expected rank (1), never the observed output.
+- Verdicts:
+  - pass;
+  - product failure: a forced 2 and only two units;
+  - observer failure: a missing, repeated, unforced or wrongly formed roll.
+
+**Correction 3: Master Summoner duration** (`InheritedClassRankDurationContract`).
+- The structural expectation comes from the untouched host row: `Minutes`, bonus `Rank(Default)`, and a `Default`
+  rank based on Summoner class level with `AsIs` progression.
+- The Summoner class level must be exactly 7, so the expectation is 7 × 60 = 420 s.
+- The native value is the `Default` rank of the recalculated child execution context. Neither value comes from the
+  spawned unit's duration.
+
+**Correction 4: donors across the cast window** (`InheritedDonorWindowContract`).
+- Before the first cast and after the last, the census donor validation runs: 48 carriers = 46 unchanged + 2 approved
+  `WithholdCompleteReplacement`, 0 mutated.
+- Every carrier's current post-publication receipt is then compared field by field: component array and references,
+  spawns, after-spawn arrays and actions, action types, `ApplyBuff` identities and native sequence.
+- Category names are never compared.
+
+**Negative controls (engine-free):**
+- rank 0 with a forced 2 and two units fails;
+- rank 1, a forced 2 and three units passes;
+- three units without a captured roll fails;
+- two relevant rolls fail;
+- foreign or duplicate units fail;
+- an unrecalculated rank 0 fails, and class level 7 with context rank 0 fails;
+- rank 7 with 0 s fails, and rank 7 with 420 s passes;
+- a duration on the wrong unit fails;
+- unchanged approved transitions pass;
+- a new component replacement, an in-place buff identity mutation and an action reorder each fail;
+- approved-to-mutated fails;
+- equal category names with a different underlying mutation fail.
+
+**Focused checks:**
+
+| Check | Result | Time |
+|---|---|---|
+| `Invoke-KmgGate -Filter 'expanded-summoning.inherited-template'` | 25 of 25 (3,128 registered) | 32 s |
+| `-Filter 'expanded-summoning.native-profile;expanded-summoning.scenario;loader-compat;runtime-scenario;scenario-catalog'` | 18 of 18 | 2 s |
+| Scenario preflight | 1,205 passed | 36 s |
+| Development-candidate validation | PASS | 9 s |
+| Icon catalog | PASS | — |
+| `git diff --check` | clean | — |
+
+The broader summoning tests were not needed, because no shared production helper changed. The first gate attempt
+failed to compile the test assembly: the new view's fields were never assigned there. They became properties, and the
+gate was rerun.
+
+**Replacement candidate**, built from `8ceb08ccef29f1029618ee86e4797f40480ec8d8`:
+- package `3ef1bce7027b0c168dddd9f3042cfc65e7a107ad7382b508075c5d08b0427ccb`;
+- DLL `e0dadbc9c854768bd83711324403fc9f5d61f82c8572b9b844249e5a0f14cc35`;
+- MVID `3806eb49-4581-4784-a01d-99c7cfec0659`, as loaded in game in both sessions;
+- harness `c47e7f14…b089`;
+- built 20:08:49–20:16:50 UTC, 897 of 897 selected; memory preflight 33.9 of 63.2 GB physical free.
+
+Both sessions ran with UMM 0.33.0, Call of the Wild 1.14.4c-2.1 and game 2.1.7b. Steam Cloud stayed "Sync Disabled"
+and no other lab held a runtime lock.
+
+**Session `20261119T201715Z-owner-0.33.0-inherited-template-census`: PASS.**
+- Run 20:17:14–20:19:21 UTC; 112 s, of which 100.8 s in game.
+- 5,769 of 5,769 observations (1,826 canonical, 3,943 alternate), none unresolved.
+- Branches: 2,262 canonical, 5,723 alternate; 1,744 abilities with more than one branch.
+- Dispositions:
+  - RemoveInherited 405;
+  - PreserveDeliberateTemplate 2,233;
+  - NoInheritedTemplate 1,000;
+  - OutsideSummonMonster 2,131.
+- Quantity removals: 58.
+- All seven families exact (600, 600, 600, 600, 588, 588, 367), zero child-set findings.
+- 405 justified redundancies; zero findings.
+- 48 donors = 46 unchanged + 2 approved `WithholdCompleteReplacement`, 0 mutated, 0 unexpected owned rows.
+- Tier-one menus: both preserved children are absent (0 by GUID, 0 by reference). The Dog (`d5915038…`) and the Mite
+  (`a274c1f9…`) each appear once as their exact registered objects.
+- Original components kept in order; semantic proof "equal-and-independent"; publication record consistent.
+- Saves (95), installation and registry unchanged or restored.
+
+**Session `20261119T201938Z-owner-0.33.0-inherited-template-casts`: PASS, 15 of 15 assertions.**
+- Run 20:19:38–20:21:41 UTC; 108 s, of which 97.0 s in game.
+- Same package, DLL and MVID as the census.
+- All nine cases passed. Each completed cast spent exactly one source and produced the expected units, with the
+  expected templates, smites, durations, innate facts and summon marker, and left no lingering unit.
+- The cancellation spent nothing and summoned nothing.
+- Every context is an `AbilityExecutionContext`, recalculated for the caster, with the child as associated blueprint and
+  the parent as its `ConvertedFrom`.
+- Hooks were removed, the two unrelated rows were unchanged, cleanup completed and the native profile was restored.
+- Saves (95), installation and registry unchanged or restored.
+
+**Controlled quantity** (`quantity-tier6-d4plus1-mephit`, Summon Monster VI, level-20 Sorcerer):
+- The caster does not hold Superior Summoning.
+- The child's `ProjectilesCount` config: base `FeatureListRanks` over Superior Summoning, progression
+  `OnePlusDivStep`, step 1, no min or max.
+- Recalculated `ProjectilesCount` = 1.
+- Exactly one relevant roll: 1d4 by the caster, forced to 2. The caster's only other rolls were seven zero-dice
+  evaluations.
+- Expected count 2 + 1 = 3. Actual: 3 distinct live Air Mephits, each 120 s, one level-6 slot spent. Verdict: Pass.
+
+**Master Summoner** (`master-summoner-tier4-mephit`, child `1e125d75…` from `MasterSummonerSummon4Base`, resource fact
+`5554be32…`):
+- Structural: the host row `60da9f1b…` is `Minutes`, `Zero` dice, bonus `Rank(Default)`; its `Default` config is
+  `ClassLevel` over the Summoner class `0f4c4ada…`, `AsIs`.
+- Summoner class level 7, so the expected rank is 7 and the expected duration 420 s.
+- Native: the child's own `Default` config is identical; the recalculated `Default` rank is 7 (caster level 7,
+  `RankBonus` 0).
+- Observed: one duration of 420 + 0 s bound to the one spawned unit; one resource use spent (9 to 8).
+
+**Donor window:**
+- Before and after the casts: 48 carriers, 46 unchanged, 2 approved `WithholdCompleteReplacement`, 0 mutated, no
+  findings; 4,073 live adapter identities counted as KMG-owned.
+- Receipt differences across the casts: none.
+- Both approved transitions are identical before and after:
+  - `SummonMonsterISingle`: preserved child 0 / 0 in the menu, Dog 1 / 1, 7 menu rows;
+  - `SummonNaturesAllyI`: preserved child 0 / 0, Mite 1 / 1, 9 menu rows.
+  - Each has pre-clone receipt differences `components-array`, `components` only, and none excluding the menu.
+
+## Status
+
+S5 T1 / DEF-05 is ready for principal review.
+
+## Remaining
+
+1. Release obligation: the next release validator must account for the removed creature list. The v0.0.191 historical
    validator is unchanged.
 
 ## Limits
 
+- The quantity is proved for the controlled roll only: one d4 forced to 2 gave 2 + 1 = 3. An ordinary, unforced roll's
+  distribution is not claimed beyond that.
+- The retained Sprint 4 baseline lacks the old donor identities, so the donor window is compared from this product's
+  own receipts.
 - The census is graph evidence; it does not say what a cast unit carries.
 - The donor table in the domain tests is the retained observation of one installation (game 2.1.7b as staged). A
   different native library needs the census, not the table.

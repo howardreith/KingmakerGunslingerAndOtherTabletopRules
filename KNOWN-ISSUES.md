@@ -344,8 +344,12 @@
   `20261119T193054Z`) failed 3 of 15 assertions, while seven of its nine cases passed. Two failures came from the
   observer reading ranks from an unrecalculated context: a tier-VI d4+1 mephit's bonus read 0, and a Master Summoner
   duration expectation read 0 against 420 s observed. The third was a donor assertion not updated for the two approved
-  tier-one transitions. Whether the d4+1 quantity is correct in play is not yet established, and nothing is claimed
-  fixed in play yet.
+  tier-one transitions. After a bounded observer repair (no gameplay change), candidate `8ceb08ccef29` passed both
+  the census (session `20261119T201715Z`) and the cast session (`20261119T201938Z`, 15 of 15). With the d4 forced to
+  2, `ProjectilesCount` 1 and three Air Mephits prove the d4+1 path. The Master Summoner's Default rank of 7 gives the
+  420 s duration. The donor carriers are unchanged across the casts. The quantity is proved for the controlled roll
+  only. The branch is ready for principal review; it is not merged or released, so released versions still carry this
+  issue.
 - Two feature-module publication self-checks fail on a heavily modded installation (v0.0.186):
   `feature-module-expanded-summoning-publication-gate` reports `unclassified=38` against a hard-coded
   expectation of 0, and `feature-module-brown-fur-publication-gate` fails alongside it. A matched
