@@ -11,6 +11,9 @@ using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
+using Kingmaker.PubSubSystem;
+using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
@@ -19,6 +22,7 @@ using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Mechanics.Components;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -53,6 +57,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const string InheritedSnaII = "298148133cdc3fd42889b99c82711986";
         /// <summary>The native Summon Monster and Nature's Ally duration at caster level 20: one round per level.</summary>
         private const double InheritedSorcererDurationSeconds = 120d;
+        /// <summary>Superior Summoning, which adds to the ProjectilesCount rank; the disposable Sorcerer must not hold it.</summary>
+        private const string InheritedSuperiorSummoning = "0477936c0f74841498b5c8753a8062a3";
+        /// <summary>Tabletop d4+1 without Superior Summoning: the ProjectilesCount bonus is exactly 1.</summary>
+        private const int InheritedD4PlusOneRank = 1;
+        /// <summary>The controlled value of the one d4 roll of the d4+1 case.</summary>
+        private const int InheritedForcedDie = 2;
+        /// <summary>The disposable Master Summoner's exact Summoner class level.</summary>
+        private const int InheritedMasterSummonerLevel = 7;
 
         private static List<string> _inheritedEvents;
         private static UnitEntityData _inheritedCaster;
@@ -69,6 +81,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal SummonMultiplicity Quantity;
             /// <summary>"none", "celestial" or "fiendish": the project template the cast must leave.</summary>
             internal string ProjectTemplate = "none";
+            /// <summary>Force the caster's one d4 roll to InheritedForcedDie and prove the count from it.</summary>
+            internal bool ControlDie;
         }
 
         private sealed class InheritedExpectation
@@ -82,6 +96,36 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal double DurationBase;
             internal double DurationBonus;
             internal string DurationSource;
+            /// <summary>Master Summoner: the duration is judged from the host row's structure and the context's Default rank.</summary>
+            internal SummonSpawn ClassRankHostSpawn;
+            internal InheritedRankConfigView ClassRankHostConfig;
+            internal string SummonerClass;
+            internal int SummonerClassLevel;
+        }
+
+        /// <summary>
+        /// Every RuleRollDice the exact caster triggers during the cast window. The first roll of the controlled
+        /// die is forced; every roll of that die is recorded as relevant, every other roll by the caster as other.
+        /// </summary>
+        private sealed class InheritedDieObserver : IGlobalRulebookHandler<RuleRollDice>
+        {
+            internal UnitEntityData Initiator; internal DiceType Die; internal int Value;
+            internal readonly List<InheritedDieRoll> Relevant = new List<InheritedDieRoll>();
+            internal readonly List<string> Other = new List<string>();
+            private readonly List<RuleRollDice> _overridden = new List<RuleRollDice>();
+            public void OnEventAboutToTrigger(RuleRollDice evt)
+            {
+                if (evt == null || !ReferenceEquals(evt.Initiator, Initiator) || evt.DiceFormula.Dice != Die) return;
+                if (_overridden.Count == 0) { evt.Override(Value); _overridden.Add(evt); }
+            }
+            public void OnEventDidTrigger(RuleRollDice evt)
+            {
+                if (evt == null || !ReferenceEquals(evt.Initiator, Initiator)) return;
+                int result = evt.Result;
+                if (evt.DiceFormula.Dice != Die) { Other.Add(evt.DiceFormula.Rolls + "x" + evt.DiceFormula.Dice + "=" + result); return; }
+                Relevant.Add(new InheritedDieRoll(evt.DiceFormula.Dice.ToString(), evt.DiceFormula.Rolls, result,
+                    _overridden.Any(value => ReferenceEquals(value, evt))));
+            }
         }
 
         private static void InheritedSpendPostfix(Spellbook __instance, BlueprintAbility blueprint, bool doSpend, bool __result)
@@ -176,7 +220,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             document["cases"] = cases;
             ExpandedSummoningCorrectionFixture fixture = null;
             bool cleaned = false;
-            IList<string> donorBefore = null, donorAfter = null;
+            IList<InheritedDonorWindowEntry> donorBefore = null, donorAfter = null;
+            ICollection<string> donorAdapterGuids = null;
+            var donorBeforeRecord = new JObject();
+            var donorAfterRecord = new JObject();
             var unrelated = new Dictionary<string, InheritedTemplateDonorReceipt>(StringComparer.Ordinal);
             var unrelatedDifferences = new List<string>();
             List<KeyValuePair<MethodInfo, MethodInfo>> hooks = null;
@@ -188,7 +235,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (status == null || status.Disposition != AlternateSummoningDisposition.Published)
                     throw new InvalidOperationException("Master Summoner is not published: " +
                         (status == null ? "<no status>" : status.Disposition + " " + status.Reason));
-                donorBefore = ExpandedSummoningAbilityBuilder.DonorReceiptDifferences();
+                donorAdapterGuids = InheritedOwnedAdapterGuids();
+                donorBefore = InheritedDonorWindow(donorAdapterGuids, donorBeforeRecord);
                 foreach (string symbol in new[] { "KMG.Summoning.Ability.SM.Tier9.Lemure.OneD4PlusOne",
                     "KMG.Summoning.Ability.SNA.Tier4.Wolf.OneD4PlusOne" })
                     unrelated[symbol] = ExpandedSummoningAbilityBuilder.CaptureReceipt(InheritedAbility(symbol));
@@ -216,7 +264,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new InheritedCase { Name = "evil-tier4-single-mephit", Alignment = Alignment.NeutralEvil, SpellLevel = 4, Parent = InheritedSmIV,
                         ChildSymbol = "KMG.Summoning.Ability.SM.Tier4.AirMephit.One", UnitSymbol = "KMG.Summoning.Unit.AirMephit", Quantity = SummonMultiplicity.One },
                     new InheritedCase { Name = "quantity-tier6-d4plus1-mephit", Alignment = Alignment.NeutralGood, SpellLevel = 6, Parent = InheritedSmVI,
-                        ChildSymbol = "KMG.Summoning.Ability.SM.Tier6.AirMephit.OneD4PlusOne", UnitSymbol = "KMG.Summoning.Unit.AirMephit", Quantity = SummonMultiplicity.OneD4PlusOne },
+                        ChildSymbol = "KMG.Summoning.Ability.SM.Tier6.AirMephit.OneD4PlusOne", UnitSymbol = "KMG.Summoning.Unit.AirMephit", Quantity = SummonMultiplicity.OneD4PlusOne,
+                        ControlDie = true },
                     new InheritedCase { Name = "celestial-project-template", Alignment = Alignment.NeutralGood, SpellLevel = 4, Parent = InheritedSmIV,
                         ChildSymbol = "KMG.Summoning.Ability.SM.Tier4.DireWolf.One", UnitSymbol = "KMG.Summoning.Unit.DireWolf", Quantity = SummonMultiplicity.One, ProjectTemplate = "celestial" },
                     new InheritedCase { Name = "fiendish-project-template", Alignment = Alignment.NeutralEvil, SpellLevel = 4, Parent = InheritedSmIV,
@@ -298,12 +347,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                             SummonSignatureReader.Read(value).Spawns().All(spawn => spawn.CountDice == "Zero"));
                     if (host == null) throw new InvalidOperationException("No untouched single-creature host row for Master Summoner tier IV.");
                     SummonSpawn hostSpawn = SummonSignatureReader.Read(host).Spawns().First();
-                    double hostSeconds = InheritedDurationSeconds(caster, host, hostSpawn);
+                    InheritedRankConfigView[] hostDefaults = InheritedRankConfigs(host, AbilityRankType.Default);
                     var parentData = new AbilityData(root);
                     var expectation = new InheritedExpectation { Branches = SummonSignatureReader.Read(host).Spawns().Count(),
-                        DurationBase = hostSeconds, DurationBonus = 0,
                         DurationSource = "untouched CotW host row " + host.AssetGuid + ": " + hostSpawn.DurationRate + " x " +
-                            hostSpawn.DurationDice + hostSpawn.DurationDiceCount + "+" + hostSpawn.DurationBonus };
+                            hostSpawn.DurationDice + hostSpawn.DurationDiceCount + "+" + hostSpawn.DurationBonus,
+                        ClassRankHostSpawn = hostSpawn, ClassRankHostConfig = hostDefaults.Length == 1 ? hostDefaults[0] : null,
+                        SummonerClass = summoner.AssetGuid,
+                        SummonerClassLevel = caster.Descriptor.Progression.GetClassLevel(summoner) };
                     AbilityData probe = new AbilityData(parentData, child);
                     AbilityResourceLogic logic = child.ComponentsArray.OfType<AbilityResourceLogic>().SingleOrDefault();
                     int cost = logic == null ? 0 : logic.CalculateCost(probe);
@@ -339,7 +390,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (BlueprintUnit blueprint in _playerPathBlueprints)
                     if (blueprint != null) UnityEngine.Object.Destroy(blueprint);
                 _playerPathBlueprints.Clear();
-                donorAfter = ExpandedSummoningAbilityBuilder.DonorReceiptDifferences();
+                try { donorAfter = InheritedDonorWindow(donorAdapterGuids ?? InheritedOwnedAdapterGuids(), donorAfterRecord); }
+                catch (Exception exception) { donorAfterRecord["exception"] = exception.GetType().Name + ": " + exception.Message; }
                 foreach (KeyValuePair<string, InheritedTemplateDonorReceipt> entry in unrelated)
                     foreach (string difference in InheritedTemplateDonorReceipt.Differences(entry.Value,
                         ExpandedSummoningAbilityBuilder.CaptureReceipt(InheritedAbility(entry.Key))))
@@ -353,12 +405,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "every spend/restore observer hook was installed and removed",
                 "installed=" + installed.Count + ";unpatchError=" + (document["unpatchError"] ?? "none"),
                 hooks != null && installed.Count == hooks.Count && document["unpatchError"] == null, "Harmony12 Patch/Unpatch by method"));
+            // Correction 4: the census donor validation on both sides of the cast window (48 = 46 unchanged + 2
+            // approved WithholdCompleteReplacement, 0 mutated), then every carrier's post-publication receipt
+            // compared field by field across the window.
+            var donorFailures = new List<string>();
+            donorFailures.AddRange(InheritedDonorWindowContract.Validation("before", donorBefore, 48, 2));
+            donorFailures.AddRange(InheritedDonorWindowContract.Validation("after", donorAfter, 48, 2));
+            IList<string> donorWindow = donorBefore == null || donorAfter == null ? new List<string> { "window:not-read" } :
+                InheritedDonorWindowContract.Compare(donorBefore, donorAfter);
+            donorFailures.AddRange(donorWindow.Select(value => "window:" + value));
+            document["donorWindow"] = new JObject { ["before"] = donorBeforeRecord, ["after"] = donorAfterRecord,
+                ["adapterIdentities"] = donorAdapterGuids == null ? 0 : donorAdapterGuids.Count,
+                ["receiptDifferences"] = new JArray(donorWindow), ["failures"] = new JArray(donorFailures) };
             assertions.Add(Assertion("inherited-casts-donors-unmodified",
-                "every recorded donor carrier matches its pre-clone receipt before and after all casts",
-                "before=[" + (donorBefore == null ? "<not read>" : string.Join(",", donorBefore.ToArray())) + "];after=[" +
-                    (donorAfter == null ? "<not read>" : string.Join(",", donorAfter.ToArray())) + "]",
-                donorBefore != null && donorAfter != null && donorBefore.Count == 0 && donorAfter.Count == 0,
-                "ExpandedSummoningAbilityBuilder donor receipts"));
+                "48 donor carriers (46 unchanged + 2 approved WithholdCompleteReplacement, 0 mutated) before and after all casts, " +
+                    "and every carrier's post-publication receipt unchanged across the casts",
+                "before=" + InheritedDonorCounts(donorBefore) + ";after=" + InheritedDonorCounts(donorAfter) +
+                    ";receiptDifferences=[" + string.Join(",", donorWindow.ToArray()) + "];failures=" + donorFailures.Count,
+                donorFailures.Count == 0, "census donor validation and post-publication receipts"));
             assertions.Add(Assertion("inherited-casts-unrelated-rows-unchanged",
                 "two published rows that no case casts are unchanged by the casts",
                 "rows=" + unrelated.Count + ";differences=[" + string.Join(",", unrelatedDifferences.ToArray()) + "]",
@@ -382,31 +446,134 @@ namespace KingmakerGunslinger.RuntimeTesting
             return (BlueprintAbility)value;
         }
 
-        private static int InheritedRank(UnitEntityData caster, BlueprintAbility ability, string rank)
+        private static readonly BindingFlags InheritedPrivate = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
+
+        private static object InheritedField(object owner, string name)
         {
-            AbilityRankType type = (AbilityRankType)Enum.Parse(typeof(AbilityRankType), rank);
-            var context = new MechanicsContext(caster, caster.Descriptor, ability, null, new TargetWrapper(caster));
-            return context[type];
+            FieldInfo field = owner.GetType().GetField(name, InheritedPrivate);
+            if (field == null) throw new MissingFieldException(owner.GetType().FullName, name);
+            return field.GetValue(owner);
         }
 
-        private static int InheritedValue(UnitEntityData caster, BlueprintAbility ability, SummonValue value)
+        /// <summary>The fields of every ContextRankConfig of one rank type on an ability, read from the engine.</summary>
+        private static InheritedRankConfigView[] InheritedRankConfigs(BlueprintAbility ability, AbilityRankType type)
         {
-            if (value == null) return 0;
-            if (value.Kind == "Simple") return value.Value;
-            if (value.Kind == "Rank") return InheritedRank(caster, ability, value.Rank);
-            throw new InvalidOperationException("Unsupported value kind " + value.Kind);
+            return (ability.ComponentsArray ?? new BlueprintComponent[0]).OfType<ContextRankConfig>()
+                .Where(config => config.Type == type).Select(config =>
+                {
+                    var feature = InheritedField(config, "m_Feature") as BlueprintScriptableObject;
+                    var classes = InheritedField(config, "m_Class") as BlueprintCharacterClass[];
+                    return new InheritedRankConfigView {
+                        Type = config.Type.ToString(),
+                        BaseValueType = InheritedField(config, "m_BaseValueType").ToString(),
+                        Progression = InheritedField(config, "m_Progression").ToString(),
+                        Feature = feature == null ? null : feature.AssetGuid,
+                        Classes = (classes ?? new BlueprintCharacterClass[0]).Select(value => value == null ? "<null>" : value.AssetGuid).ToArray(),
+                        ExceptClasses = (bool)InheritedField(config, "m_ExceptClasses"),
+                        StartLevel = (int)InheritedField(config, "m_StartLevel"), StepLevel = (int)InheritedField(config, "m_StepLevel"),
+                        UseMin = (bool)InheritedField(config, "m_UseMin"), Min = (int)InheritedField(config, "m_Min"),
+                        UseMax = (bool)InheritedField(config, "m_UseMax"), Max = (int)InheritedField(config, "m_Max") };
+                }).ToArray();
         }
 
-        /// <summary>Duration in seconds stated by a spawn row's own ContextDurationValue, evaluated for this caster.</summary>
-        private static double InheritedDurationSeconds(UnitEntityData caster, BlueprintAbility ability, SummonSpawn spawn)
+        private static JObject InheritedRankConfigRecord(InheritedRankConfigView view)
         {
-            if (spawn.DurationDice != "Zero")
-                throw new InvalidOperationException("A random duration cannot be an exact expectation: " + spawn.DurationDice);
-            double rate = spawn.DurationRate == "Rounds" ? 6d : spawn.DurationRate == "Minutes" ? 60d :
-                spawn.DurationRate == "TenMinutes" ? 600d : spawn.DurationRate == "Hours" ? 3600d :
-                spawn.DurationRate == "Days" ? 86400d : -1d;
-            if (rate < 0) throw new InvalidOperationException("Unknown duration rate " + spawn.DurationRate);
-            return rate * InheritedValue(caster, ability, spawn.DurationBonus);
+            return view == null ? null : new JObject { ["type"] = view.Type, ["baseValueType"] = view.BaseValueType,
+                ["progression"] = view.Progression, ["feature"] = view.Feature, ["classes"] = new JArray(view.Classes),
+                ["exceptClasses"] = view.ExceptClasses, ["startLevel"] = view.StartLevel, ["stepLevel"] = view.StepLevel,
+                ["useMin"] = view.UseMin, ["min"] = view.Min, ["useMax"] = view.UseMax, ["max"] = view.Max };
+        }
+
+        /// <summary>The exact execution context the command's own AbilityData creates for its own target, recalculated.</summary>
+        private static JObject InheritedContextRecord(AbilityData data, MechanicsContext context, bool recalculated)
+        {
+            var chain = new JArray();
+            for (AbilityData link = data.ConvertedFrom; link != null; link = link.ConvertedFrom)
+                chain.Add(link.Blueprint.AssetGuid + ":" + link.Blueprint.name);
+            var ranks = new JObject();
+            foreach (AbilityRankType type in new[] { AbilityRankType.Default, AbilityRankType.ProjectilesCount })
+                ranks[type.ToString()] = context[type];
+            return new JObject {
+                ["associatedBlueprint"] = context.AssociatedBlueprint == null ? null :
+                    context.AssociatedBlueprint.AssetGuid + ":" + context.AssociatedBlueprint.name,
+                ["abilityData"] = data.Blueprint.AssetGuid + ":" + data.Blueprint.name,
+                ["convertedFrom"] = chain,
+                ["spellbook"] = data.Spellbook == null ? null : data.Spellbook.Blueprint.AssetGuid,
+                ["fact"] = data.Fact == null ? null : data.Fact.Blueprint.AssetGuid,
+                ["caster"] = context.MaybeCaster == null ? null : context.MaybeCaster.UniqueId,
+                ["contextType"] = context.GetType().Name,
+                ["recalculated"] = recalculated,
+                ["casterLevel"] = context.Params.CasterLevel,
+                ["rankBonus"] = context.Params.RankBonus,
+                ["spellLevel"] = context.Params.SpellLevel,
+                ["ranks"] = ranks };
+        }
+
+        /// <summary>Every live, published KMG adapter ability identity, for the census's owned-row classification.</summary>
+        private static ICollection<string> InheritedOwnedAdapterGuids()
+        {
+            var guids = new HashSet<string>(StringComparer.Ordinal);
+            foreach (AlternateSummoningFamilySpec family in AlternateSummoningSourceCatalog.All)
+                foreach (BlueprintAbility owned in AlternateSummoningCoordinator.OwnedIdentities(family.Key).Values)
+                    if (owned != null) guids.Add(owned.AssetGuid);
+            return guids;
+        }
+
+        /// <summary>
+        /// The census donor validation over every recorded carrier, and each carrier's current post-publication receipt.
+        /// </summary>
+        private static IList<InheritedDonorWindowEntry> InheritedDonorWindow(ICollection<string> adapterGuids, JObject record)
+        {
+            var entries = new List<InheritedDonorWindowEntry>();
+            var dispositions = new JObject();
+            var transitions = new JArray();
+            foreach (ExpandedSummoningAbilityBuilder.DonorRecord carrier in ExpandedSummoningAbilityBuilder.RecordedCarriers()
+                .OrderBy(value => value.Ability.AssetGuid, StringComparer.Ordinal))
+            {
+                InheritedTierOneObservation view = CensusDonorView(carrier, adapterGuids);
+                var failures = new List<string>();
+                string disposition = InheritedTierOnePublicationContract.Judge(view, failures);
+                bool withheld = view.Expectation != null && view.Expectation.Disposition == InheritedPreservedExposure.WithholdCompleteReplacement;
+                entries.Add(new InheritedDonorWindowEntry(carrier.Ability.AssetGuid, disposition, withheld,
+                    ExpandedSummoningAbilityBuilder.CaptureReceipt(carrier.Ability), failures));
+                dispositions[carrier.Ability.AssetGuid] = disposition;
+                if (disposition == "approved-tier-one-publication")
+                    transitions.Add(new JObject {
+                        ["parent"] = carrier.Ability.AssetGuid + ":" + carrier.Ability.name,
+                        ["expectedExposure"] = view.Expectation == null ? null : view.Expectation.Disposition.ToString(),
+                        ["replacementCoverageReason"] = view.Expectation == null ? null : view.Expectation.Reason,
+                        ["preservedInMenuByGuid"] = view.MenuChildren.Count(row => row.Guid == view.PreservedGuid),
+                        ["preservedInMenuByReference"] = view.MenuChildren.Count(row => ReferenceEquals(row.Reference, view.PreservedReference)),
+                        ["requiredReplacements"] = new JArray((view.Expectation == null ? new List<InheritedRequiredReplacement>() :
+                            view.Expectation.Required).Select(row =>
+                            {
+                                object reference;
+                                view.RequiredReplacementReferences.TryGetValue(row.Symbol, out reference);
+                                return new JObject { ["symbol"] = row.Symbol, ["guid"] = row.Guid,
+                                    ["inMenuByGuid"] = view.MenuChildren.Count(menuRow => menuRow.Guid == row.Guid),
+                                    ["inMenuByReference"] = view.MenuChildren.Count(menuRow => reference != null &&
+                                        ReferenceEquals(menuRow.Reference, reference)) };
+                            })),
+                        ["menuChildren"] = view.MenuChildren.Count,
+                        ["unexpectedOwnedMenuRows"] = view.MenuChildren.Count(row =>
+                            InheritedTierOnePublicationContract.Classify(view, row) == "unexpected-owned"),
+                        ["preCloneReceiptDifferences"] = new JArray(view.ReceiptDifferences),
+                        ["differencesExcludingMenu"] = new JArray(view.DifferencesExcludingMenu ?? new List<string>()) });
+            }
+            record["counts"] = InheritedDonorCounts(entries);
+            record["dispositions"] = dispositions;
+            record["approvedTransitions"] = transitions;
+            record["findings"] = new JArray(entries.SelectMany(entry => entry.Findings.Select(value => entry.Guid + ":" + value)));
+            return entries;
+        }
+
+        private static string InheritedDonorCounts(IList<InheritedDonorWindowEntry> entries)
+        {
+            if (entries == null) return "<not read>";
+            return "carriers=" + entries.Count + ",unchanged=" + entries.Count(value => value.Disposition == "unchanged") +
+                ",approved=" + entries.Count(value => value.Disposition == "approved-tier-one-publication") +
+                ",withheld=" + entries.Count(value => value.Disposition == "approved-tier-one-publication" && value.Withheld) +
+                ",mutated=" + entries.Count(value => value.Disposition != "unchanged" && value.Disposition != "approved-tier-one-publication");
         }
 
         private void InheritedTemplateSection(List<RuntimeTestAssertion> assertions, JArray cases, string name,
@@ -436,10 +603,37 @@ namespace KingmakerGunslinger.RuntimeTesting
             string unitGuid = expectedUnit == null ? "<unresolved>" : expectedUnit.AssetGuid;
             record["expectedUnit"] = expectedUnit == null ? "<unresolved>" : unitGuid + ":" + expectedUnit.name;
 
+            // Correction 1: the exact AbilityData the command uses, one TargetWrapper, and the execution context that
+            // AbilityData creates for that target, recalculated. Ranks are read only from that context.
+            AbilityData data = create();
+            var target = new TargetWrapper(caster.Position + Vector3.forward * 2f);
+            MechanicsContext context = data.CreateExecutionContext(target);
+            context.Recalculate();
+            bool recalculated = context.MaybeCaster != null && ReferenceEquals(context.MaybeCaster, caster);
+            record["executionContext"] = InheritedContextRecord(data, context, recalculated);
+            if (!recalculated) failures.Add("context:not-recalculated-for-this-caster");
+
             // Quantity: the exact graph expression, read before the cast.
             SummonSpawn[] spawns = SummonSignatureReader.Read(child).Spawns().ToArray();
             int rankBonus = spawns.Length > 0 && spawns[0].CountBonus != null && spawns[0].CountBonus.Kind == "Rank"
-                ? InheritedRank(caster, child, spawns[0].CountBonus.Rank) : 0;
+                ? context[(AbilityRankType)Enum.Parse(typeof(AbilityRankType), spawns[0].CountBonus.Rank)] : 0;
+            InheritedDieObserver die = null;
+            if (item.ControlDie)
+            {
+                // Correction 2: the d4+1 path, controlled. No Superior Summoning; the exact ProjectilesCount config.
+                var superior = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(BlueprintBootstrap.Library,
+                    InheritedSuperiorSummoning, "Superior Summoning");
+                bool holdsSuperior = caster.Descriptor.HasFact(superior) || caster.Descriptor.Progression.Features.GetRank(superior) != 0;
+                if (holdsSuperior) failures.Add("caster-holds-superior-summoning");
+                InheritedRankConfigView[] projectiles = InheritedRankConfigs(child, AbilityRankType.ProjectilesCount);
+                if (projectiles.Length != 1) failures.Add("projectiles-count-configs:" + projectiles.Length);
+                record["controlledQuantity"] = new JObject { ["superiorSummoning"] = InheritedSuperiorSummoning,
+                    ["casterHoldsSuperiorSummoning"] = holdsSuperior,
+                    ["projectilesCountConfig"] = projectiles.Length == 1 ? InheritedRankConfigRecord(projectiles[0]) : null,
+                    ["recalculatedProjectilesCount"] = context[AbilityRankType.ProjectilesCount],
+                    ["expectedProjectilesCount"] = InheritedD4PlusOneRank, ["forcedDie"] = InheritedForcedDie };
+                die = new InheritedDieObserver { Initiator = caster, Die = DiceType.D4, Value = InheritedForcedDie };
+            }
             int minimum, maximum;
             IList<string> expression = InheritedQuantityContract.Expression(item.Quantity, unitGuid,
                 spawns.Select(spawn => new InheritedSpawnExpression(spawn.Unit, spawn.CountDice,
@@ -498,7 +692,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             object[] before = SnapshotReferences(fixture.SceneEntities);
             ExpandedSummoningRuleCapture.Clear();
             ExpandedSummoningRuleDurationCapture.Clear();
-            AbilityData data = create();
             bool converted = data.ConvertedFrom != null && ReferenceEquals(data.ConvertedFrom.Blueprint, parent) &&
                 ReferenceEquals(data.Blueprint, child) && parent.HasVariant(child);
             record["sourceIsVariantOfParent"] = converted;
@@ -512,11 +705,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             _inheritedEvents = events;
             string result = "NotStarted";
             bool started = false, acted = false;
+            if (die != null) EventBus.Subscribe(die);
             try
             {
                 UnitUseAbility command;
                 var parameters = new Kingmaker.AreaLogic.Cutscenes.CutsceneParametersContext();
-                using (parameters.Data) command = new UnitUseAbility(data, new TargetWrapper(caster.Position + Vector3.forward * 2f));
+                using (parameters.Data) command = new UnitUseAbility(data, target);
                 record["available"] = data.IsAvailable;
                 if (!data.IsAvailable || !command.CanStart) failures.Add("the cast was not available");
                 else
@@ -549,6 +743,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 _inheritedEvents = null;
                 _inheritedCaster = null;
+                if (die != null) EventBus.Unsubscribe(die);
             }
             Game.Instance.EntityCreator.Tick();
             Dictionary<string, int> sourcesAfter = InheritedSources(caster);
@@ -586,11 +781,50 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (result != "Success") failures.Add("result " + result);
                 bool[] live = summoned.Select(unit => unit != null && !unit.Destroyed && unit.IsInState &&
                     ContainsReference(fixture.SceneEntities, unit)).ToArray();
-                failures.AddRange(InheritedQuantityContract.Output(minimum, maximum, unitGuid,
-                    summoned.Select(unit => unit == null ? "<null>" : unit.Blueprint.AssetGuid).ToList(),
-                    summoned.Select(unit => unit == null ? "<null>" : unit.UniqueId).ToList(), live).Select(value => "output:" + value));
-                failures.AddRange(InheritedDurationContract.Judge(summoned.Select(unit => unit == null ? "<null>" : unit.UniqueId).ToList(),
-                    durations, expected.DurationBase, expected.DurationBonus).Select(value => "duration:" + value));
+                List<string> unitBlueprints = summoned.Select(unit => unit == null ? "<null>" : unit.Blueprint.AssetGuid).ToList();
+                List<string> unitIds = summoned.Select(unit => unit == null ? "<null>" : unit.UniqueId).ToList();
+                failures.AddRange(InheritedQuantityContract.Output(minimum, maximum, unitGuid, unitBlueprints, unitIds, live)
+                    .Select(value => "output:" + value));
+                if (die != null)
+                {
+                    InheritedControlledQuantityResult controlled = InheritedControlledQuantityContract.Judge(recalculated,
+                        InheritedD4PlusOneRank, context[AbilityRankType.ProjectilesCount], "D4", InheritedForcedDie, die.Relevant,
+                        unitGuid, unitBlueprints, unitIds, live);
+                    var controlledRecord = (JObject)record["controlledQuantity"];
+                    controlledRecord["relevantRolls"] = new JArray(die.Relevant.Select(roll => new JObject { ["die"] = roll.Die,
+                        ["rolls"] = roll.Rolls, ["result"] = roll.Result, ["overridden"] = roll.Overridden }));
+                    controlledRecord["otherCasterRolls"] = new JArray(die.Other);
+                    controlledRecord["expectedCount"] = controlled.ExpectedCount;
+                    controlledRecord["actualCount"] = summoned.Length;
+                    controlledRecord["distinctLiveUnits"] = unitIds.Distinct(StringComparer.Ordinal).Count();
+                    controlledRecord["verdict"] = controlled.Verdict.ToString();
+                    failures.AddRange(controlled.Failures.Select(value => "controlled-quantity:" + value));
+                }
+                if (expected.SummonerClass != null)
+                {
+                    int expectedRank; double expectedSeconds;
+                    SummonSpawn host = expected.ClassRankHostSpawn;
+                    failures.AddRange(InheritedClassRankDurationContract.Judge(host.DurationRate, host.DurationDice,
+                        host.DurationBonus == null ? null : host.DurationBonus.Kind, host.DurationBonus == null ? null : host.DurationBonus.Rank,
+                        expected.ClassRankHostConfig, expected.SummonerClass, expected.SummonerClassLevel, InheritedMasterSummonerLevel,
+                        recalculated, context[AbilityRankType.Default], unitIds, durations, out expectedRank, out expectedSeconds)
+                        .Select(value => "duration:" + value));
+                    InheritedRankConfigView[] childDefaults = InheritedRankConfigs(child, AbilityRankType.Default);
+                    record["classRankDuration"] = new JObject {
+                        ["structural"] = new JObject { ["hostRate"] = host.DurationRate, ["hostDice"] = host.DurationDice,
+                            ["hostBonus"] = host.DurationBonus == null ? null : host.DurationBonus.Kind + ":" + host.DurationBonus.Rank,
+                            ["hostDefaultRankConfig"] = InheritedRankConfigRecord(expected.ClassRankHostConfig),
+                            ["summonerClass"] = expected.SummonerClass, ["summonerClassLevel"] = expected.SummonerClassLevel,
+                            ["requiredClassLevel"] = InheritedMasterSummonerLevel,
+                            ["expectedRank"] = expectedRank, ["expectedSeconds"] = expectedSeconds },
+                        ["native"] = new JObject { ["childDefaultRankConfigs"] = new JArray(childDefaults.Select(InheritedRankConfigRecord)),
+                            ["recalculatedDefaultRank"] = context[AbilityRankType.Default] } };
+                    record["expectedDuration"] = new JObject { ["base"] = expectedSeconds, ["bonus"] = 0,
+                        ["source"] = expected.DurationSource + "; Default rank by Summoner class level " + expected.SummonerClassLevel };
+                }
+                else
+                    failures.AddRange(InheritedDurationContract.Judge(unitIds, durations, expected.DurationBase, expected.DurationBonus)
+                        .Select(value => "duration:" + value));
                 InheritedObserveUnits(summoned, item, record, failures, nativeIds, expectTemplate, expectSmite);
             }
             foreach (UnitEntityData unit in summoned) CleanupExpandedSummoningUnit(unit);
