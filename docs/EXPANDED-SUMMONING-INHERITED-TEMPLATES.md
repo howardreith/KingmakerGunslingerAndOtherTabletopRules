@@ -373,6 +373,7 @@ journal. The cast session was not attempted.
 | Built-but-unexecuted candidate (second review) | `0af2b30bd4c7`, package `336b88e0…c0f8`, DLL `6c44072b…390c`, MVID `63c5f429-…1daa0` | built; never loaded by the game; superseded by the third review's correction |
 | Frozen candidate, first census | `0d6006ac03a2`, package `f1fdd873…9dbd`, DLL `0575b4fc…7a45`, MVID `5e5ff7e5-…b8f7` | census session `20261118T215938Z-owner-0.33.0-inherited-template-census` **FAIL**: 170 repeated donor-receipt findings, representing two unique tier-one parent transitions; cast session not run |
 | Tier-one contract candidate | `67704e6459ce`, package `ccfbf1d4…b961`, DLL `e30b2bd7…9d8a`, MVID `5151ff94-…b595` | census session `20261118T225322Z-owner-0.33.0-inherited-template-census` **FAIL**: both tier-one parents failed only `preserved-child-in-menu:0`; cast session not run |
+| Withhold-aware candidate | `540556bbf004`, package `59b24c5a…44c5`, DLL `14e32cb0…0d69`, MVID `caaba169-…987f` | census session `20261119T192806Z-owner-0.33.0-inherited-template-census` **PASS**; cast session `20261119T193054Z-owner-0.33.0-inherited-template-casts` **FAIL**, 3 of 15 assertions (observer rank reader, donor assertion); unresolved diagnostic |
 
 ## Second review corrections (third checkpoint)
 
@@ -695,10 +696,102 @@ replacement rule keeps it, and absent (but registered, and proved semantically) 
 would be evaluated independently, from the catalogs rather than from the publisher's record. That changes the owner's
 condition 3, so it was not made. The cast session was not run.
 
+## Withheld preserved child: census PASS, first cast session FAIL
+
+**Owner decision (after session `20261118T225322Z`).** Condition 3 was revised: the preserved tier-one child is always
+registered and proved semantically, and its live-menu exposure follows a replacement expectation derived independently
+from the catalogs (`InheritedTierOneReplacementContract`):
+- complete exact replacement coverage: withheld;
+- incomplete or no coverage: exactly once;
+- ambiguous or malformed coverage: fail.
+
+Menu rows are classified as preserved, expected KMG-owned, unexpected KMG-owned or foreign, and any unexpected owned row
+fails. Implemented in `540556bbf0`.
+
+**Candidate**, built from `540556bbf004f539b2c67f0de46a576b8e550388`:
+- package `59b24c5a7400a11f151100b1dceba53fa793c5188edc054bd197091c0b3744c5`;
+- DLL `14e32cb0976cf6372c8d9223cc1aeb1d66efe28bfaaf2d18fe08adc80e5a0d69`;
+- MVID `caaba169-80f8-4f0c-b0d7-32fc076a987f`, as loaded in game;
+- harness `c47e7f14…b089`;
+- build 16:03:03 to 16:11:04 UTC, 894 of 894 selected.
+
+Both sessions below ran this unchanged package with UMM 0.33.0, Call of the Wild 1.14.4c-2.1 and game 2.1.7b.
+Steam Cloud stayed "Sync Disabled".
+
+The first census launch on this package (16:11:23 UTC) was refused by the session preflight: another lab held a
+runtime lock on the shared installation. No session directory was created and nothing was staged. That lock was
+released before the run below.
+
+**Session `20261119T192806Z-owner-0.33.0-inherited-template-census`: PASS.**
+- Run 19:28:06–19:30:12 UTC, 111 s.
+- 5,769 of 5,769 observations (1,826 canonical, 3,943 alternate), none unresolved.
+- Branches: 2,262 canonical, 5,723 alternate; 1,744 abilities with more than one branch.
+- Dispositions:
+  - RemoveInherited 405;
+  - PreserveDeliberateTemplate 2,233;
+  - NoInheritedTemplate 1,000;
+  - OutsideSummonMonster 2,131.
+- Quantity removals: 58.
+- All seven alternate families exact (600, 600, 600, 600, 588, 588, 367), zero child-set findings.
+- 405 justified redundancies listed; zero findings.
+- Donor carriers: 48. Of these, 46 are unchanged and 2 are approved tier-one transitions, both
+  `WithholdCompleteReplacement`. 0 mutated, 0 donor findings.
+- `SummonMonsterISingle` (`8fd74edd…`):
+  - preserved child `KMG.Summoning.Native.SM.Tier1` (`6c7915c9…`): 0 in the menu by GUID, 0 by reference;
+  - required replacement `KMG.Summoning.Ability.SM.Tier1.Dog.One` (`d5915038…`): once by GUID and once as the exact
+    registered object;
+  - 7 menu rows, all expected KMG rows: 0 foreign, 0 unexpected owned;
+  - 29 original components kept in order; semantic proof "equal-and-independent"; publication record consistent.
+- `SummonNaturesAllyI` (`c6147854…`):
+  - preserved child `b5b7cf07…`: 0 in the menu by GUID, 0 by reference;
+  - required replacement `KMG.Summoning.NativeOption.SNA.Tier1.Mite.One` (`a274c1f9…`): once by GUID and once by
+    reference;
+  - 9 menu rows, all expected KMG rows;
+  - 16 original components kept in order; same proofs as above.
+- Saves (95), installation and registry unchanged or restored.
+
+**Session `20261119T193054Z-owner-0.33.0-inherited-template-casts`: FAIL, 3 of 15 assertions.**
+- Run 19:30:54–19:33:09 UTC, 121 s (109.8 s in game).
+- Saves (95), installation and registry unchanged or restored.
+
+**The seven cases that passed**, each with source, exactly one debit, quantity, unit identities, native and project
+templates, smites, duration, innate facts, summon marker and no lingering unit:
+- `good-tier4-single-mephit` and `evil-tier4-single-mephit`: SM IV Air Mephit, one unit; one level-4 spontaneous slot
+  spent; 120 s; no native or project template; 12 innate facts.
+- `celestial-project-template`: SM IV Dire Wolf for a good caster; the celestial template `c3c53de0…` and smite
+  `83718bdd…` only; 120 s.
+- `fiendish-project-template`: the same for an evil caster; the fiendish template `031bc1b9…` and smite `0e5197ca…` only.
+- `tier7-untemplated-no-inherited`: SM VII Greater Air Elemental; one level-7 slot; 120 s; no template.
+- `natures-ally-preservation`: SNA II Wolf; one level-2 slot; 120 s; no template.
+- `cancel-before-commit`: interrupted before commit; no debit and no unit.
+
+**Assertions that also passed:** all nine cases observed; the four hooks installed and removed; two unrelated rows
+unchanged; cleanup complete; loaded version 0.0.191; native profile restored.
+
+**The three failures:**
+1. `quantity-tier6-d4plus1-mephit`: `expression:branch0:wrong-bonus-value:0/1`.
+   - The observer read `ProjectilesCount` as 0 and expected 1.
+   - Three Air Mephits were summoned and the debit and duration held. Three units fit both d4 and d4+1, so the count
+     decides nothing.
+2. `master-summoner-tier4-mephit`: the duration observation was 420 + 0 s against an expected 0 + 0.
+   - The expectation is the untouched Call of the Wild host row (`Minutes × Rank(Default)`), and the observer read
+     that rank as 0.
+3. `inherited-casts-donors-unmodified` required zero pre-publication receipt differences before and after the casts.
+   - It saw `components-array` and `components` on `8fd74edd…` and `c6147854…`, which are the two approved tier-one
+     transitions the census accepts.
+   - Before and after were identical.
+
+**Classification:** unresolved diagnostic evidence. Findings 1 and 2 share the observer's rank reader, which builds a
+bare `MechanicsContext` and reads it without recalculation. Finding 3 is an assertion that was not updated for the
+approved transitions. Whether the d4+1 quantity is correct in play is not established. The cast session has not been
+rerun.
+
 ## Remaining (S5 T1 is not complete)
 
-1. The owner decides condition 3 for a withheld preserved tier-one child.
-2. Then implement, rebuild, rerun the census, and run the cast session on that unchanged package.
+1. Bounded observer repair (authorized): read ranks from the exact recalculated execution context; prove the d4+1 path
+   with a controlled d4 roll; derive the Master Summoner duration from the context's Default rank; compare donor
+   receipts across the cast window, accepting the two approved transitions.
+2. Then rebuild, rerun the census, and run the cast session on that unchanged package.
 3. Then the review records.
 4. Release obligation: the next release validator must account for the removed creature list. The v0.0.191 historical
    validator is unchanged.

@@ -338,8 +338,14 @@
   abilities across the seven families, but failed on 170 donor-receipt findings. These are diagnostic: the established
   tier-one menu publication rewrites the two native tier-one parents after cloning. With the owner's tier-one donor
   contract (`67704e6459`), the rerun (session `20261118T225322Z`) failed only one condition of that contract, "preserved
-  child exactly once in the menu". The publisher withholds that child by design when its lineage is replaced. The cast
-  session was not run, and nothing is claimed fixed in play yet.
+  child exactly once in the menu". The publisher withholds that child by design when its lineage is replaced. With
+  condition 3 revised by the owner (withhold on complete replacement coverage, derived independently), the census on
+  candidate `540556bbf004` (session `20261119T192806Z`) passed. The first cast session on the same package (session
+  `20261119T193054Z`) failed 3 of 15 assertions, while seven of its nine cases passed. Two failures came from the
+  observer reading ranks from an unrecalculated context: a tier-VI d4+1 mephit's bonus read 0, and a Master Summoner
+  duration expectation read 0 against 420 s observed. The third was a donor assertion not updated for the two approved
+  tier-one transitions. Whether the d4+1 quantity is correct in play is not yet established, and nothing is claimed
+  fixed in play yet.
 - Two feature-module publication self-checks fail on a heavily modded installation (v0.0.186):
   `feature-module-expanded-summoning-publication-gate` reports `unclassified=38` against a hard-coded
   expectation of 0, and `feature-module-brown-fur-publication-gate` fails alongside it. A matched
