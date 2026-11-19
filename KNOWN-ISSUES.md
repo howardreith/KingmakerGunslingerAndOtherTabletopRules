@@ -351,6 +351,20 @@
   only. S5 T1 is accepted and closed for its reviewed development scope (principal review, 2026-11-19; qualified
   product `8ceb08ccef29`). Acceptance is not merge or release: PR #186 stays a draft, so released versions still carry
   this issue.
+- Controller Elementals entry with nothing gathered (v0.0.189 disclosure, DEF-06). On a controller, the spell selector
+  can offer an Elementals entry even when no original Summon Elemental spell was folded into it, as the v0.0.189 release
+  notes disclose. S5 T2 / DEF-06 (`codex/def06-controller-launcher-consolidation`, draft PR #187; not merged, not
+  released) publishes the controller entry only after an actual consolidation of an exact original row, at the first
+  removed position, and otherwise leaves the native rows untouched. On candidate `f91a80144707`, session
+  `20261119T213730Z` observed both lanes in the actual console UI: no entry without consolidation, and one entry in
+  place with consolidation. It also observed one exact debit on use, and refusals with no spend for stale and exhausted
+  sources (`docs/EXPANDED-SUMMONING-CONTROLLER-LAUNCHER-CONSOLIDATION.md`). Released versions still carry the issue.
+- Console learning: the hidden-option learning list still lists one original Summon Elemental. In the controller
+  learning review, with the "show original Summon Elemental spells" option off, the seam-level learning list for a
+  Wizard still contained one original Summon Elemental. The revealed list is correct. This reproduces identically on
+  the accepted S5 T1 product (session `20261119T213956Z`) and on the S5 T2 candidate (session `20261119T213730Z`), so
+  S5 T2 did not cause it. Its mechanism is not traced. It may be a defect in the hidden learning seam, or a stale check
+  after the owner's 2026-11-11 and 2026-11-12 withdrawals of the learning disclosure. It is not repaired.
 - Two feature-module publication self-checks fail on a heavily modded installation (v0.0.186):
   `feature-module-expanded-summoning-publication-gate` reports `unclassified=38` against a hard-coded
   expectation of 0, and `feature-module-brown-fur-publication-gate` fails alongside it. A matched
