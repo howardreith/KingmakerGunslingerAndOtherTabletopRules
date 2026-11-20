@@ -249,6 +249,7 @@
     <Compile Include="SummonAttackGesturePolicyTests.cs" />
     <Compile Include="Cleanup2ElementalPresentationTests.cs" />
     <Compile Include="Cleanup2ElementalSourceChooserTests.cs" />
+    <Compile Include="Cleanup2ElementalConsoleLauncherTests.cs" />
     <Compile Include="Cleanup2ElementalLauncherStagingTests.cs" />
     <Compile Include="Cleanup2ElementalChooserLifecycleTests.cs" />
     <Compile Include="Cleanup2DruidConversionTests.cs" />

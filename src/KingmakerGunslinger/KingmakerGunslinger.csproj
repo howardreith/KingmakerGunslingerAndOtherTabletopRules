@@ -1602,6 +1602,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ElementalPresentation.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ConsoleScene.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ElementalConsole.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ConsoleConsolidation.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ConsoleLearning.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2DesktopLearning.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ElementalSources.cs" />

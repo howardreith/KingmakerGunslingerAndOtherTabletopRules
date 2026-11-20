@@ -1,0 +1,21 @@
+{
+  "name": "def06-console",
+  "description": "S5 T2 / DEF-06 controller Elementals launcher. It runs the existing save-free cleanup2 elementals-console review in the actual native console UI (controller mode selected natively before the world exists) with only the candidate staged. Lane A: a level-20 Wizard's console spell selector whose elemental sources come only from a prepared Summon Monster II, beside Summon Nature's Ally II and Magic Missile, stays exactly native (no Elementals entry, no context, no disposed row) and closes natively with no spend. Lane B: after the six original standalone Summon Elemental spells are prepared, one launcher takes the first removed row's place with every other row exact; rank, element and source navigation, cancel, execute=false pin, execute=true dispatch of the exact source with one debit, stale-node and exhausted-source refusals, focus, pause, selection and input-layer ownership, and no leaked selector or context. No save is loaded. The short session name and label keep every evidence path under the Windows MAX_PATH limit (the first run, 20261119T212359Z, exceeded it).",
+  "ownerMods": [],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "console",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-expanded-summoning-cleanup2-native-review",
+        "parameters": {
+          "reviewPhase": "elementals-console"
+        },
+        "timeoutSeconds": 900
+      }
+    }
+  ]
+}

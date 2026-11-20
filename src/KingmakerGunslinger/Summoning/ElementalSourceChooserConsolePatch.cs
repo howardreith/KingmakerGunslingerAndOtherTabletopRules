@@ -59,6 +59,8 @@ namespace KingmakerGunslinger.Summoning
         private static readonly ConditionalWeakTable<ActionBarSelectorVm,ElementalConsoleContext> Contexts=
             new ConditionalWeakTable<ActionBarSelectorVm,ElementalConsoleContext>();
         internal static string Outcome="not-used";
+        /// <summary>The last controller spell-selector collection decision (admission refusal or commit outcome).</summary>
+        internal static string LastCollection="not-collected";
         internal static bool IsBound(ActionBarSelectorView view,ActionBarSelectorVm vm)
         {return view!=null && view.gameObject.activeInHierarchy && BoundModel!=null && InputLayer!=null &&
             ReferenceEquals(BoundModel.GetValue(view,null),vm) && InputLayer.GetValue(view)!=null;}
@@ -71,36 +73,45 @@ namespace KingmakerGunslinger.Summoning
             if(unit==null || !unit.IsDirectlyControllable)return;
             var temporary=new ElementalChooserSession {Unit=unit};
             var original=vm.ItemVms.ToArray();var removed=new List<ActionBarSelectorItemVm>();
-            var retained=new List<ActionBarSelectorItemVm>();int first=-1;
+            // The one shared source policy: Collect records every elemental source
+            // (standalone rows and Summon Monster/Nature's Ally rows alike) and
+            // returns true only for a complete original standalone elemental row.
             foreach(var item in original)
             {
                 bool consolidate=false;
                 try{consolidate=ElementalSourceChooserRuntime.Collect(temporary,item.MechanicActionBarSlot,0);}
                 catch(Exception error){temporary.Sources.RemoveAll(value=>ReferenceEquals(value.Mechanism,item.MechanicActionBarSlot));
-                    Outcome="preserve-console-source-inspection:"+error.GetType().Name;}
-                if(consolidate){if(first<0)first=retained.Count;removed.Add(item);}
-                else retained.Add(item);
+                    temporary.Exceptions.Add("preserve-console-source-inspection:"+error.GetType().Name);}
+                if(consolidate)removed.Add(item);
             }
-            if(temporary.Sources.Count==0)return;
-            var context=new ElementalConsoleContext {Owner=owner,CurrentVm=vm,Unit=unit,Books=unit.Descriptor.Spellbooks.ToArray()};
-            context.Sources.AddRange(temporary.Sources);
-            var launch=Node(context,"Elementals",0,null,null);
-            var itemVm=new ActionBarSelectorItemVm(launch,vm.IsPossibleActive);
-            retained.Insert(first<0?retained.Count:first,itemVm);
-            if(!vm.ItemVms.SequenceEqual(original) || !ReferenceEquals(owner.Unit.Value,unit))
-            {itemVm.Dispose();Outcome="preserve-foreign-console-collection";return;}
-            Contexts.Add(vm,context);
-            try{vm.ItemVms.Clear();vm.ItemVms.AddRange(retained);}
-            catch
+            // S5 T2 / DEF-06: a launcher only for an actual consolidation of an
+            // exact original row of this selector, at its first removed position.
+            // Otherwise the native rows, their order and their VMs stay exactly
+            // as CollectSpells built them: no launcher, no context, no disposal.
+            var books=unit.Descriptor.Spellbooks.ToArray();
+            ElementalConsoleContext context=null;
+            var staging=ElementalConsoleLauncherPolicy.Stage<ActionBarSelectorItemVm>(original,removed,temporary.Sources.Count,()=>{
+                context=new ElementalConsoleContext {Owner=owner,CurrentVm=vm,Unit=unit,Books=books};
+                context.Sources.AddRange(temporary.Sources);
+                return new ActionBarSelectorItemVm(Node(context,"Elementals",0,null,null),vm.IsPossibleActive);});
+            if(!staging.Admitted)
             {
-                if(vm.ItemVms.SequenceEqual(retained.Take(vm.ItemVms.Count)))
-                {vm.ItemVms.Clear();vm.ItemVms.AddRange(original);}
-                Contexts.Remove(vm);itemVm.Dispose();throw;
+                LastCollection="preserve-native-console-rows:"+staging.Reason+";sources="+temporary.Sources.Count+";rows="+original.Length;
+                Outcome=LastCollection;return;
             }
-            // Native source VM disposal happens only after the complete group
-            // and every new native VM have committed successfully.
-            foreach(var item in removed)item.Dispose();
-            Outcome="native-console-elementals-ready;sources="+context.Sources.Count;
+            // Revalidated immediately before the write. CollectSpells runs in the
+            // selector's constructor, so no view is bound yet: the selector, its
+            // holder, the unit and its spellbooks are the exact staged ones.
+            LastCollection=ElementalConsoleLauncherPolicy.Commit<ActionBarSelectorItemVm>(staging,vm.ItemVms,()=>{
+                    if(!ElementalSourceChooserRuntime.Active || !Game.Instance.IsControllerGamepad)return "module-or-controller-changed";
+                    if(context==null || !ReferenceEquals(context.CurrentVm,vm))return "selector-changed";
+                    if(!ReferenceEquals(Holder.GetValue(vm),owner))return "owner-changed";
+                    if(!ReferenceEquals(owner.Unit.Value,unit) || unit.Destroyed || !unit.IsDirectlyControllable)return "unit-changed";
+                    if(!unit.Descriptor.Spellbooks.SequenceEqual(books))return "spellbooks-changed";
+                    return null;},
+                ElementalConsoleLauncherPolicy.Write,()=>Contexts.Add(vm,context),()=>Contexts.Remove(vm),
+                item=>item.Dispose(),item=>item.Dispose());
+            Outcome=LastCollection+";sources="+temporary.Sources.Count;
         }
         private static ElementalConsoleNode Node(ElementalConsoleContext context,string title,int rank,string creature,ElementalNativeSource source)
         {var node=new ElementalConsoleNode {Context=context,Unit=context.Unit,Title=title,Rank=rank,Creature=creature,Source=source};
@@ -133,24 +144,26 @@ namespace KingmakerGunslinger.Summoning
         internal static bool Result(ActionBarVM owner,ref MechanicActionBarSlot mechanism,bool execute)
         {
             var node=mechanism as ElementalConsoleNode;
-            if(node==null)return true;
-            var context=node.Context;
-            if(!ReferenceEquals(owner,context.Owner) || !context.Current)
-            {Outcome="refuse-stale-console-node-no-spend";return false;}
-            if(!ElementalSourceChooserRuntime.Active)
+            var context=node==null?null:node.Context;
+            string outcome;
+            var route=ElementalConsoleResultPolicy.Route(node!=null,node!=null && ReferenceEquals(owner,context.Owner),
+                node!=null && context.Current,ElementalSourceChooserRuntime.Active,node!=null && node.Source!=null,
+                ()=>node.Source.Validate(),execute,
+                ()=>Game.Instance.SelectedAbilityHandler!=null && Game.Instance.SelectedAbilityHandler.Ability==null,out outcome);
+            if(route==ElementalConsoleResultRoute.NativePassThrough)return true;
+            if(route==ElementalConsoleResultRoute.RefuseStale || route==ElementalConsoleResultRoute.RefuseSource)
+            {Outcome=outcome;return false;}
+            if(route==ElementalConsoleResultRoute.RestoreModuleOff)
             {Restore(context);return false;}
-            if(node.Source!=null)
+            if(route==ElementalConsoleResultRoute.PinSource || route==ElementalConsoleResultRoute.UseSource)
             {
-                string error=node.Source.Validate();
-                if(error!=null || (execute && (Game.Instance.SelectedAbilityHandler==null || Game.Instance.SelectedAbilityHandler.Ability!=null)))
-                {Outcome="refuse-console-source-no-spend:"+(error??"foreign-targeting-owner");return false;}
                 // The original Result now receives exactly the same native
                 // converted slot as the native popup. Its execute=false branch
                 // pins that native slot; execute=true calls its native OnClick.
                 var native=new MechanicActionBarSlotSpontaneusConvertedSpell {Unit=context.Unit,Spell=node.Source.Child};
                 native.UpdateResourceCount();mechanism=native;
                 if(execute)ElementalSourceChooserRuntime.LastDispatched=node.Source.Child;
-                Outcome=execute?"native-console-explicit-source-use":"native-console-explicit-source-pin";return true;
+                Outcome=outcome;return true;
             }
             IEnumerable<ElementalConsoleNode> children;
             string caption;
