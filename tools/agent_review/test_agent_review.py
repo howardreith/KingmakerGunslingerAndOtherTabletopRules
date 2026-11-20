@@ -15,6 +15,7 @@ import re
 import shutil
 import socket
 import subprocess
+import sys
 import stat
 import tempfile
 import uuid
@@ -101,6 +102,10 @@ class FakeReviewer:
         request = json.loads((Path(result_path).parent / "request.json").read_text(encoding="utf-8"))
         self.calls.append({"request": request, "prompt": prompt, "workdir": str(workdir)})
         assert Path(workdir).is_dir() and git(workdir, "rev-parse", "HEAD") == request["H"]
+        inbox = Path(workdir) / ".agent-review-inputs"
+        for name in ("feature.diff", "developer-report.json", "prior-findings.json", "developer-tool-transcript.md",
+                     "mission.md"):
+            assert (inbox / name).is_file(), f"{name} missing from the reviewer's workspace"
         if self.during_run:
             self.during_run()
         thread = f"thread-{len(self.calls)}"
@@ -163,6 +168,9 @@ class FakeDeveloper:
 
     def session_provenance(self, session_id):
         return {"found": True, "session_id": session_id, "source": "SIMULATED", **self.foreground}
+
+    def tool_transcript(self, session_id, since_iso):
+        return f"# Developer tool transcript (SIMULATED)\n\nsession {session_id} since {since_iso}\n"
 
     def run(self, prompt, session_id, resume, cwd, log_path, stderr_path, soft_deadline_s, on_start=None,
             on_soft_deadline=None, grace_s=0, protected=None):
@@ -1107,6 +1115,37 @@ class GeneralRepositoryTests(unittest.TestCase):
         named = ar.plan_for_mission(plan, Path("C:/Dev/x/ADD-SEARCH-MISSION.md"))
         self.assertEqual(("add-search-mission", "ADD-SEARCH-MISSION"), (named["mission_id"], named["title"]))
         self.assertEqual("black-tentacles", ar.plan_for_mission(ar.load_plan("black-tentacles"), Path("m.md"))["mission_id"])
+
+
+class ToolTranscriptTests(unittest.TestCase):
+    def test_extracts_recorded_commands_and_outputs_since_a_time(self):
+        """Executed-validation evidence for the read-only reviewer, from the CLI-recorded session log."""
+        with tempfile.TemporaryDirectory() as folder:
+            sid = "abc-session"
+            log = Path(folder) / "projects" / "C--repo" / f"{sid}.jsonl"
+            log.parent.mkdir(parents=True)
+
+            def use(stamp, uid, cmd, side=False):
+                return {"type": "assistant", "timestamp": stamp, "isSidechain": side, "message": {"content": [
+                    {"type": "tool_use", "id": uid, "name": "Bash", "input": {"command": cmd}}]}}
+
+            def result(stamp, uid, text, err=False):
+                return {"type": "user", "timestamp": stamp, "message": {"content": [
+                    {"type": "tool_result", "tool_use_id": uid, "content": text, "is_error": err}]}}
+            rows = [use("2026-11-20T10:00:00.000Z", "u0", "old command"), result("2026-11-20T10:00:01.000Z", "u0", "old"),
+                    use("2026-11-20T12:00:00.000Z", "u1", "python -m unittest test_calc"),
+                    result("2026-11-20T12:00:01.000Z", "u1", "Ran 2 tests\n\nOK"),
+                    use("2026-11-20T12:01:00.000Z", "u2", "git push", side=True),
+                    use("2026-11-20T12:02:00.000Z", "u3", "false"), result("2026-11-20T12:02:01.000Z", "u3", "exit 1", True)]
+            log.write_text("\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8")
+            dev = ar.ClaudeDeveloper({"executable": sys.executable, "config_dir": folder, "model": "opus", "effort": "high"},
+                                     Path(folder) / "s.json", HERE / ar.REPORT_SCHEMA_FILE)
+            text = dev.tool_transcript(sid, "2026-11-20T11:00:00Z")
+            self.assertIn("$ python -m unittest test_calc\nRan 2 tests\n\nOK", text)
+            self.assertIn("· error", text)
+            self.assertNotIn("old command", text)
+            self.assertNotIn("git push", text)  # sidechain (sub-agent) entries are not the developer's own record
+            self.assertIn("commands since 2026-11-20T11:00:00Z: 2", text)
 
 
 class UnitTests(unittest.TestCase):

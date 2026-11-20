@@ -22,6 +22,13 @@ the change.
 - Mission `$mission_id` (sha256 `$mission_sha256`): `$mission_path`
 - Developer checkpoint report (a claim to verify, not evidence by itself):
   `$developer_report_path`
+- Developer tool transcript: `.agent-review-inputs/developer-tool-transcript.md`
+  — the shell commands the developer session actually ran since the previous
+  round, with their recorded outputs, extracted by the controller from the
+  Claude Code session log (CLI-recorded, not model-authored). Use it to confirm
+  executed validation you cannot rerun; check that a cited run happened at the
+  candidate. It proves what ran and printed, not native behavior beyond that
+  output.
 - Prior findings ledger and the IDs you must assess: `$prior_findings_path`
   (pending: $pending_findings)
 

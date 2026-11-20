@@ -612,6 +612,47 @@ class ClaudeDeveloper:
         return {"found": bool(paths), "session_id": session_id, "models": sorted(models), "efforts": sorted(efforts),
                 "source": "Claude Code session transcript (CLI-recorded; not model-authored)"}
 
+    def tool_transcript(self, session_id, since_iso, limit_chars=150000):
+        """CLI-recorded shell commands and their outputs from the developer session since ``since_iso``.
+
+        This is execution evidence the read-only reviewer can inspect (it cannot rerun commands)."""
+        uses, results = [], {}
+        for path in self._transcripts(session_id):
+            for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+                try:
+                    obj = json.loads(line)
+                except ValueError:
+                    continue
+                if obj.get("isSidechain") or (obj.get("timestamp") or "") < since_iso:
+                    continue
+                for item in (obj.get("message") or {}).get("content") or []:
+                    if not isinstance(item, dict):
+                        continue
+                    if item.get("type") == "tool_use" and item.get("name") in ("Bash", "PowerShell"):
+                        uses.append((obj.get("timestamp"), item["name"], item["id"], (item.get("input") or {}).get("command", "")))
+                    elif item.get("type") == "tool_result":
+                        content = item.get("content")
+                        if isinstance(content, list):
+                            content = "\n".join(c.get("text", "") for c in content if isinstance(c, dict))
+                        results[item.get("tool_use_id")] = (bool(item.get("is_error")), str(content or ""))
+        blocks = []
+        for stamp, tool, use_id, command in uses:
+            is_error, output = results.get(use_id, (None, "(no recorded result)"))
+            if len(output) > 3000:
+                output = output[:1500] + "\n[... truncated ...]\n" + output[-1500:]
+            status = "no result" if is_error is None else ("error" if is_error else "ok")
+            blocks.append(f"### {stamp} · {tool} · {status}\n\n```text\n$ {command}\n{output}\n```\n")
+        text, total = [], 0
+        for block in reversed(blocks):  # keep the most recent evidence within the limit
+            if total + len(block) > limit_chars:
+                text.append(f"_[{len(blocks) - len(text)} earlier commands omitted for length]_\n")
+                break
+            text.append(block)
+            total += len(block)
+        header = (f"# Developer tool transcript (CLI-recorded, not model-authored)\n\nSession `{session_id}`, "
+                  f"commands since {since_iso}: {len(blocks)}.\n\n")
+        return header + "\n".join(reversed(text))
+
     def argv(self, session_id, resume):
         schema = json.dumps(strict_schema_copy(read_json(self.schema_path)), separators=(",", ":"))
         args = [self.exe, "-p", "--model", self.cfg["model"], "--effort", self.cfg["effort"]]
@@ -1155,6 +1196,7 @@ class Controller:
                    "checkpoint_id": cp["id"], "checkpoint_type": cp["type"], **candidate,
                    "pending_findings": list(self.state.get("pending_findings", [])),
                    "report": self.state["last_report"], "developer_provenance": self.state.get("last_report_provenance"),
+                   "evidence_since": self.state["rounds"][-1]["created_at"] if self.state["rounds"] else self.state["created_at"],
                    "created_at": now_iso(), "status": "requested", "attempts": [], "attempt_seq": 0}
             self.state["rounds"].append(rnd)
             self.state["active_round"] = number
@@ -1233,11 +1275,16 @@ class Controller:
                                                               "developer_provenance": rnd.get("developer_provenance")})
         atomic_write_json(rnd_dir / "request.json", {k: rnd[k] for k in (
             "round", "request_id", "checkpoint_id", "checkpoint_type", "H", "B", "M")})
+        session = self.state.get("foreground_session") if self.state["mode"] == "foreground" \
+            else self.state["developer"]["session_id"]
+        transcript, _ = sanitize(self.developer.tool_transcript(session, rnd.get("evidence_since") or self.state["created_at"]))
+        write_text(rnd_dir / "developer-tool-transcript.md", transcript)
         # The reviewer's sandbox is always granted its workspace, but not necessarily other paths
         # (e.g. owner-only ACLs). Give it copies inside the snapshot; they are not part of the candidate.
         inbox = snapshot / ".agent-review-inputs"
         inbox.mkdir(exist_ok=True)
-        for name in ("feature.diff", "changed-files.txt", "prior-findings.json", "developer-report.json", "request.json"):
+        for name in ("feature.diff", "changed-files.txt", "prior-findings.json", "developer-report.json", "request.json",
+                     "developer-tool-transcript.md"):
             shutil.copy2(rnd_dir / name, inbox / name)
         shutil.copy2(self.state["mission"]["snapshot"], inbox / ("mission" + Path(self.state["mission"]["snapshot"]).suffix))
         return {"diff": inbox / "feature.diff", "names": inbox / "changed-files.txt",
