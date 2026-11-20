@@ -383,7 +383,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint25Check("spider-interface-setup", false, new JObject { ["error"] = error.ToString() },
                         "The natural Druids and the natural Herald Caller were levelled and joined the party.");
                 }
-                mode = Cleanup2EnterNativeDefault(fixture, "summon-cleric-alignment");
+                mode = Cleanup2EnterNativeDefault(fixture, _pol06Lane ? ExpandedSummoningNativeProfilePolicy.Sprint39CotwConversionPhase : ExpandedSummoningNativeProfilePolicy.Sprint39ClericAlignmentPhase);
                 screens = new NativeIconScreenEvidence(_request);
                 ui.SelectionManagerPC.SelectUnit(fixture.Caster.View, true, true, false); group.SelectUnit(fixture.Caster);
                 for (int frame = 0; frame < 12; frame++) yield return 0;
