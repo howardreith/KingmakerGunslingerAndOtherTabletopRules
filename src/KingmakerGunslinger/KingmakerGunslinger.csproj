@@ -1754,6 +1754,7 @@
     <Compile Include="RuntimeTesting\FavoredClassLevelUpHarness.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassContract.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassGrit.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.GunTrainingLevelUps.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassGunslinger.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassInitiative.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassTurnModes.cs" />

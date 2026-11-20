@@ -227,7 +227,7 @@ namespace KingmakerGunslinger.Blueprints
                 "KMG.Pistolero.Name", "Pistolero");
             result.LocalizedDescription = LocalizationService.Create(
                 "KMG.Pistolero.Description",
-                "A one-handed firearm specialist who fights at close range with speed and precision.");
+                "A one-handed firearm specialist who fights at close range with speed and precision. Pistol Training replaces Gun Training at levels 5, 9, 13 and 17 and gains a rank each time.");
             result.OverrideAttributeRecommendations = true;
             result.RecommendedAttributes = new[] { StatType.Dexterity,
                 StatType.Wisdom };

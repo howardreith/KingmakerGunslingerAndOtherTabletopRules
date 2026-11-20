@@ -31895,8 +31895,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
                     "Unity Mod Manager ModEntry.Info.Version")
             };
-            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+            // DEF-04: the same opportunities as real level-up transactions,
+            // kept apart from the direct-fact controls above.
+            var levelUpEvidence = new List<string>();
+            assertions.AddRange(ObserveGunTrainingLevelUps(levelUpEvidence));
+            RuntimeTestResult result = CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+            result.EvidenceFiles.AddRange(levelUpEvidence);
+            return result;
         }
 
         /// <summary>

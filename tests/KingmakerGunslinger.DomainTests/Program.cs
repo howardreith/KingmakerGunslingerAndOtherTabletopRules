@@ -2232,6 +2232,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("gun-training.misfire", GunTrainingMisfirePolicy),
             Case("gun-training.invalid", GunTrainingInvalidInputs),
             Case("gun-training.empty-pick-completes", GunslingerDeedFixTests.GunTrainingEmptyPickCompletesTheLevel),
+            Case("gun-training.presentation-states-the-policy", GunslingerDeedFixTests.GunTrainingPresentationStatesThePolicy),
             Case("dead-shot.bab-cadence", DeadShotBabCadence),
             Case("dead-shot.preconditions", DeadShotPreconditionsAtomic),
             Case("dead-shot.hit-dice", DeadShotHitAndDiceAggregation),

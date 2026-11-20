@@ -1,0 +1,19 @@
+{
+  "name": "gunslinger-gun-training-levelups",
+  "description": "DEF-04 / S4 T1. The product's own disposable-gunslinger-gun-training scenario, run in the disposable game copy with the candidate alone, at the main menu, in a fresh process. Besides its direct-fact controls (a Pistol Gun Training fact added directly: Dexterity damage and the Broken-state misfire), it levels detached chargen units through real LevelUpController visits (LevelUpState.IsComplete, then ApplyLevelup): a base Gunslinger to 17 with a cancelled level-9 visit, a Mysterious Stranger to 17, two constructed legacy states holding a hidden Rifle fact (compatibility controls, not an old save), and a Pistolero and a Musket Master to 17. It reads the published descriptions. No save is loaded or written.",
+  "ownerMods": [],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "gun-training",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-gunslinger-gun-training",
+        "parameters": {},
+        "timeoutSeconds": 600
+      }
+    }
+  ]
+}

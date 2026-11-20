@@ -1,8 +1,9 @@
 # Expanded Summoning roster coverage: placements, not identities (INT-08)
 
-Status: **development change on a review branch, awaiting review. Not merged, not released.** Branch
-`codex/int08-summoning-roster-coverage`, stacked on draft PR #176 at its accepted head `a37a712e85` (which is stacked
-on #175 down to #169). Nothing here is a release qualification.
+Status: **development item closed: the review accepted draft PR #177 at `dcea649f5e` for its reviewed development
+scope. Not merged, not released.** Branch `codex/int08-summoning-roster-coverage`, stacked on draft PR #176 at its
+accepted head `a37a712e85` (which is stacked on #175 down to #169). Nothing here is a release qualification. See
+"Review acceptance and closeout".
 
 This is one bounded cut of the Gunslinger remediation epic of 2026-11-15: story S3 T7, inventory record INT-08
 (Sprint 41 audit finding A-6). Current status is kept in `planning/GUNSLINGER-REMEDIATION-STATUS.md`. It repairs a
@@ -227,6 +228,19 @@ Stirge placement, a mixed withheld and missing state described as such, and 144 
 | `powershell -File scripts/validate-repository.ps1 -DevelopmentPurpose roster-coverage-report -DevelopmentSummaryPath <scratch>` | PASS, exit 0: the roster suite ran once (22 of 22) in the source fixtures; development validation accepted the branch; the wrapper's dispatch regression passed 46 checks; every other child passed | 428 s |
 
 The earlier results under "Verification" belong to head `4d2e1bfb10` and stay as recorded.
+
+## Review acceptance and closeout
+
+The review of draft PR #177 at `dcea649f5e2a3ee1742e13592ebe76cc638ba286` accepted it for its reviewed development
+scope. INT-08 / S3 T7 is closed as a development item. Nothing was rebuilt or rerun for this closeout. Review
+acceptance, merge and release are separate states; PR #177 stays an open draft and nothing is merged or released.
+
+The accepted result of the Stirge fixture (registered at Nature's Ally II) is six withheld ideal-placement matches,
+three missing ideal placements and two extra declared choices. The earlier review's expectation of eight withheld
+and one missing was mistaken: the quantity follows the registered tier.
+
+Unchanged by the closeout: the figures and evidence above under their original heads; the limits below; POL-04 and
+POL-05, which remain Sprint 5 decisions.
 
 ## Limits
 

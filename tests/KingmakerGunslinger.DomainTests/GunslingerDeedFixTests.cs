@@ -40,6 +40,54 @@ namespace KingmakerGunslinger.DomainTests
                 "Four Gun Training picks against three official types.");
         }
 
+        // DEF-04: the retained policy is three supported types, each trained
+        // once, over four opportunities. What the player reads must say so:
+        // the types, once each, an exhausted opportunity granting nothing,
+        // the Mysterious Stranger's 9/13/17 and the ranked replacements.
+        internal static void GunTrainingPresentationStatesThePolicy()
+        {
+            string training = Source("Blueprints", "GunTrainingBlueprints.cs");
+            foreach (string required in new[]
+            {
+                "Pistol, Musket or Blunderbuss", "trained only once",
+                "levels 5, 9, 13 and 17", "a remaining opportunity grants nothing more",
+                "no further type and no additional bonus",
+                "A Mysterious Stranger gets it at levels 9, 13 and 17",
+                "Pistol Training or Musket Training replaces it"
+            })
+                Assertions.True(training.Contains(required),
+                    "The Gun Training description must state: " + required);
+            Assertions.True(!training.Contains("\"Select one firearm type."),
+                "The old description, which named no types and no limit, must be gone.");
+            // The ranked-replacement sentence must carry its own schedule: it
+            // follows the Mysterious Stranger's 9/13/17, so a back-reference
+            // ("each of those levels") would read as 9/13/17.
+            const string rankedLead = "A Pistolero or Musket Master never gets it:";
+            int rankedStart = training.IndexOf(rankedLead, StringComparison.Ordinal);
+            Assertions.True(rankedStart >= 0 &&
+                training.IndexOf(rankedLead, rankedStart + 1, StringComparison.Ordinal) < 0,
+                "The description must have exactly one ranked-replacement sentence.");
+            int rankedEnd = training.IndexOf('.', rankedStart);
+            string ranked = rankedEnd < 0 ? "" : training.Substring(rankedStart, rankedEnd - rankedStart + 1);
+            Assertions.Equal(
+                "A Pistolero or Musket Master never gets it: Pistol Training or Musket Training replaces it and gains a rank at levels 5, 9, 13 and 17.",
+                ranked, "The ranked replacements must state their own 5/9/13/17 schedule.");
+            Assertions.True(Source("Blueprints", "MysteriousStrangerBlueprints.cs")
+                    .Contains("Gun Training comes at levels 9, 13 and 17"),
+                "The Mysterious Stranger description must give its Gun Training levels.");
+            Assertions.True(Source("Blueprints", "PistoleroBlueprints.cs")
+                    .Contains("Pistol Training replaces Gun Training at levels 5, 9, 13 and 17"),
+                "The Pistolero description must name its ranked replacement.");
+            Assertions.True(Source("Blueprints", "MusketMasterBlueprints.cs")
+                    .Contains("Musket Training replaces Gun Training at levels 5, 9, 13 and 17"),
+                "The Musket Master description must name its ranked replacement.");
+            Assertions.True(OfficialFirearmSupport.Kinds.Length == 3 &&
+                OfficialFirearmSupport.Kinds[0] == FirearmKind.Pistol &&
+                OfficialFirearmSupport.Kinds[1] == FirearmKind.Musket &&
+                OfficialFirearmSupport.Kinds[2] == FirearmKind.Blunderbuss,
+                "The description names exactly the official types, in order.");
+        }
+
         // D2: a probe threatens when it hits with a natural roll at or above
         // the weapon's critical edge; a misfire never threatens.
         internal static void DeadShotThreatRule()
