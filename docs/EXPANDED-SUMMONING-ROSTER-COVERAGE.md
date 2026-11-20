@@ -270,10 +270,16 @@ POL-05 remains an open decision.
 
 ## Limits
 
+Historical INT-08 limitations, as accepted at `dcea649f5e`:
 - Source-derived publication only. Native menu observation rests on the retained v0.0.191 census above; native
   casting is not established for any placement.
 - Assumptions: the Expanded Summoning module enabled; the source's own publication policy; no optional provider in
   the core population.
-- POL-04 and POL-05 remain open decisions; the report labels their placements and does not decide them.
+- At INT-08, POL-04 and POL-05 were open decisions; the report labelled their placements and did not decide them.
 - The freshness check runs in source validation, which `Build-Local` runs; it does not run on its own schedule, so a
   stale report is caught when validation next runs, not when a catalog changes.
+
+Current dispositions:
+- POL-04 is decided and accepted (S5 T3, A-records, at `ada0ff2650`): the three Brachiosaurus Summon Monster
+  placements are approved out of scope, as described in "Later: POL-04 decided".
+- POL-05 (the twelve higher native-wrapper placements) remains an open owner decision (S5 T4).

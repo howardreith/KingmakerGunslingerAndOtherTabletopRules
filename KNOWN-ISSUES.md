@@ -425,8 +425,9 @@
 - Brachiosaurus is not offered through Summon Monster (POL-04, scope decision, not a defect). The Core Rulebook Summon
   Monster VII table includes it, and the original charter placed it at Summon Monster VII single, VIII 1d3 and IX 1d4+1.
   The owner chose Nature's Ally only on 2026-10-15, because adding Monster placements later is additive while
-  withdrawing published ones is not, and reaffirmed it as S5 T3 / POL-04 Alternative A (A-records) on 2026-11-19 (draft
-  PR #188; not merged, not released; `docs/EXPANDED-SUMMONING-BRACHIOSAURUS-SCOPE.md`). Those three placements are
+  withdrawing published ones is not, and reaffirmed it as S5 T3 / POL-04 Alternative A (A-records) on 2026-11-19,
+  accepted and closed for its reviewed development scope at `ada0ff2650` (draft PR #188; not merged, not released;
+  `docs/EXPANDED-SUMMONING-BRACHIOSAURUS-SCOPE.md`). Those three placements are
   approved out of scope; they are not fulfilled. The roster report shows 1,208 admitted, 9 withheld, 12 missing and 3
   approved out of scope against the unchanged 1,232 ideal. Brachiosaurus is available through Summon Nature's Ally
   VII, VIII and IX, and the Naturalist, Feral Hunter and Preservationist adapters.
