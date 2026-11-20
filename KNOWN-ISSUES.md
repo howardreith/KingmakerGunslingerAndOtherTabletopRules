@@ -477,17 +477,19 @@
   comparison key, which does not prove behavioural equivalence) are retained
   presentation limitations within the accepted development scope. Spontaneous
   casters stay outside this scope.
-- A summoned Mastodon never uses its Trample in normal play. Trample (2d8+18,
-  Reflex DC 29, added in v0.0.180) was qualified only by a harness command: the
-  summon's configured brain supplies only an ordinary attack, no supported
-  normal-play route was found in the inspected configuration (a scan of direct
-  AI-action references), and the canonical summon cannot be commanded by the
-  player in real-time or turn-based mode. Observed natively on branch `codex/risk06-mastodon-trample-route`
-  (S5 T6 / RISK-06, draft PR #191; a normal summon in both modes made only
-  attacks while a legal Trample path existed). An owned, conservative Trample
-  AI action is proposed for review; nothing is implemented
-  (`docs/EXPANDED-SUMMONING-MASTODON-TRAMPLE-ROUTE.md`). The other tramplers share the
-  carrier and were not examined.
+- Mastodon Trample (2d8+18, Reflex DC 29, added in v0.0.180) was reachable
+  only by a harness command in every released version: the summon's brain
+  supplies only an ordinary attack and summons cannot be commanded by the
+  player. On branch `codex/risk06-mastodon-trample-route` (S5 T6 / RISK-06,
+  draft PR #191; not merged, not released) the Mastodon has a private brain
+  whose owned AI action uses the existing Trample as a conservative approach
+  maneuver: only when it is unthreatened, has its full round, no enemy is
+  within its melee reach, the target is smaller and unclaimed this round, and
+  the final straight path crosses the target and ends clear beyond it.
+  Otherwise it attacks as before. Qualified natively in real-time and
+  turn-based combat on a fixture-created summon, one geometry
+  (`docs/EXPANDED-SUMMONING-MASTODON-TRAMPLE-ROUTE.md`). Other tramplers unchanged and not
+  examined; summons saved before the change keep attack-only brains.
 - The legacy Advanced Revolver declares six chambers, but saved firearm state holds one round, so its six-round reload
   fails and restores ammunition and weapon state. No published release offered it (vendors only cleaned it up;
   Craft Magic Items only recognized an owned one). On branch `codex/risk01-advanced-revolver` (accepted with Sprint 4 at `e30b19e8fe`;
