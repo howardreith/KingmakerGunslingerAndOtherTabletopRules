@@ -11,6 +11,10 @@ buff, cost, duration, stacking, effect links and expiry guard are as they were.
 The record was revised after the review of PR #171 at `f9d86391a3`. The three corrections, their tests and the new
 run are under "Review corrections" below. The first candidate's run is kept as recorded.
 
+The review of `7c4cb8ad44` accepted the three corrections, which closes INT-03 as a development work item: the
+corrected scenario passed 12 of 12 on candidate `15767a89ad2b`, and the recast timing, the outer-abort evidence and
+the exit requirement at admission are resolved. It is not merged and not released. NEW-06 is closed for Dodge only.
+
 ## The live path
 
 The epic describes Dodge as activating through `GunslingerDodgeProneAbilityLogic.Deliver`. That was not so. The

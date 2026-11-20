@@ -8953,9 +8953,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !overhaul.Description.Contains("Firearm Repair Kit") &&
                 overhaul.ComponentsArray.OfType<RepairTestMusketAbilityLogic>()
                     .Count() == 1;
-            bool itemPresentationExact;
-            string itemPresentation = ObserveProjectItemPresentation(
-                out itemPresentationExact);
+            Presentation.ProjectItemPresentationAudit itemPresentation =
+                ObserveProjectItemPresentation();
             string observed = "levels=" + progression.LevelEntries.Length +
                 ";visible=" + visible + ";hidden=" + hidden +
                 ";topLevelVisible=" + topLevelVisible +
@@ -8967,7 +8966,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";semanticIcons=" + semanticIconCount + ";semanticMap=" + semanticMap +
                 ";rapidPresentation=" + rapidPresentation +
                 ";rapidIsolation=" + rapidKindIsolation +
-                ";itemPresentation=" + itemPresentation +
+                ";itemPresentation=" + itemPresentation.Aggregate.Observed +
                 ";actions=" + (reload == null ? "<null>" : reload.Name) + "," +
                     (overhaul == null ? "<null>" : overhaul.Name) + "," +
                     (repair == null ? "<null>" : repair.Name);
@@ -9006,64 +9005,207 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Reload Firearm and Repair Firearm with reusable-tool text; hidden legacy Overhaul alias delegates to unified repair; no Test Musket descriptions",
                     observed, productionActions,
                     "Firearm Proficiency AddFacts reachable stable ability blueprints"),
-                Assertion("project-item-player-facing-presentation",
-                    "55 weapons and the Cord have complete clean player text; eleven visible custom enchantments are clean and the policy-only enchantment is blank",
-                    itemPresentation, itemPresentationExact,
-                    "live item/type/enchantment localized strings"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
                     "Unity Mod Manager ModEntry.Info.Version")
             };
+            // The item presentation check reports each of its parts on its
+            // own, then the aggregate under the name the check has always had.
+            foreach (Presentation.AuditOutcome outcome in itemPresentation.Outcomes
+                .Concat(new[] { itemPresentation.Aggregate }))
+                assertions.Insert(assertions.Count - 1, Assertion(outcome.Name,
+                    outcome.Expected, outcome.Observed, outcome.Passed,
+                    "declared project item rosters against live item, type and enchantment blueprints and their localized strings"));
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
         }
 
-        private static string ObserveProjectItemPresentation(out bool exact)
+        /// <summary>
+        /// The expected identities of a roster, each with the GUID the
+        /// deployed blueprint manifest gives its symbol. A symbol the
+        /// manifest cannot resolve stays in the expectation without a key, so
+        /// the census reports it instead of losing it.
+        /// </summary>
+        private static List<Presentation.AuditIdentity> ExpectedProjectIdentities(
+            BlueprintManifest manifest, string manifestFault,
+            IEnumerable<KeyValuePair<string, Type>> symbols)
         {
-            BlueprintItemWeapon[] weapons = BlueprintBootstrap
-                .ProductionFirearms.Entries.Select(value => value.Item)
-                .Concat(BlueprintBootstrap.MagicFirearms.Entries.Select(
-                    value => value.Item))
-                .Concat(BlueprintBootstrap.EasternWeapons.Entries.Select(
-                    value => value.Item))
-                .Concat(BlueprintBootstrap.EasternWeapons.Named.Entries.Select(
-                    value => value.Item))
-                .Concat(BlueprintBootstrap.ElvenBranchedSpears.Entries.Select(
-                    value => value.Item))
-                .Concat(BlueprintBootstrap.ElvenBranchedSpears.Named.Entries
-                    .Select(value => value.Item))
-                .Distinct().ToArray();
-            BlueprintItem[] items = weapons.Cast<BlueprintItem>().Concat(
-                new[] { (BlueprintItem)BlueprintBootstrap
-                    .CordOfStubbornResolve }).ToArray();
-            var optionalFlavor = new HashSet<BlueprintItem>(
-                BlueprintBootstrap.MagicFirearms.GenericEntries.Select(
-                    value => (BlueprintItem)value.Item));
+            var result = new List<Presentation.AuditIdentity>();
+            foreach (KeyValuePair<string, Type> pair in symbols)
+            {
+                if (manifest == null)
+                {
+                    result.Add(new Presentation.AuditIdentity(null, pair.Key,
+                        "manifest unavailable: " + manifestFault));
+                    continue;
+                }
+                try
+                {
+                    result.Add(new Presentation.AuditIdentity(manifest.ResolveActive(
+                        pair.Key, pair.Value).Id.Value, pair.Key));
+                }
+                catch (Exception error)
+                {
+                    result.Add(new Presentation.AuditIdentity(null, pair.Key,
+                        error.Message));
+                }
+            }
+            return result;
+        }
+
+        private static Presentation.AuditIdentity ObservedProjectIdentity(
+            BlueprintScriptableObject blueprint, string source)
+        {
+            return blueprint == null
+                ? new Presentation.AuditIdentity(null, source, "null blueprint")
+                : new Presentation.AuditIdentity(blueprint.AssetGuid,
+                    blueprint.name + "(" + blueprint.AssetGuid + ")");
+        }
+
+        private static Presentation.ProjectItemPresentationAudit
+            ObserveProjectItemPresentation()
+        {
+            // Expectations come from the declared rosters and the deployed
+            // manifest, never from the collections read below.
+            BlueprintManifest manifest = null;
+            string manifestFault = null;
+            try
+            {
+                ModContext context;
+                if (!ModContext.TryGet(out context))
+                    throw new InvalidOperationException("no mod context");
+                manifest = BlueprintManifest.Load(context.ModEntry.Path);
+            }
+            catch (Exception error) { manifestFault = error.Message; }
+            List<Presentation.AuditIdentity> expectedWeapons = ExpectedProjectIdentities(
+                manifest, manifestFault, Presentation.ProjectItemRosters
+                    .PresentationWeapons.Select(symbol =>
+                        new KeyValuePair<string, Type>(symbol,
+                            typeof(BlueprintItemWeapon))));
+            List<Presentation.AuditIdentity> expectedItems = expectedWeapons.Concat(
+                ExpectedProjectIdentities(manifest, manifestFault, new[] {
+                    new KeyValuePair<string, Type>(
+                        Presentation.ProjectItemRosters.CordSymbol,
+                        typeof(BlueprintItemEquipmentBelt)) })).ToList();
+            List<Presentation.AuditIdentity> expectedEnchantments =
+                ExpectedProjectIdentities(manifest, manifestFault,
+                    Presentation.ProjectItemRosters.CustomWeaponEnchantments.Select(
+                        symbol => new KeyValuePair<string, Type>(symbol,
+                            typeof(BlueprintWeaponEnchantment))));
+
+            // What the game has. Obtaining a source and reading one of its
+            // entries are separate failure boundaries: a malformed entry costs
+            // that entry, the readable entries on either side of it go on to
+            // the identity, text and enchantment checks, and a source that
+            // cannot be obtained or stops part-way is reported as that while
+            // the other sources are still read.
+            var collected =
+                new Presentation.ProjectItemObservations<BlueprintItemWeapon>();
+            Func<BlueprintItemWeapon, Presentation.AuditIdentity> identify =
+                weapon => ObservedProjectIdentity(weapon, "weapon");
+            Presentation.ProjectItemCollection.ReadSource(collected,
+                "production firearms",
+                () => BlueprintBootstrap.ProductionFirearms.Entries,
+                (ProductionFirearmBlueprintEntry entry) => entry.Item, identify);
+            Presentation.ProjectItemCollection.ReadSource(collected,
+                "magic firearms", () => BlueprintBootstrap.MagicFirearms.Entries,
+                (MagicFirearmBlueprintEntry entry) => entry.Item, identify);
+            Presentation.ProjectItemCollection.ReadSource(collected,
+                "Eastern weapons", () => BlueprintBootstrap.EasternWeapons.Entries,
+                (EasternWeaponBlueprintEntry entry) => entry.Item, identify);
+            Presentation.ProjectItemCollection.ReadSource(collected,
+                "named Eastern weapons",
+                () => BlueprintBootstrap.EasternWeapons.Named.Entries,
+                (EasternWeaponNamedBlueprintEntry entry) => entry.Item, identify);
+            Presentation.ProjectItemCollection.ReadSource(collected,
+                "Elven branched spears",
+                () => BlueprintBootstrap.ElvenBranchedSpears.Entries,
+                (ElvenBranchedSpearBlueprintEntry entry) => entry.Item, identify);
+            Presentation.ProjectItemCollection.ReadSource(collected,
+                "named Elven branched spears",
+                () => BlueprintBootstrap.ElvenBranchedSpears.Named.Entries,
+                (NamedSpearBlueprintEntry entry) => entry.Item, identify);
+            IList<Presentation.AuditIdentity> observedWeapons = collected.Identities;
+            IList<BlueprintItemWeapon> weapons = collected.Items;
+            BlueprintItem cord = null;
+            var observedItems = new List<Presentation.AuditIdentity>(observedWeapons);
+            try
+            {
+                cord = BlueprintBootstrap.CordOfStubbornResolve;
+                observedItems.Add(ObservedProjectIdentity(cord,
+                    "Cord of Stubborn Resolve"));
+            }
+            catch (Exception error)
+            {
+                observedItems.Add(new Presentation.AuditIdentity(null,
+                    "Cord of Stubborn Resolve", "unavailable: " + error.Message));
+            }
+
+            // Player-facing text of every item that was read.
+            BlueprintItemWeapon[] distinctWeapons = weapons.Distinct().ToArray();
+            BlueprintItem[] items = distinctWeapons.Cast<BlueprintItem>().Concat(
+                cord == null ? new BlueprintItem[0] : new[] { cord }).ToArray();
             var issues = new List<string>();
+            // The generic magic firearms may leave their flavor blank. Read
+            // entry by entry: a malformed entry is already in the census, and
+            // it must not turn the rule off for the entries that can be read.
+            var optionalFlavor = new HashSet<BlueprintItem>();
+            Presentation.SourceRead<MagicFirearmBlueprintEntry> flavorSource =
+                Presentation.SourceReader.Read("magic firearms",
+                    () => BlueprintBootstrap.MagicFirearms.Entries);
+            foreach (Presentation.SourceSlot<MagicFirearmBlueprintEntry> slot in
+                flavorSource.Slots)
+            {
+                MagicFirearmBlueprintEntry entry = slot.Value;
+                if (entry == null) continue;
+                BlueprintItem generic;
+                string flavorFault;
+                if (!Presentation.SourceReader.TryRead(() =>
+                        entry.Spec.IsNamedCampaignUnique
+                            ? null : (BlueprintItem)entry.Item,
+                        out generic, out flavorFault))
+                    issues.Add(Presentation.SourceReader.Locate("magic firearms",
+                        slot.Index) + ":flavor-rule-unreadable=" + flavorFault);
+                else if (generic != null) optionalFlavor.Add(generic);
+            }
+            if (flavorSource.SourceFault != null)
+                issues.Add("magic firearms:flavor-rule-source=" +
+                    flavorSource.SourceFault.Detail);
             BlueprintItemAccess access = BlueprintItemAccess.Resolve();
             foreach (BlueprintItem item in items)
             {
-                BlueprintItemSnapshot snapshot = access.Capture(item);
-                string name = item.Name ?? string.Empty;
-                string description = item.Description ?? string.Empty;
-                string flavor = snapshot.Flavor == null ? string.Empty :
-                    snapshot.Flavor.ToString();
-                AppendPlayerTextIssue(issues, item.name, "name", name, true);
-                AppendPlayerTextIssue(issues, item.name, "description",
-                    description, true);
-                AppendPlayerTextIssue(issues, item.name, "flavor", flavor,
-                    !optionalFlavor.Contains(item));
+                try
+                {
+                    BlueprintItemSnapshot snapshot = access.Capture(item);
+                    string name = item.Name ?? string.Empty;
+                    string description = item.Description ?? string.Empty;
+                    string flavor = snapshot.Flavor == null ? string.Empty :
+                        snapshot.Flavor.ToString();
+                    AppendPlayerTextIssue(issues, item.name, "name", name, true);
+                    AppendPlayerTextIssue(issues, item.name, "description",
+                        description, true);
+                    AppendPlayerTextIssue(issues, item.name, "flavor", flavor,
+                        !optionalFlavor.Contains(item));
+                }
+                catch (Exception error)
+                {
+                    issues.Add(item.name + ":text-unreadable=" + error.Message);
+                }
             }
-            exact = false;
-            return CompleteProjectItemPresentationAudit(weapons, items,
-                issues, out exact);
+            return CompleteProjectItemPresentationAudit(distinctWeapons,
+                Presentation.IdentityCensus.Compare(expectedWeapons, observedWeapons),
+                Presentation.IdentityCensus.Compare(expectedItems, observedItems),
+                expectedEnchantments, issues);
         }
 
-        private static string CompleteProjectItemPresentationAudit(
-            BlueprintItemWeapon[] weapons, BlueprintItem[] items,
-            ICollection<string> issues, out bool exact)
+        private static Presentation.ProjectItemPresentationAudit
+            CompleteProjectItemPresentationAudit(BlueprintItemWeapon[] weapons,
+                Presentation.IdentityCensus weaponCensus,
+                Presentation.IdentityCensus itemCensus,
+                List<Presentation.AuditIdentity> expectedEnchantments,
+                ICollection<string> issues)
         {
             FieldInfo field = typeof(BlueprintItemWeapon).GetField(
                 "m_Enchantments", BindingFlags.Instance |
@@ -9082,44 +9224,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Where(value => value != null && value.name != null &&
                     value.name.StartsWith("KMG_", StringComparison.Ordinal))
                 .Distinct().ToArray();
-            BlueprintWeaponEnchantment policy = BlueprintBootstrap
-                .EasternWeapons.ProficiencyPolicy;
+            BlueprintWeaponEnchantment policy = null;
+            try { policy = BlueprintBootstrap.EasternWeapons.ProficiencyPolicy; }
+            catch (Exception) { }
+            var policyObservation = new Presentation.PolicyEnchantmentObservation
+            {
+                BlueprintAvailable = policy != null,
+                AmongWeaponEnchantments = policy != null && custom.Contains(policy),
+                InternalName = policy == null ? null : policy.name,
+                Name = policy == null ? null : policy.Name ?? string.Empty,
+                Description = policy == null ? null : policy.Description ?? string.Empty
+            };
             foreach (BlueprintWeaponEnchantment enchantment in custom)
             {
+                // The policy-only enchantment's text is judged on its own.
+                if (ReferenceEquals(enchantment, policy)) continue;
                 string name = enchantment.Name ?? string.Empty;
                 string description = enchantment.Description ?? string.Empty;
-                bool policyOnly = ReferenceEquals(enchantment, policy);
-                if (policyOnly)
-                {
-                    if (name.Length != 0 || description.Length != 0)
-                        issues.Add(enchantment.name + ":policy-text-visible");
-                    continue;
-                }
                 AppendPlayerTextIssue(issues, enchantment.name, "name", name,
                     true);
                 AppendPlayerTextIssue(issues, enchantment.name, "description",
                     description, true);
             }
-            exact = weapons.Length == 55 && items.Length == 56 &&
-                custom.Length == 12 && custom.Contains(policy) &&
-                issues.Count == 0;
-            return "weapons=" + weapons.Length + ";items=" + items.Length +
-                ";customEnchantments=" + custom.Length + ";issues=" +
-                (issues.Count == 0 ? "<none>" :
-                    string.Join("|", issues.ToArray()));
+            return Presentation.ProjectItemPresentationAudit.Evaluate(weaponCensus,
+                itemCensus, Presentation.IdentityCensus.Compare(expectedEnchantments,
+                    custom.Select(value => ObservedProjectIdentity(value,
+                        "custom enchantment"))),
+                policyObservation, issues);
         }
 
         private static void AppendPlayerTextIssue(ICollection<string> issues,
             string owner, string field, string text, bool required)
         {
-            if (required && string.IsNullOrWhiteSpace(text))
-            {
-                issues.Add(owner + ":" + field + "=blank");
-                return;
-            }
-            string issue = PlayerFacingTextPolicy.FindIssue(text);
-            if (issue != null)
-                issues.Add(owner + ":" + field + "=" + issue);
+            Presentation.PlayerTextAudit.Append(issues, owner, field, text, required);
         }
 
         private RuntimeTestResult RunNativeWeaponFeatContractObservation()
@@ -13930,66 +14067,96 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static void AppendFirearmItemVariantAssertions(
             List<RuntimeTestAssertion> assertions)
         {
-            var items = new List<Tuple<string, FirearmKind,
-                BlueprintItemWeapon>>
-            {
-                Tuple.Create(TestMusketBlueprints.ItemSymbol,
-                    FirearmKind.Musket, BlueprintBootstrap.TestMusketItem),
-                Tuple.Create(ProductionFirearmBlueprints.PistolItemSymbol,
-                    FirearmKind.Pistol,
-                    BlueprintBootstrap.ProductionFirearms.Pistol.Item),
-                Tuple.Create(ProductionFirearmBlueprints.MusketItemSymbol,
-                    FirearmKind.Musket,
-                    BlueprintBootstrap.ProductionFirearms.Musket.Item),
-                Tuple.Create(ProductionFirearmBlueprints.BlunderbussItemSymbol,
-                    FirearmKind.Blunderbuss,
-                    BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item),
-                Tuple.Create(ProductionFirearmBlueprints.AdvancedRifleItemSymbol,
-                    FirearmKind.Rifle,
-                    BlueprintBootstrap.ProductionFirearms.AdvancedRifle.Item),
-                Tuple.Create(ProductionFirearmBlueprints.AdvancedRevolverItemSymbol,
-                    FirearmKind.Revolver,
-                    BlueprintBootstrap.ProductionFirearms.AdvancedRevolver.Item)
-            };
-            items.AddRange(BlueprintBootstrap.MagicFirearms.Entries.Select(entry =>
-                Tuple.Create(entry.Spec.Symbol, entry.Spec.Kind, entry.Item)));
-            string[] variants = items.Select(value =>
-                    WeaponVisualVariantCatalog.Require(value.Item1))
+            // What the game has. Every item, and every entry of the magic
+            // firearm catalog, is its own failure boundary: an entry whose
+            // metadata cannot be read is recorded as malformed at its
+            // position and the entries after it are read as usual. Only a
+            // catalog that cannot be obtained or stepped is a source fault.
+            var observed = new List<Presentation.FirearmVisualBindingObservation>();
+            Action<string, string, FirearmKind, Func<BlueprintItemWeapon>> read =
+                (source, symbol, kind, item) => observed.Add(
+                    Presentation.FirearmVisualCollection.ReadItem(source, symbol,
+                        kind, item, FirearmWeaponPresentation.ObserveItemVariant));
+            read("test musket", TestMusketBlueprints.ItemSymbol, FirearmKind.Musket,
+                () => BlueprintBootstrap.TestMusketItem);
+            read("production firearms", ProductionFirearmBlueprints.PistolItemSymbol,
+                FirearmKind.Pistol,
+                () => BlueprintBootstrap.ProductionFirearms.Pistol.Item);
+            read("production firearms", ProductionFirearmBlueprints.MusketItemSymbol,
+                FirearmKind.Musket,
+                () => BlueprintBootstrap.ProductionFirearms.Musket.Item);
+            read("production firearms",
+                ProductionFirearmBlueprints.BlunderbussItemSymbol,
+                FirearmKind.Blunderbuss,
+                () => BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item);
+            read("production firearms",
+                ProductionFirearmBlueprints.AdvancedRifleItemSymbol, FirearmKind.Rifle,
+                () => BlueprintBootstrap.ProductionFirearms.AdvancedRifle.Item);
+            read("production firearms",
+                ProductionFirearmBlueprints.AdvancedRevolverItemSymbol,
+                FirearmKind.Revolver,
+                () => BlueprintBootstrap.ProductionFirearms.AdvancedRevolver.Item);
+            Presentation.FirearmVisualCollection.ReadEntries(observed,
+                "magic firearms",
+                () => BlueprintBootstrap.MagicFirearms.Entries,
+                (MagicFirearmBlueprintEntry entry) => entry.Spec,
+                (MagicFirearmItemSpec spec) => spec.Symbol,
+                (MagicFirearmItemSpec spec) => spec.Kind,
+                (MagicFirearmBlueprintEntry entry) => entry.Item,
+                (BlueprintItemWeapon item, string symbol, FirearmKind kind) =>
+                    FirearmWeaponPresentation.ObserveItemVariant(item, symbol, kind));
+
+            // The roster is the declared one; the census and the per-item
+            // bindings are separate results and neither stops the other.
+            Presentation.FirearmVisualRigAudit rig =
+                Presentation.FirearmVisualRigAudit.Evaluate(
+                    Presentation.ProjectItemRosters.FirearmItemVisuals, observed);
+            foreach (Presentation.AuditOutcome outcome in new[] { rig.Roster,
+                rig.BindingOutcome })
+                assertions.Add(Assertion(outcome.Name, outcome.Expected,
+                    outcome.Observed, outcome.Passed,
+                    "declared firearm visual roster; exact inherited item visual/model reference"));
+            string[] variants = rig.Bindings.Select(value => value.Variant)
+                .Where(value => value != null)
                 .Distinct(StringComparer.Ordinal).OrderBy(value => value,
                     StringComparer.Ordinal).ToArray();
-            bool exactItems = items.Count == 14 && items.All(value =>
-                FirearmWeaponPresentation.HasExactItemVariant(value.Item3,
-                    value.Item1, value.Item2));
-            bool pistolSeparation = !ReferenceEquals(
-                    BlueprintBootstrap.MagicFirearms.Require(
-                        MagicFirearmBlueprints.DuelistsRebuttalSymbol).Item
-                        .VisualParameters.Model,
-                    BlueprintBootstrap.ProductionFirearms.Pistol.Item
-                        .VisualParameters.Model) &&
-                !ReferenceEquals(BlueprintBootstrap.MagicFirearms.Require(
-                        MagicFirearmBlueprints.TheLastWordSymbol).Item
-                        .VisualParameters.Model,
-                    BlueprintBootstrap.ProductionFirearms.Pistol.Item
-                        .VisualParameters.Model) &&
-                !ReferenceEquals(BlueprintBootstrap.MagicFirearms.Require(
-                        MagicFirearmBlueprints.DuelistsRebuttalSymbol).Item
-                        .VisualParameters.Model,
-                    BlueprintBootstrap.MagicFirearms.Require(
-                        MagicFirearmBlueprints.TheLastWordSymbol).Item
-                        .VisualParameters.Model);
-            assertions.Add(Assertion("firearm-all-14-item-visual-identities",
-                "14 exact symbol-approved variants; no FirearmKind-only selection",
-                string.Join("|", items.Select(value => value.Item1 + "=" +
-                    WeaponVisualVariantCatalog.Require(value.Item1)).ToArray()),
-                exactItems, "exact inherited item visual/model reference"));
+            bool pistolSeparation = false;
+            string pistolSeparationFault = null;
+            try
+            {
+                pistolSeparation = !ReferenceEquals(
+                        BlueprintBootstrap.MagicFirearms.Require(
+                            MagicFirearmBlueprints.DuelistsRebuttalSymbol).Item
+                            .VisualParameters.Model,
+                        BlueprintBootstrap.ProductionFirearms.Pistol.Item
+                            .VisualParameters.Model) &&
+                    !ReferenceEquals(BlueprintBootstrap.MagicFirearms.Require(
+                            MagicFirearmBlueprints.TheLastWordSymbol).Item
+                            .VisualParameters.Model,
+                        BlueprintBootstrap.ProductionFirearms.Pistol.Item
+                            .VisualParameters.Model) &&
+                    !ReferenceEquals(BlueprintBootstrap.MagicFirearms.Require(
+                            MagicFirearmBlueprints.DuelistsRebuttalSymbol).Item
+                            .VisualParameters.Model,
+                        BlueprintBootstrap.MagicFirearms.Require(
+                            MagicFirearmBlueprints.TheLastWordSymbol).Item
+                            .VisualParameters.Model);
+            }
+            catch (Exception error)
+            {
+                pistolSeparationFault = error.GetType().Name + ": " + error.Message;
+            }
             assertions.Add(Assertion("pistol-three-variant-separation",
                 "Service, Duelist, and LastWord are three distinct prefab references",
-                "distinct=" + pistolSeparation, pistolSeparation,
+                "distinct=" + pistolSeparation + (pistolSeparationFault == null
+                    ? string.Empty : ";unreadable=" + pistolSeparationFault),
+                pistolSeparation,
                 "exact item-level visual model reference identity"));
 
             var instances = new List<GameObject>();
             bool renderable = true;
             bool exactPistolMarkers = true;
+            var pistolMarkerDetail = new List<string>();
             bool cleaned = false;
             try
             {
@@ -14022,6 +14189,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Vector3.Distance(instance.transform.Find("Muzzle")
                                 .localPosition, new Vector3(0f, 0f, 0.264f)) <
                                 0.0001f;
+                        // Each sub-condition as read, so that a failure can
+                        // be attributed. The verdict above is unchanged.
+                        Transform muzzle = instance == null ? null :
+                            instance.transform.Find("Muzzle");
+                        pistolMarkerDetail.Add(variant + "[instance=" +
+                            (instance != null) + ";visual=" + (visual != null) +
+                            ";markers=" + string.Join(",", new[] { "KMG_Grip",
+                                "KMG_Support", "KMG_Butt", "KMG_Muzzle" }.Select(
+                                    marker => marker + ":" + hierarchy.Count(
+                                        value => value.name == marker)).ToArray()) +
+                            ";supportHandTarget=" + (instance != null &&
+                                instance.transform.Find("SupportHandTarget") != null) +
+                            ";muzzle=" + (muzzle == null ? "<absent>" :
+                                muzzle.localPosition.x.ToString("R",
+                                    System.Globalization.CultureInfo.InvariantCulture) + "," +
+                                muzzle.localPosition.y.ToString("R",
+                                    System.Globalization.CultureInfo.InvariantCulture) + "," +
+                                muzzle.localPosition.z.ToString("R",
+                                    System.Globalization.CultureInfo.InvariantCulture)) +
+                            ";expectedMuzzle=0,0,0.264]");
                     }
                 }
                 assertions.Add(Assertion("firearm-seven-approved-variant-prefabs",
@@ -14031,7 +14218,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "runtime-loaded exact variant prefab set"));
                 assertions.Add(Assertion("pistol-authored-marker-contract",
                     "Duelist and LastWord retain exactly four authored markers, +Z muzzle, and no support IK",
-                    "exact=" + exactPistolMarkers, exactPistolMarkers,
+                    "exact=" + exactPistolMarkers + ";" + (pistolMarkerDetail.Count == 0
+                        ? "noPistolVariantInstantiated" :
+                        string.Join(";", pistolMarkerDetail.ToArray())),
+                    exactPistolMarkers,
                     "runtime-loaded source marker hierarchy"));
             }
             finally

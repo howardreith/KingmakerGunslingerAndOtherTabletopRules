@@ -97,6 +97,23 @@
   working save was made with, and it was not run through the live guarded launcher on the owner's installation.
 - `disposable-gunslinger-comprehensive-acceptance` has no Dodge slice on branch `codex/int03-dodge-scenario` (32
   slices, was 33): the slice could not execute the ability at the main menu. The aggregate was not rerun.
+- Up to and including the published v0.0.191, two of the product's own diagnostics cannot see what they are named
+  for. `disposable-firearm-visual-rigs` is pinned to 14 firearm items; there are 16, so it fails on the count and
+  inspects no item's visual binding. `observe-gunslinger-presentation` is pinned to 55 weapons and 56 items; there
+  are 57 and 58, so it fails on the count and never checks that the policy-only enchantment is present. Neither is a
+  player-facing defect. Repaired on branch `codex/int04-int05-presentation-diagnostics` (not merged, not released):
+  the expected identities come from declared rosters, every item is inspected, and each result is its own assertion.
+  On that branch all 16 firearm visual bindings and the 57, 58 and 12 censuses pass, and the policy enchantment is
+  present with blank text (`docs/GUNSLINGER-PRESENTATION-DIAGNOSTICS.md`).
+- `disposable-firearm-visual-rigs` still fails on `pistol-authored-marker-contract`, on the published line and on
+  the branch. The Duelist and Last Word pistol prefabs each have their four authored markers once and no
+  support-hand target, but their `Muzzle` is at local (-0.1483, -0.2357, 0.0521) where the assertion expects
+  (0, 0, 0.264). Whether the prefabs or the expectation is wrong is not established, and what a player would see of
+  it (a muzzle-flash origin) has not been looked at. Not repaired.
+- The 27 generic progression firearms (+2 to +5 and Reliable, for pistol, musket and blunderbuss) receive an item
+  visual variant through the same registration helper as the magic firearms, each mapped to its family's Service
+  variant. No scenario reads them, so whether those bindings hold in the game is not established. The sixteen-item
+  roster of `disposable-firearm-visual-rigs` is the population that scenario reads, not every firearm with a variant.
 - In `disposable-pistolero-deeds`, the damage assertion `up-close-critical` is intermittent on the grit UI recipient
   candidate: two of three identical runs failed (observed damage `6,3`) and one passed (`3,3`). The published v0.0.190
   package was run once and passed, which does not show whether it is intermittent there. The cause is not established.

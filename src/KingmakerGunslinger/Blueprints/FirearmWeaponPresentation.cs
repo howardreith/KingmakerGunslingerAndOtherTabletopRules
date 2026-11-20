@@ -56,13 +56,46 @@ namespace KingmakerGunslinger.Blueprints
         internal static bool HasExactItemVariant(BlueprintItemWeapon weapon,
             string blueprintSymbol, FirearmKind kind)
         {
-            if (weapon == null) return false;
-            string variant = WeaponVisualVariantCatalog.Require(blueprintSymbol);
-            if (!variant.StartsWith(kind.ToString() + ".",
-                StringComparison.Ordinal)) return false;
-            GameObject prefab = FirearmAssetRuntime.GetItemVariantPrefab(variant);
-            return prefab != null && weapon.VisualParameters != null &&
-                ReferenceEquals(weapon.VisualParameters.Model, prefab);
+            return Presentation.FirearmVisualRigAudit.Inspect(
+                ObserveItemVariant(weapon, blueprintSymbol, kind)).Bound;
+        }
+
+        /// <summary>
+        /// Reads what one firearm item's visual actually is, for the item
+        /// visual check. It never throws: an unmapped symbol or an unreadable
+        /// item is part of what it reports.
+        /// </summary>
+        internal static Presentation.FirearmVisualBindingObservation
+            ObserveItemVariant(BlueprintItemWeapon weapon, string blueprintSymbol,
+                FirearmKind kind)
+        {
+            var observation = new Presentation.FirearmVisualBindingObservation
+            {
+                Symbol = blueprintSymbol, Kind = kind, ItemPresent = weapon != null
+            };
+            try
+            {
+                if (weapon != null) observation.ItemName = weapon.name;
+                string variant;
+                if (string.IsNullOrEmpty(blueprintSymbol) ||
+                    !WeaponVisualVariantCatalog.TryGet(blueprintSymbol, out variant))
+                    return observation;
+                GameObject prefab = FirearmAssetRuntime.GetItemVariantPrefab(variant);
+                observation.PrefabAvailable = prefab != null;
+                observation.PrefabName = prefab == null ? null : prefab.name;
+                if (weapon == null) return observation;
+                WeaponVisualParameters visual = weapon.VisualParameters;
+                observation.HasVisualParameters = visual != null;
+                GameObject model = visual == null ? null : visual.Model;
+                observation.ModelName = model == null ? null : model.name;
+                observation.ModelIsVariantPrefab = prefab != null &&
+                    ReferenceEquals(model, prefab);
+            }
+            catch (Exception error)
+            {
+                observation.Fault = error.GetType().Name + ": " + error.Message;
+            }
+            return observation;
         }
 
         internal static bool HasApprovedItemVariantOrFamilyFallback(
