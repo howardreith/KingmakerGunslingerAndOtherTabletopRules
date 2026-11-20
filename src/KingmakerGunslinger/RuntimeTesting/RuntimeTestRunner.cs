@@ -15330,18 +15330,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cotwArchetypes.Count(value => value != null &&
                     BrownFurArchetypeOrdering.IsKnownCombinedArchetype(
                         value.AssetGuid));
-            bool brownFurOrderingExact = !expectedBrownFurTransmuter
-                ? brownFurIndex < 0
-                : brownFurIndex >= 0 &&
-                    (firstCombinedArchetypeIndex < 0 ||
-                     brownFurIndex < firstCombinedArchetypeIndex);
             IReadOnlyList<string> brownFurPublicationEvidence =
                 BrownFurOptionalExtensionCoordinator.PublicationEvidence;
-            int brownFurExpectedBefore = foreignCotwArchetypes;
-            int brownFurExpectedAfter = foreignCotwArchetypes + 1;
-            string brownFurExpectedPublication =
-                "surface=cotw-arcanist-archetypes;action=published;before=" +
-                brownFurExpectedBefore + ";after=" + brownFurExpectedAfter;
+            // Each predicate of the Brown-Fur check is judged and named on
+            // its own. The transaction is held to its own record from when
+            // it ran, not to the number of archetypes the selector holds
+            // now, which other mods may have added to since.
+            BrownFurPublicationAudit brownFurAudit =
+                ObserveBrownFurPublication(expectedBrownFurTransmuter);
             BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass
                 .CharacterClass;
             int classCount = (BlueprintRoot.Instance.Progression.CharacterClasses ??
@@ -16000,28 +15996,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         BrownFurIdentityCatalog.IdentityCount +
                         " identities; available and not published; zero CotW selector references; all foreign archetypes preserved",
                     observed,
-                    brownFurProviderAbsent ? BoundaryObservationPolicy.BrownFurAbsent(
+                    (!brownFurProviderAbsent || BoundaryObservationPolicy.BrownFurAbsent(
                         brownFurProviderAbsent,
                         brownFurStatus.Availability == BrownFurDependencyAvailability.Unavailable,
                         brownFurResolution == null && brownFurBlueprints == null,
                         brownFurRegisteredIdentities, brownFurStatus.Published,
                         brownFurGlobalSelectorReferences, brownFurGuidReferences,
-                        brownFurPublicationEvidence.Count) : brownFurContractCompatible &&
-                    brownFurStatus.Availability ==
-                        BrownFurDependencyAvailability.Available &&
-                    brownFurStatus.Published == expectedBrownFurTransmuter &&
-                    brownFurSelectorReferences ==
-                        (expectedBrownFurTransmuter ? 1 : 0) &&
-                    brownFurGuidReferences ==
-                        (expectedBrownFurTransmuter ? 1 : 0) &&
-                    foreignCotwArchetypes >= 6 && cotwArchetypesUnique &&
-                    brownFurOrderingExact &&
-                    (expectedBrownFurTransmuter ?
-                        brownFurPublicationEvidence.Any(value => value.Contains(
-                            "transaction;action=committed")) &&
-                        brownFurPublicationEvidence.Any(value => value.Contains(
-                            brownFurExpectedPublication)) :
-                        brownFurPublicationEvidence.Count == 0),
+                        brownFurPublicationEvidence.Count)) &&
+                    brownFurAudit.Passed,
                     "structural CotW contract, stable identity set, exact Arcanist archetype array, and Brown-Fur transaction evidence"),
                 Assertion("feature-module-urban-barbarian-publication-gate",
                     expectedUrbanBarbarian ?
@@ -16066,6 +16048,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExpandedSummoningBoundaryDetail(
                     "feature-module-expanded-summoning-publication",
                     summoningBoundary, iconEvidenceFiles));
+            assertions.InsertRange(assertions.FindIndex(value => value.Name ==
+                "feature-module-brown-fur-publication-gate") + 1,
+                BrownFurPublicationDetail(
+                    "feature-module-brown-fur-publication",
+                    brownFurAudit, iconEvidenceFiles));
             FirearmMonogramEvidence.Exercise(_request, assertions, iconEvidenceFiles);
             ObserveSprint40GeneratedDiagnostic(assertions, iconEvidenceFiles);
             var result = CreateResult(assertions.All(value => value.Status == "PASS") ?

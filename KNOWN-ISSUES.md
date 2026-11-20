@@ -301,15 +301,30 @@
   baseline built from released master reproduces both with identical measured values, so they are
   pre-existing and are not caused by the v0.0.186 repairs. Their mechanism is not traced. They are
   internal consistency checks and do not affect play.
-  Since traced for the summoning check (INT-01, 2026-11-16): the 38 are the mod's own generated Spider Summoner
+  Since traced for the summoning check (INT-01, 2026-11-16): the 38 entries reproduced on the published v0.0.191 are
+  the mod's own generated Spider Summoner
   rows, which are published, correctly, whenever Races Unleashed is installed. The check predates them and had no
   class for them, so it is a defect of the diagnostic and not of publication; it fails the same way on the published
   v0.0.191 with Races Unleashed as the only other mod. Corrected on branch
-  `codex/int01-summoning-publication-attribution` (not merged, not released), where every choice under the eighteen
-  summon parents is judged by identity and listed (`docs/EXPANDED-SUMMONING-PUBLICATION-BOUNDARY.md`). The original
-  run's raw results and mod list were not recovered, so the identification rests on the matching count, the matching
-  Brown-Fur value and the reproduction. The Brown-Fur check is not traced; it still fails beside twelve of the
-  owner's mods and is tracked separately (INT-02).
+  `codex/int01-summoning-publication-attribution` (accepted in review at `e2a716c59e`; not merged, not released), where
+  every choice under the eighteen summon parents is judged by identity and listed
+  (`docs/EXPANDED-SUMMONING-PUBLICATION-BOUNDARY.md`). The original run's raw results, mod list and row identities
+  were not recovered; the matching count, Races Unleashed's known presence, the matching Brown-Fur value and the
+  source history strongly support this as the cause of the historical report.
+  Since traced for the Brown-Fur check (INT-02, 2026-11-16), independently: it fails whenever the Favored Class mod
+  is installed beside Call of the Wild. The archetype is published correctly, once and in the right place. The
+  check required the publication transaction to have found as many archetypes as the selector holds at the end
+  (14), but since the startup-order repair of 2026-10-17 the mod publishes before Favored Class adds its eight combined
+  archetypes, so the transaction rightly found six. A defect of the diagnostic, not of publication; it fails the
+  same way on the published v0.0.191. Corrected on branch `codex/int02-brown-fur-publication-attribution` (awaiting
+  review; not merged, not released), where each predicate is its own named result and the transaction is judged
+  against its own record (`docs/BROWN-FUR-PUBLICATION-BOUNDARY.md`).
+- With Favored Class installed, that mod builds three combined Arcanist archetypes from Brown-Fur Transmuter itself
+  (Unlettered Arcanist / Spell Specialist / Brown-Fur Transmuter, Unlettered Arcanist / Brown-Fur Transmuter, Spell
+  Specialist / Brown-Fur Transmuter), because Brown-Fur is already in the selector when it combines. They are
+  Favored Class's blueprints, not this mod's, and by that mod's own list they were present in the owner's
+  installation on 2026-11-12. They disappear when the Brown-Fur module is off. Whether they work in play, and
+  whether they should be offered, has not been examined (NEW-10). Observed, not classified, not changed.
 - Dire Narlmarches and Pitax regional weapon stock (withdrawn in v0.0.185). It has the same native limitation as Oleg's spears:
   if a stocked Eastern weapon or spear was bought and a matching one was later sold back to that trader,
   the engine's update removes the sold copy. A save with no persisted known-item history keeps the old

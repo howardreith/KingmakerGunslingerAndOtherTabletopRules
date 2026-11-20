@@ -1,0 +1,30 @@
+{
+  "name": "brown-fur-publication-boundary-absent-provider",
+  "description": "INT-02. The Brown-Fur publication check with no other mod, so Call of the Wild is absent: the product's own feature-module observation with every module requested on. Nothing of Brown-Fur may be registered or published.",
+  "ownerMods": [],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "publication-provider-absent",
+      "product": {
+        "scenario": "observe-feature-module-settings",
+        "parameters": {
+          "gunslinger": true,
+          "acadamaeGraduate": true,
+          "shieldOther": true,
+          "expandedSummoning": true,
+          "elvenBranchedSpears": true,
+          "easternWeapons": true,
+          "brownFurTransmuter": true,
+          "urbanBarbarian": true,
+          "bodyguardFeats": true,
+          "protectionFromAlignmentControlImmunity": true,
+          "elementalRaces": true,
+          "teleportationSpells": true,
+          "magicCircleSpells": true
+        },
+        "timeoutSeconds": 600
+      }
+    }
+  ]
+}
