@@ -141,6 +141,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningTrampleObserver contacts = null;
             bool subscribed = false;
             var passedTurns = new JArray();
+            // Units already in combat before this cell are left alone at
+            // teardown; every unit the cell brought into combat leaves it
+            // before the turn-based setting is restored, because native
+            // turn-based disable pauses a party that is still in combat.
+            var combatBefore = new HashSet<UnitEntityData>(game.State.Units.All.Where(value => value != null && value.IsInCombat));
+            var leftCombat = new JArray();
+            bool partyOutOfCombat = false;
             try
             {
                 if (!mode.Current) throw new InvalidOperationException("RISK-06 native Default ownership is not current.");
@@ -264,8 +271,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (subscribed) { EventBus.Unsubscribe(log); EventBus.Unsubscribe(contacts); }
                     if (owner != null && !owner.Destroyed) Sprint28SetBrainActivePreservingActions(owner, false);
                     foreach (var actor in new[] { owner, target }.Where(value => value != null && !value.Destroyed))
-                    { actor.Commands.InterruptAll(true); if (actor.IsInCombat) actor.LeaveCombat(); }
+                        actor.Commands.InterruptAll(true);
+                    foreach (var actor in game.State.Units.All.Where(value => value != null && !value.Destroyed &&
+                        value.IsInCombat && !combatBefore.Contains(value)).ToArray())
+                    { actor.LeaveCombat(); leftCombat.Add(actor.UniqueId); }
                     game.Player.UpdateIsInCombat();
+                    partyOutOfCombat = !game.Player.IsInCombat;
                 }
                 finally
                 {
@@ -286,13 +297,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (tutorial != null && tutorialLocked) tutorial.Lock();
                         bool flagsRestored = flagsBefore.OrderBy(value => value.Key.AssetGuid, StringComparer.Ordinal)
                             .SequenceEqual(game.Player.UnlockableFlags.UnlockedFlags.OrderBy(value => value.Key.AssetGuid, StringComparer.Ordinal));
-                        bool restored = flagsRestored && target.Descriptor.State.Size == sizeBefore &&
+                        bool restored = flagsRestored && partyOutOfCombat && !game.IsPaused && target.Descriptor.State.Size == sizeBefore &&
                             target.Descriptor.Damage == damageBefore && (owner == null || owner.Destroyed || !fixture.Created.Contains(owner));
                         Sprint25Check(id + "-restored", restored, new JObject { ["flagsRestored"] = flagsRestored,
+                            ["leftCombat"] = leftCombat, ["partyOutOfCombatBeforeModeRestore"] = partyOutOfCombat,
+                            ["pausedAfterModeRestore"] = game.IsPaused,
                             ["targetSize"] = target.Descriptor.State.Size.ToString(), ["targetDamage"] = target.Descriptor.Damage,
                             ["ownerDisposed"] = owner == null || owner.Destroyed, ["quietedRestored"] = quieted.Count,
                             ["turnBasedSetting"] = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue },
-                            "The summon is disposed, the hostile's size, damage and position, the quieted actors, the engagement and turn-based settings and the tutorial flag are restored.");
+                            "Every unit the cell brought into combat leaves it before the turn-based setting is restored (no native pause); the summon is disposed, the hostile's size, damage and position, the quieted actors, the engagement and turn-based settings and the tutorial flag are restored.");
                     }
                 }
             }
