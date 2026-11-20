@@ -481,7 +481,8 @@
   only by a harness command in every released version: the summon's brain
   supplies only an ordinary attack and summons cannot be commanded by the
   player. On branch `codex/risk06-mastodon-trample-route` (S5 T6 / RISK-06,
-  draft PR #191; not merged, not released) the Mastodon has a private brain
+  draft PR #191; accepted for its reviewed development scope at `9d2f5e7c4f`,
+  product `203b605c108c`; not merged, not released) the Mastodon has a private brain
   whose owned AI action uses the existing Trample as a conservative approach
   maneuver: only when it is unthreatened, has its full round, no enemy is
   within its melee reach, the target is smaller and unclaimed this round, and
@@ -489,7 +490,9 @@
   Otherwise it attacks as before. Qualified natively in real-time and
   turn-based combat on a fixture-created summon, one geometry
   (`docs/EXPANDED-SUMMONING-MASTODON-TRAMPLE-ROUTE.md`). Other tramplers unchanged and not
-  examined; summons saved before the change keep attack-only brains.
+  examined; summons saved before the change keep attack-only brains. Stale
+  dispatch, summon expiry, an attack-of-opportunity stop during an AI
+  Trample and the threatened case in turn-based combat were not observed.
 - The legacy Advanced Revolver declares six chambers, but saved firearm state holds one round, so its six-round reload
   fails and restores ammunition and weapon state. No published release offered it (vendors only cleaned it up;
   Craft Magic Items only recognized an owned one). On branch `codex/risk01-advanced-revolver` (accepted with Sprint 4 at `e30b19e8fe`;

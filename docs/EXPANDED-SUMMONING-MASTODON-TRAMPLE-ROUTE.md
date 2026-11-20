@@ -1,8 +1,21 @@
 # Mastodon Trample: normal-play invocation route (RISK-06 / S5 T6)
 
-Status: **investigation accepted (principal review, 2026-11-20); the approved owned Mastodon Trample AI action is
-implemented and qualified natively in real-time and turn-based combat (session `20261120T162705Z`, 28 of 28).
-Returned for review; S5 T6 and Sprint 5 stay open.** Not merged, not released.
+Status: **accepted and closed for its reviewed development scope (principal review, 2026-11-20).** Accepted review
+head `9d2f5e7c4f2f23aed47d01cc9bdb33ae7551b920`; qualified product-build commit `203b605c108c` (session
+`20261120T162705Z`, PASS 28 of 28). Sprint 5 is closed (`docs/GUNSLINGER-SPRINT5-CLOSURE.md`). Not merged, not
+released.
+
+## Acceptance qualifications (principal review, 2026-11-20)
+
+1. **Stale plans.** Revalidation at command creation is implemented and source-reviewed. Policy and segment decisions
+   are domain-tested. Stale dispatch and queued-command behaviour were not separately observed. When the plan no longer
+   holds at creation, the fallback creates an ordinary attack against the previously selected target; it does not
+   request fresh native target selection, and no reselection path is claimed.
+2. **Death.** The Mastodon was killed before its first contact: the cell shows interruption without contact and
+   without a claim being created. It does not show removal of a previously established claim after death.
+3. **Inventory.** All 32 expected outputs resolved and none was unreadable in this frozen session. The observer checks
+   that expected set only; it does not scan for unexpected extra outputs, and an unreadable alternate graph would be
+   reported without failing the verdict on its own. It is not an exhaustive bidirectional census.
 
 - **Branch:** `codex/risk06-mastodon-trample-route`, draft PR #191, stacked on PR #190 (accepted S5 T5 review head
   `c2867a3aa1`).
@@ -61,8 +74,8 @@ Returned for review; S5 T6 and Sprint 5 stay open.** Not merged, not released.
   - the navmesh trace reaches the endpoint, line of sight holds, and the native `AbilityData.CanTarget(point)` and
     `IsAvailable` accept it.
   A point that snapped beside or short of the target is refused. The plan is recomputed when the command is created;
-  if it no longer holds, no Trample is cast and the ordinary attack command is issued instead. Once dispatched, native
-  cancellation applies.
+  if it no longer holds, no Trample is cast and an ordinary attack command against the previously selected target is
+  issued instead (no fresh target selection is requested). Once dispatched, native cancellation applies.
 - **Unavailable-ability guard (`203b605c10`).** The native selector treats a cast action whose ability is unavailable as
   "expended" and removes it from the unit's available actions, which the game restores only at creation or rest. The
   action therefore refuses in `IsAvailable` whenever the ability is unavailable, before that check runs. Found while
@@ -92,7 +105,7 @@ requires and fails otherwise.
 | Larger target, real time | Target set to the Mastodon's size | Trample never selected; ordinary attack | Refusal `TargetNotSmaller`; 0 Trample issued; 2 attacks on the target |
 | No full round, turn-based | Native Staggered condition on the Mastodon | Trample never selected; ordinary attack | Refusal `NoFullRoundAction` (the native ability also reports unavailable); 0 Trample issued; one attack after a move |
 | Occupied endpoint, real time | The summoner placed on the planned endpoint | No Trample cast; ordinary attack | Refusal `EndpointOccupied`; 0 Trample issued; 2 attacks on the target |
-| Death mid-Trample, real time | The Mastodon killed (`GameHelper.KillUnit`) once the owned Trample had started and acted, before any contact | Command stops; no contact; no claim left | Command ended Interrupt; no save, attack of opportunity or damage; ledger shows no claim; no unfinished command |
+| Death mid-Trample, real time | The Mastodon killed (`GameHelper.KillUnit`) once the owned Trample had started and acted, before any contact | Command stops; no contact; no claim left | Command ended Interrupt; no save, attack of opportunity or damage; no claim was created; no unfinished command |
 | Shared brain after cells | — | Native brain unchanged | Still exactly `AttackAiAction` |
 
 In every cell the owned action was still in the Mastodon's available actions at the end (the unavailable-ability
@@ -241,8 +254,8 @@ Investigation checks (unchanged): gate 17 of 17 at `bc92642e19` and `921a952978`
 - **Creation route.** Every cell's Mastodon came from the accelerated own-tier fixture helper (the Summon Nature's Ally
   VII single execution). Menu selection, slot debit and the summoning cast's action expenditure are not established;
   the other outputs share the unit and its brain (route inventory) but were not cast.
-- **Not separately observed:** a stale plan between command creation and start (the plan is recomputed at creation and
-  the real-time selector re-plans while the command waits; covered by code and domain tests only); expiry of the summon
+- **Not separately observed:** stale dispatch and queued-command behaviour (revalidation at command creation is
+  source-reviewed; policy and segment decisions are domain-tested); expiry of the summon
   (death was observed); a stopping attack of opportunity during an AI-issued Trample (the AoO branch and ledger halt are
   the existing, previously qualified rule; the halt is read by the planner and covered by domain tests); the
   threatened case in turn-based mode.
