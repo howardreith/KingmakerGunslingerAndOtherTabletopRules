@@ -1,8 +1,9 @@
 # The named pistols' muzzle position: an observer that compared two frames (REP-03)
 
-Status: **development change on a review branch. Not merged, not released.** Branch
-`codex/rep03-named-pistol-muzzle`, stacked on draft PR #172 at its accepted head `73c2a0e4bc` (which is stacked on
-#171, #170 and #169). The published v0.0.191 does not contain it. Nothing here is a release qualification.
+Status: **development item closed: the review accepted draft PR #173 at `6f1590d31d` for its reviewed development
+scope. Not merged, not released.** Branch `codex/rep03-named-pistol-muzzle`, stacked on draft PR #172 at its accepted
+head `73c2a0e4bc` (which is stacked on #171, #170 and #169). The published v0.0.191 does not contain it. Nothing here
+is a release qualification. See "Review acceptance and closeout".
 
 This is one bounded cut of the Gunslinger remediation epic of 2026-11-15: story S3 T8, inventory record REP-03 (audit
 finding GS-AUD-0047). Current status is kept in `planning/GUNSLINGER-REMEDIATION-STATUS.md`.
@@ -10,7 +11,8 @@ finding GS-AUD-0047). Current status is kept in `planning/GUNSLINGER-REMEDIATION
 The review of `b77bd58d55` accepted the coordinate-frame diagnosis and the geometry repair in principle and found two
 defects in the supporting code. Those, and a third found while validating them, are corrected and described under
 "Review corrections" near the end. The sections before it are the record as first written; their runs are kept under
-their own candidates and did not exercise the corrected code. REP-03 awaits review.
+their own candidates and did not exercise the corrected code. The review of `6f1590d31d` then accepted the
+corrections; that is recorded under "Review acceptance and closeout".
 
 ## Disposition
 
@@ -427,6 +429,36 @@ second build and its three sessions are the difference.
   alone was refused in the failing run is not established.
 - No marker data that is not finite was produced in the game; that is covered by the domain tests.
 - Only the handgun family was run. The long-gun, spear and Eastern motion scenarios share the session and were not.
+
+## Review acceptance and closeout
+
+The review of draft PR #173 at `6f1590d31d31588b03726484c6ad6da4a2e88da1` accepted it for its reviewed development
+scope. The two review findings are closed and the additional command-completion repair is accepted. REP-03 / S3 T8 is
+closed as a development item. Nothing was rebuilt or rerun for this closeout; the evidence is the runs already listed
+above, each under its own candidate.
+
+What was accepted, and what each part rests on:
+
+| Part | State |
+|---|---|
+| The REP-03 finding | An observer defect: the assertion compared two different coordinate frames. Corrected |
+| The pistols | Unchanged. No asset, bundle, source model, identity or variant mapping changed |
+| Outer termination of the motion session | Corrected (`6ab8c97733`, `87cc889f06`) |
+| Marker data that is not finite | Corrected (`6ab8c97733`) |
+| The pause-related command-completion defect | Corrected (`652dd05700`) |
+| Final compiled candidate `652dd057001d` | Visual rigs PASS 74 of 74 (`20261116T170135Z`); handgun motion PASS 8 of 8 (`20261116T165812Z`) |
+| The deliberate outer-abort drill | ERROR by design (`20261116T170009Z`); judged apart from that, it showed the pause restored and a clean termination |
+
+Review acceptance, merge and release are separate states. This is the first only: PR #173 is still an open draft
+with no reviewers, nothing is merged and nothing is released.
+
+Unchanged by the closeout:
+
+- The limits below and those under "What the corrections' evidence does not show" all stand.
+- The earlier candidates' records stand as written, including the failed handgun run on `87cc889f0607`.
+- NEW-09 (the projectile's launch origin) is observed and not classified.
+- How the pistols look was not reviewed. Appearance approval and any broader presentation qualification are outside
+  this closeout.
 
 ## Limits and untested claims
 

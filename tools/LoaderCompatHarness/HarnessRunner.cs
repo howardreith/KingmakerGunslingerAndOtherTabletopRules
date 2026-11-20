@@ -427,6 +427,15 @@ namespace KmgLoaderCompatHarness
                     return failures.Count == 0 ? StepStatus.Done : Fail(string.Join("; ", failures.ToArray()));
                 }
 
+                case "kmgVariantCensus":
+                {
+                    // "match" lists variant parents. Records every entry under each, in order; changes nothing.
+                    var variantCensus = new JObject();
+                    System.Collections.Generic.List<string> unreadableParents = VariantCensus.Run(List(step.Match), variantCensus);
+                    result["kmgVariantCensus_" + (step.Label ?? stepIndex.ToString())] = variantCensus;
+                    return unreadableParents.Count == 0 ? StepStatus.Done : Fail(string.Join("; ", unreadableParents.ToArray()));
+                }
+
                 case "kmgDeedLifecycle":
                 {
                     // "match" names the script (dodge, armed, bleeds, condition, fallingPetal, mountainSunder);

@@ -334,6 +334,7 @@
     <Compile Include="Summoning\SummonClericAlignmentPolicy.cs" />
     <Compile Include="Summoning\SummonClericAlignmentGate.cs" />
     <Compile Include="Summoning\SpiderSummonerCatalog.cs" />
+    <Compile Include="Summoning\ExpandedSummoningPublicationAudit.cs" />
     <Compile Include="Summoning\SpiderSummonerBenefit.cs" />
     <Compile Include="Blueprints\SpiderSummonerIntegration.cs" />
     <Compile Include="Summoning\SummonForeignRowContracts.cs" />

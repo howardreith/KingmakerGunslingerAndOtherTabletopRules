@@ -1,0 +1,66 @@
+{
+  "name": "summoning-publication-boundary-owner-stack",
+  "description": "INT-01. The Expanded Summoning publication check beside twelve of the owner's mods from the lab snapshot, Races Unleashed and Call of the Wild among them: the product's own feature-module observation with every module on, and a harness listing of every entry under the eighteen canonical summon parents. The original report named eleven installed mods on the owner's installation; this is the lab's twelve-mod snapshot, not that installation, so it is a wider configuration and not the original matched comparison. The Brown-Fur check runs in the same observation and is not judged here (INT-02).",
+  "ownerMods": [
+    "BagOfTricks",
+    "BetterVendors",
+    "CallOfTheWild",
+    "CheatMenu",
+    "CraftMagicItems",
+    "EddicKingmakerRespec",
+    "KingmakerBugfixes",
+    "ProperFlanking2",
+    "RacesUnleashed",
+    "SkipIntro",
+    "TweakOrTreat",
+    "ZFavoredClass"
+  ],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "publication-module-on",
+      "product": {
+        "scenario": "observe-feature-module-settings",
+        "parameters": {
+          "gunslinger": true,
+          "acadamaeGraduate": true,
+          "shieldOther": true,
+          "expandedSummoning": true,
+          "elvenBranchedSpears": true,
+          "easternWeapons": true,
+          "brownFurTransmuter": true,
+          "urbanBarbarian": true,
+          "bodyguardFeats": true,
+          "protectionFromAlignmentControlImmunity": true,
+          "elementalRaces": true,
+          "teleportationSpells": true,
+          "magicCircleSpells": true
+        },
+        "timeoutSeconds": 600
+      }
+    },
+    {
+      "label": "census-module-on",
+      "harness": {
+        "steps": [
+          {
+            "op": "expectMods",
+            "match": "KingmakerGunslinger,KmgLoaderCompatHarness,BagOfTricks,BetterVendors,CallOfTheWild,CheatMenu,CraftMagicItems,EddicKingmakerRespec,KingmakerBugfixes,ProperFlanking2,RacesUnleashed,SkipIntro,TweakOrTreat,ZFavoredClass",
+            "expect": ""
+          },
+          {
+            "op": "kmgModules",
+            "label": "initial",
+            "match": ""
+          },
+          {
+            "op": "kmgVariantCensus",
+            "label": "module-on",
+            "match": "8fd74eddd9b6c224693d9ab241f25e84,1724061e89c667045a6891179ee2e8e7,5d61dde0020bbf54ba1521f7ca0229dc,7ed74a3ec8c458d4fb50b192fd7be6ef,630c8b85d9f07a64f917d79cb5905741,e740afbab0147944dab35d83faa0ae1c,ab167fd8203c1314bac6568932f1752f,d3ac756a229830243a72e84f3ab050d0,52b5df2a97df18242aec67610616ded0,c6147854641924442a3bb736080cfeb6,298148133cdc3fd42889b99c82711986,fdcf7e57ec44f704591f11b45f4acf61,c83db50513abdf74ca103651931fac4b,8f98a22f35ca6684a983363d32e51bfe,55bbce9b3e76d4a4a8c8e0698d29002c,051b979e7d7f8ec41b9fa35d04746b33,ea78c04f0bd13d049a1cce5daf8d83e0,a7469ef84ba50ac4cbf3d145e3173f8e",
+            "continueOnFailure": true
+          }
+        ]
+      }
+    }
+  ]
+}

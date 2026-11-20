@@ -117,7 +117,8 @@
   paused game while an attack is sampled. As first written on the branch, a run that the runner ended early left the
   game unpaused and its disposable units in place, and a high frame rate could leave an attack command running that
   blocked the next weapon's. The corrected marker diagnostic also let a marker that was not a finite number pass.
-  All three are corrected on the branch and await review. These are diagnostics; none of this is player-facing.
+  All three are corrected on the branch, and the review of PR #173 at `6f1590d31d` accepted them (not merged, not
+  released). These are diagnostics; none of this is player-facing.
 - The engine launches a firearm's projectile from the unit's left-palm locator, inherited from the native light
   crossbow's projectile, not from the weapon's muzzle. At the frame a handgun shot fires, that point is 1.4 to 1.8 m
   from the muzzle over two runs (service pistol, both named pistols and the revolver). The mod intends to hide the projectile's
@@ -300,6 +301,15 @@
   baseline built from released master reproduces both with identical measured values, so they are
   pre-existing and are not caused by the v0.0.186 repairs. Their mechanism is not traced. They are
   internal consistency checks and do not affect play.
+  Since traced for the summoning check (INT-01, 2026-11-16): the 38 are the mod's own generated Spider Summoner
+  rows, which are published, correctly, whenever Races Unleashed is installed. The check predates them and had no
+  class for them, so it is a defect of the diagnostic and not of publication; it fails the same way on the published
+  v0.0.191 with Races Unleashed as the only other mod. Corrected on branch
+  `codex/int01-summoning-publication-attribution` (not merged, not released), where every choice under the eighteen
+  summon parents is judged by identity and listed (`docs/EXPANDED-SUMMONING-PUBLICATION-BOUNDARY.md`). The original
+  run's raw results and mod list were not recovered, so the identification rests on the matching count, the matching
+  Brown-Fur value and the reproduction. The Brown-Fur check is not traced; it still fails beside twelve of the
+  owner's mods and is tracked separately (INT-02).
 - Dire Narlmarches and Pitax regional weapon stock (withdrawn in v0.0.185). It has the same native limitation as Oleg's spears:
   if a stocked Eastern weapon or spear was bought and a matching one was later sold back to that trader,
   the engine's update removes the sold copy. A save with no persisted known-item history keeps the old
