@@ -476,6 +476,16 @@
   tooltip) and eight duplicate-looking pairs (alike under the observer's
   comparison key, which does not prove behavioural equivalence) are retained
   and left for owner review. Spontaneous casters stay outside this scope.
+- A summoned Mastodon never uses its Trample in normal play. Trample (2d8+18,
+  Reflex DC 29, added in v0.0.180) was qualified only by a harness command: the
+  summon's only AI action is an ordinary attack, no loaded AI action names the
+  Trample, and summons cannot be commanded by the player in real-time or
+  turn-based mode. Observed natively on branch `codex/risk06-mastodon-trample-route`
+  (S5 T6 / RISK-06, draft PR #191; a normal summon in both modes made only
+  attacks while a legal Trample path existed). An owned, conservative Trample
+  AI action is proposed for review; nothing is implemented
+  (`docs/EXPANDED-SUMMONING-MASTODON-TRAMPLE-ROUTE.md`). The other tramplers share the
+  carrier and were not examined.
 - The legacy Advanced Revolver declares six chambers, but saved firearm state holds one round, so its six-round reload
   fails and restores ammunition and weapon state. No published release offered it (vendors only cleaned it up;
   Craft Magic Items only recognized an owned one). On branch `codex/risk01-advanced-revolver` (accepted with Sprint 4 at `e30b19e8fe`;
