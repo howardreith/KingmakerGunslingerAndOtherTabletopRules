@@ -366,6 +366,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintFeature superior = BlueprintBootstrap.Library.BlueprintsByAssetId.ContainsKey(Pol06SuperiorSummoning) ?
                 BlueprintBootstrap.Library.BlueprintsByAssetId[Pol06SuperiorSummoning] as BlueprintFeature : null;
             bool superiorHeld = superior == null || caster.Descriptor.HasFact(superior);
+            // Superior Summoning adds to the dice rows' ProjectilesCount rank; a
+            // Single row is no die plus a fixed one, so only dice casts need its absence.
+            bool superiorBlocks = superiorHeld && quantity != SummonMultiplicity.One;
             int expectedCount = Pol06ConversionObservationVerdict.ExpectedCount(quantity, Pol06ForcedDie);
             DiceType die = quantity == SummonMultiplicity.OneD3 ? DiceType.D3 : quantity == SummonMultiplicity.OneD4PlusOne ? DiceType.D4 : DiceType.Zero;
             var dieOverride = die == DiceType.Zero ? null : new SpiderDieOverride { Initiator = caster, Die = die, Value = Pol06ForcedDie };
@@ -377,7 +380,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["childMetamagicText"] = Pol06MetamagicText(chosen), ["childSpellLevel"] = chosen.SpellLevel, ["heightenLevel"] = chosen.MetamagicData?.HeightenLevel ?? 0,
                 ["spellLevelCost"] = chosen.MetamagicData?.SpellLevelCost ?? 0, ["sourceSlotLevel"] = source.ParamSpellSlot?.SpellLevel,
                 ["equalPreparedCopies"] = Pol06EqualPreparedCopies(source.Spellbook, source), ["casterLevel"] = source.Spellbook.CasterLevel };
-            if (index < 0 || superiorHeld) { record["error"] = index < 0 ? "row-not-in-popup" : "superior-summoning-held-or-unresolved"; report(record); yield break; }
+            if (index < 0 || superiorBlocks) { record["error"] = index < 0 ? "row-not-in-popup" : "superior-summoning-held-or-unresolved"; report(record); yield break; }
             if (dieOverride != null) EventBus.Subscribe(dieOverride);
             fixture.Caster = caster;
             try
@@ -828,8 +831,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SpellSlot wizardSlot = wizardBook.GetMemorizedSpellSlots(1).FirstOrDefault(value => value != null && value.Type == SpellSlotType.Common && value.Spell == null);
                 bool wizardMemorized = wizardSlot != null && wizardBook.Memorize(new AbilityData(wizardSpell, wizardBook), wizardSlot);
                 clericBook.Rest(); wizardBook.Rest();
-                AbilityData source = clericBook.GetMemorizedSpellSlots(5).Where(value => value.Spell != null && value.Type == SpellSlotType.Common &&
-                    ReferenceEquals(value.Spell.Blueprint, plainFive)).Select(value => value.Spell).FirstOrDefault();
+                SpellSlot sourceSlot = clericBook.GetMemorizedSpellSlots(5).FirstOrDefault(value => value.Spell != null && value.Type == SpellSlotType.Common &&
+                    ReferenceEquals(value.Spell.Blueprint, plainFive));
+                if (sourceSlot != null) { sourceSlot.Available = true; sourceSlot.Spell.ParamSpellSlot = sourceSlot; }
+                AbilityData source = sourceSlot?.Spell;
                 SpellSlot[] wizardSlots = Enumerable.Range(0, 10).SelectMany(level => wizardBook.GetMemorizedSpellSlots(level)).ToArray();
                 Func<JArray> wizardState = () => new JArray(Enumerable.Range(0, 10).SelectMany(level => wizardBook.GetMemorizedSpellSlots(level))
                     .Select(value => (value.Spell?.Blueprint?.AssetGuid ?? "empty") + ":" + value.Available));
