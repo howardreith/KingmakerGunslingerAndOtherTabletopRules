@@ -45,8 +45,13 @@ $plan_notes
   and transactional restoration. Never leave a transaction unrestored.
 - If the file `$stop_file` exists, finish or restore any active runtime
   transaction, commit and push coherent work, and return status `paused`.
-- If a permission denial blocks a required step, do not look for a workaround;
-  report status `blocked` naming the exact command and why it is needed.
+- Shell permissions are an allowlist matched against the start of each
+  command. Run one simple command per tool call from the worktree (no `cd`,
+  `&&`, `;` or pipes; those never match). Allowed command prefixes:
+$allowed_commands
+  If the simple form of a command you genuinely need is denied, do not look for
+  a workaround: report status `blocked` naming the exact command and why it is
+  needed.
 
 ## Ending this invocation
 

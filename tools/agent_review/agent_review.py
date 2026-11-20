@@ -1709,6 +1709,14 @@ class Controller:
         return fields
 
     # -- headless developer loop ---------------------------------------------------------
+    def allowed_commands(self):
+        """Human-readable list of the shell command prefixes the developer's permission file allows."""
+        path = self.dir / "developer-settings.json"
+        rules = read_json(path)["permissions"]["allow"] if path.exists() else []
+        prefixes = sorted({m.group(1).rstrip("*").rstrip() for r in rules
+                           for m in [re.match(r"^(?:Bash|PowerShell)\((.*)\)$", r)] if m})
+        return "\n".join(f"  - `{p}`" for p in prefixes) or "  - (none)"
+
     def runtime_active(self):
         return any(Path(expand(p)).exists() for p in self.cfg.get("runtime_lock_paths", []))
 
@@ -1722,7 +1730,7 @@ class Controller:
                        "push_command": " ".join(push_argv(self.cfg, self.wf, self.state["enrollment_id"]))
                        .replace("{repo_root}", self.state["repo_root"]).replace("{branch}", self.state["branch"]),
                        "transcript_dir": self.cfg["transcript_dir"], "correction": "",
-                       "enrollment_id": self.state["enrollment_id"]})
+                       "enrollment_id": self.state["enrollment_id"], "allowed_commands": self.allowed_commands()})
         resume = self.developer.session_exists(dev["session_id"])
         context = self.state.get("develop_context")
         if correction:

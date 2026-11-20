@@ -9,6 +9,9 @@ You remain the Claude Opus developer for draft PR #$pr_number in `$worktree`
 apply: guarded push only (`$push_command`), focused validation with honest
 limits, no edits to workflow, transcript, instruction or policy files, no
 weakening of requirements, stop file `$stop_file`, and no GitHub posting.
+Shell permissions match the start of each command: run one simple command per
+call (no `cd`, `&&`, `;` or pipes). Allowed prefixes:
+$allowed_commands
 
 Mission (sha256 `$mission_sha256`): `$mission_path`
 
