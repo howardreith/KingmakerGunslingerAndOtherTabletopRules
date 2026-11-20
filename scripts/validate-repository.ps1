@@ -35,6 +35,11 @@ if ($null -eq $python) {
 if ($LASTEXITCODE -ne 0) { throw 'Repository validator regression fixtures failed.' }
 & $python.Source (Join-Path $repositoryRoot 'tools\test_development_candidate_validator.py')
 if ($LASTEXITCODE -ne 0) { throw 'Development-candidate validator corruption fixtures failed.' }
+# Placement-level roster coverage fixtures (INT-08). The suite includes the
+# freshness check of the two generated planning documents, so a stale report
+# fails here; it never regenerates them. An accurately incomplete report passes.
+& $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_ideal_roster.py')
+if ($LASTEXITCODE -ne 0) { throw 'Expanded Summoning roster coverage fixtures failed.' }
 & $python.Source (Join-Path $repositoryRoot 'tools\test_deterministic_package.py')
 if ($LASTEXITCODE -ne 0) { throw 'Deterministic package count/refusal fixtures failed.' }
 if ([string]::IsNullOrEmpty($DevelopmentPurpose)) {

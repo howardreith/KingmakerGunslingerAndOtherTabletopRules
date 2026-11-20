@@ -17,15 +17,17 @@ domain suite. Live creatures remain owned by `ExpandedSummoningCatalog`.
 | Requiring work (Appendix A) | 95 | 95 |
 | Summon Monster base entries | 120 | 120 |
 | Summon Nature's Ally base entries | 110 | 110 |
-| Core visible quantity placements | 1,232 | 1,232 |
+| Ideal quantity placements | 1,232 | 1,232 |
 
 Derived independently from the manifest; the delta against every charter
-figure is zero.
+figure is zero. This table checks the ideal manifest against the charter
+only. What the source actually offers is reported under "Coverage of
+ideal placements" below.
 
 ## Projected menu scale
 
-The 1,232 figure is an aggregate across eighteen parent spells, never one
-menu. The scalability gate is the largest single parent spell.
+The 1,232 figure is an aggregate of ideal placements across eighteen parent
+spells, never one menu. The scalability gate is the largest single parent spell.
 
 ### Summon Monster
 
@@ -57,12 +59,113 @@ menu. The scalability gate is the largest single parent spell.
 | SNA 9 | 3 | 7 | 100 | **110** |
 | **Total** | | | | **608** |
 
-## Coverage ledger
+## Coverage of ideal placements
 
-Coverage is derived from the union of the shipped catalogs, never
-hand-maintained. A creature that ships only as a retained native
-wrapper counts as represented; an earlier revision consulted only the
-project-owned catalog and so hid eleven of them.
+Coverage is **incomplete**: 1,208 of 1,232 ideal placements have a choice admitted by the current publication policy. 9 are registered and withheld, and 15 have no declared choice.
+
+A placement is one creature in one spell family, under one parent spell, at one
+quantity. Every ideal placement is matched exactly against the choices the source
+declares. A creature's registered identity, or a choice in another family, tier or
+quantity, never stands in for one. The declared choices are derived from the
+catalogs alone, never from the ideal roster's promises.
+
+| Evidence state | Placements | Established by |
+|---|---|---|
+| Ideal placement | 1,232 | `ExpandedSummoningIdealRosterCatalog` |
+| Registered project choice | 1,188 | `ExpandedSummoningCatalog` tiers under `GenerateVariants` semantics, each an active identity in `blueprints/blueprints.json` |
+| Registered native wrapper choice | 29 | `SummonNativeExpansionCatalog`, each an active identity in `blueprints/blueprints.json` |
+| Admitted by the publication policy | 1,208 | `SummonVisibilityCatalog`, which withholds 9 project choices |
+| Observed in a native menu | not established | this report is source-derived |
+| Exercised by a native cast | not established | this report is source-derived |
+
+Assumptions: the Expanded Summoning module is enabled; the publication policy is the
+source's own; native wrappers are published unconditionally, as the publisher does.
+Optional providers are not counted: the Spider Summoner rows that Races Unleashed makes
+possible, and any other mod's choices, are outside the core charter and outside the
+catalogs read here.
+
+| Comparison | Placements |
+|---|---|
+| Ideal placements covered by an admitted choice | 1,208 |
+| Ideal placements withheld by the publication policy | 9 |
+| Ideal placements with no declared choice | 15 |
+| Declared choices not in the ideal roster (extra) | 0 |
+| Placements declared more than once (duplicate) | 0 |
+| Declared choices without an active registered identity | 0 |
+| Unpublished placements without a recorded disposition | 0 (0 withheld, 0 missing) |
+
+Cross-checked against the totals the source states for itself:
+
+| Figure | Stated in source | Derived here |
+|---|---|---|
+| Project creatures (`UnitCount`) | 134 | 134 |
+| Registered project placements (`RegisteredLogicalPlacementCount`) | 1,188 | 1,188 |
+| Summon Monster project placements (`ValidateFamily`) | 600 | 600 |
+| Summon Nature's Ally project placements (`ValidateFamily`) | 588 | 588 |
+| Withheld project placements (`SuppressedLogicalPlacementCount`) | 9 | 9 |
+| Native wrapper choices (`NativeExpandedOptionIdentityCount`) | 29 | 29 |
+
+### Ideal placements not published
+
+| Creature | Family | Parent | Quantity | State | Decision on record | Disposition |
+|---|---|---|---|---|---|---|
+| Axiomite | Summon Monster | SM IX | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Brachiosaurus | Summon Monster | SM VII | single | No declared choice | yes | POL-04 / Sprint 5 T3: Brachiosaurus is registered only in Summon Nature's Ally; whether Summon Monster offers it is an open charter decision |
+| Brachiosaurus | Summon Monster | SM VIII | 1d3 | No declared choice | yes | POL-04 / Sprint 5 T3: Brachiosaurus is registered only in Summon Nature's Ally; whether Summon Monster offers it is an open charter decision |
+| Brachiosaurus | Summon Monster | SM IX | 1d4+1 | No declared choice | yes | POL-04 / Sprint 5 T3: Brachiosaurus is registered only in Summon Nature's Ally; whether Summon Monster offers it is an open charter decision |
+| Manticore | Summon Nature's Ally | SNA VIII | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Manticore | Summon Nature's Ally | SNA IX | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Mite | Summon Nature's Ally | SNA IV | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Mite | Summon Nature's Ally | SNA V | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Mite | Summon Nature's Ally | SNA VI | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Mite | Summon Nature's Ally | SNA VII | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Mite | Summon Nature's Ally | SNA VIII | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Mite | Summon Nature's Ally | SNA IX | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Redcap | Summon Monster | SM VIII | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Redcap | Summon Monster | SM IX | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Soul Eater | Summon Monster | SM IX | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
+| Stirge | Summon Nature's Ally | SNA I | single | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
+| Stirge | Summon Nature's Ally | SNA II | 1d3 | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
+| Stirge | Summon Nature's Ally | SNA III | 1d4+1 | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
+| Stirge | Summon Nature's Ally | SNA IV | 1d4+1 | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
+| Stirge | Summon Nature's Ally | SNA V | 1d4+1 | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
+| Stirge | Summon Nature's Ally | SNA VI | 1d4+1 | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
+| Stirge | Summon Nature's Ally | SNA VII | 1d4+1 | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
+| Stirge | Summon Nature's Ally | SNA VIII | 1d4+1 | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
+| Stirge | Summon Nature's Ally | SNA IX | 1d4+1 | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
+
+### Declared choices not in the ideal roster
+
+None.
+
+### Placements declared more than once
+
+None.
+
+### Declared choices without an active registered identity
+
+None.
+
+### Recorded dispositions whose placement is now published
+
+None.
+
+### Coverage by creature
+
+| Creature coverage | Creatures | Which |
+|---|---|---|
+| Every ideal placement published | 138 |  |
+| Some ideal placements published, some not | 6 | Axiomite, Brachiosaurus, Manticore, Mite, Redcap, Soul Eater |
+| No ideal placement published; every one registered and withheld | 1 | Stirge |
+| No ideal placement published; some registered and withheld, some with no declared choice | 0 |  |
+| No ideal placement published or registered | 0 |  |
+
+Available somewhere: 144 creatures have at least one published ideal placement (the first
+two rows). That is not complete coverage; the partial row is the difference.
+
+### Registered unit identity
+
+Identity is a separate and weaker fact than a published placement.
 
 | Unit identity | Creatures | Meaning |
 |---|---|---|
@@ -70,165 +173,161 @@ project-owned catalog and so hid eleven of them.
 | Retained native wrapper | 11 | A native unit exposed through a preserved wrapper |
 | None yet | 0 | In the ideal roster; no unit identity exists |
 
-| Family placement | Summon Monster | Nature's Ally |
-|---|---|---|
-| Published | 120 | 110 |
-| Registered | 0 | 0 |
-| Planned | 0 | 0 |
-| NotOffered | 25 | 35 |
-
-Represented today: **145** creatures (145 published somewhere, 0 registered but hidden).
-
 Frost Giant has one retained native unit identity and published Summon Monster and Nature's Ally wrappers in both families.
 
 Identity reuse: 145 existing creature identities are reused in place (charter decision D-01, one creature one identity); 0 new identities remain to be allocated.
 
 ## Creatures
 
-| Creature | SM | SNA | Sprint | Priority | Effort | Unit identity | SM cover | SNA cover | Asset package |
+Placement columns count published ideal placements of that creature in that
+family: Complete; Partial (some published); Withheld (all registered, none
+admitted); Missing (none declared); Unpublished (none published, some withheld and
+some missing). The parenthesis gives the unpublished placements by state.
+
+| Creature | SM | SNA | Sprint | Priority | Effort | Unit identity | SM placements | SNA placements | Asset package |
 |---|---|---|---|---|---|---|---|---|---|
-| Air Mephit | 4 | 4 | complete | Strong | - | ProjectOwned | Published | Published | Mephit family |
-| Ankylosaurus | 5 | 5 | S22 | Essential | High | ProjectOwned | Published | Published | Armored dinosaurs |
-| Ape | 3 | 3 | S18 | Strong | High | ProjectOwned | Published | Published | Primate rig family |
-| Astral Deva | 9 | - | S31 | Essential | Medium | ProjectOwned | Published | NotOffered | Outsiders |
-| Aurochs | 3 | 3 | S11 | Essential | Medium | ProjectOwned | Published | Published | Equines & ungulates |
-| Axiomite | 6 | - | complete | Variety | - | NativeWrapper | Published | NotOffered | Outsiders |
-| Babau | 5 | - | S36 | Strong | High | ProjectOwned | Published | NotOffered | Outsiders |
-| Barbed Devil | 8 | - | S35 | Strong | High | ProjectOwned | Published | NotOffered | Outsiders |
-| Bearded Devil | 5 | - | S34 | Strong | High | ProjectOwned | Published | NotOffered | Outsiders |
-| Bebelith | 7 | - | S21 | Strong | High | ProjectOwned | Published | NotOffered | Arachnids & scorpion |
-| Bison | 4 | 4 | S11 | Strong | Medium | ProjectOwned | Published | Published | Equines & ungulates |
-| Boar | 3 | 3 | complete | Variety | - | ProjectOwned | Published | Published | Boar family |
-| Bogeyman | 7 | - | complete | Strong | - | NativeWrapper | Published | NotOffered | Fey |
-| Bone Devil | 7 | - | S35 | Strong | VeryHigh | ProjectOwned | Published | NotOffered | Outsiders |
-| Brachiosaurus | 7 | 7 | S25 | Essential | High | ProjectOwned | Published | Published | Sauropod dinosaur |
-| Bralani Azata | 5 | - | complete | Essential | - | ProjectOwned | Published | NotOffered | Outsiders |
-| Bulette | - | 6 | S26 | Strong | High | ProjectOwned | NotOffered | Published | Burrowers & huge monsters |
-| Cheetah | 3 | 3 | S8 | Strong | Medium | ProjectOwned | Published | Published | Big-cat family |
-| Cloud Giant | - | 8 | S29 | Strong | Medium | ProjectOwned | NotOffered | Published | Giant humanoids |
-| Constrictor Snake | 3 | 3 | S17 | Strong | High | ProjectOwned | Published | Published | Snake rig family |
-| Crocodile | 3 | 3 | S16 | Strong | High | ProjectOwned | Published | Published | Crocodilian rig family |
-| Cyclops | - | 5 | S3 | Essential | Low | ProjectOwned | NotOffered | Published | Giant humanoids |
-| Deinonychus | 4 | 4 | S24 | Strong | High | ProjectOwned | Published | Published | Theropod dinosaurs |
-| Dire Ape | 4 | 4 | S18 | Strong | Medium | ProjectOwned | Published | Published | Primate rig family |
-| Dire Bat | 3 | 3 | S9 | Essential | High | ProjectOwned | Published | Published | Flying creature rigs |
-| Dire Bear | 6 | 6 | S6 | Strong | Low | ProjectOwned | Published | Published | Individual creature |
-| Dire Boar | 4 | 4 | complete | Strong | - | ProjectOwned | Published | Published | Boar family |
-| Dire Crocodile | 7 | 7 | S16 | Strong | Medium | ProjectOwned | Published | Published | Crocodilian rig family |
-| Dire Lion | 5 | 5 | S7 | Strong | Medium | ProjectOwned | Published | Published | Big-cat family |
-| Dire Rat | 1 | 1 | S12 | Variety | Medium | ProjectOwned | Published | Published | Canines & small quadrupeds |
-| Dire Tiger (Smilodon) | 6 | 6 | S7 | Essential | Medium | ProjectOwned | Published | Published | Big-cat family |
-| Dire Wolf | 4 | 4 | complete | Strong | - | ProjectOwned | Published | Published | Canines & small quadrupeds |
-| Dog | 1 | 1 | S12 | Variety | Medium | ProjectOwned | Published | Published | Canines & small quadrupeds |
-| Dretch | 3 | - | S30 | Strong | Medium | ProjectOwned | Published | NotOffered | Outsiders |
-| Dust Mephit | 4 | 4 | S5 | Strong | Low | ProjectOwned | Published | Published | Mephit family |
-| Eagle | 1 | 1 | S9 | Essential | Medium | ProjectOwned | Published | Published | Flying creature rigs |
-| Earth Mephit | 4 | 4 | complete | Strong | - | ProjectOwned | Published | Published | Mephit family |
-| Elder Air Elemental | 8 | 8 | complete | Strong | - | ProjectOwned | Published | Published | Classic elementals |
-| Elder Earth Elemental | 8 | 8 | complete | Strong | - | ProjectOwned | Published | Published | Classic elementals |
-| Elder Fire Elemental | 8 | 8 | complete | Variety | - | ProjectOwned | Published | Published | Classic elementals |
-| Elder Water Elemental | 8 | 8 | complete | Variety | - | ProjectOwned | Published | Published | Classic elementals |
-| Elephant | 6 | 6 | S25 | Strong | Medium | ProjectOwned | Published | Published | Proboscideans |
-| Erinyes Devil | 6 | - | complete | Strong | - | ProjectOwned | Published | NotOffered | Outsiders |
-| Ettin | - | 5 | S29 | Strong | High | ProjectOwned | NotOffered | Published | Individual creature |
-| Fire Beetle | 1 | 1 | S14 | Variety | High | ProjectOwned | Published | Published | Insect rig family |
-| Fire Giant | - | 7 | S28 | Essential | Medium | ProjectOwned | NotOffered | Published | Giant humanoids |
-| Fire Mephit | 4 | 4 | complete | Strong | - | ProjectOwned | Published | Published | Mephit family |
-| Frost Giant | 8 | 7 | S3 | Strong | Low | NativeWrapper | Published | Published | Giant humanoids |
-| Ghaele Azata | 9 | - | complete | Essential | - | ProjectOwned | Published | NotOffered | Outsiders |
-| Giant Ant (Drone) | 4 | 4 | S15 | Variety | High | ProjectOwned | Published | Published | Insect rig family |
-| Giant Ant (Soldier) | 3 | 3 | S14 | Variety | Medium | ProjectOwned | Published | Published | Insect rig family |
-| Giant Ant (Worker) | 2 | 2 | S14 | Variety | High | ProjectOwned | Published | Published | Insect rig family |
-| Giant Centipede | 2 | 1 | complete | Variety | - | ProjectOwned | Published | Published | Native vermin |
-| Giant Crab | - | 3 | S21 | Strong | High | ProjectOwned | NotOffered | Published | Crustacean rig |
-| Giant Flytrap | - | 7 | S4 | Strong | Low | ProjectOwned | NotOffered | Published | Native plant summons |
-| Giant Frog | 2 | 2 | complete | Strong | - | ProjectOwned | Published | Published | Frog family |
-| Giant Scorpion | 4 | 4 | S20 | Essential | VeryHigh | ProjectOwned | Published | Published | Arachnids & scorpion |
-| Giant Spider | 2 | 2 | S6 | Essential | Medium | ProjectOwned | Published | Published | Arachnids & scorpion |
-| Giant Stag Beetle | - | 4 | S15 | Strong | Medium | ProjectOwned | NotOffered | Published | Insect rig family |
-| Giant Wasp | 4 | 4 | S10 | Strong | High | ProjectOwned | Published | Published | Flying creature rigs |
-| Girallon | - | 5 | S19 | Essential | VeryHigh | ProjectOwned | NotOffered | Published | Primate rig family |
-| Glabrezu | 9 | - | S38 | Essential | VeryHigh | ProjectOwned | Published | NotOffered | Outsiders |
-| Goblin Dog | 2 | 2 | S12 | Variety | Medium | ProjectOwned | Published | Published | Canines & small quadrupeds |
-| Gorgon | 8 | - | S26 | Essential | High | ProjectOwned | Published | NotOffered | Armored magical beast |
-| Greater Air Elemental | 7 | 7 | complete | Strong | - | ProjectOwned | Published | Published | Classic elementals |
-| Greater Earth Elemental | 7 | 7 | complete | Strong | - | ProjectOwned | Published | Published | Classic elementals |
-| Greater Fire Elemental | 7 | 7 | complete | Variety | - | ProjectOwned | Published | Published | Classic elementals |
-| Greater Water Elemental | 7 | 7 | complete | Variety | - | ProjectOwned | Published | Published | Classic elementals |
-| Griffon | - | 4 | S27 | Essential | VeryHigh | ProjectOwned | NotOffered | Published | Hybrid magical beasts |
-| Grizzly Bear | 4 | 4 | S6 | Strong | Low | ProjectOwned | Published | Published | Individual creature |
-| Hamadryad | - | 9 | complete | Strong | - | NativeWrapper | NotOffered | Published | Fey |
-| Hell Hound | 4 | - | complete | Strong | - | ProjectOwned | Published | NotOffered | Outsiders |
-| Hezrou | 8 | - | S36 | Strong | High | ProjectOwned | Published | NotOffered | Outsiders |
-| Hill Giant | - | 6 | S28 | Variety | Medium | ProjectOwned | NotOffered | Published | Giant humanoids |
-| Horse | 2 | 2 | S3 | Variety | Low | ProjectOwned | Published | Published | Equines & ungulates |
-| Hound Archon | 4 | - | S30 | Essential | High | ProjectOwned | Published | NotOffered | Outsiders |
-| Huge Air Elemental | 6 | 6 | complete | Strong | - | ProjectOwned | Published | Published | Classic elementals |
-| Huge Earth Elemental | 6 | 6 | complete | Strong | - | ProjectOwned | Published | Published | Classic elementals |
-| Huge Fire Elemental | 6 | 6 | complete | Variety | - | ProjectOwned | Published | Published | Classic elementals |
-| Huge Water Elemental | 6 | 6 | complete | Variety | - | ProjectOwned | Published | Published | Classic elementals |
-| Hyena | 2 | 2 | S12 | Strong | Medium | ProjectOwned | Published | Published | Canines & small quadrupeds |
-| Ice Devil | 9 | - | S40 | Strong | VeryHigh | ProjectOwned | Published | NotOffered | Outsiders |
-| Ice Mephit | 4 | 4 | S5 | Variety | Low | ProjectOwned | Published | Published | Mephit family |
-| Invisible Stalker | 6 | - | S33 | Strong | Medium | ProjectOwned | Published | NotOffered | Outsiders |
-| Kyton (Chain Devil) | 5 | - | S34 | Strong | High | ProjectOwned | Published | NotOffered | Outsiders |
-| Lantern Archon | 3 | - | S31 | Essential | Medium | ProjectOwned | Published | NotOffered | Outsiders |
-| Large Air Elemental | 5 | 5 | complete | Strong | - | ProjectOwned | Published | Published | Classic elementals |
-| Large Earth Elemental | 5 | 5 | complete | Essential | - | ProjectOwned | Published | Published | Classic elementals |
-| Large Fire Elemental | 5 | 5 | complete | Variety | - | ProjectOwned | Published | Published | Classic elementals |
-| Large Water Elemental | 5 | 5 | complete | Variety | - | ProjectOwned | Published | Published | Classic elementals |
-| Lemure | 2 | - | S30 | Essential | Medium | ProjectOwned | Published | NotOffered | Outsiders |
-| Leopard | 3 | 3 | S7 | Essential | Medium | ProjectOwned | Published | Published | Big-cat family |
-| Lillend Azata | 6 | - | S32 | Essential | VeryHigh | ProjectOwned | Published | NotOffered | Outsiders |
-| Lion | 4 | 4 | S7 | Essential | Medium | ProjectOwned | Published | Published | Big-cat family |
-| Magma Mephit | 4 | 4 | S5 | Variety | Low | ProjectOwned | Published | Published | Mephit family |
-| Manticore | - | 5 | complete | Essential | - | NativeWrapper | NotOffered | Published | Hybrid magical beasts |
-| Mastodon | 7 | 7 | complete | Strong | - | ProjectOwned | Published | Published | Proboscideans |
-| Medium Air Elemental | 4 | 4 | complete | Strong | - | ProjectOwned | Published | Published | Classic elementals |
-| Medium Earth Elemental | 4 | 4 | complete | Strong | - | ProjectOwned | Published | Published | Classic elementals |
-| Medium Fire Elemental | 4 | 4 | complete | Variety | - | ProjectOwned | Published | Published | Classic elementals |
-| Medium Water Elemental | 4 | 4 | complete | Variety | - | ProjectOwned | Published | Published | Classic elementals |
-| Mite | - | 1 | complete | Strong | - | NativeWrapper | NotOffered | Published | Fey |
-| Monitor Lizard | 3 | 3 | S6 | Strong | Low | ProjectOwned | Published | Published | Individual creature |
-| Movanic Deva | 8 | - | complete | Essential | - | NativeWrapper | Published | NotOffered | Outsiders |
-| Nalfeshnee | 9 | - | S39 | Essential | VeryHigh | ProjectOwned | Published | NotOffered | Outsiders |
-| Nereid | - | 8 | complete | Variety | - | NativeWrapper | NotOffered | Published | Fey |
-| Ooze Mephit | 4 | 4 | S5 | Essential | Low | ProjectOwned | Published | Published | Mephit family |
-| Owlbear | - | 4 | S3 | Strong | Low | ProjectOwned | NotOffered | Published | Hybrid magical beasts |
-| Pixie | - | 9 | S6 | Essential | Medium | ProjectOwned | NotOffered | Published | Fey |
-| Poisonous Frog | 1 | 1 | S13 | Variety | Medium | ProjectOwned | Published | Published | Frog family |
-| Pony | 1 | 1 | S3 | Essential | Low | ProjectOwned | Published | Published | Equines & ungulates |
-| Pteranodon | 4 | 4 | S2 | Essential | High | ProjectOwned | Published | Published | Flying creature rigs |
-| Purple Worm | - | 8 | S4 | Essential | Medium | ProjectOwned | NotOffered | Published | Burrowers & huge monsters |
-| Redcap | 5 | - | complete | Variety | - | NativeWrapper | Published | NotOffered | Fey |
-| Rhinoceros | 4 | 4 | S11 | Strong | Medium | ProjectOwned | Published | Published | Equines & ungulates |
-| Roc | 7 | 7 | complete | Essential | - | ProjectOwned | Published | Published | Flying creature rigs |
-| Salamander | 5 | - | S17 | Strong | High | ProjectOwned | Published | NotOffered | Outsiders |
-| Salt Mephit | 4 | 4 | S5 | Essential | Low | ProjectOwned | Published | Published | Mephit family |
-| Satyr | - | 4 | S32 | Essential | Medium | ProjectOwned | NotOffered | Published | Fey |
-| Shadow Demon | 6 | - | S33 | Essential | High | ProjectOwned | Published | NotOffered | Outsiders |
-| Shadow Mastiff | 6 | - | S13 | Strong | Medium | ProjectOwned | Published | NotOffered | Canines & small quadrupeds |
-| Shambling Mound | - | 6 | S4 | Strong | Low | ProjectOwned | NotOffered | Published | Native plant summons |
-| Small Air Elemental | 2 | 2 | complete | Strong | - | ProjectOwned | Published | Published | Classic elementals |
-| Small Earth Elemental | 2 | 2 | complete | Essential | - | ProjectOwned | Published | Published | Classic elementals |
-| Small Fire Elemental | 2 | 2 | complete | Variety | - | ProjectOwned | Published | Published | Classic elementals |
-| Small Water Elemental | 2 | 2 | complete | Variety | - | ProjectOwned | Published | Published | Classic elementals |
-| Soul Eater | 6 | - | complete | Strong | - | NativeWrapper | Published | NotOffered | Outsiders |
-| Steam Mephit | 4 | 4 | S5 | Strong | Low | ProjectOwned | Published | Published | Mephit family |
-| Stegosaurus | - | 6 | S23 | Strong | High | ProjectOwned | NotOffered | Published | Armored dinosaurs |
-| Stirge | - | 1 | S10 | Strong | High | ProjectOwned | NotOffered | Published | Flying creature rigs |
-| Stone Giant | - | 6 | S28 | Essential | Medium | ProjectOwned | NotOffered | Published | Giant humanoids |
-| Storm Giant | - | 9 | S29 | Essential | Medium | ProjectOwned | NotOffered | Published | Giant humanoids |
-| Succubus | 6 | - | S33 | Strong | Medium | ProjectOwned | Published | NotOffered | Outsiders |
-| Thanadaemon | 9 | - | complete | Strong | - | NativeWrapper | Published | NotOffered | Outsiders |
-| Tiger | - | 4 | S8 | Essential | Medium | ProjectOwned | NotOffered | Published | Big-cat family |
-| Triceratops | 6 | 6 | S23 | Essential | High | ProjectOwned | Published | Published | Armored dinosaurs |
-| Trumpet Archon | 9 | - | S31 | Strong | High | ProjectOwned | Published | NotOffered | Outsiders |
-| Tyrannosaurus | 7 | 7 | S24 | Essential | High | ProjectOwned | Published | Published | Theropod dinosaurs |
-| Viper | 1 | 1 | S17 | Variety | High | ProjectOwned | Published | Published | Snake rig family |
-| Vrock | 7 | - | S37 | Essential | VeryHigh | ProjectOwned | Published | NotOffered | Outsiders |
-| Water Mephit | 4 | 4 | complete | Strong | - | ProjectOwned | Published | Published | Mephit family |
-| Wolf | 2 | 2 | complete | Strong | - | ProjectOwned | Published | Published | Canines & small quadrupeds |
-| Wolverine | 3 | 3 | S13 | Variety | Medium | ProjectOwned | Published | Published | Canines & small quadrupeds |
-| Woolly Rhinoceros | 5 | 5 | S11 | Strong | Low | ProjectOwned | Published | Published | Equines & ungulates |
-| Xill | 5 | - | S19 | Strong | VeryHigh | ProjectOwned | Published | NotOffered | Outsiders |
+| Air Mephit | 4 | 4 | complete | Strong | - | ProjectOwned | Complete 6/6 | Complete 6/6 | Mephit family |
+| Ankylosaurus | 5 | 5 | S22 | Essential | High | ProjectOwned | Complete 5/5 | Complete 5/5 | Armored dinosaurs |
+| Ape | 3 | 3 | S18 | Strong | High | ProjectOwned | Complete 7/7 | Complete 7/7 | Primate rig family |
+| Astral Deva | 9 | - | S31 | Essential | Medium | ProjectOwned | Complete 1/1 | - | Outsiders |
+| Aurochs | 3 | 3 | S11 | Essential | Medium | ProjectOwned | Complete 7/7 | Complete 7/7 | Equines & ungulates |
+| Axiomite | 6 | - | complete | Variety | - | NativeWrapper | Partial 3/4 (1 missing) | - | Outsiders |
+| Babau | 5 | - | S36 | Strong | High | ProjectOwned | Complete 5/5 | - | Outsiders |
+| Barbed Devil | 8 | - | S35 | Strong | High | ProjectOwned | Complete 2/2 | - | Outsiders |
+| Bearded Devil | 5 | - | S34 | Strong | High | ProjectOwned | Complete 5/5 | - | Outsiders |
+| Bebelith | 7 | - | S21 | Strong | High | ProjectOwned | Complete 3/3 | - | Arachnids & scorpion |
+| Bison | 4 | 4 | S11 | Strong | Medium | ProjectOwned | Complete 6/6 | Complete 6/6 | Equines & ungulates |
+| Boar | 3 | 3 | complete | Variety | - | ProjectOwned | Complete 7/7 | Complete 7/7 | Boar family |
+| Bogeyman | 7 | - | complete | Strong | - | NativeWrapper | Complete 3/3 | - | Fey |
+| Bone Devil | 7 | - | S35 | Strong | VeryHigh | ProjectOwned | Complete 3/3 | - | Outsiders |
+| Brachiosaurus | 7 | 7 | S25 | Essential | High | ProjectOwned | Missing 0/3 | Complete 3/3 | Sauropod dinosaur |
+| Bralani Azata | 5 | - | complete | Essential | - | ProjectOwned | Complete 5/5 | - | Outsiders |
+| Bulette | - | 6 | S26 | Strong | High | ProjectOwned | - | Complete 4/4 | Burrowers & huge monsters |
+| Cheetah | 3 | 3 | S8 | Strong | Medium | ProjectOwned | Complete 7/7 | Complete 7/7 | Big-cat family |
+| Cloud Giant | - | 8 | S29 | Strong | Medium | ProjectOwned | - | Complete 2/2 | Giant humanoids |
+| Constrictor Snake | 3 | 3 | S17 | Strong | High | ProjectOwned | Complete 7/7 | Complete 7/7 | Snake rig family |
+| Crocodile | 3 | 3 | S16 | Strong | High | ProjectOwned | Complete 7/7 | Complete 7/7 | Crocodilian rig family |
+| Cyclops | - | 5 | S3 | Essential | Low | ProjectOwned | - | Complete 5/5 | Giant humanoids |
+| Deinonychus | 4 | 4 | S24 | Strong | High | ProjectOwned | Complete 6/6 | Complete 6/6 | Theropod dinosaurs |
+| Dire Ape | 4 | 4 | S18 | Strong | Medium | ProjectOwned | Complete 6/6 | Complete 6/6 | Primate rig family |
+| Dire Bat | 3 | 3 | S9 | Essential | High | ProjectOwned | Complete 7/7 | Complete 7/7 | Flying creature rigs |
+| Dire Bear | 6 | 6 | S6 | Strong | Low | ProjectOwned | Complete 4/4 | Complete 4/4 | Individual creature |
+| Dire Boar | 4 | 4 | complete | Strong | - | ProjectOwned | Complete 6/6 | Complete 6/6 | Boar family |
+| Dire Crocodile | 7 | 7 | S16 | Strong | Medium | ProjectOwned | Complete 3/3 | Complete 3/3 | Crocodilian rig family |
+| Dire Lion | 5 | 5 | S7 | Strong | Medium | ProjectOwned | Complete 5/5 | Complete 5/5 | Big-cat family |
+| Dire Rat | 1 | 1 | S12 | Variety | Medium | ProjectOwned | Complete 9/9 | Complete 9/9 | Canines & small quadrupeds |
+| Dire Tiger (Smilodon) | 6 | 6 | S7 | Essential | Medium | ProjectOwned | Complete 4/4 | Complete 4/4 | Big-cat family |
+| Dire Wolf | 4 | 4 | complete | Strong | - | ProjectOwned | Complete 6/6 | Complete 6/6 | Canines & small quadrupeds |
+| Dog | 1 | 1 | S12 | Variety | Medium | ProjectOwned | Complete 9/9 | Complete 9/9 | Canines & small quadrupeds |
+| Dretch | 3 | - | S30 | Strong | Medium | ProjectOwned | Complete 7/7 | - | Outsiders |
+| Dust Mephit | 4 | 4 | S5 | Strong | Low | ProjectOwned | Complete 6/6 | Complete 6/6 | Mephit family |
+| Eagle | 1 | 1 | S9 | Essential | Medium | ProjectOwned | Complete 9/9 | Complete 9/9 | Flying creature rigs |
+| Earth Mephit | 4 | 4 | complete | Strong | - | ProjectOwned | Complete 6/6 | Complete 6/6 | Mephit family |
+| Elder Air Elemental | 8 | 8 | complete | Strong | - | ProjectOwned | Complete 2/2 | Complete 2/2 | Classic elementals |
+| Elder Earth Elemental | 8 | 8 | complete | Strong | - | ProjectOwned | Complete 2/2 | Complete 2/2 | Classic elementals |
+| Elder Fire Elemental | 8 | 8 | complete | Variety | - | ProjectOwned | Complete 2/2 | Complete 2/2 | Classic elementals |
+| Elder Water Elemental | 8 | 8 | complete | Variety | - | ProjectOwned | Complete 2/2 | Complete 2/2 | Classic elementals |
+| Elephant | 6 | 6 | S25 | Strong | Medium | ProjectOwned | Complete 4/4 | Complete 4/4 | Proboscideans |
+| Erinyes Devil | 6 | - | complete | Strong | - | ProjectOwned | Complete 4/4 | - | Outsiders |
+| Ettin | - | 5 | S29 | Strong | High | ProjectOwned | - | Complete 5/5 | Individual creature |
+| Fire Beetle | 1 | 1 | S14 | Variety | High | ProjectOwned | Complete 9/9 | Complete 9/9 | Insect rig family |
+| Fire Giant | - | 7 | S28 | Essential | Medium | ProjectOwned | - | Complete 3/3 | Giant humanoids |
+| Fire Mephit | 4 | 4 | complete | Strong | - | ProjectOwned | Complete 6/6 | Complete 6/6 | Mephit family |
+| Frost Giant | 8 | 7 | S3 | Strong | Low | NativeWrapper | Complete 2/2 | Complete 3/3 | Giant humanoids |
+| Ghaele Azata | 9 | - | complete | Essential | - | ProjectOwned | Complete 1/1 | - | Outsiders |
+| Giant Ant (Drone) | 4 | 4 | S15 | Variety | High | ProjectOwned | Complete 6/6 | Complete 6/6 | Insect rig family |
+| Giant Ant (Soldier) | 3 | 3 | S14 | Variety | Medium | ProjectOwned | Complete 7/7 | Complete 7/7 | Insect rig family |
+| Giant Ant (Worker) | 2 | 2 | S14 | Variety | High | ProjectOwned | Complete 8/8 | Complete 8/8 | Insect rig family |
+| Giant Centipede | 2 | 1 | complete | Variety | - | ProjectOwned | Complete 8/8 | Complete 9/9 | Native vermin |
+| Giant Crab | - | 3 | S21 | Strong | High | ProjectOwned | - | Complete 7/7 | Crustacean rig |
+| Giant Flytrap | - | 7 | S4 | Strong | Low | ProjectOwned | - | Complete 3/3 | Native plant summons |
+| Giant Frog | 2 | 2 | complete | Strong | - | ProjectOwned | Complete 8/8 | Complete 8/8 | Frog family |
+| Giant Scorpion | 4 | 4 | S20 | Essential | VeryHigh | ProjectOwned | Complete 6/6 | Complete 6/6 | Arachnids & scorpion |
+| Giant Spider | 2 | 2 | S6 | Essential | Medium | ProjectOwned | Complete 8/8 | Complete 8/8 | Arachnids & scorpion |
+| Giant Stag Beetle | - | 4 | S15 | Strong | Medium | ProjectOwned | - | Complete 6/6 | Insect rig family |
+| Giant Wasp | 4 | 4 | S10 | Strong | High | ProjectOwned | Complete 6/6 | Complete 6/6 | Flying creature rigs |
+| Girallon | - | 5 | S19 | Essential | VeryHigh | ProjectOwned | - | Complete 5/5 | Primate rig family |
+| Glabrezu | 9 | - | S38 | Essential | VeryHigh | ProjectOwned | Complete 1/1 | - | Outsiders |
+| Goblin Dog | 2 | 2 | S12 | Variety | Medium | ProjectOwned | Complete 8/8 | Complete 8/8 | Canines & small quadrupeds |
+| Gorgon | 8 | - | S26 | Essential | High | ProjectOwned | Complete 2/2 | - | Armored magical beast |
+| Greater Air Elemental | 7 | 7 | complete | Strong | - | ProjectOwned | Complete 3/3 | Complete 3/3 | Classic elementals |
+| Greater Earth Elemental | 7 | 7 | complete | Strong | - | ProjectOwned | Complete 3/3 | Complete 3/3 | Classic elementals |
+| Greater Fire Elemental | 7 | 7 | complete | Variety | - | ProjectOwned | Complete 3/3 | Complete 3/3 | Classic elementals |
+| Greater Water Elemental | 7 | 7 | complete | Variety | - | ProjectOwned | Complete 3/3 | Complete 3/3 | Classic elementals |
+| Griffon | - | 4 | S27 | Essential | VeryHigh | ProjectOwned | - | Complete 6/6 | Hybrid magical beasts |
+| Grizzly Bear | 4 | 4 | S6 | Strong | Low | ProjectOwned | Complete 6/6 | Complete 6/6 | Individual creature |
+| Hamadryad | - | 9 | complete | Strong | - | NativeWrapper | - | Complete 1/1 | Fey |
+| Hell Hound | 4 | - | complete | Strong | - | ProjectOwned | Complete 6/6 | - | Outsiders |
+| Hezrou | 8 | - | S36 | Strong | High | ProjectOwned | Complete 2/2 | - | Outsiders |
+| Hill Giant | - | 6 | S28 | Variety | Medium | ProjectOwned | - | Complete 4/4 | Giant humanoids |
+| Horse | 2 | 2 | S3 | Variety | Low | ProjectOwned | Complete 8/8 | Complete 8/8 | Equines & ungulates |
+| Hound Archon | 4 | - | S30 | Essential | High | ProjectOwned | Complete 6/6 | - | Outsiders |
+| Huge Air Elemental | 6 | 6 | complete | Strong | - | ProjectOwned | Complete 4/4 | Complete 4/4 | Classic elementals |
+| Huge Earth Elemental | 6 | 6 | complete | Strong | - | ProjectOwned | Complete 4/4 | Complete 4/4 | Classic elementals |
+| Huge Fire Elemental | 6 | 6 | complete | Variety | - | ProjectOwned | Complete 4/4 | Complete 4/4 | Classic elementals |
+| Huge Water Elemental | 6 | 6 | complete | Variety | - | ProjectOwned | Complete 4/4 | Complete 4/4 | Classic elementals |
+| Hyena | 2 | 2 | S12 | Strong | Medium | ProjectOwned | Complete 8/8 | Complete 8/8 | Canines & small quadrupeds |
+| Ice Devil | 9 | - | S40 | Strong | VeryHigh | ProjectOwned | Complete 1/1 | - | Outsiders |
+| Ice Mephit | 4 | 4 | S5 | Variety | Low | ProjectOwned | Complete 6/6 | Complete 6/6 | Mephit family |
+| Invisible Stalker | 6 | - | S33 | Strong | Medium | ProjectOwned | Complete 4/4 | - | Outsiders |
+| Kyton (Chain Devil) | 5 | - | S34 | Strong | High | ProjectOwned | Complete 5/5 | - | Outsiders |
+| Lantern Archon | 3 | - | S31 | Essential | Medium | ProjectOwned | Complete 7/7 | - | Outsiders |
+| Large Air Elemental | 5 | 5 | complete | Strong | - | ProjectOwned | Complete 5/5 | Complete 5/5 | Classic elementals |
+| Large Earth Elemental | 5 | 5 | complete | Essential | - | ProjectOwned | Complete 5/5 | Complete 5/5 | Classic elementals |
+| Large Fire Elemental | 5 | 5 | complete | Variety | - | ProjectOwned | Complete 5/5 | Complete 5/5 | Classic elementals |
+| Large Water Elemental | 5 | 5 | complete | Variety | - | ProjectOwned | Complete 5/5 | Complete 5/5 | Classic elementals |
+| Lemure | 2 | - | S30 | Essential | Medium | ProjectOwned | Complete 8/8 | - | Outsiders |
+| Leopard | 3 | 3 | S7 | Essential | Medium | ProjectOwned | Complete 7/7 | Complete 7/7 | Big-cat family |
+| Lillend Azata | 6 | - | S32 | Essential | VeryHigh | ProjectOwned | Complete 4/4 | - | Outsiders |
+| Lion | 4 | 4 | S7 | Essential | Medium | ProjectOwned | Complete 6/6 | Complete 6/6 | Big-cat family |
+| Magma Mephit | 4 | 4 | S5 | Variety | Low | ProjectOwned | Complete 6/6 | Complete 6/6 | Mephit family |
+| Manticore | - | 5 | complete | Essential | - | NativeWrapper | - | Partial 3/5 (2 missing) | Hybrid magical beasts |
+| Mastodon | 7 | 7 | complete | Strong | - | ProjectOwned | Complete 3/3 | Complete 3/3 | Proboscideans |
+| Medium Air Elemental | 4 | 4 | complete | Strong | - | ProjectOwned | Complete 6/6 | Complete 6/6 | Classic elementals |
+| Medium Earth Elemental | 4 | 4 | complete | Strong | - | ProjectOwned | Complete 6/6 | Complete 6/6 | Classic elementals |
+| Medium Fire Elemental | 4 | 4 | complete | Variety | - | ProjectOwned | Complete 6/6 | Complete 6/6 | Classic elementals |
+| Medium Water Elemental | 4 | 4 | complete | Variety | - | ProjectOwned | Complete 6/6 | Complete 6/6 | Classic elementals |
+| Mite | - | 1 | complete | Strong | - | NativeWrapper | - | Partial 3/9 (6 missing) | Fey |
+| Monitor Lizard | 3 | 3 | S6 | Strong | Low | ProjectOwned | Complete 7/7 | Complete 7/7 | Individual creature |
+| Movanic Deva | 8 | - | complete | Essential | - | NativeWrapper | Complete 2/2 | - | Outsiders |
+| Nalfeshnee | 9 | - | S39 | Essential | VeryHigh | ProjectOwned | Complete 1/1 | - | Outsiders |
+| Nereid | - | 8 | complete | Variety | - | NativeWrapper | - | Complete 2/2 | Fey |
+| Ooze Mephit | 4 | 4 | S5 | Essential | Low | ProjectOwned | Complete 6/6 | Complete 6/6 | Mephit family |
+| Owlbear | - | 4 | S3 | Strong | Low | ProjectOwned | - | Complete 6/6 | Hybrid magical beasts |
+| Pixie | - | 9 | S6 | Essential | Medium | ProjectOwned | - | Complete 1/1 | Fey |
+| Poisonous Frog | 1 | 1 | S13 | Variety | Medium | ProjectOwned | Complete 9/9 | Complete 9/9 | Frog family |
+| Pony | 1 | 1 | S3 | Essential | Low | ProjectOwned | Complete 9/9 | Complete 9/9 | Equines & ungulates |
+| Pteranodon | 4 | 4 | S2 | Essential | High | ProjectOwned | Complete 6/6 | Complete 6/6 | Flying creature rigs |
+| Purple Worm | - | 8 | S4 | Essential | Medium | ProjectOwned | - | Complete 2/2 | Burrowers & huge monsters |
+| Redcap | 5 | - | complete | Variety | - | NativeWrapper | Partial 3/5 (2 missing) | - | Fey |
+| Rhinoceros | 4 | 4 | S11 | Strong | Medium | ProjectOwned | Complete 6/6 | Complete 6/6 | Equines & ungulates |
+| Roc | 7 | 7 | complete | Essential | - | ProjectOwned | Complete 3/3 | Complete 3/3 | Flying creature rigs |
+| Salamander | 5 | - | S17 | Strong | High | ProjectOwned | Complete 5/5 | - | Outsiders |
+| Salt Mephit | 4 | 4 | S5 | Essential | Low | ProjectOwned | Complete 6/6 | Complete 6/6 | Mephit family |
+| Satyr | - | 4 | S32 | Essential | Medium | ProjectOwned | - | Complete 6/6 | Fey |
+| Shadow Demon | 6 | - | S33 | Essential | High | ProjectOwned | Complete 4/4 | - | Outsiders |
+| Shadow Mastiff | 6 | - | S13 | Strong | Medium | ProjectOwned | Complete 4/4 | - | Canines & small quadrupeds |
+| Shambling Mound | - | 6 | S4 | Strong | Low | ProjectOwned | - | Complete 4/4 | Native plant summons |
+| Small Air Elemental | 2 | 2 | complete | Strong | - | ProjectOwned | Complete 8/8 | Complete 8/8 | Classic elementals |
+| Small Earth Elemental | 2 | 2 | complete | Essential | - | ProjectOwned | Complete 8/8 | Complete 8/8 | Classic elementals |
+| Small Fire Elemental | 2 | 2 | complete | Variety | - | ProjectOwned | Complete 8/8 | Complete 8/8 | Classic elementals |
+| Small Water Elemental | 2 | 2 | complete | Variety | - | ProjectOwned | Complete 8/8 | Complete 8/8 | Classic elementals |
+| Soul Eater | 6 | - | complete | Strong | - | NativeWrapper | Partial 3/4 (1 missing) | - | Outsiders |
+| Steam Mephit | 4 | 4 | S5 | Strong | Low | ProjectOwned | Complete 6/6 | Complete 6/6 | Mephit family |
+| Stegosaurus | - | 6 | S23 | Strong | High | ProjectOwned | - | Complete 4/4 | Armored dinosaurs |
+| Stirge | - | 1 | S10 | Strong | High | ProjectOwned | - | Withheld 0/9 | Flying creature rigs |
+| Stone Giant | - | 6 | S28 | Essential | Medium | ProjectOwned | - | Complete 4/4 | Giant humanoids |
+| Storm Giant | - | 9 | S29 | Essential | Medium | ProjectOwned | - | Complete 1/1 | Giant humanoids |
+| Succubus | 6 | - | S33 | Strong | Medium | ProjectOwned | Complete 4/4 | - | Outsiders |
+| Thanadaemon | 9 | - | complete | Strong | - | NativeWrapper | Complete 1/1 | - | Outsiders |
+| Tiger | - | 4 | S8 | Essential | Medium | ProjectOwned | - | Complete 6/6 | Big-cat family |
+| Triceratops | 6 | 6 | S23 | Essential | High | ProjectOwned | Complete 4/4 | Complete 4/4 | Armored dinosaurs |
+| Trumpet Archon | 9 | - | S31 | Strong | High | ProjectOwned | Complete 1/1 | - | Outsiders |
+| Tyrannosaurus | 7 | 7 | S24 | Essential | High | ProjectOwned | Complete 3/3 | Complete 3/3 | Theropod dinosaurs |
+| Viper | 1 | 1 | S17 | Variety | High | ProjectOwned | Complete 9/9 | Complete 9/9 | Snake rig family |
+| Vrock | 7 | - | S37 | Essential | VeryHigh | ProjectOwned | Complete 3/3 | - | Outsiders |
+| Water Mephit | 4 | 4 | complete | Strong | - | ProjectOwned | Complete 6/6 | Complete 6/6 | Mephit family |
+| Wolf | 2 | 2 | complete | Strong | - | ProjectOwned | Complete 8/8 | Complete 8/8 | Canines & small quadrupeds |
+| Wolverine | 3 | 3 | S13 | Variety | Medium | ProjectOwned | Complete 7/7 | Complete 7/7 | Canines & small quadrupeds |
+| Woolly Rhinoceros | 5 | 5 | S11 | Strong | Low | ProjectOwned | Complete 5/5 | Complete 5/5 | Equines & ungulates |
+| Xill | 5 | - | S19 | Strong | VeryHigh | ProjectOwned | Complete 5/5 | - | Outsiders |

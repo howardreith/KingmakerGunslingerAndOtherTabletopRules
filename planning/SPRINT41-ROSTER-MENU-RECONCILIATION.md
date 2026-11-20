@@ -312,6 +312,13 @@ which really does read the shipped catalogs and really does mislabel
 Brachiosaurus; the reconciliation table only needs its row renamed to say
 *ideal* rather than *visible*.
 
+*Later (2026-11-16, INT-08):* `coverage()` was replaced by a placement-level
+comparison and the row renamed to *Ideal quantity placements*; see
+`docs/EXPANDED-SUMMONING-ROSTER-COVERAGE.md`. The figures in this document stay
+as measured on `b2be3ebe`, before Stirge's withdrawal of 2026-11-07. The current
+figures are 1,208 published placements (1,217 − 9) and 24 unpublished placements
+(15 + 9).
+
 ## Scope of this document
 
 Covered: the roster and menu surface, at placement level, derived from source.

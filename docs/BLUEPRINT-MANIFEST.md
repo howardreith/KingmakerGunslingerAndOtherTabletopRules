@@ -697,3 +697,17 @@ package or game launch.
 The fixtures include the actual released ledger from tag `v0.0.191`: its row 206 is exactly the authorized
 "before"; the ledger against itself passes with no correction; with only the approved note it passes with one
 correction and no appended identity; with one more note changed it fails.
+
+**Review acceptance and closeout (2026-11-16).** The review accepted draft PR #176 at
+`a37a712e85fee4d591518683a69810262afa7ed2`, and INT-07 / S3 T6 is closed as a development item. Review acceptance,
+merge, release and installation are separate states; this is the first only. PR #176 stays an open draft, and
+nothing is merged, released or installed.
+
+- The accepted implementation is the note correction, the exact one-record exception in both historical C# guards
+  (digests `43909eb0…` and `bf46e4e3…` unchanged), the semantic text check, the icon catalog's receipt of the actual
+  corrected manifest, and the development-only comparator `check_development_ledger`.
+- The follow-up evidence is the Python fixtures, the standalone development validator and the development wrapper
+  listed above. No product package and no native execution were performed for the follow-up, and nothing was
+  rebuilt or rerun for this closeout.
+- The historical `check_append_only` callers and the v0.0.191 release validator remain strict.
+- The prospective next release validator must explicitly account for the approved Gunsmith's Kit note.
