@@ -229,6 +229,8 @@ DEF-06 is worked on `codex/def06-controller-launcher-consolidation`, stacked on 
   previously selected target rather than reselecting); the death cell shows interruption without a claim being
   created, not removal of an existing claim; the route inventory covers the expected set only.
 
+**Merged and released (2026-11-20, owner direction).** PRs #169 to #191 (Sprints 3 to 5) are merged into master and published as v0.0.192 (release PR #192, `f1304d05f5`; package `936f3571a5f9…`, DLL `0eff2af36f15…`; `docs/BUILD-AND-RELEASE.md`). Per-record "not merged, not released" wording in this register and in KNOWN-ISSUES predates that release and has not been rewritten entry by entry.
+
 **Sprint 5 closure:** `docs/GUNSLINGER-SPRINT5-CLOSURE.md` lists all six accepted heads with each story's own product and session
 identities. The inherited complete-suite result stays 3,147 of 3,148 (the pre-existing `model-d` firearm-source pin
 from RISK-01). Sprint 6 has not started.
