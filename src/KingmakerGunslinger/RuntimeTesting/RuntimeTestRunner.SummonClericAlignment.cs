@@ -394,6 +394,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintAbility iceDevil = ExpandedSummoningRoot(fixture.Blueprints, spec("ice-devil", 9));
                 BlueprintAbility astral = ExpandedSummoningRoot(fixture.Blueprints, spec("astral-deva", 9));
 
+                bool lane = _pol06Lane;
+                Sprint25Check("cleric-phase-lane", true, new JObject { ["pol06Lane"] = lane,
+                    ["skipped"] = lane ? "cleric menu, legal/forbidden, Herald, deity and third-party cells; spider-summoner and the non-POL-06 spider interface cells" : "none" },
+                    "The phase records whether it runs whole or only its POL-06 cells after the same setup.");
+                if (!lane) {
                 AlphaMenu nineLawfulGood = null;
                 foreach (int frame in R6Cell("cleric-menu-nine-lg", () => ClericOpenMenu("lawful-good-erastil-tier9", spellGroup, levels, 9, book, smParent(9), tierNine, mode, watch, screens, (menu, source) => nineLawfulGood = menu, true))) yield return frame;
                 if (nineLawfulGood != null)
@@ -475,6 +480,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["restrictingDeity"] = asmodeus.AssetGuid, ["heldVisibleAfterChange"] = heldVisible, ["heldAvailableAfterChange"] = heldAvailable, ["astralAbsentForDeity"] = absentForDeity,
                     ["state"] = "Induced deity change on the fixture; not an old save or a cold load." },
                     "A lawful neutral cleric may summon the Good-only Astral Deva under a lawful neutral deity, and loses it, including an already held choice, under a lawful evil deity.");
+                }
 
                 BlueprintAbility spiderRow = (smParent(5).Variants ?? new BlueprintAbility[0]).FirstOrDefault(value => value.AssetGuid == ClericOgreRowIdentity);
                 BlueprintAbility tarantulaRow = (smParent(7).Variants ?? new BlueprintAbility[0]).FirstOrDefault(value => value.AssetGuid == ClericTarantulaRowIdentity);
@@ -494,6 +500,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     fixture.Caster.Descriptor.Alignment.Set(Alignment.LawfulGood);
                     setDeity(erastil);
                     spiderFact = fixture.Caster.Descriptor.AddFact(spiderFeature) as Feature;
+                    if (!lane) {
                     heraldFact = fixture.Caster.Descriptor.AddFact(herald) as Feature;
                     bool visibleWithFeature = new AbilityData(spiderRow, book).IsVisible();
                     Sprint25Check("cleric-foreign-feature-visibility", hiddenBeforeFeature && visibleWithFeature, new JObject { ["hiddenWithoutFeature"] = hiddenBeforeFeature, ["visibleWithFeature"] = visibleWithFeature },
@@ -557,6 +564,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     fixture.Caster.Descriptor.RemoveFact(heraldFact); heraldFact = null;
                     Func<int, AbilityData> preparedParent = level => book.GetMemorizedSpellSlots(level).Where(value => value.Spell != null && ReferenceEquals(value.Spell.Blueprint, smParent(level))).Select(value => value.Spell).FirstOrDefault();
                     foreach (int frame in R6Cell("spider-summoner", () => SpiderSummonerCells(fixture, book, spiderFeature, mode, watch, spellGroup, levels, smParent, preparedParent, setDeity, erastil, asmodeus))) yield return frame;
+                    }
                     if (spiderCasters != null)
                         foreach (int frame in R6Cell("spider-interface", () => SpiderInterfaceCells(fixture, spiderCasters, book, herald, mode, screens, spellGroup, levels, smParent, setDeity, desna))) yield return frame;
                     else Sprint25Check("spider-interface-casters", false, new JObject(), "The spider interface casters were created.");

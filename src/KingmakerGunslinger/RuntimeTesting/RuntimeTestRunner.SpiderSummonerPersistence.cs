@@ -78,7 +78,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return new JObject { ["unit"] = rule.SummonedUnit?.Blueprint?.AssetGuid, ["durationSeconds"] = rule.Duration.Seconds.TotalSeconds,
                 ["casterLevel"] = parameters == null ? -1 : parameters.CasterLevel, ["metamagic"] = parameters == null ? null : parameters.Metamagic.ToString(),
                 ["extended"] = rule.Context != null && rule.Context.HasMetamagic(Metamagic.Extend),
-                ["ability"] = rule.Context?.SourceAbility?.AssetGuid, ["level"] = rule.Level };
+                ["ability"] = rule.Context?.SourceAbility?.AssetGuid, ["level"] = rule.Level, ["spellLevel"] = parameters == null ? -1 : parameters.SpellLevel };
         }
 
         /// <summary>Null when every summon rule gave the creature the caster

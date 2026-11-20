@@ -247,8 +247,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             fixture.Caster.Descriptor.Alignment.Set(Alignment.ChaoticGood);
             setDeity(desna);
             var heraldFact = fixture.Caster.Descriptor.AddFact(herald);
+            bool lane = _pol06Lane;
             try
             {
+                if (!lane) {
                 // Crab I and Black Widow IV admission in the Herald popups over unrelated prepared spells.
                 foreach (var admission in new[] { new { Tier = 1, Key = "giant-crab-spider" }, new { Tier = 4, Key = "giant-black-widow" } })
                 {
@@ -332,6 +334,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 else Sprint25Check("spider-herald-extended-source-row-present", false, new JObject { ["rows"] = conversionMenu?.Rows.Length ?? 0 }, "The Ogre is offered in the Herald popup over the extended source.");
                 if (conversionSource != null) Cleanup2MenuAdapterHide(conversionSource, extendedSourceSpell);
                 book.Rest();
+                }
 
                 // S5 T5 / POL-06: Call of the Wild's metamagic conversion rows on the Herald route.
                 foreach (int frame in R6Cell("pol06-herald", () => Pol06HeraldCells(fixture, book, mode, spellGroup, levels, smParent, original))) yield return frame;
@@ -339,7 +342,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally { if (heraldFact != null) fixture.Caster.Descriptor.RemoveFact(heraldFact); }
 
             // RU-10 and RU-09: the naturally levelled cleric/wizard Herald Caller casts from its cleric book.
-            if (casters.HeraldBook != null && casters.HeraldWizardBook != null)
+            if (lane) { }
+            else if (casters.HeraldBook != null && casters.HeraldWizardBook != null)
             {
                 Spellbook clericBook = casters.HeraldBook, wizardBook = casters.HeraldWizardBook;
                 BlueprintAbility unrelated = SpiderUnrelated(clericBook, 5);
@@ -377,9 +381,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (popupSource != null) Cleanup2MenuAdapterHide(popupSource, source);
             }
             else Sprint25Check("spider-natural-herald-books", false, casters.Setup, "The natural Herald Caller has a cleric book and a wizard book.");
+            // S5 T5 / POL-06: the natural Herald over a plain source, its wizard book populated.
+            foreach (int frame in R6Cell("pol06-natural-herald", () => Pol06NaturalHeraldCells(fixture, casters, mode, spellGroup, levels, smParent))) yield return frame;
 
             // RU-15: rendered Summon Nature's Ally V and Druid conversion popups, with and without the feat.
-            foreach (var druidCase in new[] { new { Key = "feat", Unit = casters.Druid, Book = casters.DruidBook, Feat = true },
+            if (!lane) foreach (var druidCase in new[] { new { Key = "feat", Unit = casters.Druid, Book = casters.DruidBook, Feat = true },
                 new { Key = "no-feat", Unit = casters.PlainDruid, Book = casters.PlainBook, Feat = false } })
             {
                 var scoped = druidCase;
