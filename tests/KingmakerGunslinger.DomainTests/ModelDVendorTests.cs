@@ -246,7 +246,9 @@ namespace KingmakerGunslinger.DomainTests
         }
         internal static void ItemIdentityEconomicsEnchantmentsAndCraftingUnchanged()
         {
-            AssertHash(Source("Blueprints/ProductionFirearmBlueprints.cs"), "9e530097a64a0f9f7eb430336465f91c6e660bcf52b4d92b150ce2b049dc3ffd", "Blueprints/ProductionFirearmBlueprints.cs");
+            // Owner-authorized refresh (2026-11-20, v0.0.192 release): RISK-01 / S4 T5
+            // (0c0a211e62) deliberately added the legacy Advanced Revolver containment to this file.
+            AssertHash(Source("Blueprints/ProductionFirearmBlueprints.cs"), "7308f208f7741e177e3607af0bd16c8f2f468b1567ca141fc719782505992f78", "Blueprints/ProductionFirearmBlueprints.cs");
             AssertHash(Source("Blueprints/MagicFirearmBlueprints.cs"), "ab7ddafea87e3959999221de716fcca61b5cd2ddc8e93c6699efcc3bc78a5478", "Blueprints/MagicFirearmBlueprints.cs");
             AssertHash(Source("Blueprints/BasicAmmunitionBlueprints.cs"), "e636c43de97830372af4f99defbd30fd5770f1effeadaf64f2bd83c1c59fc49e", "Blueprints/BasicAmmunitionBlueprints.cs");
             AssertHash(Source("Blueprints/GunsmithingSupplyBlueprints.cs"), "9cb1f57472ae9929034f7d6c65b06c1a77b78ea6c26fc1794c9edb9087f9104d", "Blueprints/GunsmithingSupplyBlueprints.cs");

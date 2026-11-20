@@ -169,6 +169,7 @@ VALIDATORS = {
     "0.0.189": "validate_elementals_launcher_release189.py",
     "0.0.190": "validate_missing_gunslinger_class_release190.py",
     "0.0.191": "validate_grit_ui_recipient_release191.py",
+    "0.0.192": "validate_gunslinger_remediation_release192.py",
 }
 
 
