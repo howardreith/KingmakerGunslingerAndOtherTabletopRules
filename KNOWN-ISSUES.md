@@ -170,13 +170,15 @@
   exception-safe ownership of a level-up controller whose initialisation fails,
   caller-owned cancellation failures reaching the scored failure collection
   rather than only the evidence row, and a non-destructive cleanup injection
-  that leaves the controller intact for real teardown. It has still not been
-  executed: the runtime orchestrator refuses administrator
-  elevation by design and the authoring sessions were elevated, so runtime
-  qualification for the Rapid Reload proficiency gate is recorded as blocked
-  rather than passed. The `rapid-reload-evidence.*` domain cases only prove that
-  incomplete, unreserved, mis-fixtured or ungated evidence cannot score a pass;
-  neither they nor a clean Release build are runtime evidence.
+  that leaves the controller intact for real teardown. VER-01 / S4 T8: it was
+  executed for the first time in a non-elevated session through the supported
+  loader-compat product launch, on development candidate `16708bd5e237`
+  (session `20261118T014708Z-owner-0.33.0-rapid-reload-transaction`, 11 of 11;
+  also 11 of 11 on `fd4087c312bd`). The pending archetype change cleared the
+  invalid one-handed child while keeping the parent, all 19 selection-flow
+  cases ran without a cleanup error, and party and unit isolation held. No
+  defect was found. Not merged, not released; the level-up screen itself was
+  not observed (`docs/GUNSLINGER-SPRINT4-CLOSURE.md`).
 - A Musket Master still qualifies for the Rapid Reload parent through
   two-handed firearm proficiency, so a pending archetype change may
   legitimately leave the parent selection in place while clearing the

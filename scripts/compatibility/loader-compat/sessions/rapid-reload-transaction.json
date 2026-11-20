@@ -1,0 +1,19 @@
+{
+  "name": "rapid-reload-transaction",
+  "description": "VER-01 / S4 T8. It runs the dedicated disposable-rapid-reload-proficiency-gate scenario, previously never executed because the authoring sessions were elevated: real LevelUpController transactions for the Rapid Reload parent and its firearm children (refusal, scoped-child refusal, empty child selection, acquisition, the Fighter bonus slot), a pending class change and a pending archetype change inside one live transaction with exact-child tracking and invalid-child cleanup, a natively built Musket Master, a class-identity negative control, visit-ownership on a failed initialisation, a cleanup-reporting injection, the native prerequisite matrix with request-local independent sources, catalog publication and classification, and party and unit isolation. No save is loaded.",
+  "ownerMods": [],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "rapid-reload-transaction",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-rapid-reload-proficiency-gate",
+        "parameters": {},
+        "timeoutSeconds": 900
+      }
+    }
+  ]
+}

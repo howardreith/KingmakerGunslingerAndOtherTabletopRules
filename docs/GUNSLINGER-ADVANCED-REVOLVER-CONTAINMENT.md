@@ -95,8 +95,12 @@ Updated tests:
 
 ## Native evidence and limits
 
-- Registration runs at every load of the final Sprint 4 candidate. The Sprint 4 native sessions show the mod loading
-  and the Gunslinger class registered, which would not happen if the new validation threw. No dedicated revolver
+- Registration runs at every load of the final Sprint 4 candidate `16708bd5e237` (package `e017a5f3d8ec…`, DLL `cbca54912642…`, MVID `90ce7e7d-9c5a-46ec-9c95-c0734d2faaec`). All three Sprint 4 native sessions on it
+  (`20261118T014552Z`, `20261118T014708Z`, `20261118T014826Z`) loaded the mod and used the registered Gunslinger
+  class, which would not happen if the new validation threw.
+- The final candidate build first stopped at `Test-IconPolishRound2Assets.ps1`, which pins
+  `ProductionFirearmCatalog.cs`. The pin was refreshed with a note in `e30b19e8fe` (cherry-picked to the closure
+  branch), as DEF-04 had done for `GunTrainingBlueprints.cs`. No dedicated revolver
   session was run: there is no legitimate save or acquisition route to exercise, and the equipment gate is the
   existing mechanism already used for unsupported production firearms.
 - The Craft Magic Items qualification runs only with Craft Magic Items installed. It is not exercised by this story's
