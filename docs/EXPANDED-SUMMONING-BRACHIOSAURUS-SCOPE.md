@@ -1,7 +1,11 @@
 # Brachiosaurus spell-family scope (POL-04 / S5 T3): decision record
 
-Status: **decided, Alternative A recorded as A-records; returned for principal review.** S5 T3 is not accepted until
-principal review.
+Status: **accepted and closed for its reviewed A-records development scope** (principal review, 2026-11-19, at
+`ada0ff2650d49db9c3bf5ddba0d8979d8b966417`). Acceptance is not merge or release; PR #188 stays an open draft. Every
+evidence limitation below stands.
+- All existing Brachiosaurus identities and Nature's Ally routes are preserved.
+- The frozen ideal manifest and its 1,232 reference total remain. The compiled coverage model is unchanged and may
+  still report the excluded cells as Planned.
 - Brachiosaurus stays available through Summon Nature's Ally only.
 - Exactly three original-charter placements are approved out of scope: Summon Monster VII single, VIII 1d3 and IX 1d4+1.
 - This is a product scope decision. It is not a gameplay repair and not fulfilment of the three original Monster

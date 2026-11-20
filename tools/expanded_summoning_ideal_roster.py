@@ -250,6 +250,7 @@ def roster_doc(entries, d, cov):
         "Placement columns count published ideal placements of that creature in that",
         "family: Complete; Partial (some published); Withheld (all registered, none",
         "admitted); Missing (none declared); Approved out of scope (owner decision; not published);",
+        "In scope complete (every placement in the approved scope published; the rest approved out of scope);",
         "Unpublished (none published, some withheld and some missing). The parenthesis gives the",
         "unpublished placements by state.",
         "",
@@ -357,16 +358,13 @@ WRAPPER_A = re.compile(
 # Placements the ideal roster wants and the source does not offer, for which
 # a decision is already recorded. Keyed by exact placement, so a further
 # missing placement of the same creature is never covered by one of these.
-POL05 = ("POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own "
-         "options stop; whether to extend it is an open decision")
-RECORDED_DISPOSITIONS = dict(
-    [(Placement(key, family, parent, "OneD4PlusOne"), POL05) for key, family, parents in (
-        ("redcap", "sm", (8, 9)), ("axiomite", "sm", (9,)), ("soul-eater", "sm", (9,)),
-        ("manticore", "sna", (8, 9)), ("mite", "sna", (4, 5, 6, 7, 8, 9)))
-     for parent in parents])
+# Empty since the S5 T4 / POL-05 decision moved the twelve wrapper cells into
+# APPROVED_OUT_OF_SCOPE; kept for any future recorded disposition.
+RECORDED_DISPOSITIONS = {}
 
-# Ideal placements awaiting an owner scope decision. Each is reported as
-# missing with this recorded disposition until it is decided.
+# Ideal placements awaiting an owner scope decision. Each stays missing; its
+# recorded disposition (where one exists) keeps precedence over this label.
+# Empty: POL-04 and POL-05 are decided.
 PENDING_SCOPE = "Pending owner scope decision"
 SCOPE_PENDING = set()
 
@@ -381,11 +379,24 @@ POL04_DECISION = (
     "(https://legacy.aonprd.com/coreRulebook/spells/summonMonster.html) and the ordinary spell progression "
     "supports this placement; adding Monster placements later is additive, while withdrawing published ones "
     "is not. Not a gameplay repair and not fulfilment of the original Monster placement")
+POL05_DECISION = (
+    "POL-05 / S5 T4, Alternative A: product scope decision by the owner at the S5 T4 review on 2026-11-19. "
+    "The retained native wrapper keeps Owlcat's base-plus-two ladder for this creature; no native option exists for "
+    "this exact creature and higher tier, and none is invented. This narrows the original ideal (the Core Rulebook "
+    "allows 1d4+1 creatures from a lower-level list, https://legacy.aonprd.com/coreRulebook/spells/summonMonster.html); "
+    "it is not a gameplay repair and not fulfilment of this placement")
 APPROVED_OUT_OF_SCOPE = {
     Placement("brachiosaurus", "sm", 7, "One"): POL04_DECISION,
     Placement("brachiosaurus", "sm", 8, "OneD3"): POL04_DECISION,
     Placement("brachiosaurus", "sm", 9, "OneD4PlusOne"): POL04_DECISION,
 }
+# S5 T4 / POL-05: each of the twelve cells recorded independently.
+APPROVED_OUT_OF_SCOPE.update({
+    Placement(key, family, parent, "OneD4PlusOne"): POL05_DECISION
+    for key, family, parents in (
+        ("redcap", "sm", (8, 9)), ("axiomite", "sm", (9,)), ("soul-eater", "sm", (9,)),
+        ("manticore", "sna", (8, 9)), ("mite", "sna", (4, 5, 6, 7, 8, 9)))
+    for parent in parents})
 
 
 def canonical(wrapper_key):
@@ -668,6 +679,8 @@ def describe_counts(counts):
     out_of_scope = counts.get("out_of_scope", 0)
     if out_of_scope == total:
         return "Approved out of scope 0/%d" % total
+    if covered and covered + out_of_scope == total:
+        return "In scope complete %d/%d (%d approved out of scope)" % (covered, total, out_of_scope)
     rest = ", ".join(part for part in ("%d withheld" % withheld if withheld else "",
                                        "%d missing" % missing if missing else "",
                                        "%d approved out of scope" % out_of_scope if out_of_scope else "") if part)
@@ -812,6 +825,26 @@ def project_symbol(placement):
         FAMILY_SYMBOL[placement.family], placement.parent, token(placement.key), placement.quantity)
 
 
+LEDGER_PLACEMENT = re.compile(
+    r"^KMG\.Summoning\.(Ability|NativeOption)\.(SM|SNA)\.Tier(\d)\.([A-Za-z]+)\.(One|OneD3|OneD4PlusOne)$")
+
+
+def ledger_placements(registered_symbols, entries):
+    """Active ledger identities that name an exact placement, read from the ledger itself: project
+    abilities by their token, retained native wrappers by their canonical key. No identity is guessed."""
+    by_token = {token(e.key): e.key for e in entries}
+    found = defaultdict(list)
+    for symbol in registered_symbols:
+        match = LEDGER_PLACEMENT.match(symbol)
+        if match is None:
+            continue
+        kind, family, parent, name, quantity = match.groups()
+        key = by_token.get(name) if kind == "Ability" else canonical(name)
+        if key is not None:
+            found[Placement(key, "sm" if family == "SM" else "sna", int(parent), quantity)].append(symbol)
+    return found
+
+
 def cell_report(entries, cov, choices, registered_symbols, evidence, keys):
     """One row per ideal placement of each named creature, in both families.
     Every fact is read independently from its own input and only for the exact
@@ -819,6 +852,8 @@ def cell_report(entries, cov, choices, registered_symbols, evidence, keys):
     by_placement = defaultdict(list)
     for choice in choices:
         by_placement[choice.placement].append(choice)
+    in_ledger = ledger_placements(registered_symbols, entries)
+    project_keys = set(cov["project_keys"])
     rows = []
     for key in keys:
         entry = next((e for e in entries if e.key == key), None)
@@ -830,7 +865,12 @@ def cell_report(entries, cov, choices, registered_symbols, evidence, keys):
                 continue
             for placement in ladder(key, family, tier):
                 offered = by_placement.get(placement, [])
-                symbols = [c.symbol for c in offered] or [project_symbol(placement)]
+                # The identity shown is a declared one, else an active ledger identity of this exact
+                # placement (registered but undeclared), else for a project creature its deterministic
+                # generated identity. A wrapper identity is never inferred: an undeclared wrapper cell
+                # with no ledger identity has none.
+                symbols = ([c.symbol for c in offered] or sorted(in_ledger.get(placement, [])) or
+                           ([project_symbol(placement)] if key in project_keys else []))
                 def native(kind):
                     rows_for = [row for symbol in symbols for row in evidence.get(symbol, []) if row["kind"] == kind]
                     if not rows_for:
@@ -843,7 +883,7 @@ def cell_report(entries, cov, choices, registered_symbols, evidence, keys):
                 scope = ("SCOPE CONFLICT: approved out of scope but declared" if verdict == "scope-conflict" else
                          "approved out of scope" if verdict == "excluded" else
                          "pending owner decision" if placement in SCOPE_PENDING else "in scope")
-                rows.append(Cell(placement, True, scope, symbols[0],
+                rows.append(Cell(placement, True, scope, symbols[0] if symbols else None,
                                  any(symbol in registered_symbols for symbol in symbols),
                                  bool(offered), any(c.admitted for c in offered),
                                  native("graph"), native("menu"), native("cast")))
@@ -857,9 +897,9 @@ def cell_table(rows):
     yes = lambda value: "yes" if value else "no"
     for r in rows:
         p = r.placement
-        lines.append("| %s | %s | %s | %s | %s | %s | `%s` | %s | %s | %s | %s | %s | %s |" % (
+        lines.append("| %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |" % (
             p.key, FAMILY_NAME[p.family], ROMAN[p.parent], QUANTITY_LABEL[p.quantity], yes(r.ideal), r.scope,
-            r.symbol, yes(r.registered), yes(r.declared), yes(r.admitted), r.graph, r.menu, r.cast))
+            ("`%s`" % r.symbol) if r.symbol else "none declared", yes(r.registered), yes(r.declared), yes(r.admitted), r.graph, r.menu, r.cast))
     return "\n".join(lines)
 
 
