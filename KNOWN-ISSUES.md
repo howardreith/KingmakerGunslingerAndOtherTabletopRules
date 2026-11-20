@@ -45,7 +45,7 @@
   further type and no additional bonus; the level completes normally. This is the owner's selected policy (DEF-04),
   not a defect. A Mysterious Stranger trains its three at 9, 13 and 17; Pistolero and Musket Master use ranked Pistol
   or Musket Training instead. Up to and including the published v0.0.191 the descriptions did not say this; on
-  branch `codex/def04-gun-training-progression` (awaiting review; not merged, not released) the Gun Training,
+  branch `codex/def04-gun-training-progression` (accepted in review at `2fe1b8af2c`; not merged, not released) the Gun Training,
   Mysterious Stranger, Pistolero and Musket Master descriptions state it. Record: `docs/GUNSLINGER-GUN-TRAINING-PROGRESSION.md`.
 - With Steady Aim and Deadeye both armed inside the lengthened first increment, the shot uses up Deadeye's state
   (and the grit Deadeye cost to arm) while Deadeye authorizes nothing, because the range already gives touch armor
@@ -135,12 +135,19 @@
   visual variant through the same registration helper as the magic firearms, each mapped to its family's Service
   variant. No scenario reads them, so whether those bindings hold in the game is not established. The sixteen-item
   roster of `disposable-firearm-visual-rigs` is the population that scenario reads, not every firearm with a variant.
-- In `disposable-pistolero-deeds`, the damage assertion `up-close-critical` is intermittent on the grit UI recipient
-  candidate: two of three identical runs failed (observed damage `6,3`) and one passed (`3,3`). The published v0.0.190
-  package was run once and passed, which does not show whether it is intermittent there. The cause is not established.
-  The scenario's grit assertions passed in every run. It was not investigated or run again. Separately, in a loaded
-  game on the branch candidate, Up Close and Deadly armed through its ability spent nothing at arming and exactly one
-  grit after a hit, and an unused state ended after one round with no charge; damage was not judged there.
+- Up to and including the published v0.0.191, the `up-close-critical` assertion of `disposable-pistolero-deeds`
+  gives a pass or a fail by process on identical inputs (two of three runs on the grit UI recipient candidate failed
+  with `6,3`, one passed with `3,3`; the published v0.0.190 passed once). Cause measured on branch
+  `codex/rep02-pistolero-damage-consumption` (awaiting review; not merged, not released): an invalid assumption in
+  the component fixture, not a gameplay defect. Its "hit" stage really hits only when an unseeded d20 is 13 or more
+  (then the full packet, 6), and its "critical" stage is always a miss in that order (half packet, 3); the assertion
+  compared their hit-point losses. Damage matched each stage's actual outcome and cost and consumption were correct;
+  the hit stage's damage amount differed because its outcome did. On that branch the fixture judges outcome, deed damage, grit charge and
+  consumption separately, and the registered ability and the attack command were observed on a Pistolero: an
+  ordinary hit and an engine-confirmed critical each apply one unmultiplied 1d6 deed packet, a miss applies exactly
+  half of its recorded roll, each charges one grit and removes the exact armed instance before the deed's damage; a following unarmed shot and an order cancelled before
+  it starts charge nothing, and the cancelled state expires by itself. Record:
+  `docs/GUNSLINGER-UP-CLOSE-AND-DEADLY-DAMAGE.md`.
 - Rapid Reload's parent proficiency gate reads only the registered firearm
   proficiency features, so any future independent proficiency source satisfies
   it without further changes. `FirearmProficiencyScopeReconciler` remains a

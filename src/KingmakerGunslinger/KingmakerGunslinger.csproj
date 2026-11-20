@@ -510,6 +510,7 @@
     <Compile Include="Archetypes\MysteriousStrangerPolicy.cs" />
     <Compile Include="Archetypes\SteadyAimMechanics.cs" />
     <Compile Include="Archetypes\UpCloseAndDeadlyMechanics.cs" />
+    <Compile Include="Archetypes\UpCloseAndDeadlyDeliveryRecords.cs" />
     <Compile Include="Archetypes\TwinShotKnockdownMechanics.cs" />
     <Compile Include="Blueprints\MysteriousStrangerBlueprints.cs" />
     <Compile Include="Enchantments\SeekingBlueprints.cs" />
@@ -1755,6 +1756,8 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassContract.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassGrit.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.GunTrainingLevelUps.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.PistoleroDeedObservation.cs" />
+    <Compile Include="RuntimeTesting\UpCloseAndDeadlyCaseVerdict.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassGunslinger.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassInitiative.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassTurnModes.cs" />

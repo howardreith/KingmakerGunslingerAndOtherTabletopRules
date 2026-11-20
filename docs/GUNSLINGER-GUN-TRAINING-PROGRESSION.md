@@ -1,9 +1,10 @@
 # Gun Training: three supported types, four opportunities (DEF-04 / S4 T1)
 
-Status: **development change on a review branch, awaiting final review of two wording corrections. Not merged, not
-released.** Branch `codex/def04-gun-training-progression`, stacked on draft PR #177 at its accepted head `dcea649f5e`.
-The review of `7c8e720542` accepted the policy, the implementation, the native level-up observer and the recorded
-qualification for their stated scope; see "Review corrections". Nothing here is a release qualification. Sprint 4 stays open; its other firearm-policy stories and the Sprint 5 roster decisions are
+Status: **development item closed: the review accepted draft PR #178 at `2fe1b8af2c` for its reviewed
+description-and-progression scope. Not merged, not released.** Branch `codex/def04-gun-training-progression`, stacked
+on draft PR #177 at its accepted head `dcea649f5e`. The review of `7c8e720542` accepted the policy, the
+implementation, the native level-up observer and the recorded qualification for their stated scope; see "Review
+corrections" and "Review acceptance and closeout". Nothing here is a release qualification. Sprint 4 stays open; its other firearm-policy stories and the Sprint 5 roster decisions are
 outside this cut.
 
 ## The selected policy
@@ -147,6 +148,15 @@ types, and Rifle or Revolver was never offered.
 | `scripts/Build-Local.ps1 -DevelopmentPurpose gun-training-progression` | development candidate above; development-candidate repository validation passed, including the roster coverage suite and its freshness check | 455 s |
 | Complete domain suite (`KMG_TEST_FILTER` unset) | 3,071 of 3,071 | 75 s |
 | Loader-compat session above | PASS, 12 of 12 | 102 s (scenario 64 s) |
+
+## Review acceptance and closeout
+
+The review of draft PR #178 at `2fe1b8af2c3adc6e1ea58a34fd8f256b437083a6` accepted S4 T1 / DEF-04 for its reviewed
+description-and-progression scope, with both wording corrections complete. It is closed as a development item.
+Nothing was rebuilt or rerun for this closeout. Implementation, review acceptance, native verification, merge and
+release are separate states: the native level-up evidence stays attached to candidate `0c0f4f7b7708` and the wording
+of `0c0f4f7b77`; the corrected ranked-replacement sentence has source and focused-test verification only; PR #178 stays
+an open draft and nothing is merged or released. The limits below are unchanged.
 
 ## Limits and deferred checks
 
