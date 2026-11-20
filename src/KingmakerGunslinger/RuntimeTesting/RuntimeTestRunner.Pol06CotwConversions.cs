@@ -194,7 +194,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (retained != null)
                     foreach (int frame in R6Cell("pol06-herald-stale-refused", () => ClericRefusedAttempt(fixture, retained, source, mode, watch, "pol06-herald-stale-choice-refused", "pol06-stale",
                         true, "a projected choice retained from the popup, after its source slot was spent; native UnitUseAbility",
-                        "A projected Call of the Wild choice retained after its source slot was spent is refused with nothing spent and nothing summoned."))) yield return frame;
+                        "A projected Call of the Wild choice retained after its source slot was spent has no cast left and is refused with nothing spent and nothing summoned.",
+                        true))) yield return frame;
                 else Sprint25Check("pol06-herald-stale-choice-present", false, new JObject { ["projected"] = projected.Length }, "A second projected choice of the same row exists to retain.");
             }
             else Sprint25Check("pol06-herald-additional-row-present", false, new JObject { ["rows"] = menu?.Rows.Length ?? 0, ["projected"] = projected.Length },

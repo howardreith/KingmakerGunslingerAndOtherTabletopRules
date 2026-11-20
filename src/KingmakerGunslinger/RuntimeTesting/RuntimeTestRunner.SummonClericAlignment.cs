@@ -194,11 +194,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// <summary>Executes exactly the given ability object through the
         /// native command path and requires a refusal with no spend and no spawn.</summary>
         private IEnumerable<int> ClericRefusedAttempt(ExpandedSummoningCorrectionFixture fixture, AbilityData data, AbilityData prepared,
-            Cleanup2NativeDefaultScope mode, Stopwatch phase, string checkName, string caseKey, bool visibleExpected, string route, string claim)
+            Cleanup2NativeDefaultScope mode, Stopwatch phase, string checkName, string caseKey, bool visibleExpected, string route, string claim,
+            bool slotExhausted = false)
         {
             BlueprintAbility child = data.Blueprint;
             var debit = new Cleanup2SourceDebit(fixture.Caster);
             bool visible = data.IsVisible(), available = data.IsAvailableForCast;
+            // The native IsAvailableForCast never reads spell slots; a choice whose
+            // source slot is spent shows that only through its remaining cast count.
+            int castCount = data.GetAvailableForCastCount();
             string reason = data.GetUnavailableReason();
             var hooks = HarmonyInstance.Create("kmg.cleric.forbidden." + caseKey + _request.RunId); UnitUseAbility command = null;
             var watch = Stopwatch.StartNew(); string result;
@@ -224,8 +228,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             var summons = ExpandedSummoningRuleCapture.Where(value => value != null).Distinct().ToArray();
             foreach (var unit in summons) if (!fixture.Created.Contains(unit)) fixture.Created.Add(unit);
             if (summons.Length != 0) DisposeExpandedSummoningUnits(fixture.Created, summons);
-            bool refused = visible == visibleExpected && !available && result == "Fail" && debit.Unspent && _expandedSummoningPlayerPathSpawnActionCount == 0 && summons.Length == 0;
+            bool precondition = slotExhausted ? castCount == 0 : !available;
+            bool refused = visible == visibleExpected && precondition && result == "Fail" && debit.Unspent && _expandedSummoningPlayerPathSpawnActionCount == 0 && summons.Length == 0;
             Sprint25Check(checkName, refused, new JObject { ["child"] = child.AssetGuid, ["name"] = child.Name, ["visible"] = visible, ["availableForCast"] = available,
+                ["availableForCastCount"] = castCount, ["precondition"] = slotExhausted ? "source slot exhausted (cast count 0)" : "native availability false",
                 ["nativeReason"] = reason, ["commandResult"] = result, ["slotOrResourceSpent"] = !debit.Unspent, ["spawnActions"] = _expandedSummoningPlayerPathSpawnActionCount, ["summons"] = summons.Length,
                 ["debit"] = debit.Describe(prepared.ParamSpellSlot), ["route"] = route, ["wallSeconds"] = watch.Elapsed.TotalSeconds }, claim);
         }
