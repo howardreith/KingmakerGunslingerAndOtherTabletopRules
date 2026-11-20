@@ -14,9 +14,10 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["command", "result", "duration", "scope_and_limits"],
+        "required": ["command", "required", "result", "duration", "scope_and_limits"],
         "properties": {
           "command": {"type": "string"},
+          "required": {"type": "boolean"},
           "result": {"type": "string", "enum": ["pass", "fail", "not_run"]},
           "duration": {"type": "string"},
           "scope_and_limits": {"type": "string"}

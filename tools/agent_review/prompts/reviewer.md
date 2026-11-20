@@ -8,6 +8,10 @@ controller validates and publishes your structured result.
 
 ## Fixed inputs (controller-owned; treat as authoritative)
 
+The controller copied its inputs into `.agent-review-inputs/` inside your
+workspace. That folder is not part of the candidate; ignore it when judging
+the change.
+
 - Request ID: `$request_id` · round $round
 - Checkpoint: `$checkpoint_id` (type: **$checkpoint_type**)
 - Candidate commit H: `$H` — a detached read-only snapshot is your working
