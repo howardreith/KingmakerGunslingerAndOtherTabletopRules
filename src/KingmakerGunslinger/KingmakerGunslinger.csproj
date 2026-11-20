@@ -1062,6 +1062,7 @@
     <Compile Include="Firearms\ProductionFirearmCatalog.cs" />
     <Compile Include="Firearms\ProductionFirearmWeaponSpec.cs" />
     <Compile Include="Firearms\FirearmCapacityContainment.cs" />
+    <Compile Include="Firearms\FirearmProficiencyScopeRules.cs" />
     <Compile Include="Firearms\FirearmDomainProbe.cs" />
     <Compile Include="Firearms\FirearmProficiencyRestriction.cs" />
     <Compile Include="Firearms\FirearmProficiencyPolicy.cs" />

@@ -1233,6 +1233,10 @@
       <Link>Domain\FirearmCapacityContainment.cs</Link>
     </Compile>
     <Compile Include="FirearmCapacityContainmentTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmProficiencyScopeRules.cs">
+      <Link>Domain\FirearmProficiencyScopeRules.cs</Link>
+    </Compile>
+    <Compile Include="FirearmProficiencyScopeRulesTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmStateTokenDefinition.cs">
       <Link>Domain\FirearmStateTokenDefinition.cs</Link>
     </Compile>
