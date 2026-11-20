@@ -365,10 +365,11 @@ RECORDED_DISPOSITIONS = dict(
         ("manticore", "sna", (8, 9)), ("mite", "sna", (4, 5, 6, 7, 8, 9)))
      for parent in parents])
 
-# Ideal placements awaiting an owner scope decision. Each is reported as
-# missing with this recorded disposition until it is decided.
+# Ideal placements awaiting an owner scope decision. Each stays missing; its
+# recorded disposition (where one exists) keeps precedence over this label.
+# S5 T4 / POL-05: exactly the twelve higher native-wrapper 1d4+1 placements.
 PENDING_SCOPE = "Pending owner scope decision"
-SCOPE_PENDING = set()
+SCOPE_PENDING = {placement for placement, text in RECORDED_DISPOSITIONS.items() if text == POL05}
 
 # Ideal placements the owner has explicitly approved out of scope, keyed by exact
 # placement, each with its rationale and decision provenance. The ideal roster
@@ -812,6 +813,26 @@ def project_symbol(placement):
         FAMILY_SYMBOL[placement.family], placement.parent, token(placement.key), placement.quantity)
 
 
+LEDGER_PLACEMENT = re.compile(
+    r"^KMG\.Summoning\.(Ability|NativeOption)\.(SM|SNA)\.Tier(\d)\.([A-Za-z]+)\.(One|OneD3|OneD4PlusOne)$")
+
+
+def ledger_placements(registered_symbols, entries):
+    """Active ledger identities that name an exact placement, read from the ledger itself: project
+    abilities by their token, retained native wrappers by their canonical key. No identity is guessed."""
+    by_token = {token(e.key): e.key for e in entries}
+    found = defaultdict(list)
+    for symbol in registered_symbols:
+        match = LEDGER_PLACEMENT.match(symbol)
+        if match is None:
+            continue
+        kind, family, parent, name, quantity = match.groups()
+        key = by_token.get(name) if kind == "Ability" else canonical(name)
+        if key is not None:
+            found[Placement(key, "sm" if family == "SM" else "sna", int(parent), quantity)].append(symbol)
+    return found
+
+
 def cell_report(entries, cov, choices, registered_symbols, evidence, keys):
     """One row per ideal placement of each named creature, in both families.
     Every fact is read independently from its own input and only for the exact
@@ -819,6 +840,8 @@ def cell_report(entries, cov, choices, registered_symbols, evidence, keys):
     by_placement = defaultdict(list)
     for choice in choices:
         by_placement[choice.placement].append(choice)
+    in_ledger = ledger_placements(registered_symbols, entries)
+    project_keys = set(cov["project_keys"])
     rows = []
     for key in keys:
         entry = next((e for e in entries if e.key == key), None)
@@ -830,7 +853,12 @@ def cell_report(entries, cov, choices, registered_symbols, evidence, keys):
                 continue
             for placement in ladder(key, family, tier):
                 offered = by_placement.get(placement, [])
-                symbols = [c.symbol for c in offered] or [project_symbol(placement)]
+                # The identity shown is a declared one, else an active ledger identity of this exact
+                # placement (registered but undeclared), else for a project creature its deterministic
+                # generated identity. A wrapper identity is never inferred: an undeclared wrapper cell
+                # with no ledger identity has none.
+                symbols = ([c.symbol for c in offered] or sorted(in_ledger.get(placement, [])) or
+                           ([project_symbol(placement)] if key in project_keys else []))
                 def native(kind):
                     rows_for = [row for symbol in symbols for row in evidence.get(symbol, []) if row["kind"] == kind]
                     if not rows_for:
@@ -843,7 +871,7 @@ def cell_report(entries, cov, choices, registered_symbols, evidence, keys):
                 scope = ("SCOPE CONFLICT: approved out of scope but declared" if verdict == "scope-conflict" else
                          "approved out of scope" if verdict == "excluded" else
                          "pending owner decision" if placement in SCOPE_PENDING else "in scope")
-                rows.append(Cell(placement, True, scope, symbols[0],
+                rows.append(Cell(placement, True, scope, symbols[0] if symbols else None,
                                  any(symbol in registered_symbols for symbol in symbols),
                                  bool(offered), any(c.admitted for c in offered),
                                  native("graph"), native("menu"), native("cast")))
@@ -857,9 +885,9 @@ def cell_table(rows):
     yes = lambda value: "yes" if value else "no"
     for r in rows:
         p = r.placement
-        lines.append("| %s | %s | %s | %s | %s | %s | `%s` | %s | %s | %s | %s | %s | %s |" % (
+        lines.append("| %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |" % (
             p.key, FAMILY_NAME[p.family], ROMAN[p.parent], QUANTITY_LABEL[p.quantity], yes(r.ideal), r.scope,
-            r.symbol, yes(r.registered), yes(r.declared), yes(r.admitted), r.graph, r.menu, r.cast))
+            ("`%s`" % r.symbol) if r.symbol else "none declared", yes(r.registered), yes(r.declared), yes(r.admitted), r.graph, r.menu, r.cast))
     return "\n".join(lines)
 
 

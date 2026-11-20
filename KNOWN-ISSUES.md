@@ -421,7 +421,8 @@
   branch `codex/int08-summoning-roster-coverage` (accepted in review at `dcea649f5e`; not merged, not released): coverage is now
   compared placement by placement and reads, from source, 1,208 of 1,232 ideal placements published, 9 withheld
   (Stirge, owner withdrawal) and 15 missing (Brachiosaurus in Summon Monster, POL-04; twelve wrapper placements,
-  POL-05) (`docs/EXPANDED-SUMMONING-ROSTER-COVERAGE.md`). POL-05 remains an open decision.
+  POL-05) (`docs/EXPANDED-SUMMONING-ROSTER-COVERAGE.md`). POL-05 remains an open decision; its owner-decision packet
+  is `docs/EXPANDED-SUMMONING-WRAPPER-LADDER-SCOPE.md` (S5 T4, draft PR #189).
 - Brachiosaurus is not offered through Summon Monster (POL-04, scope decision, not a defect). The Core Rulebook Summon
   Monster VII table includes it, and the original charter placed it at Summon Monster VII single, VIII 1d3 and IX 1d4+1.
   The owner chose Nature's Ally only on 2026-10-15, because adding Monster placements later is additive while

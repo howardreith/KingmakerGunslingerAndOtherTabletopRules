@@ -505,6 +505,126 @@
       "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
       "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
       "observation": "listed once under SummonNaturesAllyIX by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier5.Redcap.One",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonMonsterVBase by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier6.Axiomite.One",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonMonsterVIBase by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier6.Redcap.OneD3",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonMonsterVIBase by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier6.SoulEater.One",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonMonsterVIBase by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier7.Axiomite.OneD3",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonMonsterVIIBase by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier7.Redcap.OneD4PlusOne",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonMonsterVIIBase by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier7.SoulEater.OneD3",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonMonsterVIIBase by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier8.Axiomite.OneD4PlusOne",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonMonsterVIIIBase by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SM.Tier8.SoulEater.OneD4PlusOne",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonMonsterVIIIBase by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SNA.Tier1.Mite.One",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyI by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SNA.Tier2.Mite.OneD3",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyII by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SNA.Tier3.Mite.OneD4PlusOne",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyIII by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SNA.Tier5.Manticore.One",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyV by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SNA.Tier6.Manticore.OneD3",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyVI by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SNA.Tier7.Manticore.OneD4PlusOne",
+      "kind": "menu",
+      "result": "PASS",
+      "session": "20261116T181244Z-owner-0.33.0-summoning-publication-boundary",
+      "package": "c09ca6255feefe6c547d051ab3cf3ead8bc918402d7488f077efa0ac5d2e7fbb",
+      "observation": "listed once under SummonNaturesAllyVII by the loader harness (module on), published v0.0.191; Races Unleashed 1.0.11 only"
     }
   ]
 }

@@ -584,10 +584,84 @@ class ScopeDecisionTests(unittest.TestCase):
 
     def test_the_recorded_decision_is_exact(self):
         self.assertEqual(set(EXPECTED_OUT_OF_SCOPE), set(roster.APPROVED_OUT_OF_SCOPE))
-        self.assertEqual(set(), roster.SCOPE_PENDING)
+        self.assertEqual(EXPECTED_MISSING, roster.SCOPE_PENDING, "Exactly the twelve POL-05 cells await a decision.")
         self.assertFalse(set(roster.APPROVED_OUT_OF_SCOPE) & set(roster.RECORDED_DISPOSITIONS),
                          "No POL-05 placement is waived and no approval doubles as a pending disposition.")
         self.assertTrue(all(roster.RECORDED_DISPOSITIONS[p].startswith("POL-05") for p in EXPECTED_MISSING))
+
+
+POL05_CELLS = sorted(EXPECTED_MISSING)
+
+
+def wrapper_rows(sources=SOURCES):
+    return rows_by_placement(roster.cells(["redcap", "axiomite", "soul-eater", "manticore", "mite"], sources))
+
+
+class NativeWrapperCellTests(unittest.TestCase):
+    """S5 T4 / POL-05: the twelve higher native-wrapper 1d4+1 cells are reported from their own
+    declarations and ledger identities only; no identity is inferred and no observation of another
+    tier, quantity, family or build fills one."""
+
+    def setUp(self):
+        self.rows = wrapper_rows()
+
+    def test_each_of_the_twelve_cells_is_undeclared_unregistered_and_pending(self):
+        self.assertEqual(12, len(POL05_CELLS))
+        for placement in POL05_CELLS:
+            row = self.rows[placement]
+            self.assertEqual((True, "pending owner decision", None, False, False, False, "none", "none", "none"),
+                             (row.ideal, row.scope, row.symbol, row.registered, row.declared, row.admitted,
+                              row.graph, row.menu, row.cast), placement)
+        table = roster.cell_table(roster.cells(["redcap"], SOURCES))
+        self.assertEqual(2, len([line for line in table.splitlines()
+                                 if "| pending owner decision | none declared | no | no | no | none | none | none |" in line]))
+        self.assertNotIn("KMG.Summoning.Ability.SM.Tier8.Redcap", table,
+                         "A wrapper cell never shows a project-convention identity.")
+
+    def test_existing_wrapper_rows_keep_their_exact_identity_and_v0191_menu_row(self):
+        expected = {P("redcap", "sm", 7, D41): "KMG.Summoning.NativeOption.SM.Tier7.Redcap.OneD4PlusOne",
+                    P("axiomite", "sm", 8, D41): "KMG.Summoning.NativeOption.SM.Tier8.Axiomite.OneD4PlusOne",
+                    P("soul-eater", "sm", 8, D41): "KMG.Summoning.NativeOption.SM.Tier8.SoulEater.OneD4PlusOne",
+                    P("manticore", "sna", 7, D41): "KMG.Summoning.NativeOption.SNA.Tier7.Manticore.OneD4PlusOne",
+                    P("mite", "sna", 3, D41): "KMG.Summoning.NativeOption.SNA.Tier3.Mite.OneD4PlusOne"}
+        for placement, symbol in expected.items():
+            row = self.rows[placement]
+            self.assertEqual(("in scope", symbol, True, True, True, "none", "PASS:" + MENU + V191_PACKAGE, "none"),
+                             (row.scope, row.symbol, row.registered, row.declared, row.admitted,
+                              row.graph, row.menu, row.cast), placement)
+
+    def test_an_observation_of_another_tier_or_quantity_never_fills_a_cell(self):
+        # The Mite III 1d4+1 and Redcap VII 1d4+1 menu rows exist; the higher cells stay unobserved.
+        self.assertTrue(self.rows[P("mite", "sna", 3, D41)].menu.startswith("PASS:"))
+        self.assertTrue(self.rows[P("redcap", "sm", 7, D41)].menu.startswith("PASS:"))
+        for placement in POL05_CELLS:
+            self.assertEqual("none", self.rows[placement].menu, placement)
+        evidence = ('{"entries":[{"symbol":"KMG.Summoning.NativeOption.SNA.Tier3.Mite.OneD4PlusOne","kind":"cast",'
+                    '"result":"PASS","session":"other-tier","package":"x"}]}')
+        rows = wrapper_rows(dict(SOURCES, evidence=evidence))
+        self.assertEqual("none", rows[P("mite", "sna", 4, D41)].cast, "A tier III cast never fills tier IV.")
+
+    def test_a_ledger_identity_without_a_declaration_is_reported_as_registered_only(self):
+        import json
+        ledger = json.loads(SOURCES["ledger"])
+        ledger["entries"].append({"symbol": "KMG.Summoning.NativeOption.SNA.Tier4.Mite.OneD4PlusOne",
+                                  "guid": "f" * 32, "status": "active"})
+        rows = wrapper_rows(dict(SOURCES, ledger=json.dumps(ledger)))
+        row = rows[P("mite", "sna", 4, D41)]
+        self.assertEqual(("KMG.Summoning.NativeOption.SNA.Tier4.Mite.OneD4PlusOne", True, False, False),
+                         (row.symbol, row.registered, row.declared, row.admitted),
+                         "Registration, declaration and admission stay separate facts.")
+        self.assertEqual((None, False), (rows[P("mite", "sna", 5, D41)].symbol, rows[P("mite", "sna", 5, D41)].registered))
+
+    def test_the_twelve_cells_keep_their_pol05_disposition_and_are_not_approved(self):
+        cov = judge()
+        for placement in POL05_CELLS:
+            self.assertEqual("missing", cov["states"][placement], placement)
+            self.assertTrue(disposition(cov, placement).startswith("POL-05"), placement)
+            self.assertNotIn(placement, roster.APPROVED_OUT_OF_SCOPE)
+        self.assertEqual(12, cov["totals"]["missing"])
+        self.assertEqual({"sm": "Partial 3/5 (2 missing)", "sna": "-"}, cov["family_status"]["redcap"])
+        self.assertEqual("Partial 3/9 (6 missing)", cov["family_status"]["mite"]["sna"])
 
 
 class ReadDiagnosticTests(unittest.TestCase):

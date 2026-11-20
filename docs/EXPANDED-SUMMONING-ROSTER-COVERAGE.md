@@ -282,4 +282,5 @@ Historical INT-08 limitations, as accepted at `dcea649f5e`:
 Current dispositions:
 - POL-04 is decided and accepted (S5 T3, A-records, at `ada0ff2650`): the three Brachiosaurus Summon Monster
   placements are approved out of scope, as described in "Later: POL-04 decided".
-- POL-05 (the twelve higher native-wrapper placements) remains an open owner decision (S5 T4).
+- POL-05 (the twelve higher native-wrapper placements) remains an open owner decision (S5 T4; packet
+  `docs/EXPANDED-SUMMONING-WRAPPER-LADDER-SCOPE.md`).
