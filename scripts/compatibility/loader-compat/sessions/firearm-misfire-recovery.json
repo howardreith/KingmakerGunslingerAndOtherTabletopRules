@@ -1,0 +1,19 @@
+{
+  "name": "firearm-misfire-recovery",
+  "description": "POL-01 / S4 T3, owner decision B. It runs disposable-firearm-misfire-recovery: the save-free firearm fixture (native click handler, native commands, native AI brain controller, native completed-rest boundary) with the recovery lanes: Quick Clear then a fresh AI decision and a deliberate stop; out-of-combat Repair Firearm; completed rest after the gun moved to shared inventory and to another participant; failed repair, reload-only and other-firearm negatives; the manual-order control; and the turn-based boundaries. The candidate runs alone; no save is loaded. disposable-firearm-break-interruption is not part of this session: in this game copy it stops in its ordinary kill-chain lanes on the pre-POL-01 candidate as well (session 20261117T205923Z), before its recovery assertions.",
+  "ownerMods": [],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "misfire-recovery-lanes",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-firearm-misfire-recovery",
+        "parameters": {},
+        "timeoutSeconds": 900
+      }
+    }
+  ]
+}

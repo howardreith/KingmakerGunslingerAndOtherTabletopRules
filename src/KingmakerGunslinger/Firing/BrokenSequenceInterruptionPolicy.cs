@@ -12,11 +12,12 @@ namespace KingmakerGunslinger.Firing
     /// committed degradation of the exact firearm. The misfiring shot itself
     /// always finishes resolving under the existing rules; these gates only
     /// prevent the next real shot and its automatic continuations.
-    /// Suppression is released ONLY by a genuine new player-issued attack
-    /// order for the same executor and target — repairing or reloading the
-    /// firearm restores readiness but never resurrects the cancelled order,
-    /// while any later deliberate order works normally and re-enables
-    /// ordinary automatic behavior for that weapon.
+    /// Suppression is released by a genuine new player-issued attack order,
+    /// or (POL-01, owner decision B) by a successful recovery of the exact
+    /// firearm to Normal (Quick Clear, Repair Firearm, completed rest),
+    /// which permits fresh automatic decisions. Neither ever resurrects the
+    /// cancelled order: the epoch keeps every pre-break command stale, and
+    /// reloading alone releases nothing.
     /// </summary>
     internal static class BrokenSequenceInterruptionPolicy
     {

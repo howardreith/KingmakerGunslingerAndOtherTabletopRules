@@ -941,7 +941,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
-                    RuntimeTestScenarioCatalog.DisposableFirearmBreakInterruption)
+                    RuntimeTestScenarioCatalog.DisposableFirearmBreakInterruption ||
+                    _request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableFirearmMisfireRecovery)
                 {
                     PollFirearmNativeInput();
                     return;

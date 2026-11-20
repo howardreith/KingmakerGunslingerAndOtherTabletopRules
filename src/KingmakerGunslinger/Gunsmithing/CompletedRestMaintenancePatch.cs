@@ -236,6 +236,12 @@ namespace KingmakerGunslinger.Gunsmithing
                     "The exact firearm did not retain the completed-rest restoration state.");
             }
 
+            // POL-01: this exact item's restoration has committed; release
+            // the misfire locks held on it wherever it now is (equipped by
+            // its original wielder, in shared inventory or on another
+            // participant). A failure before this point releases nothing.
+            Firing.BrokenSequenceSuppressionRuntime.OnCommittedRecovery(weapon);
+
             FirearmConditionCombatLog.Publish(
                 after.ItemDisplayName,
                 beforeState.Condition,

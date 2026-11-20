@@ -63,7 +63,6 @@ namespace KingmakerGunslinger.Deeds
                     after.Condition,
                     "Quick Clear");
                 QuickClearRuntimeDiagnostics.Record(decision);
-                return decision;
             }
             catch
             {
@@ -79,6 +78,11 @@ namespace KingmakerGunslinger.Deeds
                 QuickClearRuntimeDiagnostics.RecordFault();
                 throw;
             }
+            // POL-01: past the rollback boundary, so the item's committed
+            // condition is final. Normal releases its misfire locks; nothing
+            // is ordered, targeted or fired here.
+            Firing.BrokenSequenceSuppressionRuntime.OnCommittedRecovery(firearm.Weapon);
+            return decision;
         }
 
         private static int ReadGrit(UnitDescriptor caster)

@@ -47,7 +47,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     _manualElapsed = Stopwatch.StartNew();
                     _firearmInputSaveGuard = new FirearmInputSaveGuard(_request.RunId);
-                    _firearmInputSteps = FirearmNativeInputCases().GetEnumerator();
+                    _firearmInputSteps = (_request.Scenario ==
+                        RuntimeTestScenarioCatalog.DisposableFirearmMisfireRecovery
+                        ? FirearmMisfireRecoveryCases() : FirearmNativeInputCases()).GetEnumerator();
                 }
                 if (_firearmInputSteps.MoveNext()) return;
                 FinishFirearmInput(null);

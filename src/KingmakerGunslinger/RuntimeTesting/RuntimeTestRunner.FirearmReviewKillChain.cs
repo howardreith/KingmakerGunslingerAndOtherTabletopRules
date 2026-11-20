@@ -179,14 +179,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             int shots = f.Shots.Count;
             var broken = f.State.Condition;
             var quickClear = f.ClickAbility(gunslinger.QuickClear.StandardAbility);
-            for (int tick = 0; tick < 240 && !quickClear.IsFinished; tick++) { f.Pump(); yield return null; }
-            foreach (object step in DriveFirearmIdle(f)) yield return step;
+            for (int tick = 0; tick < 240 && !quickClear.IsFinished; tick++) { f.Pump(false); yield return null; }
+            // POL-01 (owner decision B): the committed Quick Clear releases the
+            // misfire lock and keeps the epoch. The kill chain continues with
+            // an explicit order, so its idle runs without the AI brain.
+            foreach (object step in DriveFirearmIdleWithoutAi(f)) yield return step;
             verdicts.Add(KillChainCheck(prefix + "quick-clear-normal-nonzero-epoch",
                 broken == FirearmCondition.Broken && quickClear.IsFinished &&
                 quickClear.Result == UnitCommand.ResultType.Success && f.State.Condition == FirearmCondition.Normal &&
                 epoch > 0 && BrokenSequenceSuppressionRuntime.GetDegradationEpoch(f.Actor, f.Weapon) == epoch &&
-                BrokenSequenceSuppressionRuntime.IsSuppressed(f.Actor, f.Weapon) &&
-                BrokenSequenceSuppressionRuntime.Orders.RequiresOrder(f.Actor, f.Weapon) &&
+                !BrokenSequenceSuppressionRuntime.IsSuppressed(f.Actor, f.Weapon) &&
+                !BrokenSequenceSuppressionRuntime.Orders.RequiresOrder(f.Actor, f.Weapon) &&
                 BrokenSequenceSuppressionRuntime.Orders.Current(f.Actor) == null && f.Shots.Count == shots &&
                 f.Actor.Descriptor.Resources.GetResourceAmount(gunslinger.Grit.Resource) == grit &&
                 costs.Exact(quickClear, false), f.Describe() + ";epoch=" + epoch + ";gritBefore=" + grit));

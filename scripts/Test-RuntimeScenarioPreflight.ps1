@@ -77,6 +77,7 @@ $expected = @(
     'working-save-magic-circle-absent',
     'working-save-magic-circle-scene',
     'disposable-firearm-break-interruption',
+    'disposable-firearm-misfire-recovery',
     'observe-teleportation-native-contracts',
     'observe-teleportation-world-map',
         'disposable-teleportation-coexistence',

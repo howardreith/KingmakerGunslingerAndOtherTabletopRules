@@ -1,7 +1,7 @@
 # Up Close and Deadly: damage, grit and consumption observed apart (REP-02 / S4 T2)
 
-Status: **development change on a review branch, awaiting final review of the retention and unarmed-state
-corrections asked for by the review of `b4ceae0eae`. Not merged, not released.** Branch `codex/rep02-pistolero-damage-consumption`, stacked on draft PR #178
+Status: **development item closed: the review accepted draft PR #179 at `9b8a755ec8` for its reviewed development
+scope. Not merged, not released.** See "Review acceptance and closeout". Branch `codex/rep02-pistolero-damage-consumption`, stacked on draft PR #178
 at its accepted head `2fe1b8af2c`. Nothing here is a release qualification. Gameplay is unchanged: the repair is to the
 diagnostic. The review accepted the explanation of the reproduced split; see "Review corrections" for the four
 diagnostic corrections and their results.
@@ -305,6 +305,33 @@ of the status register no longer calls the assertion unattributed.
 | Session `20261117T183252Z` | PASS, 4 of 4 | 339 s |
 
 About 14 minutes for this pass.
+
+## Review acceptance and closeout
+
+The review of draft PR #179 at `9b8a755ec80cdb19ebce787c433d87fef75c8f23` accepted S4 T2 / REP-02 for its reviewed
+development scope. It is closed as a development item. Nothing was rebuilt or rerun for this closeout.
+Implementation, native verification, review acceptance, merge and release are separate states: PR #179 stays an open
+draft and nothing is merged or released.
+
+The accepted conclusions:
+
+- The historical intermittent `up-close-critical` result came from the old fixture's uncontrolled hit and miss
+  outcomes and its invalid comparison of hit-point losses. No gameplay defect was established; gameplay is unchanged.
+- The final diagnostic judges the actual outcome, the deed's damage packet, its grit charge and the armed state's
+  consumption separately.
+- Miss damage is checked against the exact d6 values recorded where the delivery drew them.
+- Positive consumption requires the exact instance's removal during the delivery and before its expiry.
+- Retention requires positive exact-reference evidence at delivery end.
+- An unarmed case requires an actual pre-shot absence reading.
+- Cancellation requires an admitted command interrupted before it started.
+- Nonzero recovery read from the global diagnostics is not attributed to the actor without ownership evidence.
+
+The final evidence is bound to product commit `d72746b81c5d26ec068d34ba8c6ffd4e7f0063ec`, package
+`0a43cd8f3e3f7460539e2ff1241047541fd895ce53490befc77f6f657b85cb85`, DLL
+`99a19f16210d8a74097632885b97d90d367626fe88ef5dd151ba881199c12398`, harness
+`593a26d438f8cd68e5c0e9c6b5b7a387c583fb0e0c723a81af82857da5db1077` and session `20261117T183252Z`. Earlier
+candidates (`27578ecf2172` with its natural-armor miss-fixture failure, `a06e989ee1d6`, `e63f6e43b214`) and the
+historical runs keep their original identities and the evaluators of their own commits. The limits below stay open.
 
 ## Limits
 

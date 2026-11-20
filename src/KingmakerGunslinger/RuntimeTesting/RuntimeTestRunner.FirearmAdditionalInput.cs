@@ -215,7 +215,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         f.Shots.Count == 1 && f.Powder == powder && kit.Count == 1 &&
                         Game.Instance.Player.Inventory.Items.Contains(kit) &&
                         BrokenSequenceSuppressionRuntime.Orders.Current(f.Actor) == null &&
-                        BrokenSequenceSuppressionRuntime.IsSuppressed(f.Actor, f.Weapon), f.Describe() +
+                        // POL-01 (owner decision B): a committed repair to Normal releases the lock.
+                        !BrokenSequenceSuppressionRuntime.IsSuppressed(f.Actor, f.Weapon), f.Describe() +
                         ";repairResult=" + repair.Result + ";partyCombat=" + Game.Instance.Player.IsInCombat);
                     f.MakeEnemyPeaceful(false);
                     FirearmMisfireRuntime.QueueForcedNaturalRoll(10);

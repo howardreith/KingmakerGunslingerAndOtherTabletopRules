@@ -138,7 +138,7 @@
 - Up to and including the published v0.0.191, the `up-close-critical` assertion of `disposable-pistolero-deeds`
   gives a pass or a fail by process on identical inputs (two of three runs on the grit UI recipient candidate failed
   with `6,3`, one passed with `3,3`; the published v0.0.190 passed once). Cause measured on branch
-  `codex/rep02-pistolero-damage-consumption` (awaiting review; not merged, not released): an invalid assumption in
+  `codex/rep02-pistolero-damage-consumption` (accepted in review at `9b8a755ec8`; not merged, not released): an invalid assumption in
   the component fixture, not a gameplay defect. Its "hit" stage really hits only when an unseeded d20 is 13 or more
   (then the full packet, 6), and its "critical" stage is always a miss in that order (half packet, 3); the assertion
   compared their hit-point losses. Damage matched each stage's actual outcome and cost and consumption were correct;
@@ -193,7 +193,19 @@
   to the same checks, Quick Clear keeps its distinct in-combat Broken
   recovery, and a newly committed break during an attack sequence stops the
   remainder of that sequence and its automatic continuations while a later
-  deliberate attack with the Broken gun stays possible. Native runtime
+  deliberate attack with the Broken gun stays possible. Up to and including
+  the published v0.0.191, Quick Clear, Repair Firearm and rest do not lift
+  that stop: a companion's own AI does not fire that firearm again until the
+  player gives it a new attack order (or the game is saved and reloaded),
+  and nothing in the game says so. On branch `codex/pol01-sprint4-policy`
+  (owner decision B; awaiting review; not merged, not released), a
+  successful Quick Clear, Repair Firearm or completed rest that brings the
+  exact firearm back to Normal lifts it, so the AI may decide new attacks
+  with that gun; the interrupted sequence stays cancelled and nothing is
+  ordered by the recovery. The next release notes must state that v0.0.128's
+  "Recovery alone grants no new order" is superseded. Record:
+  `docs/GUNSLINGER-MISFIRE-AI-RECOVERY-POLICY.md`.
+  Native runtime
   qualification status is tracked in
   `docs/FIREARM-MAINTENANCE-ACCEPTANCE.md`; human visual/play acceptance
   remains separately pending.
