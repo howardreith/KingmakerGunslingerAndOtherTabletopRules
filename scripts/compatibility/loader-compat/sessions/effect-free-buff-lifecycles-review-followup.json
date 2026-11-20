@@ -1,0 +1,101 @@
+{
+  "name": "effect-free-buff-lifecycles-review-followup",
+  "description": "The checks changed after the review of PR #169, in one launch on the same fixture save. 'timeout-drill' is the Mountain-Sunder script given four seconds, so that it is cut off while its units are in the game: it fails by design with a step timeout, and what matters is its record (ended under its own label, every release attempted, isolation restored) and that the steps after it run as themselves. Then: the two retained equipment shells and the Mountain-Sunder marker applied directly, which must leave armor class, speed, Reflex and Initiative unchanged while they are on; Gunslinger's Dodge, whose recast check now requires both activations and the removal of the earlier instance before it judges anything; Deadeye with the expectation that names its re-arm rule; and Bleeding Wound, where each Stop Bleeding command and its delivery finish before the next. The launch as a whole fails because of the drill.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "changed-checks",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgDeedLifecycle",
+            "label": "timeout-drill",
+            "match": "mountainSunder",
+            "invariants": {
+              "weapon": "5867c9be30e15d3a8a22e0f442959d03",
+              "buff": "4ca1d8e286dd5c82a2ee8ce369146d57",
+              "powerAttackFeature": "9972f33f977fc724c838e59641b2fca5",
+              "powerAttackToggle": "a7b339e4f6ff93a4697df5d7a87ff619",
+              "class": "abca4797366d4df0831a418eee39069a",
+              "grit": "9876b3e744dd422b9c259d19861ad222"
+            },
+            "timeoutSeconds": 4,
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgTimedBuffs",
+            "label": "direct-hidden",
+            "type": "2fd1feb61e7b53af8c8aee70eb85d5b8,596a9b06c478572d8d82414ad8d78935,4ca1d8e286dd5c82a2ee8ce369146d57",
+            "match": "6",
+            "timeoutSeconds": 180,
+            "continueOnFailure": true,
+            "invariants": {
+              "whileActive": "unchanged"
+            }
+          },
+          {
+            "op": "kmgDeedLifecycle",
+            "label": "dodge",
+            "match": "dodge",
+            "invariants": {
+              "ability": "9eec64400c8c47c5924552279ce45c77",
+              "buff": "bbd7d42117cc4c23b3e22af3a71621d9",
+              "class": "abca4797366d4df0831a418eee39069a",
+              "grit": "9876b3e744dd422b9c259d19861ad222"
+            },
+            "timeoutSeconds": 300,
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgDeedLifecycle",
+            "label": "deadeye",
+            "match": "armed",
+            "invariants": {
+              "ability": "984386dce5bf4788b508e9f61c7568e5",
+              "buff": "88ca4220e3944b65b2b9fb3afea35b08",
+              "firearm": "Pistol",
+              "gritAtArm": "1",
+              "gritAtShot": "0",
+              "class": "abca4797366d4df0831a418eee39069a",
+              "grit": "9876b3e744dd422b9c259d19861ad222",
+              "refusedWhileArmed": "false"
+            },
+            "timeoutSeconds": 240,
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgDeedLifecycle",
+            "label": "bleeding-wound",
+            "match": "bleeds",
+            "invariants": {
+              "abilities": "0beb35e712f749abb660f593e790ab39,9d8b076131364a7394aa225b4306419c,41fde8c96f7d468d9f9e6ad4d9b60fb0,a964315c427c4421bdf24c6ccea8700e",
+              "markers": "e563e8cdec324c59959c4dc8b9449702,74749a03f92e4fabaec2830bd66f7731,cd51a3e250094365b54929490a1d64b6,479e8f2c4dc7480cac9664ac10232e21",
+              "bleeds": "7fcfa24d2dcb4044bc2fbe23a1937626,fe07b11676904019b1471905708764eb,9252d6155b3e4c258cbc7a1e794b8a5a,de789d99a1a742b5a7ac3da9c666a804",
+              "stopBleeding": "6c9cebcc46604ec09d3c0ea49e48bdad",
+              "class": "abca4797366d4df0831a418eee39069a",
+              "grit": "9876b3e744dd422b9c259d19861ad222"
+            },
+            "timeoutSeconds": 420,
+            "continueOnFailure": true
+          }
+        ]
+      }
+    }
+  ]
+}

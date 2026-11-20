@@ -412,6 +412,12 @@ namespace KingmakerGunslinger.Blueprints
             result.IsClassFeature = false;
             result.ComponentsArray = components ??
                 Array.Empty<BlueprintComponent>();
+            // All four are effect-free. Without links activation is cut
+            // short: Falling Petal misses the portrait and no end is
+            // scheduled, so its bonus and the Mountain-Sunder round marker
+            // outlast their round. The two retained equipment shells gain
+            // no behaviour; a copy left in an old save activates cleanly.
+            BlueprintUnitFactAccess.UseEmptyBuffEffects(result);
             FieldInfo flags = typeof(BlueprintBuff).GetField("m_Flags",
                 BindingFlags.Instance | BindingFlags.NonPublic);
             if (flags == null) throw new MissingFieldException(

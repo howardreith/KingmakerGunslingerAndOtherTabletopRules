@@ -4,6 +4,9 @@ Status: **released as v0.0.191.** This record was written for the review branch 
 is kept as written below. The release, and the check of the published bytes in the game, are recorded in
 `docs/BUILD-AND-RELEASE.md`. The first report and its repair are in `docs/GUNSLINGER-MISSING-CLASS-REPAIR.md`.
 
+Later evidence on two points this record leaves open (Gunslinger's Dodge spending, and why its scenario errors) is in
+`docs/GUNSLINGER-EFFECT-FREE-BUFF-LINKS.md`.
+
 ## The report
 
 The same player updated to v0.0.190 and still had no Gunslinger class. Their new log records Pathfinder: Kingmaker

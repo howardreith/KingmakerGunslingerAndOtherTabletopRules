@@ -89,6 +89,9 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_SteadyAim_Armed";
+            // Effect-free: empty links let activation finish, so the armed
+            // state reaches the party bar and its end is scheduled.
+            BlueprintUnitFactAccess.UseEmptyBuffEffects(result);
             result.Stacking = StackingType.Replace;
             var handler = ScriptableObject.CreateInstance<SteadyAimAttackHandler>();
             handler.name = "$KMG_SteadyAim_Attack";

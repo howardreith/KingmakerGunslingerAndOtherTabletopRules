@@ -48,6 +48,9 @@ namespace KingmakerGunslinger.Blueprints
         {
             var result = ScriptableObject.CreateInstance<BlueprintBuff>();
             result.name = "KMG_TargetingHead_Confusion_Buff";
+            // Effect-free: empty links let activation finish, so the
+            // condition is announced and its one-round end is scheduled.
+            BlueprintUnitFactAccess.UseEmptyBuffEffects(result);
             result.IsClassFeature = false;
             result.Stacking = StackingType.Replace;
             var condition = ScriptableObject.CreateInstance<AddCondition>();
