@@ -1,0 +1,24 @@
+{
+  "name": "risk06-trample",
+  "description": "S5 T6 / RISK-06 investigation of the Mastodon Trample's normal-play invocation route. It runs the save-free summon-risk06-trample-route phase (sprint32 native review) in the owned outdoor native Default fixture. A census records every published row that spawns the Mastodon with its spawn control flag, the unit's Trample grant, its brain and actions, and every AI action or brain in the loaded library that names the Trample. Then the published Mastodon row is cast through its own execution and, driven only by the game's own controllers, fights a Medium private hostile placed on a surveyed legal Trample path: once in real time for three rounds and once turn-based for two complete owner turns. No Trample command, AI tick or action is supplied; every command the summon starts is recorded. Call of the Wild and Races Unleashed are staged beside the candidate as in the owner profile. No save is loaded. The short name keeps evidence paths under MAX_PATH.",
+  "ownerMods": [
+    "CallOfTheWild",
+    "RacesUnleashed"
+  ],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "route",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-expanded-summoning-sprint32-native-review",
+        "parameters": {
+          "reviewPhase": "summon-risk06-trample-route"
+        },
+        "timeoutSeconds": 900
+      }
+    }
+  ]
+}
