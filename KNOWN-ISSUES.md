@@ -464,11 +464,15 @@
   `codex/pol06-cotw-conversion-semantics` (S5 T5 / POL-06, draft PR #190; not
   accepted, not merged, not released) they are projected into the published
   creatures of their own tier and quantity, each keeping that row's metamagic,
-  the slot's level and the slot's debit. Rows of the prepared parent's own tier
-  stay raw. Observed in a disposable game copy for Extend on both routes
-  (`docs/EXPANDED-SUMMONING-COTW-CONVERSION-SEMANTICS.md`); the larger popup and the same creature
-  appearing at two tiers (distinguished only in the tooltip) are left for owner
-  review.
+  the slot's level and one native debit of the source. Rows of the prepared
+  parent's own tier stay raw as a conservative presentation fallback (their
+  metamagic can differ from the source's). Observed in a disposable game copy
+  with an independent per-conversion observer: Extend and Heighten, Single, d3
+  and d4+1 casts on both routes, a plain source and a second spellbook
+  (`docs/EXPANDED-SUMMONING-COTW-CONVERSION-SEMANTICS.md`). The larger popup (302
+  rows for Extend and Heighten Spell), the same creature at two tiers
+  (distinguished only in the tooltip) and eight redundant same-behaviour rows
+  are left for owner review.
 - The legacy Advanced Revolver declares six chambers, but saved firearm state holds one round, so its six-round reload
   fails and restores ammunition and weapon state. No published release offered it (vendors only cleaned it up;
   Craft Magic Items only recognized an owned one). On branch `codex/risk01-advanced-revolver` (accepted with Sprint 4 at `e30b19e8fe`;

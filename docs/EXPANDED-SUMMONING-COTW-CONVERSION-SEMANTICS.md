@@ -1,6 +1,6 @@
 # Call of the Wild conversion semantics (POL-06 / S5 T5)
 
-Status: **implemented on a development branch; native observations recorded below, with an environmental limit on the final observer.** Not merged, not released.
+Status: **implemented on a development branch; the corrected observer completed its POL-06 cells natively (session `20261120T054533Z`, 77 of 77).** Awaiting principal review. Not accepted, not merged, not released.
 
 - **Branch:** `codex/pol06-cotw-conversion-semantics`, draft PR #190, stacked on PR #189 (accepted S5 T4 head
   `acd50a042a`).
@@ -30,7 +30,11 @@ Both assemblies were decompiled with ilspycmd into the session scratch area. Not
   metamagic**, even over a source prepared with metamagic.
 - **Spell level:** `AbilityData.SpellLevel` follows `ConvertedFrom`, so a converted row has the source's level (known
   level plus the source's metamagic cost).
-- **Debit:** `SpendFromSpellbook` and availability walk `ConvertedFrom` to the source's slot.
+- **Debit:** `SpendFromSpellbook` and availability walk `ConvertedFrom` to the source. The native
+  `Spellbook.Spend(source)` for a prepared book then takes the **last available memorized slot whose spell `Equals`
+  the source** (blueprint, caster, fact, book and `ConvertedFrom`). With two equal preparations it may spend the other
+  one; it never pins the slot whose popup was opened. The product preserves this native selection and does not
+  introduce captured-slot spending.
 - **Native evidence:** in session `20261111T0045385494739Z`, the Herald Ogre converted from an unrelated level 4 spell
   prepared with Extend Spell had no Extend, 20 rounds at caster level 20, and spent the level 5 slot
   (`spider-herald-extended-source-caster-level-duration`).
@@ -67,8 +71,8 @@ So each such row is:
 |---|---|
 | Creature list | the conversion feature's own quantity spell of a **lower** tier `n` (every metamagic costs at least one level, so `n < L` in practice) |
 | Metamagic | built from the **caster's feats** to make up `L - n`; **not the source's metamagic** |
-| Spell level | `L`, the source's level, through `ConvertedFrom` |
-| Debit | the source's slot, through `ConvertedFrom` |
+| Spell level | `AbilityData.SpellLevel` is `L`, the source's level, through `ConvertedFrom` (the slot level). The engine's effective level in the cast context (`Params.SpellLevel`) is `L` minus the cost of metamagic that does not raise it: observed 4 for an Extend row, 5 for a Heighten +1 row, both from a level 5 slot |
+| Debit | one native debit of an equal preparation of the source, through `ConvertedFrom` (see the ordinary contract) |
 | Eligibility | the same conversion feature (Herald Caller or Druid), the caster's metamagic feats and the spell's accepted metamagic; for the Herald, the native umbrella chooses its branch by alignment at cast |
 
 **Native confirmation.** In session `20261111T0045385494739Z`, the level 5 Herald popup over an unrelated level 4
@@ -127,13 +131,20 @@ popup's `Conversion` list.
   source-level list.
 
 **Left raw, as Call of the Wild made them:**
-- a row whose tier is the prepared parent itself: its children would repeat the source's own listed variants, with
-  the same metamagic, level and debit;
+- a row whose tier is the prepared parent itself. This is a **conservative presentation fallback**: projecting it
+  would multiply the prepared parent's creature menu. The row keeps its own metamagic and execution chain. It is
+  **not** presumed semantically identical to the source's variants: the fallback compares tiers, not metamagic, so a
+  prepared Extended summon and a separately generated Reach row of the same tier both appear, with different
+  metamagic. Nothing is hidden and no power changes;
 - two rows with the same blueprint and the same metamagic;
 - any row whose projection cannot be verified exactly. Such a row never withdraws the ordinary projection.
 
 **Order.** Additional children follow every ordinary child, in Call of the Wild's own row order. Within a row they keep
 the published parent's order (`DruidSummonConversionPolicy.ProjectedRank`).
+
+**Scope boundary:** the projection handles prepared slots only, as it did before this story. Call of the Wild's
+rows on a spontaneous caster's slot stay as Call of the Wild made them. This is the retained prepared-caster
+restriction, not an untested supported route.
 
 **Unchanged:**
 - ordinary rows and their projection;
@@ -143,60 +154,94 @@ the published parent's order (`DruidSummonConversionPolicy.ProjectedRank`).
 
 ### Presentation boundary for owner review
 
+The principal review (2026-11-20) retains the projection direction and its raw fallbacks, and the native tooltip as
+the distinguishing presentation for this development scope; no nested chooser. The measurements below are for the
+owner.
+
 - **Creature icons:** projected children show the creature's icon, like every projected row. Their metamagic is
   visible in the tooltip's Metamagic block, as for Call of the Wild's raw rows.
 - **The same creature twice:** a creature can appear once as an ordinary choice (higher tier, no metamagic) and once
   as an additional choice (lower tier, with metamagic). Both are cast at the source's level. Only the tooltip
   distinguishes them, by its metamagic block and by the creature's quantity label.
 - **Menu size:** the popup grows by the permitted creatures of each additional row. The count multiplies with the
-  caster's metamagic feats that summon spells accept (for example Extend, Reach, Quicken, and Heighten at every lower
-  level), because Call of the Wild makes one row per combination.
+  caster's metamagic feats that summon spells accept, because Call of the Wild makes one row per combination.
+  Measured: Herald 68 ordinary rows, 126 with Extend Spell, **302 with Extend Spell and Heighten Spell** (18 Call of
+  the Wild conversions at tiers I to IV, 234 projected creatures). Druid 76 and 140 with Extend Spell.
+- **Reachable and distinguishable (two-feat popup, measured):** all 302 rows fit the 1920×1080 game screen without
+  scrolling. The same creature under the Extend and the Heighten tier IV conversions, and the last row, were each
+  fully on screen, and the two creatures' native tooltips rendered "Extended," and "Heightened," respectively. No two
+  rows that behave differently share both a label and the tooltip's metamagic text.
+- **Redundant rows (two-feat popup, measured):** eight labels appear twice with the same tooltip text and the same
+  behaviour, for example "Beetle, Fire (1d4+1)" with "Heightened,": once from the tier III d4+1 placement under
+  Heighten +2 and once from the tier IV d4+1 placement under Heighten +1. Both summon the same creature with the same
+  dice and metamagic at spell level 5. They are redundant, not indistinguishable, and are left for owner review.
 - **Alternative, if the owner prefers it:** keep Call of the Wild's rows raw and label them with their tier and
   metamagic. Hiding them, or changing their power, would need an explicit product decision; neither was done.
 
 ## Validation
 
-**Focused development checks:**
-- production compilation;
-- domain controls `expanded-summoning.pol06-*` (additional-level recognition, ordering, in-place projection beside
-  unprojected rows) and the existing conversion, cleric-alignment and spider selections.
+### The observer (corrected after the 2026-11-20 principal review)
 
-**Native qualification:** the `summon-cleric-alignment` phase on the combined DATA profile, extended with POL-06 cells
-(`RuntimeTestRunner.Pol06CotwConversions.cs`):
-- **Herald popup** over an unrelated level 4 spell prepared with Extend:
-  - ordinary Summon Monster V rows exact;
-  - Call of the Wild's Summon Monster IV rows projected into exactly the caster's permitted Summon Monster IV
-    creatures, each with the row's Extend at spell level 5;
-  - none raw.
-- **Projected Herald cast** (the Black Widow where offered):
-  - Extend's doubled duration from the engine's summon rule;
-  - the quantity row's count;
-  - the level 5 slot spent exactly once.
-- **Refusals with nothing spent:**
-  - a retained projected choice after its slot was spent;
-  - a forbidden-alignment creature under the same row.
-- **Setting off** (Call of the Wild's in-memory value, restored; settings file untouched): ordinary rows only.
-- **Druid popup and cast:** the same projection for Summon Nature's Ally IV.
-- **Unchanged cells, still in the phase:**
-  - the Herald Ogre from the extended source: ordinary conversion, no Extend;
-  - the extended Summon Monster V popup, whose same-tier Call of the Wild rows stay raw;
-  - the natural cleric/wizard Herald with its cure rows and unchanged wizard book;
-  - the Druid spider popups.
+The first observer checked each projected child's tier, then its membership in the product receipt's own
+`ProjectionVariants`, then the combined child set. That could not show that each quantity conversion owns its own
+creatures: a projection that crossed the d3 and d4+1 associations would keep the combined set and pass. The corrected
+observer (`RuntimeTestRunner.Pol06CotwConversions.cs`, `Pol06ConversionObservationVerdict.cs`) derives every
+expectation independently of the projection under test:
+
+- **Conversions:** Call of the Wild's own builder (`getAdditionalToggleSpells`) for the same slot and source, keyed by
+  quantity spell, metamagic mask, heighten level and level cost.
+- **Each conversion's tier:** the single level at which the book's native conversion lists hold its spell.
+- **Each conversion's quantity:** its own spawn expression (no die, d3, d4); a tier I canonical parent, which the native
+  arrays hold itself, is Single.
+- **The creatures it must own:** the route parent of that tier, filtered to this caster's visible and permitted rows,
+  whose quantity at that tier the placement, native-expansion, native-option, third-party and Spider Summoner contracts
+  state. Each creature's own spawn expression must agree.
+- **Per conversion:** its children must equal that set exactly (missing, duplicate and unexpected children fail), under
+  one conversion object, each child holding that conversion's metamagic object, spell level, book, caster and fact.
+  Expected-raw rows (the prepared parent's own tier, duplicate keys) must be present raw; unexpected raw rows fail;
+  non-summon and ability rows must be retained as a multiset. The aggregate completeness check is kept beside it.
+- **Domain controls** (`expanded-summoning.pol06-observer-*`): exact associations pass; crossing d3 and d4+1 while
+  keeping the combined set fails both crossed conversions while the aggregate passes; missing, duplicate, unexpected,
+  split-conversion, foreign-conversion, left-raw, lost-cure and withdrawn cases fail; controlled counts (Single 1, d3
+  forced 2 gives 2, d4 forced 2 gives 3) and count-dice mapping.
+- **Counts** come from the contract and a controlled roll (the existing `SpiderDieOverride`), never from the observed
+  unit count. Superior Summoning, which adds to the dice rows' rank, must be absent for a controlled dice cast.
+
+### The native lane
+
+`summon-pol06-cotw` (`Sprint39CotwConversionPhase`) runs the cleric phase's own setup and cleanup (fixture
+prerequisites, census, party, the spider interface casters, native Default ownership and restoration) with only the
+POL-06 cells, so unrelated earlier popups cannot stop them. The full `summon-cleric-alignment` phase still runs every
+cell. Session file `scripts/compatibility/loader-compat/sessions/pol06-lane.json`.
+
+**Cases** (overlapping, reusing the existing fixtures and observers):
+
+| Case | Caster and source | What it resolves |
+|---|---|---|
+| Herald popup, Single cast, stale and forbidden refusals, setting off | fixture cleric 20 (chaotic good, Desna, Spider Summoner), Air Walk prepared with Extend in a level 5 slot | per-conversion projection; Extend; the Herald alignment gate; exhausted-source refusal |
+| Herald d4+1 cast, d4 forced to 2 | same | the d4+1 path with a controlled roll |
+| Herald with Extend Spell and Heighten Spell | same, Heighten Spell feat added | a second metamagic, with its mask, heighten level and cost observed; tiers I to IV; popup size, reachability and tooltips |
+| Druid popup, d3 cast with d3 forced to 2, stale refusal | Druid 13 (true neutral), Freedom of Movement prepared with Extend in a level 5 slot | the d3 path; the second route's exhausted-source refusal |
+| Natural Herald, plain source | cleric 9/wizard 1 Herald Caller, Burst of Glory with **no metamagic** in a Common level 5 slot, Extend Spell granted, one wizard spell prepared | row metamagic independent of source metamagic; correct book and one debit with another spellbook populated |
+
+There is no Druid forbidden-alignment case: the Druid route has no alignment gate.
 
 ## Checkpoint record
 
 ### Focused checks
 
-| Check | Result | Time |
-|---|---|---|
-| `Invoke-KmgGate -Filter 'expanded-summoning.cleanup2-druid;expanded-summoning.cleanup4-druid;expanded-summoning.pol06;cleric-alignment;spider;native-profile'` | 48 of 48 (3,138 registered), production compiled | 15 s |
-| `-Filter 'expanded-summoning.pol06'` | 3 of 3 | — |
-| Each candidate's development filter (above plus `loader-compat`) | 53 of 53; strict standalone package validation PASS | 400–418 s per build |
-| `git diff --check`; icon catalog | clean; PASS | — |
+| Check | Result |
+|---|---|
+| `Invoke-KmgGate -Filter 'expanded-summoning.pol06'` | 8 of 8 (3 projection controls, 5 observer controls) |
+| `-Filter 'expanded-summoning.pol06;expanded-summoning.sprint32-native-admission;cleric-alignment;spider'` | 41 of 41, production compiled |
+| `-Filter` `cleanup2-druid`, `cleanup4-druid`, `cleric`, `spider`, `sprint32-native-admission` | 3, 1, 19, 13, 1, all PASS |
+| Each candidate's development filter (the above plus `native-profile` and `loader-compat`) | 59 of 59 (3,143 registered); strict standalone package validation PASS |
+| `Test-LoaderCompatSafety.ps1` | 13 of 13 |
+| `Test-KmgSprint32ReviewPhaseScope` for `summon-pol06-cotw` and `summon-cleric-alignment` | both admitted |
+| `git diff --check` | clean |
 
-`validate_expanded_summoning_cleanup2_release164.py` and `..._druid_giant_sizes_release166.py` list the two
-conversion files. Both report "A released identity row changed" identically on the unchanged base (`acd50a042a`), so
-they are historical release validators and say nothing about this change.
+`validate_expanded_summoning_cleanup2_release164.py` and `..._druid_giant_sizes_release166.py` report "A released
+identity row changed" identically on the unchanged base (`acd50a042a`); they are historical release validators.
 
 ### Candidates and native sessions
 
@@ -206,97 +251,106 @@ All sessions:
 - **Mods:** the candidate, Call of the Wild 1.14.4c-2.1 and Races Unleashed 1.0.11.
 - **Harness:** `c47e7f14d48edac88740b4c9bf1841e805c45a88043dc162789b4c86dbc1b089`, unchanged since its build at
   `c638de2385`.
-- **Session file:** `scripts/compatibility/loader-compat/sessions/pol06-cleric.json`, phase `summon-cleric-alignment`,
-  save-free.
-- **Input:** from the second session on, the pointer was parked at (300, 200) and sampled every 5 s.
+- **Save-free;** each candidate's frozen package was staged unchanged.
+- **Gameplay source** (`src/KingmakerGunslinger/Summoning`, `Blueprints`) is identical in every candidate below from
+  `0707d39c48e5` on. Only runtime-test files, the phase declaration and the session files differ. The compiled DLLs
+  differ (hashes and MVIDs below), so no candidate's DLL identity stands in for another's.
+
+**First observer, full `summon-cleric-alignment` phase** (`sessions/pol06-cleric.json`; from the second session the
+pointer was parked at (300, 200) and sampled every 5 s):
 
 | Candidate | Identity | Session | Result |
 |---|---|---|---|
-| `0707d39c48e5` | package `bd71f5af18f7f89cfbd9134c4ceb91954ace51896a74e8529e791eb7ffd98321`, DLL `607e5d63fdf241585461f8ec55ad55fddafa1e76cd6125654385e53ac81ff591` (in game) | `20261120T025710Z-owner-0.33.0-pol06-cleric` | **FAIL**, environment: 20 checks, 6 failed. The popup-teardown guard refused at the first popup (Summon Monster IX), because of a tooltip context with no ability and no live trigger. Pointer not controlled. No POL-06 cell ran |
-| `0707d39c48e5` (same bytes) | as above, MVID `62b41a56-5051-45b7-bcb8-4a1956522acc` (in game) | `20261120T030023Z-owner-0.33.0-pol06-cleric` | **FAIL**: 258 checks, 7 failed. See the table below |
-| `74d01069713a` (observer fix 1) | package `063c4b332abd6829379b0ef27f4dc794f2c6453abe819efe1af3d0a297f22862`, DLL `2e7e64df6cc6ff672a2756e32fc84d6fa344590e2864654b8bbcdbf4ddae0220`, MVID `9c18590d-3051-49a5-bb5a-3ba658dea275` (in game) | `20261120T031613Z-owner-0.33.0-pol06-cleric` | **FAIL in game, 259 of 260**. The one failure is the stale-choice check's wrong precondition (below). Every other check passes, including every POL-06 behaviour and every pre-existing cleric, Herald, Spider Summoner and Druid cell |
-| `52ec0e144b6c` (observer fix 2) | package `00ac7d5da27a1f358bc8dbd93c1dea57a4afc423e03dcf9b98e89c9e238fb55f`, DLL `1dd95d9b1f3a883846944fcebd27b34fa93fa21c774733e347e834694deffd8a`, MVID `f6b9ce92-3eb0-490a-bd81-159b2d45f2c4` (in game) | `20261120T033139Z-owner-0.33.0-pol06-cleric` | **FAIL**, environment: 202 checks, 5 failed. The same teardown-guard refusal, at the pre-existing `spider-extended` popup, aborted the spider interface cells before any POL-06 cell ran |
+| `0707d39c48e5` | package `bd71f5af18f7f89cfbd9134c4ceb91954ace51896a74e8529e791eb7ffd98321`, DLL `607e5d63fdf241585461f8ec55ad55fddafa1e76cd6125654385e53ac81ff591` | `20261120T025710Z-owner-0.33.0-pol06-cleric` | **FAIL**: 20 checks, 6 failed. Popup-teardown guard refusal at the first popup (Summon Monster IX): a tooltip context with no ability and no live trigger. No POL-06 cell ran |
+| `0707d39c48e5` (same bytes) | MVID `62b41a56-5051-45b7-bcb8-4a1956522acc` | `20261120T030023Z-owner-0.33.0-pol06-cleric` | **FAIL**: 258 checks, 7 failed (below) |
+| `74d01069713a` | package `063c4b332abd6829379b0ef27f4dc794f2c6453abe819efe1af3d0a297f22862`, DLL `2e7e64df6cc6ff672a2756e32fc84d6fa344590e2864654b8bbcdbf4ddae0220`, MVID `9c18590d-3051-49a5-bb5a-3ba658dea275` | `20261120T031613Z-owner-0.33.0-pol06-cleric` | **FAIL in game, 259 of 260.** The one failure is the stale-choice precondition (below) |
+| `52ec0e144b6c` | package `00ac7d5da27a1f358bc8dbd93c1dea57a4afc423e03dcf9b98e89c9e238fb55f`, DLL `1dd95d9b1f3a883846944fcebd27b34fa93fa21c774733e347e834694deffd8a`, MVID `f6b9ce92-3eb0-490a-bd81-159b2d45f2c4` | `20261120T033139Z-owner-0.33.0-pol06-cleric` | **FAIL**: 202 checks, 5 failed. The same guard refusal at the pre-existing `spider-extended` popup, before any POL-06 cell |
 
-**Failures of the second session (`20261120T030023Z`):**
+Failures of `20261120T030023Z`: the guard refusal in a pre-existing Spider Summoner cell (popup-close admission,
+`r6-spider-hold-original`, `spider-held-attempt-original-crab`), and a fixture defect corrected in `74d01069`: the
+Herald book held two equal extended preparations, and the native spend took the other one (exactly one level 5 slot,
+not the pinned one).
 
-| Failure | Cause |
-|---|---|
-| Popup-close admission, `r6-spider-hold-original`, `spider-held-attempt-original-crab` | the same teardown-guard refusal, in a pre-existing Spider Summoner cell |
-| `...-pol06-herald-additional-cast-debit`, `r6-pol06-herald-additional-cast`, `pol06-herald-additional-extend-duration-debit` (debit part only), `pol06-herald-stale-choice-refused` | fixture defect, corrected in `74d01069` |
+**Stale-choice verdict of `20261120T031613Z`, re-read from retained evidence (policy rule 5):** the in-game check
+required `IsAvailableForCast` false, which never reads slots. The retained observation (visible, available, native
+reason "No suitable spell slots", Fail, nothing spent or summoned) meets the slot-exhausted precondition. In-game
+**FAIL** and re-read **PASS** are both kept. The re-read is not an execution of the corrected observer; that
+observer (`slotExhausted`) executed natively in the lane sessions below.
 
-The fixture defect, in detail:
-- The Herald book held two identical extended Freedom of Movement copies.
-- The native `Spellbook.Spend` spends the last available memorized slot whose spell equals the source. It spent the
-  other copy: exactly one level 5 slot, but not the pinned one.
-- The retained choice then legitimately spent the pinned slot.
-- The cast itself was correct: Extend, 240 s, the exact unit.
+**The guard refusals** happened in three different popups that predate this story; the guard was not weakened. They
+are recorded as **popup-guard aborts with suspected cursor interference, a hypothesis**, not an established cause.
+The 5 s samples of those sessions sat mostly at (640, 360) or (0, 0). In the first lane session, a driver re-parking
+every 50 ms read (0, 0) from its first sample, before the game window existed, and did not check whether the read
+succeeded, so those readings do not attribute anything. From the second lane session the driver checked every read:
+no failed read and no displacement in about 3,000 samples per session. No matched baseline was run, so no attribution
+is claimed.
 
-**The guard refusals.** All three are in popups that predate this story, at three different places, and the guard
-was not weakened. In every controlled session, most pointer samples sit at the game window's centre (640, 360) or
-at (0, 0), not where it was parked. The game repositions the cursor on its 1280×720 screen, where the popups render.
-This is recorded as an environmental cause, not a proven one. The earlier cleric phase passed 234/234 on the live
-combined installation (`20261111T0045385494739Z`).
+**Corrected observer, `summon-pol06-cotw` lane** (`sessions/pol06-lane.json`). The pointer was owned by a
+scratch-area driver that re-parks it at (300, 200) every 50 ms and records every displacement and failed read:
 
-**Stale-choice verdict, re-read from retained evidence (policy rule 5):**
-- **In game (session `20261120T031613Z`):** the check required native `IsAvailableForCast` to be false.
-- **Why that was wrong:** that getter never reads spell slots. Slot exhaustion shows only in
-  `GetAvailableForCastCount`, `GetUnavailableReason` and execution.
-- **The retained observation:** visible, `IsAvailableForCast` true, native reason "No suitable spell slots", command
-  result Fail, nothing spent, no spawn action, nothing summoned. That reason comes from `GetUnavailableReason` through
-  the conversion chain, which reports it only when `Spellbook.CanSpend(source)` is false; that is the slot-exhausted
-  precondition.
-- **Verdicts:** in-game FAIL; re-read PASS. Both are kept.
-- **The corrected observer** (`52ec0e144b`, `slotExhausted`) has not executed natively: its only session aborted on
-  the guard first.
-- **Production code is identical** in `74d01069713a` and `52ec0e144b6c`; only two runtime-test files differ.
+| Candidate | Identity | Session | Result |
+|---|---|---|---|
+| `2bc96a6ef6f2` | package `f135117fa4361b5e36d0c5bb705578c519c77c7040c12c4428ecbb4f981e5f23`, DLL `8584e31d3a9af3bd71566b5530c138dc835e0e667c94a3cb6ac2ae1026abdf00`, MVID `42d928c5-a5a8-457e-9275-b3b33fb29f13` | `20261120T050759Z-owner-0.33.0-pol06-lane` | **FAIL**: 10 checks, 2 failed. Lane defect: the phase entered native Default with the fixed purpose `summon-cleric-alignment`, which admission refused for the lane. No POL-06 cell ran. Corrected in `43f69cfede` |
+| `43f69cfede6b` | package `5ea7f480d406bc5933310bd841beddd4084e7de17f5920f30d2a23d1d9f2b9be`, DLL `1b33889fe6e3f6fa85508a015d56cf0ddd054ee3c0531e4e6b09dfe4d7fc58e5`, MVID `501a8e00-36ef-4d0f-84cf-d8219c25741c` | `20261120T051940Z-owner-0.33.0-pol06-lane` | **FAIL**: 75 checks, 9 failed. Every POL-06 cell ran; every cast, controlled count, debit, refusal, reachability and tooltip check passed. Observer defects: Call of the Wild's builder namespace (the per-conversion verdicts had no expectation); tier I conversions held as the Summon Monster I parent were not classified; the presentation check compared reading only; the natural Herald's source went into its domain slot (which the native conversion and the product rightly leave alone). Corrected in `41a1d3487d` |
+| `41a1d3487def` | package `585633439ead7d36140757ba1785ea1ecfb2c72e587418be273077cb001c5364`, DLL `fa21d1c6a009e41dc6e5b1378f2a3923e7f81242fe9e70a3cf42b6835f719110`, MVID `59be4b64-d99e-4417-a95c-0d2c22baf740` | `20261120T053352Z-owner-0.33.0-pol06-lane` | **FAIL**: 74 checks, 1 failed. Every per-conversion verdict passed. The observer refused the natural Herald's Single cast because that naturally levelled caster holds Superior Summoning, which only affects dice rows. Corrected in `c5fdcb1431` |
+| `c5fdcb1431c2` | package `2fd49eaadb1ca6d4a1b873a563b9e3684707d4e2f1cff684cc782c8b24bebb72`, DLL `bff80052bfb76d7d29731946a85c1141ea604d014220564431e7e2b429e97645`, MVID `6d4e9a1b-2ae4-441f-b739-924dc535d0bb` | `20261120T054533Z-owner-0.33.0-pol06-lane` | **PASS, 77 of 77 in game.** Every POL-06 cell reached and completed |
 
-### Native observations (session `20261120T031613Z`, candidate `74d01069713a`)
+### Native observations (session `20261120T054533Z`, candidate `c5fdcb1431c2`)
 
-**Herald, chaotic good under Desna, caster level 20, holding only Extend Spell.** The source is Air Walk (level 4)
-prepared with Extend in a level 5 slot, its only equal prepared copy.
-- **Popup:**
-  - the 68 ordinary Summon Monster V rows, exactly this caster's permitted list, in published order;
-  - then 58 projected children from Call of the Wild's three Summon Monster IV rows (Single, 1d3, 1d4+1), exactly the
-    permitted Summon Monster IV creatures, each once;
-  - every child carries that row's own Extend object at spell level 5, with a current receipt for additional tier IV;
-  - no raw row remained (`additional=3;additionalChildren=58;additionalRaw=0`);
-  - the five forbidden Summon Monster IV creatures were not offered.
-- **Projected cast**, Summon Monster IV Black Widow (Spider Summoner), through the native row click, target and
-  command:
-  - one Giant Black Widow;
-  - the engine's summon rule shows Extend, 240 s, which is 40 rounds at caster level 20;
-  - exactly the source's level 5 slot was spent.
-- **Stale choice:** a retained choice from the same row after that slot was spent was refused (above).
-- **Forbidden choice:** a Dretch (1d3), chaotic evil, under the same Extend row was refused before any spend (not
-  visible, unavailable, Fail, nothing spent or summoned).
-- **Setting off** (Call of the Wild's in-memory value; its settings file untouched; restored afterwards): the same
-  popup listed exactly the 68 ordinary rows, with no additional row (`additional=0`).
-- **The ordinary conversion is unchanged:** the Ogre converted from the extended Freedom of Movement source had no
-  Extend, 120 s, at caster level 20, as before.
-- **Same-tier rows stay raw:** in the extended Summon Monster V popup (level 6 slot), Call of the Wild's same-tier
-  Summon Monster V rows stayed raw and were set aside. The natural cleric 9 / wizard 1 Herald still cast from its
-  cleric book with its wizard book unchanged.
+**Herald, fixture cleric 20, Air Walk prepared with Extend in a level 5 slot (its only equal preparation).**
+- **Popup:** 68 ordinary Summon Monster V rows exact; Call of the Wild's three Summon Monster IV Extend conversions
+  each owned exactly its own permitted creatures (Single 27, d3 11, d4+1 20), each child with that conversion's
+  metamagic object at spell level 5; none raw; aggregate complete.
+- **Single cast:** Black Widow, one creature, Extend, 240 s (40 rounds at caster level 20), exactly the source slot.
+- **Stale:** a retained choice of the same conversion after the slot was spent: cast count 0, refused, nothing spent
+  or summoned. **Forbidden:** a chaotic evil creature under the same conversion: not visible, unavailable, refused,
+  nothing spent or summoned.
+- **Setting off:** exactly the 68 ordinary rows.
+- **d4+1 cast:** Ant, Giant (Worker) (1d4+1), d4 forced to 2 (one d4 roll observed): three creatures, each Extend,
+  240 s, exactly the source slot.
+- **Extend Spell and Heighten Spell:** 302 rows; 18 conversions at tiers I to IV (Extend; Heighten +1 to +4; Extend
+  with Heighten +1 to +3), each owning exactly its own creatures; no indistinguishable rows; eight redundant pairs
+  (above). Heighten cast: Ant, Giant (Drone) under the tier IV Heighten +1 conversion: mask Heighten, heighten level
+  1, level cost 1, `AbilityData.SpellLevel` 5; the summon rule carried Heighten, context spell level 5, not extended,
+  120 s; one creature; exactly the source slot.
 
-**Druid, true neutral, caster level 13, holding the feat and Extend Spell.** The source is Freedom of Movement
-prepared with Extend in a level 5 slot, its only equal copy.
-- **Popup:** the 76 ordinary Summon Nature's Ally V rows exact, then 64 projected Summon Nature's Ally IV children from
-  the three rows, each with Extend at spell level 5; none raw.
-- **Projected cast:** Giant Ant (Drone), Summon Nature's Ally IV Single. Extend, 156 s (26 rounds at caster level 13),
-  exactly the source slot spent.
+**Druid 13, Freedom of Movement prepared with Extend in a level 5 slot.**
+- **Popup:** 76 ordinary Summon Nature's Ally V rows exact; three Extend conversions each owned exactly its own
+  creatures (Single 32, d3 12, d4+1 20).
+- **d3 cast:** Ant, Giant (Soldier) (1d3), d3 forced to 2 (one d3 roll observed): two creatures, each Extend, 156 s
+  (26 rounds at caster level 13), exactly the source slot.
+- **Stale:** a retained choice of the same conversion after the slot was spent: cast count 0, refused, nothing spent
+  or summoned.
+
+**Natural cleric 9/wizard 1 Herald, Burst of Glory with no metamagic in a Common level 5 slot.**
+- **Popup:** 68 ordinary rows exact; the cure rows retained exactly; three Summon Monster IV **Extend** conversions,
+  although the source has no metamagic, each owning exactly its own creatures.
+- **Cast:** Ant, Giant (Drone), one creature, Extend, 108 s (18 rounds at caster level 9), from the cleric book;
+  exactly the cleric source slot spent; every wizard slot, preparation and availability unchanged (one wizard spell
+  prepared).
+
+### The debit contract, as established
+
+- **Established:** with exactly one equal prepared copy, a projected Call of the Wild choice spends exactly that source
+  slot, once, in the correct book, with every other slot, preparation, known spell, custom spell and resource
+  unchanged, including a second populated spellbook.
+- **Not claimed:** that a conversion always spends the slot whose popup was opened. With two equal preparations the
+  native `Spellbook.Spend` may spend the other (observed in `20261120T030023Z`). The product preserves this native
+  selection: one native debit of an equal preparation, within the correct book, spell, metamagic and level, and no
+  unrelated spend. It does not override native slot selection.
 
 ### Limits
 
-**Not executed natively:**
-- the final observer (`52ec0e144b`);
-- the Druid stale and forbidden cases (the Druid has no alignment gate; only the Herald stale case ran);
-- quantities above Single in a projected cast (1d3 and 1d4+1 children were listed and verified, not cast);
-- metamagic other than Extend, and combinations, including Heighten;
-- spontaneous casters' Call of the Wild rows (the projection handles prepared slots only, as before);
-- controller presentation;
-- the live owner installation.
-
-**Not in this story:** the full stack of 15 mods, and the other phases that open conversion popups over metamagic
-sources (alphabetical menus, menu order).
-
-**Presentation:** the presentation boundary above is for owner review. In these sessions the Herald popup grew from 68
-to 126 rows and the Druid popup from 76 to 140.
+- **Not executed natively:**
+  - the full `summon-cleric-alignment` phase with the corrected observer (its non-POL-06 cells are unchanged code; the
+    lane runs the same POL-06 cells);
+  - Reach, Empower, Quicken and other metamagic beyond Extend and Heighten (each a different conversion key handled by
+    the same per-conversion verdict);
+  - a projected d3 Herald cast and a projected d4+1 Druid cast (one of each quantity path per route family was cast);
+  - controller presentation;
+  - the owner installation and the full 15-mod stack.
+- **Scope boundaries, not untested routes:** spontaneous casters (prepared slots only, as before); a Druid alignment gate
+  (none exists).
+- **Same-tier fallback:** Call of the Wild rows of the prepared parent's own tier stay raw as a conservative
+  presentation fallback (see Implementation); the extended Summon Monster V popup in the full phase exercises it.
+- **Presentation:** the owner's review of the measurements above remains open.
