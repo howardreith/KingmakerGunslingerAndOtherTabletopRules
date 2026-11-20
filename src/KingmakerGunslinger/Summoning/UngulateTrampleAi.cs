@@ -39,8 +39,13 @@ namespace KingmakerGunslinger.Summoning
         public override bool IsAvailable(DecisionContext context)
         {
             UnitEntityData owner = context == null ? null : context.Unit;
+            // An unavailable ability is refused here, before the native
+            // selector's expended check: that check would otherwise remove
+            // this action from the unit's available actions, which the game
+            // restores only at creation or rest.
             return UngulateTrampleAiRuntime.ActorRefusal(owner, OwningBlueprint) ==
-                MastodonTrampleAiRefusal.None && base.IsAvailable(context);
+                MastodonTrampleAiRefusal.None && context.Ability != null &&
+                context.Ability.IsAvailable && base.IsAvailable(context);
         }
 
         public override bool IsTargetValid(DecisionContext context)

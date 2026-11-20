@@ -295,9 +295,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["summonedPartDirectlyControllable"] = summoned?.IsDirectlyControllable,
                     ["liveBrain"] = owner.Brain?.Blueprint?.name,
                     ["liveBrainActions"] = new JArray((owner.Brain?.Actions ?? new List<AiAction>())
+                        .Select(value => value?.Blueprint?.name)),
+                    ["liveBrainAvailableActions"] = new JArray((owner.Brain?.AvailableActions ?? new List<AiAction>())
                         .Select(value => value?.Blueprint?.name)) };
                 bool liveBrainExact = owner.Brain != null && ReferenceEquals(owner.Brain.Blueprint, unit.Brain) &&
-                    owner.Brain.Actions.Any(value => ReferenceEquals(value?.Blueprint, ai));
+                    owner.Brain.Actions.Any(value => ReferenceEquals(value?.Blueprint, ai)) &&
+                    owner.Brain.AvailableActions.Any(value => ReferenceEquals(value?.Blueprint, ai));
                 Sprint28SetBrainActivePreservingActions(owner, false);
                 owner.Commands.InterruptAll(true); owner.Commands.RemoveFinishedAndUpdateQueue();
                 var granted = owner.Descriptor.Abilities.GetAbility(trample);
@@ -501,8 +504,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool claimedNow, haltedNow;
                 ContextActionUngulateTrample.ReadLedger(owner, target.UniqueId, out claimedNow, out haltedNow);
                 bool combatReal = owner.IsInCombat || owner.Descriptor.State.IsDead;
+                // The action must never be dropped as "expended" by the native
+                // selector, whatever the cell refused.
+                bool stillAvailable = owner.Brain != null &&
+                    owner.Brain.AvailableActions.Any(value => ReferenceEquals(value?.Blueprint, ai));
                 bool valid;
-                var verdict = new JObject();
+                var verdict = new JObject { ["trampleActionStillAvailable"] = stillAvailable };
                 if (positive)
                 {
                     UnitCommand first = tramples.FirstOrDefault();
@@ -528,7 +535,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool laterRound = tramples.Length >= 2 && log.Starts.ContainsKey(tramples[1]) &&
                         log.Starts[tramples[1]]["round"]?.Value<long>() > claimRound;
                     bool sameRoundSuppressed = turnBased || sameRoundReturned && laterRound;
-                    valid = liveBrainExact && combatReal && firstIsTrample && executed && allByOwnedAi && noCutscene &&
+                    valid = liveBrainExact && stillAvailable && combatReal && firstIsTrample && executed && allByOwnedAi && noCutscene &&
                         ledgerClearAtStart && contacted && fullRoundSpent && reuse && laterRound && sameRoundSuppressed && laterReturned;
                     verdict["firstCommandIsOwnedTrample"] = firstIsTrample; verdict["firstExecutedSuccess"] = executed;
                     verdict["contacted"] = contacted; verdict["fullRoundSpent"] = fullRoundSpent;
@@ -563,7 +570,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !(value.AiAction is UngulateTrampleAi));
                     bool attackedInReach = arrangement != "other-in-reach" && arrangement != "threatened" ||
                         issuedAttacks.Any(value => ReferenceEquals(value.TargetUnit, second));
-                    valid = liveBrainExact && combatReal && expectedRefusal && !trampleIssued && attacked && attackedInReach &&
+                    valid = liveBrainExact && stillAvailable && combatReal && expectedRefusal && !trampleIssued && attacked && attackedInReach &&
                         noCutscene && (!turnBased || ownerTurns.Count >= 2);
                     verdict["expectedRefusalAtStart"] = expectedRefusal; verdict["trampleIssued"] = trampleIssued;
                     verdict["ordinaryAttackIssued"] = attacked; verdict["issuedAttacks"] = issuedAttacks.Length;
