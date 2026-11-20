@@ -1,6 +1,6 @@
 {
   "name": "effect-free-buff-lifecycles",
-  "description": "Native check of the fourteen deed and Eastern named-weapon buffs that were built without effect links (Deadeye Armed, Gunslinger's Dodge, the four Bleeding Wound target bleeds, Startled, Targeted Head, Up Close and Deadly Armed, Steady Aim Armed, Falling Petal, the Mountain-Sunder round marker and the two retained Wayfarer's Oath and Moonlit Crossing shells), plus a census of the optional Suggestion buff. In one loaded fixture save: first the final blueprints are read (both effect links, visibility, stacking, components, icon). Then ten of the buffs are put on the main character for one round with the game's own AddBuff, to read activation, the portrait's buff bar and the unaided end; the two shells must leave armor class, speed, Reflex and Initiative unchanged. Then each effect runs through its real trigger on disposable units with time running: the Dodge, Deadeye, Up Close and Deadly, Steady Aim, Bleeding Wound, Stop Bleeding, Startling Shot and Targeting (Head) abilities through the game's ability command on gunslingers levelled by the level-up controller, and firearm, Falling Petal and Mountain-Sunder attacks through the game's weapon attack rule with the equipped weapon. Each records the game's buff-added and buff-removed notices, grit, the mechanical effect, consumption or cure, the end that comes by itself and the stats afterwards. The second launch is the product's own Dodge scenario. On a build without the links the first launch fails by design. Two steps fail on current source for reasons that are not effect links and are recorded in KNOWN-ISSUES.md: 'direct-visible-without-icons' (Deadeye Armed and Falling Petal have no icon) and 'steady-aim' (the armed state is never consumed by a shot).",
+  "description": "Native check of the fourteen deed and Eastern named-weapon buffs that were built without effect links (Deadeye Armed, Gunslinger's Dodge, the four Bleeding Wound target bleeds, Startled, Targeted Head, Up Close and Deadly Armed, Steady Aim Armed, Falling Petal, the Mountain-Sunder round marker and the two retained Wayfarer's Oath and Moonlit Crossing shells), plus a census of the optional Suggestion buff. In one loaded fixture save: first the final blueprints are read (both effect links, visibility, stacking, components, icon). Then ten of the buffs are put on the main character for one round with the game's own AddBuff, to read activation, the portrait's buff bar and the unaided end; the two shells must leave armor class, speed, Reflex and Initiative unchanged. Then each effect runs through its real trigger on disposable units with time running: the Dodge, Deadeye, Up Close and Deadly, Steady Aim, Bleeding Wound, Stop Bleeding, Startling Shot and Targeting (Head) abilities through the game's ability command on gunslingers levelled by the level-up controller, and firearm, Falling Petal and Mountain-Sunder attacks through the game's weapon attack rule with the equipped weapon. Each records the game's buff-added and buff-removed notices, grit, the mechanical effect, consumption or cure, the end that comes by itself and the stats afterwards. The product's own Dodge scenario was this session's second launch until it became a loaded-save scenario; it now has its own session, gunslinger-dodge-scenario. On a build without the links the first launch fails by design. Two steps fail on current source for reasons that are not effect links and are recorded in KNOWN-ISSUES.md: 'direct-visible-without-icons' (Deadeye Armed and Falling Petal have no icon) and 'steady-aim' (the armed state is never consumed by a shot).",
   "ownerMods": [],
   "fixtureSaves": [
     "KMCS_AFTER_NORMAL_012_MODONLY.zks"
@@ -202,17 +202,6 @@
             "continueOnFailure": true
           }
         ]
-      }
-    },
-    {
-      "label": "dodge-scenario",
-      "gameArguments": [
-        "locale=enGB"
-      ],
-      "product": {
-        "scenario": "disposable-gunslinger-dodge",
-        "parameters": {},
-        "timeoutSeconds": 600
       }
     }
   ]

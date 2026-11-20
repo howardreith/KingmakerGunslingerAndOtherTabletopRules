@@ -1732,10 +1732,10 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
     'disposable-gunslinger-dodge' = [pscustomobject]@{
-        RequiresSaveName = $false; PermittedSaveName = $null
-        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
-        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
-        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
     'disposable-gunslinger-quick-clear' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
@@ -2407,6 +2407,9 @@ function Assert-KmgRuntimeScenarioPreflight {
     )
     if ($Scenario -cin @('disposable-magic-circle-profile', 'disposable-magic-circle-terrain') -and -not $ExitAfterCompletion) {
         throw 'The native Magic Circle profile fixture requires automatic exit.'
+    }
+    if ($Scenario -ceq 'disposable-gunslinger-dodge' -and -not $ExitAfterCompletion) {
+        throw "The Gunslinger's Dodge scenario requires automatic exit: it leaves a loaded game with time having run and nothing to hand over."
     }
     if ($Scenario -cin @('disposable-expanded-summoning-native-profile',
             'disposable-alternate-summoning-player-paths') -and

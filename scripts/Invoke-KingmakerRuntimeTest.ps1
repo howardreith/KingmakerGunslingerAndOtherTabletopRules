@@ -735,6 +735,7 @@ try {
         'disposable-expanded-summoning-visual-contracts',
         'disposable-brown-fur-native-cast',
         'disposable-alternate-summoning-natural',
+        'disposable-gunslinger-dodge',
         'observe-teleportation-world-map',
         'disposable-teleportation-familiarity',
         'working-save-favored-class-visual-census',

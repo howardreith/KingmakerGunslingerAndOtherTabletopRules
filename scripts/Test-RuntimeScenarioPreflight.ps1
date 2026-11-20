@@ -534,6 +534,47 @@ foreach ($invalid in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'},
     @{saveName='KMG_AUTOMATION_WORKING'; saveWrite='true'})) {
     Assert-Throws { New-KmgRuntimeRequest @snakeFinalArguments -Parameters $invalid } 'snake-final-rejects-extra-scope-and-save-authority'
 }
+# Gunslinger's Dodge runs its ability command in the loaded working save; a request without that save,
+# with the baseline or with anything extra is refused before launch.
+$dodgeArguments = $snakeFinalArguments.Clone()
+$dodgeArguments.Scenario = 'disposable-gunslinger-dodge'
+$dodgeArguments.EvidenceDirectory = Join-Path $script:KmgRuntimeEvidenceRoot 'gunslinger-dodge-preflight-test'
+$dodgeMetadata = Get-KmgRuntimeScenarioMetadata $dodgeArguments.Scenario
+$dodgeRequest = New-KmgRuntimeRequest @dodgeArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+Assert-True ($dodgeMetadata.RequiresSaveName -and $dodgeMetadata.UsesWorkingStageTimeouts -and
+    $dodgeMetadata.UsesCatalogTimeout -and $dodgeMetadata.UsesSelectionTimeouts -and
+    $dodgeMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    $dodgeMetadata.ReadinessBehavior -ceq 'autonomous-working-save' -and
+    -not $dodgeMetadata.RequiresManualInteraction -and
+    $dodgeRequest.scenario -ceq 'disposable-gunslinger-dodge' -and
+    $dodgeRequest.parameters.saveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    $dodgeRequest.completionTimeoutSeconds -gt 0 -and $dodgeRequest.fingerprintTimeoutSeconds -gt 0) `
+    'gunslinger-dodge-is-autonomous-working-save-only'
+foreach ($invalid in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'}, @{saveName='SOME_OTHER_SAVE'},
+    @{saveName='KMG_AUTOMATION_WORKING'; saveWrite='true'})) {
+    Assert-Throws { New-KmgRuntimeRequest @dodgeArguments -Parameters $invalid } 'gunslinger-dodge-rejects-missing-baseline-other-or-extra-parameters'
+}
+# An otherwise valid request that does not exit when it completes is refused before launch. The same request
+# with automatic exit is the valid one built above.
+$dodgeNoExitArguments = $dodgeArguments.Clone()
+$dodgeNoExitArguments.ExitAfterCompletion = $false
+Assert-True $dodgeArguments.ExitAfterCompletion 'gunslinger-dodge-valid-request-exits'
+Assert-True $dodgeRequest.exitAfterCompletion 'gunslinger-dodge-valid-request-carries-automatic-exit'
+Assert-Throws { New-KmgRuntimeRequest @dodgeNoExitArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'} } 'gunslinger-dodge-request-requires-automatic-exit'
+Assert-Throws {
+    Assert-KmgRuntimeScenarioPreflight -Scenario 'disposable-gunslinger-dodge' -ExpectedVersion $dodgeArguments.ExpectedVersion `
+        -TimeoutSeconds 600 -ExitAfterCompletion $false -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+} 'gunslinger-dodge-preflight-requires-automatic-exit'
+$dodgeNoExitMessage = ''
+try { New-KmgRuntimeRequest @dodgeNoExitArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'} | Out-Null }
+catch { $dodgeNoExitMessage = $_.Exception.Message }
+Assert-True ($dodgeNoExitMessage -like "*Gunslinger's Dodge scenario requires automatic exit*") 'gunslinger-dodge-no-exit-refusal-names-its-reason'
+# The rule is Dodge's own: a working-save scenario without it still accepts a non-exiting request.
+$smokeNoExitArguments = $dodgeNoExitArguments.Clone()
+$smokeNoExitArguments.Scenario = 'working-save-smoke'
+$smokeNoExitArguments.EvidenceDirectory = Join-Path $script:KmgRuntimeEvidenceRoot 'working-save-smoke-no-exit-preflight-test'
+$smokeNoExitRequest = New-KmgRuntimeRequest @smokeNoExitArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+Assert-True (-not $smokeNoExitRequest.exitAfterCompletion) 'working-save-smoke-admission-unchanged-by-dodge-rule'
 Assert-True (-not $midgameDisposable.RequiresSaveName -and
     -not $midgameDisposable.RequiresManualInteraction) `
     'midgame-firearms-is-autonomous-save-free'
@@ -1405,6 +1446,8 @@ Assert-True ($orchestrator.Contains("'disposable-brown-fur-native-cast',")) `
     'brown-fur-native-cast-uses-working-save-result-deadline'
 Assert-True ($orchestrator.Contains("'disposable-alternate-summoning-natural',")) `
     'alternate-summoning-natural-uses-working-save-result-deadline'
+Assert-True ($orchestrator.Contains("'disposable-gunslinger-dodge',")) `
+    'gunslinger-dodge-uses-working-save-result-deadline'
 Assert-True ($orchestrator.Contains("'working-save-brown-fur-prepare',") -and
     $orchestrator.Contains("'working-save-brown-fur-verify-cleanup',")) `
     'brown-fur-persistence-uses-working-save-result-deadline'

@@ -214,7 +214,7 @@ namespace KingmakerGunslinger.DomainTests
                 "An unselected one-cost deed costs 1.");
             Assertions.Equal(1, TrueGrit(0, 1, false).NativeCheckCost,
                 "An unselected one-cost deed at 0 grit reports 1 (refused).");
-            string source = Source("Deeds", "GunslingerDodgeProneAbilityLogic.cs");
+            string source = Source("Deeds", "DodgeGritCostCalculator.cs");
             Assertions.True(source.Contains(".NativeCheckCost;") && !source.Contains(".EffectiveCost;"),
                 "The Dodge cost calculator reports the native check cost.");
         }

@@ -57,12 +57,18 @@
   Custom Spells present the builder copies the provider's own links into it; that final blueprint has not been read,
   because the provider is not installed on the lab machine. The native Rainbow Pattern buff the provider's buff is
   checked against has a start effect and an empty remove link.
-- `GunslingerDodgeProneAbilityLogic`'s custom delivery and its `RecordDeliveryEntered`/`RecordDeliveryApplied`
-  diagnostics are not part of the registered Dodge ability, which applies its buff with the native apply-buff action
-  (`AbilityResourceLogic`, `DodgeGritCostCalculator`, `AbilityCasterHasNoFacts`, `AbilityEffectRunAction`). A real
-  activation leaves the diagnostic at `deliverEntered=false`. The same file holds `DodgeGritCostCalculator`, which is
-  live and must survive any later removal of the dead code. The dead delivery was not activated, and it and the dead
-  pre-AC reaction diagnostic were left alone.
+- The registered Gunslinger's Dodge ability applies its buff with the native apply-buff action (`AbilityResourceLogic`,
+  `DodgeGritCostCalculator`, `AbilityCasterHasNoFacts`, `AbilityEffectRunAction`). Up to and including the published
+  v0.0.191 the source also carries a custom delivery class (`GunslingerDodgeProneAbilityLogic`, with
+  `RecordDeliveryEntered`/`RecordDeliveryApplied` diagnostics) and an attack-time runtime (`GunslingerDodgeRuntime`)
+  that nothing calls; a real activation leaves the delivery diagnostic at `deliverEntered=false`. Branch
+  `codex/int03-dodge-scenario` (not merged, not released) removes those unused classes and their diagnostics and
+  keeps `DodgeGritCostCalculator`, which is live, in its own file. Gameplay is unchanged.
+- A character saved under version 0.0.65 with the hidden Dodge armed marker (`KMG.Deeds.GunslingerDodgeProneArmed`)
+  still has it. The code that removed it has not been called since 2026-08-04 (`93193c5170`). The marker has no
+  components and does nothing; its blueprint stays registered so such saves resolve. Nothing removes it.
+- The tabletop Dodge reaction policy (`GunslingerDodgeService` and its request and decision types) has domain tests
+  and no caller in the product. Left as it is.
 - Three hidden Expanded Summoning abilities have no stored description:
   `KMG_Summoning_Infernal_BarbedDevil_OrdersWrath`, `KMG_Summoning_Infernal_BarbedDevil_Pyrotechnics` and
   `KMG_Summoning_Infernal_BoneDevil_DimensionalAnchor`. On a stock game Kingmaker shows `<null>` for such text. On an
@@ -75,15 +81,22 @@
   action), Utility Shot, Startling Shot or Lightning Reload, which are in the same position. It also counts remaining
   grit in units of 1 whatever a deed costs. Both are released behaviour, preserved by the recipient repair and left
   as a design question.
-- In the disposable loader-compat game copy, `disposable-gunslinger-dodge` errors before its assertions. It runs from
-  the main menu on a unit that is in no loaded area, and Kingmaker interrupts the ability command there before
-  anything is cast. On the published packages the scenario then read the missing buff ("The native Dodge command
-  completed without its timed Buff fact"); on branch `codex/def02-buff-effect-links` it stops at the cause ("Native
-  Dodge command produced no execution process; result=Interrupt"). This is the fixture, not the deed: in a loaded game
-  the real ability spends one grit, adds 2 to armor class against an incoming attack and ends after one round on the
-  published v0.0.191 and on the branch (`docs/GUNSLINGER-EFFECT-FREE-BUFF-LINKS.md`). The scenario's new
-  `dodge-native-apply-completed` assertion has therefore not been exercised. In those loaded-game checks the ability
-  was read as unavailable while its buff was up and with no grit; a command was not attempted in either state.
+- In the disposable loader-compat game copy, the product's own `disposable-gunslinger-dodge` scenario gives no
+  verdict on the published packages or on branch `codex/def02-buff-effect-links` (branch
+  `codex/new03-steady-aim-attack-roll` has the same scenario code and was not run). It runs from the main menu on a
+  unit that is in no loaded area, and Kingmaker interrupts the ability command there before anything is cast. On the published packages the scenario then read the missing buff ("The native Dodge
+  command completed without its timed Buff fact"); on `codex/def02-buff-effect-links` it stops at the cause ("Native
+  Dodge command produced no execution process; result=Interrupt"). This is the fixture, not the deed
+  (`docs/GUNSLINGER-EFFECT-FREE-BUFF-LINKS.md`). Repaired on branch `codex/int03-dodge-scenario` (not merged, not
+  released): the scenario now loads `KMG_AUTOMATION_WORKING` through the product's guarded read-only route and uses
+  the registered ability through the game's ability command. It passed in the disposable game copy: grit 5 to 4,
+  armor class 10 to 12, an incoming attack resolved against 10, 12 and 10, an attempted command refused while active
+  and with no grit with nothing spent or applied, the buff ended after one round, and a recast after an early removal
+  outlived the earlier deadline (after the review corrections: the later buff was applied 3.46 s before that deadline
+  and was still on the unit 0.62 s after it). Record and limits: `docs/GUNSLINGER-DODGE-SCENARIO.md`. It needs the mods the
+  working save was made with, and it was not run through the live guarded launcher on the owner's installation.
+- `disposable-gunslinger-comprehensive-acceptance` has no Dodge slice on branch `codex/int03-dodge-scenario` (32
+  slices, was 33): the slice could not execute the ability at the main menu. The aggregate was not rerun.
 - In `disposable-pistolero-deeds`, the damage assertion `up-close-critical` is intermittent on the grit UI recipient
   candidate: two of three identical runs failed (observed damage `6,3`) and one passed (`3,3`). The published v0.0.190
   package was run once and passed, which does not show whether it is intermittent there. The cause is not established.
