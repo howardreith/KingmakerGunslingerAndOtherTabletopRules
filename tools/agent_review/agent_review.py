@@ -1735,8 +1735,8 @@ class Controller:
             return self.run_loop()
         if self.state["phase"] == "review":
             result = self.review_round()
-            if result == "needs_report":
-                raise Stop("PAUSED", "submit a developer report for the current candidate (`review --report`)")
+            if result == "needs_report":  # stay ACTIVE: the developer's next step is an ordinary report
+                return "ACTIVE: submit a developer report for the current candidate (`review --report`)"
             return result
         if self.state["phase"] == "finalize":
             return self.finalize()
