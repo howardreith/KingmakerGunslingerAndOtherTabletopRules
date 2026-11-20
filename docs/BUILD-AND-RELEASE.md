@@ -1,5 +1,44 @@
 # Build, package, and publish
 
+## 0.0.192 publication authorization
+
+**Authorized; publication pending.** The publication result is added here after the publisher runs.
+
+On 2026-11-20 Howie sent the Sprint 5 closure review (S5 T6 accepted at `9d2f5e7c4f`; Sprint 5 closure approved) and
+wrote: "I think we can wrap up sprint 5. ... Just merge, push, close, and cut a release of what we've achieve so far."
+The Sprint 5 closure was recorded (`88212ecc77`, `docs/GUNSLINGER-SPRINT5-CLOSURE.md`), and the 23 stacked remediation
+pull requests #169 to #191 (Sprints 3 to 5) were merged bottom-up into master, ending with PR #191 as `5d297cfe4a`. No
+channel was named, so this follows v0.0.191 as the next stable patch, v0.0.192, from master `5d297cfe4a`.
+
+- **Reviewed product.** Master `5d297cfe4a`, content-identical to the Sprint 5 closure head `88212ecc77`. Each story
+  was accepted in principal review at its own head; the product delta from v0.0.191 is 105 files under
+  `src/KingmakerGunslinger`, `assets-source` and `blueprints` (34 of them the in-product runtime test runner),
+  listed and pinned in `tools/validate_gunslinger_remediation_release192.py`:
+  - the product delta from the v0.0.191 tag target is exactly those files, in both directions;
+  - `Info.json`, the UMM 0.31.1 loader pins and the build inputs are unchanged from v0.0.191 and the reviewed master;
+  - only the three AssemblyInfo version attributes and the Info and props version values may change;
+  - all 7,933 released identities stay in order; the only change is the owner-authorized INT-07 Gunsmith's Kit note
+    at position 206; exactly two identities are appended (the Mastodon Trample AI action and its brain);
+  - the creature catalog is unchanged, with only the owner-withdrawn Stirge withheld (1,208 public choices);
+  - the DEF-05 obligation: v0.0.191's twelve-name inherited-template list is replaced by the graph-derived policy;
+  - one static release record is added.
+- **Owner-authorized test pin refresh.** The complete domain suite on the reviewed master fails one test,
+  `model-d.ItemIdentityEconomicsEnchantmentsAndCraftingUnchanged`, which pins
+  `src/KingmakerGunslinger/Blueprints/ProductionFirearmBlueprints.cs` to its 0.0.142 hash; RISK-01 (`0c0a211e62`, S4
+  T5, accepted) changed that file deliberately to contain the legacy Advanced Revolver. On 2026-11-20 Howie chose
+  "Refresh pin, then release": that one pin in `tests/KingmakerGunslinger.DomainTests/ModelDVendorTests.cs` now reads
+  the accepted file's hash `7308f208f7741e177e3607af0bd16c8f2f468b1567ca141fc719782505992f78`. No other pin changes.
+- **Release obligations carried and discharged here.** The release notes state that v0.0.128's "Recovery alone grants
+  no new order" is superseded (POL-01); the validator accounts for the INT-07 note correction and for DEF-05 replacing
+  the name list.
+- **Native evidence.** Development candidates per story, as recorded in the Sprint 4 and Sprint 5 closures and the
+  story records. No session ran on the merged master product. The release build is run in the game after publication
+  and the result is added here.
+- **Not established.** Every story's recorded limitation stands; the release notes list the player-facing ones.
+- **Publication path.** The ordinary exact-reference publisher from clean, pushed master with
+  `docs/RELEASE-NOTES-0.0.192.md` and the explicit summon-overhaul-baseline reference bundle. It runs the complete
+  gate and two deterministic builds, then publishes.
+
 ## 0.0.191 publication authorization
 
 **Published (completed).** Stable
