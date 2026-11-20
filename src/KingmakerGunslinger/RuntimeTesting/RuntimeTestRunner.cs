@@ -7319,9 +7319,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         training.ReducedBrokenMisfire;
                     var deadeye = new DeadeyeService().Evaluate(
                         new DeadeyeRequest(true, true, 1, musketDefinition,
-                            18.5d, 5, 10));
+                            18.5d, 10));
                     steadyDeadeyeRange = deadeye.Status == DeadeyeStatus.Eligible &&
-                        deadeye.RangeIncrement == 2 && deadeye.GritCost == 1;
+                        deadeye.RangeIncrement == 2 && DeadeyeCostPolicy.OrdinaryArmingCost == 1;
                 }
                 transferUnit = new Kingmaker.UI.LevelUp.ChargenUnit(
                     BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;

@@ -1,8 +1,9 @@
 # AI recovery after a firearm misfire (POL-01 / S4 T3)
 
-Status: **implemented on a review branch under the owner's decision B; native lanes pass on the current candidate.
-Awaiting review. Not merged, not released.** Branch `codex/pol01-sprint4-policy`, stacked on draft PR #179 at its
-accepted head `9b8a755ec8`, draft PR #180. Sprint 4 stays open.
+Status: **development item closed: the review accepted draft PR #180 at `ee65d09e9d` for its reviewed development
+scope, under the owner's decision B. Not merged, not released.** Branch `codex/pol01-sprint4-policy`, stacked on draft
+PR #179 at its accepted head `9b8a755ec8`. See "Review acceptance and closeout", which also narrows two evidence
+descriptions below.
 
 ## 1. The issue, as the epic states it
 
@@ -207,6 +208,36 @@ collected actor is not retained. The tests model each runtime's glue (release af
 itself is shown by the native lanes.
 
 Total validation time was about 30 minutes, at the ceiling, because two observer defects each needed a rebuild.
+
+## Review acceptance and closeout
+
+The review of draft PR #180 at `ee65d09e9d3d48b38db8ee67c139829c3713b171` accepted S4 T3 / POL-01 for its reviewed
+development scope. It is closed as a development item. Nothing was rebuilt or rerun for this closeout. Implementation,
+native verification, review acceptance, merge and release are separate states: PR #180 stays an open draft and nothing
+is merged or released.
+
+The accepted evidence is bound to source and product commit `5fcc3e9d3ed945730a9b1a8079efba016cfc55b6`, package
+`aec986ff8430debc68c50af959b008b886d2753fdf8807edc8f93b129ffb4065`, DLL
+`9a531808e800f9f4975972dc7c23ef4c1d33883444adf8db6eef7f68bc35b7cf`, module version id
+`d358e9c9-40ed-4519-90a5-1ea50422f56e`, harness `593a26d438f8cd68e5c0e9c6b5b7a387c583fb0e0c723a81af82857da5db1077` and session
+`20261117T211826Z-owner-0.33.0-firearm-misfire-recovery`, 42 of 42. The dedicated `disposable-firearm-misfire-recovery`
+scenario is the accepted evidence for the changed behaviour. The earlier candidates and the break-interruption baseline
+keep their identities as recorded in section 5c.
+
+Two evidence descriptions are narrowed:
+
+1. **`deliberate-stop-holds`** shows that the AI's pending post-recovery command was cancelled before it acted and that
+   no carried callback or shot escaped during the following second, with the AI brain not ticking. It does not show
+   lasting AI inactivity after a stop, and it does not show hold-position behaviour. Hold position
+   (`UnitEntityData.HoldState`) stays unexecuted; its native behaviour is preserved by source, not demonstrated.
+2. **Recorded values are not all predicates.** The ball debit, the standard cooldown after the shot, the AI reload's
+   action cost and the grit delta were recorded and are reported in section 5c as observed, but not every one of them
+   is part of the 42 assertion predicates (for example the fresh-AI check requires the powder debit and not the ball
+   debit, and the recovery check records the grit delta without requiring it). The aggregate PASS does not enforce each
+   recorded value independently.
+
+The four `disposable-firearm-break-interruption` checks updated to the new rule stay unexecuted on current bytes (see
+section 7).
 
 ## 7. Limits
 

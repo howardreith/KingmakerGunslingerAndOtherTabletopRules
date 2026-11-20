@@ -6,7 +6,6 @@ namespace KingmakerGunslinger.Deeds
         NotArmed = 1,
         NotExactFirearm = 2,
         UnsupportedRange = 3,
-        WithinFirstIncrement = 4,
-        InsufficientGrit = 5
+        WithinFirstIncrement = 4
     }
 }

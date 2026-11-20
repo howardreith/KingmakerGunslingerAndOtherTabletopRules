@@ -37,11 +37,10 @@ namespace KingmakerGunslinger.Deeds
                 if (!armed) return;
 
                 FirearmMarkerSnapshot marker = FirearmMarkerLookup.ReadFromRuleEvent(attackRoll);
-                int grit = descriptor.Resources.GetResourceAmount(
-                    BlueprintBootstrap.GunslingerClass.Grit.Resource);
+                // The shot spends nothing: arming was paid at activation.
                 DeadeyeDecision decision = Service.Evaluate(new DeadeyeRequest(
                     true, marker.IsExactFirearm, marker.MarkerCount, marker.Definition,
-                    initiator.DistanceTo(target), int.MaxValue,
+                    initiator.DistanceTo(target),
                     Rules.EffectiveFirearmRangeRuntime.GetBonusFeet(attackRoll)));
 
                 // The native persisted marker applies to the next firearm attack only.

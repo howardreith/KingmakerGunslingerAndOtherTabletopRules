@@ -198,7 +198,7 @@
   that stop: a companion's own AI does not fire that firearm again until the
   player gives it a new attack order (or the game is saved and reloaded),
   and nothing in the game says so. On branch `codex/pol01-sprint4-policy`
-  (owner decision B; awaiting review; not merged, not released), a
+  (owner decision B; accepted in review at `ee65d09e9d`; not merged, not released), a
   successful Quick Clear, Repair Firearm or completed rest that brings the
   exact firearm back to Normal lifts it, so the AI may decide new attacks
   with that gun; the interrupted sequence stays cancelled and nothing is
