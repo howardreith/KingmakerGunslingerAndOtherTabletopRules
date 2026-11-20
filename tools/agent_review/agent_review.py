@@ -177,8 +177,15 @@ def kill_tree(proc):
         proc.kill()
 
 
-def sanitize(text: str):
-    """Redact credentials and local home paths from publishable text; fail closed on partial key blocks."""
+PEM_PARTIAL_RE = re.compile(r"-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----(?:\\n|\r?\n)?(?:[A-Za-z0-9+/=]{16,}(?:\\n|\r?\n)?)*")
+
+
+def sanitize(text: str, strict: bool = True):
+    """Redact credentials and local home paths.
+
+    strict (anything published or committed): an incomplete private-key block stops publication.
+    non-strict (local model inputs such as the developer tool transcript): the marker and any
+    key-like lines after it are redacted instead, since that text still reaches the model provider."""
     count = 0
 
     def _redact(_match):
@@ -188,7 +195,9 @@ def sanitize(text: str):
 
     text = PEM_BLOCK_RE.sub(_redact, text)
     if PEM_BEGIN_RE.search(text):
-        raise Stop("BLOCKED", "publishable text contains an incomplete private-key block; refusing to publish it")
+        if strict:
+            raise Stop("BLOCKED", "publishable text contains an incomplete private-key block; refusing to publish it")
+        text = PEM_PARTIAL_RE.sub(_redact, text)
     text = TOKEN_RE.sub(_redact, text)
     home = str(Path.home())
     for variant in {home, home.replace("\\", "/"), home.replace("\\", "\\\\")}:
@@ -1154,7 +1163,11 @@ class Controller:
         lines.append(f"\n_Model-generated developer response (Claude {self.cfg['developer']['model']} / "
                      f"{self.cfg['developer']['effort']}), posted by the agent-review controller through the owner's "
                      f"GitHub account; not a human review._\n")
-        self.publish(f"r{n:02d}-dispositions", "\n".join(lines))
+        key, pubs, suffix = f"r{n:02d}-dispositions", self.state.get("publications", {}), 1
+        while key in pubs and pubs[key]["state"] == "posted":  # a resubmission gets its own visible comment
+            suffix += 1
+            key = f"r{n:02d}-dispositions-{suffix}"
+        self.publish(key, "\n".join(lines))
 
     @staticmethod
     def validation_md(report):
@@ -1277,7 +1290,8 @@ class Controller:
             "round", "request_id", "checkpoint_id", "checkpoint_type", "H", "B", "M")})
         session = self.state.get("foreground_session") if self.state["mode"] == "foreground" \
             else self.state["developer"]["session_id"]
-        transcript, _ = sanitize(self.developer.tool_transcript(session, rnd.get("evidence_since") or self.state["created_at"]))
+        transcript, _ = sanitize(self.developer.tool_transcript(session, rnd.get("evidence_since") or self.state["created_at"]),
+                                 strict=False)
         write_text(rnd_dir / "developer-tool-transcript.md", transcript)
         # The reviewer's sandbox is always granted its workspace, but not necessarily other paths
         # (e.g. owner-only ACLs). Give it copies inside the snapshot; they are not part of the candidate.

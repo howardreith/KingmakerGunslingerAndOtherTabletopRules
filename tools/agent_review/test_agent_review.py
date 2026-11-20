@@ -1161,6 +1161,13 @@ class UnitTests(unittest.TestCase):
             self.assertNotIn(secret, text)
         with self.assertRaises(ar.Stop):
             ar.sanitize(f"{dashes}BEGIN {label}{dashes}\ntruncated body without an end marker")
+        # Local model inputs (developer tool transcript): redact the lone marker and key-like lines instead.
+        local, n = ar.sanitize(f"$ grep BEGIN file\n{dashes}BEGIN {label}{dashes}\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASC\nok\n",
+                               strict=False)
+        self.assertEqual(1, n)
+        self.assertNotIn("BEGIN " + label, local)
+        self.assertNotIn("MIIEvQIBADANBgkq", local)
+        self.assertIn("ok", local)
 
     def test_shipped_schemas_validate_examples(self):
         req = {"request_id": "r", "round": 1, "checkpoint_id": "c", "checkpoint_type": "final", "H": "h"}
