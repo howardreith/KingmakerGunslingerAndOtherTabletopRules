@@ -311,20 +311,33 @@
   (`docs/EXPANDED-SUMMONING-PUBLICATION-BOUNDARY.md`). The original run's raw results, mod list and row identities
   were not recovered; the matching count, Races Unleashed's known presence, the matching Brown-Fur value and the
   source history strongly support this as the cause of the historical report.
-  Since traced for the Brown-Fur check (INT-02, 2026-11-16), independently: it fails whenever the Favored Class mod
-  is installed beside Call of the Wild. The archetype is published correctly, once and in the right place. The
-  check required the publication transaction to have found as many archetypes as the selector holds at the end
-  (14), but since the startup-order repair of 2026-10-17 the mod publishes before Favored Class adds its eight combined
-  archetypes, so the transaction rightly found six. A defect of the diagnostic, not of publication; it fails the
-  same way on the published v0.0.191. Corrected on branch `codex/int02-brown-fur-publication-attribution` (awaiting
-  review; not merged, not released), where each predicate is its own named result and the transaction is judged
-  against its own record (`docs/BROWN-FUR-PUBLICATION-BOUNDARY.md`).
+  Since traced for the Brown-Fur check (INT-02, 2026-11-16), independently. On the observed twelve-mod stack, with
+  Brown-Fur enabled, Call of the Wild 1.14.4c-2.1 and Favored Class 1.3.1, the old gate fails because Brown-Fur
+  publishes before Favored Class adds the combined archetypes. Its expected transaction counts are derived from the
+  later selector state. The archetype is published correctly, once and in the right place: the transaction found
+  six archetypes and the selector holds fourteen foreign ones at the end. A defect of the diagnostic, not of
+  publication; it fails the same way on the published v0.0.191. Corrected on branch
+  `codex/int02-brown-fur-publication-attribution` (accepted in review at `6ddd4802c2`; not merged, not released),
+  where each predicate is its own named result and the transaction is judged against its own record
+  (`docs/BROWN-FUR-PUBLICATION-BOUNDARY.md`). Other provider versions and load orders were not run.
 - With Favored Class installed, that mod builds three combined Arcanist archetypes from Brown-Fur Transmuter itself
   (Unlettered Arcanist / Spell Specialist / Brown-Fur Transmuter, Unlettered Arcanist / Brown-Fur Transmuter, Spell
   Specialist / Brown-Fur Transmuter), because Brown-Fur is already in the selector when it combines. They are
   Favored Class's blueprints, not this mod's, and by that mod's own list they were present in the owner's
-  installation on 2026-11-12. They disappear when the Brown-Fur module is off. Whether they work in play, and
-  whether they should be offered, has not been examined (NEW-10). Observed, not classified, not changed.
+  installation on 2026-11-12. They disappear when the Brown-Fur module is off. Observed with Favored Class 1.3.1
+  and Call of the Wild 1.14.4c-2.1; identities `1e94108befebb3728ec03be1a6ee70db`,
+  `c152b2a965d9f4f0105d562aeba2ac44` and `753ccc40ae29f6c71c433293315b4fb6`. Decision (NEW-10): Preserve the existing Favored Class-generated combinations. Gameplay
+  compatibility qualification is pending; their presence is neither a confirmed defect nor verified gameplay support.
+  Nothing is suppressed, renamed, patched or reordered. Whether they work in play has not been examined.
+- The identity manifest's note for the Gunsmith's Kit said, up to and including the published v0.0.191, that the kit
+  serves "unified Broken-or-Wrecked-to-Normal firearm repair". That was stale developer metadata: field repair has
+  been Broken-only since 0.0.127 and a Wrecked firearm is restored only by a completed full rest. No player-facing
+  text carried the claim and nothing in play was affected. Corrected under the owner's authorization on branch
+  `codex/int07-gunsmith-kit-manifest-note` (awaiting review; not merged, not released), with the historical
+  1,913-record prefix hash unchanged and one exact, named exception for this note
+  (`docs/BLUEPRINT-MANIFEST.md`). By the owner's later decision the development-candidate validator recognizes this
+  one exact transition and accepts the branch again; the v0.0.191 release validator is unchanged, and the next
+  release's validator will have to account for the approved note.
 - Dire Narlmarches and Pitax regional weapon stock (withdrawn in v0.0.185). It has the same native limitation as Oleg's spears:
   if a stocked Eastern weapon or spear was bought and a matching one was later sold back to that trader,
   the engine's update removes the sold copy. A save with no persisted known-item history keeps the old

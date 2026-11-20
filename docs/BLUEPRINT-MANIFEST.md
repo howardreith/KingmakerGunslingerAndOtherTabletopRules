@@ -580,3 +580,120 @@ or removed. The four trait features and Fiery Glare toggle keep their original
 icons/conditional Favored Class acquisition;hidden saved providers remain resolvable.
 This integrated tree still requires full source/closure/master-regression gates
 before release;registration or historical evidence alone is not qualification.
+
+## Authorized note correction: the Gunsmith's Kit record (INT-07, 2026-11-16)
+
+One note inside the preserved 1,913-record prefix was corrected under an explicit owner authorization. This is a
+new, one-record exception made for this correction. It is not a standing procedure for editing notes, and it
+authorizes nothing else.
+
+| | |
+|---|---|
+| Authorization | Owner, 2026-11-16, for remediation story S3 T6 / INT-07 (audit finding GS-REP-0001): one catalog note correction and the narrow validation changes needed to keep it protected |
+| Source head when made | `6ddd4802c2acfcb7ec5b0d8237575cc07920ff80` |
+| File | `blueprints/blueprints.json` |
+| Record | `KMG.Gunsmithing.GunsmithKit`, GUID `d52aacb753434691b1ed85a16cc87104`, `BlueprintItem`, `active`, milestone `Sixth Playtest 0.0.66`, zero-based position 206 |
+| Note before | Stable non-consumable Gunsmith's Kit required for basic ammunition crafting and for unified Broken-or-Wrecked-to-Normal firearm repair. |
+| Note after | Stable non-consumable Gunsmith's Kit required for basic ammunition crafting and for Broken-to-Normal field repair. Wrecked firearms are restored only by a completed full rest. |
+| Manifest SHA-256 | `1d2812964d958492a388ec37f898125b30082d371996bb3278807f8db7ecf8df` before, `094dfa7d1d4715cdfc8baa2d2d9d8529fa228d2d5b7c365ebfa08639f80c2338` after; 2,807,449 bytes before, 2,807,489 after; one line changed |
+| Historical prefix SHA-256 | `43909eb0094d38862dfe26c61345554b5d364d523a2c1ce1b91b996760a52fd2`, unchanged |
+
+**Why.** The note said the kit serves "unified Broken-or-Wrecked-to-Normal firearm repair". Since the maintenance
+redesign released as 0.0.127, Repair Firearm is Broken-only and a Wrecked firearm is restored only by a completed
+full rest. The note is developer metadata and no player-facing text carried the stale claim, but it contradicted
+the record of the repair ability itself.
+
+**What the corrected note was checked against.**
+
+- The repair action: `FirearmActionPolicy` refuses a Wrecked firearm with "This firearm is Wrecked. A full rest is
+  required."; `FirearmRepairTransactionService` returns `WreckedRequiresRest`.
+- Completed-rest behaviour: `CompletedRestMaintenancePolicy` restores the party's carried Broken and Wrecked
+  firearms to Normal after a genuine completed full rest (a Wrecked firearm stays unloaded).
+- The repair ability's own manifest record, `KMG.Test.RepairAbility`, which ends "A Wrecked firearm is restored only
+  by a completed full rest."
+- Player-facing text: the kit's item description ("Required in the shared inventory to repair a Broken firearm with
+  Repair Firearm (outside combat) and to craft basic firearm ammunition") and the README's maintenance paragraph.
+
+One thing the approved note does not say: completed-rest maintenance itself needs a capable gunsmith and a kit. The
+note is accurate about field repair and about how a Wrecked firearm is restored; it is not a full statement of the
+rest's requirements.
+
+**How the prefix stays protected.** `BetterVendorsProgressionTests` still hashes symbol, guid, plannedType, status,
+milestone and notes of the first 1,913 records and still requires the historical value. The exception is stated
+once, in `BetterVendorsProgressionTests.AuthorizedNoteException`, `AuthorizedNoteProblem` and `HistoricalView`:
+
+1. The record at position 206 must be exactly this symbol and GUID.
+2. Its note must be exactly the approved note. The old note fails, and so does any other wording.
+3. Only then, and only for that record, the frozen old note is used in its place when a historical hash is
+   computed. The record's other five fields are hashed as they stand.
+4. Every other record is hashed unchanged.
+
+The uniqueness, identity and appended-record checks beside it are as they were. `manifest-note-exception.*` runs
+those same checks on in-memory copies of the manifest changed one way at a time.
+
+**A second historical hash over the same note.** The complete domain suite showed one more guard that covers this
+note: `expanded-summoning.sprint17-snake-append-only-ledger` (`SerpentineRulesTests`), which hashes whole records
+over 2,836 historical entries and requires
+`bf46e4e3d2d709935f2a27fa32f2bd8ad640098801174680c755c89287ea0570`. It was not named in the authorization. It now
+takes its records through the same `HistoricalView`, so the same single substitution applies under the same
+conditions, and its historical value is unchanged. Nothing else in it changed.
+
+**Verification (2026-11-16).** Metadata and tests only; no product DLL, package or game launch.
+
+- The manifest diff is one line: the note of record 206. Parsed before and after, no other record and no other
+  field of that record differs.
+- Focused gate, filter
+  `manifest;field-repair;better-vendors;unified-repair;gunsmith;firearm-maintenance;expanded-summoning.sprint17`:
+  production compiled, 185 of 3,070 selected, 0 failures.
+- Complete domain suite on the final tree: 3,070 of 3,070, 0 failures. (An earlier run, before the second guard was
+  handled, failed that one test and nothing else.)
+- With the approved note the prefix guard passes, and the historical prefix hash is reached only through the one
+  substitution: without it the prefix hashes to a different value.
+- On in-memory copies, through the same checks: the stale note fails; five other wordings fail; a changed note on
+  five other protected records fails; the approved or the frozen wording on another record fails; a changed
+  plannedType, status or milestone on the Gunsmith's Kit record fails; a changed symbol or GUID there fails; a
+  changed symbol, GUID, type, status or milestone on another protected record fails; two exchanged records, the
+  Gunsmith's Kit record moved, a record removed, a record inserted and a truncated manifest each fail. The second
+  guard refuses the stale note, another wording and a moved record, and loses its value on six other changes.
+- Five deliberate faults were put into the guard itself. Four were caught: accepting either wording, accepting any
+  wording, not requiring the exact record and position, and exempting the record's other fields. The fifth,
+  freezing the approved wording on any record that carries it, changed no result, because no other record's
+  historical note is the frozen wording, so that substitution can never reach a historical hash.
+- `tools/validate_icon_catalog.py` passes with the receipt at the new manifest hash, and its 36 corruption fixtures
+  pass.
+
+**Other guards on the same bytes.**
+
+- `assets-source/original-icons/icon-catalog.json` records the manifest's whole-file SHA-256
+  (`baseline.registrySha256`), which `tools/validate_icon_catalog.py` requires. It was moved to the new file hash,
+  as it is for any manifest change. It pins the exact new bytes.
+- `tools/validate_development_candidate.py`, the validator `Build-Local -DevelopmentPurpose` runs, required every
+  released row at the active version's tag (`v0.0.191`), notes included, to be unchanged, and at `2fcac7387b` it
+  refused this branch: "A released identity row changed, moved or was removed". **Decision (owner, 2026-11-16, review
+  of `2fcac7387b`):** that validator recognizes this exact authorized transition. It now compares the released
+  ledger with `check_development_ledger`, which is the earlier exact, append-only comparison with one permitted
+  difference, listed in `AUTHORIZED_RELEASED_ROW_CORRECTIONS`: at position 206, the whole six-field row exactly as
+  released (frozen note) may become the whole six-field row with exactly the approved note. Every other released
+  row must still be identical. The reverse transition fails, and so does any other wording before or after, the
+  approved wording on another row or at another position, and any other field of the record. A released ledger
+  that already holds the approved note is simply identical and passes. A corrected row is not an appended
+  identity. The summary lists each correction under `authorizedReleasedRowCorrections`, and `ledgerSha256` is the
+  hash of the actual candidate manifest. `check_append_only`, which the historical release validators import, is
+  unchanged, so they keep describing their own releases exactly.
+- `tools/validate_grit_ui_recipient_release191.py`, the v0.0.191 release validator, is unchanged and still
+  requires its exact reviewed ledger. **A prospective release validator must account for the approved note
+  explicitly when the next release is prepared**; that is outside this change.
+
+**Verification of the development path (2026-11-16, after the decision).** No `Build-Local` run, product DLL,
+package or game launch.
+
+| Check | Result |
+|---|---|
+| `python tools/test_development_candidate_validator.py` | 47 of 47 pass (unittest), none skipped, 3 s |
+| `python tools/validate_development_candidate.py --root . --purpose gunsmith-note-guard --summary <scratch>` | PASS, exit 0, 6 s: baseline v0.0.191, 7,933 identities, 0 appended, one authorized correction (row 206, notes); ledgerSha256 is the actual file's hash 094dfa7d1d47... |
+| `scripts/validate-repository.ps1 -DevelopmentPurpose gunsmith-note-guard -DevelopmentSummaryPath <scratch>` | PASS, exit 0, 504 s: development validation accepted; every other child passed (the 47 fixtures again among them) |
+| `tools/validate_grit_ui_recipient_release191.py` | unchanged (SHA-256 `6b33f9994168a7362ca119f53d74de2cf5f964da23da3580853c3b6e7d0320cb` before and after) |
+
+The fixtures include the actual released ledger from tag `v0.0.191`: its row 206 is exactly the authorized
+"before"; the ledger against itself passes with no correction; with only the approved note it passes with one
+correction and no appended identity; with one more note changed it fails.

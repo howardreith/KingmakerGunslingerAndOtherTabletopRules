@@ -733,6 +733,33 @@ namespace KingmakerGunslinger.DomainTests
                 "All prior production view steps remain unchanged.");
         }
 
+        internal const string HistoricalLedgerSha256 =
+            "bf46e4e3d2d709935f2a27fa32f2bd8ad640098801174680c755c89287ea0570";
+
+        /// <summary>
+        /// The digest of the 2,836 historical Phase 2B records. The current
+        /// release preserves master's entire prefix; only its exact eleven
+        /// independently appended trait nodes are projected out, never
+        /// arbitrary entries. The records are taken through
+        /// <see cref="BetterVendorsProgressionTests.HistoricalView"/>, which
+        /// puts the one authorized Gunsmith's Kit note (INT-07) back to its
+        /// frozen wording and refuses a manifest that carries anything but
+        /// the approved note in that exact record. Nothing else is
+        /// substituted and the historical value is unchanged.
+        /// </summary>
+        internal static string HistoricalLedgerDigest(System.Collections.Generic.IList<JToken> entries)
+        {
+            var masterTraits = new System.Collections.Generic.HashSet<string>(
+                KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes()
+                    .Select(value => value.Symbol), StringComparer.Ordinal);
+            JArray historical = new JArray(BetterVendorsProgressionTests.HistoricalView(entries)
+                .Where(value => !masterTraits.Contains((string)value["symbol"])));
+            using (var sha = SHA256.Create())
+                return BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(
+                    new JArray(historical.Take(2836)).ToString(Newtonsoft.Json.Formatting.None))))
+                    .Replace("-", "").ToLowerInvariant();
+        }
+
         internal static void LedgerAppendPreservesEveryHistoricalEntry()
         {
             JArray entries = (JArray)JObject.Parse(File.ReadAllText(Path.Combine(
@@ -752,19 +779,8 @@ namespace KingmakerGunslinger.DomainTests
                 (ExpandedSummoningSprint25Tests.AppendedLedgerIdentities + SummoningCurrentSurface.AppendedLedgerIdentityCount),
                 entries.Count,
                 "Qualified Phase2B identities, the Sprint 18 appends and all eleven released master trait identities coexist.");
-            // The current release preserves master's entire prefix. Project
-            // only its exact eleven independently appended trait nodes out
-            // when checking the historical Phase2B order/hash; never remove
-            // arbitrary entries or weaken the historical identity contract.
-            JArray historical = new JArray(entries.Where(value =>
-                !masterTraits.Contains((string)value["symbol"])));
-            string digest;
-            using (var sha = SHA256.Create())
-                digest = BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(
-                    new JArray(historical.Take(2836)).ToString(Newtonsoft.Json.Formatting.None))))
-                    .Replace("-", "").ToLowerInvariant();
-            Assertions.Equal("bf46e4e3d2d709935f2a27fa32f2bd8ad640098801174680c755c89287ea0570",
-                digest, "Every prior symbol, GUID, type, status and historical note stays intact.");
+            Assertions.Equal(HistoricalLedgerSha256, HistoricalLedgerDigest(entries.ToList()),
+                "Every prior symbol, GUID, type, status and historical note stays intact.");
             foreach (string[] row in new[] {
                 new[] { "KMG.Summoning.Unit.Viper", "d8be82543ab64dc988c33e9f13608bad" },
                 new[] { "KMG.Summoning.Unit.ConstrictorSnake", "f1a2eadf588e4c3b9fb670724d706364" } })

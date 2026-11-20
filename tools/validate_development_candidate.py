@@ -23,6 +23,14 @@ identity freezes and the exact bytes of released art. Those are what make a
 release a release, and a development candidate makes no such claim; the
 v0.0.155 art pin, inherited here, refused a branch refining the
 Tyrannosaurus before it could be observed natively.
+
+The released ledger is compared by `check_development_ledger`, which is
+`check_append_only` with one more permitted difference: the exact released
+rows named in AUTHORIZED_RELEASED_ROW_CORRECTIONS may change from their exact
+released form to their exact authorized form, at their exact position, and in
+that direction only. `check_append_only` itself is unchanged, because the
+historical release validators import it and must keep describing their own
+releases exactly.
 """
 from __future__ import annotations
 
@@ -65,6 +73,40 @@ OWNER_WITHDRAWN_RELEASED = {
     # release; identities, assets and saves retained.
     "stirge": "planning/summon-playtest-repair/R1-STATUS.md",
 }
+# Released ledger rows the owner has authorized to change. Each entry is one
+# exact transition of one whole six-field row at one position: the row as
+# released, and the row as it must now read. Nothing else about any released
+# row may differ, and the reverse transition is not permitted.
+AUTHORIZED_RELEASED_ROW_CORRECTIONS = (
+    {
+        "position": 206,
+        "authorization": ("Owner, 2026-11-16, remediation story S3 T6 / INT-07 "
+                          "(GS-REP-0001): correct the Gunsmith's Kit note, "
+                          "which described Wrecked field repair. See "
+                          "docs/BLUEPRINT-MANIFEST.md."),
+        "before": {
+            "symbol": "KMG.Gunsmithing.GunsmithKit",
+            "guid": "d52aacb753434691b1ed85a16cc87104",
+            "plannedType": "BlueprintItem",
+            "status": "active",
+            "milestone": "Sixth Playtest 0.0.66",
+            "notes": ("Stable non-consumable Gunsmith's Kit required for basic "
+                      "ammunition crafting and for unified "
+                      "Broken-or-Wrecked-to-Normal firearm repair."),
+        },
+        "after": {
+            "symbol": "KMG.Gunsmithing.GunsmithKit",
+            "guid": "d52aacb753434691b1ed85a16cc87104",
+            "plannedType": "BlueprintItem",
+            "status": "active",
+            "milestone": "Sixth Playtest 0.0.66",
+            "notes": ("Stable non-consumable Gunsmith's Kit required for basic "
+                      "ammunition crafting and for Broken-to-Normal field "
+                      "repair. Wrecked firearms are restored only by a "
+                      "completed full rest."),
+        },
+    },
+)
 PACKAGE_SCRIPTS = ("scripts/Build-Local.ps1", "scripts/package.ps1",
                    "scripts/validate-build-output.ps1",
                    "scripts/validate-package.ps1")
@@ -116,6 +158,46 @@ def check_append_only(accepted, current):
     if len(current) < len(accepted) or current[:len(accepted)] != accepted:
         raise AssertionError("A released identity row changed, moved or was removed")
     return len(current) - len(accepted)
+
+
+def authorized_correction(index, released, current):
+    """The authorized correction this exact transition is, or None."""
+    for correction in AUTHORIZED_RELEASED_ROW_CORRECTIONS:
+        if index == correction["position"] and released == correction["before"] \
+                and current == correction["after"]:
+            return correction
+    return None
+
+
+def check_development_ledger(accepted, current):
+    """The released ledger is an unchanged prefix of the current one, except
+    for authorized corrections of released rows. Returns the number of
+    appended identities and a record of each correction applied. A corrected
+    row is not a new identity."""
+    check_entries(accepted)
+    check_entries(current)
+    if len(current) < len(accepted):
+        raise AssertionError("A released identity row changed, moved or was removed")
+    corrections = []
+    for index, released in enumerate(accepted):
+        row = current[index]
+        if row == released:
+            continue
+        correction = authorized_correction(index, released, row)
+        if correction is None:
+            raise AssertionError("A released identity row changed, moved or was "
+                                 "removed: row %d (%s)" % (index, released["symbol"]))
+        changed = sorted(field for field in FIELDS if released[field] != row[field])
+        corrections.append({
+            "position": index,
+            "symbol": row["symbol"],
+            "guid": row["guid"],
+            "fields": changed,
+            "before": {field: released[field] for field in changed},
+            "after": {field: row[field] for field in changed},
+            "authorization": correction["authorization"],
+        })
+    return len(current) - len(accepted), corrections
 
 
 def git(root: Path, *arguments):
@@ -221,7 +303,8 @@ def validate(root: Path, purpose: str):
     for key in ("$schema", "schemaVersion", "namespace", "policy"):
         if current.get(key) != accepted.get(key):
             raise AssertionError("The identity ledger header changed: " + key)
-    appended = check_append_only(accepted["entries"], current["entries"])
+    appended, corrections = check_development_ledger(accepted["entries"],
+                                                     current["entries"])
 
     # Preserve every released public creature; new withheld cohorts are independent.
     # The original Sprint24 asset/package ownership guard remains in force.
@@ -260,6 +343,7 @@ def validate(root: Path, purpose: str):
         "releasedIdentities": len(accepted["entries"]),
         "identities": len(current["entries"]),
         "appendedIdentities": appended,
+        "authorizedReleasedRowCorrections": corrections,
         "ledgerSha256": hashlib.sha256(ledger_bytes).hexdigest(),
         "manifestValidation": manifest.stdout.strip().splitlines(),
     }
@@ -283,7 +367,11 @@ def main():
     print("Development candidate validation PASS (not a release qualification): "
           "purpose=" + summary["purpose"] + "; baseline=" + summary["baselineTag"] +
           "; identities=" + str(summary["identities"]) + "; appended=" +
-          str(summary["appendedIdentities"]) + ".")
+          str(summary["appendedIdentities"]) + "; authorized released-row corrections=" +
+          (", ".join("row %d %s %s" % (value["position"], value["symbol"],
+                                        "/".join(value["fields"]))
+                     for value in summary["authorizedReleasedRowCorrections"]) or "none") +
+          ".")
     return 0
 
 
