@@ -124,7 +124,8 @@ namespace KingmakerGunslinger.DomainTests
                 "AI identity count changed.");
             Assertions.Equal(17 + ExpandedSummoningSprints30And31Tests.RegisteredBrainIdentityCount +
                     1 + // Repair R3 UI-03: the Ghaele brain.
-                    4, // Repair R4: the four owned mephit brains.
+                    4 + // Repair R4: the four owned mephit brains.
+                    1, // S5 T6 / RISK-06: the Mastodon's private Trample brain.
                 released.Count(value => value.PlannedType == "BlueprintBrain"),
                 "Brain identity count changed.");
             Assertions.Equal(1, released.Count(value => value.PlannedType == "IsEngagedConsideration"),

@@ -1219,6 +1219,9 @@ def planned():
         ("KMG.Summoning.Special.Pixie.DispelMagicAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.Special.Pixie.Shield", "BlueprintAbility"),
         ("KMG.Summoning.Special.Pixie.ShieldAi", "BlueprintAiCastSpell"),
+        # S5 T6 / RISK-06: the Mastodon's owned Trample AI action and brain.
+        ("KMG.Summoning.Special.Mastodon.TrampleAi", "UngulateTrampleAi"),
+        ("KMG.Summoning.Special.Mastodon.Brain", "BlueprintBrain"),
     ))
     expected = sum(identity_count(name) for name in (
         "UnitCount", "LogicalAbilityCount", "TemplateBuffCount", "SpecialIdentityCount",

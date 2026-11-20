@@ -1,0 +1,24 @@
+{
+  "name": "risk06-trample-ai",
+  "description": "S5 T6 / RISK-06 qualification of the Mastodon's owned Trample AI action. It runs the save-free summon-risk06-trample-ai phase (sprint32 native review) in the owned outdoor native Default fixture. A census checks the private brain (the native natural-attack brain's actions plus the owned Trample action), that the shared native brain is unchanged, and every independently expected canonical, retained-execution and alternate Mastodon output. Then, in nine cells, a Mastodon created by the disclosed own-tier fixture helper fights private hostiles in real-time or turn-based combat, driven only by the game's own controllers: an eligible approach must produce the owned Trample (with same-round suppression and later-round reuse), and another enemy in reach, a threatening enemy, a target that is not smaller, a missing full round (native Staggered) and an occupied endpoint must keep the ordinary attack; a death after the Trample starts must stop it without contact. No Trample command, AI tick or action is supplied. Call of the Wild and Races Unleashed are staged beside the candidate as in the owner profile. No save is loaded. The short name keeps evidence paths under MAX_PATH.",
+  "ownerMods": [
+    "CallOfTheWild",
+    "RacesUnleashed"
+  ],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "ai",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-expanded-summoning-sprint32-native-review",
+        "parameters": {
+          "reviewPhase": "summon-risk06-trample-ai"
+        },
+        "timeoutSeconds": 1200
+      }
+    }
+  ]
+}

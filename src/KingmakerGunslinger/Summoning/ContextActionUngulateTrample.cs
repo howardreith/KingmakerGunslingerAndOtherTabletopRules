@@ -253,6 +253,24 @@ namespace KingmakerGunslinger.Summoning
                 ledger.HasClaim(CurrentRound(), defender.UniqueId);
         }
 
+        /// <summary>
+        /// S5 T6 / RISK-06: a read-only view of the contact ledger for AI
+        /// planning. It never creates a ledger and never claims or halts:
+        /// the contact above remains the only owner of a claim.
+        /// </summary>
+        internal static void ReadLedger(UnitEntityData trampler, string targetId,
+            out bool claimedThisRound, out bool haltedThisRound)
+        {
+            claimedThisRound = false;
+            haltedThisRound = false;
+            TrampleRoundLedger ledger;
+            if (trampler == null || !Ledgers.TryGetValue(trampler, out ledger))
+                return;
+            long round = CurrentRound();
+            claimedThisRound = ledger.HasClaim(round, targetId);
+            haltedThisRound = ledger.IsHalted(round);
+        }
+
         internal static long CurrentRound()
         {
             return CombatController.IsInTurnBasedCombat() &&

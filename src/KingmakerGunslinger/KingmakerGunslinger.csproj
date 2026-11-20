@@ -173,6 +173,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SpiderSummonerPersistence.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SpiderInterface.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.Pol06CotwConversions.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.Risk06TrampleRoute.cs" />
     <Compile Include="RuntimeTesting\AlphabeticalMenuObservationVerdict.cs" />
     <Compile Include="RuntimeTesting\SunderObservationVerdict.cs" />
     <Compile Include="Summoning\SummonPlaytestR6Policy.cs" />
@@ -436,6 +437,8 @@
     <Compile Include="Summoning\SummonRagePolicy.cs" />
     <Compile Include="Summoning\SummonShadowMastiffPolicy.cs" />
     <Compile Include="Summoning\UngulateRulesPolicy.cs" />
+    <Compile Include="Summoning\MastodonTrampleAiPolicy.cs" />
+    <Compile Include="Summoning\UngulateTrampleAi.cs" />
     <Compile Include="Summoning\ArmoredDinosaurRulesPolicy.cs" />
     <Compile Include="Summoning\TheropodRulesPolicy.cs" />
     <Compile Include="Summoning\GiantBodyRulesPolicy.cs" />

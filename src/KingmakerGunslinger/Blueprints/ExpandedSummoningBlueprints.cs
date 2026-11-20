@@ -180,6 +180,11 @@ namespace KingmakerGunslinger.Blueprints
                         var value = ScriptableObject.CreateInstance<KytonGazeAi34>();
                         value.name = InternalName(identity.Symbol); return value;
                     });
+                else if (identity.PlannedType == "UngulateTrampleAi")
+                    blueprint = registry.Register<UngulateTrampleAi>(identity.Symbol, () => {
+                        var value = ScriptableObject.CreateInstance<UngulateTrampleAi>();
+                        value.name = InternalName(identity.Symbol); return value;
+                    });
                 else if (identity.PlannedType == "InfernalSpellAi35")
                     blueprint = registry.Register<InfernalSpellAi35>(identity.Symbol, () => {
                         var value = ScriptableObject.CreateInstance<InfernalSpellAi35>();

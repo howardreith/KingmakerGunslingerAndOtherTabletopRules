@@ -754,6 +754,8 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureUngulateTrample(library, bySymbol,
                 "KMG.Summoning.Unit.Mastodon",
                 SummonPlaytestR5Policy.MastodonTrampleSymbol, "mastodon");
+            // S5 T6 / RISK-06: the Mastodon's own AI may choose that Trample.
+            ConfigureMastodonTrampleAi(bySymbol);
             // The bounded ordinary Overrun command the owner selected
             // over a waiver. Brachiosaurus only, separate from Trample,
             // and it reuses the native implementation rather than
@@ -2913,6 +2915,52 @@ namespace KingmakerGunslinger.Blueprints
             grant.Abilities = new[] { sprint };
             unit.ComponentsArray = unit.ComponentsArray.Concat(
                 new BlueprintComponent[] { grant }).ToArray();
+            unit.Brain = brain;
+        }
+
+        /// <summary>
+        /// S5 T6 / RISK-06 (owner decision, 2026-11-20): a private copy of the
+        /// Mastodon's native natural-attack brain whose actions are the native
+        /// ones, unchanged and in order, followed by the owned Trample action.
+        /// The shared native brain is not modified, and no other trampler
+        /// changes.
+        /// </summary>
+        private static void ConfigureMastodonTrampleAi(
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, MastodonTrampleAiPolicy.UnitSymbol);
+            BlueprintAbility trample = Require<BlueprintAbility>(bySymbol,
+                SummonPlaytestR5Policy.MastodonTrampleSymbol);
+            UngulateTrampleAi ai = Require<UngulateTrampleAi>(bySymbol, MastodonTrampleAiPolicy.AiSymbol);
+            BlueprintBrain brain = Require<BlueprintBrain>(bySymbol, MastodonTrampleAiPolicy.BrainSymbol);
+            BlueprintBrain native = unit.Brain;
+            if (native == null || ReferenceEquals(native, brain) ||
+                native.AssetGuid != MastodonTrampleAiPolicy.NativeBrainGuid)
+                throw new InvalidOperationException(
+                    "The Mastodon Trample brain requires the configured native natural-attack brain.");
+            if (unit.AddFacts == null || unit.AddFacts.Count(fact => ReferenceEquals(fact, trample)) != 1)
+                throw new InvalidOperationException("The Mastodon must grant its Trample exactly once.");
+
+            ai.name = InternalName(MastodonTrampleAiPolicy.AiSymbol);
+            ai.Ability = trample;
+            ai.Variant = null;
+            ai.BaseScore = MastodonTrampleAiPolicy.BaseScore;
+            ai.CooldownRounds = 0;
+            ai.StartCooldownRounds = 0;
+            ai.CombatCount = 0;
+            ai.ActorConsiderations = Array.Empty<Kingmaker.Controllers.Brain.Blueprints
+                .Considerations.Consideration>();
+            ai.TargetConsiderations = Array.Empty<Kingmaker.Controllers.Brain.Blueprints
+                .Considerations.Consideration>();
+            ai.Locators = Array.Empty<EntityReference>();
+            ai.OwningBlueprint = unit;
+            ai.CreatureKey = MastodonTrampleAiPolicy.CreatureKey;
+
+            brain.name = InternalName(MastodonTrampleAiPolicy.BrainSymbol);
+            brain.ComponentsArray = (native.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            brain.Actions = MastodonTrampleAiPolicy.AppendTrampleAction<BlueprintAiAction>(
+                native.Actions, ai);
             unit.Brain = brain;
         }
 

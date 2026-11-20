@@ -50,6 +50,7 @@
     <Compile Include="SummonPlaytestR3Tests.cs" />
     <Compile Include="SummonPlaytestR4Tests.cs" />
     <Compile Include="SummonPlaytestR5Tests.cs" />
+    <Compile Include="MastodonTrampleAiTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\IceDevilRules40Policy.cs"><Link>Summoning\IceDevilRules40Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InfernalRules36Policy.cs"><Link>Summoning\InfernalRules36Policy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InfernalVisualPolicy36.cs"><Link>Summoning\InfernalVisualPolicy36.cs</Link></Compile>
@@ -66,6 +67,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonActionTooltipPolicy.cs"><Link>Summoning\SummonActionTooltipPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\MephitBreathPolicy.cs"><Link>Summoning\MephitBreathPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonPlaytestR5Policy.cs"><Link>Summoning\SummonPlaytestR5Policy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\MastodonTrampleAiPolicy.cs"><Link>Summoning\MastodonTrampleAiPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\AlphabeticalMenuObservationVerdict.cs"><Link>RuntimeTesting\AlphabeticalMenuObservationVerdict.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SunderObservationVerdict.cs"><Link>RuntimeTesting\SunderObservationVerdict.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\UpCloseAndDeadlyCaseVerdict.cs"><Link>RuntimeTesting\UpCloseAndDeadlyCaseVerdict.cs</Link></Compile>
