@@ -618,6 +618,7 @@
     <Compile Include="Presentation\ProjectItemRosters.cs" />
     <Compile Include="Presentation\PresentationAudits.cs" />
     <Compile Include="Presentation\SourceCollection.cs" />
+    <Compile Include="Presentation\AuthoredMarkerRigContract.cs" />
     <Compile Include="Presentation\PlayerFacingTextAssignment.cs" />
     <Compile Include="FeatureModules\ContentInitializationStatus.cs" />
     <Compile Include="Presentation\GunslingerClassAppearanceCatalog.cs" />
@@ -1638,6 +1639,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoningNatural.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.GunslingerDodge.cs" />
     <Compile Include="RuntimeTesting\GunslingerDodgeScenarioVerdict.cs" />
+    <Compile Include="RuntimeTesting\MotionSessionLifecycle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoningComposition.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SelectionBoundaryNative.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.CraftingTransactionNative.cs" />

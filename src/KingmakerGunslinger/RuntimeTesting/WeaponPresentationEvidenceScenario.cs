@@ -2974,6 +2974,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             private const int MaximumSettleUpdates = 300;
             private const int ReadySettleUpdates = 30;
+            // The attack animation advances on Unity's scaled time, which
+            // stands still while the game is paused. A save that loads
+            // paused would otherwise hold every attack at its first frame.
+            // Time is released for each attack sequence only: left running
+            // between them, the game acts on the newly equipped weapon
+            // itself and the firearm is empty before its own sample. The
+            // lifecycle owns that pause and the session's releases, and is
+            // the one place that gives them back, whether the session runs
+            // to its own result or the runner ends it first.
+            private readonly MotionSessionLifecycle<RuntimeTestAssertion>
+                _lifecycle;
             private readonly ModContext _context;
             private readonly RuntimeTestRequest _request;
             private readonly DateTime _started = DateTime.UtcNow;
@@ -3062,14 +3073,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _easternMotion ? EasternMotionVariants :
                     _handgunMotion ? HandgunMotionVariants :
                     LongGunMotionVariants;
+                _lifecycle = new MotionSessionLifecycle<RuntimeTestAssertion>(
+                    () => Game.Instance.IsPaused,
+                    value => Game.Instance.IsPaused = value,
+                    (name, expected, observed, passed) =>
+                        new RuntimeTestAssertion
+                        {
+                            Name = name,
+                            Expected = expected,
+                            Observed = observed,
+                            Status = passed ? RuntimeTestStatuses.Pass :
+                                RuntimeTestStatuses.Fail,
+                            Evidence = "the motion session's own lifecycle " +
+                                "record and the game's pause and unit lists, " +
+                                "read on the game thread when the session " +
+                                "was ended"
+                        });
             }
 
             internal bool Complete { get; private set; }
             internal RuntimeTestResult Result { get; private set; }
+            internal MotionSessionLifecycle<RuntimeTestAssertion> Lifecycle
+            {
+                get { return _lifecycle; }
+            }
 
             internal void Poll()
             {
-                if (Complete) return;
+                if (Complete || _lifecycle.Ended) return;
                 try
                 {
                     if (_cleanupStarted)
@@ -3077,6 +3108,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         PollCleanup();
                         return;
                     }
+                    if (_phase != 3) _lifecycle.HoldOutsideSampling();
                     if (_phase == 0)
                     {
                         Initialize();
@@ -3494,6 +3526,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 EvidenceCase value = _cases[_caseIndex];
                 _stage = "sample-native-attack-" + value.Variant;
+                if (_lifecycle.ReleaseForSampling())
+                    _diagnostics.Add("attackSampling=game was paused; " +
+                        "time released during each attack sequence and " +
+                        "the pause held between them and restored when " +
+                        "the session ends");
                 Game.Instance.EntityCreator.Tick();
                 _target.Commands.InterruptAll(true);
                 if (_actor.View.AnimationManager != null)
@@ -3560,15 +3597,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _captureScheduleIndex++;
                 }
 
-                if (_captureScheduleIndex < AttackCaptureUpdates.Length) return;
                 bool attackObserved = IsFirearm(value)
                     ? FirearmDischargeRuntimeDiagnostics.Fired -
                         _firedBefore >= 1
                     : _commandRunningObserved && _animationObserved;
                 bool actedCaptureObserved = !_handgunMotion ||
                     _actedCaptureTaken;
-                if ((!attackObserved || !actedCaptureObserved) &&
-                    _attackUpdates < MaximumSettleUpdates) return;
+                if (!MotionAttackSequence.MayEnd(
+                    _captureScheduleIndex >= AttackCaptureUpdates.Length,
+                    attackObserved, actedCaptureObserved,
+                    _lifecycle.PauseOwned, _attackCommand.IsFinished,
+                    _attackUpdates, MaximumSettleUpdates)) return;
+                _diagnostics.Add(value.Variant + ":sequenceEnd=update=" +
+                    _attackUpdates + ";commandFinished=" +
+                    _attackCommand.IsFinished + ";pauseOwned=" +
+                    _lifecycle.PauseOwned);
                 RecordOutcome(value);
                 string removalRole;
                 _removedPresentation = ResolveActivePresentation(_actor,
@@ -4209,40 +4252,230 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (_cleanupStarted) return;
                 _stage = "motion-request-cleanup";
-                if (_actor != null)
-                {
-                    _actor.Commands.InterruptAll(true);
-                    TryInterruptHandEquipmentAnimation();
-                    RemoveDualEquipped();
-                    RemoveEquipped(_actor, ref _equipped,
-                        ref _equippedFirearmStateSet);
-                    if (_actor.CombatState != null &&
-                        _actor.CombatState.IsInCombat)
-                        _actor.CombatState.LeaveCombat();
-                    _actor.Descriptor.State.Immortality.ReleaseAll();
-                }
-                if (_target != null)
-                {
-                    _target.Commands.InterruptAll(true);
-                    if (_target.CombatState != null &&
-                        _target.CombatState.IsInCombat)
-                        _target.CombatState.LeaveCombat();
-                    _target.Descriptor.State.Immortality.ReleaseAll();
-                }
-                if (_target != null && ContainsReference(_allUnits, _target))
-                    Game.Instance.State.Units.All.Remove(_target);
-                if (_actor != null && ContainsReference(_allUnits, _actor))
-                    Game.Instance.State.Units.All.Remove(_actor);
-                if (_target != null) _target.Dispose();
-                if (_actor != null) _actor.Dispose();
-                if (_hostileBlueprint != null)
-                    UnityEngine.Object.DestroyImmediate(_hostileBlueprint);
-                if (_actorBlueprint != null)
-                    UnityEngine.Object.DestroyImmediate(_actorBlueprint);
-                _hostileBlueprint = null;
-                _actorBlueprint = null;
+                _lifecycle.RunCleanup(OwnedReleases());
                 _cleanupStarted = true;
                 _settleUpdates = 0;
+            }
+
+            /// <summary>
+            /// Everything the session created and must give back, in the
+            /// order it is released. The lifecycle restores the pause before
+            /// any of these and attempts each on its own, so one that raises
+            /// does not keep the rest from being attempted.
+            /// </summary>
+            private List<KeyValuePair<string, Action>> OwnedReleases()
+            {
+                var releases = new List<KeyValuePair<string, Action>>();
+                Action<string, Action> add = (name, release) => releases.Add(
+                    new KeyValuePair<string, Action>(name, release));
+                add("actor-commands", () =>
+                {
+                    if (_actor != null) _actor.Commands.InterruptAll(true);
+                });
+                add("actor-hand-animation", () =>
+                {
+                    if (_actor != null) TryInterruptHandEquipmentAnimation();
+                });
+                add("actor-dual-equipment", () =>
+                {
+                    if (_actor != null) RemoveDualEquipped();
+                });
+                add("actor-equipment", () =>
+                {
+                    if (_actor != null)
+                        RemoveEquipped(_actor, ref _equipped,
+                            ref _equippedFirearmStateSet);
+                });
+                add("actor-combat", () =>
+                {
+                    if (_actor != null && _actor.CombatState != null &&
+                        _actor.CombatState.IsInCombat)
+                        _actor.CombatState.LeaveCombat();
+                });
+                add("actor-immortality", () =>
+                {
+                    if (_actor != null)
+                        _actor.Descriptor.State.Immortality.ReleaseAll();
+                });
+                add("target-commands", () =>
+                {
+                    if (_target != null) _target.Commands.InterruptAll(true);
+                });
+                add("target-combat", () =>
+                {
+                    if (_target != null && _target.CombatState != null &&
+                        _target.CombatState.IsInCombat)
+                        _target.CombatState.LeaveCombat();
+                });
+                add("target-immortality", () =>
+                {
+                    if (_target != null)
+                        _target.Descriptor.State.Immortality.ReleaseAll();
+                });
+                add("target-unit-list", () =>
+                {
+                    if (_target != null &&
+                        ContainsReference(_allUnits, _target))
+                        Game.Instance.State.Units.All.Remove(_target);
+                });
+                add("actor-unit-list", () =>
+                {
+                    if (_actor != null && ContainsReference(_allUnits, _actor))
+                        Game.Instance.State.Units.All.Remove(_actor);
+                });
+                add("target-dispose", () =>
+                {
+                    if (_target != null) _target.Dispose();
+                });
+                add("actor-dispose", () =>
+                {
+                    if (_actor != null) _actor.Dispose();
+                });
+                add("hostile-blueprint", () =>
+                {
+                    BlueprintUnit blueprint = _hostileBlueprint;
+                    _hostileBlueprint = null;
+                    if (blueprint != null)
+                        UnityEngine.Object.DestroyImmediate(blueprint);
+                });
+                add("actor-blueprint", () =>
+                {
+                    BlueprintUnit blueprint = _actorBlueprint;
+                    _actorBlueprint = null;
+                    if (blueprint != null)
+                        UnityEngine.Object.DestroyImmediate(blueprint);
+                });
+                return releases;
+            }
+
+            /// <summary>
+            /// The runner is completing with a result that is not this
+            /// session's: a save-guard failure, a failed observation hook,
+            /// an exception of its own. No further update will reach the
+            /// session, so everything it owns is given back here and now:
+            /// the pause it released, then each release. The outer result
+            /// keeps its own status and reason and receives, after its own
+            /// entries, what the session had observed and what ending it
+            /// did. Does nothing when the session has already ended.
+            /// </summary>
+            internal MotionTermination Terminate(RuntimeTestResult result)
+            {
+                if (result == null) throw new ArgumentNullException("result");
+                if (_lifecycle.Ended)
+                    return new MotionTermination { Stage = _stage };
+                if (result.Assertions == null)
+                    result.Assertions = new List<RuntimeTestAssertion>();
+                if (result.Diagnostics == null)
+                    result.Diagnostics = new List<string>();
+                if (result.Warnings == null)
+                    result.Warnings = new List<string>();
+                if (result.EvidenceFiles == null)
+                    result.EvidenceFiles = new List<string>();
+                MotionTermination termination = _lifecycle.Terminate(_stage,
+                    OwnedReleases(), Residue, PartialObservations, _assertions,
+                    result.Assertions, result.Diagnostics);
+                if (!termination.Performed) return termination;
+                _cleanupStarted = true;
+                TryWriteTerminationEvidence(termination);
+                foreach (string diagnostic in _diagnostics)
+                    result.Diagnostics.Add("motionDiagnostic:" + diagnostic);
+                foreach (string warning in _warnings)
+                    result.Warnings.Add(warning);
+                foreach (string file in _evidenceFiles)
+                    if (!result.EvidenceFiles.Contains(file))
+                        result.EvidenceFiles.Add(file);
+                // An ended session is never a pass; a failing status and its
+                // reason stay as they are.
+                result.Status = MotionTermination.StatusAfter(result.Status,
+                    RuntimeTestStatuses.Pass, RuntimeTestStatuses.Fail);
+                return termination;
+            }
+
+            // Read once: after termination no further update runs.
+            private string Residue()
+            {
+                if (_allUnits == null) return null;
+                Game.Instance.EntityCreator.Tick();
+                var remains = new List<string>();
+                if (!SameReferences(_unitsBefore, Snapshot(_allUnits)))
+                    remains.Add("the global unit list differs from the " +
+                        "snapshot taken before the session");
+                if (!SameReferences(_partyBefore, Snapshot(_party)))
+                    remains.Add("the party differs from the snapshot taken " +
+                        "before the session");
+                if (_actor != null && ContainsReference(_allUnits, _actor))
+                    remains.Add("the disposable actor is still listed");
+                if (_target != null && ContainsReference(_allUnits, _target))
+                    remains.Add("the disposable target is still listed");
+                return remains.Count == 0 ? null :
+                    string.Join("; ", remains.ToArray());
+            }
+
+            private IEnumerable<string> PartialObservations()
+            {
+                var values = new List<string>();
+                values.Add("phase=" + _phase + ";case=" +
+                    (_caseIndex < _cases.Length
+                        ? (_caseIndex + 1) + "/" + _cases.Length + ":" +
+                            _cases[_caseIndex].Variant
+                        : "<none>") + ";attackUpdates=" + _attackUpdates);
+                values.Add("command=installed:" + _commandInstalled +
+                    "/started:" + _commandStarted + "/running:" +
+                    _commandRunningObserved + "/animation:" +
+                    _animationObserved + "/acted:" + _animationActedObserved);
+                values.Add("records=" + _records.Count + ";captures=" +
+                    _captured + ";evidenceFiles=" + _evidenceFiles.Count +
+                    ";indexWritten=" + _indexWritten);
+                values.Add("completedVariants=" + (_outcomes.Count == 0
+                    ? "<none>" : string.Join(",", _outcomes.Select(value =>
+                        value.Variant).ToArray())));
+                return values;
+            }
+
+            private void TryWriteTerminationEvidence(
+                MotionTermination termination)
+            {
+                try
+                {
+                    string path = Path.Combine(_request.EvidenceDirectory,
+                        "weapon-presentation-motion-termination.json");
+                    var evidence = new JObject
+                    {
+                        { "stage", termination.Stage },
+                        { "phase", _phase },
+                        { "caseIndex", _caseIndex },
+                        { "variant", _caseIndex < _cases.Length
+                            ? _cases[_caseIndex].Variant : "<none>" },
+                        { "attackUpdates", _attackUpdates },
+                        { "sampling", termination.Sampling },
+                        { "samplingUpdates", termination.SamplingUpdates },
+                        { "pauseOwned", termination.PauseOwned },
+                        { "pausedAtTermination",
+                            termination.PausedAtTermination },
+                        { "pausedAfterwards", termination.PausedAfterwards },
+                        { "pauseRestored", termination.PauseRestored },
+                        { "cleanupAlreadyRun",
+                            termination.CleanupAlreadyRun },
+                        { "releasesAttempted",
+                            new JArray(termination.Attempted.ToArray()) },
+                        { "releaseFailures",
+                            new JArray(termination.Failures.ToArray()) },
+                        { "residue", termination.Residue ?? "none" },
+                        { "completedVariants", new JArray(_outcomes.Select(
+                            value => value.Variant).ToArray()) },
+                        { "recordCount", _records.Count },
+                        { "records", new JArray(_records.Select(value =>
+                            value.DeepClone()).ToArray()) }
+                    };
+                    WriteJsonAtomic(path, evidence);
+                    if (!_evidenceFiles.Contains(path))
+                        _evidenceFiles.Add(path);
+                }
+                catch (Exception evidenceException)
+                {
+                    _warnings.Add("Motion termination evidence could not " +
+                        "be written: " + evidenceException.Message);
+                }
             }
 
             private void TryWriteMotionFailureEvidence(Exception exception)
@@ -4600,9 +4833,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _evidenceFiles.All(File.Exists) && zeroPixelSheets == 0,
                     "front/right-side/rear/front-right-three-quarter live combat contact sheets");
                 Add(_assertions, "weapon-presentation-motion-request-cleanup",
-                    "exact party/global-unit snapshots restored; no save call",
+                    "exact party/global-unit snapshots restored; every " +
+                        "owned release attempted and none raised; no save call",
                     "cleaned=" + cleaned + ";settleUpdates=" +
-                        _settleUpdates, cleaned,
+                        _settleUpdates + ";" + _lifecycle.DescribeCleanup(),
+                    cleaned && _lifecycle.CleanupFailures.Count == 0,
                     "request-local items, combat pair, blueprint clones, camera, light, and textures");
                 Add(_assertions, "loaded-mod-version",
                     _request.ExpectedModVersion,
@@ -4650,6 +4885,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     AutomaticExitRequested = _request.ExitAfterCompletion,
                     EvidenceDirectory = _request.EvidenceDirectory
                 };
+                _lifecycle.MarkCompleted();
                 Complete = true;
             }
         }
@@ -5926,6 +6162,61 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Vector3.Dot(bore, targetDirection);
             record["physicalMuzzleLeadsGripTowardTarget"] =
                 Vector3.Dot(muzzleOffset, targetDirection) > 0f;
+            DescribeNativeProjectileSource(record, model, actor, muzzle, bore);
+        }
+
+        /// <summary>
+        /// Where the engine would launch this unit's firearm projectile from
+        /// at this sample, by the rule in ProjectileController.CreateView:
+        /// the transform under the launcher's view named by the projectile
+        /// blueprint's SourceBone. It is computed here from the live
+        /// hierarchy. It is not read from a launched projectile.
+        /// </summary>
+        private static void DescribeNativeProjectileSource(JObject record,
+            Transform model, UnitEntityData actor, Transform muzzle,
+            Vector3 normalizedBore)
+        {
+            try
+            {
+                BlueprintProjectile projectile =
+                    FirearmProjectileBlueprints.Projectile;
+                record["nativeProjectileSourceRule"] =
+                    "ProjectileController.CreateView: Launcher.View.transform." +
+                    "FindChildRecursive(Blueprint.SourceBone); computed at this " +
+                    "sample, not read from a launched projectile";
+                if (projectile == null)
+                {
+                    record["nativeProjectileSourceResolved"] = false;
+                    return;
+                }
+                string bone = projectile.SourceBone ?? string.Empty;
+                Transform view = actor.View.transform;
+                Transform source = bone.Length == 0 ? view :
+                    Kingmaker.Utility.ObjectExtensions.FindChildRecursive(view,
+                        bone);
+                record["nativeProjectileSourceBone"] = bone;
+                record["nativeProjectileSourceCorpulenceOffset"] =
+                    projectile.SourceBoneCorpulenceOffset;
+                record["nativeProjectileSourceResolved"] = source != null;
+                if (source == null) return;
+                record["nativeProjectileSourcePath"] = TransformPath(source, view);
+                record["nativeProjectileSourceInsideWeaponModel"] =
+                    source == model || source.IsChildOf(model);
+                record["nativeProjectileSourceIsWeaponMuzzle"] =
+                    ReferenceEquals(source, muzzle);
+                record["nativeProjectileSourceWorldPosition"] =
+                    source.position.ToString("R");
+                Vector3 toMuzzle = muzzle.position - source.position;
+                record["nativeProjectileSourceToMuzzleMeters"] =
+                    toMuzzle.magnitude;
+                record["nativeProjectileSourceToMuzzleAlongBoreMeters"] =
+                    Vector3.Dot(toMuzzle, normalizedBore);
+            }
+            catch (Exception error)
+            {
+                record["nativeProjectileSourceFault"] =
+                    error.GetType().Name + ": " + error.Message;
+            }
         }
 
         private static void DescribePiercingOneHandedDonorFrame(

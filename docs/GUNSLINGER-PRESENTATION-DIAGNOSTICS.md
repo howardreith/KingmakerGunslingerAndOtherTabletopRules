@@ -15,6 +15,13 @@ a malformed catalog entry could still stop readable items reaching the evaluator
 progression firearms are outside the visual roster was wrong. Both corrections, their tests and the new run are
 under "Review corrections" below. The first candidate's results are kept as recorded.
 
+The review of `73c2a0e4bc` accepted both corrections, which closes INT-04 and INT-05 as development work items. Their
+scope is as stated here: a visual roster of sixteen items; a presentation of 57 weapons, 58 items and twelve custom
+enchantments; the 27 progression firearms receive item variants and are outside this scenario's observations; the
+corrected candidate is `bb205b774b58`, native session `20261116T052756Z`. They are not merged and not released. The
+named-pistol marker failure this record describes as remaining was REP-03; it has since been attributed and
+corrected on its own branch (`docs/GUNSLINGER-NAMED-PISTOL-MUZZLE.md`).
+
 ## What was wrong
 
 **`disposable-firearm-visual-rigs`** judged the firearm items' visuals with

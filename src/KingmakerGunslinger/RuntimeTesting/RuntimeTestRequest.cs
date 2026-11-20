@@ -396,6 +396,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             string dodgeRejection = GunslingerDodgeScenarioAdmission.Rejection(
                 request.Scenario, request.ExitAfterCompletion);
             if (dodgeRejection != null) return dodgeRejection;
+            // The outer-abort drill is its own request and is refused here
+            // unless it is exactly that. An admitted drill carries one more
+            // parameter than the save name, which the save-name rule below
+            // still requires.
+            JToken abortDrill = request.Parameters == null ? null :
+                request.Parameters[MotionOuterAbortDrill.Parameter];
+            string abortDrillRejection = MotionOuterAbortDrill.Rejection(
+                request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationMotionEvidence ||
+                request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationHandgunMotionEvidence ||
+                request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationSpearMotionEvidence ||
+                request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationEasternMotionEvidence,
+                abortDrill != null,
+                abortDrill != null && abortDrill.Type == JTokenType.String
+                    ? (string)abortDrill : null,
+                request.Parameters == null ? 0 : request.Parameters.Count,
+                request.ExitAfterCompletion);
+            if (abortDrillRejection != null) return abortDrillRejection;
             if ((request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations || request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits) && !request.ExitAfterCompletion)
                 return "race-trait-foundation-exit-required";
@@ -701,7 +718,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (circleBound && (!request.ExitAfterCompletion || request.Parameters?["preparationBinding"]?.Type != JTokenType.String ||
                     !MagicCirclePreparationBinding.Valid((string)request.Parameters["preparationBinding"], request.ExpectedModVersion)))
                     return "magic-circle-preparation-binding-required";
-                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : suggestionTransition || spiderCheckpoint || persistence || fcbPersistence || traitSave || weaponSave ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : surpriseEntry || treacherousEffect || crowdReview || dispelUi ? 3 : readinessCreature || nereidPersistence || deferredMarkers || targetedSummonPersistence || creatureReview || flightActivation || weaponRoute || representativePlayerPaths ? 2 : 1) ||
+                if (request.Parameters == null || request.Parameters.Count != (abortDrill != null ? MotionOuterAbortDrill.RequestParameterCount : circleBound ? 2 : suggestionTransition || spiderCheckpoint || persistence || fcbPersistence || traitSave || weaponSave ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : surpriseEntry || treacherousEffect || crowdReview || dispelUi ? 3 : readinessCreature || nereidPersistence || deferredMarkers || targetedSummonPersistence || creatureReview || flightActivation || weaponRoute || representativePlayerPaths ? 2 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";

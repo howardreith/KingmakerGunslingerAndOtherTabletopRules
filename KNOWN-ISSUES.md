@@ -105,11 +105,24 @@
   the expected identities come from declared rosters, every item is inspected, and each result is its own assertion.
   On that branch all 16 firearm visual bindings and the 57, 58 and 12 censuses pass, and the policy enchantment is
   present with blank text (`docs/GUNSLINGER-PRESENTATION-DIAGNOSTICS.md`).
-- `disposable-firearm-visual-rigs` still fails on `pistol-authored-marker-contract`, on the published line and on
-  the branch. The Duelist and Last Word pistol prefabs each have their four authored markers once and no
-  support-hand target, but their `Muzzle` is at local (-0.1483, -0.2357, 0.0521) where the assertion expects
-  (0, 0, 0.264). Whether the prefabs or the expectation is wrong is not established, and what a player would see of
-  it (a muzzle-flash origin) has not been looked at. Not repaired.
+- Up to and including the published v0.0.191, `disposable-firearm-visual-rigs` fails on
+  `pistol-authored-marker-contract` for Duelist's Rebuttal and The Last Word. This is a defect of the diagnostic, not
+  of the pistols: it compares the root `Muzzle`'s position in the prefab's own frame with the marker's coordinate in
+  the source model's frame, (0, 0, 0.264), and the two pistols have been placed in the held hand frame since
+  2026-08-21. Compared in one frame the root markers are within 0.0000001 m of the authored markers, and in a live
+  attack both pistols' bores are aligned with the target at the frame the shot fires. Corrected on branch
+  `codex/rep03-named-pistol-muzzle` (not merged, not released); no model or bundle changed
+  (`docs/GUNSLINGER-NAMED-PISTOL-MUZZLE.md`). How the pistols look was not reviewed.
+- On that branch only (the published line does not contain this code): the weapon motion evidence scenarios release a
+  paused game while an attack is sampled. As first written on the branch, a run that the runner ended early left the
+  game unpaused and its disposable units in place, and a high frame rate could leave an attack command running that
+  blocked the next weapon's. The corrected marker diagnostic also let a marker that was not a finite number pass.
+  All three are corrected on the branch and await review. These are diagnostics; none of this is player-facing.
+- The engine launches a firearm's projectile from the unit's left-palm locator, inherited from the native light
+  crossbow's projectile, not from the weapon's muzzle. At the frame a handgun shot fires, that point is 1.4 to 1.8 m
+  from the muzzle over two runs (service pistol, both named pistols and the revolver). The mod intends to hide the projectile's
+  model; whether it does, and so whether a player sees anything leave from the left hand, has not been examined. Long
+  guns were not sampled. Observed, not classified, not changed.
 - The 27 generic progression firearms (+2 to +5 and Reliable, for pistol, musket and blunderbuss) receive an item
   visual variant through the same registration helper as the magic firearms, each mapped to its family's Service
   variant. No scenario reads them, so whether those bindings hold in the game is not established. The sixteen-item
