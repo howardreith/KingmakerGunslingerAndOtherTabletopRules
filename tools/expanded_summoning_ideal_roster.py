@@ -912,7 +912,7 @@ def coverage_section(entries, cov):
         "",
         ("Coverage is **complete**: " if complete else "Coverage is **incomplete**: ") +
         "%s of %s ideal placements have a choice admitted by the current publication policy. "
-        "%d are registered and withheld, and %d have no declared choice." % (
+        "%d are registered and withheld, and %d in-scope placements have no declared choice." % (
             format(t["covered"], ","), format(t["ideal"], ","), t["withheld"], t["missing"]) +
         (" %d are approved out of scope by owner decision: excluded from the selected development scope, "
          "not published and not counted as covered." % t["out_of_scope"] if t["approved"] else ""),
@@ -950,7 +950,7 @@ def coverage_section(entries, cov):
         "|---|---|",
         "| Ideal placements covered by an admitted choice | %s |" % format(t["covered"], ","),
         "| Ideal placements withheld by the publication policy | %d |" % t["withheld"],
-        "| Ideal placements with no declared choice | %d |" % t["missing"],
+        "| In-scope ideal placements with no declared choice | %d |" % t["missing"],
         "| Ideal placements approved out of scope (excluded, not published) | %d |" % t["out_of_scope"],
         "| Approved exclusions contradicted by a declared choice (scope conflict) | %d |" % t["scope_conflicts"],
         "| Declared choices not in the ideal roster (extra) | %d |" % t["extra"],

@@ -438,7 +438,8 @@
   1d4+1 creatures from a lower-level list; Owlcat authored these creatures only on a base-plus-two ladder, so no native
   option exists for those exact creature-and-tier combinations. The owner selected S5 T4 / POL-05 Alternative A on
   2026-11-19: keep the base-plus-two ladders and approve exactly those twelve cells out of scope, each recorded
-  separately (draft PR #189; implemented in the reporter and records, awaiting review; not merged, not released;
+  separately (draft PR #189; reporter and records only; accepted for that development scope at `acd50a042a`; not
+  merged, not released;
   `docs/EXPANDED-SUMMONING-WRAPPER-LADDER-SCOPE.md`). They are not fulfilled. Every existing wrapper row of these creatures (15) and its adapters (52)
   are unchanged. The roster report now shows 1,208 admitted, 9 withheld, 0 missing and 15 approved out of scope
   against the unchanged 1,232 ideal; the original ideal is not fully published.

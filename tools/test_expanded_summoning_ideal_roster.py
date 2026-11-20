@@ -502,6 +502,9 @@ class ScopeDecisionTests(unittest.TestCase):
         self.assertIn("scope contract: 15 approved exclusions, 0 scope conflicts", summary)
         self.assertIn("Accounting against the original ideal: 1,208 admitted + 9 withheld + 0 missing + "
                       "15 approved out of scope = 1,232 ideal placements.", document)
+        self.assertIn("9 are registered and withheld, and 0 in-scope placements have no declared choice.", document)
+        self.assertEqual(["| In-scope ideal placements with no declared choice | 0 |"],
+                         rows(document, "| In-scope ideal placements with no declared choice"))
         self.assertEqual(["| Ideal placements approved out of scope (excluded, not published) | 15 |"],
                          rows(document, "| Ideal placements approved out of scope"))
         self.assertEqual(["| Approved exclusions contradicted by a declared choice (scope conflict) | 0 |"],
