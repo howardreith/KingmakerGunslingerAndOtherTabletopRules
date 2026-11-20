@@ -454,13 +454,21 @@
   also never held, so it is removed too. Offline policy tests and a model of the native
   diff only; not observed natively (`planning/gunslinger-playtest-repairs/STATUS.md`).
 - With Call of the Wild's "metamagic for spontaneous spell conversion" setting
-  enabled, a Herald Caller conversion popup over a metamagic source also lists
-  Call of the Wild's own base-level conversions. They appear as raw native
-  Summon Monster rows, for example "Summon Monster IV (Dire Wolf)" in a level 5
-  popup. Expanded Summoning projects only the native conversion list, and these
-  extra rows are not Spider Summoner behavior. Projecting or hiding them is an
-  open design choice; nothing was changed (recorded 2026-11-11 in
-  `planning/races-unleashed-compatibility/STATUS.md`).
+  enabled, Herald Caller and Druid conversion popups over a prepared slot also
+  list Call of the Wild's own rows: the feature's lower-tier quantity spells, with
+  metamagic built from the caster's metamagic feats to make up the slot's level
+  (not the source's metamagic, as the 2026-11-11 record said). Released versions
+  show them as raw native rows, for example "Summon Monster IV (1d4+1 Wolves)" in
+  a level 5 popup (recorded 2026-11-11 in
+  `planning/races-unleashed-compatibility/STATUS.md`). On branch
+  `codex/pol06-cotw-conversion-semantics` (S5 T5 / POL-06, draft PR #190; not
+  accepted, not merged, not released) they are projected into the published
+  creatures of their own tier and quantity, each keeping that row's metamagic,
+  the slot's level and the slot's debit. Rows of the prepared parent's own tier
+  stay raw. Observed in a disposable game copy for Extend on both routes
+  (`docs/EXPANDED-SUMMONING-COTW-CONVERSION-SEMANTICS.md`); the larger popup and the same creature
+  appearing at two tiers (distinguished only in the tooltip) are left for owner
+  review.
 - The legacy Advanced Revolver declares six chambers, but saved firearm state holds one round, so its six-round reload
   fails and restores ammunition and weapon state. No published release offered it (vendors only cleaned it up;
   Craft Magic Items only recognized an owned one). On branch `codex/risk01-advanced-revolver` (accepted with Sprint 4 at `e30b19e8fe`;
