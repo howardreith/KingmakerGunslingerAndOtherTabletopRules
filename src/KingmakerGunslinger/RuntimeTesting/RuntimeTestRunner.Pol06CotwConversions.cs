@@ -113,6 +113,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["conversionAdapter"] = DruidSummonConversionVariantPatch.Outcome };
         }
 
+        /// <summary>Prepared slots of the source's level whose spell the native
+        /// spend would treat as this source (AbilityData equality).</summary>
+        private static int Pol06EqualPreparedCopies(Spellbook book, AbilityData source)
+        {
+            return book.GetMemorizedSpellSlots(book.GetSpellLevel(source)).Count(slot => slot?.Spell != null && source.Equals(slot.Spell));
+        }
+
         private static Func<int, bool> Pol06CountFor(AbilityData child, SummonConversionRoute route)
         {
             int tier; SummonMultiplicity quantity;
@@ -132,10 +139,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Call of the Wild is loaded in this profile and its metamagic-for-spontaneous-conversion setting is on.");
             if (setting == null || !settingOn) yield break;
 
-            BlueprintAbility unrelatedFour = SpiderPlainSpell(book, 4, 0, true);
+            // A level 4 spell no earlier cell prepared: the native spend takes the
+            // last available slot whose spell equals the source, so a second
+            // identical extended copy (the extended-source cell's, index 0) would
+            // be spent instead and keep this source's slot available.
+            BlueprintAbility unrelatedFour = SpiderPlainSpell(book, 4, 1, true);
             AbilityData source = SpiderPrepareExtended(book, unrelatedFour, 4);
             book.Rest();
             int sourceLevel = book.GetSpellLevel(source);
+            int equalCopies = Pol06EqualPreparedCopies(book, source);
+            Sprint25Check("pol06-herald-source-unique", equalCopies == 1, new JObject { ["sourceSpell"] = unrelatedFour.name + ":" + unrelatedFour.AssetGuid,
+                ["equalPreparedCopies"] = equalCopies, ["slotLevel"] = source.ParamSpellSlot?.SpellLevel },
+                "The Herald POL-06 source is the only prepared slot whose spell equals it, so its debit and staleness are exact.");
             BlueprintAbility[] ordinaryExpected = SpiderPermitted(smParent(5), book);
             BlueprintAbility[] additionalExpected = SpiderPermitted(smParent(4), book);
             // Owned generated rows only: like the phase's forbidden selected child,
@@ -229,6 +244,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             AbilityData source = SpiderPrepareExtended(book, unrelatedFour, 4);
             book.Rest();
             int sourceLevel = book.GetSpellLevel(source);
+            int equalCopies = Pol06EqualPreparedCopies(book, source);
+            Sprint25Check("pol06-druid-source-unique", equalCopies == 1, new JObject { ["sourceSpell"] = unrelatedFour.name + ":" + unrelatedFour.AssetGuid,
+                ["equalPreparedCopies"] = equalCopies }, "The Druid POL-06 source is the only prepared slot whose spell equals it.");
             BlueprintAbility[] ordinaryExpected = SpiderPermitted(snaParent(5), book);
             BlueprintAbility[] additionalExpected = SpiderPermitted(snaParent(4), book);
             foreach (int frame in SpiderInterfaceSelect(casters.Druid)) yield return frame;
