@@ -79,11 +79,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (row == null || row.Blueprint == null) return null;
                 AbilityData conversion = row.ConvertedFrom;
                 if (conversion != null && ReferenceEquals(conversion.ConvertedFrom, source) && Pol06HasMetamagic(conversion) &&
-                    SummonNativeOptionCatalog.All.Any(value => value.Guid == conversion.Blueprint?.AssetGuid)) return Pol06Projected;
-                if (ReferenceEquals(conversion, source) && Pol06HasMetamagic(row) &&
-                    SummonNativeOptionCatalog.All.Any(value => value.Guid == row.Blueprint.AssetGuid)) return Pol06Raw;
+                    Pol06NativeSummonConversion(conversion.Blueprint)) return Pol06Projected;
+                if (ReferenceEquals(conversion, source) && Pol06HasMetamagic(row) && Pol06NativeSummonConversion(row.Blueprint)) return Pol06Raw;
                 return null;
             };
+        }
+
+        /// <summary>A native summon conversion spell: a native quantity spell, or
+        /// a tier I canonical parent, which the native arrays hold itself.</summary>
+        private static bool Pol06NativeSummonConversion(BlueprintAbility blueprint)
+        {
+            return blueprint != null && (SummonNativeOptionCatalog.All.Any(value => value.Guid == blueprint.AssetGuid) ||
+                ExpandedSummoningPublisher.CanonicalParentGuids.Contains(blueprint.AssetGuid));
+        }
+
+        /// <summary>A conversion's quantity: its own spawn expression, or Single for a
+        /// canonical parent held as a conversion (Summon Monster I and Summon
+        /// Nature's Ally I have only single-creature options).</summary>
+        private static SummonMultiplicity? Pol06ConversionQuantity(BlueprintAbility blueprint)
+        {
+            SummonMultiplicity? spawned = Pol06SpawnQuantity(blueprint);
+            if (spawned != null) return spawned;
+            return blueprint != null && ExpandedSummoningPublisher.CanonicalParentGuids.Contains(blueprint.AssetGuid) ? SummonMultiplicity.One : (SummonMultiplicity?)null;
         }
 
         private static bool Pol06HasMetamagic(AbilityData data)
@@ -108,7 +125,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static List<AbilityData> Pol06CotwRows(MechanicActionBarSlot slot, Spellbook book, AbilityData source)
         {
             Assembly cotw = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(assembly => assembly.GetName().Name == "CallOfTheWild");
-            MethodInfo builder = cotw?.GetType("CallOfTheWild.ActionBarGroupSlot__SetToggleAdditionalSpells__Patch")?.GetMethod("getAdditionalToggleSpells",
+            Type patch = cotw?.GetType("CallOfTheWild.SpellManipulationMechanics.ActionBarGroupSlot__SetToggleAdditionalSpells__Patch");
+            MethodInfo builder = patch?.GetMethod("getAdditionalToggleSpells",
                 BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(MechanicActionBarSlot), typeof(Spellbook), typeof(AbilityData) }, null);
             return builder == null || slot == null ? null : builder.Invoke(null, new object[] { slot, book, source }) as List<AbilityData>;
         }
@@ -229,7 +247,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             List<AbilityData> cotw = Pol06CotwRows(popupSource?.MechanicSlot, book, source);
             if (menu == null || cotw == null) { evidence["error"] = menu == null ? "no-popup" : "call-of-the-wild-row-builder-unavailable"; return evidence; }
             Func<AbilityData, bool> summonConversion = row => row?.Blueprint != null && ReferenceEquals(row.ConvertedFrom, source) &&
-                Pol06NativeTier(book, row.Blueprint) > 0 && Pol06SpawnQuantity(row.Blueprint) != null;
+                Pol06NativeTier(book, row.Blueprint) > 0 && Pol06ConversionQuantity(row.Blueprint) != null;
             AbilityData[] ordinaryConversions = cotw.Where(row => summonConversion(row) && !Pol06HasMetamagic(row)).ToArray();
             AbilityData[] additional = cotw.Where(row => summonConversion(row) && Pol06HasMetamagic(row)).ToArray();
             string[] expectedRetained = cotw.Where(row => row?.Blueprint != null && !summonConversion(row)).Select(Pol06RetainedKey).ToArray();
@@ -239,7 +257,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (AbilityData row in additional)
             {
                 int tier = Pol06NativeTier(book, row.Blueprint);
-                SummonMultiplicity quantity = Pol06SpawnQuantity(row.Blueprint).Value;
+                SummonMultiplicity quantity = Pol06ConversionQuantity(row.Blueprint).Value;
                 BlueprintAbility parent = parentOf(tier);
                 bool raw = duplicates || ReferenceEquals(parent, source.Blueprint);
                 string[] children = new string[0];
@@ -539,7 +557,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             var watch = Stopwatch.StartNew();
             BlueprintAbility[] tierFourQuantity = Enumerable.Range(1, 4).SelectMany(level => book.GetSpontaneousConversionSpells(level))
-                .Where(value => Pol06NativeTier(book, value) == 4 && Pol06SpawnQuantity(value) != null).Distinct().ToArray();
+                .Where(value => Pol06NativeTier(book, value) == 4 && Pol06ConversionQuantity(value) != null).Distinct().ToArray();
             var candidates = new[] { Kingmaker.UnitLogic.Abilities.Metamagic.Heighten, Kingmaker.UnitLogic.Abilities.Metamagic.Reach,
                 Kingmaker.UnitLogic.Abilities.Metamagic.Empower, Kingmaker.UnitLogic.Abilities.Metamagic.Quicken };
             var survey = new JArray();
@@ -576,14 +594,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                         projected.Any(other => isExtendOnly(other) && ReferenceEquals(other.Blueprint, value.Blueprint)) && SummonSignatureReader.Read(value.Blueprint).Spawns().Count() == 1 &&
                         Pol06SpawnQuantity(value.Blueprint) == SummonMultiplicity.One);
                     AbilityData extendTwin = second == null ? null : projected.First(value => isExtendOnly(value) && ReferenceEquals(value.Blueprint, second.Blueprint));
-                    var labels = menu.Data.Where(value => value != null).Select(value => Tuple.Create(value.Name ?? "", Pol06MetamagicText(value),
-                        value.Blueprint.AssetGuid + "|" + (value.ConvertedFrom == null ? "" : Pol06Key(value.ConvertedFrom)))).ToArray();
-                    IReadOnlyList<string> indistinguishable = Pol06ConversionObservationVerdict.IndistinguishableRows(labels);
+                    Func<AbilityData, string> behaviour = value =>
+                    {
+                        string spawns;
+                        try { spawns = string.Join(";", SummonSignatureReader.Read(value.Blueprint).Spawns().Select(spawn => spawn.Unit + ":" + spawn.CountDice).ToArray()); }
+                        catch (Exception) { spawns = "unreadable:" + value.Blueprint.AssetGuid; }
+                        return spawns + "|" + (value.MetamagicData == null ? 0L : Convert.ToInt64(value.MetamagicData.MetamagicMask)) + "|" + value.SpellLevel;
+                    };
+                    AbilityData[] shown = menu.Data.Where(value => value != null).ToArray();
+                    IReadOnlyList<string> indistinguishable = Pol06ConversionObservationVerdict.IndistinguishableRows(shown.Select(value =>
+                        Tuple.Create(value.Name ?? "", Pol06MetamagicText(value), behaviour(value))));
+                    IReadOnlyList<string> redundant = Pol06ConversionObservationVerdict.IndistinguishableRows(shown.Select(value =>
+                        Tuple.Create(value.Name ?? "", Pol06MetamagicText(value) + "\u0002" + behaviour(value),
+                            value.Blueprint.AssetGuid + "|" + (value.ConvertedFrom == null ? "" : Pol06Key(value.ConvertedFrom)))));
                     var presentation = new JObject { ["rows"] = menu.Rows.Length, ["ordinary"] = verdict?["ordinary"], ["projected"] = verdict?["projected"],
                         ["conversions"] = verdict?["conversions"], ["metamagicFeats"] = new JArray("Extend Spell", feat.name), ["indistinguishable"] = new JArray(indistinguishable),
+                        ["redundantSameBehaviour"] = new JArray(redundant), ["behaviourKey"] = "spawned unit and count dice, metamagic mask, effective spell level",
                         ["sameCreatureTwoConversions"] = second == null ? null : second.Name, ["metamagicTexts"] = second == null ? null : new JArray(Pol06MetamagicText(extendTwin), Pol06MetamagicText(second)) };
                     Sprint25Check("pol06-two-feats-presentation-distinguishable", second != null && indistinguishable.Count == 0, presentation,
-                        "In the larger popup no two rows with different semantics share both a label and the native metamagic text; the same creature appears under the Extend and the second conversion.");
+                        "In the larger popup no two rows that behave differently (spawned creature and count, metamagic, spell level) share both a label and the native metamagic text; " +
+                        "rows that read alike and behave alike are recorded as redundant for owner review; the same creature appears under the Extend and the second conversion.");
                     if (second != null)
                     {
                         foreach (int frame in R6Cell("pol06-two-feats-reach", () => Pol06Reachability(menu, popupSource, source, new[] { extendTwin, second, menu.Data.Last(value => value != null) }, mode))) yield return frame;
@@ -785,15 +815,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (extendGranted) casters.Herald.Descriptor.AddFact(extendFeat);
             try
             {
+                // A Common slot: the native conversion (and the product) leave a domain slot's spell alone.
                 BlueprintAbility plainFive = SpiderPlainSpell(clericBook, 5, 2);
-                PrepareExpandedSummoningPlayerPathSpell(clericBook, plainFive, plainFive, 5);
+                if (clericBook.GetSpellLevel(plainFive) < 0) clericBook.AddKnown(5, plainFive, true);
+                SpellSlot commonFive = clericBook.GetMemorizedSpellSlots(5).FirstOrDefault(value => value != null && value.Type == SpellSlotType.Common && value.Spell == null);
+                bool memorized = commonFive != null && clericBook.Memorize(new AbilityData(plainFive, clericBook), commonFive);
                 // The wizard book is populated: one prepared level 1 spell.
+                if (casters.Herald.Stats.Intelligence.BaseValue < 18) { casters.Herald.Stats.Intelligence.BaseValue = 18; wizardBook.UpdateAllSlotsSize(false); }
                 BlueprintAbility wizardSpell = wizardBook.Blueprint.SpellList.GetSpells(1).Where(value => value != null && (value.Variants == null || value.Variants.Length == 0))
                     .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).First();
                 if (wizardBook.GetSpellLevel(wizardSpell) < 0) wizardBook.AddKnown(1, wizardSpell, true);
-                wizardBook.Memorize(new AbilityData(wizardSpell, wizardBook), null);
+                SpellSlot wizardSlot = wizardBook.GetMemorizedSpellSlots(1).FirstOrDefault(value => value != null && value.Type == SpellSlotType.Common && value.Spell == null);
+                bool wizardMemorized = wizardSlot != null && wizardBook.Memorize(new AbilityData(wizardSpell, wizardBook), wizardSlot);
                 clericBook.Rest(); wizardBook.Rest();
-                AbilityData source = clericBook.GetMemorizedSpellSlots(5).Where(value => value.Spell != null && ReferenceEquals(value.Spell.Blueprint, plainFive)).Select(value => value.Spell).FirstOrDefault();
+                AbilityData source = clericBook.GetMemorizedSpellSlots(5).Where(value => value.Spell != null && value.Type == SpellSlotType.Common &&
+                    ReferenceEquals(value.Spell.Blueprint, plainFive)).Select(value => value.Spell).FirstOrDefault();
                 SpellSlot[] wizardSlots = Enumerable.Range(0, 10).SelectMany(level => wizardBook.GetMemorizedSpellSlots(level)).ToArray();
                 Func<JArray> wizardState = () => new JArray(Enumerable.Range(0, 10).SelectMany(level => wizardBook.GetMemorizedSpellSlots(level))
                     .Select(value => (value.Spell?.Blueprint?.AssetGuid ?? "empty") + ":" + value.Available));
@@ -802,7 +838,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint25Check("pol06-natural-herald-plain-source", plain && wizardPrepared >= 1 && casters.Herald.Descriptor.HasFact(extendFeat), new JObject {
                     ["sourceSpell"] = plainFive.name + ":" + plainFive.AssetGuid, ["sourceMetamagic"] = source == null ? null : Pol06Key(source),
                     ["equalPreparedCopies"] = source == null ? 0 : Pol06EqualPreparedCopies(clericBook, source), ["wizardPreparedAvailable"] = wizardPrepared,
-                    ["wizardSpell"] = wizardSpell.name, ["extendFeatHeld"] = casters.Herald.Descriptor.HasFact(extendFeat), ["extendFeatGranted"] = extendGranted, ["setup"] = casters.Setup },
+                    ["wizardSpell"] = wizardSpell.name, ["sourceMemorizedInCommonSlot"] = memorized, ["wizardMemorized"] = wizardMemorized,
+                    ["sourceSlotType"] = source?.ParamSpellSlot?.Type.ToString(), ["extendFeatHeld"] = casters.Herald.Descriptor.HasFact(extendFeat), ["extendFeatGranted"] = extendGranted, ["setup"] = casters.Setup },
                     "The natural Herald's source is a plain level 5 cleric spell with no metamagic, the only equal preparation; its wizard book holds a prepared spell; it holds Extend Spell.");
                 if (!plain) yield break;
                 foreach (int frame in SpiderInterfaceSelect(casters.Herald)) yield return frame;
