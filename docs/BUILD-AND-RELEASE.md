@@ -2,7 +2,35 @@
 
 ## 0.0.192 publication authorization
 
-**Authorized; publication pending.** The publication result is added here after the publisher runs.
+**Published (completed).** Stable
+[v0.0.192](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.192)
+is Latest and not a prerelease. The annotated tag peels to the release commit `f1304d05f5` (PR #192), which was
+`origin/master` when the publisher ran.
+
+- **Preparation.** On the release branch: the repository wrapper (dispatched to the release192 validator, PASS) and
+  the complete suite (3,148/3,148, 0 failures, with the owner-authorized pin refresh) took 426 s.
+- **Gate.** The publisher's complete suite passed 3,148/3,148 with 0 failures.
+- **Builds.** Two deterministic exact-reference builds against the pinned UMM 0.31.1 loader references:
+  - package SHA-256 `936f3571a5f948911b410e6e39134629b60d0fc469d0cd6347d88971af072d69`;
+  - DLL SHA-256 `0eff2af36f15e6986e8f0f18c07e8544d2b4ad5f0b82368d1f22625cfc2ab96f`.
+- **Reference bundle.** `artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references`,
+  as for v0.0.191.
+- **Public download test.** A fresh download of the three assets matched `SHA256SUMS.txt`.
+- **Native check on the published bytes.** The downloaded public package ran in the disposable loader-compat game copy
+  on Unity Mod Manager 0.33.0 with harness `c47e7f14d48edac88740b4c9bf1841e805c45a88043dc162789b4c86dbc1b089` (harness
+  source unchanged on master), and the game loaded the DLL above (version 0.0.192). Session
+  `20261120T174116Z-owner-0.33.0-risk06-trample-ai`: **PASS, 28 of 28**, the same cells as the RISK-06 qualification
+  (ownership and shared brain, 32-output route inventory, owned Trample selected and executed in real time and turn
+  based with same-round suppression and later-round reuse, the ordinary attack kept in the five refusal cells, death
+  mid-Trample). Owner saves and installation unchanged; registry restored. The pointer driver recorded 1,432 failed
+  pointer reads and 559 displacements during this session (it re-parked the pointer each time); the verdict is
+  recorded as observed. Only this one session ran on the published bytes; the other stories' sessions ran on their
+  own development candidates.
+- **Timing.** The publisher run took 899 s.
+- **Installation.** The installed mod was not touched; the publisher performed no deployment.
+- **Merges.** PRs #169 to #191 merged bottom-up (PR #191 as `5d297cfe4a`); release PR #192 as `f1304d05f5`.
+
+Originally authorized as follows.
 
 On 2026-11-20 Howie sent the Sprint 5 closure review (S5 T6 accepted at `9d2f5e7c4f`; Sprint 5 closure approved) and
 wrote: "I think we can wrap up sprint 5. ... Just merge, push, close, and cut a release of what we've achieve so far."
