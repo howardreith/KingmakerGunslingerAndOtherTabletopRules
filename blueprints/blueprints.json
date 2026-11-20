@@ -63471,6 +63471,22 @@
       "status": "active",
       "milestone": "Races Unleashed Spider Summoner",
       "notes": "Hidden marker carrying the Spider Summoner +2 to exact poison and web parameters."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Mastodon.TrampleAi",
+      "guid": "4d88e6d656064c36a8df3f0e8df1f39f",
+      "plannedType": "UngulateTrampleAi",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Mastodon.Brain",
+      "guid": "7e9e643401714494adf441ffd267ed5a",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     }
   ]
 }

@@ -437,6 +437,8 @@
     <Compile Include="Summoning\SummonRagePolicy.cs" />
     <Compile Include="Summoning\SummonShadowMastiffPolicy.cs" />
     <Compile Include="Summoning\UngulateRulesPolicy.cs" />
+    <Compile Include="Summoning\MastodonTrampleAiPolicy.cs" />
+    <Compile Include="Summoning\UngulateTrampleAi.cs" />
     <Compile Include="Summoning\ArmoredDinosaurRulesPolicy.cs" />
     <Compile Include="Summoning\TheropodRulesPolicy.cs" />
     <Compile Include="Summoning\GiantBodyRulesPolicy.cs" />

@@ -82,10 +82,10 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-pol06-cotw", 0, 0, 0, false, false, false, false, true), "The POL-06 lane is a save-free native review.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "summon-pol06-cotw"), "The POL-06 lane uses the cleric phase's outdoor fixture.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-pol06-cotw"), "The POL-06 lane is not a host-restricted Sprint40 routine.");
-            Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-risk06-trample-route", 0, 0, 0, false, false, false, false, true), "The RISK-06 Trample route phase is a save-free native review.");
-            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "summon-risk06-trample-route"), "The RISK-06 phase uses the outdoor native Default fixture.");
-            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-risk06-trample-route") ||
-                ExpandedSummoningNativeProfilePolicy.WallFixturePhase("summon-risk06-trample-route"), "The RISK-06 phase is neither a Wall nor a host-restricted Sprint40 routine.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "summon-risk06-trample-ai", 0, 0, 0, false, false, false, false, true), "The RISK-06 Trample AI phase is a save-free native review.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "summon-risk06-trample-ai"), "The RISK-06 phase uses the outdoor native Default fixture.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-risk06-trample-ai") ||
+                ExpandedSummoningNativeProfilePolicy.WallFixturePhase("summon-risk06-trample-ai"), "The RISK-06 phase is neither a Wall nor a host-restricted Sprint40 routine.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "summon-alphabetical-menus"), "The alphabetical-menu phase uses the outdoor fixture.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-alphabetical-menus"), "The alphabetical-menu phase is not a host-restricted Sprint40 routine.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-playtest-r7-models") || ExpandedSummoningNativeProfilePolicy.Sprint40Phase("summon-playtest-r7-models-interior"), "R7 presentation phases are not host-restricted Sprint40 routines.");

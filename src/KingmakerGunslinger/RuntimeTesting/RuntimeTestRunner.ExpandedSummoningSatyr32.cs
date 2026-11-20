@@ -53,7 +53,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestMephitPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestMephitFinishPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestSpellsPhase ||
-                    phase == ExpandedSummoningNativeProfilePolicy.Sprint39TrampleRoutePhase ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint39TrampleAiPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestPresentationPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestModelsPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint32PerformancePhase ||
@@ -143,11 +143,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in ReviewSummonPlaytestMephitR4(fixture, phase, mode)) yield return frame;
                 yield break;
             }
-            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39TrampleRoutePhase)
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39TrampleAiPhase)
             {
                 CreateSprint32TurnHostile(fixture);
                 using (var mode = Cleanup2EnterNativeDefault(fixture, phase))
-                    foreach (int frame in ReviewRisk06TrampleRoute(fixture, phase, mode)) yield return frame;
+                    foreach (int frame in ReviewRisk06TrampleAi(fixture, phase, mode)) yield return frame;
                 yield break;
             }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestSpellsPhase)

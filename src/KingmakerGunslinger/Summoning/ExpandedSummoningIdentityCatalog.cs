@@ -99,7 +99,9 @@ namespace KingmakerGunslinger.Summoning
         // moves from 737 by exactly that, and the derived
         // FoundationIdentityCount follows. It is not fitted to whatever the
         // builder happened to produce.
-        internal const int SpecialIdentityCount = 815;
+        // S5 T6 / RISK-06 appends the Mastodon's owned Trample AI action and
+        // its private brain copy (two identities).
+        internal const int SpecialIdentityCount = 817;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -1170,6 +1172,10 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.DispelMagicAi", "BlueprintAiCastSpell"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.Shield", "BlueprintAbility"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.ShieldAi", "BlueprintAiCastSpell"));
+            // S5 T6 / RISK-06: the Mastodon's owned Trample AI action and its
+            // private copy of the native natural-attack brain.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Mastodon.TrampleAi", "UngulateTrampleAi"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Mastodon.Brain", "BlueprintBrain"));
             Validate(result);
             return result.AsReadOnly();
         }

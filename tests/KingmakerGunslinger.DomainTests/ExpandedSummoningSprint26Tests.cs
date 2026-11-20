@@ -66,6 +66,8 @@ namespace KingmakerGunslinger.DomainTests
         internal const int RepairR4PrivateIdentityCount = 12;
         // Repair R5: Mastodon trample and the Pixie's spell-likes and AI actions.
         internal const int RepairR5PrivateIdentityCount = 11;
+        // S5 T6 / RISK-06: the Mastodon's owned Trample AI action and brain.
+        internal const int Risk06PrivateIdentityCount = 2;
         internal const int AppendedCatalogIdentityCount =
             Sprint26MagicalBeastRules.AppendedCatalogIdentityCount +
             ExpandedSummoningSprint27Tests.AppendedCatalogIdentityCount +
@@ -76,7 +78,8 @@ namespace KingmakerGunslinger.DomainTests
             InfernalRules35.AppendedCatalogIdentityCount +
             Sprint36CatalogIdentityCount + Sprint37CatalogIdentityCount +
             Sprint38CatalogIdentityCount + Sprint39CatalogIdentityCount + Sprint40CatalogIdentityCount +
-            RepairR3PrivateIdentityCount + RepairR4PrivateIdentityCount + RepairR5PrivateIdentityCount;
+            RepairR3PrivateIdentityCount + RepairR4PrivateIdentityCount + RepairR5PrivateIdentityCount +
+            Risk06PrivateIdentityCount;
         internal const int SpiderSummonerLedgerIdentityCount = 39;
         internal const int AppendedLedgerIdentityCount =
             AppendedCatalogIdentityCount +
