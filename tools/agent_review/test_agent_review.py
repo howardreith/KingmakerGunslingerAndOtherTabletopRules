@@ -44,6 +44,8 @@ class FakeGitHub:
         self.body = ""
         self.required = []
         self.check_results = {}
+        self.poster = "owner"
+        self.on_post = None
 
     def viewer(self):
         return self.pr_overrides.get("viewer", "owner")
@@ -66,12 +68,14 @@ class FakeGitHub:
             raise RuntimeError("simulated transient GitHub failure")
         body = Path(body_file).read_text(encoding="utf-8")
         self.next_id += 1
-        record = {"id": self.next_id, "user": "owner", "body": body, "url": f"https://example.test/c/{self.next_id}"}
+        record = {"id": self.next_id, "user": self.poster, "body": body, "url": f"https://example.test/c/{self.next_id}"}
         self.comments_list.append(record)
+        if self.on_post:
+            self.on_post(record)
         if self.lose_next_response:
             self.lose_next_response -= 1
             raise TimeoutError("simulated lost response after the server stored the comment")
-        return {"id": record["id"], "url": record["url"]}
+        return {"id": record["id"], "url": record["url"], "user": record["user"]}
 
     def required_checks(self, branch):
         return list(self.required)
@@ -100,9 +104,11 @@ class FakeReviewer:
     def run(self, prompt, workdir, schema, result_path, events_path, stderr_path, timeout_s, skip_git=False):
         item = self.script.pop(0)
         request = json.loads((Path(result_path).parent / "request.json").read_text(encoding="utf-8"))
-        self.calls.append({"request": request, "prompt": prompt, "workdir": str(workdir)})
-        assert Path(workdir).is_dir() and git(workdir, "rev-parse", "HEAD") == request["H"]
         inbox = Path(workdir) / ".agent-review-inputs"
+        self.calls.append({"request": request, "prompt": prompt, "workdir": str(workdir),
+                           "inbox": sorted(p.relative_to(inbox).as_posix() for p in inbox.rglob("*") if p.is_file()),
+                           "transcript": (inbox / "developer-tool-transcript.md").read_text(encoding="utf-8")})
+        assert Path(workdir).is_dir() and git(workdir, "rev-parse", "HEAD") == request["H"]
         for name in ("feature.diff", "developer-report.json", "prior-findings.json", "developer-tool-transcript.md",
                      "mission.md"):
             assert (inbox / name).is_file(), f"{name} missing from the reviewer's workspace"
@@ -182,7 +188,7 @@ class FakeDeveloper:
         model = getattr(action, "model", OPUS)
         return {"init_model": model, "api_key_source": "none", "session_id": getattr(action, "session", session_id),
                 "main_models": [model], "result": "", "structured_output": report, "permission_denials": [],
-                "model_usage": {}, "cost_usd": 0.0, "is_error": False, "subtype": "success",
+                "model_usage": {}, "cost_usd": 0.0, "is_error": False, "subtype": getattr(action, "subtype", "success"),
                 "exit_code": getattr(action, "exit_code", 0), "deadline_exceeded": False, "terminated": False,
                 "duration_s": 0.1, "observed_effort": ["high"]}
 
@@ -920,15 +926,34 @@ class TargetValidationTests(Base):
         env.gh.pr_overrides = {"viewer": "mallory"}
         with self.assertRaises(ar.UsageError):
             ar.enroll(args, github=env.gh, root=env.wf)
-        os.environ["AGENT_REVIEW_HOME"] = str(env.root / "home2")  # bypass the existing registry entry
-        for override in ({"headRefName": "codex/other"}, {"isCrossRepository": True},
-                         {"headRepositoryOwner": {"login": "fork-owner"}}, {"url": "https://github.com/evil/repo/pull/7"}):
+        env.gh.pr_overrides = {}
+        good = env.gh.pr(7)
+        self.assertEqual([], ar.pr_identity_problems(good, "owner/repo", 7, env.branch, "master"))
+        for override in ({"headRefName": "codex/other"}, {"baseRefName": "release"}, {"isCrossRepository": True},
+                         {"headRepositoryOwner": {"login": "fork-owner"}}, {"number": 8},
+                         {"url": "https://github.com/evil/repo/pull/7"}):
             with self.subTest(override):
+                # The same checker gates enrollment and every mutation (verify_inputs).
+                self.assertTrue(ar.pr_identity_problems({**good, **override}, "owner/repo", 7, env.branch, "master"))
                 env.gh.pr_overrides = override
                 with self.assertRaises(ar.UsageError):
-                    ar.enroll(args, github=env.gh, root=env.wf)
-                with self.assertRaises(ar.UsageError):
                     env.controller().verify_inputs()
+
+    def test_writer_exclusion_does_not_depend_on_the_selected_home(self):
+        """R1-F8: a controller using another AGENT_REVIEW_HOME cannot enroll or lock the same worktree."""
+        env = self.env
+        ctl = env.controller()
+        original = os.environ["AGENT_REVIEW_HOME"]
+        with ctl.lock("run"):  # held under the original home
+            os.environ["AGENT_REVIEW_HOME"] = str(env.root / "other-home")
+            with self.assertRaises(ar.UsageError):  # the other home's lock is free; the worktree's lock is not
+                with ar.writer_lock("owner/repo", env.branch, str(env.work), "review"):
+                    pass
+            os.environ["AGENT_REVIEW_HOME"] = original
+        os.environ["AGENT_REVIEW_HOME"] = str(env.root / "other-home")
+        with self.assertRaises(ar.UsageError) as refused:
+            ar.enroll(env.args(), github=env.gh, root=env.wf)
+        self.assertIn("active enrollment", str(refused.exception))
 
     def test_second_enrollment_for_active_branch_is_refused_across_state_roots(self):
         env = self.env
@@ -1052,6 +1077,13 @@ class GeneralRepositoryTests(unittest.TestCase):
             ar.guarded_push(ctl.state, ctl.cfg)
         self.assertIn("credential", str(refused.exception))
         self.assertEqual(head, git(env.origin, "rev-parse", f"refs/heads/{env.branch}"))
+        git(env.work, "reset", "--quiet", "--hard", head)
+        env.commit("feature.txt", "v3\n", "v3")
+        git(env.work, "config", "remote.origin.pushurl", str(env.root / "elsewhere.git"))  # R3-F5
+        with self.assertRaises(ar.UsageError) as refused:
+            ar.guarded_push(ctl.state, ctl.cfg)
+        self.assertIn("push destination", str(refused.exception))
+        self.assertEqual(head, git(env.origin, "rev-parse", f"refs/heads/{env.branch}"))
 
     def test_archive_uses_builtin_push_without_a_wrapper(self):
         env = self.env
@@ -1117,6 +1149,309 @@ class GeneralRepositoryTests(unittest.TestCase):
         self.assertEqual("black-tentacles", ar.plan_for_mission(ar.load_plan("black-tentacles"), Path("m.md"))["mission_id"])
 
 
+class RoundTwoRegressionTests(Base):
+    """Focused regressions for the round-2 review findings (publication, recovery, identity, permissions, readiness)."""
+
+    def submit_with(self, ctl, checkpoint, dispositions=(), evidence=()):
+        r = report(self.env, checkpoint, dispositions)
+        r["evidence_refs"] = list(evidence)
+        self.assertIsNone(ctl.accept_report(r))
+        ctl.transition("review", "t")
+        return ctl.review_round()
+
+    def test_wrapper_projects_cannot_use_the_builtin_helper(self):
+        """R1-F19."""
+        ctl = self.env.controller()
+        with self.assertRaises(ar.UsageError) as refused:
+            ar.guarded_push(ctl.state, ctl.cfg)
+        self.assertIn("own push wrapper", str(refused.exception))
+        settings = ar.read_json(self.env.dir / "developer-settings.json")["permissions"]["allow"]
+        self.assertFalse([rule for rule in settings if " push --enrollment " in rule])
+
+    def test_config_names_cannot_escape_trusted_directories(self):
+        """R1-F14."""
+        for name in ("../projects/test", "..\\projects\\test", "Test", "a/b"):
+            with self.subTest(name), self.assertRaises(ar.UsageError):
+                ar.load_project(name, self.env.wf)
+
+    def test_actor_is_refreshed_and_posting_identity_checked(self):
+        """R1-F9."""
+        env = self.env
+        ctl = env.controller()
+        ctl.verify_inputs()
+        env.gh.pr_overrides = {"viewer": "someone-else"}
+        with self.assertRaises(ar.UsageError):
+            ctl.verify_inputs()
+        env.gh.pr_overrides = {}
+        env.gh.poster = "someone-else"
+        with self.assertRaises(ar.Stop) as stop:
+            ctl.publish("r01-request", "### heading\nbody")
+        self.assertIn("gh login changed", stop.exception.reason)
+
+    def test_developer_report_requires_an_explicit_successful_terminal_event(self):
+        """R1-F17."""
+        log = self.env.root / "stream.jsonl"
+        log.write_text(json.dumps({"type": "result", "subtype": "success", "structured_output": {}}) + "\n", encoding="utf-8")
+        self.assertTrue(ar.ClaudeDeveloper.parse(log)["is_error"])  # is_error missing: not success
+        env = Env("headless")
+        self.addCleanup(env.cleanup)
+
+        def interrupted(e):
+            return report(e, "phase-1")
+        interrupted.subtype = "error_during_execution"
+        env.developer.script = [interrupted]
+        self.assertIn("error_during_execution", env.controller().develop_step())
+
+    def test_decode_failures_are_persisted_stops(self):
+        """R1-F18."""
+        ctl = self.env.controller()
+        self.assertEqual(ar.EXIT_PAUSED, ar.guarded(ctl, "run", lambda: json.loads("{not json")))
+        self.assertEqual("PAUSED", ar.read_json(self.env.dir / "state.json")["status"])
+
+    def test_rival_marker_and_tampered_outbox_are_refused(self):
+        """R1-F7."""
+        env = self.env
+        ctl = env.controller()
+        ctl.publish("r01-request", "### heading\nbody")
+        ours = env.gh.comments_list[-1]
+        env.gh.comments_list.append({**ours, "id": 5, "body": ours["body"].splitlines()[0] + "\nconflicting copy"})
+        ctl.state["publications"]["r01-request"].update(state="pending")
+        ctl.state["publications"]["r01-request"]["parts"][0]["comment_id"] = None
+        with self.assertRaises(ar.Stop) as stop:
+            ctl.publish("r01-request", "ignored")
+        self.assertIn("differ or are duplicated", stop.exception.reason)
+        env.gh.fail_next = 99
+        with self.assertRaises(ar.Stop):
+            ctl.publish("r02-request", "### heading\nsecond")
+        path = Path(ctl.state["publications"]["r02-request"]["parts"][0]["body_file"])
+        path.write_text(path.read_text(encoding="utf-8") + "tampered", encoding="utf-8")
+        env.gh.fail_next = 0
+        with self.assertRaises(ar.Stop) as stop:
+            ctl.publish("r02-request", "ignored")
+        self.assertIn("modified on disk", stop.exception.reason)
+
+    def test_disposition_publication_is_idempotent_per_content(self):
+        """R3-F3."""
+        env = self.env
+        env.reviewer.script = [{"decision": "changes_required", "findings": [finding("R1-F1")]}]
+        ctl = env.controller()
+        self.submit(ctl, "phase-1")
+        sha = env.commit("feature.txt", "fix\n", "fix")
+        env.push()
+        r = report(env, "phase-1", [fixed("R1-F1", sha)])
+        ctl.publish_dispositions(r)
+        ctl.publish_dispositions(r)  # replay after a crash
+        count = lambda: sum("finding dispositions" in h for h in env.gh.headings())
+        self.assertEqual(1, count())
+        r2 = report(env, "phase-1", [{"finding_id": "R1-F1", "disposition": "rebutted", "commits": [], "evidence": "x"}])
+        ctl.publish_dispositions(r2)
+        self.assertEqual(2, count())
+
+    def test_archive_recovers_partial_writes_and_an_unrecorded_commit(self):
+        """R1-F12."""
+        env = self.env
+
+        class Crashing(ar.Controller):
+            def complete_archive(self, pending):
+                raise KeyboardInterrupt("simulated crash")
+        ctl = env.controller(Crashing)
+        self.to_finalize(ctl)
+        with self.assertRaises(KeyboardInterrupt):
+            ctl.finalize()
+        pending = ar.read_json(env.dir / "state.json")["archive_pending"]
+        (env.work / pending["files"][0]["rel"]).unlink()  # crash mid-write: one record missing
+        self.assertEqual("AWAITING_OWNER_REVIEW", env.controller().finalize())
+
+        env2 = Env("foreground")
+        self.addCleanup(env2.cleanup)
+        ctl2 = env2.controller(Crashing)
+        env2.reviewer.script += [{"decision": "checkpoint_passed"}, {"decision": "ready_for_owner_review"}]
+        for checkpoint in ("phase-1", "final"):
+            ctl2.accept_report(report(env2, checkpoint))
+            ctl2.transition("review", "t")
+            ctl2.review_round()
+        with self.assertRaises(KeyboardInterrupt):
+            ctl2.finalize()
+        git(env2.work, "add", "-A")
+        git(env2.work, "commit", "--quiet", "-m", "archive commit made just before the crash")
+        self.assertEqual("AWAITING_OWNER_REVIEW", env2.controller().finalize())
+
+    def test_stop_outcome_is_saved_with_the_round(self):
+        """R1-F11."""
+        env = self.env
+        env.reviewer.script = [{"decision": "changes_required", "findings": [finding("R1-F1")]},
+                               {"decision": "changes_required", "findings": [finding("R1-F1")],
+                                "assessments": [("R1-F1", "rebuttal_rejected")]}]
+        ctl = env.controller()
+        self.submit(ctl, "phase-1")
+        with self.assertRaises(ar.Stop):
+            self.submit(ctl, "phase-1", [{"finding_id": "R1-F1", "disposition": "rebutted", "commits": [], "evidence": "x"}])
+        on_disk = ar.read_json(env.dir / "state.json")
+        self.assertEqual("BLOCKED", on_disk["status"])
+        self.assertEqual("accepted", on_disk["rounds"][-1]["status"])
+
+    def test_preserved_results_are_bound_to_content_and_workflow_version(self):
+        """R3-F1."""
+        env = self.env
+        env.reviewer.script = [{"decision": "checkpoint_passed"}, {"decision": "checkpoint_passed"}]
+        ctl = env.controller()
+        ctl.accept_report(report(env, "phase-1"))
+        ctl.transition("review", "t")
+        real_post, calls = env.gh.post_comment, {"n": 0}
+
+        def post(number, body_file):
+            calls["n"] += 1
+            if calls["n"] >= 2:
+                raise RuntimeError("simulated outage")
+            return real_post(number, body_file)
+        env.gh.post_comment = post
+        with self.assertRaises(ar.Stop):
+            ctl.review_round()
+        env.gh.post_comment = real_post
+        envelope = Path(ctl.active()["envelope_path"])
+        data = ar.read_json(envelope)
+        data["result"]["decision_rationale"] = "edited on disk"
+        ar.atomic_write_json(envelope, data)
+        self.assertEqual("checkpoint_passed", env.controller().review_round())
+        self.assertEqual(2, len(env.reviewer.calls))  # the altered result was not consumed; a fresh review ran
+
+        env2 = Env("foreground")
+        self.addCleanup(env2.cleanup)
+        ctl2 = env2.controller()
+        env2.reviewer.script += [{"decision": "checkpoint_passed"}, {"decision": "ready_for_owner_review"}]
+        for checkpoint in ("phase-1", "final"):
+            ctl2.accept_report(report(env2, checkpoint))
+            ctl2.transition("review", "t")
+            ctl2.review_round()
+        (env2.wf / "prompts" / "reviewer.md").write_text("new rules\n", encoding="utf-8")
+        result = ctl2.activate()
+        self.assertEqual(["ready result"], result["invalidated"])
+        self.assertIsNone(ctl2.state["ready_review"])
+        self.assertEqual("review", ctl2.state["phase"])
+
+    def test_freshness_is_rechecked_after_publication(self):
+        """R1-F1."""
+        env = self.env
+        env.reviewer.script = [{"decision": "checkpoint_passed"}]
+        ctl = env.controller()
+
+        def push_during_review_publication(record):
+            if "Codex GPT-6.2 Astra — review" in record["body"]:
+                env.gh.on_post = None
+                env.commit("feature.txt", "racing\n", "push while the review was being posted")
+                env.push()
+        env.gh.on_post = push_during_review_publication
+        with self.assertRaises(ar.Stop) as stop:
+            self.submit(ctl, "phase-1")
+        self.assertIn("historical", stop.exception.reason)
+        self.assertEqual({}, ctl.state["rounds_completed"])
+        self.assertIn("Workflow — correction", env.gh.headings()[-1])
+
+    def test_blocking_status_is_sticky_and_required_gaps_must_block(self):
+        """R1-F3, R1-F4."""
+        env = self.env
+        downgrade = {"decision": "changes_required", "findings": [finding("R1-F1", blocks=False), finding("R2-F1")],
+                     "assessments": [("R1-F1", "fix_rejected")]}
+        env.reviewer.script = [{"decision": "changes_required", "findings": [finding("R1-F1")]}] + [downgrade] * 3
+        ctl = env.controller()
+        self.submit(ctl, "phase-1")
+        sha = env.commit("feature.txt", "fix\n", "fix")
+        env.push()
+        with self.assertRaises(ar.Stop) as stop:
+            self.submit(ctl, "phase-1", [fixed("R1-F1", sha)])
+        self.assertIn("cannot be restated as non-blocking", stop.exception.reason)
+
+        env2 = Env("foreground")
+        self.addCleanup(env2.cleanup)
+        env2.reviewer.script = [{"decision": "changes_required",
+                                 "findings": [finding("R1-F1"), finding("R1-F2", blocks=False, category="required_gap")]}] * 3
+        ctl2 = env2.controller()
+        ctl2.accept_report(report(env2, "phase-1"))
+        ctl2.transition("review", "t")
+        with self.assertRaises(ar.Stop) as stop:
+            ctl2.review_round()
+        self.assertIn("required_gap must block", stop.exception.reason)
+
+    def test_checkpoint_declared_gates_are_enforced(self):
+        """R1-F3 (declared mandatory gates)."""
+        plan = {"schema_version": "agent-review.plan.v1", "mission_id": "fixture", "checkpoints": [
+            {"id": "final", "type": "final", "scope": "s", "exit_conditions": ["e"], "required_validation": ["focused gate"]}]}
+        env = Env("foreground", plan=plan)
+        self.addCleanup(env.cleanup)
+        ctl = env.controller()
+        self.assertIn("focused gate", ctl.accept_report(report(env, "final")))
+        gate = [{"command": "run focused gate --filter x", "required": True, "result": "pass", "duration": "1s",
+                 "scope_and_limits": "x"}]
+        self.assertIsNone(ctl.accept_report(report(env, "final", validation=gate)))
+
+    def test_readiness_checks_runtime_lock_records_and_check_providers(self):
+        """R3-F4, R1-F7 (handoff), R1-F6."""
+        env = self.env
+        ctl = env.controller()
+        self.to_finalize(ctl)
+        lock = env.root / "runtime.lock"
+        lock.write_text("run-id\n", encoding="utf-8")
+        with self.assertRaises(ar.Stop) as stop:
+            ctl.finalize()
+        self.assertIn("runtime transaction lock", stop.exception.reason)
+        lock.unlink()
+        removed = env.gh.comments_list.pop(0)
+        with self.assertRaises(ar.Stop) as stop:
+            ctl.finalize()
+        self.assertIn("missing or altered", stop.exception.reason)
+        env.gh.comments_list.insert(0, removed)
+        h = ctl.state["ready_review"]["H"]
+        env.gh.required = [{"context": "ci/test", "app_id": 15368}]
+        env.gh.check_results[h] = [{"name": "ci/test", "status": "completed", "conclusion": "success", "app_id": 999}]
+        with self.assertRaises(ar.Stop) as stop:
+            ctl.finalize()
+        self.assertIn("ci/test", stop.exception.reason)
+        env.gh.check_results[h][0]["app_id"] = 15368
+        self.assertEqual("AWAITING_OWNER_REVIEW", ctl.finalize())
+        env.gh.pr_overrides = {"reviewRequests": [{"login": "someone"}]}
+        self.assertFalse(ctl.status(remote=True)["handoff_current"])  # R1-F22: same head, changed gate
+
+    def test_reserved_inbox_path_and_foreign_transcript_changes_block(self):
+        """R3-F2, R1-F13."""
+        env = self.env
+        env.commit(".agent-review-inputs/request.json", "{}\n", "collides with the reviewer inbox")
+        env.push()
+        ctl = env.controller()
+        env.reviewer.script = [{"decision": "checkpoint_passed"}]
+        ctl.accept_report(report(env, "phase-1"))
+        ctl.transition("review", "t")
+        with self.assertRaises(ar.Stop) as stop:
+            ctl.review_round()
+        self.assertIn("reserved path", stop.exception.reason)
+
+        env2 = Env("foreground", extra_files={"docs/agent-reviews/pr-3/001-r01-review.md": "old record\n"})
+        self.addCleanup(env2.cleanup)
+        env2.commit("docs/agent-reviews/pr-3/001-r01-review.md", "rewritten history\n", "edit another PR's record")
+        env2.push()
+        ctl2 = env2.controller()
+        ctl2.accept_report(report(env2, "phase-1"))
+        ctl2.transition("review", "t")
+        with self.assertRaises(ar.Stop) as stop:
+            ctl2.review_round()
+        self.assertIn("transcript tree change", stop.exception.reason)
+
+    def test_foreground_reviewer_gets_receipts_not_the_whole_session_log(self):
+        """R3-F6."""
+        env = self.env
+        ctl = env.controller()
+        receipt = ctl.dir / "evidence" / "test-receipt.md"
+        receipt.parent.mkdir()
+        receipt.write_text("Ran 3 tests\nOK\n", encoding="utf-8")
+        elsewhere = env.root / "unrelated.md"
+        elsewhere.write_text("unrelated\n", encoding="utf-8")
+        env.reviewer.script = [{"decision": "checkpoint_passed"}]
+        self.submit_with(ctl, "phase-1", evidence=[str(receipt), str(elsewhere)])
+        call = env.reviewer.calls[-1]
+        self.assertIn("evidence/test-receipt.md", call["inbox"])
+        self.assertNotIn("evidence/unrelated.md", call["inbox"])
+        self.assertIn("withheld", call["transcript"])
+
+
 class ToolTranscriptTests(unittest.TestCase):
     def test_extracts_recorded_commands_and_outputs_since_a_time(self):
         """Executed-validation evidence for the read-only reviewer, from the CLI-recorded session log."""
@@ -1146,6 +1481,17 @@ class ToolTranscriptTests(unittest.TestCase):
             self.assertNotIn("old command", text)
             self.assertNotIn("git push", text)  # sidechain (sub-agent) entries are not the developer's own record
             self.assertIn("commands since 2026-11-20T11:00:00Z: 2", text)
+            # R1-F16: effort comes from main-thread assistant metadata only, not from text that mentions it.
+            noise = [{"type": "assistant", "timestamp": "2026-11-20T12:03:00.000Z", "effort": "high",
+                      "message": {"model": "claude-opus-5-5", "content": []}},
+                     {"type": "user", "timestamp": "2026-11-20T12:04:00.000Z",
+                      "message": {"content": [{"type": "text", "text": '{"effort":"low"}'}]}},
+                     {"type": "assistant", "isSidechain": True, "effort": "low", "message": {"model": "claude-haiku-5-5"}}]
+            with log.open("a", encoding="utf-8") as handle:
+                handle.write("\n".join(json.dumps(r) for r in noise) + "\n")
+            prov = dev.session_provenance(sid)
+            self.assertEqual(["high"], prov["efforts"])
+            self.assertEqual(["claude-opus-5-5"], prov["models"])
 
 
 class UnitTests(unittest.TestCase):

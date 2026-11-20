@@ -445,30 +445,35 @@ class GitHub:
 
     def post_comment(self, number, body_file) -> dict:
         data = self._json("api", f"repos/{self.repo}/issues/{number}/comments", "-F", f"body=@{body_file}")
-        return {"id": data["id"], "url": data["html_url"]}
+        return {"id": data["id"], "url": data["html_url"], "user": (data.get("user") or {}).get("login")}
 
     def required_checks(self, branch):
-        """Required status-check contexts from branch protection and rulesets. Errors propagate."""
-        contexts = set()
+        """Required checks ({context, app_id}) from branch protection and rulesets. Only GitHub's explicit
+        'not protected' answers count as verified absence; any other failure propagates."""
+        required = {}
         proc = run([self.gh, "api", f"repos/{self.repo}/branches/{branch}/protection/required_status_checks"],
                    check=False, timeout=180)
         if proc.returncode == 0:
             data = json.loads(proc.stdout or "{}")
-            contexts.update(data.get("contexts") or [])
-            contexts.update(c.get("context") for c in data.get("checks") or [] if c.get("context"))
-        elif not re.search(r"not protected|required status checks not enabled|HTTP 404", proc.stderr + proc.stdout, re.I):
+            for context in data.get("contexts") or []:
+                required.setdefault(context, None)
+            for check in data.get("checks") or []:
+                if check.get("context"):
+                    required[check["context"]] = check.get("app_id")
+        elif not re.search(r"Branch not protected|Required status checks not enabled", proc.stderr + proc.stdout):
             raise CommandError(["gh", "api", "protection"], proc)
         for rule in self._json("api", f"repos/{self.repo}/rules/branches/{branch}") or []:
             if rule.get("type") == "required_status_checks":
                 for item in (rule.get("parameters") or {}).get("required_status_checks") or []:
-                    contexts.add(item.get("context"))
-        return sorted(c for c in contexts if c)
+                    if item.get("context"):
+                        required[item["context"]] = item.get("integration_id", required.get(item["context"]))
+        return [{"context": c, "app_id": a} for c, a in sorted(required.items())]
 
     def commit_checks(self, sha):
-        runs = self._lines("api", "--paginate", f"repos/{self.repo}/commits/{sha}/check-runs",
-                           "--jq", ".check_runs[] | {name: .name, status: .status, conclusion: .conclusion} | @json")
-        statuses = self._lines("api", f"repos/{self.repo}/commits/{sha}/status",
-                               "--jq", ".statuses[] | {name: .context, status: \"completed\", conclusion: .state} | @json")
+        runs = self._lines("api", "--paginate", f"repos/{self.repo}/commits/{sha}/check-runs", "--jq",
+                           ".check_runs[] | {name: .name, status: .status, conclusion: .conclusion, app_id: .app.id} | @json")
+        statuses = self._lines("api", f"repos/{self.repo}/commits/{sha}/status", "--jq",
+                               ".statuses[] | {name: .context, status: \"completed\", conclusion: .state, app_id: null} | @json")
         return runs + statuses
 
 
@@ -609,12 +614,14 @@ class ClaudeDeveloper:
         models, efforts, paths = set(), set(), self._transcripts(session_id)
         for path in paths:
             for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
-                efforts.update(re.findall(r'"(?:effort|perTurnEffort)":"([a-z]+)"', line))
                 try:
                     obj = json.loads(line)
                 except ValueError:
                     continue
                 if obj.get("type") == "assistant" and not obj.get("isSidechain"):
+                    for key in ("effort", "perTurnEffort"):
+                        if isinstance(obj.get(key), str):
+                            efforts.add(obj[key])
                     model = (obj.get("message") or {}).get("model")
                     if model and model != "<synthetic>":
                         models.add(model)
@@ -647,6 +654,7 @@ class ClaudeDeveloper:
         blocks = []
         for stamp, tool, use_id, command in uses:
             is_error, output = results.get(use_id, (None, "(no recorded result)"))
+            command, output = sanitize(command, strict=False)[0], sanitize(output, strict=False)[0]
             if len(output) > 3000:
                 output = output[:1500] + "\n[... truncated ...]\n" + output[-1500:]
             status = "no result" if is_error is None else ("error" if is_error else "ok")
@@ -724,7 +732,7 @@ class ClaudeDeveloper:
                 if model and model != "<synthetic>" and model not in out["main_models"]:
                     out["main_models"].append(model)
             elif obj.get("type") == "result":
-                out.update(subtype=obj.get("subtype"), is_error=bool(obj.get("is_error")),
+                out.update(subtype=obj.get("subtype"), is_error=obj.get("is_error") is not False,
                            structured_output=obj.get("structured_output"), result=obj.get("result"),
                            permission_denials=obj.get("permission_denials") or [],
                            model_usage=obj.get("modelUsage") or {}, cost_usd=obj.get("total_cost_usd"))
@@ -792,6 +800,40 @@ class Lock:
                 return False
         except UsageError:
             return True
+
+
+class MultiLock:
+    """Acquire several locks in order (machine-home lock + the worktree's own git-dir lock)."""
+
+    def __init__(self, locks):
+        self.locks, self.held = locks, []
+
+    @property
+    def holder(self):
+        return self.locks[0].holder
+
+    def __enter__(self):
+        try:
+            for lock in self.locks:
+                lock.__enter__()
+                self.held.append(lock)
+        except BaseException:
+            self.__exit__()
+            raise
+        return self
+
+    def __exit__(self, *exc):
+        for lock in reversed(self.held):
+            lock.__exit__()
+        self.held = []
+
+
+def writer_lock(repository, branch, worktree, command):
+    """Writer exclusion anchored both to the machine home and to the physical worktree, so controllers using
+    different AGENT_REVIEW_HOME values still cannot own the same worktree at once."""
+    git_dir = Path(Git(worktree)("rev-parse", "--absolute-git-dir"))
+    return MultiLock([Lock(agent_home() / "locks" / f"{branch_key(repository, branch)}.lock", command),
+                      Lock(git_dir / "agent-review.lock", command)])
 
 
 # --------------------------------------------------------------------------- controller
@@ -871,8 +913,7 @@ class Controller:
         return self.state["limits"]
 
     def lock(self, command):
-        key = branch_key(self.cfg["repository"], self.state["branch"])
-        return Lock(agent_home() / "locks" / f"{key}.lock", command)
+        return writer_lock(self.cfg["repository"], self.state["branch"], self.state["repo_root"], command)
 
     def active(self):
         n = self.state.get("active_round")
@@ -883,8 +924,7 @@ class Controller:
 
     # -- identity checks -----------------------------------------------------
     def viewer(self):
-        if self._viewer is None:
-            self._viewer = self.gh.viewer()
+        self._viewer = self.gh.viewer()  # refreshed at every check; the gh login may change during a long run
         return self._viewer
 
     def verify_inputs(self):
@@ -924,14 +964,9 @@ class Controller:
     def pr_view(self):
         number = self.state["pr"]["number"]
         pr = self.gh.pr(number)
-        owner, name = self.cfg["repository"].split("/")
-        if pr.get("number") != number or not pr["url"].endswith(f"/{self.cfg['repository']}/pull/{number}"):
-            raise UsageError("PR does not belong to the enrolled repository and number")
-        if pr.get("isCrossRepository") or (pr.get("headRepositoryOwner") or {}).get("login") != owner or \
-                (pr.get("headRepository") or {}).get("name") != name:
-            raise UsageError("PR head is not in the enrolled repository (cross-repository PRs are refused)")
-        if pr["headRefName"] != self.state["branch"] or pr["baseRefName"] != self.state["target"]:
-            raise UsageError("PR head/base do not match the enrollment")
+        problems = pr_identity_problems(pr, self.cfg["repository"], number, self.state["branch"], self.state["target"])
+        if problems:
+            raise UsageError("; ".join(problems))
         if pr["state"] != "OPEN":
             raise Stop("PAUSED", f"PR #{number} is {pr['state']}")
         if not pr["isDraft"]:
@@ -990,6 +1025,22 @@ class Controller:
         foreign = [p for p in self.git.tree_files(commit, folder) if p not in archived]
         if foreign:
             raise Stop("BLOCKED", "unapproved transcript records in the candidate: " + ", ".join(foreign[:5]))
+        for line in filter(None, self.git("ls-tree", "-r", commit, "--", folder).splitlines()):
+            mode, _, rest = line.partition(" ")
+            if mode != "100644":
+                raise Stop("BLOCKED", f"transcript record {rest.partition(chr(9))[2]} has mode {mode}")
+
+    def verify_transcript_delta(self, base, head):
+        """Everything the review diff excludes (the whole transcript tree, any PR) must be the controller's own
+        records for this PR, added as plain files with their recorded content."""
+        archived = self.state.get("archived", {})
+        raw = self.git("diff", "--raw", "--no-renames", "--no-ext-diff", base, head, "--",
+                       self.cfg["transcript_dir"].strip("/"))
+        for line in filter(None, raw.splitlines()):
+            meta, _, path = line.partition("\t")
+            fields = meta.split()
+            if fields[4] != "A" or fields[1] != "100644" or archived.get(path) != self.git.blob_sha256(head, path):
+                raise Stop("BLOCKED", f"transcript tree change outside the controller's records: {fields[4]} {path}")
 
     # -- publication -----------------------------------------------------------
     def marker(self, key, index, total, digest):
@@ -1021,7 +1072,7 @@ class Controller:
         for part in record["parts"]:
             if part["comment_id"]:
                 continue
-            body = Path(part["body_file"]).read_text(encoding="utf-8")
+            body = self.outbox_body(key, part)
             attempts, found = 0, None
             while not found:
                 attempts += 1
@@ -1029,6 +1080,9 @@ class Controller:
                     found = self.reconcile(number, part["marker"], body)
                     if not found:
                         found = self.gh.post_comment(number, part["body_file"])
+                        if found.get("user") not in (None, self.cfg["expected_actor"]):
+                            raise Stop("BLOCKED", f"comment {found['id']} was posted as {found.get('user')}, not the "
+                                                  f"expected {self.cfg['expected_actor']}; the gh login changed")
                 except Stop:
                     raise
                 except Exception as exc:  # lost response, listing failure or transient error
@@ -1042,13 +1096,20 @@ class Controller:
         self.save()
         return record
 
+    def outbox_body(self, key, part):
+        """Re-read a persisted outgoing body and verify it against its recorded digest."""
+        body = Path(part["body_file"]).read_text(encoding="utf-8")
+        marker, _, chunk = body.partition(chr(10))
+        if marker != part["marker"] or sha256_text(chunk) != part["sha256"]:
+            raise Stop("BLOCKED", f"the preserved outgoing message for {key} was modified on disk")
+        return body
+
     def reconcile(self, number, marker, body):
-        """Find our already-posted comment: expected actor, exact marker and identical body."""
+        """Find our already-posted comment: expected actor, exact marker, identical body, and no rivals."""
         matches = [c for c in self.gh.comments(number)
                    if c.get("user") == self.cfg["expected_actor"] and (c.get("body") or "").startswith(marker)]
-        exact = [c for c in matches if normalize_body(c["body"]) == normalize_body(body)]
-        if len(exact) == 1:
-            return {"id": exact[0]["id"], "url": exact[0]["url"]}
+        if len(matches) == 1 and normalize_body(matches[0]["body"]) == normalize_body(body):
+            return {"id": matches[0]["id"], "url": matches[0]["url"]}
         if matches:
             raise Stop("PAUSED", f"PR comment(s) {[c['id'] for c in matches]} carry the marker for this message but "
                                  "their bodies differ or are duplicated; resolve manually before publishing")
@@ -1121,6 +1182,9 @@ class Controller:
         failing = [v["command"] for v in report["validation"] if v["required"] and v["result"] != "pass"]
         if failing:
             return "required validation is not passing: " + "; ".join(failing) + " (fix it or report blocked)"
+        for gate in cp.get("required_validation", []):  # gates the plan declares mandatory for this checkpoint
+            if not any(gate in v["command"] and v["required"] and v["result"] == "pass" for v in report["validation"]):
+                return f"the checkpoint requires a passing required validation entry for: {gate}"
         pending = set(self.state.get("pending_findings", []))
         ledger = self.state.get("findings", {})
         disposed = [d["finding_id"] for d in report["dispositions"]]
@@ -1163,11 +1227,10 @@ class Controller:
         lines.append(f"\n_Model-generated developer response (Claude {self.cfg['developer']['model']} / "
                      f"{self.cfg['developer']['effort']}), posted by the agent-review controller through the owner's "
                      f"GitHub account; not a human review._\n")
-        key, pubs, suffix = f"r{n:02d}-dispositions", self.state.get("publications", {}), 1
-        while key in pubs and pubs[key]["state"] == "posted":  # a resubmission gets its own visible comment
-            suffix += 1
-            key = f"r{n:02d}-dispositions-{suffix}"
-        self.publish(key, "\n".join(lines))
+        # Keyed by content: replaying the same accepted report is idempotent; a different disposition set
+        # for the same round gets its own visible comment.
+        digest = sha256_text(json.dumps([report["candidate_commit"], report["dispositions"]], sort_keys=True))[:10]
+        self.publish(f"r{n:02d}-dispositions-{digest}", "\n".join(lines))
 
     @staticmethod
     def validation_md(report):
@@ -1194,6 +1257,7 @@ class Controller:
                                   f"({completed}/{self.limits['max_review_rounds_per_checkpoint']})")
         candidate = self.capture_candidate()
         self.verify_transcripts(candidate["H"])
+        self.verify_transcript_delta(candidate["M"], candidate["H"])
         reuse = (rnd and rnd["status"] in ("requested", "reviewing") and rnd["H"] == candidate["H"]
                  and rnd["M"] == candidate["M"] and rnd["checkpoint_id"] == cp["id"])
         if not reuse:
@@ -1236,9 +1300,7 @@ class Controller:
         if not envelope or not envelope["ok"]:
             raise Stop("BLOCKED", f"no valid review after {len(rnd['attempts'])} attempts: " +
                        "; ".join(envelope["reasons"] if envelope else []))
-        rnd["status"], rnd["envelope_path"] = "validated", envelope["path"]
-        self.save()
-        return self.finish_round(rnd)
+        return self.finish_round(rnd)  # review_attempt already promoted the round to validated atomically
 
     def review_attempt(self, rnd, rnd_dir):
         rnd["attempt_seq"] = n = rnd.get("attempt_seq", 0) + 1  # monotonic across owner-granted budgets
@@ -1264,8 +1326,11 @@ class Controller:
         envelope = self.validate_review(rnd, result_path, info, prov, rnd_dir / f"stderr-{n}.txt")
         envelope["path"] = str(rnd_dir / f"envelope-{n}.json")
         atomic_write_json(envelope["path"], envelope)
+        digest = sha256_file(envelope["path"])
         attempt.update({"ended": now_iso(), "ok": envelope["ok"], "fatal": envelope["fatal"],
-                        "reasons": envelope["reasons"], "thread_id": info.get("thread_id")})
+                        "reasons": envelope["reasons"], "thread_id": info.get("thread_id"), "envelope_sha256": digest})
+        if envelope["ok"]:  # promote in the same write that records the attempt: no window for a duplicate review
+            rnd.update(status="validated", envelope_path=envelope["path"], envelope_sha256=digest)
         self.save()
         return envelope
 
@@ -1288,18 +1353,37 @@ class Controller:
                                                               "developer_provenance": rnd.get("developer_provenance")})
         atomic_write_json(rnd_dir / "request.json", {k: rnd[k] for k in (
             "round", "request_id", "checkpoint_id", "checkpoint_type", "H", "B", "M")})
-        session = self.state.get("foreground_session") if self.state["mode"] == "foreground" \
-            else self.state["developer"]["session_id"]
-        transcript, _ = sanitize(self.developer.tool_transcript(session, rnd.get("evidence_since") or self.state["created_at"]),
-                                 strict=False)
+        evidence_dir = (self.dir / "evidence").resolve()
+        receipts = []
+        for ref in (rnd.get("report") or {}).get("evidence_refs", []):
+            path = Path(ref)
+            if path.is_file() and path.resolve().parent == evidence_dir:
+                receipts.append(path.resolve())
+        if self.state["mode"] == "foreground":
+            # An interactive session's log mixes unrelated work; only controller-held receipts are supplied.
+            transcript = ("# Developer tool transcript\n\nForeground session: the whole-session log is withheld because "
+                          "it mixes unrelated work. Candidate-bound receipts held by the controller are in `evidence/`: "
+                          + (", ".join(p.name for p in receipts) or "none") + ".\n")
+        else:
+            transcript, _ = sanitize(self.developer.tool_transcript(self.state["developer"]["session_id"],
+                                                                    rnd.get("evidence_since") or self.state["created_at"]),
+                                     strict=False)
         write_text(rnd_dir / "developer-tool-transcript.md", transcript)
         # The reviewer's sandbox is always granted its workspace, but not necessarily other paths
         # (e.g. owner-only ACLs). Give it copies inside the snapshot; they are not part of the candidate.
         inbox = snapshot / ".agent-review-inputs"
-        inbox.mkdir(exist_ok=True)
+        if os.path.lexists(inbox):
+            raise Stop("BLOCKED", "the candidate contains the reserved path .agent-review-inputs; rename it")
+        inbox.mkdir()
+        if inbox.resolve().parent != snapshot.resolve():
+            raise Stop("BLOCKED", "reviewer inbox resolved outside the snapshot")
         for name in ("feature.diff", "changed-files.txt", "prior-findings.json", "developer-report.json", "request.json",
                      "developer-tool-transcript.md"):
             shutil.copy2(rnd_dir / name, inbox / name)
+        if receipts:
+            (inbox / "evidence").mkdir()
+            for path in receipts:
+                shutil.copy2(path, inbox / "evidence" / path.name)
         shutil.copy2(self.state["mission"]["snapshot"], inbox / ("mission" + Path(self.state["mission"]["snapshot"]).suffix))
         return {"diff": inbox / "feature.diff", "names": inbox / "changed-files.txt",
                 "prior": inbox / "prior-findings.json", "report": inbox / "developer-report.json",
@@ -1380,6 +1464,12 @@ class Controller:
         if len(ids) != len(set(ids)):
             reasons.append("duplicate finding IDs")
         ledger = self.state.get("findings", {})
+        for f in result["findings"]:
+            if f["category"] == "required_gap" and not f["blocks_readiness"]:
+                reasons.append(f"{f['id']}: a required_gap must block readiness (contradictory classification)")
+            prior = ledger.get(f["id"])
+            if prior and prior.get("status") == "open" and prior.get("blocks_readiness") and not f["blocks_readiness"]:
+                reasons.append(f"{f['id']}: an open blocking finding cannot be restated as non-blocking")
         pending = set(rnd["pending_findings"])
         assessed = [a["finding_id"] for a in result["prior_finding_assessments"]]
         if len(assessed) != len(set(assessed)):
@@ -1409,21 +1499,25 @@ class Controller:
         return reasons
 
     def finish_round(self, rnd):
-        """Accept a validated round: freshness re-check, publication, then one atomic state update."""
-        stale = self.freshness(rnd)
-        envelope = read_json(rnd["envelope_path"])
-        if stale:
-            rnd["status"], rnd["stale_reasons"] = "historical", stale
+        """Accept a validated round: binding and freshness checks, publication, freshness again, then one
+        atomic state update (including any resulting stop)."""
+        path = Path(rnd["envelope_path"])
+        envelope = read_json(path) if path.exists() else {}
+        if not path.exists() or sha256_file(path) != rnd.get("envelope_sha256") or \
+                envelope.get("workflow_fingerprint") != self.state["workflow"]["fingerprint"]:
+            rnd["status"] = "invalidated"  # preserved result changed or was produced under other rules: rerun
             self.state["active_round"] = None
-            self.state["develop_context"] = "needs_report"
-            self.transition("develop", "review became historical: " + "; ".join(stale))
-            self.publish(f"r{rnd['round']:02d}-review", self.review_body(rnd, envelope, stale=stale))
-            raise Stop("PAUSED", f"the review of {short(rnd['H'])} is historical ({'; '.join(stale)}); only the "
-                                 "enrolled writer may push. Reconcile, then submit a report for the current candidate")
+            self.save()
+            return self.review_round()
+        stale = self.freshness(rnd)
+        if stale:
+            self.make_historical(rnd, envelope, stale, f"r{rnd['round']:02d}-review")
         result = envelope["result"]
         record = self.publish(f"r{rnd['round']:02d}-review", self.review_body(rnd, envelope))
-        envelope["published"] = [{"comment_id": p["comment_id"], "url": p["url"]} for p in record["parts"]]
-        atomic_write_json(rnd["envelope_path"], envelope)
+        rnd["published"] = [{"comment_id": p["comment_id"], "url": p["url"]} for p in record["parts"]]
+        stale = self.freshness(rnd)  # publication may have taken minutes of retries
+        if stale:
+            self.make_historical(rnd, envelope, stale, f"r{rnd['round']:02d}-review-superseded", correction=True)
         cp = self.checkpoint
         ledger = self.state.setdefault("findings", {})
         for a in result["prior_finding_assessments"]:
@@ -1432,8 +1526,9 @@ class Controller:
             entry["status"] = "resolved" if a["assessment"] in POSITIVE_ASSESSMENTS else "open"
         for f in result["findings"]:
             entry = ledger.setdefault(f["id"], {"first_round": rnd["round"], "rounds_open": 0})
-            entry.update({k: f[k] for k in ("title", "priority", "category", "blocks_readiness")})
-            entry.update(status="open", last_round=rnd["round"])
+            was_blocking = bool(entry.get("blocks_readiness")) and entry.get("status") == "open"
+            entry.update({k: f[k] for k in ("title", "priority", "category")})
+            entry.update(blocks_readiness=f["blocks_readiness"] or was_blocking, status="open", last_round=rnd["round"])
         for entry in ledger.values():
             entry["rounds_open"] = entry.get("rounds_open", 0) + 1 if entry["status"] == "open" else 0
         open_ids = sorted(fid for fid, e in ledger.items() if e["status"] == "open")
@@ -1466,10 +1561,26 @@ class Controller:
             self.transition("finalize", f"round {rnd['round']} ready for owner review", save=False)
         else:
             stop = Stop("BLOCKED", f"reviewer blocked: {result['decision_rationale']}")
-        self.save()  # one write: acceptance, ledger, counters, next phase
+        if stop:
+            self.state.update(status=stop.status, status_reason=stop.reason)
+        self.save()  # one write: acceptance, ledger, counters, next phase and any stop
         if stop:
             raise stop
         return decision
+
+    def make_historical(self, rnd, envelope, stale, key, correction=False):
+        rnd["status"], rnd["stale_reasons"] = "historical", stale
+        self.state.update(active_round=None, develop_context="needs_report")
+        self.transition("develop", "review became historical: " + "; ".join(stale))
+        if correction:
+            self.publish(key, f"### Workflow — correction — round {rnd['round']} review is historical\n\nThe review "
+                              f"posted above for `{short(rnd['H'])}` was published, but its comparison inputs changed "
+                              f"before acceptance ({'; '.join(stale)}). It is preserved and is not a current verdict.\n\n"
+                              "_Automated workflow status; not a human review._\n")
+        else:
+            self.publish(key, self.review_body(rnd, envelope, stale=stale))
+        raise Stop("PAUSED", f"the review of {short(rnd['H'])} is historical ({'; '.join(stale)}); only the "
+                             "enrolled writer may push. Reconcile, then submit a report for the current candidate")
 
     # -- bodies ------------------------------------------------------------------
     def provenance_line(self, prov):
@@ -1680,7 +1791,7 @@ class Controller:
         efforts = out["observed_effort"]
         if efforts and efforts != [self.cfg["developer"]["effort"]]:
             raise Stop("BLOCKED", f"developer effort observed {efforts}, required {self.cfg['developer']['effort']}")
-        if out["exit_code"] != 0 or out["is_error"] or not isinstance(out["structured_output"], dict):
+        if out["exit_code"] != 0 or out["is_error"] or out["subtype"] != "success" or                 not isinstance(out["structured_output"], dict):
             return (f"invocation {n} ended without a valid structured report (exit {out['exit_code']}, "
                     f"{out['subtype']}); return the report")
         error = self.accept_report(out["structured_output"])
@@ -1713,6 +1824,26 @@ class Controller:
                 return "AWAITING_OWNER_REVIEW"
             else:
                 raise UsageError(f"unknown phase {phase}")
+
+    def activate(self):
+        """Accept a reviewed workflow version. Results validated under the previous rules are not reused."""
+        new = workflow_fingerprint(self.wf)
+        old = self.state["workflow"]["fingerprint"]
+        self.state["workflow"] = {"fingerprint": new, "root": str(self.wf), "activated_at": now_iso(), "previous": old}
+        invalidated = []
+        active = self.active()
+        if active and active["status"] == "validated" and new != old:
+            active["status"] = "invalidated"
+            self.state["active_round"] = None
+            invalidated.append(f"round {active['round']} result")
+        if self.state.get("ready_review") and new != old and self.state.get("status") != "AWAITING_OWNER_REVIEW":
+            self.state.setdefault("superseded_ready", []).append({**self.state["ready_review"], "why": "workflow activation"})
+            self.state["ready_review"] = None
+            invalidated.append("ready result")
+            self.state["phase"] = "review"  # same candidate and report: a fresh review under the new rules
+        self.transition(self.state["phase"], f"workflow activated {short(old)} -> {short(new)}"
+                        + (f"; invalidated {', '.join(invalidated)}" if invalidated else ""))
+        return {"activated": new, "previous": old, "invalidated": invalidated}
 
     def resume(self, reason, max_rounds=None):
         """Owner-initiated continuation after a stop; counters and session persist."""
@@ -1773,13 +1904,14 @@ class Controller:
                 n = int(pub["key"][1:3])
                 rnd = next((r for r in self.state["rounds"] if r["round"] == n and r.get("envelope_path")), None)
                 if rnd:
-                    env_text, _ = sanitize(json.dumps(read_json(rnd["envelope_path"]), indent=2, sort_keys=True))
+                    env_text, _ = sanitize(json.dumps({**read_json(rnd["envelope_path"]), "published": rnd.get("published")},
+                                                      indent=2, sort_keys=True))
                     files.append((f"{rel_dir}/{seq:03d}-r{n:02d}-envelope.json", env_text + "\n", f"r{n:02d}-envelope"))
                     seq += 1
         if not files:
             return head
         pending = {"parent": head, "reason": reason, "commit": None,
-                   "files": [{"rel": rel, "sha256": sha256_text(text), "key": key} for rel, text, key in files]}
+                   "files": [{"rel": rel, "sha256": sha256_text(text), "key": key, "text": text} for rel, text, key in files]}
         self.state["archive_pending"] = pending
         self.save()  # intent recorded before any write
         for rel, text, _ in files:
@@ -1792,16 +1924,28 @@ class Controller:
     def complete_archive(self, pending):
         root = Path(self.state["repo_root"])
         rels = [f["rel"] for f in pending["files"]]
-        if pending["commit"] is None:
-            if self.git.head() != pending["parent"]:
+        expected = {f["rel"]: f["sha256"] for f in pending["files"]}
+        if pending["commit"] is None and self.git.head() != pending["parent"]:
+            # A crash between `git commit` and recording it: adopt the commit only if it is exactly ours.
+            head = self.git.head()
+            parents = self.git("rev-list", "--parents", "-n", "1", head).split()[1:]
+            if parents == [pending["parent"]] and check_archive_only(self.git, pending["parent"], head,
+                                                                      self.cfg["transcript_dir"],
+                                                                      self.state["pr"]["number"], expected)[0]:
+                pending["commit"] = head
+                self.save()
+            else:
                 raise Stop("BLOCKED", "branch moved during an interrupted archive; inspect before resuming")
+        if pending["commit"] is None:
             dirty = {line[3:] for line in self.git("status", "--porcelain", "--untracked-files=all").splitlines() if line}
             if dirty - set(rels):
                 raise Stop("BLOCKED", "unexpected changes alongside an interrupted archive: " + ", ".join(sorted(dirty - set(rels))))
             for f in pending["files"]:
                 path = root / f["rel"]
+                if not path.exists() and sha256_text(f["text"]) == f["sha256"]:
+                    write_text(path, f["text"])  # finish a partially written record set from the persisted intent
                 if not path.exists() or sha256_file(path) != f["sha256"]:
-                    raise Stop("BLOCKED", f"interrupted archive record {f['rel']} is missing or changed")
+                    raise Stop("BLOCKED", f"interrupted archive record {f['rel']} changed on disk")
             self.git("add", "--", *rels)
             self.git("commit", "--quiet", "-m",
                      f"Archive agent review records for PR #{self.state['pr']['number']} ({pending['reason']})")
@@ -1810,7 +1954,6 @@ class Controller:
         commit = pending["commit"]
         if self.git.head() != commit:
             raise Stop("BLOCKED", f"local branch moved away from archive commit {short(commit)}")
-        expected = {f["rel"]: f["sha256"] for f in pending["files"]}
         ok, reasons = check_archive_only(self.git, pending["parent"], commit, self.cfg["transcript_dir"],
                                          self.state["pr"]["number"], expected)
         if not ok:
@@ -1865,6 +2008,12 @@ class Controller:
         report = self.state.get("last_report") or {}
         if report.get("runtime_restoration") == "pending":
             reasons.append("runtime restoration is pending")
+        if self.runtime_active():
+            reasons.append("a runtime transaction lock is present (" + ", ".join(self.cfg.get("runtime_lock_paths", []))
+                           + f"); the developer reported restoration '{report.get('runtime_restoration')}'")
+        missing = self.missing_publications()
+        if missing:
+            reasons.append("published records are missing or altered on the PR: " + ", ".join(missing[:5]))
         if self.state.get("last_report_for") != ready["H"]:
             reasons.append("the accepted developer report is not bound to the reviewed candidate")
         failing = [v["command"] for v in report.get("validation", []) if v.get("required") and v["result"] != "pass"]
@@ -1890,11 +2039,14 @@ class Controller:
             if not required:
                 notes.append(f"no required status checks on {self.state['target']} (no branch protection or ruleset "
                              "requires one); verified, not assumed")
-            for context in required:
-                passed = [c for c in results if c["name"] == context and c["status"] == "completed"
-                          and c["conclusion"] in ("success", "neutral", "skipped")]
+            for req in required:
+                req = req if isinstance(req, dict) else {"context": req, "app_id": None}
+                passed = [c for c in results if c["name"] == req["context"] and c["status"] == "completed"
+                          and c["conclusion"] in ("success", "neutral", "skipped")
+                          and (req.get("app_id") in (None, -1) or c.get("app_id") == req["app_id"])]
                 if not passed:
-                    reasons.append(f"required check {context} has not passed on reviewed source {short(ready['H'])}")
+                    reasons.append(f"required check {req['context']} (app {req.get('app_id')}) has not passed on "
+                                   f"reviewed source {short(ready['H'])}")
             failed = [c["name"] for c in results if c["conclusion"] in ("failure", "error", "timed_out", "cancelled")]
             if failed:
                 reasons.append("failing checks on the reviewed source: " + ", ".join(sorted(set(failed))))
@@ -1948,20 +2100,45 @@ class Controller:
                  "acceptance. The PR remains a draft with no requested reviewers.", "",
                  "_Automated workflow status posted through the owner's GitHub account; not a human approval._"]
         self.publish(f"final-status-{short(archive_head)}", "\n".join(lines) + "\n")
+        after, _ = self.readiness(archive_head)  # publication may take minutes; re-check before declaring readiness
+        if after:
+            self.publish(f"final-status-{short(archive_head)}-superseded",
+                         f"### Workflow — correction — handoff `{short(archive_head)}` is not current\n\nConditions "
+                         f"changed while the handoff above was being posted: {'; '.join(after)}.\n\n"
+                         "_Automated workflow status; not a human review._\n")
+            self.invalidate_ready("; ".join(after))
         self.update_pr_body(f"awaiting owner review. Reviewed source `{ready['H']}`; archive head `{archive_head}` "
-                            "(transcript-only successor).")
+                            "(transcript-only successor).", expected_head=archive_head)
         self.state.update(status="AWAITING_OWNER_REVIEW", status_reason=f"source {ready['H']}, archive {archive_head}",
                           handoff={"H": ready["H"], "A": archive_head, "at": now_iso()})
         self.transition("done", "owner review handoff posted")
         return "AWAITING_OWNER_REVIEW"
 
+    def missing_publications(self):
+        """Keys of posted records whose comments are gone or no longer match the recorded body."""
+        comments = {c["id"]: c for c in self.gh.comments(self.state["pr"]["number"])}
+        missing = []
+        for key, pub in self.state.get("publications", {}).items():
+            if pub["state"] != "posted" or key.startswith("final-"):
+                continue
+            for part in pub["parts"]:
+                remote = comments.get(part["comment_id"])
+                if not remote or normalize_body(remote.get("body")) != normalize_body(self.outbox_body(key, part)):
+                    missing.append(key)
+                    break
+        return missing
+
     def handoff_superseded(self):
-        """None if the handoff is current; otherwise a description of what moved."""
+        """None if the handoff is still current; otherwise what changed. Observation failures propagate."""
         handoff = self.state.get("handoff") or {}
         pr = self.gh.pr(self.state["pr"]["number"])
-        if pr["headRefOid"] == handoff.get("A") and pr.get("isDraft") and pr["state"] == "OPEN":
-            return None
-        return f"PR head {short(pr['headRefOid'])} (handoff archive {short(handoff.get('A'))}), state {pr['state']}"
+        if pr["headRefOid"] != handoff.get("A") or pr["state"] != "OPEN":
+            return f"PR head {short(pr['headRefOid'])} (handoff archive {short(handoff.get('A'))}), state {pr['state']}"
+        try:
+            reasons, _ = self.readiness(handoff["A"])  # same identity, comparison and gate checks as the handoff
+        except Stop as stop:
+            return stop.reason
+        return "; ".join(reasons) or None
 
     def reopen(self, moved):
         self.state.setdefault("superseded_handoffs", []).append({**self.state.get("handoff", {}), "why": moved,
@@ -1973,8 +2150,10 @@ class Controller:
                                         "earlier receipt is preserved above and is no longer current.")
         self.update_pr_body(f"handoff superseded ({moved}); review reopened.")
 
-    def update_pr_body(self, text):
+    def update_pr_body(self, text, expected_head=None):
         pr = self.pr_view()
+        if expected_head and pr["headRefOid"] != expected_head:
+            self.invalidate_ready(f"PR head moved to {short(pr['headRefOid'])} before the status update")
         start, end = "<!-- agent-review:status:start -->", "<!-- agent-review:status:end -->"
         section = (f"{start}\n**Agent review status:** {text} Records: `{self.transcript_folder()}/`.\n{end}")
         body = pr.get("body") or ""
@@ -2036,7 +2215,10 @@ def _trusted(root: Path, folder: str, name_or_path: str) -> Path:
         if path.parent not in bases or not path.is_file():
             raise UsageError(f"{name_or_path} is not a {folder[:-1]} in {[str(b) for b in bases]}")
         return path
-    found = [b / f"{name_or_path}.json" for b in bases if (b / f"{name_or_path}.json").is_file()]
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", name_or_path):
+        raise UsageError(f"{folder[:-1]} name '{name_or_path}' must be lowercase letters, digits and dashes")
+    found = [(b / f"{name_or_path}.json").resolve() for b in bases if (b / f"{name_or_path}.json").is_file()]
+    found = [f for f in found if f.parent in bases]
     if len(found) != 1:
         raise UsageError(f"{folder[:-1]} '{name_or_path}' must exist in exactly one of {[str(b) for b in bases]}")
     return found[0]
@@ -2056,7 +2238,10 @@ def compose_developer_settings(cfg, root: Path, enrollment_id: str):
                 rule = rule.replace(key, value)
             out.append(rule)
         return out
-    return {"permissions": {"allow": fill(base["allow"] + extra.get("allow", [])),
+    allow = base["allow"] + extra.get("allow", [])
+    if cfg.get("push_command"):  # the repository's wrapper is the only push route; no helper permission
+        allow = [rule for rule in allow if "{helper} push" not in rule]
+    return {"permissions": {"allow": fill(allow),
                             "deny": fill(base["deny"] + extra.get("deny", []))}}
 
 
@@ -2070,6 +2255,8 @@ def push_argv(cfg, root: Path, enrollment_id: str):
 def guarded_push(state, cfg):
     """Built-in guarded push for repositories without their own wrapper: enrolled branch only,
     clean tree, approved origin, fast-forward, no credentials in the feature diff, never force."""
+    if cfg.get("push_command"):
+        raise UsageError("this project requires its own push wrapper; the built-in helper is not a push route here")
     git = Git(state["repo_root"])
     branch = state["branch"]
     if not same_path(git.toplevel(), state["repo_root"]) or git.branch() != branch:
@@ -2086,6 +2273,9 @@ def guarded_push(state, cfg):
         raise UsageError("push requires a clean worktree")
     if git.remote_url() not in cfg["allowed_remote_urls"]:
         raise UsageError("origin is not an approved remote")
+    push_urls = [u for u in git("remote", "get-url", "--push", "--all", "origin").splitlines() if u.strip()]
+    if not push_urls or any(u not in cfg["allowed_remote_urls"] for u in push_urls):
+        raise UsageError(f"origin's effective push destination(s) {push_urls} are not all approved")
     head = git.head()
     remote = git.remote_head(branch)
     if remote and not git.is_ancestor(remote, head):
@@ -2103,6 +2293,20 @@ def guarded_push(state, cfg):
     if git.remote_head(branch) != head:
         raise UsageError("remote verification failed after push")
     return head
+
+
+def pr_identity_problems(pr, repository, number, branch, target):
+    """Identity mismatches between a PR and the enrollment (shared by enrollment and every mutation)."""
+    owner, name = repository.split("/")
+    problems = []
+    if pr.get("number") != number or not str(pr.get("url", "")).endswith(f"/{repository}/pull/{number}"):
+        problems.append("PR does not belong to the enrolled repository and number")
+    if pr.get("isCrossRepository") or (pr.get("headRepositoryOwner") or {}).get("login") != owner or \
+            (pr.get("headRepository") or {}).get("name") != name:
+        problems.append("PR head is not in the enrolled repository (cross-repository PRs are refused)")
+    if pr.get("headRefName") != branch or pr.get("baseRefName") != target:
+        problems.append("PR head/base do not match the enrollment")
+    return problems
 
 
 def check_policy(cfg):
@@ -2168,14 +2372,15 @@ def enroll(args, github=None, root=HERE):
     mission = Path(args.mission).resolve()
     if not mission.is_file():
         raise UsageError(f"mission not found: {mission}")
-    lock = Lock(agent_home() / "locks" / f"{branch_key(cfg['repository'], branch)}.lock", "enroll")
-    with lock:
+    with writer_lock(cfg["repository"], branch, top, "enroll"):
         reg = registry_path(cfg["repository"], branch)
-        if reg.exists():
-            prior = read_json(reg)
-            prior_state = Path(prior["dir"]) / "state.json"
-            if prior_state.exists() and read_json(prior_state).get("status") not in ("AWAITING_OWNER_REVIEW", "CANCELLED"):
-                raise UsageError(f"branch {branch} already has an active enrollment: {prior['enrollment_id']}")
+        marker = Path(git("rev-parse", "--absolute-git-dir")) / "agent-review-enrollment.json"
+        for claim in (reg, marker):  # machine registry and the worktree's own marker (independent of the home)
+            if claim.exists():
+                prior = read_json(claim)
+                prior_state = Path(prior["dir"]) / "state.json"
+                if prior_state.exists() and read_json(prior_state).get("status") not in ("AWAITING_OWNER_REVIEW", "CANCELLED"):
+                    raise UsageError(f"branch {branch} already has an active enrollment: {prior['enrollment_id']}")
         state_root = Path(expand(args.state_root or cfg.get("state_root") or str(agent_home() / "state")))
         state_root.mkdir(parents=True, exist_ok=True)
         slug = re.sub(r"[^a-z0-9]+", "-", branch.lower()).strip("-")
@@ -2218,13 +2423,10 @@ def _enroll_into(folder, enrollment_id, cfg, plan, args, git, gh, mission, top, 
         number = gh.create_draft_pr(branch, target, args.title or f"[draft] {plan.get('title', plan['mission_id'])}",
                                     body)
     pr = gh.pr(number)
-    owner, name = cfg["repository"].split("/")
-    if pr.get("number") != number or not pr["url"].endswith(f"/{cfg['repository']}/pull/{number}"):
-        raise UsageError("PR is not in the project's repository")
-    if pr.get("isCrossRepository") or (pr.get("headRepositoryOwner") or {}).get("login") != owner or \
-            (pr.get("headRepository") or {}).get("name") != name:
-        raise UsageError("PR head is not in the project's repository")
-    if pr["headRefName"] != branch or pr["baseRefName"] != target or not pr["isDraft"] or pr["state"] != "OPEN":
+    problems = pr_identity_problems(pr, cfg["repository"], number, branch, target)
+    if problems:
+        raise UsageError("; ".join(problems))
+    if not pr["isDraft"] or pr["state"] != "OPEN":
         raise UsageError(f"PR #{number} is not an open draft from {branch} into {target}")
     if pr.get("reviewRequests"):
         raise UsageError("PR has requested reviewers; the workflow requires none")
@@ -2247,8 +2449,10 @@ def _enroll_into(folder, enrollment_id, cfg, plan, args, git, gh, mission, top, 
         "created_at": now_iso(), "transitions": [],
     }
     atomic_write_json(folder / "state.json", state)
-    atomic_write_json(reg, {"enrollment_id": enrollment_id, "dir": str(folder), "repository": cfg["repository"],
-                            "branch": branch, "at": now_iso()})
+    claim = {"enrollment_id": enrollment_id, "dir": str(folder), "repository": cfg["repository"], "branch": branch,
+             "at": now_iso()}
+    atomic_write_json(reg, claim)
+    atomic_write_json(Path(git("rev-parse", "--absolute-git-dir")) / "agent-review-enrollment.json", claim)
     return folder, state
 
 
@@ -2400,7 +2604,7 @@ def guarded(controller, command, fn, mutate=True, honor_stop=False):
             controller.state.setdefault("notes", []).append(f"{now_iso()} {command} refused: {exc}")
             controller.save()
             raise
-        except (Stop, CommandError, subprocess.TimeoutExpired, OSError) as exc:
+        except (Stop, CommandError, subprocess.TimeoutExpired, OSError, ValueError, KeyError, TypeError) as exc:
             stop = exc if isinstance(exc, Stop) else Stop("PAUSED", f"operational failure during {command}: {exc}")
             controller.state["status"], controller.state["status_reason"] = stop.status, stop.reason
             controller.state.setdefault("transitions", []).append(
@@ -2502,12 +2706,8 @@ def main(argv=None):
         if args.command == "activate":
             with controller.lock("activate"):
                 controller.reload()
-                new = workflow_fingerprint(controller.wf)
-                old = controller.state["workflow"]["fingerprint"]
-                controller.state["workflow"] = {"fingerprint": new, "root": str(controller.wf),
-                                                "activated_at": now_iso(), "previous": old}
-                controller.transition(controller.state["phase"], f"workflow activated {short(old)} -> {short(new)}")
-            print(json.dumps({"activated": new, "previous": old}, indent=2))
+                result = controller.activate()
+            print(json.dumps(result, indent=2))
             return EXIT_OK
         if args.command == "resume":
             return guarded(controller, "resume", lambda: controller.resume(args.reason, args.max_rounds))
