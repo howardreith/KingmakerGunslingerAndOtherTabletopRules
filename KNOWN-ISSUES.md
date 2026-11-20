@@ -461,8 +461,9 @@
   show them as raw native rows, for example "Summon Monster IV (1d4+1 Wolves)" in
   a level 5 popup (recorded 2026-11-11 in
   `planning/races-unleashed-compatibility/STATUS.md`). On branch
-  `codex/pol06-cotw-conversion-semantics` (S5 T5 / POL-06, draft PR #190; not
-  accepted, not merged, not released) they are projected into the published
+  `codex/pol06-cotw-conversion-semantics` (S5 T5 / POL-06, draft PR #190;
+  accepted for its reviewed prepared-caster development scope at `c2867a3aa1`,
+  product `c5fdcb1431c2`; not merged, not released) they are projected into the published
   creatures of their own tier and quantity, each keeping that row's metamagic,
   the slot's level and one native debit of the source. Rows of the prepared
   parent's own tier stay raw as a conservative presentation fallback (their
@@ -470,9 +471,11 @@
   with an independent per-conversion observer: Extend and Heighten, Single, d3
   and d4+1 casts on both routes, a plain source and a second spellbook
   (`docs/EXPANDED-SUMMONING-COTW-CONVERSION-SEMANTICS.md`). The larger popup (302
-  rows for Extend and Heighten Spell), the same creature at two tiers
-  (distinguished only in the tooltip) and eight redundant same-behaviour rows
-  are left for owner review.
+  rows for Extend and Heighten Spell; three rows checked for reachability, two
+  tooltips rendered), the same creature at two tiers (distinguished only in the
+  tooltip) and eight duplicate-looking pairs (alike under the observer's
+  comparison key, which does not prove behavioural equivalence) are retained
+  and left for owner review. Spontaneous casters stay outside this scope.
 - The legacy Advanced Revolver declares six chambers, but saved firearm state holds one round, so its six-round reload
   fails and restores ammunition and weapon state. No published release offered it (vendors only cleaned it up;
   Craft Magic Items only recognized an owned one). On branch `codex/risk01-advanced-revolver` (accepted with Sprint 4 at `e30b19e8fe`;

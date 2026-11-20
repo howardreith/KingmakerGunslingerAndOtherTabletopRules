@@ -1,10 +1,36 @@
 # Call of the Wild conversion semantics (POL-06 / S5 T5)
 
-Status: **implemented on a development branch; the corrected observer completed its POL-06 cells natively (session `20261120T054533Z`, 77 of 77).** Awaiting principal review. Not accepted, not merged, not released.
+Status: **accepted and closed for its reviewed prepared-caster development scope (principal review, 2026-11-20).** Not merged, not released. See Acceptance below.
 
 - **Branch:** `codex/pol06-cotw-conversion-semantics`, draft PR #190, stacked on PR #189 (accepted S5 T4 head
   `acd50a042a`).
 - **Epic story:** S5 T5, inventory record POL-06: "Metamagic conversion popup includes raw base-level conversion rows".
+
+## Acceptance (principal review, 2026-11-20)
+
+- **Accepted review head:** `c2867a3aa1216c1cd842b7acf644421208e234e9` (PR #190, which stays a draft).
+- **Qualified product-build commit:** `c5fdcb1431c25acfac48dfc73b617ef94bc1af51`: package
+  `2fd49eaadb1ca6d4a1b873a563b9e3684707d4e2f1cff684cc782c8b24bebb72`, DLL
+  `bff80052bfb76d7d29731946a85c1141ea604d014220564431e7e2b429e97645`, MVID `6d4e9a1b-2ae4-441f-b739-924dc535d0bb`,
+  harness `c47e7f14d48edac88740b4c9bf1841e805c45a88043dc162789b4c86dbc1b089`. These identities are frozen; the
+  records-only heads after it were not rebuilt.
+- **Qualified native session:** `20261120T054533Z-owner-0.33.0-pol06-lane`, original in-game verdict **PASS, 77 of
+  77** (76 review cells and the profile-restoration check).
+- **Scope accepted:** the reviewed prepared-caster Herald Caller and Druid conversion scope: the semantics-preserving
+  projection, its raw fallbacks (same-tier rows, unknown and non-summon conversions), the per-conversion observer and
+  the native cases listed under Validation. The projection, the raw fallbacks and the duplicate-looking rows are
+  retained; no deduplication and no new chooser.
+- **Not covered by the acceptance:** every item under Limits stays unrun or open, including the full
+  `summon-cleric-alignment` phase with the corrected observer, metamagic beyond Extend and Heighten, a Herald d3 and a
+  Druid d4+1 cast, controller presentation, the owner installation and the 15-mod stack. Spontaneous casters stay a
+  scope boundary. Exact pinned-slot debit stays qualified to the unique-copy fixture; the native equal-preparation
+  spend is preserved. The cursor explanation of the full-phase guard aborts stays an unattributed hypothesis. Every
+  earlier failed session is kept below under its own identity.
+- **Unchanged by this story:** S5 T2's acceptance and both of its aggregate-FAIL sessions, the unclassified
+  console-learning issue, all approved exclusions, and the release-validator obligations including DEF-05's.
+- **Presentation claims corrected at acceptance** (Presentation boundary and Evidence verification below): the
+  reachability and tooltip claims are stated for the rows actually checked, and the all-row comparison is stated as
+  the key it used, not as proof of behavioural equivalence.
 
 ## Inputs inspected
 
@@ -167,14 +193,27 @@ owner.
   caster's metamagic feats that summon spells accept, because Call of the Wild makes one row per combination.
   Measured: Herald 68 ordinary rows, 126 with Extend Spell, **302 with Extend Spell and Heighten Spell** (18 Call of
   the Wild conversions at tiers I to IV, 234 projected creatures). Druid 76 and 140 with Extend Spell.
-- **Reachable and distinguishable (two-feat popup, measured):** all 302 rows fit the 1920×1080 game screen without
-  scrolling. The same creature under the Extend and the Heighten tier IV conversions, and the last row, were each
-  fully on screen, and the two creatures' native tooltips rendered "Extended," and "Heightened," respectively. No two
-  rows that behave differently share both a label and the tooltip's metamagic text.
-- **Redundant rows (two-feat popup, measured):** eight labels appear twice with the same tooltip text and the same
-  behaviour, for example "Beetle, Fire (1d4+1)" with "Heightened,": once from the tier III d4+1 placement under
-  Heighten +2 and once from the tier IV d4+1 placement under Heighten +1. Both summon the same creature with the same
-  dice and metamagic at spell level 5. They are redundant, not indistinguishable, and are left for owner review.
+- **Reachability (two-feat popup, measured for three rows):** the popup contained 302 rows. Reachability was checked
+  for three rows only: the selected Extend row (Ant, Giant (Drone), index 186), its second-metamagic counterpart (the
+  same creature under the tier IV Heighten +1 conversion, index 213) and the last row (Wolf (1d4+1), index 301). Each
+  was fully visible in the popup and on the 1920×1080 screen, in a stationary observation with no scrolling. The other
+  299 rows were not individually checked.
+- **Tooltips (measured for two rows):** two native tooltips were rendered, for the selected Extend row and its
+  Heighten counterpart; their Metamagic blocks read "Extended," and "Heightened," respectively. No other row's tooltip
+  was rendered.
+- **All-row comparison (computed, not rendered):** every one of the 302 rows was compared on its name, its computed
+  metamagic text (`UIUtilityTexts.GetMetamagicList` of its mask, the text the native tooltip shows; not read from a
+  rendered tooltip), its spawned-unit identities with their count-dice kinds, its metamagic mask and its
+  `AbilityData.SpellLevel`. That field is the slot-level property (5 for every row here), not the level captured in a
+  cast's execution context; the observer's recorded label for this key ("effective spell level") is inaccurate. No two
+  rows that differ under this key share both a name and a metamagic text. The key omits, among other things, the
+  heighten level, the conversion and the duration, so this comparison does not prove complete behavioural
+  equivalence or difference.
+- **Duplicate-looking rows (two-feat popup, measured):** eight labels appear twice with the same name, computed
+  metamagic text and comparison key, for example "Beetle, Fire (1d4+1)" with "Heightened,": once from the tier III
+  d4+1 conversion under Heighten +2 (key `7b531828b885e8b47a7b06a6f1a34805|16|2|2`) and once from the tier IV d4+1
+  conversion under Heighten +1 (`24ed31f7b42eb5f4ab461be90d479066|16|1|1`), both from the level 5 slot. They are
+  retained as published and left for owner review; whether every effect of the two is identical was not established.
 - **Alternative, if the owner prefers it:** keep Call of the Wild's rows raw and label them with their tier and
   metamagic. Hiding them, or changing their power, would need an explicit product decision; neither was done.
 
@@ -329,6 +368,34 @@ scratch-area driver that re-parks it at (300, 200) every 50 ms and records every
   exactly the cleric source slot spent; every wizard slot, preparation and availability unchanged (one wizard spell
   prepared).
 
+### Evidence verification after acceptance (immutable session records, read 2026-11-20)
+
+This is a reading of the retained `20261120T054533Z` records (`01-lane/product/sprint32-review.json` and
+`runtime-summary.txt`), not part of the original in-game verdict, which stays **PASS, 77 of 77** as executed. The
+frozen observer was not changed.
+
+- **Dice events.** The controlled-roll handler (`SpiderDieOverride`) records each of the caster's `RuleRollDice`
+  events of the forced die as its formula (`<rolls>x<die>`), not its result, and overrides the first such event to 2.
+  - Herald d4+1 cast (`pol06-herald-d4-count-duration-debit`): `rolls` = `["1xD4"]`, `forcedDie` 2, `expectedCount` 3,
+    `summoned` 3, three summon rules.
+  - Druid d3 cast (`pol06-druid-d3-count-duration-debit`): `rolls` = `["1xD3"]`, `forcedDie` 2, `expectedCount` 2,
+    `summoned` 2, two summon rules.
+  - Single casts (Herald Black Widow, Heighten, natural Herald): `rolls` = `null` (no override installed).
+  - The rolled result after the override is not retained; that it was 2 rests on the override and the matching
+    counts (2 + 1 and 2). The in-game check required at least one recorded event (`Count >= 1`); exactly one was
+    recorded in each dice cast.
+- **Heighten context level.** In `pol06-herald-second-metamagic-cast` the summon rule recorded from the cast context
+  (`rules[0]`) carried `metamagic` Heighten, `spellLevel` **5** (`Params.SpellLevel`), `extended` false and 120 s. The
+  row's `childSpellLevel` 5 is `AbilityData.SpellLevel`, the slot-level property, recorded separately; `heightenLevel`
+  1 and `spellLevelCost` 1. For comparison, every Extend cast's rule recorded `spellLevel` 4 with `childSpellLevel` 5.
+- **Presentation records:** `pol06-two-feats-rows-reachable` lists exactly the three target rows above;
+  `pol06-two-feats-extend-tooltip` and `pol06-two-feats-second-tooltip` are the two rendered tooltips;
+  `pol06-two-feats-presentation-distinguishable` records `behaviourKey` "spawned unit and count dice, metamagic mask,
+  effective spell level" while its code reads `AbilityData.SpellLevel` (the discrepancy noted above).
+- **Verdict count:** `runtime-summary.txt` has 77 PASS lines and no FAIL line: the 76 review cells and
+  `expanded-summoning-native-profile-restored`.
+- No retained value contradicts the reported casts, counts, durations or debits.
+
 ### The debit contract, as established
 
 - **Established:** with exactly one equal prepared copy, a projected Call of the Wild choice spends exactly that source
@@ -353,4 +420,5 @@ scratch-area driver that re-parks it at (300, 200) every 50 ms and records every
   (none exists).
 - **Same-tier fallback:** Call of the Wild rows of the prepared parent's own tier stay raw as a conservative
   presentation fallback (see Implementation); the extended Summon Monster V popup in the full phase exercises it.
-- **Presentation:** the owner's review of the measurements above remains open.
+- **Presentation:** the owner's review of the measurements above remains open. Reachability was checked for three
+  rows and tooltips rendered for two; the all-row comparison is a computed key, not proof of behavioural equivalence.
