@@ -61,7 +61,9 @@ spells, never one menu. The scalability gate is the largest single parent spell.
 
 ## Coverage of ideal placements
 
-Coverage is **incomplete**: 1,208 of 1,232 ideal placements have a choice admitted by the current publication policy. 9 are registered and withheld, and 15 have no declared choice.
+Coverage is **incomplete**: 1,208 of 1,232 ideal placements have a choice admitted by the current publication policy. 9 are registered and withheld, and 12 have no declared choice. 3 are approved out of scope by owner decision: excluded from the selected development scope, not published and not counted as covered.
+
+Accounting against the original ideal: 1,208 admitted + 9 withheld + 12 missing + 3 approved out of scope = 1,232 ideal placements.
 
 A placement is one creature in one spell family, under one parent spell, at one
 quantity. Every ideal placement is matched exactly against the choices the source
@@ -88,7 +90,9 @@ catalogs read here.
 |---|---|
 | Ideal placements covered by an admitted choice | 1,208 |
 | Ideal placements withheld by the publication policy | 9 |
-| Ideal placements with no declared choice | 15 |
+| Ideal placements with no declared choice | 12 |
+| Ideal placements approved out of scope (excluded, not published) | 3 |
+| Approved exclusions contradicted by a declared choice (scope conflict) | 0 |
 | Declared choices not in the ideal roster (extra) | 0 |
 | Placements declared more than once (duplicate) | 0 |
 | Declared choices without an active registered identity | 0 |
@@ -110,9 +114,9 @@ Cross-checked against the totals the source states for itself:
 | Creature | Family | Parent | Quantity | State | Decision on record | Disposition |
 |---|---|---|---|---|---|---|
 | Axiomite | Summon Monster | SM IX | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
-| Brachiosaurus | Summon Monster | SM VII | single | No declared choice | yes | POL-04 / Sprint 5 T3: Brachiosaurus is registered only in Summon Nature's Ally; whether Summon Monster offers it is an open charter decision |
-| Brachiosaurus | Summon Monster | SM VIII | 1d3 | No declared choice | yes | POL-04 / Sprint 5 T3: Brachiosaurus is registered only in Summon Nature's Ally; whether Summon Monster offers it is an open charter decision |
-| Brachiosaurus | Summon Monster | SM IX | 1d4+1 | No declared choice | yes | POL-04 / Sprint 5 T3: Brachiosaurus is registered only in Summon Nature's Ally; whether Summon Monster offers it is an open charter decision |
+| Brachiosaurus | Summon Monster | SM VII | single | Approved out of scope | yes | Approved out of scope: POL-04 / S5 T3, Alternative A (A-records): product scope decision by the owner on 2026-10-15, reaffirmed at the S5 T3 principal review on 2026-11-19. Brachiosaurus stays Summon Nature's Ally only although the standard Summon Monster VII table includes it (https://legacy.aonprd.com/coreRulebook/spells/summonMonster.html) and the ordinary spell progression supports this placement; adding Monster placements later is additive, while withdrawing published ones is not. Not a gameplay repair and not fulfilment of the original Monster placement |
+| Brachiosaurus | Summon Monster | SM VIII | 1d3 | Approved out of scope | yes | Approved out of scope: POL-04 / S5 T3, Alternative A (A-records): product scope decision by the owner on 2026-10-15, reaffirmed at the S5 T3 principal review on 2026-11-19. Brachiosaurus stays Summon Nature's Ally only although the standard Summon Monster VII table includes it (https://legacy.aonprd.com/coreRulebook/spells/summonMonster.html) and the ordinary spell progression supports this placement; adding Monster placements later is additive, while withdrawing published ones is not. Not a gameplay repair and not fulfilment of the original Monster placement |
+| Brachiosaurus | Summon Monster | SM IX | 1d4+1 | Approved out of scope | yes | Approved out of scope: POL-04 / S5 T3, Alternative A (A-records): product scope decision by the owner on 2026-10-15, reaffirmed at the S5 T3 principal review on 2026-11-19. Brachiosaurus stays Summon Nature's Ally only although the standard Summon Monster VII table includes it (https://legacy.aonprd.com/coreRulebook/spells/summonMonster.html) and the ordinary spell progression supports this placement; adding Monster placements later is additive, while withdrawing published ones is not. Not a gameplay repair and not fulfilment of the original Monster placement |
 | Manticore | Summon Nature's Ally | SNA VIII | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
 | Manticore | Summon Nature's Ally | SNA IX | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
 | Mite | Summon Nature's Ally | SNA IV | 1d4+1 | No declared choice | yes | POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own options stop; whether to extend it is an open decision |
@@ -133,6 +137,14 @@ Cross-checked against the totals the source states for itself:
 | Stirge | Summon Nature's Ally | SNA VII | 1d4+1 | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
 | Stirge | Summon Nature's Ally | SNA VIII | 1d4+1 | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
 | Stirge | Summon Nature's Ally | SNA IX | 1d4+1 | Registered, withheld | yes | Owner withdrawal: Withdrawn from public summon routes by owner decision (manual-playtest repair R1 CUT-01, 2026-11-07); not a qualification hold. All nine SNA I-IX roots, alternate-source adapters, unit, touch/attach/drain state, icons and assets stay registered so older saves resolve. Grapple-animation repair is deferred with the cut |
+
+### Approved scope exclusions
+
+| Creature | Family | Parent | Quantity | Verdict | Decision |
+|---|---|---|---|---|---|
+| Brachiosaurus | Summon Monster | SM VII | single | Excluded: no declared choice; not published | POL-04 / S5 T3, Alternative A (A-records): product scope decision by the owner on 2026-10-15, reaffirmed at the S5 T3 principal review on 2026-11-19. Brachiosaurus stays Summon Nature's Ally only although the standard Summon Monster VII table includes it (https://legacy.aonprd.com/coreRulebook/spells/summonMonster.html) and the ordinary spell progression supports this placement; adding Monster placements later is additive, while withdrawing published ones is not. Not a gameplay repair and not fulfilment of the original Monster placement |
+| Brachiosaurus | Summon Monster | SM VIII | 1d3 | Excluded: no declared choice; not published | POL-04 / S5 T3, Alternative A (A-records): product scope decision by the owner on 2026-10-15, reaffirmed at the S5 T3 principal review on 2026-11-19. Brachiosaurus stays Summon Nature's Ally only although the standard Summon Monster VII table includes it (https://legacy.aonprd.com/coreRulebook/spells/summonMonster.html) and the ordinary spell progression supports this placement; adding Monster placements later is additive, while withdrawing published ones is not. Not a gameplay repair and not fulfilment of the original Monster placement |
+| Brachiosaurus | Summon Monster | SM IX | 1d4+1 | Excluded: no declared choice; not published | POL-04 / S5 T3, Alternative A (A-records): product scope decision by the owner on 2026-10-15, reaffirmed at the S5 T3 principal review on 2026-11-19. Brachiosaurus stays Summon Nature's Ally only although the standard Summon Monster VII table includes it (https://legacy.aonprd.com/coreRulebook/spells/summonMonster.html) and the ordinary spell progression supports this placement; adding Monster placements later is additive, while withdrawing published ones is not. Not a gameplay repair and not fulfilment of the original Monster placement |
 
 ### Declared choices not in the ideal roster
 
@@ -155,13 +167,15 @@ None.
 | Creature coverage | Creatures | Which |
 |---|---|---|
 | Every ideal placement published | 138 |  |
-| Some ideal placements published, some not | 6 | Axiomite, Brachiosaurus, Manticore, Mite, Redcap, Soul Eater |
+| Every ideal placement in the approved scope published; the others approved out of scope, not published | 1 | Brachiosaurus |
+| Some ideal placements published, some not | 5 | Axiomite, Manticore, Mite, Redcap, Soul Eater |
 | No ideal placement published; every one registered and withheld | 1 | Stirge |
 | No ideal placement published; some registered and withheld, some with no declared choice | 0 |  |
 | No ideal placement published or registered | 0 |  |
 
 Available somewhere: 144 creatures have at least one published ideal placement (the first
-two rows). That is not complete coverage; the partial row is the difference.
+three rows). That is not complete coverage of the original ideal: the approved-scope and
+partial rows are the difference.
 
 ### Registered unit identity
 
@@ -181,8 +195,9 @@ Identity reuse: 145 existing creature identities are reused in place (charter de
 
 Placement columns count published ideal placements of that creature in that
 family: Complete; Partial (some published); Withheld (all registered, none
-admitted); Missing (none declared); Unpublished (none published, some withheld and
-some missing). The parenthesis gives the unpublished placements by state.
+admitted); Missing (none declared); Approved out of scope (owner decision; not published);
+Unpublished (none published, some withheld and some missing). The parenthesis gives the
+unpublished placements by state.
 
 | Creature | SM | SNA | Sprint | Priority | Effort | Unit identity | SM placements | SNA placements | Asset package |
 |---|---|---|---|---|---|---|---|---|---|
@@ -200,7 +215,7 @@ some missing). The parenthesis gives the unpublished placements by state.
 | Boar | 3 | 3 | complete | Variety | - | ProjectOwned | Complete 7/7 | Complete 7/7 | Boar family |
 | Bogeyman | 7 | - | complete | Strong | - | NativeWrapper | Complete 3/3 | - | Fey |
 | Bone Devil | 7 | - | S35 | Strong | VeryHigh | ProjectOwned | Complete 3/3 | - | Outsiders |
-| Brachiosaurus | 7 | 7 | S25 | Essential | High | ProjectOwned | Missing 0/3 | Complete 3/3 | Sauropod dinosaur |
+| Brachiosaurus | 7 | 7 | S25 | Essential | High | ProjectOwned | Approved out of scope 0/3 | Complete 3/3 | Sauropod dinosaur |
 | Bralani Azata | 5 | - | complete | Essential | - | ProjectOwned | Complete 5/5 | - | Outsiders |
 | Bulette | - | 6 | S26 | Strong | High | ProjectOwned | - | Complete 4/4 | Burrowers & huge monsters |
 | Cheetah | 3 | 3 | S8 | Strong | Medium | ProjectOwned | Complete 7/7 | Complete 7/7 | Big-cat family |

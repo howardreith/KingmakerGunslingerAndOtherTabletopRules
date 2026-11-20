@@ -17,9 +17,10 @@ import expanded_summoning_ideal_roster as roster  # noqa: E402
 
 P = roster.Placement
 D41 = "OneD4PlusOne"
-EXPECTED_MISSING = {
+EXPECTED_OUT_OF_SCOPE = {
     P("brachiosaurus", "sm", 7, "One"), P("brachiosaurus", "sm", 8, "OneD3"),
-    P("brachiosaurus", "sm", 9, D41),
+    P("brachiosaurus", "sm", 9, D41)}
+EXPECTED_MISSING = {
     P("redcap", "sm", 8, D41), P("redcap", "sm", 9, D41),
     P("axiomite", "sm", 9, D41), P("soul-eater", "sm", 9, D41),
     P("manticore", "sna", 8, D41), P("manticore", "sna", 9, D41),
@@ -78,19 +79,29 @@ class CurrentSourceTests(unittest.TestCase):
         self.assertEqual((1232, 1188, 29, 1217, 1208, 9),
                          (t["ideal"], t["project"], t["wrapper"], t["declared"], t["admitted"],
                           t["suppressed_choices"]))
-        self.assertEqual((1208, 9, 15, 0, 0, 0, 0),
-                         (t["covered"], t["withheld"], t["missing"], t["extra"], t["duplicates"],
-                          t["unregistered"], t["unexplained"]))
+        self.assertEqual((1208, 9, 12, 3, 0, 0, 0, 0),
+                         (t["covered"], t["withheld"], t["missing"], t["out_of_scope"], t["extra"],
+                          t["duplicates"], t["unregistered"], t["unexplained"]))
+        # Every ideal placement has exactly one derived state; the four states account for the original ideal.
+        states = list(self.cov["states"].values())
+        self.assertEqual(t["ideal"], len(states))
+        self.assertEqual((t["covered"], t["withheld"], t["missing"], t["out_of_scope"]),
+                         tuple(states.count(s) for s in ("covered", "withheld", "missing", "out-of-scope")))
         self.assertTrue(all(stated == derived for _label, stated, derived in self.cov["cross"]))
 
     def test_each_discrepancy_is_the_named_placement(self):
         self.assertEqual(EXPECTED_MISSING, unpublished(self.cov, "missing"))
         self.assertEqual(EXPECTED_WITHHELD, unpublished(self.cov, "withheld"))
+        self.assertEqual(EXPECTED_OUT_OF_SCOPE, unpublished(self.cov, "out-of-scope"))
 
     def test_dispositions_are_kept_apart(self):
         for placement in EXPECTED_MISSING:
-            expected = "POL-04" if placement.key == "brachiosaurus" else "POL-05"
-            self.assertTrue(disposition(self.cov, placement).startswith(expected), placement)
+            self.assertTrue(disposition(self.cov, placement).startswith("POL-05"), placement)
+        for placement in EXPECTED_OUT_OF_SCOPE:
+            text = disposition(self.cov, placement)
+            self.assertTrue(text.startswith("Approved out of scope: POL-04"), placement)
+            self.assertIn("2026-10-15", text)
+            self.assertIn("https://legacy.aonprd.com/coreRulebook/spells/summonMonster.html", text)
         for placement in EXPECTED_WITHHELD:
             self.assertTrue(disposition(self.cov, placement).startswith("Owner withdrawal"), placement)
         self.assertTrue(all(u.recorded for u in self.cov["unpublished"]))
@@ -120,7 +131,8 @@ class MutationTests(unittest.TestCase):
     def test_registration_without_a_choice_in_the_family_does_not_cover_it(self):
         cov = judge()
         self.assertEqual("ProjectOwned", cov["identity"]["brachiosaurus"])
-        self.assertEqual("Missing 0/3", cov["family_status"]["brachiosaurus"]["sm"])
+        self.assertEqual("Approved out of scope 0/3", cov["family_status"]["brachiosaurus"]["sm"])
+        self.assertFalse(any(cov["states"][p] == "covered" for p in EXPECTED_OUT_OF_SCOPE))
         # Tyrannosaurus keeps its identity and its Nature's Ally ladder but
         # loses its Summon Monster tier.
         cov = judge(project=replace(SOURCES["project"], 'C("tyrannosaurus","Tyrannosaurus",7,',
@@ -204,8 +216,8 @@ class MutationTests(unittest.TestCase):
         for placement in BRACHIOSAURUS_SNA:
             self.assertEqual("withheld", cov["states"][placement])
             self.assertFalse(next(u for u in cov["unpublished"] if u.placement == placement).recorded)
-        for placement in {p for p in EXPECTED_MISSING if p.key == "brachiosaurus"}:
-            self.assertEqual("missing", cov["states"][placement])
+        for placement in EXPECTED_OUT_OF_SCOPE:
+            self.assertEqual("out-of-scope", cov["states"][placement])
         # Stirge's registration removed altogether: missing, not withheld.
         cov = judge(project=replace(SOURCES["project"], 'C("stirge","Stirge",null,false,1),', ""),
                     visibility=replace(SOURCES["visibility"], 'new[] { "stirge" }', "new string[0]"))
@@ -218,7 +230,7 @@ class MutationTests(unittest.TestCase):
         creatures = roster.read_project(SOURCES["project"])
         next(c for c in creatures if c["key"] == "brachiosaurus")["sm"] = 7
         wrappers = roster.read_wrappers(SOURCES["wrappers"])
-        for p in EXPECTED_MISSING - {p for p in EXPECTED_MISSING if p.key == "brachiosaurus"}:
+        for p in EXPECTED_MISSING:
             wrappers.append({"family": p.family, "tier": p.parent, "key": p.key, "quantity": p.quantity,
                              "symbol": "fixture." + "/".join(map(str, p))})
         choices = roster.declared_choices(creatures, wrappers, set())
@@ -228,7 +240,11 @@ class MutationTests(unittest.TestCase):
         self.assertEqual((1232, 0, 0, 0, 0, 0), (t["covered"], t["withheld"], t["missing"], t["extra"],
                                                  t["duplicates"], t["unregistered"]))
         self.assertEqual(sorted(EXPECTED_MISSING), cov["stale_dispositions"])
-        self.assertIn("is complete", roster.coverage_summary(cov))
+        summary = roster.coverage_summary(cov)
+        self.assertIn("is complete", summary)
+        # Publishing the approved exclusions completes the original ideal but contradicts the decision.
+        self.assertEqual(sorted(EXPECTED_OUT_OF_SCOPE), cov["scope_conflicts"])
+        self.assertIn("3 SCOPE CONFLICT", summary)
 
 
 def withheld_brachiosaurus(sources):
@@ -275,13 +291,13 @@ class ReviewControlTests(unittest.TestCase):
             u = next(x for x in cov["unpublished"] if x.placement == placement)
             self.assertEqual(("withheld", True), (u.state, u.recorded))
             self.assertTrue(u.disposition.startswith("Owner withdrawal"))
-        for placement in {p for p in EXPECTED_MISSING if p.key == "brachiosaurus"}:
+        for placement in EXPECTED_OUT_OF_SCOPE:
             u = next(x for x in cov["unpublished"] if x.placement == placement)
-            self.assertEqual(("missing", True), (u.state, u.recorded))
-        self.assertEqual((1205, 12, 15), (cov["totals"]["covered"], cov["totals"]["withheld"],
-                                          cov["totals"]["missing"]))
+            self.assertEqual(("out-of-scope", True), (u.state, u.recorded))
+        self.assertEqual((1205, 12, 12, 3), (cov["totals"]["covered"], cov["totals"]["withheld"],
+                                             cov["totals"]["missing"], cov["totals"]["out_of_scope"]))
         # Summary and rendered tables agree with the structured result.
-        self.assertIn("12 withheld; 15 missing; 0 extra; 0 duplicate; 3 unexplained",
+        self.assertIn("12 withheld; 12 missing; 3 approved out of scope; 0 extra; 0 duplicate; 3 unexplained",
                       roster.coverage_summary(cov))
         self.assertEqual(["| Unpublished placements without a recorded disposition | 3 (3 withheld, 0 missing) |"],
                          rows(document, "| Unpublished placements without a recorded disposition"))
@@ -293,10 +309,11 @@ class ReviewControlTests(unittest.TestCase):
 
     def test_mixed_missing_and_withheld_brachiosaurus_is_not_called_unregistered(self):
         _entries, _d, cov, document, _trace = roster.build(withheld_brachiosaurus(SOURCES))
-        self.assertEqual({"sm": {"covered": 0, "withheld": 0, "missing": 3, "total": 3},
+        self.assertEqual({"sm": {"covered": 0, "withheld": 0, "missing": 0, "out_of_scope": 3, "total": 3},
                           "sna": {"covered": 0, "withheld": 3, "missing": 0, "total": 3}},
                          cov["placement_counts"]["brachiosaurus"])
-        self.assertEqual({"sm": "Missing 0/3", "sna": "Withheld 0/3"}, cov["family_status"]["brachiosaurus"])
+        self.assertEqual({"sm": "Approved out of scope 0/3", "sna": "Withheld 0/3"},
+                         cov["family_status"]["brachiosaurus"])
         self.assertEqual("mixed", cov["creature_category"]["brachiosaurus"])
         self.assertEqual(143, cov["available_somewhere"])
         self.assertEqual(["| No ideal placement published; some registered and withheld, some with no "
@@ -346,7 +363,231 @@ class ReviewControlTests(unittest.TestCase):
         for key, counts in cov["placement_counts"].items():
             category = cov["creature_category"][key]
             covered = sum(c["covered"] for c in counts.values() if c)
-            self.assertEqual(covered > 0, category in ("complete", "partial"), key)
+            self.assertEqual(covered > 0, category in ("complete", "scoped", "partial"), key)
+
+
+BRACHIOSAURUS_SM = [P("brachiosaurus", "sm", 7, "One"), P("brachiosaurus", "sm", 8, "OneD3"),
+                    P("brachiosaurus", "sm", 9, D41)]
+SM_SYMBOLS = ["KMG.Summoning.Ability.SM.Tier7.Brachiosaurus.One",
+              "KMG.Summoning.Ability.SM.Tier8.Brachiosaurus.OneD3",
+              "KMG.Summoning.Ability.SM.Tier9.Brachiosaurus.OneD4PlusOne"]
+CENSUS = "20261119T201715Z-owner-0.33.0-inherited-template-census"
+CASTS = "20261119T201938Z-owner-0.33.0-inherited-template-casts"
+MENU = "20261116T181244Z-owner-0.33.0-summoning-publication-boundary"
+S5T1_PACKAGE = "@3ef1bce7027b"
+V191_PACKAGE = "@c09ca6255fee"
+
+
+def rows_by_placement(rows):
+    return {r.placement: r for r in rows}
+
+
+def coherent_monster_brachiosaurus(sources):
+    """Brachiosaurus also registered and declared in Summon Monster VII-IX, with the
+    project's own totals, the visibility count and the ledger moved to match."""
+    import json
+    s = dict(sources)
+    s["project"] = replace(replace(s["project"], 'C("brachiosaurus","Brachiosaurus",null,false,7,"Mastodon")',
+                                   'C("brachiosaurus","Brachiosaurus",7,true,7,"Mastodon")'),
+                           "ValidateFamily(SummonFamily.Monster, 112, 600)",
+                           "ValidateFamily(SummonFamily.Monster, 113, 603)")
+    s["visibility"] = replace(s["visibility"], "RegisteredLogicalPlacementCount = 1188;",
+                              "RegisteredLogicalPlacementCount = 1191;")
+    ledger = json.loads(s["ledger"])
+    for index, symbol in enumerate(SM_SYMBOLS):
+        ledger["entries"].append({"symbol": symbol, "guid": "%032x" % (index + 1), "status": "active"})
+    s["ledger"] = json.dumps(ledger)
+    return s
+
+
+def cell_rows(table):
+    return [line for line in table.splitlines() if line.startswith("| brachiosaurus | Summon Monster |")]
+
+
+class DecisionPacketTests(unittest.TestCase):
+    """S5 T3 / POL-04 decision rows: registered identity, declared and admitted
+    choice, native evidence and original-ideal/approved scope are each read
+    independently, for the exact family-specific identity only."""
+
+    def setUp(self):
+        self.rows = rows_by_placement(roster.cells(["brachiosaurus", "tyrannosaurus", "air-mephit"], SOURCES))
+
+    def test_each_summon_monster_cell_is_reported_individually_and_excluded(self):
+        for placement, symbol in zip(BRACHIOSAURUS_SM, SM_SYMBOLS):
+            row = self.rows[placement]
+            self.assertEqual((True, "approved out of scope", symbol), (row.ideal, row.scope, row.symbol), placement)
+            self.assertEqual((False, False, False, "none", "none", "none"),
+                             (row.registered, row.declared, row.admitted, row.graph, row.menu, row.cast), placement)
+        rendered = cell_rows(roster.cell_table(roster.cells(["brachiosaurus"], SOURCES)))
+        self.assertEqual(3, len(rendered))
+        self.assertTrue(all("| yes | approved out of scope |" in row and row.endswith("| no | no | no | none | none | none |")
+                            for row in rendered), rendered)
+
+    def test_a_registered_natures_ally_identity_never_fills_a_summon_monster_cell(self):
+        for placement in BRACHIOSAURUS_SNA:
+            row = self.rows[placement]
+            self.assertTrue(row.registered and row.admitted, placement)
+            self.assertEqual(("in scope", "PASS:" + CENSUS + S5T1_PACKAGE, "PASS:" + MENU + V191_PACKAGE, "none"),
+                             (row.scope, row.graph, row.menu, row.cast), placement)
+        self.assertTrue(all("SNA" in self.rows[p].symbol for p in BRACHIOSAURUS_SNA))
+        self.assertFalse(any(self.rows[p].registered or self.rows[p].graph != "none" or self.rows[p].menu != "none"
+                             or self.rows[p].cast != "none" for p in BRACHIOSAURUS_SM),
+                         "Nature's Ally identities, graphs and menu rows never reach a Monster cell.")
+
+    def test_registration_declaration_and_native_evidence_are_independent(self):
+        # Catalog only, no ledger identity: declared and admitted, never registered, no native evidence.
+        project = replace(SOURCES["project"], 'C("brachiosaurus","Brachiosaurus",null,false,7,"Mastodon")',
+                          'C("brachiosaurus","Brachiosaurus",7,true,7,"Mastodon")')
+        rows = rows_by_placement(roster.cells(["brachiosaurus"], dict(SOURCES, project=project)))
+        for placement in BRACHIOSAURUS_SM:
+            row = rows[placement]
+            self.assertEqual((True, True, False, "none", "none"),
+                             (row.declared, row.admitted, row.registered, row.graph, row.cast), placement)
+
+    def test_native_cast_evidence_is_exact_to_the_identity(self):
+        cast = self.rows[P("air-mephit", "sm", 4, "One")]
+        self.assertEqual("PASS:" + CASTS + S5T1_PACKAGE, cast.cast)
+        self.assertEqual("PASS:" + MENU + V191_PACKAGE, cast.menu, "The menu row keeps its own v0.0.191 identity.")
+        self.assertEqual("none", self.rows[P("air-mephit", "sna", 4, "One")].cast,
+                         "A Summon Monster cast does not count for the Nature's Ally identity.")
+        self.assertEqual("none", self.rows[P("tyrannosaurus", "sm", 7, "One")].cast,
+                         "Graph evidence is not a cast.")
+        self.assertEqual("none", self.rows[P("tyrannosaurus", "sm", 7, "One")].cast)
+        self.assertTrue(all(r.menu in ("none", "PASS:" + MENU + V191_PACKAGE) for r in self.rows.values()),
+                        "Menu credit comes only from the retained v0.0.191 parent census.")
+
+    def test_a_failed_or_foreign_evidence_row_cannot_pass_a_cell(self):
+        evidence = ('{"schemaVersion":1,"entries":['
+                    '{"symbol":"KMG.Summoning.Ability.SNA.Tier7.Brachiosaurus.One","kind":"cast","result":"FAIL","session":"s1"},'
+                    '{"symbol":"KMG.Summoning.Ability.SNA.Tier7.Brachiosaurus.One","kind":"graph","result":"PASS","session":"s3"},'
+                    '{"symbol":"KMG.Summoning.Ability.SM.Tier7.Brachiosaurusx.One","kind":"cast","result":"PASS","session":"s2"}]}')
+        rows = rows_by_placement(roster.cells(["brachiosaurus"], dict(SOURCES, evidence=evidence)))
+        self.assertEqual("FAIL:s1", rows[P("brachiosaurus", "sna", 7, "One")].cast)
+        self.assertEqual(("none", "none"), (rows[P("brachiosaurus", "sm", 7, "One")].cast,
+                                            rows[P("brachiosaurus", "sm", 7, "One")].graph),
+                         "A Nature's Ally graph and a misnamed cast never reach the Monster cell.")
+        with self.assertRaises(roster.ReadError):
+            roster.cells(["brachiosaurus"], dict(SOURCES, evidence='{"entries":[{"symbol":"x","kind":"seen","result":"PASS","session":"s"}]}'))
+
+
+class ScopeDecisionTests(unittest.TestCase):
+    """Alternative A through the real build, rendering and validation paths."""
+
+    def setUp(self):
+        self.saved = (dict(roster.APPROVED_OUT_OF_SCOPE), set(roster.SCOPE_PENDING))
+
+    def tearDown(self):
+        roster.APPROVED_OUT_OF_SCOPE.clear()
+        roster.APPROVED_OUT_OF_SCOPE.update(self.saved[0])
+        roster.SCOPE_PENDING.clear()
+        roster.SCOPE_PENDING.update(self.saved[1])
+
+    def unapproved(self):
+        roster.APPROVED_OUT_OF_SCOPE.clear()
+        return roster.build(SOURCES)
+
+    def test_the_three_approvals_are_visible_and_not_called_published(self):
+        _e, _d, cov, document, _trace = roster.build(SOURCES)
+        self.assertEqual(sorted(EXPECTED_OUT_OF_SCOPE), sorted(cov["scope_verdicts"]))
+        self.assertTrue(all(v == "excluded" for v in cov["scope_verdicts"].values()))
+        summary = roster.coverage_summary(cov)
+        self.assertIn("Source-derived coverage is incomplete: 1,208 of 1,232", summary)
+        self.assertIn("12 missing; 3 approved out of scope", summary)
+        self.assertIn("scope contract: 3 approved exclusions, 0 scope conflicts", summary)
+        self.assertIn("Accounting against the original ideal: 1,208 admitted + 9 withheld + 12 missing + "
+                      "3 approved out of scope = 1,232 ideal placements.", document)
+        self.assertEqual(["| Ideal placements approved out of scope (excluded, not published) | 3 |"],
+                         rows(document, "| Ideal placements approved out of scope"))
+        self.assertEqual(["| Approved exclusions contradicted by a declared choice (scope conflict) | 0 |"],
+                         rows(document, "| Approved exclusions contradicted"))
+        excluded = rows(document, "| Brachiosaurus | Summon Monster | SM ")
+        self.assertEqual(6, len(excluded), "three unpublished rows and three exclusion rows")
+        self.assertEqual(3, len([r for r in excluded if "| Approved out of scope | yes | Approved out of scope: POL-04" in r]))
+        self.assertEqual(3, len([r for r in excluded if "| Excluded: no declared choice; not published |" in r]))
+        self.assertNotIn("Brachiosaurus", rows(document, "| Every ideal placement published |")[0])
+        self.assertEqual(["| Every ideal placement in the approved scope published; the others approved out of scope, "
+                          "not published | 1 | Brachiosaurus |"],
+                         rows(document, "| Every ideal placement in the approved scope"))
+        self.assertEqual(1, len([r for r in rows(document, "| Brachiosaurus | 7 | 7 |")
+                                 if "| Approved out of scope 0/3 | Complete 3/3 |" in r]))
+        self.assertEqual("scoped", cov["creature_category"]["brachiosaurus"])
+        messages = []
+        self.assertEqual(0, roster.validate_scope(SOURCES, messages.append))
+        self.assertEqual(["Scope contract valid: 3 approved exclusions, none declared, admitted or published."], messages)
+
+    def test_approval_never_raises_the_admitted_count(self):
+        approved = roster.build(SOURCES)[2]["totals"]
+        unapproved = self.unapproved()[2]["totals"]
+        self.assertEqual((unapproved["admitted"], unapproved["covered"]), (approved["admitted"], approved["covered"]))
+        self.assertEqual(unapproved["missing"] - 3, approved["missing"])
+        self.assertEqual((0, 3), (unapproved["out_of_scope"], approved["out_of_scope"]))
+
+    def test_one_approved_cell_leaves_the_others_missing(self):
+        roster.APPROVED_OUT_OF_SCOPE.clear()
+        roster.APPROVED_OUT_OF_SCOPE[BRACHIOSAURUS_SM[0]] = "test decision"
+        _e, _d, cov, document, _trace = roster.build(SOURCES)
+        self.assertEqual({BRACHIOSAURUS_SM[0]}, unpublished(cov, "out-of-scope"))
+        self.assertEqual(set(BRACHIOSAURUS_SM[1:]), unpublished(cov, "missing") & set(BRACHIOSAURUS_SM))
+        self.assertEqual("Unpublished 0/3 (2 missing, 1 approved out of scope)",
+                         cov["family_status"]["brachiosaurus"]["sm"])
+        self.assertEqual("partial", cov["creature_category"]["brachiosaurus"])
+        self.assertIn("14 missing; 1 approved out of scope; 0 extra; 0 duplicate; 2 unexplained; "
+                      "scope contract: 1 approved exclusion, 0 scope conflicts", roster.coverage_summary(cov))
+        self.assertEqual(2, len([r for r in rows(document, "| Brachiosaurus | Summon Monster | SM ")
+                                 if "| No declared choice | no | Unexplained" in r]))
+
+    def test_an_approved_exclusion_with_a_coherent_monster_placement_is_a_scope_conflict(self):
+        sources = coherent_monster_brachiosaurus(SOURCES)
+        _e, _d, cov, document, _trace = roster.build(sources)
+        self.assertEqual(sorted(EXPECTED_OUT_OF_SCOPE), cov["scope_conflicts"])
+        self.assertEqual(0, cov["totals"]["out_of_scope"], "A declared exclusion is not a resolved exclusion.")
+        self.assertEqual(0, cov["totals"]["unregistered"], "The Monster identities are coherently registered.")
+        for placement in EXPECTED_OUT_OF_SCOPE:
+            self.assertEqual(("covered", "scope-conflict"), (cov["states"][placement], cov["scope_verdicts"][placement]))
+        summary = roster.coverage_summary(cov)
+        self.assertIn("3 SCOPE CONFLICT (declared despite approval: brachiosaurus SM VII One, "
+                      "brachiosaurus SM VIII OneD3, brachiosaurus SM IX OneD4PlusOne)", summary)
+        self.assertEqual(["| Approved exclusions contradicted by a declared choice (scope conflict) | 3 |"],
+                         rows(document, "| Approved exclusions contradicted"))
+        self.assertEqual(3, len([r for r in rows(document, "| Brachiosaurus | Summon Monster | SM ")
+                                 if "**SCOPE CONFLICT**: declared despite the approval (admitted)" in r]))
+        self.assertFalse([r for r in rows(document, "| Brachiosaurus | Summon Monster | SM ")
+                          if "Excluded: no declared choice" in r])
+        table = roster.cell_table(roster.cells(["brachiosaurus"], sources))
+        self.assertTrue(all("SCOPE CONFLICT: approved out of scope but declared" in row and "| yes | yes | yes |" in row
+                            for row in cell_rows(table)), table)
+        messages = []
+        self.assertEqual(1, roster.validate_scope(sources, messages.append))
+        self.assertTrue(messages[0].startswith("Scope contract INVALID: approved out of scope but declared: "
+                                               "brachiosaurus SM VII One (admitted)"), messages)
+        # Freshness is a separate question and never reports scope as validated.
+        freshness = []
+        roster.run(True, sources, out=freshness.append)
+        self.assertIn("Freshness only: the approved scope is validated by --validate-scope, not by --check.", freshness)
+
+    def test_the_pending_unapproved_case_stays_truthful(self):
+        roster.APPROVED_OUT_OF_SCOPE.clear()
+        roster.SCOPE_PENDING.update(EXPECTED_OUT_OF_SCOPE)
+        _e, _d, cov, document, _trace = roster.build(SOURCES)
+        self.assertEqual(EXPECTED_OUT_OF_SCOPE, unpublished(cov, "missing") & EXPECTED_OUT_OF_SCOPE)
+        self.assertEqual("Missing 0/3", cov["family_status"]["brachiosaurus"]["sm"])
+        self.assertEqual("partial", cov["creature_category"]["brachiosaurus"])
+        summary = roster.coverage_summary(cov)
+        self.assertIn("9 withheld; 15 missing; 0 extra", summary)
+        self.assertNotIn("approved out of scope", summary)
+        self.assertNotIn("scope contract", summary)
+        self.assertTrue(document.split("### Approved scope exclusions\n\n")[1].startswith("None."))
+        self.assertTrue(all(r.scope == "pending owner decision" for r in
+                            (rows_by_placement(roster.cells(["brachiosaurus"], SOURCES))[p] for p in BRACHIOSAURUS_SM)))
+        self.assertEqual(3, len([r for r in rows(document, "| Brachiosaurus | Summon Monster | SM ")
+                                 if "| No declared choice | yes | Pending owner scope decision |" in r]))
+
+    def test_the_recorded_decision_is_exact(self):
+        self.assertEqual(set(EXPECTED_OUT_OF_SCOPE), set(roster.APPROVED_OUT_OF_SCOPE))
+        self.assertEqual(set(), roster.SCOPE_PENDING)
+        self.assertFalse(set(roster.APPROVED_OUT_OF_SCOPE) & set(roster.RECORDED_DISPOSITIONS),
+                         "No POL-05 placement is waived and no approval doubles as a pending disposition.")
+        self.assertTrue(all(roster.RECORDED_DISPOSITIONS[p].startswith("POL-05") for p in EXPECTED_MISSING))
 
 
 class ReadDiagnosticTests(unittest.TestCase):

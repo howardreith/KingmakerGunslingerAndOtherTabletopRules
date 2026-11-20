@@ -1,13 +1,50 @@
 # Controller Elementals launcher only after an actual row consolidation (DEF-06 / S5 T2)
 
-Status: **review checkpoint.**
+Status: **accepted and closed for its reviewed development scope** (principal review, 2026-11-19; see "Acceptance").
+Acceptance is not merge or release.
 - Every S5 T2 native acceptance observation passed.
-- The native session verdict is FAIL, because of one console-learning check that runs after them. That check
-  fails identically on the accepted S5 T1 product (a matched baseline), so it predates S5 T2.
-- Principal review decides whether that pre-existing failure blocks acceptance.
+- The native session's aggregate verdict **remains FAIL**, because of one console-learning check that runs after them.
+  That check fails identically on the accepted S5 T1 product (a matched baseline), so it predates S5 T2. It remains a
+  separate, unclassified known issue.
 
 Branch `codex/def06-controller-launcher-consolidation`, draft PR #187, stacked on PR #186 (accepted S5 T1 records head
 `f59e3ed811`). Not merged, not released.
+
+## Acceptance
+
+**S5 T2 / DEF-06 is accepted and closed for its reviewed development scope (principal review, 2026-11-19).**
+Acceptance is not merge or release. PR #187 stays an open draft, and nothing is released, tagged or installed.
+
+Accepted identities:
+- PR #187, branch `codex/def06-controller-launcher-consolidation`;
+- accepted base `f59e3ed811a772c2d82ee33cc0b5eac28c6a96d8`;
+- accepted records head `bbc8174f056eacd3c1957edd0b17db197a91ccd2`;
+- qualified product/source `f91a80144707fa9e81486bbcea05145e0d1ed9b1`.
+
+Accepted artifacts:
+- package SHA-256 `6e23d2eb5776d97d5f5bf14aaacf5cda567f309b1dfbf77cfaced36454045481`;
+- DLL SHA-256 `76e0aaad6ef362358ff571bf42a302212eb0faa9aa205f23bd7325af0f931307`;
+- MVID `23a5bfc6-76d3-4e57-85fc-436397b97684`;
+- harness SHA-256 `c47e7f14d48edac88740b4c9bf1841e805c45a88043dc162789b4c86dbc1b089`.
+
+Native evidence, accepted as it stands:
+- `20261119T213730Z-owner-0.33.0-def06-console`: every S5 T2-specific observation passed. The session's aggregate
+  verdict **remains FAIL**, because of one pre-existing console-learning assertion. It is never relabeled PASS.
+- `20261119T213956Z-owner-0.33.0-def06-console`: the matched baseline on the accepted S5 T1 product. The same learning
+  assertion **fails** with identical values. Together with the source boundary (S5 T2 changes neither
+  `StandaloneElementalDiscovery` nor `OriginalSummonElementalVisibility`), it establishes that the learning failure
+  predates S5 T2.
+
+The learning failure remains a separate, unclassified known issue, and both sessions remain FAIL. No further S5 T2
+build or native rerun is required.
+
+Retained failed runs, each under its own identity:
+- `20261119T212359Z`: MAX_PATH fixture failure; no lane ran.
+- `20261119T212635Z`: observer failure after correct stale-node behaviour.
+- `20261119T213730Z`: final S5 T2 candidate; aggregate FAIL from the pre-existing learning assertion.
+- `20261119T213956Z`: matched S5 T1 baseline with the identical learning failure.
+
+Every limitation above and every earlier candidate (`779ee6620ed7`) is unchanged.
 
 ## Defect
 
