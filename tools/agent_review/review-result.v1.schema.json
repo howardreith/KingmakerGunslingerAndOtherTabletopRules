@@ -1,0 +1,84 @@
+{
+  "$comment": "agent-review reviewer output, schema version agent-review.review.v1. Strict-mode compatible: every property is required; optional values use null.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "request_id", "round", "checkpoint_id", "checkpoint_type", "candidate_commit", "decision", "decision_rationale", "findings", "prior_finding_assessments", "evidence_assessment", "summary"],
+  "properties": {
+    "schema_version": {"type": "string", "enum": ["agent-review.review.v1"]},
+    "request_id": {"type": "string"},
+    "round": {"type": "integer"},
+    "checkpoint_id": {"type": "string"},
+    "checkpoint_type": {"type": "string", "enum": ["intermediate", "final"]},
+    "candidate_commit": {"type": "string"},
+    "decision": {"type": "string", "enum": ["changes_required", "checkpoint_passed", "ready_for_owner_review", "blocked"]},
+    "decision_rationale": {"type": "string"},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "priority", "category", "blocks_readiness", "blocking_rationale", "title", "trigger", "expected", "actual", "location", "acceptance_ids", "requested_correction", "requested_evidence"],
+        "properties": {
+          "id": {"type": "string"},
+          "priority": {"type": "string", "enum": ["P0", "P1", "P2", "P3"]},
+          "category": {"type": "string", "enum": ["defect", "required_gap", "evidence_gap", "optional_polish", "question"]},
+          "blocks_readiness": {"type": "boolean"},
+          "blocking_rationale": {"type": "string"},
+          "title": {"type": "string"},
+          "trigger": {"type": "string"},
+          "expected": {"type": "string"},
+          "actual": {"type": "string"},
+          "location": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["file", "line"],
+            "properties": {
+              "file": {"type": ["string", "null"]},
+              "line": {"type": ["integer", "null"]}
+            }
+          },
+          "acceptance_ids": {"type": "array", "items": {"type": "string"}},
+          "requested_correction": {"type": "string"},
+          "requested_evidence": {"type": "string"}
+        }
+      }
+    },
+    "prior_finding_assessments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["finding_id", "assessment", "rationale"],
+        "properties": {
+          "finding_id": {"type": "string"},
+          "assessment": {"type": "string", "enum": ["fix_verified", "fix_rejected", "rebuttal_accepted", "rebuttal_rejected", "deferral_accepted", "deferral_rejected", "still_open"]},
+          "rationale": {"type": "string"}
+        }
+      }
+    },
+    "evidence_assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inspected", "executed_verification", "source_inspection_only", "required_gaps", "limitations"],
+      "properties": {
+        "inspected": {"type": "array", "items": {"type": "string"}},
+        "executed_verification": {"type": "array", "items": {"type": "string"}},
+        "source_inspection_only": {"type": "array", "items": {"type": "string"}},
+        "required_gaps": {"type": "array", "items": {"type": "string"}},
+        "limitations": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["delivered_behavior", "scope_reviewed", "pending_later_phase_work", "unresolved_questions", "remaining_owner_review"],
+      "properties": {
+        "delivered_behavior": {"type": "string"},
+        "scope_reviewed": {"type": "string"},
+        "pending_later_phase_work": {"type": "array", "items": {"type": "string"}},
+        "unresolved_questions": {"type": "array", "items": {"type": "string"}},
+        "remaining_owner_review": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

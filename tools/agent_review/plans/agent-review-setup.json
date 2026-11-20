@@ -1,0 +1,30 @@
+{
+  "schema_version": "agent-review.plan.v1",
+  "mission_id": "agent-review-setup",
+  "title": "Agent review workflow setup",
+  "notes": "Mission: the owner's setup brief (planning/CLAUDE-GITHUB-REVIEW-SETUP.md). Behavioral specification: docs/GITHUB-AGENT-REVIEW-PROTOCOL.md. This tooling change needs focused behavior tests, not a whole-mod validation campaign or a game installation. The live pilot runs in foreground mode: the interactive Claude Opus setup session is the developer, so no second setup writer is launched.",
+  "checkpoints": [
+    {
+      "id": "controller-core",
+      "type": "intermediate",
+      "scope": "Controller, versioned reviewer/developer schemas, prompts, model/permission configuration and behavior tests (tools/agent_review/).",
+      "exit_conditions": [
+        "Controller enforces candidate identity (H/B/M), explicit model selection with requested/observed provenance, schema/request validation, single-writer lock, idempotent publication, bounded retries, round budget, stop/resume and the transcript-only archive check.",
+        "Behavior tests with real temporary Git repositories cover protocol rows WF04-WF10 and WF12; only the model and GitHub boundaries are stubbed.",
+        "No path lets a malformed, failed, wrong-model or stale review produce readiness."
+      ]
+    },
+    {
+      "id": "setup-final",
+      "type": "final",
+      "scope": "Complete setup per the brief: controller plus workflow documentation, permissions, installation, Black Tentacles binding and the setup acceptance report.",
+      "exit_conditions": [
+        "All controller-core conditions still hold for the final candidate.",
+        "docs/AGENT-REVIEW-WORKFLOW.md covers architecture, permissions, normal use, recovery, costs/limits and uninstall/disable.",
+        "Project-local Claude permissions are narrow and do not disable approvals or sandboxes globally; the reviewer profile is read-only without write-capable connectors.",
+        "The Black Tentacles plan preserves the mission as the contract with review after Phases 0-1 and at the complete Phase 4 candidate, and the exact start command is documented.",
+        "planning/AGENT-REVIEW-SETUP-ACCEPTANCE.md reports WF01-WF12 honestly, distinguishing real model exchanges from fixture simulations."
+      ]
+    }
+  ]
+}
