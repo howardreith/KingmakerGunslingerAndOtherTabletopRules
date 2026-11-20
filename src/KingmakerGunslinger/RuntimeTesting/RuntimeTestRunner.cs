@@ -1568,6 +1568,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableTrueGritLevelUpTransaction)
+                {
+                    Complete(RunTrueGritLevelUpTransaction());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     DisposableFavoredClassRespec)
                 {
                     Complete(RunFavoredClassRespec());

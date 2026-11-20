@@ -1755,6 +1755,7 @@
     <Compile Include="RuntimeTesting\NativeRacialActionIconRules.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmHigherFeatRoots.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.RapidReloadProficiencyGate.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TrueGritLevelUp.cs" />
     <Compile Include="RuntimeTesting\FavoredClassLevelUpHarness.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassContract.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassGrit.cs" />

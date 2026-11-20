@@ -3,6 +3,15 @@ using System.Linq;
 
 namespace KingmakerGunslinger.Deeds
 {
+    /// <summary>
+    /// The deeds True Grit may reduce. The rule that the two level-20 choices
+    /// are different deeds is not enforced here: the native level-up selection
+    /// enforces it (each choice is a one-rank feature, and
+    /// BlueprintFeatureSelection.CanSelect refuses a feature the preview already
+    /// has), observed by the disposable-true-grit-level-up-transaction scenario
+    /// (RISK-04). A former test-only IsValidPair helper was removed so it is not
+    /// mistaken for production protection.
+    /// </summary>
     internal static class TrueGritCatalog
     {
         private static readonly TrueGritChoice[] Values =
@@ -38,9 +47,6 @@ namespace KingmakerGunslinger.Deeds
 
         internal static bool Contains(TrueGritDeed deed)
         { return Values.Any(value => value.Deed == deed); }
-
-        internal static bool IsValidPair(TrueGritDeed first, TrueGritDeed second)
-        { return first != second && Contains(first) && Contains(second); }
 
         private static TrueGritChoice Choice(TrueGritDeed deed, string name)
         { return new TrueGritChoice(deed, name); }

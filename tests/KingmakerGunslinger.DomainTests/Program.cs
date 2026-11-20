@@ -2409,7 +2409,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("native-rig.holster-hidden-exact", NativeRigHolsterHiddenExact),
             Case("native-rig.visibility-repair", NativeRigVisibilityRepair),
             Case("true-grit.catalog", TrueGritCatalogExact),
-            Case("true-grit.pair-uniqueness", TrueGritPairUniqueness),
+            Case("true-grit.catalog-deeds-distinct", TrueGritPairUniqueness),
             Case("true-grit.one-cost", TrueGritOneCostBoundary),
             Case("true-grit.native-check-cost", GunslingerDeedFixTests.TrueGritNativeCheckCost),
             Case("harness.completed-png-read-once", HarnessEvidenceTests.CompletedPngIsReadOnce),

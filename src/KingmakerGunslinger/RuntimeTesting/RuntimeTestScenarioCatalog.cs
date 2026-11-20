@@ -663,6 +663,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-firearm-higher-feat-roots";
         internal const string DisposableRapidReloadProficiencyGate =
             "disposable-rapid-reload-proficiency-gate";
+        internal const string DisposableTrueGritLevelUpTransaction =
+            "disposable-true-grit-level-up-transaction";
         internal const string DisposableFavoredClassRespec =
             "disposable-favored-class-respec";
         internal const string DisposableFavoredClassMulticlass =
@@ -1133,6 +1135,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableFirearmDependentFeats,
                 DisposableFirearmHigherFeatRoots,
                 DisposableRapidReloadProficiencyGate,
+                DisposableTrueGritLevelUpTransaction,
                 DisposableFavoredClassRespec,
                 DisposableFavoredClassMulticlass,
                 ObserveFavoredClassPerformanceVisuals,
