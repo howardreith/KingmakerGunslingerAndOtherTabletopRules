@@ -94,5 +94,49 @@ namespace KingmakerGunslinger.DomainTests
                 new Dictionary<Row, Row[]> { { self, new[] { d3Child } } }, new[] { self }), "A row cannot be both projected and removed.");
             Assertions.True(original.SequenceEqual(before), "Refusal leaves every original row untouched.");
         }
+
+        // S5 T5 / POL-06: Call of the Wild's metamagic conversion rows are the
+        // feature's own lower-tier quantity spells; only a tier below the
+        // source's level, held exactly once at that tier, is recognized.
+        internal static void AdditionalConversionLevelsAreLowerHeldOnceTiers()
+        {
+            Assertions.True(DruidSummonConversionPolicy.IsAdditionalConversionLevel(4, 5, 1), "SM IV under a level-5 source, held once at IV, is an additional row.");
+            Assertions.True(DruidSummonConversionPolicy.IsAdditionalConversionLevel(1, 9, 1), "Any lower tier qualifies.");
+            Assertions.False(DruidSummonConversionPolicy.IsAdditionalConversionLevel(5, 5, 1), "The source's own level is the ordinary conversion, never an additional row.");
+            Assertions.False(DruidSummonConversionPolicy.IsAdditionalConversionLevel(6, 5, 1), "A higher tier can never be bought with a lower slot.");
+            Assertions.False(DruidSummonConversionPolicy.IsAdditionalConversionLevel(4, 5, 0), "A spell the book's tier-IV list does not hold is unknown, not additional.");
+            Assertions.False(DruidSummonConversionPolicy.IsAdditionalConversionLevel(4, 5, 2), "An ambiguous duplicate at that tier stays raw.");
+            Assertions.False(DruidSummonConversionPolicy.IsAdditionalConversionLevel(0, 5, 1), "Tier zero is not a summon tier.");
+            Assertions.False(DruidSummonConversionPolicy.IsAdditionalConversionLevel(1, 1, 1), "A level-1 source has no lower tier.");
+        }
+
+        internal static void AdditionalRowsRankAfterOrdinaryRowsInTheirOwnOrder()
+        {
+            int ordinaryHighest = DruidSummonConversionPolicy.ProjectedRank(9, 99999, 0);
+            int firstAdditional = DruidSummonConversionPolicy.ProjectedRank(1, 0, 1);
+            Assertions.True(ordinaryHighest < firstAdditional, "Every ordinary child ranks before any additional child.");
+            Assertions.True(DruidSummonConversionPolicy.ProjectedRank(4, 3, 2) < DruidSummonConversionPolicy.ProjectedRank(4, 0, 3),
+                "Additional rows keep their original order (CotW's level and metamagic order).");
+            Assertions.True(DruidSummonConversionPolicy.ProjectedRank(4, 1, 2) < DruidSummonConversionPolicy.ProjectedRank(4, 2, 2),
+                "Within one row, children keep the published parent's order.");
+            Assertions.Equal(5 * 100000 + 7, DruidSummonConversionPolicy.ProjectedRank(5, 7, 0), "Ordinary ranks are unchanged.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() => DruidSummonConversionPolicy.ProjectedRank(0, 0, 0), "Tier zero has no rank.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() => DruidSummonConversionPolicy.ProjectedRank(4, -1, 1), "A child missing from its parent has no rank.");
+        }
+
+        // Ordinary and additional rows of the same quantity spell project
+        // independently; each keeps its own object, and an unprojected
+        // additional row stays exactly where it was.
+        internal static void AdditionalRowsProjectBesideOrdinaryRowsAndUnprojectedOnesStay()
+        {
+            var ordinary = new Row { Id = "native-d3" }; var extend = new Row { Id = "native-iv-d3" }; var reach = new Row { Id = "native-iv-d3" };
+            var cure = new Row { Id = "cure" }; var ordinaryChild = new Row { Id = "published-v-d3" }; var extendChild = new Row { Id = "published-iv-d3" };
+            var original = new[] { ordinary, cure, extend, reach }; var before = original.ToArray();
+            var projected = DruidSummonConversionPolicy.Project(original,
+                new Dictionary<Row, Row[]> { { ordinary, new[] { ordinaryChild } }, { extend, new[] { extendChild } } });
+            Assertions.True(projected.SequenceEqual(new[] { ordinaryChild, cure, extendChild, reach }) && ReferenceEquals(projected[3], reach),
+                "The projected additional row is replaced in place; an equal-looking unprojected one keeps its identity and position.");
+            Assertions.True(original.SequenceEqual(before), "The original list keeps every row for its invocation chain.");
+        }
     }
 }

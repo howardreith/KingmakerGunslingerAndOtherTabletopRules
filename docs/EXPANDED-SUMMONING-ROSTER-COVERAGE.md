@@ -291,7 +291,7 @@ is not a gameplay repair and not fulfilment of those placements.
 - The five creatures, with Brachiosaurus, are reported as published within the approved scope.
 - A declared choice for any excluded placement is a scope conflict, which `--validate-scope` refuses.
 
-Implemented in the reporter and records only, awaiting review. The 15 existing wrapper rows, their 52 adapters, the
+Implemented in the reporter and records only; accepted and closed for its reviewed Alternative A tooling and records development scope (principal review, 2026-11-19, at `acd50a042a`). The 15 existing wrapper rows, their 52 adapters, the
 nine Stirge withholdings and the compiled coverage model are unchanged.
 
 ## Limits
@@ -308,5 +308,5 @@ Historical INT-08 limitations, as accepted at `dcea649f5e`:
 Current dispositions:
 - POL-04 is decided and accepted (S5 T3, A-records, at `ada0ff2650`): the three Brachiosaurus Summon Monster
   placements are approved out of scope, as described in "Later: POL-04 decided".
-- POL-05 is decided (S5 T4, Alternative A; implemented in the reporter and records, awaiting review): the twelve higher
+- POL-05 is decided and accepted (S5 T4, Alternative A, reporter and records, at `acd50a042a`): the twelve higher
   native-wrapper placements are approved out of scope, as described in "Later: POL-05 decided".

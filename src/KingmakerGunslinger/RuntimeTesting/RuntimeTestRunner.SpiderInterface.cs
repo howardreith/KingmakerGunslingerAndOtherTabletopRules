@@ -145,16 +145,23 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>Call of the Wild's "metamagic for spontaneous spell conversion"
-        /// adds conversions at the source's base level that the native conversion
-        /// list does not contain; Expanded Summoning does not project them, so they
-        /// show as native quantity rows. Identified exactly and recorded as a
-        /// separate finding, outside the spider comparison.</summary>
+        /// adds lower-level conversions carrying metamagic built from the caster's
+        /// feats, which the native conversion list does not contain. Since S5 T5 /
+        /// POL-06 they project into creatures (asserted by the POL-06 cells); a
+        /// row of the prepared parent's own tier stays raw. Both are identified
+        /// exactly and recorded outside the spider comparison.</summary>
         private static Func<AbilityData, string> SpiderCotwMetamagicConversions(AbilityData source, Spellbook book)
         {
             bool cotw = AppDomain.CurrentDomain.GetAssemblies().Any(value => value.GetName().Name == "CallOfTheWild");
             BlueprintAbility[] native = book.GetSpontaneousConversionSpells(source).ToArray();
-            return row => cotw && ReferenceEquals(row.ConvertedFrom, source) && row.Blueprint != null && !native.Contains(row.Blueprint) &&
-                SummonNativeOptionCatalog.All.Any(value => value.Guid == row.Blueprint.AssetGuid) ? "call-of-the-wild-metamagic-spontaneous-conversion-unprojected" : null;
+            Func<AbilityData, string> pol06 = Pol06Classify(source);
+            return row =>
+            {
+                if (!cotw || row?.Blueprint == null) return null;
+                if (pol06(row) == Pol06Projected) return "call-of-the-wild-metamagic-spontaneous-conversion-projected";
+                return ReferenceEquals(row.ConvertedFrom, source) && !native.Contains(row.Blueprint) &&
+                    SummonNativeOptionCatalog.All.Any(value => value.Guid == row.Blueprint.AssetGuid) ? "call-of-the-wild-metamagic-spontaneous-conversion-unprojected" : null;
+            };
         }
 
         /// <summary>The cleric's own non-summon spontaneous conversions of the
@@ -240,8 +247,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             fixture.Caster.Descriptor.Alignment.Set(Alignment.ChaoticGood);
             setDeity(desna);
             var heraldFact = fixture.Caster.Descriptor.AddFact(herald);
+            bool lane = _pol06Lane;
             try
             {
+                if (!lane) {
                 // Crab I and Black Widow IV admission in the Herald popups over unrelated prepared spells.
                 foreach (var admission in new[] { new { Tier = 1, Key = "giant-crab-spider" }, new { Tier = 4, Key = "giant-black-widow" } })
                 {
@@ -325,11 +334,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 else Sprint25Check("spider-herald-extended-source-row-present", false, new JObject { ["rows"] = conversionMenu?.Rows.Length ?? 0 }, "The Ogre is offered in the Herald popup over the extended source.");
                 if (conversionSource != null) Cleanup2MenuAdapterHide(conversionSource, extendedSourceSpell);
                 book.Rest();
+                }
+
+                // S5 T5 / POL-06: Call of the Wild's metamagic conversion rows on the Herald route.
+                foreach (int frame in R6Cell("pol06-herald", () => Pol06HeraldCells(fixture, book, mode, spellGroup, levels, smParent, original))) yield return frame;
             }
             finally { if (heraldFact != null) fixture.Caster.Descriptor.RemoveFact(heraldFact); }
 
             // RU-10 and RU-09: the naturally levelled cleric/wizard Herald Caller casts from its cleric book.
-            if (casters.HeraldBook != null && casters.HeraldWizardBook != null)
+            if (lane) { }
+            else if (casters.HeraldBook != null && casters.HeraldWizardBook != null)
             {
                 Spellbook clericBook = casters.HeraldBook, wizardBook = casters.HeraldWizardBook;
                 BlueprintAbility unrelated = SpiderUnrelated(clericBook, 5);
@@ -367,9 +381,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (popupSource != null) Cleanup2MenuAdapterHide(popupSource, source);
             }
             else Sprint25Check("spider-natural-herald-books", false, casters.Setup, "The natural Herald Caller has a cleric book and a wizard book.");
+            // S5 T5 / POL-06: the natural Herald over a plain source, its wizard book populated.
+            foreach (int frame in R6Cell("pol06-natural-herald", () => Pol06NaturalHeraldCells(fixture, casters, mode, spellGroup, levels, smParent))) yield return frame;
 
             // RU-15: rendered Summon Nature's Ally V and Druid conversion popups, with and without the feat.
-            foreach (var druidCase in new[] { new { Key = "feat", Unit = casters.Druid, Book = casters.DruidBook, Feat = true },
+            if (!lane) foreach (var druidCase in new[] { new { Key = "feat", Unit = casters.Druid, Book = casters.DruidBook, Feat = true },
                 new { Key = "no-feat", Unit = casters.PlainDruid, Book = casters.PlainBook, Feat = false } })
             {
                 var scoped = druidCase;
@@ -401,6 +417,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             : "A Druid without the feat sees no spider row in the rendered " + view.Key + " popup.");
                 }
             }
+            // S5 T5 / POL-06: Call of the Wild's metamagic conversion rows on the Druid route.
+            foreach (int frame in R6Cell("pol06-druid", () => Pol06DruidCells(fixture, casters, mode, spellGroup, levels, snaParent))) yield return frame;
             foreach (int frame in SpiderInterfaceSelect(fixture.Caster)) yield return frame;
         }
     }

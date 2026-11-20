@@ -1,8 +1,12 @@
 # Native-wrapper ladder scope (POL-05 / S5 T4): decision record
 
 Status: **Alternative A selected by the owner** at the S5 T4 review of the decision packet (head `a3a55dac69`,
-2026-11-19), and **implemented in the reporter and records only**. Awaiting principal review of this implementation;
-S5 T4 is not accepted or closed.
+2026-11-19), and **implemented in the reporter and records only**. S5 T4 is **accepted and closed for its reviewed Alternative A tooling and records development scope (principal review, 2026-11-19, at `acd50a042a`)**.
+Acceptance is not merge, release or native gameplay qualification.
+
+Closeout (S5 T5 branch `codex/pol06-cotw-conversion-semantics`): the generated report now qualifies its zero as "0
+in-scope placements have no declared choice" (the fifteen exclusions also lack declared choices); the accounting is
+unchanged.
 
 **The decision.** These five creatures keep their existing base-plus-two ladders. Exactly twelve 1d4+1 cells are
 approved out of scope, each recorded separately with this decision's rationale and provenance. This narrows the

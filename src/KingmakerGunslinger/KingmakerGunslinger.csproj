@@ -166,11 +166,13 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SpiderRoutes.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonClericAlignment.cs" />
     <Compile Include="RuntimeTesting\SummonClericObservationVerdict.cs" />
+    <Compile Include="RuntimeTesting\Pol06ConversionObservationVerdict.cs" />
     <Compile Include="RuntimeTesting\SpiderEscapeObservationVerdict.cs" />
     <Compile Include="RuntimeTesting\SpiderCompletionVerdicts.cs" />
     <Compile Include="RuntimeTesting\SpiderSummonerPersistencePolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SpiderSummonerPersistence.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SpiderInterface.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.Pol06CotwConversions.cs" />
     <Compile Include="RuntimeTesting\AlphabeticalMenuObservationVerdict.cs" />
     <Compile Include="RuntimeTesting\SunderObservationVerdict.cs" />
     <Compile Include="Summoning\SummonPlaytestR6Policy.cs" />

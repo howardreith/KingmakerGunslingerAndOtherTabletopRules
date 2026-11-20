@@ -194,11 +194,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// <summary>Executes exactly the given ability object through the
         /// native command path and requires a refusal with no spend and no spawn.</summary>
         private IEnumerable<int> ClericRefusedAttempt(ExpandedSummoningCorrectionFixture fixture, AbilityData data, AbilityData prepared,
-            Cleanup2NativeDefaultScope mode, Stopwatch phase, string checkName, string caseKey, bool visibleExpected, string route, string claim)
+            Cleanup2NativeDefaultScope mode, Stopwatch phase, string checkName, string caseKey, bool visibleExpected, string route, string claim,
+            bool slotExhausted = false)
         {
             BlueprintAbility child = data.Blueprint;
             var debit = new Cleanup2SourceDebit(fixture.Caster);
             bool visible = data.IsVisible(), available = data.IsAvailableForCast;
+            // The native IsAvailableForCast never reads spell slots; a choice whose
+            // source slot is spent shows that only through its remaining cast count.
+            int castCount = data.GetAvailableForCastCount();
             string reason = data.GetUnavailableReason();
             var hooks = HarmonyInstance.Create("kmg.cleric.forbidden." + caseKey + _request.RunId); UnitUseAbility command = null;
             var watch = Stopwatch.StartNew(); string result;
@@ -224,8 +228,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             var summons = ExpandedSummoningRuleCapture.Where(value => value != null).Distinct().ToArray();
             foreach (var unit in summons) if (!fixture.Created.Contains(unit)) fixture.Created.Add(unit);
             if (summons.Length != 0) DisposeExpandedSummoningUnits(fixture.Created, summons);
-            bool refused = visible == visibleExpected && !available && result == "Fail" && debit.Unspent && _expandedSummoningPlayerPathSpawnActionCount == 0 && summons.Length == 0;
+            bool precondition = slotExhausted ? castCount == 0 : !available;
+            bool refused = visible == visibleExpected && precondition && result == "Fail" && debit.Unspent && _expandedSummoningPlayerPathSpawnActionCount == 0 && summons.Length == 0;
             Sprint25Check(checkName, refused, new JObject { ["child"] = child.AssetGuid, ["name"] = child.Name, ["visible"] = visible, ["availableForCast"] = available,
+                ["availableForCastCount"] = castCount, ["precondition"] = slotExhausted ? "source slot exhausted (cast count 0)" : "native availability false",
                 ["nativeReason"] = reason, ["commandResult"] = result, ["slotOrResourceSpent"] = !debit.Unspent, ["spawnActions"] = _expandedSummoningPlayerPathSpawnActionCount, ["summons"] = summons.Length,
                 ["debit"] = debit.Describe(prepared.ParamSpellSlot), ["route"] = route, ["wallSeconds"] = watch.Elapsed.TotalSeconds }, claim);
         }
@@ -377,7 +383,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint25Check("spider-interface-setup", false, new JObject { ["error"] = error.ToString() },
                         "The natural Druids and the natural Herald Caller were levelled and joined the party.");
                 }
-                mode = Cleanup2EnterNativeDefault(fixture, "summon-cleric-alignment");
+                mode = Cleanup2EnterNativeDefault(fixture, _pol06Lane ? ExpandedSummoningNativeProfilePolicy.Sprint39CotwConversionPhase : ExpandedSummoningNativeProfilePolicy.Sprint39ClericAlignmentPhase);
                 screens = new NativeIconScreenEvidence(_request);
                 ui.SelectionManagerPC.SelectUnit(fixture.Caster.View, true, true, false); group.SelectUnit(fixture.Caster);
                 for (int frame = 0; frame < 12; frame++) yield return 0;
@@ -388,6 +394,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintAbility iceDevil = ExpandedSummoningRoot(fixture.Blueprints, spec("ice-devil", 9));
                 BlueprintAbility astral = ExpandedSummoningRoot(fixture.Blueprints, spec("astral-deva", 9));
 
+                bool lane = _pol06Lane;
+                Sprint25Check("cleric-phase-lane", true, new JObject { ["pol06Lane"] = lane,
+                    ["skipped"] = lane ? "cleric menu, legal/forbidden, Herald, deity and third-party cells; spider-summoner and the non-POL-06 spider interface cells" : "none" },
+                    "The phase records whether it runs whole or only its POL-06 cells after the same setup.");
+                if (!lane) {
                 AlphaMenu nineLawfulGood = null;
                 foreach (int frame in R6Cell("cleric-menu-nine-lg", () => ClericOpenMenu("lawful-good-erastil-tier9", spellGroup, levels, 9, book, smParent(9), tierNine, mode, watch, screens, (menu, source) => nineLawfulGood = menu, true))) yield return frame;
                 if (nineLawfulGood != null)
@@ -469,6 +480,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["restrictingDeity"] = asmodeus.AssetGuid, ["heldVisibleAfterChange"] = heldVisible, ["heldAvailableAfterChange"] = heldAvailable, ["astralAbsentForDeity"] = absentForDeity,
                     ["state"] = "Induced deity change on the fixture; not an old save or a cold load." },
                     "A lawful neutral cleric may summon the Good-only Astral Deva under a lawful neutral deity, and loses it, including an already held choice, under a lawful evil deity.");
+                }
 
                 BlueprintAbility spiderRow = (smParent(5).Variants ?? new BlueprintAbility[0]).FirstOrDefault(value => value.AssetGuid == ClericOgreRowIdentity);
                 BlueprintAbility tarantulaRow = (smParent(7).Variants ?? new BlueprintAbility[0]).FirstOrDefault(value => value.AssetGuid == ClericTarantulaRowIdentity);
@@ -488,6 +500,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     fixture.Caster.Descriptor.Alignment.Set(Alignment.LawfulGood);
                     setDeity(erastil);
                     spiderFact = fixture.Caster.Descriptor.AddFact(spiderFeature) as Feature;
+                    if (!lane) {
                     heraldFact = fixture.Caster.Descriptor.AddFact(herald) as Feature;
                     bool visibleWithFeature = new AbilityData(spiderRow, book).IsVisible();
                     Sprint25Check("cleric-foreign-feature-visibility", hiddenBeforeFeature && visibleWithFeature, new JObject { ["hiddenWithoutFeature"] = hiddenBeforeFeature, ["visibleWithFeature"] = visibleWithFeature },
@@ -551,6 +564,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     fixture.Caster.Descriptor.RemoveFact(heraldFact); heraldFact = null;
                     Func<int, AbilityData> preparedParent = level => book.GetMemorizedSpellSlots(level).Where(value => value.Spell != null && ReferenceEquals(value.Spell.Blueprint, smParent(level))).Select(value => value.Spell).FirstOrDefault();
                     foreach (int frame in R6Cell("spider-summoner", () => SpiderSummonerCells(fixture, book, spiderFeature, mode, watch, spellGroup, levels, smParent, preparedParent, setDeity, erastil, asmodeus))) yield return frame;
+                    }
                     if (spiderCasters != null)
                         foreach (int frame in R6Cell("spider-interface", () => SpiderInterfaceCells(fixture, spiderCasters, book, herald, mode, screens, spellGroup, levels, smParent, setDeity, desna))) yield return frame;
                     else Sprint25Check("spider-interface-casters", false, new JObject(), "The spider interface casters were created.");

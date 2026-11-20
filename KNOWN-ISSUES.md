@@ -438,7 +438,8 @@
   1d4+1 creatures from a lower-level list; Owlcat authored these creatures only on a base-plus-two ladder, so no native
   option exists for those exact creature-and-tier combinations. The owner selected S5 T4 / POL-05 Alternative A on
   2026-11-19: keep the base-plus-two ladders and approve exactly those twelve cells out of scope, each recorded
-  separately (draft PR #189; implemented in the reporter and records, awaiting review; not merged, not released;
+  separately (draft PR #189; reporter and records only; accepted for that development scope at `acd50a042a`; not
+  merged, not released;
   `docs/EXPANDED-SUMMONING-WRAPPER-LADDER-SCOPE.md`). They are not fulfilled. Every existing wrapper row of these creatures (15) and its adapters (52)
   are unchanged. The roster report now shows 1,208 admitted, 9 withheld, 0 missing and 15 approved out of scope
   against the unchanged 1,232 ideal; the original ideal is not fully published.
@@ -453,13 +454,25 @@
   also never held, so it is removed too. Offline policy tests and a model of the native
   diff only; not observed natively (`planning/gunslinger-playtest-repairs/STATUS.md`).
 - With Call of the Wild's "metamagic for spontaneous spell conversion" setting
-  enabled, a Herald Caller conversion popup over a metamagic source also lists
-  Call of the Wild's own base-level conversions. They appear as raw native
-  Summon Monster rows, for example "Summon Monster IV (Dire Wolf)" in a level 5
-  popup. Expanded Summoning projects only the native conversion list, and these
-  extra rows are not Spider Summoner behavior. Projecting or hiding them is an
-  open design choice; nothing was changed (recorded 2026-11-11 in
-  `planning/races-unleashed-compatibility/STATUS.md`).
+  enabled, Herald Caller and Druid conversion popups over a prepared slot also
+  list Call of the Wild's own rows: the feature's lower-tier quantity spells, with
+  metamagic built from the caster's metamagic feats to make up the slot's level
+  (not the source's metamagic, as the 2026-11-11 record said). Released versions
+  show them as raw native rows, for example "Summon Monster IV (1d4+1 Wolves)" in
+  a level 5 popup (recorded 2026-11-11 in
+  `planning/races-unleashed-compatibility/STATUS.md`). On branch
+  `codex/pol06-cotw-conversion-semantics` (S5 T5 / POL-06, draft PR #190; not
+  accepted, not merged, not released) they are projected into the published
+  creatures of their own tier and quantity, each keeping that row's metamagic,
+  the slot's level and one native debit of the source. Rows of the prepared
+  parent's own tier stay raw as a conservative presentation fallback (their
+  metamagic can differ from the source's). Observed in a disposable game copy
+  with an independent per-conversion observer: Extend and Heighten, Single, d3
+  and d4+1 casts on both routes, a plain source and a second spellbook
+  (`docs/EXPANDED-SUMMONING-COTW-CONVERSION-SEMANTICS.md`). The larger popup (302
+  rows for Extend and Heighten Spell), the same creature at two tiers
+  (distinguished only in the tooltip) and eight redundant same-behaviour rows
+  are left for owner review.
 - The legacy Advanced Revolver declares six chambers, but saved firearm state holds one round, so its six-round reload
   fails and restores ammunition and weapon state. No published release offered it (vendors only cleaned it up;
   Craft Magic Items only recognized an owned one). On branch `codex/risk01-advanced-revolver` (accepted with Sprint 4 at `e30b19e8fe`;

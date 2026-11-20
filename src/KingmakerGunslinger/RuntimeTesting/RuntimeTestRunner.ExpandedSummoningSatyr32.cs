@@ -169,8 +169,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in ReviewSummonMenuOrderSunder(fixture, mode)) yield return frame;
                 yield break;
             }
-            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39ClericAlignmentPhase)
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39ClericAlignmentPhase || phase == ExpandedSummoningNativeProfilePolicy.Sprint39CotwConversionPhase)
             {
+                _pol06Lane = phase == ExpandedSummoningNativeProfilePolicy.Sprint39CotwConversionPhase;
                 foreach (int frame in ReviewSummonClericAlignment(fixture)) yield return frame;
                 yield break;
             }

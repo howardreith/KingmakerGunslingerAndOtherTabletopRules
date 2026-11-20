@@ -1,0 +1,24 @@
+{
+  "name": "pol06-lane",
+  "description": "S5 T5 / POL-06 qualification correction. It runs the save-free summon-pol06-cotw lane (sprint32 native review): the cleric phase's own fixture setup and cleanup, in the native Default fixture, with only its POL-06 cells, so unrelated earlier popups cannot prevent them. Call of the Wild and Races Unleashed are staged beside the candidate. Every popup verdict is per conversion and independent of the projection under test: the expected conversions come from Call of the Wild's own row builder, each conversion's tier from the book's native conversion lists, its quantity from its own spawn expression, and the creatures it should own from the placement, native-option, third-party and Spider Summoner contracts. Herald (cleric 20) over an extended level 4 source in a level 5 slot: popup, a Single cast, a stale retained choice and a forbidden creature refused with nothing spent, the setting off, a controlled d4+1 cast, then a second metamagic feat (Heighten where installed and accepted) with the popup size, reachability, tooltips and a cast. Druid: popup, a controlled d3 cast and a stale retained choice refused. Natural cleric 9/wizard 1 Herald over a plain level 5 source with no metamagic and a populated wizard book: popup and an Extend cast, one cleric slot spent and the wizard book unchanged. No save is loaded. The short name keeps evidence paths under MAX_PATH.",
+  "ownerMods": [
+    "CallOfTheWild",
+    "RacesUnleashed"
+  ],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "lane",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-expanded-summoning-sprint32-native-review",
+        "parameters": {
+          "reviewPhase": "summon-pol06-cotw"
+        },
+        "timeoutSeconds": 1200
+      }
+    }
+  ]
+}

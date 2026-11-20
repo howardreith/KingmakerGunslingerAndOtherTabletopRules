@@ -46,12 +46,19 @@ namespace KingmakerGunslinger.Summoning
             internal AbilityData[] Children, ProjectedRows;
             internal ElementalInvocationContextSnapshot SourceContext, ConversionContext;
             internal ElementalInvocationContextSnapshot[] ChildContexts;
+            internal SummonConversionRoute Route;
+            // Zero for a native conversion row; otherwise the tier of a Call of
+            // the Wild metamagic conversion row (its own quantity spell's level).
+            internal int AdditionalTier;
+            internal bool Additional { get { return AdditionalTier > 0; } }
             internal bool Current { get { return ExpandedSummoningVisualVariantPatch.IsModuleActive && BlueprintBootstrap.IsInitialized &&
                 ReferenceEquals(Mechanism.SpellSlot, Slot) && ReferenceEquals(Slot.Spell, Source) && ReferenceEquals(Source.Spellbook, Book) &&
                 ReferenceEquals(Conversion.ConvertedFrom, Source) && ReferenceEquals(Conversion.Blueprint, NativeConversionBlueprint) &&
                 SourceContext.Current && ConversionContext.Current && ChildContexts.All(value => value.Current) &&
                 Source.Caster.Progression.Features.Enumerable.Any(value => ReferenceEquals(value?.Blueprint, Grant)) && ExactNativeFeature(Grant, Book.Blueprint.CharacterClass) &&
-                Book.GetSpontaneousConversionSpells(Source).Count(value => ReferenceEquals(value, NativeConversionBlueprint)) == 1 &&
+                (Additional ? Conversion.MetamagicData != null && Conversion.MetamagicData.MetamagicMask != 0 &&
+                    AdditionalConversionLevel(Route, Book, NativeConversionBlueprint, Book.GetSpellLevel(Source)) == AdditionalTier :
+                    Book.GetSpontaneousConversionSpells(Source).Count(value => ReferenceEquals(value, NativeConversionBlueprint)) == 1) &&
                 ReferenceEquals(Parent.Variants, NativeVariantArray) && NativeVariantArray != null && NativeVariantArray.SequenceEqual(Variants) &&
                 OwnedVariants.All(value => ReferenceEquals(value.Parent, Parent) && Variants.Count(variant => ReferenceEquals(variant, value)) == 1) &&
                 Book.Owner.Spellbooks.Any(value => ReferenceEquals(value, Book)) && Children.All(value => ReferenceEquals(value.ConvertedFrom, Conversion) &&
@@ -62,6 +69,19 @@ namespace KingmakerGunslinger.Summoning
         {
             SpiderPlacement placement = SpiderSummonerIntegration.PlacementOf(row);
             return placement != null && placement.Family == family && placement.Tier == tier && placement.Quantity == quantity;
+        }
+
+        /// <summary>The level of an additional (Call of the Wild metamagic)
+        /// conversion row: its quantity spell's own tier, below the source's
+        /// level, at which this book's conversion list holds it exactly once.
+        /// Zero when the row is not such a conversion.</summary>
+        internal static int AdditionalConversionLevel(SummonConversionRoute route, Spellbook book, BlueprintAbility blueprint, int sourceLevel)
+        {
+            int tier; SummonMultiplicity quantity;
+            if (route == null || book == null || blueprint == null ||
+                !DruidSummonConversionPolicy.TryResolve(route, blueprint.AssetGuid, out tier, out quantity)) return 0;
+            return DruidSummonConversionPolicy.IsAdditionalConversionLevel(tier, sourceLevel,
+                book.GetSpontaneousConversionSpells(tier).Count(value => ReferenceEquals(value, blueprint))) ? tier : 0;
         }
 
         internal static Receipt For(AbilityData child)
@@ -233,8 +253,31 @@ namespace KingmakerGunslinger.Summoning
                 var candidates = __result.Where(value => value?.Blueprint != null && ReferenceEquals(value.ConvertedFrom, source) &&
                     ReferenceEquals(value.Spellbook, book) && granted.Any(blueprint => ReferenceEquals(blueprint, value.Blueprint)) &&
                     nativeConversions.Count(blueprint => ReferenceEquals(blueprint, value.Blueprint)) == 1).ToArray();
-                if (candidates.Length == 0 || candidates.GroupBy(value => value.Blueprint).Any(value => value.Count() != 1))
+                if (candidates.GroupBy(value => value.Blueprint).Any(value => value.Count() != 1))
                 { Outcome = "preserve-native-druid-quantity-candidates"; return; }
+                // Call of the Wild's "metamagic for spontaneous spell conversion"
+                // (its SetToggleAdditionalSpells/GetConvertedAbilityData
+                // prefixes) appends rows the native list never holds: this
+                // feature's lower-level quantity spell, converted from the same
+                // source, carrying its own metamagic built from the caster's
+                // metamagic feats to make up the source's level. The native
+                // ConvertedFrom setter gave it no metamagic (not a variant of
+                // the source); the assignment after it did. Each projects at its
+                // own tier and quantity; its children inherit exactly that
+                // metamagic, and level and debit follow the same source chain.
+                int sourceLevel = book.GetSpellLevel(source);
+                var additional = __result.Where(value => value?.Blueprint != null && ReferenceEquals(value.ConvertedFrom, source) &&
+                    ReferenceEquals(value.Spellbook, book) && !candidates.Any(candidate => ReferenceEquals(candidate, value)) &&
+                    value.MetamagicData != null && value.MetamagicData.MetamagicMask != 0 &&
+                    granted.Any(blueprint => ReferenceEquals(blueprint, value.Blueprint)) &&
+                    !nativeConversions.Any(blueprint => ReferenceEquals(blueprint, value.Blueprint)) &&
+                    AdditionalConversionLevel(route, book, value.Blueprint, sourceLevel) > 0).ToArray();
+                // Two rows of one quantity spell with the same metamagic would
+                // be indistinguishable: leave every additional row raw instead.
+                if (additional.GroupBy(value => new { value.Blueprint, Mask = Convert.ToInt64(value.MetamagicData.MetamagicMask),
+                        value.MetamagicData.HeightenLevel, value.MetamagicData.SpellLevelCost }).Any(value => value.Count() != 1))
+                    additional = new AbilityData[0];
+                if (candidates.Length + additional.Length == 0) { Outcome = "preserve-native-druid-quantity-candidates"; return; }
                 var original = __result; var originalRows = original.ToArray(); var books = source.Caster.Spellbooks.ToArray();
                 var bookState = books.Select(value => new { Book = value, Slots = Enumerable.Range(0, 10).SelectMany(value.GetMemorizedSpellSlots).ToArray() })
                     .Select(value => new { value.Book, value.Slots, Spells = value.Slots.Select(nativeSlot => nativeSlot.Spell).ToArray(),
@@ -246,12 +289,18 @@ namespace KingmakerGunslinger.Summoning
                 foreach (BlueprintScriptableObject resource in source.Caster.Resources) resources.Add(resource);
                 var amounts = resources.Select(source.Caster.Resources.GetResourceAmount).ToArray();
                 var replacements = new Dictionary<AbilityData, AbilityData[]>(); var receipts = new List<Receipt>(); var removals = new List<AbilityData>();
-                foreach (var conversion in candidates)
+                foreach (var conversion in candidates.Concat(additional))
                 {
                     int tier; SummonMultiplicity quantity;
+                    bool isAdditional = additional.Any(value => ReferenceEquals(value, conversion));
                     if (!DruidSummonConversionPolicy.TryResolve(route, conversion.Blueprint.AssetGuid, out tier, out quantity)) continue;
+                    if (isAdditional && tier != AdditionalConversionLevel(route, book, conversion.Blueprint, sourceLevel)) continue;
                     var parent = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library, ParentsOf(route)[tier - 1], "published conversion parent");
                     if (!ExpandedSummoningPublisher.IsPublishedExpandedParent(parent)) continue;
+                    // A prepared parent of this tier lists its own variants with
+                    // its own metamagic; an additional row of the same tier would
+                    // repeat those creatures, so it stays raw as Call of the Wild made it.
+                    if (isAdditional && ReferenceEquals(source.Blueprint, parent)) continue;
                     var variantArray = parent.Variants; var variants = variantArray?.ToArray();
                     var expected = Expected(route, tier, quantity);
                     if (variants == null || variants.Length == 0 || variants.Any(value => value == null) || expected.Length == 0 || expected.Any(value => value == null) ||
@@ -281,7 +330,10 @@ namespace KingmakerGunslinger.Summoning
                     // quantity row would show every creature twice; keeping it
                     // would show the parent's own row. Drop it when every child
                     // is already listed by the source.
-                    if (ReferenceEquals(source.Blueprint, parent))
+                    // An additional row's metamagic is its own, so the source's
+                    // listed variants (with the source's metamagic) never stand
+                    // in for it; the identical-blueprint check below keeps it raw.
+                    if (!isAdditional && ReferenceEquals(source.Blueprint, parent))
                     {
                         var listed = sourceVariantsFollow ? variants : originalRows.Where(value => value != null && !ReferenceEquals(value, conversion) &&
                             ReferenceEquals(value.ConvertedFrom, source) && ReferenceEquals(value.Spellbook, book)).Select(value => value.Blueprint).ToArray();
@@ -293,15 +345,26 @@ namespace KingmakerGunslinger.Summoning
                     Func<bool> current = () => sourceContext.Current && conversionContext.Current && ReferenceEquals(__instance.SpellSlot, slot) &&
                         ReferenceEquals(slot.Spell, source) && slot.Available == availability && ReferenceEquals(parent.Variants, variantArray) && variantArray.SequenceEqual(variants) &&
                         ExactNativeFeature(grants[0].Blueprint, druid);
-                    var produced = NativeChildren(conversion, projection, current);
+                    List<AbilityData> produced;
+                    if (!isAdditional) produced = NativeChildren(conversion, projection, current);
+                    else
+                    {
+                        // An additional row that cannot be projected exactly
+                        // stays raw; it never withdraws the ordinary projection.
+                        try { produced = NativeChildren(conversion, projection, current); }
+                        catch (InvalidOperationException) { continue; }
+                    }
                     var children = produced == null ? new AbilityData[0] : produced.Where(value => value != null &&
                         projection.Any(variant => ReferenceEquals(variant, value.Blueprint))).ToArray();
                     bool complete = children.Length == projection.Length && projection.All(variant => children.Count(value => ReferenceEquals(value.Blueprint, variant)) == 1) &&
                         children.All(value => ReferenceEquals(value.ConvertedFrom, conversion) && ReferenceEquals(value.Spellbook, book) &&
-                            ReferenceEquals(value.Caster, source.Caster) && ReferenceEquals(value.Fact, conversion.Fact) && ReferenceEquals(value.MetamagicData, conversion.MetamagicData));
+                            ReferenceEquals(value.Caster, source.Caster) && ReferenceEquals(value.Fact, conversion.Fact) && ReferenceEquals(value.MetamagicData, conversion.MetamagicData) &&
+                            value.SpellLevel == conversion.SpellLevel);
+                    if (isAdditional && (!complete || !current())) continue;
                     if (!complete || !current()) { Outcome = "preserve-unverified-native-quantity-context"; return; }
                     replacements.Add(conversion, children);
                     receipts.Add(new Receipt { Mechanism = __instance, Source = source, Conversion = conversion, Book = book, Slot = slot, Grant = grants[0].Blueprint,
+                        Route = route, AdditionalTier = isAdditional ? tier : 0,
                         Parent = parent, NativeConversionBlueprint = conversion.Blueprint, NativeVariantArray = variantArray, Variants = variants, OwnedVariants = expected,
                         ProjectionVariants = projection, Children = children, SourceContext = sourceContext, ConversionContext = conversionContext,
                         ChildContexts = children.Select(child => new ElementalInvocationContextSnapshot(() => References(child), () => Values(child))).ToArray() });
@@ -323,7 +386,8 @@ namespace KingmakerGunslinger.Summoning
                     {
                         int tier; SummonMultiplicity quantity;
                         DruidSummonConversionPolicy.TryResolve(route, receipt.NativeConversionBlueprint.AssetGuid, out tier, out quantity);
-                        ranks[child] = tier * 100000 + Array.IndexOf(receipt.Variants, child.Blueprint);
+                        int ordinal = receipt.Additional ? Array.IndexOf(originalRows, receipt.Conversion) + 1 : 0;
+                        ranks[child] = DruidSummonConversionPolicy.ProjectedRank(tier, Array.IndexOf(receipt.Variants, child.Blueprint), ordinal);
                     }
                 var projected = DruidSummonConversionPolicy.OrderProjectedChoices(DruidSummonConversionPolicy.Project(originalRows, replacements, removals),
                     row => { int rank; return ranks.TryGetValue(row, out rank) ? rank : (int?)null; });
@@ -333,7 +397,9 @@ namespace KingmakerGunslinger.Summoning
                     foreach (var child in receipt.Children) Receipts.Add(child, receipt);
                 }
                 __result = projected.ToList(); Outcome = "native-druid-quantity-variants;original-quantities-retained-in-chain;quantities=" + replacements.Count + ";children=" + receipts.Sum(value => value.Children.Length) +
-                    ";removed=" + removals.Count;
+                    ";removed=" + removals.Count + ";additional=" + receipts.Count(value => value.Additional) +
+                    ";additionalChildren=" + receipts.Where(value => value.Additional).Sum(value => value.Children.Length) +
+                    ";additionalRaw=" + __result.Count(value => value != null && additional.Any(row => ReferenceEquals(row, value)));
             }
             catch (Exception error) { Outcome = "preserve-native-druid-conversion:" + error.GetType().Name + ":" + error.Message; }
         }

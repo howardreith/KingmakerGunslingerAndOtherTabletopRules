@@ -61,7 +61,7 @@ spells, never one menu. The scalability gate is the largest single parent spell.
 
 ## Coverage of ideal placements
 
-Coverage is **incomplete**: 1,208 of 1,232 ideal placements have a choice admitted by the current publication policy. 9 are registered and withheld, and 0 have no declared choice. 15 are approved out of scope by owner decision: excluded from the selected development scope, not published and not counted as covered.
+Coverage is **incomplete**: 1,208 of 1,232 ideal placements have a choice admitted by the current publication policy. 9 are registered and withheld, and 0 in-scope placements have no declared choice. 15 are approved out of scope by owner decision: excluded from the selected development scope, not published and not counted as covered.
 
 Accounting against the original ideal: 1,208 admitted + 9 withheld + 0 missing + 15 approved out of scope = 1,232 ideal placements.
 
@@ -90,7 +90,7 @@ catalogs read here.
 |---|---|
 | Ideal placements covered by an admitted choice | 1,208 |
 | Ideal placements withheld by the publication policy | 9 |
-| Ideal placements with no declared choice | 0 |
+| In-scope ideal placements with no declared choice | 0 |
 | Ideal placements approved out of scope (excluded, not published) | 15 |
 | Approved exclusions contradicted by a declared choice (scope conflict) | 0 |
 | Declared choices not in the ideal roster (extra) | 0 |

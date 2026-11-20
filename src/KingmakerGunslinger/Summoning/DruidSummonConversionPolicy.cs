@@ -77,6 +77,23 @@ namespace KingmakerGunslinger.Summoning
             tier = native.Tier; quantity = native.Multiplicity; return true;
         }
 
+        // A Call of the Wild metamagic conversion row is this feature's quantity
+        // spell of a lower tier, held exactly once by the book's conversion list
+        // at that tier; its metamagic makes up the difference to the source.
+        internal static bool IsAdditionalConversionLevel(int tier, int sourceLevel, int heldAtTier)
+        {
+            return tier >= 1 && tier <= 9 && sourceLevel >= 2 && sourceLevel <= 9 && tier < sourceLevel && heldAtTier == 1;
+        }
+
+        // Ordinary native rows keep their tier ranks; additional rows follow
+        // them, in their original order, each keeping its parent's order.
+        internal static int ProjectedRank(int tier, int variantIndex, int additionalOrdinal)
+        {
+            if (tier < 1 || tier > 9 || variantIndex < 0 || variantIndex >= 100000 || additionalOrdinal < 0 || additionalOrdinal > 9999)
+                throw new ArgumentOutOfRangeException();
+            return additionalOrdinal == 0 ? tier * 100000 + variantIndex : 10000000 + additionalOrdinal * 100000 + variantIndex;
+        }
+
         // Commit a fully verified projection without modifying the original
         // native list, its foreign rows, or the native conversion objects.
         // A removal names an exact native row whose every child the same menu
