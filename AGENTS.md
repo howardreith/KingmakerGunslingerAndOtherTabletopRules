@@ -53,6 +53,11 @@ exports/presentation; technical PASS does not grant owner visual approval.
   identities when relevant. Update the active resume/state, not old PASS records.
 - Push coherent checkpoints from the current worktree through:
   `powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1`
+- A branch enrolled in the agent review workflow follows
+  docs/AGENT-REVIEW-WORKFLOW.md: the controller alone posts PR comments and
+  archives review records; the developer reports checkpoints and dispositions
+  to it and never edits tools/agent_review/ or docs/agent-reviews/ unless the
+  workflow itself is the assigned scope.
 - Older rules and chronology are retained in docs/history/AGENTS-before-workflow-reset-2026-10-11.md
   as historical reference. Missions remain gameplay/release contracts, governed
   by the current validation policy for development checkpoints.
