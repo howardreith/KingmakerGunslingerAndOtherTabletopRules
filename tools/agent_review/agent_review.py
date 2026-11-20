@@ -1235,7 +1235,7 @@ class Controller:
         snapshot = rnd_dir / f"snapshot-{n}"
         if snapshot.exists():
             self.remove_snapshot(snapshot)
-        self.git("worktree", "add", "--detach", str(snapshot), rnd["H"])
+        self.git("-c", "core.longpaths=true", "worktree", "add", "--detach", str(snapshot), rnd["H"])
         try:
             inputs = self.write_review_inputs(rnd, rnd_dir, snapshot)
             schema = rnd_dir / "review-schema.json"
