@@ -294,6 +294,131 @@ namespace KingmakerGunslinger.DomainTests
                 "Negative marker count did not fail closed.");
         }
 
+        private static SteadyAimShotDecision SteadyShot(bool armed,
+            bool dischargedRound, FirearmKind kind, bool requiredGrit,
+            bool exactFirearm = true, int markerCount = 1,
+            bool scatterDelivery = false)
+        {
+            return SteadyAimPolicy.ResolveShot(armed, dischargedRound,
+                exactFirearm, markerCount, kind, scatterDelivery, requiredGrit);
+        }
+
+        internal static void SteadyAimShotResolution()
+        {
+            foreach (FirearmKind kind in new[] { FirearmKind.Musket,
+                FirearmKind.Blunderbuss, FirearmKind.Rifle })
+            {
+                SteadyAimShotDecision shot = SteadyShot(true, true, kind, true);
+                Assertions.True(shot.ConsumesArmedState,
+                    kind + " shot did not consume Steady Aim.");
+                Assertions.Equal(10, shot.RangeBonusFeet,
+                    kind + " shot did not gain exactly 10 feet.");
+            }
+
+            // The requirement can fail between arming and firing: the shot
+            // still uses the state up and gains nothing.
+            SteadyAimShotDecision gritLost = SteadyShot(true, true,
+                FirearmKind.Musket, false);
+            Assertions.True(gritLost.ConsumesArmedState,
+                "A qualifying shot without the grit requirement kept the state.");
+            Assertions.Equal(0, gritLost.RangeBonusFeet,
+                "A shot without the grit requirement gained range.");
+
+            SteadyAimShotDecision[] retained =
+            {
+                SteadyShot(true, true, FirearmKind.Pistol, true),
+                SteadyShot(true, true, FirearmKind.Musket, true, false, 0),
+                SteadyShot(true, true, FirearmKind.Musket, true, true, 2),
+                SteadyShot(true, true, FirearmKind.Unknown, true),
+                SteadyShot(true, true, FirearmKind.Blunderbuss, true, true, 1,
+                    true),
+                // A roll that fired no round: a probe, a synthetic roll, a
+                // delivery resolved elsewhere or an empty chamber.
+                SteadyShot(true, false, FirearmKind.Musket, true)
+            };
+            for (int index = 0; index < retained.Length; index++)
+            {
+                Assertions.False(retained[index].ConsumesArmedState,
+                    "Nonqualifying roll " + index + " consumed Steady Aim.");
+                Assertions.Equal(0, retained[index].RangeBonusFeet,
+                    "Nonqualifying roll " + index + " gained range.");
+            }
+
+            // The state is spent by the first shot; the next one is unarmed.
+            SteadyAimShotDecision following = SteadyShot(false, true,
+                FirearmKind.Musket, true);
+            Assertions.False(following.ConsumesArmedState,
+                "An unarmed shot consumed a state it did not have.");
+            Assertions.Equal(0, following.RangeBonusFeet,
+                "An unarmed shot gained range.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                new SteadyAimShotDecision(false, 10),
+                "A range bonus without consumption was representable.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                SteadyShot(true, true, FirearmKind.Musket, true, true, -1),
+                "Negative marker count did not fail closed.");
+        }
+
+        internal static void SteadyAimGritRequirement()
+        {
+            // Steady Aim asks the True Grit service for a no-spend deed that
+            // needs positive grit: (current, cost 0, selected, positive gate).
+            var service = new TrueGritService();
+            TrueGritDecision ordinary = service.Evaluate(
+                new TrueGritRequest(1, 0, false, true));
+            Assertions.True(ordinary.Available,
+                "Steady Aim was unavailable with positive grit.");
+            Assertions.Equal(0, ordinary.EffectiveCost,
+                "Steady Aim acquired a grit cost.");
+            Assertions.False(service.Evaluate(
+                new TrueGritRequest(0, 0, false, true)).Available,
+                "Steady Aim was available with no grit.");
+            TrueGritDecision exempt = service.Evaluate(
+                new TrueGritRequest(0, 0, true, true));
+            Assertions.True(exempt.Available,
+                "The selected True Grit exemption was lost.");
+            Assertions.Equal(0, exempt.EffectiveCost,
+                "The True Grit exemption acquired a grit cost.");
+        }
+
+        internal static void SteadyAimRangeReachesDeadeyeAndArmorClass()
+        {
+            var musket = FirearmDefinitions.CreateEarlyMusket();
+            double distance = 45d * FirearmArmorClassService.MetersPerFoot;
+            Func<SteadyAimShotDecision, bool> touch = shot =>
+                FirearmArmorClassService.Select(new FirearmArmorClassRequest(
+                    true, 1, musket, distance, 20, 12, 20, false, false,
+                    shot.RangeBonusFeet)).UsesTouchArmorClass;
+            Func<SteadyAimShotDecision, DeadeyeDecision> deadeye = shot =>
+                new DeadeyeService().Evaluate(new DeadeyeRequest(true, true, 1,
+                    musket, distance, 10, shot.RangeBonusFeet));
+
+            SteadyAimShotDecision steady = SteadyShot(true, true,
+                FirearmKind.Musket, true);
+            Assertions.True(touch(steady),
+                "The Steady Aim shot at 45 feet did not select touch AC.");
+            Assertions.Equal(DeadeyeStatus.WithinFirstIncrement,
+                deadeye(steady).Status,
+                "Deadeye did not receive the Steady Aim range.");
+
+            // Without the bonus the same distance is the second increment.
+            foreach (SteadyAimShotDecision none in new[]
+            {
+                SteadyShot(false, true, FirearmKind.Musket, true),
+                SteadyShot(true, true, FirearmKind.Musket, false),
+                SteadyShot(true, true, FirearmKind.Pistol, true)
+            })
+            {
+                Assertions.False(touch(none),
+                    "A shot without the bonus selected touch AC at 45 feet.");
+                Assertions.Equal(2, deadeye(none).RangeIncrement,
+                    "Deadeye read a range bonus that was not granted.");
+            }
+
+            Assertions.Equal(40, musket.RangeIncrementFeet,
+                "Resolving a shot changed the weapon definition.");
+        }
+
         internal static void UpCloseAndDeadlyPolicyContract()
         {
             Assertions.Equal(1, UpCloseAndDeadlyPolicy.DiceAtLevel(1),

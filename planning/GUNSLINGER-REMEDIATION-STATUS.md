@@ -46,7 +46,9 @@ superseded by the owner's later instruction to cut v0.0.191.
 | Finding | What | State |
 |---|---|---|
 | NEW-02 | Deadeye spends grit and arms nothing (published v0.0.191; the apply-buff action's duration had no dice count) | **Implemented on the branch (`596285cb0d`); native verified for stated scope**: arms, is consumed by an eligible shot, ends unused after a round with no refund. Not merged, not released. Touch-AC effect through the real ability not judged |
-| NEW-03 | Steady Aim's armed state is never consumed by a shot and never grants its 10 feet (handler reads the attack roll before it exists) | **Open.** Observed on the candidate; from source the published build is the same. Belongs with the firearm-rules work |
+| NEW-03 | Steady Aim's armed state is never consumed by a shot and never grants its 10 feet (handler read the attack roll before it existed) | **Implemented on branch `codex/new03-steady-aim-attack-roll` (`28836aaaea`), stacked on PR #169; native verified for stated scope.** Candidate `2ee86e0f6a6e` against PR #169's candidate, same harness: through the real ability and the game's attack command, a musket shot at 43.2 ft takes ordinary armor class unarmed and touch armor class armed, the state is removed once on a hit and on a miss, grit is unchanged, the next shot is ordinary, a shot after grit is lost uses the state with no bonus, the unused state ends after a round (`docs/GUNSLINGER-STEADY-AIM-RANGE.md`). Not merged, not released. Not run: turn-based, controller, save and load, other stacks, Blunderbuss and Rifle in the game, the True Grit exemption in the game, the published package |
+| NEW-07 | The game's attack command measures the musket's 40 ft range edge to edge; the firearm armor-class rule measures centre to centre. An unarmed musket shot ordered from the edge of its range against a Medium target is resolved at about 43 ft, past the first increment | **Open; design question.** Observed on both builds. Not changed |
+| NEW-08 | With Steady Aim and Deadeye both armed inside the lengthened first increment, the shot uses up Deadeye's state and its grit while Deadeye authorizes nothing | **Design question** (Deadeye pricing). Observed on the NEW-03 branch. Not changed |
 | NEW-04 | Six visible buffs have no icon: Deadeye Armed, four Bleeding Wound bleeds, Falling Petal | **Open.** Needs an art decision and an authorized catalog change |
 | NEW-05 | Deadeye reports itself available while armed (observed, availability check only). From source a second use would spend another grit and replace the state; that was not run | **Design question.** Policy unchanged |
 | NEW-06 | The product's deed scenarios add armed buffs directly and call runtime hooks on units with no view, so they cannot see activation or real-ability defects | **Open coverage gap.** The loader-compat `kmgDeedLifecycle` probe covers the real triggers used here |
@@ -56,8 +58,11 @@ superseded by the owner's later instruction to cut v0.0.191.
 This cut's two remaining checks were finished in the review follow-up (Stop Bleeding on all four bleeds; the Deadeye
 step with the corrected expectation).
 
-1. NEW-03, Steady Aim's rule hook, with its range effect judged through a real shot.
-2. NEW-04, icons for the six visible buffs, once the art choice is made.
-3. S3 T3 (INT-03): retire the dead Dodge diagnostic and delivery (keeping `DodgeGritCostCalculator`), and give the
+NEW-03 was then worked as its own cut on a branch stacked on PR #169 (`docs/GUNSLINGER-STEADY-AIM-RANGE.md`).
+
+1. NEW-04, icons for the six visible buffs, once the art choice is made.
+2. S3 T3 (INT-03): retire the dead Dodge diagnostic and delivery (keeping `DodgeGritCostCalculator`), and give the
    Dodge scenario a route that can run its command.
-4. RISK-07 with its provider; the broader compatibility and save-and-load work.
+3. RISK-07 with its provider; the broader compatibility and save-and-load work.
+4. NEW-05 and NEW-08 (Deadeye's re-arm rule and pricing) and NEW-07 (range measurement), each a decision before any
+   change. Up Close and Deadly's damage is still not judged.

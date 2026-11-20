@@ -26,11 +26,23 @@
   not released), where the same use arms the state, an eligible firearm shot consumes it and an unused one ends after
   one round with no refund. The product's own `disposable-gunslinger-deadeye` scenario adds the buff directly and so
   never showed this.
-- Steady Aim's armed state is never consumed by a shot and never grants its 10 feet. `SteadyAimAttackHandler` reads
-  `RuleAttackWithWeapon.AttackRoll` before the rule has triggered, where Kingmaker has not created the roll yet, and
-  returns. Observed in a loaded game on the branch candidate with a Musket Master and a musket: the state arms, a
-  qualifying shot leaves it in place, and it runs out after one round. From source, the published v0.0.191 is the same
-  (the handler is unchanged); it was not run there. Not repaired; it needs a change to the deed's rule hook.
+- Steady Aim's armed state is never consumed by a shot and never grants its 10 feet in the published v0.0.191 (from
+  source; the published package was not run for this) and on branch `codex/def02-buff-effect-links` (observed).
+  `SteadyAimAttackHandler` read `RuleAttackWithWeapon.AttackRoll` before the rule had triggered, where Kingmaker has
+  not created the roll yet, and returned. Repaired on branch `codex/new03-steady-aim-attack-roll` (stacked on PR
+  #169; not merged, not released): the shot is resolved in the attack-roll prefix, after the discharge step and
+  before Deadeye and armor-class selection. In a loaded game, through the real ability and the game's attack
+  command, a musket shot resolved at 43.2 ft used ordinary armor class unarmed and touch armor class armed, the
+  state was removed once on a hit and on a miss, grit did not change, and the next shot was ordinary again. Record,
+  evidence and limits: `docs/GUNSLINGER-STEADY-AIM-RANGE.md`.
+- A musket shot ordered from the edge of its range is resolved past its first range increment. The game's attack
+  command measures the musket's 40 ft between the two units' edges; the firearm armor-class rule measures between
+  their centres. Against a Medium target the shooter stops at about 43 ft by the second measure, so the shot is
+  resolved against ordinary armor class unless Steady Aim is armed. Observed in a loaded game on both the branch and
+  its predecessor. Not changed; left as a question for the firearm-rules work.
+- With Steady Aim and Deadeye both armed inside the lengthened first increment, the shot uses up Deadeye's state
+  (and the grit Deadeye cost to arm) while Deadeye authorizes nothing, because the range already gives touch armor
+  class. Observed on branch `codex/new03-steady-aim-attack-roll`. This is Deadeye's existing pricing; not changed.
 - Deadeye reports itself available while Deadeye Armed is up. That much was observed in a loaded game, through the
   game's own availability check; a second use was not attempted. From source, the registered ability has no "not
   already armed" restriction, its resource logic spends grit on every use and the armed buff replaces itself, so a

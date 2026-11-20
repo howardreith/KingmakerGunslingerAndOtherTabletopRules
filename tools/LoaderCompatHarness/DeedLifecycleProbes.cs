@@ -100,6 +100,10 @@ namespace KmgLoaderCompatHarness
         private const string DodgeGuard = "KingmakerGunslinger.Deeds.GunslingerDodgeExpirationPatch";
         private const string DodgeBonus = "KingmakerGunslinger.Deeds.GunslingerDodgeArmorClassBonus";
         private const string EasternDiagnostics = "KingmakerGunslinger.EasternWeapons.EasternNamedWeaponEffectDiagnostics";
+        private const string RangeContext = "KingmakerGunslinger.Rules.EffectiveFirearmRangeRuntime";
+        private const string ArmorClassLog = "KingmakerGunslinger.Rules.FirearmArmorClassCombatLog";
+        private const string Misfires = "KingmakerGunslinger.Misfires.FirearmMisfireRuntime";
+        private const string DeadeyeDiagnostics = "KingmakerGunslinger.Deeds.DeadeyeRuntimeDiagnostics";
 
         private sealed class Observer : IUnitBuffHandler, IGlobalRulebookHandler<RuleAttackRoll>, IGlobalRulebookHandler<RuleDealDamage>,
             IGlobalRulebookHandler<RuleDealStatDamage>
@@ -110,7 +114,49 @@ namespace KmgLoaderCompatHarness
             public readonly JArray AttackRolls = new JArray();
             public readonly JArray Damage = new JArray();
 
+            /// <summary>Units whose own attack rolls are recorded in full: the range and armor class each roll used.</summary>
+            public readonly HashSet<UnitEntityData> Shooters = new HashSet<UnitEntityData>();
+            public readonly List<KeyValuePair<RuleAttackRoll, JObject>> Shots = new List<KeyValuePair<RuleAttackRoll, JObject>>();
+            public BlueprintBuff ArmedState;
+            /// <summary>A native generator seed for the next roll by a shooter, set as that roll starts so nothing else draws from it first.</summary>
+            public int? NextSeed;
+            private bool armedAtStart;
+            private long messagesAtStart;
+
             private static double Now() => Math.Round(Game.Instance.TimeController.GameTime.TotalSeconds, 2);
+
+            private bool Armed(UnitEntityData unit)
+            {
+                return ArmedState != null && unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Any(buff => ReferenceEquals(buff.Blueprint, ArmedState));
+            }
+
+            private void Shot(RuleAttackRoll evt)
+            {
+                UnitEntityData target = evt.Target;
+                var armorClass = target.Stats.AC;
+                bool flatFooted = evt.IsTargetFlatFooted;
+                int ordinary = flatFooted ? armorClass.FlatFooted : armorClass.ModifiedValue;
+                int touch = flatFooted ? armorClass.FlatFootedTouch : armorClass.Touch;
+                double meters = evt.Initiator.DistanceTo(target);
+                long messages = Counter(ArmorClassLog, "Attempts");
+                var row = new JObject
+                {
+                    ["initiator"] = evt.Initiator.Blueprint.name, ["target"] = target.Blueprint.name, ["weapon"] = evt.Weapon == null ? null : evt.Weapon.Blueprint.name,
+                    ["weaponRangeFeet"] = evt.Weapon == null ? null : (JToken)evt.Weapon.Blueprint.Type.AttackRange.Value,
+                    ["fromWeaponAttackRule"] = evt.RuleAttackWithWeapon != null,
+                    ["distanceMeters"] = Math.Round(meters, 3), ["distanceFeet"] = Math.Round(meters / 0.3048, 2),
+                    ["rangeBonusFeet"] = Convert.ToInt32(Product(RangeContext).GetMethod("GetBonusFeet", Any).Invoke(null, new object[] { evt }), CultureInfo.InvariantCulture),
+                    ["natural"] = (int)evt.Roll, ["attackBonus"] = evt.AttackBonus, ["attackBonusPenalty"] = evt.AttackBonusPenalty,
+                    ["shootingIntoMeleePenalty"] = evt.AttackBonusRule == null ? null : (JToken)evt.AttackBonusRule.ShootIntoCombatBonus, ["result"] = evt.Result.ToString(), ["hit"] = evt.IsHit,
+                    ["targetHitPointsLeft"] = target.HPLeft,
+                    ["selectedArmorClass"] = evt.TargetAC, ["targetFlatFooted"] = flatFooted, ["targetOrdinaryArmorClass"] = ordinary, ["targetTouchArmorClass"] = touch,
+                    ["selected"] = evt.TargetAC == touch && touch != ordinary ? "touch" : evt.TargetAC == ordinary && touch != ordinary ? "ordinary" : "undetermined",
+                    ["productArmorClassMessage"] = messages > messagesAtStart ? (string)ProductStatic(ArmorClassLog, "LastMessage") : null,
+                    ["completedWithoutMisfire"] = (bool)Product(Misfires).GetMethod("WasCompletedNonMisfire", Any).Invoke(null, new object[] { evt }),
+                    ["armedWhenRollStarted"] = armedAtStart, ["armedWhenRollEnded"] = Armed(evt.Initiator), ["gameSeconds"] = Now()
+                };
+                Shots.Add(new KeyValuePair<RuleAttackRoll, JObject>(evt, row));
+            }
 
             private void Buff(string kind, Buff buff)
             {
@@ -124,10 +170,19 @@ namespace KmgLoaderCompatHarness
 
             public void HandleBuffDidAdded(Buff buff) => Buff("added", buff);
             public void HandleBuffDidRemoved(Buff buff) => Buff("removed", buff);
-            public void OnEventAboutToTrigger(RuleAttackRoll evt) { }
+            public void OnEventAboutToTrigger(RuleAttackRoll evt)
+            {
+                if (evt.Initiator == null || !Shooters.Contains(evt.Initiator)) return;
+                armedAtStart = Armed(evt.Initiator);
+                messagesAtStart = Counter(ArmorClassLog, "Attempts");
+                if (!NextSeed.HasValue) return;
+                UnityEngine.Random.InitState(NextSeed.Value);
+                NextSeed = null;
+            }
 
             public void OnEventDidTrigger(RuleAttackRoll evt)
             {
+                if (evt.Initiator != null && evt.Target != null && Shooters.Contains(evt.Initiator)) Shot(evt);
                 if (evt.Target == null || !Units.Contains(evt.Target)) return;
                 AttackRolls.Add(new JObject
                 {
@@ -214,6 +269,7 @@ namespace KmgLoaderCompatHarness
                     case "condition": routine = Condition(); break;
                     case "fallingPetal": routine = FallingPetal(); break;
                     case "mountainSunder": routine = MountainSunder(); break;
+                    case "steadyAim": routine = SteadyAim(); break;
                     default: return Verdict("unknown deed lifecycle script " + script);
                 }
             }
@@ -247,6 +303,7 @@ namespace KmgLoaderCompatHarness
             // What was observed is recorded first, so that no release below can lose it.
             Record["buffEvents"] = observer.BuffEvents;
             Record["attackRollsOnWatchedUnits"] = observer.AttackRolls;
+            if (observer.Shots.Count != 0) Record["attackRollsByShooters"] = new JArray(observer.Shots.Select(shot => (object)shot.Value).ToArray());
             Record["damageOnWatchedUnits"] = observer.Damage;
             Record["pausesLifted"] = pausesLifted;
             Record["findings"] = new JArray(findings.Cast<object>().ToArray());
@@ -932,6 +989,372 @@ namespace KmgLoaderCompatHarness
             Attack(actor, hostile, firearm, 15, true, shots);
             Record["shotAfterEnd"] = new JObject { ["gritBefore"] = gritBeforeLate, ["gritAfter"] = Grit(actor), ["armedOnUnit"] = OnUnit(actor, blueprint) != null };
             Expect(Grit(actor) == gritBeforeLate, "a shot after the state ended changed grit from " + gritBeforeLate + " to " + Grit(actor));
+        }
+
+        // ---- Steady Aim: the range of the next two-handed shot ----
+
+        private const double FeetPerMeter = 1d / 0.3048d;
+
+        /// <summary>
+        /// A spot for the shooter and one for the target the given distance away, joined by a straight walkable line, so
+        /// that the attack command has both a clear line of fire and room to close to its weapon's range.
+        /// </summary>
+        private bool ClearLine(double meters, bool clearOfUnits, out Vector3 from, out Vector3 to)
+        {
+            Vector3 main = Game.Instance.Player.MainCharacter.Value.Position;
+            foreach (Vector3 offset in new[] { new Vector3(3f, 0f, 3f), new Vector3(-3f, 0f, 3f), new Vector3(3f, 0f, -3f), new Vector3(-3f, 0f, -3f), Vector3.zero })
+            {
+                Vector3 start = Kingmaker.View.ObstacleAnalyzer.GetNearestNode(main + offset).clampedPosition;
+                if (!Kingmaker.View.ObstacleAnalyzer.IsPointInsideNavMesh(start)) continue;
+                for (int step = 0; step < 24; step++)
+                {
+                    double angle = step * Math.PI / 12d;
+                    Vector3 end = start + new Vector3((float)(Math.Cos(angle) * meters), 0f, (float)(Math.Sin(angle) * meters));
+                    Vector3 reached = Kingmaker.View.ObstacleAnalyzer.TraceAlongNavmesh(start, end);
+                    if (new Vector2(reached.x - end.x, reached.z - end.z).magnitude > 0.05f) continue;
+                    // Nobody from the save within 20 ft of the target's spot: a bystander next to the target would
+                    // engage it once the fight starts, and the game then takes 4 off every shot into that melee.
+                    if (clearOfUnits && Game.Instance.State.Units.Any(unit => unit != null && unit.DistanceTo(reached) < 6.1f)) continue;
+                    from = start;
+                    to = reached;
+                    return true;
+                }
+            }
+
+            from = to = Vector3.zero;
+            return false;
+        }
+
+        private void QueueNatural(int natural)
+        {
+            Product(Misfires).GetMethod("QueueForcedNaturalRoll", Any).Invoke(null, new object[] { natural });
+            observer.NextSeed = Seed(natural);
+        }
+
+        private void CancelNatural()
+        {
+            Product(Misfires).GetMethod("CancelForcedNaturalRoll", Any).Invoke(null, null);
+            observer.NextSeed = null;
+        }
+
+        /// <summary>
+        /// One shot through the game's own attack command: the unit is told to attack, closes to its weapon's range if
+        /// it has to, plays the attack and the command triggers the weapon attack rule. The firearm is given one loaded
+        /// round first, and the natural roll is fixed as the roll starts.
+        /// </summary>
+        private IEnumerable<object> Shoot(UnitEntityData shooter, UnitEntityData target, ItemEntityWeapon weapon, int natural, JObject record)
+        {
+            target.Descriptor.Damage = 0;
+            LoadRound(weapon);
+            QueueNatural(natural);
+            shooter.CombatState.Cooldown.StandardAction = 0f;
+            shooter.CombatState.Cooldown.MoveAction = 0f;
+            shooter.CombatState.Cooldown.SwiftAction = 0f;
+            shooter.Commands.InterruptAll(true);
+            int before = observer.Shots.Count;
+            int gritBefore = Grit(shooter);
+            var command = new UnitAttack(target);
+            command.IgnoreCooldown(null);
+            record["through"] = "attack command";
+            record["requestedNatural"] = natural;
+            record["distanceFeetWhenOrdered"] = Math.Round(shooter.DistanceTo(target) * FeetPerMeter, 2);
+            shooter.Commands.Run(command);
+            record["commandTakenByTheUnit"] = shooter.Commands.Raw.Any(queued => ReferenceEquals(queued, command));
+            yield return Until("the attack command to resolve an attack roll", () => observer.Shots.Count > before, 25);
+            CancelNatural();
+            // The command is left to end by itself. An attack command still in the unit's slot absorbs the next attack
+            // order instead of being replaced by it, and that order then never runs.
+            double rolledAt = Now();
+            yield return Until("the attack command to end", () => command.IsFinished || Now() >= rolledAt + 5d, 60);
+            record["commandStarted"] = command.IsStarted;
+            record["commandActed"] = command.IsActed;
+            record["commandFinished"] = command.IsFinished;
+            record["commandEndedAfterGameSeconds"] = Math.Round(Now() - rolledAt, 2);
+            record["commandResult"] = command.Result.ToString();
+            record["attackRollsResolved"] = observer.Shots.Count - before;
+            record["gritBefore"] = gritBefore;
+            record["gritAfter"] = Grit(shooter);
+            if (observer.Shots.Count > before)
+            {
+                KeyValuePair<RuleAttackRoll, JObject> shot = observer.Shots[before];
+                record["rollIsTheCommandsOwn"] = command.LastAttackRule != null && ReferenceEquals(command.LastAttackRule.AttackRoll, shot.Key);
+                record["roll"] = shot.Value;
+            }
+
+            shooter.Commands.InterruptAll(true);
+            double interruptedAt = Now();
+            yield return Until("the unit's attack slot to clear", () => !shooter.Commands.Raw.Any(queued => queued is UnitAttack && !queued.IsFinished) || Now() >= interruptedAt + 2d, 30);
+        }
+
+        /// <summary>The same shot through the weapon attack rule alone, for the cases that must resolve at once.</summary>
+        private JObject ShootByRule(UnitEntityData shooter, UnitEntityData target, ItemEntityWeapon weapon, int natural, JObject record)
+        {
+            int before = observer.Shots.Count;
+            int gritBefore = Grit(shooter);
+            record["through"] = "weapon attack rule";
+            record["requestedNatural"] = natural;
+            target.Descriptor.Damage = 0;
+            LoadRound(weapon);
+            QueueNatural(natural);
+            try { Rulebook.Trigger(new RuleAttackWithWeapon(shooter, target, weapon, 0)); }
+            finally { CancelNatural(); }
+            record["attackRollsResolved"] = observer.Shots.Count - before;
+            record["gritBefore"] = gritBefore;
+            record["gritAfter"] = Grit(shooter);
+            if (observer.Shots.Count > before) record["roll"] = observer.Shots[before].Value;
+            return record;
+        }
+
+        /// <summary>What a recorded shot must show: which armor class it was resolved against, and the range bonus it carried.</summary>
+        private void ExpectShot(string name, JObject record, string selected, int bonusFeet, bool? hit)
+        {
+            JObject roll = record["roll"] as JObject;
+            if (roll == null)
+            {
+                findings.Add(name + ": no attack roll was resolved");
+                return;
+            }
+
+            double feet = (double)roll["distanceFeet"];
+            Expect((int)record["attackRollsResolved"] == 1, name + ": " + record["attackRollsResolved"] + " attack rolls were resolved, expected 1");
+            Expect(feet > 40d && feet < 50d, name + ": the attack was resolved at " + feet + " ft, outside the 40 to 50 ft window the comparison needs");
+            Expect((int)roll["rangeBonusFeet"] == bonusFeet, name + ": the attack carried a range bonus of " + roll["rangeBonusFeet"] + " ft, expected " + bonusFeet);
+            Expect((string)roll["selected"] == selected, name + ": the attack was resolved against " + roll["selected"] + " armor class (" + roll["selectedArmorClass"] + "; ordinary " +
+                roll["targetOrdinaryArmorClass"] + ", touch " + roll["targetTouchArmorClass"] + "), expected " + selected);
+            string message = (string)roll["productArmorClassMessage"];
+            string expectedMessage = selected == "touch" ? "Firearm: Touch AC (" : "Firearm: Normal AC (";
+            Expect(message != null && message.StartsWith(expectedMessage, StringComparison.Ordinal), name + ": the product's combat-log line is '" + message + "', expected it to start '" + expectedMessage + "'");
+            Expect((int)roll["weaponRangeFeet"] == 40, name + ": the musket's own range reads " + roll["weaponRangeFeet"] + " ft, expected 40");
+            Expect((int)record["gritAfter"] == (int)record["gritBefore"], name + ": the shot changed grit from " + record["gritBefore"] + " to " + record["gritAfter"]);
+            if (hit.HasValue) Expect((bool)roll["hit"] == hit.Value, name + ": the shot " + ((bool)roll["hit"] ? "hit" : "missed (" + roll["result"] + ")") + ", expected a " + (hit.Value ? "hit" : "miss"));
+            if ((string)record["through"] == "attack command")
+                Expect(record["rollIsTheCommandsOwn"] != null && (bool)record["rollIsTheCommandsOwn"], name + ": the recorded roll is not the one the attack command triggered");
+        }
+
+        private IEnumerator<object> SteadyAim()
+        {
+            BlueprintAbility ability = Blueprint<BlueprintAbility>("ability");
+            BlueprintBuff blueprint = Blueprint<BlueprintBuff>("buff");
+            BlueprintAbility deadeyeAbility = Blueprint<BlueprintAbility>("deadeyeAbility");
+            BlueprintBuff deadeyeBuff = Blueprint<BlueprintBuff>("deadeyeBuff");
+            BlueprintArchetype archetype = Blueprint<BlueprintArchetype>("archetype");
+            BlueprintAbilityResource gritResource = Blueprint<BlueprintAbilityResource>("grit");
+            double startFeet = double.Parse(Id("startFeet"), CultureInfo.InvariantCulture);
+            Watch(blueprint, deadeyeBuff);
+            observer.ArmedState = blueprint;
+            Record["blueprint"] = BuffCensus.Describe(blueprint);
+            Game.Instance.IsPaused = true;
+
+            Vector3 from, to;
+            bool clearOfUnits = ClearLine(startFeet / FeetPerMeter, true, out from, out to);
+            if (!clearOfUnits && !ClearLine(startFeet / FeetPerMeter, false, out from, out to)) throw new InvalidOperationException("no straight walkable line of " + startFeet + " ft was found near the main character");
+            UnitEntityData actor = Gunslinger("SteadyGunslinger", from, 1, 20, archetype);
+            UnitEntityData bystander = Gunslinger("OtherGunslinger", from + (from - to).normalized * 0.01f + Vector3.Cross(Vector3.up, (to - from).normalized) * 1.2f, 1, 20, archetype);
+            UnitEntityData hostile = SpawnHostile(actor, to);
+            // An ordinary armor class eight above touch, so the two cannot be mistaken; no Dexterity, so that being caught
+            // flat-footed changes neither; and no movement, so that the distance is the shooter's doing alone.
+            hostile.Descriptor.Stats.Dexterity.BaseValue = 10;
+            hostile.Descriptor.Stats.AC.AddModifier(8, (GameLogicComponent)null, Kingmaker.Enums.ModifierDescriptor.NaturalArmor);
+            hostile.Descriptor.State.AddCondition(UnitCondition.CantMove);
+            // Hit points to spare: a target knocked out by the first hit has a different armor class for the next shot.
+            hostile.Descriptor.Stats.HitPoints.AddModifier(5000, (GameLogicComponent)null, Kingmaker.Enums.ModifierDescriptor.None);
+            // No unit here acts for itself. Once the first shot starts a fight the game's own AI would otherwise order
+            // attacks for the shooter as well, and those displace the attack commands under test.
+            foreach (UnitEntityData unit in new[] { actor, bystander, hostile }) unit.IsBrainActive = false;
+            observer.Shooters.Add(actor);
+            observer.Shooters.Add(bystander);
+            ItemEntityWeapon musket = Equip(actor, Firearm("Musket"));
+            ItemEntityWeapon otherMusket = Equip(bystander, Firearm("Musket"));
+            Record["fixture"] = new JObject
+            {
+                ["archetype"] = archetype.name, ["targetSpotClearOfOtherUnits"] = clearOfUnits, ["firearm"] = musket.Blueprint.name, ["firearmRangeFeet"] = musket.Blueprint.Type.AttackRange.Value,
+                ["requestedDistanceFeet"] = startFeet, ["distanceFeetAtStart"] = Math.Round(actor.DistanceTo(hostile) * FeetPerMeter, 2),
+                ["targetOrdinaryArmorClass"] = hostile.Stats.AC.ModifiedValue, ["targetTouchArmorClass"] = hostile.Stats.AC.Touch,
+                ["targetFlatFootedArmorClass"] = hostile.Stats.AC.FlatFooted, ["targetFlatFootedTouchArmorClass"] = hostile.Stats.AC.FlatFootedTouch,
+                ["targetHitPoints"] = hostile.HPLeft,
+                ["grit"] = Grit(actor), ["deadeyeGranted"] = actor.Descriptor.Abilities.GetAbility(deadeyeAbility) != null
+            };
+            Expect(hostile.Stats.AC.ModifiedValue != hostile.Stats.AC.Touch, "the target's ordinary and touch armor class are the same");
+            yield return GameSeconds(0.5);
+
+            // 1. Not armed: the control shot.
+            var control = new JObject();
+            Record["controlShot"] = control;
+            foreach (object wait in Shoot(actor, hostile, musket, 10, control)) yield return wait;
+            ExpectShot("control shot", control, "ordinary", 0, null);
+
+            // 2. Armed through the real ability, then a shot that hits.
+            var armedHit = new JObject();
+            Record["armedShotThatHits"] = armedHit;
+            foreach (object wait in Arm(actor, ability, blueprint, armedHit)) yield return wait;
+            Expect(!(bool)armedHit["availableWhileArmed"], "Steady Aim can be used again while armed");
+            var hitShot = new JObject();
+            armedHit["shot"] = hitShot;
+            int removedBefore = Notices("removed", blueprint, actor);
+            foreach (object wait in Shoot(actor, hostile, musket, 19, hitShot)) yield return wait;
+            armedHit["armedAfterShot"] = OnUnit(actor, blueprint) != null;
+            armedHit["buffRemovedNotices"] = Notices("removed", blueprint, actor) - removedBefore;
+            ExpectShot("armed shot", hitShot, "touch", 10, true);
+            ExpectConsumed("armed shot", armedHit, hitShot);
+
+            // 3. The next shot is an ordinary one again.
+            var following = new JObject();
+            Record["followingShot"] = following;
+            if (OnUnit(actor, blueprint) != null)
+            {
+                following["leftOverStateWaitedOut"] = true;
+                yield return Ended(blueprint, actor);
+            }
+
+            foreach (object wait in Shoot(actor, hostile, musket, 10, following)) yield return wait;
+            ExpectShot("following shot", following, "ordinary", 0, null);
+
+            // 4. Armed, then a shot that misses without misfiring.
+            var armedMiss = new JObject();
+            Record["armedShotThatMisses"] = armedMiss;
+            foreach (object wait in Arm(actor, ability, blueprint, armedMiss)) yield return wait;
+            var missShot = new JObject();
+            armedMiss["shot"] = missShot;
+            removedBefore = Notices("removed", blueprint, actor);
+            foreach (object wait in Shoot(actor, hostile, musket, 3, missShot)) yield return wait;
+            armedMiss["armedAfterShot"] = OnUnit(actor, blueprint) != null;
+            armedMiss["buffRemovedNotices"] = Notices("removed", blueprint, actor) - removedBefore;
+            ExpectShot("armed miss", missShot, "touch", 10, false);
+            ExpectConsumed("armed miss", armedMiss, missShot);
+            Expect(missShot["roll"] != null && (bool)missShot["roll"]["completedWithoutMisfire"], "armed miss: the product did not record the shot as completed without a misfire");
+
+            // 5. A one-handed firearm shot while armed leaves the state for the musket shot that follows.
+            var nonqualifying = new JObject();
+            Record["oneHandedShotWhileArmed"] = nonqualifying;
+            foreach (object wait in Arm(actor, ability, blueprint, nonqualifying)) yield return wait;
+            ItemEntityWeapon pistol = Equip(actor, Firearm("Pistol"));
+            JObject pistolShot = ShootByRule(actor, hostile, pistol, 15, new JObject());
+            nonqualifying["pistolShot"] = pistolShot;
+            nonqualifying["armedAfterPistolShot"] = OnUnit(actor, blueprint) != null;
+            Expect(OnUnit(actor, blueprint) != null, "a pistol shot consumed Steady Aim");
+            Expect(pistolShot["roll"] != null && (int)pistolShot["roll"]["rangeBonusFeet"] == 0, "a pistol shot carried a Steady Aim range bonus");
+            musket = Equip(actor, Firearm("Musket"));
+            var afterPistol = new JObject();
+            nonqualifying["musketShot"] = afterPistol;
+            removedBefore = Notices("removed", blueprint, actor);
+            foreach (object wait in Shoot(actor, hostile, musket, 19, afterPistol)) yield return wait;
+            nonqualifying["armedAfterShot"] = OnUnit(actor, blueprint) != null;
+            nonqualifying["buffRemovedNotices"] = Notices("removed", blueprint, actor) - removedBefore;
+            ExpectShot("musket shot after the pistol shot", afterPistol, "touch", 10, true);
+            ExpectConsumed("musket shot after the pistol shot", nonqualifying, afterPistol);
+
+            // 6. Another gunslinger's shot neither uses the state nor gains from it.
+            var isolation = new JObject();
+            Record["anotherGunslingersShot"] = isolation;
+            foreach (object wait in Arm(actor, ability, blueprint, isolation)) yield return wait;
+            JObject otherShot = ShootByRule(bystander, hostile, otherMusket, 15, new JObject());
+            isolation["otherShot"] = otherShot;
+            isolation["armedAfterOtherShot"] = OnUnit(actor, blueprint) != null;
+            Expect(OnUnit(actor, blueprint) != null, "another gunslinger's shot consumed the armed state");
+            Expect(otherShot["roll"] != null && (int)otherShot["roll"]["rangeBonusFeet"] == 0, "another gunslinger's shot carried the range bonus");
+            Expect(otherShot["roll"] != null && (string)otherShot["roll"]["selected"] == "ordinary", "another gunslinger's shot was not resolved against ordinary armor class");
+
+            // 7. Deadeye armed as well: its own range reading must already include the Steady Aim bonus, so it finds the
+            //    shot inside the first increment and does not authorize anything itself.
+            var withDeadeye = new JObject();
+            Record["withDeadeyeArmed"] = withDeadeye;
+            var deadeyeUse = new JObject();
+            withDeadeye["deadeye"] = deadeyeUse;
+            UnitUseAbility deadeyeCommand = Use(actor, deadeyeAbility, actor, deadeyeUse);
+            yield return Finished(deadeyeCommand);
+            deadeyeUse.Merge(Used(deadeyeCommand));
+            withDeadeye["steadyAimStillArmed"] = OnUnit(actor, blueprint) != null;
+            withDeadeye["deadeyeArmed"] = OnUnit(actor, deadeyeBuff) != null;
+            long appliedBefore = Counter(DeadeyeDiagnostics, "Applied"), rejectedBefore = Counter(DeadeyeDiagnostics, "Rejected"), faultsBefore = Counter(DeadeyeDiagnostics, "Faults");
+            removedBefore = Notices("removed", blueprint, actor);
+            JObject bothShot = ShootByRule(actor, hostile, musket, 19, new JObject());
+            withDeadeye["shot"] = bothShot;
+            withDeadeye["armedAfterShot"] = OnUnit(actor, blueprint) != null;
+            withDeadeye["deadeyeArmedAfterShot"] = OnUnit(actor, deadeyeBuff) != null;
+            withDeadeye["buffRemovedNotices"] = Notices("removed", blueprint, actor) - removedBefore;
+            withDeadeye["deadeyeAuthorized"] = Counter(DeadeyeDiagnostics, "Applied") - appliedBefore;
+            withDeadeye["deadeyeNotAuthorized"] = Counter(DeadeyeDiagnostics, "Rejected") - rejectedBefore;
+            withDeadeye["deadeyeFaults"] = Counter(DeadeyeDiagnostics, "Faults") - faultsBefore;
+            Expect((bool)withDeadeye["steadyAimStillArmed"] && (bool)withDeadeye["deadeyeArmed"], "Steady Aim and Deadeye were not both armed when the shot was fired");
+            ExpectShot("shot with Deadeye armed", bothShot, "touch", 10, true);
+            ExpectConsumed("shot with Deadeye armed", withDeadeye, bothShot);
+            Expect((long)withDeadeye["deadeyeNotAuthorized"] == 1 && (long)withDeadeye["deadeyeAuthorized"] == 0 && (long)withDeadeye["deadeyeFaults"] == 0,
+                "Deadeye did not read the Steady Aim range: authorized " + withDeadeye["deadeyeAuthorized"] + ", not authorized " + withDeadeye["deadeyeNotAuthorized"] + ", faults " + withDeadeye["deadeyeFaults"] +
+                " (expected 0, 1, 0: inside the lengthened first increment)");
+            if (OnUnit(actor, deadeyeBuff) != null) actor.Descriptor.Buffs.RemoveFact(OnUnit(actor, deadeyeBuff));
+            if (OnUnit(actor, blueprint) != null) yield return Ended(blueprint, actor);
+
+            // 8. Grit lost after arming: the shot still uses the state up and gains nothing.
+            var gritLost = new JObject();
+            Record["gritLostAfterArming"] = gritLost;
+            actor.Descriptor.Resources.Restore(gritResource, 100);
+            foreach (object wait in Arm(actor, ability, blueprint, gritLost)) yield return wait;
+            actor.Descriptor.Resources.Spend(gritResource, Grit(actor));
+            gritLost["gritWhenFired"] = Grit(actor);
+            var emptyShot = new JObject();
+            gritLost["shot"] = emptyShot;
+            removedBefore = Notices("removed", blueprint, actor);
+            foreach (object wait in Shoot(actor, hostile, musket, 19, emptyShot)) yield return wait;
+            gritLost["armedAfterShot"] = OnUnit(actor, blueprint) != null;
+            gritLost["buffRemovedNotices"] = Notices("removed", blueprint, actor) - removedBefore;
+            gritLost["availableWithNoGrit"] = Available(actor, ability);
+            Expect((int)gritLost["gritWhenFired"] == 0, "grit was " + gritLost["gritWhenFired"] + " when the shot was fired, expected 0");
+            ExpectShot("shot after grit was lost", emptyShot, "ordinary", 0, null);
+            ExpectConsumed("shot after grit was lost", gritLost, emptyShot);
+            Expect(!(bool)gritLost["availableWithNoGrit"], "Steady Aim reads as available with no grit");
+            actor.Descriptor.Resources.Restore(gritResource, 100);
+
+            // 9. Armed and left alone: the state ends by itself after one round.
+            var unused = new JObject();
+            Record["armedThenLeft"] = unused;
+            double armedAt = Now();
+            foreach (object wait in Arm(actor, ability, blueprint, unused)) yield return wait;
+            yield return Ended(blueprint, actor);
+            double? lasted = Lasted(blueprint, actor, armedAt);
+            unused["endedAfterGameSeconds"] = Seconds(lasted);
+            unused["gritAfterEnd"] = Grit(actor);
+            Expect(OneRound(lasted), lasted.HasValue ? blueprint.name + " lasted " + lasted + " s of game time unused, expected one round" : blueprint.name + " did not end by itself");
+            Expect(Grit(actor) == (int)unused["gritBefore"], "grit is " + Grit(actor) + " after the unused state ended, expected " + unused["gritBefore"]);
+        }
+
+        /// <summary>Arms through the real ability and records what arming did.</summary>
+        private IEnumerable<object> Arm(UnitEntityData actor, BlueprintAbility ability, BlueprintBuff blueprint, JObject record)
+        {
+            if (OnUnit(actor, blueprint) != null)
+            {
+                // Left over from a shot that should have used it up: let it run out so this arming starts clean.
+                record["leftOverStateWaitedOut"] = true;
+                yield return Ended(blueprint, actor);
+            }
+
+            int gritBefore = Grit(actor);
+            int addedBefore = Notices("added", blueprint, actor);
+            actor.CombatState.Cooldown.StandardAction = 0f;
+            actor.CombatState.Cooldown.MoveAction = 0f;
+            actor.CombatState.Cooldown.SwiftAction = 0f;
+            UnitUseAbility command = Use(actor, ability, actor, record);
+            yield return Finished(command);
+            record.Merge(Used(command));
+            Buff armed = OnUnit(actor, blueprint);
+            record["gritBefore"] = gritBefore;
+            record["gritAfterArming"] = Grit(actor);
+            record["armedOnUnit"] = armed != null;
+            record["timeLeftSeconds"] = TimeLeft(armed);
+            record["buffAddedNotices"] = Notices("added", blueprint, actor) - addedBefore;
+            record["availableWhileArmed"] = Available(actor, ability);
+            Expect(armed != null, blueprint.name + " is not on the gunslinger after the ability was used");
+            Expect(Grit(actor) == gritBefore, "arming changed grit from " + gritBefore + " to " + Grit(actor));
+            Expect((int)record["buffAddedNotices"] == 1, "the game raised " + record["buffAddedNotices"] + " buff-added notices for " + blueprint.name + ", expected 1");
+        }
+
+        /// <summary>The armed state was on the gunslinger as the roll started and was removed once by the time it ended.</summary>
+        private void ExpectConsumed(string name, JObject record, JObject shot)
+        {
+            JObject roll = shot["roll"] as JObject;
+            Expect(roll != null && (bool)roll["armedWhenRollStarted"], name + ": the gunslinger was not armed when the roll started");
+            Expect(roll != null && !(bool)roll["armedWhenRollEnded"], name + ": the armed state was still on the gunslinger when the roll ended");
+            Expect(!(bool)record["armedAfterShot"], name + ": the armed state is still on the gunslinger after the shot");
+            Expect((int)record["buffRemovedNotices"] == 1, name + ": the game raised " + record["buffRemovedNotices"] + " buff-removed notices, expected 1");
         }
 
         // ---- Bleeding Wound: four target bleeds ----
