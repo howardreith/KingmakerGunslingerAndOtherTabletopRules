@@ -178,11 +178,11 @@ restriction, not an untested supported route.
 - the behaviour with the setting off;
 - Call of the Wild itself, and every identity.
 
-### Presentation boundary for owner review
+### Presentation boundary (retained limitations of the accepted scope)
 
 The principal review (2026-11-20) retains the projection direction and its raw fallbacks, and the native tooltip as
-the distinguishing presentation for this development scope; no nested chooser. The measurements below are for the
-owner.
+the distinguishing presentation for this development scope; no nested chooser. The items below are retained
+presentation limitations within the accepted development scope; recording them does not reopen the story.
 
 - **Creature icons:** projected children show the creature's icon, like every projected row. Their metamagic is
   visible in the tooltip's Metamagic block, as for Call of the Wild's raw rows.
@@ -213,7 +213,8 @@ owner.
   metamagic text and comparison key, for example "Beetle, Fire (1d4+1)" with "Heightened,": once from the tier III
   d4+1 conversion under Heighten +2 (key `7b531828b885e8b47a7b06a6f1a34805|16|2|2`) and once from the tier IV d4+1
   conversion under Heighten +1 (`24ed31f7b42eb5f4ab461be90d479066|16|1|1`), both from the level 5 slot. They are
-  retained as published and left for owner review; whether every effect of the two is identical was not established.
+  retained as published, a presentation limitation of the accepted scope; whether every effect of the two is
+  identical was not established.
 - **Alternative, if the owner prefers it:** keep Call of the Wild's rows raw and label them with their tier and
   metamagic. Hiding them, or changing their power, would need an explicit product decision; neither was done.
 

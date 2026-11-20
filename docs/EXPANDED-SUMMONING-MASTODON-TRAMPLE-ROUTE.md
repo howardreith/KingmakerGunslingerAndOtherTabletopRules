@@ -19,7 +19,7 @@ is implemented and no action priority has changed.** Not merged, not released.
 | Shape | A field copy of the native `OverrunAbility` (`1a3b471ecea51f7439a946b23577fd70`): Extraordinary, range double move, **point target only** (no self, friend or enemy target), Standard action made full-round; `AbilityCustomOverrun` (auto-success, every contact) running `ContextActionUngulateTrample`; `AbilityIsFullRoundInTurnBased`; `UngulateTramplePathChecker` (farther than the body, at most twice the current speed) |
 | Contact rule | `ContextActionUngulateTrample`: enemy smaller than the Mastodon, once per target per round (round ledger), a target with a legal melee attack of opportunity makes it at -4 (stopping the trample if the Mastodon cannot continue, otherwise full damage and no save), otherwise Reflex DC 29 for half; 2d8+18 from live Strength and hit dice; ordinary command interruption |
 | Grant | `KMG.Summoning.Unit.Mastodon` (`e129ffc2768d47c5bee61bb99b0c8703`) `AddFacts`; one grant |
-| Published routes | 12 rows spawn this unit: Summon Monster VII single, VIII 1d3 and IX 1d4+1 (each with its celestial and fiendish executions) and Summon Nature's Ally VII single, VIII 1d3 and IX 1d4+1. Every spawn sets `IsDirectlyControllable` false |
+| Routes that spawn the unit | Twelve canonical registered execution graphs, representing six menu placements: the three Summon Monster VII to IX canonical placements (single, 1d3, 1d4+1), the six retained celestial and fiendish executions the builder creates for them, and the three Summon Nature's Ally VII to IX canonical placements. The publisher adds only the six canonical placements to the menus; the six retained executions are unpublished (which is not the same as their blueprint `Hidden` flag). Every one of the twelve sets `IsDirectlyControllable` false. The census scanned the canonical registration dictionary only: separately registered alternate-family children were not scanned. Their source contracts carry the same control setting (the control flag is part of signature validation and unit substitution preserves it); that is a source-derived conclusion, not a per-alternate observation |
 | Brain | The native "Dumb Monster Brain" (`5abc8884c6f15204c8604cb01a2efbab`), set by `ExpandedSummoningNaturalBuilder` for natural summons; its only action is `AttackAiAction` (`BlueprintAiAttack`) |
 | `SummonPlaytestR5Policy` | Declares the identity only (`MastodonTrampleSymbol`, `NewIdentities`); no AI or control route |
 
@@ -27,7 +27,7 @@ is implemented and no action priority has changed.** Not merged, not released.
 
 | Route | Result | Basis |
 |---|---|---|
-| Native AI (brain actions) | **None.** The brain holds only `AttackAiAction`; no AI action or brain among the 112,518 loaded blueprints (game, Call of the Wild, Races Unleashed, product) names this Trample | Native census in session (below); `UnitBrain` builds its actions only from `Blueprint.Brain.Actions` |
+| Native AI (brain actions) | **None found.** The configured brain holds only `AttackAiAction`. Among the 112,518 loaded blueprints (game, Call of the Wild, Races Unleashed, product) no `BlueprintAiCastSpell` names this Trample in its `Ability` field and no brain holds such an action. The scan searched those direct references only; it did not inspect every possible indirect command producer or custom AI implementation | Native census in session (below); `UnitBrain` builds its actions only from `Blueprint.Brain.Actions` |
 | Direct player control, real time | **None.** A summon's `IsDirectlyControllable` comes from its spawn action, false for every Mastodon row; native selection and ground commands use only directly controllable units | Native census; 2.1.7b `UnitEntityData.IsDirectlyControllable`, `ClickGroundHandler` |
 | Direct player control, turn-based | **None.** `TurnController` starts a unit that is not directly controllable in `Acting` (AI), never `Preparing` (player input) | 2.1.7b `TurnController` |
 | A plain native AI cast action | **Not viable as is.** `BlueprintAiCastSpell.GetTargetType` returns Self for an ability that targets neither enemies nor friends, so it would aim Trample at the Mastodon, which Trample cannot target; its `Locators` are fixed scene objects | 2.1.7b `BlueprintAiCastSpell` |
@@ -40,17 +40,24 @@ and command path also requires `IsDirectlyControllable`.
 
 Phase `summon-risk06-trample-route` (`Sprint39TrampleRoutePhase`), session file
 `scripts/compatibility/loader-compat/sessions/risk06-trample.json`, observer `RuntimeTestRunner.Risk06TrampleRoute.cs`.
-The published Summon Nature's Ally VII Mastodon row is cast through its own execution. In the owned outdoor native
-Default fixture, with the game's own controllers driving it, the Mastodon fights a Medium private hostile (100,000 hit
-points, inactive brain) standing on a surveyed legal Trample path. The observer issues no Trample command, ticks no AI
-and supplies no action; every command the Mastodon starts is recorded. Disclosed fixture steps: the hostile's size and
-placement, ordinary native combat entry (memory and `JoinCombat`), passing idle fixture turns in turn-based mode.
+This is native summoned-unit combat following disclosed fixture creation. The Mastodon is created by the accelerated
+own-tier fixture helper from the Summon Nature's Ally VII single execution: the helper temporarily grants the summoner
+that execution, supplies its spell parameters, creates a cutscene command that ignores cooldown, starts and ticks the
+execution directly, and removes the summon's appearance buff. This does not establish normal menu selection, the
+source slot's debit or the summoning cast's action expenditure. In the owned outdoor native Default fixture, with the
+game's own controllers driving it, the Mastodon then fights a Medium private hostile (100,000 hit points, inactive
+brain) standing on a surveyed legal Trample path. During that combat the observer issues the Mastodon no Trample
+command, ticks no AI and supplies it no action; every command the Mastodon starts is recorded. Disclosed fixture steps:
+the summon's creation as above, the hostile's size and placement, ordinary native combat entry (memory and
+`JoinCombat`), passing idle fixture turns in turn-based mode.
 
 ### Observed (session `20261120T140731Z`, candidate `921a952978ce`)
 
-**Configured routes (census, live):** 12 published rows spawn `KMG_Summoning_Unit_Mastodon`, each with
-`IsDirectlyControllable` false; one Trample grant (Standard action, full round); brain "Dumb Monster Brain" with exactly
-`AttackAiAction`; no AI action and no brain naming the Trample among 112,518 loaded blueprints.
+**Configured routes (census, live):** twelve canonical registered execution graphs (six menu placements and six
+retained celestial and fiendish executions) spawn `KMG_Summoning_Unit_Mastodon`, each with `IsDirectlyControllable`
+false; alternate-family children were not scanned. One Trample grant (Standard action, full round); brain "Dumb Monster
+Brain" with exactly `AttackAiAction`; among 112,518 loaded blueprints no AI cast action names the Trample in its
+`Ability` field and no brain holds one (direct references only).
 
 **Live summon (both modes):** `IsDirectlyControllable` false, `UnitPartSummonedMonster.IsDirectlyControllable` false,
 not in the party, not player faction; present in `Player.ControllableCharacters`; live brain "Dumb Monster Brain" with
@@ -66,9 +73,11 @@ In both modes every unit the cell brought into combat (the Mastodon, the hostile
 combat before the turn-based setting was restored; the game was not paused afterwards and the native Default lease
 released exactly.
 
-**Conclusion:** in normal play a summoned Mastodon never tramples. Its only AI action is an ordinary attack, nothing in
-the loaded game or mods can make its AI choose Trample, and the player cannot command it in either mode. The Trample
-qualified in R5 and Sprint 23 is reachable only by a harness command.
+**Conclusion (as accepted, 2026-11-20):** no supported normal-play Trample route was found in the inspected
+configuration. The observed canonical summon is not directly controllable, and its configured live brain supplies only
+ordinary attacks. Supported alternate adapters preserve the validated native control settings through the traced
+contracts. The Trample qualified in R5 and Sprint 23 was reached only by a harness command. The 12 of 12 session
+completes the investigation; it does not show that Trample is now accessible.
 
 ### Candidates and sessions
 

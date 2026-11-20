@@ -475,12 +475,14 @@
   tooltips rendered), the same creature at two tiers (distinguished only in the
   tooltip) and eight duplicate-looking pairs (alike under the observer's
   comparison key, which does not prove behavioural equivalence) are retained
-  and left for owner review. Spontaneous casters stay outside this scope.
+  presentation limitations within the accepted development scope. Spontaneous
+  casters stay outside this scope.
 - A summoned Mastodon never uses its Trample in normal play. Trample (2d8+18,
   Reflex DC 29, added in v0.0.180) was qualified only by a harness command: the
-  summon's only AI action is an ordinary attack, no loaded AI action names the
-  Trample, and summons cannot be commanded by the player in real-time or
-  turn-based mode. Observed natively on branch `codex/risk06-mastodon-trample-route`
+  summon's configured brain supplies only an ordinary attack, no supported
+  normal-play route was found in the inspected configuration (a scan of direct
+  AI-action references), and the canonical summon cannot be commanded by the
+  player in real-time or turn-based mode. Observed natively on branch `codex/risk06-mastodon-trample-route`
   (S5 T6 / RISK-06, draft PR #191; a normal summon in both modes made only
   attacks while a legal Trample path existed). An owned, conservative Trample
   AI action is proposed for review; nothing is implemented
