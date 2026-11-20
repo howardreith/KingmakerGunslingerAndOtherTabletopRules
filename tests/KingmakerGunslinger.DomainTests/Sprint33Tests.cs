@@ -180,7 +180,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(value.IsTwoHanded, "Revolver handedness changed.");
             Assertions.Equal(4000, value.CostGold, "Revolver cost changed.");
             Assertions.Equal(4f, value.WeightPounds, "Revolver weight changed.");
-            Assertions.True(value.IsPlayerFireable, "Revolver was unexpectedly unavailable.");
+            Assertions.False(value.IsPlayerFireable, "RISK-01: the legacy revolver must stay unsupported (unequippable).");
         }
 
         private static void AdvancedFactoriesFresh()

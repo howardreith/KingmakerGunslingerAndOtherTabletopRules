@@ -1197,10 +1197,11 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 .SelectMany(ReadNewItemBases).ToArray();
             IDictionary recognitionIndex = contract.TypeToItemField
                 .GetValue(null) as IDictionary;
-            bool recognitionOnlyExact = recognitionOnly.Length == 2 &&
+            // RISK-01: the unsupported legacy Advanced Revolver is Unavailable, not recognition-only.
+            bool recognitionOnlyExact = recognitionOnly.Length == 1 &&
                 recognitionOnly.Select(value => value.Name).OrderBy(value =>
                     value, StringComparer.Ordinal).SequenceEqual(new[] {
-                        "Advanced Revolver", "Advanced Rifle" },
+                        "Advanced Rifle" },
                     StringComparer.Ordinal) && recognitionOnly.All(value =>
                     graphBases.All(candidate => !ReferenceEquals(candidate,
                         value)) && value.Type != null && recognitionIndex !=
@@ -1210,7 +1211,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                                 value));
             AddQualificationCheck(checks,
                 "advanced-firearms-recognition-only",
-                "Advanced Rifle and Advanced Revolver absent from every creation base and present in owned-item type recognition",
+                "Advanced Rifle absent from every creation base and present in owned-item type recognition; the unsupported Advanced Revolver is not recognition-only",
                 "recognitionOnly=" + string.Join(",", recognitionOnly
                     .Select(value => value.AssetGuid).ToArray()),
                 recognitionOnlyExact,

@@ -321,9 +321,8 @@ namespace KingmakerGunslinger.DomainTests
                 "Only the three ordinary-campaign firearms may be creation bases.");
             Assertions.True(decision.FirearmRecognitionBases.Select(value =>
                     value.Identity).SequenceEqual(new[] { "pistol", "musket",
-                    "blunderbuss", "advanced-rifle",
-                    "advanced-revolver" }),
-                "All five mechanically supported firearms must remain recognized.");
+                    "blunderbuss", "advanced-rifle" }),
+                "The four supported firearms remain recognized; the unsupported Advanced Revolver is not (RISK-01).");
             Assertions.Equal("nodachi", decision.MartialBases.Single().Identity,
                 "Nodachi must use CMI Martial Weapons.");
             Assertions.True(decision.ExoticBases.Select(value =>
@@ -408,8 +407,8 @@ namespace KingmakerGunslinger.DomainTests
                 "Disabled modules must preserve owned stable upgrade identity.");
             Assertions.Equal(1, disabled.AuthoredTargets.Length,
                 "Disabled modules must preserve recognition of authored targets.");
-            Assertions.Equal(5, disabled.FirearmRecognitionBases.Length,
-                "A disabled Gunslinger module must preserve owned firearm recognition.");
+            Assertions.Equal(4, disabled.FirearmRecognitionBases.Length,
+                "A disabled Gunslinger module must preserve owned recognition of the four supported firearms (the unsupported Advanced Revolver is not recognized, RISK-01).");
             Assertions.Equal(4,
                 disabled.CustomFamilyRecognitionBases.Length,
                 "Disabled custom-family modules must preserve owned-item recognition.");
@@ -773,12 +772,15 @@ namespace KingmakerGunslinger.DomainTests
                     CraftMagicItemsCatalogFamily.Firearm,
                     CraftMagicItemsCatalogRole.CanonicalCreationBase,
                     CraftMagicItemsOwningModule.Gunslinger, true, false));
-            foreach (string firearm in new[] { "advanced-rifle",
-                "advanced-revolver" })
-                result.Add(Entry(firearm,
-                    CraftMagicItemsCatalogFamily.Firearm,
-                    CraftMagicItemsCatalogRole.LegacyRecognitionOnly,
-                    CraftMagicItemsOwningModule.Gunslinger, true, false));
+            result.Add(Entry("advanced-rifle",
+                CraftMagicItemsCatalogFamily.Firearm,
+                CraftMagicItemsCatalogRole.LegacyRecognitionOnly,
+                CraftMagicItemsOwningModule.Gunslinger, true, false));
+            // RISK-01: the registration catalog gives the unsupported revolver the Unavailable role.
+            result.Add(Entry("advanced-revolver",
+                CraftMagicItemsCatalogFamily.Firearm,
+                CraftMagicItemsCatalogRole.Unavailable,
+                CraftMagicItemsOwningModule.Gunslinger, false, true));
             result.Add(Entry("wakizashi",
                 CraftMagicItemsCatalogFamily.Wakizashi,
                 CraftMagicItemsCatalogRole.CanonicalCreationBase,
