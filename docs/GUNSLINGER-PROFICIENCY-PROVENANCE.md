@@ -1,8 +1,8 @@
 # Firearm proficiency provenance and the scope reconciler (RISK-05 / S4 T7)
 
-Status: **boundary record and rule extraction on a review branch, awaiting review. Not merged, not released.** Branch
-`codex/risk05-proficiency-provenance`, stacked on the preceding stacked checkpoint `codex/risk04-true-grit-distinct`
-(draft PR #183).
+Status: **Accepted and closed for its reviewed development scope** as part of Sprint 4 (principal review, 2026-11-18). Acceptance is not merge or release: not merged, not released. Branch
+`codex/risk05-proficiency-provenance`, draft PR #184, accepted head `d53487a2a6ee8cf595069f55828d5d5c7409ff31`, stacked
+on `codex/risk04-true-grit-distinct` (draft PR #183).
 
 ## Contract
 

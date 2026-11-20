@@ -1,7 +1,7 @@
 # The legacy Advanced Revolver: contained as unsupported content (RISK-01 / S4 T5)
 
-Status: **containment on a review branch, awaiting review. Not merged, not released.** Branch
-`codex/risk01-advanced-revolver`, stacked on the preceding stacked checkpoint `codex/pol02-deadeye-cost` (draft PR #181).
+Status: **Accepted and closed for its reviewed development scope** as part of Sprint 4 (principal review, 2026-11-18). Acceptance is not merge or release: not merged, not released. Branch
+`codex/risk01-advanced-revolver`, draft PR #182, accepted head `e30b19e8fef03bd4c5e614e3e078ca9e0a467345`, stacked on `codex/pol02-deadeye-cost` (draft PR #181).
 
 ## Contract
 

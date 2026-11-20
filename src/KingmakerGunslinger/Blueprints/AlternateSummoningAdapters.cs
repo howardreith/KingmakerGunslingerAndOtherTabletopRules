@@ -653,22 +653,18 @@ namespace KingmakerGunslinger.Blueprints
                 int spawns = ExpandedSummoningAbilityBuilder.ReplaceSpawnUnits(
                     target.ComponentsArray, unit);
                 if (spawns < 1) throw Mismatch(choice, "no-spawn");
-                // GS-AUD-0025: the canonical ordinary spell strips the native
-                // carrier's inherited celestial/fiendish template for this
-                // declared set of untemplated Summon Monster creatures, and
-                // this branch previously omitted the rule. Applying the same
-                // shared rule here means the two paths cannot diverge.
-                //
-                // It does NOT follow - and the earlier comment here wrongly
-                // said - that an alternate caller's child "kept a template the
-                // ordinary spell removes". Measured on an affected child,
-                // appliedByGraph=0: this path composes from the caller's own
-                // host template, which applies no native template at all, so
-                // the removal is currently a no-op here. It is kept so that a
-                // future host template carrying a native template cannot
-                // silently reintroduce the divergence.
-                if (ExpandedSummoningAbilityBuilder.RequiresInheritedTemplateRemoval(
-                        placement.Family, placement.Creature))
+                // GS-AUD-0025 / DEF-05: the same placement rule as the canonical
+                // spell, decided from the donor the canonical spell recorded (the
+                // native parents are already republished here), so the
+                // two paths cannot diverge. It does NOT follow that an alternate
+                // child "kept a template the ordinary spell removes" (withdrawn,
+                // PR #138): this path composes from the caller's own host
+                // template, which applies no native template, so the mirrored
+                // removal is a deliberate, harmless redundancy here (the census
+                // lists it). It guards against a future host template that
+                // carries one.
+                if (ExpandedSummoningAbilityBuilder.RequiresInheritedTemplateRemoval(placement,
+                        ExpandedSummoningAbilityBuilder.RecordedDonor(placement).Ability))
                     ExpandedSummoningAbilityBuilder.AppendInheritedTemplateRemoval(
                         target.ComponentsArray, unit,
                         ExpandedSummoningAbilityBuilder.ResolveNativeTemplateBuffs(lookup));

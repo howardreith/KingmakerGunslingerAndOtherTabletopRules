@@ -203,6 +203,7 @@ $expected = @(
     'observe-alternate-summoning-blocked-family',
     'disposable-alternate-summoning-contracts',
     'disposable-alternate-summoning-player-paths',
+    'disposable-inherited-template-casts',
     'disposable-alternate-summoning-natural',
     'disposable-expanded-summoning-sprint18-review',
     'disposable-expanded-summoning-sprint19-review',

@@ -153,7 +153,7 @@
   identity whoever granted them (Kingmaker facts carry no general provenance), sparing only the legacy Exotic Weapon
   Proficiency (Firearms) wrapper's full proficiency. No supported independent provider of these facts exists: they are
   granted only by the Gunslinger, Pistolero and Musket Master presentations and the legacy wrapper. On branch
-  `codex/risk05-proficiency-provenance` (not merged, not released) the scope rules are extracted to
+  `codex/risk05-proficiency-provenance` (accepted with Sprint 4 at `d53487a2a6`; not merged, not released) the scope rules are extracted to
   `FirearmProficiencyScopeRules` with tests, and the requirement for any future provider is recorded there and in
   `docs/GUNSLINGER-PROFICIENCY-PROVENANCE.md`: grant a provider-owned fact the proficiency policy is extended to
   recognize, or bring a recorded provenance the reconciler honours; never grant these blueprints directly. A provider
@@ -177,7 +177,7 @@
   also 11 of 11 on `fd4087c312bd`). The pending archetype change cleared the
   invalid one-handed child while keeping the parent, all 19 selection-flow
   cases ran without a cleanup error, and party and unit isolation held. No
-  defect was found. Not merged, not released; the level-up screen itself was
+  defect was found. Accepted with Sprint 4 (2026-11-18); not merged, not released; the level-up screen itself was
   not observed (`docs/GUNSLINGER-SPRINT4-CLOSURE.md`).
 - A Musket Master still qualifies for the Rapid Reload parent through
   two-handed firearm proficiency, so a pending archetype change may
@@ -323,6 +323,33 @@
   SHAPED to apply a template with nothing removing it, not that each delivers one in play. The
   membership is byte-identical to v0.0.185, so v0.0.186 neither introduces nor worsens it. Tracked
   separately as GS-REP-0002 and not fixed by this release.
+  DEF-05 / S5 T1, in progress on `codex/def05-inherited-template-cleanup` (draft PR #186; not merged, not
+  released): the census was reproduced on the accepted Sprint 4 product (session `20261118T032921Z`), and it showed the
+  donor carrier, selected by parent tier and quantity, decides application whatever the creature. The list is replaced
+  by a per-placement policy over the recorded donor, shared by canonical and alternate callers, with an independent
+  census evaluator and mutation controls (`docs/EXPANDED-SUMMONING-INHERITED-TEMPLATES.md`). The first candidate
+  failed natively on a product defect in that change (alternate families failed closed), and it is repaired in source.
+  The review's four census corrections (an independent donor contract, all seven alternate families, donor receipts,
+  branch pairing) and a representative native-cast observer were built into `bab7e7dd43fc`, which was never executed.
+  The second review's corrections (exact debit, quantity, duration, buff sets and alternate child sets) were built into
+  `0af2b30bd4c7`, also never executed. The third review's correction (the deliberate template expectation derived
+  independently of the child graph) is built into the frozen final candidate `0d6006ac03a2`. After the owner disabled
+  Steam Cloud for Kingmaker, its native census (session `20261118T215938Z`) observed all 5,769 canonical and alternate
+  abilities across the seven families, but failed on 170 donor-receipt findings. These are diagnostic: the established
+  tier-one menu publication rewrites the two native tier-one parents after cloning. With the owner's tier-one donor
+  contract (`67704e6459`), the rerun (session `20261118T225322Z`) failed only one condition of that contract, "preserved
+  child exactly once in the menu". The publisher withholds that child by design when its lineage is replaced. With
+  condition 3 revised by the owner (withhold on complete replacement coverage, derived independently), the census on
+  candidate `540556bbf004` (session `20261119T192806Z`) passed. The first cast session on the same package (session
+  `20261119T193054Z`) failed 3 of 15 assertions, while seven of its nine cases passed. Two failures came from the
+  observer reading ranks from an unrecalculated context: a tier-VI d4+1 mephit's bonus read 0, and a Master Summoner
+  duration expectation read 0 against 420 s observed. The third was a donor assertion not updated for the two approved
+  tier-one transitions. After a bounded observer repair (no gameplay change), candidate `8ceb08ccef29` passed both
+  the census (session `20261119T201715Z`) and the cast session (`20261119T201938Z`, 15 of 15). With the d4 forced to
+  2, `ProjectilesCount` 1 and three Air Mephits prove the d4+1 path. The Master Summoner's Default rank of 7 gives the
+  420 s duration. The donor carriers are unchanged across the casts. The quantity is proved for the controlled roll
+  only. The branch is ready for principal review; it is not merged or released, so released versions still carry this
+  issue.
 - Two feature-module publication self-checks fail on a heavily modded installation (v0.0.186):
   `feature-module-expanded-summoning-publication-gate` reports `unclassified=38` against a hard-coded
   expectation of 0, and `feature-module-brown-fur-publication-gate` fails alongside it. A matched
@@ -395,8 +422,8 @@
   `planning/races-unleashed-compatibility/STATUS.md`).
 - The legacy Advanced Revolver declares six chambers, but saved firearm state holds one round, so its six-round reload
   fails and restores ammunition and weapon state. No published release offered it (vendors only cleaned it up;
-  Craft Magic Items only recognized an owned one). On branch `codex/risk01-advanced-revolver` (not merged, not
-  released) it is contained as unsupported: it stays registered and loadable with its identities, cannot be equipped,
+  Craft Magic Items only recognized an owned one). On branch `codex/risk01-advanced-revolver` (accepted with Sprint 4 at `e30b19e8fe`;
+  not merged, not released) it is contained as unsupported: it stays registered and loadable with its identities, cannot be equipped,
   is no longer recognized by Craft Magic Items, says so in its description, and registration refuses any other firearm
   whose capacity the saved state cannot hold (`docs/GUNSLINGER-ADVANCED-REVOLVER-CONTAINMENT.md`). One already equipped
   through external means stays equipped and keeps failing its reloads safely.

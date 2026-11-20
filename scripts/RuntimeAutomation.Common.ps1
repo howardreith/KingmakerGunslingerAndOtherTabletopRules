@@ -1251,6 +1251,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'disposable-inherited-template-casts' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     # Guarded read-only working save: a disposable Master Summoner party
     # member, real action-bar popup selection, natural RTWP casts and a
     # native dismissal. Nothing is saved; automatic exit.
@@ -2424,7 +2430,8 @@ function Assert-KmgRuntimeScenarioPreflight {
         throw "The Gunslinger's Dodge scenario requires automatic exit: it leaves a loaded game with time having run and nothing to hand over."
     }
     if ($Scenario -cin @('disposable-expanded-summoning-native-profile',
-            'disposable-alternate-summoning-player-paths') -and
+            'disposable-alternate-summoning-player-paths',
+            'disposable-inherited-template-casts') -and
         (-not $ExitAfterCompletion -or $Parameters.Count -ne 0)) {
         throw 'Native summoning profile requires automatic exit and no save/import parameters.'
     }

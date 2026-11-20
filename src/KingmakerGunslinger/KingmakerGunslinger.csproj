@@ -1589,6 +1589,11 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Turn.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCelestial31Inputs.cs" />
     <Compile Include="Summoning\ContextActionRemoveInheritedSummonTemplates.cs" />
+    <Compile Include="Summoning\InheritedTemplatePolicy.cs" />
+    <Compile Include="Summoning\InheritedTemplateCensus.cs" />
+    <Compile Include="Summoning\InheritedTemplateDonorContract.cs" />
+    <Compile Include="Summoning\InheritedTemplateCastContracts.cs" />
+    <Compile Include="Summoning\InheritedCastWindowContracts.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint28Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2Review.cs" />
@@ -1757,6 +1762,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmHigherFeatRoots.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.RapidReloadProficiencyGate.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TrueGritLevelUp.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InheritedTemplateCasts.cs" />
     <Compile Include="RuntimeTesting\FavoredClassLevelUpHarness.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassContract.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassGrit.cs" />

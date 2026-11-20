@@ -336,7 +336,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningNativeProfile ||
                 scenario == RuntimeTestScenarioCatalog
-                    .DisposableAlternateSummoningPlayerPaths)
+                    .DisposableAlternateSummoningPlayerPaths ||
+                scenario == RuntimeTestScenarioCatalog
+                    .DisposableInheritedTemplateCasts)
                 return parameters == 0 && reviewPhase == null;
             if (scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningSprint22NativeReview)

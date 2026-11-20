@@ -288,6 +288,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// their granted host roots' variant data.</summary>
         internal const string DisposableAlternateSummoningPlayerPaths =
             "disposable-alternate-summoning-player-paths";
+        /// <summary>S5 T1 / DEF-05: save-free native-area representative casts for inherited summon templates.</summary>
+        internal const string DisposableInheritedTemplateCasts =
+            "disposable-inherited-template-casts";
         internal const string ObserveExpandedSummoningVariantMenu =
             "observe-expanded-summoning-variant-menu";
         internal const string DisposableExpandedSummoning =
@@ -376,6 +379,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return scenario == DisposableExpandedSummoningNativeProfile ||
                 scenario == DisposableAlternateSummoningPlayerPaths ||
+                scenario == DisposableInheritedTemplateCasts ||
                 scenario == DisposableExpandedSummoningSprint22NativeReview ||
                 scenario == DisposableExpandedSummoningSprint23NativeReview ||
                 scenario == DisposableExpandedSummoningSprint24NativeReview ||
@@ -1015,6 +1019,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveAlternateSummoningBlockedFamily,
                 DisposableAlternateSummoningContracts,
                 DisposableAlternateSummoningPlayerPaths,
+                DisposableInheritedTemplateCasts,
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,
                 DisposableExpandedSummoningNativeProfile,

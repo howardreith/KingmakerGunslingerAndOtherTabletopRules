@@ -1,9 +1,37 @@
 # Sprint 4 closure checkpoint (S4 T1 to S4 T8)
 
-Status: **every Sprint 4 story has been worked and is ready for principal closure review.** This is a development
-checkpoint. Sprint 4 is not accepted or formally closed by this record. Nothing was merged, released, tagged,
-published, installed into the human game or sent for review. Every pull request listed below is an open draft with no
-reviewers.
+Status: **Sprint 4 is accepted and formally closed for its reviewed development scope** (principal review,
+2026-11-18). Acceptance is not merge or release. Nothing was merged, released, tagged, published, installed into the
+human game or sent for review. Every pull request listed below stays an open draft with no reviewers. Every
+limitation recorded below is unchanged by the acceptance.
+
+## Accepted identities
+
+| Item | Identity |
+|---|---|
+| Closure PR | #185, branch `codex/ver01-rapid-reload-transaction` |
+| Accepted records head | `5c662d50b0824bf5eabb02892bfbc172db8a7374` |
+| Qualified product/source commit | `16708bd5e237bd4f2f0fefc1d6cd0f2c9ba2e399` |
+| Package SHA-256 | `e017a5f3d8ec5c9e2164f88d6b8c36a69d1e1556da59a2b13b6ae0d675a27634` |
+| DLL SHA-256 | `cbca54912642c0ef7c5913489e3101ce8c58d424f52fc8262fb24e07547a3f26` |
+| MVID | `90ce7e7d-9c5a-46ec-9c95-c0734d2faaec` |
+| Harness SHA-256 | `c47e7f14d48edac88740b4c9bf1841e805c45a88043dc162789b4c86dbc1b089` |
+| Final sessions | `20261118T014552Z-owner-0.33.0-true-grit-level-up` (6 of 6), `20261118T014708Z-owner-0.33.0-rapid-reload-transaction` (11 of 11), `20261118T014826Z-owner-0.33.0-deadeye-cost` (PASS) |
+
+The three final sessions are execution on `16708bd5e237` only; the later records-only head `5c662d50b0` was not
+rebuilt or rerun. The failed first True Grit run (candidate `fd4087c312bd`, session `20261118T013304Z`) remains a
+fixture failure under its own identity.
+
+| Story | Accepted head |
+|---|---|
+| S4 T1 / DEF-04 | `2fe1b8af2c3adc6e1ea58a34fd8f256b437083a6` |
+| S4 T2 / REP-02 | `9b8a755ec80cdb19ebce787c433d87fef75c8f23` |
+| S4 T3 / POL-01 | `ee65d09e9d3d48b38db8ee67c139829c3713b171` |
+| S4 T4 / POL-02 | `c638de23857724dfaea39c2270467f0a79b12b78` |
+| S4 T5 / RISK-01 | `e30b19e8fef03bd4c5e614e3e078ca9e0a467345` |
+| S4 T6 / RISK-04 | `bb789b1891b5e76e21345b0dc6abd2ba8c70db7e` |
+| S4 T7 / RISK-05 | `d53487a2a6ee8cf595069f55828d5d5c7409ff31` |
+| S4 T8 / VER-01 and closure | `5c662d50b0824bf5eabb02892bfbc172db8a7374` |
 
 Closure branch: `codex/ver01-rapid-reload-transaction`, stacked on `codex/risk05-proficiency-provenance` (draft PR #184).
 
@@ -62,11 +90,11 @@ repair, because history was not rewritten and no branch was merged. The closure 
 | S4 T1 | DEF-04, GS-AUD-0032 | `codex/def04-gun-training-progression`, #178 | `2fe1b8af2c` | Text-only policy statement; accepted in review at `2fe1b8af2c` | 22 of 22; complete suite 3,071 of 3,071 | Candidate `0c0f4f7b7708`, session `20261117T033517Z`, 12 of 12 real level-ups | Respec analysed from code only; no historical save; no level-up screens | no | no |
 | S4 T2 | REP-02, GS-AUD-0038 | `codex/rep02-pistolero-damage-consumption`, #179 | `9b8a755ec8` | Diagnostic repair, gameplay unchanged; accepted in review at `9b8a755ec8` | Focused per record | Candidate `d72746b81c5d`, package `0a43cd8f3e3f…`, DLL `99a19f16210d…`, harness `593a26d438f8…`, session `20261117T183252Z`, 4 of 4 | No native recovery offset; immunity, insufficient grit, misfire, scatter and duplicates from the component fixture only | no | no |
 | S4 T3 | POL-01, GS-AUD-0013 | `codex/pol01-sprint4-policy`, #180 | `ee65d09e9d` | Owner decision B implemented; accepted in review at `ee65d09e9d` | `FirearmMisfireRecoveryTests` | Candidate `5fcc3e9d3ed9`, package `aec986ff…4065`, DLL `9a531808…b7cf`, MVID `d358e9c9-…f56e`, session `20261117T211826Z`, 42 of 42 | Hold position not executed; the four break-interruption assertions not executed; deliberate stop is cancellation before acting only | no | no |
-| S4 T4 | POL-02, GS-AUD-0011 | `codex/pol02-deadeye-cost`, #181 | `c638de2385` | Policy reconciliation (flat-one-grit CRPG adaptation retained); preceding stacked checkpoint, awaiting review | 49 of 49 | Final candidate, `deadeye-cost` session: refused without grit; one debit; touch-AC hit beyond the first increment; miss consumed; first-increment shot consumed; cancelled order kept, no refund; expiry after 6.01 s, no refund | True Grit's reduced cost not exercised natively; text does not mention True Grit's reduction | no | no |
-| S4 T5 | RISK-01 | `codex/risk01-advanced-revolver`, #182 | `e30b19e8fe` | Containment as unsupported content; awaiting review | 89 of 89; icon catalog validator | Registration on the final candidate (the mod loads and the class registers in every session); no dedicated session (no legitimate save or acquisition route) | A revolver already equipped by external means stays equipped (reloads still fail safely); CMI qualification not run | no | no |
-| S4 T6 | RISK-04 | `codex/risk04-true-grit-distinct`, #183 | `bb789b1891` | Demonstrated native invariant; test-only pair helper removed; awaiting review | 11 of 11, 10 of 10; preflight 1,205 | Final candidate, `true-grit-level-up`, 6 of 6: duplicate neither offered nor accepted in nine steps; commit Deadeye + Quick Clear at rank 1, each costing 0; cancel, injected failure and cancelled respec unchanged; committed respec restarts at Gunslinger 1 with no True Grit | Disposable character advanced without earlier selections; the level-up screen not observed | no | no |
-| S4 T7 | RISK-05 | `codex/risk05-proficiency-provenance`, #184 | `d53487a2a6` | Boundary record; no supported independent provider exists; awaiting review | 55 of 55 | None required; the S4 T8 matrix rows with request-local independent sources are fixture evidence only | A provider surviving a Gunslinger's reconciler is a future requirement, not verified compatibility | no | no |
-| S4 T8 | VER-01 | `codex/ver01-rapid-reload-transaction`, no PR yet when this record was written (the closure PR) | the closure commit | Dedicated scenario executed; no product or fixture defect found; this closure record | Repository validation, then 113 of 113 in the build | Final candidate, `rapid-reload-transaction`, 11 of 11 (details below) | The scenario's own limits (below) | no | no |
+| S4 T4 | POL-02, GS-AUD-0011 | `codex/pol02-deadeye-cost`, #181 | `c638de2385` | Policy reconciliation (flat-one-grit CRPG adaptation retained); accepted with Sprint 4 | 49 of 49 | Final candidate, `deadeye-cost` session: refused without grit; one debit; touch-AC hit beyond the first increment; miss consumed; first-increment shot consumed; cancelled order kept, no refund; expiry after 6.01 s, no refund | True Grit's reduced cost not exercised natively; text does not mention True Grit's reduction | no | no |
+| S4 T5 | RISK-01 | `codex/risk01-advanced-revolver`, #182 | `e30b19e8fe` | Containment as unsupported content; accepted with Sprint 4 | 89 of 89; icon catalog validator | Registration on the final candidate (the mod loads and the class registers in every session); no dedicated session (no legitimate save or acquisition route) | A revolver already equipped by external means stays equipped (reloads still fail safely); CMI qualification not run | no | no |
+| S4 T6 | RISK-04 | `codex/risk04-true-grit-distinct`, #183 | `bb789b1891` | Demonstrated native invariant; test-only pair helper removed; accepted with Sprint 4 | 11 of 11, 10 of 10; preflight 1,205 | Final candidate, `true-grit-level-up`, 6 of 6: duplicate neither offered nor accepted in nine steps; commit Deadeye + Quick Clear at rank 1, each costing 0; cancel, injected failure and cancelled respec unchanged; committed respec restarts at Gunslinger 1 with no True Grit | Disposable character advanced without earlier selections; the level-up screen not observed | no | no |
+| S4 T7 | RISK-05 | `codex/risk05-proficiency-provenance`, #184 | `d53487a2a6` | Boundary record; no supported independent provider exists; accepted with Sprint 4 | 55 of 55 | None required; the S4 T8 matrix rows with request-local independent sources are fixture evidence only | A provider surviving a Gunslinger's reconciler is a future requirement, not verified compatibility | no | no |
+| S4 T8 | VER-01 | `codex/ver01-rapid-reload-transaction`, #185 | qualified product `16708bd5e237bd4f2f0fefc1d6cd0f2c9ba2e399`; accepted records `5c662d50b0824bf5eabb02892bfbc172db8a7374` | Dedicated scenario executed; no product or fixture defect found; this closure record; accepted with Sprint 4 | Repository validation, then 113 of 113 in the build | Final candidate, `rapid-reload-transaction`, 11 of 11 (details below) | The scenario's own limits (below) | no | no |
 
 ## S4 T8 / VER-01: the dedicated Rapid Reload transaction scenario
 
@@ -147,4 +175,5 @@ No Sprint or Tranche gate was run. POL-01 and REP-02 were not rebuilt or rerun.
   refused as a pattern at registration. The proficiency provenance boundary is recorded as a requirement for future
   providers.
 
-Every Sprint 4 story has been worked and is ready for principal closure review.
+Every Sprint 4 story was worked; Sprint 4 is accepted and closed for its reviewed development scope (2026-11-18).
+Not merged, not released.

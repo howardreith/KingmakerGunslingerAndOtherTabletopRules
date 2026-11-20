@@ -322,6 +322,15 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonAttackGesturePolicy.cs"><Link>Summoning\SummonAttackGesturePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\StandaloneElementalPresentationPolicy.cs"><Link>Summoning\StandaloneElementalPresentationPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningCatalog.cs"><Link>Summoning\ExpandedSummoningCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InheritedTemplatePolicy.cs"><Link>Summoning\InheritedTemplatePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InheritedTemplateCensus.cs"><Link>Summoning\InheritedTemplateCensus.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InheritedTemplateDonorContract.cs"><Link>Summoning\InheritedTemplateDonorContract.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InheritedTemplateCastContracts.cs"><Link>Summoning\InheritedTemplateCastContracts.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InheritedCastWindowContracts.cs"><Link>Summoning\InheritedCastWindowContracts.cs</Link></Compile>
+    <Compile Include="InheritedTemplateCastContractTests.cs" />
+    <Compile Include="InheritedCastWindowContractTests.cs" />
+    <Compile Include="InheritedTierOnePublicationTests.cs" />
+    <Compile Include="InheritedTemplatePolicyTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVariantMergePolicy.cs"><Link>Summoning\SummonVariantMergePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVariantMenuLayoutPolicy.cs"><Link>Summoning\SummonVariantMenuLayoutPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonDisplayOrderPolicy.cs"><Link>Summoning\SummonDisplayOrderPolicy.cs</Link></Compile>

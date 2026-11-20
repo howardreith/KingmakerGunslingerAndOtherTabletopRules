@@ -15,6 +15,9 @@ namespace KingmakerGunslinger.Blueprints
         internal ExpandedSummoningPublication(List<Record> records)
         { _records = records; }
 
+        /// <summary>Read-only view of what this publication changed, for diagnostics that cross-check it.</summary>
+        internal IReadOnlyList<Record> Records { get { return _records.AsReadOnly(); } }
+
         internal void Rollback()
         {
             // Check every owned surface before restoring any parent. A later
@@ -56,6 +59,9 @@ namespace KingmakerGunslinger.Blueprints
     {
         internal const string PublishedVariantsComponentName =
             "$KMG_ExpandedSummoning_Variants";
+
+        /// <summary>The last successful publication, for diagnostics (DEF-05 census) only.</summary>
+        internal static ExpandedSummoningPublication Last { get; private set; }
 
         private static readonly string[] MonsterParents = {
             "8fd74eddd9b6c224693d9ab241f25e84", "1724061e89c667045a6891179ee2e8e7",
@@ -108,7 +114,8 @@ namespace KingmakerGunslinger.Blueprints
                     PublishParent(parent, family, tier, nativePreservation,
                         additions, specs, nativeAdditions, nativeSpecs, records);
                 }
-                return new ExpandedSummoningPublication(records);
+                Last = new ExpandedSummoningPublication(records);
+                return Last;
             }
             catch
             {
