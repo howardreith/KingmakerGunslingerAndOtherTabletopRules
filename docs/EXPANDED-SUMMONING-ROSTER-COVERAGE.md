@@ -266,7 +266,33 @@ Core Rulebook Summon Monster VII table includes Brachiosaurus
 **Native evidence:** the retained v0.0.191 parent census above is now also credited per identity in
 `planning/expanded-summoning-native-placement-evidence.json`, under its own session and package.
 
-POL-05 remains an open decision.
+POL-05 remained open at that point.
+
+## Later: POL-05 decided (S5 T4, 2026-11-19)
+
+The figures above stay as accepted, under their original heads.
+
+**Decision:** the owner selected Alternative A (`docs/EXPANDED-SUMMONING-WRAPPER-LADDER-SCOPE.md`, draft PR #189): the five retained
+native wrappers Redcap, Axiomite, Soul Eater, Manticore and Mite keep Owlcat's base-plus-two ladders.
+
+**Approved out of scope:** exactly twelve 1d4+1 placements, each recorded separately:
+- Redcap Summon Monster VIII and IX;
+- Axiomite Summon Monster IX;
+- Soul Eater Summon Monster IX;
+- Manticore Summon Nature's Ally VIII and IX;
+- Mite Summon Nature's Ally IV, V, VI, VII, VIII and IX.
+
+No native option exists for those exact creature-and-tier combinations. The decision narrows the original promise; it
+is not a gameplay repair and not fulfilment of those placements.
+
+**What the reporter shows now:**
+- From unchanged source: 1,208 admitted + 9 withheld + 0 missing + 15 approved out of scope = 1,232.
+- The admitted count does not change, and the original ideal is still reported as incomplete.
+- The five creatures, with Brachiosaurus, are reported as published within the approved scope.
+- A declared choice for any excluded placement is a scope conflict, which `--validate-scope` refuses.
+
+Implemented in the reporter and records only, awaiting review. The 15 existing wrapper rows, their 52 adapters, the
+nine Stirge withholdings and the compiled coverage model are unchanged.
 
 ## Limits
 
@@ -282,5 +308,5 @@ Historical INT-08 limitations, as accepted at `dcea649f5e`:
 Current dispositions:
 - POL-04 is decided and accepted (S5 T3, A-records, at `ada0ff2650`): the three Brachiosaurus Summon Monster
   placements are approved out of scope, as described in "Later: POL-04 decided".
-- POL-05 (the twelve higher native-wrapper placements) remains an open owner decision (S5 T4; packet
-  `docs/EXPANDED-SUMMONING-WRAPPER-LADDER-SCOPE.md`).
+- POL-05 is decided (S5 T4, Alternative A; implemented in the reporter and records, awaiting review): the twelve higher
+  native-wrapper placements are approved out of scope, as described in "Later: POL-05 decided".

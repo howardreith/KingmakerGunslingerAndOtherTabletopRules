@@ -17,16 +17,18 @@ import expanded_summoning_ideal_roster as roster  # noqa: E402
 
 P = roster.Placement
 D41 = "OneD4PlusOne"
-EXPECTED_OUT_OF_SCOPE = {
+POL04_CELLS = {
     P("brachiosaurus", "sm", 7, "One"), P("brachiosaurus", "sm", 8, "OneD3"),
     P("brachiosaurus", "sm", 9, D41)}
-EXPECTED_MISSING = {
+POL05_WRAPPER_CELLS = {
     P("redcap", "sm", 8, D41), P("redcap", "sm", 9, D41),
     P("axiomite", "sm", 9, D41), P("soul-eater", "sm", 9, D41),
     P("manticore", "sna", 8, D41), P("manticore", "sna", 9, D41),
     P("mite", "sna", 4, D41), P("mite", "sna", 5, D41), P("mite", "sna", 6, D41),
     P("mite", "sna", 7, D41), P("mite", "sna", 8, D41), P("mite", "sna", 9, D41),
 }
+EXPECTED_OUT_OF_SCOPE = POL04_CELLS | POL05_WRAPPER_CELLS
+EXPECTED_MISSING = set()
 EXPECTED_WITHHELD = {P("stirge", "sna", 1, "One"), P("stirge", "sna", 2, "OneD3")} | {
     P("stirge", "sna", parent, D41) for parent in range(3, 10)}
 BRACHIOSAURUS_SNA = {P("brachiosaurus", "sna", 7, "One"), P("brachiosaurus", "sna", 8, "OneD3"),
@@ -79,7 +81,7 @@ class CurrentSourceTests(unittest.TestCase):
         self.assertEqual((1232, 1188, 29, 1217, 1208, 9),
                          (t["ideal"], t["project"], t["wrapper"], t["declared"], t["admitted"],
                           t["suppressed_choices"]))
-        self.assertEqual((1208, 9, 12, 3, 0, 0, 0, 0),
+        self.assertEqual((1208, 9, 0, 15, 0, 0, 0, 0),
                          (t["covered"], t["withheld"], t["missing"], t["out_of_scope"], t["extra"],
                           t["duplicates"], t["unregistered"], t["unexplained"]))
         # Every ideal placement has exactly one derived state; the four states account for the original ideal.
@@ -95,13 +97,16 @@ class CurrentSourceTests(unittest.TestCase):
         self.assertEqual(EXPECTED_OUT_OF_SCOPE, unpublished(self.cov, "out-of-scope"))
 
     def test_dispositions_are_kept_apart(self):
-        for placement in EXPECTED_MISSING:
-            self.assertTrue(disposition(self.cov, placement).startswith("POL-05"), placement)
-        for placement in EXPECTED_OUT_OF_SCOPE:
+        for placement in POL04_CELLS:
             text = disposition(self.cov, placement)
             self.assertTrue(text.startswith("Approved out of scope: POL-04"), placement)
             self.assertIn("2026-10-15", text)
             self.assertIn("https://legacy.aonprd.com/coreRulebook/spells/summonMonster.html", text)
+        for placement in POL05_WRAPPER_CELLS:
+            text = disposition(self.cov, placement)
+            self.assertTrue(text.startswith("Approved out of scope: POL-05 / S5 T4, Alternative A"), placement)
+            self.assertIn("no native option exists for this exact creature and higher tier", text)
+            self.assertIn("not fulfilment of this placement", text)
         for placement in EXPECTED_WITHHELD:
             self.assertTrue(disposition(self.cov, placement).startswith("Owner withdrawal"), placement)
         self.assertTrue(all(u.recorded for u in self.cov["unpublished"]))
@@ -116,7 +121,7 @@ class CurrentSourceTests(unittest.TestCase):
         self.assertEqual({"sm": "Complete 2/2", "sna": "Complete 3/3"}, status["frost-giant"])
         self.assertEqual({"sm": "Complete 3/3", "sna": "-"}, status["bogeyman"])
         self.assertEqual("Withheld 0/9", status["stirge"]["sna"])
-        self.assertEqual("Partial 3/9 (6 missing)", status["mite"]["sna"])
+        self.assertEqual("In scope complete 3/9 (6 approved out of scope)", status["mite"]["sna"])
 
     def test_optional_provider_choices_are_not_core_coverage(self):
         # Spider Summoner rows (Races Unleashed) are not in either catalog read here.
@@ -156,7 +161,7 @@ class MutationTests(unittest.TestCase):
         self.assertTrue(disposition(cov, P("axiomite", "sm", 8, D41)).startswith("Unexplained"))
         self.assertEqual("covered", cov["states"][P("axiomite", "sm", 6, "One")])
         self.assertEqual("covered", cov["states"][P("axiomite", "sm", 7, "OneD3")])
-        self.assertEqual("Partial 2/4 (2 missing)", cov["family_status"]["axiomite"]["sm"])
+        self.assertEqual("Partial 2/4 (1 missing, 1 approved out of scope)", cov["family_status"]["axiomite"]["sm"])
 
     def test_a_wrong_quantity_fails_its_placement(self):
         cov = judge(wrappers=replace(SOURCES["wrappers"],
@@ -230,7 +235,7 @@ class MutationTests(unittest.TestCase):
         creatures = roster.read_project(SOURCES["project"])
         next(c for c in creatures if c["key"] == "brachiosaurus")["sm"] = 7
         wrappers = roster.read_wrappers(SOURCES["wrappers"])
-        for p in EXPECTED_MISSING:
+        for p in POL05_WRAPPER_CELLS:
             wrappers.append({"family": p.family, "tier": p.parent, "key": p.key, "quantity": p.quantity,
                              "symbol": "fixture." + "/".join(map(str, p))})
         choices = roster.declared_choices(creatures, wrappers, set())
@@ -239,12 +244,12 @@ class MutationTests(unittest.TestCase):
         t = cov["totals"]
         self.assertEqual((1232, 0, 0, 0, 0, 0), (t["covered"], t["withheld"], t["missing"], t["extra"],
                                                  t["duplicates"], t["unregistered"]))
-        self.assertEqual(sorted(EXPECTED_MISSING), cov["stale_dispositions"])
+        self.assertEqual([], cov["stale_dispositions"])
         summary = roster.coverage_summary(cov)
         self.assertIn("is complete", summary)
         # Publishing the approved exclusions completes the original ideal but contradicts the decision.
         self.assertEqual(sorted(EXPECTED_OUT_OF_SCOPE), cov["scope_conflicts"])
-        self.assertIn("3 SCOPE CONFLICT", summary)
+        self.assertIn("15 SCOPE CONFLICT", summary)
 
 
 def withheld_brachiosaurus(sources):
@@ -294,10 +299,10 @@ class ReviewControlTests(unittest.TestCase):
         for placement in EXPECTED_OUT_OF_SCOPE:
             u = next(x for x in cov["unpublished"] if x.placement == placement)
             self.assertEqual(("out-of-scope", True), (u.state, u.recorded))
-        self.assertEqual((1205, 12, 12, 3), (cov["totals"]["covered"], cov["totals"]["withheld"],
+        self.assertEqual((1205, 12, 0, 15), (cov["totals"]["covered"], cov["totals"]["withheld"],
                                              cov["totals"]["missing"], cov["totals"]["out_of_scope"]))
         # Summary and rendered tables agree with the structured result.
-        self.assertIn("12 withheld; 12 missing; 3 approved out of scope; 0 extra; 0 duplicate; 3 unexplained",
+        self.assertIn("12 withheld; 0 missing; 15 approved out of scope; 0 extra; 0 duplicate; 3 unexplained",
                       roster.coverage_summary(cov))
         self.assertEqual(["| Unpublished placements without a recorded disposition | 3 (3 withheld, 0 missing) |"],
                          rows(document, "| Unpublished placements without a recorded disposition"))
@@ -349,7 +354,7 @@ class ReviewControlTests(unittest.TestCase):
     def test_creature_categories_follow_the_placement_counts(self):
         cov = judge()
         self.assertEqual("complete", cov["creature_category"]["tyrannosaurus"])
-        self.assertEqual("partial", cov["creature_category"]["mite"])
+        self.assertEqual("scoped", cov["creature_category"]["mite"])
         self.assertEqual("withheld", cov["creature_category"]["stirge"])
         self.assertEqual(144, cov["available_somewhere"])
         # A creature with no choice at all: Hamadryad's only wrapper removed.
@@ -489,14 +494,15 @@ class ScopeDecisionTests(unittest.TestCase):
     def test_the_three_approvals_are_visible_and_not_called_published(self):
         _e, _d, cov, document, _trace = roster.build(SOURCES)
         self.assertEqual(sorted(EXPECTED_OUT_OF_SCOPE), sorted(cov["scope_verdicts"]))
+        self.assertEqual(15, len(cov["scope_verdicts"]), "Exactly the three POL-04 and twelve POL-05 exclusions.")
         self.assertTrue(all(v == "excluded" for v in cov["scope_verdicts"].values()))
         summary = roster.coverage_summary(cov)
         self.assertIn("Source-derived coverage is incomplete: 1,208 of 1,232", summary)
-        self.assertIn("12 missing; 3 approved out of scope", summary)
-        self.assertIn("scope contract: 3 approved exclusions, 0 scope conflicts", summary)
-        self.assertIn("Accounting against the original ideal: 1,208 admitted + 9 withheld + 12 missing + "
-                      "3 approved out of scope = 1,232 ideal placements.", document)
-        self.assertEqual(["| Ideal placements approved out of scope (excluded, not published) | 3 |"],
+        self.assertIn("0 missing; 15 approved out of scope", summary)
+        self.assertIn("scope contract: 15 approved exclusions, 0 scope conflicts", summary)
+        self.assertIn("Accounting against the original ideal: 1,208 admitted + 9 withheld + 0 missing + "
+                      "15 approved out of scope = 1,232 ideal placements.", document)
+        self.assertEqual(["| Ideal placements approved out of scope (excluded, not published) | 15 |"],
                          rows(document, "| Ideal placements approved out of scope"))
         self.assertEqual(["| Approved exclusions contradicted by a declared choice (scope conflict) | 0 |"],
                          rows(document, "| Approved exclusions contradicted"))
@@ -506,21 +512,24 @@ class ScopeDecisionTests(unittest.TestCase):
         self.assertEqual(3, len([r for r in excluded if "| Excluded: no declared choice; not published |" in r]))
         self.assertNotIn("Brachiosaurus", rows(document, "| Every ideal placement published |")[0])
         self.assertEqual(["| Every ideal placement in the approved scope published; the others approved out of scope, "
-                          "not published | 1 | Brachiosaurus |"],
+                          "not published | 6 | Axiomite, Brachiosaurus, Manticore, Mite, Redcap, Soul Eater |"],
                          rows(document, "| Every ideal placement in the approved scope"))
         self.assertEqual(1, len([r for r in rows(document, "| Brachiosaurus | 7 | 7 |")
                                  if "| Approved out of scope 0/3 | Complete 3/3 |" in r]))
         self.assertEqual("scoped", cov["creature_category"]["brachiosaurus"])
         messages = []
         self.assertEqual(0, roster.validate_scope(SOURCES, messages.append))
-        self.assertEqual(["Scope contract valid: 3 approved exclusions, none declared, admitted or published."], messages)
+        self.assertEqual(["Scope contract valid: 15 approved exclusions, none declared, admitted or published."], messages)
+        self.assertEqual(["| Some ideal placements published, some not | 0 |  |"],
+                         rows(document, "| Some ideal placements published, some not"))
+        self.assertEqual(12, len([r for r in excluded_rows(document) if "POL-05 / S5 T4" in r]))
 
     def test_approval_never_raises_the_admitted_count(self):
         approved = roster.build(SOURCES)[2]["totals"]
         unapproved = self.unapproved()[2]["totals"]
         self.assertEqual((unapproved["admitted"], unapproved["covered"]), (approved["admitted"], approved["covered"]))
-        self.assertEqual(unapproved["missing"] - 3, approved["missing"])
-        self.assertEqual((0, 3), (unapproved["out_of_scope"], approved["out_of_scope"]))
+        self.assertEqual(unapproved["missing"] - 15, approved["missing"])
+        self.assertEqual((0, 15), (unapproved["out_of_scope"], approved["out_of_scope"]))
 
     def test_one_approved_cell_leaves_the_others_missing(self):
         roster.APPROVED_OUT_OF_SCOPE.clear()
@@ -531,18 +540,32 @@ class ScopeDecisionTests(unittest.TestCase):
         self.assertEqual("Unpublished 0/3 (2 missing, 1 approved out of scope)",
                          cov["family_status"]["brachiosaurus"]["sm"])
         self.assertEqual("partial", cov["creature_category"]["brachiosaurus"])
-        self.assertIn("14 missing; 1 approved out of scope; 0 extra; 0 duplicate; 2 unexplained; "
+        self.assertIn("14 missing; 1 approved out of scope; 0 extra; 0 duplicate; 14 unexplained; "
                       "scope contract: 1 approved exclusion, 0 scope conflicts", roster.coverage_summary(cov))
         self.assertEqual(2, len([r for r in rows(document, "| Brachiosaurus | Summon Monster | SM ")
                                  if "| No declared choice | no | Unexplained" in r]))
 
+    def test_partial_wrapper_approval_leaves_the_other_wrapper_cells_missing(self):
+        kept = {P("mite", "sna", 4, D41), P("redcap", "sm", 9, D41)}
+        for placement in POL05_WRAPPER_CELLS - kept:
+            del roster.APPROVED_OUT_OF_SCOPE[placement]
+        cov = judge()
+        self.assertEqual(POL04_CELLS | kept, unpublished(cov, "out-of-scope"))
+        self.assertEqual(POL05_WRAPPER_CELLS - kept, unpublished(cov, "missing"))
+        self.assertEqual(1208, cov["totals"]["covered"])
+        self.assertEqual("Partial 3/9 (5 missing, 1 approved out of scope)", cov["family_status"]["mite"]["sna"])
+        self.assertEqual("Partial 3/5 (1 missing, 1 approved out of scope)", cov["family_status"]["redcap"]["sm"])
+        self.assertEqual("partial", cov["creature_category"]["mite"])
+        self.assertIn("10 missing; 5 approved out of scope", roster.coverage_summary(cov))
+
     def test_an_approved_exclusion_with_a_coherent_monster_placement_is_a_scope_conflict(self):
         sources = coherent_monster_brachiosaurus(SOURCES)
         _e, _d, cov, document, _trace = roster.build(sources)
-        self.assertEqual(sorted(EXPECTED_OUT_OF_SCOPE), cov["scope_conflicts"])
-        self.assertEqual(0, cov["totals"]["out_of_scope"], "A declared exclusion is not a resolved exclusion.")
+        self.assertEqual(sorted(POL04_CELLS), cov["scope_conflicts"])
+        self.assertEqual(12, cov["totals"]["out_of_scope"], "A declared exclusion is not a resolved exclusion.")
+        self.assertEqual(1211, cov["totals"]["covered"])
         self.assertEqual(0, cov["totals"]["unregistered"], "The Monster identities are coherently registered.")
-        for placement in EXPECTED_OUT_OF_SCOPE:
+        for placement in POL04_CELLS:
             self.assertEqual(("covered", "scope-conflict"), (cov["states"][placement], cov["scope_verdicts"][placement]))
         summary = roster.coverage_summary(cov)
         self.assertIn("3 SCOPE CONFLICT (declared despite approval: brachiosaurus SM VII One, "
@@ -584,37 +607,65 @@ class ScopeDecisionTests(unittest.TestCase):
 
     def test_the_recorded_decision_is_exact(self):
         self.assertEqual(set(EXPECTED_OUT_OF_SCOPE), set(roster.APPROVED_OUT_OF_SCOPE))
-        self.assertEqual(EXPECTED_MISSING, roster.SCOPE_PENDING, "Exactly the twelve POL-05 cells await a decision.")
-        self.assertFalse(set(roster.APPROVED_OUT_OF_SCOPE) & set(roster.RECORDED_DISPOSITIONS),
-                         "No POL-05 placement is waived and no approval doubles as a pending disposition.")
-        self.assertTrue(all(roster.RECORDED_DISPOSITIONS[p].startswith("POL-05") for p in EXPECTED_MISSING))
+        self.assertEqual(set(), roster.SCOPE_PENDING, "No placement awaits a decision.")
+        self.assertEqual({}, roster.RECORDED_DISPOSITIONS)
+        self.assertEqual({roster.POL04_DECISION, roster.POL05_DECISION}, set(roster.APPROVED_OUT_OF_SCOPE.values()))
+        self.assertFalse(any(p.key not in ("brachiosaurus", "redcap", "axiomite", "soul-eater", "manticore", "mite")
+                             for p in roster.APPROVED_OUT_OF_SCOPE), "No generated creature or other wrapper is restricted.")
 
 
-POL05_CELLS = sorted(EXPECTED_MISSING)
+POL05_CELLS = sorted(POL05_WRAPPER_CELLS)
 
 
 def wrapper_rows(sources=SOURCES):
     return rows_by_placement(roster.cells(["redcap", "axiomite", "soul-eater", "manticore", "mite"], sources))
 
 
+def excluded_rows(document):
+    section = document.split("### Approved scope exclusions\n\n")[1].split("\n\n")[0]
+    return [line for line in section.splitlines() if line.startswith("| ") and not line.startswith("| Creature")]
+
+
+def coherent_excluded_wrappers(sources):
+    """Redcap SM VIII and Mite SNA IV declared as coherent native wrappers despite their approval:
+    catalog rows, the source's own wrapper count and active ledger identities all moved to match."""
+    import json
+    s = dict(sources)
+    redcap = ('            N(7,"Redcap","Redcap",SummonMultiplicity.OneD4PlusOne,\n'
+              '                "6e805a9e3ff445146a6386f5a704d4bc","af8bcff074b93c84b97938e486184222",'
+              'SummonNativeSpawnBranch.Evil),\n')
+    mite = ('            A(3,"Mite","mite","Mite",SummonMultiplicity.OneD4PlusOne,\n'
+            '                "bb1bac85be6b1e44eafdc54a3b757c3e","0c433dcdefcaaeb4db78b07c3ebf4c94"),\n')
+    s["wrappers"] = replace(replace(s["wrappers"], redcap, redcap + redcap.replace("N(7,", "N(8,")),
+                            mite, mite + mite.replace("A(3,", "A(4,"))
+    s["identities"] = replace(s["identities"], "NativeExpandedOptionIdentityCount = 29;",
+                              "NativeExpandedOptionIdentityCount = 31;")
+    ledger = json.loads(s["ledger"])
+    for index, symbol in enumerate(("KMG.Summoning.NativeOption.SM.Tier8.Redcap.OneD4PlusOne",
+                                    "KMG.Summoning.NativeOption.SNA.Tier4.Mite.OneD4PlusOne")):
+        ledger["entries"].append({"symbol": symbol, "guid": "%032x" % (index + 101), "status": "active"})
+    s["ledger"] = json.dumps(ledger)
+    return s
+
+
 class NativeWrapperCellTests(unittest.TestCase):
-    """S5 T4 / POL-05: the twelve higher native-wrapper 1d4+1 cells are reported from their own
-    declarations and ledger identities only; no identity is inferred and no observation of another
-    tier, quantity, family or build fills one."""
+    """S5 T4 / POL-05, Alternative A: the twelve higher native-wrapper 1d4+1 cells are approved out of
+    scope, each independently, from their own declarations and ledger identities only; no identity is
+    inferred and no observation of another tier, quantity, family or build fills one."""
 
     def setUp(self):
         self.rows = wrapper_rows()
 
-    def test_each_of_the_twelve_cells_is_undeclared_unregistered_and_pending(self):
+    def test_each_of_the_twelve_cells_is_an_approved_exclusion_and_undeclared(self):
         self.assertEqual(12, len(POL05_CELLS))
         for placement in POL05_CELLS:
             row = self.rows[placement]
-            self.assertEqual((True, "pending owner decision", None, False, False, False, "none", "none", "none"),
+            self.assertEqual((True, "approved out of scope", None, False, False, False, "none", "none", "none"),
                              (row.ideal, row.scope, row.symbol, row.registered, row.declared, row.admitted,
                               row.graph, row.menu, row.cast), placement)
         table = roster.cell_table(roster.cells(["redcap"], SOURCES))
         self.assertEqual(2, len([line for line in table.splitlines()
-                                 if "| pending owner decision | none declared | no | no | no | none | none | none |" in line]))
+                                 if "| approved out of scope | none declared | no | no | no | none | none | none |" in line]))
         self.assertNotIn("KMG.Summoning.Ability.SM.Tier8.Redcap", table,
                          "A wrapper cell never shows a project-convention identity.")
 
@@ -629,9 +680,10 @@ class NativeWrapperCellTests(unittest.TestCase):
             self.assertEqual(("in scope", symbol, True, True, True, "none", "PASS:" + MENU + V191_PACKAGE, "none"),
                              (row.scope, row.symbol, row.registered, row.declared, row.admitted,
                               row.graph, row.menu, row.cast), placement)
+        self.assertEqual(15, len([r for r in self.rows.values() if r.declared and r.admitted]),
+                         "All fifteen existing wrapper rows stay declared and admitted.")
 
     def test_an_observation_of_another_tier_or_quantity_never_fills_a_cell(self):
-        # The Mite III 1d4+1 and Redcap VII 1d4+1 menu rows exist; the higher cells stay unobserved.
         self.assertTrue(self.rows[P("mite", "sna", 3, D41)].menu.startswith("PASS:"))
         self.assertTrue(self.rows[P("redcap", "sm", 7, D41)].menu.startswith("PASS:"))
         for placement in POL05_CELLS:
@@ -641,27 +693,56 @@ class NativeWrapperCellTests(unittest.TestCase):
         rows = wrapper_rows(dict(SOURCES, evidence=evidence))
         self.assertEqual("none", rows[P("mite", "sna", 4, D41)].cast, "A tier III cast never fills tier IV.")
 
-    def test_a_ledger_identity_without_a_declaration_is_reported_as_registered_only(self):
+    def test_a_ledger_identity_without_a_declaration_stays_undeclared_and_unadmitted(self):
         import json
         ledger = json.loads(SOURCES["ledger"])
         ledger["entries"].append({"symbol": "KMG.Summoning.NativeOption.SNA.Tier4.Mite.OneD4PlusOne",
                                   "guid": "f" * 32, "status": "active"})
-        rows = wrapper_rows(dict(SOURCES, ledger=json.dumps(ledger)))
+        sources = dict(SOURCES, ledger=json.dumps(ledger))
+        rows = wrapper_rows(sources)
         row = rows[P("mite", "sna", 4, D41)]
-        self.assertEqual(("KMG.Summoning.NativeOption.SNA.Tier4.Mite.OneD4PlusOne", True, False, False),
-                         (row.symbol, row.registered, row.declared, row.admitted),
-                         "Registration, declaration and admission stay separate facts.")
+        self.assertEqual(("KMG.Summoning.NativeOption.SNA.Tier4.Mite.OneD4PlusOne", True, False, False,
+                          "approved out of scope"),
+                         (row.symbol, row.registered, row.declared, row.admitted, row.scope),
+                         "Registration, declaration and admission stay separate facts; registration alone is no conflict.")
         self.assertEqual((None, False), (rows[P("mite", "sna", 5, D41)].symbol, rows[P("mite", "sna", 5, D41)].registered))
+        self.assertEqual([], judge(ledger=sources["ledger"])["scope_conflicts"])
 
-    def test_the_twelve_cells_keep_their_pol05_disposition_and_are_not_approved(self):
+    def test_the_twelve_cells_carry_the_pol05_decision_and_stirge_is_unchanged(self):
         cov = judge()
         for placement in POL05_CELLS:
-            self.assertEqual("missing", cov["states"][placement], placement)
-            self.assertTrue(disposition(cov, placement).startswith("POL-05"), placement)
-            self.assertNotIn(placement, roster.APPROVED_OUT_OF_SCOPE)
-        self.assertEqual(12, cov["totals"]["missing"])
-        self.assertEqual({"sm": "Partial 3/5 (2 missing)", "sna": "-"}, cov["family_status"]["redcap"])
-        self.assertEqual("Partial 3/9 (6 missing)", cov["family_status"]["mite"]["sna"])
+            self.assertEqual(("out-of-scope", "excluded"), (cov["states"][placement], cov["scope_verdicts"][placement]))
+            self.assertTrue(disposition(cov, placement).startswith("Approved out of scope: POL-05"), placement)
+        self.assertEqual({"sm": "In scope complete 3/5 (2 approved out of scope)", "sna": "-"}, cov["family_status"]["redcap"])
+        self.assertEqual("In scope complete 3/9 (6 approved out of scope)", cov["family_status"]["mite"]["sna"])
+        self.assertEqual("scoped", cov["creature_category"]["mite"])
+        for placement in EXPECTED_WITHHELD:
+            self.assertEqual("withheld", cov["states"][placement])
+            self.assertTrue(disposition(cov, placement).startswith("Owner withdrawal"))
+
+    def test_coherent_excluded_wrappers_in_both_families_are_scope_conflicts(self):
+        sources = coherent_excluded_wrappers(SOURCES)
+        conflicted = [P("mite", "sna", 4, D41), P("redcap", "sm", 8, D41)]
+        _e, _d, cov, document, _trace = roster.build(sources)
+        self.assertEqual(sorted(conflicted), cov["scope_conflicts"])
+        self.assertEqual((1210, 13, 0), (cov["totals"]["covered"], cov["totals"]["out_of_scope"],
+                                         cov["totals"]["unregistered"]))
+        summary = roster.coverage_summary(cov)
+        self.assertIn("2 SCOPE CONFLICT (declared despite approval: mite SNA IV OneD4PlusOne, "
+                      "redcap SM VIII OneD4PlusOne)", summary)
+        conflicts = [r for r in excluded_rows(document) if "**SCOPE CONFLICT**" in r]
+        self.assertEqual(2, len(conflicts))
+        self.assertTrue(any(r.startswith("| Redcap | Summon Monster | SM VIII |") for r in conflicts))
+        self.assertTrue(any(r.startswith("| Mite | Summon Nature's Ally | SNA IV |") for r in conflicts))
+        rows = wrapper_rows(sources)
+        for placement in conflicted:
+            row = rows[placement]
+            self.assertEqual(("SCOPE CONFLICT: approved out of scope but declared", True, True, True),
+                             (row.scope, row.registered, row.declared, row.admitted), placement)
+        messages = []
+        self.assertEqual(1, roster.validate_scope(sources, messages.append))
+        self.assertIn("mite SNA IV OneD4PlusOne (admitted)", messages[0])
+        self.assertIn("redcap SM VIII OneD4PlusOne (admitted)", messages[0])
 
 
 class ReadDiagnosticTests(unittest.TestCase):

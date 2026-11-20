@@ -250,6 +250,7 @@ def roster_doc(entries, d, cov):
         "Placement columns count published ideal placements of that creature in that",
         "family: Complete; Partial (some published); Withheld (all registered, none",
         "admitted); Missing (none declared); Approved out of scope (owner decision; not published);",
+        "In scope complete (every placement in the approved scope published; the rest approved out of scope);",
         "Unpublished (none published, some withheld and some missing). The parenthesis gives the",
         "unpublished placements by state.",
         "",
@@ -357,19 +358,15 @@ WRAPPER_A = re.compile(
 # Placements the ideal roster wants and the source does not offer, for which
 # a decision is already recorded. Keyed by exact placement, so a further
 # missing placement of the same creature is never covered by one of these.
-POL05 = ("POL-05 / Sprint 5 T4: the retained native wrapper ladder stops where the game's own "
-         "options stop; whether to extend it is an open decision")
-RECORDED_DISPOSITIONS = dict(
-    [(Placement(key, family, parent, "OneD4PlusOne"), POL05) for key, family, parents in (
-        ("redcap", "sm", (8, 9)), ("axiomite", "sm", (9,)), ("soul-eater", "sm", (9,)),
-        ("manticore", "sna", (8, 9)), ("mite", "sna", (4, 5, 6, 7, 8, 9)))
-     for parent in parents])
+# Empty since the S5 T4 / POL-05 decision moved the twelve wrapper cells into
+# APPROVED_OUT_OF_SCOPE; kept for any future recorded disposition.
+RECORDED_DISPOSITIONS = {}
 
 # Ideal placements awaiting an owner scope decision. Each stays missing; its
 # recorded disposition (where one exists) keeps precedence over this label.
-# S5 T4 / POL-05: exactly the twelve higher native-wrapper 1d4+1 placements.
+# Empty: POL-04 and POL-05 are decided.
 PENDING_SCOPE = "Pending owner scope decision"
-SCOPE_PENDING = {placement for placement, text in RECORDED_DISPOSITIONS.items() if text == POL05}
+SCOPE_PENDING = set()
 
 # Ideal placements the owner has explicitly approved out of scope, keyed by exact
 # placement, each with its rationale and decision provenance. The ideal roster
@@ -382,11 +379,24 @@ POL04_DECISION = (
     "(https://legacy.aonprd.com/coreRulebook/spells/summonMonster.html) and the ordinary spell progression "
     "supports this placement; adding Monster placements later is additive, while withdrawing published ones "
     "is not. Not a gameplay repair and not fulfilment of the original Monster placement")
+POL05_DECISION = (
+    "POL-05 / S5 T4, Alternative A: product scope decision by the owner at the S5 T4 review on 2026-11-19. "
+    "The retained native wrapper keeps Owlcat's base-plus-two ladder for this creature; no native option exists for "
+    "this exact creature and higher tier, and none is invented. This narrows the original ideal (the Core Rulebook "
+    "allows 1d4+1 creatures from a lower-level list, https://legacy.aonprd.com/coreRulebook/spells/summonMonster.html); "
+    "it is not a gameplay repair and not fulfilment of this placement")
 APPROVED_OUT_OF_SCOPE = {
     Placement("brachiosaurus", "sm", 7, "One"): POL04_DECISION,
     Placement("brachiosaurus", "sm", 8, "OneD3"): POL04_DECISION,
     Placement("brachiosaurus", "sm", 9, "OneD4PlusOne"): POL04_DECISION,
 }
+# S5 T4 / POL-05: each of the twelve cells recorded independently.
+APPROVED_OUT_OF_SCOPE.update({
+    Placement(key, family, parent, "OneD4PlusOne"): POL05_DECISION
+    for key, family, parents in (
+        ("redcap", "sm", (8, 9)), ("axiomite", "sm", (9,)), ("soul-eater", "sm", (9,)),
+        ("manticore", "sna", (8, 9)), ("mite", "sna", (4, 5, 6, 7, 8, 9)))
+    for parent in parents})
 
 
 def canonical(wrapper_key):
@@ -669,6 +679,8 @@ def describe_counts(counts):
     out_of_scope = counts.get("out_of_scope", 0)
     if out_of_scope == total:
         return "Approved out of scope 0/%d" % total
+    if covered and covered + out_of_scope == total:
+        return "In scope complete %d/%d (%d approved out of scope)" % (covered, total, out_of_scope)
     rest = ", ".join(part for part in ("%d withheld" % withheld if withheld else "",
                                        "%d missing" % missing if missing else "",
                                        "%d approved out of scope" % out_of_scope if out_of_scope else "") if part)
