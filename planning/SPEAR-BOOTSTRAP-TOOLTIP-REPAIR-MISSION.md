@@ -363,13 +363,16 @@ Recorded by the launching session on 2026-11-21:
 - Installed controller `C:/Dev/agent-review` (package
   `65d19b4ba9d9…6c67e`). `preflight --project kingmaker-gunslinger` passed
   for both developer and reviewer.
-- `check-project --project kingmaker-gunslinger` reports one problem:
-  `instruction file docs/AGENT-REVIEW-WORKFLOW.md is missing`. The project
-  configuration lists that file as an instruction for both agents, but it
-  exists only on the closed, unmerged PR #194 branch
-  (`codex/agent-review-workflow`) and not on `master`. This mission does not
-  add or copy that file. Its repository-specific content (branch prefix, push
-  wrapper, `focused` gate, developer extras and denials, runtime locks,
-  private state root) is also in the installed project configuration and in
-  sections 4 and 5 above.
+- **Resolved setup gap.** `check-project --project kingmaker-gunslinger`
+  first reported `instruction file docs/AGENT-REVIEW-WORKFLOW.md is missing`.
+  The guide existed only on the closed, unmerged PR #194 branch
+  (`codex/agent-review-workflow`). With owner authorization, the owner's
+  restored guide (recovered from PR #194, archive reference corrected,
+  ordinary-mission startup made explicit) was committed to this branch as
+  `docs/AGENT-REVIEW-WORKFLOW.md` before enrollment. Its integration settings
+  match the installed project configuration, which is byte-identical to
+  development-process `6d7f44a`. `check-project` was re-run on this worktree
+  before the push and reported no problems. PR #194 stays closed, and its
+  historical records stay on its branch. This setup correction does not
+  change the repair scope or the acceptance requirements above.
 - The reporter's raw log is unavailable (§2.1).
