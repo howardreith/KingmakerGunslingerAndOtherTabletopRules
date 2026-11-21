@@ -608,7 +608,7 @@ namespace KmgLoaderCompatHarness
                     Game.Instance.Player.UpdateCharacterLists();
                     SelectionManager.Instance.SelectUnit(caster.View, true, true, false);
                     stage = Stage.Selected;
-                    Wait(12);
+                    Wait(30);
                     return null;
                 }
 
@@ -619,6 +619,7 @@ namespace KmgLoaderCompatHarness
                     ActionBarGroupElement spells = bar.Group.GroupElements.FirstOrDefault(e => e != null && e.SlotType == ActionBarSlotType.Spell);
                     if (spells == null) return "the action bar has no spell group";
                     Record["selectedUnit"] = SelectionManager.Instance.GetSingleSelectedUnit()?.Blueprint?.name;
+                    if (!BarShowsCaster()) return Reselect("the action bar did not show the new sorcerer after selection");
                     if (!spells.ToggleState) spells.OnClick();
                     stage = Stage.GroupOpened;
                     Wait(12);
@@ -627,6 +628,7 @@ namespace KmgLoaderCompatHarness
 
                 case Stage.GroupOpened:
                 {
+                    if (!BarShowsCaster()) return Reselect("the action bar left the new sorcerer before the slot click");
                     ActionBarGroupElement spells = ActionBarManager.Instance.Group.GroupElements.First(e => e.SlotType == ActionBarSlotType.Spell);
                     Record["spellGroupOpen"] = spells.ToggleState;
                     List<ActionBarGroupSlot> slots = Field<List<ActionBarGroupSlot>>(spells, "m_Slots");
@@ -683,7 +685,8 @@ namespace KmgLoaderCompatHarness
                         return null;
                     }
 
-                    if (!menuOpen) return "the Summon Monster I creature menu did not open";
+                    if (!menuOpen) return Reselect("the Summon Monster I creature menu was not open " + (BarShowsCaster()
+                        ? "while the bar still showed the new sorcerer" : "because the bar no longer showed the new sorcerer"));
                     if (rows.Count < 2) return "the Summon Monster I menu shows " + rows.Count + " creature entries";
                     JObject[] bad = rows.Cast<JObject>().Where(r => !(bool)r["visible"] || string.IsNullOrWhiteSpace((string)r["name"]) || r["icon"].Type == JTokenType.Null).ToArray();
                     if (bad.Length > 0) return "menu entries are not visible with a name and icon: " + string.Join(", ", bad.Select(b => b.ToString(Newtonsoft.Json.Formatting.None)).ToArray());
@@ -730,6 +733,34 @@ namespace KmgLoaderCompatHarness
             }
 
             return string.Empty;
+        }
+
+        private const int MaxAttempts = 3;
+        private readonly JArray attempts = new JArray();
+
+        /// <summary>Whether the action bar the game built is the new sorcerer's (its private selected unit).</summary>
+        private bool BarShowsCaster()
+        {
+            ActionBarManager bar = ActionBarManager.Instance;
+            return bar != null && ReferenceEquals(Field<UnitEntityData>(bar, "m_Selected"), caster);
+        }
+
+        /// <summary>
+        /// Records why this attempt did not reach the menu and selects the sorcerer again the way a portrait click
+        /// does, up to three attempts; returns the failure once they are spent.
+        /// </summary>
+        private string Reselect(string reason)
+        {
+            attempts.Add(reason);
+            Record["attempts"] = attempts;
+            if (attempts.Count >= MaxAttempts) return reason + " (after " + attempts.Count + " attempts)";
+            if (subGroup != null) subGroup.Hide(true);
+            ActionBarGroupElement spells = ActionBarManager.Instance?.Group?.GroupElements.FirstOrDefault(e => e != null && e.SlotType == ActionBarSlotType.Spell);
+            if (spells != null && spells.ToggleState) spells.OnClick();
+            SelectionManager.Instance.SelectUnit(caster.View, true, true, false);
+            stage = Stage.Selected;
+            Wait(30);
+            return null;
         }
 
         private bool Matches(ActionBarSpontaneousConvertedSlot entry)
