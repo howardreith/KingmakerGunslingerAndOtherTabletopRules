@@ -151,7 +151,13 @@ that opens empty was never observed.
     engine contract for that field. For most predicates that is the live
     getter. For the sub-category predicate it is the patched engine method
     `WeaponCategoryExtension.HasSubCategory` for the owned category, compared
-    with the mod's own policy. The effective `AttackRange` is compared at full
+    with the mod's own policy. The comparison (R5-F1) spans **every
+    `WeaponSubCategory` value** plus the `None` wildcard, through
+    `ElvenBranchedSpearProfilePolicy.SubCategoryText`. The text lists the
+    intended five in policy order (Melee, Finessable, TwoHanded, Exotic,
+    Metal), then any other granted value such as Simple or Martial, then
+    `!None` if the wildcard is denied. An extra, missing or wildcard
+    difference therefore fails validation. The effective `AttackRange` is compared at full
     `Feet` precision, so 6.25 ft does not pass as 6 ft.
 
   The effective profile is judged **only on the registered type**, after it
@@ -233,6 +239,7 @@ reference, because the clone carries the donor's GUID while it is configured.
 | `attackRangeByGuid` | `AttackRange` of the type with that asset GUID gains or returns a value, keyed on the GUID as a mod would key it |
 | `throwingGettersByGuid` | a getter throws for that GUID on every read inside the product's spear registration |
 | `spearSubCategoryRemoval` | a late (`Priority.Last`) `HasSubCategory` postfix withholds sub-categories from the spear category only |
+| `spearSubCategoryAddition` | a late (`Priority.Last`) `HasSubCategory` postfix grants extra sub-categories to the spear category only (R5-F1) |
 
 **Ops:**
 
@@ -314,14 +321,51 @@ lease was opened.
 | **O** `20261121T181329Z-…-spear-bootstrap-observer-selection` (round 3 harness, git `9153164dcf`) | candidate | PASS (70, 79, 80, 72 s) |
 | **R** `20261121T175459Z-…-spear-bootstrap-reporter-stack` | candidate | PASS (105, 111 s) |
 | **R-base** `20261121T153842Z-…-spear-bootstrap-reporter-stack` (round 0, harness `4ba6cab678`) | v0.0.192 | PASS: the partial stack does not reproduce |
+| **S5** `20261121T190216Z-…-spear-bootstrap-simulated` (round 5, git `18361607ed`) | round-5 candidate | PASS, 12 launches (53–74 s each) |
+| **C** `20261121T185458Z-…-spear-bootstrap-subcategory` (round 5) | round-5 candidate | PASS (71, 52, 53 s) |
+| **R5** `20261121T185820Z-…-spear-bootstrap-reporter-stack` (round 5) | round-5 candidate | PASS (101, 109 s) |
 
-"Candidate" is the development package built at `8ee7eabaeda0`: ZIP
-SHA-256 `f8988fdee8411c59d7d2cd726b9e4adebf49d90801e8eaf883d2b52fd4bbbb00`,
-product DLL SHA-256
-`f0f17f7c3d459845b6a2ce20aaeb7165c2966bcf79c43f7da06d8036016ab574`. Product
-sources (`src/`, `tests/`) are unchanged from `8ee7eabaeda0` to the final
-candidate (`git diff --stat 8ee7eabaeda0 -- src tests` is empty). Round 3
-changed only the test-only harness, a session file and this record.
+"Candidate" (rows S to R) is the development package built at
+`8ee7eabaeda0`: ZIP SHA-256
+`f8988fdee8411c59d7d2cd726b9e4adebf49d90801e8eaf883d2b52fd4bbbb00`, product
+DLL SHA-256
+`f0f17f7c3d459845b6a2ce20aaeb7165c2966bcf79c43f7da06d8036016ab574`.
+
+Round 5 changed the product's sub-category check (R5-F1, `195d17ce19`). The
+**round-5 candidate** is the development package built at `18361607eda8`:
+ZIP `c96e1b3c94cf13707cb8f73368681e61150e23f0526542d050979bdc3707f20e`,
+DLL `f0fb25cb6027a83ed4265b880122dbd0cc573ca1f04f4eb4f74552c3bc4c8330`,
+harness DLL `cfad84a0…07a4`. Build-Local passed strict standalone UMM package
+validation and 28 focused tests. `src/` and `tests/` are unchanged from
+`18361607eda8` to the final candidate.
+
+On it, the simulated session S5, the sub-category controls C and the
+reporter-shaped stack R5 all passed, with `registryRestored`,
+`ownerSavesUnchanged` and `ownerInstallUnchanged` true; each was surfaced
+through `-Report`.
+
+- S5 repeats every S result below. Summary sha256 `5edbd352…ec53`.
+  `productSha256` in all 12 launches is `f0fb25cb…8330`. S5-2's
+  `harness-result.json` (`231dcb62…986f`) again shows four ordinary weapons
+  at 25 queries each, 0 price or tooltip throws, prices 1, 4, 5 and 13, and
+  `batteredInspectionUnavailableReported` true. The warning was logged once.
+- C-1: healthy startup, intended profile, selectors published.
+- C-2: Finessable withheld; startup failed once with the sub-category
+  diagnostic; selectors restored.
+- C-3: a late postfix grants only **Simple** to the spear category and keeps
+  the five intended classifications. Startup failed once. The diagnostic
+  (`harness-result.json` `8415b9ee…766d`) reads: `subcategory-policy
+  [effective-getter]: expected=Melee,Finessable,TwoHanded,Exotic,Metal
+  actual=Melee,Finessable,TwoHanded,Exotic,Metal donor=<not-applicable>;
+  getter expected=Melee,Finessable,TwoHanded,Exotic,Metal
+  actual=Melee,Finessable,TwoHanded,Exotic,Metal,Simple
+  donor=Melee,TwoHanded,Metal,Simple;
+  getterPatches=KingmakerGunslinger,KmgLoaderCompatHarness`.
+  `subCategoryAdditions` was 1, and the native selectors were restored.
+- R5: with Call of the Wild, CraftMagicItems, KingmakerBugfixes and
+  RacesUnleashed, the stricter check still lets startup complete. There was
+  no profile-invalid, missing-token or unavailable-state line, and the
+  Fire Beetle summon passed.
 
 **Machine-recorded summary of S (R3-F1).** These values are read from the
 session runner's own `session-summary.json` and the per-launch
@@ -616,3 +660,11 @@ is in the developer report.
    every getter value they compared was a whole number of feet. In those
    runs the production validator, which always read full precision, passed
    the same values.
+6. Round 5's product change touches only the sub-category predicate. The
+   persistence (P), probe-lifecycle (L) and observer-selection (O) sessions
+   ran on the `8ee7eabaeda0` candidate and were not repeated on the round-5
+   candidate. Startup, failure diagnostics and failed-startup pricing (S5),
+   the sub-category controls (C) and the reporter-shaped stack with the
+   summon (R5) were repeated.
+   The read-only report keeps empty and single-element arrays as arrays
+   (R5-F2). Every report first prints a shape check on a synthetic record.

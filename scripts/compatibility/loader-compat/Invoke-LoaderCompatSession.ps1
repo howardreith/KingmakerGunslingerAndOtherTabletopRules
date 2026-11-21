@@ -89,7 +89,7 @@ if ($Report) {
             if ($property.Name -match '^kmgItemPricing_') {
                 $picked[$property.Name] = [ordered]@{ repeat = (Get-LcReportValue $value 'repeat')
                     sellPricePatchOwners = (Get-LcReportValue $value 'sellPricePatchOwners')
-                    ordinary = @(@(Get-LcReportValue $value 'ordinary') | Where-Object { $_ } | ForEach-Object { [ordered]@{ name = $_.name
+                    ordinary = @((Get-LcReportValue $value 'ordinary') | Where-Object { $_ } | ForEach-Object { [ordered]@{ name = $_.name
                         queries = $_.queries; sellPrices = $_.sellPrices; tooltipSellPrices = $_.tooltipSellPrices; priceThrows = $_.priceThrows
                         tooltipThrows = $_.tooltipThrows; priceCauseMatches = $_.priceCauseMatches; tooltipCauseMatches = $_.tooltipCauseMatches } })
                     batteredInspectionUnavailableReported = (Get-LcReportValue $value 'batteredInspectionUnavailableReported')
