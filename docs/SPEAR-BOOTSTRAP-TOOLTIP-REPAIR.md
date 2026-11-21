@@ -254,9 +254,17 @@ reference, because the clone carries the donor's GUID while it is configured.
   - treats `native-single` as an explicit expectation that rejects an
     expanded spell;
   - refuses a non-idle UI (active targeting or an open action-bar group)
-    before changing anything. It releases only the targeting, group, menu and
-    selection it acquired, then checks the UI is idle again (R2-F4).
-- `kmgSorcererResidue`, `kmgSetTargeting` and `kmgTargetingState`.
+    before changing anything. It releases only the targeting, group and menu
+    it acquired, and restores the exact incoming selection and current
+    character. It then checks that the UI is idle and the selection matches
+    what it captured (R2-F4).
+- `kmgWeaponTypeProfile` reads effective `Feet` values at full precision
+  (the private float, not the truncating `Feet.Value`). Its
+  `longspearGetter:<Name>` and `ownedGetter:<Name>` invariants assert the
+  recorded text (R2-F3).
+- `kmgSorcererResidue`, `kmgSetTargeting`, `kmgTargetingState`,
+  `kmgSetSelection` (`empty` or `main`, through the native selection manager)
+  and `kmgSelectionState`.
 
 **Runner support:**
 
@@ -265,8 +273,8 @@ reference, because the clone carries the donor's GUID while it is configured.
 - Launch `expectHarnessFailure` / `expectStepsNotRun`.
 - The exactly-once `expectLog` group.
 
-**Sessions:** reporter-stack, simulated, baseline, persistence and
-probe-lifecycle.
+**Sessions:** reporter-stack, simulated, baseline, persistence,
+probe-lifecycle and observer-selection.
 
 ## 4. Validation
 
@@ -302,9 +310,59 @@ lease was opened.
 | **S** `20261121T171410Z-…-spear-bootstrap-simulated` | candidate `f8988fde…` | PASS, 12 launches (53–73 s each) |
 | **B** `20261121T174507Z-…-spear-bootstrap-baseline` | v0.0.192 | PASS (74 s): the unrepaired bytes reproduce the cascade under the simulated condition |
 | **P** `20261121T175105Z-…-spear-bootstrap-persistence` | candidate | PASS (76, 69, 71 s) |
-| **L** `20261121T174636Z-…-spear-bootstrap-probe-lifecycle` | candidate | PASS (96, 80, 74 s) |
+| **L** `20261121T181849Z-…-spear-bootstrap-probe-lifecycle` (round 3 harness, git `9153164dcf`) | candidate | PASS (98, 80, 71 s); supersedes `20261121T174636Z` |
+| **O** `20261121T181329Z-…-spear-bootstrap-observer-selection` (round 3 harness, git `9153164dcf`) | candidate | PASS (70, 79, 80, 72 s) |
 | **R** `20261121T175459Z-…-spear-bootstrap-reporter-stack` | candidate | PASS (105, 111 s) |
 | **R-base** `20261121T153842Z-…-spear-bootstrap-reporter-stack` (round 0, harness `4ba6cab678`) | v0.0.192 | PASS: the partial stack does not reproduce |
+
+"Candidate" is the development package built at `8ee7eabaeda0`: ZIP
+SHA-256 `f8988fdee8411c59d7d2cd726b9e4adebf49d90801e8eaf883d2b52fd4bbbb00`,
+product DLL SHA-256
+`f0f17f7c3d459845b6a2ce20aaeb7165c2966bcf79c43f7da06d8036016ab574`. Product
+sources (`src/`, `tests/`) are unchanged from `8ee7eabaeda0` to the final
+candidate (`git diff --stat 8ee7eabaeda0 -- src tests` is empty). Round 3
+changed only the test-only harness, a session file and this record.
+
+**Machine-recorded summary of S (R3-F1).** These values are read from the
+session runner's own `session-summary.json` and the per-launch
+`harness-result.json`, without re-interpretation:
+
+- Session `20261121T171410Z-umm-0.31.1-spear-bootstrap-simulated`.
+- Git `8ee7eabaeda05f443804ce9e989b6c6011029cfe`, loader `umm-0.31.1`.
+- `candidateZipSha256` `f8988fde…bbbb00`. `productSha256` in every launch
+  identity is `f0f17f7c…ab574`, and the active mods are
+  `KingmakerGunslinger 0.0.192` and `KmgLoaderCompatHarness 0.1.0`. The
+  harness DLL is `be0d9e79…2b8e`.
+- `status` `PASS`; `registryRestored` true; `ownerSavesUnchanged` true (95
+  owner save files); `ownerInstallUnchanged` true.
+
+| Launch | Verdict | Harness | Key log assertions (count as recorded) |
+|---|---|---|---|
+| 01 simulated-donor-mutation | PASS | passed | `initialize.complete` ×1, `foundation.ready` ×1; profile-invalid ×0 |
+| 02 invalid-owned-profile | PASS | passed | `initialize.failed` ×1; `1 of 17 checks failed.` ×1 (once); `fighter-group [owned-field]: …` ×1; `battered-origin.inspection-unavailable` ×1 (once); missing-token exception ×0 |
+| 03 owned-spear-getter-patch | PASS | passed | `attack-range [effective-getter]: … getter expected=6ft actual=7ft donor=6ft` ×1 (once) |
+| 04 donor-getter-throws (`donor:CriticalRollEdge`) | PASS | passed | `initialize.complete` ×1; profile-invalid ×0 |
+| 05 owned-getter-throws-with-invalid-field | PASS | passed | `2 of 17 checks failed.` ×1 (once); `light [effective-getter]: … actual=<throws InvalidOperationException: …` ×1 |
+| 06 late-validation-failure | PASS | passed | `1 of 17` ×1 (once); `foundation.ready` ×0 |
+| 07 named-registration-failure | PASS | passed | injected named-spear failure ×1; `initialize.failed` ×1 |
+| 08 longspear-guid-getter-patch (`fa2dd17c…=+1`) | PASS | passed | `initialize.complete` ×1; profile-invalid ×0 |
+| 09 released-spear-guid-getter-patch (`77f72b0f…=+1`) | PASS | passed | `actual=7ft` diagnostic ×1 (once) |
+| 10 donor-weight-throws-by-guid | PASS | passed | `initialize.complete` ×1; profile-invalid ×0 |
+| 11 fractional-effective-reach (`77f72b0f…=6.25`) | PASS | passed | `getter expected=6ft actual=6.25ft donor=6ft` ×1 (once) |
+| 12 spear-finessable-removed | PASS | passed | `subcategory-policy [effective-getter]` with `actual=Melee,TwoHanded,Exotic,Metal` ×1; `1 of 17` ×1 (once) |
+
+S-2's `kmgItemPricing_failed-startup`: `repeat` 25, `sellModifier` 0.25,
+sell-price patch owner `KingmakerGunslinger`. Standard Longspear, Longsword,
+Greataxe and Heavy Crossbow each have `queries` 25, `priceThrows` 0,
+`tooltipThrows` 0, sell prices 1, 4, 5 and 13 with matching tooltip text.
+`batteredInspectionUnavailableReported` is true, and bootstrap is
+`initialized` false, `failed` true. Every step of S-2 records
+`isolationRestored` true.
+
+The O and round-3 L sessions record the same candidate ZIP and product DLL
+hashes, git `9153164dcf0f3a10ecabc55821a26b9a420b391e`, harness DLL
+`22ab82fa…3e11`, and `registryRestored`, `ownerSavesUnchanged` and
+`ownerInstallUnchanged` all true.
 
 Mission coverage:
 
@@ -342,9 +400,20 @@ Mission coverage:
    - S-8 (R2-F1): a postfix keyed on the **native Longspear GUID** adds 1 ft
      to its `AttackRange`. Startup completed. The donor kept the change (its
      old-release `attack-range` predicate fails), and the registered spear
-     reads exactly 6 ft. Before this round, the same GUID-keyed patch stopped
-     startup because the clone still carried the donor GUID during
-     `Configure` (round-1 run `162032Z`).
+     reads exactly 6 ft. This is a different experiment from the round-1
+     failure in run `162032Z`: there, the session at `0f08f76f64` configured
+     `throwingWeaponTypeGetters: donor:CriticalRollEdge` (S-4), and the
+     harness of that time recognised "the donor" by asset GUID. While
+     `Configure` ran, the clone still carried the donor's GUID, so the
+     clone's own `CriticalRollEdge` threw and startup stopped. `d7dd0ff01d`
+     then identified the donor by reference. The two experiments differ in
+     getter and failure mode (a throwing `CriticalRollEdge` in the harness's
+     donor test; an additive `AttackRange` change in a mod-style GUID key).
+     Both exercise the same hazard: before the registry assigns the released
+     GUID, anything keyed on the donor GUID also hits the clone. The product
+     now runs its definitive effective-getter check only after registration
+     (R2-F1), and S-8 shows that a donor-GUID-keyed patch no longer reaches
+     the owned spear.
    - S-9, the failing control: the same patch keyed on the **released spear
      GUID** `77f72b0febaf212a5650e7193c00361f` fails startup once, with
      `attack-range [effective-getter]: … getter expected=6ft actual=7ft
@@ -355,6 +424,14 @@ Mission coverage:
    - S-11 (R2-F3): the released spear returns 6.25 ft. Startup failed once,
      with `getter expected=6ft actual=6.25ft donor=6ft;
      getterPatches=KmgLoaderCompatHarness`.
+   - O-1 (R2-F3, round 3, the independent observer): the live native
+     Longspear's `AttackRange` getter returns 6.25 ft (keyed on its GUID).
+     Startup completed, because the product validates the owned spear rather
+     than the donor's effective reach. `kmgWeaponTypeProfile` recorded the
+     Longspear getter as `"6.25"` and the owned spear's ordinary effective
+     reach as `"6"`, both enforced as invariants; the override fired 3 times.
+     Before this round the observer formatted `Feet.Value` and would have
+     recorded `"6"`.
    - S-12 (R2-F2): a late `HasSubCategory` postfix withholds Finessable from
      the spear category only. Startup failed once, with `subcategory-policy
      [effective-getter]: expected=Melee,Finessable,TwoHanded,Exotic,Metal …
@@ -444,6 +521,27 @@ Mission coverage:
      none); nothing was changed`, which was the step's expected outcome with
      isolation restored. Afterwards the handler still held
      `SummonMonsterISingle`, and no sorcerer remained in the area or party.
+   - Selection ownership (R2-F4, round 3). The probe now captures the
+     incoming `SelectionManager.SelectedUnits` (any size, empty included) and
+     the group's current character before it changes anything. It restores
+     that exact set before the caster is destroyed, with no main-character
+     fallback, and verifies selection and current character on every release
+     path; a mismatch fails the release. In every L and O launch the recorded
+     `outgoingSelection` equals the `incomingSelection`:
+     - O-2: an empty selection set through Kingmaker's own selection manager
+       (`count` 0, current `StartGamePregenFighterUnit#535ba77c…`). After a
+       full Fire Beetle summon (`Success`, `KMG_Summoning_Unit_FireBeetle|714b0410…`)
+       and cleanup, the probe recorded `count` 0 with the same current
+       character, and an independent `kmgSelectionState` step confirmed the
+       empty selection.
+     - O-3: the main character alone, before and after a full summon.
+     - O-4: an empty selection plus pre-existing targeting. The probe refused
+       before changing anything; the selection was still empty and the
+       handler still held `SummonMonsterISingle`.
+     - L-1, L-2 and L-3: the fixture's own incoming selection (the main
+       character alone) was the same after the timeout release, after the
+       injected release failure (whose real releases all ran), and after the
+       refusal.
 
 Harness iterations kept as evidence:
 
@@ -455,6 +553,8 @@ Harness iterations kept as evidence:
   console.
 - Round 1 passing sessions (`162812Z`, `163535Z`, `163705Z`, `164419Z`,
   `164728Z`, candidate `53f58154…`) are superseded by the round-2 runs above.
+- Round 2 probe-lifecycle `20261121T174636Z` (PASS) is superseded by the
+  round-3 L run.
 
 ### 4.3 Required gate
 
@@ -482,3 +582,15 @@ is in the developer report.
    of its donors would still stop startup there.
 4. Native evidence comes from a disposable copy, with the product alone or
    with four of the reported mods. It is not the reporter's installation.
+5. The sorcerer probe's selection restoration was exercised natively with an
+   empty selection and a single-unit selection. The fixture party has one
+   member, so a multi-unit incoming selection was not exercised natively.
+   The same code path restores it (native `MultiSelect` of the captured
+   views), and the release-time set comparison would fail the release if it
+   did not match. The S, B, P and R sessions ran with the round-2 harness,
+   and their sorcerer steps used the earlier selection handling. Their
+   product verdicts are unaffected, because selection is restored only after
+   all observations. Those sessions also used the truncating observer, but
+   every getter value they compared was a whole number of feet. In those
+   runs the production validator, which always read full precision, passed
+   the same values.
