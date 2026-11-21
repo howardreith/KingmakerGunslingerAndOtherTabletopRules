@@ -9,24 +9,24 @@ compatibility qualification.
 
 Identities:
 
-- **Product source**: commit `88f1e86b5e`. That is the original repair in
-  `288ce4dd07` plus the review round 1 product corrections. Later commits
-  change only the test-only loader-compat harness, its sessions, the session
-  runner and this record.
-- **Native development candidate**, built from `0f08f76f644d`, whose product
-  source is identical to `88f1e86b5e`:
-  `KingmakerGunslinger-0.0.192-development-spear-bootstrap-tooltip-repair-0f08f76f644d.zip`.
+- **Product source**: commit `cc8da0e71f`. That is the original repair in
+  `288ce4dd07` plus the review round 1 (`88f1e86b5e`) and round 2 product
+  corrections. Later commits change only the test-only loader-compat
+  harness, its sessions and this record.
+- **Native development candidate**, built from `8ee7eabaeda0`, whose product
+  source is identical to `cc8da0e71f`:
+  `KingmakerGunslinger-0.0.192-development-spear-bootstrap-tooltip-repair-8ee7eabaeda0.zip`.
   Package SHA-256
-  `53f58154067c35c60b7f06aeaac4041df7bfc63aa37eecdcb038598a421e44ca`; DLL
-  SHA-256 `ae1250ccaa3531210eed4a4b47a1d0e9bd7ecb93631a21e486b7eafd51ca8196`.
+  `f8988fdee8411c59d7d2cd726b9e4adebf49d90801e8eaf883d2b52fd4bbbb00`; DLL
+  SHA-256 `f0f17f7c3d459845b6a2ce20aaeb7165c2966bcf79c43f7da06d8036016ab574`.
+- **Round 2 native sessions** ran with harness commit `8ee7eabaed`. Their
+  results supersede round 1's for every session they repeat. Round 1 used
+  candidate `0f08f76f644d` (package `53f58154…`) with harness `d7dd0ff01d` /
+  `b348c3f815`.
 - **Baseline**: the published v0.0.192 package
   `KingmakerGunslinger-0.0.192-gunslinger-remediation.zip`, package SHA-256
   `936f3571a5f948911b410e6e39134629b60d0fc469d0cd6347d88971af072d69`. Its spear
   and battered sources are byte-identical to v0.0.188.
-- **Round 1 native sessions** ran with harness commit `d7dd0ff01d`, or
-  `b348c3f815` for the probe-lifecycle and reporter-stack sessions. The two
-  commits differ only by a session-runner variable fix that affects
-  `expectStepsNotRun`.
 - The controller's archive and handoff commits are separate from all of the
   above.
 
@@ -141,16 +141,28 @@ that opens empty was never observed.
   override; 10 lb; the movement-accuracy enchantment.
 - **Donor untouched.** The native donor is never written. `Register`
   fingerprints all of the donor's serialized mechanical fields before
-  construction and refuses if any changed.
-- **Validation (R1-F1).** Every one of the 17 predicates must hold, through the
-  game-independent `ElvenBranchedSpearProfilePolicy`. Each predicate checks:
+  construction, `m_Weight` included, and refuses if any changed. No donor
+  getter is read for that comparison (R1-F3).
+- **Validation (R1-F1, R2-F1 to R2-F3).** Every one of the 17 predicates must
+  hold, through the game-independent `ElvenBranchedSpearProfilePolicy`. Each
+  predicate checks:
   - the **owned serialized field** against the intended value; and
-  - the **live getter** (the effective value players and the engine use)
-    against the 2.1.7b engine contract for that field.
+  - the **effective value** players and the engine use against the 2.1.7b
+    engine contract for that field. For most predicates that is the live
+    getter. For the sub-category predicate it is the patched engine method
+    `WeaponCategoryExtension.HasSubCategory` for the owned category, compared
+    with the mod's own policy. The effective `AttackRange` is compared at full
+    `Feet` precision, so 6.25 ft does not pass as 6 ft.
 
-  A getter mismatch is fatal **whoever patches the getter**. Harmony patch
-  owners are reported as context, never as an exemption. The round-0 tolerance
-  for foreign-patched getters is removed.
+  The effective profile is judged **only on the registered type**, after it
+  has its released GUID and before selector publication. Inside the registry
+  factory the clone still carries the donor's GUID, so `Configure` checks only
+  the serialized profile there. Effective values it does not read are recorded
+  as `<deferred>` and never judged. A failing owned field still reports its
+  getter's patch owners from Harmony metadata.
+
+  An effective mismatch is fatal **whoever patches the method**. Harmony patch
+  owners are reported as context, never as an exemption.
 - **One complete report (R1-F3).** Owned and donor getter reads are captured
   per predicate:
   - A throwing owned getter is recorded as `<throws …>` and fails validation.
@@ -166,8 +178,8 @@ that opens empty was never observed.
   now run before any native Exotic Weapon Proficiency or Finesse Training
   selection, Elven Weapon Familiarity component or custom-weapon selector
   runtime state is touched:
-  - the clone validation;
-  - the final post-registration validation;
+  - the serialized clone validation;
+  - the definitive post-registration validation;
   - the item checks;
   - the donor fingerprint.
 
@@ -218,6 +230,9 @@ reference, because the clone carries the donor's GUID while it is configured.
 | `ownedSpearAttackRangePatch` | +1 ft on the shared getter, for the owned spear only |
 | `throwingWeaponTypeGetters` | the donor or owned getter throws during spear validation |
 | `failNamedSpearRegistration` | named-spear registration throws |
+| `attackRangeByGuid` | `AttackRange` of the type with that asset GUID gains or returns a value, keyed on the GUID as a mod would key it |
+| `throwingGettersByGuid` | a getter throws for that GUID on every read inside the product's spear registration |
+| `spearSubCategoryRemoval` | a late (`Priority.Last`) `HasSubCategory` postfix withholds sub-categories from the spear category only |
 
 **Ops:**
 
@@ -232,11 +247,16 @@ reference, because the clone carries the donor's GUID while it is configured.
   - clicks the creature row through its own slot;
   - requires exactly that row's ability in the targeting handler;
   - casts through the handler's ground click;
-  - requires a successful command carrying the selected ability, and a summon
-    that the ability's actions spawn;
+  - requires a successful command, and judges the chosen row, the submitted
+    command and the spawned unit against **independent session
+    expectations** (R1-F5): the released ability and unit identities. The
+    creatures named in the ability's own actions are only recorded;
   - treats `native-single` as an explicit expectation that rejects an
-    expanded spell.
-- `kmgSorcererResidue`.
+    expanded spell;
+  - refuses a non-idle UI (active targeting or an open action-bar group)
+    before changing anything. It releases only the targeting, group, menu and
+    selection it acquired, then checks the UI is idle again (R2-F4).
+- `kmgSorcererResidue`, `kmgSetTargeting` and `kmgTargetingState`.
 
 **Runner support:**
 
@@ -254,9 +274,9 @@ probe-lifecycle.
 
 | Command | Result | Time |
 |---|---|---|
-| `.\scripts\Invoke-KmgGate.ps1 -Filter 'elven-branched-spear'` (working tree of `88f1e86b5e`) | production compile passed; **26 of 3159** tests passed. That is 11 bootstrap-repair policy cases, including a foreign-patched getter being fatal, a throwing owned getter being fatal and reported, an unavailable donor not being fatal, and the field-only predicates, plus 15 spear neighbours | compile 14.9 s, tests 2.3 s |
-| same, `-Filter 'custom-weapon;selector;martial-performance;eastern-weapons;battered;summoning-publication-boundary'` | **56** passed | 1.3 s |
-| `powershell.exe -File scripts/Build-Local.ps1 -DevelopmentPurpose spear-bootstrap-tooltip-repair -DevelopmentTestFilter elven-branched-spear -ReferenceBundleDir … -LoaderReferenceDir …` at `0f08f76f644d` | development candidate built; strict standalone UMM package validation passed; 26 tests passed | about 6 min |
+| `.\scripts\Invoke-KmgGate.ps1 -Filter 'elven-branched-spear'` (working tree of `cc8da0e71f`) | production compile passed; **27 of 3160** tests passed. That is 12 bootstrap-repair policy cases, including a foreign-patched getter being fatal, a throwing owned getter being fatal and reported, an unavailable donor not being fatal, a deferred effective value not being judged, and the field-only predicates, plus 15 spear neighbours | compile 14.6 s, tests 2.7 s |
+| same, `-Filter 'custom-weapon;selector;martial-performance;eastern-weapons;battered;summoning-publication-boundary'` (round 1, `88f1e86b5e`) | **56** passed | 1.3 s |
+| `powershell.exe -File scripts/Build-Local.ps1 -DevelopmentPurpose spear-bootstrap-tooltip-repair -DevelopmentTestFilter elven-branched-spear -ReferenceBundleDir … -LoaderReferenceDir …` at `8ee7eabaeda0` | development candidate built; strict standalone UMM package validation passed; 27 tests passed | about 6 min |
 
 The domain cases exercise the production policies directly and are
 supporting evidence only.
@@ -279,11 +299,11 @@ lease was opened.
 
 | Session (`runtime-evidence/loader-compat/`) | Package | Result |
 |---|---|---|
-| **S** `20261121T162812Z-…-spear-bootstrap-simulated` | candidate `53f58154…` | PASS, 7 launches (74, 72, 53, 60, 55, 55, 55 s) |
-| **B** `20261121T163535Z-…-spear-bootstrap-baseline` | v0.0.192 | PASS (73 s): the unrepaired bytes reproduce the cascade under the simulated condition |
-| **P** `20261121T163705Z-…-spear-bootstrap-persistence` | candidate | PASS (75, 65, 70 s) |
-| **L** `20261121T164419Z-…-spear-bootstrap-probe-lifecycle` | candidate | PASS (96, 79 s) |
-| **R** `20261121T164728Z-…-spear-bootstrap-reporter-stack` | candidate | PASS (103, 113 s) |
+| **S** `20261121T171410Z-…-spear-bootstrap-simulated` | candidate `f8988fde…` | PASS, 12 launches (53–73 s each) |
+| **B** `20261121T174507Z-…-spear-bootstrap-baseline` | v0.0.192 | PASS (74 s): the unrepaired bytes reproduce the cascade under the simulated condition |
+| **P** `20261121T175105Z-…-spear-bootstrap-persistence` | candidate | PASS (76, 69, 71 s) |
+| **L** `20261121T174636Z-…-spear-bootstrap-probe-lifecycle` | candidate | PASS (96, 80, 74 s) |
+| **R** `20261121T175459Z-…-spear-bootstrap-reporter-stack` | candidate | PASS (105, 111 s) |
 | **R-base** `20261121T153842Z-…-spear-bootstrap-reporter-stack` (round 0, harness `4ba6cab678`) | v0.0.192 | PASS: the partial stack does not reproduce |
 
 Mission coverage:
@@ -302,11 +322,12 @@ Mission coverage:
    - R (reporter-shaped stack) shows the same profile.
 2. **Failure diagnostics (4.1.2).** Each case below logged the stated line
    once:
-   - S-2, owned clone's fighter group corrupted, harness postfix on the
-     getter: `Elven Branched Spear type profile is invalid: 1 of 17 checks
-     failed.` with `fighter-group [owned-field]: expected=Spears
-     actual=Polearms donor=Spears; getter expected=Polearms actual=Polearms
-     donor=Spears; getterPatches=KmgLoaderCompatHarness`.
+   - S-2, owned clone's fighter group corrupted at the serialized
+     pre-registration check, harness postfix on the getter: `Elven Branched
+     Spear type profile is invalid: 1 of 17 checks failed.` with
+     `fighter-group [owned-field]: expected=Spears actual=Polearms
+     donor=Spears; getter expected=Polearms actual=<deferred>
+     donor=<deferred>; getterPatches=KmgLoaderCompatHarness`.
    - S-3, a harness postfix gives only the owned spear a 7 ft effective range
      while its field and the donor stay correct (R1-F1): startup **fails**,
      with `attack-range [effective-getter]: expected=10ft actual=10ft
@@ -314,10 +335,32 @@ Mission coverage:
      getterPatches=KmgLoaderCompatHarness`.
    - S-4, the donor's `CriticalRollEdge` throws during validation (R1-F3):
      the correct spear still initializes. The condition fired at least once.
-   - S-5, the owned `IsLight` getter throws and the fighter group is also
-     corrupted: one message, `2 of 17 checks failed`, lists both. The light
-     predicate shows `actual=<throws InvalidOperationException: …>` with its
-     patch owner.
+   - S-5, at the post-registration check the owned `IsLight` getter throws
+     and the fighter group is also corrupted: one message, `2 of 17 checks
+     failed`, lists both. The light predicate shows `actual=<throws
+     InvalidOperationException: …>` with its patch owner.
+   - S-8 (R2-F1): a postfix keyed on the **native Longspear GUID** adds 1 ft
+     to its `AttackRange`. Startup completed. The donor kept the change (its
+     old-release `attack-range` predicate fails), and the registered spear
+     reads exactly 6 ft. Before this round, the same GUID-keyed patch stopped
+     startup because the clone still carried the donor GUID during
+     `Configure` (round-1 run `162032Z`).
+   - S-9, the failing control: the same patch keyed on the **released spear
+     GUID** `77f72b0febaf212a5650e7193c00361f` fails startup once, with
+     `attack-range [effective-getter]: … getter expected=6ft actual=7ft
+     donor=6ft; getterPatches=KmgLoaderCompatHarness`.
+   - S-10 (R1-F3): `Weight` throws for the native Longspear GUID on every read
+     inside spear registration, `Register` included. Startup completed with
+     the intended spear; the condition fired at least once.
+   - S-11 (R2-F3): the released spear returns 6.25 ft. Startup failed once,
+     with `getter expected=6ft actual=6.25ft donor=6ft;
+     getterPatches=KmgLoaderCompatHarness`.
+   - S-12 (R2-F2): a late `HasSubCategory` postfix withholds Finessable from
+     the spear category only. Startup failed once, with `subcategory-policy
+     [effective-getter]: expected=Melee,Finessable,TwoHanded,Exotic,Metal …
+     getter expected=Melee,Finessable,TwoHanded,Exotic,Metal
+     actual=Melee,TwoHanded,Exotic,Metal`, naming the harness patch owner.
+     The unmodified category passes in every other launch.
 3. **Failed startup (4.1.3).**
    - After S-2's failed initialization, Standard Longspear, Longsword,
      Greataxe and Heavy Crossbow each took 25 `GetItemSellPrice` and 25
@@ -333,10 +376,11 @@ Mission coverage:
    Familiarity components were the same objects with the same contents as
    before the product ran, and the custom-weapon selector runtime held no
    spear source:
-   - S-6: the corruption is written only on the second, post-registration
-     validation (2 owned validations, 1 corruption).
+   - S-6: the corruption is written only on the post-registration
+     validation (3 owned validation calls, 1 corruption).
    - S-7: named-spear registration throws after `foundation.ready`.
-   - S-2, S-3 and S-5.
+   - S-2, S-3, S-5, S-9, S-11 and S-12. S-1 and S-8 confirm publication on
+     success.
 5. **Normal pricing (4.1.4).** In S-1 and R, ordinary weapons sold at native
    prices. A production pistol bound as battered sold for the fixed 22 gp,
    and the unbound pistol at its native price.
@@ -364,15 +408,25 @@ Mission coverage:
    - The real spell group opened. The Summon Monster I slot opened a creature
      menu with 7 visible entries, each with a name and an icon: Fire Beetle,
      Dog, Eagle, Poisonous Frog, Pony, Dire Rat and Viper.
-   - Clicking row 0 put `KMG_Summoning_Ability_SM_Tier1_FireBeetle_One` into
-     the targeting handler. Its ground click submitted that ability, the
-     command result was `Success`, and the summon was
-     `KMG_Summoning_Unit_FireBeetle`, the creature that ability's actions
-     spawn.
+   - The session named the expected identities independently, from the
+     released manifest: ability `c7ef177436854efca42ac4ae0a068610`
+     (`KMG.Summoning.Ability.SM.Tier1.FireBeetle.One`) and unit
+     `714b04102eae4cd2be200a8f09f04bc3` (`KMG.Summoning.Unit.FireBeetle`).
+   - The "Beetle, Fire" row, its ability in the targeting handler, and the
+     command the ground click submitted were all
+     `KMG_Summoning_Ability_SM_Tier1_FireBeetle_One|c7ef1774…`. The command
+     result was `Success`. The spawned unit was
+     `KMG_Summoning_Unit_FireBeetle|714b0410…`, matching the session's
+     expectation. The ability's own actions name the same unit, but that is
+     recorded only.
    - Failure controls (B and S-2): `native-single`, 0 variants, the menu
-     closed. The slot click put `SummonMonsterISingle` in the handler, the
-     ground click cast it with `Success`, and the summon was `DogSummoned`.
-   - Residue checks after each summon found nothing left.
+     closed. The slot click put `SummonMonsterISingle` (`8fd74edd…`, the
+     session's expected ability) in the handler, the ground click cast it
+     with `Success`, and the summon was `DogSummoned`, the session's
+     expected unit, identified by blueprint name because no native GUID is
+     held locally.
+   - Residue checks after each summon found nothing left. The UI was idle
+     before and after the probe.
 8. **Probe isolation (R1-F6).**
    - L-1: the probe was held after inserting the sorcerer into the party.
      The 25 s step timeout released through the probe slot, with release
@@ -384,6 +438,12 @@ Mission coverage:
      unrestored, and the launch stopped before its next step. The harness
      verdict was `failed`: `cleanup failed: injected-release … || … could not
      all be released`.
+   - L-3 (R2-F4): an ability (`SummonMonsterISingle`) was put into the
+     targeting handler before the probe. The probe refused with `the UI is
+     not idle before the probe (targeting SummonMonsterISingle, open groups
+     none); nothing was changed`, which was the step's expected outcome with
+     isolation restored. Afterwards the handler still held
+     `SummonMonsterISingle`, and no sorcerer remained in the area or party.
 
 Harness iterations kept as evidence:
 
@@ -393,6 +453,8 @@ Harness iterations kept as evidence:
   startup when the condition actually made the owned getter throw.
 - Round 1, `20261121T164052Z`: the launch label printed wrongly on the
   console.
+- Round 1 passing sessions (`162812Z`, `163535Z`, `163705Z`, `164419Z`,
+  `164728Z`, candidate `53f58154…`) are superseded by the round-2 runs above.
 
 ### 4.3 Required gate
 
@@ -407,10 +469,12 @@ is in the developer report.
    unrepaired package. ArmsArmor 1.0.10, about 38 other mods and the raw log
    are unavailable.
 2. **Behaviour change for the owner to note.** A foreign mod that changes the
-   owned spear's effective getter values now fails startup visibly, with
-   diagnostics naming the predicate and the patch owner, as it did before
-   the repair. Tolerating such a mod would need an explicit owner design
-   decision and a specific supported rule.
+   registered spear's effective values fails startup visibly, with
+   diagnostics naming the predicate and the patch owner, as it did before the
+   repair. The effective values are its getters, its engine sub-category
+   result, and its full-precision range. Tolerating such a mod would need an
+   explicit owner design decision and a specific supported rule. Patches
+   keyed on the native Longspear no longer affect the spear.
 3. Eastern Weapons is registered before Expanded Summoning and still
    inherits `m_AttackType`, `m_AttackRange` and `m_IsNatural` from its donors.
    It checks `AttackRange.Value == 2` with a generic message. It was not
