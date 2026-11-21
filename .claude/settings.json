@@ -7,8 +7,6 @@
   "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
-      "Bash(python -m unittest discover -s tools/agent_review *)",
-      "PowerShell(python -m unittest discover -s tools/agent_review *)",
       "Bash(powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1*)",
       "PowerShell(powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1*)"
     ]

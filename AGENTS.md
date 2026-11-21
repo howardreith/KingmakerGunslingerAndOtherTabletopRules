@@ -56,8 +56,8 @@ exports/presentation; technical PASS does not grant owner visual approval.
 - A branch enrolled in the agent review workflow follows
   docs/AGENT-REVIEW-WORKFLOW.md: the controller alone posts PR comments and
   archives review records; the developer reports checkpoints and dispositions
-  to it and never edits tools/agent_review/ or docs/agent-reviews/ unless the
-  workflow itself is the assigned scope.
+  to it, runs required gates with its `verify` helper, and never edits
+  docs/agent-reviews/.
 - Older rules and chronology are retained in docs/history/AGENTS-before-workflow-reset-2026-10-11.md
   as historical reference. Missions remain gameplay/release contracts, governed
   by the current validation policy for development checkpoints.
