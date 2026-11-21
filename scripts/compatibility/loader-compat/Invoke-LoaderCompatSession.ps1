@@ -27,10 +27,78 @@ param(
     [string]$GameCopy = 'C:\Dev\KingmakerGunslingerLab\game-copies\loader-compat',
     [string]$FixtureDir = 'C:\Dev\KingmakerSkipCinematicLab\fixtures',
     [int]$LaunchTimeoutSeconds = 900,
-    [switch]$RecoverOnly
+    [switch]$RecoverOnly,
+    # Read-only: prints the machine-recorded results of an existing session - the session-summary.json identity,
+    # verdict, restoration and per-launch log fields, or with -ReportLaunch one launch's harness-result.json steps
+    # and pricing/initialization/profile records - each with its file's SHA-256, so a finished session can be
+    # surfaced as recorded command output. Starts nothing and changes nothing.
+    [string]$Report,
+    # With -Report: print that launch's records (label prefix, e.g. 02) instead of the session summary.
+    [string]$ReportLaunch
 )
 
 . (Join-Path $PSScriptRoot 'LoaderCompat.Common.ps1')
+
+if ($Report) {
+    if ($Report -notmatch '^[0-9]{8}T[0-9]{6}Z-[A-Za-z0-9.\-]+$') { throw '-Report takes a session id such as 20261121T171410Z-umm-0.31.1-spear-bootstrap-simulated.' }
+    $reportDir = Join-Path $script:LcEvidenceRoot $Report
+    $summaryPath = Join-Path $reportDir 'session-summary.json'
+    if (-not (Test-Path -LiteralPath $summaryPath)) { throw "No session summary at $summaryPath" }
+    function Get-LcReportValue($Object, [string]$Name) {
+        if ($null -eq $Object) { return $null }
+        $property = $Object.PSObject.Properties[$Name]
+        if ($null -eq $property) { return $null }
+        return $property.Value
+    }
+    $summaryData = Get-Content -LiteralPath $summaryPath -Raw | ConvertFrom-Json
+    if (-not $ReportLaunch) {
+        Write-Host "READ-ONLY REPORT $summaryPath sha256=$(Get-LcSha256 $summaryPath)"
+        $head = [ordered]@{}
+        foreach ($name in @('sessionId', 'session', 'loaderProfile', 'candidateZip', 'candidateZipSha256', 'git', 'candidateVersion', 'status',
+                'ownerSaveFiles', 'registryRestored', 'ownerSavesUnchanged', 'ownerInstallUnchanged', 'stagedMods')) {
+            $head[$name] = Get-LcReportValue $summaryData $name
+        }
+        Write-Host ($head | ConvertTo-Json -Depth 6 -Compress)
+        foreach ($launch in @($summaryData.launches)) {
+            $identity = Get-LcReportValue $launch 'identity'
+            Write-Host ([ordered]@{ label = $launch.label; verdict = $launch.verdict; harness = (Get-LcReportValue $launch 'harness')
+                problems = (Get-LcReportValue $launch 'problems'); seconds = (Get-LcReportValue $launch 'seconds')
+                conditions = (Get-LcReportValue $launch 'conditions'); productSha256 = (Get-LcReportValue $identity 'productSha256')
+                umm = (Get-LcReportValue $identity 'umm'); activeMods = (Get-LcReportValue $identity 'activeMods')
+                log = (Get-LcReportValue $launch 'log') } | ConvertTo-Json -Depth 6 -Compress)
+        }
+        return
+    }
+    foreach ($launchDir in @(Get-ChildItem -LiteralPath $reportDir -Directory | Where-Object { $_.Name -match '^[0-9]{2}-' -and $_.Name.StartsWith($ReportLaunch) } | Sort-Object Name)) {
+        $resultPath = Join-Path $launchDir.FullName 'harness\harness-result.json'
+        if (-not (Test-Path -LiteralPath $resultPath)) { Write-Host "== $($launchDir.Name): no harness-result.json"; continue }
+        $result = Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json
+        $picked = [ordered]@{ runId = (Get-LcReportValue $result 'runId'); status = (Get-LcReportValue $result 'status')
+            failure = (Get-LcReportValue $result 'failure'); isolationRestored = (Get-LcReportValue $result 'isolationRestored')
+            steps = (Get-LcReportValue $result 'steps') }
+        foreach ($property in $result.PSObject.Properties) {
+            $value = $property.Value
+            if ($property.Name -match '^kmgItemPricing_') {
+                $picked[$property.Name] = [ordered]@{ repeat = (Get-LcReportValue $value 'repeat')
+                    sellPricePatchOwners = (Get-LcReportValue $value 'sellPricePatchOwners')
+                    ordinary = @(@(Get-LcReportValue $value 'ordinary') | Where-Object { $_ } | ForEach-Object { [ordered]@{ name = $_.name
+                        queries = $_.queries; sellPrices = $_.sellPrices; tooltipSellPrices = $_.tooltipSellPrices; priceThrows = $_.priceThrows
+                        tooltipThrows = $_.tooltipThrows; priceCauseMatches = $_.priceCauseMatches; tooltipCauseMatches = $_.tooltipCauseMatches } })
+                    batteredInspectionUnavailableReported = (Get-LcReportValue $value 'batteredInspectionUnavailableReported')
+                    bootstrap = (Get-LcReportValue $value 'bootstrap') }
+            }
+            elseif ($property.Name -match '^kmgInitialization_') { $picked[$property.Name] = $value }
+            elseif ($property.Name -match '^kmgWeaponTypeProfile_') {
+                $owned = Get-LcReportValue $value 'ownedSpear'
+                $picked[$property.Name] = [ordered]@{ ownedSpearPresent = (Get-LcReportValue $value 'ownedSpearPresent')
+                    ownedGetters = (Get-LcReportValue $owned 'getters'); conditions = (Get-LcReportValue $value 'conditions') }
+            }
+        }
+        Write-Host "== $($launchDir.Name) harness-result.json sha256=$(Get-LcSha256 $resultPath)"
+        Write-Host ($picked | ConvertTo-Json -Depth 8 -Compress)
+    }
+    return
+}
 
 if ($RecoverOnly) {
     if (-not (Test-Path -LiteralPath $script:LcJournal)) { Write-Host 'No interrupted session journal.'; return }

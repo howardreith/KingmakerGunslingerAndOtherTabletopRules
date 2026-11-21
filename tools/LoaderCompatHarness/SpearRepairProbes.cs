@@ -864,10 +864,12 @@ namespace KmgLoaderCompatHarness
     /// <summary>
     /// Fresh-process persistence of affected items. kmgSpearPersistFixture (a loaded save, initialization complete)
     /// puts a released foundation spear, a production pistol bound as battered to the main character, an unbound pistol
-    /// and a Standard Longsword into the party inventory and writes their identities beside the session profile; the
-    /// save is then written by saveGame. kmgSpearPersistedItems, in a later process that loaded that save, finds each
-    /// item by its unique id and checks its blueprint, the spear's resolved weapon-type profile, the battered owner and
-    /// token through the product's own strict lookup, the fixed battered price and the native control prices.
+    /// and a Standard Longsword into the party inventory and writes their blueprint identities, inventory counts and
+    /// the battered owner beside the session profile; the save is then written by saveGame. kmgSpearPersistedItems, in
+    /// a later process that loaded that save, matches the items by blueprint identity and count (Kingmaker 2.1.7b items
+    /// carry no unique id) and checks the spear's resolved weapon-type profile, the battered owner (the main
+    /// character's unique id) and token through the product's own strict lookup, the fixed battered price and the
+    /// native control prices.
     /// </summary>
     internal static class SpearPersistence
     {

@@ -325,7 +325,27 @@ changed only the test-only harness, a session file and this record.
 
 **Machine-recorded summary of S (R3-F1).** These values are read from the
 session runner's own `session-summary.json` and the per-launch
-`harness-result.json`, without re-interpretation:
+`harness-result.json`, without re-interpretation. The runner's read-only
+report mode prints them as command output, with each file's SHA-256:
+
+```
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/compatibility/loader-compat/Invoke-LoaderCompatSession.ps1 -Report 20261121T171410Z-umm-0.31.1-spear-bootstrap-simulated [-ReportLaunch 02]
+```
+
+It starts nothing and changes nothing. In round 4 it reported
+`session-summary.json` sha256 `78d5bb91…ec235`. The S-2 `harness-result.json`
+was `6f179f0f…0e0a`. Launches 04, 05, 08, 09, 10, 11 and 12 were reported
+as well. Their condition counters were:
+
+- 04 `getterThrows` 1;
+- 05 `getterThrows` 1, `ownedValidations` 3, `corruptionsApplied` 1;
+- 08 `rangeOverrides` 3, owned getter `AttackRange` `"6"`;
+- 09 `rangeOverrides` 1;
+- 10 `guidGetterThrows` 1;
+- 12 `subCategoryRemovals` 1.
+
+Launch 11's failure chain ends `getter expected=6ft actual=6.25ft
+donor=6ft`. Values:
 
 - Session `20261121T171410Z-umm-0.31.1-spear-bootstrap-simulated`.
 - Git `8ee7eabaeda05f443804ce9e989b6c6011029cfe`, loader `umm-0.31.1`.
@@ -436,7 +456,9 @@ Mission coverage:
      the spear category only. Startup failed once, with `subcategory-policy
      [effective-getter]: expected=Melee,Finessable,TwoHanded,Exotic,Metal …
      getter expected=Melee,Finessable,TwoHanded,Exotic,Metal
-     actual=Melee,TwoHanded,Exotic,Metal`, naming the harness patch owner.
+     actual=Melee,TwoHanded,Exotic,Metal`, naming the patch owners
+     `KingmakerGunslinger,KmgLoaderCompatHarness` (the product's own
+     `HasSubCategory` patch and the harness postfix).
      The unmodified category passes in every other launch.
 3. **Failed startup (4.1.3).**
    - After S-2's failed initialization, Standard Longspear, Longsword,
