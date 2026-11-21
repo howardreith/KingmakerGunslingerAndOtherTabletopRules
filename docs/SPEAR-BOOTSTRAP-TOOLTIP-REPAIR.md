@@ -7,22 +7,41 @@ v0.0.192). This is a focused development checkpoint under
 `docs/VALIDATION-POLICY.md`. It does not cover release, packaging or broad
 compatibility qualification.
 
-Identities:
+Identities (current first):
 
-- **Product source**: commit `cc8da0e71f`. That is the original repair in
-  `288ce4dd07` plus the review round 1 (`88f1e86b5e`) and round 2 product
-  corrections. Later commits change only the test-only loader-compat
-  harness, its sessions and this record.
-- **Native development candidate**, built from `8ee7eabaeda0`, whose product
-  source is identical to `cc8da0e71f`:
-  `KingmakerGunslinger-0.0.192-development-spear-bootstrap-tooltip-repair-8ee7eabaeda0.zip`.
-  Package SHA-256
-  `f8988fdee8411c59d7d2cd726b9e4adebf49d90801e8eaf883d2b52fd4bbbb00`; DLL
-  SHA-256 `f0f17f7c3d459845b6a2ce20aaeb7165c2966bcf79c43f7da06d8036016ab574`.
-- **Round 2 native sessions** ran with harness commit `8ee7eabaed`. Their
-  results supersede round 1's for every session they repeat. Round 1 used
+- **Current product source**: commit `dfc86851a8` (round 6). This adds the
+  following to the round-5 product (`195d17ce19`):
+  - spear items use the family 1d8 damage (R6-F1);
+  - the live `Enchantments` getter check (R6-F2);
+  - the returned `GetSubCategories` list check (R6-F3), giving 18 profile
+    checks.
+
+  `fe837b5007` and later commits change only the test-only harness, its
+  sessions and this record.
+- **Current native package: none yet.** The round-6 development candidate
+  could not be built. In this environment `Build-Local.ps1` now stops with
+  the repository's own safety refusal, `Runtime tests must run without
+  administrator elevation.` (`Assert-KmgUnelevated`). The round-6 product is
+  therefore covered so far only by compilation and its domain cases. The
+  round-6 native controls are defined in
+  `scripts/compatibility/loader-compat/sessions/spear-bootstrap-item-enchantment-list.json`
+  but have not run.
+- **Round-5 product and package**: product `195d17ce19`, candidate built
+  from `18361607eda8`:
+  - ZIP `c96e1b3c94cf13707cb8f73368681e61150e23f0526542d050979bdc3707f20e`;
+  - DLL `f0fb25cb6027a83ed4265b880122dbd0cc573ca1f04f4eb4f74552c3bc4c8330`.
+
+  Sessions S5, C and R5 in §4.2 ran on it.
+- **Round-2 product and package**: product `cc8da0e71f` (the original repair
+  `288ce4dd07` plus the round-1 `88f1e86b5e` and round-2 corrections),
+  candidate built from `8ee7eabaeda0`:
+  - `KingmakerGunslinger-0.0.192-development-spear-bootstrap-tooltip-repair-8ee7eabaeda0.zip`;
+  - ZIP `f8988fdee8411c59d7d2cd726b9e4adebf49d90801e8eaf883d2b52fd4bbbb00`;
+  - DLL `f0f17f7c3d459845b6a2ce20aaeb7165c2966bcf79c43f7da06d8036016ab574`.
+
+  Sessions S, P, L, O and R in §4.2 ran on it. The round-1 sessions used
   candidate `0f08f76f644d` (package `53f58154…`) with harness `d7dd0ff01d` /
-  `b348c3f815`.
+  `b348c3f815`, and are superseded.
 - **Baseline**: the published v0.0.192 package
   `KingmakerGunslinger-0.0.192-gunslinger-remediation.zip`, package SHA-256
   `936f3571a5f948911b410e6e39134629b60d0fc469d0cd6347d88971af072d69`. Its spear
@@ -143,7 +162,23 @@ that opens empty was never observed.
   fingerprints all of the donor's serialized mechanical fields before
   construction, `m_Weight` included, and refuses if any changed. No donor
   getter is read for that comparison (R1-F3).
-- **Validation (R1-F1, R2-F1 to R2-F3).** Every one of the 17 predicates must
+- **Round 6 (R6-F1 to R6-F3).** Three further gaps are closed:
+  - **Item damage.** Foundation, named and progression spear items now clear
+    the damage-dice override they would otherwise inherit from the cloned
+    native Standard Longspear (`m_OverrideDamageDice` false, `m_DamageDice`
+    1d8). Item validation requires the override off and the effective
+    `BlueprintItemWeapon.BaseDamage` equal to 1d8.
+  - **Live enchantments.** The `movement-enchantment` predicate reads both
+    `m_Enchantments` and the live `BlueprintWeaponType.Enchantments` getter.
+    It compares entries with the registered movement-accuracy enchantment by
+    object identity.
+  - **Returned sub-category list.** A new `subcategory-list` predicate
+    compares the live `WeaponCategoryExtension.GetSubCategories` result with
+    the intended five. Order does not matter; extras and repeats are
+    visible. Donor context and that method's patch owners are reported.
+
+  The profile now has 18 predicates, and the diagnostics read `N of 18`.
+- **Validation (R1-F1, R2-F1 to R2-F3).** Every one of the predicates (17 before round 6) must
   hold, through the game-independent `ElvenBranchedSpearProfilePolicy`. Each
   predicate checks:
   - the **owned serialized field** against the intended value; and
@@ -668,3 +703,15 @@ is in the developer report.
    summon (R5) were repeated.
    The read-only report keeps empty and single-element arrays as arrays
    (R5-F2). Every report first prints a shape check on a synthetic record.
+7. **Round-6 native evidence is pending.** The development candidate for
+   `dfc86851a8` could not be built in the current environment.
+   `Build-Local.ps1` stops on the repository's own refusal to run runtime
+   tests under administrator elevation. Until it can be built unelevated:
+   - The donor item damage, live enchantments getter and returned-list
+     controls have not run (session `spear-bootstrap-item-enchantment-list`).
+   - The S, C and reporter-stack sessions have not been repeated on the
+     18-check product. The simulated and sub-category sessions already expect
+     `N of 18`.
+
+   The round-6 product changes are covered only by compilation and domain
+   cases.
