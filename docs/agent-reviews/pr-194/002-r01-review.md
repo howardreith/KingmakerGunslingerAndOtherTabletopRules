@@ -1,0 +1,799 @@
+<!-- agent-review:v1 enrollment=kmg-codex-agent-review-workflow-20261120170436 key=r01-review part=1/2 sha256=e0797199d8774ce367e31e7ee39981bec73049b5b408d2e04d2a6d1ebfc77c39 -->
+_Part 1 of 2._
+
+### Codex GPT-6.2 Astra — review — round 1 — candidate `0cc3f41b31`
+
+**Decision:** `changes_required` — The controller can advance a checkpoint with a stale review and reach AWAITING_OWNER_REVIEW with an explicitly missing required observation or a changed target branch. Its recovery paths also bypass checks that apply on the first invocation. These are failures of the controller-core exit conditions. The documentation, installation and Black Tentacles handoff belong to setup-final.
+
+#### Findings
+
+**R1-F1** · P1 · defect · blocks readiness — Recheck H, B and M when consuming a review
+- Location: `tools/agent_review/agent_review.py:904`; acceptance: WF04, WF12
+- Trigger: The target advances during review, or the PR changes after validation while publication is paused.
+- Expected: Accept a result only for its enrolled H/B/M. Record a superseded result as historical and reconcile changed inputs before advancing.
+- Actual: review_round checks H after a fresh invocation, reuses an existing request by H alone, and sends a validated round straight to finish_round on resume. finish_round advances the checkpoint without a fresh comparison. At final handoff, a different B only adds a note, even though M may also have changed.
+- Why it blocks / does not: A stale intermediate pass can advance development, and a stale final comparison can reach the owner.
+- Requested correction: Use the same freshness check for fresh and preserved results, at the point of acceptance and again at handoff. Require a fresh comparison or an explicitly recorded policy reconciliation if B or M moves.
+- Requested evidence: Move only the target during review, move H while review publication is paused, and move the target before finalization. Verify that none consumes the old pass or posts a current handoff.
+
+**R1-F2** · P1 · defect · blocks readiness — Bind validation evidence to the candidate being submitted
+- Location: `tools/agent_review/agent_review.py:910`; acceptance: WF04, WF07
+- Trigger: The enrolled branch changes after report acceptance or after a final ready review.
+- Expected: The report, evidence and review request identify the same source. Material changes reopen development/review on the existing enrollment.
+- Actual: accept_report compares the report to the local HEAD once. review_round later captures the current candidate independently and writes last_report into its inputs. After a stale round, resume can submit the new H with the previous H's validation. Conversely, a material change discovered in finalize leaves the enrollment in finalize, with no transition back to submit a corrected candidate.
+- Why it blocks / does not: The controller can attach the wrong evidence to a review or leave a correctable stale candidate permanently on the finalization path.
+- Requested correction: Bind the accepted report to the captured request identity. On material drift, invalidate the ready result, preserve history and require a matching report for the new candidate.
+- Requested evidence: Resume after a changed H and after a material post-review commit. Show a new report and review for the new source with the original session, counters and historical evidence preserved.
+
+**R1-F3** · P1 · defect · blocks readiness — Enforce required evidence independently of the decision string
+- Location: `tools/agent_review/agent_review.py:1038`; acceptance: WF05, WF08, WF12
+- Trigger: A schema-valid passing review lists a required gap, or a required validation result remains failed or not run.
+- Expected: An outstanding required gap or required failed/not-run check prevents a passing decision at the relevant checkpoint.
+- Actual: Decision validation checks the blocks_readiness flags on findings. It never checks evidence_assessment.required_gaps. A final ready result can explicitly list a missing required observation and carry no blocking findings. readiness also ignores reported validation failures and has no way to distinguish required gates from optional checks.
+- Why it blocks / does not: The controller can publish readiness despite affirmative evidence in its inputs that a checkpoint requirement is unmet.
+- Requested correction: Reject passing reviews with nonempty required_gaps. Represent the required validation for the active checkpoint and reconcile its status before advancement, while allowing genuinely optional or later-phase work to remain pending.
+- Requested evidence: Exercise both checkpoint types with an explicit required gap and a final report with an unsatisfied required check. Assert a visible non-ready outcome.
+
+**R1-F4** · P1 · defect · blocks readiness — Validate finding dispositions before updating the ledger
+- Location: `tools/agent_review/agent_review.py:1046`; acceptance: WF05, WF08, WF12
+- Trigger: A follow-up review has structurally valid arrays but inconsistent assessments of prior findings.
+- Expected: Each pending finding has exactly one corresponding developer disposition and reviewer assessment. Required work stays open until a supported fix or rebuttal is accepted.
+- Actual: The controller turns assessments into a set and checks only for missing IDs. Duplicate, contradictory and extra assessments pass. finish_round applies them in array order and treats every accepted deferral as resolved, including a required blocking defect. A rejected blocking item omitted from findings can also accompany checkpoint_passed.
+- Why it blocks / does not: A malformed disposition exchange can close a required finding or advance a phase with a known open blocker.
+- Requested correction: Validate exact ID membership and uniqueness, disposition/assessment compatibility, the optional-only deferral rule, and the required same-ID finding for a rejection. Check the resulting ledger before consuming a pass.
+- Requested evidence: Cover duplicate contradictory assessments, an unknown ID, accepted deferral of a required defect and a rejected prior blocker omitted from an intermediate pass.
+
+**R1-F5** · P2 · defect · blocks readiness — Reject a null structured review before saving a validated round
+- Location: `tools/agent_review/agent_review.py:1027`; acceptance: WF05, WF08
+- Trigger: The reviewer writes the four-byte JSON value null.
+- Expected: Every successfully parsed JSON value is checked against the object schema before an envelope can be marked valid.
+- Actual: JSON null parses to None and bypasses validate_schema. With successful process metadata, validate_review marks the envelope ok. finish_round then dereferences a null result and exits outside the workflow's blocked/retry handling.
+- Why it blocks / does not: Malformed output must produce a recorded failed attempt and a bounded, visible outcome. This input leaves the workflow with an accepted-as-valid unusable envelope.
+- Requested correction: Track parse success separately from the parsed value and reject every non-object result through normal schema validation.
+- Requested evidence: Return the literal JSON null with exit code zero and correct provenance. Verify bounded failed attempts, zero completed rounds and a visible blocked outcome.
+
+**R1-F6** · P1 · defect · blocks readiness — Verify hosted gates for the reviewed commit
+- Location: `tools/agent_review/agent_review.py:1438`; acceptance: WF04, WF08, WF09
+- Trigger: A transcript push changes the PR head, and the checks API returns a different or empty set for that head.
+- Expected: Required hosted checks have an established identity, source SHA and acceptable terminal result. A project with no required hosted checks can explicitly record that fact.
+- Actual: GitHub.checks queries by PR number and returns no commit identity or required-check inventory. readiness runs it after pushing A. An empty response becomes 'no hosted checks are configured', even when required checks ran on H or have yet to appear for A.
+- Why it blocks / does not: The handoff can proceed without establishing the outcome of a required hosted gate for the reviewed source.
+- Requested correction: Determine the applicable required gates and query their results for H. Handle archive-only successors explicitly and distinguish an empty or unavailable response from a verified absence of requirements.
+- Requested evidence: Use different hosted-check results for H and A, including required pending, failed and missing checks. Also demonstrate the explicitly configured no-required-check case.
+
+**R1-F7** · P1 · defect · blocks readiness — Verify the content behind a publication marker
+- Location: `tools/agent_review/agent_review.py:802`; acceptance: WF06, WF10
+- Trigger: A same-account comment has the expected marker but a different body.
+- Expected: Reconciliation verifies the actual comment body against the persisted outgoing part and its digest.
+- Actual: reconcile accepts an expected-account comment whenever its body starts with the saved marker. It never hashes or compares the remaining body. A truncated or edited comment with the original marker is recorded as faithful publication.
+- Why it blocks / does not: The GitHub discussion can omit or change findings while the ledger reports successful delivery.
+- Requested correction: Compare the complete canonical body and expected actor in the enrolled PR. Surface mismatching or ambiguous same-marker records without acknowledging them as the intended publication.
+- Requested evidence: After a lost response, retain the correct marker and expected author but change the visible body. Verify the discrepancy is detected. Keep the positive exact-match idempotency test.
+
+**R1-F8** · P1 · defect · blocks readiness — Scope the single-writer lock to the PR and worktree
+- Location: `tools/agent_review/agent_review.py:1568`; acceptance: WF07, WF10
+- Trigger: Two controllers enroll or recover the same branch concurrently.
+- Expected: A single atomic claim covers the enrolled repository, PR and worktree across processes and state locations. Each writer reads current state under that claim.
+- Actual: Duplicate enrollment scans one caller-selected state_root before creating state.json, while the runtime lock lives inside an individual enrollment directory. Another state root or concurrent enrollment can claim the same PR independently. Stale-lock recovery also reads a dead claim and unlinks by pathname, which permits competing recoverers to remove a newly acquired claim. Controller state is loaded before the command acquires the lock.
+- Why it blocks / does not: Two controllers can own one worktree, or a later lock holder can overwrite state loaded before another writer's transition.
+- Requested correction: Use a canonical ownership location and an atomic process-safe lock for enrollment, recovery and mutation. Reload authoritative state after acquisition and account for an already-running developer before permitting worktree writes.
+- Requested evidence: Use two real local processes to race enrollment and stale-lock recovery, including distinct requested state roots. Show one writer, no lost state and no second developer launch.
+
+**R1-F9** · P1 · defect · blocks readiness — Apply enrollment guards to archive and foreground resume
+- Location: `tools/agent_review/agent_review.py:1832`; acceptance: WF07, WF10
+- Trigger: The worktree, actor or activated controller changes while an enrollment is paused.
+- Expected: Every command that dispatches work, commits or publishes validates the same current target, actor, worktree and activated workflow before its first side effect.
+- Actual: Manual archive calls archive directly. Foreground resume can call review_round or finalize without verify_inputs. archive compares the enrolled remote head SHA with local HEAD but does not check the checked-out branch, origin, actor or workflow activation before committing. A different branch at the same SHA satisfies that comparison.
+- Why it blocks / does not: A supported recovery or archive command can mutate the wrong branch or publish under an unverified identity.
+- Requested correction: Centralize pre-mutation validation under the writer lock, including for foreground resume and manual archive. Avoid publishing a stop message to a target whose identity has not been established.
+- Requested evidence: Switch to another branch at the identical SHA and invoke manual archive. Change actor or workflow before foreground resume. Verify refusal before any commit, push, comment or model launch.
+
+**R1-F10** · P1 · defect · blocks readiness — Honor stop requests in the foreground pilot
+- Location: `tools/agent_review/agent_review.py:1812`; acceptance: WF07, WF12
+- Trigger: The owner runs stop on a foreground enrollment or while the reviewer is between attempts.
+- Expected: A stop request takes effect at the next safe boundary in either mode and preserves session, evidence and counters.
+- Actual: Only run_loop calls check_stop_request. Foreground review and finalize ignore STOP. A stop arriving during a failed reviewer attempt can also be followed by more attempts and backoff intervals before the next loop boundary.
+- Why it blocks / does not: The live pilot uses foreground mode, where the advertised stop command does not stop the next dispatch or handoff.
+- Requested correction: Check STOP before foreground dispatch, retry and finalization, and when a child returns to a safe boundary. Keep protected restoration work intact.
+- Requested evidence: Set STOP before a foreground review and before finalize, and during a failed review attempt. Verify PAUSED, no subsequent launch or handoff, and successful explicit resume.
+
+**R1-F11** · P1 · defect · blocks readiness — Make round completion atomic across process restarts
+- Location: `tools/agent_review/agent_review.py:1100`; acceptance: WF06, WF07, WF08
+- Trigger: The controller restarts during review, after a failed publication, or between acceptance and phase transition.
+- Expected: A round has one durable identity and one acceptance transaction. Every attempt retains a unique immutable record across resumes.
+- Actual: active_round and rounds contain duplicate copies after a JSON reload. Finishing the active copy can leave the history copy 'reviewing' or 'validated', without the accepted decision or envelope link. finish_round also saves the charged counter and clears active_round before persisting the next phase. A crash between those saves restarts phase review and can charge a second round. Resume resets attempt numbering, so fresh attempts overwrite earlier result, event and envelope paths.
+- Why it blocks / does not: A restart can lose review history, consume budget twice or remove the original failure evidence.
+- Requested correction: Store an active round ID referencing the canonical history entry. Persist acceptance, ledger, counters and the next phase atomically. Keep attempt filenames monotonic even when an owner grants another attempt budget.
+- Requested evidence: Reconstruct a controller at the requested, validated and acceptance-transition boundaries. Assert one counted review, one correct history entry, correct continuation and preservation of all prior attempt bytes.
+
+**R1-F12** · P2 · defect · blocks readiness — Recover archive commits and pushes idempotently
+- Location: `tools/agent_review/agent_review.py:1394`; acceptance: WF07, WF09
+- Trigger: The archive push fails or the controller exits between committing, pushing and saving the archive receipt.
+- Expected: A pending archive operation can be reconciled against the worktree, local commit and remote head, then finished once.
+- Actual: archive commits records and pushes before saving their names, hashes and publication keys. A failed push leaves the local branch ahead, which archive refuses on the next invocation. A crash after a successful push but before save causes the same publications to be appended under new sequence numbers.
+- Why it blocks / does not: An ordinary transient failure can strand finalization or duplicate the supposedly canonical committed exchange.
+- Requested correction: Persist the intended files, hashes and parent before writing or committing. On restart recognize verified partial work, retry the guarded push of the same commit if needed, and record completion once.
+- Requested evidence: Interrupt after file creation, after local commit, and after push before state save. Resume each case with one archive commit and one record per publication.
+
+**R1-F13** · P1 · defect · blocks readiness — Restrict the archive exemption to authenticated transcript records
+- Location: `tools/agent_review/agent_review.py:319`; acceptance: WF04, WF09
+- Trigger: An additional post-review commit resembles a transcript by name but is outside the enrolled exchange.
+- Expected: The exemption covers only the enrolled PR's expected append-only transcript records and bytes.
+- Actual: check_archive_only accepts a plain addition in any pr-<digits> directory with a three-digit prefix and arbitrary slug. It never compares the path or content with the enrolled PR's expected records. A foreign PR record or an unrelated numbered Markdown document can therefore preserve a ready verdict.
+- Why it blocks / does not: The final status claims the H..A range contains the enrolled PR's transcript records, which the check does not establish.
+- Requested correction: Bind the per-commit path, operation and mode check to the enrolled PR and the controller's expected record inventory and hashes. Detect unapproved additions and changes to earlier transcripts even when preparing later review inputs.
+- Requested evidence: Add a correctly numbered file under another PR, an unexpected numbered document under this PR, and altered content at an expected new path. All must invalidate the exemption. Retain the genuine positive archive case.
+
+**R1-F14** · P1 · defect · blocks readiness — Keep repository and model authority outside caller-selected configuration
+- Location: `tools/agent_review/agent_review.py:1526`; acceptance: WF01, WF05, WF10
+- Trigger: A routine helper invocation receives a project or enrollment path outside the trusted installation.
+- Expected: Routine commands select an already authorized project and enrollment. Their trusted configuration fixes the permitted target, model and publisher.
+- Actual: load_project accepts an arbitrary existing path, including a name resolved from the caller's working directory before the installed projects directory. That file defines its own allowed repository, actor, reviewer model, developer pattern, executables and push command. Comparing observed values with the same file does not enforce the owner's Astra and repository constraints. find_enrollment similarly accepts any directory containing a state file.
+- Why it blocks / does not: The helper's authority can be redefined by its input, defeating its role as the scoped operation permitted to the developer.
+- Requested correction: Resolve project and enrollment identifiers through trusted installed roots. Validate pinned mission-level model and target constraints independently of caller data. Keep any custom fixture configuration confined to the test or explicit owner provisioning boundary.
+- Requested evidence: Verify that an unregistered project file, a working-directory name collision and an unenrolled state directory are refused before dispatch. Verify the pinned project still works.
+
+**R1-F15** · P1 · defect · blocks readiness — Verify the PR's head repository before dispatch
+- Location: `tools/agent_review/agent_review.py:1596`; acceptance: WF10
+- Trigger: An existing draft PR comes from a similarly named fork branch.
+- Expected: The enrolled PR's number, base repository, head repository and branch identify the authorized worktree unambiguously.
+- Actual: Enrollment compares the head and base branch names and checks for a repository/PR substring in the URL. It requests no head-repository identity, and a fork can have the same branch name and head SHA. The headless run can launch the developer before capture_candidate checks the pushed SHA.
+- Why it blocks / does not: An unrelated draft PR can be enrolled as the destination for development and publication.
+- Requested correction: Request and verify structured repository and PR identities, including the head repository, at enrollment and before dispatch. Validate the exact PR number.
+- Requested evidence: Present a fork PR with matching branch name and SHA and a response for a different PR number. Verify neither can enroll, launch a developer or receive a workflow comment.
+
+**R1-F16** · P1 · required_gap · blocks readiness — Verify the processes that actually produce the report and review
+- Location: `tools/agent_review/agent_review.py:1818`; acceptance: WF01, WF05, WF10
+- Trigger: The foreground pilot submits a report, or reviewer turn metadata disagrees with the requested thread setting.
+- Expected: Record requested and observed configuration for the actual developer and reviewer doing the work, with explicit limits where the CLI exposes no value.
+- Actual: Foreground review accepts a report file with no binding to the interactive Claude session that produced it, then publishes under a Claude Opus heading. The separate preflight verifies a different process. For the reviewer, provenance collects turn_efforts, but validation compares only the thread setting, so contradictory recorded turn effort is accepted.
+- Why it blocks / does not: The pilot cannot substantiate its developer attribution, and the review gate discards available evidence about the effective settings.
+- Requested correction: Bind foreground enrollment to the existing interactive session and inspect its CLI-recorded model/effort metadata without starting a second writer. Validate available per-turn reviewer metadata and surface contradictions.
+- Requested evidence: Show candidate-bound foreground provenance for the actual producer and negative cases for a mismatched session/model and contradictory turn effort.
+
+**R1-F17** · P1 · defect · blocks readiness — Bind headless reports and recovery to a successful developer invocation
+- Location: `tools/agent_review/agent_review.py:1271`; acceptance: WF05, WF07, WF08
+- Trigger: Claude exits unsuccessfully after emitting a result, the controller exits during the first invocation, or the developer stalls.
+- Expected: Each launched invocation is durably counted, belongs to the enrolled session, has a successful outcome before report acceptance, and has a bounded recovery path that protects active restoration.
+- Actual: develop_step records the subprocess exit code but accepts structured output without checking it or the returned session ID. It charges an invocation only after return. If the first invocation is interrupted, started remains false even if its transcript exists, so recovery can attempt a new session using the already-used ID. The soft deadline only sets a flag while continuing to wait indefinitely.
+- Why it blocks / does not: The controller can accept work from a failed invocation, lose session continuity or remain stuck with no effective deadline even for tooling-only work.
+- Requested correction: Persist launch intent and budget before dispatch, reconcile the actual session/transcript and process on restart, and validate outcome and session identity before accepting output. Implement a bounded safe-stop policy that distinguishes protected runtime restoration from an ordinary stalled developer.
+- Requested evidence: Exercise nonzero exit with a complete report, a mismatched session ID, interruption of the first invocation, and an over-deadline tooling-only child. Demonstrate that protected restoration can finish safely.
+
+**R1-F18** · P2 · defect · blocks readiness — Persist operational failures as visible workflow stops
+- Location: `tools/agent_review/agent_review.py:1719`; acceptance: WF07, WF08
+- Trigger: A required Git, GitHub or model boundary fails outside the narrow post_comment retry handler.
+- Expected: External failures produce bounded retries where appropriate, followed by durable PAUSED/BLOCKED status and a precise reason. Successful reviews survive publication outages.
+- Actual: guarded persists a stop only for Stop exceptions. Errors from fetching a target, reading GitHub comments during reconciliation, or launching a missing model executable can escape as CommandError, timeout, OS error or UsageError. The command can exit while persistent status still says ACTIVE and without a recorded operational blocker.
+- Why it blocks / does not: The owner cannot reliably distinguish an active workflow from a failed unattended one or identify the preserved recovery point.
+- Requested correction: Classify operational boundary failures and persist the stop under the lock. Include failures while listing comments in the recoverable publication flow. Keep invalid command-line input separate.
+- Requested evidence: Fail a comment-list call, target fetch and model launch through the command path. Inspect status after process exit and verify recoverable publication resumes without rerunning a valid review.
+
+**R1-F19** · P1 · defect · blocks readiness — Narrow the shipped developer command permissions
+- Location: `tools/agent_review/settings/developer.kingmaker-gunslinger.json:35`; acceptance: WF10
+- Trigger: A headless session uses one of the broadly allowed command families rather than the designated helper.
+- Expected: Granted commands perform specific authorized validation and development operations, with protected workflow, publication and history operations outside the developer's command surface.
+- Actual: The shipped developer settings allow python tools/* while the developer can write under tools/. They also allow unrestricted arguments to find and git commit. These permissions include operations beyond the designated helpers and allow a developer to run the repository copy of the controller despite the deny rule for the installed path.
+- Why it blocks / does not: The supplied headless permission profile does not enforce the separation between the feature writer and the controller/publisher required at this checkpoint.
+- Requested correction: Replace broad executable and argument wildcards with specific trusted helpers, validated arguments and protected paths. Apply the same policy to Bash and PowerShell.
+- Requested evidence: Demonstrate effective permission decisions for the intended focused check and guarded push, an unregistered writable tool, invocation of the controller by the developer, and a history-rewriting commit option.
+
+**R1-F20** · P1 · defect · blocks readiness — Redact entire credential blocks before publication
+- Location: `tools/agent_review/agent_review.py:47`; acceptance: WF06, WF10
+- Trigger: A report or review contains a multiline private-key block.
+- Expected: Recognized credential material is removed in full or publication stops for safe handling.
+- Actual: sanitize replaces only the opening marker of a PEM private-key block. The key body and ending marker remain in the content that publish writes to GitHub and archive commits.
+- Why it blocks / does not: A credential in a submitted report or diagnostic can be disclosed permanently in both copies of the exchange.
+- Requested correction: Redact complete recognized multiline credential blocks, including their serialized representation, and fail closed on incomplete blocks. Apply the same protection to comments and committed envelopes.
+- Requested evidence: Pass an inert multiline credential fixture through both publication and archive paths and verify that no body fragment is retained in either public copy.
+
+**R1-F21** · P1 · defect · blocks readiness — Hash the mission snapshot actually passed to the agents
+- Location: `tools/agent_review/agent_review.py:712`; acceptance: WF04, WF05
+- Trigger: The cached mission copy changes or disappears after enrollment.
+- Expected: The exact mission bytes supplied to the agents match the enrolled digest.
+- Actual: Review and developer prompts point to mission.snapshot, while verify_inputs and readiness hash only mission.path, and only when it still exists. A changed or missing snapshot can be presented with the original SHA-256 label.
+- Why it blocks / does not: A review can evaluate a different contract from the one recorded in its envelope.
+- Requested correction: Verify the snapshot immediately after copying and before dispatch or acceptance. Handle a missing or changed authoritative input explicitly.
+- Requested evidence: Change or remove only the mission snapshot while leaving the source mission intact. Verify dispatch stops before publishing a request with the old digest.
+
+**R1-F22** · P2 · defect · blocks readiness — Reconcile readiness after a completed handoff moves
+- Location: `tools/agent_review/agent_review.py:1508`; acceptance: WF04, WF09
+- Trigger: The enrolled draft PR receives another material commit after entering AWAITING_OWNER_REVIEW.
+- Expected: A historical handoff remains a receipt for H/A. Any subsequently reported current readiness is reconciled with the current PR identity.
+- Actual: After handoff, status returns the stored AWAITING_OWNER_REVIEW value without comparing the current PR head or target. resume refuses a handed-off enrollment. A later material push can therefore leave local status and the PR status section presenting the old readiness as current.
+- Why it blocks / does not: The user-facing status can continue to claim readiness for a PR that has moved beyond the reviewed source and permitted archive.
+- Requested correction: Give inspect/recovery a way to detect a superseded handoff and reopen review for a material successor. Keep the original receipt and distinguish it from a current status.
+- Requested evidence: Complete a handoff, push a material successor, then inspect and reconcile the enrollment. Verify it cannot report the old ready verdict as current.
+
+**R1-F23** · P2 · evidence_gap · blocks readiness — Supply inspectable execution evidence for the behavioral suite
+- Location: `tools/agent_review/test_agent_review.py:8`; acceptance: WF04, WF05, WF06, WF07, WF08, WF09, WF10, WF12
+- Trigger: The reviewer assesses the required WF04–WF10 and WF12 demonstrations at this read-only checkpoint.
+- Expected: The reviewer can inspect candidate-bound execution results for the required focused behavioral cases.
+- Actual: The report gives a command, count and duration for 25 tests. Its evidence references identify a model preflight and installed manifest. Neither identifies an execution record for the behavioral suite. The three read-only unit tests I could run do not exercise the controller cycle.
+- Why it blocks / does not: The checkpoint requires demonstrated behavior with real temporary repositories and persisted state. The execution claim cannot be independently confirmed from the supplied evidence.
+- Requested correction: Run the corrected focused suite and supply a sanitized, accessible result or receipt identifying the candidate, command, test cases, outcomes and duration.
+- Requested evidence: Provide the focused test output or a verifiable reference with its digest. Include the negative and restart cases requested above, with simulated model/GitHub boundaries labeled.
+
+#### Evidence assessment
+
+- **Inspected:** The owner mission, AGENTS.md, docs/VALIDATION-POLICY.md, docs/GITHUB-AGENT-REVIEW-PROTOCOL.md, request.json, developer report and empty prior-findings ledger.; All 13 changed files, including the controller, both schemas, project and plan configuration, permissions, prompts and 25 test methods.
+- **Executed verification:** Verified the detached HEAD and independently computed the merge base. Both match the request. The mission file's SHA-256 also matches.; Compared the supplied 3,852-line feature diff with Git's M..H output, excluding docs/agent-reviews. They match after newline normalization. git diff --check passed.; Ran the three read-only test_agent_review.UnitTests with Python bytecode writes disabled. All three passed. They cover schema examples, loading the shipped project/plans and the existing redaction example.
+- **Source inspection only:** Traced enrollment, subprocess invocation, provenance, schema and ledger validation, publication, locking, stop/resume, archive generation, hosted checks and final handoff.; Inspected the real temporary-repository fixture and its simulated model/GitHub boundaries. The ordinary correction cycle and several negative paths have behavioral tests. The suite does not exercise the key stale-base, evidence, concurrent enrollment and interrupted-publication cases identified below.
+- **Required gaps:** Candidate-bound focused behavioral results covering the failure and recovery cases below, including actual controller reconstruction from persisted state.
+- **Limitations:** The temporary-Git behavioral tests create files and repositories. I inspected their source under the read-only review constraint. The developer reported 25 passes in 36 seconds, but the supplied round inputs contain no candidate-bound execution output for that run.; The default python.exe alias could not launch in this environment. The installed Python executable ran the three read-only tests successfully.; docs/AGENT-REVIEW-WORKFLOW.md is absent at H. It is an explicit setup-final deliverable. I used the supplied checkpoint contract and behavioral protocol for this review.; Live subscription preflight, guarded push and remote PR state were developer-reported. I did not access the network, launch a model, publish, or run game workflows.
+
+#### Summary
+
+- **Delivered behavior:** The candidate provides a controller, versioned schemas, explicit model launch settings, detached review worktrees, an outgoing-comment ledger, per-commit archive checks and a real-Git test fixture. The tests include an intermediate-to-final correction cycle with simulated model and GitHub responses. The controller still accepts several inconsistent or stale outcomes and has incomplete restart and ownership guards.
+- **Scope reviewed:** Intermediate controller-core checkpoint for draft PR #194 at 0cc3f41b31d9f1bcc974d051c123c834e4d271d0.
+- **Pending later-phase work:** Complete the workflow operating guide, installation and project-local permission setup.; Complete the live pilot, Black Tentacles workflow binding and exact start command, and the setup acceptance report.
+- **Unresolved questions:** none
+- **Remaining owner review:** After a verified final checkpoint, assess whether the operational handoff and effective permissions meet the owner's needs. Merge and release decisions remain with the owner.
+
+#### Provenance (controller-recorded)
+
+| | Requested | Observed |
+|---|---|---|
+| Model | `gpt-6.2-astra` | `gpt-6.2-astra` |
+| Reasoning effort | `high` | `high` |
+| Sandbox / approvals | read-only / never | `read-only` / `never` |
+
+Codex CLI `0.170.0`, thread `01a1fafd-eb3e-7d33-90bc-0d0bfe6cd3f5`, duration 276.0s, response sha256 `abdea1ff0a203174022b39be366a064379d163fb3162d8d31e08f82fcbe995b9`, request `kmg-codex-agent-review-workflow-20261120170436-r01-4d8565`. Observed values come from the Codex session rollout's recorded thread settings, not from the model's own statements; the serving backend's model identity is not separately exposed.
+
+<details><summary>Complete structured review (agent-review.review.v1)</summary>
+
+```json
+{
+  "candidate_commit": "0cc3f41b31d9f1bcc974d051c123c834e4d271d0",
+  "checkpoint_id": "controller-core",
+  "checkpoint_type": "intermediate",
+  "decision": "changes_required",
+  "decision_rationale": "The controller can advance a checkpoint with a stale review and reach AWAITING_OWNER_REVIEW with an explicitly missing required observation or a changed target branch. Its recovery paths also bypass checks that apply on the first invocation. These are failures of the controller-core exit conditions. The documentation, installation and Black Tentacles handoff belong to setup-final.",
+  "evidence_assessment": {
+    "executed_verification": [
+      "Verified the detached HEAD and independently computed the merge base. Both match the request. The mission file's SHA-256 also matches.",
+      "Compared the supplied 3,852-line feature diff with Git's M..H output, excluding docs/agent-reviews. They match after newline normalization. git diff --check passed.",
+      "Ran the three read-only test_agent_review.UnitTests with Python bytecode writes disabled. All three passed. They cover schema examples, loading the shipped project/plans and the existing redaction example."
+    ],
+    "inspected": [
+      "The owner mission, AGENTS.md, docs/VALIDATION-POLICY.md, docs/GITHUB-AGENT-REVIEW-PROTOCOL.md, request.json, developer report and empty prior-findings ledger.",
+      "All 13 changed files, including the controller, both schemas, project and plan configuration, permissions, prompts and 25 test methods."
+    ],
+    "limitations": [
+      "The temporary-Git behavioral tests create files and repositories. I inspected their source under the read-only review constraint. The developer reported 25 passes in 36 seconds, but the supplied round inputs contain no candidate-bound execution output for that run.",
+      "The default python.exe alias could not launch in this environment. The installed Python executable ran the three read-only tests successfully.",
+      "docs/AGENT-REVIEW-WORKFLOW.md is absent at H. It is an explicit setup-final deliverable. I used the supplied checkpoint contract and behavioral protocol for this review.",
+      "Live subscription preflight, guarded push and remote PR state were developer-reported. I did not access the network, launch a model, publish, or run game workflows."
+    ],
+    "required_gaps": [
+      "Candidate-bound focused behavioral results covering the failure and recovery cases below, including actual controller reconstruction from persisted state."
+    ],
+    "source_inspection_only": [
+      "Traced enrollment, subprocess invocation, provenance, schema and ledger validation, publication, locking, stop/resume, archive generation, hosted checks and final handoff.",
+      "Inspected the real temporary-repository fixture and its simulated model/GitHub boundaries. The ordinary correction cycle and several negative paths have behavioral tests. The suite does not exercise the key stale-base, evidence, concurrent enrollment and interrupted-publication cases identified below."
+    ]
+  },
+  "findings": [
+    {
+      "acceptance_ids": [
+        "WF04",
+        "WF12"
+      ],
+      "actual": "review_round checks H after a fresh invocation, reuses an existing request by H alone, and sends a validated round straight to finish_round on resume. finish_round advances the checkpoint without a fresh comparison. At final handoff, a different B only adds a note, even though M may also have changed.",
+      "blocking_rationale": "A stale intermediate pass can advance development, and a stale final comparison can reach the owner.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "Accept a result only for its enrolled H/B/M. Record a superseded result as historical and reconcile changed inputs before advancing.",
+      "id": "R1-F1",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 904
+      },
+      "priority": "P1",
+      "requested_correction": "Use the same freshness check for fresh and preserved results, at the point of acceptance and again at handoff. Require a fresh comparison or an explicitly recorded policy reconciliation if B or M moves.",
+      "requested_evidence": "Move only the target during review, move H while review publication is paused, and move the target before finalization. Verify that none consumes the old pass or posts a current handoff.",
+      "title": "Recheck H, B and M when consuming a review",
+      "trigger": "The target advances during review, or the PR changes after validation while publication is paused."
+    },
+    {
+      "acceptance_ids": [
+        "WF04",
+        "WF07"
+      ],
+      "actual": "accept_report compares the report to the local HEAD once. review_round later captures the current candidate independently and writes last_report into its inputs. After a stale round, resume can submit the new H with the previous H's validation. Conversely, a material change discovered in finalize leaves the enrollment in finalize, with no transition back to submit a corrected candidate.",
+      "blocking_rationale": "The controller can attach the wrong evidence to a review or leave a correctable stale candidate permanently on the finalization path.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "The report, evidence and review request identify the same source. Material changes reopen development/review on the existing enrollment.",
+      "id": "R1-F2",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 910
+      },
+      "priority": "P1",
+      "requested_correction": "Bind the accepted report to the captured request identity. On material drift, invalidate the ready result, preserve history and require a matching report for the new candidate.",
+      "requested_evidence": "Resume after a changed H and after a material post-review commit. Show a new report and review for the new source with the original session, counters and historical evidence preserved.",
+      "title": "Bind validation evidence to the candidate being submitted",
+      "trigger": "The enrolled branch changes after report acceptance or after a final ready review."
+    },
+    {
+      "acceptance_ids": [
+        "WF05",
+        "WF08",
+        "WF12"
+      ],
+      "actual": "Decision validation checks the blocks_readiness flags on findings. It never checks evidence_assessment.required_gaps. A final ready result can explicitly list a missing required observation and carry no blocking findings. readiness also ignores reported validation failures and has no way to distinguish required gates from optional checks.",
+      "blocking_rationale": "The controller can publish readiness despite affirmative evidence in its inputs that a checkpoint requirement is unmet.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "An outstanding required gap or required failed/not-run check prevents a passing decision at the relevant checkpoint.",
+      "id": "R1-F3",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 1038
+      },
+      "priority": "P1",
+      "requested_correction": "Reject passing reviews with nonempty required_gaps. Represent the required validation for the active checkpoint and reconcile its status before advancement, while allowing genuinely optional or later-phase work to remain pending.",
+      "requested_evidence": "Exercise both checkpoint types with an explicit required gap and a final report with an unsatisfied required check. Assert a visible non-ready outcome.",
+      "title": "Enforce required evidence independently of the decision string",
+      "trigger": "A schema-valid passing review lists a required gap, or a required validation result remains failed or not run."
+    },
+    {
+      "acceptance_ids": [
+        "WF05",
+        "WF08",
+        "WF12"
+      ],
+      "actual": "The controller turns assessments into a set and checks only for missing IDs. Duplicate, contradictory and extra assessments pass. finish_round applies them in array order and treats every accepted deferral as resolved, including a required blocking defect. A rejected blocking item omitted from findings can also accompany checkpoint_passed.",
+      "blocking_rationale": "A malformed disposition exchange can close a required finding or advance a phase with a known open blocker.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "Each pending finding has exactly one corresponding developer disposition and reviewer assessment. Required work stays open until a supported fix or rebuttal is accepted.",
+      "id": "R1-F4",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 1046
+      },
+      "priority": "P1",
+      "requested_correction": "Validate exact ID membership and uniqueness, disposition/assessment compatibility, the optional-only deferral rule, and the required same-ID finding for a rejection. Check the resulting ledger before consuming a pass.",
+      "requested_evidence": "Cover duplicate contradictory assessments, an unknown ID, accepted deferral of a required defect and a rejected prior blocker omitted from an intermediate pass.",
+      "title": "Validate finding dispositions before updating the ledger",
+      "trigger": "A follow-up review has structurally valid arrays but inconsistent assessments of prior findings."
+    },
+    {
+      "acceptance_ids": [
+        "WF05",
+        "WF08"
+      ],
+      "actual": "JSON null parses to None and bypasses validate_schema. With successful process metadata, validate_review marks the envelope ok. finish_round then dereferences a null result and exits outside the workflow's blocked/retry handling.",
+      "blocking_rationale": "Malformed output must produce a recorded failed attempt and a bounded, visible outcome. This input leaves the workflow with an accepted-as-valid unusable envelope.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "Every successfully parsed JSON value is checked against the object schema before an envelope can be marked valid.",
+      "id": "R1-F5",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 1027
+      },
+      "priority": "P2",
+      "requested_correction": "Track parse success separately from the parsed value and reject every non-object result through normal schema validation.",
+      "requested_evidence": "Return the literal JSON null with exit code zero and correct provenance. Verify bounded failed attempts, zero completed rounds and a visible blocked outcome.",
+      "title": "Reject a null structured review before saving a validated round",
+      "trigger": "The reviewer writes the four-byte JSON value null."
+    },
+    {
+      "acceptance_ids": [
+        "WF04",
+        "WF08",
+        "WF09"
+      ],
+      "actual": "GitHub.checks queries by PR number and returns no commit identity or required-check inventory. readiness runs it after pushing A. An empty response becomes 'no hosted checks are configured', even when required checks ran on H or have yet to appear for A.",
+      "blocking_rationale": "The handoff can proceed without establishing the outcome of a required hosted gate for the reviewed source.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "Required hosted checks have an established identity, source SHA and acceptable terminal result. A project with no required hosted checks can explicitly record that fact.",
+      "id": "R1-F6",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 1438
+      },
+      "priority": "P1",
+      "requested_correction": "Determine the applicable required gates and query their results for H. Handle archive-only successors explicitly and distinguish an empty or unavailable response from a verified absence of requirements.",
+      "requested_evidence": "Use different hosted-check results for H and A, including required pending, failed and missing checks. Also demonstrate the explicitly configured no-required-check case.",
+      "title": "Verify hosted gates for the reviewed commit",
+      "trigger": "A transcript push changes the PR head, and the checks API returns a different or empty set for that head."
+    },
+    {
+      "acceptance_ids": [
+        "WF06",
+        "WF10"
+      ],
+      "actual": "reconcile accepts an expected-account comment whenever its body starts with the saved marker. It never hashes or compares the remaining body. A truncated or edited comment with the original marker is recorded as faithful publication.",
+      "blocking_rationale": "The GitHub discussion can omit or change findings while the ledger reports successful delivery.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "Reconciliation verifies the actual comment body against the persisted outgoing part and its digest.",
+      "id": "R1-F7",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 802
+      },
+      "priority": "P1",
+      "requested_correction": "Compare the complete canonical body and expected actor in the enrolled PR. Surface mismatching or ambiguous same-marker records without acknowledging them as the intended publication.",
+      "requested_evidence": "After a lost response, retain the correct marker and expected author but change the visible body. Verify the discrepancy is detected. Keep the positive exact-match idempotency test.",
+      "title": "Verify the content behind a publication marker",
+      "trigger": "A same-account comment has the expected marker but a different body."
+    },
+    {
+      "acceptance_ids": [
+        "WF07",
+        "WF10"
+      ],
+      "actual": "Duplicate enrollment scans one caller-selected state_root before creating state.json, while the runtime lock lives inside an individual enrollment directory. Another state root or concurrent enrollment can claim the same PR independently. Stale-lock recovery also reads a dead claim and unlinks by pathname, which permits competing recoverers to remove a newly acquired claim. Controller state is loaded before the command acquires the lock.",
+      "blocking_rationale": "Two controllers can own one worktree, or a later lock holder can overwrite state loaded before another writer's transition.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "A single atomic claim covers the enrolled repository, PR and worktree across processes and state locations. Each writer reads current state under that claim.",
+      "id": "R1-F8",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 1568
+      },
+      "priority": "P1",
+      "requested_correction": "Use a canonical ownership location and an atomic process-safe lock for enrollment, recovery and mutation. Reload authoritative state after acquisition and account for an already-running developer before permitting worktree writes.",
+      "requested_evidence": "Use two real local processes to race enrollment and stale-lock recovery, including distinct requested state roots. Show one writer, no lost state and no second developer launch.",
+      "title": "Scope the single-writer lock to the PR and worktree",
+      "trigger": "Two controllers enroll or recover the same branch concurrently."
+    },
+    {
+      "acceptance_ids": [
+        "WF07",
+        "WF10"
+      ],
+      "actual": "Manual archive calls archive directly. Foreground resume can call review_round or finalize without verify_inputs. archive compares the enrolled remote head SHA with local HEAD but does not check the checked-out branch, origin, actor or workflow activation before committing. A different branch at the same SHA satisfies that comparison.",
+      "blocking_rationale": "A supported recovery or archive command can mutate the wrong branch or publish under an unverified identity.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "Every command that dispatches work, commits or publishes validates the same current target, actor, worktree and activated workflow before its first side effect.",
+      "id": "R1-F9",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 1832
+      },
+      "priority": "P1",
+      "requested_correction": "Centralize pre-mutation validation under the writer lock, including for foreground resume and manual archive. Avoid publishing a stop message to a target whose identity has not been established.",
+      "requested_evidence": "Switch to another branch at the identical SHA and invoke manual archive. Change actor or workflow before foreground resume. Verify refusal before any commit, push, comment or model launch.",
+      "title": "Apply enrollment guards to archive and foreground resume",
+      "trigger": "The worktree, actor or activated controller changes while an enrollment is paused."
+    },
+    {
+      "acceptance_ids": [
+        "WF07",
+        "WF12"
+      ],
+      "actual": "Only run_loop calls check_stop_request. Foreground review and finalize ignore STOP. A stop arriving during a failed reviewer attempt can also be followed by more attempts and backoff intervals before the next loop boundary.",
+      "blocking_rationale": "The live pilot uses foreground mode, where the advertised stop command does not stop the next dispatch or handoff.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "A stop request takes effect at the next safe boundary in either mode and preserves session, evidence and counters.",
+      "id": "R1-F10",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 1812
+      },
+      "priority": "P1",
+      "requested_correction": "Check STOP before foreground dispatch, retry and finalization, and when a child returns to a safe boundary. Keep protected restoration work intact.",
+      "requested_evidence": "Set STOP before a foreground review and before finalize, and during a failed review attempt. Verify PAUSED, no subsequent launch or handoff, and successful explicit resume.",
+      "title": "Honor stop requests in the foreground pilot",
+      "trigger": "The owner runs stop on a foreground enrollment or while the reviewer is between attempts."
+    },
+    {
+      "acceptance_ids": [
+        "WF06",
+        "WF07",
+        "WF08"
+      ],
+      "actual": "active_round and rounds contain duplicate copies after a JSON reload. Finishing the active copy can leave the history copy 'reviewing' or 'validated', without the accepted decision or envelope link. finish_round also saves the charged counter and clears active_round before persisting the next phase. A crash between those saves restarts phase review and can charge a second round. Resume resets attempt numbering, so fresh attempts overwrite earlier result, event and envelope paths.",
+      "blocking_rationale": "A restart can lose review history, consume budget twice or remove the original failure evidence.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "A round has one durable identity and one acceptance transaction. Every attempt retains a unique immutable record across resumes.",
+      "id": "R1-F11",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 1100
+      },
+      "priority": "P1",
+      "requested_correction": "Store an active round ID referencing the canonical history entry. Persist acceptance, ledger, counters and the next phase atomically. Keep attempt filenames monotonic even when an owner grants another attempt budget.",
+      "requested_evidence": "Reconstruct a controller at the requested, validated and acceptance-transition boundaries. Assert one counted review, one correct history entry, correct continuation and preservation of all prior attempt bytes.",
+      "title": "Make round completion atomic across process restarts",
+      "trigger": "The controller restarts during review, after a failed publication, or between acceptance and phase transition."
+    },
+    {
+      "acceptance_ids": [
+        "WF07",
+        "WF09"
+      ],
+      "actual": "archive commits records and pushes before saving their names, hashes and publication keys. A failed push leaves the local branch ahead, which archive refuses on the next invocation. A crash after a successful push but before save causes the same publications to be appended under new sequence numbers.",
+      "blocking_rationale": "An ordinary transient failure can strand finalization or duplicate the supposedly canonical committed exchange.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "A pending archive operation can be reconciled against the worktree, local commit and remote head, then finished once.",
+      "id": "R1-F12",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 1394
+      },
+      "priority": "P2",
+      "requested_correction": "Persist the intended files, hashes and parent before writing or committing. On restart recognize verified partial work, retry the guarded push of the same commit if needed, and record completion once.",
+      "requested_evidence": "Interrupt after file creation, after local commit, and after push before state save. Resume each case with one archive commit and one record per publication.",
+      "title": "Recover archive commits and pushes idempotently",
+      "trigger": "The archive push fails or the controller exits between committing, pushing and saving the archive receipt."
+    },
+    {
+      "acceptance_ids": [
+        "WF04",
+        "WF09"
+      ],
+      "actual": "check_archive_only accepts a plain addition in any pr-<digits> directory with a three-digit prefix and arbitrary slug. It never compares the path or content with the enrolled PR's expected records. A foreign PR record or an unrelated numbered Markdown document can therefore preserve a ready verdict.",
+      "blocking_rationale": "The final status claims the H..A range contains the enrolled PR's transcript records, which the check does not establish.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "The exemption covers only the enrolled PR's expected append-only transcript records and bytes.",
+      "id": "R1-F13",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 319
+      },
+      "priority": "P1",
+      "requested_correction": "Bind the per-commit path, operation and mode check to the enrolled PR and the controller's expected record inventory and hashes. Detect unapproved additions and changes to earlier transcripts even when preparing later review inputs.",
+      "requested_evidence": "Add a correctly numbered file under another PR, an unexpected numbered document under this PR, and altered content at an expected new path. All must invalidate the exemption. Retain the genuine positive archive case.",
+      "title": "Restrict the archive exemption to authenticated transcript records",
+      "trigger": "An additional post-review commit resembles a transcript by name but is outside the enrolled exchange."
+    },
+    {
+      "acceptance_ids": [
+        "WF01",
+        "WF05",
+        "WF10"
+      ],
+      "actual": "load_project accepts an arbitrary existing path, including a name resolved from the caller's working directory before the installed projects directory. That file defines its own allowed repository, actor, reviewer model, developer pattern, executables and push command. Comparing observed values with the same file does not enforce the owner's Astra and repository constraints. find_enrollment similarly accepts any directory containing a state file.",
+      "blocking_rationale": "The helper's authority can be redefined by its input, defeating its role as the scoped operation permitted to the developer.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "Routine commands select an already authorized project and enrollment. Their trusted configuration fixes the permitted target, model and publisher.",
+      "id": "R1-F14",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 1526
+      },
+      "priority": "P1",
+      "requested_correction": "Resolve project and enrollment identifiers through trusted installed roots. Validate pinned mission-level model and target constraints independently of caller data. Keep any custom fixture configuration confined to the test or explicit owner provisioning boundary.",
+      "requested_evidence": "Verify that an unregistered project file, a working-director
+
+---
+
+<!-- agent-review:v1 enrollment=kmg-codex-agent-review-workflow-20261120170436 key=r01-review part=2/2 sha256=c3925f7379c70896bf03ed4642d6f77ed988c9dc335edc8283c293889d5fd64b -->
+_Part 2 of 2._
+
+y name collision and an unenrolled state directory are refused before dispatch. Verify the pinned project still works.",
+      "title": "Keep repository and model authority outside caller-selected configuration",
+      "trigger": "A routine helper invocation receives a project or enrollment path outside the trusted installation."
+    },
+    {
+      "acceptance_ids": [
+        "WF10"
+      ],
+      "actual": "Enrollment compares the head and base branch names and checks for a repository/PR substring in the URL. It requests no head-repository identity, and a fork can have the same branch name and head SHA. The headless run can launch the developer before capture_candidate checks the pushed SHA.",
+      "blocking_rationale": "An unrelated draft PR can be enrolled as the destination for development and publication.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "The enrolled PR's number, base repository, head repository and branch identify the authorized worktree unambiguously.",
+      "id": "R1-F15",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 1596
+      },
+      "priority": "P1",
+      "requested_correction": "Request and verify structured repository and PR identities, including the head repository, at enrollment and before dispatch. Validate the exact PR number.",
+      "requested_evidence": "Present a fork PR with matching branch name and SHA and a response for a different PR number. Verify neither can enroll, launch a developer or receive a workflow comment.",
+      "title": "Verify the PR's head repository before dispatch",
+      "trigger": "An existing draft PR comes from a similarly named fork branch."
+    },
+    {
+      "acceptance_ids": [
+        "WF01",
+        "WF05",
+        "WF10"
+      ],
+      "actual": "Foreground review accepts a report file with no binding to the interactive Claude session that produced it, then publishes under a Claude Opus heading. The separate preflight verifies a different process. For the reviewer, provenance collects turn_efforts, but validation compares only the thread setting, so contradictory recorded turn effort is accepted.",
+      "blocking_rationale": "The pilot cannot substantiate its developer attribution, and the review gate discards available evidence about the effective settings.",
+      "blocks_readiness": true,
+      "category": "required_gap",
+      "expected": "Record requested and observed configuration for the actual developer and reviewer doing the work, with explicit limits where the CLI exposes no value.",
+      "id": "R1-F16",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 1818
+      },
+      "priority": "P1",
+      "requested_correction": "Bind foreground enrollment to the existing interactive session and inspect its CLI-recorded model/effort metadata without starting a second writer. Validate available per-turn reviewer metadata and surface contradictions.",
+      "requested_evidence": "Show candidate-bound foreground provenance for the actual producer and negative cases for a mismatched session/model and contradictory turn effort.",
+      "title": "Verify the processes that actually produce the report and review",
+      "trigger": "The foreground pilot submits a report, or reviewer turn metadata disagrees with the requested thread setting."
+    },
+    {
+      "acceptance_ids": [
+        "WF05",
+        "WF07",
+        "WF08"
+      ],
+      "actual": "develop_step records the subprocess exit code but accepts structured output without checking it or the returned session ID. It charges an invocation only after return. If the first invocation is interrupted, started remains false even if its transcript exists, so recovery can attempt a new session using the already-used ID. The soft deadline only sets a flag while continuing to wait indefinitely.",
+      "blocking_rationale": "The controller can accept work from a failed invocation, lose session continuity or remain stuck with no effective deadline even for tooling-only work.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "Each launched invocation is durably counted, belongs to the enrolled session, has a successful outcome before report acceptance, and has a bounded recovery path that protects active restoration.",
+      "id": "R1-F17",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 1271
+      },
+      "priority": "P1",
+      "requested_correction": "Persist launch intent and budget before dispatch, reconcile the actual session/transcript and process on restart, and validate outcome and session identity before accepting output. Implement a bounded safe-stop policy that distinguishes protected runtime restoration from an ordinary stalled developer.",
+      "requested_evidence": "Exercise nonzero exit with a complete report, a mismatched session ID, interruption of the first invocation, and an over-deadline tooling-only child. Demonstrate that protected restoration can finish safely.",
+      "title": "Bind headless reports and recovery to a successful developer invocation",
+      "trigger": "Claude exits unsuccessfully after emitting a result, the controller exits during the first invocation, or the developer stalls."
+    },
+    {
+      "acceptance_ids": [
+        "WF07",
+        "WF08"
+      ],
+      "actual": "guarded persists a stop only for Stop exceptions. Errors from fetching a target, reading GitHub comments during reconciliation, or launching a missing model executable can escape as CommandError, timeout, OS error or UsageError. The command can exit while persistent status still says ACTIVE and without a recorded operational blocker.",
+      "blocking_rationale": "The owner cannot reliably distinguish an active workflow from a failed unattended one or identify the preserved recovery point.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "External failures produce bounded retries where appropriate, followed by durable PAUSED/BLOCKED status and a precise reason. Successful reviews survive publication outages.",
+      "id": "R1-F18",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 1719
+      },
+      "priority": "P2",
+      "requested_correction": "Classify operational boundary failures and persist the stop under the lock. Include failures while listing comments in the recoverable publication flow. Keep invalid command-line input separate.",
+      "requested_evidence": "Fail a comment-list call, target fetch and model launch through the command path. Inspect status after process exit and verify recoverable publication resumes without rerunning a valid review.",
+      "title": "Persist operational failures as visible workflow stops",
+      "trigger": "A required Git, GitHub or model boundary fails outside the narrow post_comment retry handler."
+    },
+    {
+      "acceptance_ids": [
+        "WF10"
+      ],
+      "actual": "The shipped developer settings allow python tools/* while the developer can write under tools/. They also allow unrestricted arguments to find and git commit. These permissions include operations beyond the designated helpers and allow a developer to run the repository copy of the controller despite the deny rule for the installed path.",
+      "blocking_rationale": "The supplied headless permission profile does not enforce the separation between the feature writer and the controller/publisher required at this checkpoint.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "Granted commands perform specific authorized validation and development operations, with protected workflow, publication and history operations outside the developer's command surface.",
+      "id": "R1-F19",
+      "location": {
+        "file": "tools/agent_review/settings/developer.kingmaker-gunslinger.json",
+        "line": 35
+      },
+      "priority": "P1",
+      "requested_correction": "Replace broad executable and argument wildcards with specific trusted helpers, validated arguments and protected paths. Apply the same policy to Bash and PowerShell.",
+      "requested_evidence": "Demonstrate effective permission decisions for the intended focused check and guarded push, an unregistered writable tool, invocation of the controller by the developer, and a history-rewriting commit option.",
+      "title": "Narrow the shipped developer command permissions",
+      "trigger": "A headless session uses one of the broadly allowed command families rather than the designated helper."
+    },
+    {
+      "acceptance_ids": [
+        "WF06",
+        "WF10"
+      ],
+      "actual": "sanitize replaces only the opening marker of a PEM private-key block. The key body and ending marker remain in the content that publish writes to GitHub and archive commits.",
+      "blocking_rationale": "A credential in a submitted report or diagnostic can be disclosed permanently in both copies of the exchange.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "Recognized credential material is removed in full or publication stops for safe handling.",
+      "id": "R1-F20",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 47
+      },
+      "priority": "P1",
+      "requested_correction": "Redact complete recognized multiline credential blocks, including their serialized representation, and fail closed on incomplete blocks. Apply the same protection to comments and committed envelopes.",
+      "requested_evidence": "Pass an inert multiline credential fixture through both publication and archive paths and verify that no body fragment is retained in either public copy.",
+      "title": "Redact entire credential blocks before publication",
+      "trigger": "A report or review contains a multiline private-key block."
+    },
+    {
+      "acceptance_ids": [
+        "WF04",
+        "WF05"
+      ],
+      "actual": "Review and developer prompts point to mission.snapshot, while verify_inputs and readiness hash only mission.path, and only when it still exists. A changed or missing snapshot can be presented with the original SHA-256 label.",
+      "blocking_rationale": "A review can evaluate a different contract from the one recorded in its envelope.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "The exact mission bytes supplied to the agents match the enrolled digest.",
+      "id": "R1-F21",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 712
+      },
+      "priority": "P1",
+      "requested_correction": "Verify the snapshot immediately after copying and before dispatch or acceptance. Handle a missing or changed authoritative input explicitly.",
+      "requested_evidence": "Change or remove only the mission snapshot while leaving the source mission intact. Verify dispatch stops before publishing a request with the old digest.",
+      "title": "Hash the mission snapshot actually passed to the agents",
+      "trigger": "The cached mission copy changes or disappears after enrollment."
+    },
+    {
+      "acceptance_ids": [
+        "WF04",
+        "WF09"
+      ],
+      "actual": "After handoff, status returns the stored AWAITING_OWNER_REVIEW value without comparing the current PR head or target. resume refuses a handed-off enrollment. A later material push can therefore leave local status and the PR status section presenting the old readiness as current.",
+      "blocking_rationale": "The user-facing status can continue to claim readiness for a PR that has moved beyond the reviewed source and permitted archive.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "A historical handoff remains a receipt for H/A. Any subsequently reported current readiness is reconciled with the current PR identity.",
+      "id": "R1-F22",
+      "location": {
+        "file": "tools/agent_review/agent_review.py",
+        "line": 1508
+      },
+      "priority": "P2",
+      "requested_correction": "Give inspect/recovery a way to detect a superseded handoff and reopen review for a material successor. Keep the original receipt and distinguish it from a current status.",
+      "requested_evidence": "Complete a handoff, push a material successor, then inspect and reconcile the enrollment. Verify it cannot report the old ready verdict as current.",
+      "title": "Reconcile readiness after a completed handoff moves",
+      "trigger": "The enrolled draft PR receives another material commit after entering AWAITING_OWNER_REVIEW."
+    },
+    {
+      "acceptance_ids": [
+        "WF04",
+        "WF05",
+        "WF06",
+        "WF07",
+        "WF08",
+        "WF09",
+        "WF10",
+        "WF12"
+      ],
+      "actual": "The report gives a command, count and duration for 25 tests. Its evidence references identify a model preflight and installed manifest. Neither identifies an execution record for the behavioral suite. The three read-only unit tests I could run do not exercise the controller cycle.",
+      "blocking_rationale": "The checkpoint requires demonstrated behavior with real temporary repositories and persisted state. The execution claim cannot be independently confirmed from the supplied evidence.",
+      "blocks_readiness": true,
+      "category": "evidence_gap",
+      "expected": "The reviewer can inspect candidate-bound execution results for the required focused behavioral cases.",
+      "id": "R1-F23",
+      "location": {
+        "file": "tools/agent_review/test_agent_review.py",
+        "line": 8
+      },
+      "priority": "P2",
+      "requested_correction": "Run the corrected focused suite and supply a sanitized, accessible result or receipt identifying the candidate, command, test cases, outcomes and duration.",
+      "requested_evidence": "Provide the focused test output or a verifiable reference with its digest. Include the negative and restart cases requested above, with simulated model/GitHub boundaries labeled.",
+      "title": "Supply inspectable execution evidence for the behavioral suite",
+      "trigger": "The reviewer assesses the required WF04\u2013WF10 and WF12 demonstrations at this read-only checkpoint."
+    }
+  ],
+  "prior_finding_assessments": [],
+  "request_id": "kmg-codex-agent-review-workflow-20261120170436-r01-4d8565",
+  "round": 1,
+  "schema_version": "agent-review.review.v1",
+  "summary": {
+    "delivered_behavior": "The candidate provides a controller, versioned schemas, explicit model launch settings, detached review worktrees, an outgoing-comment ledger, per-commit archive checks and a real-Git test fixture. The tests include an intermediate-to-final correction cycle with simulated model and GitHub responses. The controller still accepts several inconsistent or stale outcomes and has incomplete restart and ownership guards.",
+    "pending_later_phase_work": [
+      "Complete the workflow operating guide, installation and project-local permission setup.",
+      "Complete the live pilot, Black Tentacles workflow binding and exact start command, and the setup acceptance report."
+    ],
+    "remaining_owner_review": [
+      "After a verified final checkpoint, assess whether the operational handoff and effective permissions meet the owner's needs. Merge and release decisions remain with the owner."
+    ],
+    "scope_reviewed": "Intermediate controller-core checkpoint for draft PR #194 at 0cc3f41b31d9f1bcc974d051c123c834e4d271d0.",
+    "unresolved_questions": []
+  }
+}
+```
+</details>
+
+_Model-generated review by Codex using the requested model, posted by the agent-review controller through the owner's GitHub account. Not a human review or approval._
