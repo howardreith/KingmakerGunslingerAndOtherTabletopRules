@@ -490,7 +490,7 @@ namespace KmgLoaderCompatHarness
             if (catalog == null) { problems.Add("no production firearm catalog for the battered check"); return null; }
             object pistolSet = catalog.GetType().GetProperty("Pistol", Any).GetValue(catalog, null);
             BlueprintItemWeapon pistol = (BlueprintItemWeapon)pistolSet.GetType().GetProperty("Item", Any).GetValue(pistolSet, null);
-            object fixedValue = product.GetType("KingmakerGunslinger.Firearms.BatteredFirearmUsePolicy", true)
+            object fixedValue = product.GetType("KingmakerGunslinger.Gunsmithing.BatteredFirearmUsePolicy", true)
                 .GetField("FixedExpectedScrapValueGold", Any).GetValue(null);
             long expected = Convert.ToInt64(fixedValue, CultureInfo.InvariantCulture);
             UnitEntityData owner = Game.Instance.Player.MainCharacter.Value;
