@@ -151,6 +151,38 @@ namespace KingmakerGunslinger.DomainTests
                 "The diagnostic must name the list, the extra entry and the patch owner.");
         }
 
+        internal static void ItemDamageFailureIsOneBoundedDiagnostic()
+        {
+            // Healthy: override off, effective 1d8.
+            SpearProfileVerdict healthy = ElvenBranchedSpearProfilePolicy.Evaluate(new[] {
+                new SpearProfileObservation("item-damage", "override=False", "override=False",
+                    "override=True", "1d8", "1d8", "2d6", null, "not-read") });
+            Assertions.True(healthy.IsValid && ElvenBranchedSpearProfilePolicy
+                .DescribeItemFailure("Elven Branched Spear", healthy).Length == 0,
+                "A healthy item produced an item-damage failure.");
+            // A patched BaseDamage that returns the wrong dice.
+            SpearProfileVerdict wrong = ElvenBranchedSpearProfilePolicy.Evaluate(new[] {
+                new SpearProfileObservation("item-damage", "override=False", "override=False",
+                    "override=True", "1d8", "2d6", "2d6", new[] { "other.mod" }, "read") });
+            string message = ElvenBranchedSpearProfilePolicy.DescribeItemFailure("Boughkeeper", wrong);
+            Assertions.Equal("Elven Branched Spear item damage is invalid: Boughkeeper: item-damage [effective-getter]: " +
+                "expected=override=False actual=override=False donor=override=True; getter expected=1d8 actual=2d6 donor=2d6; " +
+                "getterPatches=other.mod", message, "The item-damage diagnostic must name item, values, donor and owner.");
+            // A throwing getter with a very long message stays bounded, and an
+            // unavailable donor read does not hide the owned failure.
+            string thrown = ElvenBranchedSpearProfilePolicy.Threw(new InvalidOperationException(new string('x', 500)));
+            string unavailable = ElvenBranchedSpearProfilePolicy.Unavailable(new InvalidOperationException("donor"));
+            SpearProfileVerdict throws = ElvenBranchedSpearProfilePolicy.Evaluate(new[] {
+                new SpearProfileObservation("item-damage", "override=False", "override=False",
+                    unavailable, "1d8", thrown, unavailable, new[] { "other.mod" }, "read") });
+            string bounded = ElvenBranchedSpearProfilePolicy.DescribeItemFailure(new string('n', 300), throws);
+            Assertions.False(throws.IsValid, "A throwing item BaseDamage passed.");
+            Assertions.True(bounded.Length < 600 && bounded.Contains("actual=<throws InvalidOperationException") &&
+                bounded.Contains("donor=<unavailable InvalidOperationException: donor>") &&
+                bounded.Contains("getterPatches=other.mod"),
+                "The throwing item-damage diagnostic must stay bounded and keep donor and owner context.");
+        }
+
         internal static void HealthyProfilePassesWithoutFindings()
         {
             SpearProfileVerdict verdict = ElvenBranchedSpearProfilePolicy.Evaluate(

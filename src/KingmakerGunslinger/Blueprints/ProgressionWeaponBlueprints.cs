@@ -67,7 +67,13 @@ namespace KingmakerGunslinger.Blueprints
                 failures.Add("reliable-cost");
 
             var easternAccess = new EasternWeaponItemAccess();
-            var spearAccess = new SpearItemAccess();
+            // Donor context for spear item-damage diagnostics only; absent is
+            // reported as not applicable, never as a new failure.
+            BlueprintScriptableObject spearDonor = null;
+            if (library.BlueprintsByAssetId != null)
+                library.BlueprintsByAssetId.TryGetValue(
+                    ElvenBranchedSpearBlueprints.NativeLongspearItemGuid, out spearDonor);
+            var spearAccess = new SpearItemAccess(spearDonor as BlueprintItemWeapon);
             WeaponBlueprintAccess typeAccess = WeaponBlueprintAccess.Resolve();
             var entries = new List<ProgressionWeaponBlueprintEntry>();
             foreach (ProgressionWeaponSpec spec in ProgressionWeaponCatalog.All)

@@ -81,7 +81,7 @@ namespace KingmakerGunslinger.Blueprints
             var enchantments = RegisterEnchantments(registry, buffs, entangled);
             var native = LoadNativeEnchantments(library);
             var typeAccess = WeaponBlueprintAccess.Resolve();
-            var itemAccess = new SpearItemAccess();
+            var itemAccess = new SpearItemAccess(donor);
             var entries = new List<NamedSpearBlueprintEntry>();
             foreach (NamedSpearSpec spec in ElvenBranchedSpearNamedCatalog.All)
             {

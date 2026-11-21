@@ -97,7 +97,7 @@ namespace KingmakerGunslinger.Blueprints
 
             var typeAdapter = new SpearWeaponTypeAccess();
             string nativeProfile = typeAdapter.MechanicalFingerprint(nativeType);
-            var itemAdapter = new SpearItemAccess();
+            var itemAdapter = new SpearItemAccess(nativeItem);
             var name = LocalizationService.Create(
                 "KMG.ElvenBranchedSpear.Type.Name", "Elven Branched Spear");
             var description = LocalizationService.Create(
@@ -802,7 +802,7 @@ namespace KingmakerGunslinger.Blueprints
             return PatchOwners(info == null ? null : info.GetGetMethod(), out patchInfo);
         }
 
-        private static string[] PatchOwners(MethodInfo getter, out string patchInfo)
+        internal static string[] PatchOwners(MethodInfo getter, out string patchInfo)
         {
             ModContext context;
             if (getter == null)
@@ -924,9 +924,40 @@ namespace KingmakerGunslinger.Blueprints
             _damageDice.SetValue(item, FamilyDamage());
         }
 
-        /// <summary>Null when the item's own override is off and its effective BaseDamage is the family's 1d8.</summary>
-        private string DamageProblem(BlueprintItemWeapon item)
+        // The native Standard Longspear item the owned items are cloned from:
+        // comparison context for item-damage diagnostics only, never written.
+        private readonly BlueprintItemWeapon _donor;
+
+        internal SpearItemAccess() : this(null) { }
+
+        internal SpearItemAccess(BlueprintItemWeapon donor) { _donor = donor; }
+
+        private static readonly MethodInfo ItemBaseDamageGetter =
+            typeof(BlueprintItemWeapon).GetProperty("BaseDamage",
+                BindingFlags.Instance | BindingFlags.Public)?.GetGetMethod();
+
+        /// <summary>
+        /// The item-damage predicate: the item's own dice override must be off
+        /// and its effective BlueprintItemWeapon.BaseDamage must be the family
+        /// 1d8. A failure throws one bounded diagnostic naming the item, the
+        /// expected and actual values, the donor item's values (a donor read
+        /// that throws only makes that comparison unavailable) and the
+        /// BaseDamage getter's patch owners.
+        /// </summary>
+        private void ValidateDamage(BlueprintItemWeapon item, string displayName)
         {
+            const string expectedOverride = "override=False";
+            string ownedOverride = "override=" + (bool)_overrideDamageDice.GetValue(item);
+            string donorOverride;
+            try
+            {
+                donorOverride = _donor == null ? "<not-applicable>" :
+                    "override=" + (bool)_overrideDamageDice.GetValue(_donor);
+            }
+            catch (Exception exception)
+            {
+                donorOverride = ElvenBranchedSpearProfilePolicy.Unavailable(exception);
+            }
             string expected = FamilyDamage().ToString();
             string actual;
             try { actual = item.BaseDamage.ToString(); }
@@ -934,10 +965,23 @@ namespace KingmakerGunslinger.Blueprints
             {
                 actual = ElvenBranchedSpearProfilePolicy.Threw(exception);
             }
-            bool overridden = (bool)_overrideDamageDice.GetValue(item);
-            return !overridden && string.Equals(actual, expected, StringComparison.Ordinal)
-                ? null : "overrideDice=" + overridden + ";baseDamage=" + actual +
-                    ";expectedBaseDamage=" + expected;
+            string donorActual;
+            try { donorActual = _donor == null ? "<not-applicable>" : _donor.BaseDamage.ToString(); }
+            catch (Exception exception)
+            {
+                donorActual = ElvenBranchedSpearProfilePolicy.Unavailable(exception);
+            }
+            string patchInfo = "not-read";
+            string[] owners = null;
+            if (!string.Equals(ownedOverride, expectedOverride, StringComparison.Ordinal) ||
+                !string.Equals(actual, expected, StringComparison.Ordinal))
+                owners = SpearWeaponTypeAccess.PatchOwners(ItemBaseDamageGetter, out patchInfo);
+            SpearProfileVerdict verdict = ElvenBranchedSpearProfilePolicy.Evaluate(new[] {
+                new SpearProfileObservation("item-damage", expectedOverride, ownedOverride,
+                    donorOverride, expected, actual, donorActual, owners, patchInfo) });
+            if (!verdict.IsValid)
+                throw new InvalidOperationException(
+                    ElvenBranchedSpearProfilePolicy.DescribeItemFailure(displayName, verdict));
         }
 
         internal void Configure(BlueprintItemWeapon item,
@@ -985,10 +1029,7 @@ namespace KingmakerGunslinger.Blueprints
                 (BlueprintWeaponEnchantment[])_enchantments.GetValue(item) ??
                 Array.Empty<BlueprintWeaponEnchantment>();
             DamageTypeDescription damage = (DamageTypeDescription)_damageType.GetValue(item);
-            string diceProblem = DamageProblem(item);
-            if (diceProblem != null)
-                throw new InvalidOperationException("Spear item damage is invalid: " +
-                    displayName + ";" + diceProblem + ".");
+            ValidateDamage(item, displayName);
             if (item.Cost != cost || !item.Weight.Equals(10f) ||
                 item.IsActuallyStackable || item.IsMasterwork !=
                     (masterwork && enhancement == 0) ||
@@ -1037,10 +1078,7 @@ namespace KingmakerGunslinger.Blueprints
                 Array.Empty<BlueprintWeaponEnchantment>();
             DamageTypeDescription damage =
                 (DamageTypeDescription)_damageType.GetValue(item);
-            string diceProblem = DamageProblem(item);
-            if (diceProblem != null)
-                throw new InvalidOperationException("Named spear item damage is invalid: " +
-                    spec.DisplayName + ";" + diceProblem + ".");
+            ValidateDamage(item, spec.DisplayName);
             if (item.Cost != spec.Cost || !item.Weight.Equals(10f) ||
                 item.IsActuallyStackable ||
                 (bool)_overrideDamageType.GetValue(item) != spec.ColdIron ||

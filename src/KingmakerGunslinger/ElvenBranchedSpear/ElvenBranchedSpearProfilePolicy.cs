@@ -309,6 +309,20 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
             return text.ToString();
         }
 
+        internal const string ItemDamageFailurePrefix = "Elven Branched Spear item damage is invalid";
+
+        /// <summary>
+        /// One bounded item-damage diagnostic: the (bounded) item name, then
+        /// the same predicate text as the type profile - expected, actual and
+        /// donor values and the getter's patch owners.
+        /// </summary>
+        internal static string DescribeItemFailure(string item, SpearProfileVerdict verdict)
+        {
+            if (verdict == null) throw new ArgumentNullException("verdict");
+            if (verdict.IsValid) return string.Empty;
+            return ItemDamageFailurePrefix + ": " + Bound(item) + ": " + Describe(verdict.Findings);
+        }
+
         private static string Kind(SpearProfileFindingKind kind)
         {
             return kind == SpearProfileFindingKind.OwnedFieldMismatch
