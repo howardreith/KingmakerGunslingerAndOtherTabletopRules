@@ -330,17 +330,46 @@ reference, because the clone carries the donor's GUID while it is configured.
 
 **Runner support:**
 
-- Shared runtime ownership (R7-F1, `ecf1d641bc`).
-  - A session holds the lab's shared `compatibility.lock`, taken through
-    `Enter-KmgRuntimeLease` with its runtime-lease journal, for its whole
-    life, alongside `loader-compat.lock`.
-  - Immediately before every fresh launch, `Assert-LcLaunchAvailable`
-    refuses any Kingmaker process, any sibling-lab lock and a lost lease. It
-    withholds that launch and every later one, and records why.
-  - Game settings are restored, and the lease completed, only when no
-    Kingmaker process remains. Otherwise the journal, both locks and a
-    `RecoveryRequired` lease are kept for `-RecoverOnly`, which refuses
-    while a game runs.
+- Shared runtime ownership as one journaled session transaction. It was
+  introduced in round 7 (R7-F1, `ecf1d641bc`) and reworked in round 8
+  (`8354822130`).
+  - The candidate package and harness are checked before anything is
+    acquired (R8-F2).
+  - `Enter-LcSessionTransaction` writes the schema-2 journal, then takes the
+    lab's shared `compatibility.lock` through `Enter-KmgRuntimeLease`, then
+    `loader-compat.lock`. Each step is journaled, and a failure undoes
+    exactly what that call acquired.
+  - Every later fallible step, evidence-directory creation included, is
+    inside the runner's try. Its finally completes the transaction or
+    retains it.
+  - The owner's saves and installation manifests are stored with their
+    digests beside the lease, as the intake.
+  - Before every fresh launch, `Assert-LcLaunchAvailable` refuses any
+    Kingmaker process, any sibling-lab or foreign lock, and a lost lease.
+  - `Complete-LcTransaction` is shared by the finalizer and `-RecoverOnly`.
+    It acts only at a safe boundary: no Kingmaker process and no sibling or
+    foreign lock (R7-F1). It then:
+    - restores game settings exactly once;
+    - compares the owner's files with the intake while still holding the
+      lease, recording `verified`, `changed` or an explicit `unresolved`
+      result in the journal and the lease (R8-F3);
+    - completes the lease and releases the shared lock, the private lock
+      and finally the journal.
+
+    Each step is journaled before the next, so an interrupted teardown
+    resumes without a second restore (R8-F4). Otherwise the journal, both
+    locks and a `RecoveryRequired` lease are kept.
+  - Before its first registry write, `-RecoverOnly` establishes exclusive
+    ownership of the exact interrupted session (R8-F1):
+    - the original owner has exited (pid and start time; older journals via
+      the lease or the private lock);
+    - the host is free;
+    - the shared lock, re-taken if missing, is held by this session's
+      lease;
+    - this caller holds the lock's exclusive recovery handle.
+
+    Refused callers change nothing, and only matching lock files are ever
+    removed.
 - Read-only `-Report <session> [-ReportLaunch <prefix>]`.
 - `-SafetyTests` (offline guard fixtures).
 
@@ -412,6 +441,64 @@ Shared runtime leases:
 | **P7** `20261121T230443Z-…-spear-bootstrap-persistence` (round 7) | round-7 candidate | PASS (72, 62, 70 s) |
 | **X7** `20261121T230845Z-…-spear-bootstrap-item-enchantment-list` (round 7) | round-7 candidate | PASS (70, 53, 54 s) |
 | **R7** `20261121T231156Z-…-spear-bootstrap-reporter-stack` (round 7) | round-7 candidate | PASS (102, 110 s) |
+| **F8** `20261121T233622Z-…-spear-bootstrap-round8-setup-failure` (round 8, disposable untracked session file) | round-7 candidate | host-error by design (setup failure after acquisition), transaction completed |
+| **I8** `20261121T233715Z-…-spear-bootstrap-item-damage-diagnostic` (round 8) | round-7 candidate | PASS (60, 54 s) |
+| **R8** `20261121T233924Z-…-spear-bootstrap-reporter-stack` (round 8) | round-7 candidate | PASS (102, 111 s) |
+
+**Round 8: the journaled runner on the round-7 candidate.** The product is
+unchanged since round 7 (ZIP `253fbe43…`, DLL `6b2696c7…`); round 8 changed
+only the runner (`8354822130`). Every session below was surfaced through
+`-Report`.
+
+- **Missing package (R8-F2)**: the runner, given a nonexistent
+  `-CandidateZip`, stopped with `Candidate ZIP not found: … Nothing was
+  acquired.` before taking any lock.
+- **F8 (R8-F2)**: a disposable, untracked session file names a fixture save
+  that does not exist. After both locks were taken, the intake recorded and
+  the game settings backed up, `Copy-Item` failed. The summary
+  (`669e5b17…21ed9`) records `status` `host-error` with that failure,
+  `ownership` `restored`, `registryRestored` true and `ownerIntegrity`
+  `verified` (95 saves, install unchanged). The lease
+  (`runtime-20261121T233623Z-9f612ace…`) is `Completed`, with the same
+  integrity record, and the shared lock is `<free>`.
+- **I8** then acquired both locks without manual deletion and repeated
+  I7's two item-damage failures. Summary `3308b3f8…ee37`, lease
+  `runtime-20261121T233715Z-a2c499fb…` `Completed`, integrity `verified`,
+  shared lock free.
+- **R8** repeated the reporter-shaped stack. Summary `385b1601…21c0`; lease
+  `runtime-20261121T233924Z-ee1b6b5d…` `Completed`, integrity `verified`,
+  shared lock free; startup complete, with no profile-invalid, missing-token
+  or unavailable-state line.
+- **Offline transaction fixtures**: `Invoke-LoaderCompatSession.ps1
+  -SafetyTests` ran `Test-LoaderCompatSafety.ps1`, PASS=74. It uses a
+  disposable state root, locks, journal and manifests, and a substituted
+  peer process.
+  - **Inputs (R8-F2)**: a missing ZIP and a missing harness are refused
+    with nothing acquired.
+  - **Acquisition**: a foreign shared lock is refused and kept. A stale
+    private lock of another session is kept while this session's
+    acquisition rolls back.
+  - **Setup failure (R8-F2)**: a setup failure after acquisition completes
+    with integrity `unresolved` and releases both locks. The next session
+    acquires both.
+  - **Sibling lock (R7-F1)**: with an empty game list, launch two is
+    withheld. The finalizer defers with zero restores and keeps both locks,
+    a `RecoveryRequired` lease and the journal.
+  - **Refused recoveries (R8-F1)**: recovery is refused, with zero restores
+    each time, while the original owner lives, while the sibling lock
+    remains, and while a competing caller holds the recovery handle.
+    Recovery is also refused beside a foreign shared-lock holder, whose lock
+    is preserved. After release, exactly one restore follows, then full
+    release.
+  - **Integrity (R8-F3)**: a competing lease acquisition during
+    verification is refused. A changed manifest is recorded as `changed`,
+    and an unreadable one as `unresolved`, in both the journal and the
+    lease.
+  - **Interruptions (R8-F4)**: completion was interrupted after `restored`,
+    `verified`, `lease-completed`, `shared-released` and `private-released`.
+    Each resumed through recovery with no second restore and every owned
+    marker cleared; a sibling lock at `shared-released` was preserved first.
+  - **Older journals**: a round-7 journal gets the same owner check.
 
 **Round 7 on the round-7 candidate** (ZIP `253fbe43…`, DLL `6b2696c7…`). These
 runs used the round-7 runner. Each summary, surfaced through `-Report`,
@@ -882,7 +969,12 @@ is in the developer report.
    - the probe-lifecycle (L) and observer-selection (O) sessions, last run
      in round 3 on the round-2 candidate.
 
-   The runner's contention paths (a peer game or lock after launch one,
-   deferred restoration, recovery) are proven with offline fixtures, not
-   with a real second Kingmaker process. Real runs exercised only the
-   uncontended path.
+   The runner's contention paths are proven with offline fixtures (74
+   checks in round 8), not with a real second Kingmaker process or a real
+   sibling lab. These include a peer game or sibling lock after launch one,
+   deferred restoration, refused, competing and interrupted recoveries, and
+   integrity during verification. Real runs exercised the uncontended path
+   and one real post-acquisition setup failure (F8).
+9. Round 8 changed only the runner. The product and its round-7 candidate
+   are unchanged, so the round-7 product evidence stands. I8 and R8 repeat
+   two of those sessions under the round-8 runner.
