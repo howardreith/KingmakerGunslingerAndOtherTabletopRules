@@ -18,14 +18,17 @@ Identities (current first):
 
   `fe837b5007` and later commits change only the test-only harness, its
   sessions and this record.
-- **Current native package: none yet.** The round-6 development candidate
-  could not be built. In this environment `Build-Local.ps1` now stops with
-  the repository's own safety refusal, `Runtime tests must run without
-  administrator elevation.` (`Assert-KmgUnelevated`). The round-6 product is
-  therefore covered so far only by compilation and its domain cases. The
-  round-6 native controls are defined in
-  `scripts/compatibility/loader-compat/sessions/spear-bootstrap-item-enchantment-list.json`
-  but have not run.
+- **Current native package**: the development candidate built from
+  `0a926ce1d8bd`, whose product source is identical to `dfc86851a8`:
+  - `KingmakerGunslinger-0.0.192-development-spear-bootstrap-tooltip-repair-0a926ce1d8bd.zip`;
+  - ZIP `83c936d58bdda1e7e09b6988e612c4550287d8b0d2ba212a281001e1965fcb75`;
+  - DLL `5e7d69d17e9dfd5509c4b32e0ef40cedfed4c12e8d13a1ea5df1ccd33ee3fe7d`;
+  - harness DLL `8bbee78c…b8d4`.
+
+  Build-Local passed strict standalone UMM package validation and 29 focused
+  tests. A first build attempt had stopped with the repository's
+  administrator-elevation refusal; it succeeded once the environment ran
+  unelevated. Sessions X6, S6, C6 and R6 in §4.2 ran on this package.
 - **Round-5 product and package**: product `195d17ce19`, candidate built
   from `18361607eda8`:
   - ZIP `c96e1b3c94cf13707cb8f73368681e61150e23f0526542d050979bdc3707f20e`;
@@ -359,6 +362,56 @@ lease was opened.
 | **S5** `20261121T190216Z-…-spear-bootstrap-simulated` (round 5, git `18361607ed`) | round-5 candidate | PASS, 12 launches (53–74 s each) |
 | **C** `20261121T185458Z-…-spear-bootstrap-subcategory` (round 5) | round-5 candidate | PASS (71, 52, 53 s) |
 | **R5** `20261121T185820Z-…-spear-bootstrap-reporter-stack` (round 5) | round-5 candidate | PASS (101, 109 s) |
+| **X6** `20261121T220237Z-…-spear-bootstrap-item-enchantment-list` (round 6) | round-6 candidate | PASS (72, 53, 53 s) |
+| **C6** `20261121T220623Z-…-spear-bootstrap-subcategory` (round 6) | round-6 candidate | PASS (70, 53, 53 s) |
+| **R6** `20261121T220934Z-…-spear-bootstrap-reporter-stack` (round 6) | round-6 candidate | PASS (100, 108 s) |
+| **S6** `20261121T221322Z-…-spear-bootstrap-simulated` (round 6) | round-6 candidate | PASS, 12 launches (53–75 s each) |
+
+**Round 6 on the round-6 candidate** (ZIP `83c936d5…`, DLL `5e7d69d1…`). Every
+session below was surfaced through `-Report`, with `registryRestored`,
+`ownerSavesUnchanged` and `ownerInstallUnchanged` true.
+
+- **X6-1 (R6-F1)**: the live native Standard Longspear item is given a 2d6
+  damage-dice override before the product runs. Startup completed, with
+  `item damage is invalid` ×0. `kmgItemDamage` (`harness-result.json`
+  `30a5953c…fbc2`) recorded:
+  - `StandardLongspear`: override `True`, BaseDamage `2xD6`, unchanged by
+    registration;
+  - foundation `KMG_ElvenBranchedSpear_Item` (`6edc216d…`): override
+    `False`, `1xD8`;
+  - named `KMG_ElvenBranchedSpear_Boughkeeper` (`4a084b02…`): override
+    `False`, `1xD8`.
+
+  The owned profile was intact and the selectors were published.
+- **X6-2 (R6-F2)**: a postfix makes `Enchantments` return an empty
+  collection for the owned spear only, while its backing field stays
+  correct; `enchantmentOverrides` was 1. Startup failed once
+  (`a79f5b22…29ed6`) with `1 of 18 checks failed. movement-enchantment
+  [effective-getter]: expected=KMG_ElvenBranchedSpear_MovementOpportunityAccuracy
+  actual=KMG_ElvenBranchedSpear_MovementOpportunityAccuracy donor=<none>;
+  getter expected=KMG_ElvenBranchedSpear_MovementOpportunityAccuracy
+  actual=<none> donor=<none>; getterPatches=KmgLoaderCompatHarness`. The
+  owned spear was absent and the selectors were restored.
+- **X6-3 (R6-F3)**: a late `GetSubCategories` postfix appends Simple to the
+  spear category's list only; `subCategoryListAdditions` was 1. Startup
+  failed once (`18be2a83…53d6`) with `1 of 18 checks failed.
+  subcategory-list [effective-getter]: … getter
+  expected=Melee,Finessable,TwoHanded,Exotic,Metal
+  actual=Melee,Finessable,TwoHanded,Exotic,Metal,Simple
+  donor=Melee,TwoHanded,Metal,Simple;
+  getterPatches=KingmakerGunslinger,KmgLoaderCompatHarness`.
+  `subcategory-policy [effective-getter]` appeared ×0, so membership still
+  rejected Simple. The selectors were restored.
+- **S6** repeats all twelve simulated results with `N of 18`. Summary
+  `bde397e4…8e1b`; `productSha256` `5e7d69d1…` in every launch. S6-2
+  (`520d5c57…ffa2`): four ordinary weapons at 25 queries each, 0 price or
+  tooltip throws, prices 1, 4, 5 and 13, and
+  `batteredInspectionUnavailableReported` true; the warning was logged once.
+- **C6** repeats the healthy, Finessable-removed and Simple-added
+  membership controls (`a181e9f2…83e6`).
+- **R6**: the reporter-shaped stack still starts with the 18-check profile
+  (`6588f4a9…cf89`): no profile-invalid, missing-token or unavailable-state
+  line, and the Fire Beetle summon passed.
 
 "Candidate" (rows S to R) is the development package built at
 `8ee7eabaeda0`: ZIP SHA-256
@@ -703,15 +756,9 @@ is in the developer report.
    summon (R5) were repeated.
    The read-only report keeps empty and single-element arrays as arrays
    (R5-F2). Every report first prints a shape check on a synthetic record.
-7. **Round-6 native evidence is pending.** The development candidate for
-   `dfc86851a8` could not be built in the current environment.
-   `Build-Local.ps1` stops on the repository's own refusal to run runtime
-   tests under administrator elevation. Until it can be built unelevated:
-   - The donor item damage, live enchantments getter and returned-list
-     controls have not run (session `spear-bootstrap-item-enchantment-list`).
-   - The S, C and reporter-stack sessions have not been repeated on the
-     18-check product. The simulated and sub-category sessions already expect
-     `N of 18`.
-
-   The round-6 product changes are covered only by compilation and domain
-   cases.
+7. Round 6's product changes touch item damage, the enchantment predicate
+   and a new list predicate. On the round-6 candidate, the round-6 controls
+   (X6), the simulated session (S6), the membership controls (C6) and the
+   reporter-shaped stack with its summon (R6) were run. The persistence (P),
+   probe-lifecycle (L) and observer-selection (O) sessions were not repeated
+   after round 2.
