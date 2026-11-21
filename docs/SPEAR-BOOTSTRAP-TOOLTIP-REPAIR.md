@@ -9,17 +9,30 @@ compatibility qualification.
 
 Identities (current first):
 
-- **Current product source**: commit `dfc86851a8` (round 6). This adds the
-  following to the round-5 product (`195d17ce19`):
+- **Current product source**: commit `6d6a295b64` (round 7). It adds the
+  bounded item-damage diagnostic to the round-6 product (R7-F2): donor item
+  values and the `BlueprintItemWeapon.BaseDamage` patch owners.
+  `ecf1d641bc` and later commits change only the loader-compat runner and
+  harness, their sessions and this record. `ecf1d641bc` itself carries the
+  shared runtime ownership (R7-F1).
+- **Current native package**: the development candidate built from
+  `4e0ac475aabc`, whose product source is identical to `6d6a295b64`:
+  - `KingmakerGunslinger-0.0.192-development-spear-bootstrap-tooltip-repair-4e0ac475aabc.zip`;
+  - ZIP `253fbe43188d433f57a771261a215ba794160ff98b06142fafcedca69d643518`;
+  - DLL `6b2696c70988db4ea1ed42ce015b99226a4de1fdd1727c569bf35eefd5e7049f`;
+  - harness DLL `494dadf9…d471`.
+
+  Build-Local passed strict standalone UMM package validation and 30 focused
+  tests. Sessions I7, P7, X7 and R7 in §4.2 ran on this package.
+- **Round-6 product and package**: product `dfc86851a8`, the round-5 product
+  (`195d17ce19`) plus:
   - spear items use the family 1d8 damage (R6-F1);
   - the live `Enchantments` getter check (R6-F2);
   - the returned `GetSubCategories` list check (R6-F3), giving 18 profile
     checks.
 
-  `fe837b5007` and later commits change only the test-only harness, its
-  sessions and this record.
-- **Current native package**: the development candidate built from
-  `0a926ce1d8bd`, whose product source is identical to `dfc86851a8`:
+  Its development candidate was built from `0a926ce1d8bd`, whose product
+  source is identical to `dfc86851a8`:
   - `KingmakerGunslinger-0.0.192-development-spear-bootstrap-tooltip-repair-0a926ce1d8bd.zip`;
   - ZIP `83c936d58bdda1e7e09b6988e612c4550287d8b0d2ba212a281001e1965fcb75`;
   - DLL `5e7d69d17e9dfd5509c4b32e0ef40cedfed4c12e8d13a1ea5df1ccd33ee3fe7d`;
@@ -317,6 +330,20 @@ reference, because the clone carries the donor's GUID while it is configured.
 
 **Runner support:**
 
+- Shared runtime ownership (R7-F1, `ecf1d641bc`).
+  - A session holds the lab's shared `compatibility.lock`, taken through
+    `Enter-KmgRuntimeLease` with its runtime-lease journal, for its whole
+    life, alongside `loader-compat.lock`.
+  - Immediately before every fresh launch, `Assert-LcLaunchAvailable`
+    refuses any Kingmaker process, any sibling-lab lock and a lost lease. It
+    withholds that launch and every later one, and records why.
+  - Game settings are restored, and the lease completed, only when no
+    Kingmaker process remains. Otherwise the journal, both locks and a
+    `RecoveryRequired` lease are kept for `-RecoverOnly`, which refuses
+    while a game runs.
+- Read-only `-Report <session> [-ReportLaunch <prefix>]`.
+- `-SafetyTests` (offline guard fixtures).
+
 - Step `expectFailure` (the step must fail with that text and isolation must
   be restored).
 - Launch `expectHarnessFailure` / `expectStepsNotRun`.
@@ -370,6 +397,72 @@ lease was opened.
 | **C6** `20261121T220623Z-…-spear-bootstrap-subcategory` (round 6) | round-6 candidate | PASS (70, 53, 53 s) |
 | **R6** `20261121T220934Z-…-spear-bootstrap-reporter-stack` (round 6) | round-6 candidate | PASS (100, 108 s) |
 | **S6** `20261121T221322Z-…-spear-bootstrap-simulated` (round 6) | round-6 candidate | PASS, 12 launches (53–75 s each) |
+| **I7** `20261121T230213Z-…-spear-bootstrap-item-damage-diagnostic` (round 7) | round-7 candidate | PASS (53, 53 s) |
+| **P7** `20261121T230443Z-…-spear-bootstrap-persistence` (round 7) | round-7 candidate | PASS (72, 62, 70 s) |
+| **X7** `20261121T230845Z-…-spear-bootstrap-item-enchantment-list` (round 7) | round-7 candidate | PASS (70, 53, 54 s) |
+| **R7** `20261121T231156Z-…-spear-bootstrap-reporter-stack` (round 7) | round-7 candidate | PASS (102, 110 s) |
+
+**Round 7 on the round-7 candidate** (ZIP `253fbe43…`, DLL `6b2696c7…`). These
+runs used the round-7 runner. Each summary, surfaced through `-Report`,
+records:
+- `ownership: restored`;
+- the session's shared runtime lease now `Completed` with
+  `recoveryRequired` false;
+- the shared `compatibility.lock` `<free>`;
+- `registryRestored`, `ownerSavesUnchanged` and `ownerInstallUnchanged`
+  true.
+
+The sessions:
+
+- **I7 (R7-F2)**: a harness patch on `BlueprintItemWeapon.BaseDamage`,
+  keyed on the foundation spear item `6edc216d…`, changes only that item;
+  its weapon type stays correct (`itemDamageOverrides` 1, no type-profile
+  failure). Both launches failed startup once, and the selectors were
+  restored.
+  - With 2d6 (`03a6640e…3d0e`): `Elven Branched Spear item damage is
+    invalid: Elven Branched Spear: item-damage [effective-getter]:
+    expected=override=False actual=override=False donor=override=False;
+    getter expected=1d8 actual=2d6 donor=1d8;
+    getterPatches=KmgLoaderCompatHarness`.
+  - With a throwing getter (`746fd1c5…4daf`): the same single diagnostic,
+    with `actual=<throws InvalidOperationException: KmgLoaderCompatHarness
+    injected getter failure (item 6edc216d...` bounded, `donor=1d8` and the
+    harness patch owner.
+- **P7 (R7-F3)**: the persistence fixture, with Gunslinger off in a fresh
+  process, on the corrected package (`317344f5…7c0b` for the reload). The
+  loaded save is the session's own `spearpersist` save
+  (`expectLoadedFrom(spearpersist)` passed).
+  - The loaded released foundation spear (`6edc216d…`,
+    `KMG_ElvenBranchedSpear_Item`) reports item BaseDamage `1xD8` with
+    `itemOverrideDamageDice` `False`, resolving to
+    `KMG_ElvenBranchedSpear_WeaponType` (`77f72b0f…`) with its intended
+    profile. Both item values are enforced by the reload probe.
+  - The battered pistol kept its owner Hedwirg (`535ba77c…`) and sold for
+    22 gp with tooltip "22". The unbound pistol sold for 250 gp and the
+    longsword for 4 gp. Counts: 1 spear, 2 pistols (1 battered), 1
+    longsword.
+- **X7**: the round-6 controls on the round-7 product.
+  - With the native item's 2d6 override, startup completes, with `item
+    damage is invalid` ×0. The donor values are context only.
+  - The empty live enchantments and Simple-in-list controls each still fail
+    once.
+- **R7**: the reporter-shaped stack still starts: no profile-invalid,
+  missing-token or unavailable-state line, and the Fire Beetle summon
+  passed.
+
+Runner ownership (R7-F1) is also covered offline. `Invoke-LoaderCompatSession.ps1
+-SafetyTests` ran `Test-LoaderCompatSafety.ps1`: PASS=35. It uses a
+disposable state root, lock files, journal and a substituted peer process,
+and shows:
+- a foreign shared lock is refused and never overwritten;
+- launch one is admitted under the session's own lock;
+- launch two is withheld once a peer game or a sibling-lab lock appears;
+- with the peer still running, the finalizer neither restores settings nor
+  releases anything, and keeps the lease `RecoveryRequired`, the journal
+  and both locks;
+- `-RecoverOnly` refuses while the peer runs, then restores exactly once,
+  completes the lease and releases the journal and both locks;
+- normal completion restores and releases.
 
 **Round 6 on the round-6 candidate** (ZIP `83c936d5…`, DLL `5e7d69d1…`). Every
 session below was surfaced through `-Report`, with `registryRestored`,
@@ -765,6 +858,20 @@ is in the developer report.
 7. Round 6's product changes touch item damage, the enchantment predicate
    and a new list predicate. On the round-6 candidate, the round-6 controls
    (X6), the simulated session (S6), the membership controls (C6) and the
-   reporter-shaped stack with its summon (R6) were run. The persistence (P),
-   probe-lifecycle (L) and observer-selection (O) sessions were not repeated
-   after round 2.
+   reporter-shaped stack with its summon (R6) were run.
+8. Round 7's product change is confined to the item-damage check and its
+   diagnostic. These ran on the round-7 candidate:
+   - the item-damage controls (I7);
+   - the persistence reload (P7);
+   - the round-6 controls (X7);
+   - the reporter-shaped stack (R7).
+
+   These were not repeated on it:
+   - the simulated (last S6) and membership (last C6) sessions;
+   - the probe-lifecycle (L) and observer-selection (O) sessions, last run
+     in round 3 on the round-2 candidate.
+
+   The runner's contention paths (a peer game or lock after launch one,
+   deferred restoration, recovery) are proven with offline fixtures, not
+   with a real second Kingmaker process. Real runs exercised only the
+   uncontended path.
