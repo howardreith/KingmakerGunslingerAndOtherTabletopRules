@@ -43,6 +43,7 @@ namespace KmgLoaderCompatHarness
         private BuffUiProbe buffProbe;
         private OpportunityBuffUiProbe opportunityProbe;
         private TimedBuffProbe timedBuffProbe;
+        private SorcererSummonProbe sorcererProbe;
         private readonly ProbeSlot probes = new ProbeSlot();
         private readonly System.Collections.Generic.List<string> deferredFailures = new System.Collections.Generic.List<string>();
 
@@ -233,6 +234,7 @@ namespace KmgLoaderCompatHarness
                 buffProbe = null;
                 opportunityProbe = null;
                 timedBuffProbe = null;
+                sorcererProbe = null;
             }
 
             ProbeOutcome ended = probes.Terminate(StepIdentity(step), stepFailure ?? "the step ended without its probe's verdict");
@@ -493,6 +495,37 @@ namespace KmgLoaderCompatHarness
                     JObject reapplied = GritUiProbes.Reapply(step.Match, int.Parse(step.Expect, System.Globalization.CultureInfo.InvariantCulture), out string problem);
                     result["kmgGritUiReapply_" + (step.Label ?? stepIndex.ToString())] = reapplied;
                     return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
+                case "kmgWeaponTypeProfile":
+                {
+                    // Spear startup repair. "match": owned | absent | empty; "type": weapon types that must still hold
+                    // their pre-product profile (captureWeaponTypes); "expect": the native Longspear's old-release
+                    // clone predicate failures ("none" or a comma list).
+                    JObject profile = WeaponTypeProfiles.Probe(step.Match, List(step.Type), step.Expect, out string problem);
+                    result["kmgWeaponTypeProfile_" + (step.Label ?? stepIndex.ToString())] = profile;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
+                case "kmgItemPricing":
+                {
+                    // Ordinary weapon sale price and tooltip fill; see ItemPricingProbe.
+                    JObject pricing = ItemPricingProbe.Run(List(step.Type), step.Expect, step.Match, step.Contains, step.Invariants, out string problem);
+                    result["kmgItemPricing_" + (step.Label ?? stepIndex.ToString())] = pricing;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
+                case "kmgSorcererSummon":
+                {
+                    // A new level-1 sorcerer's Summon Monster I menu and one cast from it; see SorcererSummonProbe.
+                    if (sorcererProbe == null) sorcererProbe = new SorcererSummonProbe(evidence.Directory, step.Label ?? stepIndex.ToString(), step.Expect, step.Contains);
+                    string outcome;
+                    try { outcome = sorcererProbe.Poll(); }
+                    catch (Exception exception) { outcome = exception.ToString(); }
+                    if (outcome == null) return StepStatus.Running;
+                    result["kmgSorcererSummon_" + (step.Label ?? stepIndex.ToString())] = sorcererProbe.Result;
+                    sorcererProbe = null;
+                    return outcome.Length == 0 ? StepStatus.Done : Fail(outcome);
                 }
 
                 case "kmgRollbackResidue":

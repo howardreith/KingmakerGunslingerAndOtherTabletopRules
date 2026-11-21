@@ -203,14 +203,15 @@ try {
             if (-not (Test-Path -LiteralPath $logCopy)) { $record.problems += 'no loader log was captured for expectLog' }
             else {
                 $logText = [IO.File]::ReadAllText($logCopy)
-                $record.log = [ordered]@{ present = @(); absent = @() }
-                foreach ($group in @('present', 'absent')) {
+                $record.log = [ordered]@{ present = @(); absent = @(); once = @() }
+                foreach ($group in @('present', 'absent', 'once')) {
                     if (-not $launch.expectLog.PSObject.Properties[$group]) { continue }
                     foreach ($needle in @($launch.expectLog.$group | Where-Object { $_ })) {
                         $count = ([regex]::Matches($logText, [regex]::Escape([string]$needle))).Count
                         $record.log[$group] += "$needle x$count"
                         if ($group -eq 'present' -and $count -eq 0) { $record.problems += "log lacks '$needle'" }
                         if ($group -eq 'absent' -and $count -ne 0) { $record.problems += "log contains '$needle' ($count)" }
+                        if ($group -eq 'once' -and $count -ne 1) { $record.problems += "log contains '$needle' $count times, expected exactly once" }
                     }
                 }
             }
