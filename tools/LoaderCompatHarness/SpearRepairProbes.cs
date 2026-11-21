@@ -14,6 +14,7 @@ using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.ElementsSystem;
+using Kingmaker.Enums;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Items;
 using Kingmaker.UI.ActionBar;
@@ -67,6 +68,15 @@ namespace KmgLoaderCompatHarness
         /// <summary>Records the native spear selectors, familiarity components and selector runtime before the product runs.</summary>
         public const string CaptureSpearSelectors = "captureSpearSelectors";
 
+        /// <summary>"guid=+delta;guid=value" - AttackRange of the type with that asset guid gains delta ft or returns value ft (identity by guid, as a mod keyed on a blueprint guid would).</summary>
+        public const string AttackRangeByGuid = "attackRangeByGuid";
+
+        /// <summary>"guid:Getter;..." - that getter throws whenever it is read for the type with that asset guid, anywhere in the game.</summary>
+        public const string ThrowingGettersByGuid = "throwingGettersByGuid";
+
+        /// <summary>Sub-categories (list) a late WeaponCategoryExtension.HasSubCategory postfix withholds from the Elven Branched Spear category only.</summary>
+        public const string SpearSubCategoryRemoval = "spearSubCategoryRemoval";
+
         public const string NativeLongspearTypeGuid = "fa2dd17cbde7d3f4aa918d467c30516e";
         public const string HarnessId = "KmgLoaderCompatHarness";
         public const string InjectedNamedFailure = "KmgLoaderCompatHarness injected named-spear registration failure";
@@ -84,8 +94,16 @@ namespace KmgLoaderCompatHarness
         public static readonly string[] Known =
         {
             MutateNativeLongspear, CaptureWeaponTypes, CorruptOwnedSpearProfile, CorruptOwnedSpearProfileOnCall, PatchWeaponTypeGetters,
-            OwnedSpearAttackRangePatch, ThrowingWeaponTypeGetters, FailNamedSpearRegistration, CaptureSpearSelectors
+            OwnedSpearAttackRangePatch, ThrowingWeaponTypeGetters, FailNamedSpearRegistration, CaptureSpearSelectors,
+            AttackRangeByGuid, ThrowingGettersByGuid, SpearSubCategoryRemoval
         };
+
+        private static readonly Dictionary<string, string> rangeByGuid = new Dictionary<string, string>();
+        private static readonly List<KeyValuePair<string, string>> throwingByGuid = new List<KeyValuePair<string, string>>();
+        private static WeaponSubCategory[] removedSubCategories = new WeaponSubCategory[0];
+        public static int RangeOverrides { get; private set; }
+        public static int GuidGetterThrows { get; private set; }
+        public static int SubCategoryRemovals { get; private set; }
 
         public static readonly List<string> Events = new List<string>();
         public static readonly Dictionary<string, JObject> Captured = new Dictionary<string, JObject>();
@@ -147,6 +165,35 @@ namespace KmgLoaderCompatHarness
             }
 
             if (throwingGetters.Count > 0) applied[ThrowingWeaponTypeGetters] = ToJson(throwingGetters);
+
+            rangeByGuid.Clear();
+            foreach (KeyValuePair<string, string> pair in Pairs(conditions, AttackRangeByGuid, '=')) rangeByGuid[pair.Key] = pair.Value;
+            if (rangeByGuid.Count > 0)
+            {
+                harmony.Patch(Getter("AttackRange"), null, new HarmonyMethod(typeof(SpearRepairConditions).GetMethod(nameof(AttackRangeByGuidPostfix), Any)));
+                applied[AttackRangeByGuid] = ToJson(rangeByGuid);
+            }
+
+            throwingByGuid.Clear();
+            foreach (KeyValuePair<string, string> pair in Pairs(conditions, ThrowingGettersByGuid, ':'))
+            {
+                throwingByGuid.Add(pair);
+                harmony.Patch(Getter(pair.Value), new HarmonyMethod(typeof(SpearRepairConditions).GetMethod(nameof(ThrowingByGuidPrefix), Any)), null);
+            }
+
+            if (throwingByGuid.Count > 0)
+                applied[ThrowingGettersByGuid] = new JArray(throwingByGuid.Select(p => (object)(p.Key + ":" + p.Value)).ToArray());
+
+            if (conditions.TryGetValue(SpearSubCategoryRemoval, out string removal) && !string.IsNullOrWhiteSpace(removal))
+            {
+                removedSubCategories = removal.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(v => (WeaponSubCategory)Enum.Parse(typeof(WeaponSubCategory), v.Trim())).ToArray();
+                MethodInfo has = typeof(Kingmaker.Enums.WeaponCategoryExtension).GetMethod("HasSubCategory", BindingFlags.Static | BindingFlags.Public, null,
+                    new[] { typeof(Kingmaker.Enums.WeaponCategory), typeof(WeaponSubCategory) }, null) ??
+                    throw new MissingMethodException("WeaponCategoryExtension.HasSubCategory");
+                harmony.Patch(has, null, new HarmonyMethod(typeof(SpearRepairConditions).GetMethod(nameof(SubCategoryRemovalPostfix), Any)) { prioritiy = Priority.Last });
+                applied[SpearSubCategoryRemoval] = new JArray(removedSubCategories.Select(v => (object)v.ToString()).ToArray());
+            }
 
             if (Enabled(conditions, FailNamedSpearRegistration))
             {
@@ -226,10 +273,51 @@ namespace KmgLoaderCompatHarness
             throw new InvalidOperationException(InjectedGetterFailure + " (" + target + " " + getter + ")");
         }
 
+        private static bool InsideSpearRegistration()
+        {
+            return new System.Diagnostics.StackTrace().GetFrames().Any(frame =>
+            {
+                string type = frame.GetMethod()?.DeclaringType?.FullName ?? string.Empty;
+                return type.StartsWith("KingmakerGunslinger.Blueprints.ElvenBranchedSpearBlueprints", StringComparison.Ordinal) ||
+                    type.StartsWith("KingmakerGunslinger.Blueprints.SpearWeaponTypeAccess", StringComparison.Ordinal);
+            });
+        }
+
         private static bool InsideSpearValidation()
         {
             return new System.Diagnostics.StackTrace().GetFrames().Any(frame =>
                 (frame.GetMethod()?.DeclaringType?.FullName ?? string.Empty).StartsWith("KingmakerGunslinger.Blueprints.SpearWeaponTypeAccess", StringComparison.Ordinal));
+        }
+
+        private static void AttackRangeByGuidPostfix(BlueprintWeaponType __instance, ref Feet __result)
+        {
+            if (__instance == null || !rangeByGuid.TryGetValue(__instance.AssetGuid ?? string.Empty, out string spec)) return;
+            float current = (float)typeof(Feet).GetField("m_Value", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(__result);
+            float value = spec.StartsWith("+", StringComparison.Ordinal)
+                ? current + float.Parse(spec.Substring(1), CultureInfo.InvariantCulture)
+                : float.Parse(spec, CultureInfo.InvariantCulture);
+            __result = new Feet(value);
+            RangeOverrides++;
+        }
+
+        // Keyed on the asset guid, active for every read made anywhere inside the product's spear registration
+        // (ElvenBranchedSpearBlueprints.Register and the spear type adapter), so the rest of the game is unaffected.
+        private static void ThrowingByGuidPrefix(BlueprintWeaponType __instance, MethodBase __originalMethod)
+        {
+            if (__instance == null || !InsideSpearRegistration()) return;
+            foreach (KeyValuePair<string, string> pair in throwingByGuid)
+            {
+                if (__instance.AssetGuid != pair.Key || "get_" + pair.Value != __originalMethod.Name) continue;
+                GuidGetterThrows++;
+                throw new InvalidOperationException(InjectedGetterFailure + " (guid " + pair.Key + " " + pair.Value + ")");
+            }
+        }
+
+        private static void SubCategoryRemovalPostfix(Kingmaker.Enums.WeaponCategory __0, WeaponSubCategory __1, ref bool __result)
+        {
+            if ((int)__0 != WeaponTypeProfiles.OwnedSpearCategory || !__result || Array.IndexOf(removedSubCategories, __1) < 0) return;
+            __result = false;
+            SubCategoryRemovals++;
         }
 
         private static void FailNamedPrefix()
@@ -265,7 +353,8 @@ namespace KmgLoaderCompatHarness
             return new JObject
             {
                 ["events"] = new JArray(Events.Cast<object>().ToArray()), ["ownedValidations"] = OwnedValidations,
-                ["corruptionsApplied"] = CorruptionsApplied, ["getterThrows"] = GetterThrows, ["captured"] = captured
+                ["corruptionsApplied"] = CorruptionsApplied, ["getterThrows"] = GetterThrows, ["guidGetterThrows"] = GuidGetterThrows,
+                ["rangeOverrides"] = RangeOverrides, ["subCategoryRemovals"] = SubCategoryRemovals, ["captured"] = captured
             };
         }
 
@@ -952,6 +1041,13 @@ namespace KmgLoaderCompatHarness
         private AbilityData chosen;
         private UnitUseAbility command;
         private double castAt;
+        private readonly string expectAbility;
+        private readonly string expectUnit;
+
+        // What this probe acquired; Release gives back exactly these and nothing it found already in place.
+        private bool selectionChanged;
+        private bool openedSpellGroup;
+        private bool acquiredTargeting;
 
         public SorcererSummonProbe(string directory, string label, string expect, IEnumerable<string> pick, IDictionary<string, string> invariants)
             : base(directory, label)
@@ -961,6 +1057,12 @@ namespace KmgLoaderCompatHarness
             this.pick = pick.ToArray();
             stallAfter = invariants != null && invariants.TryGetValue("stallAfter", out string stall) ? stall : null;
             failRelease = invariants != null && invariants.TryGetValue("failRelease", out string fail) ? fail : null;
+            // Independent identities for the chosen row: the released ability and unit (guid or blueprint name), taken
+            // from the session, never from the ability under test.
+            expectAbility = invariants != null && invariants.TryGetValue("expectAbility", out string ability) ? ability : null;
+            expectUnit = invariants != null && invariants.TryGetValue("expectUnit", out string unit) ? unit : null;
+            if (stallAfter == null && (expectAbility == null || expectUnit == null))
+                throw new ArgumentException("kmgSorcererSummon needs invariants expectAbility and expectUnit for the chosen row");
             if (stallAfter != null) Record["testOnlyStallAfter"] = stallAfter;
             if (failRelease != null) Record["testOnlyFailRelease"] = failRelease;
         }
@@ -995,6 +1097,15 @@ namespace KmgLoaderCompatHarness
             };
             Record["publishedExpandedParent"] = PublishedExpandedParent(summonMonsterOne);
             Record["partyBefore"] = Game.Instance.Player.PartyCharacters.Count;
+            // Precondition: an idle UI. A probe that inherits active targeting or an open action-bar group refuses
+            // before it changes anything, so the fixture's state stays exactly as it was.
+            string incomingTargeting = Game.Instance.SelectedAbilityHandler?.Ability?.Blueprint?.name;
+            string[] openGroups = (ActionBarManager.Instance?.Group?.GroupElements ?? new List<ActionBarGroupElement>())
+                .Where(e => e != null && e.ToggleState).Select(e => e.SlotType.ToString()).ToArray();
+            Record["incomingUi"] = new JObject { ["targeting"] = incomingTargeting, ["openGroups"] = new JArray(openGroups.Cast<object>().ToArray()) };
+            if (incomingTargeting != null || openGroups.Length > 0)
+                return "the UI is not idle before the probe (targeting " + (incomingTargeting ?? "none") + ", open groups " +
+                    (openGroups.Length == 0 ? "none" : string.Join(",", openGroups)) + "); nothing was changed";
             originalSelection = SelectionManager.Instance?.GetSingleSelectedUnit();
             pausedBefore = Game.Instance.IsPaused;
             clone = UnityEngine.Object.Instantiate(BlueprintRoot.Instance.DefaultPlayerCharacter);
@@ -1025,6 +1136,7 @@ namespace KmgLoaderCompatHarness
                 return null;
             }
 
+            selectionChanged = true;
             SelectionManager.Instance.SelectUnit(caster.View, true, true, false);
             stage = Stage.Selected;
             Wait(30);
@@ -1037,7 +1149,7 @@ namespace KmgLoaderCompatHarness
             if (spells == null) return "the action bar has no spell group";
             Record["selectedUnit"] = SelectionManager.Instance.GetSingleSelectedUnit()?.Blueprint?.name;
             if (!BarShowsCaster()) return Reselect("the action bar did not show the new sorcerer after selection");
-            if (!spells.ToggleState) spells.OnClick();
+            if (!spells.ToggleState) { spells.OnClick(); openedSpellGroup = true; }
             stage = Stage.GroupOpened;
             Wait(12);
             return null;
@@ -1062,7 +1174,7 @@ namespace KmgLoaderCompatHarness
             if (target == null) return "no visible Summon Monster I slot on the new sorcerer's spell bar";
             sourceSpell = ((MechanicActionBarSlotSpontaneusSpell)target.MechanicSlot).Spell;
             subGroup = Field<ActionBarSpellsGroup>(target, "SubGroup");
-            Game.Instance.SelectedAbilityHandler.DropAbility();
+            acquiredTargeting = true;
             target.OnClick();
             stage = Stage.MenuOpened;
             Wait(10);
@@ -1129,7 +1241,7 @@ namespace KmgLoaderCompatHarness
         private string ClickEntry()
         {
             if (AwaitingScreenshots()) return null;
-            Game.Instance.SelectedAbilityHandler.DropAbility();
+            acquiredTargeting = true;
             choiceSlot.OnClick();
             stage = Stage.EntryClicked;
             Wait(5);
@@ -1176,15 +1288,27 @@ namespace KmgLoaderCompatHarness
                 return null;
             }
 
-            BlueprintUnit[] expected = ExpectedSummons(chosen.Blueprint);
+            // Recorded only: the creatures the chosen ability's own actions name. The verdict uses the session's
+            // independent expectation (expectAbility / expectUnit) instead.
+            BlueprintUnit[] fromActions = ExpectedSummons(chosen.Blueprint);
             Record["commandResult"] = command.Result.ToString();
-            Record["expectedCreatures"] = new JArray(expected.Select(u => (object)u.name).ToArray());
-            Record["summoned"] = new JArray(summoned.Select(u => (object)(u.Blueprint.name + "|" + u.CharacterName)).ToArray());
+            Record["actionCreatures"] = new JArray(fromActions.Select(u => (object)(u.name + "|" + u.AssetGuid)).ToArray());
+            Record["summoned"] = new JArray(summoned.Select(u => (object)(u.Blueprint.name + "|" + u.Blueprint.AssetGuid + "|" + u.CharacterName)).ToArray());
+            Record["expected"] = new JObject { ["ability"] = expectAbility, ["unit"] = expectUnit };
+            Record["chosenIdentity"] = chosen.Blueprint.name + "|" + chosen.Blueprint.AssetGuid;
+            Record["submittedIdentity"] = command.Spell.Blueprint.name + "|" + command.Spell.Blueprint.AssetGuid;
             if (command.Result != UnitCommand.ResultType.Success) return "the cast of " + chosen.Blueprint.name + " ended " + command.Result;
-            if (expected.Length == 0) return "no creature blueprint was found in " + chosen.Blueprint.name + "'s actions";
-            if (!summoned.Any(u => expected.Any(e => e == u.Blueprint || e.AssetGuid == u.Blueprint.AssetGuid)))
-                return "the summoned " + string.Join(",", summoned.Select(u => u.Blueprint.name).ToArray()) + " is not a creature " + chosen.Blueprint.name + " spawns";
+            if (!Is(chosen.Blueprint, expectAbility) || !Is(command.Spell.Blueprint, expectAbility))
+                return "the chosen row and submitted command are " + Record["chosenIdentity"] + " / " + Record["submittedIdentity"] + ", expected " + expectAbility;
+            if (!summoned.Any(u => Is(u.Blueprint, expectUnit)))
+                return "the summoned " + string.Join(",", summoned.Select(u => u.Blueprint.name + "|" + u.Blueprint.AssetGuid).ToArray()) + " is not the expected " + expectUnit;
             return string.Empty;
+        }
+
+        private static bool Is(BlueprintScriptableObject blueprint, string identity)
+        {
+            return blueprint != null && identity != null && (string.Equals(blueprint.AssetGuid, identity, StringComparison.Ordinal) ||
+                string.Equals(blueprint.name, identity, StringComparison.Ordinal));
         }
 
         private List<UnitCommand> Commands()
@@ -1268,9 +1392,10 @@ namespace KmgLoaderCompatHarness
             attempts.Add(reason);
             Record["attempts"] = attempts;
             if (attempts.Count >= MaxAttempts) return reason + " (after " + attempts.Count + " attempts)";
-            if (subGroup != null) subGroup.Hide(true);
+            if (subGroup != null && subGroup.gameObject.activeInHierarchy) subGroup.Hide(true);
             ActionBarGroupElement spells = SpellGroup();
-            if (spells != null && spells.ToggleState) spells.OnClick();
+            if (openedSpellGroup && spells != null && spells.ToggleState) { spells.OnClick(); openedSpellGroup = false; }
+            selectionChanged = true;
             SelectionManager.Instance.SelectUnit(caster.View, true, true, false);
             stage = Stage.Selected;
             Wait(30);
@@ -1317,12 +1442,22 @@ namespace KmgLoaderCompatHarness
         {
             var releases = new List<KeyValuePair<string, Action>>
             {
-                new KeyValuePair<string, Action>("targeting", () => Game.Instance.SelectedAbilityHandler?.DropAbility()),
-                new KeyValuePair<string, Action>("menu", () => { if (subGroup != null) subGroup.Hide(true); }),
+                // Only what this probe acquired: targeting it started, the menu of the group it opened, that group,
+                // and a selection it changed. Nothing it found in place is touched.
+                new KeyValuePair<string, Action>("targeting", () =>
+                {
+                    AbilityData current = Game.Instance.SelectedAbilityHandler?.Ability;
+                    if (acquiredTargeting && current != null && (current == chosen || current == sourceSpell))
+                        Game.Instance.SelectedAbilityHandler.DropAbility();
+                }),
+                new KeyValuePair<string, Action>("menu", () =>
+                {
+                    if (openedSpellGroup && subGroup != null && subGroup.gameObject.activeInHierarchy) subGroup.Hide(true);
+                }),
                 new KeyValuePair<string, Action>("spell-group", () =>
                 {
                     ActionBarGroupElement spells = SpellGroup();
-                    if (spells != null && spells.ToggleState) spells.OnClick();
+                    if (openedSpellGroup && spells != null && spells.ToggleState) spells.OnClick();
                 }),
                 new KeyValuePair<string, Action>("summons", () =>
                 {
@@ -1344,6 +1479,7 @@ namespace KmgLoaderCompatHarness
                 }),
                 new KeyValuePair<string, Action>("selection", () =>
                 {
+                    if (!selectionChanged) return;
                     UnitEntityData back = originalSelection ?? Game.Instance.Player.MainCharacter.Value;
                     if (back != null && back.View != null) SelectionManager.Instance.SelectUnit(back.View, true, true, false);
                 }),
@@ -1354,6 +1490,17 @@ namespace KmgLoaderCompatHarness
                     if (Game.Instance.State.Units.Any(u => u != null && u.Blueprint != null && u.Blueprint.name == "KmgLoaderCompat_NewSorcerer" && u.IsInState))
                         throw new InvalidOperationException("the new sorcerer is still in the area");
                     if (Game.Instance.Player.PartyCharacters.Any(r => r.Value == caster)) throw new InvalidOperationException("the new sorcerer is still in the party");
+                    // The precondition was an idle UI (or the probe refused before acquiring anything): it must be idle again.
+                    if (Record["incomingUi"] != null && (Record["incomingUi"]["targeting"].Type == JTokenType.String &&
+                        !string.IsNullOrEmpty((string)Record["incomingUi"]["targeting"]))) return;
+                    string targeting = Game.Instance.SelectedAbilityHandler?.Ability?.Blueprint?.name;
+                    string[] open = (ActionBarManager.Instance?.Group?.GroupElements ?? new List<ActionBarGroupElement>())
+                        .Where(e => e != null && e.ToggleState).Select(e => e.SlotType.ToString()).ToArray();
+                    Record["outgoingUi"] = new JObject { ["targeting"] = targeting, ["openGroups"] = new JArray(open.Cast<object>().ToArray()) };
+                    bool incomingIdle = Record["incomingUi"] != null && string.IsNullOrEmpty((string)Record["incomingUi"]["targeting"]) &&
+                        !((JArray)Record["incomingUi"]["openGroups"]).Any();
+                    if (incomingIdle && (targeting != null || open.Length > 0))
+                        throw new InvalidOperationException("the UI is not back to its idle incoming state (targeting " + (targeting ?? "none") + ", open groups " + string.Join(",", open) + ")");
                 })
             };
             if (failRelease != null)

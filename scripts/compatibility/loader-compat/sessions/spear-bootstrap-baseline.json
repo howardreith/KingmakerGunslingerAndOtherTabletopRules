@@ -38,7 +38,7 @@
             "invariants": { "repeat": "5" },
             "continueOnFailure": true
           },
-          { "op": "kmgSorcererSummon", "label": "baseline-native-spell", "expect": "native-single", "timeoutSeconds": 180, "continueOnFailure": true },
+          { "op": "kmgSorcererSummon", "label": "baseline-native-spell", "expect": "native-single", "invariants": { "expectAbility": "8fd74eddd9b6c224693d9ab241f25e84", "expectUnit": "DogSummoned" }, "timeoutSeconds": 180, "continueOnFailure": true },
           { "op": "kmgSorcererResidue", "label": "after-native-spell", "continueOnFailure": true }
         ]
       }

@@ -524,13 +524,16 @@ namespace KmgLoaderCompatHarness
                     var counts = new System.Collections.Generic.Dictionary<string, int>
                     {
                         ["ownedValidations"] = SpearRepairConditions.OwnedValidations, ["corruptionsApplied"] = SpearRepairConditions.CorruptionsApplied,
-                        ["getterThrowsAtLeast"] = SpearRepairConditions.GetterThrows
+                        ["getterThrowsAtLeast"] = SpearRepairConditions.GetterThrows,
+                        ["guidGetterThrowsAtLeast"] = SpearRepairConditions.GuidGetterThrows,
+                        ["rangeOverridesAtLeast"] = SpearRepairConditions.RangeOverrides,
+                        ["subCategoryRemovalsAtLeast"] = SpearRepairConditions.SubCategoryRemovals
                     };
                     foreach (var pair in step.Invariants ?? new System.Collections.Generic.Dictionary<string, string>())
                     {
                         if (!counts.TryGetValue(pair.Key, out int observed)) { problem = (problem == null ? "" : problem + "; ") + "unknown invariant " + pair.Key; continue; }
                         int wanted = int.Parse(pair.Value, System.Globalization.CultureInfo.InvariantCulture);
-                        bool held = pair.Key == "getterThrowsAtLeast" ? observed >= wanted : observed == wanted;
+                        bool held = pair.Key.EndsWith("AtLeast", StringComparison.Ordinal) ? observed >= wanted : observed == wanted;
                         if (!held) problem = (problem == null ? "" : problem + "; ") + pair.Key + " is " + observed + ", expected " + pair.Value;
                     }
 
@@ -574,6 +577,26 @@ namespace KmgLoaderCompatHarness
                     if (((JArray)residue["units"]).Count != 0 || (bool)residue["partyHasSorcerer"] || !string.IsNullOrEmpty((string)residue["targeting"]))
                         return Fail("sorcerer probe residue: " + residue.ToString(Newtonsoft.Json.Formatting.None));
                     return StepStatus.Done;
+                }
+
+                case "kmgSetTargeting":
+                {
+                    // Puts an ability ("match": guid) of the main character into Kingmaker's targeting handler, as an
+                    // action-bar click does, so a later step inherits a non-idle UI.
+                    var ability = Kingmaker.Blueprints.ResourcesLibrary.TryGetBlueprint<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility>(step.Match);
+                    if (ability == null) return Fail("no ability " + step.Match);
+                    game.SelectedAbilityHandler.SetAbility(new Kingmaker.UnitLogic.Abilities.AbilityData(ability, game.Player.MainCharacter.Value.Descriptor));
+                    result["kmgSetTargeting_" + (step.Label ?? stepIndex.ToString())] = game.SelectedAbilityHandler.Ability?.Blueprint?.name;
+                    return StepStatus.Done;
+                }
+
+                case "kmgTargetingState":
+                {
+                    // "match": the blueprint name the targeting handler must hold, or "none". "type" = "drop" then clears it.
+                    string held = game.SelectedAbilityHandler?.Ability?.Blueprint?.name ?? "none";
+                    result["kmgTargetingState_" + (step.Label ?? stepIndex.ToString())] = held;
+                    if (step.Type == "drop") game.SelectedAbilityHandler?.DropAbility();
+                    return held == step.Match ? StepStatus.Done : Fail("the targeting handler holds " + held + ", expected " + step.Match);
                 }
 
                 case "kmgSpearSelectorState":

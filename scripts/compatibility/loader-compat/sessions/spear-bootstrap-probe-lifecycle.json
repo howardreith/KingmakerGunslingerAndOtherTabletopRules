@@ -1,6 +1,6 @@
 {
   "name": "spear-bootstrap-probe-lifecycle",
-  "description": "Spear startup repair (PR #195), the sorcerer summon probe's ownership of fixture state. Launch 1 holds the probe (test-only stallAfter=party) after it has spawned the new sorcerer and added it to the party, so the step times out; the harness must release everything through the probe slot, count only that timeout as the expected outcome, and a later residue step must find no sorcerer in the area or the party and no ability in the targeting handler. Launch 2 runs the probe to completion with a test-only release action that throws after every real release; the step must fail, isolation must be reported unrestored, the launch must stop before its next step, and the harness verdict must fail.",
+  "description": "Spear startup repair (PR #195), the sorcerer summon probe's ownership of fixture state. Launch 1 holds the probe (test-only stallAfter=party) after it has spawned the new sorcerer and added it to the party, so the step times out; the harness must release everything through the probe slot, count only that timeout as the expected outcome, and a later residue step must find no sorcerer in the area or the party and no ability in the targeting handler. Launch 2 runs the probe to completion with a test-only release action that throws after every real release; the step must fail, isolation must be reported unrestored, the launch must stop before its next step, and the harness verdict must fail. Launch 3 puts an ability into Kingmaker's targeting handler before the probe; the probe must refuse the non-idle UI before changing anything, and the pre-existing targeting must still be in place afterwards.",
   "ownerMods": [],
   "fixtureSaves": [
     "KMCS_AFTER_NORMAL_012_MODONLY.zks"
@@ -25,8 +25,29 @@
       "harness": {
         "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
         "steps": [
-          { "op": "kmgSorcererSummon", "label": "release-fails", "expect": "expanded", "invariants": { "failRelease": "release" }, "timeoutSeconds": 180, "continueOnFailure": true },
+          {
+            "op": "kmgSorcererSummon", "label": "release-fails", "expect": "expanded", "contains": [ "Beetle, Fire" ],
+            "invariants": { "failRelease": "release", "expectAbility": "c7ef177436854efca42ac4ae0a068610", "expectUnit": "714b04102eae4cd2be200a8f09f04bc3" },
+            "timeoutSeconds": 180, "continueOnFailure": true
+          },
           { "op": "kmgModules", "label": "after-release-failure", "match": "" }
+        ]
+      }
+    },
+    {
+      "label": "non-idle-ui-refused",
+      "gameArguments": [ "locale=enGB" ],
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "kmgSetTargeting", "label": "pre-existing", "match": "8fd74eddd9b6c224693d9ab241f25e84" },
+          {
+            "op": "kmgSorcererSummon", "label": "inherits-targeting", "expect": "expanded",
+            "invariants": { "expectAbility": "c7ef177436854efca42ac4ae0a068610", "expectUnit": "714b04102eae4cd2be200a8f09f04bc3" },
+            "timeoutSeconds": 60, "expectFailure": "the UI is not idle before the probe"
+          },
+          { "op": "kmgTargetingState", "label": "still-pre-existing", "match": "SummonMonsterISingle", "type": "drop" },
+          { "op": "kmgSorcererResidue", "label": "after-refusal" }
         ]
       }
     }

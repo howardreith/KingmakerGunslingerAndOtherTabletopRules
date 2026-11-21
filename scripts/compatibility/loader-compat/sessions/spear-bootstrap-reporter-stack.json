@@ -70,7 +70,11 @@
             "invariants": { "repeat": "20" },
             "continueOnFailure": true
           },
-          { "op": "kmgSorcererSummon", "label": "reporter", "expect": "expanded", "timeoutSeconds": 180, "continueOnFailure": true },
+          {
+            "op": "kmgSorcererSummon", "label": "reporter", "expect": "expanded", "contains": [ "Beetle, Fire" ],
+            "invariants": { "expectAbility": "c7ef177436854efca42ac4ae0a068610", "expectUnit": "714b04102eae4cd2be200a8f09f04bc3" },
+            "timeoutSeconds": 180, "continueOnFailure": true
+          },
           { "op": "kmgSorcererResidue", "label": "after-reporter-summon", "continueOnFailure": true }
         ]
       }

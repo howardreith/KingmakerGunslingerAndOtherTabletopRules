@@ -44,7 +44,7 @@
       "expectLog": {
         "present": [
           "[blueprints][initialize.failed]",
-          "fighter-group [owned-field]: expected=Spears actual=Polearms donor=Spears; getter expected=Polearms actual=Polearms donor=Spears; getterPatches=KmgLoaderCompatHarness"
+          "fighter-group [owned-field]: expected=Spears actual=Polearms donor=Spears; getter expected=Polearms actual=<deferred> donor=<deferred>; getterPatches=KmgLoaderCompatHarness"
         ],
         "once": [ "Elven Branched Spear type profile is invalid: 1 of 17 checks failed.", "battered-origin.inspection-unavailable" ],
         "absent": [ "[blueprints][initialize.complete]", "The battered origin token blueprint is unavailable" ]
@@ -60,7 +60,7 @@
             "type": "f28f6031c2908d84d945865a80f67177,6fd0a849531617844b195f452661b2cd,6efea466862f014469cec6c3f2b85cb7,19a5092244dcf99478dcd73c974828b1",
             "expect": "native", "invariants": { "repeat": "25" }, "continueOnFailure": true
           },
-          { "op": "kmgSorcererSummon", "label": "failed-startup-native-spell", "expect": "native-single", "timeoutSeconds": 180, "continueOnFailure": true },
+          { "op": "kmgSorcererSummon", "label": "failed-startup-native-spell", "expect": "native-single", "invariants": { "expectAbility": "8fd74eddd9b6c224693d9ab241f25e84", "expectUnit": "DogSummoned" }, "timeoutSeconds": 180, "continueOnFailure": true },
           { "op": "kmgSorcererResidue", "label": "after-native-spell", "continueOnFailure": true }
         ]
       }
@@ -111,6 +111,7 @@
       "conditions": {
         "throwingWeaponTypeGetters": "owned:IsLight",
         "corruptOwnedSpearProfile": "m_FighterGroup=Polearms",
+        "corruptOwnedSpearProfileOnCall": "2",
         "captureSpearSelectors": "true"
       },
       "expectLog": {
@@ -126,7 +127,7 @@
       "harness": {
         "steps": [
           { "op": "kmgInitialization", "label": "owned-throws", "expect": "failed", "match": "2 of 17 checks failed", "continueOnFailure": true },
-          { "op": "kmgWeaponTypeProfile", "label": "owned-throws", "match": "absent", "invariants": { "getterThrowsAtLeast": "1", "corruptionsApplied": "1" }, "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "owned-throws", "match": "absent", "invariants": { "getterThrowsAtLeast": "1", "ownedValidations": "3", "corruptionsApplied": "1" }, "continueOnFailure": true },
           { "op": "kmgSpearSelectorState", "label": "owned-throws", "expect": "restored", "continueOnFailure": true }
         ]
       }
@@ -147,7 +148,7 @@
       "harness": {
         "steps": [
           { "op": "kmgInitialization", "label": "late-validation", "expect": "failed", "match": "1 of 17 checks failed", "continueOnFailure": true },
-          { "op": "kmgWeaponTypeProfile", "label": "late-validation", "match": "absent", "invariants": { "ownedValidations": "2", "corruptionsApplied": "1" }, "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "late-validation", "match": "absent", "invariants": { "ownedValidations": "3", "corruptionsApplied": "1" }, "continueOnFailure": true },
           { "op": "kmgSpearSelectorState", "label": "late-validation", "expect": "restored", "continueOnFailure": true }
         ]
       }
@@ -168,6 +169,112 @@
           { "op": "kmgInitialization", "label": "named-failure", "expect": "failed", "match": "KmgLoaderCompatHarness injected named-spear registration failure", "continueOnFailure": true },
           { "op": "kmgWeaponTypeProfile", "label": "named-failure", "match": "absent", "continueOnFailure": true },
           { "op": "kmgSpearSelectorState", "label": "named-failure", "expect": "restored", "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "longspear-guid-getter-patch",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "attackRangeByGuid": "fa2dd17cbde7d3f4aa918d467c30516e=+1",
+        "captureSpearSelectors": "true"
+      },
+      "expectLog": {
+        "present": [ "[blueprints][initialize.complete]", "[elven-branched-spear][foundation.ready]" ],
+        "absent": [ "[initialize.failed]", "Elven Branched Spear type profile is invalid" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "kmgInitialization", "label": "longspear-guid", "expect": "completed", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "longspear-guid", "match": "owned", "expect": "attack-range", "invariants": { "rangeOverridesAtLeast": "1" }, "continueOnFailure": true },
+          { "op": "kmgSpearSelectorState", "label": "longspear-guid", "expect": "published", "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "released-spear-guid-getter-patch",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "attackRangeByGuid": "77f72b0febaf212a5650e7193c00361f=+1",
+        "captureSpearSelectors": "true"
+      },
+      "expectLog": {
+        "present": [ "[blueprints][initialize.failed]" ],
+        "once": [
+          "Elven Branched Spear type profile is invalid: 1 of 17 checks failed.",
+          "attack-range [effective-getter]: expected=10ft actual=10ft donor=10ft; getter expected=6ft actual=7ft donor=6ft; getterPatches=KmgLoaderCompatHarness"
+        ],
+        "absent": [ "[blueprints][initialize.complete]" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "kmgInitialization", "label": "released-guid", "expect": "failed", "match": "attack-range [effective-getter]", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "released-guid", "match": "absent", "expect": "none", "invariants": { "rangeOverridesAtLeast": "1" }, "continueOnFailure": true },
+          { "op": "kmgSpearSelectorState", "label": "released-guid", "expect": "restored", "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "donor-weight-throws-by-guid",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "throwingGettersByGuid": "fa2dd17cbde7d3f4aa918d467c30516e:Weight"
+      },
+      "expectLog": {
+        "present": [ "[blueprints][initialize.complete]", "[elven-branched-spear][foundation.ready]" ],
+        "absent": [ "[initialize.failed]", "Elven Branched Spear type profile is invalid" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "kmgInitialization", "label": "donor-weight", "expect": "completed", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "donor-weight", "match": "owned", "invariants": { "guidGetterThrowsAtLeast": "1" }, "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "fractional-effective-reach",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "attackRangeByGuid": "77f72b0febaf212a5650e7193c00361f=6.25",
+        "captureSpearSelectors": "true"
+      },
+      "expectLog": {
+        "present": [ "[blueprints][initialize.failed]" ],
+        "once": [
+          "Elven Branched Spear type profile is invalid: 1 of 17 checks failed.",
+          "attack-range [effective-getter]: expected=10ft actual=10ft donor=10ft; getter expected=6ft actual=6.25ft donor=6ft; getterPatches=KmgLoaderCompatHarness"
+        ],
+        "absent": [ "[blueprints][initialize.complete]" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "kmgInitialization", "label": "fractional", "expect": "failed", "match": "actual=6.25ft", "continueOnFailure": true },
+          { "op": "kmgSpearSelectorState", "label": "fractional", "expect": "restored", "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "spear-finessable-removed",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "spearSubCategoryRemoval": "Finessable",
+        "captureSpearSelectors": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.failed]",
+          "subcategory-policy [effective-getter]: expected=Melee,Finessable,TwoHanded,Exotic,Metal actual=Melee,Finessable,TwoHanded,Exotic,Metal",
+          "getter expected=Melee,Finessable,TwoHanded,Exotic,Metal actual=Melee,TwoHanded,Exotic,Metal",
+          "KmgLoaderCompatHarness"
+        ],
+        "once": [ "Elven Branched Spear type profile is invalid: 1 of 17 checks failed." ],
+        "absent": [ "[blueprints][initialize.complete]" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "kmgInitialization", "label": "finessable-removed", "expect": "failed", "match": "subcategory-policy [effective-getter]", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "finessable-removed", "match": "absent", "invariants": { "subCategoryRemovalsAtLeast": "1" }, "continueOnFailure": true },
+          { "op": "kmgSpearSelectorState", "label": "finessable-removed", "expect": "restored", "continueOnFailure": true }
         ]
       }
     }
