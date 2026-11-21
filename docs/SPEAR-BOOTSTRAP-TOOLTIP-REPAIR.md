@@ -215,7 +215,11 @@ that opens empty was never observed.
 
   The movement-enchantment and sub-category checks are predicates in the same
   verdict. So one failure message lists every discrepancy, in the form
-  `Elven Branched Spear type profile is invalid: N of 17 checks failed. <predicate> [owned-field|effective-getter]: expected=… actual=… donor=…; getter expected=… actual=… donor=…; getterPatches=…`.
+  `Elven Branched Spear type profile is invalid: N of 18 checks failed. <predicate> [owned-field|effective-getter]: expected=… actual=… donor=…; getter expected=… actual=… donor=…; getterPatches=…`.
+  The profile had 17 checks before round 6, so runs before then quote
+  `N of 17`. The item-damage predicate (round 7, R7-F2) uses the same
+  bounded form: `Elven Branched Spear item damage is invalid: <item>:
+  item-damage [effective-getter]: expected=override=False actual=override=… donor=override=…; getter expected=<1d8> actual=… donor=…; getterPatches=…`.
   Values are capped at 96 characters, owners at 8 and entries at 24. Patch
   info is read only for failing predicates.
 - **Selector publication ordering (R1-F2).** All fallible foundation checks
@@ -424,8 +428,10 @@ Round 5 changed the product's sub-category check (R5-F1, `195d17ce19`). The
 ZIP `c96e1b3c94cf13707cb8f73368681e61150e23f0526542d050979bdc3707f20e`,
 DLL `f0fb25cb6027a83ed4265b880122dbd0cc573ca1f04f4eb4f74552c3bc4c8330`,
 harness DLL `cfad84a0…07a4`. Build-Local passed strict standalone UMM package
-validation and 28 focused tests. `src/` and `tests/` are unchanged from
-`18361607eda8` to the final candidate.
+validation and 28 focused tests. At the round-5 checkpoint (`0b3a9533cd`),
+`src/` and `tests/` were unchanged from `18361607eda8`. Rounds 6 and 7
+changed the product again; see the opening identity list for the current
+product and package.
 
 On it, the simulated session S5, the sub-category controls C and the
 reporter-shaped stack R5 all passed, with `registryRestored`,
