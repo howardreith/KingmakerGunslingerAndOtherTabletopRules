@@ -79,6 +79,7 @@ namespace KmgLoaderCompatHarness
         private static string[] captureGuids = new string[0];
         private static readonly Dictionary<string, string> throwingGetters = new Dictionary<string, string>();
         private static bool captureSelectors;
+        private static BlueprintWeaponType donorReference;
 
         public static readonly string[] Known =
         {
@@ -93,7 +94,7 @@ namespace KmgLoaderCompatHarness
         public static int CorruptionsApplied { get; private set; }
         public static int GetterThrows { get; private set; }
 
-        public static bool NeedsLibraryHook => longspearMutations.Count > 0 || captureGuids.Length > 0 || captureSelectors;
+        public static bool NeedsLibraryHook => longspearMutations.Count > 0 || captureGuids.Length > 0 || captureSelectors || throwingGetters.Count > 0;
 
         public static void Apply(HarmonyInstance harmony, IDictionary<string, string> conditions, JObject applied)
         {
@@ -159,6 +160,7 @@ namespace KmgLoaderCompatHarness
         /// <summary>Runs from the harness LoadDictionary postfix, which is ordered before the product's own.</summary>
         public static void BeforeProduct(LibraryScriptableObject library)
         {
+            donorReference = Type(library, NativeLongspearTypeGuid);
             if (longspearMutations.Count > 0)
             {
                 BlueprintWeaponType longspear = Type(library, NativeLongspearTypeGuid);
@@ -216,7 +218,8 @@ namespace KmgLoaderCompatHarness
         private static void ThrowingPrefix(BlueprintWeaponType __instance, MethodBase __originalMethod)
         {
             if (__instance == null || !InsideSpearValidation()) return;
-            string target = __instance.AssetGuid == NativeLongspearTypeGuid ? "donor" :
+            // By reference: while the product configures its clone, the clone still carries the donor's asset guid.
+            string target = ReferenceEquals(__instance, donorReference) ? "donor" :
                 __instance.name == WeaponTypeProfiles.OwnedSpearTypeName ? "owned" : null;
             if (target == null || !throwingGetters.TryGetValue(target, out string getter) || "get_" + getter != __originalMethod.Name) return;
             GetterThrows++;
@@ -1107,7 +1110,7 @@ namespace KmgLoaderCompatHarness
             if (!menuOpen) return Reselect("the Summon Monster I creature menu was not open " + (BarShowsCaster()
                 ? "while the bar still showed the new sorcerer" : "because the bar no longer showed the new sorcerer"));
             if (rows.Count < 2) return "the Summon Monster I menu shows " + rows.Count + " creature entries";
-            JObject[] bad = rows.Cast<JObject>().Where(r => !(bool)r["visible"] || string.IsNullOrWhiteSpace((string)r["name"]) || r["icon"].Type == JTokenType.Null).ToArray();
+            JObject[] bad = rows.Cast<JObject>().Where(r => !(bool)r["visible"] || string.IsNullOrWhiteSpace((string)r["name"]) || string.IsNullOrEmpty((string)r["icon"])).ToArray();
             if (bad.Length > 0) return "menu entries are not visible with a name and icon: " + string.Join(", ", bad.Select(b => b.ToString(Newtonsoft.Json.Formatting.None)).ToArray());
             int index = entries.FindIndex(e => Matches(e));
             if (index < 0 && pick.Length == 0) index = entries.FindIndex(NoNested);

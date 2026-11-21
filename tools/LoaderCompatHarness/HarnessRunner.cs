@@ -571,7 +571,7 @@ namespace KmgLoaderCompatHarness
                         ["targeting"] = game.SelectedAbilityHandler?.Ability?.Blueprint?.name
                     };
                     result["kmgSorcererResidue_" + (step.Label ?? stepIndex.ToString())] = residue;
-                    if (((JArray)residue["units"]).Count != 0 || (bool)residue["partyHasSorcerer"] || residue["targeting"].Type != JTokenType.Null)
+                    if (((JArray)residue["units"]).Count != 0 || (bool)residue["partyHasSorcerer"] || !string.IsNullOrEmpty((string)residue["targeting"]))
                         return Fail("sorcerer probe residue: " + residue.ToString(Newtonsoft.Json.Formatting.None));
                     return StepStatus.Done;
                 }
