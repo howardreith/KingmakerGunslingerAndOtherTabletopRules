@@ -107,7 +107,7 @@ if ($Report) {
                     batteredInspectionUnavailableReported = (Get-LcReportValue $value 'batteredInspectionUnavailableReported')
                     bootstrap = (Get-LcReportValue $value 'bootstrap') }
             }
-            elseif ($property.Name -match '^kmgInitialization_') { $picked[$property.Name] = $value }
+            elseif ($property.Name -match '^(kmgInitialization|kmgSpearPersistFixture|kmgSpearPersistedItems|kmgModules)_') { $picked[$property.Name] = $value }
             elseif ($property.Name -match '^kmgItemDamage_') {
                 $damage = [ordered]@{}
                 foreach ($entry in $value.PSObject.Properties) { if ($entry.Name -ne 'conditions') { $damage[$entry.Name] = $entry.Value } }
