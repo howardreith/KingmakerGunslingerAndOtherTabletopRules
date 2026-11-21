@@ -524,7 +524,9 @@ namespace KmgLoaderCompatHarness
     /// opened through its own click handler, the Summon Monster I slot the game built is clicked, and the creature menu
     /// the game filled is read (names, icons, visibility). The chosen entry ("contains" picks by name; otherwise the
     /// first entry) is cast with the AbilityData that slot holds, and a summoned creature must appear. Everything the
-    /// probe created is removed. expect "expanded": Summon Monster I must carry the product's published menu.
+    /// probe created is removed. expect "expanded": Summon Monster I must carry the product's published menu. Otherwise,
+    /// when Summon Monster I is Kingmaker's own single spell (no variants, as after a failed product startup), the slot
+    /// must not open a menu and the spell itself is cast.
     /// </summary>
     internal sealed class SorcererSummonProbe : ScreenProbe
     {
@@ -542,6 +544,7 @@ namespace KmgLoaderCompatHarness
         private BlueprintAbility summonMonsterOne;
         private ActionBarSpellsGroup subGroup;
         private AbilityData chosen;
+        private AbilityData sourceSpell;
         private UnitUseAbility command;
         private bool pausedBefore;
         private double castAt;
@@ -639,6 +642,7 @@ namespace KmgLoaderCompatHarness
 
                     Record["spellSlots"] = seen;
                     if (target == null) return "no visible Summon Monster I slot on the new sorcerer's spell bar";
+                    sourceSpell = (Mechanic(target) as MechanicActionBarSlotSpontaneusSpell).Spell;
                     subGroup = Field<ActionBarSpellsGroup>(target, "SubGroup");
                     target.OnClick();
                     stage = Stage.MenuOpened;
@@ -661,10 +665,25 @@ namespace KmgLoaderCompatHarness
                         });
                     }
 
-                    Record["menuOpen"] = subGroup.gameObject.activeInHierarchy;
+                    bool menuOpen = subGroup.gameObject.activeInHierarchy;
+                    Record["menuOpen"] = menuOpen;
                     Record["menuEntries"] = rows;
                     Record["menuEntryCount"] = rows.Count;
                     Capture("summon-monster-i-menu");
+                    bool nativeSingle = summonMonsterOne.Variants == null || summonMonsterOne.Variants.Length == 0;
+                    Record["nativeSingleSpell"] = nativeSingle;
+                    if (nativeSingle && expect != "expanded")
+                    {
+                        // Kingmaker's own Summon Monster I has no variants: the slot does not expand, and its click
+                        // only starts targeting. The spell itself is what this player casts.
+                        if (menuOpen || rows.Count != 0) return "a native single Summon Monster I opened a menu with " + rows.Count + " entries";
+                        chosen = sourceSpell;
+                        Record["chosen"] = new JObject { ["name"] = chosen.Name, ["blueprint"] = chosen.Blueprint.name, ["available"] = chosen.IsAvailableForCast, ["route"] = "native-single-spell" };
+                        stage = Stage.MenuRead;
+                        return null;
+                    }
+
+                    if (!menuOpen) return "the Summon Monster I creature menu did not open";
                     if (rows.Count < 2) return "the Summon Monster I menu shows " + rows.Count + " creature entries";
                     JObject[] bad = rows.Cast<JObject>().Where(r => !(bool)r["visible"] || string.IsNullOrWhiteSpace((string)r["name"]) || r["icon"].Type == JTokenType.Null).ToArray();
                     if (bad.Length > 0) return "menu entries are not visible with a name and icon: " + string.Join(", ", bad.Select(b => b.ToString(Newtonsoft.Json.Formatting.None)).ToArray());
