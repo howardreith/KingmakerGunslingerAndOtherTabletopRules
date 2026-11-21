@@ -179,7 +179,24 @@ try {
         if (Test-Path -LiteralPath $harnessResultPath) {
             $harnessResult = Get-Content -LiteralPath $harnessResultPath -Raw | ConvertFrom-Json
             $record.harness = $harnessResult.status
-            if ($harnessResult.status -ne 'passed') { $record.problems += "harness: $($harnessResult.failure)" }
+            if ($launch.PSObject.Properties['expectHarnessFailure'] -and $launch.expectHarnessFailure) {
+                # This launch must end with the harness failing, its failure naming every listed text, and none of
+                # the listed steps (matched by "[label]") having run.
+                $record.expectedHarnessFailure = @($launch.expectHarnessFailure)
+                if ($harnessResult.status -ne 'failed') { $record.problems += "harness $($harnessResult.status); an expected failure did not occur" }
+                foreach ($needle in @($launch.expectHarnessFailure)) {
+                    if (([string]$harnessResult.failure).IndexOf([string]$needle, [StringComparison]::Ordinal) -lt 0) {
+                        $record.problems += "harness failure lacks '$needle': $($harnessResult.failure)"
+                    }
+                }
+                if ($launch.PSObject.Properties['expectStepsNotRun']) {
+                    foreach ($stepLabel in @($launch.expectStepsNotRun)) {
+                        if (@($harnessResult.steps | Where-Object { ([string]$_.step).Contains("[$stepLabel]") }).Count -ne 0) {
+                            $record.problems += "step [$stepLabel] ran after the expected stop"
+                        }
+                    }
+                }
+            } elseif ($harnessResult.status -ne 'passed') { $record.problems += "harness: $($harnessResult.failure)" }
         } elseif ($product) {
             # The product's scenario owns the exit; the harness only had to
             # isolate the profile and record identity, both checked here.
@@ -203,14 +220,15 @@ try {
             if (-not (Test-Path -LiteralPath $logCopy)) { $record.problems += 'no loader log was captured for expectLog' }
             else {
                 $logText = [IO.File]::ReadAllText($logCopy)
-                $record.log = [ordered]@{ present = @(); absent = @() }
-                foreach ($group in @('present', 'absent')) {
+                $record.log = [ordered]@{ present = @(); absent = @(); once = @() }
+                foreach ($group in @('present', 'absent', 'once')) {
                     if (-not $launch.expectLog.PSObject.Properties[$group]) { continue }
                     foreach ($needle in @($launch.expectLog.$group | Where-Object { $_ })) {
                         $count = ([regex]::Matches($logText, [regex]::Escape([string]$needle))).Count
                         $record.log[$group] += "$needle x$count"
                         if ($group -eq 'present' -and $count -eq 0) { $record.problems += "log lacks '$needle'" }
                         if ($group -eq 'absent' -and $count -ne 0) { $record.problems += "log contains '$needle' ($count)" }
+                        if ($group -eq 'once' -and $count -ne 1) { $record.problems += "log contains '$needle' $count times, expected exactly once" }
                     }
                 }
             }

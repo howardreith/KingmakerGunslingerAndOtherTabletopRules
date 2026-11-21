@@ -104,8 +104,10 @@ namespace KmgLoaderCompatHarness
             };
             foreach (string name in conditions.Keys)
             {
-                if (!known.Contains(name)) throw new InvalidOperationException("unknown harness condition " + name);
+                if (!known.Contains(name) && !SpearRepairConditions.Known.Contains(name)) throw new InvalidOperationException("unknown harness condition " + name);
             }
+
+            SpearRepairConditions.Apply(harmony, conditions, applied);
 
             if (Enabled(conditions, UnassignedTextResolvesBlank))
             {
@@ -134,7 +136,7 @@ namespace KmgLoaderCompatHarness
             string[] throwingDescriptions = List(conditions, AbilityDescriptionThrowsAtGritUi);
             string[] gritSpendDescriptions = List(conditions, AbilityDescriptionMentionsGritSpend);
             bool observeGritUi = Enabled(conditions, ObserveGritUiPass) || throwingDescriptions.Length + gritSpendDescriptions.Length > 0;
-            if (captureGuids.Length > 0 || observeGritUi)
+            if (captureGuids.Length > 0 || observeGritUi || SpearRepairConditions.NeedsLibraryHook)
             {
                 MethodInfo load = typeof(LibraryScriptableObject).GetMethod("LoadDictionary", Any);
                 if (load == null) throw new MissingMethodException(typeof(LibraryScriptableObject).FullName, "LoadDictionary");
@@ -230,6 +232,7 @@ namespace KmgLoaderCompatHarness
             if (libraryPrepared || __instance == null || __instance.BlueprintsByAssetId == null) return;
             libraryPrepared = true;
             library = __instance;
+            SpearRepairConditions.BeforeProduct(__instance);
             foreach (string guid in captureGuids)
             {
                 BlueprintUnitFact fact = Fact(guid);

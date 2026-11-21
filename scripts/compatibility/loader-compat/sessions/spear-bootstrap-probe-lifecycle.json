@@ -1,0 +1,34 @@
+{
+  "name": "spear-bootstrap-probe-lifecycle",
+  "description": "Spear startup repair (PR #195), the sorcerer summon probe's ownership of fixture state. Launch 1 holds the probe (test-only stallAfter=party) after it has spawned the new sorcerer and added it to the party, so the step times out; the harness must release everything through the probe slot, count only that timeout as the expected outcome, and a later residue step must find no sorcerer in the area or the party and no ability in the targeting handler. Launch 2 runs the probe to completion with a test-only release action that throws after every real release; the step must fail, isolation must be reported unrestored, the launch must stop before its next step, and the harness verdict must fail.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "stalled-probe-timeout",
+      "gameArguments": [ "locale=enGB" ],
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "kmgSorcererSummon", "label": "stalled", "expect": "expanded", "invariants": { "stallAfter": "party" }, "timeoutSeconds": 25, "expectFailure": "step timeout" },
+          { "op": "kmgSorcererResidue", "label": "after-timeout" }
+        ]
+      }
+    },
+    {
+      "label": "injected-release-failure",
+      "gameArguments": [ "locale=enGB" ],
+      "expectHarnessFailure": [ "cleanup failed: injected-release", "could not all be released" ],
+      "expectStepsNotRun": [ "after-release-failure" ],
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "kmgSorcererSummon", "label": "release-fails", "expect": "expanded", "invariants": { "failRelease": "release" }, "timeoutSeconds": 180, "continueOnFailure": true },
+          { "op": "kmgModules", "label": "after-release-failure", "match": "" }
+        ]
+      }
+    }
+  ]
+}

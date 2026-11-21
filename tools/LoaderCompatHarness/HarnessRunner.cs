@@ -169,9 +169,26 @@ namespace KmgLoaderCompatHarness
             // The step is over, however it ended: by its own verdict, by timeout or by an exception. Whatever it
             // started is ended here, under this step's identity, before another step is considered.
             bool isolationRestored = EndStepProbes(step, ref status);
+            string expectedFailure = null;
+            if (!string.IsNullOrEmpty(step.ExpectFailure))
+            {
+                if (status == StepStatus.Failed && isolationRestored && (stepFailure ?? string.Empty).IndexOf(step.ExpectFailure, StringComparison.Ordinal) >= 0)
+                {
+                    expectedFailure = stepFailure;
+                    stepFailure = null;
+                    status = StepStatus.Done;
+                }
+                else if (status == StepStatus.Done)
+                {
+                    stepFailure = "the expected failure '" + step.ExpectFailure + "' did not occur";
+                    status = StepStatus.Failed;
+                }
+            }
+
             ((JArray)result["steps"]).Add(new JObject
             {
-                ["step"] = step.ToString(), ["status"] = status.ToString(), ["failure"] = stepFailure, ["isolationRestored"] = isolationRestored
+                ["step"] = step.ToString(), ["status"] = status.ToString(), ["failure"] = stepFailure, ["expectedFailure"] = expectedFailure,
+                ["isolationRestored"] = isolationRestored
             });
             if (status == StepStatus.Failed)
             {
@@ -492,6 +509,89 @@ namespace KmgLoaderCompatHarness
                     if (string.IsNullOrEmpty(step.Expect)) return Fail("kmgGritUiReapply needs expect=<shared recipient count>");
                     JObject reapplied = GritUiProbes.Reapply(step.Match, int.Parse(step.Expect, System.Globalization.CultureInfo.InvariantCulture), out string problem);
                     result["kmgGritUiReapply_" + (step.Label ?? stepIndex.ToString())] = reapplied;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
+                case "kmgWeaponTypeProfile":
+                {
+                    // Spear startup repair. "match": owned | absent | empty; "type": weapon types that must still hold
+                    // their pre-product profile (captureWeaponTypes); "expect": the native Longspear's old-release
+                    // clone predicate failures ("none" or a comma list).
+                    JObject profile = WeaponTypeProfiles.Probe(step.Match, List(step.Type), step.Expect, out string problem);
+                    result["kmgWeaponTypeProfile_" + (step.Label ?? stepIndex.ToString())] = profile;
+                    // invariants: ownedValidations / corruptionsApplied (exact) and getterThrowsAtLeast, so a session
+                    // proves its condition actually fired where it meant to.
+                    var counts = new System.Collections.Generic.Dictionary<string, int>
+                    {
+                        ["ownedValidations"] = SpearRepairConditions.OwnedValidations, ["corruptionsApplied"] = SpearRepairConditions.CorruptionsApplied,
+                        ["getterThrowsAtLeast"] = SpearRepairConditions.GetterThrows
+                    };
+                    foreach (var pair in step.Invariants ?? new System.Collections.Generic.Dictionary<string, string>())
+                    {
+                        if (!counts.TryGetValue(pair.Key, out int observed)) { problem = (problem == null ? "" : problem + "; ") + "unknown invariant " + pair.Key; continue; }
+                        int wanted = int.Parse(pair.Value, System.Globalization.CultureInfo.InvariantCulture);
+                        bool held = pair.Key == "getterThrowsAtLeast" ? observed >= wanted : observed == wanted;
+                        if (!held) problem = (problem == null ? "" : problem + "; ") + pair.Key + " is " + observed + ", expected " + pair.Value;
+                    }
+
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
+                case "kmgItemPricing":
+                {
+                    // Ordinary weapon sale price and tooltip fill; see ItemPricingProbe.
+                    JObject pricing = ItemPricingProbe.Run(List(step.Type), step.Expect, step.Match, step.Contains, step.Invariants, out string problem);
+                    result["kmgItemPricing_" + (step.Label ?? stepIndex.ToString())] = pricing;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
+                case "kmgSorcererSummon":
+                {
+                    // A new level-1 sorcerer's Summon Monster I menu and one cast from it; see SorcererSummonProbe. An
+                    // owned probe: the slot releases what it created on success, failure, exception, step timeout and
+                    // run end, and a failed release stops the launch.
+                    string identity = StepIdentity(step);
+                    if (!probes.IsActive)
+                        probes.Begin(identity, new SorcererSummonProbe(evidence.Directory, step.Label ?? stepIndex.ToString(), step.Expect, step.Contains, step.Invariants));
+                    ProbeOutcome outcome = probes.Poll(identity);
+                    if (outcome == null) return StepStatus.Running;
+                    RecordProbe(outcome);
+                    return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
+                }
+
+                case "kmgSorcererResidue":
+                {
+                    // Nothing a sorcerer probe created is left: no such unit in the area and none in the party.
+                    var residue = new JObject
+                    {
+                        ["units"] = new JArray(game.State.Units.Where(u => u != null && u.Blueprint != null && u.Blueprint.name == "KmgLoaderCompat_NewSorcerer" && u.IsInState)
+                            .Select(u => (object)u.UniqueId).ToArray()),
+                        ["partyCount"] = game.Player.PartyCharacters.Count,
+                        ["partyHasSorcerer"] = game.Player.PartyCharacters.Any(r => r.Value != null && r.Value.Blueprint != null && r.Value.Blueprint.name == "KmgLoaderCompat_NewSorcerer"),
+                        ["targeting"] = game.SelectedAbilityHandler?.Ability?.Blueprint?.name
+                    };
+                    result["kmgSorcererResidue_" + (step.Label ?? stepIndex.ToString())] = residue;
+                    if (((JArray)residue["units"]).Count != 0 || (bool)residue["partyHasSorcerer"] || !string.IsNullOrEmpty((string)residue["targeting"]))
+                        return Fail("sorcerer probe residue: " + residue.ToString(Newtonsoft.Json.Formatting.None));
+                    return StepStatus.Done;
+                }
+
+                case "kmgSpearSelectorState":
+                {
+                    // Native spear selectors, familiarity and selector runtime against their pre-product capture.
+                    JObject state = SpearSelectorState.Probe(step.Expect, out string problem);
+                    result["kmgSpearSelectorState_" + (step.Label ?? stepIndex.ToString())] = state;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
+                case "kmgSpearPersistFixture":
+                    result["kmgSpearPersistFixture_" + (step.Label ?? stepIndex.ToString())] = SpearPersistence.Fixture(request.ProfileDir);
+                    return StepStatus.Done;
+
+                case "kmgSpearPersistedItems":
+                {
+                    JObject persisted = SpearPersistence.Verify(request.ProfileDir, out string problem);
+                    result["kmgSpearPersistedItems_" + (step.Label ?? stepIndex.ToString())] = persisted;
                     return problem == null ? StepStatus.Done : Fail(problem);
                 }
 
