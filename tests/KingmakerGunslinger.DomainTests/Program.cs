@@ -927,6 +927,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("elven-branched-spear.bootstrap-repair.throwing-owned-getter-fatal", SpearBootstrapTooltipRepairTests.ThrowingOwnedGetterIsFatalAndReported),
             Case("elven-branched-spear.bootstrap-repair.unavailable-donor-not-fatal", SpearBootstrapTooltipRepairTests.UnavailableDonorComparisonIsNotFatal),
             Case("elven-branched-spear.bootstrap-repair.field-only-predicates", SpearBootstrapTooltipRepairTests.FieldOnlyPredicatesReportEnchantmentAndSubcategories),
+            Case("elven-branched-spear.bootstrap-repair.deferred-effective-value", SpearBootstrapTooltipRepairTests.DeferredEffectiveValueIsNotJudged),
             Case("elven-branched-spear.bootstrap-repair.bounded-diagnostics", SpearBootstrapTooltipRepairTests.DiagnosticsAreBounded),
             Case("elven-branched-spear.bootstrap-repair.observation-contract", SpearBootstrapTooltipRepairTests.ObservationsMustBeUniqueAndComplete),
             Case("elven-branched-spear.bootstrap-repair.battered-inspection-unavailable-state", SpearBootstrapTooltipRepairTests.BatteredInspectionIsExemptOnlyWhenUnavailable),

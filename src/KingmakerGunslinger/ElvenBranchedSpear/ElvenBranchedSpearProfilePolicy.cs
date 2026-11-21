@@ -70,9 +70,18 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
             get { return string.Equals(ExpectedField, OwnedField, StringComparison.Ordinal); }
         }
 
+        /// <summary>
+        /// True when the effective value equals the engine contract, or when
+        /// it was deliberately not read in this (serialized-only) validation.
+        /// </summary>
         internal bool EngineMatches
         {
-            get { return string.Equals(EngineExpected, EngineActual, StringComparison.Ordinal); }
+            get
+            {
+                return string.Equals(EngineActual, ElvenBranchedSpearProfilePolicy.Deferred,
+                        StringComparison.Ordinal) ||
+                    string.Equals(EngineExpected, EngineActual, StringComparison.Ordinal);
+            }
         }
     }
 
@@ -135,6 +144,13 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
     internal static class ElvenBranchedSpearProfilePolicy
     {
         internal const string FailurePrefix = "Elven Branched Spear type profile is invalid";
+
+        /// <summary>
+        /// Recorded for an effective value that a serialized-only validation
+        /// deliberately does not read (the clone does not yet have its released
+        /// identity). It is never judged; the definitive validation reads it.
+        /// </summary>
+        internal const string Deferred = "<deferred>";
 
         /// <summary>The spear's serialized reach, as on the native Longspear.</summary>
         internal const int ReachFeet = 10;

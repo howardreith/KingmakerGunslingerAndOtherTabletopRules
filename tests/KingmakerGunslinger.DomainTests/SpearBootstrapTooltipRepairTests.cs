@@ -165,6 +165,22 @@ namespace KingmakerGunslinger.DomainTests
                 StringComparison.Ordinal), "Unavailable donor text changed: " + unavailable);
         }
 
+        internal static void DeferredEffectiveValueIsNotJudged()
+        {
+            string deferred = ElvenBranchedSpearProfilePolicy.Deferred;
+            var range = new SpearProfileObservation("attack-range", "10ft", "10ft",
+                "15ft", "6ft", deferred, deferred, null, "not-read");
+            Assertions.True(ElvenBranchedSpearProfilePolicy.Evaluate(With(range)).IsValid,
+                "A deferred effective value failed a correct serialized profile.");
+            var group = new SpearProfileObservation("fighter-group", "Spears",
+                "Polearms", "Spears", "Polearms", deferred, deferred,
+                new[] { "other.mod" }, "read");
+            string message = ElvenBranchedSpearProfilePolicy.Evaluate(With(group))
+                .DescribeFailure();
+            Assertions.True(message.Contains("fighter-group [owned-field]: expected=Spears actual=Polearms donor=Spears; getter expected=Polearms actual=<deferred> donor=<deferred>; getterPatches=other.mod"),
+                "A serialized-only failure did not say its getter was not read: " + message);
+        }
+
         internal static void FieldOnlyPredicatesReportEnchantmentAndSubcategories()
         {
             var enchantment = new SpearProfileObservation("movement-enchantment",
