@@ -425,11 +425,6 @@ namespace KingmakerGunslinger.Blueprints
             WeaponSubCategory.TwoHanded, WeaponSubCategory.Exotic,
             WeaponSubCategory.Metal };
 
-        private static readonly WeaponSubCategory[] ExcludedSubCategories = {
-            WeaponSubCategory.Light, WeaponSubCategory.Martial,
-            WeaponSubCategory.OneHandedPiercing,
-            WeaponSubCategory.OneHandedSlashing, WeaponSubCategory.Thrown };
-
         /// <summary>
         /// The definitive check, on the registered type: the owned serialized
         /// profile and the effective values players and the engine use - the
@@ -587,8 +582,9 @@ namespace KingmakerGunslinger.Blueprints
                 "HasSubCategory");
 
         /// <summary>
-        /// The owned category's sub-categories: the mod's own policy must grant
-        /// exactly the intended five, and the engine's
+        /// The owned category's sub-categories across every WeaponSubCategory
+        /// value: the mod's own policy must grant exactly the intended five
+        /// plus the None wildcard, and the engine's
         /// WeaponCategoryExtension.HasSubCategory - what Weapon Finesse and
         /// every other native consumer asks, after all patches - must agree.
         /// </summary>
@@ -637,16 +633,22 @@ namespace KingmakerGunslinger.Blueprints
                     .ToArray());
         }
 
+        /// <summary>Every WeaponSubCategory the engine defines.</summary>
+        private static readonly WeaponSubCategory[] SupportedSubCategories =
+            (WeaponSubCategory[])Enum.GetValues(typeof(WeaponSubCategory));
+
         /// <summary>
-        /// Which of the intended five sub-categories, and of the excluded ones,
-        /// the given calculation grants, in a fixed order.
+        /// Which sub-categories the given calculation grants, across every
+        /// WeaponSubCategory the engine defines: the intended five in policy
+        /// order, then any other granted value (Simple, Martial, Light, ...),
+        /// and a marker when the None wildcard is denied. Any extra, missing or
+        /// wildcard difference therefore changes the text.
         /// </summary>
         private static string SubCategoryList(Func<WeaponSubCategory, bool> grants)
         {
-            IEnumerable<WeaponSubCategory> granted = IntendedSubCategories
-                .Where(grants).Concat(ExcludedSubCategories.Where(grants));
-            return string.Join(",", granted.Select(value => value.ToString())
-                .ToArray());
+            return ElvenBranchedSpearProfilePolicy.SubCategoryText(
+                IntendedSubCategories, SupportedSubCategories,
+                WeaponSubCategory.None, grants);
         }
 
         /// <summary>

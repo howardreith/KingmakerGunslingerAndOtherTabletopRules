@@ -58,6 +58,67 @@ namespace KingmakerGunslinger.DomainTests
                 "The owned spear keeps the native Longspear's 10 ft reach.");
         }
 
+        // Stand-in for Kingmaker's WeaponSubCategory (the domain tests do not
+        // load game assemblies); only names and the None value matter here.
+        private enum SubCategory
+        {
+            None, Light, Melee, Ranged, Finessable, Thrown, Natural, Monk,
+            TwoHanded, Exotic, Simple, Martial, Metal, OneHandedPiercing,
+            OneHandedSlashing
+        }
+
+        private static readonly SubCategory[] IntendedSubCategories =
+        {
+            SubCategory.Melee, SubCategory.Finessable, SubCategory.TwoHanded,
+            SubCategory.Exotic, SubCategory.Metal
+        };
+
+        private static string SubCategoryText(Func<SubCategory, bool> grants)
+        {
+            return ElvenBranchedSpearProfilePolicy.SubCategoryText(
+                IntendedSubCategories,
+                (SubCategory[])Enum.GetValues(typeof(SubCategory)),
+                SubCategory.None, grants);
+        }
+
+        internal static void SubCategoryTextCoversEverySupportedValue()
+        {
+            Func<SubCategory, bool> policy = value => value == SubCategory.None ||
+                IntendedSubCategories.Contains(value);
+            string intended = SubCategoryText(policy);
+            Assertions.Equal("Melee,Finessable,TwoHanded,Exotic,Metal", intended,
+                "The intended policy must read exactly the intended five.");
+            // An extra classification outside the intended five (R5-F1).
+            string withSimple = SubCategoryText(value => policy(value) ||
+                value == SubCategory.Simple);
+            Assertions.Equal("Melee,Finessable,TwoHanded,Exotic,Metal,Simple",
+                withSimple, "An extra Simple classification must be visible.");
+            string withMonk = SubCategoryText(value => policy(value) ||
+                value == SubCategory.Monk);
+            Assertions.True(withMonk.EndsWith(",Monk", StringComparison.Ordinal),
+                "Any other extra classification must be visible.");
+            // A missing intended classification.
+            Assertions.Equal("Melee,TwoHanded,Exotic,Metal", SubCategoryText(
+                value => policy(value) && value != SubCategory.Finessable),
+                "A removed Finessable must be visible.");
+            // The None wildcard every category grants.
+            Assertions.Equal("Melee,Finessable,TwoHanded,Exotic,Metal," +
+                ElvenBranchedSpearProfilePolicy.WildcardDenied, SubCategoryText(
+                    value => policy(value) && value != SubCategory.None),
+                "A denied None wildcard must be visible.");
+            // As an observation, an extra classification fails validation.
+            SpearProfileVerdict verdict = ElvenBranchedSpearProfilePolicy.Evaluate(
+                With(new SpearProfileObservation("subcategory-policy", intended,
+                    intended, "<not-applicable>", intended, withSimple,
+                    "Melee,TwoHanded,Metal", new[] { "other.mod" }, "read")));
+            Assertions.False(verdict.IsValid,
+                "An extra effective Simple classification passed validation.");
+            Assertions.True(verdict.DescribeFailure().Contains(
+                "actual=Melee,Finessable,TwoHanded,Exotic,Metal,Simple") &&
+                verdict.DescribeFailure().Contains("getterPatches=other.mod"),
+                "The diagnostic must name the extra classification and the patch owner.");
+        }
+
         internal static void HealthyProfilePassesWithoutFindings()
         {
             SpearProfileVerdict verdict = ElvenBranchedSpearProfilePolicy.Evaluate(

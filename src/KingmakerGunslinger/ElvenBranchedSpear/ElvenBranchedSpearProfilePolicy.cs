@@ -191,6 +191,37 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
             return "<unavailable " + exception.GetType().Name + ": " + exception.Message + ">";
         }
 
+        /// <summary>Marker appended when a calculation denies the None wildcard.</summary>
+        internal const string WildcardDenied = "!None";
+
+        /// <summary>
+        /// The sub-categories a calculation grants, as comparable text: the
+        /// intended values it grants in their policy order, then every other
+        /// value it grants in the order given (all supported values), and
+        /// <see cref="WildcardDenied"/> when it denies the <paramref name="none"/>
+        /// wildcard that every category grants. For an intended policy this is
+        /// exactly the intended list, so any missing, extra or wildcard
+        /// difference makes the texts differ.
+        /// </summary>
+        internal static string SubCategoryText<T>(IList<T> intended,
+            IEnumerable<T> supported, T none, Func<T, bool> grants)
+        {
+            if (intended == null) throw new ArgumentNullException("intended");
+            if (supported == null) throw new ArgumentNullException("supported");
+            if (grants == null) throw new ArgumentNullException("grants");
+            EqualityComparer<T> equality = EqualityComparer<T>.Default;
+            var granted = new List<string>();
+            foreach (T value in intended)
+                if (grants(value)) granted.Add(value.ToString());
+            foreach (T value in supported.Distinct())
+            {
+                if (equality.Equals(value, none) || intended.Contains(value)) continue;
+                if (grants(value)) granted.Add(value.ToString());
+            }
+            if (!grants(none)) granted.Add(WildcardDenied);
+            return string.Join(",", granted.ToArray());
+        }
+
         /// <summary>
         /// The owned serialized field and the owned getter are the invariants.
         /// Donor values are comparison context only and never decide a verdict.

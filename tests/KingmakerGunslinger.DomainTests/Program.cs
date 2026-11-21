@@ -921,6 +921,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("elven-branched-spear.foundation-catalog", ElvenBranchedSpearCatalogTests.LockedProfileAndFoundationCatalogAreExact),
             Case("elven-branched-spear.bootstrap-repair.engine-attack-range", SpearBootstrapTooltipRepairTests.EngineAttackRangeFollowsKingmakerContract),
             Case("elven-branched-spear.bootstrap-repair.healthy-profile", SpearBootstrapTooltipRepairTests.HealthyProfilePassesWithoutFindings),
+            Case("elven-branched-spear.bootstrap-repair.subcategory-text-all-values", SpearBootstrapTooltipRepairTests.SubCategoryTextCoversEverySupportedValue),
             Case("elven-branched-spear.bootstrap-repair.owned-field-diagnostics", SpearBootstrapTooltipRepairTests.OwnedFieldFailureNamesPredicateAndValues),
             Case("elven-branched-spear.bootstrap-repair.unpatched-getter-fatal", SpearBootstrapTooltipRepairTests.UnpatchedGetterMismatchIsFatal),
             Case("elven-branched-spear.bootstrap-repair.foreign-patched-getter-fatal", SpearBootstrapTooltipRepairTests.ForeignPatchedGetterMismatchIsFatal),
