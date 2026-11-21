@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using Kingmaker.Blueprints;
@@ -14,6 +15,7 @@ using Kingmaker.Enums.Damage;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.Utility;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.ElvenBranchedSpear;
 using UnityEngine;
@@ -91,6 +93,7 @@ namespace KingmakerGunslinger.Blueprints
             WeaponCategory nativeCategory = nativeType.Category;
 
             var typeAdapter = new SpearWeaponTypeAccess();
+            string nativeProfile = typeAdapter.MechanicalFingerprint(nativeType);
             var itemAdapter = new SpearItemAccess();
             var name = LocalizationService.Create(
                 "KMG.ElvenBranchedSpear.Type.Name", "Elven Branched Spear");
@@ -123,7 +126,7 @@ namespace KingmakerGunslinger.Blueprints
                     BlueprintWeaponType clone = BlueprintCloneService.Clone(nativeType,
                         "KMG_ElvenBranchedSpear_WeaponType");
                     typeAdapter.Configure(clone, category, name, description,
-                        movementAccuracy);
+                        movementAccuracy, nativeType);
                     Assets.ElvenBranchedSpearAssetRuntime.ApplyTo(clone);
                     return clone;
                 });
@@ -214,31 +217,43 @@ namespace KingmakerGunslinger.Blueprints
                     ElvenBranchedSpearProficiencyPenaltyComponent>().Count() != 1)
                 throw new InvalidOperationException(
                     "Movement-opportunity accuracy enchantment is malformed.");
-            Validate(result, typeAccess, typeAdapter, itemAdapter);
+            SpearProfileVerdict profile = Validate(result, typeAccess,
+                typeAdapter, itemAdapter, nativeType);
+            string external = profile.DescribeExternal();
+            if (external.Length != 0)
+                logger.Warning("elven-branched-spear", "profile.external-getter-patch",
+                    external);
             if (!nativeType.Category.Equals(nativeCategory) ||
                 !nativeType.Weight.Equals(nativeWeight) ||
                 !ReferenceEquals(typeAccess.Get(nativeItem), nativeType))
                 throw new InvalidOperationException("Native Longspear donor was mutated.");
+            string nativeProfileAfter = typeAdapter.MechanicalFingerprint(nativeType);
+            if (!string.Equals(nativeProfile, nativeProfileAfter, StringComparison.Ordinal))
+                throw new InvalidOperationException(
+                    "Native Longspear donor profile was mutated: before=" +
+                    nativeProfile + " after=" + nativeProfileAfter + ".");
             logger.Info("elven-branched-spear", "foundation.ready",
                 "Registered one stable category, six foundation items, native selector options, and Elf familiarity integration; selector publication=" +
                 publishSelectors + ".");
             return result;
         }
 
-        internal static void Validate(ElvenBranchedSpearBlueprintSet set,
+        internal static SpearProfileVerdict Validate(
+            ElvenBranchedSpearBlueprintSet set,
             WeaponBlueprintAccess typeAccess, SpearWeaponTypeAccess typeAdapter,
-            SpearItemAccess itemAdapter)
+            SpearItemAccess itemAdapter, BlueprintWeaponType donor)
         {
             if (set == null || set.Entries.Length != 6 ||
                 set.Entries.Select(value => value.Item).Distinct().Count() != 6)
                 throw new InvalidOperationException("Spear foundation identity count is invalid.");
-            typeAdapter.Validate(set.WeaponType);
+            SpearProfileVerdict profile = typeAdapter.Validate(set.WeaponType, donor);
             foreach (ElvenBranchedSpearBlueprintEntry entry in set.Entries)
             {
                 if (!ReferenceEquals(typeAccess.Get(entry.Item), set.WeaponType))
                     throw new InvalidOperationException("A spear item left the shared category family.");
                 itemAdapter.Validate(entry.Item, entry.Spec);
             }
+            return profile;
         }
 
         private static BlueprintFeature CloneFeatureWithComponents(
@@ -341,11 +356,32 @@ namespace KingmakerGunslinger.Blueprints
         private readonly FieldInfo _magicDescription = Require("m_MagicDescriptionText");
         private readonly FieldInfo _weight = Require("m_Weight");
         private readonly FieldInfo _enchantments = Require("m_Enchantments");
+        private readonly FieldInfo _attackType = Require("m_AttackType");
+        private readonly FieldInfo _attackRange = Require("m_AttackRange");
+        private readonly FieldInfo _baseDamage = Require("m_BaseDamage");
+        private readonly FieldInfo _damageType = Require("m_DamageType");
+        private readonly FieldInfo _criticalEdge = Require("m_CriticalRollEdge");
+        private readonly FieldInfo _criticalModifier = Require("m_CriticalModifier");
+        private readonly FieldInfo _fighterGroup = Require("m_FighterGroup");
+        private readonly FieldInfo _isTwoHanded = Require("m_IsTwoHanded");
+        private readonly FieldInfo _isLight = Require("m_IsLight");
+        private readonly FieldInfo _isMonk = Require("m_IsMonk");
+        private readonly FieldInfo _isNatural = Require("m_IsNatural");
+        private readonly FieldInfo _isUnarmed = Require("m_IsUnarmed");
+        private readonly FieldInfo _overrideAttackStat =
+            Require("m_OverrideAttackBonusStat");
 
+        /// <summary>
+        /// Writes the spear's whole fixed mechanical profile onto the owned
+        /// clone. The clone starts from the live native Longspear, which other
+        /// mods may legitimately have changed; nothing mechanical is inherited
+        /// from it and the donor itself is never written.
+        /// </summary>
         internal void Configure(BlueprintWeaponType type, WeaponCategory category,
             Kingmaker.Localization.LocalizedString name,
             Kingmaker.Localization.LocalizedString description,
-            BlueprintWeaponEnchantment movementAccuracy)
+            BlueprintWeaponEnchantment movementAccuracy,
+            BlueprintWeaponType donor)
         {
             type.Category = category;
             _typeName.SetValue(type, name);
@@ -353,24 +389,41 @@ namespace KingmakerGunslinger.Blueprints
             _description.SetValue(type, description);
             _masterworkDescription.SetValue(type, description);
             _magicDescription.SetValue(type, description);
+            _attackType.SetValue(type, AttackType.Melee);
+            _attackRange.SetValue(type, new Feet(
+                ElvenBranchedSpearProfilePolicy.ReachFeet));
+            _baseDamage.SetValue(type, IntendedDamage());
+            _damageType.SetValue(type, SpearItemAccess.PhysicalPiercing(false));
+            _criticalEdge.SetValue(type, ElvenBranchedSpearCatalog.CriticalThreatMinimum);
+            _criticalModifier.SetValue(type, DamageCriticalModifierType.X3);
+            _fighterGroup.SetValue(type, WeaponFighterGroup.Spears);
+            _isTwoHanded.SetValue(type, true);
+            _isLight.SetValue(type, false);
+            _isMonk.SetValue(type, false);
+            _isNatural.SetValue(type, false);
+            _isUnarmed.SetValue(type, false);
+            _overrideAttackStat.SetValue(type, false);
             _weight.SetValue(type, (float)ElvenBranchedSpearCatalog.WeightPounds);
             _enchantments.SetValue(type, new[] { movementAccuracy });
-            Validate(type);
+            Validate(type, donor);
         }
 
-        internal void Validate(BlueprintWeaponType type)
+        /// <summary>
+        /// Checks the owned serialized profile and the live getters. An owned
+        /// field mismatch, or a getter that disagrees with the engine contract
+        /// without another mod patching it, throws one message naming every
+        /// failed predicate. A getter changed by another mod's patch is returned
+        /// in the verdict for a single report; the owned profile stays exact.
+        /// </summary>
+        internal SpearProfileVerdict Validate(BlueprintWeaponType type,
+            BlueprintWeaponType donor)
         {
-            if (!type.Category.Equals(ElvenBranchedSpearCategoryRuntime.Category) ||
-                type.AttackType != AttackType.Melee ||
-                !type.BaseDamage.Equals(new DiceFormula(1, DiceType.D8)) ||
-                type.DamageType.Type != DamageType.Physical ||
-                type.DamageType.Physical.Form != PhysicalDamageForm.Piercing ||
-                type.CriticalRollEdge != 20 ||
-                type.CriticalModifier != DamageCriticalModifierType.X3 ||
-                type.FighterGroup != WeaponFighterGroup.Spears ||
-                !type.IsTwoHanded || type.IsLight || type.IsNatural ||
-                type.AttackRange.Value != 6 || !type.Weight.Equals(10f))
-                throw new InvalidOperationException("Elven Branched Spear type profile is invalid.");
+            if (type == null) throw new ArgumentNullException("type");
+            if (donor == null) throw new ArgumentNullException("donor");
+            SpearProfileVerdict verdict = ElvenBranchedSpearProfilePolicy.Evaluate(
+                Observe(type, donor), OwnHarmonyId());
+            if (!verdict.IsValid)
+                throw new InvalidOperationException(verdict.DescribeFailure());
             BlueprintWeaponEnchantment[] enchantments =
                 (BlueprintWeaponEnchantment[])_enchantments.GetValue(type) ??
                 Array.Empty<BlueprintWeaponEnchantment>();
@@ -393,6 +446,235 @@ namespace KingmakerGunslinger.Blueprints
                     WeaponSubCategory.OneHandedSlashing) ||
                 ElvenBranchedSpearCategoryRuntime.HasSubCategory(WeaponSubCategory.Thrown))
                 throw new InvalidOperationException("Spear subcategory policy is invalid.");
+            return verdict;
+        }
+
+        /// <summary>
+        /// Every serialized mechanical field plus the identity of the shared
+        /// reference-typed values, used to prove the native donor is unchanged.
+        /// </summary>
+        internal string MechanicalFingerprint(BlueprintWeaponType type)
+        {
+            if (type == null) throw new ArgumentNullException("type");
+            object damage = _damageType.GetValue(type);
+            object enchantments = _enchantments.GetValue(type);
+            return string.Join(";", new[] {
+                Category(type.Category),
+                Convert.ToString(_attackType.GetValue(type), CultureInfo.InvariantCulture),
+                SerializedFeetText(SerializedFeet((Feet)_attackRange.GetValue(type))),
+                Dice((DiceFormula)_baseDamage.GetValue(type)),
+                Damage((DamageTypeDescription)damage),
+                Identity(damage),
+                Integer((int)_criticalEdge.GetValue(type)),
+                Convert.ToString(_criticalModifier.GetValue(type), CultureInfo.InvariantCulture),
+                Convert.ToString(_fighterGroup.GetValue(type), CultureInfo.InvariantCulture),
+                Flag((bool)_isTwoHanded.GetValue(type)),
+                Flag((bool)_isLight.GetValue(type)),
+                Flag((bool)_isMonk.GetValue(type)),
+                Flag((bool)_isNatural.GetValue(type)),
+                Flag((bool)_isUnarmed.GetValue(type)),
+                Flag((bool)_overrideAttackStat.GetValue(type)),
+                Weight((float)_weight.GetValue(type)),
+                Identity(enchantments),
+                Identity(_typeName.GetValue(type)),
+                Identity(_description.GetValue(type)) });
+        }
+
+        private static string Identity(object value)
+        {
+            return value == null ? "<null>" : value.GetType().Name + "#" +
+                System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(value)
+                    .ToString("X8", CultureInfo.InvariantCulture);
+        }
+
+        private static DiceFormula IntendedDamage()
+        {
+            return new DiceFormula(ElvenBranchedSpearCatalog.DamageDieCount,
+                (DiceType)ElvenBranchedSpearCatalog.DamageDieSides);
+        }
+
+        private SpearProfileObservation[] Observe(BlueprintWeaponType type,
+            BlueprintWeaponType donor)
+        {
+            var values = new List<SpearProfileObservation>();
+            string category = Category(ElvenBranchedSpearCategoryRuntime.Category);
+            values.Add(new SpearProfileObservation("category", category,
+                Category(type.Category), Category(donor.Category),
+                category, Category(type.Category), Category(donor.Category),
+                null, "field"));
+            values.Add(Getter("attack-type", type, donor, _attackType,
+                AttackType.Melee.ToString(), value => value.ToString(),
+                "AttackType", value => value.AttackType.ToString(), null));
+            values.Add(Getter("attack-range", type, donor, _attackRange,
+                SerializedFeetText(ElvenBranchedSpearProfilePolicy.ReachFeet),
+                value => SerializedFeetText(SerializedFeet((Feet)value)),
+                "AttackRange", value => FeetText(value.AttackRange.Value),
+                field => FeetText(ElvenBranchedSpearProfilePolicy
+                    .EngineAttackRangeFeet(SerializedFeet((Feet)field)))));
+            values.Add(Getter("base-damage", type, donor, _baseDamage,
+                Dice(IntendedDamage()), value => Dice((DiceFormula)value),
+                "BaseDamage", value => Dice(value.BaseDamage), null));
+            values.Add(Getter("damage-type", type, donor, _damageType,
+                Damage(SpearItemAccess.PhysicalPiercing(false)),
+                value => Damage((DamageTypeDescription)value),
+                "DamageType", value => Damage(value.DamageType), null));
+            values.Add(Getter("critical-edge", type, donor, _criticalEdge,
+                Integer(ElvenBranchedSpearCatalog.CriticalThreatMinimum),
+                value => Integer((int)value),
+                "CriticalRollEdge", value => Integer(value.CriticalRollEdge), null));
+            values.Add(Getter("critical-modifier", type, donor, _criticalModifier,
+                DamageCriticalModifierType.X3.ToString(), value => value.ToString(),
+                "CriticalModifier", value => value.CriticalModifier.ToString(), null));
+            values.Add(Getter("fighter-group", type, donor, _fighterGroup,
+                WeaponFighterGroup.Spears.ToString(), value => value.ToString(),
+                "FighterGroup", value => value.FighterGroup.ToString(), null));
+            values.Add(Getter("two-handed", type, donor, _isTwoHanded,
+                Flag(true), value => Flag((bool)value),
+                "IsTwoHanded", value => Flag(value.IsTwoHanded), null));
+            values.Add(Getter("light", type, donor, _isLight,
+                Flag(false), value => Flag((bool)value),
+                "IsLight", value => Flag(value.IsLight), null));
+            values.Add(Getter("monk", type, donor, _isMonk,
+                Flag(false), value => Flag((bool)value),
+                "IsMonk", value => Flag(value.IsMonk), null));
+            values.Add(Getter("natural", type, donor, _isNatural,
+                Flag(false), value => Flag((bool)value),
+                "IsNatural", value => Flag(value.IsNatural), null));
+            values.Add(Getter("unarmed", type, donor, _isUnarmed,
+                Flag(false), value => Flag((bool)value),
+                "IsUnarmed", value => Flag(value.IsUnarmed), null));
+            values.Add(Getter("attack-stat-override", type, donor,
+                _overrideAttackStat, Flag(false), value => Flag((bool)value),
+                "AttackBonusStat", value => value.AttackBonusStat.ToString(),
+                field => (bool)field ? "<override>" :
+                    Kingmaker.EntitySystem.Stats.StatType.Strength.ToString()));
+            values.Add(Getter("weight", type, donor, _weight,
+                Weight(ElvenBranchedSpearCatalog.WeightPounds),
+                value => Weight((float)value),
+                "Weight", value => Weight(value.Weight), null));
+            return values.ToArray();
+        }
+
+        /// <summary>
+        /// Reads one serialized field and its public getter on the owned clone
+        /// and the donor. Getter patch owners are read only when the predicate
+        /// fails, so a healthy startup performs no Harmony queries.
+        /// </summary>
+        private static SpearProfileObservation Getter(string predicate,
+            BlueprintWeaponType type, BlueprintWeaponType donor, FieldInfo field,
+            string expectedField, Func<object, string> fieldText, string property,
+            Func<BlueprintWeaponType, string> getterText,
+            Func<object, string> engineFromField)
+        {
+            object ownedValue = field.GetValue(type);
+            string owned = fieldText(ownedValue);
+            string engineExpected = engineFromField == null ? owned :
+                engineFromField(ownedValue);
+            string engineActual = getterText(type);
+            bool failed = !string.Equals(owned, expectedField, StringComparison.Ordinal) ||
+                !string.Equals(engineExpected, engineActual, StringComparison.Ordinal);
+            string patchInfo = "not-read";
+            string[] owners = null;
+            if (failed)
+                owners = GetterPatchOwners(property, out patchInfo);
+            return new SpearProfileObservation(predicate, expectedField, owned,
+                fieldText(field.GetValue(donor)), engineExpected, engineActual,
+                getterText(donor), owners, patchInfo);
+        }
+
+        private static string[] GetterPatchOwners(string property, out string patchInfo)
+        {
+            PropertyInfo info = typeof(BlueprintWeaponType).GetProperty(property,
+                BindingFlags.Instance | BindingFlags.Public);
+            MethodInfo getter = info == null ? null : info.GetGetMethod();
+            ModContext context;
+            if (getter == null)
+            {
+                patchInfo = "unavailable:no-getter";
+                return new string[0];
+            }
+            if (!ModContext.TryGet(out context) || context.Harmony == null)
+            {
+                patchInfo = "unavailable:no-harmony";
+                return new string[0];
+            }
+            try
+            {
+                Harmony12.Patches patches = context.Harmony.GetPatchInfo(getter);
+                patchInfo = "read";
+                if (patches == null) return new string[0];
+                return patches.Prefixes.Concat(patches.Postfixes)
+                    .Concat(patches.Transpilers)
+                    .Where(value => value != null)
+                    .Select(value => value.owner).ToArray();
+            }
+            catch (Exception exception)
+            {
+                // The installed Harmony12 facade throws for an unpatched
+                // method; record that rather than guessing an owner.
+                patchInfo = "unavailable:" + exception.GetType().Name;
+                return new string[0];
+            }
+        }
+
+        private static string OwnHarmonyId()
+        {
+            ModContext context;
+            return ModContext.TryGet(out context) && context.Harmony != null
+                ? context.Harmony.Id : string.Empty;
+        }
+
+        private static readonly FieldInfo FeetValue = typeof(Feet).GetField(
+            "m_Value", BindingFlags.Instance | BindingFlags.NonPublic) ??
+            throw new MissingFieldException(typeof(Feet).FullName, "m_Value");
+
+        private static float SerializedFeet(Feet value)
+        {
+            return (float)FeetValue.GetValue(value);
+        }
+
+        private static string SerializedFeetText(float feet)
+        {
+            return feet.ToString("R", CultureInfo.InvariantCulture) + "ft";
+        }
+
+        private static string Category(WeaponCategory value)
+        {
+            return ((int)value).ToString("X8", CultureInfo.InvariantCulture) +
+                ":" + value;
+        }
+
+        private static string FeetText(int feet)
+        {
+            return feet.ToString(CultureInfo.InvariantCulture) + "ft";
+        }
+
+        private static string Dice(DiceFormula value)
+        {
+            return value.Rolls.ToString(CultureInfo.InvariantCulture) + "x" +
+                value.Dice;
+        }
+
+        private static string Damage(DamageTypeDescription value)
+        {
+            if (value == null) return "<null>";
+            return value.Type + "/" + (value.Physical == null ? "<null>" :
+                value.Physical.Form + "/" + value.Physical.Material);
+        }
+
+        private static string Integer(int value)
+        {
+            return value.ToString(CultureInfo.InvariantCulture);
+        }
+
+        private static string Flag(bool value)
+        {
+            return value ? "true" : "false";
+        }
+
+        private static string Weight(float value)
+        {
+            return value.ToString("R", CultureInfo.InvariantCulture);
         }
 
         private static FieldInfo Require(string name)
@@ -524,7 +806,7 @@ namespace KingmakerGunslinger.Blueprints
             return "Usable with Weapon Finesse. Grants a +2 bonus on attacks of opportunity triggered by enemy movement.";
         }
 
-        private static DamageTypeDescription PhysicalPiercing(bool coldIron)
+        internal static DamageTypeDescription PhysicalPiercing(bool coldIron)
         {
             return new DamageTypeDescription
             {

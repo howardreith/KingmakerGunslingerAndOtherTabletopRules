@@ -260,6 +260,7 @@
     <Compile Include="Blueprints\UrbanBarbarianBlueprints.cs" />
     <Compile Include="Blueprints\UrbanBarbarianAllocationIcons.cs" />
     <Compile Include="ElvenBranchedSpear\ElvenBranchedSpearCatalog.cs" />
+    <Compile Include="ElvenBranchedSpear\ElvenBranchedSpearProfilePolicy.cs" />
     <Compile Include="ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs" />
     <Compile Include="ElvenBranchedSpear\ElvenBranchedSpearNamedEffects.cs" />
     <Compile Include="ElvenBranchedSpear\ElvenBranchedSpearCategoryRuntime.cs" />
@@ -1035,6 +1036,7 @@
     <Compile Include="Gunsmithing\BatteredFirearmUseDecision.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmOriginComponent.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmOriginRuntime.cs" />
+    <Compile Include="Gunsmithing\BatteredFirearmOriginInspectionPolicy.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmUsePolicy.cs" />
     <Compile Include="Gunsmithing\OriginatingUnitId.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmOwnershipRecord.cs" />

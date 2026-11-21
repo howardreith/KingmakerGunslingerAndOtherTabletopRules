@@ -13,7 +13,10 @@ namespace KingmakerGunslinger.Gunsmithing
             ItemEntityWeapon weapon = item as ItemEntityWeapon;
             if (weapon == null) return false;
 
-            if (!BatteredFirearmOriginRuntime.IsBattered(weapon))
+            // The hook sees every weapon, so it uses the inspection path: a
+            // failed or pending initialization keeps the native price instead
+            // of demanding a token blueprint that was never registered.
+            if (!BatteredFirearmOriginRuntime.IsBatteredForInspection(weapon))
                 return false;
 
             value = BatteredFirearmUsePolicy.FixedExpectedScrapValueGold;
