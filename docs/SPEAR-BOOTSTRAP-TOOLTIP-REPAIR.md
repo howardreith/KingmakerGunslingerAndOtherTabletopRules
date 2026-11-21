@@ -378,8 +378,19 @@ Environment for all sessions:
 Every session verified in-process loader and product identity, restored the
 game's registry settings, and confirmed the owner's saves and installation
 unchanged (`registryRestored`, `ownerSavesUnchanged`, `ownerInstallUnchanged`
-all true). No owner save or normal-play installation was touched. No runtime
-lease was opened.
+all true). No owner save or normal-play installation was touched.
+
+Shared runtime leases:
+- No lease was opened by the sessions before round 7 (R-base, S, B, P, L,
+  O, S5, C, R5, X6, C6, R6 and S6), which used the earlier runner with
+  only its private loader-compat lock.
+- From round 7 every session holds the lab's shared runtime lease for its
+  whole life. The round-7 runner was used for I7, P7, X7 and R7: leases
+  `runtime-20261121T230213Z-ea20f41f…`, `runtime-20261121T230443Z-94c386c4…`,
+  `runtime-20261121T230845Z-795b2bba…` and `runtime-20261121T231156Z-9c43c85a…`,
+  each `Completed` with the shared lock free.
+- The round-8 runner (journaled transaction) was used for the round-8
+  sessions below.
 
 | Session (`runtime-evidence/loader-compat/`) | Package | Result |
 |---|---|---|

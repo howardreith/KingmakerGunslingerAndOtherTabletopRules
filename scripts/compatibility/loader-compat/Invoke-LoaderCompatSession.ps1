@@ -65,7 +65,8 @@ if ($Report) {
         Write-Host "READ-ONLY REPORT $summaryPath sha256=$(Get-LcSha256 $summaryPath)"
         $head = [ordered]@{}
         foreach ($name in @('sessionId', 'session', 'loaderProfile', 'candidateZip', 'candidateZipSha256', 'git', 'candidateVersion', 'status',
-                'ownerSaveFiles', 'registryRestored', 'ownerSavesUnchanged', 'ownerInstallUnchanged', 'ownership', 'runtimeLease', 'stagedMods')) {
+                'ownerSaveFiles', 'registryRestored', 'ownerSavesUnchanged', 'ownerInstallUnchanged', 'ownerIntegrity', 'ownership', 'runtimeLease',
+                'failure', 'integrityFailures', 'stagedMods')) {
             $head[$name] = Get-LcReportValue $summaryData $name
         }
         # The session's shared runtime lease as it stands now: its journal status and whether the shared lock is free.
@@ -76,6 +77,7 @@ if ($Report) {
             $sharedLock = Join-Path $script:LcStateRoot 'compatibility.lock'
             $head['runtimeLeaseNow'] = [ordered]@{ status = (Get-LcReportValue $leaseState 'status'); recoveryRequired = (Get-LcReportValue $leaseState 'recoveryRequired')
                 purpose = (Get-LcReportValue $leaseState 'purpose'); reason = (Get-LcReportValue $leaseState 'reason')
+                integrity = (Get-LcReportValue $leaseState 'integrity')
                 sharedLockHeldBy = $(if (Test-Path -LiteralPath $sharedLock) { (Get-Content -LiteralPath $sharedLock -Raw).Trim() } else { '<free>' }) }
         }
         Write-Host ($head | ConvertTo-Json -Depth 6 -Compress)
@@ -147,27 +149,26 @@ $sessionId = [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ') + '-' + $LoaderProf
 $evidence = Join-Path $script:LcEvidenceRoot $sessionId
 $profileDir = Join-Path $evidence 'profile'
 
-Assert-LcPreflight
-# The shared runtime ownership for the whole session (compatibility.lock plus its lease journal).
-$scope = Enter-LcRuntimeOwnership $sessionId
-try { Enter-LcLock $sessionId }
-catch { Complete-LcOwnedLease $scope.Lease 'Loader-compat session did not start: the loader-compat lock is held.'; throw }
-New-Item -ItemType Directory -Force -Path $evidence, (Join-Path $profileDir 'Saved Games') | Out-Null
+# Everything checkable is checked before anything is acquired.
+$candidateSha = Assert-LcSessionInputs $CandidateZip $HarnessDir
 $summary = [ordered]@{ sessionId = $sessionId; session = $session.name; loaderProfile = $LoaderProfile
-    candidateZip = $CandidateZip; candidateZipSha256 = Get-LcSha256 $CandidateZip; gameCopy = $copyRoot
-    git = (& git -C (Split-Path (Split-Path (Split-Path $PSScriptRoot))) rev-parse HEAD); launches = @(); status = 'started'
-    runtimeLease = $scope.Lease.RunId }
-$journal = [ordered]@{ sessionId = $sessionId; registryBackup = $null; leaseRunId = $scope.Lease.RunId; leaseStatePath = $scope.Lease.StatePath }
-$savesBefore = $null; $installBefore = $null
+    candidateZip = $CandidateZip; candidateZipSha256 = $candidateSha; gameCopy = $copyRoot
+    git = (& git -C (Split-Path (Split-Path (Split-Path $PSScriptRoot))) rev-parse HEAD); launches = @(); status = 'started' }
+Assert-LcPreflight
+# One journaled transaction for the whole session: the shared runtime lease (compatibility.lock) and the private
+# loader-compat lock. From here on every fallible step is inside the try, whose finally completes or retains it.
+$transaction = Enter-LcSessionTransaction $sessionId
+$scope = $transaction.Scope
+$journal = $transaction.Journal
+$summary.runtimeLease = $scope.Lease.RunId
 try {
-    $savesBefore = Get-LcOwnerSavesManifest
-    $installBefore = Get-LcOwnerInstallManifest
-    $summary.ownerSaveFiles = $savesBefore.Count
-    Write-LcJson $script:LcJournal $journal
+    New-Item -ItemType Directory -Force -Path $evidence, (Join-Path $profileDir 'Saved Games') | Out-Null
+    $intake = Save-LcIntake $journal
+    $summary.ownerSaveFiles = $intake.savesCount
     $registryBackup = Join-Path $evidence 'game-settings.reg'
     Backup-LcRegistry $registryBackup
     $journal.registryBackup = $registryBackup
-    Write-LcJson $script:LcJournal $journal
+    Save-LcJournal $journal
 
     Initialize-LcGameCopy $paths
     $summary.loaderInstall = Install-LcLoaderProfile $paths $LoaderProfile
@@ -355,27 +356,31 @@ catch {
 }
 finally {
     $integrity = @()
-    # Game settings are restored, and shared ownership released, only once no Kingmaker process remains;
-    # otherwise the journal and a RecoveryRequired lease are kept for -RecoverOnly.
+    # At a safe boundary only (no Kingmaker process, no sibling or foreign lock): restore game settings once,
+    # compare the owner's files with the intake while still owning the host, then complete and release. Otherwise
+    # the journal, both locks and a RecoveryRequired lease are kept for -RecoverOnly.
     try {
         $ownership = Complete-LcSessionOwnership $journal $scope { param($Path) Restore-LcRegistry $Path }
-        $summary.registryRestored = ($ownership.Outcome -eq 'restored')
         $summary.ownership = $ownership.Outcome
         if ($ownership.Outcome -ne 'restored') { $integrity += $ownership.Reason }
-    } catch { $summary.registryRestored = $false; $integrity += "ownership completion failed: $($_.Exception.Message)" }
-    if ($null -ne $savesBefore) {
-        $diff = Compare-LcManifest $savesBefore (Get-LcOwnerSavesManifest)
-        $summary.ownerSavesUnchanged = ($diff.Count -eq 0)
-        if ($diff.Count) { $summary.ownerSaveChanges = $diff; $integrity += 'owner saves changed' }
-    }
-    if ($null -ne $installBefore) {
-        $diff = Compare-LcManifest $installBefore (Get-LcOwnerInstallManifest)
-        $summary.ownerInstallUnchanged = ($diff.Count -eq 0)
-        if ($diff.Count) { $summary.ownerInstallChanges = $diff; $integrity += 'owner installation changed' }
+    } catch { $summary.ownership = 'teardown-interrupted'; $integrity += "ownership completion failed (journal kept for -RecoverOnly): $($_.Exception.Message)" }
+    $summary.registryRestored = [bool]$journal.registryRestored
+    $check = $journal.integrity
+    if ($null -eq $check) {
+        $summary.ownerIntegrity = 'not-verified'
+        $integrity += 'owner-file integrity was not verified because ownership is retained for -RecoverOnly'
+    } else {
+        $summary.ownerIntegrity = $check.status
+        if ($check.status -eq 'unresolved') { $integrity += "owner-file integrity unresolved: $($check.reason)" }
+        else {
+            $summary.ownerSavesUnchanged = $check.ownerSavesUnchanged
+            $summary.ownerInstallUnchanged = $check.ownerInstallUnchanged
+            if (-not $check.ownerSavesUnchanged) { $summary.ownerSaveChanges = $check.ownerSaveChanges; $integrity += 'owner saves changed' }
+            if (-not $check.ownerInstallUnchanged) { $summary.ownerInstallChanges = $check.ownerInstallChanges; $integrity += 'owner installation changed' }
+        }
     }
     if ($integrity.Count) { $summary.status = 'integrity-failed'; $summary.integrityFailures = $integrity }
-    Write-LcJson (Join-Path $evidence 'session-summary.json') $summary
-    if (-not (Test-Path -LiteralPath $script:LcJournal)) { Exit-LcLock }
+    if (Test-Path -LiteralPath $evidence) { Write-LcJson (Join-Path $evidence 'session-summary.json') $summary }
     Write-Host "Session $sessionId : $($summary.status) $($integrity -join '; ')"
     Write-Host "Evidence: $evidence"
 }
