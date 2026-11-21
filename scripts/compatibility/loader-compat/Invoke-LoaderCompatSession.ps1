@@ -190,9 +190,9 @@ try {
                     }
                 }
                 if ($launch.PSObject.Properties['expectStepsNotRun']) {
-                    foreach ($label in @($launch.expectStepsNotRun)) {
-                        if (@($harnessResult.steps | Where-Object { ([string]$_.step).Contains("[$label]") }).Count -ne 0) {
-                            $record.problems += "step [$label] ran after the expected stop"
+                    foreach ($stepLabel in @($launch.expectStepsNotRun)) {
+                        if (@($harnessResult.steps | Where-Object { ([string]$_.step).Contains("[$stepLabel]") }).Count -ne 0) {
+                            $record.problems += "step [$stepLabel] ran after the expected stop"
                         }
                     }
                 }
