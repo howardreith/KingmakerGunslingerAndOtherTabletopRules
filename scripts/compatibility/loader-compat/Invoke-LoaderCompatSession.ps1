@@ -65,8 +65,18 @@ if ($Report) {
         Write-Host "READ-ONLY REPORT $summaryPath sha256=$(Get-LcSha256 $summaryPath)"
         $head = [ordered]@{}
         foreach ($name in @('sessionId', 'session', 'loaderProfile', 'candidateZip', 'candidateZipSha256', 'git', 'candidateVersion', 'status',
-                'ownerSaveFiles', 'registryRestored', 'ownerSavesUnchanged', 'ownerInstallUnchanged', 'stagedMods')) {
+                'ownerSaveFiles', 'registryRestored', 'ownerSavesUnchanged', 'ownerInstallUnchanged', 'ownership', 'runtimeLease', 'stagedMods')) {
             $head[$name] = Get-LcReportValue $summaryData $name
+        }
+        # The session's shared runtime lease as it stands now: its journal status and whether the shared lock is free.
+        $leaseId = Get-LcReportValue $summaryData 'runtimeLease'
+        if ($leaseId) {
+            $leasePath = Join-Path (Join-Path $script:LcStateRoot $leaseId) 'runtime-lease.json'
+            $leaseState = if (Test-Path -LiteralPath $leasePath) { Get-Content -LiteralPath $leasePath -Raw | ConvertFrom-Json } else { $null }
+            $sharedLock = Join-Path $script:LcStateRoot 'compatibility.lock'
+            $head['runtimeLeaseNow'] = [ordered]@{ status = (Get-LcReportValue $leaseState 'status'); recoveryRequired = (Get-LcReportValue $leaseState 'recoveryRequired')
+                purpose = (Get-LcReportValue $leaseState 'purpose'); reason = (Get-LcReportValue $leaseState 'reason')
+                sharedLockHeldBy = $(if (Test-Path -LiteralPath $sharedLock) { (Get-Content -LiteralPath $sharedLock -Raw).Trim() } else { '<free>' }) }
         }
         Write-Host ($head | ConvertTo-Json -Depth 6 -Compress)
         foreach ($launch in @($summaryData.launches)) {
