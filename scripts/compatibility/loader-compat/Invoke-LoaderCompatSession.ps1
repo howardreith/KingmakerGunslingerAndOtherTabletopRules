@@ -96,6 +96,11 @@ if ($Report) {
                     bootstrap = (Get-LcReportValue $value 'bootstrap') }
             }
             elseif ($property.Name -match '^kmgInitialization_') { $picked[$property.Name] = $value }
+            elseif ($property.Name -match '^kmgItemDamage_') {
+                $damage = [ordered]@{}
+                foreach ($entry in $value.PSObject.Properties) { if ($entry.Name -ne 'conditions') { $damage[$entry.Name] = $entry.Value } }
+                $picked[$property.Name] = $damage
+            }
             elseif ($property.Name -match '^kmgWeaponTypeProfile_') {
                 $owned = Get-LcReportValue $value 'ownedSpear'
                 $picked[$property.Name] = [ordered]@{ ownedSpearPresent = (Get-LcReportValue $value 'ownedSpearPresent')
