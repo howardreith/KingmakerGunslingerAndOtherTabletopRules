@@ -1,0 +1,95 @@
+{
+  "name": "spear-bootstrap-observer-selection",
+  "description": "Spear startup repair (PR #195), round-3 harness controls. Launch 1: a harness postfix makes the live native Longspear's AttackRange getter return 6.25 ft (by its asset guid); the product must still start (it validates the owned spear, not the donor's effective reach), and the native profile observer must record the Longspear getter as 6.25 at full precision while recording the owned spear's ordinary effective reach as 6. Launches 2-4 exercise the sorcerer probe's ownership of the incoming party selection: an empty selection set through Kingmaker's own selection manager must still be empty after a full Fire Beetle summon and cleanup (no main-character fallback); a single main-character selection must be exactly that afterwards; and with an empty selection plus pre-existing targeting the probe must refuse before changing anything, leaving the selection empty.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "fractional-donor-observer",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "attackRangeByGuid": "fa2dd17cbde7d3f4aa918d467c30516e=6.25",
+        "captureWeaponTypes": "fa2dd17cbde7d3f4aa918d467c30516e,36d0551b8a28587438a47fcbbf53c083"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]",
+          "[elven-branched-spear][foundation.ready]"
+        ],
+        "absent": [
+          "[initialize.failed]",
+          "Elven Branched Spear type profile is invalid"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "kmgInitialization", "label": "observer", "expect": "completed", "continueOnFailure": true },
+          {
+            "op": "kmgWeaponTypeProfile", "label": "observer", "match": "owned",
+            "type": "fa2dd17cbde7d3f4aa918d467c30516e,36d0551b8a28587438a47fcbbf53c083",
+            "invariants": { "longspearGetter:AttackRange": "6.25", "ownedGetter:AttackRange": "6", "rangeOverridesAtLeast": "1" },
+            "continueOnFailure": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "empty-selection-preserved",
+      "gameArguments": [ "locale=enGB" ],
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "kmgSetSelection", "label": "empty", "match": "empty" },
+          { "op": "kmgSelectionState", "label": "before-empty", "match": "empty" },
+          {
+            "op": "kmgSorcererSummon", "label": "from-empty", "expect": "expanded", "contains": [ "Beetle, Fire" ],
+            "invariants": { "expectAbility": "c7ef177436854efca42ac4ae0a068610", "expectUnit": "714b04102eae4cd2be200a8f09f04bc3" },
+            "timeoutSeconds": 180, "continueOnFailure": true
+          },
+          { "op": "kmgSelectionState", "label": "after-empty", "match": "empty", "continueOnFailure": true },
+          { "op": "kmgSorcererResidue", "label": "after-empty", "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "main-selection-preserved",
+      "gameArguments": [ "locale=enGB" ],
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "kmgSetSelection", "label": "main", "match": "main" },
+          { "op": "kmgSelectionState", "label": "before-main", "match": "main" },
+          {
+            "op": "kmgSorcererSummon", "label": "from-main", "expect": "expanded", "contains": [ "Beetle, Fire" ],
+            "invariants": { "expectAbility": "c7ef177436854efca42ac4ae0a068610", "expectUnit": "714b04102eae4cd2be200a8f09f04bc3" },
+            "timeoutSeconds": 180, "continueOnFailure": true
+          },
+          { "op": "kmgSelectionState", "label": "after-main", "match": "main", "continueOnFailure": true },
+          { "op": "kmgSorcererResidue", "label": "after-main", "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "empty-selection-refusal",
+      "gameArguments": [ "locale=enGB" ],
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "kmgSetSelection", "label": "empty", "match": "empty" },
+          { "op": "kmgSetTargeting", "label": "pre-existing", "match": "8fd74eddd9b6c224693d9ab241f25e84" },
+          {
+            "op": "kmgSorcererSummon", "label": "refused", "expect": "expanded",
+            "invariants": { "expectAbility": "c7ef177436854efca42ac4ae0a068610", "expectUnit": "714b04102eae4cd2be200a8f09f04bc3" },
+            "timeoutSeconds": 60, "expectFailure": "the UI is not idle before the probe"
+          },
+          { "op": "kmgSelectionState", "label": "after-refusal", "match": "empty" },
+          { "op": "kmgTargetingState", "label": "still-pre-existing", "match": "SummonMonsterISingle", "type": "drop" },
+          { "op": "kmgSorcererResidue", "label": "after-refusal" }
+        ]
+      }
+    }
+  ]
+}

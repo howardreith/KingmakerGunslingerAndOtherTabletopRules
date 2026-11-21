@@ -415,7 +415,9 @@ namespace KmgLoaderCompatHarness
                 try
                 {
                     object value = typeof(BlueprintWeaponType).GetProperty(name).GetValue(type, null);
-                    result[name] = value is Feet feet ? feet.Value.ToString(CultureInfo.InvariantCulture) : FieldText(value);
+                    // Full precision: Feet.Value truncates (a 6.25 ft effective reach would read 6), so the observer
+                    // reads the private float through the same reader the serialized fields use.
+                    result[name] = FieldText(value);
                 }
                 catch (Exception exception) { result[name] = "<throws " + (exception.InnerException ?? exception).GetType().Name + ">"; }
             }
@@ -1001,6 +1003,69 @@ namespace KmgLoaderCompatHarness
     }
 
     /// <summary>
+    /// The desktop party selection (SelectionManager.SelectedUnits) and the group's current character: fixture setup
+    /// (kmgSetSelection), observation (kmgSelectionState) and the exact restoration the sorcerer probe uses.
+    /// </summary>
+    internal static class SelectionFixture
+    {
+        public static JObject Describe(UnitEntityData[] units, UnitEntityData current)
+        {
+            return new JObject
+            {
+                ["count"] = units.Length,
+                ["units"] = new JArray(units.Select(u => (object)Name(u)).ToArray()),
+                ["current"] = current == null ? "<none>" : Name(current)
+            };
+        }
+
+        public static JObject Current()
+        {
+            SelectionManager manager = SelectionManager.Instance ?? throw new InvalidOperationException("Kingmaker's selection manager is unavailable");
+            return Describe(manager.SelectedUnits.ToArray(), Kingmaker.UI.Group.GroupController.Instance?.GetCurrentCharacter());
+        }
+
+        /// <summary>"empty": unselect every selected unit through the native manager; "main": select the main character alone.</summary>
+        public static JObject Set(string mode)
+        {
+            SelectionManager manager = SelectionManager.Instance ?? throw new InvalidOperationException("Kingmaker's selection manager is unavailable");
+            if (mode == "empty") foreach (UnitEntityData unit in manager.SelectedUnits.ToArray()) manager.UnselectUnit(unit);
+            else if (mode == "main") manager.SelectUnit(Game.Instance.Player.MainCharacter.Value.View, true, true, false);
+            else throw new ArgumentException("kmgSetSelection takes empty or main, not " + mode);
+            return Current();
+        }
+
+        /// <summary>Puts back exactly the captured selection (any size, empty included) and current character.</summary>
+        public static void Restore(UnitEntityData[] selection, UnitEntityData current)
+        {
+            SelectionManager manager = SelectionManager.Instance ?? throw new InvalidOperationException("Kingmaker's selection manager is unavailable");
+            Kingmaker.UI.Group.GroupController group = Kingmaker.UI.Group.GroupController.Instance;
+            if (group != null && current != null && current.IsInState && !ReferenceEquals(group.GetCurrentCharacter(), current)) group.SelectUnit(current);
+            if (selection.Length > 0) manager.MultiSelect(selection.Select(u => u.View).ToArray(), false);
+            else foreach (UnitEntityData unit in manager.SelectedUnits.ToArray()) manager.UnselectUnit(unit);
+        }
+
+        /// <summary>Null when the selection holds exactly the expected units (as a set, by reference) and the current character matches.</summary>
+        public static string Mismatch(UnitEntityData[] expected, UnitEntityData expectedCurrent, UnitEntityData[] actual, UnitEntityData actualCurrent)
+        {
+            var problems = new List<string>();
+            UnitEntityData[] missing = expected.Where(u => !actual.Any(a => ReferenceEquals(a, u))).ToArray();
+            UnitEntityData[] extra = actual.Where(a => !expected.Any(u => ReferenceEquals(a, u))).ToArray();
+            if (missing.Length > 0 || extra.Length > 0 || expected.Length != actual.Length)
+                problems.Add("selected " + actual.Length + " [" + string.Join(",", actual.Select(Name).ToArray()) + "], expected " + expected.Length +
+                    " [" + string.Join(",", expected.Select(Name).ToArray()) + "]");
+            if (!ReferenceEquals(expectedCurrent, actualCurrent))
+                problems.Add("current character " + (actualCurrent == null ? "<none>" : Name(actualCurrent)) + ", expected " +
+                    (expectedCurrent == null ? "<none>" : Name(expectedCurrent)));
+            return problems.Count == 0 ? null : string.Join("; ", problems.ToArray());
+        }
+
+        private static string Name(UnitEntityData unit)
+        {
+            return unit == null ? "<null>" : (unit.Blueprint?.name ?? "<no blueprint>") + "#" + unit.UniqueId;
+        }
+    }
+
+    /// <summary>
     /// kmgSorcererSummon, an owned probe. In the loaded save a fresh disposable character takes Sorcerer level 1 through
     /// the native level-up controller in character-generation mode (the native class path) and learns Summon Monster I
     /// through the controller's own spell selection. It joins the party and is selected the way a portrait click
@@ -1034,7 +1099,10 @@ namespace KmgLoaderCompatHarness
         private bool addedToParty;
         private bool pauseChanged;
         private bool pausedBefore;
-        private UnitEntityData originalSelection;
+        // The incoming party selection (any size, including empty) and the group's current character, captured before
+        // the probe changes anything; Release restores exactly these and verifies them.
+        private UnitEntityData[] incomingSelection;
+        private UnitEntityData incomingCurrent;
         private BlueprintAbility summonMonsterOne;
         private ActionBarSpellsGroup subGroup;
         private AbilityData sourceSpell;
@@ -1097,6 +1165,14 @@ namespace KmgLoaderCompatHarness
             };
             Record["publishedExpandedParent"] = PublishedExpandedParent(summonMonsterOne);
             Record["partyBefore"] = Game.Instance.Player.PartyCharacters.Count;
+            // The incoming selection, captured before anything else so even a refusal is checked against it.
+            SelectionManager manager = SelectionManager.Instance;
+            if (manager == null) return "Kingmaker's selection manager is unavailable; nothing was changed";
+            incomingSelection = manager.SelectedUnits.ToArray();
+            incomingCurrent = Kingmaker.UI.Group.GroupController.Instance?.GetCurrentCharacter();
+            Record["incomingSelection"] = SelectionFixture.Describe(incomingSelection, incomingCurrent);
+            if (incomingSelection.Any(u => u == null || !u.IsInState || u.View == null))
+                return "the incoming selection holds a unit without a live view, which cannot be restored natively; nothing was changed";
             // Precondition: an idle UI. A probe that inherits active targeting or an open action-bar group refuses
             // before it changes anything, so the fixture's state stays exactly as it was.
             string incomingTargeting = Game.Instance.SelectedAbilityHandler?.Ability?.Blueprint?.name;
@@ -1106,7 +1182,6 @@ namespace KmgLoaderCompatHarness
             if (incomingTargeting != null || openGroups.Length > 0)
                 return "the UI is not idle before the probe (targeting " + (incomingTargeting ?? "none") + ", open groups " +
                     (openGroups.Length == 0 ? "none" : string.Join(",", openGroups)) + "); nothing was changed";
-            originalSelection = SelectionManager.Instance?.GetSingleSelectedUnit();
             pausedBefore = Game.Instance.IsPaused;
             clone = UnityEngine.Object.Instantiate(BlueprintRoot.Instance.DefaultPlayerCharacter);
             clone.name = "KmgLoaderCompat_NewSorcerer";
@@ -1459,6 +1534,14 @@ namespace KmgLoaderCompatHarness
                     ActionBarGroupElement spells = SpellGroup();
                     if (openedSpellGroup && spells != null && spells.ToggleState) spells.OnClick();
                 }),
+                new KeyValuePair<string, Action>("selection", () =>
+                {
+                    // Before the caster goes, so destroying a selected unit cannot trigger the game's own reselection.
+                    // Restores the incoming selection exactly, empty and multi-unit included; never adds a unit that
+                    // was not selected.
+                    if (!selectionChanged || incomingSelection == null) return;
+                    SelectionFixture.Restore(incomingSelection, incomingCurrent);
+                }),
                 new KeyValuePair<string, Action>("summons", () =>
                 {
                     foreach (UnitEntityData unit in caster == null ? new UnitEntityData[0] : Summons()) unit.Destroy();
@@ -1477,12 +1560,6 @@ namespace KmgLoaderCompatHarness
                     if (caster.IsInState) caster.Destroy(); else caster.Dispose();
                     Game.Instance.EntityDestroyer.Tick();
                 }),
-                new KeyValuePair<string, Action>("selection", () =>
-                {
-                    if (!selectionChanged) return;
-                    UnitEntityData back = originalSelection ?? Game.Instance.Player.MainCharacter.Value;
-                    if (back != null && back.View != null) SelectionManager.Instance.SelectUnit(back.View, true, true, false);
-                }),
                 new KeyValuePair<string, Action>("pause", () => { if (pauseChanged) Game.Instance.IsPaused = pausedBefore; }),
                 new KeyValuePair<string, Action>("blueprint", () => { if (clone != null) UnityEngine.Object.Destroy(clone); }),
                 new KeyValuePair<string, Action>("verify", () =>
@@ -1490,6 +1567,16 @@ namespace KmgLoaderCompatHarness
                     if (Game.Instance.State.Units.Any(u => u != null && u.Blueprint != null && u.Blueprint.name == "KmgLoaderCompat_NewSorcerer" && u.IsInState))
                         throw new InvalidOperationException("the new sorcerer is still in the area");
                     if (Game.Instance.Player.PartyCharacters.Any(r => r.Value == caster)) throw new InvalidOperationException("the new sorcerer is still in the party");
+                    // Whatever path ran (success, failure, refusal, timeout), the selection must be the incoming one.
+                    if (incomingSelection != null)
+                    {
+                        UnitEntityData[] selectedNow = SelectionManager.Instance.SelectedUnits.ToArray();
+                        UnitEntityData currentNow = Kingmaker.UI.Group.GroupController.Instance?.GetCurrentCharacter();
+                        Record["outgoingSelection"] = SelectionFixture.Describe(selectedNow, currentNow);
+                        string mismatch = SelectionFixture.Mismatch(incomingSelection, incomingCurrent, selectedNow, currentNow);
+                        if (mismatch != null) throw new InvalidOperationException("the selection is not back to its incoming state: " + mismatch);
+                    }
+
                     // The precondition was an idle UI (or the probe refused before acquiring anything): it must be idle again.
                     if (Record["incomingUi"] != null && (Record["incomingUi"]["targeting"].Type == JTokenType.String &&
                         !string.IsNullOrEmpty((string)Record["incomingUi"]["targeting"]))) return;

@@ -531,6 +531,16 @@ namespace KmgLoaderCompatHarness
                     };
                     foreach (var pair in step.Invariants ?? new System.Collections.Generic.Dictionary<string, string>())
                     {
+                        // "longspearGetter:Name" / "ownedGetter:Name": the observer's recorded effective value, exact text.
+                        if (pair.Key.StartsWith("longspearGetter:", StringComparison.Ordinal) || pair.Key.StartsWith("ownedGetter:", StringComparison.Ordinal))
+                        {
+                            string getter = pair.Key.Substring(pair.Key.IndexOf(':') + 1);
+                            JToken getters = pair.Key.StartsWith("longspear", StringComparison.Ordinal) ? profile["nativeLongspear"]?["getters"] : profile["ownedSpear"]?["getters"];
+                            string recorded = getters?[getter] == null ? "<absent>" : (string)getters[getter];
+                            if (recorded != pair.Value) problem = (problem == null ? "" : problem + "; ") + pair.Key + " recorded " + recorded + ", expected " + pair.Value;
+                            continue;
+                        }
+
                         if (!counts.TryGetValue(pair.Key, out int observed)) { problem = (problem == null ? "" : problem + "; ") + "unknown invariant " + pair.Key; continue; }
                         int wanted = int.Parse(pair.Value, System.Globalization.CultureInfo.InvariantCulture);
                         bool held = pair.Key.EndsWith("AtLeast", StringComparison.Ordinal) ? observed >= wanted : observed == wanted;
@@ -597,6 +607,24 @@ namespace KmgLoaderCompatHarness
                     result["kmgTargetingState_" + (step.Label ?? stepIndex.ToString())] = held;
                     if (step.Type == "drop") game.SelectedAbilityHandler?.DropAbility();
                     return held == step.Match ? StepStatus.Done : Fail("the targeting handler holds " + held + ", expected " + step.Match);
+                }
+
+                case "kmgSetSelection":
+                    // Fixture setup for the sorcerer probe's selection ownership: "match" empty | main.
+                    result["kmgSetSelection_" + (step.Label ?? stepIndex.ToString())] = SelectionFixture.Set(step.Match);
+                    return StepStatus.Done;
+
+                case "kmgSelectionState":
+                {
+                    // "match" empty: no unit selected; main: the main character alone. Also records the current character.
+                    JObject selection = SelectionFixture.Current();
+                    result["kmgSelectionState_" + (step.Label ?? stepIndex.ToString())] = selection;
+                    var units = (JArray)selection["units"];
+                    var main = game.Player.MainCharacter.Value;
+                    string mainName = (main.Blueprint?.name ?? "<no blueprint>") + "#" + main.UniqueId;
+                    bool held = step.Match == "empty" ? units.Count == 0 :
+                        step.Match == "main" ? units.Count == 1 && (string)units[0] == mainName : false;
+                    return held ? StepStatus.Done : Fail("the selection is " + selection.ToString(Newtonsoft.Json.Formatting.None) + ", expected " + step.Match);
                 }
 
                 case "kmgSpearSelectorState":
