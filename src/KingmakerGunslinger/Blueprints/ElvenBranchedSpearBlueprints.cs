@@ -196,18 +196,14 @@ namespace KingmakerGunslinger.Blueprints
                 .Select(guid => BlueprintLibraryLookup.RequireExact<
                     BlueprintParametrizedFeature>(library, guid,
                         "native chosen-weapon selector")).ToArray();
-            ElvenBranchedSpearSelectorPublication publication =
-                ElvenBranchedSpearSelectorPublication.Publish(ewpSelection, ewp,
-                    BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
-                        NativeElvenCurveBladeProficiencyGuid,
-                        "native Elven Curve Blade proficiency ordering anchor"),
-                    finesseSelection, finesseTraining, familiarity, category,
-                    parameterSelectors, publishSelectors);
+            BlueprintFeature ewpOrderingAnchor = BlueprintLibraryLookup
+                .RequireExact<BlueprintFeature>(library,
+                    NativeElvenCurveBladeProficiencyGuid,
+                    "native Elven Curve Blade proficiency ordering anchor");
 
-            var result = new ElvenBranchedSpearBlueprintSet(weaponType,
-                entries.ToArray(), ewp, finesseTraining, publication,
-                ewpUsesCategoryIcon, finesseUsesCategoryIcon,
-                ewp.Icon, finesseTraining.Icon);
+            // Every fallible foundation check runs before any native selector,
+            // familiarity or selector-runtime state is touched, so a failure
+            // here leaves only registry-owned identities for the rollback.
             if (movementAccuracy.EnchantmentCost != 0 ||
                 movementAccuracy.ComponentsArray == null ||
                 movementAccuracy.ComponentsArray.Length != 2 ||
@@ -217,12 +213,8 @@ namespace KingmakerGunslinger.Blueprints
                     ElvenBranchedSpearProficiencyPenaltyComponent>().Count() != 1)
                 throw new InvalidOperationException(
                     "Movement-opportunity accuracy enchantment is malformed.");
-            SpearProfileVerdict profile = Validate(result, typeAccess,
+            ValidateFoundation(weaponType, entries.ToArray(), typeAccess,
                 typeAdapter, itemAdapter, nativeType);
-            string external = profile.DescribeExternal();
-            if (external.Length != 0)
-                logger.Warning("elven-branched-spear", "profile.external-getter-patch",
-                    external);
             if (!nativeType.Category.Equals(nativeCategory) ||
                 !nativeType.Weight.Equals(nativeWeight) ||
                 !ReferenceEquals(typeAccess.Get(nativeItem), nativeType))
@@ -232,28 +224,38 @@ namespace KingmakerGunslinger.Blueprints
                 throw new InvalidOperationException(
                     "Native Longspear donor profile was mutated: before=" +
                     nativeProfile + " after=" + nativeProfileAfter + ".");
+
+            // Native selector publication is deferred until the named spears
+            // have also registered (AttachNamed). Publish rolls itself back if
+            // it fails, and the bootstrap takes the handle immediately after.
+            var result = new ElvenBranchedSpearBlueprintSet(weaponType,
+                entries.ToArray(), ewp, finesseTraining,
+                () => ElvenBranchedSpearSelectorPublication.Publish(ewpSelection,
+                    ewp, ewpOrderingAnchor, finesseSelection, finesseTraining,
+                    familiarity, category, parameterSelectors, publishSelectors),
+                ewpUsesCategoryIcon, finesseUsesCategoryIcon,
+                ewp.Icon, finesseTraining.Icon);
             logger.Info("elven-branched-spear", "foundation.ready",
-                "Registered one stable category, six foundation items, native selector options, and Elf familiarity integration; selector publication=" +
+                "Registered and validated one stable category and six foundation items; native selector options and Elf familiarity integration publish after named-spear registration; selector publication=" +
                 publishSelectors + ".");
             return result;
         }
 
-        internal static SpearProfileVerdict Validate(
-            ElvenBranchedSpearBlueprintSet set,
+        internal static void ValidateFoundation(BlueprintWeaponType weaponType,
+            ElvenBranchedSpearBlueprintEntry[] entries,
             WeaponBlueprintAccess typeAccess, SpearWeaponTypeAccess typeAdapter,
             SpearItemAccess itemAdapter, BlueprintWeaponType donor)
         {
-            if (set == null || set.Entries.Length != 6 ||
-                set.Entries.Select(value => value.Item).Distinct().Count() != 6)
+            if (weaponType == null || entries == null || entries.Length != 6 ||
+                entries.Select(value => value.Item).Distinct().Count() != 6)
                 throw new InvalidOperationException("Spear foundation identity count is invalid.");
-            SpearProfileVerdict profile = typeAdapter.Validate(set.WeaponType, donor);
-            foreach (ElvenBranchedSpearBlueprintEntry entry in set.Entries)
+            typeAdapter.Validate(weaponType, donor);
+            foreach (ElvenBranchedSpearBlueprintEntry entry in entries)
             {
-                if (!ReferenceEquals(typeAccess.Get(entry.Item), set.WeaponType))
+                if (!ReferenceEquals(typeAccess.Get(entry.Item), weaponType))
                     throw new InvalidOperationException("A spear item left the shared category family.");
                 itemAdapter.Validate(entry.Item, entry.Spec);
             }
-            return profile;
         }
 
         private static BlueprintFeature CloneFeatureWithComponents(
@@ -408,45 +410,35 @@ namespace KingmakerGunslinger.Blueprints
             Validate(type, donor);
         }
 
+        private const string MovementAccuracyName =
+            "KMG_ElvenBranchedSpear_MovementOpportunityAccuracy";
+
+        private static readonly WeaponSubCategory[] IntendedSubCategories = {
+            WeaponSubCategory.Melee, WeaponSubCategory.Finessable,
+            WeaponSubCategory.TwoHanded, WeaponSubCategory.Exotic,
+            WeaponSubCategory.Metal };
+
+        private static readonly WeaponSubCategory[] ExcludedSubCategories = {
+            WeaponSubCategory.Light, WeaponSubCategory.Martial,
+            WeaponSubCategory.OneHandedPiercing,
+            WeaponSubCategory.OneHandedSlashing, WeaponSubCategory.Thrown };
+
         /// <summary>
-        /// Checks the owned serialized profile and the live getters. An owned
-        /// field mismatch, or a getter that disagrees with the engine contract
-        /// without another mod patching it, throws one message naming every
-        /// failed predicate. A getter changed by another mod's patch is returned
-        /// in the verdict for a single report; the owned profile stays exact.
+        /// Checks the owned serialized profile and the live getters, which are
+        /// what players and the engine use. Any owned-field mismatch, any
+        /// getter that disagrees with the engine contract for the owned field
+        /// (whoever patches it) and any getter that throws fails validation
+        /// with one message naming every failed predicate together with its
+        /// expected, actual and donor values and the getter's patch owners.
         /// </summary>
-        internal SpearProfileVerdict Validate(BlueprintWeaponType type,
-            BlueprintWeaponType donor)
+        internal void Validate(BlueprintWeaponType type, BlueprintWeaponType donor)
         {
             if (type == null) throw new ArgumentNullException("type");
             if (donor == null) throw new ArgumentNullException("donor");
             SpearProfileVerdict verdict = ElvenBranchedSpearProfilePolicy.Evaluate(
-                Observe(type, donor), OwnHarmonyId());
+                Observe(type, donor));
             if (!verdict.IsValid)
                 throw new InvalidOperationException(verdict.DescribeFailure());
-            BlueprintWeaponEnchantment[] enchantments =
-                (BlueprintWeaponEnchantment[])_enchantments.GetValue(type) ??
-                Array.Empty<BlueprintWeaponEnchantment>();
-            if (enchantments.Length != 1 || enchantments[0] == null ||
-                !string.Equals(enchantments[0].name,
-                    "KMG_ElvenBranchedSpear_MovementOpportunityAccuracy",
-                    StringComparison.Ordinal))
-                throw new InvalidOperationException(
-                    "Spear inherent movement-opportunity enchantment is invalid.");
-            WeaponSubCategory[] expected = {
-                WeaponSubCategory.Melee, WeaponSubCategory.Finessable,
-                WeaponSubCategory.TwoHanded, WeaponSubCategory.Exotic,
-                WeaponSubCategory.Metal };
-            if (!expected.All(ElvenBranchedSpearCategoryRuntime.HasSubCategory) ||
-                ElvenBranchedSpearCategoryRuntime.HasSubCategory(WeaponSubCategory.Light) ||
-                ElvenBranchedSpearCategoryRuntime.HasSubCategory(WeaponSubCategory.Martial) ||
-                ElvenBranchedSpearCategoryRuntime.HasSubCategory(
-                    WeaponSubCategory.OneHandedPiercing) ||
-                ElvenBranchedSpearCategoryRuntime.HasSubCategory(
-                    WeaponSubCategory.OneHandedSlashing) ||
-                ElvenBranchedSpearCategoryRuntime.HasSubCategory(WeaponSubCategory.Thrown))
-                throw new InvalidOperationException("Spear subcategory policy is invalid.");
-            return verdict;
         }
 
         /// <summary>
@@ -552,12 +544,51 @@ namespace KingmakerGunslinger.Blueprints
                 Weight(ElvenBranchedSpearCatalog.WeightPounds),
                 value => Weight((float)value),
                 "Weight", value => Weight(value.Weight), null));
+            string enchantments = EnchantmentNames(_enchantments.GetValue(type));
+            values.Add(new SpearProfileObservation("movement-enchantment",
+                MovementAccuracyName, enchantments,
+                EnchantmentNames(_enchantments.GetValue(donor)),
+                MovementAccuracyName, enchantments,
+                EnchantmentNames(_enchantments.GetValue(donor)), null, "field"));
+            string subCategories = SubCategoryPolicy();
+            string intendedSubCategories = string.Join(",", IntendedSubCategories
+                .Select(value => value.ToString()).ToArray());
+            values.Add(new SpearProfileObservation("subcategory-policy",
+                intendedSubCategories, subCategories, "<not-applicable>",
+                intendedSubCategories, subCategories, "<not-applicable>", null,
+                "field"));
             return values.ToArray();
+        }
+
+        private static string EnchantmentNames(object value)
+        {
+            BlueprintWeaponEnchantment[] enchantments =
+                value as BlueprintWeaponEnchantment[] ??
+                Array.Empty<BlueprintWeaponEnchantment>();
+            return enchantments.Length == 0 ? "<none>" : string.Join(",",
+                enchantments.Select(item => item == null ? "<null>" : item.name)
+                    .ToArray());
+        }
+
+        /// <summary>
+        /// The owned category's sub-categories as the mod's own policy grants
+        /// them: the intended five, plus any excluded one it wrongly grants.
+        /// </summary>
+        private static string SubCategoryPolicy()
+        {
+            IEnumerable<WeaponSubCategory> granted = IntendedSubCategories
+                .Where(ElvenBranchedSpearCategoryRuntime.HasSubCategory)
+                .Concat(ExcludedSubCategories
+                    .Where(ElvenBranchedSpearCategoryRuntime.HasSubCategory));
+            return string.Join(",", granted.Select(value => value.ToString())
+                .ToArray());
         }
 
         /// <summary>
         /// Reads one serialized field and its public getter on the owned clone
-        /// and the donor. Getter patch owners are read only when the predicate
+        /// and the donor. A throwing owned getter is recorded as a failed
+        /// value; a throwing donor getter only makes that comparison
+        /// unavailable. Getter patch owners are read only when the predicate
         /// fails, so a healthy startup performs no Harmony queries.
         /// </summary>
         private static SpearProfileObservation Getter(string predicate,
@@ -570,16 +601,33 @@ namespace KingmakerGunslinger.Blueprints
             string owned = fieldText(ownedValue);
             string engineExpected = engineFromField == null ? owned :
                 engineFromField(ownedValue);
-            string engineActual = getterText(type);
+            string engineActual;
+            try { engineActual = getterText(type); }
+            catch (Exception exception)
+            {
+                engineActual = ElvenBranchedSpearProfilePolicy.Threw(exception);
+            }
             bool failed = !string.Equals(owned, expectedField, StringComparison.Ordinal) ||
                 !string.Equals(engineExpected, engineActual, StringComparison.Ordinal);
             string patchInfo = "not-read";
             string[] owners = null;
             if (failed)
                 owners = GetterPatchOwners(property, out patchInfo);
+            string donorField;
+            try { donorField = fieldText(field.GetValue(donor)); }
+            catch (Exception exception)
+            {
+                donorField = ElvenBranchedSpearProfilePolicy.Unavailable(exception);
+            }
+            string donorEngine;
+            try { donorEngine = getterText(donor); }
+            catch (Exception exception)
+            {
+                donorEngine = ElvenBranchedSpearProfilePolicy.Unavailable(exception);
+            }
             return new SpearProfileObservation(predicate, expectedField, owned,
-                fieldText(field.GetValue(donor)), engineExpected, engineActual,
-                getterText(donor), owners, patchInfo);
+                donorField, engineExpected, engineActual, donorEngine, owners,
+                patchInfo);
         }
 
         private static string[] GetterPatchOwners(string property, out string patchInfo)
@@ -615,13 +663,6 @@ namespace KingmakerGunslinger.Blueprints
                 patchInfo = "unavailable:" + exception.GetType().Name;
                 return new string[0];
             }
-        }
-
-        private static string OwnHarmonyId()
-        {
-            ModContext context;
-            return ModContext.TryGet(out context) && context.Harmony != null
-                ? context.Harmony.Id : string.Empty;
         }
 
         private static readonly FieldInfo FeetValue = typeof(Feet).GetField(
@@ -844,7 +885,7 @@ namespace KingmakerGunslinger.Blueprints
             ElvenBranchedSpearBlueprintEntry[] entries,
             BlueprintFeature exoticWeaponProficiency,
             BlueprintFeature finesseTraining,
-            ElvenBranchedSpearSelectorPublication publication,
+            Func<ElvenBranchedSpearSelectorPublication> publish,
             bool exoticWeaponProficiencyUsesCategoryIcon,
             bool finesseTrainingUsesCategoryIcon,
             Sprite exoticWeaponProficiencyNativeIcon,
@@ -854,7 +895,7 @@ namespace KingmakerGunslinger.Blueprints
             Entries = entries;
             ExoticWeaponProficiency = exoticWeaponProficiency;
             FinesseTraining = finesseTraining;
-            Publication = publication;
+            _publish = publish ?? throw new ArgumentNullException("publish");
             ExoticWeaponProficiencyUsesCategoryIcon =
                 exoticWeaponProficiencyUsesCategoryIcon;
             FinesseTrainingUsesCategoryIcon = finesseTrainingUsesCategoryIcon;
@@ -869,14 +910,28 @@ namespace KingmakerGunslinger.Blueprints
         internal bool FinesseTrainingUsesCategoryIcon { get; private set; }
         internal Sprite ExoticWeaponProficiencyNativeIcon { get; private set; }
         internal Sprite FinesseTrainingNativeIcon { get; private set; }
+        private readonly Func<ElvenBranchedSpearSelectorPublication> _publish;
         internal ElvenBranchedSpearSelectorPublication Publication { get; private set; }
         internal ElvenBranchedSpearNamedBlueprintSet Named { get; private set; }
+
+        /// <summary>
+        /// Attaches the named spears and only then publishes the native
+        /// selector, familiarity and selector-runtime changes, so a failure
+        /// anywhere in foundation or named registration leaves native state
+        /// untouched. Publish restores its own changes if it fails; on success
+        /// the caller takes <see cref="Publication"/> for its rollback.
+        /// </summary>
         internal void AttachNamed(ElvenBranchedSpearNamedBlueprintSet named)
         {
             if (named == null || Named != null)
                 throw new InvalidOperationException(
                     "Named spear registration may be attached exactly once.");
+            ElvenBranchedSpearSelectorPublication publication = _publish();
+            if (publication == null)
+                throw new InvalidOperationException(
+                    "Spear selector publication returned no rollback handle.");
             Named = named;
+            Publication = publication;
         }
         internal ElvenBranchedSpearBlueprintEntry Require(
             ElvenBranchedSpearItemKind kind)

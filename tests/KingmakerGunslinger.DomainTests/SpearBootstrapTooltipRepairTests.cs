@@ -8,11 +8,18 @@ namespace KingmakerGunslinger.DomainTests
     /// <summary>
     /// Production policies behind the spear startup and battered-pricing
     /// repair. Native construction, failed-startup tooltips and summoning are
-    /// covered (or recorded as gaps) in docs/SPEAR-BOOTSTRAP-TOOLTIP-REPAIR.md.
+    /// covered in docs/SPEAR-BOOTSTRAP-TOOLTIP-REPAIR.md.
     /// </summary>
     internal static class SpearBootstrapTooltipRepairTests
     {
-        private const string OwnId = "KingmakerGunslinger";
+        private static readonly string[] Predicates =
+        {
+            "category", "attack-type", "attack-range", "base-damage",
+            "damage-type", "critical-edge", "critical-modifier", "fighter-group",
+            "two-handed", "light", "monk", "natural", "unarmed",
+            "attack-stat-override", "weight", "movement-enchantment",
+            "subcategory-policy"
+        };
 
         private static SpearProfileObservation Healthy(string predicate)
         {
@@ -22,19 +29,15 @@ namespace KingmakerGunslinger.DomainTests
 
         private static SpearProfileObservation[] HealthyProfile()
         {
-            return new[] { "category", "attack-type", "attack-range",
-                "base-damage", "damage-type", "critical-edge",
-                "critical-modifier", "fighter-group", "two-handed", "light",
-                "monk", "natural", "unarmed", "attack-stat-override", "weight" }
-                .Select(Healthy).ToArray();
+            return Predicates.Select(Healthy).ToArray();
         }
 
         private static SpearProfileObservation[] With(
-            SpearProfileObservation replacement)
+            params SpearProfileObservation[] replacements)
         {
-            return HealthyProfile().Select(value => string.Equals(
-                value.Predicate, replacement.Predicate, StringComparison.Ordinal)
-                    ? replacement : value).ToArray();
+            return HealthyProfile().Select(value => replacements.FirstOrDefault(
+                replacement => string.Equals(replacement.Predicate,
+                    value.Predicate, StringComparison.Ordinal)) ?? value).ToArray();
         }
 
         internal static void EngineAttackRangeFollowsKingmakerContract()
@@ -58,109 +61,129 @@ namespace KingmakerGunslinger.DomainTests
         internal static void HealthyProfilePassesWithoutFindings()
         {
             SpearProfileVerdict verdict = ElvenBranchedSpearProfilePolicy.Evaluate(
-                HealthyProfile(), OwnId);
+                HealthyProfile());
             Assertions.True(verdict.IsValid && verdict.Findings.Length == 0 &&
-                verdict.CheckedCount == 15, "A healthy profile produced findings.");
+                verdict.CheckedCount == 17, "A healthy profile produced findings.");
             Assertions.Equal(string.Empty, verdict.DescribeFailure(),
                 "A healthy profile described a failure.");
-            Assertions.Equal(string.Empty, verdict.DescribeExternal(),
-                "A healthy profile described an external patch.");
         }
 
         internal static void OwnedFieldFailureNamesPredicateAndValues()
         {
             // Simulated: an owned clone carrying a mutated donor's 15 ft reach.
             var reach = new SpearProfileObservation("attack-range", "10ft", "15ft",
-                "15ft", "15", "15", "15", new[] { "SomeOtherMod" }, "read");
+                "15ft", "15ft", "15ft", "15ft", new[] { "SomeOtherMod" }, "read");
             var group = new SpearProfileObservation("fighter-group", "Spears",
                 "Polearms", "Polearms", "Polearms", "Polearms", "Polearms", null,
-                "unavailable:InvalidOperationException");
-            SpearProfileObservation[] profile = With(reach).Select(value =>
-                value.Predicate == "fighter-group" ? group : value).ToArray();
+                "unavailable:NullReferenceException");
             SpearProfileVerdict verdict = ElvenBranchedSpearProfilePolicy.Evaluate(
-                profile, OwnId);
+                With(reach, group));
             string message = verdict.DescribeFailure();
             Assertions.False(verdict.IsValid, "An owned-field mismatch passed.");
-            Assertions.Equal(2, verdict.Fatal.Length, "Both failures must be fatal.");
             Assertions.True(message.StartsWith(
-                "Elven Branched Spear type profile is invalid: 2 of 15 checks failed.",
+                "Elven Branched Spear type profile is invalid: 2 of 17 checks failed.",
                 StringComparison.Ordinal), "Failure summary is wrong: " + message);
             foreach (string token in new[] {
                 "attack-range [owned-field]: expected=10ft actual=15ft donor=15ft",
-                "getter expected=15 actual=15 donor=15",
+                "getter expected=15ft actual=15ft donor=15ft",
                 "getterPatches=SomeOtherMod",
                 "fighter-group [owned-field]: expected=Spears actual=Polearms donor=Polearms",
-                "getterPatches=unavailable:InvalidOperationException" })
+                "getterPatches=unavailable:NullReferenceException" })
                 Assertions.True(message.Contains(token),
                     "Failure message lacks '" + token + "': " + message);
             Assertions.False(message.Contains("critical-edge"),
                 "Failure message names a passing predicate: " + message);
         }
 
+        internal static void ForeignPatchedGetterMismatchIsFatal()
+        {
+            // A foreign patch on the shared getter that gives the owned spear a
+            // wrong effective reach: the serialized field and donor are right.
+            var range = new SpearProfileObservation("attack-range", "10ft", "10ft",
+                "10ft", "6ft", "7ft", "6ft",
+                new[] { "KingmakerGunslinger", "zeta.reach", "alpha.reach" }, "read");
+            SpearProfileVerdict verdict = ElvenBranchedSpearProfilePolicy.Evaluate(
+                With(range));
+            Assertions.False(verdict.IsValid,
+                "A foreign getter patch excused a wrong effective spear value.");
+            Assertions.True(verdict.Findings.Single().Kind ==
+                SpearProfileFindingKind.EffectiveGetterMismatch,
+                "Foreign-patched getter mismatch was misclassified.");
+            string message = verdict.DescribeFailure();
+            Assertions.True(message.Contains(
+                "attack-range [effective-getter]: expected=10ft actual=10ft donor=10ft; getter expected=6ft actual=7ft donor=6ft; getterPatches=KingmakerGunslinger,alpha.reach,zeta.reach"),
+                "Foreign-patched getter diagnostics are incomplete: " + message);
+        }
+
         internal static void UnpatchedGetterMismatchIsFatal()
         {
-            var range = new SpearProfileObservation("attack-range", "10ft", "10ft",
-                "10ft", "6ft", "10ft", "10ft", null,
-                "unavailable:InvalidOperationException");
-            SpearProfileVerdict verdict = ElvenBranchedSpearProfilePolicy.Evaluate(
-                With(range), OwnId);
-            Assertions.False(verdict.IsValid, "An unexplained getter change passed.");
-            Assertions.True(verdict.Fatal.Single().Kind ==
-                SpearProfileFindingKind.UnpatchedEngineMismatch,
-                "Unpatched getter mismatch was misclassified.");
-            Assertions.True(verdict.DescribeFailure().Contains(
-                "attack-range [unpatched-getter]: expected=10ft actual=10ft donor=10ft; getter expected=6ft actual=10ft donor=10ft"),
-                "Unpatched getter diagnostics are incomplete: " +
-                verdict.DescribeFailure());
-        }
-
-        internal static void OwnPatchOnlyGetterMismatchIsFatal()
-        {
             var group = new SpearProfileObservation("fighter-group", "Spears",
-                "Spears", "Spears", "Spears", "Polearms", "Polearms",
-                new[] { OwnId }, "read");
+                "Spears", "Spears", "Spears", "Polearms", "Polearms", null,
+                "unavailable:NullReferenceException");
             SpearProfileVerdict verdict = ElvenBranchedSpearProfilePolicy.Evaluate(
-                With(group), OwnId);
+                With(group));
             Assertions.False(verdict.IsValid,
-                "A getter changed only by this mod's own patch passed.");
-            Assertions.True(verdict.Fatal.Single().Kind ==
-                SpearProfileFindingKind.UnpatchedEngineMismatch,
-                "Own-patch getter mismatch was misclassified.");
+                "A getter mismatch without readable patch owners passed.");
+            Assertions.True(verdict.Findings.Single().Kind ==
+                SpearProfileFindingKind.EffectiveGetterMismatch,
+                "Unpatched getter mismatch was misclassified.");
         }
 
-        internal static void ExternalGetterPatchIsReportedNotFatal()
+        internal static void ThrowingOwnedGetterIsFatalAndReported()
         {
-            // Simulated: another mod postfixes the shared AttackRange getter
-            // for every weapon; the owned 10 ft field is still exact.
-            var range = new SpearProfileObservation("attack-range", "10ft", "10ft",
-                "10ft", "6ft", "11ft", "11ft",
-                new[] { OwnId, "zeta.reach", "alpha.reach" }, "read");
+            string threw = ElvenBranchedSpearProfilePolicy.Threw(
+                new InvalidOperationException("boom"));
+            var light = new SpearProfileObservation("light", "false", "false",
+                "false", "false", threw, "false", new[] { "other.mod" }, "read");
+            var group = new SpearProfileObservation("fighter-group", "Spears",
+                "Polearms", "Spears", "Polearms", "Polearms", "Spears", null,
+                "unavailable:NullReferenceException");
             SpearProfileVerdict verdict = ElvenBranchedSpearProfilePolicy.Evaluate(
-                With(range), OwnId);
-            Assertions.True(verdict.IsValid,
-                "Another mod's shared getter patch failed the owned profile.");
-            Assertions.Equal(1, verdict.External.Length,
-                "The external getter patch was not reported.");
-            string note = verdict.DescribeExternal();
-            Assertions.True(note.Contains("attack-range [external-getter-patch]") &&
-                note.Contains("getter expected=6ft actual=11ft donor=11ft") &&
-                note.Contains("getterPatches=" + OwnId + ",alpha.reach,zeta.reach"),
-                "External patch note is incomplete: " + note);
-            Assertions.Equal(string.Empty, verdict.DescribeFailure(),
-                "An external-only verdict described a failure.");
+                With(light, group));
+            string message = verdict.DescribeFailure();
+            Assertions.Equal(2, verdict.Findings.Length,
+                "A throwing getter and a second invalid predicate were not both reported.");
+            Assertions.True(message.StartsWith(
+                "Elven Branched Spear type profile is invalid: 2 of 17 checks failed.",
+                StringComparison.Ordinal) &&
+                message.Contains("light [effective-getter]: expected=false actual=false donor=false; getter expected=false actual=<throws InvalidOperationException: boom> donor=false; getterPatches=other.mod") &&
+                message.Contains("fighter-group [owned-field]"),
+                "Throwing getter diagnostics are incomplete: " + message);
         }
 
-        internal static void OwnedFieldMismatchStaysFatalUnderExternalPatch()
+        internal static void UnavailableDonorComparisonIsNotFatal()
         {
-            var range = new SpearProfileObservation("attack-range", "10ft", "15ft",
-                "15ft", "15ft", "16ft", "16ft", new[] { "alpha.reach" }, "read");
+            string unavailable = ElvenBranchedSpearProfilePolicy.Unavailable(
+                new InvalidOperationException("donor getter"));
+            var edge = new SpearProfileObservation("critical-edge", "20", "20",
+                "20", "20", "20", unavailable, null, "not-read");
             SpearProfileVerdict verdict = ElvenBranchedSpearProfilePolicy.Evaluate(
-                With(range), OwnId);
-            Assertions.False(verdict.IsValid,
-                "An external getter patch excused a wrong owned field.");
-            Assertions.True(verdict.Fatal.Single().Kind ==
-                SpearProfileFindingKind.OwnedFieldMismatch,
-                "Owned mismatch was not classified first.");
+                With(edge));
+            Assertions.True(verdict.IsValid && verdict.Findings.Length == 0,
+                "An unreadable donor comparison failed a correct owned spear.");
+            Assertions.True(unavailable.StartsWith("<unavailable InvalidOperationException",
+                StringComparison.Ordinal), "Unavailable donor text changed: " + unavailable);
+        }
+
+        internal static void FieldOnlyPredicatesReportEnchantmentAndSubcategories()
+        {
+            var enchantment = new SpearProfileObservation("movement-enchantment",
+                "KMG_ElvenBranchedSpear_MovementOpportunityAccuracy", "<none>",
+                "<none>", "KMG_ElvenBranchedSpear_MovementOpportunityAccuracy",
+                "<none>", "<none>", null, "field");
+            var subcategories = new SpearProfileObservation("subcategory-policy",
+                "Melee,Finessable,TwoHanded,Exotic,Metal",
+                "Melee,Finessable,TwoHanded,Exotic,Metal,Light", "<not-applicable>",
+                "Melee,Finessable,TwoHanded,Exotic,Metal",
+                "Melee,Finessable,TwoHanded,Exotic,Metal,Light", "<not-applicable>",
+                null, "field");
+            string message = ElvenBranchedSpearProfilePolicy.Evaluate(
+                With(enchantment, subcategories)).DescribeFailure();
+            Assertions.True(message.Contains("2 of 17 checks failed.") &&
+                message.Contains("movement-enchantment [owned-field]: expected=KMG_ElvenBranchedSpear_MovementOpportunityAccuracy actual=<none>") &&
+                message.Contains("subcategory-policy [owned-field]") &&
+                message.Contains("getterPatches=field"),
+                "Field-only predicates were not reported: " + message);
         }
 
         internal static void DiagnosticsAreBounded()
@@ -170,8 +193,8 @@ namespace KingmakerGunslinger.DomainTests
                 index.ToString("D2")).ToArray();
             var range = new SpearProfileObservation("attack-range", "10ft",
                 longValue, longValue, "6ft", "7ft", "7ft", owners, "read");
-            string message = ElvenBranchedSpearProfilePolicy.Evaluate(With(range),
-                OwnId).DescribeFailure();
+            string message = ElvenBranchedSpearProfilePolicy.Evaluate(With(range))
+                .DescribeFailure();
             Assertions.False(message.Contains(new string('v',
                 ElvenBranchedSpearProfilePolicy.MaxDescribedValueLength + 1)),
                 "A described value was not truncated.");
@@ -183,7 +206,7 @@ namespace KingmakerGunslinger.DomainTests
             var many = Enumerable.Range(0, 40).Select(index =>
                 new SpearProfileObservation("p" + index.ToString("D2"), "a", "b",
                     "c", "d", "d", "d", null, "not-read")).ToArray();
-            string capped = ElvenBranchedSpearProfilePolicy.Evaluate(many, OwnId)
+            string capped = ElvenBranchedSpearProfilePolicy.Evaluate(many)
                 .DescribeFailure();
             Assertions.True(capped.Contains("40 of 40 checks failed") &&
                 capped.Contains("(+16 more)") && !capped.Contains("p24 ["),
@@ -196,7 +219,7 @@ namespace KingmakerGunslinger.DomainTests
             try
             {
                 ElvenBranchedSpearProfilePolicy.Evaluate(new[] { Healthy("weight"),
-                    Healthy("weight") }, OwnId);
+                    Healthy("weight") });
             }
             catch (ArgumentException) { refused = true; }
             Assertions.True(refused, "Duplicate predicates were accepted.");
@@ -204,7 +227,7 @@ namespace KingmakerGunslinger.DomainTests
             try
             {
                 ElvenBranchedSpearProfilePolicy.Evaluate(
-                    new SpearProfileObservation[0], OwnId);
+                    new SpearProfileObservation[0]);
             }
             catch (ArgumentException) { refused = true; }
             Assertions.True(refused, "An empty profile was accepted as valid.");

@@ -78,22 +78,16 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
 
     internal enum SpearProfileFindingKind
     {
-        /// <summary>The owned clone's serialized field is wrong. Always fatal.</summary>
+        /// <summary>The owned clone's serialized field is wrong. Fatal.</summary>
         OwnedFieldMismatch = 0,
 
         /// <summary>
-        /// The owned field is right but the live getter disagrees with the
-        /// engine contract and no other mod patches that getter. Fatal: the
-        /// engine contract or an owned patch is not what this mod expects.
+        /// The owned field is right but the live getter - what players and the
+        /// engine actually use - disagrees with the engine contract for that
+        /// field, or throws. Fatal whoever patches the getter: patch owners are
+        /// reported as context, never as an exemption.
         /// </summary>
-        UnpatchedEngineMismatch = 1,
-
-        /// <summary>
-        /// The owned field is right; another mod's Harmony patch on the shared
-        /// getter changes the effective value for every weapon. Not an owned
-        /// profile defect, so it is reported once and does not fail startup.
-        /// </summary>
-        ExternallyPatchedEngineValue = 2
+        EffectiveGetterMismatch = 1
     }
 
     internal sealed class SpearProfileFinding
@@ -107,11 +101,6 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
 
         internal SpearProfileFindingKind Kind { get; private set; }
         internal SpearProfileObservation Observation { get; private set; }
-
-        internal bool IsFatal
-        {
-            get { return Kind != SpearProfileFindingKind.ExternallyPatchedEngineValue; }
-        }
     }
 
     internal sealed class SpearProfileVerdict
@@ -126,43 +115,20 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
         internal SpearProfileFinding[] Findings { get; private set; }
         internal int CheckedCount { get; private set; }
 
-        internal SpearProfileFinding[] Fatal
-        {
-            get { return Findings.Where(value => value.IsFatal).ToArray(); }
-        }
-
-        internal SpearProfileFinding[] External
-        {
-            get { return Findings.Where(value => !value.IsFatal).ToArray(); }
-        }
-
-        internal bool IsValid { get { return Fatal.Length == 0; } }
+        internal bool IsValid { get { return Findings.Length == 0; } }
 
         /// <summary>
-        /// One bounded message naming every failed predicate with its expected,
-        /// actual and donor values and the getter's patch owners.
+        /// One bounded message naming every failed predicate of this
+        /// validation with its expected, actual and donor values and the
+        /// getter's patch owners.
         /// </summary>
         internal string DescribeFailure()
         {
-            SpearProfileFinding[] fatal = Fatal;
-            if (fatal.Length == 0) return string.Empty;
+            if (Findings.Length == 0) return string.Empty;
             return ElvenBranchedSpearProfilePolicy.FailurePrefix + ": " +
-                fatal.Length.ToString(CultureInfo.InvariantCulture) + " of " +
+                Findings.Length.ToString(CultureInfo.InvariantCulture) + " of " +
                 CheckedCount.ToString(CultureInfo.InvariantCulture) +
-                " checks failed. " + ElvenBranchedSpearProfilePolicy.Describe(fatal);
-        }
-
-        /// <summary>
-        /// One bounded note for externally patched getters; empty when none.
-        /// </summary>
-        internal string DescribeExternal()
-        {
-            SpearProfileFinding[] external = External;
-            if (external.Length == 0) return string.Empty;
-            return "The owned Elven Branched Spear profile is correct, but " +
-                external.Length.ToString(CultureInfo.InvariantCulture) +
-                " shared weapon-type getter(s) are patched by another mod and change its effective value; the other mod's rule applies to every weapon. " +
-                ElvenBranchedSpearProfilePolicy.Describe(external);
+                " checks failed. " + ElvenBranchedSpearProfilePolicy.Describe(Findings);
         }
     }
 
@@ -192,22 +158,39 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
             return (int)serializedFeet;
         }
 
+        /// <summary>
+        /// Text recorded in place of a value whose getter threw. It never equals
+        /// an expected value, so a throwing owned getter is a mismatch.
+        /// </summary>
+        internal static string Threw(Exception exception)
+        {
+            if (exception == null) throw new ArgumentNullException("exception");
+            return "<throws " + exception.GetType().Name + ": " + exception.Message + ">";
+        }
+
+        /// <summary>Text recorded for a donor comparison that could not be read.</summary>
+        internal static string Unavailable(Exception exception)
+        {
+            if (exception == null) throw new ArgumentNullException("exception");
+            return "<unavailable " + exception.GetType().Name + ": " + exception.Message + ">";
+        }
+
+        /// <summary>
+        /// The owned serialized field and the owned getter are the invariants.
+        /// Donor values are comparison context only and never decide a verdict.
+        /// </summary>
         internal static SpearProfileFindingKind? Classify(
-            SpearProfileObservation observation, string ownHarmonyId)
+            SpearProfileObservation observation)
         {
             if (observation == null) throw new ArgumentNullException("observation");
             if (!observation.OwnedFieldMatches)
                 return SpearProfileFindingKind.OwnedFieldMismatch;
             if (observation.EngineMatches) return null;
-            bool external = observation.GetterPatchOwners.Any(owner =>
-                !string.Equals(owner, ownHarmonyId, StringComparison.Ordinal));
-            return external
-                ? SpearProfileFindingKind.ExternallyPatchedEngineValue
-                : SpearProfileFindingKind.UnpatchedEngineMismatch;
+            return SpearProfileFindingKind.EffectiveGetterMismatch;
         }
 
         internal static SpearProfileVerdict Evaluate(
-            IEnumerable<SpearProfileObservation> observations, string ownHarmonyId)
+            IEnumerable<SpearProfileObservation> observations)
         {
             if (observations == null) throw new ArgumentNullException("observations");
             SpearProfileObservation[] values = observations.ToArray();
@@ -221,7 +204,7 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
             var findings = new List<SpearProfileFinding>();
             foreach (SpearProfileObservation value in values)
             {
-                SpearProfileFindingKind? kind = Classify(value, ownHarmonyId);
+                SpearProfileFindingKind? kind = Classify(value);
                 if (kind.HasValue) findings.Add(new SpearProfileFinding(kind.Value, value));
             }
             return new SpearProfileVerdict(findings, values.Length);
@@ -254,12 +237,8 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
 
         private static string Kind(SpearProfileFindingKind kind)
         {
-            switch (kind)
-            {
-                case SpearProfileFindingKind.OwnedFieldMismatch: return "owned-field";
-                case SpearProfileFindingKind.UnpatchedEngineMismatch: return "unpatched-getter";
-                default: return "external-getter-patch";
-            }
+            return kind == SpearProfileFindingKind.OwnedFieldMismatch
+                ? "owned-field" : "effective-getter";
         }
 
         private static string Owners(SpearProfileObservation value)
