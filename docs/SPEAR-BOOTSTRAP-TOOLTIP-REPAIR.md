@@ -4,11 +4,25 @@ Investigation and repair record for
 `planning/SPEAR-BOOTSTRAP-TOOLTIP-REPAIR-MISSION.md` (draft PR #195, branch
 `codex/spear-bootstrap-tooltip-repair`, prepared from `master` `2e61e78097`,
 v0.0.192). This is a focused development checkpoint under
-`docs/VALIDATION-POLICY.md`. It does not cover release, packaging or
+`docs/VALIDATION-POLICY.md`. It does not cover release, packaging or broad
 compatibility qualification.
 
-The product change is the commit that adds this record. The controller's later
-archive and handoff commits are separate from it.
+Identities:
+
+- Product source: commit `288ce4dd07`. Later commits change only the test-only
+  loader-compat harness, its sessions and session runner, and this record.
+- Native development candidate, built from `56e00163e9d1` with the product
+  source unchanged from `288ce4dd07`:
+  `KingmakerGunslinger-0.0.192-development-spear-bootstrap-tooltip-repair-56e00163e9d1.zip`.
+  - Package SHA-256 `b7b4d619d5e020bf259d4576f52820ebea890a66727992a2a21c99ab25b7083e`.
+  - DLL SHA-256 `031dc659498f0c6a591f45abc22bf13ed1837f5babfcb8b34148b9af8c9e130a`.
+- Baseline: the published v0.0.192 package
+  `KingmakerGunslinger-0.0.192-gunslinger-remediation.zip`. Package SHA-256
+  `936f3571a5f948911b410e6e39134629b60d0fc469d0cd6347d88971af072d69`; in-process
+  DLL `0eff2af3…`. Its spear and battered sources are byte-identical to
+  v0.0.188.
+- Native sessions ran with harness commit `4ba6cab678`.
+- The controller's archive and handoff commits are separate from all of these.
 
 ## 1. Reported failure
 
@@ -20,26 +34,24 @@ including Call of the Wild 1.14.4c-2.1, ArmsArmor 1.0.10, RacesUnleashed
 `gunslinger=False`.
 
 1. `SpearWeaponTypeAccess.Validate` threw `Elven Branched Spear type profile is
-   invalid.` inside `ElvenBranchedSpearBlueprints.Register`. Startup then
-   rolled back 287 registrations and stopped initialization for the process.
+   invalid.` inside `ElvenBranchedSpearBlueprints.Register`. Startup rolled
+   back 287 registrations and stopped initialization for the process.
 2. Expanded Summoning never registered. Summoning hooks reported
    `package-blueprint-lifecycle-failed` and `bootstrap-unavailable`.
 3. Every weapon tooltip threw `The battered origin token blueprint is
-   unavailable.` The throw came from `BatteredFirearmSaleValuePatch` (a
+   unavailable.` from `BatteredFirearmSaleValuePatch` (a
    `VendorLogic.GetItemSellPrice` postfix called from
    `UIUtilityItem.FillTooltipData`).
 
-The same log records a normal Summoned Dog from Summon Monster I. So the log
-does not show that every form of the spell was unusable.
+The same log records a normal Summoned Dog from Summon Monster I.
 
 ## 2. Findings
 
 ### 2.1 Engine contracts (Kingmaker 2.1.7b)
 
-These were read from the decompiled `Assembly-CSharp`
-(`BlueprintWeaponType`, `Feet`, `GameConsts`, `DamageTypeDescription`,
-`DiceFormula`). Production code was compiled against the installed game's
-`Kingmaker_Data/Managed`.
+These were read from the decompiled `Assembly-CSharp` (`BlueprintWeaponType`,
+`Feet`, `GameConsts`, `DamageTypeDescription`, `DiceFormula`, the action-bar,
+level-up and vendor types). They were confirmed natively in §4.2.
 
 - `BlueprintWeaponType` getters return their private serialized fields
   directly: `AttackType`, `BaseDamage`, `DamageType`, `CriticalRollEdge`,
@@ -49,264 +61,320 @@ These were read from the decompiled `Assembly-CSharp`
   `max(GameConsts.MinWeaponRange (2 ft), range − 4)`; a longer range is
   returned unchanged. The old `AttackRange.Value == 6` check therefore
   required a serialized 10 ft range.
-- `AttackBonusStat` returns Strength for an unranged weapon unless
-  `m_OverrideAttackBonusStat` is set.
+- Outside trading, `VendorLogic.GetItemSellPrice` is
+  `(long)(item.Cost × Vendors.SellModifier)`. `UIUtilityItem.FillTooltipData`
+  calls it for every item tooltip.
+- Kingmaker's own Summon Monster I (`SummonMonsterISingle`,
+  `8fd74eddd9b6c224693d9ab241f25e84`) has **no variants**. Only the product's
+  Expanded Summoning publication gives it a creature list. Without that list,
+  `ActionBarGroupSlot` shows no expand control, and a click starts targeting
+  for the spell itself.
 
 ### 2.2 What the old constructor relied on
 
-`ElvenBranchedSpearBlueprints` clones the live native Longspear type
+`ElvenBranchedSpearBlueprints` cloned the live native Longspear type
 (`fa2dd17cbde7d3f4aa918d467c30516e`). `SpearWeaponTypeAccess.Configure` wrote
-only the category, text, weight and enchantments. `Validate` then checked
-these values through the getters:
-
-- melee attack type;
-- 1d8 piercing physical damage;
-- 20/×3 critical;
-- Spears fighter group;
-- two-handed, not light, not natural;
-- 6 ft effective range;
-- 10 lb weight.
-
-All of these except category and weight were **inherited from the donor at the
-moment the clone was made**. Two things could therefore fail the whole
-initialization transaction:
-
-- any change to the donor's serialized fields made before this mod's bootstrap
-  (by another mod or a blueprint edit);
-- a patch on one of those getters.
-
-The message named neither the failed predicate nor the actual value.
+only category, text, weight and enchantments. `Validate` then checked melee,
+1d8 piercing, 20/×3, Spears, two-handed / not light / not natural, 6 ft
+effective range and 10 lb through the getters. Everything except category and
+weight was the **donor's** value at clone time. So any mutation of those donor
+fields before this mod's bootstrap, or a patch on one of those getters, failed
+the whole initialization transaction with a message that named no predicate
+and no value.
 
 Owned patches that touch the checked values:
 
-- `ElvenBranchedSpearCategoryRuntime` postfixes
-  `WeaponCategoryExtension.HasSubCategory` / `GetSubCategories` and
-  `StatsStrings.GetText`. The subcategory policy check calls the mod's own
-  static `ElvenBranchedSpearCategoryRuntime.HasSubCategory`, not the patched
-  engine method.
-- The mod's `get_AttackRange` patches (Elephant, Griffon, Infernal, Triceratops
-  and the summon reach patches) target `ItemEntityWeapon`, not
-  `BlueprintWeaponType`. They do not affect `Validate`.
+- `ElvenBranchedSpearCategoryRuntime` patches the category's sub-category and
+  display lookups. Validation uses the mod's own static policy, not the
+  patched engine method.
+- The mod's `get_AttackRange` patches target `ItemEntityWeapon`, not
+  `BlueprintWeaponType`.
 
-### 2.3 Third-party scan (offline, limited)
+### 2.3 Third-party scan (offline) and native partial-stack attempt
 
-These checks were byte searches of the mod DLLs available on this host
-(`game-copies/loader-compat/.lab-pristine/Mods`) and the existing Call of the
-Wild decompile. They are not a full disassembly.
+- **Offline.** Byte searches of the local mod DLLs found no reference to the
+  Longspear type GUID in Call of the Wild, KingmakerBugfixes, CraftMagicItems
+  or RacesUnleashed.
+  - Call of the Wild only reads `AttackRange`.
+  - KingmakerBugfixes 1.3.3 has `SetFighterGroup` / `SetIsLight` helpers whose
+    targets could not be determined offline. Its public source could not be
+    fetched from this session.
+  - ArmsArmor 1.0.10 is not available on this host.
+- **Native.** Session `spear-bootstrap-reporter-stack` (§4.2, session R) ran
+  the **unrepaired v0.0.192** under UMM 0.31.1 with:
+  - the four reported mods this lab holds, at the reported versions: Call of
+    the Wild 1.14.4c-2.1, CraftMagicItems 2.1.0, KingmakerBugfixes 1.3.3 and
+    RacesUnleashed 1.0.11;
+  - the reporter's module settings, applied through real panel clicks:
+    Gunslinger, Shield Other, Urban Barbarian, Bodyguard feats and
+    Teleportation off; the reported modules on.
 
-| Mod (local version) | Weapon-type references found | Longspear GUID |
-|---|---|---|
-| CallOfTheWild | reads `BlueprintWeaponType.AttackRange`; writes `m_IsTwoHanded` on other types (for example `d516765b…`) | type absent; item `f28f6031…` referenced as a list entry |
-| KingmakerBugfixes 1.3.3 | `SetFighterGroup` / `SetIsLight` helpers that write `m_FighterGroup` / `m_IsLight` | no UTF-16 GUID literals at all (targets not determinable offline) |
-| ProperFlanking2 | references `get_AttackRange` | absent |
-| CraftMagicItems, RacesUnleashed | none | absent |
-| ArmsArmor 1.0.10 | **not available on this host** | — |
-
-KingmakerBugfixes 1.3.3 is also part of the owner's live stack, where spear
-registration succeeds on v0.0.192. Its public source could not be fetched from
-this session (web access denied). **No mod is blamed.**
+  Initialization **completed**, and the native Longspear passed every
+  old-release predicate. **That partial stack does not reproduce the
+  report.**
 
 ### 2.4 Established mechanism and remaining uncertainty
 
-The old construction was unsafe for any donor mutation or getter patch on the
-inherited predicates, and it reported none of the values. **Which predicate
-failed in the reporter's 43-mod environment is still unknown.** The raw log,
-the full mod stack and ArmsArmor 1.0.10 are unavailable, and no native
-reproduction could be run (§4.2).
+Established natively (simulated condition, §4.2 session B). When the live
+Longspear carries values the old validation rejects, the unrepaired package:
+
+1. fails with the generic message;
+2. rolls back every owned registration (no spear type remains);
+3. throws `The battered origin token blueprint is unavailable.` on every
+   ordinary weapon price and tooltip query;
+4. leaves Summon Monster I as Kingmaker's own unexpanded spell, which still
+   summons a Summoned Dog.
+
+This matches every observable in the report. The donor in that simulation had
+a 15 ft reach and the Polearms group; that is a stand-in, not the reporter's
+values.
+
+**Not established:** which predicate failed for the reporter, and which of
+the missing ~39 mods (or other local change) caused it. The raw log, the full
+stack and ArmsArmor are unavailable, and no mod is blamed.
+
+The reporter's "empty stub" wording is consistent with an unexpanded native
+Summon Monster I (no creature list to expand). No menu that opens empty was
+observed in any run.
 
 ## 3. Changes
 
 ### 3.1 Spear construction (`Blueprints/ElvenBranchedSpearBlueprints.cs`)
 
-- `SpearWeaponTypeAccess.Configure` now writes the spear's whole fixed
-  mechanical profile onto the **owned clone**: melee; 10 ft serialized reach;
-  1d8 (catalog dice); a new physical/piercing `DamageTypeDescription`; 20/×3;
-  Spears; two-handed; not light, monk, natural or unarmed; no attack-stat
-  override; 10 lb; the movement-accuracy enchantment. Nothing mechanical is
-  inherited from the donor any more.
-- The native donor is never written. `Register` now captures a fingerprint of
-  every serialized mechanical field of the donor, plus the identity of its
-  reference-typed values, before construction. It refuses
-  (`Native Longspear donor profile was mutated: before=… after=…`) if anything
-  changed. The earlier category, weight and item-type checks remain.
-- Validation is kept and is stricter. It checks 15 predicates through the new
-  game-independent `ElvenBranchedSpear/ElvenBranchedSpearProfilePolicy.cs`. The
-  existing enchantment and subcategory checks follow unchanged. For each
-  predicate the policy compares:
-  - the **owned serialized field** with the intended value;
-  - the **live getter** with the engine contract for that field (identity, or
-    the reach formula).
-
-  Outcomes:
+- `SpearWeaponTypeAccess.Configure` writes the whole fixed mechanical profile
+  onto the **owned clone**: melee; 10 ft serialized reach; catalog 1d8; a new
+  physical/piercing `DamageTypeDescription`; 20/×3; Spears; two-handed; not
+  light, monk, natural or unarmed; no attack-stat override; 10 lb; the
+  movement-accuracy enchantment. Nothing mechanical is inherited from the
+  donor.
+- The native donor is never written. `Register` fingerprints every serialized
+  mechanical field of the donor, plus the identity of its reference-typed
+  values, before construction. It refuses if anything changed afterwards. The
+  earlier category, weight and item-type checks remain.
+- Validation is kept and is stricter. It covers 15 predicates through the new
+  game-independent `ElvenBranchedSpear/ElvenBranchedSpearProfilePolicy.cs`; the
+  enchantment and sub-category checks are unchanged. Each predicate compares
+  the owned serialized field with the intended value, and the live getter
+  with the engine contract for that field.
   - Any owned-field mismatch is fatal.
   - A getter mismatch is fatal unless the getter's Harmony patch info names an
-    owner other than this mod. That case covers an engine contract change and
-    a getter patched only by this mod.
-  - A getter changed by another mod's patch on a shared getter (every weapon
-    is affected, and the owned field is exact) is logged once, as warning
-    `elven-branched-spear` / `profile.external-getter-patch`, and does not
-    fail startup. A wrong owned field stays fatal even when the getter is
-    externally patched.
-- Diagnostics. A failure throws one message, logged once by the existing
-  `blueprints` / `initialize.failed` record. It has the form `Elven Branched
-  Spear type profile is invalid: N of 15 checks failed.`, followed by one entry
-  per failed predicate with:
+    owner other than this mod.
+  - A getter changed by another mod's patch, while the owned field is exact,
+    is logged once as warning `elven-branched-spear` /
+    `profile.external-getter-patch` and does not fail startup.
+- Diagnostics: one message, logged once by the existing initialization
+  failure records:
+  `Elven Branched Spear type profile is invalid: N of 15 checks failed.`
+  followed by, per failed predicate:
   - the predicate name and failure kind;
-  - the expected, actual and donor serialized values;
-  - the expected, actual and donor getter values;
+  - expected, actual and donor serialized values;
+  - expected, actual and donor getter values;
   - the getter's Harmony patch owners (`none`, the owner list, or
     `unavailable:<reason>` — the installed Harmony12 facade throws for an
     unpatched method).
 
   Values are capped at 96 characters, owners at 8 and entries at 24. Patch
-  info is read only for failing predicates, so a healthy startup makes no
-  Harmony queries. Nothing runs per frame or per hover.
+  info is read only for failing predicates.
 
 ### 3.2 Tooltip and pricing (`Gunsmithing/`)
 
 - New `BatteredFirearmOriginRuntime.IsBatteredForInspection`, used only by the
-  sale-price hook (`BatteredFirearmSaleValueRuntime`). The decision is made by
-  `BatteredFirearmOriginInspectionPolicy`:
+  sale-price hook. It is decided by `BatteredFirearmOriginInspectionPolicy`:
   - **Unavailable**: initialization is pending or failed, and the token
-    blueprint was never registered. No live item can carry an enchantment
-    whose blueprint does not exist in the process, so the weapon is reported
-    as not battered and keeps its native sale price. A single warning
-    (`gunsmithing` / `battered-origin.inspection-unavailable`) is logged per
-    process.
+    blueprint was never registered. No live item can carry an enchantment of a
+    blueprint that does not exist in the process, so the weapon is not
+    battered and keeps its native price. One warning (`gunsmithing` /
+    `battered-origin.inspection-unavailable`) is logged per process.
   - **Inspect** in every other case, including successful initialization
-    without the token. That case is an invariant violation, and the strict
-    `RequireBlueprint` exception still fires. Multiple tokens or a token
-    without a stable owner still throw.
-- `Bind`, `TryGetOwner` and the creation, transfer and CMI paths are
-  unchanged. They still require the blueprint.
-  `RequireBlueprint`'s message now says why the token is missing (failed,
-  pending or invariant).
-- Not gated on the Gunslinger toggle. The token is registered unconditionally
-  during a successful initialization, so `gunslinger=False` and existing saves
-  behave exactly as before.
+    without the token. That is an invariant violation, and
+    `RequireBlueprint` still throws. Multiple tokens or a token without a
+    stable owner still throw.
+- `Bind`, `TryGetOwner` and the creation, transfer and CMI paths still require
+  the blueprint. `RequireBlueprint`'s message now says why it is missing.
+- Not gated on the Gunslinger toggle. The token registers unconditionally in a
+  successful initialization.
 
 ### 3.3 Failure containment, inspected and unchanged
 
-- `ExpandedSummoningVariantMenuPatch` returns to native behavior unless the
-  source spell carries this mod's published variants component, which exists
-  only after a successful publication. After a failed startup, Summon Monster
-  I keeps its native menu.
-- `ExpandedSummoningPublication.IsPublishedExpandedParent` uses the same
-  marker test.
-- Other tooltip-path hooks already return to native behavior when
+- `ExpandedSummoningVariantMenuPatch` and
+  `ExpandedSummoningPublisher.IsPublishedExpandedParent` act only on the
+  product's published variants component. After a failed startup they leave
+  the native spell alone, which §4.2 confirmed.
+- The other tooltip hooks already return to native behaviour when
   initialization did not complete:
   - `FirearmConditionTooltipPatch` and `FirearmQualitiesTooltipPatch`
     (`FirearmRuntimeState.IsConfigured`);
   - `BasicAmmunitionSaleValuePatch` (null ammunition set);
-  - the quality filter transpilers (component tests on the enchantment
-    itself).
-- The `package-blueprint-lifecycle-failed` / `bootstrap-unavailable` summoning
-  messages are truthful blocked states and were left as they are.
-- `BlueprintBootstrap.cs` (hash-pinned by the icon catalog) is not edited.
-  Registration order, GUIDs, released identities, module publication and the
-  summon roster are unchanged.
+  - the quality-filter transpilers.
+- The summoning blocked-state messages are truthful and were not changed.
+- `BlueprintBootstrap.cs` (hash-pinned), GUIDs, registration order, released
+  identities, module publication and the summon roster are unchanged.
+
+### 3.4 Test-only native harness (`tools/LoaderCompatHarness`, `scripts/compatibility/loader-compat`)
+
+Nothing here is packaged with the product.
+
+- `SpearRepairProbes.cs` adds conditions, all applied before the product
+  initializes:
+  - `mutateNativeLongspear` (simulated donor mutation);
+  - `captureWeaponTypes` (pre-product weapon-type fingerprints);
+  - `corruptOwnedSpearProfile` (writes onto the owned clone as it is
+    validated);
+  - `patchWeaponTypeGetters` (harness-owned identity postfixes);
+  - `externalAttackRangePatch` (+1 ft on the shared `AttackRange` getter,
+    limited to the Longspear family).
+- It also adds three ops:
+  - `kmgWeaponTypeProfile`: owned spear fields and getters, native donor
+    fields, getters and patch owners, old-release clone predicate failures,
+    and unchanged-since-capture checks.
+  - `kmgItemPricing`: native `GetItemSellPrice` and `FillTooltipData` on
+    ordinary weapons, repeated; a production pistol bound as battered to the
+    main character.
+  - `kmgSorcererSummon`: a fresh level-1 sorcerer created through
+    `LevelUpController` in character-generation mode with the native class
+    path, learning Summon Monster I through `SelectSpell`. It joins the party
+    and is selected as a portrait click does. The probe opens the action
+    bar's spell group with its own click handler, clicks the Summon Monster I
+    slot, reads the creature menu the game filled (names, icons, visibility),
+    casts the first entry with the `AbilityData` that slot holds, and waits
+    for the summoned unit. Everything it creates is removed.
+- `Invoke-LoaderCompatSession.ps1` gains an exactly-once `expectLog` group.
+- Three sessions: `spear-bootstrap-reporter-stack.json`,
+  `spear-bootstrap-simulated.json` and `spear-bootstrap-baseline.json`.
 
 ## 4. Validation
 
-### 4.1 Focused domain and compile checks (this host, `DATA`)
+### 4.1 Build and focused domain checks
 
-`GamePath.props` is absent from this worktree, and the headless developer is
-not permitted to create it. Local runs therefore passed
-`-KingmakerInstallDir 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker'`.
-The first domain-test build in this worktree failed for the same reason (the
-test project resolves `Newtonsoft.Json` through `$(KingmakerManagedDir)`). It
-built after one `dotnet build` of the test project with
-`-p:KingmakerManagedDir=…\Kingmaker_Data\Managed`, which placed the reference
-in the output directory. These runs used the working tree before commit. The
-controller's `focused` receipt for the exact candidate is separate (§4.3).
+`GamePath.props` was absent in the first invocation; the operator has since
+supplied it in the worktree.
 
 | Command | Result | Time |
 |---|---|---|
-| `.\scripts\Invoke-KmgGate.ps1 -Filter 'elven-branched-spear' -KingmakerInstallDir …` | production Release compile passed; **25 of 3158** selected tests passed: the 10 new `elven-branched-spear.bootstrap-repair.*` cases and 15 existing spear catalog, source-contract, publication and presentation cases | compile 0.4 s (incremental, after a full compile in the first run), tests 2.4 s |
-| same, `-Filter 'battered;craft-magic-items;sale;vendor;player-facing'` | **98** passed, 0 failed (battered rules and ownership, CMI, vendor stock, player-facing presentation) | 0.8 s |
-| same, `-Filter 'summoning-publication-boundary;summon.publication;alternate-summoning;summon-variant-menu'` | **43** passed, 0 failed | 0.9 s |
+| `.\scripts\Invoke-KmgGate.ps1 -Filter 'elven-branched-spear' -KingmakerInstallDir …` | production compile passed; **25 of 3158** tests passed (10 new `elven-branched-spear.bootstrap-repair.*` policy cases and 15 existing spear cases) | compile 0.4 s incremental, tests 2.4 s |
+| same, `-Filter 'battered;craft-magic-items;sale;vendor;player-facing'` | 98 passed | 0.8 s |
+| same, `-Filter 'summoning-publication-boundary;summon.publication;alternate-summoning;summon-variant-menu'` | 43 passed | 0.9 s |
+| `powershell.exe -File scripts/Build-Local.ps1 -DevelopmentPurpose spear-bootstrap-tooltip-repair -DevelopmentTestFilter elven-branched-spear -ReferenceBundleDir … -LoaderReferenceDir …` at `56e00163e9d1` | development candidate built; strict standalone UMM package validation passed; the same 25 tests passed | about 6 min |
+| `.\scripts\compatibility\loader-compat\Build-LoaderCompatHarness.ps1 …` (pinned UMM 0.31.1 references) | compiled | seconds |
 
-The new cases test the production policies directly. They are supporting
-evidence and do not replace native observation:
+The domain cases test the production policies directly and are supporting
+evidence only.
 
-- the engine reach formula (10 → 6, 5 → 2, 9 → 5, 11, 15);
-- a healthy profile;
-- owned-field failure diagnostics (predicate, expected, actual, donor, getter
-  and patch owners) from a **simulated** donor mutation (15 ft reach, Polearms
-  group);
-- unpatched-getter and own-patch-only mismatches are fatal;
-- an external getter patch is reported and not fatal;
-- an owned mismatch still wins over an external patch;
-- bounded output;
-- observation-contract refusal;
-- the battered inspection truth table.
+### 4.2 Native evidence (disposable loader-compat game copy)
 
-### 4.2 Native evidence: not obtained (blocked)
+Environment for all sessions:
 
-Native work was not run. Each required item below remains an **explicit gap**,
-not a pass.
+- Kingmaker 2.1.7b, in the disposable copy
+  `C:\Dev\KingmakerGunslingerLab\game-copies\loader-compat`.
+- UMM **0.31.1.0**, in-process SHA-256 `2e038ff2…`; Harmony 2.3.1.1 and the
+  0.31.1 Harmony12 facade.
+- Harness commit `4ba6cab678`; fixture save `KMCS_AFTER_NORMAL_012_MODONLY.zks`
+  in a per-session profile; `locale=enGB`.
 
-| Mission item | Status | Why |
+Each session verified in-process loader and product identity. Each restored
+the game's registry settings and confirmed the owner's saves and installation
+unchanged (`registryRestored`, `ownerSavesUnchanged` and
+`ownerInstallUnchanged` all true). No owner save or normal-play installation
+was touched, and no runtime lease was opened.
+
+| Session (evidence under `runtime-evidence/loader-compat/`) | Package | Result |
 |---|---|---|
-| 4.1.1 Spear construction under the reproduced condition; donor unchanged | GAP | No native run. The constructor change and the donor fingerprint guard are compiled only. |
-| 4.1.2 Failure diagnostics from an intentionally invalid profile | Domain only (simulated observations) | Native injection not run. |
-| 4.1.3 Failed startup: ordinary weapon price and tooltip, no flood | GAP | The loader-compat harness's injected-initialization-failure condition was not run. |
-| 4.1.4 Normal and battered pricing | Domain neighbors only | No native price query. |
-| 4.1.5 `gunslinger=False` | By construction and inspection (unconditional token registration, toggle not consulted) | No native run. |
-| 4.1.6 New sorcerer Summon Monster I menu and summon, reporter settings, UMM 0.31.1 | GAP | The visual "empty stub" symptom has **not** been observed, before or after the repair, and is not claimed fixed. |
-| 4.1.7 Fresh-process save/load | Not required by the change: persistence, registration order, identities and saved-item interpretation are unchanged. The inspection path reads only. | — |
+| **R-cand** `20261121T154235Z-…-spear-bootstrap-reporter-stack` | candidate | PASS (107 s + 115 s) |
+| **R-base** `20261121T153842Z-…-spear-bootstrap-reporter-stack` | v0.0.192 | PASS (101 s + 109 s): the partial stack does not reproduce |
+| **B** `20261121T155017Z-…-spear-bootstrap-baseline` | v0.0.192 | PASS (72 s): the unrepaired bytes reproduce the cascade under the simulated condition |
+| **S** `20261121T154637Z-…-spear-bootstrap-simulated` | candidate | PASS (70 s, 73 s, 61 s) |
 
-Blocking causes, attempted once each in their simple form:
+Mission coverage:
 
-- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Build-Local.ps1 -DevelopmentPurpose spear-bootstrap-tooltip-repair -DevelopmentTestFilter elven-branched-spear`
-  was **denied** by the session permission policy. It is needed to produce the
-  development candidate ZIP that the loader-compat session stages.
-- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/compatibility/loader-compat/Build-LoaderCompatHarness.ps1`
-  was **denied**. It is needed for the harness that injects the failure and
-  drives character creation, tooltips and the summon menu in the disposable
-  UMM 0.31.1 copy.
-- `scripts/compatibility/loader-compat/Invoke-LoaderCompatSession.ps1` is not
-  on the allowlist and needs both outputs above.
-- Writing `GamePath.props` is explicitly denied. The allowlisted guarded live
-  route (`.\scripts\Invoke-KingmakerRuntimeTest.ps1`) was **not** launched
-  for three reasons:
-  - it builds through Build-Local and deploys into the owner's installation
-    (UMM 0.33.0 and the owner's mod stack, not the reporter's 0.31.1
-    settings);
-  - this session cannot snapshot `Params.xml` (the UMM `LastUpdateCheck`
-    restoration gap) or check for a peer Kingmaker process;
-  - no existing scenario injects an initialization failure or opens a new
-    sorcerer's menu.
+1. **Spear construction (4.1.1).**
+   - S-1: simulated donor mutation, native Longspear at 15 ft and Polearms;
+     old-release predicates `fighter-group` and `attack-range` fail on it.
+     Initialization completed, and the owned spear has the intended profile:
+     category `0x004b4d47`, Melee, 10 ft, 1×D8, Physical/Piercing, 20, X3,
+     Spears, two-handed, not light, monk, natural or unarmed, no override,
+     10 lb.
+   - The native Longspear (still mutated, exactly as captured before the
+     product ran) and the unrelated Heavy Crossbow type show no changed field.
+   - R-cand shows the same owned profile on the reporter-shaped stack.
+2. **Failure diagnostics (4.1.2).**
+   - S-2 corrupts the owned clone's fighter group, with a harness postfix on
+     the getter. The loader log records once:
+     `Elven Branched Spear type profile is invalid: 1 of 15 checks failed.
+     fighter-group [owned-field]: expected=Spears actual=Polearms donor=Spears;
+     getter expected=Polearms actual=Polearms donor=Spears;
+     getterPatches=KmgLoaderCompatHarness`.
+   - S-3 shows the tolerated case, logged exactly once:
+     `attack-range [external-getter-patch]: expected=10ft actual=10ft
+     donor=10ft; getter expected=6ft actual=7ft donor=7ft;
+     getterPatches=KmgLoaderCompatHarness`. Initialization completed. The
+     v0.0.192 rule would have failed this donor (`attack-range`).
+3. **Failed startup (4.1.3).**
+   - After S-2's failed initialization, 25 repeated `GetItemSellPrice` and
+     `FillTooltipData` queries each on the Standard Longspear, Longsword,
+     Greataxe and Heavy Crossbow threw nothing. Prices were native (1, 4, 5,
+     13 gp), and the tooltip `SellPrice` text matched.
+   - `battered-origin.inspection-unavailable` appeared **exactly once**; the
+     missing-token exception, zero times.
+   - The same queries on the unrepaired package (B) threw `The battered origin
+     token blueprint is unavailable.` on every call (5/5 per item, price and
+     tooltip).
+4. **Normal pricing (4.1.4).** In S-1 and R-cand, ordinary weapons sold at the
+   native price. A production pistol (`a303d71d…`) bound as battered to the
+   main character sold for the fixed 22 gp; the unbound pistol sold at its
+   native price. On R-cand the only `GetItemSellPrice` patch owner was this
+   mod.
+5. **Disabled publication (4.1.5).** R-cand ran with `gunslinger=False`
+   (`Gunslinger=False` active in the process). Initialization completed,
+   battered pricing kept its fixed value, and ordinary pricing stayed native.
+   No identity or registration changed.
+6. **Summoning (4.1.6).** R-cand: a fresh level-1 sorcerer learned Summon
+   Monster I through the native level-up selection.
+   - The real spell group opened and its Summon Monster I slot was clicked.
+     The creature menu opened with **7 visible entries**, each with a name and
+     an icon: Fire Beetle, Dog, Eagle, Poisonous Frog, Pony, Dire Rat and
+     Viper. RacesUnleashed's crab spider is the parent's eighth variant and is
+     gated without its summoner feature, as before.
+   - The probe cast Fire Beetle from that slot: command `Success`, and a Fire
+     Beetle was summoned. The screenshot is in R-cand's harness folder.
+   - After S-2's failed startup, Summon Monster I stayed Kingmaker's own
+     single spell. No menu opened, and casting it summoned a Summoned Dog.
+7. **Regression scope (4.1.7).** Covered by the spear, publication, summoning
+   and pricing neighbours above. No fresh-process save/load check is needed:
+   persistence, registration order, identities and saved-item interpretation
+   are unchanged, and the inspection path only reads.
 
-**No runtime transaction, lease or deployment was started; nothing needed
-restoration.**
+Harness iterations before the final runs, kept as evidence:
+
+- `151241Z`: JSON conversion defect.
+- `151542Z`: the level-up path skipped `ApplySpellbook`.
+- `151929Z`: wrong scrap-value namespace.
+- `153059Z`: launch 1 exited during Steam start-up before the main menu
+  (environmental), so launch 2 ran with default modules.
+- `153347Z`: v0.0.192 read the menu after the action bar had fallen back to
+  the main character. The probe now confirms the bar's selected unit before
+  each click and records retries. None were needed in the final runs.
 
 ### 4.3 Required gate
 
-The `focused` gate was run on the committed candidate through the enrollment's
-`verify` helper with `-Filter elven-branched-spear`. Its receipt and outcome
-are reported in the developer report. The gate passes no install directory, so
-without `GamePath.props` in the worktree its compile step is expected to stop
-with `No Kingmaker path is configured`.
+The `focused` gate runs on the final committed candidate through the
+enrollment's `verify` helper with `-Filter elven-branched-spear`. Its receipt
+is in the developer report.
 
 ## 5. Remaining limitations and risks for the owner
 
-1. The reporter's failing predicate is still unknown (§2.4). If it was an
-   owned-profile field inherited from a mutated donor, the repair removes it.
-   If another mod patches a shared getter, startup now continues, with one
-   warning naming the patch owners. If a getter differs with no external
-   patch, startup still fails, but the message now names the predicate,
-   values and owners.
-2. **Design point for owner review:** an externally patched shared getter is
-   tolerated (logged, not fatal) when the owned field is exact. The spear
-   then follows the other mod's global rule, as every native weapon does.
-   Making that case fatal again is a one-line policy change.
-3. Eastern Weapons (registered right after the spear and before Expanded
-   Summoning) still inherits `m_AttackType`, `m_AttackRange` and `m_IsNatural`
-   from its native donors and checks `AttackRange.Value == 2` with a generic
-   message. It was not reported as failing and was not changed (bounded
-   repair). It is the next most likely cascade point if the reporter's cause
-   is a range or natural-weapon mutation.
-4. The full 43-mod environment, ArmsArmor 1.0.10 and the raw log are
-   unavailable. Every native item in §4.2 remains open until a native run is
-   authorized and executed.
+1. The reporter's exact failing predicate and its cause remain unknown
+   (§2.4). The four available reported mods do not reproduce it, even on the
+   unrepaired package. ArmsArmor 1.0.10, about 38 other mods and the raw log
+   are unavailable.
+2. **Design point for owner review.** An externally patched shared getter is
+   tolerated (logged once, not fatal) when the owned field is exact. The spear
+   then follows the other mod's rule through the shared getter. The warning
+   text says the rule "applies to every weapon", which assumes a global
+   patch; S-3's stand-in was limited to the Longspear family.
+3. Eastern Weapons, registered before Expanded Summoning, still inherits
+   `m_AttackType`, `m_AttackRange` and `m_IsNatural` from its donors and checks
+   `AttackRange.Value == 2` with a generic message. It was not reported as
+   failing and was not changed. A reach or natural-weapon mutation of its
+   donors would still stop startup there.
+4. Native evidence comes from a disposable copy with the product alone or
+   with four of the reported mods. It is not the reporter's installation.
