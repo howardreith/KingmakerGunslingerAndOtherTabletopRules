@@ -91,6 +91,9 @@ namespace KmgLoaderCompatHarness
 
         public const string NativeLongspearItemGuid = "f28f6031c2908d84d945865a80f67177";
 
+        /// <summary>"guid=2d6;guid=throw" - BlueprintItemWeapon.BaseDamage for the item with that asset guid returns those dice or throws, anywhere in the game.</summary>
+        public const string ItemBaseDamageByGuid = "itemBaseDamageByGuid";
+
         public const string NativeLongspearTypeGuid = "fa2dd17cbde7d3f4aa918d467c30516e";
         public const string HarnessId = "KmgLoaderCompatHarness";
         public const string InjectedNamedFailure = "KmgLoaderCompatHarness injected named-spear registration failure";
@@ -110,8 +113,11 @@ namespace KmgLoaderCompatHarness
             MutateNativeLongspear, CaptureWeaponTypes, CorruptOwnedSpearProfile, CorruptOwnedSpearProfileOnCall, PatchWeaponTypeGetters,
             OwnedSpearAttackRangePatch, ThrowingWeaponTypeGetters, FailNamedSpearRegistration, CaptureSpearSelectors,
             AttackRangeByGuid, ThrowingGettersByGuid, SpearSubCategoryRemoval, SpearSubCategoryAddition,
-            MutateNativeLongspearItem, OwnedEnchantmentsEmpty, SpearSubCategoryListAddition
+            MutateNativeLongspearItem, OwnedEnchantmentsEmpty, SpearSubCategoryListAddition, ItemBaseDamageByGuid
         };
+
+        private static readonly Dictionary<string, string> itemDamageByGuid = new Dictionary<string, string>();
+        public static int ItemDamageOverrides { get; private set; }
 
         private static Dictionary<string, string> longspearItemMutations = new Dictionary<string, string>();
         private static WeaponSubCategory[] listAddedSubCategories = new WeaponSubCategory[0];
@@ -155,6 +161,17 @@ namespace KmgLoaderCompatHarness
             longspearItemMutations = Pairs(conditions, MutateNativeLongspearItem, '=');
             if (longspearItemMutations.Count > 0) applied[MutateNativeLongspearItem] = ToJson(longspearItemMutations);
             Assembly product = ProductProbes.Entry().Assembly;
+
+            itemDamageByGuid.Clear();
+            foreach (KeyValuePair<string, string> pair in Pairs(conditions, ItemBaseDamageByGuid, '=')) itemDamageByGuid[pair.Key] = pair.Value;
+            if (itemDamageByGuid.Count > 0)
+            {
+                MethodInfo baseDamage = typeof(BlueprintItemWeapon).GetProperty("BaseDamage", BindingFlags.Instance | BindingFlags.Public)?.GetGetMethod() ??
+                    throw new MissingMethodException(typeof(BlueprintItemWeapon).FullName, "get_BaseDamage");
+                harmony.Patch(baseDamage, new HarmonyMethod(typeof(SpearRepairConditions).GetMethod(nameof(ItemBaseDamagePrefix), Any)),
+                    new HarmonyMethod(typeof(SpearRepairConditions).GetMethod(nameof(ItemBaseDamagePostfix), Any)));
+                applied[ItemBaseDamageByGuid] = ToJson(itemDamageByGuid);
+            }
 
             if (Enabled(conditions, OwnedEnchantmentsEmpty))
             {
@@ -390,6 +407,22 @@ namespace KmgLoaderCompatHarness
             SubCategoryRemovals++;
         }
 
+        private static void ItemBaseDamagePrefix(BlueprintItemWeapon __instance)
+        {
+            if (__instance == null || !itemDamageByGuid.TryGetValue(__instance.AssetGuid ?? string.Empty, out string spec) || spec != "throw") return;
+            ItemDamageOverrides++;
+            throw new InvalidOperationException(InjectedGetterFailure + " (item " + __instance.AssetGuid + " BaseDamage)");
+        }
+
+        private static void ItemBaseDamagePostfix(BlueprintItemWeapon __instance, ref Kingmaker.RuleSystem.DiceFormula __result)
+        {
+            if (__instance == null || !itemDamageByGuid.TryGetValue(__instance.AssetGuid ?? string.Empty, out string spec) || spec == "throw") return;
+            string[] parts = spec.ToLowerInvariant().Split('d');
+            __result = new Kingmaker.RuleSystem.DiceFormula(int.Parse(parts[0], CultureInfo.InvariantCulture),
+                (Kingmaker.RuleSystem.DiceType)int.Parse(parts[1], CultureInfo.InvariantCulture));
+            ItemDamageOverrides++;
+        }
+
         private static void SubCategoryListAdditionPostfix(Kingmaker.Enums.WeaponCategory __0, ref WeaponSubCategory[] __result)
         {
             if ((int)__0 != WeaponTypeProfiles.OwnedSpearCategory) return;
@@ -443,7 +476,7 @@ namespace KmgLoaderCompatHarness
                 ["corruptionsApplied"] = CorruptionsApplied, ["getterThrows"] = GetterThrows, ["guidGetterThrows"] = GuidGetterThrows,
                 ["rangeOverrides"] = RangeOverrides, ["subCategoryRemovals"] = SubCategoryRemovals,
                 ["subCategoryAdditions"] = SubCategoryAdditions, ["enchantmentOverrides"] = EnchantmentOverrides,
-                ["subCategoryListAdditions"] = SubCategoryListAdditions, ["captured"] = captured
+                ["subCategoryListAdditions"] = SubCategoryListAdditions, ["itemDamageOverrides"] = ItemDamageOverrides, ["captured"] = captured
             };
         }
 
@@ -1105,7 +1138,20 @@ namespace KmgLoaderCompatHarness
             {
                 BlueprintWeaponType type = spear.Blueprint.Type;
                 JObject fields = WeaponTypeProfiles.Fields(type), getters = WeaponTypeProfiles.Getters(type);
-                result["spear"] = new JObject { ["item"] = Describe(spear), ["type"] = type.name, ["typeGuid"] = type.AssetGuid, ["fields"] = fields, ["getters"] = getters };
+                // The loaded item's own blueprint damage (BlueprintItemWeapon.BaseDamage and its dice override), which
+                // the round-6 construction change governs, not only the weapon type's.
+                string itemDamage;
+                try { itemDamage = ItemDamageProbe.Dice(spear.Blueprint.BaseDamage); }
+                catch (Exception exception) { itemDamage = "<throws " + (exception.InnerException ?? exception).GetType().Name + ">"; }
+                string overrideDice = Convert.ToString(typeof(BlueprintItemWeapon).GetField("m_OverrideDamageDice",
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(spear.Blueprint), CultureInfo.InvariantCulture);
+                result["spear"] = new JObject
+                {
+                    ["item"] = Describe(spear), ["blueprintGuid"] = spear.Blueprint.AssetGuid, ["itemBaseDamage"] = itemDamage,
+                    ["itemOverrideDamageDice"] = overrideDice, ["type"] = type.name, ["typeGuid"] = type.AssetGuid, ["fields"] = fields, ["getters"] = getters
+                };
+                if (itemDamage != "1xD8") problems.Add("the loaded spear item's BaseDamage is " + itemDamage + ", expected 1xD8");
+                if (overrideDice != "False") problems.Add("the loaded spear item's damage-dice override is " + overrideDice + ", expected False");
                 if (type.name != WeaponTypeProfiles.OwnedSpearTypeName) problems.Add("the loaded spear's weapon type is " + type.name);
                 foreach (KeyValuePair<string, string> pair in WeaponTypeProfiles.Intended)
                     if ((string)fields[pair.Key] != pair.Value) problems.Add("loaded spear " + pair.Key + " is " + fields[pair.Key] + ", expected " + pair.Value);

@@ -34,7 +34,9 @@ param(
     # surfaced as recorded command output. Starts nothing and changes nothing.
     [string]$Report,
     # With -Report: print that launch's records (label prefix, e.g. 02) instead of the session summary.
-    [string]$ReportLaunch
+    [string]$ReportLaunch,
+    # Runs the offline session-guard checks (Test-LoaderCompatSafety.ps1) and exits.
+    [switch]$SafetyTests
 )
 
 . (Join-Path $PSScriptRoot 'LoaderCompat.Common.ps1')
@@ -113,14 +115,15 @@ if ($Report) {
     return
 }
 
+if ($SafetyTests) {
+    # Offline fixture checks of the session guards, including shared ownership, per-launch host checks and
+    # restoration only at a safe boundary. No game, loader, registry or owner file is touched.
+    & (Join-Path $PSScriptRoot 'Test-LoaderCompatSafety.ps1')
+    return
+}
+
 if ($RecoverOnly) {
-    if (-not (Test-Path -LiteralPath $script:LcJournal)) { Write-Host 'No interrupted session journal.'; return }
-    if (Get-Process -Name Kingmaker -ErrorAction SilentlyContinue) { throw 'Kingmaker is running; recover after it exits.' }
-    $journal = Get-Content -LiteralPath $script:LcJournal -Raw | ConvertFrom-Json
-    if ($journal.registryBackup) { Restore-LcRegistry $journal.registryBackup }
-    Remove-Item -LiteralPath $script:LcJournal -Force
-    Exit-LcLock
-    Write-Host "Recovered interrupted session $($journal.sessionId)."
+    Write-Host (Invoke-LcRecovery { param($Path) Restore-LcRegistry $Path })
     return
 }
 
@@ -135,12 +138,16 @@ $evidence = Join-Path $script:LcEvidenceRoot $sessionId
 $profileDir = Join-Path $evidence 'profile'
 
 Assert-LcPreflight
-Enter-LcLock $sessionId
+# The shared runtime ownership for the whole session (compatibility.lock plus its lease journal).
+$scope = Enter-LcRuntimeOwnership $sessionId
+try { Enter-LcLock $sessionId }
+catch { Complete-LcOwnedLease $scope.Lease 'Loader-compat session did not start: the loader-compat lock is held.'; throw }
 New-Item -ItemType Directory -Force -Path $evidence, (Join-Path $profileDir 'Saved Games') | Out-Null
 $summary = [ordered]@{ sessionId = $sessionId; session = $session.name; loaderProfile = $LoaderProfile
     candidateZip = $CandidateZip; candidateZipSha256 = Get-LcSha256 $CandidateZip; gameCopy = $copyRoot
-    git = (& git -C (Split-Path (Split-Path (Split-Path $PSScriptRoot))) rev-parse HEAD); launches = @(); status = 'started' }
-$journal = [ordered]@{ sessionId = $sessionId; registryBackup = $null }
+    git = (& git -C (Split-Path (Split-Path (Split-Path $PSScriptRoot))) rev-parse HEAD); launches = @(); status = 'started'
+    runtimeLease = $scope.Lease.RunId }
+$journal = [ordered]@{ sessionId = $sessionId; registryBackup = $null; leaseRunId = $scope.Lease.RunId; leaseStatePath = $scope.Lease.StatePath }
 $savesBefore = $null; $installBefore = $null
 try {
     $savesBefore = Get-LcOwnerSavesManifest
@@ -228,6 +235,16 @@ try {
             $arguments += @('-kmgRuntimeTestRequest', $productRequestPath)
         }
 
+        # Every fresh launch re-checks the host: a peer game or a sibling lab lock that appeared after the session
+        # preflight withholds this launch and every later one.
+        try { Assert-LcLaunchAvailable $scope.Lease }
+        catch {
+            $record.verdict = 'withheld'; $record.problems += $_.Exception.Message
+            Write-LcJson (Join-Path $launchDir 'launch-summary.json') $record
+            $summary.launches += $record
+            Write-Host ("{0} WITHHELD {1}" -f $label, $_.Exception.Message)
+            break
+        }
         $started = Get-Date
         $process = Start-LcKingmakerCopy $paths $arguments
         $record.pid = $process.Id
@@ -328,13 +345,14 @@ catch {
 }
 finally {
     $integrity = @()
-    $deadline = (Get-Date).AddSeconds(60)
-    while ((Get-Process -Name Kingmaker -ErrorAction SilentlyContinue) -and (Get-Date) -lt $deadline) { Start-Sleep -Seconds 1 }
+    # Game settings are restored, and shared ownership released, only once no Kingmaker process remains;
+    # otherwise the journal and a RecoveryRequired lease are kept for -RecoverOnly.
     try {
-        if ($journal.registryBackup) { Restore-LcRegistry $journal.registryBackup }
-        $summary.registryRestored = $true
-        if (Test-Path -LiteralPath $script:LcJournal) { Remove-Item -LiteralPath $script:LcJournal -Force }
-    } catch { $summary.registryRestored = $false; $integrity += "registry restoration failed: $($_.Exception.Message)" }
+        $ownership = Complete-LcSessionOwnership $journal $scope { param($Path) Restore-LcRegistry $Path }
+        $summary.registryRestored = ($ownership.Outcome -eq 'restored')
+        $summary.ownership = $ownership.Outcome
+        if ($ownership.Outcome -ne 'restored') { $integrity += $ownership.Reason }
+    } catch { $summary.registryRestored = $false; $integrity += "ownership completion failed: $($_.Exception.Message)" }
     if ($null -ne $savesBefore) {
         $diff = Compare-LcManifest $savesBefore (Get-LcOwnerSavesManifest)
         $summary.ownerSavesUnchanged = ($diff.Count -eq 0)

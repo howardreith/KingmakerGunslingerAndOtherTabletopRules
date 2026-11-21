@@ -530,7 +530,8 @@ namespace KmgLoaderCompatHarness
                         ["subCategoryRemovalsAtLeast"] = SpearRepairConditions.SubCategoryRemovals,
                         ["subCategoryAdditionsAtLeast"] = SpearRepairConditions.SubCategoryAdditions,
                         ["enchantmentOverridesAtLeast"] = SpearRepairConditions.EnchantmentOverrides,
-                        ["subCategoryListAdditionsAtLeast"] = SpearRepairConditions.SubCategoryListAdditions
+                        ["subCategoryListAdditionsAtLeast"] = SpearRepairConditions.SubCategoryListAdditions,
+                        ["itemDamageOverridesAtLeast"] = SpearRepairConditions.ItemDamageOverrides
                     };
                     foreach (var pair in step.Invariants ?? new System.Collections.Generic.Dictionary<string, string>())
                     {

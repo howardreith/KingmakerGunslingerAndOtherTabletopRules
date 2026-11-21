@@ -24,7 +24,125 @@ $script:LcForeignLocks = @(
     'C:\Dev\KingmakerMemoryLeakResearchLab\runtime-state\kmld-runtime.lock',
     'C:\Dev\KingmakerMountedCombatLab\runtime-state\active-transaction.lock')
 
+# The lab's shared runtime ownership: the same compatibility.lock and runtime-lease
+# journal that profile staging, deployment, the generic runtime launcher and the
+# settings transactions use (scripts/RuntimeCoordination.Common.ps1).
+. (Join-Path $PSScriptRoot '..\..\RuntimeCoordination.Common.ps1')
+$script:LcStateRoot = 'C:\Dev\KingmakerGunslingerLab\compatibility-state'
+# Every Kingmaker process on the host. A script variable so the offline safety
+# checks can substitute a disposable peer without starting a game.
+$script:LcGameProcessQuery = { @(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue) }
+function Get-LcGameProcesses { return , @(& $script:LcGameProcessQuery) }
+
 function Get-LcSha256([string]$Path) { (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant() }
+
+# Takes the shared compatibility lock for the whole session (refuses if any other
+# entry point holds it) and records a runtime-lease journal for it.
+function Enter-LcRuntimeOwnership([string]$SessionId) {
+    return Enter-KmgRuntimeLease -ParentLease $null -Purpose ('loader-compat ' + $SessionId) -StateRoot $script:LcStateRoot
+}
+
+# Immediately before every fresh launch: no Kingmaker process of any origin, no
+# sibling lab lock, and the shared lock still held by this session's lease.
+function Assert-LcLaunchAvailable($Lease) {
+    $games = Get-LcGameProcesses
+    if ($games.Count -gt 0) {
+        throw "Launch withheld: Kingmaker is running (pid $((@($games | ForEach-Object { $_.Id })) -join ',')); another session may have taken the host."
+    }
+    foreach ($lock in $script:LcForeignLocks) {
+        if (-not (Test-Path -LiteralPath $lock)) { continue }
+        $owned = $null -ne $Lease -and [IO.Path]::GetFullPath($lock).Equals([IO.Path]::GetFullPath($Lease.LockPath), [StringComparison]::OrdinalIgnoreCase) -and
+            (Get-Content -LiteralPath $lock -Raw).Trim() -ceq $Lease.RunId
+        if (-not $owned) { throw "Launch withheld: another lab holds a runtime lock: $lock" }
+    }
+    if ($null -ne $Lease) { Assert-KmgRuntimeLease $Lease }
+}
+
+function Set-LcLeaseRecoveryRequired($Lease, [string]$Reason) {
+    if ($null -eq $Lease) { return }
+    $Lease.State.status = 'RecoveryRequired'; $Lease.State.recoveryRequired = $true; $Lease.State.reason = $Reason
+    Write-KmgRuntimeLeaseState $Lease
+    $Lease.Stream.Dispose()
+}
+
+function Complete-LcOwnedLease($Lease, [string]$Reason) {
+    Assert-KmgRuntimeLease $Lease
+    if ((Get-LcGameProcesses).Count -gt 0) { throw 'Kingmaker is running; the shared lock is not released.' }
+    $Lease.State.status = 'Completed'; $Lease.State.recoveryRequired = $false; $Lease.State.reason = $Reason
+    Write-KmgRuntimeLeaseState $Lease
+    $Lease.Stream.Dispose()
+    Remove-KmgCompatibilityOwnedLock $Lease.LockPath $Lease.RunId
+}
+
+# The session finalizer. Game settings are restored only at a safe boundary: once
+# no Kingmaker process remains (waiting up to WaitSeconds). Otherwise nothing is
+# restored and the journal, the loader-compat lock and a RecoveryRequired lease on
+# the shared lock are kept for -RecoverOnly. A failed restoration keeps them too.
+function Complete-LcSessionOwnership($Journal, $Scope, [scriptblock]$Restore, [int]$WaitSeconds = 60) {
+    $lease = if ($null -ne $Scope) { $Scope.Lease } else { $null }
+    $deadline = (Get-Date).AddSeconds($WaitSeconds)
+    while ((Get-LcGameProcesses).Count -gt 0 -and (Get-Date) -lt $deadline) { Start-Sleep -Seconds 1 }
+    $games = Get-LcGameProcesses
+    if ($games.Count -gt 0) {
+        $reason = "Kingmaker is still running (pid $((@($games | ForEach-Object { $_.Id })) -join ',')); game settings were not restored and ownership is retained. Run Invoke-LoaderCompatSession.ps1 -RecoverOnly after it exits."
+        $Journal.recoveryRequired = $true; $Journal.reason = $reason
+        Write-LcJson $script:LcJournal $Journal
+        Set-LcLeaseRecoveryRequired $lease $reason
+        return [pscustomobject]@{ Outcome = 'recovery-required'; Reason = $reason }
+    }
+    try {
+        if ($Journal.registryBackup) { & $Restore $Journal.registryBackup }
+    } catch {
+        $reason = "Game-settings restoration failed: $($_.Exception.Message). Ownership is retained for -RecoverOnly."
+        $Journal.recoveryRequired = $true; $Journal.reason = $reason
+        Write-LcJson $script:LcJournal $Journal
+        Set-LcLeaseRecoveryRequired $lease $reason
+        return [pscustomobject]@{ Outcome = 'recovery-required'; Reason = $reason }
+    }
+    if ($null -ne $lease) { Complete-LcOwnedLease $lease 'Loader-compat session completed; game settings restored with no Kingmaker process running.' }
+    if (Test-Path -LiteralPath $script:LcJournal) { Remove-Item -LiteralPath $script:LcJournal -Force }
+    return [pscustomobject]@{ Outcome = 'restored'; Reason = $null }
+}
+
+# Completes a session lease left RecoveryRequired, after its original owner and
+# every game have exited. Never releases a lock another run owns.
+function Complete-LcRecoveredLease([string]$RunId) {
+    $statePath = Join-Path (Join-Path $script:LcStateRoot $RunId) 'runtime-lease.json'
+    $lockPath = Join-Path $script:LcStateRoot 'compatibility.lock'
+    $state = Read-KmgCompatibilityJson $statePath
+    if ($state.runId -cne $RunId -or ([string]$state.purpose) -notlike 'loader-compat *' -or $state.status -cnotin @('Active', 'RecoveryRequired')) {
+        throw "Recovery covers only this session's own active or RecoveryRequired lease: $statePath"
+    }
+    if (-not (Test-Path -LiteralPath $lockPath -PathType Leaf) -or (Get-Content -LiteralPath $lockPath -Raw).Trim() -cne $RunId) {
+        throw 'The shared compatibility lock is not held by this session; nothing was released.'
+    }
+    $owner = Get-Process -Id $state.processId -ErrorAction SilentlyContinue
+    if (Test-KmgRuntimeProcessIdentity $owner $state.processId $state.processStartedUtc) { throw 'The original session owner is still alive; nothing was released.' }
+    $stream = [IO.File]::Open($lockPath, [IO.FileMode]::Open, [IO.FileAccess]::ReadWrite, [IO.FileShare]::Read)
+    try {
+        $lease = [pscustomobject]@{ RunId = $RunId; LockPath = $lockPath; Stream = $stream; ProcessId = $PID
+            StatePath = $statePath; StateSha256 = (Get-KmgCompatibilitySha256 $statePath); Compatibility = $false; State = $state }
+        $state.status = 'Completed'; $state.recoveryRequired = $false
+        $state.reason = 'Recovered by Invoke-LoaderCompatSession.ps1 -RecoverOnly after every Kingmaker process exited; game settings restored.'
+        Write-KmgRuntimeLeaseState $lease
+        $stream.Dispose()
+        Remove-KmgCompatibilityOwnedLock $lockPath $RunId
+    } finally { $stream.Dispose() }
+}
+
+# -RecoverOnly: refuses while any Kingmaker process runs; otherwise restores the
+# backed-up game settings, completes the session's shared lease and releases the
+# journal and the loader-compat lock.
+function Invoke-LcRecovery([scriptblock]$Restore) {
+    if (-not (Test-Path -LiteralPath $script:LcJournal)) { return 'No interrupted session journal.' }
+    if ((Get-LcGameProcesses).Count -gt 0) { throw 'Kingmaker is running; recover after it exits. Nothing was changed.' }
+    $journal = Get-Content -LiteralPath $script:LcJournal -Raw | ConvertFrom-Json
+    if ($journal.PSObject.Properties['registryBackup'] -and $journal.registryBackup) { & $Restore $journal.registryBackup }
+    if ($journal.PSObject.Properties['leaseRunId'] -and $journal.leaseRunId) { Complete-LcRecoveredLease $journal.leaseRunId }
+    Remove-Item -LiteralPath $script:LcJournal -Force
+    Exit-LcLock
+    return "Recovered interrupted session $($journal.sessionId)."
+}
 
 function Write-LcJson([string]$Path, $Value) {
     [IO.File]::WriteAllText($Path, ($Value | ConvertTo-Json -Depth 12), (New-Object Text.UTF8Encoding($false)))
@@ -53,7 +171,7 @@ function Get-LcCopyPaths([string]$CopyRoot) {
 }
 
 function Assert-LcPreflight {
-    if (Get-Process -Name Kingmaker -ErrorAction SilentlyContinue) { throw 'Kingmaker is already running; refusing to take over another session.' }
+    if ((Get-LcGameProcesses).Count -gt 0) { throw 'Kingmaker is already running; refusing to take over another session.' }
     foreach ($lock in $script:LcForeignLocks) { if (Test-Path -LiteralPath $lock) { throw "Another lab holds a runtime lock: $lock" } }
     if (Test-Path -LiteralPath $script:LcJournal) { throw "An interrupted session journal exists ($script:LcJournal); run with -RecoverOnly first." }
     $steam = (Get-ItemProperty -LiteralPath 'HKCU:\Software\Valve\Steam').SteamPath

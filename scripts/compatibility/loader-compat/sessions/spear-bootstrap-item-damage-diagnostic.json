@@ -1,0 +1,59 @@
+{
+  "name": "spear-bootstrap-item-damage-diagnostic",
+  "description": "Spear startup repair (PR #195), round-7 item-damage diagnostics on the candidate with the product alone. A harness patch on BlueprintItemWeapon.BaseDamage, keyed on the released foundation spear item's asset guid (6edc216d68810960f85417237748b042), changes only that item's effective damage while its weapon type and every other item stay correct. (1) The getter returns 2d6: startup must fail once with one bounded item-damage diagnostic naming the item, expected and actual damage, the donor item's damage and the harness as patch owner, and native selectors must be restored. (2) The getter throws: the same single diagnostic must record the throw, keep the donor value and patch owner, and stay bounded; selectors restored.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "foundation-item-damage-2d6",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "itemBaseDamageByGuid": "6edc216d68810960f85417237748b042=2d6",
+        "captureSpearSelectors": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.failed]",
+          "item-damage [effective-getter]: expected=override=False actual=override=False donor=override=False; getter expected=",
+          "getterPatches=KmgLoaderCompatHarness"
+        ],
+        "once": [ "Elven Branched Spear item damage is invalid: " ],
+        "absent": [ "[blueprints][initialize.complete]", "Elven Branched Spear type profile is invalid" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "kmgInitialization", "label": "item-2d6", "expect": "failed", "match": "Elven Branched Spear item damage is invalid", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "item-2d6", "match": "absent", "invariants": { "itemDamageOverridesAtLeast": "1" }, "continueOnFailure": true },
+          { "op": "kmgSpearSelectorState", "label": "item-2d6", "expect": "restored", "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "foundation-item-damage-throws",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "itemBaseDamageByGuid": "6edc216d68810960f85417237748b042=throw",
+        "captureSpearSelectors": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.failed]",
+          "item-damage [effective-getter]: expected=override=False actual=override=False donor=override=False; getter expected=",
+          "actual=<throws InvalidOperationException: KmgLoaderCompatHarness injected getter failure",
+          "getterPatches=KmgLoaderCompatHarness"
+        ],
+        "once": [ "Elven Branched Spear item damage is invalid: " ],
+        "absent": [ "[blueprints][initialize.complete]", "Elven Branched Spear type profile is invalid" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "kmgInitialization", "label": "item-throws", "expect": "failed", "match": "Elven Branched Spear item damage is invalid", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "item-throws", "match": "absent", "invariants": { "itemDamageOverridesAtLeast": "1" }, "continueOnFailure": true },
+          { "op": "kmgSpearSelectorState", "label": "item-throws", "expect": "restored", "continueOnFailure": true }
+        ]
+      }
+    }
+  ]
+}
