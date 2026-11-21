@@ -48,8 +48,16 @@ if ($Report) {
         if ($null -eq $Object) { return $null }
         $property = $Object.PSObject.Properties[$Name]
         if ($null -eq $property) { return $null }
-        return $property.Value
+        # The unary comma keeps an array (empty and single-element included) as one value through the function
+        # pipeline, so the report preserves each field's JSON type and cardinality.
+        return , $property.Value
     }
+    # Shape self-check, before any evidence is printed: empty and single-element arrays must survive the projection.
+    $shapeProbe = '{"problems":[],"activeMods":["only"],"steps":[{"step":"a"}]}' | ConvertFrom-Json
+    $shapeText = ([ordered]@{ problems = (Get-LcReportValue $shapeProbe 'problems'); activeMods = (Get-LcReportValue $shapeProbe 'activeMods')
+        steps = (Get-LcReportValue $shapeProbe 'steps') } | ConvertTo-Json -Depth 4 -Compress)
+    if ($shapeText -ne '{"problems":[],"activeMods":["only"],"steps":[{"step":"a"}]}') { throw "report projection changes array shape: $shapeText" }
+    Write-Host "REPORT SHAPE CHECK $shapeText"
     $summaryData = Get-Content -LiteralPath $summaryPath -Raw | ConvertFrom-Json
     if (-not $ReportLaunch) {
         Write-Host "READ-ONLY REPORT $summaryPath sha256=$(Get-LcSha256 $summaryPath)"

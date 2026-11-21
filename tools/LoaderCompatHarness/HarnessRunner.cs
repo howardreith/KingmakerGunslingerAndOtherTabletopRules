@@ -527,7 +527,8 @@ namespace KmgLoaderCompatHarness
                         ["getterThrowsAtLeast"] = SpearRepairConditions.GetterThrows,
                         ["guidGetterThrowsAtLeast"] = SpearRepairConditions.GuidGetterThrows,
                         ["rangeOverridesAtLeast"] = SpearRepairConditions.RangeOverrides,
-                        ["subCategoryRemovalsAtLeast"] = SpearRepairConditions.SubCategoryRemovals
+                        ["subCategoryRemovalsAtLeast"] = SpearRepairConditions.SubCategoryRemovals,
+                        ["subCategoryAdditionsAtLeast"] = SpearRepairConditions.SubCategoryAdditions
                     };
                     foreach (var pair in step.Invariants ?? new System.Collections.Generic.Dictionary<string, string>())
                     {

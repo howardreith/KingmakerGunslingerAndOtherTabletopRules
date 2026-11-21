@@ -1,0 +1,80 @@
+{
+  "name": "spear-bootstrap-subcategory",
+  "description": "Spear startup repair (PR #195), round-5 sub-category controls on the candidate with the product alone. The effective sub-category check now covers every WeaponSubCategory value and the None wildcard. (1) Healthy: no condition; initialization completes, the registered spear has its intended profile and the spear selectors are published. (2) Finessable removed: a late (Priority.Last) HasSubCategory postfix withholds Finessable from the spear category only; initialization fails once with the sub-category diagnostic and native selectors are restored. (3) Simple added: a late HasSubCategory postfix grants Simple to the spear category only, leaving the five intended classifications intact; initialization must fail once with a diagnostic naming the extra Simple classification and the harness patch owner, and native selectors must be restored.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "healthy-spear",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "captureWeaponTypes": "fa2dd17cbde7d3f4aa918d467c30516e,36d0551b8a28587438a47fcbbf53c083",
+        "captureSpearSelectors": "true"
+      },
+      "expectLog": {
+        "present": [ "[blueprints][initialize.complete]", "[elven-branched-spear][foundation.ready]" ],
+        "absent": [ "[initialize.failed]", "Elven Branched Spear type profile is invalid" ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "kmgInitialization", "label": "healthy", "expect": "completed", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "healthy", "match": "owned", "type": "fa2dd17cbde7d3f4aa918d467c30516e,36d0551b8a28587438a47fcbbf53c083", "continueOnFailure": true },
+          { "op": "kmgSpearSelectorState", "label": "healthy", "expect": "published", "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "spear-finessable-removed",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "spearSubCategoryRemoval": "Finessable",
+        "captureSpearSelectors": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.failed]",
+          "subcategory-policy [effective-getter]: expected=Melee,Finessable,TwoHanded,Exotic,Metal actual=Melee,Finessable,TwoHanded,Exotic,Metal",
+          "getter expected=Melee,Finessable,TwoHanded,Exotic,Metal actual=Melee,TwoHanded,Exotic,Metal donor=",
+          "KmgLoaderCompatHarness"
+        ],
+        "once": [ "Elven Branched Spear type profile is invalid: 1 of 17 checks failed." ],
+        "absent": [ "[blueprints][initialize.complete]" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "kmgInitialization", "label": "finessable-removed", "expect": "failed", "match": "subcategory-policy [effective-getter]", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "finessable-removed", "match": "absent", "invariants": { "subCategoryRemovalsAtLeast": "1" }, "continueOnFailure": true },
+          { "op": "kmgSpearSelectorState", "label": "finessable-removed", "expect": "restored", "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "spear-simple-added",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "spearSubCategoryAddition": "Simple",
+        "captureSpearSelectors": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.failed]",
+          "subcategory-policy [effective-getter]",
+          "getter expected=Melee,Finessable,TwoHanded,Exotic,Metal actual=Melee,Finessable,TwoHanded,Exotic,Metal,Simple donor=",
+          "KmgLoaderCompatHarness"
+        ],
+        "once": [ "Elven Branched Spear type profile is invalid: 1 of 17 checks failed." ],
+        "absent": [ "[blueprints][initialize.complete]" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "kmgInitialization", "label": "simple-added", "expect": "failed", "match": "actual=Melee,Finessable,TwoHanded,Exotic,Metal,Simple", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "simple-added", "match": "absent", "invariants": { "subCategoryAdditionsAtLeast": "1" }, "continueOnFailure": true },
+          { "op": "kmgSpearSelectorState", "label": "simple-added", "expect": "restored", "continueOnFailure": true }
+        ]
+      }
+    }
+  ]
+}

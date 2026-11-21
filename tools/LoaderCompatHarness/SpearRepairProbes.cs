@@ -77,6 +77,9 @@ namespace KmgLoaderCompatHarness
         /// <summary>Sub-categories (list) a late WeaponCategoryExtension.HasSubCategory postfix withholds from the Elven Branched Spear category only.</summary>
         public const string SpearSubCategoryRemoval = "spearSubCategoryRemoval";
 
+        /// <summary>Sub-categories (list) a late WeaponCategoryExtension.HasSubCategory postfix grants to the Elven Branched Spear category only.</summary>
+        public const string SpearSubCategoryAddition = "spearSubCategoryAddition";
+
         public const string NativeLongspearTypeGuid = "fa2dd17cbde7d3f4aa918d467c30516e";
         public const string HarnessId = "KmgLoaderCompatHarness";
         public const string InjectedNamedFailure = "KmgLoaderCompatHarness injected named-spear registration failure";
@@ -95,7 +98,7 @@ namespace KmgLoaderCompatHarness
         {
             MutateNativeLongspear, CaptureWeaponTypes, CorruptOwnedSpearProfile, CorruptOwnedSpearProfileOnCall, PatchWeaponTypeGetters,
             OwnedSpearAttackRangePatch, ThrowingWeaponTypeGetters, FailNamedSpearRegistration, CaptureSpearSelectors,
-            AttackRangeByGuid, ThrowingGettersByGuid, SpearSubCategoryRemoval
+            AttackRangeByGuid, ThrowingGettersByGuid, SpearSubCategoryRemoval, SpearSubCategoryAddition
         };
 
         private static readonly Dictionary<string, string> rangeByGuid = new Dictionary<string, string>();
@@ -104,6 +107,8 @@ namespace KmgLoaderCompatHarness
         public static int RangeOverrides { get; private set; }
         public static int GuidGetterThrows { get; private set; }
         public static int SubCategoryRemovals { get; private set; }
+        private static WeaponSubCategory[] addedSubCategories = new WeaponSubCategory[0];
+        public static int SubCategoryAdditions { get; private set; }
 
         public static readonly List<string> Events = new List<string>();
         public static readonly Dictionary<string, JObject> Captured = new Dictionary<string, JObject>();
@@ -193,6 +198,17 @@ namespace KmgLoaderCompatHarness
                     throw new MissingMethodException("WeaponCategoryExtension.HasSubCategory");
                 harmony.Patch(has, null, new HarmonyMethod(typeof(SpearRepairConditions).GetMethod(nameof(SubCategoryRemovalPostfix), Any)) { prioritiy = Priority.Last });
                 applied[SpearSubCategoryRemoval] = new JArray(removedSubCategories.Select(v => (object)v.ToString()).ToArray());
+            }
+
+            if (conditions.TryGetValue(SpearSubCategoryAddition, out string addition) && !string.IsNullOrWhiteSpace(addition))
+            {
+                addedSubCategories = addition.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(v => (WeaponSubCategory)Enum.Parse(typeof(WeaponSubCategory), v.Trim())).ToArray();
+                MethodInfo has = typeof(Kingmaker.Enums.WeaponCategoryExtension).GetMethod("HasSubCategory", BindingFlags.Static | BindingFlags.Public, null,
+                    new[] { typeof(Kingmaker.Enums.WeaponCategory), typeof(WeaponSubCategory) }, null) ??
+                    throw new MissingMethodException("WeaponCategoryExtension.HasSubCategory");
+                harmony.Patch(has, null, new HarmonyMethod(typeof(SpearRepairConditions).GetMethod(nameof(SubCategoryAdditionPostfix), Any)) { prioritiy = Priority.Last });
+                applied[SpearSubCategoryAddition] = new JArray(addedSubCategories.Select(v => (object)v.ToString()).ToArray());
             }
 
             if (Enabled(conditions, FailNamedSpearRegistration))
@@ -320,6 +336,13 @@ namespace KmgLoaderCompatHarness
             SubCategoryRemovals++;
         }
 
+        private static void SubCategoryAdditionPostfix(Kingmaker.Enums.WeaponCategory __0, WeaponSubCategory __1, ref bool __result)
+        {
+            if ((int)__0 != WeaponTypeProfiles.OwnedSpearCategory || __result || Array.IndexOf(addedSubCategories, __1) < 0) return;
+            __result = true;
+            SubCategoryAdditions++;
+        }
+
         private static void FailNamedPrefix()
         {
             Events.Add("named-spear registration failure injected");
@@ -354,7 +377,8 @@ namespace KmgLoaderCompatHarness
             {
                 ["events"] = new JArray(Events.Cast<object>().ToArray()), ["ownedValidations"] = OwnedValidations,
                 ["corruptionsApplied"] = CorruptionsApplied, ["getterThrows"] = GetterThrows, ["guidGetterThrows"] = GuidGetterThrows,
-                ["rangeOverrides"] = RangeOverrides, ["subCategoryRemovals"] = SubCategoryRemovals, ["captured"] = captured
+                ["rangeOverrides"] = RangeOverrides, ["subCategoryRemovals"] = SubCategoryRemovals,
+                ["subCategoryAdditions"] = SubCategoryAdditions, ["captured"] = captured
             };
         }
 
