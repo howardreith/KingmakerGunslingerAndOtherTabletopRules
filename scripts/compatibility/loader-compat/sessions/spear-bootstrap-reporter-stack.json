@@ -70,7 +70,8 @@
             "invariants": { "repeat": "20" },
             "continueOnFailure": true
           },
-          { "op": "kmgSorcererSummon", "label": "reporter", "expect": "expanded", "timeoutSeconds": 180, "continueOnFailure": true }
+          { "op": "kmgSorcererSummon", "label": "reporter", "expect": "expanded", "timeoutSeconds": 180, "continueOnFailure": true },
+          { "op": "kmgSorcererResidue", "label": "after-reporter-summon", "continueOnFailure": true }
         ]
       }
     }

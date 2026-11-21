@@ -1,6 +1,6 @@
 {
   "name": "spear-bootstrap-simulated",
-  "description": "Spear startup repair (PR #195), simulated conditions on the candidate with the product alone. Every condition is a controlled, test-only stand-in applied by the harness before the product initializes; none is claimed to be what the reporter's installation did. (1) Simulated donor mutation: the live native Longspear gets a 15 ft serialized reach and the Polearms fighter group, values the v0.0.188-v0.0.192 clone validation rejects; the candidate must still initialize, register the spear with its intended profile, leave the mutated donor and an unrelated weapon type exactly as they were before it ran, and keep native and battered pricing. (2) Invalid owned profile: the owned clone's fighter group is corrupted while the product validates it and a harness identity postfix sits on the FighterGroup getter; initialization must fail with the new diagnostic naming the predicate, expected, actual and donor values and the patch owner, and afterwards ordinary weapon prices and tooltips must stay native with exactly one unavailable-state warning, and a new sorcerer's Summon Monster I stays Kingmaker's own unexpanded spell and still summons. (3) Shared getter patch: a harness postfix on the shared BlueprintWeaponType.AttackRange getter adds 1 ft for the Longspear family (a reach-extension stand-in); the candidate must initialize and report that patch once.",
+  "description": "Spear startup repair (PR #195), simulated conditions on the candidate with the product alone. Every condition is a controlled, test-only stand-in applied by the harness; none is claimed to be what the reporter's installation did. (1) Simulated donor mutation: the live native Longspear gets a 15 ft reach and the Polearms group, values the v0.0.188-v0.0.192 clone validation rejects; the candidate must initialize, give the spear its intended serialized and effective profile, leave the mutated donor and an unrelated weapon type exactly as captured, publish the spear selectors, and keep native and battered pricing. (2) Invalid owned profile: the owned clone's fighter group is corrupted while the product validates it, with a harness identity postfix on the getter; initialization must fail with the predicate, values and patch owner, native selectors must be untouched, ordinary prices and tooltips must stay native with exactly one unavailable-state warning, and a new sorcerer's Summon Monster I must stay Kingmaker's own unexpanded spell and summon its own creature. (3) Owned-spear getter patch: a harness postfix gives only the owned spear a 7 ft effective range while its field and the donor stay correct; initialization must fail naming the predicate and the patch owner. (4) Donor-only throwing getter: the donor's CriticalRollEdge throws during spear validation; the correct owned spear must still initialize. (5) Owned throwing getter plus a second invalid predicate: both must be reported in one bounded failure. (6) Late validation failure: the corruption is written only on the second (post-registration) validation; native selectors must be untouched. (7) Named-spear registration failure after the owned type is registered: native selectors must be untouched.",
   "ownerMods": [],
   "fixtureSaves": [
     "KMCS_AFTER_NORMAL_012_MODONLY.zks"
@@ -8,110 +8,166 @@
   "launches": [
     {
       "label": "simulated-donor-mutation",
-      "gameArguments": [
-        "locale=enGB"
-      ],
+      "gameArguments": [ "locale=enGB" ],
       "conditions": {
         "mutateNativeLongspear": "m_AttackRange=15;m_FighterGroup=Polearms",
-        "captureWeaponTypes": "fa2dd17cbde7d3f4aa918d467c30516e,36d0551b8a28587438a47fcbbf53c083"
+        "captureWeaponTypes": "fa2dd17cbde7d3f4aa918d467c30516e,36d0551b8a28587438a47fcbbf53c083",
+        "captureSpearSelectors": "true"
       },
       "expectLog": {
-        "present": [
-          "[blueprints][initialize.complete]",
-          "[elven-branched-spear][foundation.ready]"
-        ],
-        "absent": [
-          "[initialize.failed]",
-          "Elven Branched Spear type profile is invalid",
-          "profile.external-getter-patch",
-          "Native Longspear donor"
-        ]
+        "present": [ "[blueprints][initialize.complete]", "[elven-branched-spear][foundation.ready]" ],
+        "absent": [ "[initialize.failed]", "Elven Branched Spear type profile is invalid", "Native Longspear donor" ]
       },
       "harness": {
         "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
         "steps": [
           { "op": "kmgInitialization", "label": "mutated-donor", "expect": "completed", "continueOnFailure": true },
           { "op": "kmgWeaponTypeProfile", "label": "mutated-donor", "match": "owned", "type": "fa2dd17cbde7d3f4aa918d467c30516e,36d0551b8a28587438a47fcbbf53c083", "expect": "fighter-group,attack-range", "continueOnFailure": true },
+          { "op": "kmgSpearSelectorState", "label": "mutated-donor", "expect": "published", "continueOnFailure": true },
           {
-            "op": "kmgItemPricing",
-            "label": "mutated-donor",
+            "op": "kmgItemPricing", "label": "mutated-donor",
             "type": "f28f6031c2908d84d945865a80f67177,6fd0a849531617844b195f452661b2cd,19a5092244dcf99478dcd73c974828b1",
-            "expect": "native",
-            "match": "battered",
-            "invariants": { "repeat": "20" },
-            "continueOnFailure": true
+            "expect": "native", "match": "battered", "invariants": { "repeat": "20" }, "continueOnFailure": true
           }
         ]
       }
     },
     {
       "label": "invalid-owned-profile",
-      "gameArguments": [
-        "locale=enGB"
-      ],
+      "gameArguments": [ "locale=enGB" ],
       "conditions": {
         "corruptOwnedSpearProfile": "m_FighterGroup=Polearms",
         "patchWeaponTypeGetters": "FighterGroup",
-        "captureWeaponTypes": "fa2dd17cbde7d3f4aa918d467c30516e,36d0551b8a28587438a47fcbbf53c083"
+        "captureWeaponTypes": "fa2dd17cbde7d3f4aa918d467c30516e,36d0551b8a28587438a47fcbbf53c083",
+        "captureSpearSelectors": "true"
       },
       "expectLog": {
         "present": [
           "[blueprints][initialize.failed]",
-          "Elven Branched Spear type profile is invalid: 1 of 15 checks failed.",
-          "fighter-group [owned-field]: expected=Spears actual=Polearms donor=Spears",
-          "getterPatches=KmgLoaderCompatHarness"
+          "fighter-group [owned-field]: expected=Spears actual=Polearms donor=Spears; getter expected=Polearms actual=Polearms donor=Spears; getterPatches=KmgLoaderCompatHarness"
         ],
-        "once": [
-          "battered-origin.inspection-unavailable"
-        ],
-        "absent": [
-          "[blueprints][initialize.complete]",
-          "The battered origin token blueprint is unavailable"
-        ]
+        "once": [ "Elven Branched Spear type profile is invalid: 1 of 17 checks failed.", "battered-origin.inspection-unavailable" ],
+        "absent": [ "[blueprints][initialize.complete]", "The battered origin token blueprint is unavailable" ]
       },
       "harness": {
         "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
         "steps": [
-          { "op": "kmgInitialization", "label": "invalid-owned", "expect": "failed", "match": "Elven Branched Spear type profile is invalid: 1 of 15 checks failed.", "continueOnFailure": true },
-          { "op": "kmgWeaponTypeProfile", "label": "invalid-owned", "match": "absent", "type": "fa2dd17cbde7d3f4aa918d467c30516e,36d0551b8a28587438a47fcbbf53c083", "expect": "none", "continueOnFailure": true },
+          { "op": "kmgInitialization", "label": "invalid-owned", "expect": "failed", "match": "Elven Branched Spear type profile is invalid: 1 of 17 checks failed.", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "invalid-owned", "match": "absent", "type": "fa2dd17cbde7d3f4aa918d467c30516e,36d0551b8a28587438a47fcbbf53c083", "expect": "none", "invariants": { "ownedValidations": "1", "corruptionsApplied": "1" }, "continueOnFailure": true },
+          { "op": "kmgSpearSelectorState", "label": "invalid-owned", "expect": "restored", "continueOnFailure": true },
           {
-            "op": "kmgItemPricing",
-            "label": "failed-startup",
+            "op": "kmgItemPricing", "label": "failed-startup",
             "type": "f28f6031c2908d84d945865a80f67177,6fd0a849531617844b195f452661b2cd,6efea466862f014469cec6c3f2b85cb7,19a5092244dcf99478dcd73c974828b1",
-            "expect": "native",
-            "invariants": { "repeat": "25" },
-            "continueOnFailure": true
+            "expect": "native", "invariants": { "repeat": "25" }, "continueOnFailure": true
           },
-          { "op": "kmgSorcererSummon", "label": "failed-startup-native-menu", "expect": "", "timeoutSeconds": 180, "continueOnFailure": true }
+          { "op": "kmgSorcererSummon", "label": "failed-startup-native-spell", "expect": "native-single", "timeoutSeconds": 180, "continueOnFailure": true },
+          { "op": "kmgSorcererResidue", "label": "after-native-spell", "continueOnFailure": true }
         ]
       }
     },
     {
-      "label": "external-getter-patch",
-      "gameArguments": [
-        "locale=enGB"
-      ],
+      "label": "owned-spear-getter-patch",
+      "gameArguments": [ "locale=enGB" ],
       "conditions": {
-        "externalAttackRangePatch": "true"
+        "ownedSpearAttackRangePatch": "true",
+        "captureSpearSelectors": "true"
       },
       "expectLog": {
-        "present": [
-          "[blueprints][initialize.complete]",
-          "attack-range [external-getter-patch]: expected=10ft actual=10ft",
-          "getter expected=6ft actual=7ft donor=7ft"
-        ],
+        "present": [ "[blueprints][initialize.failed]" ],
         "once": [
-          "[elven-branched-spear][profile.external-getter-patch]"
+          "Elven Branched Spear type profile is invalid: 1 of 17 checks failed.",
+          "attack-range [effective-getter]: expected=10ft actual=10ft donor=10ft; getter expected=6ft actual=7ft donor=6ft; getterPatches=KmgLoaderCompatHarness"
         ],
-        "absent": [
-          "[initialize.failed]",
-          "Elven Branched Spear type profile is invalid"
-        ]
+        "absent": [ "[blueprints][initialize.complete]" ]
       },
       "harness": {
         "steps": [
-          { "op": "kmgInitialization", "label": "external-patch", "expect": "completed", "continueOnFailure": true },
-          { "op": "kmgWeaponTypeProfile", "label": "external-patch", "match": "owned", "continueOnFailure": true }
+          { "op": "kmgInitialization", "label": "owned-getter-patch", "expect": "failed", "match": "attack-range [effective-getter]", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "owned-getter-patch", "match": "absent", "expect": "none", "continueOnFailure": true },
+          { "op": "kmgSpearSelectorState", "label": "owned-getter-patch", "expect": "restored", "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "donor-getter-throws",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "throwingWeaponTypeGetters": "donor:CriticalRollEdge"
+      },
+      "expectLog": {
+        "present": [ "[blueprints][initialize.complete]", "[elven-branched-spear][foundation.ready]" ],
+        "absent": [ "[initialize.failed]", "Elven Branched Spear type profile is invalid" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "kmgInitialization", "label": "donor-throws", "expect": "completed", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "donor-throws", "match": "owned", "invariants": { "getterThrowsAtLeast": "1" }, "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "owned-getter-throws-with-invalid-field",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "throwingWeaponTypeGetters": "owned:IsLight",
+        "corruptOwnedSpearProfile": "m_FighterGroup=Polearms",
+        "captureSpearSelectors": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.failed]",
+          "light [effective-getter]: expected=false actual=false donor=false; getter expected=false actual=<throws InvalidOperationException: KmgLoaderCompatHarness injected getter failure",
+          "fighter-group [owned-field]: expected=Spears actual=Polearms donor=Spears",
+          "getterPatches=KmgLoaderCompatHarness"
+        ],
+        "once": [ "Elven Branched Spear type profile is invalid: 2 of 17 checks failed." ],
+        "absent": [ "[blueprints][initialize.complete]" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "kmgInitialization", "label": "owned-throws", "expect": "failed", "match": "2 of 17 checks failed", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "owned-throws", "match": "absent", "invariants": { "getterThrowsAtLeast": "1", "corruptionsApplied": "1" }, "continueOnFailure": true },
+          { "op": "kmgSpearSelectorState", "label": "owned-throws", "expect": "restored", "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "late-validation-failure",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "corruptOwnedSpearProfile": "m_FighterGroup=Polearms",
+        "corruptOwnedSpearProfileOnCall": "2",
+        "captureSpearSelectors": "true"
+      },
+      "expectLog": {
+        "present": [ "[blueprints][initialize.failed]", "fighter-group [owned-field]: expected=Spears actual=Polearms donor=Spears" ],
+        "once": [ "Elven Branched Spear type profile is invalid: 1 of 17 checks failed." ],
+        "absent": [ "[blueprints][initialize.complete]", "[elven-branched-spear][foundation.ready]" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "kmgInitialization", "label": "late-validation", "expect": "failed", "match": "1 of 17 checks failed", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "late-validation", "match": "absent", "invariants": { "ownedValidations": "2", "corruptionsApplied": "1" }, "continueOnFailure": true },
+          { "op": "kmgSpearSelectorState", "label": "late-validation", "expect": "restored", "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "named-registration-failure",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "failNamedSpearRegistration": "true",
+        "captureSpearSelectors": "true"
+      },
+      "expectLog": {
+        "present": [ "[blueprints][initialize.failed]", "KmgLoaderCompatHarness injected named-spear registration failure", "[elven-branched-spear][foundation.ready]" ],
+        "absent": [ "[blueprints][initialize.complete]" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "kmgInitialization", "label": "named-failure", "expect": "failed", "match": "KmgLoaderCompatHarness injected named-spear registration failure", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "named-failure", "match": "absent", "continueOnFailure": true },
+          { "op": "kmgSpearSelectorState", "label": "named-failure", "expect": "restored", "continueOnFailure": true }
         ]
       }
     }

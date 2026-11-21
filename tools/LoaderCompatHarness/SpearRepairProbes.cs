@@ -1,15 +1,19 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Root;
+using Kingmaker.ElementsSystem;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Items;
 using Kingmaker.UI.ActionBar;
@@ -22,6 +26,7 @@ using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Class.LevelUp;
 using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
 using Newtonsoft.Json.Linq;
@@ -30,8 +35,8 @@ using UnityEngine;
 namespace KmgLoaderCompatHarness
 {
     /// <summary>
-    /// Test-only conditions for the spear startup repair. Each stands in for something another mod could do before
-    /// the product initializes; none is claimed to be what the reporter's installation did.
+    /// Test-only conditions for the spear startup repair. Each stands in for something another mod could do before or
+    /// while the product initializes; none is claimed to be what the reporter's installation did.
     /// </summary>
     internal static class SpearRepairConditions
     {
@@ -41,71 +46,113 @@ namespace KmgLoaderCompatHarness
         /// <summary>Weapon types (guid list) whose serialized profile is recorded before the product runs.</summary>
         public const string CaptureWeaponTypes = "captureWeaponTypes";
 
-        /// <summary>"field=value;..." written onto the product's owned spear clone each time the product validates it (invalid owned profile).</summary>
+        /// <summary>"field=value;..." written onto the product's owned spear clone when the product validates it (invalid owned profile).</summary>
         public const string CorruptOwnedSpearProfile = "corruptOwnedSpearProfile";
+
+        /// <summary>The product validation call (1-based, owned spear only) on which the corruption is written; empty: every call.</summary>
+        public const string CorruptOwnedSpearProfileOnCall = "corruptOwnedSpearProfileOnCall";
 
         /// <summary>BlueprintWeaponType getters (property names) given an identity postfix owned by the harness.</summary>
         public const string PatchWeaponTypeGetters = "patchWeaponTypeGetters";
 
-        /// <summary>A harness postfix on the shared BlueprintWeaponType.AttackRange getter adds 1 ft for the Longspear family.</summary>
-        public const string ExternalAttackRangePatch = "externalAttackRangePatch";
+        /// <summary>A harness postfix on the shared AttackRange getter adds 1 ft for the owned spear only; its field and donor stay correct.</summary>
+        public const string OwnedSpearAttackRangePatch = "ownedSpearAttackRangePatch";
+
+        /// <summary>"donor:Getter;owned:Getter" - that getter throws for that type while the product's spear validation reads it.</summary>
+        public const string ThrowingWeaponTypeGetters = "throwingWeaponTypeGetters";
+
+        /// <summary>The product's named-spear registration throws after the owned spear type has been registered.</summary>
+        public const string FailNamedSpearRegistration = "failNamedSpearRegistration";
+
+        /// <summary>Records the native spear selectors, familiarity components and selector runtime before the product runs.</summary>
+        public const string CaptureSpearSelectors = "captureSpearSelectors";
 
         public const string NativeLongspearTypeGuid = "fa2dd17cbde7d3f4aa918d467c30516e";
         public const string HarnessId = "KmgLoaderCompatHarness";
+        public const string InjectedNamedFailure = "KmgLoaderCompatHarness injected named-spear registration failure";
+        public const string InjectedGetterFailure = "KmgLoaderCompatHarness injected getter failure";
 
         private const BindingFlags Any = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
         private static Dictionary<string, string> longspearMutations = new Dictionary<string, string>();
         private static Dictionary<string, string> ownedCorruptions = new Dictionary<string, string>();
+        private static int corruptOnCall;
         private static string[] captureGuids = new string[0];
+        private static readonly Dictionary<string, string> throwingGetters = new Dictionary<string, string>();
+        private static bool captureSelectors;
 
-        public static readonly string[] Known = { MutateNativeLongspear, CaptureWeaponTypes, CorruptOwnedSpearProfile, PatchWeaponTypeGetters, ExternalAttackRangePatch };
+        public static readonly string[] Known =
+        {
+            MutateNativeLongspear, CaptureWeaponTypes, CorruptOwnedSpearProfile, CorruptOwnedSpearProfileOnCall, PatchWeaponTypeGetters,
+            OwnedSpearAttackRangePatch, ThrowingWeaponTypeGetters, FailNamedSpearRegistration, CaptureSpearSelectors
+        };
+
         public static readonly List<string> Events = new List<string>();
         public static readonly Dictionary<string, JObject> Captured = new Dictionary<string, JObject>();
         public static HarmonyInstance Harmony { get; private set; }
+        public static int OwnedValidations { get; private set; }
         public static int CorruptionsApplied { get; private set; }
+        public static int GetterThrows { get; private set; }
 
-        public static bool NeedsLibraryHook => longspearMutations.Count > 0 || captureGuids.Length > 0;
+        public static bool NeedsLibraryHook => longspearMutations.Count > 0 || captureGuids.Length > 0 || captureSelectors;
 
         public static void Apply(HarmonyInstance harmony, IDictionary<string, string> conditions, JObject applied)
         {
             Harmony = harmony;
-            longspearMutations = Pairs(conditions, MutateNativeLongspear);
-            ownedCorruptions = Pairs(conditions, CorruptOwnedSpearProfile);
+            longspearMutations = Pairs(conditions, MutateNativeLongspear, '=');
+            ownedCorruptions = Pairs(conditions, CorruptOwnedSpearProfile, '=');
+            corruptOnCall = conditions.TryGetValue(CorruptOwnedSpearProfileOnCall, out string onCall) && !string.IsNullOrWhiteSpace(onCall)
+                ? int.Parse(onCall, CultureInfo.InvariantCulture) : 0;
             captureGuids = (conditions.TryGetValue(CaptureWeaponTypes, out string captured) && captured != null
                 ? captured.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries).Select(v => v.Trim()) : Enumerable.Empty<string>())
                 .Concat(longspearMutations.Count > 0 ? new[] { NativeLongspearTypeGuid } : new string[0]).Distinct().ToArray();
+            captureSelectors = Enabled(conditions, CaptureSpearSelectors);
             if (longspearMutations.Count > 0) applied[MutateNativeLongspear] = ToJson(longspearMutations);
             if (captureGuids.Length > 0) applied[CaptureWeaponTypes] = new JArray(captureGuids.Cast<object>().ToArray());
+            if (captureSelectors) applied[CaptureSpearSelectors] = true;
+            Assembly product = ProductProbes.Entry().Assembly;
 
             if (ownedCorruptions.Count > 0)
             {
-                Type access = ProductProbes.Entry().Assembly.GetType("KingmakerGunslinger.Blueprints.SpearWeaponTypeAccess", true);
+                Type access = product.GetType("KingmakerGunslinger.Blueprints.SpearWeaponTypeAccess", true);
                 MethodInfo[] validators = access.GetMethods(Any).Where(m => m.Name == "Validate" && m.GetParameters().Length >= 1 &&
                     m.GetParameters()[0].ParameterType == typeof(BlueprintWeaponType)).ToArray();
                 if (validators.Length == 0) throw new MissingMethodException(access.FullName, "Validate(BlueprintWeaponType,...)");
                 foreach (MethodInfo validator in validators)
                     harmony.Patch(validator, new HarmonyMethod(typeof(SpearRepairConditions).GetMethod(nameof(CorruptPrefix), Any)), null);
                 applied[CorruptOwnedSpearProfile] = ToJson(ownedCorruptions);
+                applied[CorruptOwnedSpearProfileOnCall] = corruptOnCall == 0 ? "every call" : corruptOnCall.ToString(CultureInfo.InvariantCulture);
             }
 
             if (conditions.TryGetValue(PatchWeaponTypeGetters, out string getters) && !string.IsNullOrWhiteSpace(getters))
             {
                 var names = getters.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries).Select(v => v.Trim()).ToArray();
                 foreach (string name in names)
-                {
-                    MethodInfo getter = typeof(BlueprintWeaponType).GetProperty(name, BindingFlags.Instance | BindingFlags.Public)?.GetGetMethod();
-                    if (getter == null) throw new MissingMethodException(typeof(BlueprintWeaponType).FullName, "get_" + name);
-                    harmony.Patch(getter, null, new HarmonyMethod(typeof(SpearRepairConditions).GetMethod(nameof(IdentityPostfix), Any)));
-                }
-
+                    harmony.Patch(Getter(name), null, new HarmonyMethod(typeof(SpearRepairConditions).GetMethod(nameof(IdentityPostfix), Any)));
                 applied[PatchWeaponTypeGetters] = new JArray(names.Cast<object>().ToArray());
             }
 
-            if (conditions.TryGetValue(ExternalAttackRangePatch, out string range) && !string.Equals(range, "false", StringComparison.OrdinalIgnoreCase))
+            if (Enabled(conditions, OwnedSpearAttackRangePatch))
             {
-                MethodInfo getter = typeof(BlueprintWeaponType).GetProperty("AttackRange").GetGetMethod();
-                harmony.Patch(getter, null, new HarmonyMethod(typeof(SpearRepairConditions).GetMethod(nameof(AttackRangePlusOnePostfix), Any)));
-                applied[ExternalAttackRangePatch] = "postfix on BlueprintWeaponType.get_AttackRange adds 1 ft for the Longspear and Elven Branched Spear types";
+                harmony.Patch(Getter("AttackRange"), null, new HarmonyMethod(typeof(SpearRepairConditions).GetMethod(nameof(OwnedSpearAttackRangePostfix), Any)));
+                applied[OwnedSpearAttackRangePatch] = "postfix on BlueprintWeaponType.get_AttackRange adds 1 ft for the owned spear only";
+            }
+
+            throwingGetters.Clear();
+            foreach (KeyValuePair<string, string> pair in Pairs(conditions, ThrowingWeaponTypeGetters, ':'))
+            {
+                if (pair.Key != "donor" && pair.Key != "owned") throw new InvalidOperationException(ThrowingWeaponTypeGetters + " targets donor or owned, not " + pair.Key);
+                throwingGetters[pair.Key] = pair.Value;
+                harmony.Patch(Getter(pair.Value), new HarmonyMethod(typeof(SpearRepairConditions).GetMethod(nameof(ThrowingPrefix), Any)), null);
+            }
+
+            if (throwingGetters.Count > 0) applied[ThrowingWeaponTypeGetters] = ToJson(throwingGetters);
+
+            if (Enabled(conditions, FailNamedSpearRegistration))
+            {
+                Type named = product.GetType("KingmakerGunslinger.Blueprints.ElvenBranchedSpearNamedBlueprints", true);
+                MethodInfo register = named.GetMethod("Register", Any) ?? throw new MissingMethodException(named.FullName, "Register");
+                harmony.Patch(register, new HarmonyMethod(typeof(SpearRepairConditions).GetMethod(nameof(FailNamedPrefix), Any)), null);
+                applied[FailNamedSpearRegistration] = "prefix on ElvenBranchedSpearNamedBlueprints.Register throws";
             }
         }
 
@@ -129,6 +176,14 @@ namespace KmgLoaderCompatHarness
                 if (type == null) { Events.Add("weapon type missing before product: " + guid); continue; }
                 Captured[guid] = WeaponTypeProfiles.Fields(type);
             }
+
+            if (captureSelectors) SpearSelectorState.Capture(library);
+        }
+
+        private static MethodInfo Getter(string name)
+        {
+            return typeof(BlueprintWeaponType).GetProperty(name, BindingFlags.Instance | BindingFlags.Public)?.GetGetMethod() ??
+                throw new MissingMethodException(typeof(BlueprintWeaponType).FullName, "get_" + name);
         }
 
         private static BlueprintWeaponType Type(LibraryScriptableObject library, string guid)
@@ -140,30 +195,60 @@ namespace KmgLoaderCompatHarness
         private static void CorruptPrefix(BlueprintWeaponType __0)
         {
             if (__0 == null || __0.name != WeaponTypeProfiles.OwnedSpearTypeName) return;
+            OwnedValidations++;
+            if (corruptOnCall != 0 && OwnedValidations != corruptOnCall) return;
             foreach (KeyValuePair<string, string> pair in ownedCorruptions) WeaponTypeProfiles.Write(__0, pair.Key, pair.Value);
             CorruptionsApplied++;
+            Events.Add("owned spear corrupted on validation call " + OwnedValidations);
         }
 
         private static void IdentityPostfix()
         {
         }
 
-        // A reach-extension stand-in on the shared getter, limited to the Longspear family so that unrelated
-        // weapons (whose own validations read the same getter) keep their native range.
-        private static void AttackRangePlusOnePostfix(BlueprintWeaponType __instance, ref Feet __result)
+        private static void OwnedSpearAttackRangePostfix(BlueprintWeaponType __instance, ref Feet __result)
         {
-            if (__instance == null || (__instance.AssetGuid != NativeLongspearTypeGuid && __instance.name != WeaponTypeProfiles.OwnedSpearTypeName)) return;
+            if (__instance == null || __instance.name != WeaponTypeProfiles.OwnedSpearTypeName) return;
             __result = new Feet(__result.Value + 1);
         }
 
-        private static Dictionary<string, string> Pairs(IDictionary<string, string> conditions, string name)
+        // Throws only inside the product's spear validation, so the rest of the game keeps reading these getters.
+        private static void ThrowingPrefix(BlueprintWeaponType __instance, MethodBase __originalMethod)
+        {
+            if (__instance == null || !InsideSpearValidation()) return;
+            string target = __instance.AssetGuid == NativeLongspearTypeGuid ? "donor" :
+                __instance.name == WeaponTypeProfiles.OwnedSpearTypeName ? "owned" : null;
+            if (target == null || !throwingGetters.TryGetValue(target, out string getter) || "get_" + getter != __originalMethod.Name) return;
+            GetterThrows++;
+            throw new InvalidOperationException(InjectedGetterFailure + " (" + target + " " + getter + ")");
+        }
+
+        private static bool InsideSpearValidation()
+        {
+            return new System.Diagnostics.StackTrace().GetFrames().Any(frame =>
+                (frame.GetMethod()?.DeclaringType?.FullName ?? string.Empty).StartsWith("KingmakerGunslinger.Blueprints.SpearWeaponTypeAccess", StringComparison.Ordinal));
+        }
+
+        private static void FailNamedPrefix()
+        {
+            Events.Add("named-spear registration failure injected");
+            throw new InvalidOperationException(InjectedNamedFailure);
+        }
+
+        private static bool Enabled(IDictionary<string, string> conditions, string name)
+        {
+            return conditions.TryGetValue(name, out string value) && !string.IsNullOrWhiteSpace(value) &&
+                !string.Equals(value, "false", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static Dictionary<string, string> Pairs(IDictionary<string, string> conditions, string name, char separator)
         {
             var result = new Dictionary<string, string>();
             if (!conditions.TryGetValue(name, out string value) || string.IsNullOrWhiteSpace(value)) return result;
             foreach (string pair in value.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                string[] parts = pair.Split(new[] { '=' }, 2);
-                if (parts.Length != 2) throw new InvalidOperationException(name + " needs field=value pairs: " + value);
+                string[] parts = pair.Split(new[] { separator }, 2);
+                if (parts.Length != 2) throw new InvalidOperationException(name + " needs key" + separator + "value pairs: " + value);
                 result[parts[0].Trim()] = parts[1].Trim();
             }
 
@@ -176,13 +261,13 @@ namespace KmgLoaderCompatHarness
             foreach (KeyValuePair<string, JObject> pair in Captured) captured[pair.Key] = pair.Value;
             return new JObject
             {
-                ["events"] = new JArray(Events.Cast<object>().ToArray()), ["corruptionsApplied"] = CorruptionsApplied,
-                ["captured"] = captured
+                ["events"] = new JArray(Events.Cast<object>().ToArray()), ["ownedValidations"] = OwnedValidations,
+                ["corruptionsApplied"] = CorruptionsApplied, ["getterThrows"] = GetterThrows, ["captured"] = captured
             };
         }
 
         // Built by hand: another mod may change Newtonsoft's process-wide defaults (dictionaries as arrays).
-        private static JObject ToJson(Dictionary<string, string> values)
+        public static JObject ToJson(Dictionary<string, string> values)
         {
             var result = new JObject();
             foreach (KeyValuePair<string, string> pair in values) result[pair.Key] = pair.Value;
@@ -213,6 +298,14 @@ namespace KmgLoaderCompatHarness
             ["m_IsUnarmed"] = "False", ["m_OverrideAttackBonusStat"] = "False", ["m_Weight"] = "10"
         };
 
+        /// <summary>The owned spear's intended effective (getter) profile on an unpatched 2.1.7b engine.</summary>
+        public static readonly Dictionary<string, string> IntendedGetters = new Dictionary<string, string>
+        {
+            ["AttackType"] = "Melee", ["AttackRange"] = "6", ["BaseDamage"] = "1xD8", ["DamageType"] = "Physical/Piercing/0", ["CriticalRollEdge"] = "20",
+            ["CriticalModifier"] = "X3", ["FighterGroup"] = "Spears", ["IsTwoHanded"] = "True", ["IsLight"] = "False", ["IsMonk"] = "False",
+            ["IsNatural"] = "False", ["IsUnarmed"] = "False", ["AttackBonusStat"] = "Strength", ["Weight"] = "10"
+        };
+
         public static JObject Fields(BlueprintWeaponType type)
         {
             var result = new JObject { ["Category"] = ((int)type.Category).ToString(CultureInfo.InvariantCulture) };
@@ -227,8 +320,12 @@ namespace KmgLoaderCompatHarness
             var result = new JObject();
             foreach (string name in Getters_)
             {
-                try { result[name] = FieldText(typeof(BlueprintWeaponType).GetProperty(name).GetValue(type, null)); }
-                catch (Exception exception) { result[name] = "<throws " + exception.GetType().Name + ">"; }
+                try
+                {
+                    object value = typeof(BlueprintWeaponType).GetProperty(name).GetValue(type, null);
+                    result[name] = value is Feet feet ? feet.Value.ToString(CultureInfo.InvariantCulture) : FieldText(value);
+                }
+                catch (Exception exception) { result[name] = "<throws " + (exception.InnerException ?? exception).GetType().Name + ">"; }
             }
 
             return result;
@@ -320,9 +417,9 @@ namespace KmgLoaderCompatHarness
         }
 
         /// <summary>
-        /// kmgWeaponTypeProfile. match: "owned" (the owned spear exists with exactly the intended profile), "absent"
-        /// (no owned spear: a rolled-back startup) or empty (record only). type: weapon types that must still hold
-        /// the profile captured before the product ran. expect: the old-release predicate failures the native
+        /// kmgWeaponTypeProfile. match: "owned" (the owned spear exists with exactly the intended serialized and effective
+        /// profile), "absent" (no owned spear: a rolled-back startup) or empty (record only). type: weapon types that must
+        /// still hold the profile captured before the product ran. expect: the old-release predicate failures the native
         /// Longspear must show ("none" or a comma list); empty records only.
         /// </summary>
         public static JObject Probe(string match, string[] unchanged, string expect, out string problem)
@@ -350,11 +447,14 @@ namespace KmgLoaderCompatHarness
             if (owned != null)
             {
                 JObject fields = Fields(owned);
-                result["ownedSpear"] = new JObject { ["fields"] = fields, ["getters"] = Getters(owned), ["guid"] = owned.AssetGuid };
+                JObject getters = Getters(owned);
+                result["ownedSpear"] = new JObject { ["fields"] = fields, ["getters"] = getters, ["guid"] = owned.AssetGuid };
                 if (match == "owned")
                 {
                     foreach (KeyValuePair<string, string> pair in Intended)
                         if ((string)fields[pair.Key] != pair.Value) problems.Add("owned spear " + pair.Key + " is " + fields[pair.Key] + ", expected " + pair.Value);
+                    foreach (KeyValuePair<string, string> pair in IntendedGetters)
+                        if ((string)getters[pair.Key] != pair.Value) problems.Add("owned spear getter " + pair.Key + " is " + getters[pair.Key] + ", expected " + pair.Value);
                 }
             }
 
@@ -381,12 +481,95 @@ namespace KmgLoaderCompatHarness
     }
 
     /// <summary>
+    /// The native state the spear publication changes: the Exotic Weapon Proficiency and Rogue Finesse Training
+    /// selections (Features and AllFeatures), Elven Weapon Familiarity's components, and the product's custom-weapon
+    /// selector runtime. Captured before the product runs (captureSpearSelectors) and compared by kmgSpearSelectorState.
+    /// </summary>
+    internal static class SpearSelectorState
+    {
+        private const string EwpSelectionGuid = "9a01b6815d6c3684cb25f30b8bf20932";
+        private const string FinesseSelectionGuid = "b78d146cea711a84598f0acef69462ea";
+        private const string FamiliarityGuid = "03fd1e043fc678a4baf73fe67c3780ce";
+        private const string SelectorSourceKey = "elven-branched-spear";
+        private static readonly Dictionary<string, object> Before = new Dictionary<string, object>();
+        private static readonly Dictionary<string, string> BeforeText = new Dictionary<string, string>();
+        private static bool captured;
+
+        public static void Capture(LibraryScriptableObject library)
+        {
+            foreach (KeyValuePair<string, Func<object>> part in Parts(guid =>
+                library.BlueprintsByAssetId.TryGetValue(guid, out BlueprintScriptableObject value) ? value : null))
+            {
+                object value = part.Value();
+                Before[part.Key] = value;
+                BeforeText[part.Key] = Text(value);
+            }
+
+            BeforeText["selectorRuntime"] = RuntimeHasSpear() ? "configured" : "absent";
+            captured = true;
+        }
+
+        /// <summary>expect "restored": every part is the same object with the same contents and the runtime has no spear source; "published": the spear options are present.</summary>
+        public static JObject Probe(string expect, out string problem)
+        {
+            var problems = new List<string>();
+            var result = new JObject { ["captured"] = captured };
+            if (!captured) problems.Add("the spear selectors were not captured before the product ran (captureSpearSelectors)");
+            foreach (KeyValuePair<string, Func<object>> part in Parts(guid => ResourcesLibrary.TryGetBlueprint<BlueprintScriptableObject>(guid)))
+            {
+                object now = part.Value();
+                string text = Text(now);
+                bool same = Before.TryGetValue(part.Key, out object before) && ReferenceEquals(before, now);
+                bool sameText = BeforeText.TryGetValue(part.Key, out string beforeText) && beforeText == text;
+                result[part.Key] = new JObject { ["sameObject"] = same, ["sameContents"] = sameText, ["now"] = text, ["before"] = beforeText };
+                if (expect == "restored" && (!same || !sameText)) problems.Add(part.Key + " differs from its pre-product state: " + beforeText + " -> " + text);
+                if (expect == "published" && part.Key == "ewp.AllFeatures" && text.IndexOf("KMG_ExoticWeaponProficiency_ElvenBranchedSpear", StringComparison.Ordinal) < 0)
+                    problems.Add("the spear proficiency is not published in the Exotic Weapon Proficiency selection");
+            }
+
+            string runtime = RuntimeHasSpear() ? "configured" : "absent";
+            result["selectorRuntime"] = runtime;
+            if (expect == "restored" && runtime != "absent") problems.Add("the custom-weapon selector runtime still holds the spear source");
+            if (expect == "published" && runtime != "configured") problems.Add("the custom-weapon selector runtime has no spear source");
+            problem = problems.Count == 0 ? null : string.Join("; ", problems.ToArray());
+            return result;
+        }
+
+        private static IEnumerable<KeyValuePair<string, Func<object>>> Parts(Func<string, BlueprintScriptableObject> resolve)
+        {
+            yield return new KeyValuePair<string, Func<object>>("ewp.Features", () => (resolve(EwpSelectionGuid) as BlueprintFeatureSelection)?.Features);
+            yield return new KeyValuePair<string, Func<object>>("ewp.AllFeatures", () => (resolve(EwpSelectionGuid) as BlueprintFeatureSelection)?.AllFeatures);
+            yield return new KeyValuePair<string, Func<object>>("finesse.Features", () => (resolve(FinesseSelectionGuid) as BlueprintFeatureSelection)?.Features);
+            yield return new KeyValuePair<string, Func<object>>("finesse.AllFeatures", () => (resolve(FinesseSelectionGuid) as BlueprintFeatureSelection)?.AllFeatures);
+            yield return new KeyValuePair<string, Func<object>>("familiarity.Components", () => (resolve(FamiliarityGuid) as BlueprintFeature)?.ComponentsArray);
+        }
+
+        private static string Text(object value)
+        {
+            if (value == null) return "<null>";
+            if (!(value is IEnumerable items)) return value.ToString();
+            return string.Join(",", items.Cast<object>().Select(item => item == null ? "<null>" :
+                item is BlueprintScriptableObject blueprint ? blueprint.name :
+                item is UnityEngine.Object unity ? unity.GetType().Name + ":" + unity.name : item.ToString()).ToArray());
+        }
+
+        private static bool RuntimeHasSpear()
+        {
+            Type runtime = ProductProbes.Entry().Assembly.GetType("KingmakerGunslinger.CustomWeapons.CustomWeaponSelectorRuntime", true);
+            FieldInfo sources = runtime.GetField("Sources", BindingFlags.Static | BindingFlags.NonPublic) ??
+                throw new MissingFieldException(runtime.FullName, "Sources");
+            return ((IDictionary)sources.GetValue(null)).Contains(SelectorSourceKey);
+        }
+    }
+
+    /// <summary>
     /// kmgItemPricing. Creates ordinary weapons (type: item guids) and queries Kingmaker's sale price and the item
     /// tooltip fill exactly as the inventory tooltip does (UIUtilityItem.FillTooltipData calls
     /// VendorLogic.GetItemSellPrice). expect "native": nothing throws and every price is the native
-    /// (long)(Cost * Vendors.SellModifier); expect "throws": every query throws with text containing each "contains".
-    /// match "battered": a production pistol bound as a battered firearm to the main character must sell for the
-    /// product's fixed scrap value. invariants.repeat: queries per item (default 20).
+    /// (long)(Cost * Vendors.SellModifier); expect "throws": every one of the repeated price queries and every tooltip
+    /// fill throws, and every one of those exceptions contains each "contains" text. match "battered": a production
+    /// pistol bound as a battered firearm to the main character must sell for the product's fixed scrap value.
+    /// invariants.repeat: queries per item (default 20).
     /// </summary>
     internal static class ItemPricingProbe
     {
@@ -399,25 +582,17 @@ namespace KmgLoaderCompatHarness
             int repeat = invariants != null && invariants.TryGetValue("repeat", out string text) ? int.Parse(text, CultureInfo.InvariantCulture) : 20;
             double modifier = Game.Instance.BlueprintRoot.Vendors.SellModifier;
             var result = new JObject { ["sellModifier"] = modifier, ["repeat"] = repeat, ["trading"] = Game.Instance.Vendor.IsTrading };
-            try
-            {
-                Patches patches = (SpearRepairConditions.Harmony ?? HarmonyInstance.Create(SpearRepairConditions.HarnessId + ".reader"))
-                    .GetPatchInfo(typeof(VendorLogic).GetMethod("GetItemSellPrice", new[] { typeof(ItemEntity) }));
-                result["sellPricePatchOwners"] = patches == null ? "none" :
-                    string.Join(",", patches.Postfixes.Concat(patches.Prefixes).Select(p => p.owner).Distinct().ToArray());
-            }
-            catch (Exception exception) { result["sellPricePatchOwners"] = "unavailable:" + exception.GetType().Name; }
-
+            result["sellPricePatchOwners"] = SellPricePatchOwners();
             var items = new JArray();
             foreach (string guid in itemGuids)
             {
                 BlueprintItemWeapon blueprint = ResourcesLibrary.TryGetBlueprint<BlueprintItemWeapon>(guid);
                 if (blueprint == null) { problems.Add("item " + guid + " does not resolve"); continue; }
                 var item = new ItemEntityWeapon(blueprint);
-                JObject row = Query(item, repeat, (long)(item.Cost * modifier));
+                JObject row = Query(item, repeat, (long)(item.Cost * modifier), contains);
                 row["guid"] = guid;
                 items.Add(row);
-                Judge(row, expect, contains, problems);
+                Judge(row, expect, contains, repeat, problems);
             }
 
             result["ordinary"] = items;
@@ -432,49 +607,85 @@ namespace KmgLoaderCompatHarness
             return result;
         }
 
-        private static JObject Query(ItemEntityWeapon item, int repeat, long native)
+        public static JToken SellPricePatchOwners()
+        {
+            try
+            {
+                Patches patches = (SpearRepairConditions.Harmony ?? HarmonyInstance.Create(SpearRepairConditions.HarnessId + ".reader"))
+                    .GetPatchInfo(typeof(VendorLogic).GetMethod("GetItemSellPrice", new[] { typeof(ItemEntity) }));
+                return patches == null ? "none" : string.Join(",", patches.Postfixes.Concat(patches.Prefixes).Select(p => p.owner).Distinct().ToArray());
+            }
+            catch (Exception exception) { return "unavailable:" + exception.GetType().Name; }
+        }
+
+        public static JObject Query(ItemEntity item, int repeat, long native, IList<string> causes = null)
         {
             var prices = new HashSet<long>();
             var tooltipPrices = new HashSet<string>();
-            int priceThrows = 0, tooltipThrows = 0;
-            string firstPriceError = null, firstTooltipError = null;
+            var priceErrors = new HashSet<string>();
+            var tooltipErrors = new HashSet<string>();
+            int priceThrows = 0, tooltipThrows = 0, priceCauseMatches = 0, tooltipCauseMatches = 0;
+            string[] needles = (causes ?? new string[0]).ToArray();
             for (int index = 0; index < repeat; index++)
             {
                 try { prices.Add(Game.Instance.Vendor.GetItemSellPrice(item)); }
-                catch (Exception exception) { priceThrows++; firstPriceError = firstPriceError ?? exception.GetType().Name + ": " + exception.Message; }
+                catch (Exception exception)
+                {
+                    priceThrows++;
+                    string chain = Chain(exception);
+                    priceErrors.Add(chain);
+                    if (needles.Length > 0 && needles.All(n => chain.IndexOf(n, StringComparison.Ordinal) >= 0)) priceCauseMatches++;
+                }
 
                 try
                 {
                     TooltipData data = UIUtilityItem.FillTooltipData(item, new TooltipData());
                     tooltipPrices.Add(data.Texts.TryGetValue(TooltipElement.SellPrice, out string sell) ? sell : "<missing>");
                 }
-                catch (Exception exception) { tooltipThrows++; firstTooltipError = firstTooltipError ?? exception.GetType().Name + ": " + exception.Message; }
+                catch (Exception exception)
+                {
+                    tooltipThrows++;
+                    string chain = Chain(exception);
+                    tooltipErrors.Add(chain);
+                    if (needles.Length > 0 && needles.All(n => chain.IndexOf(n, StringComparison.Ordinal) >= 0)) tooltipCauseMatches++;
+                }
             }
 
             return new JObject
             {
-                ["name"] = item.Blueprint.name, ["cost"] = item.Cost, ["nativeSellPrice"] = native,
+                ["name"] = item.Blueprint.name, ["cost"] = item.Cost, ["nativeSellPrice"] = native, ["queries"] = repeat,
                 ["sellPrices"] = new JArray(prices.Cast<object>().ToArray()), ["tooltipSellPrices"] = new JArray(tooltipPrices.Cast<object>().ToArray()),
-                ["priceThrows"] = priceThrows, ["tooltipThrows"] = tooltipThrows, ["firstPriceError"] = firstPriceError, ["firstTooltipError"] = firstTooltipError
+                ["priceThrows"] = priceThrows, ["tooltipThrows"] = tooltipThrows,
+                ["priceCauseMatches"] = priceCauseMatches, ["tooltipCauseMatches"] = tooltipCauseMatches,
+                ["distinctPriceErrors"] = new JArray(priceErrors.Cast<object>().ToArray()),
+                ["distinctTooltipErrors"] = new JArray(tooltipErrors.Cast<object>().ToArray())
             };
         }
 
-        private static void Judge(JObject row, string expect, IList<string> contains, List<string> problems)
+        private static string Chain(Exception exception)
+        {
+            var parts = new List<string>();
+            for (Exception current = exception; current != null; current = current.InnerException)
+                parts.Add(current.GetType().Name + ": " + current.Message);
+            return string.Join(" <- ", parts.ToArray());
+        }
+
+        private static void Judge(JObject row, string expect, IList<string> contains, int repeat, List<string> problems)
         {
             string name = (string)row["name"];
-            int repeat = ((JArray)row["sellPrices"]).Count;
             if (expect == "throws")
             {
-                if ((int)row["priceThrows"] == 0 || (int)row["tooltipThrows"] == 0)
-                    problems.Add(name + " did not throw: priceThrows=" + row["priceThrows"] + " tooltipThrows=" + row["tooltipThrows"]);
-                foreach (string needle in contains)
-                    if (((string)row["firstPriceError"] ?? string.Empty).IndexOf(needle, StringComparison.Ordinal) < 0)
-                        problems.Add(name + " price error lacks '" + needle + "': " + row["firstPriceError"]);
+                if (contains == null || contains.Count == 0) problems.Add("expect=throws needs the cause text in contains");
+                if ((int)row["priceThrows"] != repeat || (int)row["priceCauseMatches"] != repeat)
+                    problems.Add(name + " price queries: " + row["priceThrows"] + " of " + repeat + " threw, " + row["priceCauseMatches"] + " with the expected cause");
+                if ((int)row["tooltipThrows"] != repeat || (int)row["tooltipCauseMatches"] != repeat)
+                    problems.Add(name + " tooltip fills: " + row["tooltipThrows"] + " of " + repeat + " threw, " + row["tooltipCauseMatches"] + " with the expected cause");
                 return;
             }
 
             if ((int)row["priceThrows"] != 0 || (int)row["tooltipThrows"] != 0)
-                problems.Add(name + " threw: " + (row["firstPriceError"] ?? row["firstTooltipError"]));
+                problems.Add(name + " threw: " + row["distinctPriceErrors"].ToString(Newtonsoft.Json.Formatting.None) + " " +
+                    row["distinctTooltipErrors"].ToString(Newtonsoft.Json.Formatting.None));
             long native = (long)row["nativeSellPrice"];
             JArray prices = (JArray)row["sellPrices"];
             if (prices.Count != 1 || (long)prices[0] != native) problems.Add(name + " sell prices " + prices.ToString(Newtonsoft.Json.Formatting.None) + ", native " + native);
@@ -485,19 +696,12 @@ namespace KmgLoaderCompatHarness
 
         private static JObject Battered(int repeat, List<string> problems)
         {
-            Assembly product = ProductProbes.Entry().Assembly;
-            object catalog = product.GetType("KingmakerGunslinger.Bootstrap.BlueprintBootstrap", true).GetProperty("ProductionFirearms", Any).GetValue(null, null);
-            if (catalog == null) { problems.Add("no production firearm catalog for the battered check"); return null; }
-            object pistolSet = catalog.GetType().GetProperty("Pistol", Any).GetValue(catalog, null);
-            BlueprintItemWeapon pistol = (BlueprintItemWeapon)pistolSet.GetType().GetProperty("Item", Any).GetValue(pistolSet, null);
-            object fixedValue = product.GetType("KingmakerGunslinger.Gunsmithing.BatteredFirearmUsePolicy", true)
-                .GetField("FixedExpectedScrapValueGold", Any).GetValue(null);
-            long expected = Convert.ToInt64(fixedValue, CultureInfo.InvariantCulture);
+            BlueprintItemWeapon pistol = ProductItems.Pistol();
+            long expected = ProductItems.FixedScrapValue();
             UnitEntityData owner = Game.Instance.Player.MainCharacter.Value;
             var item = new ItemEntityWeapon(pistol);
             var ordinary = new ItemEntityWeapon(pistol);
-            product.GetType("KingmakerGunslinger.Gunsmithing.BatteredFirearmOriginRuntime", true).GetMethod("Bind", Any)
-                .Invoke(null, new object[] { item, owner });
+            ProductItems.BindBattered(item, owner);
             JObject battered = Query(item, repeat, expected);
             JObject plain = Query(ordinary, repeat, (long)(ordinary.Cost * Game.Instance.BlueprintRoot.Vendors.SellModifier));
             JArray prices = (JArray)battered["sellPrices"];
@@ -509,7 +713,7 @@ namespace KmgLoaderCompatHarness
             return new JObject { ["pistol"] = pistol.AssetGuid, ["fixedScrapValue"] = expected, ["batteredQuery"] = battered, ["unboundQuery"] = plain };
         }
 
-        private static JToken ProductBool(string typeName, string property)
+        public static JToken ProductBool(string typeName, string property)
         {
             Type type = ProductProbes.Entry().Assembly.GetType(typeName, false);
             PropertyInfo info = type?.GetProperty(property, Any);
@@ -517,226 +721,533 @@ namespace KmgLoaderCompatHarness
         }
     }
 
-    /// <summary>
-    /// kmgSorcererSummon. In the loaded save: a fresh disposable character takes Sorcerer level 1 through the native
-    /// level-up controller in character-generation mode and learns Summon Monster I through the controller's own spell
-    /// selection. It joins the party and is selected the way a portrait click selects; the action bar's spell group is
-    /// opened through its own click handler, the Summon Monster I slot the game built is clicked, and the creature menu
-    /// the game filled is read (names, icons, visibility). The chosen entry ("contains" picks by name; otherwise the
-    /// first entry) is cast with the AbilityData that slot holds, and a summoned creature must appear. Everything the
-    /// probe created is removed. expect "expanded": Summon Monster I must carry the product's published menu. Otherwise,
-    /// when Summon Monster I is Kingmaker's own single spell (no variants, as after a failed product startup), the slot
-    /// must not open a menu and the spell itself is cast.
-    /// </summary>
-    internal sealed class SorcererSummonProbe : ScreenProbe
+    /// <summary>Product items and battered-origin calls the probes reach through reflection.</summary>
+    internal static class ProductItems
     {
-        private enum Stage { Start, Selected, GroupOpened, MenuOpened, MenuRead, Casting, Done }
+        private const BindingFlags Any = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+        private static Type Product(string name) => ProductProbes.Entry().Assembly.GetType(name, true);
+
+        public static BlueprintItemWeapon Pistol()
+        {
+            object catalog = Product("KingmakerGunslinger.Bootstrap.BlueprintBootstrap").GetProperty("ProductionFirearms", Any).GetValue(null, null) ??
+                throw new InvalidOperationException("no production firearm catalog (initialization did not complete)");
+            object pistolSet = catalog.GetType().GetProperty("Pistol", Any).GetValue(catalog, null);
+            return (BlueprintItemWeapon)pistolSet.GetType().GetProperty("Item", Any).GetValue(pistolSet, null);
+        }
+
+        public static BlueprintItemWeapon FoundationSpear()
+        {
+            object set = Product("KingmakerGunslinger.Bootstrap.BlueprintBootstrap").GetProperty("ElvenBranchedSpears", Any).GetValue(null, null) ??
+                throw new InvalidOperationException("no Elven Branched Spear set (initialization did not complete)");
+            Array entries = (Array)set.GetType().GetProperty("Entries", Any).GetValue(set, null);
+            object first = entries.GetValue(0);
+            return (BlueprintItemWeapon)first.GetType().GetProperty("Item", Any).GetValue(first, null);
+        }
+
+        public static long FixedScrapValue()
+        {
+            return Convert.ToInt64(Product("KingmakerGunslinger.Gunsmithing.BatteredFirearmUsePolicy").GetField("FixedExpectedScrapValueGold", Any).GetValue(null),
+                CultureInfo.InvariantCulture);
+        }
+
+        public static void BindBattered(ItemEntityWeapon item, UnitEntityData owner)
+        {
+            try { Product("KingmakerGunslinger.Gunsmithing.BatteredFirearmOriginRuntime").GetMethod("Bind", Any).Invoke(null, new object[] { item, owner }); }
+            catch (TargetInvocationException exception) { throw exception.InnerException ?? exception; }
+        }
+
+        /// <summary>The product's own strict owner lookup; null when the item carries no battered origin.</summary>
+        public static UnitEntityData BatteredOwner(ItemEntityWeapon item)
+        {
+            MethodInfo tryGet = Product("KingmakerGunslinger.Gunsmithing.BatteredFirearmOriginRuntime").GetMethod("TryGetOwner", Any);
+            object[] arguments = { item, null };
+            try { return (bool)tryGet.Invoke(null, arguments) ? (UnitEntityData)arguments[1] : null; }
+            catch (TargetInvocationException exception) { throw exception.InnerException ?? exception; }
+        }
+    }
+
+    /// <summary>
+    /// Fresh-process persistence of affected items. kmgSpearPersistFixture (a loaded save, initialization complete)
+    /// puts a released foundation spear, a production pistol bound as battered to the main character, an unbound pistol
+    /// and a Standard Longsword into the party inventory and writes their identities beside the session profile; the
+    /// save is then written by saveGame. kmgSpearPersistedItems, in a later process that loaded that save, finds each
+    /// item by its unique id and checks its blueprint, the spear's resolved weapon-type profile, the battered owner and
+    /// token through the product's own strict lookup, the fixed battered price and the native control prices.
+    /// </summary>
+    internal static class SpearPersistence
+    {
+        private const string FileName = "spear-persistence-fixture.json";
+        private const string LongswordGuid = "6fd0a849531617844b195f452661b2cd";
+
+        public static JObject Fixture(string profileDir)
+        {
+            UnitEntityData main = Game.Instance.Player.MainCharacter.Value;
+            ItemEntityWeapon spear = Give(ProductItems.FoundationSpear());
+            ItemEntityWeapon battered = Give(ProductItems.Pistol());
+            ProductItems.BindBattered(battered, main);
+            ItemEntityWeapon plain = Give(ProductItems.Pistol());
+            ItemEntityWeapon longsword = Give(ResourcesLibrary.TryGetBlueprint<BlueprintItemWeapon>(LongswordGuid));
+            // Kingmaker 2.1.7b items carry no unique id; the reload identifies them by blueprint, by the counts held
+            // after this fixture, and by the battered origin the product's own lookup reports.
+            var record = new JObject
+            {
+                ["owner"] = main.UniqueId, ["ownerName"] = main.CharacterName,
+                ["spear"] = Describe(spear), ["battered"] = Describe(battered), ["plainPistol"] = Describe(plain), ["longsword"] = Describe(longsword),
+                ["spearCount"] = Count(spear.Blueprint.AssetGuid), ["pistolCount"] = Count(battered.Blueprint.AssetGuid),
+                ["batteredPistolCount"] = Battered(battered.Blueprint.AssetGuid).Length,
+                ["batteredOwnerBeforeSave"] = ProductItems.BatteredOwner(battered)?.UniqueId
+            };
+            File.WriteAllText(Path.Combine(profileDir, FileName), record.ToString(Newtonsoft.Json.Formatting.Indented));
+            return record;
+        }
+
+        private static ItemEntityWeapon[] Held(string guid)
+        {
+            return Game.Instance.Player.Inventory.OfType<ItemEntityWeapon>().Where(i => i.Blueprint != null && i.Blueprint.AssetGuid == guid).ToArray();
+        }
+
+        private static int Count(string guid) => Held(guid).Length;
+
+        private static ItemEntityWeapon[] Battered(string guid) => Held(guid).Where(i => ProductItems.BatteredOwner(i) != null).ToArray();
+
+        public static JObject Verify(string profileDir, out string problem)
+        {
+            var problems = new List<string>();
+            string path = Path.Combine(profileDir, FileName);
+            if (!File.Exists(path)) { problem = "no persistence fixture record at " + path; return new JObject(); }
+            JObject fixture = JObject.Parse(File.ReadAllText(path));
+            var result = new JObject { ["fixture"] = fixture, ["sellPricePatchOwners"] = ItemPricingProbe.SellPricePatchOwners() };
+            double modifier = Game.Instance.BlueprintRoot.Vendors.SellModifier;
+            var found = new Dictionary<string, ItemEntityWeapon>();
+            string spearGuid = (string)fixture["spear"]["blueprint"], pistolGuid = (string)fixture["battered"]["blueprint"];
+            string longswordGuid = (string)fixture["longsword"]["blueprint"];
+            ItemEntityWeapon[] spears = Held(spearGuid), pistols = Held(pistolGuid), batteredPistols = Battered(pistolGuid);
+            result["counts"] = new JObject
+            {
+                ["spear"] = spears.Length, ["pistol"] = pistols.Length, ["batteredPistol"] = batteredPistols.Length, ["longsword"] = Count(longswordGuid)
+            };
+            if (spears.Length != (int)fixture["spearCount"]) problems.Add("the loaded inventory holds " + spears.Length + " spears, saved " + fixture["spearCount"]);
+            if (pistols.Length != (int)fixture["pistolCount"]) problems.Add("the loaded inventory holds " + pistols.Length + " pistols, saved " + fixture["pistolCount"]);
+            if (batteredPistols.Length != (int)fixture["batteredPistolCount"])
+                problems.Add("the loaded inventory holds " + batteredPistols.Length + " battered pistols, saved " + fixture["batteredPistolCount"]);
+            if (spears.Length > 0) found["spear"] = spears[0];
+            if (batteredPistols.Length > 0) found["battered"] = batteredPistols[0];
+            ItemEntityWeapon plainPistol = pistols.FirstOrDefault(i => ProductItems.BatteredOwner(i) == null);
+            if (plainPistol != null) found["plainPistol"] = plainPistol; else problems.Add("no unbound pistol in the loaded inventory");
+            ItemEntityWeapon sword = Held(longswordGuid).FirstOrDefault();
+            if (sword != null) found["longsword"] = sword; else problems.Add("no Standard Longsword in the loaded inventory");
+
+            foreach (ItemEntityWeapon each in spears)
+            {
+                BlueprintWeaponType eachType = each.Blueprint.Type;
+                if (eachType == null || eachType.name != WeaponTypeProfiles.OwnedSpearTypeName) problems.Add("a loaded spear resolved to weapon type " + eachType?.name);
+            }
+
+            if (found.TryGetValue("spear", out ItemEntityWeapon spear))
+            {
+                BlueprintWeaponType type = spear.Blueprint.Type;
+                JObject fields = WeaponTypeProfiles.Fields(type), getters = WeaponTypeProfiles.Getters(type);
+                result["spear"] = new JObject { ["item"] = Describe(spear), ["type"] = type.name, ["typeGuid"] = type.AssetGuid, ["fields"] = fields, ["getters"] = getters };
+                if (type.name != WeaponTypeProfiles.OwnedSpearTypeName) problems.Add("the loaded spear's weapon type is " + type.name);
+                foreach (KeyValuePair<string, string> pair in WeaponTypeProfiles.Intended)
+                    if ((string)fields[pair.Key] != pair.Value) problems.Add("loaded spear " + pair.Key + " is " + fields[pair.Key] + ", expected " + pair.Value);
+                foreach (KeyValuePair<string, string> pair in WeaponTypeProfiles.IntendedGetters)
+                    if ((string)getters[pair.Key] != pair.Value) problems.Add("loaded spear getter " + pair.Key + " is " + getters[pair.Key] + ", expected " + pair.Value);
+            }
+
+            if (found.TryGetValue("battered", out ItemEntityWeapon battered))
+            {
+                UnitEntityData owner = ProductItems.BatteredOwner(battered);
+                long fixedValue = ProductItems.FixedScrapValue();
+                JObject query = ItemPricingProbe.Query(battered, 10, fixedValue);
+                result["battered"] = new JObject { ["item"] = Describe(battered), ["owner"] = owner?.UniqueId, ["ownerName"] = owner?.CharacterName, ["query"] = query };
+                if (owner == null || owner.UniqueId != (string)fixture["owner"]) problems.Add("the loaded battered pistol's owner is " + (owner?.UniqueId ?? "<none>") + ", saved " + fixture["owner"]);
+                RequirePrice("battered pistol", query, fixedValue, problems);
+            }
+
+            foreach (string key in new[] { "plainPistol", "longsword" })
+            {
+                if (!found.TryGetValue(key, out ItemEntityWeapon item)) continue;
+                long native = (long)(item.Cost * modifier);
+                JObject query = ItemPricingProbe.Query(item, 10, native);
+                UnitEntityData owner = ProductItems.BatteredOwner(item);
+                result[key] = new JObject { ["item"] = Describe(item), ["batteredOwner"] = owner?.UniqueId, ["query"] = query };
+                if (owner != null) problems.Add(key + " carries a battered origin");
+                RequirePrice(key, query, native, problems);
+            }
+
+            problem = problems.Count == 0 ? null : string.Join("; ", problems.ToArray());
+            return result;
+        }
+
+        private static void RequirePrice(string name, JObject query, long expected, List<string> problems)
+        {
+            JArray prices = (JArray)query["sellPrices"];
+            JArray tooltip = (JArray)query["tooltipSellPrices"];
+            if ((int)query["priceThrows"] != 0 || (int)query["tooltipThrows"] != 0 || prices.Count != 1 || (long)prices[0] != expected ||
+                tooltip.Count != 1 || (string)tooltip[0] != expected.ToString(CultureInfo.InvariantCulture))
+                problems.Add(name + " sold for " + prices.ToString(Newtonsoft.Json.Formatting.None) + " (tooltip " + tooltip.ToString(Newtonsoft.Json.Formatting.None) +
+                    ", throws " + query["priceThrows"] + "/" + query["tooltipThrows"] + "), expected " + expected);
+        }
+
+        private static ItemEntityWeapon Give(BlueprintItemWeapon blueprint)
+        {
+            if (blueprint == null) throw new InvalidOperationException("a fixture weapon blueprint does not resolve");
+            return Game.Instance.Player.Inventory.Add(blueprint) as ItemEntityWeapon ??
+                throw new InvalidOperationException("inventory add did not yield a weapon for " + blueprint.name);
+        }
+
+        private static JObject Describe(ItemEntityWeapon item)
+        {
+            return new JObject
+            {
+                ["blueprint"] = item.Blueprint.AssetGuid, ["name"] = item.Blueprint.name,
+                ["enchantments"] = new JArray(item.Enchantments.Where(e => e != null && e.Blueprint != null).Select(e => (object)e.Blueprint.name).ToArray())
+            };
+        }
+    }
+
+    /// <summary>
+    /// kmgSorcererSummon, an owned probe. In the loaded save a fresh disposable character takes Sorcerer level 1 through
+    /// the native level-up controller in character-generation mode (the native class path) and learns Summon Monster I
+    /// through the controller's own spell selection. It joins the party and is selected the way a portrait click
+    /// selects; the action bar's spell group is opened through its own click handler and the Summon Monster I slot the
+    /// game built is clicked.
+    ///
+    /// expect "expanded": the creature menu the game filled must be open with visible named entries carrying icons; the
+    /// chosen entry ("contains" picks by name, otherwise the first) is clicked through its own slot, which must put
+    /// exactly that entry's ability into Kingmaker's ability-targeting handler. expect "native-single": Summon Monster I
+    /// must be Kingmaker's own spell with no variants, no menu may open, and the slot click must put the spell itself
+    /// into the targeting handler. In both, the targeting handler's own ground click casts; the command it issued must
+    /// carry the selected ability and succeed, and a creature that ability's actions spawn must appear as the caster's
+    /// summon. Release gives back everything the probe created: the summons, the party entry, the caster, the
+    /// selection, the pause state, the targeting handler and the blueprint clone.
+    /// </summary>
+    internal sealed class SorcererSummonProbe : ScreenProbe, IOwnedProbe
+    {
+        private enum Stage { Start, Selected, GroupOpened, MenuOpened, ClickEntry, EntryClicked, GroundClick, Casting, Stalled }
 
         private const string SorcererGuid = "b3a505fb61437dc4097f43c3f8f9a4cf";
         private const string SummonMonsterOneGuid = "8fd74eddd9b6c224693d9ab241f25e84";
+        private const int MaxAttempts = 3;
         private readonly string expect;
         private readonly string[] pick;
+        private readonly string stallAfter;
+        private readonly string failRelease;
+        private readonly JArray attempts = new JArray();
         private Stage stage = Stage.Start;
         private BlueprintUnit clone;
         private UnitEntityData caster;
         private bool addedToParty;
+        private bool pauseChanged;
+        private bool pausedBefore;
         private UnitEntityData originalSelection;
         private BlueprintAbility summonMonsterOne;
         private ActionBarSpellsGroup subGroup;
-        private AbilityData chosen;
         private AbilityData sourceSpell;
+        private AbilityData chosen;
         private UnitUseAbility command;
-        private bool pausedBefore;
         private double castAt;
-        private readonly List<UnitEntityData> summoned = new List<UnitEntityData>();
 
-        public SorcererSummonProbe(string directory, string label, string expect, IEnumerable<string> pick) : base(directory, label)
+        public SorcererSummonProbe(string directory, string label, string expect, IEnumerable<string> pick, IDictionary<string, string> invariants)
+            : base(directory, label)
         {
+            if (expect != "expanded" && expect != "native-single") throw new ArgumentException("kmgSorcererSummon expects expanded or native-single", "expect");
             this.expect = expect;
             this.pick = pick.ToArray();
+            stallAfter = invariants != null && invariants.TryGetValue("stallAfter", out string stall) ? stall : null;
+            failRelease = invariants != null && invariants.TryGetValue("failRelease", out string fail) ? fail : null;
+            if (stallAfter != null) Record["testOnlyStallAfter"] = stallAfter;
+            if (failRelease != null) Record["testOnlyFailRelease"] = failRelease;
         }
+
+        object IOwnedProbe.Result => Record;
 
         protected override string Step()
         {
-            try
+            switch (stage)
             {
-                string outcome = Advance();
-                if (outcome != null) Cleanup();
-                return outcome;
-            }
-            catch
-            {
-                Cleanup();
-                throw;
+                case Stage.Start: return Start();
+                case Stage.Selected: return OpenSpellGroup();
+                case Stage.GroupOpened: return ClickSummonMonsterSlot();
+                case Stage.MenuOpened: return ReadMenu();
+                case Stage.ClickEntry: return ClickEntry();
+                case Stage.EntryClicked: return ConfirmEntrySelection();
+                case Stage.GroundClick: return GroundClick();
+                case Stage.Casting: return AwaitSummon();
+                default: return null;
             }
         }
 
-        private string Advance()
+        private string Start()
         {
-            switch (stage)
+            summonMonsterOne = ResourcesLibrary.TryGetBlueprint<BlueprintAbility>(SummonMonsterOneGuid);
+            BlueprintCharacterClass sorcerer = ResourcesLibrary.TryGetBlueprint<BlueprintCharacterClass>(SorcererGuid);
+            if (summonMonsterOne == null || sorcerer == null) return "Summon Monster I or the Sorcerer class does not resolve";
+            Record["summonMonsterI"] = new JObject
             {
-                case Stage.Start:
-                {
-                    summonMonsterOne = ResourcesLibrary.TryGetBlueprint<BlueprintAbility>(SummonMonsterOneGuid);
-                    BlueprintCharacterClass sorcerer = ResourcesLibrary.TryGetBlueprint<BlueprintCharacterClass>(SorcererGuid);
-                    if (summonMonsterOne == null || sorcerer == null) return "Summon Monster I or the Sorcerer class does not resolve";
-                    Record["summonMonsterI"] = Describe(summonMonsterOne);
-                    Record["publishedExpandedParent"] = PublishedExpandedParent(summonMonsterOne);
-                    SelectionManager selection = SelectionManager.Instance;
-                    originalSelection = selection == null ? null : selection.GetSingleSelectedUnit();
-                    clone = UnityEngine.Object.Instantiate(BlueprintRoot.Instance.DefaultPlayerCharacter);
-                    clone.name = "KmgLoaderCompat_NewSorcerer";
-                    UnitEntityData main = Game.Instance.Player.MainCharacter.Value;
-                    caster = Game.Instance.EntityCreator.SpawnUnit(clone, main.Position + main.OrientationDirection * 1.5f, Quaternion.identity,
-                        Game.Instance.State.LoadedAreaState.MainState);
-                    if (caster == null || caster.View == null) return "the new sorcerer was not spawned";
-                    caster.Descriptor.Stats.Charisma.BaseValue = 20;
-                    var levelUp = new JObject();
-                    Record["levelUp"] = levelUp;
-                    LevelSorcerer(caster, sorcerer, levelUp);
-                    Spellbook book = caster.Descriptor.GetSpellbook(sorcerer);
-                    if (book == null) return "the new sorcerer has no spellbook";
-                    book.Rest();
-                    string[] known = book.GetKnownSpells(1).Select(s => s.Blueprint.name).ToArray();
-                    Record["knownLevelOne"] = new JArray(known.Cast<object>().ToArray());
-                    Record["spellsPerDayLevelOne"] = book.GetSpellsPerDay(1);
-                    if (!book.GetKnownSpells(1).Any(s => ReferenceEquals(s.Blueprint, summonMonsterOne)))
-                        return "the new sorcerer did not learn Summon Monster I through level-up";
-                    Game.Instance.Player.PartyCharacters.Add(caster);
-                    addedToParty = true;
-                    Game.Instance.Player.InvalidateCharacterLists();
-                    Game.Instance.Player.UpdateCharacterLists();
-                    SelectionManager.Instance.SelectUnit(caster.View, true, true, false);
-                    stage = Stage.Selected;
-                    Wait(30);
-                    return null;
-                }
-
-                case Stage.Selected:
-                {
-                    ActionBarManager bar = ActionBarManager.Instance;
-                    if (bar == null || bar.Group == null) return "the action bar is not available";
-                    ActionBarGroupElement spells = bar.Group.GroupElements.FirstOrDefault(e => e != null && e.SlotType == ActionBarSlotType.Spell);
-                    if (spells == null) return "the action bar has no spell group";
-                    Record["selectedUnit"] = SelectionManager.Instance.GetSingleSelectedUnit()?.Blueprint?.name;
-                    if (!BarShowsCaster()) return Reselect("the action bar did not show the new sorcerer after selection");
-                    if (!spells.ToggleState) spells.OnClick();
-                    stage = Stage.GroupOpened;
-                    Wait(12);
-                    return null;
-                }
-
-                case Stage.GroupOpened:
-                {
-                    if (!BarShowsCaster()) return Reselect("the action bar left the new sorcerer before the slot click");
-                    ActionBarGroupElement spells = ActionBarManager.Instance.Group.GroupElements.First(e => e.SlotType == ActionBarSlotType.Spell);
-                    Record["spellGroupOpen"] = spells.ToggleState;
-                    List<ActionBarGroupSlot> slots = Field<List<ActionBarGroupSlot>>(spells, "m_Slots");
-                    var seen = new JArray();
-                    ActionBarGroupSlot target = null;
-                    foreach (ActionBarGroupSlot slot in slots)
-                    {
-                        AbilityData spell = (Mechanic(slot) as MechanicActionBarSlotSpontaneusSpell)?.Spell;
-                        if (spell == null) continue;
-                        seen.Add(spell.Blueprint.name + (slot.gameObject.activeInHierarchy ? "" : " (hidden)"));
-                        if (ReferenceEquals(spell.Blueprint, summonMonsterOne) && slot.gameObject.activeInHierarchy) target = slot;
-                    }
-
-                    Record["spellSlots"] = seen;
-                    if (target == null) return "no visible Summon Monster I slot on the new sorcerer's spell bar";
-                    sourceSpell = (Mechanic(target) as MechanicActionBarSlotSpontaneusSpell).Spell;
-                    subGroup = Field<ActionBarSpellsGroup>(target, "SubGroup");
-                    target.OnClick();
-                    stage = Stage.MenuOpened;
-                    Wait(10);
-                    return null;
-                }
-
-                case Stage.MenuOpened:
-                {
-                    List<ActionBarSpontaneousConvertedSlot> entries = Field<List<ActionBarSpontaneousConvertedSlot>>(subGroup, "m_Slots");
-                    var rows = new JArray();
-                    foreach (ActionBarSpontaneousConvertedSlot entry in entries)
-                    {
-                        AbilityData data = (Mechanic(entry) as MechanicActionBarSlotSpontaneusConvertedSpell)?.Spell;
-                        rows.Add(new JObject
-                        {
-                            ["name"] = data?.Name, ["blueprint"] = data?.Blueprint?.name, ["guid"] = data?.Blueprint?.AssetGuid,
-                            ["icon"] = data?.Icon != null ? data.Icon.name : null, ["visible"] = entry.gameObject.activeInHierarchy,
-                            ["nestedVariants"] = data?.Blueprint?.Variants?.Length ?? 0
-                        });
-                    }
-
-                    bool menuOpen = subGroup.gameObject.activeInHierarchy;
-                    Record["menuOpen"] = menuOpen;
-                    Record["menuEntries"] = rows;
-                    Record["menuEntryCount"] = rows.Count;
-                    Capture("summon-monster-i-menu");
-                    bool nativeSingle = summonMonsterOne.Variants == null || summonMonsterOne.Variants.Length == 0;
-                    Record["nativeSingleSpell"] = nativeSingle;
-                    if (nativeSingle && expect != "expanded")
-                    {
-                        // Kingmaker's own Summon Monster I has no variants: the slot does not expand, and its click
-                        // only starts targeting. The spell itself is what this player casts.
-                        if (menuOpen || rows.Count != 0) return "a native single Summon Monster I opened a menu with " + rows.Count + " entries";
-                        chosen = sourceSpell;
-                        Record["chosen"] = new JObject { ["name"] = chosen.Name, ["blueprint"] = chosen.Blueprint.name, ["available"] = chosen.IsAvailableForCast, ["route"] = "native-single-spell" };
-                        stage = Stage.MenuRead;
-                        return null;
-                    }
-
-                    if (!menuOpen) return Reselect("the Summon Monster I creature menu was not open " + (BarShowsCaster()
-                        ? "while the bar still showed the new sorcerer" : "because the bar no longer showed the new sorcerer"));
-                    if (rows.Count < 2) return "the Summon Monster I menu shows " + rows.Count + " creature entries";
-                    JObject[] bad = rows.Cast<JObject>().Where(r => !(bool)r["visible"] || string.IsNullOrWhiteSpace((string)r["name"]) || r["icon"].Type == JTokenType.Null).ToArray();
-                    if (bad.Length > 0) return "menu entries are not visible with a name and icon: " + string.Join(", ", bad.Select(b => b.ToString(Newtonsoft.Json.Formatting.None)).ToArray());
-                    if (expect == "expanded" && !(bool)Record["publishedExpandedParent"]) return "Summon Monster I does not carry the product's published menu";
-                    ActionBarSpontaneousConvertedSlot choice = entries.FirstOrDefault(e => Matches(e)) ?? (pick.Length == 0 ? entries.FirstOrDefault(e => NoNested(e)) : null);
-                    if (choice == null) return "no menu entry matches " + string.Join(",", pick);
-                    chosen = (Mechanic(choice) as MechanicActionBarSlotSpontaneusConvertedSpell).Spell;
-                    Record["chosen"] = new JObject { ["name"] = chosen.Name, ["blueprint"] = chosen.Blueprint.name, ["available"] = chosen.IsAvailableForCast };
-                    stage = Stage.MenuRead;
-                    return null;
-                }
-
-                case Stage.MenuRead:
-                {
-                    if (AwaitingScreenshots()) return null;
-                    subGroup.Hide(true);
-                    pausedBefore = Game.Instance.IsPaused;
-                    if (pausedBefore) Game.Instance.IsPaused = false;
-                    Vector3 point = caster.Position + caster.OrientationDirection * 2.5f;
-                    caster.Commands.InterruptAll(true);
-                    command = new UnitUseAbility(chosen, new TargetWrapper(point));
-                    caster.Commands.Run(command);
-                    castAt = Time.realtimeSinceStartup;
-                    stage = Stage.Casting;
-                    return null;
-                }
-
-                case Stage.Casting:
-                {
-                    summoned.Clear();
-                    summoned.AddRange(Game.Instance.State.Units.Where(u => u != null && u.Get<UnitPartSummonedMonster>()?.Summoner == caster));
-                    bool finished = command.IsFinished;
-                    if (summoned.Count == 0 || !finished)
-                    {
-                        if (Time.realtimeSinceStartup - castAt > 40) return "no summoned creature after 40 s (command result " + command.Result + ", finished " + finished + ")";
-                        return null;
-                    }
-
-                    Record["commandResult"] = command.Result.ToString();
-                    Record["summoned"] = new JArray(summoned.Select(u => (object)(u.Blueprint.name + "|" + u.CharacterName)).ToArray());
-                    stage = Stage.Done;
-                    return string.Empty;
-                }
+                ["name"] = summonMonsterOne.name, ["variants"] = summonMonsterOne.Variants?.Length ?? 0,
+                ["variantNames"] = new JArray((summonMonsterOne.Variants ?? new BlueprintAbility[0]).Where(v => v != null).Select(v => (object)v.name).ToArray())
+            };
+            Record["publishedExpandedParent"] = PublishedExpandedParent(summonMonsterOne);
+            Record["partyBefore"] = Game.Instance.Player.PartyCharacters.Count;
+            originalSelection = SelectionManager.Instance?.GetSingleSelectedUnit();
+            pausedBefore = Game.Instance.IsPaused;
+            clone = UnityEngine.Object.Instantiate(BlueprintRoot.Instance.DefaultPlayerCharacter);
+            clone.name = "KmgLoaderCompat_NewSorcerer";
+            UnitEntityData main = Game.Instance.Player.MainCharacter.Value;
+            caster = Game.Instance.EntityCreator.SpawnUnit(clone, main.Position + main.OrientationDirection * 1.5f, Quaternion.identity,
+                Game.Instance.State.LoadedAreaState.MainState);
+            if (caster == null || caster.View == null) return "the new sorcerer was not spawned";
+            caster.Descriptor.Stats.Charisma.BaseValue = 20;
+            var levelUp = new JObject();
+            Record["levelUp"] = levelUp;
+            LevelSorcerer(caster, sorcerer, levelUp);
+            Spellbook book = caster.Descriptor.GetSpellbook(sorcerer);
+            if (book == null) return "the new sorcerer has no spellbook";
+            book.Rest();
+            Record["knownLevelOne"] = new JArray(book.GetKnownSpells(1).Select(s => (object)s.Blueprint.name).ToArray());
+            Record["spellsPerDayLevelOne"] = book.GetSpellsPerDay(1);
+            if (!book.GetKnownSpells(1).Any(s => ReferenceEquals(s.Blueprint, summonMonsterOne)))
+                return "the new sorcerer did not learn Summon Monster I through level-up";
+            Game.Instance.Player.PartyCharacters.Add(caster);
+            addedToParty = true;
+            Game.Instance.Player.InvalidateCharacterLists();
+            Game.Instance.Player.UpdateCharacterLists();
+            if (stallAfter == "party")
+            {
+                // Test-only: hold the step after the party insertion so a step timeout has state to release.
+                stage = Stage.Stalled;
+                return null;
             }
 
+            SelectionManager.Instance.SelectUnit(caster.View, true, true, false);
+            stage = Stage.Selected;
+            Wait(30);
+            return null;
+        }
+
+        private string OpenSpellGroup()
+        {
+            ActionBarGroupElement spells = SpellGroup();
+            if (spells == null) return "the action bar has no spell group";
+            Record["selectedUnit"] = SelectionManager.Instance.GetSingleSelectedUnit()?.Blueprint?.name;
+            if (!BarShowsCaster()) return Reselect("the action bar did not show the new sorcerer after selection");
+            if (!spells.ToggleState) spells.OnClick();
+            stage = Stage.GroupOpened;
+            Wait(12);
+            return null;
+        }
+
+        private string ClickSummonMonsterSlot()
+        {
+            if (!BarShowsCaster()) return Reselect("the action bar left the new sorcerer before the slot click");
+            ActionBarGroupElement spells = SpellGroup();
+            Record["spellGroupOpen"] = spells.ToggleState;
+            var seen = new JArray();
+            ActionBarGroupSlot target = null;
+            foreach (ActionBarGroupSlot slot in Field<List<ActionBarGroupSlot>>(spells, "m_Slots"))
+            {
+                AbilityData spell = (slot.MechanicSlot as MechanicActionBarSlotSpontaneusSpell)?.Spell;
+                if (spell == null) continue;
+                seen.Add(spell.Blueprint.name + (slot.gameObject.activeInHierarchy ? "" : " (hidden)"));
+                if (ReferenceEquals(spell.Blueprint, summonMonsterOne) && slot.gameObject.activeInHierarchy) target = slot;
+            }
+
+            Record["spellSlots"] = seen;
+            if (target == null) return "no visible Summon Monster I slot on the new sorcerer's spell bar";
+            sourceSpell = ((MechanicActionBarSlotSpontaneusSpell)target.MechanicSlot).Spell;
+            subGroup = Field<ActionBarSpellsGroup>(target, "SubGroup");
+            Game.Instance.SelectedAbilityHandler.DropAbility();
+            target.OnClick();
+            stage = Stage.MenuOpened;
+            Wait(10);
+            return null;
+        }
+
+        private string ReadMenu()
+        {
+            List<ActionBarSpontaneousConvertedSlot> entries = Field<List<ActionBarSpontaneousConvertedSlot>>(subGroup, "m_Slots");
+            var rows = new JArray();
+            foreach (ActionBarSpontaneousConvertedSlot entry in entries)
+            {
+                AbilityData data = (entry.MechanicSlot as MechanicActionBarSlotSpontaneusConvertedSpell)?.Spell;
+                rows.Add(new JObject
+                {
+                    ["name"] = data?.Name, ["blueprint"] = data?.Blueprint?.name, ["guid"] = data?.Blueprint?.AssetGuid,
+                    ["icon"] = data?.Icon != null ? data.Icon.name : null, ["visible"] = entry.gameObject.activeInHierarchy,
+                    ["nestedVariants"] = data?.Blueprint?.Variants?.Length ?? 0
+                });
+            }
+
+            bool menuOpen = subGroup.gameObject.activeInHierarchy;
+            bool nativeSingle = summonMonsterOne.Variants == null || summonMonsterOne.Variants.Length == 0;
+            Record["menuOpen"] = menuOpen;
+            Record["menuEntries"] = rows;
+            Record["menuEntryCount"] = rows.Count;
+            Record["nativeSingleSpell"] = nativeSingle;
+            Capture("summon-monster-i-menu");
+            if (expect == "native-single")
+            {
+                if (!nativeSingle) return "Summon Monster I carries " + summonMonsterOne.Variants.Length + " variants; the native unexpanded spell was expected";
+                if (menuOpen || rows.Count != 0) return "a native single Summon Monster I opened a menu with " + rows.Count + " entries";
+                if (Game.Instance.SelectedAbilityHandler.Ability != sourceSpell)
+                    return "the Summon Monster I slot click did not put the spell into the targeting handler (it holds " +
+                        Game.Instance.SelectedAbilityHandler.Ability?.Blueprint?.name + ")";
+                chosen = sourceSpell;
+                Record["chosen"] = new JObject { ["route"] = "native-single-spell", ["name"] = chosen.Name, ["blueprint"] = chosen.Blueprint.name };
+                Record["uiSelectedAbility"] = Game.Instance.SelectedAbilityHandler.Ability.Blueprint.name;
+                stage = Stage.GroundClick;
+                return null;
+            }
+
+            if (nativeSingle) return "Summon Monster I has no variants; the product's published creature menu was expected";
+            if (!(bool)Record["publishedExpandedParent"]) return "Summon Monster I does not carry the product's published menu";
+            if (!menuOpen) return Reselect("the Summon Monster I creature menu was not open " + (BarShowsCaster()
+                ? "while the bar still showed the new sorcerer" : "because the bar no longer showed the new sorcerer"));
+            if (rows.Count < 2) return "the Summon Monster I menu shows " + rows.Count + " creature entries";
+            JObject[] bad = rows.Cast<JObject>().Where(r => !(bool)r["visible"] || string.IsNullOrWhiteSpace((string)r["name"]) || r["icon"].Type == JTokenType.Null).ToArray();
+            if (bad.Length > 0) return "menu entries are not visible with a name and icon: " + string.Join(", ", bad.Select(b => b.ToString(Newtonsoft.Json.Formatting.None)).ToArray());
+            int index = entries.FindIndex(e => Matches(e));
+            if (index < 0 && pick.Length == 0) index = entries.FindIndex(NoNested);
+            if (index < 0) return "no menu entry matches " + string.Join(",", pick);
+            ActionBarSpontaneousConvertedSlot choice = entries[index];
+            chosen = ((MechanicActionBarSlotSpontaneusConvertedSpell)choice.MechanicSlot).Spell;
+            Record["chosen"] = new JObject { ["route"] = "creature-menu-entry", ["row"] = index, ["name"] = chosen.Name, ["blueprint"] = chosen.Blueprint.name };
+            choiceSlot = choice;
+            stage = Stage.ClickEntry;
+            return null;
+        }
+
+        private ActionBarSpontaneousConvertedSlot choiceSlot;
+
+        // After the menu picture is written, the chosen row is clicked through its own slot.
+        private string ClickEntry()
+        {
+            if (AwaitingScreenshots()) return null;
+            Game.Instance.SelectedAbilityHandler.DropAbility();
+            choiceSlot.OnClick();
+            stage = Stage.EntryClicked;
+            Wait(5);
+            return null;
+        }
+
+        private string ConfirmEntrySelection()
+        {
+            AbilityData selected = Game.Instance.SelectedAbilityHandler.Ability;
+            Record["uiSelectedAbility"] = selected?.Blueprint?.name;
+            if (selected != chosen)
+                return "clicking the menu entry " + chosen.Blueprint.name + " put " + (selected?.Blueprint?.name ?? "nothing") + " into the targeting handler";
+            stage = Stage.GroundClick;
+            return null;
+        }
+
+        private string GroundClick()
+        {
+            if (AwaitingScreenshots()) return null;
+            if (subGroup != null && subGroup.gameObject.activeInHierarchy) subGroup.Hide(true);
+            if (Game.Instance.IsPaused) { Game.Instance.IsPaused = false; pauseChanged = true; }
+            Vector3 point = caster.Position + caster.OrientationDirection * 2.5f;
+            int before = Commands().Count;
+            bool accepted = Game.Instance.SelectedAbilityHandler.OnClick(null, point, 0);
+            Record["groundClickAccepted"] = accepted;
+            if (!accepted) return "the targeting handler refused the ground click for " + chosen.Blueprint.name;
+            command = Commands().OfType<UnitUseAbility>().LastOrDefault();
+            Record["commandsIssued"] = Commands().Count - before;
+            Record["submittedAbility"] = command?.Spell?.Blueprint?.name;
+            if (command == null) return "the ground click issued no ability command";
+            if (command.Spell.Blueprint != chosen.Blueprint) return "the ground click cast " + command.Spell.Blueprint.name + ", not the selected " + chosen.Blueprint.name;
+            castAt = Time.realtimeSinceStartup;
+            stage = Stage.Casting;
+            return null;
+        }
+
+        private string AwaitSummon()
+        {
+            UnitEntityData[] summoned = Summons();
+            if (!command.IsFinished || summoned.Length == 0)
+            {
+                if (Time.realtimeSinceStartup - castAt > 40)
+                    return "no finished cast with a summon after 40 s (command result " + command.Result + ", finished " + command.IsFinished + ", summons " + summoned.Length + ")";
+                return null;
+            }
+
+            BlueprintUnit[] expected = ExpectedSummons(chosen.Blueprint);
+            Record["commandResult"] = command.Result.ToString();
+            Record["expectedCreatures"] = new JArray(expected.Select(u => (object)u.name).ToArray());
+            Record["summoned"] = new JArray(summoned.Select(u => (object)(u.Blueprint.name + "|" + u.CharacterName)).ToArray());
+            if (command.Result != UnitCommand.ResultType.Success) return "the cast of " + chosen.Blueprint.name + " ended " + command.Result;
+            if (expected.Length == 0) return "no creature blueprint was found in " + chosen.Blueprint.name + "'s actions";
+            if (!summoned.Any(u => expected.Any(e => e == u.Blueprint || e.AssetGuid == u.Blueprint.AssetGuid)))
+                return "the summoned " + string.Join(",", summoned.Select(u => u.Blueprint.name).ToArray()) + " is not a creature " + chosen.Blueprint.name + " spawns";
             return string.Empty;
         }
 
-        private const int MaxAttempts = 3;
-        private readonly JArray attempts = new JArray();
+        private List<UnitCommand> Commands()
+        {
+            var commands = new List<UnitCommand>();
+            if (caster.Commands.Standard != null) commands.Add(caster.Commands.Standard);
+            commands.AddRange(caster.Commands.Queue);
+            return commands;
+        }
+
+        private UnitEntityData[] Summons()
+        {
+            return Game.Instance.State.Units.Where(u => u != null && caster != null && u.Get<UnitPartSummonedMonster>()?.Summoner == caster).ToArray();
+        }
+
+        /// <summary>Creature blueprints an ability's actions spawn, found by walking its components and nested actions.</summary>
+        private static BlueprintUnit[] ExpectedSummons(BlueprintAbility ability)
+        {
+            var found = new List<BlueprintUnit>();
+            var seen = new HashSet<object>();
+            foreach (BlueprintComponent component in ability.ComponentsArray ?? new BlueprintComponent[0]) Walk(component, found, seen, 0);
+            return found.Distinct().ToArray();
+        }
+
+        private static void Walk(object value, List<BlueprintUnit> found, HashSet<object> seen, int depth)
+        {
+            if (value == null || depth > 10 || value is string || value.GetType().IsPrimitive || value.GetType().IsEnum || !seen.Add(value)) return;
+            if (value is BlueprintUnit unit) { found.Add(unit); return; }
+            if (value is BlueprintScriptableObject && !(value is BlueprintAbility)) return;
+            if (value is BlueprintAbility nested)
+            {
+                foreach (BlueprintComponent component in nested.ComponentsArray ?? new BlueprintComponent[0]) Walk(component, found, seen, depth + 1);
+                return;
+            }
+
+            if (value is IEnumerable sequence)
+            {
+                foreach (object item in sequence) Walk(item, found, seen, depth + 1);
+                return;
+            }
+
+            if (!(value is BlueprintComponent || value is GameAction || value is ActionList || value is Element)) return;
+            for (Type type = value.GetType(); type != null && type != typeof(object); type = type.BaseType)
+                foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+                {
+                    if (field.FieldType.IsPrimitive || field.FieldType.IsEnum || field.FieldType == typeof(string)) continue;
+                    Walk(field.GetValue(value), found, seen, depth + 1);
+                }
+        }
+
+        private bool Matches(ActionBarSpontaneousConvertedSlot entry)
+        {
+            AbilityData data = (entry.MechanicSlot as MechanicActionBarSlotSpontaneusConvertedSpell)?.Spell;
+            return pick.Length > 0 && data != null && pick.Any(p => (data.Name ?? string.Empty).IndexOf(p, StringComparison.OrdinalIgnoreCase) >= 0) && NoNested(entry);
+        }
+
+        private static bool NoNested(ActionBarSpontaneousConvertedSlot entry)
+        {
+            AbilityData data = (entry.MechanicSlot as MechanicActionBarSlotSpontaneusConvertedSpell)?.Spell;
+            return data != null && (data.Blueprint.Variants == null || data.Blueprint.Variants.Length == 0);
+        }
+
+        private static ActionBarGroupElement SpellGroup()
+        {
+            return ActionBarManager.Instance?.Group?.GroupElements.FirstOrDefault(e => e != null && e.SlotType == ActionBarSlotType.Spell);
+        }
 
         /// <summary>Whether the action bar the game built is the new sorcerer's (its private selected unit).</summary>
         private bool BarShowsCaster()
@@ -755,7 +1266,7 @@ namespace KmgLoaderCompatHarness
             Record["attempts"] = attempts;
             if (attempts.Count >= MaxAttempts) return reason + " (after " + attempts.Count + " attempts)";
             if (subGroup != null) subGroup.Hide(true);
-            ActionBarGroupElement spells = ActionBarManager.Instance?.Group?.GroupElements.FirstOrDefault(e => e != null && e.SlotType == ActionBarSlotType.Spell);
+            ActionBarGroupElement spells = SpellGroup();
             if (spells != null && spells.ToggleState) spells.OnClick();
             SelectionManager.Instance.SelectUnit(caster.View, true, true, false);
             stage = Stage.Selected;
@@ -763,27 +1274,9 @@ namespace KmgLoaderCompatHarness
             return null;
         }
 
-        private bool Matches(ActionBarSpontaneousConvertedSlot entry)
-        {
-            AbilityData data = (Mechanic(entry) as MechanicActionBarSlotSpontaneusConvertedSpell)?.Spell;
-            return pick.Length > 0 && data != null && pick.Any(p => (data.Name ?? string.Empty).IndexOf(p, StringComparison.OrdinalIgnoreCase) >= 0) && NoNested(entry);
-        }
-
-        private static bool NoNested(ActionBarSpontaneousConvertedSlot entry)
-        {
-            AbilityData data = (Mechanic(entry) as MechanicActionBarSlotSpontaneusConvertedSpell)?.Spell;
-            return data != null && (data.Blueprint.Variants == null || data.Blueprint.Variants.Length == 0);
-        }
-
-        private static MechanicActionBarSlot Mechanic(ActionBarSlot slot)
-        {
-            PropertyInfo property = typeof(ActionBarSlot).GetProperty("MechanicSlot", Any);
-            return property?.GetValue(slot, null) as MechanicActionBarSlot;
-        }
-
         private static void LevelSorcerer(UnitEntityData unit, BlueprintCharacterClass sorcerer, JObject record)
         {
-            MethodInfo apply = typeof(LevelUpController).GetMethod("ApplyLevelup", Any);
+            MethodInfo apply = typeof(LevelUpController).GetMethod("ApplyLevelup", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             if (apply == null) throw new MissingMethodException("LevelUpController.ApplyLevelup");
             BlueprintAbility summon = ResourcesLibrary.TryGetBlueprint<BlueprintAbility>(SummonMonsterOneGuid);
             LevelUpController controller = LevelUpController.StartWithoutAssigningStaticInstance(unit.Descriptor, false, null, null,
@@ -813,59 +1306,62 @@ namespace KmgLoaderCompatHarness
         private static bool PublishedExpandedParent(BlueprintAbility ability)
         {
             Type publisher = ProductProbes.Entry().Assembly.GetType("KingmakerGunslinger.Blueprints.ExpandedSummoningPublisher", false);
-            MethodInfo check = publisher?.GetMethod("IsPublishedExpandedParent", Any);
+            MethodInfo check = publisher?.GetMethod("IsPublishedExpandedParent", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
             return check != null && (bool)check.Invoke(null, new object[] { ability });
         }
 
-        private static JObject Describe(BlueprintAbility ability)
+        public CleanupReport Release(string testFailure)
         {
-            return new JObject
+            var releases = new List<KeyValuePair<string, Action>>
             {
-                ["name"] = ability.name, ["variants"] = ability.Variants?.Length ?? 0,
-                ["variantNames"] = new JArray((ability.Variants ?? new BlueprintAbility[0]).Where(v => v != null).Select(v => (object)v.name).ToArray())
-            };
-        }
-
-        private bool cleaned;
-
-        private void Cleanup()
-        {
-            if (cleaned) return;
-            cleaned = true;
-            var failures = new JArray();
-            Try(failures, "menu", () => { if (subGroup != null) subGroup.Hide(true); });
-            Try(failures, "spell-group", () =>
-            {
-                ActionBarGroupElement spells = ActionBarManager.Instance?.Group?.GroupElements.FirstOrDefault(e => e != null && e.SlotType == ActionBarSlotType.Spell);
-                if (spells != null && spells.ToggleState) spells.OnClick();
-            });
-            foreach (UnitEntityData unit in Game.Instance.State.Units.Where(u => u != null && caster != null && u.Get<UnitPartSummonedMonster>()?.Summoner == caster).ToArray())
-                Try(failures, "summon " + unit.Blueprint.name, () => unit.Destroy());
-            Try(failures, "party", () =>
-            {
-                if (addedToParty && caster != null)
+                new KeyValuePair<string, Action>("targeting", () => Game.Instance.SelectedAbilityHandler?.DropAbility()),
+                new KeyValuePair<string, Action>("menu", () => { if (subGroup != null) subGroup.Hide(true); }),
+                new KeyValuePair<string, Action>("spell-group", () =>
                 {
+                    ActionBarGroupElement spells = SpellGroup();
+                    if (spells != null && spells.ToggleState) spells.OnClick();
+                }),
+                new KeyValuePair<string, Action>("summons", () =>
+                {
+                    foreach (UnitEntityData unit in caster == null ? new UnitEntityData[0] : Summons()) unit.Destroy();
+                }),
+                new KeyValuePair<string, Action>("party", () =>
+                {
+                    if (!addedToParty || caster == null) return;
                     Game.Instance.Player.PartyCharacters.RemoveAll(r => r.Value == caster);
                     Game.Instance.Player.InvalidateCharacterLists();
                     Game.Instance.Player.UpdateCharacterLists();
-                }
-            });
-            Try(failures, "caster", () => { if (caster != null) { if (caster.IsInState) caster.Destroy(); else caster.Dispose(); } });
-            Try(failures, "destroyer", () => Game.Instance.EntityDestroyer.Tick());
-            Try(failures, "selection", () =>
-            {
-                UnitEntityData back = originalSelection ?? Game.Instance.Player.MainCharacter.Value;
-                if (back != null && back.View != null) SelectionManager.Instance.SelectUnit(back.View, true, true, false);
-            });
-            Try(failures, "pause", () => { if (pausedBefore) Game.Instance.IsPaused = true; });
-            Try(failures, "blueprint", () => { if (clone != null) UnityEngine.Object.Destroy(clone); });
-            Record["cleanupFailures"] = failures;
-        }
-
-        private static void Try(JArray failures, string what, Action action)
-        {
-            try { action(); }
-            catch (Exception exception) { failures.Add(what + ": " + exception.GetType().Name + ": " + exception.Message); }
+                    addedToParty = false;
+                }),
+                new KeyValuePair<string, Action>("caster", () =>
+                {
+                    if (caster == null) return;
+                    if (caster.IsInState) caster.Destroy(); else caster.Dispose();
+                    Game.Instance.EntityDestroyer.Tick();
+                }),
+                new KeyValuePair<string, Action>("selection", () =>
+                {
+                    UnitEntityData back = originalSelection ?? Game.Instance.Player.MainCharacter.Value;
+                    if (back != null && back.View != null) SelectionManager.Instance.SelectUnit(back.View, true, true, false);
+                }),
+                new KeyValuePair<string, Action>("pause", () => { if (pauseChanged) Game.Instance.IsPaused = pausedBefore; }),
+                new KeyValuePair<string, Action>("blueprint", () => { if (clone != null) UnityEngine.Object.Destroy(clone); }),
+                new KeyValuePair<string, Action>("verify", () =>
+                {
+                    if (Game.Instance.State.Units.Any(u => u != null && u.Blueprint != null && u.Blueprint.name == "KmgLoaderCompat_NewSorcerer" && u.IsInState))
+                        throw new InvalidOperationException("the new sorcerer is still in the area");
+                    if (Game.Instance.Player.PartyCharacters.Any(r => r.Value == caster)) throw new InvalidOperationException("the new sorcerer is still in the party");
+                })
+            };
+            if (failRelease != null)
+                releases.Add(new KeyValuePair<string, Action>("injected-" + failRelease,
+                    () => throw new InvalidOperationException("test-only injected release failure after " + failRelease)));
+            CleanupReport report = ProbeCleanup.RunAll(releases);
+            Record["releaseReason"] = testFailure ?? string.Empty;
+            Record["releaseAttempted"] = new JArray(report.Attempted.Cast<object>().ToArray());
+            Record["releaseFailures"] = new JArray(report.Failures.Cast<object>().ToArray());
+            Record["partyAfterRelease"] = Game.Instance.Player.PartyCharacters.Count;
+            return report;
         }
     }
 }

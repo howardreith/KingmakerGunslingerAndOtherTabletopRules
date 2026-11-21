@@ -179,7 +179,24 @@ try {
         if (Test-Path -LiteralPath $harnessResultPath) {
             $harnessResult = Get-Content -LiteralPath $harnessResultPath -Raw | ConvertFrom-Json
             $record.harness = $harnessResult.status
-            if ($harnessResult.status -ne 'passed') { $record.problems += "harness: $($harnessResult.failure)" }
+            if ($launch.PSObject.Properties['expectHarnessFailure'] -and $launch.expectHarnessFailure) {
+                # This launch must end with the harness failing, its failure naming every listed text, and none of
+                # the listed steps (matched by "[label]") having run.
+                $record.expectedHarnessFailure = @($launch.expectHarnessFailure)
+                if ($harnessResult.status -ne 'failed') { $record.problems += "harness $($harnessResult.status); an expected failure did not occur" }
+                foreach ($needle in @($launch.expectHarnessFailure)) {
+                    if (([string]$harnessResult.failure).IndexOf([string]$needle, [StringComparison]::Ordinal) -lt 0) {
+                        $record.problems += "harness failure lacks '$needle': $($harnessResult.failure)"
+                    }
+                }
+                if ($launch.PSObject.Properties['expectStepsNotRun']) {
+                    foreach ($label in @($launch.expectStepsNotRun)) {
+                        if (@($harnessResult.steps | Where-Object { ([string]$_.step).Contains("[$label]") }).Count -ne 0) {
+                            $record.problems += "step [$label] ran after the expected stop"
+                        }
+                    }
+                }
+            } elseif ($harnessResult.status -ne 'passed') { $record.problems += "harness: $($harnessResult.failure)" }
         } elseif ($product) {
             # The product's scenario owns the exit; the harness only had to
             # isolate the profile and record identity, both checked here.

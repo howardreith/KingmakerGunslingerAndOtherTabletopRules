@@ -1,6 +1,6 @@
 {
   "name": "spear-bootstrap-baseline",
-  "description": "Spear startup repair (PR #195), baseline for the published, unrepaired package (v0.0.192, whose spear and battered sources are byte-identical to v0.0.188). The same simulated donor mutation as spear-bootstrap-simulated launch 1 (15 ft reach and Polearms on the live native Longspear, a controlled test-only stand-in): this session passes only when the unrepaired bytes reproduce the reported mechanism - the generic spear profile failure aborts initialization, no owned spear stays registered, and ordinary weapon price and tooltip queries throw the missing battered-origin exception. It then records what a new level-1 sorcerer's Summon Monster I does after that failed startup: Kingmaker's own spell has no creature variants, so its slot must not expand, and casting it must still summon. Run it only against the unrepaired package; on the repaired candidate it fails by design.",
+  "description": "Spear startup repair (PR #195), baseline for the published, unrepaired package (v0.0.192, whose spear and battered sources are byte-identical to v0.0.188). The same simulated donor mutation as spear-bootstrap-simulated launch 1 (15 ft reach and Polearms on the live native Longspear, a controlled test-only stand-in): this session passes only when the unrepaired bytes reproduce the reported mechanism - the generic spear profile failure aborts initialization, no owned spear stays registered, and every one of the repeated ordinary weapon price queries and tooltip fills throws, each with the missing battered-origin exception. It then records what a new level-1 sorcerer's Summon Monster I does after that failed startup: Kingmaker's own spell has no creature variants, so its slot must not expand, and casting it must still summon. Run it only against the unrepaired package; on the repaired candidate it fails by design.",
   "ownerMods": [],
   "fixtureSaves": [
     "KMCS_AFTER_NORMAL_012_MODONLY.zks"
@@ -38,7 +38,8 @@
             "invariants": { "repeat": "5" },
             "continueOnFailure": true
           },
-          { "op": "kmgSorcererSummon", "label": "baseline-native-menu", "expect": "", "timeoutSeconds": 180, "continueOnFailure": true }
+          { "op": "kmgSorcererSummon", "label": "baseline-native-spell", "expect": "native-single", "timeoutSeconds": 180, "continueOnFailure": true },
+          { "op": "kmgSorcererResidue", "label": "after-native-spell", "continueOnFailure": true }
         ]
       }
     }
