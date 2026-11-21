@@ -74,7 +74,7 @@ namespace KmgLoaderCompatHarness
             captureGuids = (conditions.TryGetValue(CaptureWeaponTypes, out string captured) && captured != null
                 ? captured.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries).Select(v => v.Trim()) : Enumerable.Empty<string>())
                 .Concat(longspearMutations.Count > 0 ? new[] { NativeLongspearTypeGuid } : new string[0]).Distinct().ToArray();
-            if (longspearMutations.Count > 0) applied[MutateNativeLongspear] = JObject.FromObject(longspearMutations);
+            if (longspearMutations.Count > 0) applied[MutateNativeLongspear] = ToJson(longspearMutations);
             if (captureGuids.Length > 0) applied[CaptureWeaponTypes] = new JArray(captureGuids.Cast<object>().ToArray());
 
             if (ownedCorruptions.Count > 0)
@@ -85,7 +85,7 @@ namespace KmgLoaderCompatHarness
                 if (validators.Length == 0) throw new MissingMethodException(access.FullName, "Validate(BlueprintWeaponType,...)");
                 foreach (MethodInfo validator in validators)
                     harmony.Patch(validator, new HarmonyMethod(typeof(SpearRepairConditions).GetMethod(nameof(CorruptPrefix), Any)), null);
-                applied[CorruptOwnedSpearProfile] = JObject.FromObject(ownedCorruptions);
+                applied[CorruptOwnedSpearProfile] = ToJson(ownedCorruptions);
             }
 
             if (conditions.TryGetValue(PatchWeaponTypeGetters, out string getters) && !string.IsNullOrWhiteSpace(getters))
@@ -172,11 +172,21 @@ namespace KmgLoaderCompatHarness
 
         public static JObject Describe()
         {
+            var captured = new JObject();
+            foreach (KeyValuePair<string, JObject> pair in Captured) captured[pair.Key] = pair.Value;
             return new JObject
             {
                 ["events"] = new JArray(Events.Cast<object>().ToArray()), ["corruptionsApplied"] = CorruptionsApplied,
-                ["captured"] = JObject.FromObject(Captured)
+                ["captured"] = captured
             };
+        }
+
+        // Built by hand: another mod may change Newtonsoft's process-wide defaults (dictionaries as arrays).
+        private static JObject ToJson(Dictionary<string, string> values)
+        {
+            var result = new JObject();
+            foreach (KeyValuePair<string, string> pair in values) result[pair.Key] = pair.Value;
+            return result;
         }
     }
 
@@ -578,7 +588,9 @@ namespace KmgLoaderCompatHarness
                         Game.Instance.State.LoadedAreaState.MainState);
                     if (caster == null || caster.View == null) return "the new sorcerer was not spawned";
                     caster.Descriptor.Stats.Charisma.BaseValue = 20;
-                    Record["levelUp"] = LevelSorcerer(caster, sorcerer);
+                    var levelUp = new JObject();
+                    Record["levelUp"] = levelUp;
+                    LevelSorcerer(caster, sorcerer, levelUp);
                     Spellbook book = caster.Descriptor.GetSpellbook(sorcerer);
                     if (book == null) return "the new sorcerer has no spellbook";
                     book.Rest();
@@ -719,18 +731,18 @@ namespace KmgLoaderCompatHarness
             return property?.GetValue(slot, null) as MechanicActionBarSlot;
         }
 
-        private static JObject LevelSorcerer(UnitEntityData unit, BlueprintCharacterClass sorcerer)
+        private static void LevelSorcerer(UnitEntityData unit, BlueprintCharacterClass sorcerer, JObject record)
         {
             MethodInfo apply = typeof(LevelUpController).GetMethod("ApplyLevelup", Any);
             if (apply == null) throw new MissingMethodException("LevelUpController.ApplyLevelup");
             BlueprintAbility summon = ResourcesLibrary.TryGetBlueprint<BlueprintAbility>(SummonMonsterOneGuid);
             LevelUpController controller = LevelUpController.StartWithoutAssigningStaticInstance(unit.Descriptor, false, null, null,
                 LevelUpState.CharBuildMode.CharGen);
-            var record = new JObject();
             try
             {
-                if (!controller.SelectClass(sorcerer, false)) throw new InvalidOperationException("the level-up controller refused Sorcerer");
-                controller.ApplyClassMechanics();
+                // The native class screen's path: class mechanics, spellbook (which opens the known-spell selection)
+                // and skill points.
+                if (!controller.SelectClass(sorcerer, true)) throw new InvalidOperationException("the level-up controller refused Sorcerer");
                 BlueprintSpellbook spellbook = sorcerer.Spellbook;
                 BlueprintSpellList list = spellbook.SpellList;
                 record["spellSelections"] = new JArray(controller.State.SpellSelections.Select(s => (object)(s.Spellbook.name + "/" + s.SpellList.name)).ToArray());
@@ -746,7 +758,6 @@ namespace KmgLoaderCompatHarness
             }
 
             record["sorcererLevel"] = unit.Descriptor.Progression.GetClassLevel(sorcerer);
-            return record;
         }
 
         private static bool PublishedExpandedParent(BlueprintAbility ability)
