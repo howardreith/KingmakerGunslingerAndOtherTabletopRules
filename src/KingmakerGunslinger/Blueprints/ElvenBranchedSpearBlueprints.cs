@@ -387,6 +387,8 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintWeaponEnchantment movementAccuracy,
             BlueprintWeaponType donor)
         {
+            if (movementAccuracy == null) throw new ArgumentNullException("movementAccuracy");
+            _movementAccuracy = movementAccuracy;
             type.Category = category;
             _typeName.SetValue(type, name);
             _defaultName.SetValue(type, name);
@@ -502,6 +504,10 @@ namespace KingmakerGunslinger.Blueprints
 
         private bool _observeEffective;
 
+        // The registered movement-accuracy enchantment written by Configure;
+        // the enchantment checks compare entries with it by identity.
+        private BlueprintWeaponEnchantment _movementAccuracy;
+
         private SpearProfileObservation[] Observe(BlueprintWeaponType type,
             BlueprintWeaponType donor, bool effective)
         {
@@ -564,13 +570,15 @@ namespace KingmakerGunslinger.Blueprints
                 Weight(ElvenBranchedSpearCatalog.WeightPounds),
                 value => Weight((float)value),
                 "Weight", value => Weight(value.Weight), null));
-            string enchantments = EnchantmentNames(_enchantments.GetValue(type));
-            values.Add(new SpearProfileObservation("movement-enchantment",
-                MovementAccuracyName, enchantments,
-                EnchantmentNames(_enchantments.GetValue(donor)),
-                MovementAccuracyName, enchantments,
-                EnchantmentNames(_enchantments.GetValue(donor)), null, "field"));
+            // The serialized m_Enchantments and the live Enchantments getter
+            // must both hold exactly the registered movement-accuracy
+            // enchantment (by identity: any other object, even one with the
+            // same name, renders with its identity and so cannot match).
+            values.Add(Getter("movement-enchantment", type, donor, _enchantments,
+                MovementAccuracyName, EnchantmentText, "Enchantments",
+                value => EnchantmentText(value.Enchantments), null));
             values.Add(SubCategories(type, donor));
+            values.Add(SubCategoryListObservation(type, donor));
             return values.ToArray();
         }
 
@@ -623,14 +631,84 @@ namespace KingmakerGunslinger.Blueprints
                 owners, patchInfo);
         }
 
-        private static string EnchantmentNames(object value)
+        /// <summary>
+        /// An enchantment collection as comparable text: the registered
+        /// movement-accuracy enchantment renders as its name, any other entry
+        /// as its name plus object identity, so only that exact object can
+        /// match the intended text.
+        /// </summary>
+        private string EnchantmentText(object value)
         {
-            BlueprintWeaponEnchantment[] enchantments =
-                value as BlueprintWeaponEnchantment[] ??
-                Array.Empty<BlueprintWeaponEnchantment>();
-            return enchantments.Length == 0 ? "<none>" : string.Join(",",
-                enchantments.Select(item => item == null ? "<null>" : item.name)
-                    .ToArray());
+            if (_movementAccuracy == null)
+                throw new InvalidOperationException(
+                    "The spear type profile was validated before configuration.");
+            if (value == null) return "<null>";
+            var collection = value as System.Collections.IEnumerable;
+            if (collection == null) return "<not-a-collection " + value.GetType().Name + ">";
+            var parts = new List<string>();
+            foreach (object item in collection)
+            {
+                var blueprint = item as UnityEngine.Object;
+                parts.Add(item == null ? "<null>" :
+                    ReferenceEquals(item, _movementAccuracy) ? _movementAccuracy.name :
+                    (blueprint != null ? blueprint.name : item.GetType().Name) + "@" + Identity(item));
+            }
+            return parts.Count == 0 ? "<none>" : string.Join(",", parts.ToArray());
+        }
+
+        private static readonly MethodInfo EngineGetSubCategories =
+            typeof(WeaponCategoryExtension).GetMethod("GetSubCategories",
+                BindingFlags.Static | BindingFlags.Public, null,
+                new[] { typeof(WeaponCategory) }, null) ??
+            throw new MissingMethodException(typeof(WeaponCategoryExtension).FullName,
+                "GetSubCategories");
+
+        /// <summary>
+        /// The owned category's concrete sub-category list: the mod's own
+        /// list must be exactly the intended five, and the engine's
+        /// WeaponCategoryExtension.GetSubCategories - what enumerating callers
+        /// receive, after all patches - must return the same list.
+        /// </summary>
+        private SpearProfileObservation SubCategoryListObservation(
+            BlueprintWeaponType type, BlueprintWeaponType donor)
+        {
+            string intended = string.Join(",", IntendedSubCategories
+                .Select(value => value.ToString()).ToArray());
+            string ownList = ElvenBranchedSpearProfilePolicy.ReturnedSubCategoryText(
+                IntendedSubCategories, ElvenBranchedSpearCategoryRuntime.GetSubCategories());
+            if (!_observeEffective)
+                return new SpearProfileObservation("subcategory-list", intended,
+                    ownList, "<not-applicable>", ownList,
+                    ElvenBranchedSpearProfilePolicy.Deferred,
+                    ElvenBranchedSpearProfilePolicy.Deferred, null, "deferred");
+            string effective;
+            try
+            {
+                effective = ElvenBranchedSpearProfilePolicy.ReturnedSubCategoryText(
+                    IntendedSubCategories, WeaponCategoryExtension.GetSubCategories(type.Category));
+            }
+            catch (Exception exception)
+            {
+                effective = ElvenBranchedSpearProfilePolicy.Threw(exception);
+            }
+            string donorEffective;
+            try
+            {
+                donorEffective = ElvenBranchedSpearProfilePolicy.ReturnedSubCategoryText(
+                    IntendedSubCategories, WeaponCategoryExtension.GetSubCategories(donor.Category));
+            }
+            catch (Exception exception)
+            {
+                donorEffective = ElvenBranchedSpearProfilePolicy.Unavailable(exception);
+            }
+            string patchInfo = "not-read";
+            string[] owners = null;
+            if (!string.Equals(ownList, intended, StringComparison.Ordinal) ||
+                !string.Equals(ownList, effective, StringComparison.Ordinal))
+                owners = PatchOwners(EngineGetSubCategories, out patchInfo);
+            return new SpearProfileObservation("subcategory-list", intended,
+                ownList, "<not-applicable>", ownList, effective, donorEffective,
+                owners, patchInfo);
         }
 
         /// <summary>Every WeaponSubCategory the engine defines.</summary>
@@ -825,6 +903,42 @@ namespace KingmakerGunslinger.Blueprints
         private readonly FieldInfo _enchantments = Require("m_Enchantments");
         private readonly FieldInfo _overrideDamageType = Require("m_OverrideDamageType");
         private readonly FieldInfo _damageType = Require("m_DamageType");
+        private readonly FieldInfo _overrideDamageDice = Require("m_OverrideDamageDice");
+        private readonly FieldInfo _damageDice = Require("m_DamageDice");
+
+        private static DiceFormula FamilyDamage()
+        {
+            return new DiceFormula(ElvenBranchedSpearCatalog.DamageDieCount,
+                (DiceType)ElvenBranchedSpearCatalog.DamageDieSides);
+        }
+
+        /// <summary>
+        /// Owned spear items take their damage from the family weapon type:
+        /// a damage-dice override the cloned native item carries (another mod
+        /// may have given the Standard Longspear one) is cleared, never
+        /// inherited. The donor item itself is not written.
+        /// </summary>
+        private void UseFamilyDamage(BlueprintItemWeapon item)
+        {
+            _overrideDamageDice.SetValue(item, false);
+            _damageDice.SetValue(item, FamilyDamage());
+        }
+
+        /// <summary>Null when the item's own override is off and its effective BaseDamage is the family's 1d8.</summary>
+        private string DamageProblem(BlueprintItemWeapon item)
+        {
+            string expected = FamilyDamage().ToString();
+            string actual;
+            try { actual = item.BaseDamage.ToString(); }
+            catch (Exception exception)
+            {
+                actual = ElvenBranchedSpearProfilePolicy.Threw(exception);
+            }
+            bool overridden = (bool)_overrideDamageDice.GetValue(item);
+            return !overridden && string.Equals(actual, expected, StringComparison.Ordinal)
+                ? null : "overrideDice=" + overridden + ";baseDamage=" + actual +
+                    ";expectedBaseDamage=" + expected;
+        }
 
         internal void Configure(BlueprintItemWeapon item,
             ElvenBranchedSpearItemSpec spec,
@@ -854,6 +968,7 @@ namespace KingmakerGunslinger.Blueprints
                 : enchantments.ToArray());
             _overrideDamageType.SetValue(item, coldIron);
             _damageType.SetValue(item, PhysicalPiercing(coldIron));
+            UseFamilyDamage(item);
         }
 
         internal void Validate(BlueprintItemWeapon item,
@@ -870,6 +985,10 @@ namespace KingmakerGunslinger.Blueprints
                 (BlueprintWeaponEnchantment[])_enchantments.GetValue(item) ??
                 Array.Empty<BlueprintWeaponEnchantment>();
             DamageTypeDescription damage = (DamageTypeDescription)_damageType.GetValue(item);
+            string diceProblem = DamageProblem(item);
+            if (diceProblem != null)
+                throw new InvalidOperationException("Spear item damage is invalid: " +
+                    displayName + ";" + diceProblem + ".");
             if (item.Cost != cost || !item.Weight.Equals(10f) ||
                 item.IsActuallyStackable || item.IsMasterwork !=
                     (masterwork && enhancement == 0) ||
@@ -907,6 +1026,7 @@ namespace KingmakerGunslinger.Blueprints
                 : enchantments.ToArray());
             _overrideDamageType.SetValue(item, spec.ColdIron);
             _damageType.SetValue(item, PhysicalPiercing(spec.ColdIron));
+            UseFamilyDamage(item);
         }
 
         internal void ValidateNamed(BlueprintItemWeapon item,
@@ -917,6 +1037,10 @@ namespace KingmakerGunslinger.Blueprints
                 Array.Empty<BlueprintWeaponEnchantment>();
             DamageTypeDescription damage =
                 (DamageTypeDescription)_damageType.GetValue(item);
+            string diceProblem = DamageProblem(item);
+            if (diceProblem != null)
+                throw new InvalidOperationException("Named spear item damage is invalid: " +
+                    spec.DisplayName + ";" + diceProblem + ".");
             if (item.Cost != spec.Cost || !item.Weight.Equals(10f) ||
                 item.IsActuallyStackable ||
                 (bool)_overrideDamageType.GetValue(item) != spec.ColdIron ||

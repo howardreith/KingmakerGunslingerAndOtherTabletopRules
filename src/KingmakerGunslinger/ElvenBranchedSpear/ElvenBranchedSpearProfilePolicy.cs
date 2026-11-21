@@ -191,6 +191,33 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
             return "<unavailable " + exception.GetType().Name + ": " + exception.Message + ">";
         }
 
+        /// <summary>
+        /// A returned concrete sub-category list as comparable text: the
+        /// intended values it contains, in policy order, then every remaining
+        /// entry (extras and repeats) in returned order. For exactly the
+        /// intended set this is the intended list in policy order, whatever
+        /// order the list came in; any extra, missing or repeated entry changes
+        /// the text. A null list is "&lt;null&gt;", an empty one "&lt;none&gt;".
+        /// </summary>
+        internal static string ReturnedSubCategoryText<T>(IList<T> intended,
+            IEnumerable<T> returned)
+        {
+            if (intended == null) throw new ArgumentNullException("intended");
+            if (returned == null) return "<null>";
+            List<T> remaining = returned.ToList();
+            if (remaining.Count == 0) return "<none>";
+            var parts = new List<string>();
+            foreach (T value in intended)
+            {
+                int index = remaining.IndexOf(value);
+                if (index < 0) continue;
+                parts.Add(value.ToString());
+                remaining.RemoveAt(index);
+            }
+            parts.AddRange(remaining.Select(value => value.ToString()));
+            return string.Join(",", parts.ToArray());
+        }
+
         /// <summary>Marker appended when a calculation denies the None wildcard.</summary>
         internal const string WildcardDenied = "!None";
 

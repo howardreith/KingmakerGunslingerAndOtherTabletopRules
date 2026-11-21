@@ -119,6 +119,38 @@ namespace KingmakerGunslinger.DomainTests
                 "The diagnostic must name the extra classification and the patch owner.");
         }
 
+        internal static void ReturnedSubCategoryListIsComparedExactly()
+        {
+            Func<SubCategory[], string> text = list => ElvenBranchedSpearProfilePolicy
+                .ReturnedSubCategoryText(IntendedSubCategories, list);
+            string intended = "Melee,Finessable,TwoHanded,Exotic,Metal";
+            Assertions.Equal(intended, text(IntendedSubCategories),
+                "The intended list must read as the intended five.");
+            Assertions.Equal(intended, text(IntendedSubCategories.Reverse().ToArray()),
+                "Order of the returned list must not matter.");
+            // R6-F3: an extra entry only in the returned list.
+            string withSimple = text(IntendedSubCategories.Concat(new[] { SubCategory.Simple }).ToArray());
+            Assertions.Equal(intended + ",Simple", withSimple,
+                "An extra Simple entry must be visible.");
+            Assertions.Equal("Melee,TwoHanded,Exotic,Metal", text(
+                IntendedSubCategories.Where(value => value != SubCategory.Finessable).ToArray()),
+                "A missing Finessable entry must be visible.");
+            Assertions.Equal(intended + ",Metal", text(
+                IntendedSubCategories.Concat(new[] { SubCategory.Metal }).ToArray()),
+                "A repeated entry must be visible.");
+            Assertions.Equal("<none>", text(new SubCategory[0]), "An empty list must be visible.");
+            Assertions.Equal("<null>", text(null), "A null list must be visible.");
+            SpearProfileVerdict verdict = ElvenBranchedSpearProfilePolicy.Evaluate(
+                HealthyProfile().Concat(new[] { new SpearProfileObservation("subcategory-list", intended,
+                    intended, "<not-applicable>", intended, withSimple,
+                    "Melee,TwoHanded,Metal,Simple", new[] { "other.mod" }, "read") }));
+            Assertions.False(verdict.IsValid, "An extra returned Simple entry passed validation.");
+            Assertions.True(verdict.DescribeFailure().Contains("subcategory-list [effective-getter]") &&
+                verdict.DescribeFailure().Contains("actual=" + withSimple) &&
+                verdict.DescribeFailure().Contains("getterPatches=other.mod"),
+                "The diagnostic must name the list, the extra entry and the patch owner.");
+        }
+
         internal static void HealthyProfilePassesWithoutFindings()
         {
             SpearProfileVerdict verdict = ElvenBranchedSpearProfilePolicy.Evaluate(
