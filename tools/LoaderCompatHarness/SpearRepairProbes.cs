@@ -80,6 +80,17 @@ namespace KmgLoaderCompatHarness
         /// <summary>Sub-categories (list) a late WeaponCategoryExtension.HasSubCategory postfix grants to the Elven Branched Spear category only.</summary>
         public const string SpearSubCategoryAddition = "spearSubCategoryAddition";
 
+        /// <summary>"field=value;..." written onto the live native Standard Longspear item before the product runs (m_OverrideDamageDice, m_DamageDice as e.g. 2d6).</summary>
+        public const string MutateNativeLongspearItem = "mutateNativeLongspearItem";
+
+        /// <summary>A postfix on BlueprintWeaponType.Enchantments returns an empty collection for the owned spear only; its backing field stays correct.</summary>
+        public const string OwnedEnchantmentsEmpty = "ownedEnchantmentsEmpty";
+
+        /// <summary>Sub-categories (list) a late WeaponCategoryExtension.GetSubCategories postfix appends to the spear category's returned list only.</summary>
+        public const string SpearSubCategoryListAddition = "spearSubCategoryListAddition";
+
+        public const string NativeLongspearItemGuid = "f28f6031c2908d84d945865a80f67177";
+
         public const string NativeLongspearTypeGuid = "fa2dd17cbde7d3f4aa918d467c30516e";
         public const string HarnessId = "KmgLoaderCompatHarness";
         public const string InjectedNamedFailure = "KmgLoaderCompatHarness injected named-spear registration failure";
@@ -98,8 +109,15 @@ namespace KmgLoaderCompatHarness
         {
             MutateNativeLongspear, CaptureWeaponTypes, CorruptOwnedSpearProfile, CorruptOwnedSpearProfileOnCall, PatchWeaponTypeGetters,
             OwnedSpearAttackRangePatch, ThrowingWeaponTypeGetters, FailNamedSpearRegistration, CaptureSpearSelectors,
-            AttackRangeByGuid, ThrowingGettersByGuid, SpearSubCategoryRemoval, SpearSubCategoryAddition
+            AttackRangeByGuid, ThrowingGettersByGuid, SpearSubCategoryRemoval, SpearSubCategoryAddition,
+            MutateNativeLongspearItem, OwnedEnchantmentsEmpty, SpearSubCategoryListAddition
         };
+
+        private static Dictionary<string, string> longspearItemMutations = new Dictionary<string, string>();
+        private static WeaponSubCategory[] listAddedSubCategories = new WeaponSubCategory[0];
+        public static int EnchantmentOverrides { get; private set; }
+        public static int SubCategoryListAdditions { get; private set; }
+        internal static void CountEnchantmentOverride() { EnchantmentOverrides++; }
 
         private static readonly Dictionary<string, string> rangeByGuid = new Dictionary<string, string>();
         private static readonly List<KeyValuePair<string, string>> throwingByGuid = new List<KeyValuePair<string, string>>();
@@ -117,7 +135,8 @@ namespace KmgLoaderCompatHarness
         public static int CorruptionsApplied { get; private set; }
         public static int GetterThrows { get; private set; }
 
-        public static bool NeedsLibraryHook => longspearMutations.Count > 0 || captureGuids.Length > 0 || captureSelectors || throwingGetters.Count > 0;
+        public static bool NeedsLibraryHook => longspearMutations.Count > 0 || captureGuids.Length > 0 || captureSelectors || throwingGetters.Count > 0 ||
+            longspearItemMutations.Count > 0;
 
         public static void Apply(HarmonyInstance harmony, IDictionary<string, string> conditions, JObject applied)
         {
@@ -133,7 +152,29 @@ namespace KmgLoaderCompatHarness
             if (longspearMutations.Count > 0) applied[MutateNativeLongspear] = ToJson(longspearMutations);
             if (captureGuids.Length > 0) applied[CaptureWeaponTypes] = new JArray(captureGuids.Cast<object>().ToArray());
             if (captureSelectors) applied[CaptureSpearSelectors] = true;
+            longspearItemMutations = Pairs(conditions, MutateNativeLongspearItem, '=');
+            if (longspearItemMutations.Count > 0) applied[MutateNativeLongspearItem] = ToJson(longspearItemMutations);
             Assembly product = ProductProbes.Entry().Assembly;
+
+            if (Enabled(conditions, OwnedEnchantmentsEmpty))
+            {
+                MethodInfo enchantmentsGetter = Getter("Enchantments");
+                MethodInfo postfix = typeof(EmptyEnchantmentsPostfix<>).MakeGenericType(enchantmentsGetter.ReturnType)
+                    .GetMethod("Postfix", Any);
+                harmony.Patch(enchantmentsGetter, null, new HarmonyMethod(postfix));
+                applied[OwnedEnchantmentsEmpty] = "postfix on BlueprintWeaponType.Enchantments (" + enchantmentsGetter.ReturnType.Name + ") returns empty for the owned spear";
+            }
+
+            if (conditions.TryGetValue(SpearSubCategoryListAddition, out string listAddition) && !string.IsNullOrWhiteSpace(listAddition))
+            {
+                listAddedSubCategories = listAddition.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(v => (WeaponSubCategory)Enum.Parse(typeof(WeaponSubCategory), v.Trim())).ToArray();
+                MethodInfo list = typeof(Kingmaker.Enums.WeaponCategoryExtension).GetMethod("GetSubCategories", BindingFlags.Static | BindingFlags.Public, null,
+                    new[] { typeof(Kingmaker.Enums.WeaponCategory) }, null) ??
+                    throw new MissingMethodException("WeaponCategoryExtension.GetSubCategories");
+                harmony.Patch(list, null, new HarmonyMethod(typeof(SpearRepairConditions).GetMethod(nameof(SubCategoryListAdditionPostfix), Any)) { prioritiy = Priority.Last });
+                applied[SpearSubCategoryListAddition] = new JArray(listAddedSubCategories.Select(v => (object)v.ToString()).ToArray());
+            }
 
             if (ownedCorruptions.Count > 0)
             {
@@ -232,6 +273,19 @@ namespace KmgLoaderCompatHarness
                 {
                     foreach (KeyValuePair<string, string> pair in longspearMutations) WeaponTypeProfiles.Write(longspear, pair.Key, pair.Value);
                     Events.Add("simulated donor mutation on native Longspear: " + string.Join(";", longspearMutations.Select(p => p.Key + "=" + p.Value).ToArray()));
+                }
+            }
+
+            if (longspearItemMutations.Count > 0)
+            {
+                BlueprintItemWeapon item = library != null && library.BlueprintsByAssetId != null &&
+                    library.BlueprintsByAssetId.TryGetValue(NativeLongspearItemGuid, out BlueprintScriptableObject found) ? found as BlueprintItemWeapon : null;
+                if (item == null) Events.Add("native Standard Longspear item missing before product");
+                else
+                {
+                    foreach (KeyValuePair<string, string> pair in longspearItemMutations) ItemDamageProbe.Write(item, pair.Key, pair.Value);
+                    Events.Add("simulated mutation on native Standard Longspear item: " + string.Join(";", longspearItemMutations.Select(p => p.Key + "=" + p.Value).ToArray()) +
+                        "; BaseDamage now " + ItemDamageProbe.Dice(item.BaseDamage));
                 }
             }
 
@@ -336,6 +390,16 @@ namespace KmgLoaderCompatHarness
             SubCategoryRemovals++;
         }
 
+        private static void SubCategoryListAdditionPostfix(Kingmaker.Enums.WeaponCategory __0, ref WeaponSubCategory[] __result)
+        {
+            if ((int)__0 != WeaponTypeProfiles.OwnedSpearCategory) return;
+            WeaponSubCategory[] current = __result ?? new WeaponSubCategory[0];
+            WeaponSubCategory[] extra = listAddedSubCategories.Where(v => Array.IndexOf(current, v) < 0).ToArray();
+            if (extra.Length == 0) return;
+            __result = current.Concat(extra).ToArray();
+            SubCategoryListAdditions++;
+        }
+
         private static void SubCategoryAdditionPostfix(Kingmaker.Enums.WeaponCategory __0, WeaponSubCategory __1, ref bool __result)
         {
             if ((int)__0 != WeaponTypeProfiles.OwnedSpearCategory || __result || Array.IndexOf(addedSubCategories, __1) < 0) return;
@@ -378,7 +442,8 @@ namespace KmgLoaderCompatHarness
                 ["events"] = new JArray(Events.Cast<object>().ToArray()), ["ownedValidations"] = OwnedValidations,
                 ["corruptionsApplied"] = CorruptionsApplied, ["getterThrows"] = GetterThrows, ["guidGetterThrows"] = GuidGetterThrows,
                 ["rangeOverrides"] = RangeOverrides, ["subCategoryRemovals"] = SubCategoryRemovals,
-                ["subCategoryAdditions"] = SubCategoryAdditions, ["captured"] = captured
+                ["subCategoryAdditions"] = SubCategoryAdditions, ["enchantmentOverrides"] = EnchantmentOverrides,
+                ["subCategoryListAdditions"] = SubCategoryListAdditions, ["captured"] = captured
             };
         }
 
@@ -387,6 +452,78 @@ namespace KmgLoaderCompatHarness
         {
             var result = new JObject();
             foreach (KeyValuePair<string, string> pair in values) result[pair.Key] = pair.Value;
+            return result;
+        }
+    }
+
+    /// <summary>
+    /// ownedEnchantmentsEmpty: closed over the getter's declared return type, so the postfix's __result matches it
+    /// exactly. Returns an empty collection of the element type for the owned spear only.
+    /// </summary>
+    internal static class EmptyEnchantmentsPostfix<T>
+    {
+        private static void Postfix(BlueprintWeaponType __instance, ref T __result)
+        {
+            if (__instance == null || __instance.name != WeaponTypeProfiles.OwnedSpearTypeName) return;
+            Type declared = typeof(T);
+            Type element = declared.IsArray ? declared.GetElementType()
+                : declared.IsGenericType ? declared.GetGenericArguments()[0] : typeof(object);
+            __result = (T)(object)Array.CreateInstance(element, 0);
+            SpearRepairConditions.CountEnchantmentOverride();
+        }
+    }
+
+    /// <summary>kmgItemDamage and the mutateNativeLongspearItem condition: an item's own dice override and its effective BaseDamage.</summary>
+    internal static class ItemDamageProbe
+    {
+        private const BindingFlags Fields = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+        public static string Dice(Kingmaker.RuleSystem.DiceFormula dice)
+        {
+            return dice.Rolls.ToString(CultureInfo.InvariantCulture) + "x" + dice.Dice;
+        }
+
+        public static void Write(BlueprintItemWeapon item, string field, string value)
+        {
+            FieldInfo info = typeof(BlueprintItemWeapon).GetField(field, Fields) ?? throw new MissingFieldException(typeof(BlueprintItemWeapon).FullName, field);
+            object parsed;
+            if (info.FieldType == typeof(bool)) parsed = bool.Parse(value);
+            else if (info.FieldType == typeof(Kingmaker.RuleSystem.DiceFormula))
+            {
+                string[] parts = value.ToLowerInvariant().Split('d');
+                parsed = new Kingmaker.RuleSystem.DiceFormula(int.Parse(parts[0], CultureInfo.InvariantCulture),
+                    (Kingmaker.RuleSystem.DiceType)int.Parse(parts[1], CultureInfo.InvariantCulture));
+            }
+            else throw new NotSupportedException("condition cannot write item field " + field + " of type " + info.FieldType.Name);
+            info.SetValue(item, parsed);
+        }
+
+        /// <summary>"match": "guid=expected;..." with expected as Rolls x Dice (e.g. 1xD8); every item's effective BaseDamage must equal it.</summary>
+        public static JObject Run(string match, out string problem)
+        {
+            var problems = new List<string>();
+            var result = new JObject();
+            foreach (string pair in (match ?? string.Empty).Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                string[] parts = pair.Split('=');
+                if (parts.Length != 2) { problems.Add("kmgItemDamage needs guid=dice pairs: " + pair); continue; }
+                string guid = parts[0].Trim(), expected = parts[1].Trim();
+                BlueprintItemWeapon item = ResourcesLibrary.TryGetBlueprint<BlueprintItemWeapon>(guid);
+                if (item == null) { problems.Add("item " + guid + " does not resolve"); result[guid] = "<absent>"; continue; }
+                string actual;
+                try { actual = Dice(item.BaseDamage); }
+                catch (Exception exception) { actual = "<throws " + (exception.InnerException ?? exception).GetType().Name + ">"; }
+                object overrideDice = typeof(BlueprintItemWeapon).GetField("m_OverrideDamageDice", Fields)?.GetValue(item);
+                result[guid] = new JObject
+                {
+                    ["name"] = item.name, ["type"] = item.Type?.name, ["overrideDamageDice"] = Convert.ToString(overrideDice, CultureInfo.InvariantCulture),
+                    ["baseDamage"] = actual, ["expected"] = expected
+                };
+                if (actual != expected) problems.Add(item.name + " BaseDamage is " + actual + ", expected " + expected);
+            }
+
+            result["conditions"] = SpearRepairConditions.Describe();
+            problem = problems.Count == 0 ? null : string.Join("; ", problems.ToArray());
             return result;
         }
     }

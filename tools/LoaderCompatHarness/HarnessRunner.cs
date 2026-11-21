@@ -528,7 +528,9 @@ namespace KmgLoaderCompatHarness
                         ["guidGetterThrowsAtLeast"] = SpearRepairConditions.GuidGetterThrows,
                         ["rangeOverridesAtLeast"] = SpearRepairConditions.RangeOverrides,
                         ["subCategoryRemovalsAtLeast"] = SpearRepairConditions.SubCategoryRemovals,
-                        ["subCategoryAdditionsAtLeast"] = SpearRepairConditions.SubCategoryAdditions
+                        ["subCategoryAdditionsAtLeast"] = SpearRepairConditions.SubCategoryAdditions,
+                        ["enchantmentOverridesAtLeast"] = SpearRepairConditions.EnchantmentOverrides,
+                        ["subCategoryListAdditionsAtLeast"] = SpearRepairConditions.SubCategoryListAdditions
                     };
                     foreach (var pair in step.Invariants ?? new System.Collections.Generic.Dictionary<string, string>())
                     {
@@ -608,6 +610,14 @@ namespace KmgLoaderCompatHarness
                     result["kmgTargetingState_" + (step.Label ?? stepIndex.ToString())] = held;
                     if (step.Type == "drop") game.SelectedAbilityHandler?.DropAbility();
                     return held == step.Match ? StepStatus.Done : Fail("the targeting handler holds " + held + ", expected " + step.Match);
+                }
+
+                case "kmgItemDamage":
+                {
+                    // "match": "guid=1xD8;..." - each item's effective BaseDamage (see ItemDamageProbe).
+                    JObject damage = ItemDamageProbe.Run(step.Match, out string problem);
+                    result["kmgItemDamage_" + (step.Label ?? stepIndex.ToString())] = damage;
+                    return problem == null ? StepStatus.Done : Fail(problem);
                 }
 
                 case "kmgSetSelection":

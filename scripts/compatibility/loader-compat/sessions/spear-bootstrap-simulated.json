@@ -46,13 +46,13 @@
           "[blueprints][initialize.failed]",
           "fighter-group [owned-field]: expected=Spears actual=Polearms donor=Spears; getter expected=Polearms actual=<deferred> donor=<deferred>; getterPatches=KmgLoaderCompatHarness"
         ],
-        "once": [ "Elven Branched Spear type profile is invalid: 1 of 17 checks failed.", "battered-origin.inspection-unavailable" ],
+        "once": [ "Elven Branched Spear type profile is invalid: 1 of 18 checks failed.", "battered-origin.inspection-unavailable" ],
         "absent": [ "[blueprints][initialize.complete]", "The battered origin token blueprint is unavailable" ]
       },
       "harness": {
         "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
         "steps": [
-          { "op": "kmgInitialization", "label": "invalid-owned", "expect": "failed", "match": "Elven Branched Spear type profile is invalid: 1 of 17 checks failed.", "continueOnFailure": true },
+          { "op": "kmgInitialization", "label": "invalid-owned", "expect": "failed", "match": "Elven Branched Spear type profile is invalid: 1 of 18 checks failed.", "continueOnFailure": true },
           { "op": "kmgWeaponTypeProfile", "label": "invalid-owned", "match": "absent", "type": "fa2dd17cbde7d3f4aa918d467c30516e,36d0551b8a28587438a47fcbbf53c083", "expect": "none", "invariants": { "ownedValidations": "1", "corruptionsApplied": "1" }, "continueOnFailure": true },
           { "op": "kmgSpearSelectorState", "label": "invalid-owned", "expect": "restored", "continueOnFailure": true },
           {
@@ -75,7 +75,7 @@
       "expectLog": {
         "present": [ "[blueprints][initialize.failed]" ],
         "once": [
-          "Elven Branched Spear type profile is invalid: 1 of 17 checks failed.",
+          "Elven Branched Spear type profile is invalid: 1 of 18 checks failed.",
           "attack-range [effective-getter]: expected=10ft actual=10ft donor=10ft; getter expected=6ft actual=7ft donor=6ft; getterPatches=KmgLoaderCompatHarness"
         ],
         "absent": [ "[blueprints][initialize.complete]" ]
@@ -121,12 +121,12 @@
           "fighter-group [owned-field]: expected=Spears actual=Polearms donor=Spears",
           "getterPatches=KmgLoaderCompatHarness"
         ],
-        "once": [ "Elven Branched Spear type profile is invalid: 2 of 17 checks failed." ],
+        "once": [ "Elven Branched Spear type profile is invalid: 2 of 18 checks failed." ],
         "absent": [ "[blueprints][initialize.complete]" ]
       },
       "harness": {
         "steps": [
-          { "op": "kmgInitialization", "label": "owned-throws", "expect": "failed", "match": "2 of 17 checks failed", "continueOnFailure": true },
+          { "op": "kmgInitialization", "label": "owned-throws", "expect": "failed", "match": "2 of 18 checks failed", "continueOnFailure": true },
           { "op": "kmgWeaponTypeProfile", "label": "owned-throws", "match": "absent", "invariants": { "getterThrowsAtLeast": "1", "ownedValidations": "3", "corruptionsApplied": "1" }, "continueOnFailure": true },
           { "op": "kmgSpearSelectorState", "label": "owned-throws", "expect": "restored", "continueOnFailure": true }
         ]
@@ -142,12 +142,12 @@
       },
       "expectLog": {
         "present": [ "[blueprints][initialize.failed]", "fighter-group [owned-field]: expected=Spears actual=Polearms donor=Spears" ],
-        "once": [ "Elven Branched Spear type profile is invalid: 1 of 17 checks failed." ],
+        "once": [ "Elven Branched Spear type profile is invalid: 1 of 18 checks failed." ],
         "absent": [ "[blueprints][initialize.complete]", "[elven-branched-spear][foundation.ready]" ]
       },
       "harness": {
         "steps": [
-          { "op": "kmgInitialization", "label": "late-validation", "expect": "failed", "match": "1 of 17 checks failed", "continueOnFailure": true },
+          { "op": "kmgInitialization", "label": "late-validation", "expect": "failed", "match": "1 of 18 checks failed", "continueOnFailure": true },
           { "op": "kmgWeaponTypeProfile", "label": "late-validation", "match": "absent", "invariants": { "ownedValidations": "3", "corruptionsApplied": "1" }, "continueOnFailure": true },
           { "op": "kmgSpearSelectorState", "label": "late-validation", "expect": "restored", "continueOnFailure": true }
         ]
@@ -201,7 +201,7 @@
       "expectLog": {
         "present": [ "[blueprints][initialize.failed]" ],
         "once": [
-          "Elven Branched Spear type profile is invalid: 1 of 17 checks failed.",
+          "Elven Branched Spear type profile is invalid: 1 of 18 checks failed.",
           "attack-range [effective-getter]: expected=10ft actual=10ft donor=10ft; getter expected=6ft actual=7ft donor=6ft; getterPatches=KmgLoaderCompatHarness"
         ],
         "absent": [ "[blueprints][initialize.complete]" ]
@@ -241,7 +241,7 @@
       "expectLog": {
         "present": [ "[blueprints][initialize.failed]" ],
         "once": [
-          "Elven Branched Spear type profile is invalid: 1 of 17 checks failed.",
+          "Elven Branched Spear type profile is invalid: 1 of 18 checks failed.",
           "attack-range [effective-getter]: expected=10ft actual=10ft donor=10ft; getter expected=6ft actual=6.25ft donor=6ft; getterPatches=KmgLoaderCompatHarness"
         ],
         "absent": [ "[blueprints][initialize.complete]" ]
@@ -267,7 +267,7 @@
           "getter expected=Melee,Finessable,TwoHanded,Exotic,Metal actual=Melee,TwoHanded,Exotic,Metal",
           "KmgLoaderCompatHarness"
         ],
-        "once": [ "Elven Branched Spear type profile is invalid: 1 of 17 checks failed." ],
+        "once": [ "Elven Branched Spear type profile is invalid: 1 of 18 checks failed." ],
         "absent": [ "[blueprints][initialize.complete]" ]
       },
       "harness": {

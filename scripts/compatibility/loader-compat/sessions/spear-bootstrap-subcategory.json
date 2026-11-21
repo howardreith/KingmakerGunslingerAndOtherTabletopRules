@@ -40,7 +40,7 @@
           "getter expected=Melee,Finessable,TwoHanded,Exotic,Metal actual=Melee,TwoHanded,Exotic,Metal donor=",
           "KmgLoaderCompatHarness"
         ],
-        "once": [ "Elven Branched Spear type profile is invalid: 1 of 17 checks failed." ],
+        "once": [ "Elven Branched Spear type profile is invalid: 1 of 18 checks failed." ],
         "absent": [ "[blueprints][initialize.complete]" ]
       },
       "harness": {
@@ -65,7 +65,7 @@
           "getter expected=Melee,Finessable,TwoHanded,Exotic,Metal actual=Melee,Finessable,TwoHanded,Exotic,Metal,Simple donor=",
           "KmgLoaderCompatHarness"
         ],
-        "once": [ "Elven Branched Spear type profile is invalid: 1 of 17 checks failed." ],
+        "once": [ "Elven Branched Spear type profile is invalid: 1 of 18 checks failed." ],
         "absent": [ "[blueprints][initialize.complete]" ]
       },
       "harness": {
