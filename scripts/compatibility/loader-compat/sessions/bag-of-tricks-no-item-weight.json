@@ -158,7 +158,32 @@
           { "op": "expectLoadedFrom", "match": "weightfixture" },
           { "op": "botWeightSetting", "label": "reload", "match": "", "expect": "on", "continueOnFailure": true },
           { "op": "kmgInitialization", "label": "on-reload", "expect": "completed", "continueOnFailure": true },
-          { "op": "kmgWeightCensus", "label": "on-reload", "expect": "zero", "type": "compare:on-startup", "contains": [ "f28f6031c2908d84d945865a80f67177", "6fd0a849531617844b195f452661b2cd" ], "continueOnFailure": true },
+          {
+            "op": "kmgWeightCensus", "label": "on-reload", "expect": "zero", "type": "compare:on-startup",
+            "contains": [ "f28f6031c2908d84d945865a80f67177", "6fd0a849531617844b195f452661b2cd" ],
+            "invariants": {
+              "contract:KMG.Spells.MagicCircle.": "donor:c2cadc1c19cc4b54eb73b987f540ddca",
+              "contract:KMG.Spells.Teleport.Scroll": "donor:02086fbbda266ed4b8e9124abe5abd75",
+              "contract:KMG.Spells.GreaterTeleport.Scroll": "donor:0033529da3b90bd226232e1962ca34ba|013c0f5972c1b794b869b284ba426542",
+              "contract:KMG.Spells.WordOfRecall.Scroll": "donor:00843bddf42908953a0d77e7155c20f0|0437d7a2ea4b01542907c4d5fb12c4da",
+              "contract:KMG.Items.CordOfStubbornResolve": "value:1",
+              "contract:KMG.Gunsmithing.GunsmithKit": "value:2",
+              "contract:KMG.Gunsmithing.OverhaulKit": "value:1",
+              "contract:KMG.Test.LeadBulletItem": "value:0.1",
+              "contract:KMG.Test.BlackPowderItem": "value:0.1",
+              "contract:KMG.Test.FirearmRepairKitItem": "value:1",
+              "contract:KMG.Ammunition.PaperCartridge": "value:0",
+              "contract:KMG.ElvenBranchedSpear.": "value:10",
+              "contract:KMG.EasternWeapons.Wakizashi.": "value:2",
+              "contract:KMG.EasternWeapons.Katana.": "value:6",
+              "contract:KMG.EasternWeapons.Nodachi.": "value:8",
+              "contract:KMG.Firearms.": "type",
+              "contract:KMG.Deeds.": "type",
+              "contract:KMG.Test.TestMusketItem": "type",
+              "contract:KMG.Summoning.": "value:0"
+            },
+            "continueOnFailure": true
+          },
           { "op": "kmgWeightItems", "label": "reload-on", "expect": "zero", "type": "verify", "continueOnFailure": true }
         ]
       }
