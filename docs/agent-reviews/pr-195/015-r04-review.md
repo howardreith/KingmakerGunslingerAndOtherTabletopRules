@@ -1,0 +1,182 @@
+<!-- agent-review:v1 enrollment=kmg-codex-spear-bootstrap-tooltip-repair-20261121062854-a704 key=r04-review part=1/1 sha256=8f4bace6a6a15d528ad637e0e1ea84a9de9cfb0a7d91c4bb17ed9a5727a7f142 -->
+### Codex GPT-6.2 Astra — review — round 4 — candidate `9b8a6b4435`
+
+**Decision:** `changes_required` — Three prior fixes are verified. R3-F1 remains the sole blocker. The focused gate and both new native sessions have recorded results. The simulated session that exercises the original failure has only a developer-authored account in the review inputs. Its existing machine output is needed to verify the failed-startup tooltip behavior, diagnostics and restoration.
+
+#### Findings
+
+**R3-F1** · P1 · evidence_gap · blocks readiness — The simulated session’s completion result is still missing from the review inputs
+- Location: `docs/SPEAR-BOOTSTRAP-TOOLTIP-REPAIR.md:326`; acceptance: 3.A.3, 3.A.5, 4.1.1, 4.1.2, 4.1.3, 4.2
+- Trigger: Final acceptance relies on session 20261121T171410Z for the mutated-donor and deliberately failed-startup cases.
+- Expected: The reviewer can inspect a machine-produced result linking the simulated launches, observations and restoration to the tested package.
+- Actual: The transcript shows both shell reads of session-summary.json were denied. It contains no output from the reported Read/Grep calls. The supplied evidence directory contains only the focused gate receipt. The new investigation table transcribes the claimed results, but the reviewer cannot trace those values to machine output.
+- Why it blocks / does not: This session supplies the candidate’s direct evidence that a deliberately failed initialization preserves ordinary prices and tooltips, emits one warning and produces the required profile diagnostics. The two recorded native sessions exercise different conditions.
+- Requested correction: Have the controller include the relevant fields from the existing session-summary.json and S-2 harness-result.json in the review inputs, or include the recorded tool output that returned those fields. The existing session is sufficient if those records are supplied.
+- Requested evidence: Include the session ID, package and loaded DLL identities, all 12 launch verdicts, and registry, save and installation restoration fields. Include S-2 per-weapon query and throw counts, prices, tooltip values, unavailable-warning and missing-token counts, plus the diagnostic results for the GUID, throwing-getter, fractional-range and subcategory controls.
+
+**R4-F1** · P3 · optional_polish · non-blocking — The persistence probe comment describes an item ID the game does not provide
+- Location: `tools/LoaderCompatHarness/SpearRepairProbes.cs:869`; acceptance: 4.1.5, 4.1.7
+- Trigger: A reader uses the class summary to interpret the fresh-process persistence check.
+- Expected: The probe summary describes the item identities available in Kingmaker 2.1.7b.
+- Actual: The class summary says the probe finds each item by unique ID. The implementation and investigation record identify items by blueprint, inventory counts and battered owner.
+- Why it blocks / does not: The mismatch is confined to a source comment. The persistence check and its recorded interpretation use the correct identifiers.
+- Requested correction: Update the class summary to say that reload matches blueprint identities, counts and the battered owner.
+- Requested evidence: Source inspection of the revised comment is sufficient.
+
+#### Prior finding assessments
+
+- **R2-F1** — `fix_verified` — The investigation now distinguishes the earlier donor:CriticalRollEdge throw from S-8’s additive AttackRange patch. The configuration at 0f08f76f64 and the change from GUID matching to reference matching in d7dd0ff01d support that account.
+- **R2-F3** — `fix_verified` — The observer now formats the underlying Feet float through FieldText. The recorded O-1 launch passed assertions on the observer’s actual output of 6.25 for the donor and 6 for the owned spear. S-11 remains in the simulated session, whose completion evidence is tracked under R3-F1.
+- **R2-F4** — `fix_verified` — The probe captures the incoming selection and current character, restores them before caster destruction, and fails cleanup on a mismatch. The recorded empty-selection, single-selection and pre-targeted refusal controls passed. The empty-selection case includes an independent check after cleanup.
+- **R3-F1** — `fix_rejected` — The developer added the requested values to the investigation, but the supplied transcript and evidence directory still lack the machine-produced result needed to verify them.
+
+#### Evidence assessment
+
+- **Inspected:** Mission and SHA-256, repository validation policy, workflow instructions, feature diff, historical correction commits and prior findings ledger.; Spear construction and publication, battered-origin inspection and sale pricing, Expanded Summoning publication and menu hooks, domain tests, native probes and loader-compat session definitions.; Developer report, CLI transcript, controller gate receipt and committed investigation record.
+- **Executed verification:** The controller receipt for 9b8a6b44352f records production compilation and 27 of 27 selected elven-branched-spear tests passing. The gate exited 0 in 1.9 seconds with the worktree unchanged.; The developer transcript records all four observer-selection launches passing in session 20261121T181329Z under UMM 0.31.1. Their assertions cover a 6.25 ft donor and 6 ft owned spear, successful summons from empty and single-unit selections, and refusal with targeting already active.; The transcript records all three probe-lifecycle launches passing in session 20261121T181849Z, including the expected timeout, injected cleanup failure and pre-existing targeting controls.; Both native sessions used the package built at 8ee7eabaeda0 and the harness at 9153164dcf. Git comparison confirms the final candidate has the same product and test source as 8ee7eabaeda0 and the same harness as 9153164dcf.
+- **Source inspection only:** The constructor writes the owned mechanical profile explicitly, checks effective values after the released GUID is assigned, and delays selector publication until named registration succeeds.; The sale-price hook preserves the native result when bootstrap state and token availability indicate inspection is unavailable. Binding and owner lookup retain their strict checks.; The simulated session defines assertions for donor mutation, invalid owned profiles, repeated failed-startup pricing and diagnostic log counts. The configuration establishes what a passing run would check.
+- **Required gaps:** R3-F1 requires reviewer-visible machine output from simulated session 20261121T171410Z, including its S-2 price and tooltip observations.
+- **Limitations:** This review was read-only. Native execution evidence came from the supplied records.; The reporter’s raw log and exact 43-mod installation were unavailable. The partial-stack attempt and simulated donor mutation leave the reporter’s specific failed predicate and its cause unresolved.; The selection fixture exercised empty and single-unit selections. Multi-unit restoration was inspected in source.
+
+#### Summary
+
+- **Delivered behavior:** The candidate explicitly configures and validates the registered spear, preserves native pricing when battered-origin inspection is unavailable, and retains strict ownership checks. Recorded native controls substantiate the full-precision observer and sorcerer selection cleanup. Earlier ledger assessments cover the reporter-shaped summoning path and disabled-publication reload.
+- **Scope reviewed:** Complete spear startup, weapon-tooltip pricing and Expanded Summoning repair for draft PR #195, including all four pending prior findings.
+- **Pending later-phase work:** none
+- **Unresolved questions:** Which predicate failed on the reporter’s original installation remains unknown.
+- **Remaining owner review:** After the evidence gap closes, the owner can judge the tested compatibility scope and decide whether to merge or release.
+
+#### Provenance (controller-recorded)
+
+| | Requested | Observed |
+|---|---|---|
+| Model | `gpt-6.2-astra` | `gpt-6.2-astra` (turns ['gpt-6.2-astra']) |
+| Reasoning effort | `high` | `high` (turns ['high']) |
+| Sandbox / approvals | read-only / never | `read-only` / `never` |
+
+Codex CLI `0.170.0`, thread `01a1ff5c-4cc1-75d1-b83c-1ef00e14bd96`, duration 162.5s, response sha256 `35ebd81035e9751643c0b0451518c386d6695f905397b5352ef0d14d3ac3a01f`, request `kmg-codex-spear-bootstrap-tooltip-repair-20261121062854-a704-r04-61b534`. Observed values come from the Codex session rollout's recorded thread settings, not from the model's own statements; the serving backend's model identity is not separately exposed.
+
+<details><summary>Complete structured review (agent-review.review.v1)</summary>
+
+```json
+{
+  "candidate_commit": "9b8a6b44352fd5babed673d354414be04fd619b1",
+  "checkpoint_id": "final",
+  "checkpoint_type": "final",
+  "decision": "changes_required",
+  "decision_rationale": "Three prior fixes are verified. R3-F1 remains the sole blocker. The focused gate and both new native sessions have recorded results. The simulated session that exercises the original failure has only a developer-authored account in the review inputs. Its existing machine output is needed to verify the failed-startup tooltip behavior, diagnostics and restoration.",
+  "evidence_assessment": {
+    "executed_verification": [
+      "The controller receipt for 9b8a6b44352f records production compilation and 27 of 27 selected elven-branched-spear tests passing. The gate exited 0 in 1.9 seconds with the worktree unchanged.",
+      "The developer transcript records all four observer-selection launches passing in session 20261121T181329Z under UMM 0.31.1. Their assertions cover a 6.25 ft donor and 6 ft owned spear, successful summons from empty and single-unit selections, and refusal with targeting already active.",
+      "The transcript records all three probe-lifecycle launches passing in session 20261121T181849Z, including the expected timeout, injected cleanup failure and pre-existing targeting controls.",
+      "Both native sessions used the package built at 8ee7eabaeda0 and the harness at 9153164dcf. Git comparison confirms the final candidate has the same product and test source as 8ee7eabaeda0 and the same harness as 9153164dcf."
+    ],
+    "inspected": [
+      "Mission and SHA-256, repository validation policy, workflow instructions, feature diff, historical correction commits and prior findings ledger.",
+      "Spear construction and publication, battered-origin inspection and sale pricing, Expanded Summoning publication and menu hooks, domain tests, native probes and loader-compat session definitions.",
+      "Developer report, CLI transcript, controller gate receipt and committed investigation record."
+    ],
+    "limitations": [
+      "This review was read-only. Native execution evidence came from the supplied records.",
+      "The reporter\u2019s raw log and exact 43-mod installation were unavailable. The partial-stack attempt and simulated donor mutation leave the reporter\u2019s specific failed predicate and its cause unresolved.",
+      "The selection fixture exercised empty and single-unit selections. Multi-unit restoration was inspected in source."
+    ],
+    "required_gaps": [
+      "R3-F1 requires reviewer-visible machine output from simulated session 20261121T171410Z, including its S-2 price and tooltip observations."
+    ],
+    "source_inspection_only": [
+      "The constructor writes the owned mechanical profile explicitly, checks effective values after the released GUID is assigned, and delays selector publication until named registration succeeds.",
+      "The sale-price hook preserves the native result when bootstrap state and token availability indicate inspection is unavailable. Binding and owner lookup retain their strict checks.",
+      "The simulated session defines assertions for donor mutation, invalid owned profiles, repeated failed-startup pricing and diagnostic log counts. The configuration establishes what a passing run would check."
+    ]
+  },
+  "findings": [
+    {
+      "acceptance_ids": [
+        "3.A.3",
+        "3.A.5",
+        "4.1.1",
+        "4.1.2",
+        "4.1.3",
+        "4.2"
+      ],
+      "actual": "The transcript shows both shell reads of session-summary.json were denied. It contains no output from the reported Read/Grep calls. The supplied evidence directory contains only the focused gate receipt. The new investigation table transcribes the claimed results, but the reviewer cannot trace those values to machine output.",
+      "blocking_rationale": "This session supplies the candidate\u2019s direct evidence that a deliberately failed initialization preserves ordinary prices and tooltips, emits one warning and produces the required profile diagnostics. The two recorded native sessions exercise different conditions.",
+      "blocks_readiness": true,
+      "category": "evidence_gap",
+      "expected": "The reviewer can inspect a machine-produced result linking the simulated launches, observations and restoration to the tested package.",
+      "id": "R3-F1",
+      "location": {
+        "file": "docs/SPEAR-BOOTSTRAP-TOOLTIP-REPAIR.md",
+        "line": 326
+      },
+      "priority": "P1",
+      "requested_correction": "Have the controller include the relevant fields from the existing session-summary.json and S-2 harness-result.json in the review inputs, or include the recorded tool output that returned those fields. The existing session is sufficient if those records are supplied.",
+      "requested_evidence": "Include the session ID, package and loaded DLL identities, all 12 launch verdicts, and registry, save and installation restoration fields. Include S-2 per-weapon query and throw counts, prices, tooltip values, unavailable-warning and missing-token counts, plus the diagnostic results for the GUID, throwing-getter, fractional-range and subcategory controls.",
+      "title": "The simulated session\u2019s completion result is still missing from the review inputs",
+      "trigger": "Final acceptance relies on session 20261121T171410Z for the mutated-donor and deliberately failed-startup cases."
+    },
+    {
+      "acceptance_ids": [
+        "4.1.5",
+        "4.1.7"
+      ],
+      "actual": "The class summary says the probe finds each item by unique ID. The implementation and investigation record identify items by blueprint, inventory counts and battered owner.",
+      "blocking_rationale": "The mismatch is confined to a source comment. The persistence check and its recorded interpretation use the correct identifiers.",
+      "blocks_readiness": false,
+      "category": "optional_polish",
+      "expected": "The probe summary describes the item identities available in Kingmaker 2.1.7b.",
+      "id": "R4-F1",
+      "location": {
+        "file": "tools/LoaderCompatHarness/SpearRepairProbes.cs",
+        "line": 869
+      },
+      "priority": "P3",
+      "requested_correction": "Update the class summary to say that reload matches blueprint identities, counts and the battered owner.",
+      "requested_evidence": "Source inspection of the revised comment is sufficient.",
+      "title": "The persistence probe comment describes an item ID the game does not provide",
+      "trigger": "A reader uses the class summary to interpret the fresh-process persistence check."
+    }
+  ],
+  "prior_finding_assessments": [
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R2-F1",
+      "rationale": "The investigation now distinguishes the earlier donor:CriticalRollEdge throw from S-8\u2019s additive AttackRange patch. The configuration at 0f08f76f64 and the change from GUID matching to reference matching in d7dd0ff01d support that account."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R2-F3",
+      "rationale": "The observer now formats the underlying Feet float through FieldText. The recorded O-1 launch passed assertions on the observer\u2019s actual output of 6.25 for the donor and 6 for the owned spear. S-11 remains in the simulated session, whose completion evidence is tracked under R3-F1."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R2-F4",
+      "rationale": "The probe captures the incoming selection and current character, restores them before caster destruction, and fails cleanup on a mismatch. The recorded empty-selection, single-selection and pre-targeted refusal controls passed. The empty-selection case includes an independent check after cleanup."
+    },
+    {
+      "assessment": "fix_rejected",
+      "finding_id": "R3-F1",
+      "rationale": "The developer added the requested values to the investigation, but the supplied transcript and evidence directory still lack the machine-produced result needed to verify them."
+    }
+  ],
+  "request_id": "kmg-codex-spear-bootstrap-tooltip-repair-20261121062854-a704-r04-61b534",
+  "round": 4,
+  "schema_version": "agent-review.review.v1",
+  "summary": {
+    "delivered_behavior": "The candidate explicitly configures and validates the registered spear, preserves native pricing when battered-origin inspection is unavailable, and retains strict ownership checks. Recorded native controls substantiate the full-precision observer and sorcerer selection cleanup. Earlier ledger assessments cover the reporter-shaped summoning path and disabled-publication reload.",
+    "pending_later_phase_work": [],
+    "remaining_owner_review": [
+      "After the evidence gap closes, the owner can judge the tested compatibility scope and decide whether to merge or release."
+    ],
+    "scope_reviewed": "Complete spear startup, weapon-tooltip pricing and Expanded Summoning repair for draft PR #195, including all four pending prior findings.",
+    "unresolved_questions": [
+      "Which predicate failed on the reporter\u2019s original installation remains unknown."
+    ]
+  }
+}
+```
+</details>
+
+_Model-generated review by Codex using the requested model, posted by the agent-review controller through the owner's GitHub account. Not a human review or approval._
