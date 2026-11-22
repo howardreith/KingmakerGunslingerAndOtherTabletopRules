@@ -564,10 +564,17 @@ namespace KmgLoaderCompatHarness
             Spellbook casting = Book(caster, "CastingSpellbook");
             var reservoir = (BlueprintAbilityResource)C("Reservoir");
             if (spell == null || spell.School != SpellSchool.Transmutation || casting == null) { problems.Add("cast fixture unavailable for " + spellGuid); return row; }
-            casting.Rest();
+            // Both resolved books are rested and know the spell, as in the product's BrownFurNativeCastScenario.
+            Spellbook preparation = Book(caster, "MemorizationSpellbook");
+            caster.Commands.InterruptAll(true);
+            foreach (Spellbook book in new[] { casting, preparation })
+            {
+                if (book == null) continue;
+                book.Rest();
+                if (!book.IsKnown(spell)) book.AddKnown(2, spell, true);
+            }
             int reservoirNow = caster.Descriptor.Resources.GetResourceAmount(reservoir);
             if (reservoirNow < 4) caster.Descriptor.Resources.Restore(reservoir, 4 - reservoirNow);
-            if (!casting.IsKnown(spell)) casting.AddKnown(2, spell, true);
             intentRuntime.GetMethod("Clear", Any).Invoke(null, new[] { caster.Descriptor, blueprints });
             var toggles = (BlueprintActivatableAbility[])B("ScoreActivatables");
             var toggle = (ActivatableAbility)intentRuntime.GetMethod("Find", Any).Invoke(null, new object[] { caster.Descriptor, toggles[scoreIndex] });
@@ -584,7 +591,15 @@ namespace KmgLoaderCompatHarness
             command.IgnoreCooldown(TimeSpan.Zero);
             caster.Commands.Run(command);
             command.Start();
-            if (!command.IsRunning) { problems.Add("the cast command did not start for " + spellGuid); return row; }
+            if (!command.IsRunning)
+            {
+                row["availableBeforeStart"] = data.IsAvailable;
+                row["canStart"] = command.CanStart;
+                row["commandResult"] = command.Result.ToString();
+                row["castingSlots"] = casting.Blueprint.Spontaneous ? casting.GetSpontaneousSlots(2) : -1;
+                problems.Add("the cast command did not start for " + spellGuid + ": " + row.ToString(Formatting.None));
+                return row;
+            }
             if (command.Animation != null) command.Animation.IsActed = true;
             command.Tick();
             if (command.ExecutionProcess == null) { problems.Add("the cast did not create an execution process; result " + command.Result); return row; }
