@@ -330,6 +330,44 @@ reference, because the clone carries the donor's GUID while it is configured.
 
 **Runner support:**
 
+- **Round 10 (`731f7d883a`, journal schema 4).**
+  - **Atomic claims (R9-F1, R8-F2).** The journal, `compatibility.lock`
+    and `loader-compat.lock` are each written completely to a private file,
+    then published with an atomic no-overwrite rename (`Publish-LcClaim`).
+    A claim is either absent or complete.
+  - **Recovery lease identity (R8-F2).** Legacy recovery journals its
+    recovery lease id before taking the shared lock. A schema-2 lease left
+    between creation and recording is adopted only when it names the
+    session, belongs to the journal's owner process and holds the shared
+    lock.
+  - **Journal identity (R8-F1).** Recovery compares the journal identity it
+    read first (the transaction id, or an older journal's digest) with the
+    journal under its guard. A replacement session is left for its own
+    recovery.
+  - **Exact registry comparison (R10-F1).** Reconciliation compares
+    canonical exports that keep each key path, value name, type and ordered
+    multiline data together.
+  - **Unsettled settings (R10-F2, R8-F4).** These keep the journal, both
+    locks and a `RecoveryRequired` lease:
+    - unreadable or unrecognised live settings;
+    - any older journal, which has no backup digest and no restore phase.
+
+    A missing key is told apart from an unreadable one: a missing key means
+    the delete ran without the import, so importing once is safe. The owner
+    resolves the rest explicitly with `-RecoverOnly -RegistryResolution
+    Import` or `KeepCurrent`.
+  - **Host check before import (R10-F3).** The host is re-checked
+    immediately before every import, after the snapshot or reconciliation
+    export. A withheld import is recorded as such.
+  - **Fresh verification (R10-F4).** Recovery re-verifies owner files for
+    any transaction not yet committed.
+  - **Bound backup (R10-F5).** The registry backup is bound to its SHA-256
+    at intake and verified before any comparison or import. A changed
+    backup is never imported.
+  - **Recovery verdict (R9-F3).** The `-RecoverOnly` dispatch returns the
+    recorded transaction verdict, cleanup-only completions included. A
+    round-7 lease's missing owner-file evidence is reported as
+    `unavailable`.
 - **Round 9 (`2c84b833a8`).** The transaction now lives in
   `LoaderCompat.Transaction.ps1`, with journal schema 3.
   - **Atomic journal (R9-F1).** The journal is claimed with `CreateNew`, so
@@ -484,6 +522,74 @@ Shared runtime leases:
 | **R8** `20261121T233924Z-…-spear-bootstrap-reporter-stack` (round 8) | round-7 candidate | PASS (102, 111 s) |
 | **B9** `20261122T000745Z-…-spear-bootstrap-baseline` (round 9, leased) | v0.0.192 | PASS (73 s) |
 | **S9** `20261122T000920Z-…-spear-bootstrap-simulated-leased` (round 9, leased) | round-7 candidate | PASS (72, 75 s) |
+| **S10** `20261122T004013Z-…-spear-bootstrap-simulated-leased` (round 10, leased) | round-7 candidate | PASS (74, 69 s) |
+| **B10** `20261122T004257Z-…-spear-bootstrap-baseline` (round 10, leased) | v0.0.192 | PASS (70 s) |
+
+**Round 10: the schema-4 runner.** The product is unchanged since round 7.
+S10 and B10 repeat S9 and B9 under the round-10 runner. Both exited 0 and
+were surfaced through `-Report`, each with:
+- `transactionSucceeded` true;
+- `registryRestore` `applied`;
+- `ownerIntegrity` `verified` (95 saves);
+- a `Completed` lease recording the same results;
+- the shared lock `<free>`.
+
+The sessions:
+
+- **S10** (lease `runtime-20261122T004013Z-e422f11f…`, summary
+  `68e9dcee…0083`, loaded DLL `6b2696c7…`):
+  - S10-1: the 15 ft / Polearms donor mutation; startup completed.
+  - S10-2 (`0a882c2a…2fb3`): one `1 of 18` fighter-group failure.
+    Longspear, Longsword, Greataxe and Heavy Crossbow each took 25 price
+    queries and 25 tooltip fills with 0 throws, at 1, 4, 5 and 13 gp.
+    `batteredInspectionUnavailableReported` true, the warning ×1, the
+    missing-token text ×0; the native Summon Monster I summon passed.
+- **B10** (published v0.0.192, loaded DLL `0eff2af3…`, lease
+  `runtime-20261122T004258Z-fbc822e0…`, summary `51aa31ae…6f81`): the
+  generic profile failure reproduced.
+
+The round-10 offline fixtures (`-SafetyTests`) passed, PASS=99:
+
+- **Initial claim (R9-F1)**: a start interrupted after its private claim is
+  written leaves no journal, and the next start succeeds. The loser of
+  interleaved starts is refused, and the winner's complete journal and locks
+  are preserved.
+- **Partial acquisition (R8-F2)**:
+  - an interrupted `compatibility.lock` claim leaves no lock;
+  - legacy recovery interrupted between taking and recording the shared
+    lock leaves a lock its journal identifies, which the next recovery
+    treats as its own;
+  - a schema-2 journal beside its own partial lease is reconciled, while a
+    foreign lease's lock is preserved;
+  - the next session then acquires both locks.
+- **Delayed recovery (R8-F1)**: a recovery paused after reading session A,
+  resumed after A finished and B was left by an exited owner, refuses. B's
+  journal, lock and settings are untouched, and B recovers on its own
+  invocation.
+- **Older journals (R8-F4)**: a pre-round-7 journal, with the backup still
+  applied and again after a later settings change, gets zero imports and
+  keeps the later settings until the owner chooses `KeepCurrent`.
+- **Registry comparison (R10-F1)**: swapped subkey values and reordered
+  multiline data compare unequal. A swapped live state is preserved and
+  unresolved until the owner chooses `Import`.
+- **Unreadable registry (R10-F2)**: an unreadable export once keeps
+  ownership. The next recovery settles the same transaction without
+  re-importing, and a missing key is imported once.
+- **Peer during export (R10-F3)**: a peer appearing during the snapshot
+  export (completion and recovery) or the reconciliation export withholds
+  the import, with zero imports and state retained. One import follows after
+  the peer leaves.
+- **Stale verification (R10-F4)**: a verified-but-uncommitted transaction
+  whose manifest changed while it was down records `changed` on recovery,
+  with no second import.
+- **Changed backup (R10-F5)**: a backup changed after intake is refused
+  before any registry change, in completion and in recovery even with
+  `Import`. Once it is intact again, it is imported once.
+- **Recovery exit codes (R9-F3)**: the `-RecoverOnly` dispatch, run in child
+  processes, exits 0 for a verified cleanup-only completion. It exits 1, after
+  cleanup, for changed and unreadable integrity, and 1 for a deferred
+  recovery, which keeps its state. A round-7 Completed lease is cleanup only,
+  with integrity `unavailable`.
 
 **Round 9: the schema-3 runner.** The product is unchanged since round 7.
 Both sessions below exited 0 and were surfaced through `-Report`. Each
@@ -1101,3 +1207,13 @@ is in the developer report.
    The round-9 contention, interruption and exit-code paths are proven by
    87 offline fixture checks, not by a real second game, a real sibling lab
    or a real process kill.
+10. **Round 10** again changed only the runner. S10 and B10 repeat the
+   leased baseline and decisive simulated launches. The claim, recovery,
+   registry-reconciliation, owner-resolution and exit-code paths are proven
+   by 99 offline fixture checks with a .reg text standing in for the
+   registry key. No real interrupted restore, real registry export failure,
+   second game or sibling lab was staged.
+
+   Journals written by earlier runners carry no backup digest. Recovering
+   one that still needs an import therefore needs the owner's explicit
+   `-RegistryResolution` by design.
