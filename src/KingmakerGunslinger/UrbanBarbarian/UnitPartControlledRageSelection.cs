@@ -99,8 +99,11 @@ namespace KingmakerGunslinger.UrbanBarbarian
             _rejectedStates = rejected;
         }
 
-        // One warning per distinct condition per part instance (each load
-        // creates new instances), so repeated UI reads do not repeat it.
+        // The part instance remembers only the last reported condition
+        // signature (blocked tiers and retained-payload count). Repeated reads
+        // in an unchanged condition are silent; each transition to a different
+        // signature (for example a recovery, then a new rejection) warns again,
+        // and each load creates a new instance that reports its first read.
         private void Report(ControlledRageSelectionState state)
         {
             string blocked = string.Join(",", state.BlockedTiers.Select(value =>

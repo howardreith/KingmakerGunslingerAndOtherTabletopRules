@@ -210,7 +210,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Active tiers did not persist in the released grammar.");
         }
 
-        internal static void RetainedInputSurvivesOperationsResavesAndFailedWrites()
+        internal static void RetainedInputSurvivesOperationsAndResaves()
         {
             const string original = "4:0,0,4;4:4,0,0;6:2,2,2";
             Persisted pair = new Persisted(original, null);
@@ -293,6 +293,121 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(fresh.PendingRejected == null,
                     "Legitimate absence was treated as rejected input.");
             }
+        }
+
+        // A1 review repair 1: a null active state beside retained history is
+        // an already-used part whose current allocation data is missing, not
+        // a fresh part. Ordinary and every tier the history claims or taints
+        // stay blocked through reads, unlocks and resaves; the history is
+        // never replayed; an explicit legal selection recovers a tier.
+        internal static void NullStateBesideRetainedHistoryIsNeverANewAllocation()
+        {
+            var cases = new[]
+            {
+                // retained payload, blocked tiers, explicit recoveries in order
+                Case("4:0,4,0;4:0,4,0", "4", "4"),
+                Case("4:0,4,0;10:4,4,2", "4", "4"),
+                Case("4:0,4,0;6:bad", "4 6", "4 6"),
+                Case("4:0,4,0;6:2,2,2;8:2,2,4", "4 6 8", "4 6 8"),
+            };
+            // Every case runs, so one report names each failing input.
+            var failures = new List<string>();
+            foreach (string[] entry in cases)
+            {
+                try { NullStateBesideHistoryCase(entry); }
+                catch (InvalidOperationException failure) { failures.Add(failure.Message); }
+            }
+            Assertions.True(failures.Count == 0, string.Join(" | ", failures.ToArray()));
+
+            // Controls. Genuinely fresh absence keeps the first-unlock default.
+            foreach (List<string> none in new[] { null, new List<string>() })
+                Assertions.Equal("4:4,0,0", ControlledRageSelectionState.Restore(
+                    null, none).Serialize(), "Fresh absence lost the released default.");
+
+            // The ordinary migration of "4:bad" leaves no active tier; that alone
+            // does not establish corruption of the higher tiers, which keep their
+            // first-unlock defaults through later reloads.
+            Persisted migrated = Cycle(new Persisted("4:bad", null));
+            Assertions.True(migrated.State == null && migrated.Rejected.Count == 1,
+                "\"4:bad\" did not migrate to retained history.");
+            for (int cycle = 0; cycle < 3; cycle++)
+            {
+                ControlledRageSelectionState state = migrated.Read();
+                Assertions.Equal("4", Blocked(state),
+                    "Migrated \"4:bad\" blocked a legitimately absent higher tier.");
+                Assertions.False(state.Unlock(ControlledRageTier.Ordinary),
+                    "Migrated \"4:bad\" received an ordinary default.");
+                state.Unlock(ControlledRageTier.Greater);
+                state.Unlock(ControlledRageTier.Mighty);
+                migrated = migrated.Write(state);
+                Assertions.Equal("6:6,0,0;8:8,0,0", migrated.State,
+                    "Legitimately absent higher tiers lost their defaults.");
+            }
+        }
+
+        private static void NullStateBesideHistoryCase(string[] entry)
+        {
+            string payload = entry[0];
+            var retained = new List<string> { payload };
+            Persisted pair = new Persisted(null, retained);
+            for (int cycle = 0; cycle < 4; cycle++)
+            {
+                ControlledRageSelectionState state = pair.Read();
+                Assertions.True(!state.ActiveTiers.Any() &&
+                    state.PendingRejected == null, "Null state beside \"" + payload +
+                    "\" restored as a new allocation: " + state.Serialize() + ".");
+                Assertions.False(state.Unlock(ControlledRageTier.Ordinary),
+                    "Ordinary unlock beside \"" + payload + "\" created " +
+                    state.Serialize() + ".");
+                Assertions.Equal(entry[1], Blocked(state),
+                    "Blocked tiers differ for null state beside \"" + payload + "\".");
+                foreach (ControlledRageTier tier in state.BlockedTiers.ToArray())
+                    Assertions.False(state.Unlock(tier),
+                        "A blocked tier was defaulted beside \"" + payload + "\".");
+                pair = pair.Write(state);
+                Assertions.True(pair.State == null &&
+                    ReferenceEquals(pair.Rejected, retained) &&
+                    retained.Count == 1 && retained[0] == payload,
+                    "A resave changed null state or retained history for \"" + payload + "\".");
+            }
+
+            var expected = new List<string>();
+            foreach (string symbol in entry[2].Split(' '))
+            {
+                var tier = (ControlledRageTier)int.Parse(symbol,
+                    CultureInfo.InvariantCulture);
+                ControlledRageAllocation chosen =
+                    ControlledRageAllocationPolicy.Generate(tier).Last();
+                ControlledRageSelectionState state = pair.Read();
+                Assertions.True(state.TrySelectExact(tier, chosen, false),
+                    "An explicit legal selection did not recover tier " + symbol +
+                    " beside \"" + payload + "\".");
+                pair = pair.Write(state);
+                expected.Add(string.Format(CultureInfo.InvariantCulture,
+                    "{0}:{1},{2},{3}", (int)tier, chosen.Strength,
+                    chosen.Dexterity, chosen.Constitution));
+                for (int cycle = 0; cycle < 3; cycle++)
+                {
+                    ControlledRageSelectionState reread = pair.Read();
+                    // The ordinary runtime read unlocks the unit's tier.
+                    Assertions.False(reread.Unlock(ControlledRageTier.Ordinary),
+                        "Ordinary unlock changed a recovered state.");
+                    Persisted next = pair.Write(reread);
+                    Assertions.Equal(string.Join(";", expected.ToArray()), next.State,
+                        "An explicit recovery did not survive resaves beside \"" +
+                        payload + "\".");
+                    Assertions.True(ReferenceEquals(next.Rejected, retained) &&
+                        retained.Count == 1 && retained[0] == payload,
+                        "Recovery changed retained history for \"" + payload + "\".");
+                    pair = next;
+                }
+            }
+        }
+
+        private static string Blocked(ControlledRageSelectionState state)
+        {
+            return string.Join(" ", state.BlockedTiers.Select(value =>
+                ((int)value).ToString(CultureInfo.InvariantCulture)).ToArray());
         }
 
         private static Persisted Cycle(Persisted pair)

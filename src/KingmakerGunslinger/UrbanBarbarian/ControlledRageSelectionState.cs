@@ -128,7 +128,8 @@ namespace KingmakerGunslinger.UrbanBarbarian
 
         /// <summary>
         /// The released grammar for the active tiers only, or null when no tier
-        /// is active (possible only when every tier is blocked).
+        /// is active. Null does not mean every tier is blocked: a higher tier
+        /// can be legitimately absent beside a blocked ordinary tier.
         /// </summary>
         internal string Serialize()
         {
@@ -210,22 +211,36 @@ namespace KingmakerGunslinger.UrbanBarbarian
         /// - The released writer always records the ordinary tier, so an input
         ///   with no ordinary claim taints the ordinary tier.
         ///
-        /// Null with nothing retained is legitimate absence and receives the
-        /// released first-unlock default. Every non-null string, including an
-        /// empty one, is classified. Input that the released strict grammar
+        /// Null with no retained payload is legitimate absence and receives the
+        /// released first-unlock default. Retained payloads mean the part was
+        /// already used, so a missing current allocation is never invented:
+        /// the ordinary tier, and every tier a retained payload claims or
+        /// taints, stays blocked unless the current state holds it. Retained
+        /// text only blocks; it is never replayed as an allocation. A tier no
+        /// retained payload mentions (for example Greater beside a migrated
+        /// "4:bad") stays legitimately absent. Every non-null string, including
+        /// an empty one, is classified. Input that the released strict grammar
         /// accepts restores exactly as <see cref="Parse"/> would.
         /// </summary>
         internal static ControlledRageSelectionState Restore(string persisted,
             IEnumerable<string> retained)
         {
             var blockedByRetained = new HashSet<ControlledRageTier>();
+            bool hasHistory = false;
             if (retained != null)
                 foreach (string payload in retained)
-                    blockedByRetained.UnionWith(Classify(payload).TaintedTiers);
+                {
+                    hasHistory = true;
+                    Reading prior = Classify(payload);
+                    blockedByRetained.UnionWith(prior.TaintedTiers);
+                    blockedByRetained.UnionWith(prior.ClaimedTiers);
+                }
+            if (hasHistory)
+                blockedByRetained.Add(ControlledRageTier.Ordinary);
 
             if (persisted == null)
             {
-                if (blockedByRetained.Count == 0)
+                if (!hasHistory)
                     return new ControlledRageSelectionState();
                 var blockedOnly = new ControlledRageSelectionState(true);
                 blockedOnly._blocked.UnionWith(blockedByRetained);
@@ -274,6 +289,7 @@ namespace KingmakerGunslinger.UrbanBarbarian
                     continue;
                 }
                 var tier = (ControlledRageTier)key;
+                reading.ClaimedTiers.Add(tier);
                 List<ControlledRageAllocation> group;
                 if (!claims.TryGetValue(tier, out group))
                     claims.Add(tier, group = new List<ControlledRageAllocation>());
@@ -331,6 +347,8 @@ namespace KingmakerGunslinger.UrbanBarbarian
             internal readonly HashSet<ControlledRageTier> InvalidTiers =
                 new HashSet<ControlledRageTier>();
             internal readonly HashSet<ControlledRageTier> TaintedTiers =
+                new HashSet<ControlledRageTier>();
+            internal readonly HashSet<ControlledRageTier> ClaimedTiers =
                 new HashSet<ControlledRageTier>();
             internal bool Unattributable;
             internal bool HasOrdinaryClaim;
