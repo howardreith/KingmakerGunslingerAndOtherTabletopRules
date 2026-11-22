@@ -178,11 +178,16 @@ on candidate `f48d60ceaf33`.
 
 ## Validation
 
-- **Focused gate:** `scripts/Invoke-KmgGate.ps1 -Filter 'bag-of-tricks-no-item-weight,elven-branched-spear.bootstrap-repair'`
-  compiles production and runs 18 of 3,166 registered tests: 3 new
-  `bag-of-tricks-no-item-weight.*` cases and 15 existing spear bootstrap-repair
-  cases. It is run through the controller's `verify --gate focused` on the
-  committed head. This is a focused pass, not full qualification.
+- **Focused gate, controller receipt:** `verify --gate focused -- -Filter
+  bag-of-tricks-no-item-weight` on the committed head compiles production and
+  runs the 3 `bag-of-tricks-no-item-weight.*` cases. The controller refuses a
+  multi-term filter argument.
+- **Wider focused selection, local runs:** `Invoke-KmgGate.ps1` and the
+  candidate build were run with `bag-of-tricks-no-item-weight` plus
+  `elven-branched-spear.bootstrap-repair`: 18 of 3,166 tests, 0 failures, which
+  adds the 15 existing spear bootstrap-repair cases. These were on product
+  source identical to the head.
+- This is a focused pass, not full qualification.
 - **Development candidate:** `Build-Local.ps1 -DevelopmentPurpose
   bag-of-tricks-no-item-weight` took about 6 min. It ran the repository wrapper
   validators, development-candidate validation against v0.0.193 (appended=0),
