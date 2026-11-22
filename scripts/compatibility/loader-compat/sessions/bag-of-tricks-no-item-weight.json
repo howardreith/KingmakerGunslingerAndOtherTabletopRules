@@ -1,0 +1,188 @@
+{
+  "name": "bag-of-tricks-no-item-weight",
+  "description": "Bag of Tricks No Item Weight compatibility (docs/BAG-OF-TRICKS-NO-ITEM-WEIGHT-COMPATIBILITY.md). UMM 0.31.1 with the real Bag of Tricks 1.16.4 and Call of the Wild from the lab, and the reporter's module settings (Gunslinger, Shield Other, Urban Barbarian, Bodyguard feats and Teleportation off). Launch 1 sets the modules through real panel clicks and turns No Item Weight on through Bag of Tricks' own settings object, saved by its own ModSettings.Save. Launch 2 (on at startup) must initialize completely, census every registered product item (all live weights 0), add representative real items, toggle off (same instances regain their unpatched weights, items constructed while on included) and on again, add items in both states, write and save the disposable fixture, then cast Summon Monster I from a new sorcerer. Launch 3 reloads that save with the setting still on. Launches 4 and 5 prove a wrong authored spear weight and a non-weight spear defect still fail startup with the setting on; launch 5 then turns the setting off. Launch 6 (off at startup) reloads the same save: identical authored weights to the on-at-startup construction, unpatched live weights, the complementary toggle, an additional item and native prices and tooltips.",
+  "ownerMods": [
+    "BagOfTricks",
+    "CallOfTheWild"
+  ],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "configure-reporter-modules-and-setting-on",
+      "gameArguments": [ "locale=enGB" ],
+      "harness": {
+        "steps": [
+          { "op": "kmgModules", "label": "initial", "match": "" },
+          { "op": "ummPanel", "label": "gunslinger-off", "match": "KingmakerGunslinger", "type": "Gunslinger", "save": true, "seconds": 2 },
+          { "op": "ummPanel", "label": "shield-other-off", "match": "KingmakerGunslinger", "type": "Shield Other", "save": true, "seconds": 2 },
+          { "op": "ummPanel", "label": "urban-barbarian-off", "match": "KingmakerGunslinger", "type": "Urban Barbarian", "save": true, "seconds": 2 },
+          { "op": "ummPanel", "label": "bodyguard-off", "match": "KingmakerGunslinger", "type": "Bodyguard, In Harms Way, and Helpful", "save": true, "seconds": 2 },
+          { "op": "ummPanel", "label": "teleportation-off", "match": "KingmakerGunslinger", "type": "World-Map Teleportation Spells", "save": true, "seconds": 2 },
+          {
+            "op": "kmgModules",
+            "label": "saved",
+            "match": "",
+            "expect": "gunslinger=false,shield-other=false,urban-barbarian=false,bodyguard-feats=false,teleportation-spells=false,acadamae-graduate=true,expanded-summoning=true,elven-branched-spears=true,eastern-weapons=true,brown-fur-transmuter=true,protection-from-alignment-control-immunity=true,elemental-races=true,magic-circle-spells=true"
+          },
+          { "op": "botWeightSetting", "label": "initial", "match": "" },
+          { "op": "botWeightSetting", "label": "turn-on", "match": "on", "save": true, "expect": "on" }
+        ]
+      }
+    },
+    {
+      "label": "on-at-startup",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "captureWeaponTypes": "fa2dd17cbde7d3f4aa918d467c30516e"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]",
+          "[elven-branched-spear][foundation.ready]",
+          "weight.runtime-override"
+        ],
+        "absent": [
+          "[initialize.failed]",
+          "[initialize.root-cause]",
+          "Elven Branched Spear type profile is invalid",
+          "package-blueprint-lifecycle-failed",
+          "battered-origin.inspection-unavailable"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "expectMods", "match": "KingmakerGunslinger,KmgLoaderCompatHarness,BagOfTricks,CallOfTheWild", "continueOnFailure": true },
+          { "op": "botWeightSetting", "label": "startup", "match": "", "expect": "on", "continueOnFailure": true },
+          { "op": "kmgModules", "label": "reporter", "match": "Gunslinger=false,ShieldOther=false,UrbanBarbarian=false,BodyguardFeats=false,TeleportationSpells=false", "continueOnFailure": true },
+          { "op": "kmgInitialization", "label": "on-startup", "expect": "completed", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "donor-unchanged", "match": "", "type": "fa2dd17cbde7d3f4aa918d467c30516e", "continueOnFailure": true },
+          {
+            "op": "kmgWeightCensus", "label": "on-startup", "expect": "zero",
+            "contains": [ "f28f6031c2908d84d945865a80f67177", "6fd0a849531617844b195f452661b2cd" ],
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgWeightItems", "label": "a-on", "expect": "zero",
+            "match": "KMG.ElvenBranchedSpear.BaseItem,KMG.ElvenBranchedSpear.Boughkeeper,KMG.ElvenBranchedSpear.Plus3Item,KMG.EasternWeapons.Katana.MasterworkItem,KMG.EasternWeapons.Nodachi.CloudCleaver,KMG.EasternWeapons.Wakizashi.Plus2Item,KMG.Firearms.EarlyPistolItem,KMG.Firearms.PistolPlus1Item,KMG.Firearms.DuelistsRebuttalItem,KMG.Firearms.ReliableMusketPlus2Item,KMG.Test.LeadBulletItem*10,KMG.Test.BlackPowderItem*10,KMG.Ammunition.PaperCartridge*5,KMG.Gunsmithing.GunsmithKit,KMG.Items.CordOfStubbornResolve,KMG.Spells.MagicCircle.Evil.Scroll*2,KMG.Spells.Teleport.Scroll,guid:6fd0a849531617844b195f452661b2cd",
+            "invariants": { "battered": "KMG.Firearms.EarlyPistolItem" },
+            "continueOnFailure": true
+          },
+          { "op": "botWeightSetting", "label": "live-off", "match": "off", "expect": "off", "continueOnFailure": true },
+          { "op": "kmgWeightItems", "label": "a-off", "expect": "intended", "continueOnFailure": true },
+          { "op": "kmgWeightCensus", "label": "on-startup-live-off", "expect": "intended", "type": "compare:on-startup", "contains": [ "f28f6031c2908d84d945865a80f67177", "6fd0a849531617844b195f452661b2cd" ], "continueOnFailure": true },
+          { "op": "kmgWeightItems", "label": "b-off", "expect": "intended", "match": "KMG.Spells.MagicCircle.Good.Scroll,KMG.EasternWeapons.Katana.BaseItem", "continueOnFailure": true },
+          { "op": "botWeightSetting", "label": "live-on", "match": "on", "expect": "on", "continueOnFailure": true },
+          { "op": "kmgWeightItems", "label": "ab-on", "expect": "zero", "continueOnFailure": true },
+          { "op": "kmgWeightItems", "label": "c-on", "expect": "zero", "match": "KMG.Firearms.MusketPlus1Item,KMG.Spells.MagicCircle.Law.Scroll*3,KMG.Spells.WordOfRecall.Scroll", "continueOnFailure": true },
+          { "op": "kmgWeightItems", "label": "fixture", "expect": "zero", "type": "write", "continueOnFailure": true },
+          { "op": "saveGame", "label": "weightfixture", "timeoutSeconds": 120 },
+          {
+            "op": "kmgSorcererSummon", "label": "on-startup", "expect": "expanded", "contains": [ "Beetle, Fire" ],
+            "invariants": { "expectAbility": "c7ef177436854efca42ac4ae0a068610", "expectUnit": "714b04102eae4cd2be200a8f09f04bc3" },
+            "timeoutSeconds": 180, "continueOnFailure": true
+          },
+          { "op": "kmgSorcererResidue", "label": "after-summon", "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "on-at-reload",
+      "gameArguments": [ "locale=enGB" ],
+      "expectLog": {
+        "present": [ "[blueprints][initialize.complete]", "weight.runtime-override" ],
+        "absent": [ "[initialize.failed]", "Elven Branched Spear type profile is invalid", "package-blueprint-lifecycle-failed" ]
+      },
+      "harness": {
+        "save": "$written:weightfixture",
+        "steps": [
+          { "op": "expectLoadedFrom", "match": "weightfixture" },
+          { "op": "botWeightSetting", "label": "reload", "match": "", "expect": "on", "continueOnFailure": true },
+          { "op": "kmgInitialization", "label": "on-reload", "expect": "completed", "continueOnFailure": true },
+          { "op": "kmgWeightCensus", "label": "on-reload", "expect": "zero", "type": "compare:on-startup", "contains": [ "f28f6031c2908d84d945865a80f67177", "6fd0a849531617844b195f452661b2cd" ], "continueOnFailure": true },
+          { "op": "kmgWeightItems", "label": "reload-on", "expect": "zero", "type": "verify", "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "negative-authored-weight-on",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "corruptOwnedSpearProfile": "m_Weight=0"
+      },
+      "expectLog": {
+        "present": [ "weight [owned-field]: expected=10 actual=0" ],
+        "absent": [ "[blueprints][initialize.complete]" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "botWeightSetting", "label": "negative-weight", "match": "", "expect": "on", "continueOnFailure": true },
+          { "op": "kmgInitialization", "label": "wrong-authored-weight", "expect": "failed", "match": "weight [owned-field]", "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "negative-reach-on-then-setting-off",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "ownedSpearAttackRangePatch": "true"
+      },
+      "expectLog": {
+        "present": [ "attack-range [effective-getter]" ],
+        "absent": [ "[blueprints][initialize.complete]" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "botWeightSetting", "label": "negative-reach", "match": "", "expect": "on", "continueOnFailure": true },
+          { "op": "kmgInitialization", "label": "wrong-effective-reach", "expect": "failed", "match": "attack-range [effective-getter]", "continueOnFailure": true },
+          { "op": "botWeightSetting", "label": "turn-off", "match": "off", "save": true, "expect": "off" }
+        ]
+      }
+    },
+    {
+      "label": "off-at-startup",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "captureWeaponTypes": "fa2dd17cbde7d3f4aa918d467c30516e"
+      },
+      "expectLog": {
+        "present": [ "[blueprints][initialize.complete]", "[elven-branched-spear][foundation.ready]" ],
+        "absent": [
+          "[initialize.failed]",
+          "Elven Branched Spear type profile is invalid",
+          "package-blueprint-lifecycle-failed",
+          "weight.runtime-override",
+          "The battered origin token blueprint is unavailable",
+          "battered-origin.inspection-unavailable"
+        ]
+      },
+      "harness": {
+        "save": "$written:weightfixture",
+        "steps": [
+          { "op": "expectLoadedFrom", "match": "weightfixture" },
+          { "op": "botWeightSetting", "label": "startup-off", "match": "", "expect": "off", "continueOnFailure": true },
+          { "op": "kmgModules", "label": "reporter", "match": "Gunslinger=false,ShieldOther=false,UrbanBarbarian=false,BodyguardFeats=false,TeleportationSpells=false", "continueOnFailure": true },
+          { "op": "kmgInitialization", "label": "off-startup", "expect": "completed", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "owned-off", "match": "owned", "type": "fa2dd17cbde7d3f4aa918d467c30516e", "continueOnFailure": true },
+          { "op": "kmgWeightCensus", "label": "off-startup", "expect": "intended", "type": "compare:on-startup", "contains": [ "f28f6031c2908d84d945865a80f67177", "6fd0a849531617844b195f452661b2cd" ], "continueOnFailure": true },
+          { "op": "kmgWeightItems", "label": "reload-off", "expect": "intended", "type": "verify", "continueOnFailure": true },
+          { "op": "botWeightSetting", "label": "live-on", "match": "on", "expect": "on", "continueOnFailure": true },
+          { "op": "kmgWeightItems", "label": "off-then-on", "expect": "zero", "continueOnFailure": true },
+          { "op": "botWeightSetting", "label": "live-off", "match": "off", "expect": "off", "continueOnFailure": true },
+          { "op": "kmgWeightItems", "label": "off-again", "expect": "intended", "match": "KMG.ElvenBranchedSpear.MoonlitFork", "continueOnFailure": true },
+          {
+            "op": "kmgItemPricing",
+            "label": "off-startup",
+            "type": "f28f6031c2908d84d945865a80f67177,6fd0a849531617844b195f452661b2cd,6efea466862f014469cec6c3f2b85cb7,19a5092244dcf99478dcd73c974828b1",
+            "expect": "native",
+            "match": "battered",
+            "invariants": { "repeat": "20" },
+            "continueOnFailure": true
+          }
+        ]
+      }
+    }
+  ]
+}

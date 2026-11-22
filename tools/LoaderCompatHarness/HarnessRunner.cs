@@ -658,6 +658,29 @@ namespace KmgLoaderCompatHarness
                     return problem == null ? StepStatus.Done : Fail(problem);
                 }
 
+                case "botWeightSetting":
+                {
+                    JObject state = BagOfTricksWeight.Run(step.Match, step.Save, step.Expect, out string problem);
+                    result["botWeightSetting_" + (step.Label ?? stepIndex.ToString())] = state;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
+                case "kmgWeightCensus":
+                {
+                    JObject census = WeightCensus.Run(request.ProfileDir, step.Label ?? stepIndex.ToString(), step.Expect, step.Type, step.Contains,
+                        out string problem);
+                    result["kmgWeightCensus_" + (step.Label ?? stepIndex.ToString())] = census;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
+                case "kmgWeightItems":
+                {
+                    JObject items = WeightItems.Run(request.ProfileDir, step.Label ?? stepIndex.ToString(), step.Match, step.Type, step.Expect,
+                        step.Invariants, out string problem);
+                    result["kmgWeightItems_" + (step.Label ?? stepIndex.ToString())] = items;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
                 case "kmgRollbackResidue":
                 {
                     // Needs the captureOriginals condition: exact restoration is judged against identities recorded

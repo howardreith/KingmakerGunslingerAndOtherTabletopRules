@@ -1,0 +1,62 @@
+{
+  "name": "bag-of-tricks-no-item-weight-absent",
+  "description": "Bag of Tricks No Item Weight compatibility, Bag of Tricks absent (docs/BAG-OF-TRICKS-NO-ITEM-WEIGHT-COMPATIBILITY.md). UMM 0.31.1 with the product alone and default modules. Launch 1 must initialize normally, census every registered product item with live weights equal to their unpatched (authored) weights, and give representative real items whose tooltip, stack and carried weights are the authored ones, with native prices and tooltips. Launch 2 makes the spear weapon type's Weight getter throw inside the product's spear validation (an unreadable runtime weight): the product reads that getter only for its bounded nonfatal diagnostic, so startup must still complete.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "absent-startup",
+      "gameArguments": [ "locale=enGB" ],
+      "expectLog": {
+        "present": [ "[blueprints][initialize.complete]", "[elven-branched-spear][foundation.ready]" ],
+        "absent": [ "[initialize.failed]", "Elven Branched Spear type profile is invalid", "weight.runtime-override" ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "expectMods", "match": "KingmakerGunslinger,KmgLoaderCompatHarness", "expect": "BagOfTricks", "continueOnFailure": true },
+          { "op": "botWeightSetting", "label": "absent", "match": "", "expect": "absent", "continueOnFailure": true },
+          { "op": "kmgInitialization", "label": "absent", "expect": "completed", "continueOnFailure": true },
+          {
+            "op": "kmgWeightCensus", "label": "absent", "expect": "intended",
+            "contains": [ "f28f6031c2908d84d945865a80f67177", "6fd0a849531617844b195f452661b2cd" ],
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgWeightItems", "label": "absent", "expect": "intended",
+            "match": "KMG.ElvenBranchedSpear.BaseItem,KMG.EasternWeapons.Katana.MasterworkItem,KMG.Firearms.EarlyPistolItem,KMG.Firearms.PistolPlus1Item,KMG.Firearms.ReliableMusketPlus2Item,KMG.Test.LeadBulletItem*10,KMG.Ammunition.PaperCartridge*5,KMG.Gunsmithing.GunsmithKit,KMG.Items.CordOfStubbornResolve,KMG.Spells.MagicCircle.Evil.Scroll*2,KMG.Spells.Teleport.Scroll,guid:6fd0a849531617844b195f452661b2cd",
+            "invariants": { "battered": "KMG.Firearms.EarlyPistolItem" },
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgItemPricing",
+            "label": "absent",
+            "type": "f28f6031c2908d84d945865a80f67177,6fd0a849531617844b195f452661b2cd,6efea466862f014469cec6c3f2b85cb7,19a5092244dcf99478dcd73c974828b1",
+            "expect": "native",
+            "match": "battered",
+            "invariants": { "repeat": "20" },
+            "continueOnFailure": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "unreadable-runtime-weight",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "throwingWeaponTypeGetters": "owned:Weight"
+      },
+      "expectLog": {
+        "present": [ "[blueprints][initialize.complete]", "weight.runtime-override" ],
+        "absent": [ "[initialize.failed]", "Elven Branched Spear type profile is invalid" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "kmgInitialization", "label": "unreadable-runtime-weight", "expect": "completed", "continueOnFailure": true }
+        ]
+      }
+    }
+  ]
+}

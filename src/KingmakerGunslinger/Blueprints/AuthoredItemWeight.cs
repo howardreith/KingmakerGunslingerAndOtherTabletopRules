@@ -37,9 +37,6 @@ namespace KingmakerGunslinger.Blueprints
         private static readonly FieldInfo WeaponTypeWeight =
             Require(typeof(BlueprintWeaponType), "m_Weight");
 
-        private static readonly FieldInfo ItemWeaponType =
-            Require(typeof(BlueprintItemWeapon), "m_Type");
-
         /// <summary>The item's own serialized <c>m_Weight</c>.</summary>
         internal static float Stored(BlueprintItem item)
         {
@@ -52,22 +49,6 @@ namespace KingmakerGunslinger.Blueprints
         {
             if (type == null) throw new ArgumentNullException("type");
             return (float)WeaponTypeWeight.GetValue(type);
-        }
-
-        /// <summary>
-        /// The weight the unpatched Kingmaker 2.1.7b getter would return, from
-        /// serialized fields only: <c>BlueprintItemWeapon.Weight</c> is its own
-        /// <c>m_Weight</c> when that is above zero and otherwise its type's
-        /// <c>m_Weight</c>; every other item this mod registers uses the base
-        /// <c>BlueprintItem.Weight</c>, which is <c>m_Weight</c>.
-        /// </summary>
-        internal static float Intended(BlueprintItem item)
-        {
-            float stored = Stored(item);
-            var weapon = item as BlueprintItemWeapon;
-            if (weapon == null || stored > 0f) return stored;
-            var type = (BlueprintWeaponType)ItemWeaponType.GetValue(weapon);
-            return type == null ? stored : Stored(type);
         }
 
         /// <summary>True when the item's stored weight is exactly <paramref name="expected"/>.</summary>
