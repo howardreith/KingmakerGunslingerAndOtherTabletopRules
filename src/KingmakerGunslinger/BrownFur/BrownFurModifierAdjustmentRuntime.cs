@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
@@ -143,15 +144,40 @@ namespace KingmakerGunslinger.BrownFur
 
         internal static int Forget(Buff source)
         {
-            if (source == null || source.Owner == null ||
-                source.Context == null || source.Context.MaybeCaster == null ||
+            string casterId = source == null ? null : SavedCasterId(source.Context);
+            if (source == null || source.Owner == null || casterId == null ||
                 source.Context.SourceAbility == null) return 0;
             UnitPartBrownFurModifierPersistence part = source.Owner.Get<
                 UnitPartBrownFurModifierPersistence>();
             return part == null ? 0 : part.Forget(NormalizeGuid(
                 source.Blueprint.AssetGuid.ToString()), NormalizeGuid(
-                source.Context.SourceAbility.AssetGuid.ToString()),
-                source.Context.MaybeCaster.UniqueId);
+                source.Context.SourceAbility.AssetGuid.ToString()), casterId);
+        }
+
+        private static readonly FieldInfo CasterReference =
+            typeof(MechanicsContext).GetField("m_CasterReference",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+
+        /// <summary>
+        /// RISK-02 (B): the caster identity the engine saved in the buff's own
+        /// mechanics context (its UnitReference id). It survives when the caster
+        /// unit no longer exists, as after Player.DismissCompanion destroys a
+        /// custom companion while its buffs on others remain, when MaybeCaster
+        /// is null. It comes from the buff's saved context, never from a
+        /// persisted Powerful Change record, so it can select a record but not
+        /// validate one by itself. When the caster resolves, it equals
+        /// MaybeCaster's UniqueId.
+        /// </summary>
+        internal static string SavedCasterId(MechanicsContext context)
+        {
+            if (context == null) return null;
+            object reference = CasterReference == null ? null :
+                CasterReference.GetValue(context);
+            string saved = reference is UnitReference ?
+                ((UnitReference)reference).UniqueId : null;
+            if (!string.IsNullOrEmpty(saved)) return saved;
+            UnitEntityData caster = context.MaybeCaster;
+            return caster == null ? null : caster.UniqueId;
         }
 
         internal static OrdinaryRecastState PrepareOrdinaryRecast(
@@ -240,7 +266,13 @@ namespace KingmakerGunslinger.BrownFur
             ModifiableValue.Modifier modifier, Buff source,
             MechanicsContext sourceContext)
         {
-            if (destination.Owner == null || sourceContext.MaybeCaster == null ||
+            // RISK-02 (B): the caster may legitimately no longer exist (a
+            // dismissed companion); the effect it cast remains. Restoration
+            // keys on the caster id saved in the buff's own context, and still
+            // requires an exact match on buff, spell, caster, score, original
+            // value, descriptor, carrier and lifetime.
+            string casterId = SavedCasterId(sourceContext);
+            if (destination.Owner == null || casterId == null ||
                 sourceContext.SourceAbility == null) return false;
             UnitPartBrownFurModifierPersistence part = destination.Owner.Get<
                 UnitPartBrownFurModifierPersistence>();
@@ -251,7 +283,7 @@ namespace KingmakerGunslinger.BrownFur
                 BuffGuid = NormalizeGuid(source.Blueprint.AssetGuid.ToString()),
                 SpellGuid = NormalizeGuid(
                     sourceContext.SourceAbility.AssetGuid.ToString()),
-                CasterId = sourceContext.MaybeCaster.UniqueId,
+                CasterId = casterId,
                 AbilityScore = stat,
                 OriginalValue = modifier.ModValue,
                 OriginalDescriptor = modifier.ModDescriptor.ToString(),
