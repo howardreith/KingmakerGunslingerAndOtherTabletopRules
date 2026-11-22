@@ -9,13 +9,13 @@
     {
       "label": "create",
       "gameArguments": [ "locale=enGB" ],
+      "conditions": { "observeControlledRagePersistence": "true" },
       "expectLog": {
         "present": [ "[blueprints][initialize.complete]" ],
         "absent": [ "[initialize.failed]", "controlled-rage.persistence.retained" ]
       },
       "harness": {
         "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
-        "conditions": { "observeControlledRagePersistence": "true" },
         "steps": [
           { "op": "kmgModules", "label": "all-on", "match": "" },
           { "op": "kmgInitialization", "label": "create", "expect": "completed" },
@@ -26,6 +26,7 @@
     {
       "label": "reload-mutate",
       "gameArguments": [ "locale=enGB" ],
+      "conditions": { "observeControlledRagePersistence": "true" },
       "expectLog": {
         "present": [ "[blueprints][initialize.complete]" ],
         "absent": [ "[initialize.failed]" ],
@@ -38,7 +39,6 @@
       },
       "harness": {
         "save": "$written:risk03cr1",
-        "conditions": { "observeControlledRagePersistence": "true" },
         "steps": [
           { "op": "expectLoadedFrom", "match": "risk03cr1" },
           { "op": "kmgModules", "label": "all-on", "match": "" },
@@ -50,13 +50,13 @@
     {
       "label": "final",
       "gameArguments": [ "locale=enGB" ],
+      "conditions": { "observeControlledRagePersistence": "true" },
       "expectLog": {
         "present": [ "[blueprints][initialize.complete]", "retainedPayloads=1;newlyRejected=none" ],
         "absent": [ "[initialize.failed]", "newlyRejected=length=" ]
       },
       "harness": {
         "save": "$written:risk03cr2",
-        "conditions": { "observeControlledRagePersistence": "true" },
         "steps": [
           { "op": "expectLoadedFrom", "match": "risk03cr2" },
           { "op": "kmgModules", "label": "all-on", "match": "" },
