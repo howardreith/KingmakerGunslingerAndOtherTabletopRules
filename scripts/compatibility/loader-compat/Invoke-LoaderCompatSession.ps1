@@ -36,7 +36,10 @@ param(
     # With -Report: print that launch's records (label prefix, e.g. 02) instead of the session summary.
     [string]$ReportLaunch,
     # Runs the offline session-guard checks (Test-LoaderCompatSafety.ps1) and exits.
-    [switch]$SafetyTests
+    [switch]$SafetyTests,
+    # With -RecoverOnly: the owner's explicit decision for game settings recovery cannot settle safely
+    # (Import the session backup, or KeepCurrent settings).
+    [ValidateSet('', 'Import', 'KeepCurrent')][string]$RegistryResolution = ''
 )
 
 . (Join-Path $PSScriptRoot 'LoaderCompat.Common.ps1')
@@ -135,11 +138,8 @@ if ($SafetyTests) {
 }
 
 if ($RecoverOnly) {
-    # A refused recovery throws (failing exit); a deferred, unresolved or changed outcome exits 1 after its cleanup.
-    $recovery = Invoke-LcRecovery { param($Path) Restore-LcRegistry $Path }
-    Write-Host $recovery.Message
-    if (-not $recovery.Succeeded) { exit 1 }
-    return
+    # Exit 0 only for a clean recovered transaction; refusals, deferrals and failed verdicts exit 1.
+    exit (Invoke-LcRecoverOnlyCommand { param($Path) Restore-LcRegistry $Path } $RegistryResolution)
 }
 
 foreach ($required in @('SessionFile', 'LoaderProfile', 'CandidateZip', 'HarnessDir')) {
@@ -170,8 +170,8 @@ try {
     $summary.ownerSaveFiles = $intake.savesCount
     $registryBackup = Join-Path $evidence 'game-settings.reg'
     Backup-LcRegistry $registryBackup
-    $journal.registryBackup = $registryBackup
-    Save-LcJournal $journal
+    # Bound to its digest: completion and recovery verify these bytes before any comparison or import.
+    Set-LcRegistryBackup $journal $registryBackup
 
     Initialize-LcGameCopy $paths
     $summary.loaderInstall = Install-LcLoaderProfile $paths $LoaderProfile

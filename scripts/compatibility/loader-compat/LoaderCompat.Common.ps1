@@ -80,13 +80,9 @@ function Assert-LcPreflight {
     if (-not (Get-Process -Name steam -ErrorAction SilentlyContinue)) { throw 'Steam is not running; a direct game-copy launch needs it.' }
 }
 
+# The private loader-compat lock, published complete with an atomic no-overwrite rename.
 function Enter-LcLock([string]$SessionId) {
-    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $script:LcLock) | Out-Null
-    $stream = [IO.File]::Open($script:LcLock, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
-    try {
-        $bytes = [Text.Encoding]::UTF8.GetBytes("session=$SessionId`npid=$PID`nstartedUtc=$([DateTime]::UtcNow.ToString('o'))`n")
-        $stream.Write($bytes, 0, $bytes.Length)
-    } finally { $stream.Dispose() }
+    Publish-LcClaim $script:LcLock "session=$SessionId`npid=$PID`nstartedUtc=$([DateTime]::UtcNow.ToString('o'))`n" "The loader-compat lock already exists: $script:LcLock"
 }
 
 # Removes the loader-compat lock only when it names this session.
