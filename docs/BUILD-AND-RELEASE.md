@@ -2,7 +2,57 @@
 
 ## 0.0.194 publication authorization
 
-**Authorized; not yet published.**
+**Published (completed).** Stable
+[v0.0.194](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.194)
+is Latest and not a prerelease. The tag peels to the release commit `805f9d59a1` (PR #201), which was `origin/master`
+when the publisher ran.
+
+- **Gate.** The publisher's complete suite passed 3,166/3,166 with 0 failures, and the release194 validator passed.
+- **Builds.** Two deterministic exact-reference builds against the pinned UMM 0.31.1 loader references:
+  - package SHA-256 `0e894ceb871a91a0105f05c08ce3feeaba5f6ebecead15be432e88aa10c1b8e6`;
+  - DLL SHA-256 `07214501757b1df026d462a90b3512919260ed0e7f814117299a7be6e19b1f35`.
+- **Reference bundle.** `artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references`,
+  as for v0.0.193.
+- **First publisher attempt.** The first run refused after 169 s, before building or publishing, with "No running game
+  permitted for source-only tests". A peer session had started a loader-compat game in the meantime. No tag, release
+  or asset was created. After the peer granted a no-Kingmaker window, the second run published.
+- **Public download test.** A fresh download of the three assets matched `SHA256SUMS.txt`, and the manifest names
+  the release commit `805f9d59a14733170a07ce1d016e1df6647c79c1` with two deterministic builds. The package has one
+  `KingmakerGunslinger` root (458 files); its `Info.json` reads 0.0.194 with `ManagerVersion` 0.31.1 and `Id`
+  `KingmakerGunslinger`, beside the DLL hash above.
+- **Native check on the published bytes.** The downloaded public package ran in the disposable loader-compat game
+  copy on Unity Mod Manager **0.31.1.0** through master's runner with the full `bag-of-tricks-no-item-weight.json`
+  session, Bag of Tricks 1.16.4 (`d0362659…a0e6`) and Call of the Wild 1.14.4c-2.1. The harness was built from
+  master (source unchanged since `c4e1259457`): `e5287daa74759a9fd09aaa80026a2850ce30bab6606f2a1ba2d46e15c5c9ff0a`.
+  The game loaded the DLL above (version 0.0.194) in every launch. Session
+  `20261122T180014Z-umm-0.31.1-bag-of-tricks-no-item-weight` (summary `f761a78f…3ee8`, lease
+  `runtime-20261122T180014Z-a68b3abe…`): **PASS 6/6**, exit 0, 665 s.
+  - Launch 1 (104 s): the reporter's modules set through real panel clicks; No Item Weight turned on through Bag of
+    Tricks' own settings.
+  - Launch 2 (163 s, `harness-result.json` `deb484f1…6b97`), setting on at startup:
+    - initialization completed with Magic Circle and Teleportation published, and the Longspear donor unchanged;
+    - the census passed on and live-off;
+    - real items, including stacks, armor, the Test Musket and repair kits, read 0 and followed the in-inventory
+      toggles, including items added in each state;
+    - the fixture was saved;
+    - the new sorcerer's Summon Monster I summon and the residue check passed.
+  - Launch 3 (118 s): the saved fixture reloaded with the setting on.
+  - Launch 4 (70 s): a wrong stored spear weight failed startup with
+    `weight [owned-field]: expected=10 actual=0 donor=9; getter not read (runtime setting); fields only`.
+  - Launch 5 (71 s): a wrong live spear reach failed startup with `attack-range [effective-getter]`.
+  - Launch 6 (124 s), setting off at startup: the same fixture reloaded with normal weights, and the complementary
+    toggles, prices and tooltips passed, with no runtime-override line.
+  - Restoration: the registry readback matched the verified backup (`verified`), owner files were unchanged (95
+    saves), no host conflict was observed, the lease completed, and every lock was released. A no-Kingmaker window
+    was agreed with the one active peer session and released afterwards.
+
+  The Bag of Tricks-absent session ran on the development candidate of the same product source and was not repeated
+  on the published bytes.
+- **Timing.** The successful publisher run took 988 s.
+- **Installation.** The installed mod was not touched; the publisher performed no deployment.
+- **Merges.** PR #199 merged as `8f36604fb6`; release PR #201 as `805f9d59a1`.
+
+Originally authorized as follows.
 
 On 2026-11-22, after the owner review of PR #199 with ChatGPT, Howie accepted the lab-restoration scope exception and
 wrote: "This is accepted. Please merge and cut a release." PR #199 (Bag of Tricks No Item Weight compatibility) was
