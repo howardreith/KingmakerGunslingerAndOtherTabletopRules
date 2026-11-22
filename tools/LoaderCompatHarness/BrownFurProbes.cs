@@ -53,6 +53,8 @@ namespace KmgLoaderCompatHarness
         public static FieldInfo RejectedField { get; private set; }
         public static readonly List<JObject> Calls = new List<JObject>();
         public static readonly List<string> Exceptions = new List<string>();
+        /// <summary>Every BrownFurModifierAdjustmentRuntime.TryRestorePersisted call: owning buff, saved and resolved caster, result.</summary>
+        public static readonly List<JObject> Restorations = new List<JObject>();
 
         /// <summary>Part instance -> SYNTHETIC (_records, _rejectedRecords) values written after the product's PreSave.</summary>
         public static readonly Dictionary<object, Tuple<object, object>> Injections =
@@ -75,6 +77,10 @@ namespace KmgLoaderCompatHarness
             harmony.Patch(PartType.GetMethod("ResolveIncrease", Any),
                 new HarmonyMethod(typeof(BrownFurObserver).GetMethod(nameof(ResolvePrefix), Own)),
                 new HarmonyMethod(typeof(BrownFurObserver).GetMethod(nameof(ResolvePostfix), Own)));
+            MethodInfo restore = product.GetType("KingmakerGunslinger.BrownFur.BrownFurModifierAdjustmentRuntime", true)
+                .GetMethod("TryRestorePersisted", BindingFlags.Static | BindingFlags.NonPublic);
+            if (restore != null)
+                harmony.Patch(restore, null, new HarmonyMethod(typeof(BrownFurObserver).GetMethod(nameof(RestorePostfix), Own)));
             int exceptionHooks = 0;
             foreach (MethodInfo method in typeof(UberDebug).GetMethods(BindingFlags.Static | BindingFlags.Public)
                 .Where(m => m.Name == "LogException" && m.GetParameters().Length >= 1 && m.GetParameters()[0].ParameterType == typeof(Exception)))
@@ -131,6 +137,20 @@ namespace KmgLoaderCompatHarness
             if (RejectedField != null) call["rejectedAfter"] = Describe(RejectedField.GetValue(part));
             if (result.HasValue) call["result"] = result.Value;
             return call;
+        }
+
+        private static void RestorePostfix(object __2, object __3, bool __result)
+        {
+            var buff = __2 as Kingmaker.UnitLogic.Buffs.Buff;
+            var context = __3 as Kingmaker.UnitLogic.Mechanics.MechanicsContext;
+            if (Restorations.Count >= 400) return;
+            Restorations.Add(new JObject
+            {
+                ["seq"] = ++sequence, ["buff"] = buff?.Blueprint.AssetGuid, ["owner"] = buff?.Owner?.Unit?.UniqueId,
+                ["savedCasterId"] = context == null ? null : BrownFurProbe.SavedCasterId(context),
+                ["casterResolved"] = context != null && context.MaybeCaster != null,
+                ["sourceAbility"] = context?.SourceAbility?.AssetGuid, ["restored"] = __result
+            });
         }
 
         private static void ExceptionPrefix(Exception __0)

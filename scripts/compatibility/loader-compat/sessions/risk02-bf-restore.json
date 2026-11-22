@@ -1,0 +1,51 @@
+{
+  "name": "risk02-bf-restore",
+  "description": "S6 T3 / RISK-02 checkpoint B: Powerful Change restoration when the caster cannot be resolved. The product runs beside Call of the Wild only. Launch 1 loads the disposable fixture save. It creates four custom companions through the engine's persistent-party path: three level-five CotW Arcanist casters with Brown-Fur Powerful Change, and a fourth companion as a target. Real committed casts follow: the present caster casts Bull's Strength (armed) and Cat's Grace (unarmed) on the companion target; the remote caster casts Cat's Grace (armed) on the main character; the dismissed caster casts Bull's Strength (armed) on the main character. The remote caster is then swapped out with Player.RemoveCompanion, and the dismissed caster is dismissed with Player.DismissCompanion, which destroys it; the probe saves. Launch 2, a fresh process, checks the party-route native PostLoad and every restored modifier against the correct behavior, in which an effect the engine keeps keeps its exact increase. It then runs repeated Fact.Recalculate callbacks, removes the dismissed caster's buff, makes an ordinary unarmed recast, and saves. Launch 3, a fresh process, checks the result.",
+  "ownerMods": [ "CallOfTheWild" ],
+  "fixtureSaves": [ "KMCS_AFTER_NORMAL_012_MODONLY.zks" ],
+  "launches": [
+    {
+      "label": "restore-create",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": { "observeBrownFurPersistence": "true" },
+      "expectLog": { "present": [ "[blueprints][initialize.complete]" ], "absent": [ "[initialize.failed]" ] },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "kmgModules", "label": "all-on", "match": "" },
+          { "op": "kmgInitialization", "label": "create", "expect": "completed" },
+          { "op": "kmgBrownFur", "label": "restore-create", "match": "restore-create", "invariants": { "saveLabel": "bfr1" }, "timeoutSeconds": 300 }
+        ]
+      }
+    },
+    {
+      "label": "restore-reload",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": { "observeBrownFurPersistence": "true" },
+      "expectLog": { "present": [ "[blueprints][initialize.complete]" ], "absent": [ "[initialize.failed]" ] },
+      "harness": {
+        "save": "$written:bfr1",
+        "steps": [
+          { "op": "expectLoadedFrom", "match": "bfr1" },
+          { "op": "kmgModules", "label": "all-on", "match": "" },
+          { "op": "kmgBrownFur", "label": "restore-reload", "match": "restore-reload", "timeoutSeconds": 300 },
+          { "op": "saveGame", "label": "bfr2", "timeoutSeconds": 120 }
+        ]
+      }
+    },
+    {
+      "label": "restore-final",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": { "observeBrownFurPersistence": "true" },
+      "expectLog": { "present": [ "[blueprints][initialize.complete]" ], "absent": [ "[initialize.failed]" ] },
+      "harness": {
+        "save": "$written:bfr2",
+        "steps": [
+          { "op": "expectLoadedFrom", "match": "bfr2" },
+          { "op": "kmgModules", "label": "all-on", "match": "" },
+          { "op": "kmgBrownFur", "label": "restore-final", "match": "restore-final", "timeoutSeconds": 300 }
+        ]
+      }
+    }
+  ]
+}
