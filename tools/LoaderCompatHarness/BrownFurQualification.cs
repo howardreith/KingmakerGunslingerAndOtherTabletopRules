@@ -134,7 +134,7 @@ namespace KmgLoaderCompatHarness
             var manifest = new JObject
             {
                 ["fixture"] = "KMCS_AFTER_NORMAL_012_MODONLY.zks", ["units"] = units,
-                ["injected"] = JObject.FromObject(injected), ["expectedLoaded"] = expected
+                ["injected"] = new JObject(injected.Select(pair => new JProperty(pair.Key, new JArray(pair.Value.Cast<object>().ToArray())))), ["expectedLoaded"] = expected
             };
             File.WriteAllText(Path.Combine(profileDir, ExpectedFile), manifest.ToString(Formatting.Indented));
             File.WriteAllText(Path.Combine(profileDir, FixtureFile), new JObject { ["units"] = units }.ToString());
