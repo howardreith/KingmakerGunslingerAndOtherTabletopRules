@@ -368,8 +368,15 @@ namespace KmgLoaderCompatHarness
                     JToken a = before[guid], b = now[guid];
                     compared++;
                     if (a == null || b == null) { differences.Add(guid + " present only " + (a == null ? "now" : "in " + label)); continue; }
+                    // Compared as single-precision values: a float token written this process and the same value read
+                    // back from the record as a double (0.1f vs 0.1) are the same authored weight.
                     foreach (string field in new[] { "stored", "intended", "weaponTypeStored" })
-                        if (!JToken.DeepEquals(a[field], b[field])) differences.Add((string)b["name"] + " " + field + " " + a[field] + " -> " + b[field]);
+                    {
+                        JToken x = a[field], y = b[field];
+                        bool same = (x == null || x.Type == JTokenType.Null) && (y == null || y.Type == JTokenType.Null) ||
+                            x != null && y != null && x.Type != JTokenType.Null && y.Type != JTokenType.Null && ((float)x).Equals((float)y);
+                        if (!same) differences.Add((string)b["name"] + " " + field + " " + x + " -> " + y);
+                    }
                 }
             }
 
