@@ -1800,6 +1800,21 @@ namespace KingmakerGunslinger.Summoning
         public override void OnTurnOff()
         {
             base.OnTurnOff();
+            // S6 C2a: the engine's save suspension turns the owner off first and
+            // back on after writing; that is not the end of the hold.
+            if (!SummonHoldSuspension.ShouldRelease(Owner)) return;
+            ReleaseHeld();
+        }
+
+        /// <summary>Genuine removal or disposal of the hold buff always ends the hold (idempotent).</summary>
+        public override void OnFactDeactivate()
+        {
+            base.OnFactDeactivate();
+            ReleaseHeld();
+        }
+
+        private void ReleaseHeld()
+        {
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
             UnitEntityData target = HeldTarget(owner);
             if (target != null) Release(owner, target);
@@ -2036,6 +2051,21 @@ namespace KingmakerGunslinger.Summoning
         public override void OnTurnOff()
         {
             base.OnTurnOff();
+            // S6 C2a: the engine's save suspension turns the owner off first and
+            // back on after writing; that is not the end of the links.
+            if (!SummonHoldSuspension.ShouldRelease(Owner)) return;
+            ReleaseAllLinks();
+        }
+
+        /// <summary>Genuine removal or disposal of the hold buff always ends every link (idempotent).</summary>
+        public override void OnFactDeactivate()
+        {
+            base.OnFactDeactivate();
+            ReleaseAllLinks();
+        }
+
+        private void ReleaseAllLinks()
+        {
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
             SummonGrabComponent grab = SummonGrabComponent.Find(owner);
             if (owner == null || grab == null) return;
@@ -2177,8 +2207,15 @@ namespace KingmakerGunslinger.Summoning
     /// inert while the module is off.
     /// </summary>
     internal sealed class SummonGrappleAreaSafeguard : IPartyLeaveAreaHandler,
-        IAreaLoadingStagesHandler, IGlobalSubscriber
+        IAreaLoadingStagesHandler, ISceneHandler, IGlobalSubscriber
     {
+        // S6 C2a: an area unload raises OnAreaBeginUnloading before it turns
+        // the area's units off; a save does not. The flag lets the hold owners
+        // keep their release at unload while a save's suspension keeps holds.
+        public void OnAreaBeginUnloading() { SummonHoldSuspension.AreaUnloading = true; }
+
+        public void OnAreaDidLoad() { SummonHoldSuspension.AreaUnloading = false; }
+
         private static SummonGrappleAreaSafeguard _instance;
 
         internal static void Attach()
@@ -2196,6 +2233,7 @@ namespace KingmakerGunslinger.Summoning
 
         public void OnAreaLoadingComplete()
         {
+            SummonHoldSuspension.AreaUnloading = false;
             if (Game.Instance != null && Game.Instance.State != null &&
                 Game.Instance.State.Units != null)
                 ResetLoadedGrapples(Game.Instance.State.Units.All);
@@ -2350,6 +2388,24 @@ namespace KingmakerGunslinger.Summoning
             return unit != null && unit.Blueprint != null &&
                 unit.Blueprint.name.StartsWith("KMG_Summoning_Unit_",
                     StringComparison.Ordinal);
+        }
+    }
+
+    /// <summary>
+    /// S6 C2a (VER-02 F1): tells the hold owners' OnTurnOff a genuine end from
+    /// the engine's save suspension. SaveManager.SaveRoutine turns the loaded
+    /// area and cross-scene units off (UnitDescriptor.IsTurnedOn becomes false
+    /// before its facts turn off), writes, and turns them back on. An area
+    /// unload raises OnAreaBeginUnloading first, and keeps its release.
+    /// </summary>
+    internal static class SummonHoldSuspension
+    {
+        internal static bool AreaUnloading;
+
+        internal static bool ShouldRelease(UnitDescriptor owner)
+        {
+            return ExpandedSummoningSpecialProfiles.ShouldReleaseHoldOnTurnOff(
+                owner == null || owner.IsTurnedOn, AreaUnloading);
         }
     }
 

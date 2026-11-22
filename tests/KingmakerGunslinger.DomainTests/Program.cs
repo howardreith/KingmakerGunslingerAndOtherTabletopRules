@@ -1011,6 +1011,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint4-placements", ExpandedSummoningSprint4Tests.PlacementsMatchTheCharterAndPropagate),
             Case("expanded-summoning.sprint4-donors-profiles", ExpandedSummoningSprint4Tests.DonorsAndProfilesAreExact),
             Case("expanded-summoning.sprint4-grapple-lifecycle", ExpandedSummoningSprint4Tests.GrappleLifecycleIsBounded),
+            Case("expanded-summoning.c2a-hold-save-suspension", ExpandedSummoningSprint4Tests.HoldSurvivesSaveSuspensionOnly),
             Case("expanded-summoning.sprint4-ledger-icons", ExpandedSummoningSprint4Tests.LedgerAndIconsCoverTheNewCreatures),
             Case("expanded-summoning.sprint5-placements", ExpandedSummoningSprint5Tests.PlacementsMatchTheCharterAndPropagate),
             Case("expanded-summoning.sprint5-donors-profiles", ExpandedSummoningSprint5Tests.DonorsAndProfilesAreExact),
