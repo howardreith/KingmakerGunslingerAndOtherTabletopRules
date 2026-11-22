@@ -1,5 +1,11 @@
 # Known issues and conservative adaptations
 
+- Brown-Fur Powerful Change increase lost after loading when the caster companion was dismissed (S6 T3 / RISK-02,
+  checkpoint B). If a custom Brown-Fur companion casts a Powerful Change spell on someone and is then dismissed while
+  the spell lasts, the published versions restore that spell at its base value after the next load (Bull's Strength +4
+  instead of +6), and removing the buff leaves its persisted record behind. Repaired on branch
+  `codex/s6-risk02-powerful-change-restoration` (not merged, not released): the increase is kept, and removal forgets
+  the record. Details: `docs/GUNSLINGER-SPRINT6-B-POWERFUL-CHANGE-RESTORATION.md`.
 - Malformed Brown-Fur Powerful Change records in a save (S6 T4 / RISK-03, checkpoint A2, accepted by manual review for
   its development scope; not merged, not released). On branch `codex/s6-risk03-brown-fur-persistence`, a record that
   reaches the mod no longer makes the engine skip the Brown-Fur part.
