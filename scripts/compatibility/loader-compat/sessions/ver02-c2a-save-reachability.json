@@ -1,0 +1,34 @@
+{
+  "name": "ver02-c2a-save-reachability",
+  "description": "S6 checkpoint C2a / VER-02 F1: ordinary reachability of a permitted save during an active summon hold, and what the save does to it. The product runs alone. Launch 1 loads the disposable fixture save; the main character summons an Expanded Summoning crocodile through the product's own execution ability (brain left active), a native hostile humanoid is spawned unmodified next to it (eligibility for Dominate Person and the grab read from the engine and product), the party joins combat through the engine's controllers, and the crocodile's own AI bite establishes the hold while native save admission refuses saving. The main character then casts native Dominate Person on the held enemy through the ordinary ability command; the engine's ChangeFaction and leave-combat controller end combat, native admission is read, and three native saves are requested through Game.SaveGame with the continuing session captured after each. A round passes, then the holder's death checks genuine release. Disclosed: crocodile BAB 100, hostile HP 100000 and brain inactive, Dominate Person granted to the main character at caster level 20 and DC 100. Launch 2, a fresh process, loads the first save and checks the accepted reset at load and across two rounds of game time.",
+  "ownerMods": [],
+  "fixtureSaves": [ "KMCS_AFTER_NORMAL_012_MODONLY.zks" ],
+  "launches": [
+    {
+      "label": "reach",
+      "gameArguments": [ "locale=enGB" ],
+      "expectLog": { "present": [ "[blueprints][initialize.complete]" ], "absent": [ "[initialize.failed]" ] },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "kmgModules", "label": "all-on", "match": "" },
+          { "op": "kmgInitialization", "label": "create", "expect": "completed" },
+          { "op": "kmgSaveSuspension", "label": "reach", "match": "reach", "timeoutSeconds": 600 }
+        ]
+      }
+    },
+    {
+      "label": "reach-reload",
+      "gameArguments": [ "locale=enGB" ],
+      "expectLog": { "present": [ "[blueprints][initialize.complete]" ], "absent": [ "[initialize.failed]" ] },
+      "harness": {
+        "save": "$written:ver02c2ag1",
+        "steps": [
+          { "op": "expectLoadedFrom", "match": "ver02c2ag1" },
+          { "op": "kmgModules", "label": "all-on", "match": "" },
+          { "op": "kmgSaveSuspension", "label": "reach-reload", "match": "reachReload", "timeoutSeconds": 240 }
+        ]
+      }
+    }
+  ]
+}

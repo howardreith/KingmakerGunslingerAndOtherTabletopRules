@@ -144,7 +144,8 @@ namespace KmgLoaderCompatHarness
             Observe(typeof(BuffCollection).GetMethod("Tick", Type.EmptyTypes), nameof(BuffTickPostfix));
             try
             {
-                IEnumerable<object> body = mode == "multilink" ? Cases() : mode == "multilinkReload" ? Reload() : null;
+                IEnumerable<object> body = mode == "multilink" ? Cases() : mode == "multilinkReload" ? Reload() :
+                    mode == "multilinkSave" ? SaveCases() : null;
                 if (body == null) { problems.Add("unknown mode " + mode); yield break; }
                 foreach (object step in body) yield return step;
             }
@@ -370,6 +371,116 @@ namespace KmgLoaderCompatHarness
             Game.Instance.IsPaused = true;
             cases["reloadAfterSaveOneRound"] = State(r);
         }
+
+        // ---------------------------------------------------------------- save suspension (C2a)
+
+        internal const string SaveSuspensionLabel = "ver02c2ag2";
+
+        /// <summary>
+        /// C2a: a two-link hold through three native saves (asserted preserved with no drift), a round of ordinary
+        /// maintenance, a sibling terminal, accelerated expiry; then a fresh two-link hold saved for the reload launch.
+        /// </summary>
+        private IEnumerable<object> SaveCases()
+        {
+            UnitEntityData main = Game.Instance.Player.MainCharacter.Value;
+            anchor = main.Position;
+            Vector3 right = Quaternion.Euler(0, main.Orientation + 90f, 0) * Vector3.forward;
+            caseSpot = ObstacleAnalyzer.TraceAlongNavmesh(anchor, anchor - right * 6f);
+            var cases = new JObject();
+            result["cases"] = cases;
+
+            Case s = null;
+            foreach (object step in Establish("saveSuspension", 2, caseSpot, c => s = c)) yield return step;
+            if (s == null) yield break;
+            Buff unrelated = AddUnrelated(s.Targets[1]);
+            Game.Instance.IsPaused = true;
+            yield return null;
+            JObject first = State(s);
+            cases["beforeSaves"] = first;
+            var saves = new JArray();
+            cases["saves"] = saves;
+            for (int index = 0; index < 3; index++)
+            {
+                JObject before = State(s);
+                int turnOffs = Of(HoldTurnOffs, s.Holder);
+                bool done = false;
+                SaveInfo info = Game.Instance.SaveManager.CreateNewSave("ver02c2ag2s" + index);
+                TimeSpan clock = Game.Instance.TimeController.GameTime;
+                Game.Instance.SaveGame(info, () => done = true);
+                float until = Time.realtimeSinceStartup + 120f;
+                while ((!done || Game.Instance.SaveManager.CommitInProgress || LoadingProcess.Instance.IsLoadingInProcess) && Time.realtimeSinceStartup < until)
+                    yield return null;
+                JObject after = State(s);
+                saves.Add(new JObject { ["index"] = index, ["completed"] = done, ["gameClockUnchanged"] = Game.Instance.TimeController.GameTime == clock,
+                    ["holdTurnOffCallsDuringSave"] = Of(HoldTurnOffs, s.Holder) - turnOffs, ["after"] = after });
+                if (!done) { problems.Add("saveSuspension: save " + index + " did not complete"); yield break; }
+                ExpectHeld(s, 0, "saveSuspension.save" + index);
+                ExpectHeld(s, 1, "saveSuspension.save" + index);
+                if (!JToken.DeepEquals(before["holder"]["raw.links"], after["holder"]["raw.links"])) problems.Add("saveSuspension: save " + index + " changed the raw records");
+                for (int t = 0; t < 2; t++)
+                {
+                    JObject tb = TargetRow(before, t), ta = TargetRow(after, t);
+                    if ((int)tb["damage"] != (int)ta["damage"]) problems.Add("saveSuspension: save " + index + " changed target " + t + " damage");
+                    if ((int)tb["heldRounds"] != (int)ta["heldRounds"]) problems.Add("saveSuspension: save " + index + " ran a held round");
+                    if (((JArray)ta["heldStates"]).Count != 1) problems.Add("saveSuspension: save " + index + " duplicated or removed a held state on target " + t);
+                }
+                if ((int)after["holder"]["holdRounds"] != (int)before["holder"]["holdRounds"]) problems.Add("saveSuspension: save " + index + " ran a hold round");
+            }
+            if (problems.Count > 0) yield break;
+            row(cases, "unrelatedKeptAfterSaves", unrelated != null && s.Targets[1].Descriptor.Buffs.RawFacts.Contains(unrelated));
+
+            // Ordinary play resumes: one holder round passes, both links maintained.
+            int rounds = Of(HoldRounds, s.Holder);
+            foreach (object step in SettleGameTime(7.0, 30f, () => Of(HoldRounds, s.Holder) > rounds)) yield return step;
+            Game.Instance.IsPaused = true;
+            cases["afterRound"] = State(s);
+            if (Of(HoldRounds, s.Holder) <= rounds) problems.Add("saveSuspension: no holder round followed the saves");
+            ExpectHeld(s, 0, "saveSuspension.afterRound");
+            ExpectHeld(s, 1, "saveSuspension.afterRound");
+
+            // Genuine terminals still release: one target dies (sibling kept), then accelerated expiry.
+            var r1 = new JObject();
+            cases["siblingTargetDeath"] = r1;
+            rounds = Of(HoldRounds, s.Holder);
+            GameHelper.KillUnit(s.Targets[0]);
+            foreach (object step in SettleGameTime(7.0, 30f, () => Of(HoldRounds, s.Holder) > rounds)) yield return step;
+            Game.Instance.IsPaused = true;
+            r1["after"] = State(s);
+            ExpectEnded(s, 0, r1, "saveSuspension.siblingTargetDeath", true);
+            ExpectHeld(s, 1, "saveSuspension.siblingTargetDeath.sibling");
+            var r2 = new JObject();
+            cases["summonExpiry"] = r2;
+            r2["expiry"] = Expire(s.Holder);
+            foreach (object step in SettleGameTime(1.0, 30f, () => TargetFree(s, 1) && s.Holder.Destroyed)) yield return step;
+            Game.Instance.IsPaused = true;
+            r2["after"] = State(s);
+            ExpectEnded(s, 1, r2, "saveSuspension.summonExpiry", false);
+            if (!s.Holder.Destroyed) problems.Add("saveSuspension: the holder was not destroyed after its expiry");
+            Dispose(s);
+            if (problems.Count > 0) yield break;
+
+            // A fresh two-link hold, saved for the reload launch.
+            Case r = null;
+            foreach (object step in Establish("reload", 2, caseSpot, c => r = c)) yield return step;
+            if (r == null) yield break;
+            r.Holder.Descriptor.CustomName = ReloadHolderName;
+            for (int index = 0; index < r.Targets.Length; index++) r.Targets[index].Descriptor.CustomName = ReloadTargetPrefix + index;
+            foreach (UnitEntityData unit in new[] { r.Holder }.Concat(r.Targets)) { created.Remove(unit); awakeAdded.Remove(unit); }
+            Game.Instance.IsPaused = true;
+            yield return null;
+            cases["reloadAtSave"] = State(r);
+            bool saved = false;
+            Game.Instance.SaveGame(Game.Instance.SaveManager.CreateNewSave(SaveSuspensionLabel), () => saved = true);
+            float deadline = Time.realtimeSinceStartup + 120f;
+            while ((!saved || Game.Instance.SaveManager.CommitInProgress || LoadingProcess.Instance.IsLoadingInProcess) && Time.realtimeSinceStartup < deadline)
+                yield return null;
+            cases["reloadAfterSave"] = State(r);
+            if (!saved) problems.Add("the reload save did not complete");
+            ExpectHeld(r, 0, "reloadAfterSave");
+            ExpectHeld(r, 1, "reloadAfterSave");
+        }
+
+        private static void row(JObject cases, string key, bool value) { cases[key] = value; }
 
         // ---------------------------------------------------------------- reload
 

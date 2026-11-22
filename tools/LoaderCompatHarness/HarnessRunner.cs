@@ -511,6 +511,17 @@ namespace KmgLoaderCompatHarness
                     return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
                 }
 
+                case "kmgSaveSuspension":
+                {
+                    // S6 checkpoint C2a / VER-02 F1: "match" is reach or reachReload (see SaveSuspensionProbes.cs).
+                    string identity = StepIdentity(step);
+                    if (!probes.IsActive) probes.Begin(identity, new SaveSuspensionProbe(step.Match));
+                    ProbeOutcome outcome = probes.Poll(identity);
+                    if (outcome == null) return StepStatus.Running;
+                    RecordProbe(outcome);
+                    return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
+                }
+
                 case "kmgControlledRage":
                 {
                     // S6 T4 / RISK-03: "match" is create, reload or final; invariants.saveLabel names the save create
