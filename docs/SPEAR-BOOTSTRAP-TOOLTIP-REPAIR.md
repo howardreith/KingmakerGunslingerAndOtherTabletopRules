@@ -1447,7 +1447,22 @@ standalone repository gate, not the controller's `verify` helper:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Invoke-KmgGate.ps1 -Filter elven-branched-spear
 ```
 
-It ran on the committed candidate that adds this record (the commit after ). Its result is recorded in the record-only commit that follows; product, test and runner source are identical between them.
+Run on the clean committed candidate `bf3fb082411ca66a92523a0be461ce61413dfa81`
+(runner `1149394770` plus the first version of this record) on 2026-11-22:
+
+- **Result: PASS.** Production compilation passed in 0.5 s. MSBuild ran and
+  found its outputs current. The focused domain tests selected **30 of
+  3163** registered tests: 30 passed, 0 failed, in 3.1 s. They include all
+  15 `elven-branched-spear.bootstrap-repair.*` cases, among them
+  `healthy-profile` with the 18-check fixture (R11-F4) and
+  `battered-inspection-unavailable-state`.
+- Wall time was about 4 s. The command exited 0.
+- Deferred by policy at the Focused level: the repository wrapper, the
+  complete domain suite, the exact-reference Release candidate, and package
+  assembly with strict validation.
+
+The commit that records this result changes only this file. The gated
+candidate's product, test, harness and runner trees are identical to it.
 
 ## 5. Remaining limitations and risks for the owner
 
