@@ -1,17 +1,20 @@
 # Known issues and conservative adaptations
 
-- Malformed Brown-Fur Powerful Change records in a save (S6 T4 / RISK-03, checkpoint A2). On branch
-  `codex/s6-risk03-brown-fur-persistence` (not merged, not released), such a save loads.
-  - Every valid record keeps restoring its exact increase.
+- Malformed Brown-Fur Powerful Change records in a save (S6 T4 / RISK-03, checkpoint A2, accepted by manual review for
+  its development scope; not merged, not released). On branch `codex/s6-risk03-brown-fur-persistence`, a record that
+  reaches the mod no longer makes the engine skip the Brown-Fur part.
+  - A valid record whose identity no rejected entry could share keeps restoring its exact increase. A valid record that
+    a rejected entry in the same save could refer to is withheld (ambiguity policy).
   - A malformed, duplicate-conflicting, unsupported or ambiguous record restores no increase. The spell's base effect
     is kept: Bull's Strength gives +4 instead of +6 until it is cast again with Powerful Change.
+  - This does not hold for saves the engine cannot read up to the mod (see the retained limitations below).
   - The record's content stays in the save, and the log warns when a character's condition is first read after a load
     and again when it changes.
   - In the published v0.0.193 (from the decompiled engine, not executed): unit parts are read by the engine's
     `DictionaryConverter`, which skips a part whose value fails to convert. So an unconvertible record silently drops
     the whole Brown-Fur part, every valid increase on it included. Other forms throw in the mod's save and load
     callbacks.
-  - Still not handled, because the engine changes the data before the mod sees it:
+  - Retained limitations, accepted by the review, because the engine changes the data before the mod sees it:
     - a record that repeats a member is read as its last occurrence, and a conflicting repeated `Increase` can grant
       that increase;
     - numbers and date-like strings arrive as the engine's own values;
@@ -26,8 +29,8 @@
   choice. The rejected text stays in the save. The log warns when a character's condition is first read after a load
   and again when it changes. From source, in the published v0.0.193 that data throws in the save and load callbacks
   (not executed on the published bytes).
-  No ordinary build has been shown to write it. Brown-Fur's persisted modifiers (the other half of RISK-03) are not yet
-  addressed. Details: `docs/GUNSLINGER-SPRINT6-A1-CONTROLLED-RAGE-PERSISTENCE.md`.
+  No ordinary build has been shown to write it. Brown-Fur's persisted modifiers (the other half of RISK-03) are
+  addressed by checkpoint A2 (entry above). Details: `docs/GUNSLINGER-SPRINT6-A1-CONTROLLED-RAGE-PERSISTENCE.md`.
 - Buffs built without `FxOnStart` and `FxOnRemove` links. Kingmaker's buff activation dereferences `FxOnStart` after
   the buff is already on the unit, and the rule that applies the buff swallows the error: the buff's components work,
   but `AddBuff` hands nothing back, the "buff added" notice is not raised and no end or tick is scheduled until some

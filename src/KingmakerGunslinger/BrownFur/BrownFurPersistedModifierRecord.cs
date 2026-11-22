@@ -25,12 +25,17 @@ namespace KingmakerGunslinger.BrownFur
         public BrownFurPersistedModifierRecord() { }
 
         // RISK-03 (A2): set only by BrownFurPersistedModifierJson. For a
-        // rejected entry Raw is its full captured JSON text (a JRaw: every
-        // member occurrence, metadata, and each number's source text), written
-        // back unchanged. For a valid released record it is the record's
-        // members without the engine's "$id". A record created by gameplay has
-        // none. Rejection is null for a strictly valid record and names the
-        // reason otherwise; a rejected entry never reaches the policy below.
+        // rejected entry Raw is the canonical JSON text of the tokens the
+        // converter received (a JRaw, metadata included), written back
+        // unchanged. In an actual save those tokens come from the engine's
+        // JArray.Load: repeated members are already collapsed and numbers and
+        // date-like strings are already the engine's values, so Raw holds the
+        // original file's number and date text only when the converter reads a
+        // file reader directly (tests, direct deserialization). For a valid
+        // released record Raw is the record's members without the engine's
+        // "$id". A record created by gameplay has none. Rejection is null for a
+        // strictly valid record and names the reason otherwise; a rejected
+        // entry never reaches the policy below.
         internal JToken Raw { get; set; }
         internal string Rejection { get; private set; }
         internal bool IsValid { get { return Rejection == null; } }

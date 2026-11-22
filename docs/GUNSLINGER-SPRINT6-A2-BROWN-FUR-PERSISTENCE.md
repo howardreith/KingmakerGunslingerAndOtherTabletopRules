@@ -1,9 +1,15 @@
 # Sprint 6 checkpoint A2: Brown-Fur Powerful Change persistence (RISK-03, second owner)
 
-Status: **corrected after the first A2 review; natively qualified for the stated scope, with two claims BLOCKED at the
-engine boundary; returned for manual review** (2026-11-22). Section 9 records the review corrections, the engine path
-that unit parts actually take, and which claims are enforced, observed, inferred or unexecuted. Where section 9
-corrects an earlier section, section 9 governs.
+Status: **accepted by the second A2 manual review (2026-11-22) for its reviewed development scope**, at head
+`4d29e88c5f` (qualified product `caad210696`, package `59739a7f…0956`, DLL `b651c69b…87b8`, native session
+`20261122T173603Z-owner-0.33.0-risk03-bf-persist`).
+
+- The review accepts the owner-code remediation and explicitly retains the demonstrated engine-input limitations
+  (section 10). The proposed `DictionaryConverter` prefix and record digest are declined and will not be implemented.
+- Section 9 records the first-review corrections, the engine path that unit parts actually take, and which claims are
+  enforced, observed, inferred or unexecuted. Where section 9 corrects an earlier section, section 9 governs.
+- Later records-only commits (acceptance, code comments) do not change the qualified product's behavior. They were not
+  rebuilt.
 
 - Nothing is merged or released.
 - A1 (Controlled Rage) was accepted by the second manual review for its development scope. Its record is
@@ -41,8 +47,12 @@ build has been shown to write such records. A released record reads and restores
 
 **Now.**
 
-- The save loads.
-- Every valid record whose meaning is established keeps restoring its exact increase.
+- A record that reaches the mod no longer makes the engine skip the Brown-Fur part. This holds only for saves the
+  engine itself can read up to the mod: an unrepresentable number can fail the engine's parts-array load first
+  (section 10).
+- A valid record keeps restoring its exact increase unless a rejected entry in the same save could refer to it, in
+  which case it is withheld (ambiguity policy). A repeated property already collapsed by the engine cannot be detected
+  (section 10).
 - A rejected or ambiguous entry restores nothing; the spell's own base modifier is untouched.
 - The rejected entry stays in the save with the content the engine hands the owner (section 9.2), through later
   casts, buff removal (an explicit `Buff.Remove`; timer-driven expiry was not exercised) and saves.
@@ -343,14 +353,10 @@ Observed (all native):
 
 ## 8. Proposed disposition
 
-- **Brown-Fur's part of RISK-03:** corrected and natively qualified for everything that reaches the owner on the engine
-  path, and ready for review. Two claims stay **BLOCKED** at the engine boundary (section 9.4):
-  - repeated record members;
-  - number and date text beyond what the engine's reader keeps, including an integer beyond Int64 that fails the area
-    load before the owner.
-
-  RISK-03 should stay **partial** until the review decides whether those engine-level limits are accepted as
-  documented or require the engine-level proposal.
+- **Brown-Fur's part of RISK-03: accepted** for its development scope, with the retained limitations of section 10.
+  RISK-03 is recorded as development remediation accepted for both owners. That is not universal recovery of malformed
+  saves, not full preservation of the original JSON text, and not rejection of repeated properties that the engine has
+  already collapsed.
 - **A1:** accepted. **RISK-02:** open, checkpoint B. **REP-05/REP-06:** BLOCKED on inputs.
 
 ## 9. First A2 review corrections (2026-11-22)
@@ -489,7 +495,9 @@ Consequences:
 
 **Enforced by the automated PASS (a failure here fails the session).**
 
-1. **Seven targets with real committed Powerful Change casts.** Each cast made exactly one +6 Enhancement modifier.
+1. **Seven targets with real committed Powerful Change casts.** Each cast had to leave exactly one +6 Enhancement
+   modifier from its spell on its target. Other recorded cast diagnostics (reservoir counts, transaction terminal
+   state, command result) are observations, not gates.
 2. **SYNTHETIC raw-text entries on six targets.**
    - Before the save, the expected active and retained texts of every target were written to a profile manifest,
      bound to the unit ids and the fixture.
@@ -497,9 +505,9 @@ Consequences:
    - The written save had to contain each target's exact expected `"_records":[…]` text exactly once, and it did for
      all seven. So the file held `1e100`, `0.1000000000000000055511151231257827`, the date-like string, both
      repeated-member occurrences and the `$id`/`$ref` text.
-3. **Native callbacks.** On every part, in both fresh processes, exactly one native `PostLoad` was observed and
-   completed. The first consumer was recorded; it was `PostLoad` on all seven, with no `ResolveIncrease` before it.
-   The owner reads lazily and totally, so correctness does not depend on that order.
+3. **Native callbacks.** Asserted: on every part, in both fresh processes, exactly one native `PostLoad` was observed
+   and completed. Observed, not gated: the first consumer, which was `PostLoad` on all seven, with no
+   `ResolveIncrease` before it. The owner reads lazily and totally, so correctness does not depend on that order.
 4. **Content comparisons.** At the first fresh load and at the final fresh load, every target's active and retained
    texts were compared ordinally with the manifest's expectation: the engine-materialized texts, split by the reviewed
    policy. The final expectation is derived from the reviewed mutations.
@@ -519,7 +527,11 @@ Consequences:
      overflow. Every other row loaded with its expected active/retained split and restored increase, and its expected
      text appears in the normalized rewrite.
    - The two repeated-member rows assert the limitation (collapsed; increase 4 and 2).
-8. **Log needles.** Reload `newlyRejected` counts per part (2, 2, 1, 5, 2). The final log has no new rejection.
+8. **Log needles.** The reload log had to contain each of four distinct diagnostic strings at least once
+   (`active=1;retained=2;newlyRejected=2;`, `active=0;retained=2;newlyRejected=2;`,
+   `active=1;retained=1;newlyRejected=1;`, `active=1;retained=5;newlyRejected=5;`). The final log had to contain
+   `newlyRejected=0;` and none of `newlyRejected=1;`, `=2;` or `=5;`. Individual per-part warning counts are not
+   gated.
 
 **Observed and inspected, not separately enforced.**
 
@@ -533,23 +545,53 @@ Consequences:
 - Downgrade behavior.
 - On the save path, the old converter's `Decimal` setting never applied, because token values were already parsed.
 
-**BLOCKED at the engine boundary, with a proposal.**
+**Engine-boundary limits (accepted as retained limitations by the review; section 10).**
 
 - **Repeated members** and **number/date text beyond what the engine's reader keeps** cannot be handled in the owner,
   because the engine materializes the parts array before any owner code.
 - **Integer beyond Int64** (and `1e400`) inside any unit part fails the area load in the engine. That is no worse than
   before A2, and A2 never writes such numbers from save-path input.
-- **Concrete proposal (not implemented).** Add a Harmony prefix on `DictionaryConverter.ReadJson`, active only when the
-  target type is `UnitPartsManager.m_Parts`:
+- **Proposal declined by the review (not implemented).** It was a Harmony prefix on `DictionaryConverter.ReadJson`,
+  active only when the target type is `UnitPartsManager.m_Parts`:
   - it would load the array with the same last-wins and number semantics for every other part;
   - for the Brown-Fur entry only, it would attach `BrownFurJsonCapture`'s raw capture to the `_records` tokens as a
     `JToken` annotation, which the member converter would read;
   - an unrepresentable number would be kept as text inside the Brown-Fur entry instead of failing the area.
 
-  This touches the loading of every unit's parts. It is a decision for review, not an owner-local change.
-
-  A lighter alternative: newly written records carry an owner digest of their members, so a later external edit,
-  including a collapsed repeat, is detected. That would change the released form, so it is also a decision.
+  It would touch the loading of every unit's parts. The lighter alternative, an owner digest on newly written records,
+  would change the released form. Both are declined.
 
 **Unexecuted.** Party-member loading, downgrade, other spells and carriers, timer-driven expiry, and the old build
 against a broken save.
+
+## 10. Review decision and retained limitations (2026-11-22)
+
+**Decision.** A2 is accepted for its reviewed development scope at head `4d29e88c5f` (product `caad210696`, native
+session `20261122T173603Z`). The review accepts the owner-code remediation and explicitly retains the engine-input
+limitations below. Do not implement the `DictionaryConverter` prefix or the record digest.
+
+**Repaired owner behavior (accepted).** For every record that reaches the owner:
+
+- a typed conversion failure no longer makes the engine skip the Brown-Fur part;
+- only the released writer's form activates;
+- exact duplicates collapse to one active copy, and conflicting groups stay inactive and recoverable;
+- an ambiguous entry withholds a record it could refer to, and independently identifiable siblings stay active;
+- retained history is inert and recoverable, and never grants;
+- a new committed cast establishes current state;
+- gameplay writes stay strict;
+- the refused write leaves active and retained data unchanged.
+
+**Retained limitations (accepted, demonstrated or recorded, not repaired).**
+
+1. Repeated property names may collapse in the engine's `JArray.Load` before owner code. A conflicting repeated
+   `Increase` can produce an active increase; the native STR +8 result in `20261122T173603Z` remains a demonstrated
+   limitation.
+2. Original numeric digits and date-string representation may already be lost before owner code.
+3. An unrepresentable number (an integer beyond Int64, or `1e400` on the installed runtime) can fail the engine's
+   initial unit-parts array load before owner recovery is possible. Observed natively in `20261122T165726Z`.
+4. Unexecuted unless separately established later: party-member loading, downgrade, other spells and carriers,
+   timer-driven expiry, and the old build against a broken save.
+
+RISK-03 is development remediation accepted for both owners (A1 Controlled Rage, A2 Brown-Fur) with these limitations.
+It is not universal recovery of malformed saves, not full preservation of original JSON text, and not rejection of
+repeated properties already collapsed by the engine.

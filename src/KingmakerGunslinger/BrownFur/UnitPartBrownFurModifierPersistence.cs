@@ -13,8 +13,11 @@ namespace KingmakerGunslinger.BrownFur
     public sealed class UnitPartBrownFurModifierPersistence : UnitPart
     {
         // Released member (v0.0.95+), unchanged name and element shape. Read and
-        // written by a member converter so that a record the typed reader could
-        // not convert never throws out of the whole save file (RISK-03, A2).
+        // written by a member converter so that a record the released typed
+        // reader could not convert no longer makes the engine skip this whole
+        // part (RISK-03, A2). Failures in the engine's earlier JArray.Load of the
+        // unit's parts array (for example an integer beyond Int64) are a separate
+        // boundary that no owner code reaches.
         [JsonProperty]
         [JsonConverter(typeof(BrownFurPersistedModifierListConverter))]
         private List<BrownFurPersistedModifierRecord> _records =

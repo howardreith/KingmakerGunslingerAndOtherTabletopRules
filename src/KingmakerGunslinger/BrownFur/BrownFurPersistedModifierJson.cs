@@ -11,11 +11,17 @@ using Newtonsoft.Json.Linq;
 namespace KingmakerGunslinger.BrownFur
 {
     /// <summary>
-    /// Member-level converter for the persisted Powerful Change record lists (RISK-03, A2). The engine's
-    /// DefaultJsonSettings have no error handler, so a record the typed reader cannot convert throws out of the whole
-    /// area or party file before any owner callback runs. This converter reads the member token by token instead
-    /// (BrownFurJsonCapture): every element becomes either a strictly valid released record or a rejected entry kept as
-    /// canonical JSON text. Valid records are written in the released member names, order and value forms.
+    /// Member-level converter for the persisted Powerful Change record lists (RISK-03, A2). Unit parts are read by the
+    /// engine's DictionaryConverter (UnitPartsManager.m_Parts) in two steps with different boundaries:
+    /// 1. JArray.Load of the whole parts array from the file reader; a failure there (malformed JSON, an integer
+    ///    beyond Int64) escapes and can prevent the area from loading, before any owner code runs;
+    /// 2. each part value converted from those tokens inside a per-part try/catch; a typed conversion failure there
+    ///    (the released record type met an unknown ability-score name, text for a number, a non-object element) makes
+    ///    the engine log it and skip the whole Brown-Fur part.
+    /// This converter removes the second kind: it reads the member token by token (BrownFurJsonCapture) and never
+    /// throws for the tokens it receives. Every element becomes either a strictly valid released record or a rejected
+    /// entry kept as canonical JSON text. Valid records are written in the released member names, order and value
+    /// forms. It cannot change the first boundary.
     /// </summary>
     public sealed class BrownFurPersistedModifierListConverter : JsonConverter
     {
