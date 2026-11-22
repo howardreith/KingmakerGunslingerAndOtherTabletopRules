@@ -142,8 +142,9 @@ diagnostics outside startup and were left as they are.
   lab configuration. The runner leaves the disposable live loader/mod staging
   in place and rebuilds it for the next session. No rollback was attempted
   after the intervening peer sessions.
-- **Status:** exact lab restoration not demonstrated. The owner review proposes
-  this as an explicit scope exception for this change; it is not accepted yet.
+- **Status:** exact lab restoration not demonstrated. The owner accepted this
+  as an explicit scope exception for this change on 2026-11-22. The historical
+  evidence gap remains.
 - **Cause:** the gap is in the loader-compat lab lifecycle, which predates this
   PR. Intake captures the owner installation and saves. Staging replaces the
   lab's loader and `Mods`. Completion verifies the protected owner state and
@@ -241,7 +242,7 @@ Unless a session is named, results are from `20261122T161435Z` on candidate
 | BW11 | PASS | Natively, with the setting on, launch 4 wrote `m_Weight=0` onto the owned spear during validation. Startup failed with `weight [owned-field]: expected=10 actual=0 donor=9; getter not read (runtime setting); fields only`. The stored fields are labelled as fields, and no live getter value is reported because none was read. Launch 5 added +1 ft to the owned spear's live reach, and startup failed with `attack-range [effective-getter]`. Domain tests `bag-of-tricks-no-item-weight.*` cover the policy: a stored 0 or 9 fails and prints no getter value; every non-weight predicate keeps its fatal getter check. |
 | BW12 | PASS | The native Longspear type is unchanged from its pre-product capture (`m_Weight` 9). Native comparison items (Standard Longspear, Standard Longsword) keep their stored and unpatched weights across on, off and absent, and their live weight follows Bag of Tricks (0 while on). No GUID, manifest row, released key or module semantics changed: development validation shows identities=7935, appended=0. |
 | BW13 | PASS | Override active before construction: launch 2. Override activated after construction: launch 6 off → on. Bag of Tricks setting metadata is never read by the product. Not varied: the UMM load order of Bag of Tricks relative to this mod (the patches are stateless postfixes evaluated per call). |
-| BW14 | PASS except exact lab restoration (not demonstrated; scope exception pending owner acceptance) | Production compilation, focused selection and candidate identity are recorded below. Owner protection was verified: owner installation and saves unchanged, registry restoration completed. Exact restoration of the disposable lab to its pre-mission live configuration was not demonstrated (see Restoration above). Independent review: automated round 1, then owner review of `535cda75b2` (see Review history). |
+| BW14 | PASS with an accepted exception: exact lab restoration not demonstrated (owner-accepted scope exception, 2026-11-22) | Production compilation, focused selection and candidate identity are recorded below. Owner protection was verified: owner installation and saves unchanged, registry restoration completed. Exact restoration of the disposable lab to its pre-mission live configuration was not demonstrated (see Restoration above). Independent review: automated round 1, then owner review of `535cda75b2` (see Review history). |
 
 ## Review history
 
@@ -252,7 +253,7 @@ are PR #199 comments.
 
 | Finding | Blocking | Subject | Correction |
 | --- | --- | --- | --- |
-| R1-F1 | yes | Restoration of the disposable lab not shown | **Not resolved.** Owner protection and Bag of Tricks settings bytes verified; exact pre-mission lab restoration not demonstrated. Proposed scope exception, pending owner acceptance (see Restoration above) |
+| R1-F1 | yes | Restoration of the disposable lab not shown | **Accepted exception, not resolved.** Owner protection and Bag of Tricks settings bytes verified; exact pre-mission lab restoration not demonstrated. Owner accepted the scope exception on 2026-11-22 (see Restoration above) |
 | R1-F2 | yes | No real armor, type-inheriting weapon or legacy repair item instance | HillHideArmor, legacy Test Musket and Firearm Repair Kit ×3 added (BW04) |
 | R1-F3 | yes | Census expectation derived from the item under test | Stored weights checked against catalog, donor field or weapon type; counts split (BW03) |
 | R1-F4 | yes | Missing planned items did not fail the census | Missing/mistyped identities fail; synthetic missing identity demonstrated (BW03) |
@@ -276,6 +277,10 @@ The automated round 2 on `4bc2da5266` was stopped before it returned.
   corrected above, with exact lab restoration recorded as not demonstrated.
 - The owner review did not rerun the game or the gate. The native results
   remain recorded developer results.
+
+**Owner review of `b179b57e1b`:** no remaining findings. The R1-F1 record
+correction resolves the P2 finding. The owner accepted the lab-restoration
+exception and approved the merge and release on 2026-11-22.
 
 ## Validation
 
@@ -313,8 +318,8 @@ The automated round 2 on `4bc2da5266` was stopped before it returned.
   `UIUtilityTexts.GetItemWeight`; rendered tooltip text was not inspected, and
   no screenshot of the encumbrance bar was taken.
 - Exact restoration of the disposable lab to its pre-mission live configuration
-  was not demonstrated (see Restoration above). It is a proposed scope exception,
-  pending owner acceptance.
+  was not demonstrated (see Restoration above). The owner accepted it as a scope
+  exception on 2026-11-22.
 - The obsolete Overhaul Kit is covered by the census and its contract only. The
   legacy Firearm Repair Kit is also used as a real instance and survived save
   and reload.
