@@ -330,6 +330,36 @@ reference, because the clone carries the donor's GUID while it is configured.
 
 **Runner support:**
 
+- **Round 9 (`2c84b833a8`).** The transaction now lives in
+  `LoaderCompat.Transaction.ps1`, with journal schema 3.
+  - **Atomic journal (R9-F1).** The journal is claimed with `CreateNew`, so
+    exactly one starter wins. Every update writes a complete temporary file
+    and `File.Replace`s the journal, only while it still names this
+    transaction.
+  - **Bound identities (R8-F2).** The lease run id is chosen and journaled
+    before the shared lock exists; the lock is created with that id and the
+    runtime-lease state written afterwards. The private lock is journaled as
+    intended before it is created. An interruption at either point leaves a
+    lock that recovery identifies from the journal.
+  - **Serialized recovery (R8-F1).** A `DeleteOnClose` guard serializes
+    recovery callers. Under it the journal is re-read, so a session another
+    caller already finished, or a newer one, is left alone. A Completed
+    lease means cleanup only, and an unleased older journal is recovered
+    under a shared lock taken for the recovery.
+  - **Reconciled restore (R8-F4).** A registry snapshot is journaled before
+    the import. An interrupted restore is then reconciled:
+    - settings equal to the backup are already applied;
+    - settings equal to the snapshot are imported once;
+    - anything else is an explicit `unresolved` result that is never
+      overwritten.
+
+    A round-7 Completed lease is honoured.
+  - **Host re-check (R9-F2).** After the owner-file comparison the host is
+    checked again; if it became busy, ownership is kept with the restore
+    recorded.
+  - **Exit codes (R9-F3).** A session exits 1 unless every launch passed and
+    the transaction completed cleanly. `-RecoverOnly` exits 1 for deferred,
+    unresolved or changed outcomes.
 - Shared runtime ownership as one journaled session transaction. It was
   introduced in round 7 (R7-F1, `ecf1d641bc`) and reworked in round 8
   (`8354822130`).
@@ -404,10 +434,13 @@ Environment for all sessions:
 - Fixture save `KMCS_AFTER_NORMAL_012_MODONLY.zks` in a per-session profile;
   `locale=enGB`.
 
-Every session verified in-process loader and product identity, restored the
-game's registry settings, and confirmed the owner's saves and installation
-unchanged (`registryRestored`, `ownerSavesUnchanged`, `ownerInstallUnchanged`
-all true). No owner save or normal-play installation was touched.
+Every session that launched the game verified in-process loader and product
+identity. Every session restored the game's registry settings and confirmed
+the owner's saves and installation unchanged (`registryRestored`,
+`ownerSavesUnchanged`, `ownerInstallUnchanged` all true). F8 launched no game
+process. It is host-side setup and restoration evidence only: it failed while
+copying a missing fixture save, before any launch, and then completed its
+transaction. No owner save or normal-play installation was touched.
 
 Shared runtime leases:
 - No lease was opened by the sessions before round 7 (R-base, S, B, P, L,
@@ -419,7 +452,12 @@ Shared runtime leases:
   `runtime-20261121T230845Z-795b2bba…` and `runtime-20261121T231156Z-9c43c85a…`,
   each `Completed` with the shared lock free.
 - The round-8 runner (journaled transaction) was used for the round-8
-  sessions below.
+  sessions below: F8, I8 and R8.
+- The round-9 runner (schema 3) was used for B9 and S9:
+  - lease `runtime-20261122T000746Z-951a9f66…` for B9;
+  - lease `runtime-20261122T000920Z-6d4227bf…` for S9.
+
+  Both leases are `Completed`.
 
 | Session (`runtime-evidence/loader-compat/`) | Package | Result |
 |---|---|---|
@@ -444,6 +482,83 @@ Shared runtime leases:
 | **F8** `20261121T233622Z-…-spear-bootstrap-round8-setup-failure` (round 8, disposable untracked session file) | round-7 candidate | host-error by design (setup failure after acquisition), transaction completed |
 | **I8** `20261121T233715Z-…-spear-bootstrap-item-damage-diagnostic` (round 8) | round-7 candidate | PASS (60, 54 s) |
 | **R8** `20261121T233924Z-…-spear-bootstrap-reporter-stack` (round 8) | round-7 candidate | PASS (102, 111 s) |
+| **B9** `20261122T000745Z-…-spear-bootstrap-baseline` (round 9, leased) | v0.0.192 | PASS (73 s) |
+| **S9** `20261122T000920Z-…-spear-bootstrap-simulated-leased` (round 9, leased) | round-7 candidate | PASS (72, 75 s) |
+
+**Round 9: the schema-3 runner.** The product is unchanged since round 7.
+Both sessions below exited 0 and were surfaced through `-Report`. Each
+records:
+- `ownership` `completed`;
+- `transactionSucceeded` true;
+- `registryRestore` `applied`;
+- `ownerIntegrity` `verified` (95 saves, install unchanged);
+- a `Completed` shared lease carrying the same integrity and registry
+  results;
+- the shared lock `<free>`.
+
+The sessions:
+
+- **B9 (R9-F4)**: the baseline control on the published v0.0.192 package
+  (ZIP `936f3571…2d69`, loaded DLL `0eff2af3…b96f`), lease
+  `runtime-20261122T000746Z-951a9f66…`, summary `3c77dec3…b207`.
+  - The simulated donor mutation was recorded before the product: the
+    captured Longspear had `m_AttackRange` 15 and `m_FighterGroup`
+    Polearms. The Heavy Crossbow control was captured unchanged.
+  - Initialization failed with the generic `Elven Branched Spear type
+    profile is invalid.`, and no owned spear is registered.
+  - Standard Longspear and Longsword: 5 of 5 price queries and 5 of 5
+    tooltip fills threw, every one with the missing-token cause.
+  - Summon Monster I stayed Kingmaker's single spell and summoned its own
+    creature.
+- **S9 (R9-F4)**: the two decisive simulated launches on the round-7
+  candidate (ZIP `253fbe43…`, loaded DLL `6b2696c7…`), lease
+  `runtime-20261122T000920Z-6d4227bf…`, summary `734c4fee…0e6b`.
+  - **S9-1** (`b151eb41…687b`): the same donor mutation was captured before
+    the product (15 ft, Polearms). Initialization completed, and the owned
+    spear has its intended effective profile (6 ft, Spears, 1xD8, X3, two-
+    handed, Strength, 10 lb). The selectors were published. Longspear,
+    Longsword and Heavy Crossbow each took 20 queries with 0 throws, at 1, 4
+    and 13 gp with matching tooltips. The battered and unbound pistol
+    checks passed.
+  - **S9-2** (`510a779e…9105`): one failure, `Elven Branched Spear type
+    profile is invalid: 1 of 18 checks failed. fighter-group [owned-field]:
+    expected=Spears actual=Polearms donor=Spears; … getterPatches=KmgLoaderCompatHarness`.
+    The selectors were restored. Standard Longspear, Longsword, Greataxe and
+    Heavy Crossbow each took 25 price queries and 25 tooltip fills with 0
+    throws, at 1, 4, 5 and 13 gp with matching tooltip text.
+    `batteredInspectionUnavailableReported` is true and the warning was
+    logged exactly once; the missing-token text appeared ×0. The new
+    sorcerer's Summon Monster I stayed Kingmaker's single spell, and the
+    summon succeeded.
+- **Offline transaction fixtures (round 9)**: `-SafetyTests` PASS=87.
+  - **R9-F1**: interleaved starts leave the loser refused with the winner's
+    journal and locks intact. An update interrupted after its temporary
+    file is written leaves the last complete journal, from which recovery
+    finishes and removes the temporary file.
+  - **R8-F2**: a lease-state write failure rolls back cleanly. Interruptions
+    right after the shared lock and right after the private lock are both
+    identified from the journal and recovered, and a following session
+    acquires and completes.
+  - **R8-F1**: a second recovery paused after its first read while the
+    first finishes makes one restore in total. When a newer session starts
+    meanwhile, the resumed caller refuses and the newer session is
+    preserved. Concurrent recoveries are refused. A pre-round-7 journal is
+    refused while its owner lives and while another caller holds the shared
+    lock or the recovery guard, then recovered under its own shared lock.
+  - **R8-F4**:
+    - interrupted after the import applied but before it was recorded:
+      reconciled without a second import;
+    - interrupted before the import: imported exactly once;
+    - settings changed by someone else meanwhile: `unresolved`, not
+      overwritten, failing outcome, recorded in the lease;
+    - a round-7 journal with a Completed lease: cleanup only.
+  - **R9-F2**: a peer appearing during verification keeps ownership with
+    the restore recorded. Recovery waits for the peer, then completes
+    without another import.
+  - **R9-F3**: child-process exit codes are 0 only for the clean
+    completion, and 1 for the deferred, changed and unreadable results.
+  - **Also kept**: the sibling lock, foreign shared lock, competing-handle,
+    integrity and boundary-interruption checks from round 8.
 
 **Round 8: the journaled runner on the round-7 candidate.** The product is
 unchanged since round 7 (ZIP `253fbe43…`, DLL `6b2696c7…`); round 8 changed
@@ -975,6 +1090,14 @@ is in the developer report.
    deferred restoration, refused, competing and interrupted recoveries, and
    integrity during verification. Real runs exercised the uncontended path
    and one real post-acquisition setup failure (F8).
-9. Round 8 changed only the runner. The product and its round-7 candidate
-   are unchanged, so the round-7 product evidence stands. I8 and R8 repeat
-   two of those sessions under the round-8 runner.
+9. Rounds 8 and 9 changed only the runner. The product and its round-7
+   candidate are unchanged, so the round-7 product evidence stands.
+   - I8 and R8 repeat two of those sessions under the round-8 runner.
+   - B9 and S9 repeat the baseline control and the two decisive simulated
+     launches under the round-9 runner's shared lease (R9-F4).
+   - The remaining simulated launches (S6), the membership controls (C6)
+     and the round-7 sessions ran under the earlier runners described above.
+
+   The round-9 contention, interruption and exit-code paths are proven by
+   87 offline fixture checks, not by a real second game, a real sibling lab
+   or a real process kill.
