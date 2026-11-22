@@ -45,9 +45,11 @@ This checkpoint:
 
 Identities (current first):
 
-- **Current loader-compat runner**: commit `1149394770` (manual checkpoint,
-  §3.5). Every runner described in §3.4 and every session before §4.0 used
-  an earlier runner, now removed.
+- **Current loader-compat runner**: commit `f221553dee`. It is the
+  manual-checkpoint runner `1149394770` (§3.5) plus the host-conflict
+  correction from the first manual review (§3.7). Every runner described in
+  §3.4 and every session before §4.0 used an earlier runner, now removed.
+  Session M (§4.0) used `1149394770`.
 - **Current product source**: commit `6d6a295b64` (round 7). It adds the
   bounded item-damage diagnostic to the round-6 product (R7-F2): donor item
   values and the `BlueprintItemWeapon.BaseDamage` patch owners.
@@ -494,7 +496,7 @@ behaviour was proven correct. Round 11 (`a049ad3c87`, the S11 session in
 **Sessions:** reporter-stack, simulated, baseline, persistence,
 probe-lifecycle and observer-selection.
 
-### 3.5 Loader-compat runner contract (manual checkpoint, `1149394770`)
+### 3.5 Loader-compat runner contract (manual checkpoint `1149394770`, corrected in `f221553dee`)
 
 Files: `scripts/compatibility/loader-compat/LoaderCompat.Transaction.ps1`
 (rewritten), `LoaderCompat.Common.ps1`, `Invoke-LoaderCompatSession.ps1` and
@@ -534,7 +536,16 @@ verified completion**:
    - the journal, shared lock and game-copy lock are still this session's;
    - a backup bound to its intake digest is recorded, so nothing launches
      that completion could not restore.
-5. **Completion** (`Complete-LcTransaction`), at a safe boundary only:
+
+   A foreign Kingmaker process, a foreign lab lock or a lost claim seen here
+   is recorded in the journal as `hostConflict`, and also in the in-memory
+   session that the finalizer uses (§3.7).
+5. **Completion** (`Complete-LcTransaction`), only for a session that never
+   observed a host conflict:
+   0. If a conflict was recorded earlier, or one is present now, the
+      session is retained at once. Completion never waits for a peer to
+      leave and then imports, because a peer that has exited has stopped
+      writing, but its changes are not therefore safe to overwrite.
    1. `Open-LcVerifiedBackup` reads the backup once and requires that its
       bytes match the intake digest. No digestless or legacy exception
       remains. It writes a private verified copy, holds it open with a
@@ -555,7 +566,10 @@ verified completion**:
 6. **Failure retains the session.** Each of these returns failure and keeps
    the journal (phase `retained`, with its reason), both locks, the backup,
    the intake and a `RecoveryRequired` lease naming the transaction:
-   - an unsafe boundary or a withheld restore;
+   - any host conflict observed during the session (at a launch, at
+     completion, immediately before the import or before release), even if
+     the peer has gone by completion;
+   - a withheld restore;
    - a missing, unreadable, changed or digestless backup;
    - a failed or interrupted import;
    - an unreadable, absent or mismatching readback;
@@ -659,7 +673,7 @@ owner process may still be alive, and never run it for another lab's state.
 
 `Test-LoaderCompatSafety.ps1` (run through `-SafetyTests`) was rewritten for
 this contract, and the recovery-only fixtures were deleted with the removed
-functionality. It runs 98 checks and requires 41 named scenarios to execute,
+functionality. It runs 102 checks and requires 44 named scenarios to execute,
 covering every case in §3.5.1. The old fixed minimum of 129 checks was
 dropped. It uses real temporary files, real file handles and the real
 shared-lock acquirer as a competitor. Only the external boundaries are
@@ -686,6 +700,57 @@ claim that the old behaviour was tested and proven correct.
 | R10-F1: linguistic equality could match distinct strings | **Retained and extended**: ordinal canonical comparison is now also applied to the normal post-import readback. | `Test-LcRegistryEqual`, `Get-LcRegistryCanonicalText`, `Test-LcRegistryReadback` | `unicode-spellings-unequal-ordinally`, `readback-unicode-spelling-retained`, `swapped-subkey-values-unequal`, `reordered-multiline-data-unequal`, `value-type-difference-unequal`, `utf16-export-equals-same-data`, `utf16-backup-restores-and-verifies`; mutation `linguistic-compare` caught; native readback in session M (§4.0) |
 | R11-F4: the healthy-profile fixture modelled 17 checks | **Retained**: the `a049ad3c87` fixture correction (`subcategory-list` in the common fixture, 18 checks) is unchanged. | `tests/KingmakerGunslinger.DomainTests/SpearBootstrapTooltipRepairTests.cs` | focused gate (§4.0) |
 
+### 3.7 First manual review (of `304dec9c1a`): persisted host conflicts
+
+**Finding (P1).** An observed host conflict could disappear, and the runner
+would then restore an older settings snapshot over a peer's changes:
+
+- the session captured the settings at intake;
+- a peer Kingmaker started and changed a setting;
+- the launch guard saw the peer and withheld the next launch, but did not
+  carry that observation forward;
+- completion waited up to 60 s for conflicts to clear, the peer exited,
+  and the runner imported the intake backup over the peer's change. The
+  readback then verified the older backup and the session could complete.
+
+A variant: a peer first seen at completion, after every launch had passed,
+could likewise be waited out, overwritten and reported as an overall PASS.
+Exact readback proves what was restored, not that restoring it was right.
+
+**Disposition: fixed in `f221553dee`.**
+
+- `Register-LcHostConflict` records the first observed conflict (where it
+  was seen and what it was) in the journal's `hostConflict` and in the
+  in-memory session. Callers:
+  - the launch guard, for host conflicts and lost claims;
+  - completion's first check;
+  - the check immediately before the import;
+  - the check before release.
+- `Complete-LcTransaction` retains at once when a conflict was recorded
+  earlier or is present now, with no restoration. `Wait-LcSafeBoundary` and
+  the finalizer's 60-second wait were removed.
+- The final host check immediately before the import is kept, for
+  conflicts that arise during backup preparation.
+- `session-summary.json` reports `hostConflict`.
+
+Nothing else changed. There is no reconciliation, replay or other recovery.
+
+**Regression coverage** (in `Test-LoaderCompatSafety.ps1`):
+
+| Case | Result |
+|---|---|
+| `peer-seen-at-launch-gone-by-completion-retained-no-import`: a later launch sees peer 8080 and is withheld; the peer changes the simulated settings and has gone before completion | zero imports; the peer's value is preserved; the session is retained (`hostConflict.at = launch`); the verdict exits 1, both with the withheld launch and with all launches passing |
+| `peer-first-seen-at-completion-then-gone-retained-no-import`: completion's first check is the only one that sees peer 9090, which is gone straight afterwards | zero imports; the peer's value is preserved; the session is retained (`hostConflict.at = completion`); an all-PASS session still exits 1 |
+| `conflict-decision-persists-after-peer-left`: completion called again on that session after the peer left | still retained, still zero imports |
+| `normal-completion-verified-and-released` (unchanged) | uncontended completion still restores, reads back, verifies and releases |
+
+Two added mutations show that these cases fail when the safeguard is
+removed: ignoring the recorded launch conflict (3 checks fail), and waiting
+up to 2 s for a peer to leave (2 checks fail). The existing sibling-lock
+completion case resets its own launch-time record before completion, so
+that it still exercises retention for a conflict that is still present at
+completion.
+
 ## 4. Validation
 
 ### 4.0 Manual checkpoint checks (2026-11-22)
@@ -700,6 +765,15 @@ unchanged (§Status).
 | Fixture sensitivity | seven single-line mutations of a scratch copy of `LoaderCompat.Transaction.ps1`: skip the readback, drop the host check before restore, ignore a pending journal, use linguistic comparison, release on changed owner files, import from the backup path instead of the held copy, allow a digestless backup | every mutation makes the fixture fail with named checks (1 to 21 failing). The scratch copy was deleted and is not committed | about 1 min |
 | Real export round trip (read-only) | canonical comparison of the intake exports of B9, S9, S10, B10 and S11, each taken after the previous session's real delete-and-import, plus one read-only export of the live key | all five exports are byte-identical (`4f2a1907…`) and canonically equal; the live key equals S11's backup | seconds |
 | Native completion session **M** | see below | **PASS**, exit 0, transaction `completed` | 161 s |
+| Focused product gate | see §4.3 | see §4.3 | see §4.3 |
+
+**After the first manual review** (runner `f221553dee`, §3.7):
+
+| Check | Command | Result | Time |
+|---|---|---|---|
+| Offline runner fixtures | same `-SafetyTests` command at `f221553dee` (clean tree) | **PASS=102 FAIL=0**; 44 of 44 required scenarios executed | 6 s |
+| Fixture sensitivity | the seven mutations above plus "ignore the recorded launch conflict" and "wait up to 2 s for a peer to leave" | all nine fail with named checks (1 to 22 failing) | about 2 min |
+| Native session | not repeated | The correction adds refusals and removes the completion wait. It does not change staging, the import, the readback or owner-file verification, which session M exercised. Per the review's scope, no further native run was made; the residual is listed in §5, item 11. | – |
 | Focused product gate | see §4.3 | see §4.3 | see §4.3 |
 
 **Session M** (`runtime-evidence/loader-compat/20261122T060334Z-umm-0.31.1-spear-bootstrap-simulated-leased`):
@@ -1447,7 +1521,9 @@ standalone repository gate, not the controller's `verify` helper:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Invoke-KmgGate.ps1 -Filter elven-branched-spear
 ```
 
-Run on the clean committed candidate `bf3fb082411ca66a92523a0be461ce61413dfa81`
+The current run, on the clean committed candidate that adds §3.7 (runner f221553dee plus this record), is recorded in the record-only commit that follows it.
+
+Earlier run, on the clean committed candidate `bf3fb082411ca66a92523a0be461ce61413dfa81`
 (runner `1149394770` plus the first version of this record) on 2026-11-22:
 
 - **Result: PASS.** Production compilation passed in 0.5 s. MSBuild ran and
@@ -1546,12 +1622,19 @@ candidate's product, test, harness and runner trees are identical to it.
 
    (Historical: the round-10 recovery and `-RegistryResolution` paths were
    removed at the manual checkpoint, §3.5.2.)
-11. **Manual checkpoint (runner `1149394770`).**
+11. **Manual checkpoint (runner `1149394770`, corrected in `f221553dee`).**
    - The runner no longer recovers anything. Any interrupted, failed or
      ambiguous session is retained and blocks every later loader-compat
      session until someone performs the manual procedure in §3.5.3. That
-     includes a peer game or lab lock appearing at completion, and a
-     killed runner. This is the selected fail-closed trade-off.
+     includes a killed runner, and any foreign Kingmaker process or lab lock
+     seen at any point in the session, even briefly. This is the selected
+     fail-closed trade-off.
+   - Completion no longer waits for the host to clear. If the session's own
+     game were still visible as a Kingmaker process when completion starts
+     (for example, a timed-out launch the kill could not end within 20 s),
+     the session is retained rather than restored. Session M, on
+     `1149394770`, did not record whether its completion needed the old
+     wait. The correction was not repeated natively (§4.0).
    - Changed or unverifiable owner files now also retain the session.
      Earlier runners released and reported them.
    - Retention, conflicts, backup problems, failed imports and readback
