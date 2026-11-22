@@ -1,7 +1,14 @@
 # Sprint 6 checkpoint B: Powerful Change restoration with an unresolved caster (RISK-02)
 
-Status: **defect demonstrated on the unchanged baseline, repaired, and natively qualified for the stated scope; returned
-for manual review** (2026-11-22). Nothing is merged or released.
+Status: **accepted by manual review (2026-11-22) for its demonstrated development scope**, at head `d44cc4002f`
+(product `4e11e6c25c`, package `2608e9f5…374b`, DLL `d813f62c…2cc4`, native session
+`20261122T190544Z-owner-0.33.0-risk02-bf-restore`). Nothing is merged or released.
+
+- The review found no blocking product defect.
+- It accepts the independent caster identity taken from the owning buff's saved context, with the existing matching
+  protections preserved.
+- Section 7 records the review's coverage corrections, and where it corrects an earlier section, section 7 governs.
+- This is a records-only update: B was not rebuilt or rerun.
 
 - Branch `codex/s6-risk02-powerful-change-restoration` is stacked on A2's acceptance-records head `e0a41fd237`
   (`codex/s6-risk03-brown-fur-persistence`, draft PR #200).
@@ -17,8 +24,9 @@ dismissed while the effect still lasted. The engine keeps the effect: in the tes
 Bull's Strength with 598 s left, at +6. After the next save and load it was **+4**: the Powerful Change increase was
 lost although the spell was still running. Removing that buff later also left its stale persisted record behind.
 
-**Now.** The effect keeps its exact increase (+6) through the load, through repeated recalculation and through a
-further save and load. Removing the buff forgets its record.
+**Now.** The effect keeps its exact increase (+6) through a fresh load and repeated recalculation. Removing the buff
+forgets its record, and that cleanup persists through a further save and load. A second save/load with the dismissed
+caster's effect still active was not exercised (section 7).
 
 ## 2. Trace and cause
 
@@ -65,6 +73,13 @@ UMM 0.33.0 (owner profile).
 | Dismissed caster D (`Player.DismissCompanion`, unit destroyed): Bull's Strength armed on the main character | yes | effect kept (598 s left at load, +6 in session) | **+4: increase lost** (caster unresolved, `TryRestorePersisted` returned false) | **+6 restored** (saved caster id) |
 | Caster in another area | party casters: not reachable as unresolved | party characters (active, remote, detached) live in the cross-scene state, so an area transition does not unload them | not executed | not executed |
 | Unrelated effect: P's unarmed Cat's Grace on the companion | control | no record | +4 | +4 |
+
+Ownership controls, described precisely:
+
+- Another caster's Bull's Strength (P's) was on a **different target** (the companion), not the main character.
+- On the same target (the main character), the surviving contribution was **another spell and stat**: R's Cat's Grace,
+  Dexterity.
+- Same-target, same-spell competition or replacement by another caster was **not exercised**.
 
 The "caster in another area" disposition rests on the decompiled `Player`/`Game` code and on the remote case above
 (a caster out of the party and not in game, still resolvable). No area transition was executed. A non-party unit as a
@@ -127,13 +142,15 @@ no-Kingmaker window agreed with the peer session.
 - **Ordinary recast.** P's unarmed Bull's Strength recast on the companion produced +4, and the companion keeps 0
   records.
 - **Final fresh load.** The mutated state is unchanged: main STR none, main DEX +6, companion STR +4, companion DEX +4.
-  Record counts: main 1, companion 0.
+  Record counts: main 1, companion 0. Because D's buff was removed before the second save, this load proves that the
+  removal and record cleanup persist. It is not a second active-effect roundtrip for the dismissed caster.
 
-**Observed, not separately gated.**
+**Observed, not separately gated** (recorded in the evidence, not asserted).
 
 - `TryRestorePersisted` calls at load: for D's buff, `savedCasterId` present, `casterResolved` false, restored true.
   R's and P's casters resolved and were restored. P's unarmed Cat's Grace was not restored, because it has no record.
 - Lifetime: at load the effects had about 598 s left of 600 s (saved expiry kept), and the recast buff had 600 s.
+- Post-load caster resolvability: R resolvable, D unresolvable (the `lifecycle` field, recorded at reload).
 - The only exception in each launch is the native `BugReportCanvas.OnEnable` NullReferenceException.
 
 **Inferred from source.**
@@ -144,8 +161,12 @@ no-Kingmaker window agreed with the peer session.
 
 **Unexecuted.**
 
-- Timer-driven expiry (removal was an explicit `Buff.Remove`).
+- A second save/load with the dismissed caster's effect still active.
+- Same-target, same-spell competition or replacement by another caster.
+- Timer-driven (natural) expiry; removal was an explicit `Buff.Remove`.
 - An actual area transition.
+- A2's malformed-record behavior on the party route. B's party-route test used valid records only, and does not
+  extend A2's evidence, which used area units.
 - Other spells and carriers.
 - Story removals of companions.
 - Downgrade.
@@ -162,7 +183,25 @@ no-Kingmaker window agreed with the peer session.
 
 ## 6. Disposition
 
-- **RISK-02:** the defect is demonstrated (dismissed companion caster, increase lost after load). It is repaired at its
-  owning boundary, the restoration and forget keys, and natively qualified for the stated scope. Awaiting manual
-  review.
+- **RISK-02: accepted** for its demonstrated development scope. The defect was demonstrated (dismissed companion
+  caster, increase lost after load) and repaired at its owning boundary: the restoration and forget keys now use the
+  owning buff's saved caster identity, with the existing matching protections preserved.
 - **Proposed next checkpoint after review:** C (VER-02).
+
+## 7. Review decision and coverage corrections (2026-11-22)
+
+- **Accepted** for the demonstrated development scope. No blocking product defect was found.
+- **Dismissed caster, active effect.** It was tested through one fresh load and three recalculations. It was removed
+  before the second save, so the final reload proves that removal and record cleanup persist, not a second
+  active-effect roundtrip. A second active roundtrip is unexecuted.
+- **Ownership controls.**
+  - Another caster's Bull's Strength was on a different target.
+  - The surviving contribution on the same target was another spell and stat.
+  - Same-target, same-spell competition or replacement by another caster was not exercised.
+- **Observations, not assertions.** Lifetime (about 598 s left at load), the `TryRestorePersisted` traces and post-load
+  caster resolvability were recorded, not asserted.
+- **Source-supported.** Exact `EndTimeTicks` matching is unchanged from A2.
+- **Unexecuted.** Natural expiry and an actual area transition.
+- **Native baseline.** The baseline was the accepted A2 development candidate `caad210696`, not released bytes.
+  That released versions behave the same is a source inference.
+- **A2 scope.** B's valid-record party-route test is not proof of A2's malformed-record party-route behavior.
