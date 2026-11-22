@@ -2,7 +2,45 @@
 
 ## 0.0.193 publication authorization
 
-**Authorized; not yet published.**
+**Published (completed).** Stable
+[v0.0.193](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.193)
+is Latest and not a prerelease. The tag peels to the release commit `527f7e2fba` (PR #196), which was `origin/master`
+when the publisher ran.
+
+- **Preparation.** On the release branch at `4d8848d328`, the repository wrapper (dispatched to the release193
+  validator, PASS) and the complete suite (3,163/3,163, 0 failures, with the owner-authorized pin refresh) took 461 s.
+- **Gate.** The publisher's complete suite passed 3,163/3,163 with 0 failures, and the release193 validator passed.
+- **Builds.** Two deterministic exact-reference builds against the pinned UMM 0.31.1 loader references:
+  - package SHA-256 `e51546a874fe33d8e5b14f2d04df81f8c5b936d8243999089f36f4935a1b9e70`;
+  - DLL SHA-256 `78ac14eed465a1b8eefe6b2bfe2093d00145cfad988f3080c2bfd460a5c5f429`.
+- **Reference bundle.** `artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references`,
+  as for v0.0.192.
+- **Public download test.** A fresh download of the three assets matched `SHA256SUMS.txt`, and the manifest names
+  the release commit `527f7e2fba36d92ecc80ebd98be3267c287e6d58`. The package has one `KingmakerGunslinger` root (458
+  files); its `Info.json` reads 0.0.193 with `ManagerVersion` 0.31.1 and `Id` `KingmakerGunslinger`, beside the DLL
+  hash above.
+- **Native check on the published bytes.** The downloaded public package ran in the disposable loader-compat game
+  copy on Unity Mod Manager **0.31.1.0** through master's runner (identical to the reviewed `f221553dee`), with
+  harness `494dadf97e95c4b3170eca048b566bee36573ca168eba839f5ca8d8ac1d1d471` (harness source unchanged on master), and
+  the game loaded the DLL above (version 0.0.193) in both launches. Session
+  `20261122T073427Z-umm-0.31.1-spear-bootstrap-simulated-leased` (summary `2929a51c…ee05`, lease
+  `runtime-20261122T073427Z-b414ca60…`): **PASS**, exit 0.
+  - Launch 1 (73 s): under the simulated 15 ft / Polearms Longspear donor mutation, startup completed with the
+    intended spear profile.
+  - Launch 2 (73 s, `harness-result.json` `a46a66fc…b835`): an invalid owned profile failed with `1 of 18 checks
+    failed` and its diagnostic once. Longspear, Longsword, Greataxe and Heavy Crossbow each took 25 price queries
+    and 25 tooltip fills at 1, 4, 5 and 13 gp with 0 throws and one unavailable-state warning. The native Summon
+    Monster I summon and the residue check passed.
+  - Restoration: the registry readback matched the verified backup (`verified`), owner files were unchanged (95
+    saves), no host conflict was observed, the lease completed and every lock and the journal were released.
+
+  The other recorded sessions (R7, P7 and the earlier ones) ran on development candidates of the same product source
+  and were not repeated on the published bytes. A no-Kingmaker window was agreed with the one active peer session.
+- **Timing.** The publisher run took 971 s.
+- **Installation.** The installed mod was not touched; the publisher performed no deployment.
+- **Merges.** PR #195 merged as `3beaeb83ed`; release PR #196 as `527f7e2fba`.
+
+Originally authorized as follows.
 
 On 2026-11-22, after the manual review of PR #195 by Howie and ChatGPT, Howie wrote: "This is approved. Please merge
 this and cut a new release." PR #195 (the spear startup, summoning and weapon-tooltip repair) was marked ready and
