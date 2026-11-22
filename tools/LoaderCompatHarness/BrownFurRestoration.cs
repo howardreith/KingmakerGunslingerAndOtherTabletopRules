@@ -22,8 +22,8 @@ namespace KmgLoaderCompatHarness
 {
     /// <summary>
     /// Checkpoint B (S6 T3 / RISK-02): does a saved Powerful Change increase survive when its caster cannot be
-    /// resolved at load? Three Brown-Fur Arcanist casters are real custom companions created by the engine's own
-    /// persistent-party path (Game.AddUnitToPersistentSate with BlueprintRoot.CustomCompanion, CanRemoveFromParty,
+    /// resolved at load? Three Brown-Fur Arcanist casters are removable companions created by the engine's own
+    /// persistent-party path (Game.AddUnitToPersistentSate with the default player blueprint, CanRemoveFromParty,
     /// Player.AddCompanion), so they live in the cross-scene party state like a player-made mercenary. Targets are the
     /// main character and a fourth companion, so their buffs load through party.json (cross-scene), not area state.
     /// - present: caster P stays in the party; P casts Bull's Strength (armed) and Cat's Grace (unarmed) on target T;
@@ -245,7 +245,10 @@ namespace KmgLoaderCompatHarness
         private UnitEntityData CreateCompanion(Vector3 offset)
         {
             MethodInfo add = typeof(Game).GetMethod("AddUnitToPersistentSate", BindingFlags.Instance | BindingFlags.NonPublic);
-            var unit = (UnitEntityData)add.Invoke(Game.Instance, new object[] { BlueprintRoot.Instance.CustomCompanion });
+            // The engine's CustomCompanion blueprint has no race until chargen sets one (a save holding it fails
+            // PreloadClothes on load, session 20261122T183136Z); the default player blueprint, which the engine's own
+            // persistent-party path uses for the main character, has one.
+            var unit = (UnitEntityData)add.Invoke(Game.Instance, new object[] { BlueprintRoot.Instance.DefaultPlayerCharacter });
             unit.Descriptor.State.CanRemoveFromParty = true;
             unit.AttachToViewOnLoad(null);
             Game.Instance.Player.AddCompanion(unit);
