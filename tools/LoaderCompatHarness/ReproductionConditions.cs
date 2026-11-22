@@ -104,7 +104,8 @@ namespace KmgLoaderCompatHarness
             };
             foreach (string name in conditions.Keys)
             {
-                if (!known.Contains(name) && !SpearRepairConditions.Known.Contains(name) && name != ControlledRageObserver.Condition)
+                if (!known.Contains(name) && !SpearRepairConditions.Known.Contains(name) && name != ControlledRageObserver.Condition &&
+                    name != BrownFurObserver.Condition)
                     throw new InvalidOperationException("unknown harness condition " + name);
             }
 
@@ -113,6 +114,12 @@ namespace KmgLoaderCompatHarness
                 // Installed after every mod's Load (HarnessMain.OnUpdate), when the product type is resolvable.
                 ControlledRageObserver.Request();
                 applied[ControlledRageObserver.Condition] = "record UnitPartControlledRageSelection PreSave/PostLoad and Urban Barbarian exceptions";
+            }
+
+            if (Enabled(conditions, BrownFurObserver.Condition))
+            {
+                BrownFurObserver.Request();
+                applied[BrownFurObserver.Condition] = "record UnitPartBrownFurModifierPersistence PreSave/PostLoad/ResolveIncrease order and Brown-Fur exceptions";
             }
 
             SpearRepairConditions.Apply(harmony, conditions, applied);

@@ -1,0 +1,36 @@
+{
+  "name": "risk03-bf-characterize",
+  "description": "S6 T4 / RISK-03 checkpoint A2, characterization before any product change. The product (whose Brown-Fur persistence code is unchanged since v0.0.95) runs beside Call of the Wild only, the minimum provider that publishes Brown-Fur. Launch 1 loads the disposable fixture save, spawns a level-five CotW Arcanist with the Brown-Fur Powerful Change and Share Transmutation features and a target from the registered default player blueprint, and casts Bull's Strength through UnitUseAbility with the Strength toggle on, so the product's own committed cast path writes the enhanced modifier's persisted record. It saves (native PreSave) and reads that record back from the written file. It then deserializes SYNTHETIC variants of the written record into the product's part type with a serializer built from the engine's DefaultJsonSettings, reads the owner's whole-list validation, and writes each back with the same serializer. Launch 2, a fresh process on that save, records the order of the part's PostLoad and ResolveIncrease calls and the restored modifier.",
+  "ownerMods": [ "CallOfTheWild" ],
+  "fixtureSaves": [ "KMCS_AFTER_NORMAL_012_MODONLY.zks" ],
+  "launches": [
+    {
+      "label": "characterize-create",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": { "observeBrownFurPersistence": "true" },
+      "expectLog": { "present": [ "[blueprints][initialize.complete]" ], "absent": [ "[initialize.failed]" ] },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "kmgModules", "label": "all-on", "match": "" },
+          { "op": "kmgInitialization", "label": "create", "expect": "completed" },
+          { "op": "kmgBrownFur", "label": "characterize-create", "match": "characterize-create", "invariants": { "saveLabel": "bfchar1" }, "timeoutSeconds": 300 }
+        ]
+      }
+    },
+    {
+      "label": "characterize-reload",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": { "observeBrownFurPersistence": "true" },
+      "expectLog": { "present": [ "[blueprints][initialize.complete]" ], "absent": [ "[initialize.failed]" ] },
+      "harness": {
+        "save": "$written:bfchar1",
+        "steps": [
+          { "op": "expectLoadedFrom", "match": "bfchar1" },
+          { "op": "kmgModules", "label": "all-on", "match": "" },
+          { "op": "kmgBrownFur", "label": "characterize-reload", "match": "characterize-reload", "timeoutSeconds": 300 }
+        ]
+      }
+    }
+  ]
+}
