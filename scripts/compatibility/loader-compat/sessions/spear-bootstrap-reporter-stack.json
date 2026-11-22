@@ -1,0 +1,83 @@
+{
+  "name": "spear-bootstrap-reporter-stack",
+  "description": "Spear startup repair (PR #195), reporter-shaped stack. UMM 0.31.1 with the four mods the report names that this lab holds at the reported versions (Call of the Wild 1.14.4c-2.1, CraftMagicItems 2.1.0, KingmakerBugfixes 1.3.3, RacesUnleashed 1.0.11) and the reporter's module settings: Gunslinger, Shield Other, Urban Barbarian, Bodyguard feats and World-Map Teleportation off; Acadamae, Expanded Summoning, Elven Branched Spears, Eastern Weapons, Brown-Fur, Protection from Alignment, Elemental Races and Magic Circle on. The first launch sets the modules through real panel clicks; the second, a fresh process, must initialize, register the spear with its intended profile, keep native and battered prices with working tooltips, and give a new level-1 sorcerer a visible Summon Monster I creature menu from which a summon succeeds. Run on the published v0.0.192 package it records whether this partial stack reproduces the report. ArmsArmor 1.0.10 and about 38 other reported mods are absent.",
+  "ownerMods": [
+    "CallOfTheWild",
+    "CraftMagicItems",
+    "KingmakerBugfixes",
+    "RacesUnleashed"
+  ],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "configure-reporter-modules",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "harness": {
+        "steps": [
+          { "op": "kmgModules", "label": "initial", "match": "" },
+          { "op": "ummPanel", "label": "gunslinger-off", "match": "KingmakerGunslinger", "type": "Gunslinger", "save": true, "seconds": 2 },
+          { "op": "ummPanel", "label": "shield-other-off", "match": "KingmakerGunslinger", "type": "Shield Other", "save": true, "seconds": 2 },
+          { "op": "ummPanel", "label": "urban-barbarian-off", "match": "KingmakerGunslinger", "type": "Urban Barbarian", "save": true, "seconds": 2 },
+          { "op": "ummPanel", "label": "bodyguard-off", "match": "KingmakerGunslinger", "type": "Bodyguard, In Harms Way, and Helpful", "save": true, "seconds": 2 },
+          { "op": "ummPanel", "label": "teleportation-off", "match": "KingmakerGunslinger", "type": "World-Map Teleportation Spells", "save": true, "seconds": 2 },
+          {
+            "op": "kmgModules",
+            "label": "saved",
+            "match": "",
+            "expect": "gunslinger=false,shield-other=false,urban-barbarian=false,bodyguard-feats=false,teleportation-spells=false,acadamae-graduate=true,expanded-summoning=true,elven-branched-spears=true,eastern-weapons=true,brown-fur-transmuter=true,protection-from-alignment-control-immunity=true,elemental-races=true,magic-circle-spells=true"
+          }
+        ]
+      }
+    },
+    {
+      "label": "reporter-stack-startup",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "captureWeaponTypes": "fa2dd17cbde7d3f4aa918d467c30516e,36d0551b8a28587438a47fcbbf53c083"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]",
+          "[elven-branched-spear][foundation.ready]"
+        ],
+        "absent": [
+          "[initialize.failed]",
+          "[initialize.root-cause]",
+          "Elven Branched Spear type profile is invalid",
+          "The battered origin token blueprint is unavailable",
+          "battered-origin.inspection-unavailable"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "expectMods", "match": "KingmakerGunslinger,KmgLoaderCompatHarness,CallOfTheWild,CraftMagicItems,KingmakerBugfixes,RacesUnleashed", "continueOnFailure": true },
+          { "op": "kmgModules", "label": "reporter", "match": "Gunslinger=false,ShieldOther=false,UrbanBarbarian=false,BodyguardFeats=false,TeleportationSpells=false", "continueOnFailure": true },
+          { "op": "kmgInitialization", "label": "reporter", "expect": "completed", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "reporter", "match": "owned", "type": "fa2dd17cbde7d3f4aa918d467c30516e,36d0551b8a28587438a47fcbbf53c083", "continueOnFailure": true },
+          {
+            "op": "kmgItemPricing",
+            "label": "reporter",
+            "type": "f28f6031c2908d84d945865a80f67177,6fd0a849531617844b195f452661b2cd,6efea466862f014469cec6c3f2b85cb7,19a5092244dcf99478dcd73c974828b1",
+            "expect": "native",
+            "match": "battered",
+            "invariants": { "repeat": "20" },
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgSorcererSummon", "label": "reporter", "expect": "expanded", "contains": [ "Beetle, Fire" ],
+            "invariants": { "expectAbility": "c7ef177436854efca42ac4ae0a068610", "expectUnit": "714b04102eae4cd2be200a8f09f04bc3" },
+            "timeoutSeconds": 180, "continueOnFailure": true
+          },
+          { "op": "kmgSorcererResidue", "label": "after-reporter-summon", "continueOnFailure": true }
+        ]
+      }
+    }
+  ]
+}

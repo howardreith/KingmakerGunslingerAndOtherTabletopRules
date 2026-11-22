@@ -1,0 +1,47 @@
+{
+  "name": "spear-bootstrap-baseline",
+  "description": "Spear startup repair (PR #195), baseline for the published, unrepaired package (v0.0.192, whose spear and battered sources are byte-identical to v0.0.188). The same simulated donor mutation as spear-bootstrap-simulated launch 1 (15 ft reach and Polearms on the live native Longspear, a controlled test-only stand-in): this session passes only when the unrepaired bytes reproduce the reported mechanism - the generic spear profile failure aborts initialization, no owned spear stays registered, and every one of the repeated ordinary weapon price queries and tooltip fills throws, each with the missing battered-origin exception. It then records what a new level-1 sorcerer's Summon Monster I does after that failed startup: Kingmaker's own spell has no creature variants, so its slot must not expand, and casting it must still summon. Run it only against the unrepaired package; on the repaired candidate it fails by design.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "baseline-donor-mutation",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "mutateNativeLongspear": "m_AttackRange=15;m_FighterGroup=Polearms",
+        "captureWeaponTypes": "fa2dd17cbde7d3f4aa918d467c30516e,36d0551b8a28587438a47fcbbf53c083"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.failed]",
+          "Elven Branched Spear type profile is invalid."
+        ],
+        "absent": [
+          "[blueprints][initialize.complete]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "kmgInitialization", "label": "baseline", "expect": "failed", "match": "Elven Branched Spear type profile is invalid.", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "baseline", "match": "absent", "type": "fa2dd17cbde7d3f4aa918d467c30516e,36d0551b8a28587438a47fcbbf53c083", "expect": "fighter-group,attack-range", "continueOnFailure": true },
+          {
+            "op": "kmgItemPricing",
+            "label": "baseline",
+            "type": "f28f6031c2908d84d945865a80f67177,6fd0a849531617844b195f452661b2cd",
+            "expect": "throws",
+            "contains": [ "The battered origin token blueprint is unavailable." ],
+            "invariants": { "repeat": "5" },
+            "continueOnFailure": true
+          },
+          { "op": "kmgSorcererSummon", "label": "baseline-native-spell", "expect": "native-single", "invariants": { "expectAbility": "8fd74eddd9b6c224693d9ab241f25e84", "expectUnit": "DogSummoned" }, "timeoutSeconds": 180, "continueOnFailure": true },
+          { "op": "kmgSorcererResidue", "label": "after-native-spell", "continueOnFailure": true }
+        ]
+      }
+    }
+  ]
+}

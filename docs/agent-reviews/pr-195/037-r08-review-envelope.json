@@ -1,0 +1,271 @@
+{
+  "B": "2e61e78097623d984630eadab873d8d87417f2c3",
+  "H": "953dc8cc51a594af84943261feacd7a4dd17b3af",
+  "M": "2e61e78097623d984630eadab873d8d87417f2c3",
+  "checkpoint_id": "final",
+  "checkpoint_type": "final",
+  "fatal": false,
+  "invocation": {
+    "completed": true,
+    "duration_s": 555.0,
+    "errors": [],
+    "exit_code": 0,
+    "failed": false,
+    "observed": {
+      "approval_policy": "never",
+      "cli_version": "0.170.0",
+      "network": "restricted",
+      "observed_effort": "max",
+      "observed_model": "gpt-6.2-astra",
+      "plan_type": "pro",
+      "rollout_found": true,
+      "sandbox": "read-only",
+      "source": "Codex session rollout (CLI-recorded thread settings; not model-authored)",
+      "subagent_suspected": false,
+      "turn_efforts": [
+        "max"
+      ],
+      "turn_models": [
+        "gpt-6.2-astra"
+      ],
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 5314048,
+        "input_tokens": 5542877,
+        "output_tokens": 20811,
+        "reasoning_output_tokens": 11425,
+        "total_tokens": 5563688
+      }
+    },
+    "requested": {
+      "effort": "max",
+      "model": "gpt-6.2-astra",
+      "sandbox": "read-only"
+    },
+    "thread_id": "01a20067-1ca0-7fd3-b5a7-2cad3dfadb5e",
+    "timed_out": false
+  },
+  "mission": {
+    "id": "spear-bootstrap-tooltip-repair-mission",
+    "sha256": "8c636b1fcafdf7a776dea4038eb805bfc057243b9897c51bb3948ff41dc6c676"
+  },
+  "ok": true,
+  "path": "C:\\Dev\\KingmakerGunslingerLab\\agent-review-state\\kmg-codex-spear-bootstrap-tooltip-repair-20261121062854-a704\\rounds\\r08\\envelope-1.json",
+  "pr": 195,
+  "project_sha256": "286ea7d8a605775ee05eea7ddb50630d9710b9ddb69d1711b9dadb9b084a879e",
+  "protocol": "agent-review.v1",
+  "publication": "r08-review",
+  "published": [
+    {
+      "comment_id": 7070884392,
+      "of": 1,
+      "part": 1,
+      "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/195#issuecomment-7070884392"
+    }
+  ],
+  "raw_result_if_rejected": null,
+  "reasons": [],
+  "repository": "howardreith/KingmakerGunslingerAndOtherTabletopRules",
+  "request_id": "kmg-codex-spear-bootstrap-tooltip-repair-20261121062854-a704-r08-42cbce",
+  "response_sha256": "51632d3f62efd4637fa804108365dac6f660308eb3c8ffe8933a2ac76541eb48",
+  "result": {
+    "candidate_commit": "953dc8cc51a594af84943261feacd7a4dd17b3af",
+    "checkpoint_id": "final",
+    "checkpoint_type": "final",
+    "decision": "changes_required",
+    "decision_rationale": "The focused gate passed, and the native runs support the spear, pricing, persistence and summoning repairs. Mission 4.2 remains open. The session runner can restore shared registry settings while another session owns them, and failures during setup or completion can leave locks that its recovery command cannot clear.",
+    "evidence_assessment": {
+      "executed_verification": [
+        "The controller receipt identifies the exact candidate, exit code 0 and an unchanged worktree. Production compilation and all 30 selected elven-branched-spear tests passed in the 2.1-second gate.",
+        "The developer transcript records 35 passing offline safety checks at the final commit. The fixtures exercised a running peer during cleanup and a sibling lock during launch admission.",
+        "The build transcript identifies package 4e0ac475aabc, ZIP SHA-256 253fbe43188d433f57a771261a215ba794160ff98b06142fafcedca69d643518 and DLL SHA-256 6b2696c70988db4ea1ed42ce015b99226a4de1fdd1727c569bf35eefd5e7049f. Git confirms identical product source at that revision and the review candidate.",
+        "I7 recorded one item-damage diagnostic for an injected 2d6 result and one for a throwing getter. Both included the donor's 1d8 and the harness patch owner.",
+        "P7 reloaded spearpersist in a fresh process with Gunslinger disabled. The loaded-item probe passed its 1d8 and override-off checks. The recorded prices and tooltip values were 22 for the owner-bound pistol, 250 for the unbound pistol and 4 for the longsword.",
+        "X7 passed the donor item-damage, live enchantment and returned subcategory controls. R7 passed the reporter-settings scenario with four available reporter mods, including the sorcerer's menu selection and Fire Beetle summon. The four sessions reported restoration of registry settings and unchanged owner saves and installation."
+      ],
+      "inspected": [
+        "Verified the snapshot HEAD, merge base and mission hash. Read the applicable instructions, the full 30-file feature diff, the pending findings ledger, the developer transcript and the controller gate receipt.",
+        "Traced blueprint registration and rollback, spear type and item validation, battered-origin inspection, Expanded Summoning publication and menu handling, and the native probes and session definitions.",
+        "Compared the loader-compat runner and safety fixtures with the shared runtime lease implementation, including acquisition, registry restoration, integrity checks and interrupted-session recovery."
+      ],
+      "limitations": [
+        "The review was read-only. Runtime results come from the recorded commands and receipts. Some per-launch JSON is truncated in the transcript, including part of P7's spear record. The completed probe and its enforced assertions establish the item-damage result.",
+        "The simulated type-mutation and failed-startup tooltip observations were last repeated in S6. The membership controls were last repeated in C6. Those results retain their earlier package identities.",
+        "The reporter's raw log, ArmsArmor and the complete 43-mod installation were unavailable. The simulated donor mutation establishes a failure mechanism. The reporter's exact failing predicate and the literal empty-menu appearance remain unconfirmed."
+      ],
+      "required_gaps": [
+        "Demonstrate that a sibling lock alone prevents registry restoration, and that recovery refuses a live owner or foreign lock before invoking the restore callback.",
+        "Demonstrate recoverable ownership after a setup error and after interruption at each completion boundary.",
+        "Verify the protected save and installation manifests while the session still owns the shared lease, including after recovery."
+      ],
+      "source_inspection_only": [
+        "The contention, early-error and interrupted-completion defects below follow from the order of operations in the PowerShell entry points. The recorded native sessions exercised uncontended completion.",
+        "The strict creation and owner-lookup paths remain in use for battered firearms. The sale-price hook uses the new unavailable-state path. The existing summoning menu hook checks for published variants before applying its UI changes."
+      ]
+    },
+    "findings": [
+      {
+        "acceptance_ids": [
+          "4.2"
+        ],
+        "actual": "Assert-LcLaunchAvailable correctly withholds the launch. Complete-LcSessionOwnership then checks only for a game process before invoking Restore-LcRegistry. A sibling lock can therefore stop the launch and still allow the registry import moments later. The offline fixture removes its sibling lock before testing finalization.",
+        "blocking_rationale": "A peer can own the shared host between game processes. Restoring this session's registry snapshot during that interval can overwrite the peer's settings.",
+        "blocks_readiness": true,
+        "category": "required_gap",
+        "expected": "Registry restoration waits until the sibling transaction releases the host. The session retains its journal and ownership while it waits.",
+        "id": "R7-F1",
+        "location": {
+          "file": "scripts/compatibility/loader-compat/LoaderCompat.Common.ps1",
+          "line": 94
+        },
+        "priority": "P1",
+        "requested_correction": "Check configured foreign locks immediately before restoration in both finalization and recovery. Preserve the session's recovery state when a peer still holds a lock.",
+        "requested_evidence": "Keep the sibling fixture lock present with an empty game-process list through launch refusal, finalization and a recovery attempt. Show zero restores and retained ownership, followed by one restore after the sibling releases the lock.",
+        "title": "A sibling lock blocks the next launch but does not block registry restoration",
+        "trigger": "A sibling lab takes its transaction lock after launch one and has no Kingmaker process running when this session finalizes."
+      },
+      {
+        "acceptance_ids": [
+          "4.2"
+        ],
+        "actual": "Invoke-LcRecovery invokes the registry restore callback at line 140. Only afterward does Complete-LcRecoveredLease check the shared lock, the original owner's PID and start time, and acquire the recovery handle. A refusal at any of those checks comes after the registry write.",
+        "blocking_rationale": "The recovery command can change an active session's settings even when it ultimately reports that the original owner is alive or the lock belongs to another run.",
+        "blocks_readiness": true,
+        "category": "defect",
+        "expected": "A recovery caller establishes exclusive ownership of the exact interrupted session before its first registry mutation.",
+        "id": "R8-F1",
+        "location": {
+          "file": "scripts/compatibility/loader-compat/LoaderCompat.Common.ps1",
+          "line": 140
+        },
+        "priority": "P1",
+        "requested_correction": "Validate the journal and lock identities, confirm the original owner has exited, and acquire the recovery handle before invoking Restore-LcRegistry. Hold that ownership through restoration and release only matching lock files. Apply equivalent ownership checks to any supported older journal.",
+        "requested_evidence": "Use disposable fixtures for a live original owner between launches, a foreign shared-lock holder and competing recovery callers. Refused callers must perform zero restores. Only the successful owner may restore and release.",
+        "title": "Recovery writes the registry before checking transaction ownership",
+        "trigger": "A second invocation requests recovery between launches while the original runner is alive, or while a stale journal sits beside a foreign shared lock."
+      },
+      {
+        "acceptance_ids": [
+          "4.2"
+        ],
+        "actual": "The runner acquires both locks at lines 152\u2013153. It creates the evidence directory and hashes the candidate ZIP before entering the main try block at line 162 or writing the loader journal at line 166. An error there bypasses cleanup. RecoverOnly finds no session journal.",
+        "blocking_rationale": "An ordinary input or filesystem error can leave the shared compatibility lock held after the runner exits, blocking other coordinated lab operations.",
+        "blocks_readiness": true,
+        "category": "defect",
+        "expected": "A setup failure releases the locks acquired by this invocation or leaves a durable record that the recovery command can use.",
+        "id": "R8-F2",
+        "location": {
+          "file": "scripts/compatibility/loader-compat/Invoke-LoaderCompatSession.ps1",
+          "line": 157
+        },
+        "priority": "P2",
+        "requested_correction": "Validate the package before acquiring ownership where possible. Cover every fallible operation after acquisition with cleanup or journaled recovery, including evidence-directory creation.",
+        "requested_evidence": "Exercise a missing candidate ZIP and a post-acquisition setup failure with disposable paths. Show that a subsequent session can acquire both locks without manual deletion.",
+        "title": "A setup error can strand both runtime locks before the journal exists",
+        "trigger": "The candidate ZIP is missing or unreadable, or the evidence directory cannot be created."
+      },
+      {
+        "acceptance_ids": [
+          "4.2",
+          "6"
+        ],
+        "actual": "Complete-LcSessionOwnership completes the lease, releases compatibility.lock and removes the journal. The caller then hashes the owner's saves and installation. Recovery also lacks the before-manifests held in the original process's local variables.",
+        "blocking_rationale": "Another coordinated deployment can change the files during the final comparison. A completed lease then cannot establish whose transaction produced the observed state.",
+        "blocks_readiness": true,
+        "category": "defect",
+        "expected": "The session retains shared ownership through the final comparisons of protected files and preserves enough intake evidence to perform them after interruption.",
+        "id": "R8-F3",
+        "location": {
+          "file": "scripts/compatibility/loader-compat/Invoke-LoaderCompatSession.ps1",
+          "line": 361
+        },
+        "priority": "P2",
+        "requested_correction": "Complete and record the owner-save and installation comparisons before marking the lease complete or releasing it. Preserve the needed intake digests in private transaction state so recovery can verify the same boundary.",
+        "requested_evidence": "Have a disposable manifest-check fixture attempt a competing lease acquisition during verification. Show that acquisition is refused and that an unreadable or mismatched manifest leaves an explicit unresolved integrity result.",
+        "title": "The shared lease ends before owner-file integrity is verified",
+        "trigger": "Another coordinated operation starts after registry restoration while the runner is still checking the owner's files, or the original runner exits before those checks."
+      },
+      {
+        "acceptance_ids": [
+          "4.2"
+        ],
+        "actual": "Completion writes the Completed lease state before removing the shared lock. Complete-LcRecoveredLease accepts only Active or RecoveryRequired. A retry with the journal present can therefore replay the registry backup and then reject the completed lease. If the journal has already been removed, an interruption before Exit-LcLock leaves a private lock that RecoverOnly cannot identify.",
+        "blocking_rationale": "An interruption during teardown can require manual lock removal or cause an already-applied registry snapshot to be imported again.",
+        "blocks_readiness": true,
+        "category": "defect",
+        "expected": "Recovery can finish a partially completed transaction by removing its remaining owned markers without repeating a completed registry restore.",
+        "id": "R8-F4",
+        "location": {
+          "file": "scripts/compatibility/loader-compat/LoaderCompat.Common.ps1",
+          "line": 113
+        },
+        "priority": "P2",
+        "requested_correction": "Record restoration and completion progress durably. Let recovery finish an exact already-completed session's outstanding cleanup, and retain its identifying record until both owned locks are accounted for.",
+        "requested_evidence": "Interrupt disposable completion after the Completed write, after shared-lock removal and before private-lock removal. Retry recovery at each boundary and verify that it preserves foreign state, performs no duplicate restore and clears the remaining owned markers.",
+        "title": "Interrupted completion cannot be resumed from the recorded Completed state",
+        "trigger": "The runner exits after writing Completed but before removing the session journal and both lock files."
+      },
+      {
+        "acceptance_ids": [
+          "4.2",
+          "6"
+        ],
+        "actual": "The paragraph describing every session says no runtime lease was opened. The same section lists I7, P7, X7 and R7 with completed shared leases.",
+        "blocking_rationale": "The individual session records already identify the four leases and their outcomes.",
+        "blocks_readiness": false,
+        "category": "optional_polish",
+        "expected": "The investigation distinguishes the earlier runner from the round-seven runner when describing lease use.",
+        "id": "R8-F5",
+        "location": {
+          "file": "docs/SPEAR-BOOTSTRAP-TOOLTIP-REPAIR.md",
+          "line": 381
+        },
+        "priority": "P3",
+        "requested_correction": "Scope the no-lease statement to the earlier sessions and identify the four sessions that used shared runtime leases.",
+        "requested_evidence": "Check the revised sentence against the existing session reports.",
+        "title": "The environment summary contradicts the round-seven lease records",
+        "trigger": "The owner reads the common environment description to determine which runs held a runtime lease."
+      }
+    ],
+    "prior_finding_assessments": [
+      {
+        "assessment": "fix_rejected",
+        "finding_id": "R7-F1",
+        "rationale": "The shared lease and per-launch checks are implemented. The 35-check fixture verifies deferral for a running game, but removes the sibling lock before finalization. Source inspection shows that a lock-only peer still permits registry restoration."
+      },
+      {
+        "assessment": "fix_verified",
+        "finding_id": "R7-F2",
+        "rationale": "The registered item's BaseDamage check separately captures owned and donor results, identifies getter patch owners and bounds the message. I7 recorded the requested wrong-dice and throwing-getter failures once each."
+      },
+      {
+        "assessment": "fix_verified",
+        "finding_id": "R7-F3",
+        "rationale": "P7's fresh process loaded spearpersist with Gunslinger disabled and completed the probe that reads BaseDamage and the override flag from the inventory spear's own blueprint. The package identity, restored session, battered owner and control prices are corroborated by the transcript."
+      },
+      {
+        "assessment": "fix_verified",
+        "finding_id": "R7-F4",
+        "rationale": "Section 3.1 uses the current 18-check example and labels the earlier 17-check quotations. Section 4.2 ends the source comparison at 0b3a9533cd. Git confirms the stated round-five source equivalence."
+      }
+    ],
+    "request_id": "kmg-codex-spear-bootstrap-tooltip-repair-20261121062854-a704-r08-42cbce",
+    "round": 8,
+    "schema_version": "agent-review.review.v1",
+    "summary": {
+      "delivered_behavior": "The owned spear receives its fixed profile independently of the mutable Longspear donor. Incorrect effective values fail visibly with diagnostics. Failed-startup pricing preserves ordinary weapon tooltip values. In the partial reporter setup, a new sorcerer selected and summoned a Fire Beetle through the creature menu.",
+      "pending_later_phase_work": [],
+      "remaining_owner_review": [
+        "Assess the player-facing menu and tooltip presentation.",
+        "Decide on merge or release after the shared-host findings are resolved."
+      ],
+      "scope_reviewed": "The complete spear startup, failed-initialization tooltip, Expanded Summoning, save-compatibility and guarded-validation mission for draft PR #195.",
+      "unresolved_questions": [
+        "Which predicate failed in the reporter's exact installation, and which interaction caused it, remain unknown."
+      ]
+    }
+  },
+  "round": 8,
+  "validated_at": "2026-11-21T23:27:23Z",
+  "workflow_fingerprint": "17b66fac3294f0767f9a8a49358d6dd889a8f406363c14243509acac5086b2c7"
+}

@@ -1,0 +1,48 @@
+<!-- agent-review:v1 enrollment=kmg-codex-spear-bootstrap-tooltip-repair-20261121062854-a704 key=r01-dispositions-18c6b47940 part=1/1 sha256=18c6b4794061fb4ad4e08950237c0309290ca3707a1e999246fb2d7987183273 -->
+### Claude Opus — finding dispositions — round 1
+
+Candidate after corrections: `b12776636b659baf4904c930ff420f51403d8a9b`
+
+- **R1-F1** — `fixed` — commits: `88f1e86b5e`, `0f08f76f64`, `d7dd0ff01d`, `b12776636b`
+  The policy's foreign-owner exemption is removed (ElvenBranchedSpearProfilePolicy.Classify; kinds are owned-field and effective-getter, and both are fatal). Owners remain as diagnostic context. Domain case elven-branched-spear.bootstrap-repair.foreign-patched-getter-fatal passes. Native S-3 (session 20261121T162812Z) applies a harness postfix that gives only the owned spear 7 ft while its field and the donor stay correct. Startup failed, logging once: 'attack-range [effective-getter]: expected=10ft actual=10ft donor=10ft; getter expected=6ft actual=7ft donor=6ft; getterPatches=KmgLoaderCompatHarness'. The mutated-donor construction case S-1 still passes and now also checks the effective getter profile. The investigation record's §5 states the behaviour change.
+- **R1-F2** — `fixed` — commits: `88f1e86b5e`, `0f08f76f64`, `d7dd0ff01d`
+  Register now runs the movement-enchantment, final ValidateFoundation and donor-fingerprint checks before any publication. Publication is a deferred delegate run by ElvenBranchedSpearBlueprintSet.AttachNamed after named-spear registration, and Publish rolls itself back on failure. Native evidence: S-6 corrupts only the second (post-registration) validation (invariants ownedValidations=2, corruptionsApplied=1). S-7 makes named-spear registration throw after foundation.ready. In both, and in S-2, S-3 and S-5, kmgSpearSelectorState found the EWP and Finesse Features/AllFeatures arrays and the Elven Weapon Familiarity components to be the same objects with the same contents as before the product ran, and the custom-weapon selector runtime held no spear source. S-1 confirms the options are published on success.
+- **R1-F3** — `fixed` — commits: `88f1e86b5e`, `0f08f76f64`, `d7dd0ff01d`
+  Getter() now wraps the owned getter read (a throw is recorded as '<throws Type: message>' and fails) and the donor field and getter reads (a throw is recorded as '<unavailable …>' and never decides the verdict). The enchantment and sub-category checks are predicates in the same verdict (17 checks), so one failure message lists every discrepancy. Domain cases throwing-owned-getter-fatal, unavailable-donor-not-fatal and field-only-predicates pass. Native S-4: the donor CriticalRollEdge throws during validation (getterThrowsAtLeast 1), and startup completes with the intended spear profile. Native S-5: the owned IsLight getter throws and the fighter group is corrupted. The log has exactly one 'Elven Branched Spear type profile is invalid: 2 of 17 checks failed.' naming both predicates, the light predicate's '<throws InvalidOperationException: …>' value, and its patch owner.
+- **R1-F4** — `fixed` — commits: `0f08f76f64`, `d7dd0ff01d`, `b12776636b`
+  Session spear-bootstrap-persistence (20261121T163705Z):
+- Launch 1 (Gunslinger on) saved a released foundation spear 6edc216d68810960f85417237748b042, a pistol bound as battered to Hedwirg, an unbound pistol and a Standard Longsword.
+- Launch 2 turned Gunslinger off through the panel.
+- Launch 3 was a fresh process with Gunslinger=False active. Counts matched the save (1 spear, 2 pistols, 1 battered). The spear resolved to KMG_ElvenBranchedSpear_WeaponType 77f72b0febaf212a5650e7193c00361f with the intended serialized and effective profile. The battered pistol kept KMG_BatteredFirearm_Origin, and the product's strict TryGetOwner returned the saved owner's unique id. It sold for 22 gp with tooltip '22'. The unbound pistol sold for 250 gp and the longsword at its native price. The log had no failure, no missing-token message and no unavailable warning.
+The record's waiver is replaced with these observations. Kingmaker 2.1.7b items have no unique id, so items are identified by blueprint, counts and battered owner.
+- **R1-F5** — `fixed` — commits: `0f08f76f64`, `d7dd0ff01d`
+  SorcererSummonProbe now:
+- clicks the chosen creature row through its own slot;
+- requires Game.Instance.SelectedAbilityHandler.Ability to equal that row's AbilityData;
+- casts through the handler's own ground click;
+- requires the issued UnitUseAbility to carry the selected ability and end with Success, and a summon whose blueprint is among the creatures the ability's actions spawn;
+- treats 'native-single' as an explicit expectation that rejects a parent with variants.
+Reporter-stack session 20261121T164728Z: row 0 'Beetle, Fire', uiSelectedAbility and submittedAbility both KMG_Summoning_Ability_SM_Tier1_FireBeetle_One, command Success, expected and summoned KMG_Summoning_Unit_FireBeetle.
+Failure controls (baseline 20261121T163535Z and S-2): native-single, 0 variants, menu closed, SummonMonsterISingle selected and submitted, Success, DogSummoned.
+- **R1-F6** — `fixed` — commits: `0f08f76f64`, `d7dd0ff01d`, `b348c3f815`
+  SorcererSummonProbe implements IOwnedProbe and runs in the harness ProbeSlot like kmgDeedLifecycle. Release runs every cleanup through ProbeCleanup.RunAll (targeting, menu, spell group, summons, party, caster, selection, pause, blueprint, verification), and the slot releases on success, failure, exception, step timeout and run end. Session spear-bootstrap-probe-lifecycle (20261121T164419Z):
+- L-1 holds the probe after party insertion. The 25 s step timeout released it (releaseReason 'step timeout after 25s', partyAfterRelease 1, isolationRestored true). The timeout was the expected outcome, and kmgSorcererResidue found no unit, party entry or targeted ability.
+- L-2 completes the probe with a test-only release action that throws after every real release. The step failed with 'cleanup failed: injected-release …', isolation was reported unrestored, the next step did not run, and the harness verdict was 'failed' ('… could not all be released').
+Normal completions in the reporter-stack, baseline and S-2 sessions released with no failures and clean residue.
+- **R1-F7** — `fixed` — commits: `0f08f76f64`, `d7dd0ff01d`, `b12776636b`
+  Throws-mode judging now requires priceThrows == repeat and tooltipThrows == repeat, with every exception chain containing the expected cause (per-call priceCauseMatches and tooltipCauseMatches counts plus the distinct error texts). Baseline session 20261121T163535Z on the published v0.0.192 under the simulated donor mutation recorded, per item (Standard Longspear and Longsword), 5/5 price throws and 5/5 tooltip throws, all 5+5 matching 'The battered origin token blueprint is unavailable.' The record states exactly that.
+
+**Validation (developer-reported):**
+
+| Command | Required | Result | Duration | Scope and limits |
+|---|---|---|---|---|
+| python C:/Dev/agent-review/versions/617060d8.../agent_review.py verify --enrollment kmg-codex-spear-bootstrap-tooltip-repair-20261121062854-a704 --gate focused -- -Filter elven-branched-spear | yes | pass | 1.7 s (incremental compile; tests 0.2 s) | Candidate b12776636b. Production compiled. 26 of 3159 selected tests passed (11 bootstrap-repair policy cases and 15 spear neighbours). Focused only. |
+| .\scripts\Invoke-KmgGate.ps1 -Filter 'custom-weapon;selector;martial-performance;eastern-weapons;battered;summoning-publication-boundary' | no | pass | 1.3 s of tests | 56 neighbour tests covering selector, publication and pricing. Run on a working tree whose product source equals 88f1e86b5e. |
+| powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Build-Local.ps1 -DevelopmentPurpose spear-bootstrap-tooltip-repair -DevelopmentTestFilter elven-branched-spear -ReferenceBundleDir ... -LoaderReferenceDir ... | no | pass | about 6 min | Development candidate at 0f08f76f644d (never a release). Strict standalone package validation passed. Package 53f58154…, DLL ae1250cc…. |
+| Invoke-LoaderCompatSession.ps1 -SessionFile sessions/spear-bootstrap-simulated.json -LoaderProfile umm-0.31.1 -CandidateZip <candidate 0f08f76f644d> | yes | pass | 7 launches, 53-74 s each | Session 20261121T162812Z, harness d7dd0ff01d. Simulated, test-only conditions with the product alone. These prove the mechanisms, not the reporter's interaction. An earlier run (20261121T162032Z) exposed three harness defects and is retained. |
+| Invoke-LoaderCompatSession.ps1 -SessionFile sessions/spear-bootstrap-baseline.json -CandidateZip <published v0.0.192> | yes | pass | 73 s | Session 20261121T163535Z. Strict throws judging. Unrepaired bytes under the simulated donor mutation. |
+| Invoke-LoaderCompatSession.ps1 -SessionFile sessions/spear-bootstrap-persistence.json -CandidateZip <candidate> | yes | pass | 75 + 65 + 70 s | Session 20261121T163705Z. Fresh-process load with Gunslinger off of items saved with Gunslinger on. Product alone; fixture save only. |
+| Invoke-LoaderCompatSession.ps1 -SessionFile sessions/spear-bootstrap-probe-lifecycle.json -CandidateZip <candidate> | yes | pass | 96 + 79 s | Session 20261121T164419Z, harness/runner b348c3f815. Forced timeout and injected release failure via test-only probe invariants. |
+| Invoke-LoaderCompatSession.ps1 -SessionFile sessions/spear-bootstrap-reporter-stack.json -CandidateZip <candidate> | yes | pass | 103 + 113 s | Session 20261121T164728Z. Four of the reported mods at the reported versions, with the reporter's module settings. Not the 43-mod environment. |
+
+_Model-generated developer response (Claude opus / high), posted by the agent-review controller through the owner's GitHub account; not a human review._

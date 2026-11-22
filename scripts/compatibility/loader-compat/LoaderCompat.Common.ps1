@@ -24,7 +24,23 @@ $script:LcForeignLocks = @(
     'C:\Dev\KingmakerMemoryLeakResearchLab\runtime-state\kmld-runtime.lock',
     'C:\Dev\KingmakerMountedCombatLab\runtime-state\active-transaction.lock')
 
+# The lab's shared runtime ownership: the same compatibility.lock and runtime-lease
+# journal format that profile staging, deployment, the generic runtime launcher and
+# the settings transactions use (scripts/RuntimeCoordination.Common.ps1).
+. (Join-Path $PSScriptRoot '..\..\RuntimeCoordination.Common.ps1')
+$script:LcStateRoot = 'C:\Dev\KingmakerGunslingerLab\compatibility-state'
+# Every Kingmaker process on the host. A script variable so the offline safety
+# checks can substitute a disposable peer without starting a game.
+$script:LcGameProcessQuery = { @(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue) }
+function Get-LcGameProcesses { return , @(& $script:LcGameProcessQuery) }
+
 function Get-LcSha256([string]$Path) { (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant() }
+
+# Takes the shared compatibility lock under a fresh lease of the shared runtime
+# coordination (used by the offline checks as a competing acquirer).
+function Enter-LcRuntimeOwnership([string]$SessionId) {
+    return Enter-KmgRuntimeLease -ParentLease $null -Purpose ('loader-compat ' + $SessionId) -StateRoot $script:LcStateRoot
+}
 
 function Write-LcJson([string]$Path, $Value) {
     [IO.File]::WriteAllText($Path, ($Value | ConvertTo-Json -Depth 12), (New-Object Text.UTF8Encoding($false)))
@@ -52,10 +68,10 @@ function Get-LcCopyPaths([string]$CopyRoot) {
     }
 }
 
+# Refuses before anything changes: any Kingmaker process, any configured runtime or
+# game-copy lock, a pending journal (Assert-LcHostFree), then the Steam conditions.
 function Assert-LcPreflight {
-    if (Get-Process -Name Kingmaker -ErrorAction SilentlyContinue) { throw 'Kingmaker is already running; refusing to take over another session.' }
-    foreach ($lock in $script:LcForeignLocks) { if (Test-Path -LiteralPath $lock) { throw "Another lab holds a runtime lock: $lock" } }
-    if (Test-Path -LiteralPath $script:LcJournal) { throw "An interrupted session journal exists ($script:LcJournal); run with -RecoverOnly first." }
+    Assert-LcHostFree
     $steam = (Get-ItemProperty -LiteralPath 'HKCU:\Software\Valve\Steam').SteamPath
     $cloudLog = Join-Path $steam 'logs\cloud_log.txt'
     $last = @(Select-String -LiteralPath $cloudLog -Pattern '\[AppID 640820\]' | Select-Object -Last 6 | ForEach-Object Line)
@@ -63,16 +79,25 @@ function Assert-LcPreflight {
     if (-not (Get-Process -Name steam -ErrorAction SilentlyContinue)) { throw 'Steam is not running; a direct game-copy launch needs it.' }
 }
 
+# The private loader-compat lock, published complete with an atomic no-overwrite rename.
 function Enter-LcLock([string]$SessionId) {
-    New-Item -ItemType Directory -Force -Path $script:LcCopiesRoot | Out-Null
-    $stream = [IO.File]::Open($script:LcLock, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
-    try {
-        $bytes = [Text.Encoding]::UTF8.GetBytes("session=$SessionId`npid=$PID`nstartedUtc=$([DateTime]::UtcNow.ToString('o'))`n")
-        $stream.Write($bytes, 0, $bytes.Length)
-    } finally { $stream.Dispose() }
+    Publish-LcClaim $script:LcLock "session=$SessionId`npid=$PID`nstartedUtc=$([DateTime]::UtcNow.ToString('o'))`n" "The loader-compat lock already exists: $script:LcLock"
 }
 
-function Exit-LcLock { if (Test-Path -LiteralPath $script:LcLock) { Remove-Item -LiteralPath $script:LcLock -Force } }
+# Removes the loader-compat lock only when it names this session.
+function Exit-LcLock([string]$SessionId) {
+    if (-not (Test-Path -LiteralPath $script:LcLock)) { return }
+    $info = Get-LcPrivateLockInfo
+    if ($null -eq $info -or $info['session'] -cne $SessionId) { throw "The loader-compat lock belongs to another session and was not removed: $script:LcLock" }
+    Remove-Item -LiteralPath $script:LcLock -Force
+}
+
+function Get-LcPrivateLockInfo {
+    if (-not (Test-Path -LiteralPath $script:LcLock)) { return $null }
+    $info = @{}
+    foreach ($line in [IO.File]::ReadAllLines($script:LcLock)) { if ($line -match '^([a-zA-Z]+)=(.*)$') { $info[$Matches[1]] = $Matches[2] } }
+    return $info
+}
 
 function Get-LcFileManifest([string[]]$Paths) {
     return @(& { foreach ($path in $Paths) {
@@ -238,3 +263,6 @@ function Stop-LcOwnedProcess($Process, $Paths) {
     if (-not $Process.WaitForExit(20000)) { $Process.Refresh(); if (-not $Process.HasExited) { $Process.Kill(); $Process.WaitForExit(20000) | Out-Null } }
     return 'stopped-after-timeout'
 }
+
+# The session transaction: new-session admission, verified completion, retention on failure.
+. (Join-Path $PSScriptRoot 'LoaderCompat.Transaction.ps1')

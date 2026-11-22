@@ -1,0 +1,82 @@
+{
+  "name": "spear-bootstrap-item-enchantment-list",
+  "description": "Spear startup repair (PR #195), round-6 controls on the candidate with the product alone. (1) Donor item damage override: the live native Standard Longspear item is given a 2d6 damage-dice override before the product runs; startup must complete, the native item must still deal 2d6, and a foundation spear and a named spear must each report 1d8 through BlueprintItemWeapon.BaseDamage. (2) Live enchantments getter: a postfix makes BlueprintWeaponType.Enchantments return an empty collection for the owned spear only while its backing field stays correct; startup must fail once with a movement-enchantment diagnostic naming the harness patch owner, and native selectors must be restored. (3) Returned sub-category list: a late GetSubCategories postfix appends Simple to the spear category's list only while HasSubCategory still rejects Simple; startup must fail once with only the subcategory-list diagnostic and its patch owners, and native selectors must be restored.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "donor-item-damage-override",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "mutateNativeLongspearItem": "m_OverrideDamageDice=true;m_DamageDice=2d6",
+        "captureWeaponTypes": "fa2dd17cbde7d3f4aa918d467c30516e,36d0551b8a28587438a47fcbbf53c083",
+        "captureSpearSelectors": "true"
+      },
+      "expectLog": {
+        "present": [ "[blueprints][initialize.complete]", "[elven-branched-spear][foundation.ready]" ],
+        "absent": [ "[initialize.failed]", "Elven Branched Spear type profile is invalid", "item damage is invalid" ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "kmgInitialization", "label": "item-damage", "expect": "completed", "continueOnFailure": true },
+          { "op": "kmgItemDamage", "label": "item-damage", "match": "f28f6031c2908d84d945865a80f67177=2xD6;6edc216d68810960f85417237748b042=1xD8;4a084b0226e077b58d79e33184018002=1xD8", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "item-damage", "match": "owned", "type": "fa2dd17cbde7d3f4aa918d467c30516e,36d0551b8a28587438a47fcbbf53c083", "continueOnFailure": true },
+          { "op": "kmgSpearSelectorState", "label": "item-damage", "expect": "published", "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "owned-enchantments-empty",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "ownedEnchantmentsEmpty": "true",
+        "captureSpearSelectors": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.failed]",
+          "movement-enchantment [effective-getter]: expected=KMG_ElvenBranchedSpear_MovementOpportunityAccuracy actual=KMG_ElvenBranchedSpear_MovementOpportunityAccuracy",
+          "getter expected=KMG_ElvenBranchedSpear_MovementOpportunityAccuracy actual=<none>",
+          "getterPatches=KmgLoaderCompatHarness"
+        ],
+        "once": [ "Elven Branched Spear type profile is invalid: 1 of 18 checks failed." ],
+        "absent": [ "[blueprints][initialize.complete]" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "kmgInitialization", "label": "enchantments-empty", "expect": "failed", "match": "movement-enchantment [effective-getter]", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "enchantments-empty", "match": "absent", "invariants": { "enchantmentOverridesAtLeast": "1" }, "continueOnFailure": true },
+          { "op": "kmgSpearSelectorState", "label": "enchantments-empty", "expect": "restored", "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "spear-subcategory-list-simple-added",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "spearSubCategoryListAddition": "Simple",
+        "captureSpearSelectors": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.failed]",
+          "subcategory-list [effective-getter]: expected=Melee,Finessable,TwoHanded,Exotic,Metal actual=Melee,Finessable,TwoHanded,Exotic,Metal",
+          "getter expected=Melee,Finessable,TwoHanded,Exotic,Metal actual=Melee,Finessable,TwoHanded,Exotic,Metal,Simple donor=",
+          "KmgLoaderCompatHarness"
+        ],
+        "once": [ "Elven Branched Spear type profile is invalid: 1 of 18 checks failed." ],
+        "absent": [ "[blueprints][initialize.complete]", "subcategory-policy [effective-getter]" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "kmgInitialization", "label": "list-simple-added", "expect": "failed", "match": "subcategory-list [effective-getter]", "continueOnFailure": true },
+          { "op": "kmgWeaponTypeProfile", "label": "list-simple-added", "match": "absent", "invariants": { "subCategoryListAdditionsAtLeast": "1" }, "continueOnFailure": true },
+          { "op": "kmgSpearSelectorState", "label": "list-simple-added", "expect": "restored", "continueOnFailure": true }
+        ]
+      }
+    }
+  ]
+}

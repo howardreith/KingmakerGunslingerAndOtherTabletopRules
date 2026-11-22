@@ -1,0 +1,322 @@
+<!-- agent-review:v1 enrollment=kmg-codex-spear-bootstrap-tooltip-repair-20261121062854-a704 key=r02-review part=1/1 sha256=a44aeeba751138b606197688a4e1b985736a8f15e630167b7bf5395fa18bc519 -->
+### Codex GPT-6.2 Astra — review — round 2 — candidate `b12776636b`
+
+**Decision:** `changes_required` — The focused gate passed on the exact candidate, and the native sessions support the pricing repair, selector rollback and fresh-process save compatibility. A recorded native failure still exposes a startup defect: the clone is validated while it carries the Longspear GUID, so a getter patch intended only for the donor can abort initialization of a correctly configured spear. The final harness changed how it identifies the donor, while the product retained the failing order. Additional gaps remain in effective-profile validation and summon-probe verification.
+
+#### Findings
+
+**R2-F1** · P1 · defect · blocks readiness — The first profile check runs under the donor's GUID
+- Location: `src/KingmakerGunslinger/Blueprints/ElvenBranchedSpearBlueprints.cs:410`; acceptance: 3.A.3, 3.A.4, 3.A.5, 4.1.1
+- Trigger: A getter patch identifies the native Longspear by AssetGuid and changes its value or throws.
+- Expected: Judge effective getter values after the owned type receives its released GUID and before selector publication. A patch targeting the released spear itself must still produce a detailed failure.
+- Actual: Configure calls Validate inside the blueprint factory. BlueprintRegistry assigns the released GUID only after the factory returns. In native run 162032Z, a donor-GUID-specific CriticalRollEdge patch consequently hit the clone and stopped startup. Commit d7dd0ff01d narrowed the harness condition to the donor object, leaving this product behavior intact.
+- Why it blocks / does not: A patch confined to the native Longspear identity can still prevent Expanded Summoning and the rest of the package from initializing, even when the registered spear would have the intended profile.
+- Requested correction: Move the effective-getter check out of the pre-registration Configure call. Use the registered type for the definitive profile check and retain rollback coverage. Record the earlier GUID-based result as a distinct compatibility case.
+- Requested evidence: Use the native harness to change a getter only for the Longspear GUID. Verify the donor retains the change, the registered spear has its correct effective value, and startup completes. Retain a failing control targeting the released spear.
+
+**R1-F3** · P2 · defect · blocks readiness — Donor weight reads still escape the per-predicate exception handling
+- Location: `src/KingmakerGunslinger/Blueprints/ElvenBranchedSpearBlueprints.cs:92`; acceptance: 3.A.2, 3.A.4, 4.1.2
+- Trigger: A patch throws from Weight for the native Longspear while the owned spear's Weight getter works.
+- Expected: Use the serialized donor weight for the mutation check. An unavailable donor getter should affect diagnostic context only.
+- Actual: Register reads nativeType.Weight before construction and again at line 219. Both reads bypass the per-predicate exception handling. A throwing donor Weight getter can abort startup before the correct owned profile is accepted. The passing donor test throws from CriticalRollEdge inside SpearWeaponTypeAccess only.
+- Why it blocks / does not: An observation used to check that the donor stayed unchanged can itself bring down the package.
+- Requested correction: Remove the redundant dependency on the live donor Weight getter in Register. The before/after mechanical fingerprint already reads m_Weight. Keep the owned Weight getter strict.
+- Requested evidence: Make Weight throw for the donor object throughout spear registration, including Register itself. Confirm successful startup for a correct owned spear and retain the combined owned-getter failure case.
+
+**R2-F2** · P1 · defect · blocks readiness — Subcategory validation bypasses the patched engine method
+- Location: `src/KingmakerGunslinger/Blueprints/ElvenBranchedSpearBlueprints.cs:553`; acceptance: 3.A.1, 3.A.2, 3.A.5, 4.1.1
+- Trigger: A category postfix changes the result returned to game consumers after the product's category postfix runs.
+- Expected: Check the final category calculation that native consumers see and identify the relevant method's patch owners when it disagrees with the fixed policy.
+- Actual: SubCategoryPolicy calls ElvenBranchedSpearCategoryRuntime.HasSubCategory directly. Observe uses that same result for both the intended-policy comparison and the effective observation, with patch information set to 'field'. A later postfix on WeaponCategoryExtension.HasSubCategory can remove Finessable while validation still passes.
+- Why it blocks / does not: The registered spear can lose Weapon Finesse eligibility while startup reports its subcategory profile as valid.
+- Requested correction: Compare the intended categories with the effective WeaponCategoryExtension results for the registered spear. Collect donor context and patch information from the implicated category method on failure.
+- Requested evidence: Apply a test postfix that removes Finessable only for the spear category. Require one failure naming the category discrepancy and owner, and verify the unmodified category still passes.
+
+**R2-F3** · P2 · defect · blocks readiness — A fractional effective reach can pass the six-foot invariant
+- Location: `src/KingmakerGunslinger/Blueprints/ElvenBranchedSpearBlueprints.cs:503`; acceptance: 3.A.2, 3.A.5, 4.1.1
+- Trigger: A patched AttackRange getter returns a nonintegral distance that has the same integer Value as the intended reach.
+- Expected: Compare the full effective Feet value with the intended 6 ft and preserve fractional values in failure diagnostics.
+- Actual: Both Observe and the native profile probe reduce the returned Feet to its integer Value. A getter returning 6.25 ft can therefore compare equal to 6 ft even though Feet.Meters exposes a different distance. The repository already relies on this distinction for fractional firearm ranges.
+- Why it blocks / does not: Validation and its observer can agree on a rounded value while a range consumer sees incorrect reach.
+- Requested correction: Use the existing full-precision Feet reader, or the equivalent engine distance, for the returned AttackRange as well as the serialized field. Update the native observer to preserve that precision.
+- Requested evidence: Return 6.25 ft only for the owned spear while its field stays at 10 ft. Require a bounded failure showing expected 6 ft, the fractional actual value and the getter owner.
+
+**R1-F5** · P2 · evidence_gap · blocks readiness — The summon check derives the expected creature from the action under test
+- Location: `tools/LoaderCompatHarness/SpearRepairProbes.cs:1179`; acceptance: 3.C.1, 4.1.6
+- Trigger: A visible creature row invokes its own ability successfully, but that ability is wired to spawn the wrong unit.
+- Expected: Match the visible choice to an independently identified creature from the released roster.
+- Actual: The probe now clicks the row, checks the selected AbilityData, submits the ground click and requires a successful command. Its expected creature, however, comes from walking the same ability's current components. A row labelled Fire Beetle whose spawn action points to a dog supplies dog as both the expectation and the observed result. The transcript prints the session verdict, without the row and unit identities needed to independently verify the reported Fire Beetle match.
+- Why it blocks / does not: The recorded PASS establishes a successful cast through the UI, but the assertion can pass when the chosen creature and spawned creature differ.
+- Requested correction: For the selected test row, use the expected ability and unit identities from the session or the released roster. Compare those identities with the UI selection, submitted command and observed spawn.
+- Requested evidence: The existing immutable reporter-stack row can establish this run's result if it shows the visible choice, selected and submitted ability, successful command and spawned unit matched against the independent expectation. Rerun only if those observations are missing.
+
+**R2-F4** · P2 · defect · blocks readiness — Sorcerer cleanup can clear UI state that predates the probe
+- Location: `tools/LoaderCompatHarness/SpearRepairProbes.cs:1320`; acceptance: 4.1.6, 4.2
+- Trigger: The probe inherits active targeting or an open spell group and exits before it takes ownership of that UI.
+- Expected: Restore the fixture's incoming UI state, or require an idle UI before acquiring probe state and leave it intact when that prerequisite fails.
+- Actual: Release always drops the targeted ability and closes any open spell group. The party-insertion timeout occurs before the probe selects its caster or opens the group, so this cleanup can clear UI state the probe never acquired. The residue check expects an empty targeting handler and cannot detect that loss.
+- Why it blocks / does not: The harness can report restored isolation and advance a later step with a different UI state from the one it inherited.
+- Requested correction: Track which targeting, group and selection changes the probe acquired. Limit cleanup to those changes and verify the restored state against the captured precondition.
+- Requested evidence: Use the existing stall after party insertion with an already-open spell group or pre-existing target. Verify the probe preserves that state on timeout, or refuses the non-idle fixture before mutation.
+
+#### Prior finding assessments
+
+- **R1-F1** — `fix_verified` — Classify now treats an observed getter mismatch as fatal regardless of patch ownership. The native 7 ft spear-only case failed with the owner named, and the mutated-donor construction case passed. R2-F2 and R2-F3 concern values that never reach Classify accurately.
+- **R1-F2** — `fix_verified` — Foundation checks precede publication, AttachNamed publishes after named registration, and bootstrap immediately takes the rollback handle. Both the post-registration corruption case and the named-registration failure passed their native selector-state comparisons.
+- **R1-F3** — `fix_rejected` — The per-predicate reader handles throwing getters and reports simultaneous owned failures. The separate unguarded donor Weight reads still let a diagnostic comparison abort registration.
+- **R1-F4** — `fix_verified` — The persistence session wrote the affected items, disabled Gunslinger, and loaded the written save in a fresh process. Its assertions cover the resolved spear profile, strict battered-owner lookup, special price, tooltip price and control items.
+- **R1-F5** — `fix_rejected` — The UI selection, command-success and native-single checks now exercise the required paths. The spawned-unit expectation still comes from the ability being tested, leaving the match to the displayed choice unverified by the verdict.
+- **R1-F6** — `fix_verified` — ProbeSlot now releases the probe on terminal paths and propagates cleanup failures. The timeout and injected-release-failure launches exercised both behaviors, including stopping before the next step. R2-F4 concerns which UI state Release may change.
+- **R1-F7** — `fix_verified` — Throws mode now requires every price query and tooltip fill to throw with the expected cause. The published v0.0.192 baseline passed with five attempts per path for each of the two items.
+
+#### Evidence assessment
+
+- **Inspected:** The mission, repository instructions, full feature change, investigation record, developer report, CLI transcript, gate receipt and prior findings ledger.; The clone factory and registry GUID assignment, both spear validations, category patches, selector publication and rollback, battered-origin inspection, and Expanded Summoning publication and menu hooks.; All five new native session definitions, their assertions, the summon and pricing probes, the probe lifecycle, and the session runner's verdict and restoration logic.
+- **Executed verification:** Confirmed the controller receipt and gate-log SHA-256 for H. Production compilation succeeded and all 26 selected tests passed out of 3,159 registered. The transcript also records 56 passing neighboring tests and a successful guarded push.; Confirmed the development package build at 0f08f76f644d. The package SHA-256 is 53f58154067c35c60b7f06aeaac4041df7bfc63aa37eecdcb038598a421e44ca and the DLL SHA-256 is ae1250ccaa3531210eed4a4b47a1d0e9bd7ecb93631a21e486b7eafd51ca8196. Git shows identical product source at the package commit and H.; The CLI transcript records seven passing simulated launches in 20261121T162812Z, one baseline launch in 20261121T163535Z, three persistence launches in 20261121T163705Z, two lifecycle launches in 20261121T164419Z and two partial-stack launches in 20261121T164728Z. The runner includes registry restoration and owner save/install comparisons in the session verdict.; The retained 20261121T162032Z output records an initialization failure when the simulated throwing getter selected the native donor by GUID. The subsequent harness commit changed that selection to reference equality. The product bytes stayed the same.
+- **Source inspection only:** The unguarded donor Weight reads, the private subcategory-policy check, the integer conversion of effective reach, and unconditional UI cleanup were established by source inspection.; The menu hook checks the published variants component before applying the expanded menu. The pricing change keeps creation, binding and owner lookup on the strict path.
+- **Required gaps:** Demonstrate successful startup under a Longspear-GUID-specific getter patch and a donor-only throwing Weight getter through the complete registration path.; Exercise effective weapon-category results and fractional range through the engine surfaces that consumers use.; Independently match the selected creature row to the spawned unit and verify that probe cleanup preserves pre-existing UI state.
+- **Limitations:** This was a read-only review. Native execution was confirmed from the recorded commands, printed verdicts and the assertions those verdicts enforce. The copied evidence contains the gate receipt and log, but no per-launch native JSON rows.; The reporter's raw log and exact 43-mod environment remain unavailable. The four available reported mods and the simulated donor conditions do not identify the reporter's failing predicate or establish that a menu opened empty.
+
+#### Summary
+
+- **Delivered behavior:** Explicit clone fields repair the reproduced serialized donor mutation. Ordinary pricing and tooltip fills survive the induced startup failure with one warning. Successful startup preserves battered pricing, saved ownership and spear identities with Gunslinger disabled. The reporter-shaped session exercised a visible menu, native row selection and a successful cast.
+- **Scope reviewed:** Complete final mission for PR #195 at b12776636b659baf4904c930ff420f51403d8a9b, including all seven prior findings.
+- **Pending later-phase work:** none
+- **Unresolved questions:** Which spear predicate failed in the reporter's installation, and what changed it? The available partial stack did not reproduce that failure.
+- **Remaining owner review:** After correction, the owner retains the merge and release decisions. The evidence supports no attribution to a particular third-party mod.
+
+#### Provenance (controller-recorded)
+
+| | Requested | Observed |
+|---|---|---|
+| Model | `gpt-6.2-astra` | `gpt-6.2-astra` (turns ['gpt-6.2-astra']) |
+| Reasoning effort | `high` | `high` (turns ['high']) |
+| Sandbox / approvals | read-only / never | `read-only` / `never` |
+
+Codex CLI `0.170.0`, thread `01a1ff08-44fc-7691-9ee0-6e853f5c3628`, duration 308.5s, response sha256 `660080b9c8df826b0cbd83b070929d45470c8ae49d33ead9aa2f81109c13c136`, request `kmg-codex-spear-bootstrap-tooltip-repair-20261121062854-a704-r02-7edcf8`. Observed values come from the Codex session rollout's recorded thread settings, not from the model's own statements; the serving backend's model identity is not separately exposed.
+
+<details><summary>Complete structured review (agent-review.review.v1)</summary>
+
+```json
+{
+  "candidate_commit": "b12776636b659baf4904c930ff420f51403d8a9b",
+  "checkpoint_id": "final",
+  "checkpoint_type": "final",
+  "decision": "changes_required",
+  "decision_rationale": "The focused gate passed on the exact candidate, and the native sessions support the pricing repair, selector rollback and fresh-process save compatibility. A recorded native failure still exposes a startup defect: the clone is validated while it carries the Longspear GUID, so a getter patch intended only for the donor can abort initialization of a correctly configured spear. The final harness changed how it identifies the donor, while the product retained the failing order. Additional gaps remain in effective-profile validation and summon-probe verification.",
+  "evidence_assessment": {
+    "executed_verification": [
+      "Confirmed the controller receipt and gate-log SHA-256 for H. Production compilation succeeded and all 26 selected tests passed out of 3,159 registered. The transcript also records 56 passing neighboring tests and a successful guarded push.",
+      "Confirmed the development package build at 0f08f76f644d. The package SHA-256 is 53f58154067c35c60b7f06aeaac4041df7bfc63aa37eecdcb038598a421e44ca and the DLL SHA-256 is ae1250ccaa3531210eed4a4b47a1d0e9bd7ecb93631a21e486b7eafd51ca8196. Git shows identical product source at the package commit and H.",
+      "The CLI transcript records seven passing simulated launches in 20261121T162812Z, one baseline launch in 20261121T163535Z, three persistence launches in 20261121T163705Z, two lifecycle launches in 20261121T164419Z and two partial-stack launches in 20261121T164728Z. The runner includes registry restoration and owner save/install comparisons in the session verdict.",
+      "The retained 20261121T162032Z output records an initialization failure when the simulated throwing getter selected the native donor by GUID. The subsequent harness commit changed that selection to reference equality. The product bytes stayed the same."
+    ],
+    "inspected": [
+      "The mission, repository instructions, full feature change, investigation record, developer report, CLI transcript, gate receipt and prior findings ledger.",
+      "The clone factory and registry GUID assignment, both spear validations, category patches, selector publication and rollback, battered-origin inspection, and Expanded Summoning publication and menu hooks.",
+      "All five new native session definitions, their assertions, the summon and pricing probes, the probe lifecycle, and the session runner's verdict and restoration logic."
+    ],
+    "limitations": [
+      "This was a read-only review. Native execution was confirmed from the recorded commands, printed verdicts and the assertions those verdicts enforce. The copied evidence contains the gate receipt and log, but no per-launch native JSON rows.",
+      "The reporter's raw log and exact 43-mod environment remain unavailable. The four available reported mods and the simulated donor conditions do not identify the reporter's failing predicate or establish that a menu opened empty."
+    ],
+    "required_gaps": [
+      "Demonstrate successful startup under a Longspear-GUID-specific getter patch and a donor-only throwing Weight getter through the complete registration path.",
+      "Exercise effective weapon-category results and fractional range through the engine surfaces that consumers use.",
+      "Independently match the selected creature row to the spawned unit and verify that probe cleanup preserves pre-existing UI state."
+    ],
+    "source_inspection_only": [
+      "The unguarded donor Weight reads, the private subcategory-policy check, the integer conversion of effective reach, and unconditional UI cleanup were established by source inspection.",
+      "The menu hook checks the published variants component before applying the expanded menu. The pricing change keeps creation, binding and owner lookup on the strict path."
+    ]
+  },
+  "findings": [
+    {
+      "acceptance_ids": [
+        "3.A.3",
+        "3.A.4",
+        "3.A.5",
+        "4.1.1"
+      ],
+      "actual": "Configure calls Validate inside the blueprint factory. BlueprintRegistry assigns the released GUID only after the factory returns. In native run 162032Z, a donor-GUID-specific CriticalRollEdge patch consequently hit the clone and stopped startup. Commit d7dd0ff01d narrowed the harness condition to the donor object, leaving this product behavior intact.",
+      "blocking_rationale": "A patch confined to the native Longspear identity can still prevent Expanded Summoning and the rest of the package from initializing, even when the registered spear would have the intended profile.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "Judge effective getter values after the owned type receives its released GUID and before selector publication. A patch targeting the released spear itself must still produce a detailed failure.",
+      "id": "R2-F1",
+      "location": {
+        "file": "src/KingmakerGunslinger/Blueprints/ElvenBranchedSpearBlueprints.cs",
+        "line": 410
+      },
+      "priority": "P1",
+      "requested_correction": "Move the effective-getter check out of the pre-registration Configure call. Use the registered type for the definitive profile check and retain rollback coverage. Record the earlier GUID-based result as a distinct compatibility case.",
+      "requested_evidence": "Use the native harness to change a getter only for the Longspear GUID. Verify the donor retains the change, the registered spear has its correct effective value, and startup completes. Retain a failing control targeting the released spear.",
+      "title": "The first profile check runs under the donor's GUID",
+      "trigger": "A getter patch identifies the native Longspear by AssetGuid and changes its value or throws."
+    },
+    {
+      "acceptance_ids": [
+        "3.A.2",
+        "3.A.4",
+        "4.1.2"
+      ],
+      "actual": "Register reads nativeType.Weight before construction and again at line 219. Both reads bypass the per-predicate exception handling. A throwing donor Weight getter can abort startup before the correct owned profile is accepted. The passing donor test throws from CriticalRollEdge inside SpearWeaponTypeAccess only.",
+      "blocking_rationale": "An observation used to check that the donor stayed unchanged can itself bring down the package.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "Use the serialized donor weight for the mutation check. An unavailable donor getter should affect diagnostic context only.",
+      "id": "R1-F3",
+      "location": {
+        "file": "src/KingmakerGunslinger/Blueprints/ElvenBranchedSpearBlueprints.cs",
+        "line": 92
+      },
+      "priority": "P2",
+      "requested_correction": "Remove the redundant dependency on the live donor Weight getter in Register. The before/after mechanical fingerprint already reads m_Weight. Keep the owned Weight getter strict.",
+      "requested_evidence": "Make Weight throw for the donor object throughout spear registration, including Register itself. Confirm successful startup for a correct owned spear and retain the combined owned-getter failure case.",
+      "title": "Donor weight reads still escape the per-predicate exception handling",
+      "trigger": "A patch throws from Weight for the native Longspear while the owned spear's Weight getter works."
+    },
+    {
+      "acceptance_ids": [
+        "3.A.1",
+        "3.A.2",
+        "3.A.5",
+        "4.1.1"
+      ],
+      "actual": "SubCategoryPolicy calls ElvenBranchedSpearCategoryRuntime.HasSubCategory directly. Observe uses that same result for both the intended-policy comparison and the effective observation, with patch information set to 'field'. A later postfix on WeaponCategoryExtension.HasSubCategory can remove Finessable while validation still passes.",
+      "blocking_rationale": "The registered spear can lose Weapon Finesse eligibility while startup reports its subcategory profile as valid.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "Check the final category calculation that native consumers see and identify the relevant method's patch owners when it disagrees with the fixed policy.",
+      "id": "R2-F2",
+      "location": {
+        "file": "src/KingmakerGunslinger/Blueprints/ElvenBranchedSpearBlueprints.cs",
+        "line": 553
+      },
+      "priority": "P1",
+      "requested_correction": "Compare the intended categories with the effective WeaponCategoryExtension results for the registered spear. Collect donor context and patch information from the implicated category method on failure.",
+      "requested_evidence": "Apply a test postfix that removes Finessable only for the spear category. Require one failure naming the category discrepancy and owner, and verify the unmodified category still passes.",
+      "title": "Subcategory validation bypasses the patched engine method",
+      "trigger": "A category postfix changes the result returned to game consumers after the product's category postfix runs."
+    },
+    {
+      "acceptance_ids": [
+        "3.A.2",
+        "3.A.5",
+        "4.1.1"
+      ],
+      "actual": "Both Observe and the native profile probe reduce the returned Feet to its integer Value. A getter returning 6.25 ft can therefore compare equal to 6 ft even though Feet.Meters exposes a different distance. The repository already relies on this distinction for fractional firearm ranges.",
+      "blocking_rationale": "Validation and its observer can agree on a rounded value while a range consumer sees incorrect reach.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "Compare the full effective Feet value with the intended 6 ft and preserve fractional values in failure diagnostics.",
+      "id": "R2-F3",
+      "location": {
+        "file": "src/KingmakerGunslinger/Blueprints/ElvenBranchedSpearBlueprints.cs",
+        "line": 503
+      },
+      "priority": "P2",
+      "requested_correction": "Use the existing full-precision Feet reader, or the equivalent engine distance, for the returned AttackRange as well as the serialized field. Update the native observer to preserve that precision.",
+      "requested_evidence": "Return 6.25 ft only for the owned spear while its field stays at 10 ft. Require a bounded failure showing expected 6 ft, the fractional actual value and the getter owner.",
+      "title": "A fractional effective reach can pass the six-foot invariant",
+      "trigger": "A patched AttackRange getter returns a nonintegral distance that has the same integer Value as the intended reach."
+    },
+    {
+      "acceptance_ids": [
+        "3.C.1",
+        "4.1.6"
+      ],
+      "actual": "The probe now clicks the row, checks the selected AbilityData, submits the ground click and requires a successful command. Its expected creature, however, comes from walking the same ability's current components. A row labelled Fire Beetle whose spawn action points to a dog supplies dog as both the expectation and the observed result. The transcript prints the session verdict, without the row and unit identities needed to independently verify the reported Fire Beetle match.",
+      "blocking_rationale": "The recorded PASS establishes a successful cast through the UI, but the assertion can pass when the chosen creature and spawned creature differ.",
+      "blocks_readiness": true,
+      "category": "evidence_gap",
+      "expected": "Match the visible choice to an independently identified creature from the released roster.",
+      "id": "R1-F5",
+      "location": {
+        "file": "tools/LoaderCompatHarness/SpearRepairProbes.cs",
+        "line": 1179
+      },
+      "priority": "P2",
+      "requested_correction": "For the selected test row, use the expected ability and unit identities from the session or the released roster. Compare those identities with the UI selection, submitted command and observed spawn.",
+      "requested_evidence": "The existing immutable reporter-stack row can establish this run's result if it shows the visible choice, selected and submitted ability, successful command and spawned unit matched against the independent expectation. Rerun only if those observations are missing.",
+      "title": "The summon check derives the expected creature from the action under test",
+      "trigger": "A visible creature row invokes its own ability successfully, but that ability is wired to spawn the wrong unit."
+    },
+    {
+      "acceptance_ids": [
+        "4.1.6",
+        "4.2"
+      ],
+      "actual": "Release always drops the targeted ability and closes any open spell group. The party-insertion timeout occurs before the probe selects its caster or opens the group, so this cleanup can clear UI state the probe never acquired. The residue check expects an empty targeting handler and cannot detect that loss.",
+      "blocking_rationale": "The harness can report restored isolation and advance a later step with a different UI state from the one it inherited.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "Restore the fixture's incoming UI state, or require an idle UI before acquiring probe state and leave it intact when that prerequisite fails.",
+      "id": "R2-F4",
+      "location": {
+        "file": "tools/LoaderCompatHarness/SpearRepairProbes.cs",
+        "line": 1320
+      },
+      "priority": "P2",
+      "requested_correction": "Track which targeting, group and selection changes the probe acquired. Limit cleanup to those changes and verify the restored state against the captured precondition.",
+      "requested_evidence": "Use the existing stall after party insertion with an already-open spell group or pre-existing target. Verify the probe preserves that state on timeout, or refuses the non-idle fixture before mutation.",
+      "title": "Sorcerer cleanup can clear UI state that predates the probe",
+      "trigger": "The probe inherits active targeting or an open spell group and exits before it takes ownership of that UI."
+    }
+  ],
+  "prior_finding_assessments": [
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R1-F1",
+      "rationale": "Classify now treats an observed getter mismatch as fatal regardless of patch ownership. The native 7 ft spear-only case failed with the owner named, and the mutated-donor construction case passed. R2-F2 and R2-F3 concern values that never reach Classify accurately."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R1-F2",
+      "rationale": "Foundation checks precede publication, AttachNamed publishes after named registration, and bootstrap immediately takes the rollback handle. Both the post-registration corruption case and the named-registration failure passed their native selector-state comparisons."
+    },
+    {
+      "assessment": "fix_rejected",
+      "finding_id": "R1-F3",
+      "rationale": "The per-predicate reader handles throwing getters and reports simultaneous owned failures. The separate unguarded donor Weight reads still let a diagnostic comparison abort registration."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R1-F4",
+      "rationale": "The persistence session wrote the affected items, disabled Gunslinger, and loaded the written save in a fresh process. Its assertions cover the resolved spear profile, strict battered-owner lookup, special price, tooltip price and control items."
+    },
+    {
+      "assessment": "fix_rejected",
+      "finding_id": "R1-F5",
+      "rationale": "The UI selection, command-success and native-single checks now exercise the required paths. The spawned-unit expectation still comes from the ability being tested, leaving the match to the displayed choice unverified by the verdict."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R1-F6",
+      "rationale": "ProbeSlot now releases the probe on terminal paths and propagates cleanup failures. The timeout and injected-release-failure launches exercised both behaviors, including stopping before the next step. R2-F4 concerns which UI state Release may change."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R1-F7",
+      "rationale": "Throws mode now requires every price query and tooltip fill to throw with the expected cause. The published v0.0.192 baseline passed with five attempts per path for each of the two items."
+    }
+  ],
+  "request_id": "kmg-codex-spear-bootstrap-tooltip-repair-20261121062854-a704-r02-7edcf8",
+  "round": 2,
+  "schema_version": "agent-review.review.v1",
+  "summary": {
+    "delivered_behavior": "Explicit clone fields repair the reproduced serialized donor mutation. Ordinary pricing and tooltip fills survive the induced startup failure with one warning. Successful startup preserves battered pricing, saved ownership and spear identities with Gunslinger disabled. The reporter-shaped session exercised a visible menu, native row selection and a successful cast.",
+    "pending_later_phase_work": [],
+    "remaining_owner_review": [
+      "After correction, the owner retains the merge and release decisions. The evidence supports no attribution to a particular third-party mod."
+    ],
+    "scope_reviewed": "Complete final mission for PR #195 at b12776636b659baf4904c930ff420f51403d8a9b, including all seven prior findings.",
+    "unresolved_questions": [
+      "Which spear predicate failed in the reporter's installation, and what changed it? The available partial stack did not reproduce that failure."
+    ]
+  }
+}
+```
+</details>
+
+_Model-generated review by Codex using the requested model, posted by the agent-review controller through the owner's GitHub account. Not a human review or approval._

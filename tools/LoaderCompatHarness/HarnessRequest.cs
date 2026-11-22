@@ -53,6 +53,12 @@ namespace KmgLoaderCompatHarness
         /// <summary>A failure of this step is recorded and fails the run, but the remaining steps still execute.</summary>
         [JsonProperty("continueOnFailure")] public bool ContinueOnFailure;
 
+        /// <summary>
+        /// The step must fail with this text and leave isolation restored; that outcome counts as done. A success, a
+        /// different failure or an unrestored isolation fails the step.
+        /// </summary>
+        [JsonProperty("expectFailure")] public string ExpectFailure;
+
         public override string ToString() => Op + (Label != null ? "[" + Label + "]" : string.Empty) + (Match != null ? "(" + Match + ")" : string.Empty);
     }
 }

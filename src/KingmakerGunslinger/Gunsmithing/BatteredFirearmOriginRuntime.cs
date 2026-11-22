@@ -62,6 +62,58 @@ namespace KingmakerGunslinger.Gunsmithing
             return TryGetOwner(weapon, out ignored);
         }
 
+        /// <summary>
+        /// Read-only inspection for UI and pricing hooks that see every weapon.
+        /// When blueprint initialization has not completed, or failed, the
+        /// origin token blueprint was never registered in this process, so no
+        /// live item can carry it and the weapon is reported as not battered
+        /// (its native behavior stays untouched). A completed initialization
+        /// without the token is an invariant violation and still throws, as do
+        /// malformed tokens on a weapon. Creation, transfer and ownership checks
+        /// keep using <see cref="Bind"/> and <see cref="TryGetOwner"/>, which
+        /// require the blueprint.
+        /// </summary>
+        internal static bool IsBatteredForInspection(ItemEntity item)
+        {
+            ItemEntityWeapon weapon = item as ItemEntityWeapon;
+            if (weapon == null) return false;
+            BatteredOriginInspection inspection =
+                BatteredFirearmOriginInspectionPolicy.Decide(
+                    BlueprintBootstrap.IsInitialized,
+                    BlueprintBootstrap.IsFailed,
+                    BlueprintBootstrap.BatteredOrigin != null);
+            if (inspection == BatteredOriginInspection.Unavailable)
+            {
+                ReportUnavailableOnce();
+                return false;
+            }
+            UnitEntityData ignored;
+            return TryGetOwner(weapon, out ignored);
+        }
+
+        private static int _unavailableReported;
+
+        internal static bool UnavailableReported
+        {
+            get
+            {
+                return System.Threading.Interlocked.CompareExchange(
+                    ref _unavailableReported, 0, 0) != 0;
+            }
+        }
+
+        private static void ReportUnavailableOnce()
+        {
+            if (System.Threading.Interlocked.Exchange(ref _unavailableReported, 1) != 0)
+                return;
+            ModContext context;
+            if (!ModContext.TryGet(out context)) return;
+            context.Logger.Warning("gunsmithing", "battered-origin.inspection-unavailable",
+                "Blueprint initialization " + (BlueprintBootstrap.IsFailed
+                    ? "failed" : "has not completed") +
+                ", so the battered firearm origin token is not registered in this process. Weapon price and tooltip inspection keep native values; battered creation and transfer stay disabled. Reported once.");
+        }
+
         internal static bool SameStableOwner(UnitEntityData left,
             UnitEntityData right)
         {
@@ -90,7 +142,12 @@ namespace KingmakerGunslinger.Gunsmithing
             BlueprintWeaponEnchantment value = BlueprintBootstrap.BatteredOrigin;
             if (value == null)
                 throw new InvalidOperationException(
-                    "The battered origin token blueprint is unavailable.");
+                    "The battered origin token blueprint is unavailable" +
+                    (BlueprintBootstrap.IsFailed
+                        ? " because blueprint initialization failed."
+                        : BlueprintBootstrap.IsInitialized
+                            ? " although blueprint initialization completed."
+                            : " because blueprint initialization has not completed."));
             return value;
         }
     }

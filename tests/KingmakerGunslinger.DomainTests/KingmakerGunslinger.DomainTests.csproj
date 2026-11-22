@@ -231,6 +231,9 @@
     <Compile Include="..\..\src\KingmakerGunslinger\EasternWeapons\EasternWeaponCatalog.cs"><Link>EasternWeapons\EasternWeaponCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\EasternWeapons\EasternWeaponMartialPublicationPolicy.cs"><Link>EasternWeapons\EasternWeaponMartialPublicationPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElvenBranchedSpear\ElvenBranchedSpearCatalog.cs"><Link>ElvenBranchedSpear\ElvenBranchedSpearCatalog.cs</Link></Compile>
+    <Compile Include="SpearBootstrapTooltipRepairTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\ElvenBranchedSpear\ElvenBranchedSpearProfilePolicy.cs"><Link>ElvenBranchedSpear\ElvenBranchedSpearProfilePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmOriginInspectionPolicy.cs"><Link>Gunsmithing\BatteredFirearmOriginInspectionPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs"><Link>ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs</Link></Compile>
     <Compile Include="SummonPublicationPolicyTests.cs" />
     <Compile Include="SummonAlphabeticalMenuTests.cs" />

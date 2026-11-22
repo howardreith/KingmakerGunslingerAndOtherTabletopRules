@@ -11,12 +11,29 @@ runs its own steps or only isolates while the candidate's own guarded runtime
 scenario (-kmgRuntimeTestRequest) runs. The copy's Mods folder and the session
 profile persist between launches, so settings and saves cross real restarts.
 
-Safety (adapted from the Kingmaker Cutscene Skip lab harness): refuses while
-Kingmaker runs, another lab holds a runtime lock, a journal is pending or Steam
-Cloud sync is not proven disabled; refuses any copy outside the lab's
-game-copies root; hashes the owner's saves and loader/mod files before and
-after; backs up and exactly restores the game's registry settings (journalled,
--RecoverOnly replays it); stops only a process it started from the copy.
+Safety (adapted from the Kingmaker Cutscene Skip lab harness). The runner
+supports one new, exclusively owned session followed by its normal verified
+completion:
+- before anything changes it refuses a running Kingmaker, any configured
+  runtime or game-copy lock, a pending session journal, or Steam Cloud sync not
+  proven disabled, and takes over or cleans up none of them;
+- it refuses any copy outside the lab's game-copies root and stops only a
+  process it started from the copy;
+- it holds the lab's shared runtime lease and its own game-copy lock for the
+  whole session and re-checks the host before every launch; a foreign game, a
+  foreign lab lock or a lost claim observed at any point is remembered, and
+  that session is retained without any automatic restoration, even if the peer
+  has exited by completion;
+- it hashes the owner's saves and loader/mod files at intake, backs up the
+  game's registry settings bound to a digest, and at completion imports a held,
+  verified copy of that backup, reads the key back and compares it exactly,
+  and verifies the owner's files before releasing ownership.
+
+Any failure of that completion exits 1 and retains the journal, both locks, the
+backup and a RecoveryRequired lease; later sessions refuse that state. There
+is no recovery mode: an interrupted or retained session is resolved by a
+deliberate manual procedure ("Manual recovery" in
+docs/SPEAR-BOOTSTRAP-TOOLTIP-REPAIR.md).
 #>
 [CmdletBinding()]
 param(
@@ -27,19 +44,110 @@ param(
     [string]$GameCopy = 'C:\Dev\KingmakerGunslingerLab\game-copies\loader-compat',
     [string]$FixtureDir = 'C:\Dev\KingmakerSkipCinematicLab\fixtures',
     [int]$LaunchTimeoutSeconds = 900,
-    [switch]$RecoverOnly
+    # Read-only: prints the machine-recorded results of an existing session - the session-summary.json identity,
+    # verdict, restoration and per-launch log fields, or with -ReportLaunch one launch's harness-result.json steps
+    # and pricing/initialization/profile records - each with its file's SHA-256, so a finished session can be
+    # surfaced as recorded command output. Starts nothing and changes nothing.
+    [string]$Report,
+    # With -Report: print that launch's records (label prefix, e.g. 02) instead of the session summary.
+    [string]$ReportLaunch,
+    # Runs the offline session-guard checks (Test-LoaderCompatSafety.ps1) and exits.
+    [switch]$SafetyTests
 )
 
 . (Join-Path $PSScriptRoot 'LoaderCompat.Common.ps1')
 
-if ($RecoverOnly) {
-    if (-not (Test-Path -LiteralPath $script:LcJournal)) { Write-Host 'No interrupted session journal.'; return }
-    if (Get-Process -Name Kingmaker -ErrorAction SilentlyContinue) { throw 'Kingmaker is running; recover after it exits.' }
-    $journal = Get-Content -LiteralPath $script:LcJournal -Raw | ConvertFrom-Json
-    if ($journal.registryBackup) { Restore-LcRegistry $journal.registryBackup }
-    Remove-Item -LiteralPath $script:LcJournal -Force
-    Exit-LcLock
-    Write-Host "Recovered interrupted session $($journal.sessionId)."
+if ($Report) {
+    if ($Report -notmatch '^[0-9]{8}T[0-9]{6}Z-[A-Za-z0-9.\-]+$') { throw '-Report takes a session id such as 20261121T171410Z-umm-0.31.1-spear-bootstrap-simulated.' }
+    $reportDir = Join-Path $script:LcEvidenceRoot $Report
+    $summaryPath = Join-Path $reportDir 'session-summary.json'
+    if (-not (Test-Path -LiteralPath $summaryPath)) { throw "No session summary at $summaryPath" }
+    function Get-LcReportValue($Object, [string]$Name) {
+        if ($null -eq $Object) { return $null }
+        $property = $Object.PSObject.Properties[$Name]
+        if ($null -eq $property) { return $null }
+        # The unary comma keeps an array (empty and single-element included) as one value through the function
+        # pipeline, so the report preserves each field's JSON type and cardinality.
+        return , $property.Value
+    }
+    # Shape self-check, before any evidence is printed: empty and single-element arrays must survive the projection.
+    $shapeProbe = '{"problems":[],"activeMods":["only"],"steps":[{"step":"a"}]}' | ConvertFrom-Json
+    $shapeText = ([ordered]@{ problems = (Get-LcReportValue $shapeProbe 'problems'); activeMods = (Get-LcReportValue $shapeProbe 'activeMods')
+        steps = (Get-LcReportValue $shapeProbe 'steps') } | ConvertTo-Json -Depth 4 -Compress)
+    if ($shapeText -ne '{"problems":[],"activeMods":["only"],"steps":[{"step":"a"}]}') { throw "report projection changes array shape: $shapeText" }
+    Write-Host "REPORT SHAPE CHECK $shapeText"
+    $summaryData = Get-Content -LiteralPath $summaryPath -Raw | ConvertFrom-Json
+    if (-not $ReportLaunch) {
+        Write-Host "READ-ONLY REPORT $summaryPath sha256=$(Get-LcSha256 $summaryPath)"
+        $head = [ordered]@{}
+        foreach ($name in @('sessionId', 'session', 'loaderProfile', 'candidateZip', 'candidateZipSha256', 'git', 'candidateVersion', 'status',
+                'ownerSaveFiles', 'registryRestored', 'registryRestore', 'registryVerification', 'transactionSucceeded', 'scenarioPassed', 'ownerSavesUnchanged',
+                'ownerInstallUnchanged', 'ownerIntegrity', 'ownership', 'transactionId', 'runtimeLease', 'hostConflict', 'retained', 'failure', 'integrityFailures', 'stagedMods')) {
+            $head[$name] = Get-LcReportValue $summaryData $name
+        }
+        # The session's shared runtime lease as it stands now: its journal status and whether the shared lock is free.
+        $leaseId = Get-LcReportValue $summaryData 'runtimeLease'
+        if ($leaseId) {
+            $leasePath = Join-Path (Join-Path $script:LcStateRoot $leaseId) 'runtime-lease.json'
+            $leaseState = if (Test-Path -LiteralPath $leasePath) { Get-Content -LiteralPath $leasePath -Raw | ConvertFrom-Json } else { $null }
+            $sharedLock = Join-Path $script:LcStateRoot 'compatibility.lock'
+            $head['runtimeLeaseNow'] = [ordered]@{ status = (Get-LcReportValue $leaseState 'status'); recoveryRequired = (Get-LcReportValue $leaseState 'recoveryRequired')
+                purpose = (Get-LcReportValue $leaseState 'purpose'); reason = (Get-LcReportValue $leaseState 'reason')
+                integrity = (Get-LcReportValue $leaseState 'integrity'); registryRestore = (Get-LcReportValue $leaseState 'registryRestore')
+                sharedLockHeldBy = $(if (Test-Path -LiteralPath $sharedLock) { (Get-Content -LiteralPath $sharedLock -Raw).Trim() } else { '<free>' }) }
+        }
+        Write-Host ($head | ConvertTo-Json -Depth 6 -Compress)
+        foreach ($launch in @($summaryData.launches)) {
+            $identity = Get-LcReportValue $launch 'identity'
+            Write-Host ([ordered]@{ label = $launch.label; verdict = $launch.verdict; harness = (Get-LcReportValue $launch 'harness')
+                problems = (Get-LcReportValue $launch 'problems'); seconds = (Get-LcReportValue $launch 'seconds')
+                conditions = (Get-LcReportValue $launch 'conditions'); productSha256 = (Get-LcReportValue $identity 'productSha256')
+                umm = (Get-LcReportValue $identity 'umm'); activeMods = (Get-LcReportValue $identity 'activeMods')
+                log = (Get-LcReportValue $launch 'log') } | ConvertTo-Json -Depth 6 -Compress)
+        }
+        return
+    }
+    foreach ($launchDir in @(Get-ChildItem -LiteralPath $reportDir -Directory | Where-Object { $_.Name -match '^[0-9]{2}-' -and $_.Name.StartsWith($ReportLaunch) } | Sort-Object Name)) {
+        $resultPath = Join-Path $launchDir.FullName 'harness\harness-result.json'
+        if (-not (Test-Path -LiteralPath $resultPath)) { Write-Host "== $($launchDir.Name): no harness-result.json"; continue }
+        $result = Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json
+        $picked = [ordered]@{ runId = (Get-LcReportValue $result 'runId'); status = (Get-LcReportValue $result 'status')
+            failure = (Get-LcReportValue $result 'failure'); isolationRestored = (Get-LcReportValue $result 'isolationRestored')
+            steps = (Get-LcReportValue $result 'steps') }
+        foreach ($property in $result.PSObject.Properties) {
+            $value = $property.Value
+            if ($property.Name -match '^kmgItemPricing_') {
+                $picked[$property.Name] = [ordered]@{ repeat = (Get-LcReportValue $value 'repeat')
+                    sellPricePatchOwners = (Get-LcReportValue $value 'sellPricePatchOwners')
+                    ordinary = @((Get-LcReportValue $value 'ordinary') | Where-Object { $_ } | ForEach-Object { [ordered]@{ name = $_.name
+                        queries = $_.queries; sellPrices = $_.sellPrices; tooltipSellPrices = $_.tooltipSellPrices; priceThrows = $_.priceThrows
+                        tooltipThrows = $_.tooltipThrows; priceCauseMatches = $_.priceCauseMatches; tooltipCauseMatches = $_.tooltipCauseMatches } })
+                    batteredInspectionUnavailableReported = (Get-LcReportValue $value 'batteredInspectionUnavailableReported')
+                    bootstrap = (Get-LcReportValue $value 'bootstrap') }
+            }
+            elseif ($property.Name -match '^(kmgInitialization|kmgSpearPersistFixture|kmgSpearPersistedItems|kmgModules)_') { $picked[$property.Name] = $value }
+            elseif ($property.Name -match '^kmgItemDamage_') {
+                $damage = [ordered]@{}
+                foreach ($entry in $value.PSObject.Properties) { if ($entry.Name -ne 'conditions') { $damage[$entry.Name] = $entry.Value } }
+                $picked[$property.Name] = $damage
+            }
+            elseif ($property.Name -match '^kmgWeaponTypeProfile_') {
+                $owned = Get-LcReportValue $value 'ownedSpear'
+                $picked[$property.Name] = [ordered]@{ ownedSpearPresent = (Get-LcReportValue $value 'ownedSpearPresent')
+                    ownedGetters = (Get-LcReportValue $owned 'getters'); conditions = (Get-LcReportValue $value 'conditions') }
+            }
+        }
+        Write-Host "== $($launchDir.Name) harness-result.json sha256=$(Get-LcSha256 $resultPath)"
+        Write-Host ($picked | ConvertTo-Json -Depth 8 -Compress)
+    }
+    return
+}
+
+if ($SafetyTests) {
+    # Offline fixture checks of the session guards: refusal of pre-existing state, shared ownership, per-launch
+    # host checks, verified restoration and retention on failure. No game, loader, registry or owner file is touched.
+    try { & (Join-Path $PSScriptRoot 'Test-LoaderCompatSafety.ps1') }
+    catch { Write-Host "Safety checks aborted: $($_.Exception.Message)`n$($_.ScriptStackTrace)"; exit 1 }
     return
 }
 
@@ -53,23 +161,29 @@ $sessionId = [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ') + '-' + $LoaderProf
 $evidence = Join-Path $script:LcEvidenceRoot $sessionId
 $profileDir = Join-Path $evidence 'profile'
 
-Assert-LcPreflight
-Enter-LcLock $sessionId
-New-Item -ItemType Directory -Force -Path $evidence, (Join-Path $profileDir 'Saved Games') | Out-Null
+# Everything checkable is checked before anything is acquired.
+$candidateSha = Assert-LcSessionInputs $CandidateZip $HarnessDir
 $summary = [ordered]@{ sessionId = $sessionId; session = $session.name; loaderProfile = $LoaderProfile
-    candidateZip = $CandidateZip; candidateZipSha256 = Get-LcSha256 $CandidateZip; gameCopy = $copyRoot
+    candidateZip = $CandidateZip; candidateZipSha256 = $candidateSha; gameCopy = $copyRoot
     git = (& git -C (Split-Path (Split-Path (Split-Path $PSScriptRoot))) rev-parse HEAD); launches = @(); status = 'started' }
-$journal = [ordered]@{ sessionId = $sessionId; registryBackup = $null }
-$savesBefore = $null; $installBefore = $null
+Assert-LcPreflight
+# One journaled transaction for the whole session: the shared runtime lease (compatibility.lock) and the private
+# loader-compat lock. From here on every fallible step is inside the try, whose finally completes or retains it.
+$transaction = Enter-LcSessionTransaction $sessionId
+$scope = $transaction.Scope
+$journal = $transaction.Journal
+$summary.runtimeLease = $scope.Lease.RunId
+$summary.transactionId = $journal.transactionId
+$hostError = $false
+$verdict = $null
 try {
-    $savesBefore = Get-LcOwnerSavesManifest
-    $installBefore = Get-LcOwnerInstallManifest
-    $summary.ownerSaveFiles = $savesBefore.Count
-    Write-LcJson $script:LcJournal $journal
+    New-Item -ItemType Directory -Force -Path $evidence, (Join-Path $profileDir 'Saved Games') | Out-Null
+    $intake = Save-LcIntake $journal
+    $summary.ownerSaveFiles = $intake.savesCount
     $registryBackup = Join-Path $evidence 'game-settings.reg'
     Backup-LcRegistry $registryBackup
-    $journal.registryBackup = $registryBackup
-    Write-LcJson $script:LcJournal $journal
+    # Bound to its digest: completion imports only a held copy of these verified bytes and compares the readback with them.
+    Set-LcRegistryBackup $journal $registryBackup
 
     Initialize-LcGameCopy $paths
     $summary.loaderInstall = Install-LcLoaderProfile $paths $LoaderProfile
@@ -147,6 +261,16 @@ try {
             $arguments += @('-kmgRuntimeTestRequest', $productRequestPath)
         }
 
+        # Every fresh launch re-checks the host and the session's claims: a peer game or a sibling lab lock that
+        # appeared after the session preflight withholds this launch and every later one.
+        try { Assert-LcLaunchAvailable $scope.Lease $journal }
+        catch {
+            $record.verdict = 'withheld'; $record.problems += $_.Exception.Message
+            Write-LcJson (Join-Path $launchDir 'launch-summary.json') $record
+            $summary.launches += $record
+            Write-Host ("{0} WITHHELD {1}" -f $label, $_.Exception.Message)
+            break
+        }
         $started = Get-Date
         $process = Start-LcKingmakerCopy $paths $arguments
         $record.pid = $process.Id
@@ -179,7 +303,24 @@ try {
         if (Test-Path -LiteralPath $harnessResultPath) {
             $harnessResult = Get-Content -LiteralPath $harnessResultPath -Raw | ConvertFrom-Json
             $record.harness = $harnessResult.status
-            if ($harnessResult.status -ne 'passed') { $record.problems += "harness: $($harnessResult.failure)" }
+            if ($launch.PSObject.Properties['expectHarnessFailure'] -and $launch.expectHarnessFailure) {
+                # This launch must end with the harness failing, its failure naming every listed text, and none of
+                # the listed steps (matched by "[label]") having run.
+                $record.expectedHarnessFailure = @($launch.expectHarnessFailure)
+                if ($harnessResult.status -ne 'failed') { $record.problems += "harness $($harnessResult.status); an expected failure did not occur" }
+                foreach ($needle in @($launch.expectHarnessFailure)) {
+                    if (([string]$harnessResult.failure).IndexOf([string]$needle, [StringComparison]::Ordinal) -lt 0) {
+                        $record.problems += "harness failure lacks '$needle': $($harnessResult.failure)"
+                    }
+                }
+                if ($launch.PSObject.Properties['expectStepsNotRun']) {
+                    foreach ($stepLabel in @($launch.expectStepsNotRun)) {
+                        if (@($harnessResult.steps | Where-Object { ([string]$_.step).Contains("[$stepLabel]") }).Count -ne 0) {
+                            $record.problems += "step [$stepLabel] ran after the expected stop"
+                        }
+                    }
+                }
+            } elseif ($harnessResult.status -ne 'passed') { $record.problems += "harness: $($harnessResult.failure)" }
         } elseif ($product) {
             # The product's scenario owns the exit; the harness only had to
             # isolate the profile and record identity, both checked here.
@@ -203,14 +344,15 @@ try {
             if (-not (Test-Path -LiteralPath $logCopy)) { $record.problems += 'no loader log was captured for expectLog' }
             else {
                 $logText = [IO.File]::ReadAllText($logCopy)
-                $record.log = [ordered]@{ present = @(); absent = @() }
-                foreach ($group in @('present', 'absent')) {
+                $record.log = [ordered]@{ present = @(); absent = @(); once = @() }
+                foreach ($group in @('present', 'absent', 'once')) {
                     if (-not $launch.expectLog.PSObject.Properties[$group]) { continue }
                     foreach ($needle in @($launch.expectLog.$group | Where-Object { $_ })) {
                         $count = ([regex]::Matches($logText, [regex]::Escape([string]$needle))).Count
                         $record.log[$group] += "$needle x$count"
                         if ($group -eq 'present' -and $count -eq 0) { $record.problems += "log lacks '$needle'" }
                         if ($group -eq 'absent' -and $count -ne 0) { $record.problems += "log contains '$needle' ($count)" }
+                        if ($group -eq 'once' -and $count -ne 1) { $record.problems += "log contains '$needle' $count times, expected exactly once" }
                     }
                 }
             }
@@ -220,35 +362,50 @@ try {
         $summary.launches += $record
         Write-Host ("{0} {1} {2}s {3}" -f $label, $record.verdict, $record.seconds, ($record.problems -join '; '))
     }
-    $summary.status = $(if (@($summary.launches | Where-Object { $_.verdict -ne 'PASS' }).Count -eq 0) { 'PASS' } else { 'FAIL' })
 }
 catch {
-    $summary.status = 'host-error'
+    $hostError = $true
     $summary.failure = $_.ToString()
-    throw
+    Write-Host "Session host error: $($_.Exception.Message)`n$($_.ScriptStackTrace)"
 }
 finally {
-    $integrity = @()
-    $deadline = (Get-Date).AddSeconds(60)
-    while ((Get-Process -Name Kingmaker -ErrorAction SilentlyContinue) -and (Get-Date) -lt $deadline) { Start-Sleep -Seconds 1 }
-    try {
-        if ($journal.registryBackup) { Restore-LcRegistry $journal.registryBackup }
-        $summary.registryRestored = $true
-        if (Test-Path -LiteralPath $script:LcJournal) { Remove-Item -LiteralPath $script:LcJournal -Force }
-    } catch { $summary.registryRestored = $false; $integrity += "registry restoration failed: $($_.Exception.Message)" }
-    if ($null -ne $savesBefore) {
-        $diff = Compare-LcManifest $savesBefore (Get-LcOwnerSavesManifest)
-        $summary.ownerSavesUnchanged = ($diff.Count -eq 0)
-        if ($diff.Count) { $summary.ownerSaveChanges = $diff; $integrity += 'owner saves changed' }
+    $problems = @()
+    # At a safe boundary only: restore the verified game settings, read them back, verify the owner's files, then
+    # complete the lease and release this session's claims. Any failure retains the session for manual recovery.
+    $ownership = $null
+    try { $ownership = Complete-LcSessionOwnership $journal $scope { param($Path) Restore-LcRegistry $Path } }
+    catch { $problems += "ownership completion threw: $($_.Exception.Message)" }
+    $summary.ownership = $(if ($null -ne $ownership) { $ownership.Outcome } else { 'unknown' })
+    $summary.registryRestore = [string]$journal.registryRestore
+    $summary.registryRestored = ([string]$journal.registryRestore) -cin @('applied', 'not-needed')
+    $summary.registryVerification = $journal.registryVerification
+    $summary.hostConflict = $journal.hostConflict
+    if ($null -eq $ownership -or $ownership.Outcome -cne 'completed') {
+        if ($null -ne $ownership) { $problems += $ownership.Reason }
+        $summary.retained = [ordered]@{ journal = $script:LcJournal; transactionId = $journal.transactionId; leaseRunId = $journal.leaseRunId
+            leaseStatePath = $journal.leaseStatePath; sharedLock = (Get-LcSharedLockPath); privateLock = $script:LcLock
+            registryBackup = $journal.registryBackup; registryBackupSha256 = $journal.registryBackupSha256; phase = $journal.phase }
     }
-    if ($null -ne $installBefore) {
-        $diff = Compare-LcManifest $installBefore (Get-LcOwnerInstallManifest)
-        $summary.ownerInstallUnchanged = ($diff.Count -eq 0)
-        if ($diff.Count) { $summary.ownerInstallChanges = $diff; $integrity += 'owner installation changed' }
+    $check = $journal.integrity
+    if ($null -eq $check) { $summary.ownerIntegrity = 'not-verified' }
+    else {
+        $summary.ownerIntegrity = $check.status
+        if ($check.Contains('ownerSavesUnchanged')) {
+            $summary.ownerSavesUnchanged = $check.ownerSavesUnchanged
+            $summary.ownerInstallUnchanged = $check.ownerInstallUnchanged
+            if (-not $check.ownerSavesUnchanged) { $summary.ownerSaveChanges = $check.ownerSaveChanges }
+            if (-not $check.ownerInstallUnchanged) { $summary.ownerInstallChanges = $check.ownerInstallChanges }
+        }
     }
-    if ($integrity.Count) { $summary.status = 'integrity-failed'; $summary.integrityFailures = $integrity }
-    Write-LcJson (Join-Path $evidence 'session-summary.json') $summary
-    if (-not (Test-Path -LiteralPath $script:LcJournal)) { Exit-LcLock }
-    Write-Host "Session $sessionId : $($summary.status) $($integrity -join '; ')"
+    $verdict = Get-LcSessionVerdict @($summary.launches) $hostError $ownership
+    $summary.scenarioPassed = $verdict.ScenarioPassed
+    $summary.transactionSucceeded = $verdict.TransactionSucceeded
+    $summary.status = $verdict.Status
+    if ($problems.Count) { $summary.integrityFailures = $problems }
+    if (Test-Path -LiteralPath $evidence) { Write-LcJson (Join-Path $evidence 'session-summary.json') $summary }
+    Write-Host "Session $sessionId : $($summary.status) (scenario $(if ($verdict.ScenarioPassed) { 'passed' } else { 'not passed' }); transaction $($summary.ownership), game settings $($summary.registryRestore), owner files $($summary.ownerIntegrity)) $($problems -join '; ')"
     Write-Host "Evidence: $evidence"
 }
+# Only a session whose launches all passed and whose transaction completed with verified restoration exits 0.
+if ($null -eq $verdict) { exit 1 }
+exit $verdict.ExitCode
