@@ -916,6 +916,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("brown-fur.persistence-raw-numbers", BrownFurPersistenceRecoveryTests.NumbersKeepTheirTextAndNeverThrow),
             Case("brown-fur.persistence-raw-repeated-members", BrownFurPersistenceRecoveryTests.RepeatedMembersAreRetainedWithEveryOccurrence),
             Case("brown-fur.persistence-raw-metadata-scalars", BrownFurPersistenceRecoveryTests.UnsupportedMetadataAndScalarMembersArePreserved),
+            Case("brown-fur.persistence-engine-dictionary-path", BrownFurPersistenceRecoveryTests.EngineDictionaryPathKeepsWhatReachesTheOwner),
             Case("brown-fur.share-scope-exact", BrownFurCastTests.ShareTargetingScopeIsExact),
             Case("brown-fur.share-scope-concurrent", BrownFurCastTests.ShareTargetingScopesAreIsolated),
             Case("brown-fur.supremacy-scope-exact", BrownFurCastTests.SupremacyScopeIsExactAndNonStacking),

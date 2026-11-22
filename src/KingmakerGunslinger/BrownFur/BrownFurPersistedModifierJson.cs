@@ -73,8 +73,12 @@ namespace KingmakerGunslinger.BrownFur
     }
 
     /// <summary>
-    /// Reads one JSON value token by token from the engine's reader without materializing it through JObject
-    /// (which keeps only the last of repeated members) and without narrowing numbers. Newtonsoft 8 (the engine's
+    /// Reads one JSON value token by token without materializing it through JObject (which keeps only the last of
+    /// repeated members) and without narrowing numbers. This holds when the converter reads a JsonTextReader. Unit
+    /// parts in a save do not: the engine's DictionaryConverter (UnitPartsManager.m_Parts) first loads the whole
+    /// parts array with JArray.Load at the file reader's settings, so repeated members are already collapsed (last
+    /// wins), numbers are already long or double, date-like strings are already dates, and an integer beyond Int64
+    /// fails that load before any owner code runs. From that token reader the capture is total over what it receives. Newtonsoft 8 (the engine's
     /// pinned 8.0.0.0) does not expose a number's source text and throws for integers beyond Int64 and doubles out of
     /// range after it has consumed the number; the source text is therefore read from the JsonTextReader's character
     /// buffer, and that one number failure is resumed, both guarded by the reader's state and the JSON number grammar.
@@ -198,13 +202,20 @@ namespace KingmakerGunslinger.BrownFur
                 }
                 case JsonToken.Date:
                 {
-                    // Only the member's own first token can be a date: the serializer read it with the engine
-                    // reader's settings before this converter ran. Its source string is still the reader's most
-                    // recent string.
-                    string source = RecentStringText(reader) ??
-                        Convert.ToString(reader.Value, CultureInfo.InvariantCulture);
-                    writer.WriteValue(source);
-                    return new JValue(source);
+                    // From the file's own reader only the member's first token can be a date (read with the
+                    // engine reader's settings before this converter ran); its source string is still the
+                    // reader's most recent string. From the engine's token reader (unit parts arrive through
+                    // DictionaryConverter's JArray.Load) the source text no longer exists: the date value is kept
+                    // as the engine produced it and written as the engine's writer writes dates.
+                    string source = RecentStringText(reader);
+                    if (source != null)
+                    {
+                        writer.WriteValue(source);
+                        return new JValue(source);
+                    }
+                    var date = new JValue(reader.Value);
+                    date.WriteTo(writer);
+                    return date;
                 }
                 case JsonToken.String:
                     writer.WriteValue((string)reader.Value);

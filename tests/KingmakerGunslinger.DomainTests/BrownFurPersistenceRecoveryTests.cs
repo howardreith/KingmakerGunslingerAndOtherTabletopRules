@@ -553,6 +553,58 @@ namespace KingmakerGunslinger.DomainTests
                 "The documented Int64 overflow limit at the member's own value changed.");
         }
 
+        // The engine path for unit parts: Kingmaker's DictionaryConverter (UnitPartsManager.m_Parts) runs
+        // JArray.Load(reader) on the file reader, then item["Value"].ToObject(type, serializer). The member converter
+        // therefore reads a JTokenReader over tokens the engine has already materialized. This test reproduces those
+        // two calls; the engine converter itself is exercised natively (risk03-bf-persist).
+        private static Part LoadPartThroughEngine(string valueObject)
+        {
+            string parts = "[{\"Key\":\"part\",\"Value\":" + valueObject + "}]";
+            var reader = new JsonTextReader(new StringReader(parts));
+            reader.Read();
+            JArray loaded = JArray.Load(reader);
+            return (Part)loaded[0]["Value"].ToObject(typeof(Part), JsonSerializer.Create(Settings()));
+        }
+
+        private static Part LoadThroughEngineDictionary(string recordsValue)
+        {
+            return LoadPartThroughEngine("{\"_records\":" + recordsValue + "}");
+        }
+
+        // What the engine hands the owner for one element: the file reader's JToken, written by a plain writer.
+        private static string EngineText(string element)
+        {
+            return JToken.ReadFrom(new JsonTextReader(new StringReader(element))).ToString(Formatting.None);
+        }
+
+        internal static void EngineDictionaryPathKeepsWhatReachesTheOwner()
+        {
+            string future = Rebuff(Extend(R, "\"FutureField\":{\"nested\":[1e100,0.1000000000000000055511151231257827,\"2026-11-22T10:00:00+02:00\"]}"));
+            string linked = "{\"$id\":\"r\",\"SchemaVersion\":2,\"BuffGuid\":\"" + OtherBuffGuid + "\",\"Link\":{\"$ref\":\"r\"}}";
+            Part part = LoadThroughEngineDictionary("[" + R + "," + future + "," + linked + "]");
+            for (int cycle = 0; cycle < 3; cycle++)
+            {
+                BrownFurPersistedModifierState state = part.Read();
+                Assertions.True(ActiveTexts(state).SequenceEqual(new[] { R }),
+                    "The valid record changed on the engine path: " + string.Join(" | ", ActiveTexts(state)));
+                Assertions.True(RetainedTexts(state).SequenceEqual(new[] { EngineText(future), linked }),
+                    "Retained content differs from what the engine handed over: " + string.Join(" | ", RetainedTexts(state)) +
+                    " expected " + EngineText(future));
+                part.Write(state);
+                part = LoadPartThroughEngine(Save(part));
+            }
+
+            // Documented engine limits, asserted so a change is noticed:
+            // repeated members arrive collapsed (last occurrence wins), so the owner cannot see them;
+            string repeated = R.Replace("\"Increase\":2,", "\"Increase\":2,\"Increase\":4,");
+            BrownFurPersistedModifierState collapsed = LoadThroughEngineDictionary("[" + repeated + "]").Read();
+            Assertions.True(collapsed.Active.Count == 1 && collapsed.Active[0].Increase == 4,
+                "The engine's collapse of repeated members changed: " + string.Join(" | ", ActiveTexts(collapsed)));
+            // an integer beyond Int64 fails JArray.Load before the owner runs.
+            Assertions.True(ThrowsJson(() => LoadThroughEngineDictionary("[" + Extend(R, "\"FutureField\":123456789012345678901234567890") + "]")),
+                "The engine's Int64 limit inside a part changed.");
+        }
+
         private static bool ThrowsJson(Action action)
         {
             try { action(); return false; }
