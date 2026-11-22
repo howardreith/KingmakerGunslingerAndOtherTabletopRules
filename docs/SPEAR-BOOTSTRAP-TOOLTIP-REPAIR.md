@@ -7,8 +7,47 @@ v0.0.192). This is a focused development checkpoint under
 `docs/VALIDATION-POLICY.md`. It does not cover release, packaging or broad
 compatibility qualification.
 
+## Status: manual development checkpoint (2026-11-22)
+
+**Owner decision.** For the remainder of PR #195 the owner returned to the
+earlier process: Claude implements and validates, and the owner and ChatGPT
+review the resulting checkpoint. The agent-review enrollment
+`kmg-codex-spear-bootstrap-tooltip-repair-20261121062854-a704` was retired
+through the controller's supported commands, with its pinned package
+`34fb8529…d43c`:
+
+- The enrollment was found `PAUSED`, with no developer running, no lock
+  holder, no pending publications and no runtime lock present.
+- `archive` committed and pushed the 40 posted records as `3d47a8460e`.
+- `cancel` was run with the reason "the owner has selected manual development
+  and review for the remainder of PR #195". The enrollment's state now reads
+  `CANCELLED`, and its host registry entry and worktree claim were removed.
+
+Cancellation is not an acceptance of any finding. The controller's records
+under `docs/agent-reviews/pr-195/` are unchanged history. The paused report's
+statement that all 11 round-11 findings were fixed was the developer's own
+report on `a049ad3c87`, not an independent approval.
+
+This checkpoint:
+
+- **Simplifies the loader-compat runner** to the owner-approved fail-closed
+  contract (§3.5): one new, exclusively owned session followed by its normal
+  verified completion. Interrupted or ambiguous sessions need deliberate
+  manual recovery (§3.5.3).
+- **Leaves the product repair unchanged.** The `src/KingmakerGunslinger`
+  tree is `c948a78d1c6b3d56bb43a92a248da72e199d068e` at `a049ad3c87`, at this
+  checkpoint and at the tested native package revision `4e0ac475aabc`. The
+  domain-test and native-harness trees are also unchanged from `a049ad3c87`.
+- **Gives a disposition for every round-11 finding** (§3.6).
+- **Records the new checks** (offline fixtures, focused gate and one native
+  completion session) in §4.0. All earlier native evidence keeps its
+  original package, harness, runner and environment.
+
 Identities (current first):
 
+- **Current loader-compat runner**: commit `1149394770` (manual checkpoint,
+  §3.5). Every runner described in §3.4 and every session before §4.0 used
+  an earlier runner, now removed.
 - **Current product source**: commit `6d6a295b64` (round 7). It adds the
   bounded item-damage diagnostic to the round-6 product (R7-F2): donor item
   values and the `BlueprintItemWeapon.BaseDamage` patch owners.
@@ -328,7 +367,13 @@ reference, because the clone carries the donor's GUID while it is configured.
   `kmgSetSelection` (`empty` or `main`, through the native selection manager)
   and `kmgSelectionState`.
 
-**Runner support:**
+**Runner support (historical).** Rounds 7 to 11 extended the runner with
+interrupted-session recovery, journal conversion, lock adoption and owner
+resolution. The manual checkpoint removed all of that functionality (§3.5).
+The entries below describe what earlier sessions ran under, as history. They
+are not current behaviour, and removing that code does not mean its
+behaviour was proven correct. Round 11 (`a049ad3c87`, the S11 session in
+§4.0) is described only in the controller's records.
 
 - **Round 10 (`731f7d883a`, journal schema 4).**
   - **Atomic claims (R9-F1, R8-F2).** The journal, `compatibility.lock`
@@ -449,7 +494,270 @@ reference, because the clone carries the donor's GUID while it is configured.
 **Sessions:** reporter-stack, simulated, baseline, persistence,
 probe-lifecycle and observer-selection.
 
+### 3.5 Loader-compat runner contract (manual checkpoint, `1149394770`)
+
+Files: `scripts/compatibility/loader-compat/LoaderCompat.Transaction.ps1`
+(rewritten), `LoaderCompat.Common.ps1`, `Invoke-LoaderCompatSession.ps1` and
+`Test-LoaderCompatSafety.ps1`. The runner is test-only, and nothing in it is
+packaged with the product.
+
+#### 3.5.1 Supported contract
+
+A session is **new and exclusively owned**, and ends in its **normal
+verified completion**:
+
+1. **Admission refuses pre-existing state before anything changes.**
+   `Assert-LcHostFree`, called by the preflight and again by
+   `Enter-LcSessionTransaction`, refuses all of these:
+   - any Kingmaker process;
+   - every configured runtime lock: the shared `compatibility.lock` and
+     each sibling lab's lock;
+   - the game-copy lock `game-copies\loader-compat.lock`;
+   - any `loader-compat.journal.json`, whether current, older, legacy or
+     unreadable.
+
+   The refusal names each blocking item. None of them is taken over,
+   cleaned up or modified.
+2. **Acquisition.** The journal, the shared lock (the lease run id) and the
+   game-copy lock are each written to a private file and published with an
+   atomic no-overwrite rename. The lease record is written beside the
+   lease. A failure while starting releases exactly the claims that call
+   made. If that release cannot finish, the remaining claims are reported
+   for manual recovery.
+3. **Intake.** Owner save and installation manifests are written with their
+   digests. The registry key is exported, and the backup is bound to its
+   SHA-256 in the journal.
+4. **Before every launch**, `Assert-LcLaunchAvailable` checks all of these
+   and withholds the launch otherwise:
+   - no Kingmaker process and no foreign lock;
+   - the live lease handle is still held;
+   - the journal, shared lock and game-copy lock are still this session's;
+   - a backup bound to its intake digest is recorded, so nothing launches
+     that completion could not restore.
+5. **Completion** (`Complete-LcTransaction`), at a safe boundary only:
+   1. `Open-LcVerifiedBackup` reads the backup once and requires that its
+      bytes match the intake digest. No digestless or legacy exception
+      remains. It writes a private verified copy, holds it open with a
+      handle that denies writes and deletion, and re-checks the held bytes.
+   2. Immediately before the registry delete-and-import, host conflicts
+      and claim ownership are checked again.
+   3. The held verified copy is imported.
+   4. `Test-LcRegistryReadback` exports the live key and compares it
+      ordinally, in canonical form, with the same verified bytes. The
+      canonical form keeps each key path, value name, type and ordered
+      multiline data together, with keys and values in ordinal order. A
+      successful `reg.exe` exit is not treated as proof.
+   5. The owner files are compared with the intake.
+   6. Host and claims are checked once more. Only then is the lease
+      written `Completed`, with the registry, readback and integrity
+      verdicts. The shared lock, the game-copy lock and the journal are
+      then released, each only if it still names this session.
+6. **Failure retains the session.** Each of these returns failure and keeps
+   the journal (phase `retained`, with its reason), both locks, the backup,
+   the intake and a `RecoveryRequired` lease naming the transaction:
+   - an unsafe boundary or a withheld restore;
+   - a missing, unreadable, changed or digestless backup;
+   - a failed or interrupted import;
+   - an unreadable, absent or mismatching readback;
+   - owner files that are changed or unverifiable;
+   - claims that changed;
+   - any unexpected error during completion.
+
+   Every later session refuses that state. A process killed mid-session
+   leaves the same retained state.
+7. **Verdict and exit status.** `Get-LcSessionVerdict` reports the scenario
+   result (`scenarioPassed`) separately from the restoration result
+   (`transactionSucceeded`).
+   - A scenario failure with clean restoration is `FAIL`.
+   - A retained or unverified transaction is `integrity-failed`, even
+     when every launch passed.
+   - A host error is `host-error`.
+   - A session with zero launches does not pass.
+
+   The script exits 0 only when the result is `PASS`.
+   `session-summary.json` records `transactionId`, `registryVerification`
+   and, when retained, a `retained` block listing every retained item.
+
+#### 3.5.2 Removed
+
+Removed as unsupported functionality. These paths are gone; the removal does
+not claim their behaviour was ever proven correct.
+
+- `-RecoverOnly`, `-RegistryResolution`, `-ResolveTransaction` and the
+  `Invoke-LcRecovery` / `Invoke-LcRecoverOnlyCommand` paths.
+- Automatic interrupted-session recovery, journal replay and the
+  interrupted-restore reconciliation (`Resolve-LcInterruptedRestore`).
+- Journal schema-2/3/round-7/legacy conversion (`Convert-LcLegacyJournal`,
+  `Find-LcMatchingSchema2Lease`).
+- Orphan and foreign lock adoption, and recovery lease acquisition.
+- Deferred recovery retries and the `loader-compat.recovery.lock` guard.
+- The waiting-caller verdict path (`Get-LcObservedVerdict`).
+- Owner resolution (`ConvertTo-LcResolution`, `Get-LcResolutionHint`).
+- The fixture process-death boundaries (`Step-LcBoundary`).
+- The help text and instructions that promised these capabilities.
+
+Nothing replaces them. There is no recovery command, migration mechanism
+or general transaction framework.
+
+#### 3.5.3 Manual recovery
+
+A retained, interrupted or ambiguous session is resolved by a deliberate
+maintenance action by the owner, or by an operator the owner has authorized
+for that session, outside this runner. Never run it while that session's
+owner process may still be alive, and never run it for another lab's state.
+
+1. **Identify the session and its backup.** Read
+   `C:\Dev\KingmakerGunslingerLab\game-copies\loader-compat.journal.json`
+   and record:
+   - `transactionId`, `sessionId`, `phase` and `reason`;
+   - `leaseRunId` and `leaseStatePath`;
+   - `registryBackup` and `registryBackupSha256`;
+   - `registryRestore` and `registryVerification`;
+   - `intake` and `integrity`.
+
+   The session's evidence is
+   `runtime-evidence\loader-compat\<sessionId>\session-summary.json`, with
+   its `retained` block when the runner got that far. If the journal is
+   missing or unreadable, stop and investigate by hand. Do not infer
+   ownership.
+2. **Verify ownership and provenance.**
+   - `compatibility-state\compatibility.lock` contains exactly `leaseRunId`.
+   - `game-copies\loader-compat.lock` names `session=<sessionId>`.
+   - The lease record at `leaseStatePath` has that `runId`, the purpose
+     `loader-compat <sessionId>` and that `transactionId`.
+   - No process with the journal's `ownerProcessId` and
+     `ownerProcessStartedUtc` is alive.
+   - No Kingmaker process and no other lab's lock exists.
+
+   Stop if anything differs.
+3. **Verify the backup.** Its SHA-256 must equal `registryBackupSha256`.
+   If it does not, do not import it: the owner decides from the evidence.
+4. **Restore the affected state.** Export the current key to a separate
+   file first (`reg export "HKCU\Software\Owlcat Games\Pathfinder Kingmaker"
+   <file> /y`), so nothing is lost. If restoration is needed, run
+   `reg delete "HKCU\Software\Owlcat Games\Pathfinder Kingmaker" /f`, then
+   `reg import <registryBackup>`. Investigate a `changed` or `unresolved`
+   owner-file result against the intake manifests (`intake.savesPath`,
+   `intake.installPath`). The runner never modifies owner files, so these
+   are investigated, not restored.
+5. **Verify the result.** Export the key again and compare it with the
+   backup. For example, dot-source `LoaderCompat.Common.ps1` and evaluate
+   `Test-LcRegistryEqual (Get-LcRegistryCanonical <backup>)
+   (Get-LcRegistryCanonical <export>)`, which only reads. Re-hash the owner
+   manifests against the intake.
+6. **Clear only that session's retained state.** Record the action and its
+   outcome in the lease record: set its status to `Completed` and give a
+   reason naming the manual recovery. Then remove:
+   - `compatibility.lock`, only if it still contains `leaseRunId`;
+   - `loader-compat.lock`, only if it still names the session;
+   - the journal, only if its `transactionId` is still that transaction.
+
+   Keep the evidence directory, the backup, the intake manifests and the
+   readback exports.
+
+#### 3.5.4 Offline fixtures
+
+`Test-LoaderCompatSafety.ps1` (run through `-SafetyTests`) was rewritten for
+this contract, and the recovery-only fixtures were deleted with the removed
+functionality. It runs 98 checks and requires 41 named scenarios to execute,
+covering every case in §3.5.1. The old fixed minimum of 129 checks was
+dropped. It uses real temporary files, real file handles and the real
+shared-lock acquirer as a competitor. Only the external boundaries are
+substituted: the process query, the owner manifests and a `.reg` text
+standing for the key.
+
+### 3.6 Round-11 findings: dispositions at this checkpoint
+
+Each finding below was checked against the resulting code, not its name.
+"Removed" means the affected functionality no longer exists. It is not a
+claim that the old behaviour was tested and proven correct.
+
+| Finding | Disposition | Code at `1149394770` | Evidence |
+|---|---|---|---|
+| R8-F1: recovery checked one journal read and acted on another | **Removed**: no code reads a pending journal to act on it. Every pending journal is refused untouched. | `Get-LcPreexistingState`, `Assert-LcHostFree`, `Enter-LcSessionTransaction` (`LoaderCompat.Transaction.ps1`) | `preexisting-{pending,older,legacy,unreadable}-journal-refused-without-mutation`, `second-session-refused-while-first-owns`; mutation `ignore-pending-journal` caught (21 checks fail) |
+| R8-F2: legacy recovery could run without the shared lease | **Removed**: no legacy conversion and no recovery lease. The only lease is a new session's atomic claim, and an existing `compatibility.lock` is refused. | `Publish-LcClaim`, `Acquire-LcSharedLock`, `Enter-LcSessionTransaction` | `preexisting-shared-lock-…`, `game-copy-lock-race-releases-only-own-claims`, `lease-write-failure-releases-own-claims`, `claim-refuses-existing-and-leaves-it-intact` |
+| R9-F3: a waiting recovery caller could turn a failed verdict into success | **Removed**: there are no recovery callers. The only verdict path is `Get-LcSessionVerdict`, and a retained transaction exits 1. | `Get-LcSessionVerdict`, `Test-LcTransactionSucceeded`; `Invoke-LoaderCompatSession.ps1` `exit $verdict.ExitCode` | `verdict-*` (8 checks), `*-retained` cases with `-not Test-LcTransactionSucceeded` |
+| R10-F2: cleanup discarded an unresolved predecessor result | **Removed**: no predecessor journal is converted or cleaned up; all are refused as they are. | `Get-LcPreexistingState` | `preexisting-older-journal-…`, `preexisting-legacy-journal-…`, `preexisting-unreadable-journal-…` |
+| R11-F1: a KeepCurrent spelling could import | **Removed**: no parameter or code path accepts a registry decision. | `Invoke-LoaderCompatSession.ps1` param block; no `RegistryResolution` reference remains | source search; the manual procedure (§3.5.3) is an owner action, not a runner option |
+| R11-F2: a retry could overwrite settings a peer changed during deferral | **Removed**: no deferral and no retry. A withheld restore retains the session, and nothing re-imports automatically. | `Invoke-LcRegistryRestore`, `Set-LcRetained` | `peer-immediately-before-restore-withholds-and-retains`, `sibling-lock-at-completion-retains-without-restore`, `retained-boundary-refused-by-later-session` |
+| R11-F3: an owner resolution was not bound to its session | **Removed**: there is no owner-resolution command. Manual recovery identifies the transaction id, lease and locks explicitly before acting (§3.5.3). | none (removed) | source search; §3.5.3 steps 1–2 |
+| R10-F5: reconciliation could use different backup bytes | **Retained and verified**: one read, a required intake digest, a held write-denying verified copy for the import, and readback compared with the same verified bytes. | `Open-LcVerifiedBackup`, `Invoke-LcRegistryRestore`, `Test-LcRegistryReadback` | `backup-replaced-during-verification-verified-bytes-used`, `verified-copy-held-against-writes-during-import`, `backup-{missing,changed,unreadable,digestless}-retained-no-import`; mutations `reread-backup-path-for-import` and `digestless-allowed` caught |
+| R10-F3: the final backup read separated the host check from the write | **Retained and verified**: backup verification completes first, then host and claims are checked immediately before `Restore`. | `Invoke-LcRegistryRestore` | `peer-immediately-before-restore-withholds-and-retains` (peer introduced during verification: zero imports, ownership retained), `foreign-claim-before-restore-withholds-and-keeps-it`; mutation `no-host-check-before-restore` caught |
+| R10-F1: linguistic equality could match distinct strings | **Retained and extended**: ordinal canonical comparison is now also applied to the normal post-import readback. | `Test-LcRegistryEqual`, `Get-LcRegistryCanonicalText`, `Test-LcRegistryReadback` | `unicode-spellings-unequal-ordinally`, `readback-unicode-spelling-retained`, `swapped-subkey-values-unequal`, `reordered-multiline-data-unequal`, `value-type-difference-unequal`, `utf16-export-equals-same-data`, `utf16-backup-restores-and-verifies`; mutation `linguistic-compare` caught; native readback in session M (§4.0) |
+| R11-F4: the healthy-profile fixture modelled 17 checks | **Retained**: the `a049ad3c87` fixture correction (`subcategory-list` in the common fixture, 18 checks) is unchanged. | `tests/KingmakerGunslinger.DomainTests/SpearBootstrapTooltipRepairTests.cs` | focused gate (§4.0) |
+
 ## 4. Validation
+
+### 4.0 Manual checkpoint checks (2026-11-22)
+
+All checks ran in the task worktree on host DATA, with PowerShell 5.1 for
+the runner. The runner commit is `1149394770`, and the product source is
+unchanged (§Status).
+
+| Check | Command | Result | Time |
+|---|---|---|---|
+| Offline runner fixtures | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/compatibility/loader-compat/Invoke-LoaderCompatSession.ps1 -SafetyTests` at `1149394770` (clean tree) | **PASS=98 FAIL=0**; 41 of 41 required scenarios executed | 6 s |
+| Fixture sensitivity | seven single-line mutations of a scratch copy of `LoaderCompat.Transaction.ps1`: skip the readback, drop the host check before restore, ignore a pending journal, use linguistic comparison, release on changed owner files, import from the backup path instead of the held copy, allow a digestless backup | every mutation makes the fixture fail with named checks (1 to 21 failing). The scratch copy was deleted and is not committed | about 1 min |
+| Real export round trip (read-only) | canonical comparison of the intake exports of B9, S9, S10, B10 and S11, each taken after the previous session's real delete-and-import, plus one read-only export of the live key | all five exports are byte-identical (`4f2a1907…`) and canonically equal; the live key equals S11's backup | seconds |
+| Native completion session **M** | see below | **PASS**, exit 0, transaction `completed` | 161 s |
+| Focused product gate | see §4.3 | see §4.3 | see §4.3 |
+
+**Session M** (`runtime-evidence/loader-compat/20261122T060334Z-umm-0.31.1-spear-bootstrap-simulated-leased`):
+
+- Runner `1149394770` (the final simplified runner). Session file
+  `spear-bootstrap-simulated-leased.json`, unchanged since S9.
+- Reused package, verified by hash before and in the run:
+  `KingmakerGunslinger-0.0.192-development-spear-bootstrap-tooltip-repair-4e0ac475aabc.zip`
+  (ZIP `253fbe43…3518`, staged and in-process DLL `6b2696c7…7049f`), with
+  harness DLL `494dadf9…d471`.
+- Disposable copy `game-copies\loader-compat` with UMM **0.31.1.0**, the
+  candidate and harness only, and fixture save
+  `KMCS_AFTER_NORMAL_012_MODONLY.zks`.
+- Host window: no Kingmaker process and no lab lock at start. The only
+  active peer session (Mounted Combat) granted a no-launch window, which
+  was released afterwards.
+- Lease `runtime-20261122T060334Z-5ff4f76beee94b32b5cfb338568b7eef`,
+  transaction `f60023e142cb461bb1c562bccc8c7c3a`; summary SHA-256
+  `eda83c40…0c92`.
+- **M-1** (`simulated-donor-mutation`, 73 s): PASS. Startup completed under
+  the 15 ft / Polearms donor mutation, with the expected log lines present
+  and the failure lines absent.
+- **M-2** (`invalid-owned-profile`, 73 s, `harness-result.json`
+  `55faaa96…e2dd`): PASS.
+  - Initialization failed with `1 of 18 checks failed`, with the
+    fighter-group diagnostic and its patch owner, each exactly once, and the
+    unavailable-inspection warning exactly once. The missing-token text
+    appeared 0 times.
+  - Longspear, Longsword, Greataxe and Heavy Crossbow each took 25 price
+    queries at 1, 4, 5 and 13 gp, with 0 price and 0 tooltip throws.
+  - The native Summon Monster I summon and the residue check passed.
+- **Completion**, exercised for real:
+  - staging, both launches and completion;
+  - the registry backup export bound to its digest;
+  - import of the held verified copy;
+  - readback export `registry-readback-11d0e6e9….reg` (SHA-256
+    `4f2a1907…794c`), compared ordinally and canonically with the verified
+    backup `4f2a1907…794c`: `verified`;
+  - owner files `verified` (95 saves, installation unchanged);
+  - the lease `Completed` with those verdicts.
+
+  Afterwards the shared lock read `<free>`, and no game-copy lock, journal
+  or Kingmaker process remained (checked by `-Report` and directly).
+  `transactionSucceeded` and `scenarioPassed` are both true.
+
+No failure path was staged natively. Retention, conflicts, backup problems,
+failed imports and readback mismatches are covered only by the offline
+fixtures. The owner's registry was not damaged and no real session was
+terminated to test them.
+
+**S11, historical** (`20261122T012813Z-…-spear-bootstrap-simulated-leased`,
+summary `f4d38a68…9ffa`). It ran on the round-11 runner `a049ad3c87`, which
+is now removed, with the same package, harness and session file. It passed
+(38 and 74 s) with lease
+`runtime-20261122T012813Z-d79340e45ebf4bba940a4bd6fc06a5ed`, `Completed`
+with `applied` and `verified` (95 saves). That runner had no post-import
+readback. S11 is retained as history and says nothing about the current
+runner.
 
 ### 4.1 Build and focused domain checks (worktree with `GamePath.props`)
 
@@ -524,6 +832,8 @@ Shared runtime leases:
 | **S9** `20261122T000920Z-…-spear-bootstrap-simulated-leased` (round 9, leased) | round-7 candidate | PASS (72, 75 s) |
 | **S10** `20261122T004013Z-…-spear-bootstrap-simulated-leased` (round 10, leased) | round-7 candidate | PASS (74, 69 s) |
 | **B10** `20261122T004257Z-…-spear-bootstrap-baseline` (round 10, leased) | v0.0.192 | PASS (70 s) |
+| **S11** `20261122T012813Z-…-spear-bootstrap-simulated-leased` (round-11 runner `a049ad3c87`, removed; leased) | round-7 candidate | PASS (38, 74 s) |
+| **M** `20261122T060334Z-…-spear-bootstrap-simulated-leased` (final runner `1149394770`, leased; §4.0) | round-7 candidate | PASS (73, 73 s); readback `verified` |
 
 **Round 10: the schema-4 runner.** The product is unchanged since round 7.
 S10 and B10 repeat S9 and B9 under the round-10 runner. Both exited 0 and
@@ -1130,9 +1440,14 @@ Harness iterations kept as evidence:
 
 ### 4.3 Required gate
 
-The `focused` gate runs on the final committed candidate through the
-enrollment's `verify` helper with `-Filter elven-branched-spear`. Its receipt
-is in the developer report.
+After the enrollment was cancelled, the focused gate runs through the
+standalone repository gate, not the controller's `verify` helper:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Invoke-KmgGate.ps1 -Filter elven-branched-spear
+```
+
+It ran on the committed candidate that adds this record (the commit after ). Its result is recorded in the record-only commit that follows; product, test and runner source are identical between them.
 
 ## 5. Remaining limitations and risks for the owner
 
@@ -1214,6 +1529,25 @@ is in the developer report.
    registry key. No real interrupted restore, real registry export failure,
    second game or sibling lab was staged.
 
-   Journals written by earlier runners carry no backup digest. Recovering
-   one that still needs an import therefore needs the owner's explicit
-   `-RegistryResolution` by design.
+   (Historical: the round-10 recovery and `-RegistryResolution` paths were
+   removed at the manual checkpoint, §3.5.2.)
+11. **Manual checkpoint (runner `1149394770`).**
+   - The runner no longer recovers anything. Any interrupted, failed or
+     ambiguous session is retained and blocks every later loader-compat
+     session until someone performs the manual procedure in §3.5.3. That
+     includes a peer game or lab lock appearing at completion, and a
+     killed runner. This is the selected fail-closed trade-off.
+   - Changed or unverifiable owner files now also retain the session.
+     Earlier runners released and reported them.
+   - Retention, conflicts, backup problems, failed imports and readback
+     mismatches are proven only by offline fixtures, with a `.reg` text
+     standing for the key. Session M exercised the real uncontended
+     completion, including a real readback.
+   - Journals left by earlier runners are refused, not migrated. None
+     existed on this host when the checkpoint was made.
+12. **Reporter limitation (unchanged).** The exact failing predicate and the
+   interfering modification in the reporter's original 43-mod installation
+   remain unidentified. The available subset did not reproduce the original
+   failure without the controlled donor mutation. The repair is supported
+   against the established failure mechanism (§2.4). The reporter's exact
+   installation remains unverified.
