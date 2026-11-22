@@ -80,6 +80,8 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
             {
                 return string.Equals(EngineActual, ElvenBranchedSpearProfilePolicy.Deferred,
                         StringComparison.Ordinal) ||
+                    string.Equals(EngineActual, ElvenBranchedSpearProfilePolicy.NotRead,
+                        StringComparison.Ordinal) ||
                     string.Equals(EngineExpected, EngineActual, StringComparison.Ordinal);
             }
         }
@@ -152,6 +154,13 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
         /// identity). It is never judged; the definitive validation reads it.
         /// </summary>
         internal const string Deferred = "<deferred>";
+
+        /// <summary>
+        /// Recorded in every getter slot of a field-only observation whose live
+        /// value is a runtime setting (weight): the getter is never read, so no
+        /// getter value is reported, and the diagnostic says so.
+        /// </summary>
+        internal const string NotRead = "<not-read>";
 
         /// <summary>The spear's serialized reach, as on the native Longspear.</summary>
         internal const int ReachFeet = 10;
@@ -317,8 +326,14 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
                 text.Append(value.Predicate).Append(" [").Append(Kind(values[index].Kind))
                     .Append("]: expected=").Append(Bound(value.ExpectedField))
                     .Append(" actual=").Append(Bound(value.OwnedField))
-                    .Append(" donor=").Append(Bound(value.DonorField))
-                    .Append("; getter expected=").Append(Bound(value.EngineExpected))
+                    .Append(" donor=").Append(Bound(value.DonorField));
+                if (string.Equals(value.EngineActual, NotRead, StringComparison.Ordinal))
+                {
+                    // Field-only observation: no live value was read or is reported.
+                    text.Append("; getter not read (runtime setting); fields only");
+                    continue;
+                }
+                text.Append("; getter expected=").Append(Bound(value.EngineExpected))
                     .Append(" actual=").Append(Bound(value.EngineActual))
                     .Append(" donor=").Append(Bound(value.DonorEngine))
                     .Append("; getterPatches=").Append(Owners(value));

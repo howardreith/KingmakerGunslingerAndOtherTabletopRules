@@ -104,10 +104,12 @@ namespace KmgLoaderCompatHarness
             };
             foreach (string name in conditions.Keys)
             {
-                if (!known.Contains(name) && !SpearRepairConditions.Known.Contains(name)) throw new InvalidOperationException("unknown harness condition " + name);
+                if (!known.Contains(name) && !SpearRepairConditions.Known.Contains(name) && !WeightConditions.Known.Contains(name))
+                    throw new InvalidOperationException("unknown harness condition " + name);
             }
 
             SpearRepairConditions.Apply(harmony, conditions, applied);
+            WeightConditions.Apply(harmony, conditions, applied);
 
             if (Enabled(conditions, UnassignedTextResolvesBlank))
             {

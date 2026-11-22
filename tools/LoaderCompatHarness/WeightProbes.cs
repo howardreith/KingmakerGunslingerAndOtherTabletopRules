@@ -208,6 +208,19 @@ namespace KmgLoaderCompatHarness
                 return value == on ? "on" : value == off ? "off" : "invalid";
             };
             result["before"] = state(settings);
+            // The lab's configuration source (never written by a session) and this session's staged copy of it.
+            string stagedFile = Path.Combine(entry.Path, "Settings.xml");
+            string pristineFile = Path.GetFullPath(Path.Combine(entry.Path, "..", "..", ".lab-pristine", "Mods", ModId, "Settings.xml"));
+            Func<string, string> fileState = file =>
+            {
+                if (!File.Exists(file)) return "absent";
+                string text = File.ReadAllText(file);
+                return text.Contains("<toggleItemsWeighZero>" + System.Security.SecurityElement.Escape(on) + "</toggleItemsWeighZero>") ? "on" :
+                    text.Contains("<toggleItemsWeighZero>" + System.Security.SecurityElement.Escape(off) + "</toggleItemsWeighZero>") ? "off" : "invalid";
+            };
+            result["pristineSettings"] = new JObject { ["path"] = pristineFile, ["sha256"] = WeightReaders.Sha256(pristineFile), ["noItemWeight"] = fileState(pristineFile),
+                ["dllSha256"] = WeightReaders.Sha256(Path.Combine(Path.GetDirectoryName(pristineFile), "BagOfTricks.dll")) };
+            result["stagedSettingsBefore"] = new JObject { ["sha256"] = WeightReaders.Sha256(stagedFile), ["noItemWeight"] = fileState(stagedFile) };
             if (set == "on" || set == "off")
             {
                 toggle.SetValue(settings, set == "on" ? on : off);
@@ -245,33 +258,65 @@ namespace KmgLoaderCompatHarness
     /// </summary>
     internal static class WeightCensus
     {
-        public static JObject Run(string profileDir, string label, string expect, string type, IList<string> natives, out string problem)
+        public static JObject Run(string profileDir, string label, string expect, string type, IList<string> natives, IDictionary<string, string> invariants,
+            out string problem)
         {
             var problems = new List<string>();
-            JArray manifest = WeightReaders.ManifestEntries();
+            var manifest = new JArray(WeightReaders.ManifestEntries());
+            // invariants.extraManifestEntry "Symbol=guid:PlannedType": a synthetic required identity (self-test of the
+            // missing-identity verdict); it is added to the expected set only.
+            if (invariants != null && invariants.TryGetValue("extraManifestEntry", out string extra) && !string.IsNullOrWhiteSpace(extra))
+            {
+                string[] parts = extra.Split('=', ':');
+                manifest.Add(new JObject { ["symbol"] = parts[0], ["guid"] = parts[1], ["plannedType"] = parts[2], ["status"] = "synthetic" });
+            }
+
+            Dictionary<string, string> contracts = (invariants ?? new Dictionary<string, string>())
+                .Where(p => p.Key.StartsWith("contract:", StringComparison.Ordinal)).ToDictionary(p => p.Key.Substring(9), p => p.Value);
             var items = new JObject();
             var unresolvedPlanned = new JArray();
+            var mistyped = new JArray();
             var byType = new SortedDictionary<string, int>(StringComparer.Ordinal);
             var byStatus = new SortedDictionary<string, int>(StringComparer.Ordinal);
-            int plannedItems = 0, naturallyWeightless = 0;
+            var byContract = new SortedDictionary<string, int>(StringComparer.Ordinal);
+            int plannedItems = 0, normallyWeightless = 0, storedZero = 0, storedZeroInheriting = 0, storedPositive = 0;
             foreach (JToken entry in manifest)
             {
                 string guid = (string)entry["guid"], planned = (string)entry["plannedType"] ?? string.Empty, status = (string)entry["status"] ?? "<none>";
-                bool plannedItem = planned.StartsWith("BlueprintItem", StringComparison.Ordinal) && !planned.Contains("Enchantment");
+                string symbol = (string)entry["symbol"];
+                Type plannedType = PlannedType(planned);
+                bool plannedItem = plannedType != null && typeof(BlueprintItem).IsAssignableFrom(plannedType);
                 if (plannedItem) plannedItems++;
-                BlueprintItem item = ResourcesLibrary.TryGetBlueprint<BlueprintScriptableObject>(guid) as BlueprintItem;
-                if (item == null)
+                BlueprintScriptableObject resolved = ResourcesLibrary.TryGetBlueprint<BlueprintScriptableObject>(guid);
+                BlueprintItem item = resolved as BlueprintItem;
+                if (plannedItem && item == null)
                 {
-                    if (plannedItem) unresolvedPlanned.Add((string)entry["symbol"] + "/" + status);
+                    // Every manifest item identity is registered unconditionally; a missing or non-item one is a defect.
+                    string what = resolved == null ? "does not resolve" : "resolves to " + resolved.GetType().Name;
+                    unresolvedPlanned.Add(symbol + " (" + guid + ", " + status + ") " + what);
+                    problems.Add("planned item " + symbol + " (" + guid + ") " + what);
                     continue;
                 }
 
-                JObject record = Record(item, (string)entry["symbol"], status, expect, problems);
+                if (item == null) continue;
+                if (plannedType == null || !plannedType.IsInstanceOfType(item))
+                {
+                    mistyped.Add(symbol + " planned " + planned + ", resolved " + item.GetType().Name);
+                    problems.Add(symbol + " (" + guid + ") planned " + planned + " but resolves to " + item.GetType().Name);
+                }
+
+                JObject record = Record(item, symbol, status, expect, problems);
+                Contract(record, item, symbol, contracts, problems);
                 items[guid] = record;
-                if ((float)record["intended"] == 0f) naturallyWeightless++;
+                float stored = (float)record["stored"], intended = (float)record["intended"];
+                if (intended == 0f) normallyWeightless++;
+                if (stored == 0f) storedZero++; else storedPositive++;
+                if (stored == 0f && intended > 0f) storedZeroInheriting++;
                 string concrete = item.GetType().Name;
                 byType[concrete] = byType.TryGetValue(concrete, out int t) ? t + 1 : 1;
                 byStatus[status] = byStatus.TryGetValue(status, out int s) ? s + 1 : 1;
+                string kind = ((string)record["contract"] ?? "none").Split(':')[0];
+                byContract[kind] = byContract.TryGetValue(kind, out int c) ? c + 1 : 1;
             }
 
             var nativeRecords = new JObject();
@@ -285,8 +330,10 @@ namespace KmgLoaderCompatHarness
             var result = new JObject
             {
                 ["label"] = label, ["expect"] = expect, ["manifestEntries"] = manifest.Count, ["plannedItemEntries"] = plannedItems,
-                ["resolvedItems"] = items.Count, ["unresolvedPlannedItems"] = unresolvedPlanned, ["naturallyWeightless"] = naturallyWeightless,
-                ["byType"] = Counts(byType), ["byStatus"] = Counts(byStatus),
+                ["resolvedItems"] = items.Count, ["unresolvedPlannedItems"] = unresolvedPlanned, ["mistypedItems"] = mistyped,
+                ["storedPositive"] = storedPositive, ["storedZero"] = storedZero, ["storedZeroInheritingPositiveWeight"] = storedZeroInheriting,
+                ["normallyWeightless"] = normallyWeightless,
+                ["byType"] = Counts(byType), ["byStatus"] = Counts(byStatus), ["byConstructionContract"] = Counts(byContract),
                 ["getterPatchOwners"] = WeightReaders.PatchOwners(), ["items"] = items, ["natives"] = nativeRecords
             };
             if (items.Count == 0) problems.Add("no registered product item resolved");
@@ -297,7 +344,7 @@ namespace KmgLoaderCompatHarness
                 result["compared"] = Compare(profileDir, type.Substring(8), items, nativeRecords, problems);
 
             // The file keeps every record; the harness result keeps the summary and only problem records.
-            result["items"] = new JObject(items.Properties().Where(p => p.Value["problem"] != null).Take(40));
+            result["items"] = new JObject(items.Properties().Where(p => p.Value["problem"] != null || p.Value["contractProblem"] != null).Take(40));
             problem = problems.Count == 0 ? null : string.Join("; ", problems.Take(30).ToArray()) + (problems.Count > 30 ? "; (+" + (problems.Count - 30) + " more)" : string.Empty);
             return result;
         }
@@ -341,6 +388,72 @@ namespace KmgLoaderCompatHarness
             }
 
             return record;
+        }
+
+        private static Type PlannedType(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return null;
+            return typeof(BlueprintItem).Assembly.GetTypes().FirstOrDefault(t => t.Name == name && typeof(BlueprintScriptableObject).IsAssignableFrom(t));
+        }
+
+        /// <summary>
+        /// The item's construction contract, by longest matching symbol prefix (invariants "contract:&lt;prefix&gt;"):
+        /// "value:&lt;lb&gt;" - stored m_Weight is that catalog or source constant; "donor:&lt;guid&gt;[|&lt;fallback&gt;]" - stored
+        /// m_Weight equals the stored m_Weight of the first donor that resolves (the constructor's own fallback order);
+        /// "type" - the unpatched weight equals the item's weapon type's stored weight (firearm items and types share
+        /// one catalog weight; clones without their own weight inherit the type's). An item without a contract fails.
+        /// </summary>
+        private static void Contract(JObject record, BlueprintItem item, string symbol, Dictionary<string, string> contracts, List<string> problems)
+        {
+            string key = contracts.Keys.Where(k => symbol.StartsWith(k, StringComparison.Ordinal)).OrderByDescending(k => k.Length).FirstOrDefault();
+            if (key == null)
+            {
+                record["contract"] = "none";
+                problems.Add(symbol + " " + item.name + ": no construction contract");
+                return;
+            }
+
+            string rule = contracts[key];
+            float stored = WeightReaders.Stored(item), intended = WeightReaders.Intended(item);
+            string local = null;
+            if (rule.StartsWith("value:", StringComparison.Ordinal))
+            {
+                float expected = float.Parse(rule.Substring(6), CultureInfo.InvariantCulture);
+                record["contractExpected"] = expected;
+                if (!stored.Equals(expected)) local = "stored " + WeightReaders.Text(stored) + ", contract " + WeightReaders.Text(expected);
+            }
+            else if (rule.StartsWith("donor:", StringComparison.Ordinal))
+            {
+                BlueprintItem donor = rule.Substring(6).Split('|').Select(g => ResourcesLibrary.TryGetBlueprint<BlueprintScriptableObject>(g) as BlueprintItem)
+                    .FirstOrDefault(d => d != null);
+                if (donor == null) local = "no contract donor resolves";
+                else
+                {
+                    record["contractDonor"] = donor.AssetGuid + " " + donor.name;
+                    record["contractExpected"] = WeightReaders.Stored(donor);
+                    if (!stored.Equals(WeightReaders.Stored(donor))) local = "stored " + WeightReaders.Text(stored) + ", donor " + donor.name + " stores " + WeightReaders.Text(WeightReaders.Stored(donor));
+                }
+            }
+            else if (rule == "type")
+            {
+                var weapon = item as BlueprintItemWeapon;
+                BlueprintWeaponType weaponType = weapon == null ? null : WeightReaders.WeaponType(weapon);
+                if (weaponType == null) local = "type contract on an item without a weapon type";
+                else
+                {
+                    record["contractExpected"] = WeightReaders.Stored(weaponType);
+                    if (!intended.Equals(WeightReaders.Stored(weaponType)) || !(intended > 0f))
+                        local = "unpatched " + WeightReaders.Text(intended) + ", weapon type " + weaponType.name + " stores " + WeightReaders.Text(WeightReaders.Stored(weaponType));
+                }
+            }
+            else local = "unknown contract rule " + rule;
+
+            record["contract"] = rule;
+            if (local != null)
+            {
+                record["contractProblem"] = local;
+                problems.Add(symbol + " " + item.name + ": " + local);
+            }
         }
 
         // Built by hand: another mod may change Newtonsoft's process-wide defaults (dictionaries as arrays).
@@ -418,9 +531,22 @@ namespace KmgLoaderCompatHarness
                 string[] parts = spec.Split('*');
                 int count = parts.Length > 1 ? int.Parse(parts[1], CultureInfo.InvariantCulture) : 1;
                 BlueprintItem blueprint = WeightReaders.ResolveItem(parts[0], manifest);
-                ItemEntity item = null;
-                for (int i = 0; i < count; i++) item = Game.Instance.Player.Inventory.Add(blueprint);
+                int heldBefore = HeldCount(blueprint.AssetGuid);
+                var yielded = new List<ItemEntity>();
+                for (int i = 0; i < count; i++)
+                {
+                    ItemEntity one = Game.Instance.Player.Inventory.Add(blueprint);
+                    if (one != null && !yielded.Any(y => ReferenceEquals(y, one))) yielded.Add(one);
+                }
+
+                ItemEntity item = yielded.LastOrDefault();
                 if (item == null) { problems.Add("inventory add yielded nothing for " + spec); continue; }
+                // The requested quantity arrived, and a stackable request formed one stack.
+                int delta = HeldCount(blueprint.AssetGuid) - heldBefore;
+                if (delta != count) problems.Add(spec + " added " + delta + " items, requested " + count);
+                if (count > 1 && blueprint.IsActuallyStackable && yielded.Count != 1)
+                    problems.Add(spec + " formed " + yielded.Count + " entries, expected one stack");
+                if (yielded.Count > 1) foreach (ItemEntity other in yielded.Take(yielded.Count - 1)) Track(other);
                 if (parts[0] == battered)
                 {
                     var weapon = item as ItemEntityWeapon ?? throw new InvalidOperationException(spec + " is not a weapon instance");
@@ -466,8 +592,8 @@ namespace KmgLoaderCompatHarness
                 {
                     if (blueprintWeight != WeightReaders.Text(expectedWeight)) problems.Add(item.Blueprint.name + " Blueprint.Weight " + blueprintWeight + ", expected " + expectedWeight);
                     if (total != WeightReaders.Text(expectedWeight * item.Count)) problems.Add(item.Blueprint.name + " TotalWeight " + total + ", expected " + expectedWeight * item.Count);
-                    bool displayMatches = item.Count == 1 ? display == expectedDisplay : display.StartsWith(expectedDisplay, StringComparison.Ordinal);
-                    if (!displayMatches) problems.Add(item.Blueprint.name + " displays " + display + ", expected " + expectedDisplay);
+                    string displayProblem = DisplayVerdict(item.Count, display, expectedDisplay);
+                    if (displayProblem != null) problems.Add(item.Blueprint.name + " " + displayProblem);
                 }
 
                 instances.Add(record);
@@ -528,10 +654,8 @@ namespace KmgLoaderCompatHarness
                 {
                     ["guid"] = group.Key, ["name"] = first.Blueprint.name, ["heldCount"] = held.Sum(i => i.Count), ["heldEntries"] = held.Length,
                     ["stored"] = WeightReaders.Stored(first.Blueprint), ["intended"] = WeightReaders.Intended(first.Blueprint),
-                    ["enchantments"] = new JArray(held.SelectMany(i => i.Enchantments.Where(e => e != null && e.Blueprint != null).Select(e => (object)e.Blueprint.name))
-                        .OrderBy(n => (string)n, StringComparer.Ordinal).ToArray()),
-                    ["batteredOwners"] = new JArray(held.OfType<ItemEntityWeapon>().Select(w => (object)(ProductItems.BatteredOwner(w)?.UniqueId ?? "<none>"))
-                        .OrderBy(n => (string)n, StringComparer.Ordinal).ToArray()),
+                    // One tuple per inventory entry: its own quantity, enchantments and battered owner together.
+                    ["entries"] = new JArray(EntryTuples(held).Cast<object>().ToArray()),
                     ["weapon"] = weapon != null
                 });
             }
@@ -550,22 +674,317 @@ namespace KmgLoaderCompatHarness
                 string guid = (string)record["guid"];
                 ItemEntity[] held = Game.Instance.Player.Inventory.Items.Where(i => i.Blueprint != null && i.Blueprint.AssetGuid == guid).ToArray();
                 int count = held.Sum(i => i.Count);
-                string[] enchantments = held.SelectMany(i => i.Enchantments.Where(e => e != null && e.Blueprint != null).Select(e => e.Blueprint.name))
-                    .OrderBy(n => n, StringComparer.Ordinal).ToArray();
-                string[] owners = held.OfType<ItemEntityWeapon>().Select(w => ProductItems.BatteredOwner(w)?.UniqueId ?? "<none>")
-                    .OrderBy(n => n, StringComparer.Ordinal).ToArray();
+                string[] now = EntryTuples(held);
                 float? stored = held.Length == 0 ? (float?)null : WeightReaders.Stored(held[0].Blueprint);
                 var local = new List<string>();
                 if (count != (int)record["heldCount"]) local.Add("count " + count + ", saved " + record["heldCount"]);
-                if (!enchantments.SequenceEqual(((JArray)record["enchantments"]).Select(t => (string)t))) local.Add("enchantments " + string.Join(",", enchantments) + ", saved " + record["enchantments"].ToString(Newtonsoft.Json.Formatting.None));
-                if (!owners.SequenceEqual(((JArray)record["batteredOwners"]).Select(t => (string)t))) local.Add("battered owners " + string.Join(",", owners) + ", saved " + record["batteredOwners"].ToString(Newtonsoft.Json.Formatting.None));
+                if (held.Length != (int)record["heldEntries"]) local.Add("entries " + held.Length + ", saved " + record["heldEntries"]);
+                string entryProblem = CompareEntries(((JArray)record["entries"]).Select(t => (string)t).ToArray(), now);
+                if (entryProblem != null) local.Add(entryProblem);
                 if (stored == null || !stored.Value.Equals((float)record["stored"])) local.Add("stored weight " + stored + ", saved " + record["stored"]);
-                found.Add(new JObject { ["name"] = record["name"], ["count"] = count, ["stored"] = stored, ["problem"] = local.Count == 0 ? null : string.Join("; ", local.ToArray()) });
+                found.Add(new JObject { ["name"] = record["name"], ["count"] = count, ["entries"] = new JArray(now.Cast<object>().ToArray()), ["stored"] = stored,
+                    ["problem"] = local.Count == 0 ? null : string.Join("; ", local.ToArray()) });
                 if (local.Count > 0) problems.Add((string)record["name"] + ": " + string.Join("; ", local.ToArray()));
                 foreach (ItemEntity item in held) Track(item);
             }
 
             return new JObject { ["fixtureSha256"] = WeightReaders.Sha256(path), ["mainCharacter"] = fixture["mainCharacter"], ["items"] = found };
+        }
+
+        private static int HeldCount(string guid) =>
+            Game.Instance.Player.Inventory.Items.Where(i => i.Blueprint != null && i.Blueprint.AssetGuid == guid).Sum(i => i.Count);
+
+        /// <summary>"count=N|enchantments=a,b|owner=id" per inventory entry, sorted (a multiset: 2.1.7b items have no unique id).</summary>
+        private static string[] EntryTuples(IEnumerable<ItemEntity> held)
+        {
+            return held.Select(i => EntryTuple(i.Count,
+                    i.Enchantments.Where(e => e != null && e.Blueprint != null).Select(e => e.Blueprint.name),
+                    i is ItemEntityWeapon w ? ProductItems.BatteredOwner(w)?.UniqueId ?? "<none>" : "<not-weapon>"))
+                .OrderBy(t => t, StringComparer.Ordinal).ToArray();
+        }
+
+        public static string EntryTuple(int count, IEnumerable<string> enchantments, string owner)
+        {
+            return "count=" + count.ToString(CultureInfo.InvariantCulture) + "|enchantments=" +
+                string.Join(",", enchantments.OrderBy(n => n, StringComparer.Ordinal).ToArray()) + "|owner=" + owner;
+        }
+
+        /// <summary>Null when the saved and loaded entry multisets are identical; otherwise the differences.</summary>
+        public static string CompareEntries(string[] saved, string[] now)
+        {
+            var missing = saved.ToList();
+            var extra = new List<string>();
+            foreach (string tuple in now)
+                if (!missing.Remove(tuple)) extra.Add(tuple);
+            if (missing.Count == 0 && extra.Count == 0) return null;
+            return "entries differ: saved-only [" + string.Join("; ", missing.ToArray()) + "], loaded-only [" + string.Join("; ", extra.ToArray()) + "]";
+        }
+
+        /// <summary>Null when the tooltip text is readable and matches; an unreadable text (formatter threw) always fails.</summary>
+        public static string DisplayVerdict(int count, string display, string expectedDisplay)
+        {
+            if (display == null || display.StartsWith("<throws", StringComparison.Ordinal)) return "tooltip text is unreadable: " + display;
+            if (expectedDisplay == null || expectedDisplay.StartsWith("<throws", StringComparison.Ordinal)) return "expected tooltip text is unreadable: " + expectedDisplay;
+            bool matches = count == 1 ? display == expectedDisplay : display.StartsWith(expectedDisplay, StringComparison.Ordinal);
+            return matches ? null : "displays " + display + ", expected " + expectedDisplay;
+        }
+    }
+
+    /// <summary>
+    /// kmgPublicationStatus. match "Property=set|null,...": BlueprintBootstrap's published-state properties (for
+    /// example MagicCirclePublication, which the bootstrap clears when it contains a Magic Circle publication failure
+    /// and still completes). Detects a partially published startup that the global initialization state cannot.
+    /// </summary>
+    internal static class PublicationStatus
+    {
+        private const BindingFlags Any = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+        public static JObject Run(string match, out string problem)
+        {
+            var problems = new List<string>();
+            var result = new JObject();
+            Type bootstrap = ProductProbes.Entry().Assembly.GetType("KingmakerGunslinger.Bootstrap.BlueprintBootstrap", true);
+            foreach (string pair in (match ?? string.Empty).Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                string[] parts = pair.Split('=');
+                string name = parts[0].Trim(), expected = parts.Length > 1 ? parts[1].Trim() : "set";
+                PropertyInfo property = bootstrap.GetProperty(name, Any);
+                if (property == null) { problems.Add("BlueprintBootstrap has no property " + name); continue; }
+                object value = property.GetValue(null, null);
+                bool set = value != null && !(value is Array array && array.Length == 0);
+                result[name] = set ? "set" : "null";
+                if ((expected == "set") != set) problems.Add(name + " is " + (set ? "set" : "null") + ", expected " + expected);
+            }
+
+            problem = problems.Count == 0 ? null : string.Join("; ", problems.ToArray());
+            return result;
+        }
+    }
+
+    /// <summary>Test-only conditions for this mission. failMagicCircleSpellListPublication: the product's Magic Circle
+    /// spell-list publication throws, as a contained publication failure would.</summary>
+    internal static class WeightConditions
+    {
+        public const string FailMagicCircleSpellListPublication = "failMagicCircleSpellListPublication";
+        public const string InjectedMessage = "KmgLoaderCompatHarness injected Magic Circle publication failure";
+        public static readonly string[] Known = { FailMagicCircleSpellListPublication };
+
+        public static void Apply(HarmonyInstance harmony, IDictionary<string, string> conditions, JObject applied)
+        {
+            if (!conditions.TryGetValue(FailMagicCircleSpellListPublication, out string value) || string.IsNullOrWhiteSpace(value) ||
+                string.Equals(value, "false", StringComparison.OrdinalIgnoreCase)) return;
+            Type publication = ProductProbes.Entry().Assembly.GetType("KingmakerGunslinger.Blueprints.MagicCircleSpellListPublication", true);
+            MethodInfo publish = publication.GetMethod("Publish", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic) ??
+                throw new MissingMethodException(publication.FullName, "Publish");
+            harmony.Patch(publish, new HarmonyMethod(typeof(WeightConditions).GetMethod(nameof(FailPrefix), BindingFlags.Static | BindingFlags.NonPublic)), null);
+            applied[FailMagicCircleSpellListPublication] = "prefix on MagicCircleSpellListPublication.Publish throws";
+        }
+
+        private static bool FailPrefix()
+        {
+            throw new InvalidOperationException(InjectedMessage);
+        }
+    }
+
+    /// <summary>
+    /// kmgInventoryWeightView. Opens the real inventory window (IServiceWindowUIHandler.HandleOpenInventory), waits for
+    /// it to show, then toggles No Item Weight (match on/off) through Bag of Tricks' own setting and observes the view
+    /// across the game's normal refresh: Kingmaker 2.1.7b Inventory.Update compares the party carrying capacity every
+    /// frame and, when it changed, calls StashEncumbrance.Update (observed by a harness postfix) and Stash.Setup. Records
+    /// the capacity bound to the view and the stash encumbrance label before the toggle, in the toggle frame and after
+    /// the refresh, the refresh frame, and the tooltip weight text of the "contains" items (product and native control).
+    /// </summary>
+    internal static class InventoryWeightView
+    {
+        private const BindingFlags Any = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        private enum Phase { Open, WaitShown, Toggled }
+        private static string owner;
+        private static Phase phase;
+        private static int openFrame, toggleFrame;
+        private static JObject record;
+        private static bool patched;
+        private static readonly List<JObject> Refreshes = new List<JObject>();
+        private static readonly FieldInfo PartyCapacityField = typeof(Kingmaker.UI.ServiceWindow.Inventory).GetField("PartyCapacity", Any);
+        private static readonly FieldInfo LabelField = typeof(Kingmaker.UI.ServiceWindow.Inventory.EncumbranceContainer).GetField("m_EncumbranceLabel", Any);
+
+        /// <summary>True when the observation is finished (result and problem set).</summary>
+        public static bool Poll(string label, string match, IList<string> references, out JObject result, out string problem)
+        {
+            result = null;
+            problem = null;
+            if (owner != label) { owner = label; phase = Phase.Open; record = new JObject { ["toggleTo"] = match }; Refreshes.Clear(); }
+            int frame = UnityEngine.Time.frameCount;
+            switch (phase)
+            {
+                case Phase.Open:
+                    EnsurePatched();
+                    Kingmaker.PubSubSystem.EventBus.RaiseEvent<Kingmaker.PubSubSystem.IServiceWindowUIHandler>(h => h.HandleOpenInventory());
+                    openFrame = frame;
+                    phase = Phase.WaitShown;
+                    return false;
+                case Phase.WaitShown:
+                {
+                    var inventory = UnityEngine.Object.FindObjectOfType<Kingmaker.UI.ServiceWindow.Inventory>();
+                    if (inventory == null || !inventory.IsShow || frame - openFrame < 30)
+                    {
+                        if (frame - openFrame <= 900) return false;
+                        return Finish(out result, out problem, "the inventory window did not open");
+                    }
+
+                    record["openedAfterFrames"] = frame - openFrame;
+                    record["before"] = Snapshot(inventory, references);
+                    record["toggle"] = BagOfTricksWeight.Run(match, false, match, out string toggleProblem);
+                    if (toggleProblem != null) return Finish(out result, out problem, "toggle failed: " + toggleProblem);
+                    // Same frame, before Inventory.Update has run again: the view still holds its old values.
+                    record["toggleFrame"] = Snapshot(inventory, references);
+                    toggleFrame = frame;
+                    Refreshes.Clear();
+                    phase = Phase.Toggled;
+                    return false;
+                }
+                default:
+                {
+                    if (frame - toggleFrame < 30) return false;
+                    var inventory = UnityEngine.Object.FindObjectOfType<Kingmaker.UI.ServiceWindow.Inventory>();
+                    if (inventory == null) return Finish(out result, out problem, "the inventory window closed during the observation");
+                    JObject after = Snapshot(inventory, references);
+                    record["after"] = after;
+                    record["stashRefreshes"] = new JArray(Refreshes.Cast<object>().ToArray());
+                    var problems = new List<string>();
+                    float before = (float)record["before"]["boundCurrentWeight"], stale = (float)record["toggleFrame"]["boundCurrentWeight"];
+                    float bound = (float)after["boundCurrentWeight"], live = (float)after["liveCurrentWeight"], unpatched = (float)after["unpatchedSum"];
+                    float expected = match == "on" ? 0f : unpatched;
+                    if (!stale.Equals(before)) problems.Add("the view changed in the toggle frame, before its own refresh");
+                    if (Math.Abs(bound - expected) > 0.01f) problems.Add("the inventory view holds carried weight " + bound + ", expected " + expected);
+                    if (Math.Abs(live - expected) > 0.01f) problems.Add("live carried weight " + live + ", expected " + expected);
+                    JObject refresh = Refreshes.FirstOrDefault(r => (bool)r["stash"]);
+                    if (refresh == null) problems.Add("no StashEncumbrance refresh after the toggle");
+                    else
+                    {
+                        record["refreshFramesAfterToggle"] = (int)refresh["frame"] - toggleFrame;
+                        if (Math.Abs((float)refresh["currentWeight"] - expected) > 0.01f) problems.Add("the refresh bound " + refresh["currentWeight"] + ", expected " + expected);
+                    }
+
+                    string labelText = (string)after["stashLabel"], weightText = (string)after["boundWeightText"];
+                    if (labelText != null && (weightText == null || labelText.IndexOf(weightText, StringComparison.Ordinal) < 0))
+                        problems.Add("the stash encumbrance label '" + labelText + "' does not show the bound weight " + weightText);
+                    foreach (JProperty item in ((JObject)after["items"]).Properties())
+                    {
+                        string verdict = WeightItems.DisplayVerdict((int)item.Value["count"], (string)item.Value["display"], (string)item.Value["expectedDisplay"]);
+                        if (verdict != null) problems.Add(item.Name + " " + verdict);
+                    }
+
+                    return Finish(out result, out problem, problems.Count == 0 ? null : string.Join("; ", problems.ToArray()));
+                }
+            }
+        }
+
+        private static bool Finish(out JObject result, out string problem, string failure)
+        {
+            try
+            {
+                var tabs = Game.Instance.UI.ServiceWindow?.WindowTabs;
+                if (tabs != null && tabs.IsShow) tabs.ToggleShow();
+                record["closed"] = true;
+            }
+            catch (Exception exception) { record["closed"] = "<throws " + exception.GetType().Name + ">"; }
+            result = record;
+            problem = failure;
+            owner = null;
+            return true;
+        }
+
+        private static JObject Snapshot(Kingmaker.UI.ServiceWindow.Inventory inventory, IList<string> references)
+        {
+            var bound = (EncumbranceHelper.CarryingCapacity)PartyCapacityField.GetValue(inventory);
+            EncumbranceHelper.CarryingCapacity live = EncumbranceHelper.GetPartyCarryingCapacity();
+            float unpatched = 0f;
+            foreach (ItemEntity entry in Game.Instance.Player.Inventory.Items)
+                if (entry.Owner == null || Game.Instance.Player.Party.Contains(entry.Owner.Unit)) unpatched += entry.Count * WeightReaders.Intended(entry.Blueprint);
+            string labelText = null;
+            object labelObject = LabelField?.GetValue(inventory.StashEncumbrance);
+            if (labelObject is UnityEngine.Object unityLabel && unityLabel != null)
+                labelText = labelObject.GetType().GetProperty("text")?.GetValue(labelObject, null) as string;
+            var items = new JObject();
+            JArray manifest = WeightReaders.ManifestEntries();
+            bool on = (string)BagOfTricksWeight.Run(null, false, null, out string _)["after"] == "on";
+            foreach (string reference in references ?? new List<string>())
+            {
+                BlueprintItem blueprint = WeightReaders.ResolveItem(reference, manifest);
+                ItemEntity held = Game.Instance.Player.Inventory.Items.FirstOrDefault(i => ReferenceEquals(i.Blueprint, blueprint));
+                if (held == null) { items[reference] = new JObject { ["held"] = false, ["display"] = "<throws not-held>", ["count"] = 0 }; continue; }
+                float expectedWeight = on ? 0f : WeightReaders.Intended(blueprint);
+                string display, expectedDisplay;
+                try { display = UIUtilityTexts.GetItemWeight(held); } catch (Exception e) { display = "<throws " + e.GetType().Name + ">"; }
+                try
+                {
+                    expectedDisplay = held.Count == 1 ? UIUtilityTexts.GetItemWeight(expectedWeight)
+                        : expectedWeight.ToString("#####0.##") + " (" + (expectedWeight * held.Count).ToString("#####0.##") + ")";
+                }
+                catch (Exception e) { expectedDisplay = "<throws " + e.GetType().Name + ">"; }
+                items[reference] = new JObject { ["name"] = blueprint.name, ["count"] = held.Count, ["display"] = display, ["expectedDisplay"] = expectedDisplay };
+            }
+
+            string weightText;
+            try { weightText = bound.GetCurrentWeightText(); } catch (Exception e) { weightText = "<throws " + e.GetType().Name + ">"; }
+            return new JObject
+            {
+                ["frame"] = UnityEngine.Time.frameCount, ["botSetting"] = on ? "on" : "off", ["boundCurrentWeight"] = bound.CurrentWeight, ["boundWeightText"] = weightText,
+                ["liveCurrentWeight"] = live.CurrentWeight, ["unpatchedSum"] = unpatched, ["stashLabel"] = labelText, ["items"] = items
+            };
+        }
+
+        private static void EnsurePatched()
+        {
+            if (patched) return;
+            MethodInfo update = typeof(Kingmaker.UI.ServiceWindow.Inventory.EncumbranceContainer).GetMethod("Update", BindingFlags.Instance | BindingFlags.Public) ??
+                throw new MissingMethodException("Inventory.EncumbranceContainer.Update");
+            HarmonyInstance harmony = SpearRepairConditions.Harmony ?? HarmonyInstance.Create(SpearRepairConditions.HarnessId + ".inventory-view");
+            harmony.Patch(update, null, new HarmonyMethod(typeof(InventoryWeightView).GetMethod(nameof(UpdatePostfix), BindingFlags.Static | BindingFlags.NonPublic)));
+            patched = true;
+        }
+
+        private static void UpdatePostfix(Kingmaker.UI.ServiceWindow.Inventory.EncumbranceContainer __instance, EncumbranceHelper.CarryingCapacity __0)
+        {
+            var inventory = UnityEngine.Object.FindObjectOfType<Kingmaker.UI.ServiceWindow.Inventory>();
+            Refreshes.Add(new JObject
+            {
+                ["frame"] = UnityEngine.Time.frameCount, ["currentWeight"] = __0.CurrentWeight,
+                ["stash"] = inventory != null && ReferenceEquals(inventory.StashEncumbrance, __instance)
+            });
+        }
+    }
+
+    /// <summary>
+    /// kmgWeightProbeSelfTest. Synthetic cases for the probes' own verdict functions (no game state): a split stack and a
+    /// reassigned per-entry enchantment or owner must fail the persistence comparison while an identical multiset passes;
+    /// unreadable tooltip text must fail even when both formatter calls throw the same exception.
+    /// </summary>
+    internal static class WeightProbeSelfTest
+    {
+        public static JObject Run(out string problem)
+        {
+            var problems = new List<string>();
+            var cases = new JObject();
+            Func<int, string[], string, string> t = (n, e, o) => WeightItems.EntryTuple(n, e, o);
+            string[] saved = { t(10, new string[0], "<not-weapon>") };
+            string[] split = Enumerable.Repeat(t(1, new string[0], "<not-weapon>"), 10).ToArray();
+            string[] pair = { t(1, new[] { "Enhancement1" }, "<none>"), t(1, new string[0], "owner-a") };
+            string[] reassigned = { t(1, new string[0], "<none>"), t(1, new[] { "Enhancement1" }, "owner-a") };
+            Action<string, bool, string> check = (name, shouldFail, verdict) =>
+            {
+                bool failed = verdict != null;
+                cases[name] = new JObject { ["expectFailure"] = shouldFail, ["verdict"] = verdict };
+                if (failed != shouldFail) problems.Add(name + (shouldFail ? " was accepted" : " was rejected: " + verdict));
+            };
+            check("identical-multiset", false, WeightItems.CompareEntries(saved, saved.ToArray()));
+            check("identical-pair-reordered", false, WeightItems.CompareEntries(pair, pair.Reverse().ToArray()));
+            check("stack-of-ten-split-into-singletons", true, WeightItems.CompareEntries(saved, split));
+            check("enchantment-and-owner-reassigned", true, WeightItems.CompareEntries(pair, reassigned));
+            check("both-formatters-throw-same-exception", true, WeightItems.DisplayVerdict(1, "<throws NullReferenceException>", "<throws NullReferenceException>"));
+            check("readable-matching-display", false, WeightItems.DisplayVerdict(1, "0 lbs", "0 lbs"));
+            problem = problems.Count == 0 ? null : string.Join("; ", problems.ToArray());
+            return new JObject { ["cases"] = cases };
         }
     }
 }

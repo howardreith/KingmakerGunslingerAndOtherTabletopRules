@@ -59,20 +59,33 @@ namespace KingmakerGunslinger.DomainTests
             // donor's 9 lb inherited instead of the catalog's 10 lb: both are
             // authored defects, whatever the effective getters read (here both
             // zero, so a getter comparison alone could not see them).
+            // Shape of the production field-only weight observation
+            // (SpearWeaponTypeAccess.AuthoredWeight): every getter slot not read.
+            string notRead = ElvenBranchedSpearProfilePolicy.NotRead;
             foreach (string stored in new[] { "0", "9" })
             {
                 var weight = new SpearProfileObservation("weight", "10", stored, "9",
-                    stored, "0", "0", null, "field");
+                    notRead, notRead, notRead, null, "field");
                 SpearProfileVerdict verdict = ElvenBranchedSpearProfilePolicy.Evaluate(With(weight));
                 Assertions.False(verdict.IsValid,
                     "A wrong authored spear weight " + stored + " passed validation.");
                 Assertions.True(verdict.Findings.Single().Kind ==
                     SpearProfileFindingKind.OwnedFieldMismatch,
                     "A wrong authored weight was not an owned-field finding.");
-                Assertions.True(verdict.DescribeFailure().Contains(
-                    "weight [owned-field]: expected=10 actual=" + stored + " donor=9"),
-                    "The authored-weight diagnostic is incomplete: " + verdict.DescribeFailure());
+                string message = verdict.DescribeFailure();
+                Assertions.True(message.Contains(
+                    "weight [owned-field]: expected=10 actual=" + stored +
+                    " donor=9; getter not read (runtime setting); fields only"),
+                    "The authored-weight diagnostic is incomplete: " + message);
+                Assertions.False(message.Contains("getter expected=") ||
+                    message.Contains("getterPatches="),
+                    "A field-only weight failure reported a live getter value: " + message);
             }
+            // A correct field-only weight observation is valid.
+            Assertions.True(ElvenBranchedSpearProfilePolicy.Evaluate(With(
+                new SpearProfileObservation("weight", "10", "10", "9", notRead, notRead,
+                    notRead, null, "field"))).IsValid,
+                "A correct authored weight with unread getters failed.");
         }
 
         internal static void MechanicalGetterMismatchStaysFatal()

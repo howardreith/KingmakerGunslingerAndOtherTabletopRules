@@ -640,9 +640,13 @@ namespace KingmakerGunslinger.Blueprints
             {
                 donorField = ElvenBranchedSpearProfilePolicy.Unavailable(exception);
             }
+            // No getter is read, so every getter slot says so; a failure reports
+            // the owned and donor fields only, never a fabricated live value.
             return new SpearProfileObservation("weight",
                 Weight((float)ElvenBranchedSpearCatalog.WeightPounds), owned,
-                donorField, owned, owned, donorField, null, "field");
+                donorField, ElvenBranchedSpearProfilePolicy.NotRead,
+                ElvenBranchedSpearProfilePolicy.NotRead,
+                ElvenBranchedSpearProfilePolicy.NotRead, null, "field");
         }
 
         private static readonly MethodInfo EngineHasSubCategory =

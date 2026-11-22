@@ -1,6 +1,6 @@
 {
   "name": "bag-of-tricks-no-item-weight",
-  "description": "Bag of Tricks No Item Weight compatibility (docs/BAG-OF-TRICKS-NO-ITEM-WEIGHT-COMPATIBILITY.md). UMM 0.31.1 with the real Bag of Tricks 1.16.4 and Call of the Wild from the lab, and the reporter's module settings (Gunslinger, Shield Other, Urban Barbarian, Bodyguard feats and Teleportation off). Launch 1 sets the modules through real panel clicks and turns No Item Weight on through Bag of Tricks' own settings object, saved by its own ModSettings.Save. Launch 2 (on at startup) must initialize completely, census every registered product item (all live weights 0), add representative real items, toggle off (same instances regain their unpatched weights, items constructed while on included) and on again, add items in both states, write and save the disposable fixture, then cast Summon Monster I from a new sorcerer. Launch 3 reloads that save with the setting still on. Launches 4 and 5 prove a wrong authored spear weight and a non-weight spear defect still fail startup with the setting on; launch 5 then turns the setting off. Launch 6 (off at startup) reloads the same save: identical authored weights to the on-at-startup construction, unpatched live weights, the complementary toggle, an additional item and native prices and tooltips.",
+  "description": "Bag of Tricks No Item Weight compatibility (docs/BAG-OF-TRICKS-NO-ITEM-WEIGHT-COMPATIBILITY.md). UMM 0.31.1 with the real Bag of Tricks 1.16.4 and Call of the Wild from the lab, and the reporter's module settings (Gunslinger, Shield Other, Urban Barbarian, Bodyguard feats and Teleportation off). Launch 1 runs the probes' self-test, sets the modules through real panel clicks and turns No Item Weight on through Bag of Tricks' own settings object, saved by its own ModSettings.Save. Launch 2 (on at startup) must initialize completely with Magic Circle published, census every registered product item (all live weights 0; every stored weight against its construction contract), add representative real items (armor, a type-inheriting weapon and legacy repair items included), toggle off and on again inside the open inventory window (observing its normal refresh), add items in both states, write and save the disposable fixture, then cast Summon Monster I from a new sorcerer. Launch 3 reloads that save with the setting still on. Launches 4 and 5 prove a wrong authored spear weight and a non-weight spear defect still fail startup with the setting on; launch 5 then turns the setting off. Launch 6 (off at startup) reloads the same save: identical authored weights to the on-at-startup construction, unpatched live weights, the complementary toggle in the inventory window, an additional item, native prices and tooltips, and a final read of the lab's pristine Bag of Tricks settings.",
   "ownerMods": [
     "BagOfTricks",
     "CallOfTheWild"
@@ -14,6 +14,7 @@
       "gameArguments": [ "locale=enGB" ],
       "harness": {
         "steps": [
+          { "op": "kmgWeightProbeSelfTest", "label": "verdicts" },
           { "op": "kmgModules", "label": "initial", "match": "" },
           { "op": "ummPanel", "label": "gunslinger-off", "match": "KingmakerGunslinger", "type": "Gunslinger", "save": true, "seconds": 2 },
           { "op": "ummPanel", "label": "shield-other-off", "match": "KingmakerGunslinger", "type": "Shield Other", "save": true, "seconds": 2 },
@@ -26,7 +27,7 @@
             "match": "",
             "expect": "gunslinger=false,shield-other=false,urban-barbarian=false,bodyguard-feats=false,teleportation-spells=false,acadamae-graduate=true,expanded-summoning=true,elven-branched-spears=true,eastern-weapons=true,brown-fur-transmuter=true,protection-from-alignment-control-immunity=true,elemental-races=true,magic-circle-spells=true"
           },
-          { "op": "botWeightSetting", "label": "initial", "match": "" },
+          { "op": "botWeightSetting", "label": "initial", "match": "", "expect": "off" },
           { "op": "botWeightSetting", "label": "turn-on", "match": "on", "save": true, "expect": "on" }
         ]
       }
@@ -46,6 +47,7 @@
         "absent": [
           "[initialize.failed]",
           "[initialize.root-cause]",
+          "][publication.failed]",
           "Elven Branched Spear type profile is invalid",
           "package-blueprint-lifecycle-failed",
           "battered-origin.inspection-unavailable"
@@ -58,23 +60,78 @@
           { "op": "botWeightSetting", "label": "startup", "match": "", "expect": "on", "continueOnFailure": true },
           { "op": "kmgModules", "label": "reporter", "match": "Gunslinger=false,ShieldOther=false,UrbanBarbarian=false,BodyguardFeats=false,TeleportationSpells=false", "continueOnFailure": true },
           { "op": "kmgInitialization", "label": "on-startup", "expect": "completed", "continueOnFailure": true },
+          { "op": "kmgPublicationStatus", "label": "on-startup", "match": "MagicCircles=set,MagicCirclePublication=set,TeleportationScrolls=set", "continueOnFailure": true },
           { "op": "kmgWeaponTypeProfile", "label": "donor-unchanged", "match": "", "type": "fa2dd17cbde7d3f4aa918d467c30516e", "continueOnFailure": true },
           {
             "op": "kmgWeightCensus", "label": "on-startup", "expect": "zero",
             "contains": [ "f28f6031c2908d84d945865a80f67177", "6fd0a849531617844b195f452661b2cd" ],
+            "invariants": {
+              "contract:KMG.Spells.MagicCircle.": "donor:c2cadc1c19cc4b54eb73b987f540ddca",
+              "contract:KMG.Spells.Teleport.Scroll": "donor:02086fbbda266ed4b8e9124abe5abd75",
+              "contract:KMG.Spells.GreaterTeleport.Scroll": "donor:0033529da3b90bd226232e1962ca34ba|013c0f5972c1b794b869b284ba426542",
+              "contract:KMG.Spells.WordOfRecall.Scroll": "donor:00843bddf42908953a0d77e7155c20f0|0437d7a2ea4b01542907c4d5fb12c4da",
+              "contract:KMG.Items.CordOfStubbornResolve": "value:1",
+              "contract:KMG.Gunsmithing.GunsmithKit": "value:2",
+              "contract:KMG.Gunsmithing.OverhaulKit": "value:1",
+              "contract:KMG.Test.LeadBulletItem": "value:0.1",
+              "contract:KMG.Test.BlackPowderItem": "value:0.1",
+              "contract:KMG.Test.FirearmRepairKitItem": "value:1",
+              "contract:KMG.Ammunition.PaperCartridge": "value:0",
+              "contract:KMG.ElvenBranchedSpear.": "value:10",
+              "contract:KMG.EasternWeapons.Wakizashi.": "value:2",
+              "contract:KMG.EasternWeapons.Katana.": "value:6",
+              "contract:KMG.EasternWeapons.Nodachi.": "value:8",
+              "contract:KMG.Firearms.": "type",
+              "contract:KMG.Deeds.": "type",
+              "contract:KMG.Test.TestMusketItem": "type",
+              "contract:KMG.Summoning.": "value:0"
+            },
             "continueOnFailure": true
           },
           {
             "op": "kmgWeightItems", "label": "a-on", "expect": "zero",
-            "match": "KMG.ElvenBranchedSpear.BaseItem,KMG.ElvenBranchedSpear.Boughkeeper,KMG.ElvenBranchedSpear.Plus3Item,KMG.EasternWeapons.Katana.MasterworkItem,KMG.EasternWeapons.Nodachi.CloudCleaver,KMG.EasternWeapons.Wakizashi.Plus2Item,KMG.Firearms.EarlyPistolItem,KMG.Firearms.PistolPlus1Item,KMG.Firearms.DuelistsRebuttalItem,KMG.Firearms.ReliableMusketPlus2Item,KMG.Test.LeadBulletItem*10,KMG.Test.BlackPowderItem*10,KMG.Ammunition.PaperCartridge*5,KMG.Gunsmithing.GunsmithKit,KMG.Items.CordOfStubbornResolve,KMG.Spells.MagicCircle.Evil.Scroll*2,KMG.Spells.Teleport.Scroll,guid:6fd0a849531617844b195f452661b2cd",
+            "match": "KMG.ElvenBranchedSpear.BaseItem,KMG.ElvenBranchedSpear.Boughkeeper,KMG.ElvenBranchedSpear.Plus3Item,KMG.EasternWeapons.Katana.MasterworkItem,KMG.EasternWeapons.Nodachi.CloudCleaver,KMG.EasternWeapons.Wakizashi.Plus2Item,KMG.Firearms.EarlyPistolItem,KMG.Firearms.PistolPlus1Item,KMG.Firearms.DuelistsRebuttalItem,KMG.Firearms.ReliableMusketPlus2Item,KMG.Test.TestMusketItem,KMG.Test.LeadBulletItem*10,KMG.Test.BlackPowderItem*10,KMG.Ammunition.PaperCartridge*5,KMG.Test.FirearmRepairKitItem*3,KMG.Gunsmithing.GunsmithKit,KMG.Items.CordOfStubbornResolve,KMG.Summoning.Giant.HillHideArmor,KMG.Spells.MagicCircle.Evil.Scroll*2,KMG.Spells.Teleport.Scroll,guid:6fd0a849531617844b195f452661b2cd",
             "invariants": { "battered": "KMG.Firearms.EarlyPistolItem" },
             "continueOnFailure": true
           },
-          { "op": "botWeightSetting", "label": "live-off", "match": "off", "expect": "off", "continueOnFailure": true },
+          {
+            "op": "kmgInventoryWeightView", "label": "open-inventory-toggle-off", "match": "off",
+            "contains": [ "KMG.ElvenBranchedSpear.BaseItem", "KMG.Test.LeadBulletItem", "KMG.Summoning.Giant.HillHideArmor", "KMG.Test.TestMusketItem", "guid:6fd0a849531617844b195f452661b2cd" ],
+            "timeoutSeconds": 120, "continueOnFailure": true
+          },
           { "op": "kmgWeightItems", "label": "a-off", "expect": "intended", "continueOnFailure": true },
-          { "op": "kmgWeightCensus", "label": "on-startup-live-off", "expect": "intended", "type": "compare:on-startup", "contains": [ "f28f6031c2908d84d945865a80f67177", "6fd0a849531617844b195f452661b2cd" ], "continueOnFailure": true },
+          {
+            "op": "kmgWeightCensus", "label": "on-startup-live-off", "expect": "intended", "type": "compare:on-startup",
+            "contains": [ "f28f6031c2908d84d945865a80f67177", "6fd0a849531617844b195f452661b2cd" ],
+            "invariants": {
+              "contract:KMG.Spells.MagicCircle.": "donor:c2cadc1c19cc4b54eb73b987f540ddca",
+              "contract:KMG.Spells.Teleport.Scroll": "donor:02086fbbda266ed4b8e9124abe5abd75",
+              "contract:KMG.Spells.GreaterTeleport.Scroll": "donor:0033529da3b90bd226232e1962ca34ba|013c0f5972c1b794b869b284ba426542",
+              "contract:KMG.Spells.WordOfRecall.Scroll": "donor:00843bddf42908953a0d77e7155c20f0|0437d7a2ea4b01542907c4d5fb12c4da",
+              "contract:KMG.Items.CordOfStubbornResolve": "value:1",
+              "contract:KMG.Gunsmithing.GunsmithKit": "value:2",
+              "contract:KMG.Gunsmithing.OverhaulKit": "value:1",
+              "contract:KMG.Test.LeadBulletItem": "value:0.1",
+              "contract:KMG.Test.BlackPowderItem": "value:0.1",
+              "contract:KMG.Test.FirearmRepairKitItem": "value:1",
+              "contract:KMG.Ammunition.PaperCartridge": "value:0",
+              "contract:KMG.ElvenBranchedSpear.": "value:10",
+              "contract:KMG.EasternWeapons.Wakizashi.": "value:2",
+              "contract:KMG.EasternWeapons.Katana.": "value:6",
+              "contract:KMG.EasternWeapons.Nodachi.": "value:8",
+              "contract:KMG.Firearms.": "type",
+              "contract:KMG.Deeds.": "type",
+              "contract:KMG.Test.TestMusketItem": "type",
+              "contract:KMG.Summoning.": "value:0"
+            },
+            "continueOnFailure": true
+          },
           { "op": "kmgWeightItems", "label": "b-off", "expect": "intended", "match": "KMG.Spells.MagicCircle.Good.Scroll,KMG.EasternWeapons.Katana.BaseItem", "continueOnFailure": true },
-          { "op": "botWeightSetting", "label": "live-on", "match": "on", "expect": "on", "continueOnFailure": true },
+          {
+            "op": "kmgInventoryWeightView", "label": "open-inventory-toggle-on", "match": "on",
+            "contains": [ "KMG.ElvenBranchedSpear.BaseItem", "KMG.Test.LeadBulletItem", "KMG.Summoning.Giant.HillHideArmor", "KMG.Spells.MagicCircle.Good.Scroll", "guid:6fd0a849531617844b195f452661b2cd" ],
+            "timeoutSeconds": 120, "continueOnFailure": true
+          },
           { "op": "kmgWeightItems", "label": "ab-on", "expect": "zero", "continueOnFailure": true },
           { "op": "kmgWeightItems", "label": "c-on", "expect": "zero", "match": "KMG.Firearms.MusketPlus1Item,KMG.Spells.MagicCircle.Law.Scroll*3,KMG.Spells.WordOfRecall.Scroll", "continueOnFailure": true },
           { "op": "kmgWeightItems", "label": "fixture", "expect": "zero", "type": "write", "continueOnFailure": true },
@@ -93,7 +150,7 @@
       "gameArguments": [ "locale=enGB" ],
       "expectLog": {
         "present": [ "[blueprints][initialize.complete]", "weight.runtime-override" ],
-        "absent": [ "[initialize.failed]", "Elven Branched Spear type profile is invalid", "package-blueprint-lifecycle-failed" ]
+        "absent": [ "[initialize.failed]", "][publication.failed]", "Elven Branched Spear type profile is invalid", "package-blueprint-lifecycle-failed" ]
       },
       "harness": {
         "save": "$written:weightfixture",
@@ -113,7 +170,7 @@
         "corruptOwnedSpearProfile": "m_Weight=0"
       },
       "expectLog": {
-        "present": [ "weight [owned-field]: expected=10 actual=0" ],
+        "present": [ "weight [owned-field]: expected=10 actual=0 donor=9; getter not read (runtime setting); fields only" ],
         "absent": [ "[blueprints][initialize.complete]" ]
       },
       "harness": {
@@ -151,6 +208,7 @@
         "present": [ "[blueprints][initialize.complete]", "[elven-branched-spear][foundation.ready]" ],
         "absent": [
           "[initialize.failed]",
+          "][publication.failed]",
           "Elven Branched Spear type profile is invalid",
           "package-blueprint-lifecycle-failed",
           "weight.runtime-override",
@@ -165,12 +223,46 @@
           { "op": "botWeightSetting", "label": "startup-off", "match": "", "expect": "off", "continueOnFailure": true },
           { "op": "kmgModules", "label": "reporter", "match": "Gunslinger=false,ShieldOther=false,UrbanBarbarian=false,BodyguardFeats=false,TeleportationSpells=false", "continueOnFailure": true },
           { "op": "kmgInitialization", "label": "off-startup", "expect": "completed", "continueOnFailure": true },
+          { "op": "kmgPublicationStatus", "label": "off-startup", "match": "MagicCircles=set,MagicCirclePublication=set,TeleportationScrolls=set", "continueOnFailure": true },
           { "op": "kmgWeaponTypeProfile", "label": "owned-off", "match": "owned", "type": "fa2dd17cbde7d3f4aa918d467c30516e", "continueOnFailure": true },
-          { "op": "kmgWeightCensus", "label": "off-startup", "expect": "intended", "type": "compare:on-startup", "contains": [ "f28f6031c2908d84d945865a80f67177", "6fd0a849531617844b195f452661b2cd" ], "continueOnFailure": true },
+          {
+            "op": "kmgWeightCensus", "label": "off-startup", "expect": "intended", "type": "compare:on-startup",
+            "contains": [ "f28f6031c2908d84d945865a80f67177", "6fd0a849531617844b195f452661b2cd" ],
+            "invariants": {
+              "contract:KMG.Spells.MagicCircle.": "donor:c2cadc1c19cc4b54eb73b987f540ddca",
+              "contract:KMG.Spells.Teleport.Scroll": "donor:02086fbbda266ed4b8e9124abe5abd75",
+              "contract:KMG.Spells.GreaterTeleport.Scroll": "donor:0033529da3b90bd226232e1962ca34ba|013c0f5972c1b794b869b284ba426542",
+              "contract:KMG.Spells.WordOfRecall.Scroll": "donor:00843bddf42908953a0d77e7155c20f0|0437d7a2ea4b01542907c4d5fb12c4da",
+              "contract:KMG.Items.CordOfStubbornResolve": "value:1",
+              "contract:KMG.Gunsmithing.GunsmithKit": "value:2",
+              "contract:KMG.Gunsmithing.OverhaulKit": "value:1",
+              "contract:KMG.Test.LeadBulletItem": "value:0.1",
+              "contract:KMG.Test.BlackPowderItem": "value:0.1",
+              "contract:KMG.Test.FirearmRepairKitItem": "value:1",
+              "contract:KMG.Ammunition.PaperCartridge": "value:0",
+              "contract:KMG.ElvenBranchedSpear.": "value:10",
+              "contract:KMG.EasternWeapons.Wakizashi.": "value:2",
+              "contract:KMG.EasternWeapons.Katana.": "value:6",
+              "contract:KMG.EasternWeapons.Nodachi.": "value:8",
+              "contract:KMG.Firearms.": "type",
+              "contract:KMG.Deeds.": "type",
+              "contract:KMG.Test.TestMusketItem": "type",
+              "contract:KMG.Summoning.": "value:0"
+            },
+            "continueOnFailure": true
+          },
           { "op": "kmgWeightItems", "label": "reload-off", "expect": "intended", "type": "verify", "continueOnFailure": true },
-          { "op": "botWeightSetting", "label": "live-on", "match": "on", "expect": "on", "continueOnFailure": true },
+          {
+            "op": "kmgInventoryWeightView", "label": "open-inventory-toggle-on", "match": "on",
+            "contains": [ "KMG.ElvenBranchedSpear.BaseItem", "KMG.Test.FirearmRepairKitItem", "KMG.Summoning.Giant.HillHideArmor", "KMG.Test.TestMusketItem", "guid:6fd0a849531617844b195f452661b2cd" ],
+            "timeoutSeconds": 120, "continueOnFailure": true
+          },
           { "op": "kmgWeightItems", "label": "off-then-on", "expect": "zero", "continueOnFailure": true },
-          { "op": "botWeightSetting", "label": "live-off", "match": "off", "expect": "off", "continueOnFailure": true },
+          {
+            "op": "kmgInventoryWeightView", "label": "open-inventory-toggle-off", "match": "off",
+            "contains": [ "KMG.ElvenBranchedSpear.BaseItem", "KMG.Test.FirearmRepairKitItem", "KMG.Summoning.Giant.HillHideArmor", "KMG.Test.TestMusketItem", "guid:6fd0a849531617844b195f452661b2cd" ],
+            "timeoutSeconds": 120, "continueOnFailure": true
+          },
           { "op": "kmgWeightItems", "label": "off-again", "expect": "intended", "match": "KMG.ElvenBranchedSpear.MoonlitFork", "continueOnFailure": true },
           {
             "op": "kmgItemPricing",
@@ -180,7 +272,8 @@
             "match": "battered",
             "invariants": { "repeat": "20" },
             "continueOnFailure": true
-          }
+          },
+          { "op": "botWeightSetting", "label": "final-pristine-read", "match": "", "expect": "off", "continueOnFailure": true }
         ]
       }
     }
