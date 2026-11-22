@@ -431,6 +431,8 @@ namespace KmgLoaderCompatHarness
                 saves.Add(new JObject { ["index"] = index, ["completed"] = done, ["gameClockUnchanged"] = Game.Instance.TimeController.GameTime == clock,
                     ["holdTurnOffCallsDuringSave"] = Of(HoldTurnOffs, s.Holder) - turnOffs, ["after"] = after });
                 if (!done) { problems.Add("saveSuspension: save " + index + " did not complete"); yield break; }
+                if (Game.Instance.TimeController.GameTime != clock) problems.Add("saveSuspension: save " + index + " changed the game clock");
+                if (unrelated == null || !s.Targets[1].Descriptor.Buffs.RawFacts.Contains(unrelated)) problems.Add("saveSuspension: save " + index + " lost the unrelated effect");
                 ExpectHeld(s, 0, "saveSuspension.save" + index);
                 ExpectHeld(s, 1, "saveSuspension.save" + index);
                 if (!JToken.DeepEquals(before["holder"]["raw.links"], after["holder"]["raw.links"])) problems.Add("saveSuspension: save " + index + " changed the raw records");

@@ -522,6 +522,18 @@ namespace KmgLoaderCompatHarness
                     return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
                 }
 
+                case "kmgHoldLifecycle":
+                {
+                    // S6 checkpoint C2a R1 / VER-02 F1: "match" is removal, cadence or afterLoad (see HoldLifecycleProbes.cs).
+                    // Needs condition observeHoldLifecycle on the launch.
+                    string identity = StepIdentity(step);
+                    if (!probes.IsActive) probes.Begin(identity, new HoldLifecycleProbe(step.Match));
+                    ProbeOutcome outcome = probes.Poll(identity);
+                    if (outcome == null) return StepStatus.Running;
+                    RecordProbe(outcome);
+                    return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
+                }
+
                 case "kmgControlledRage":
                 {
                     // S6 T4 / RISK-03: "match" is create, reload or final; invariants.saveLabel names the save create

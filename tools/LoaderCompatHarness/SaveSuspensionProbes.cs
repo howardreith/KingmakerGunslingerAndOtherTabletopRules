@@ -300,6 +300,10 @@ namespace KmgLoaderCompatHarness
             holder.Descriptor.CustomName = HolderName;
             hostile.Descriptor.CustomName = TargetName;
 
+            // Unrelated-effect control: a native Bull's Strength on the main character, kept through every save.
+            var unrelatedBlueprint = ResourcesLibrary.TryGetBlueprint<BlueprintBuff>("b175001b42b1a02479881b72fe132116");
+            Buff unrelatedControl = unrelatedBlueprint == null ? null : main.Descriptor.Buffs.AddBuff(unrelatedBlueprint, main, TimeSpan.FromMinutes(30));
+
             // 5. Native saves; continuing-session capture after each.
             var saves = new JArray();
             result["saves"] = saves;
@@ -307,6 +311,7 @@ namespace KmgLoaderCompatHarness
             {
                 int turnOffs = TurnOffsOf(holder);
                 int targetDamage = hostile.Descriptor.Damage;
+                JObject beforeThis = State(pair);
                 bool done = false, requested = false;
                 SaveInfo info = Game.Instance.SaveManager.CreateNewSave(index == 0 ? SaveLabel : SaveLabel + "r" + index);
                 TimeSpan clock = Game.Instance.TimeController.GameTime;
@@ -327,6 +332,10 @@ namespace KmgLoaderCompatHarness
                 if (!IsHeld(pair) || (int)after["rawLinksNamingTarget"] != 1 || !(bool)after["live.targetGrappledBuff"] || !(bool)after["live.holderHoldBuff"])
                     problems.Add("save " + index + ": the hold did not survive the save in the continuing session: " + after.ToString(Formatting.None));
                 if (hostile.Descriptor.Damage != targetDamage) problems.Add("save " + index + ": the target took damage during the save");
+                if (Game.Instance.TimeController.GameTime != clock) problems.Add("save " + index + ": the game clock changed during the paused save");
+                if (!JToken.DeepEquals(beforeThis["raw.links"], after["raw.links"])) problems.Add("save " + index + ": the exact raw records changed");
+                if ((string)beforeThis["target"] != (string)after["target"] || (string)beforeThis["holder"] != (string)after["holder"]) problems.Add("save " + index + ": ownership changed");
+                if (unrelatedControl == null || !main.Descriptor.Buffs.RawFacts.Contains(unrelatedControl)) problems.Add("save " + index + ": the unrelated control effect was not kept");
                 if (index == 0 && problems.Count > 0) break;
             }
             if (problems.Count > 0) yield break;

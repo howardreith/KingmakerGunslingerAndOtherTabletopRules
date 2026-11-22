@@ -105,7 +105,7 @@ namespace KmgLoaderCompatHarness
             foreach (string name in conditions.Keys)
             {
                 if (!known.Contains(name) && !SpearRepairConditions.Known.Contains(name) && name != ControlledRageObserver.Condition &&
-                    name != BrownFurObserver.Condition)
+                    name != BrownFurObserver.Condition && name != HoldLifecycleObserver.Condition)
                     throw new InvalidOperationException("unknown harness condition " + name);
             }
 
@@ -120,6 +120,12 @@ namespace KmgLoaderCompatHarness
             {
                 BrownFurObserver.Request();
                 applied[BrownFurObserver.Condition] = "record UnitPartBrownFurModifierPersistence PreSave/PostLoad/ResolveIncrease order and Brown-Fur exceptions";
+            }
+
+            if (Enabled(conditions, HoldLifecycleObserver.Condition))
+            {
+                HoldLifecycleObserver.Request();
+                applied[HoldLifecycleObserver.Condition] = "record summon hold lifecycle callbacks (unload/arrival/turn-off/deactivate/release) read-only";
             }
 
             SpearRepairConditions.Apply(harmony, conditions, applied);

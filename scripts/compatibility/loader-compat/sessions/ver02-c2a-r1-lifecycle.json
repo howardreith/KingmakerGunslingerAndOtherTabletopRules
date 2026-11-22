@@ -1,0 +1,26 @@
+{
+  "name": "ver02-c2a-r1-lifecycle",
+  "description": "S6 checkpoint C2a R1 / VER-02 F1 lifecycle. The product runs alone with the read-only hold lifecycle observer (condition observeHoldLifecycle) installed for the whole process. Step removal: genuine removal of an active carrier through the native fact removal API for each changed owner (a crocodile's hold buff with the holder alive; a Giant Flytrap's multi-hold buff with two links), with an independent holding pair and unrelated effects as controls, plus a crocodile accelerated-expiry case for disposal attribution. Step cadence: an aged crocodile hold and an aged two-link Flytrap hold through two paused native saves (exact records, occupancy, ownership, native Buff.RoundNumber and next tick time, unchanged game clock, unrelated effect), then the next scheduled round. Then the harness saves (both holds active) and performs a same-process loadLastSave, which unloads the area and loads the save. Step afterLoad: the observed unload/arrival ordering and the disposition of both relationships before the arrival reset, the loaded reset, then fresh crocodile and Flytrap holds through a native save whose hold turn-offs must not see unload state. Disclosed setup as in C1/C2.",
+  "ownerMods": [],
+  "fixtureSaves": [ "KMCS_AFTER_NORMAL_012_MODONLY.zks" ],
+  "launches": [
+    {
+      "label": "lifecycle",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": { "observeHoldLifecycle": "true" },
+      "expectLog": { "present": [ "[blueprints][initialize.complete]" ], "absent": [ "[initialize.failed]" ] },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "kmgModules", "label": "all-on", "match": "" },
+          { "op": "kmgInitialization", "label": "create", "expect": "completed" },
+          { "op": "kmgHoldLifecycle", "label": "removal", "match": "removal", "timeoutSeconds": 400 },
+          { "op": "kmgHoldLifecycle", "label": "cadence", "match": "cadence", "timeoutSeconds": 400 },
+          { "op": "saveGame", "label": "ver02c2ar1", "timeoutSeconds": 120 },
+          { "op": "loadLastSave", "label": "same-process-load", "timeoutSeconds": 240 },
+          { "op": "kmgHoldLifecycle", "label": "after-load", "match": "afterLoad", "timeoutSeconds": 400 }
+        ]
+      }
+    }
+  ]
+}
