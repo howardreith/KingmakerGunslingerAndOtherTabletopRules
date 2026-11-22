@@ -1,9 +1,12 @@
 # Sprint 6 checkpoint A1: Controlled Rage persistence (RISK-03, first owner)
 
-Status: **review corrections implemented and natively qualified for the stated scope; returned for a second manual
-review** (2026-11-22). The first review found two defects; section 10 records the corrections and their evidence.
-Nothing is merged or released. RISK-03 stays **partial**: Brown-Fur, its second owner, is checkpoint A2 and is not
-changed here. The draft PR is not accepted until Howie/ChatGPT review it.
+Status: **accepted by the second manual review (2026-11-22) for its stated Controlled Rage development scope**, at head
+`f3f91386f1` (product `f9c2440651`, candidate DLL `e7afabe4…`, native session `20261122T143026Z`). Both first-review
+findings are closed. The acceptance is a scoped development-review acceptance: nothing is merged or released, and
+release qualification remains a separate boundary. RISK-03 stays **partial** until Brown-Fur, its second owner
+(checkpoint A2, stacked PR), is reviewed. The first review found two defects; section 10 records the corrections and
+their evidence. Records-only follow-ups after acceptance (this status, and the narrowed failure language in §4 row 8
+and §10.2) did not change product bytes and did not require a rebuild.
 
 Also in this checkpoint: the bounded REP-05/REP-06 historical-input intake (section 8). Both are BLOCKED on missing
 inputs.
@@ -64,7 +67,7 @@ The pre-part path "selection facts but no part" in `ResolveSelection` and the le
 | 5 | Unsupported or future data | An entry with an integer key other than 4/6/8 is retained, grants nothing and leaves the known tiers alone. Content not attributable to any tier (no `k:` key, empty entry, empty or whitespace string) blocks **every** tier. A state without an ordinary claim blocks ordinary, because the released writer always records it |
 | 6 | Valid siblings beside invalid entries | Kept, with exact meaning. A legitimately absent tier beside a blocked one still gets its normal first-unlock default |
 | 7 | Repeated reads, callbacks, mutations and saves | Idempotent: the retained list is the same instance when nothing changes. The diagnostic is deduplicated against the last condition signature (section 4, Diagnostic) |
-| 8 | Failed write | Both fields are computed before either is assigned. A failed explicit selection restores the exact pre-call persisted values and leaves every marker as it was (staged synchronization, section 10.2) |
+| 8 | Failed write | Both fields are computed before either is assigned. An explicit selection that is refused by validation, or whose marker addition returns null, restores the exact pre-call persisted values and leaves every marker as it was (staged synchronization, section 10.2). An exception thrown inside a marker addition or removal is not caught or rolled back by this owner |
 | 9 | Null current state beside retained history | Not fresh absence: the ordinary tier and every tier a retained payload claims or taints stay blocked unless the current state holds them; retained text is never replayed (section 10.1) |
 
 **Absent vs malformed.** Legitimate absence means a null `_state` with no retained payload. It keeps the released
@@ -394,8 +397,10 @@ payload.
   - Only when all additions succeed does it remove stale markers.
   - A failed addition removes exactly the instances this call added and returns false, so no marker of any tier
     changes. (`UnitHelper.RemoveFact(UnitDescriptor, Fact)` removes the given instance; decompiled 2.1.7b.)
-- `TrySelect` captures the part snapshot before its `Unlock`. On any failure it restores the snapshot and does not
-  synchronize again.
+- `TrySelect` captures the part snapshot before its `Unlock`. When the selection is refused (`TrySelectExact` returns
+  false) or a marker addition returns null, it restores the snapshot and does not synchronize again. These are the two
+  supported failure paths. An exception thrown by the engine inside `AddFact` or `RemoveFact` propagates; it is not
+  caught, and the rollback does not cover it.
 - `ResolveSelection` and `UnlockTier` get the same all-or-nothing marker behavior. Their success paths are unchanged.
 
 ### 10.3 Focused regressions
