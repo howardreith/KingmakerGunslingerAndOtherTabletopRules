@@ -128,8 +128,9 @@ namespace KmgLoaderCompatHarness
             expect("siblings", new[] { dex }, new[] { str, injected["siblings"][2] });
             expect("conflict", new string[0], injected["conflict"]);
             expect("exact", new[] { injected["exact"][0] }, new[] { injected["exact"][1] });
-            // On the engine path the identical repeated member arrives collapsed: a valid record for another buff.
-            expect("unsupported", new[] { u[0], u[4] }, new[] { u[1], u[2], u[3], u[5] });
+            // On the engine path the identical repeated member arrives collapsed: a valid record for another buff,
+            // which the schema-2 entry for that same identity withholds (reviewed ambiguity policy).
+            expect("unsupported", new[] { u[0] }, new[] { u[1], u[2], u[3], u[4], u[5] });
             expect("unattributable", new string[0], injected["unattributable"]);
             // Documented engine limit (BLOCKED claim): the conflicting repeated member arrives collapsed to its last
             // occurrence, a valid record with Increase 4.

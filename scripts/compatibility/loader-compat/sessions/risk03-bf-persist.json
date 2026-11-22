@@ -28,7 +28,7 @@
           "active=1;retained=2;newlyRejected=2;",
           "active=0;retained=2;newlyRejected=2;",
           "active=1;retained=1;newlyRejected=1;",
-          "active=2;retained=4;newlyRejected=4;"
+          "active=1;retained=5;newlyRejected=5;"
         ],
         "absent": [ "[initialize.failed]" ]
       },
@@ -48,7 +48,7 @@
       "conditions": { "observeBrownFurPersistence": "true" },
       "expectLog": {
         "present": [ "[blueprints][initialize.complete]", "newlyRejected=0;" ],
-        "absent": [ "[initialize.failed]", "newlyRejected=1;", "newlyRejected=2;", "newlyRejected=4;" ]
+        "absent": [ "[initialize.failed]", "newlyRejected=1;", "newlyRejected=2;", "newlyRejected=5;" ]
       },
       "harness": {
         "save": "$written:bfq2",
