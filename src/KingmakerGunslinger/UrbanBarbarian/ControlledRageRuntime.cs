@@ -218,15 +218,17 @@ namespace KingmakerGunslinger.UrbanBarbarian
                 // part retains its rejected input and grants nothing for it.
                 if (part.IsBlocked(tier)) continue;
                 ControlledRageAllocation selected = part.SelectionFor(tier);
+                // Add before removing, so a failed add leaves this tier's
+                // existing facts exactly as they were for the caller's rollback.
+                if (selected != null &&
+                    !owner.HasFact(_factsByAllocation[selected]) &&
+                    owner.AddFact(_factsByAllocation[selected]) == null)
+                    return false;
                 foreach (ControlledRageAllocation allocation in
                     ControlledRageAllocationPolicy.Generate(tier))
                     if (!Equals(allocation, selected) &&
                         owner.HasFact(_factsByAllocation[allocation]))
                         owner.RemoveFact(_factsByAllocation[allocation]);
-                if (selected != null &&
-                    !owner.HasFact(_factsByAllocation[selected]) &&
-                    owner.AddFact(_factsByAllocation[selected]) == null)
-                    return false;
             }
             return true;
         }
