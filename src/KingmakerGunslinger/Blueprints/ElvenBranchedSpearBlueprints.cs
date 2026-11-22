@@ -456,6 +456,47 @@ namespace KingmakerGunslinger.Blueprints
                 Observe(type, donor, effective));
             if (!verdict.IsValid)
                 throw new InvalidOperationException(verdict.DescribeFailure());
+            if (effective) ReportRuntimeWeight(type);
+        }
+
+        /// <summary>
+        /// One bounded, nonfatal diagnostic on the definitive validation: when
+        /// the effective weight getter differs from the authored weight (a
+        /// deliberate global override such as Bag of Tricks' No Item Weight),
+        /// log both values and the getter's patch owners once. Every read is
+        /// contained; nothing here can fail or change registration.
+        /// </summary>
+        private static void ReportRuntimeWeight(BlueprintWeaponType type)
+        {
+            try
+            {
+                float authored = AuthoredItemWeight.Stored(type);
+                string effective;
+                try { effective = Weight(type.Weight); }
+                catch (Exception exception)
+                {
+                    effective = ElvenBranchedSpearProfilePolicy.Unavailable(exception);
+                }
+                if (string.Equals(effective, Weight(authored), StringComparison.Ordinal))
+                    return;
+                string patchInfo;
+                string[] owners = GetterPatchOwners("Weight", out patchInfo);
+                ModContext context;
+                if (!ModContext.TryGet(out context) || context.Logger == null) return;
+                context.Logger.Info("elven-branched-spear", "weight.runtime-override",
+                    "Elven Branched Spear weapon type authored weight=" +
+                    Weight(authored) + " effective=" + effective +
+                    "; the authored weight is valid and kept, the effective value is a runtime setting; getterPatches=" +
+                    (string.Equals(patchInfo, "read", StringComparison.Ordinal)
+                        ? (owners.Length == 0 ? "none" : string.Join(",",
+                            owners.Distinct().OrderBy(value => value, StringComparer.Ordinal)
+                                .Take(ElvenBranchedSpearProfilePolicy.MaxDescribedOwners).ToArray()))
+                        : patchInfo) + ".");
+            }
+            catch (Exception)
+            {
+                // Diagnostic only: an unreadable runtime weight is not a defect.
+            }
         }
 
         /// <summary>
@@ -566,10 +607,7 @@ namespace KingmakerGunslinger.Blueprints
                 "AttackBonusStat", value => value.AttackBonusStat.ToString(),
                 field => (bool)field ? "<override>" :
                     Kingmaker.EntitySystem.Stats.StatType.Strength.ToString()));
-            values.Add(Getter("weight", type, donor, _weight,
-                Weight(ElvenBranchedSpearCatalog.WeightPounds),
-                value => Weight((float)value),
-                "Weight", value => Weight(value.Weight), null));
+            values.Add(AuthoredWeight(type, donor));
             // The serialized m_Enchantments and the live Enchantments getter
             // must both hold exactly the registered movement-accuracy
             // enchantment (by identity: any other object, even one with the
@@ -580,6 +618,31 @@ namespace KingmakerGunslinger.Blueprints
             values.Add(SubCategories(type, donor));
             values.Add(SubCategoryListObservation(type, donor));
             return values.ToArray();
+        }
+
+        /// <summary>
+        /// The weight predicate judges authored data only: the owned type's
+        /// serialized m_Weight must be the catalog weight. The public Weight
+        /// getter is a runtime value that a deliberate global override (Bag of
+        /// Tricks' No Item Weight returns zero for every weapon type) may
+        /// legitimately change, so it is not read here at all - it can be
+        /// neither a mandatory input nor a source of exceptions - and the
+        /// policy never treats an effective weight difference as a finding.
+        /// The donor's stored field is reported as context only.
+        /// </summary>
+        private SpearProfileObservation AuthoredWeight(BlueprintWeaponType type,
+            BlueprintWeaponType donor)
+        {
+            string owned = Weight(AuthoredItemWeight.Stored(type));
+            string donorField;
+            try { donorField = Weight(AuthoredItemWeight.Stored(donor)); }
+            catch (Exception exception)
+            {
+                donorField = ElvenBranchedSpearProfilePolicy.Unavailable(exception);
+            }
+            return new SpearProfileObservation("weight",
+                Weight((float)ElvenBranchedSpearCatalog.WeightPounds), owned,
+                donorField, owned, owned, donorField, null, "field");
         }
 
         private static readonly MethodInfo EngineHasSubCategory =
@@ -1030,7 +1093,11 @@ namespace KingmakerGunslinger.Blueprints
                 Array.Empty<BlueprintWeaponEnchantment>();
             DamageTypeDescription damage = (DamageTypeDescription)_damageType.GetValue(item);
             ValidateDamage(item, displayName);
-            if (item.Cost != cost || !item.Weight.Equals(10f) ||
+            // Authored weight only (see AuthoredItemWeight): the effective
+            // getter may legitimately read zero under a global weight override.
+            float storedWeight = AuthoredItemWeight.Stored(item);
+            if (item.Cost != cost ||
+                !storedWeight.Equals((float)ElvenBranchedSpearCatalog.WeightPounds) ||
                 item.IsActuallyStackable || item.IsMasterwork !=
                     (masterwork && enhancement == 0) ||
                 (bool)_overrideDamageType.GetValue(item) != coldIron ||
@@ -1041,8 +1108,8 @@ namespace KingmakerGunslinger.Blueprints
                 enchantments.Length != (enhancement >= 1 || masterwork ? 1 : 0) ||
                 item.Description.IndexOf("Brace", StringComparison.OrdinalIgnoreCase) >= 0)
                 throw new InvalidOperationException("Spear item contract is invalid: " +
-                    displayName + ";cost=" + item.Cost + ";weight=" +
-                    item.Weight + ";stackable=" + item.IsActuallyStackable +
+                    displayName + ";cost=" + item.Cost + ";storedWeight=" +
+                    AuthoredItemWeight.Text(storedWeight) + ";stackable=" + item.IsActuallyStackable +
                     ";nativeMasterworkFlag=" + item.IsMasterwork +
                     ";overrideDamage=" + _overrideDamageType.GetValue(item) +
                     ";damage=" + (damage == null ? "<null>" :
@@ -1079,7 +1146,9 @@ namespace KingmakerGunslinger.Blueprints
             DamageTypeDescription damage =
                 (DamageTypeDescription)_damageType.GetValue(item);
             ValidateDamage(item, spec.DisplayName);
-            if (item.Cost != spec.Cost || !item.Weight.Equals(10f) ||
+            if (item.Cost != spec.Cost ||
+                !AuthoredItemWeight.StoredEquals(item,
+                    (float)ElvenBranchedSpearCatalog.WeightPounds) ||
                 item.IsActuallyStackable ||
                 (bool)_overrideDamageType.GetValue(item) != spec.ColdIron ||
                 damage == null || damage.Type != DamageType.Physical ||

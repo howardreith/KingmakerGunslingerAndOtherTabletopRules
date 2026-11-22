@@ -94,7 +94,8 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
         /// The owned field is right but the live getter - what players and the
         /// engine actually use - disagrees with the engine contract for that
         /// field, or throws. Fatal whoever patches the getter: patch owners are
-        /// reported as context, never as an exemption.
+        /// reported as context, never as an exemption. Runtime-modifiable
+        /// predicates (weight) are judged on the owned field only.
         /// </summary>
         EffectiveGetterMismatch = 1
     }
@@ -249,9 +250,27 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
             return string.Join(",", granted.ToArray());
         }
 
+        /// <summary>The weight predicate: authored (serialized) data only.</summary>
+        internal const string WeightPredicate = "weight";
+
         /// <summary>
-        /// The owned serialized field and the owned getter are the invariants.
-        /// Donor values are comparison context only and never decide a verdict.
+        /// Predicates whose effective value is a legitimate runtime setting
+        /// rather than part of the weapon's mechanics. A deliberate global
+        /// override such as Bag of Tricks' No Item Weight makes every weight
+        /// getter return zero; that is valid behavior, so only the owned
+        /// serialized field of these predicates is judged. Every mechanical
+        /// predicate (damage, reach, proficiency, enchantments, handedness ...)
+        /// keeps its effective-getter check.
+        /// </summary>
+        internal static bool IsRuntimeModifiable(string predicate)
+        {
+            return string.Equals(predicate, WeightPredicate, StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// The owned serialized field and the owned getter are the invariants,
+        /// except that a runtime-modifiable predicate's getter never decides a
+        /// verdict. Donor values are comparison context only.
         /// </summary>
         internal static SpearProfileFindingKind? Classify(
             SpearProfileObservation observation)
@@ -259,7 +278,8 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
             if (observation == null) throw new ArgumentNullException("observation");
             if (!observation.OwnedFieldMatches)
                 return SpearProfileFindingKind.OwnedFieldMismatch;
-            if (observation.EngineMatches) return null;
+            if (observation.EngineMatches || IsRuntimeModifiable(observation.Predicate))
+                return null;
             return SpearProfileFindingKind.EffectiveGetterMismatch;
         }
 
