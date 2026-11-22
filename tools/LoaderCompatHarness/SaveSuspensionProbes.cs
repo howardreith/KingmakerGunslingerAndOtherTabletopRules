@@ -63,6 +63,7 @@ namespace KmgLoaderCompatHarness
 
         private static readonly Dictionary<string, int> TurnOffs = new Dictionary<string, int>();
         private static readonly List<JObject> GrabEvents = new List<JObject>();
+        private static readonly List<JObject> Trace = new List<JObject>();
 
         private readonly string mode;
         private readonly JObject result = new JObject();
@@ -92,6 +93,7 @@ namespace KmgLoaderCompatHarness
             try { more = script.MoveNext(); }
             catch (Exception exception) { problems.Add("probe exception: " + exception); more = false; }
             if (more) return null;
+            result["trace"] = new JArray(Trace.ToArray());
             result["problems"] = new JArray(problems.Cast<object>().ToArray());
             verdict = problems.Count == 0 ? string.Empty : string.Join(" | ", problems.ToArray());
             return verdict;
@@ -127,7 +129,12 @@ namespace KmgLoaderCompatHarness
             links = product.GetType("KingmakerGunslinger.Summoning.SummonGrappleLinks", true);
             grabType = product.GetType("KingmakerGunslinger.Summoning.SummonGrabComponent", true);
             holdType = product.GetType("KingmakerGunslinger.Summoning.SummonHoldComponent", true);
-            TurnOffs.Clear(); GrabEvents.Clear();
+            TurnOffs.Clear(); GrabEvents.Clear(); Trace.Clear();
+            Observe(holdType.GetMethods(Any).Single(m => m.Name == "MaintainLink" && m.GetParameters().Length == 7), nameof(MaintainPostfix));
+            Observe(holdType.GetMethod("Release", Any), nameof(ReleasePostfix));
+            Observe(holdType.GetMethod("ReleaseLink", Any), nameof(ReleaseLinkPostfix));
+            Observe(typeof(UnitPartGrappleTarget).GetMethod("OnRemove"), nameof(TargetPartRemovedPostfix));
+            Observe(typeof(UnitPartGrappleInitiator).GetMethod("OnRemove"), nameof(InitiatorPartRemovedPostfix));
             Observe(holdType.GetMethod("OnTurnOff"), nameof(TurnOffPostfix));
             Observe(grabType.GetMethod("OnEventDidTrigger", new[] { typeof(RuleAttackWithWeapon) }), nameof(GrabPostfix));
             bool paused = Game.Instance.IsPaused;
@@ -174,6 +181,22 @@ namespace KmgLoaderCompatHarness
                 ["gameSeconds"] = Game.Instance.TimeController.GameTime.TotalSeconds
             });
         }
+
+        private static void Note(string what, string detail)
+        {
+            if (Trace.Count > 60) return;
+            string stack = new System.Diagnostics.StackTrace(2, false).GetFrames()?.Take(6)
+                .Select(f => f.GetMethod() == null ? "?" : f.GetMethod().DeclaringType?.Name + "." + f.GetMethod().Name)
+                .Aggregate((a, b) => a + " < " + b);
+            Trace.Add(new JObject { ["what"] = what, ["detail"] = detail, ["gameSeconds"] = Game.Instance.TimeController.GameTime.TotalSeconds,
+                ["paused"] = Game.Instance.IsPaused, ["stack"] = stack });
+        }
+
+        private static void MaintainPostfix(UnitEntityData owner, UnitEntityData target, string __result) { Note("MaintainLink", __result); }
+        private static void ReleasePostfix(UnitEntityData owner, UnitEntityData target) { Note("SummonHoldComponent.Release", target == null ? null : target.UniqueId); }
+        private static void ReleaseLinkPostfix(UnitEntityData owner, UnitEntityData target) { Note("SummonHoldComponent.ReleaseLink", target == null ? null : target.UniqueId); }
+        private static void TargetPartRemovedPostfix(UnitPartGrappleTarget __instance) { Note("UnitPartGrappleTarget.OnRemove", __instance.Owner?.Unit?.UniqueId); }
+        private static void InitiatorPartRemovedPostfix(UnitPartGrappleInitiator __instance) { Note("UnitPartGrappleInitiator.OnRemove", __instance.Owner?.Unit?.UniqueId); }
 
         private static int TurnOffsOf(UnitEntityData unit)
         {
@@ -321,7 +344,7 @@ namespace KmgLoaderCompatHarness
             Game.Instance.IsPaused = true;
             JObject death = State(pair);
             result["afterHolderDeath"] = death;
-            if ((bool)death["live.targetPart"] || (bool)death["live.targetGrappledBuff"] || (bool)death["live.targetCantMove"] || !(bool)death["live.targetCanMove"])
+            if ((bool)death["live.targetPart"] || (bool)death["live.targetGrappledBuff"] || (bool)death["live.targetCantMove"] || (bool)death["live.targetEntangled"])
                 problems.Add("holder death after the saves did not release the target: " + death.ToString(Formatting.None));
             created.Add(holder);
         }

@@ -59,6 +59,7 @@ namespace KmgLoaderCompatHarness
         private static readonly Dictionary<string, int> HeldRounds = new Dictionary<string, int>();
         private static readonly Dictionary<string, int> BuffTicks = new Dictionary<string, int>();
         private static readonly Dictionary<string, int> HoldTurnOffs = new Dictionary<string, int>();
+        private static readonly List<JObject> Trace = new List<JObject>();
         private static readonly FieldInfo CasterReference = typeof(MechanicsContext).GetField("m_CasterReference", BindingFlags.Instance | BindingFlags.NonPublic);
 
         private readonly string mode;
@@ -95,6 +96,7 @@ namespace KmgLoaderCompatHarness
                 more = false;
             }
             if (more) return null;
+            result["trace"] = new JArray(Trace.ToArray());
             result["problems"] = new JArray(problems.Cast<object>().ToArray());
             verdict = problems.Count == 0 ? string.Empty : string.Join(" | ", problems.ToArray());
             return verdict;
@@ -137,7 +139,9 @@ namespace KmgLoaderCompatHarness
             bool paused = Game.Instance.IsPaused;
             result["area"] = Game.Instance.CurrentlyLoadedArea == null ? null : Game.Instance.CurrentlyLoadedArea.name;
             result["turnBased"] = TurnBased.Controllers.CombatController.IsInTurnBasedCombat();
-            HoldRounds.Clear(); HeldRounds.Clear(); BuffTicks.Clear(); HoldTurnOffs.Clear();
+            HoldRounds.Clear(); HeldRounds.Clear(); BuffTicks.Clear(); HoldTurnOffs.Clear(); Trace.Clear();
+            Observe(holdType.GetMethods(Any).Single(m => m.Name == "MaintainLink" && m.GetParameters().Length == 7), nameof(MaintainPostfix));
+            Observe(holdType.GetMethod("ReleaseLink", Any), nameof(ReleaseLinkPostfix));
             Observe(multiType.GetMethod("OnTurnOff"), nameof(HoldTurnOffPostfix));
             Observe(multiType.GetMethod("OnNewRound"), nameof(HoldRoundPostfix));
             Observe(heldType.GetMethod("OnNewRound"), nameof(HeldRoundPostfix));
@@ -177,6 +181,19 @@ namespace KmgLoaderCompatHarness
         private static void HoldRoundPostfix(object __instance) { Count(HoldRounds, OwnerId(__instance)); }
         private static void HeldRoundPostfix(object __instance) { Count(HeldRounds, OwnerId(__instance)); }
         private static void HoldTurnOffPostfix(object __instance) { Count(HoldTurnOffs, OwnerId(__instance)); }
+
+        private static void Note(string what, UnitEntityData owner, UnitEntityData target, string detail)
+        {
+            if (Trace.Count > 120) return;
+            string stack = new System.Diagnostics.StackTrace(2, false).GetFrames()?.Take(4)
+                .Select(f => f.GetMethod() == null ? "?" : f.GetMethod().DeclaringType?.Name + "." + f.GetMethod().Name)
+                .Aggregate((a, b) => a + " < " + b);
+            Trace.Add(new JObject { ["what"] = what, ["holder"] = owner?.UniqueId, ["target"] = target?.UniqueId, ["detail"] = detail,
+                ["gameSeconds"] = Game.Instance.TimeController.GameTime.TotalSeconds, ["stack"] = stack });
+        }
+
+        private static void MaintainPostfix(UnitEntityData owner, UnitEntityData target, string __result) { Note("MaintainLink", owner, target, __result); }
+        private static void ReleaseLinkPostfix(UnitEntityData owner, UnitEntityData target) { Note("ReleaseLink", owner, target, null); }
         private static void BuffTickPostfix(BuffCollection __instance)
         {
             UnitDescriptor owner = __instance == null ? null : __instance.Owner;
