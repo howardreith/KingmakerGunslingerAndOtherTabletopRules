@@ -658,6 +658,51 @@ namespace KmgLoaderCompatHarness
                     return problem == null ? StepStatus.Done : Fail(problem);
                 }
 
+                case "botWeightSetting":
+                {
+                    JObject state = BagOfTricksWeight.Run(step.Match, step.Save, step.Expect, out string problem);
+                    result["botWeightSetting_" + (step.Label ?? stepIndex.ToString())] = state;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
+                case "kmgWeightCensus":
+                {
+                    JObject census = WeightCensus.Run(request.ProfileDir, step.Label ?? stepIndex.ToString(), step.Expect, step.Type, step.Contains,
+                        step.Invariants, out string problem);
+                    result["kmgWeightCensus_" + (step.Label ?? stepIndex.ToString())] = census;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
+                case "kmgWeightItems":
+                {
+                    JObject items = WeightItems.Run(request.ProfileDir, step.Label ?? stepIndex.ToString(), step.Match, step.Type, step.Expect,
+                        step.Invariants, out string problem);
+                    result["kmgWeightItems_" + (step.Label ?? stepIndex.ToString())] = items;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
+                case "kmgPublicationStatus":
+                {
+                    JObject status = PublicationStatus.Run(step.Match, out string problem);
+                    result["kmgPublicationStatus_" + (step.Label ?? stepIndex.ToString())] = status;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
+                case "kmgWeightProbeSelfTest":
+                {
+                    JObject selfTest = WeightProbeSelfTest.Run(out string problem);
+                    result["kmgWeightProbeSelfTest_" + (step.Label ?? stepIndex.ToString())] = selfTest;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
+                case "kmgInventoryWeightView":
+                {
+                    if (!InventoryWeightView.Poll(step.Label ?? stepIndex.ToString(), step.Match, step.Contains, out JObject view, out string problem))
+                        return StepStatus.Running;
+                    result["kmgInventoryWeightView_" + (step.Label ?? stepIndex.ToString())] = view;
+                    return problem == null ? StepStatus.Done : Fail(problem);
+                }
+
                 case "kmgRollbackResidue":
                 {
                     // Needs the captureOriginals condition: exact restoration is judged against identities recorded

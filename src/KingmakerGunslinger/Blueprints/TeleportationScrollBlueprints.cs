@@ -82,7 +82,9 @@ namespace KingmakerGunslinger.Blueprints
                     "Scroll of " + key.Replace("GreaterTeleport", "Greater Teleport").Replace("WordOfRecall", "Word of Recall")),
                 LocalizationService.Create("KMG.Teleportation.Scroll." + key + ".Description", description),
                 LocalizationService.Create("KMG.Teleportation.Scroll." + key + ".Flavor", string.Empty),
-                cost, donor.Weight);
+                // The donor's authored m_Weight, never its effective getter,
+                // which reads zero under a global weight override.
+                cost, AuthoredItemWeight.Stored(donor));
             scroll.CasterLevel = casterLevel;
             scroll.SpellLevel = spellLevel;
             scroll.Ability = spell;
