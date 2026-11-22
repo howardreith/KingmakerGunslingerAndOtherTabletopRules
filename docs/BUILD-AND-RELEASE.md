@@ -1,5 +1,53 @@
 # Build, package, and publish
 
+## 0.0.193 publication authorization
+
+**Authorized; not yet published.**
+
+On 2026-11-22, after the manual review of PR #195 by Howie and ChatGPT, Howie wrote: "This is approved. Please merge
+this and cut a new release." PR #195 (the spear startup, summoning and weapon-tooltip repair) was marked ready and
+merged as `3beaeb83ed`. No channel was named, so this follows v0.0.192 as the next stable patch, v0.0.193, from master
+`3beaeb83ed`.
+
+- **Reviewed product.** Master `3beaeb83ed`. Its `src/KingmakerGunslinger` tree is
+  `c948a78d1c6b3d56bb43a92a248da72e199d068e`, identical to the reviewed PR head `3cfb497cc0` and to the natively
+  tested development candidate `4e0ac475aabc`. The product change from v0.0.192 is eight files, listed and pinned in
+  `tools/validate_spear_bootstrap_tooltip_repair_release193.py`:
+  - the product delta from the v0.0.192 tag target under `src/KingmakerGunslinger`, `assets`, `assets-source`,
+    `blueprints` and `Directory.Build.props` is exactly those eight files, in both directions;
+  - the reviewed product tree is the natively tested one;
+  - `Info.json`, the UMM 0.31.1 loader pins and the build inputs are unchanged from v0.0.192 and the reviewed master;
+  - only the three AssemblyInfo version attributes and the Info and props version values may change;
+  - all 7,935 released identities stay exact and in order, and none is appended;
+  - the creature catalog is unchanged, with only the owner-withdrawn Stirge withheld (1,208 public choices);
+  - v0.0.192's DEF-05 inherited-template policy stays;
+  - one static release record is added.
+- **Owner-authorized test pin refresh.** The complete domain suite on the reviewed master fails one test,
+  `model-d.ItemIdentityEconomicsEnchantmentsAndCraftingUnchanged`, which pins
+  `src/KingmakerGunslinger/Blueprints/ElvenBranchedSpearBlueprints.cs` to its v0.0.192 hash `bc2199650c42…19d9`.
+  PR #195 changed that file deliberately (the explicit owned spear profile and its validation). PR #195's focused
+  gate (`-Filter elven-branched-spear`) did not select this test. On 2026-11-22 Howie chose "Refresh pin, then
+  release": that one pin in `tests/KingmakerGunslinger.DomainTests/ModelDVendorTests.cs` now reads the merged file's
+  hash `e37bcc481afba97fb147c04fdeb52d4da5e8aeac974db47812d91a8a9baa92e8`. No other pin changes. Before the refresh,
+  3,162 of 3,163 tests passed on master `3beaeb83ed` (wrapper skipped, because the frozen release192 validator rejects
+  any post-0.0.192 product by design).
+- **Native evidence.** Development candidate `4e0ac475aabc` (package `253fbe43…3518`, DLL `6b2696c7…7049f`) in the
+  disposable loader-compat game copy on UMM 0.31.1, as recorded in `docs/SPEAR-BOOTSTRAP-TOOLTIP-REPAIR.md`:
+  - the published v0.0.192 package reproduces the cascade under the simulated donor mutation (B10);
+  - the candidate starts under that mutation, and an invalid owned profile fails with its single diagnostic while
+    ordinary prices and tooltips stay native (S10; session M on the final runner, with verified registry restoration);
+  - the Fire Beetle summon passes on the reporter-shaped four-mod stack (R7);
+  - the spear and the 22 gp battered pistol persist across a fresh process with Gunslinger off (P7).
+
+  The release build differs from that candidate by version metadata and build stamps. It is run in the game after
+  publication, and the result is added here.
+- **Not established.** The reporter's exact failing predicate and the interfering modification in their 43-mod
+  installation remain unidentified. The repair is supported against the established failure mechanism; the
+  reporter's exact installation remains unverified.
+- **Publication path.** The ordinary exact-reference publisher from clean, pushed master with
+  `docs/RELEASE-NOTES-0.0.193.md` and the explicit summon-overhaul-baseline reference bundle. It runs the complete
+  gate and two deterministic builds, then publishes.
+
 ## 0.0.192 publication authorization
 
 **Published (completed).** Stable
