@@ -11,12 +11,26 @@ runs its own steps or only isolates while the candidate's own guarded runtime
 scenario (-kmgRuntimeTestRequest) runs. The copy's Mods folder and the session
 profile persist between launches, so settings and saves cross real restarts.
 
-Safety (adapted from the Kingmaker Cutscene Skip lab harness): refuses while
-Kingmaker runs, another lab holds a runtime lock, a journal is pending or Steam
-Cloud sync is not proven disabled; refuses any copy outside the lab's
-game-copies root; hashes the owner's saves and loader/mod files before and
-after; backs up and exactly restores the game's registry settings (journalled,
--RecoverOnly replays it); stops only a process it started from the copy.
+Safety (adapted from the Kingmaker Cutscene Skip lab harness). The runner
+supports one new, exclusively owned session followed by its normal verified
+completion:
+- before anything changes it refuses a running Kingmaker, any configured
+  runtime or game-copy lock, a pending session journal, or Steam Cloud sync not
+  proven disabled, and takes over or cleans up none of them;
+- it refuses any copy outside the lab's game-copies root and stops only a
+  process it started from the copy;
+- it holds the lab's shared runtime lease and its own game-copy lock for the
+  whole session and re-checks the host before every launch;
+- it hashes the owner's saves and loader/mod files at intake, backs up the
+  game's registry settings bound to a digest, and at completion imports a held,
+  verified copy of that backup, reads the key back and compares it exactly,
+  and verifies the owner's files before releasing ownership.
+
+Any failure of that completion exits 1 and retains the journal, both locks, the
+backup and a RecoveryRequired lease; later sessions refuse that state. There
+is no recovery mode: an interrupted or retained session is resolved by a
+deliberate manual procedure ("Manual recovery" in
+docs/SPEAR-BOOTSTRAP-TOOLTIP-REPAIR.md).
 #>
 [CmdletBinding()]
 param(
@@ -27,7 +41,6 @@ param(
     [string]$GameCopy = 'C:\Dev\KingmakerGunslingerLab\game-copies\loader-compat',
     [string]$FixtureDir = 'C:\Dev\KingmakerSkipCinematicLab\fixtures',
     [int]$LaunchTimeoutSeconds = 900,
-    [switch]$RecoverOnly,
     # Read-only: prints the machine-recorded results of an existing session - the session-summary.json identity,
     # verdict, restoration and per-launch log fields, or with -ReportLaunch one launch's harness-result.json steps
     # and pricing/initialization/profile records - each with its file's SHA-256, so a finished session can be
@@ -36,13 +49,7 @@ param(
     # With -Report: print that launch's records (label prefix, e.g. 02) instead of the session summary.
     [string]$ReportLaunch,
     # Runs the offline session-guard checks (Test-LoaderCompatSafety.ps1) and exits.
-    [switch]$SafetyTests,
-    # With -RecoverOnly: the owner's explicit decision for game settings recovery cannot settle safely
-    # (Import the session backup, or KeepCurrent settings). Accepted case-insensitively and normalized.
-    [ValidateSet('', 'Import', 'KeepCurrent')][string]$RegistryResolution = '',
-    # With -RegistryResolution: the interrupted transaction the decision is for, as printed with the deferral.
-    # The decision is refused unless the pending journal is that transaction.
-    [string]$ResolveTransaction = ''
+    [switch]$SafetyTests
 )
 
 . (Join-Path $PSScriptRoot 'LoaderCompat.Common.ps1')
@@ -71,8 +78,8 @@ if ($Report) {
         Write-Host "READ-ONLY REPORT $summaryPath sha256=$(Get-LcSha256 $summaryPath)"
         $head = [ordered]@{}
         foreach ($name in @('sessionId', 'session', 'loaderProfile', 'candidateZip', 'candidateZipSha256', 'git', 'candidateVersion', 'status',
-                'ownerSaveFiles', 'registryRestored', 'registryRestore', 'transactionSucceeded', 'ownerSavesUnchanged', 'ownerInstallUnchanged', 'ownerIntegrity', 'ownership', 'runtimeLease',
-                'failure', 'integrityFailures', 'stagedMods')) {
+                'ownerSaveFiles', 'registryRestored', 'registryRestore', 'registryVerification', 'transactionSucceeded', 'scenarioPassed', 'ownerSavesUnchanged',
+                'ownerInstallUnchanged', 'ownerIntegrity', 'ownership', 'transactionId', 'runtimeLease', 'retained', 'failure', 'integrityFailures', 'stagedMods')) {
             $head[$name] = Get-LcReportValue $summaryData $name
         }
         # The session's shared runtime lease as it stands now: its journal status and whether the shared lock is free.
@@ -134,16 +141,11 @@ if ($Report) {
 }
 
 if ($SafetyTests) {
-    # Offline fixture checks of the session guards, including shared ownership, per-launch host checks and
-    # restoration only at a safe boundary. No game, loader, registry or owner file is touched.
+    # Offline fixture checks of the session guards: refusal of pre-existing state, shared ownership, per-launch
+    # host checks, verified restoration and retention on failure. No game, loader, registry or owner file is touched.
     try { & (Join-Path $PSScriptRoot 'Test-LoaderCompatSafety.ps1') }
     catch { Write-Host "Safety checks aborted: $($_.Exception.Message)`n$($_.ScriptStackTrace)"; exit 1 }
     return
-}
-
-if ($RecoverOnly) {
-    # Exit 0 only for a clean recovered transaction; refusals, deferrals and failed verdicts exit 1.
-    exit (Invoke-LcRecoverOnlyCommand { param($Path) Restore-LcRegistry $Path } $RegistryResolution $ResolveTransaction)
 }
 
 foreach ($required in @('SessionFile', 'LoaderProfile', 'CandidateZip', 'HarnessDir')) {
@@ -168,13 +170,16 @@ $transaction = Enter-LcSessionTransaction $sessionId
 $scope = $transaction.Scope
 $journal = $transaction.Journal
 $summary.runtimeLease = $scope.Lease.RunId
+$summary.transactionId = $journal.transactionId
+$hostError = $false
+$verdict = $null
 try {
     New-Item -ItemType Directory -Force -Path $evidence, (Join-Path $profileDir 'Saved Games') | Out-Null
     $intake = Save-LcIntake $journal
     $summary.ownerSaveFiles = $intake.savesCount
     $registryBackup = Join-Path $evidence 'game-settings.reg'
     Backup-LcRegistry $registryBackup
-    # Bound to its digest: completion and recovery verify these bytes before any comparison or import.
+    # Bound to its digest: completion imports only a held copy of these verified bytes and compares the readback with them.
     Set-LcRegistryBackup $journal $registryBackup
 
     Initialize-LcGameCopy $paths
@@ -253,9 +258,9 @@ try {
             $arguments += @('-kmgRuntimeTestRequest', $productRequestPath)
         }
 
-        # Every fresh launch re-checks the host: a peer game or a sibling lab lock that appeared after the session
-        # preflight withholds this launch and every later one.
-        try { Assert-LcLaunchAvailable $scope.Lease }
+        # Every fresh launch re-checks the host and the session's claims: a peer game or a sibling lab lock that
+        # appeared after the session preflight withholds this launch and every later one.
+        try { Assert-LcLaunchAvailable $scope.Lease $journal }
         catch {
             $record.verdict = 'withheld'; $record.problems += $_.Exception.Message
             Write-LcJson (Join-Path $launchDir 'launch-summary.json') $record
@@ -354,48 +359,49 @@ try {
         $summary.launches += $record
         Write-Host ("{0} {1} {2}s {3}" -f $label, $record.verdict, $record.seconds, ($record.problems -join '; '))
     }
-    $summary.status = $(if (@($summary.launches | Where-Object { $_.verdict -ne 'PASS' }).Count -eq 0) { 'PASS' } else { 'FAIL' })
 }
 catch {
-    $summary.status = 'host-error'
+    $hostError = $true
     $summary.failure = $_.ToString()
-    throw
+    Write-Host "Session host error: $($_.Exception.Message)`n$($_.ScriptStackTrace)"
 }
 finally {
-    $integrity = @()
-    # At a safe boundary only (no Kingmaker process, no sibling or foreign lock): restore game settings once,
-    # compare the owner's files with the intake while still owning the host, then complete and release. Otherwise
-    # the journal, both locks and a RecoveryRequired lease are kept for -RecoverOnly.
+    $problems = @()
+    # At a safe boundary only: restore the verified game settings, read them back, verify the owner's files, then
+    # complete the lease and release this session's claims. Any failure retains the session for manual recovery.
     $ownership = $null
-    try {
-        $ownership = Complete-LcSessionOwnership $journal $scope { param($Path) Restore-LcRegistry $Path }
-        $summary.ownership = $ownership.Outcome
-        if ($ownership.Outcome -ne 'completed') { $integrity += $ownership.Reason }
-    } catch { $summary.ownership = 'teardown-interrupted'; $integrity += "ownership completion failed (journal kept for -RecoverOnly): $($_.Exception.Message)" }
+    try { $ownership = Complete-LcSessionOwnership $journal $scope { param($Path) Restore-LcRegistry $Path } }
+    catch { $problems += "ownership completion threw: $($_.Exception.Message)" }
+    $summary.ownership = $(if ($null -ne $ownership) { $ownership.Outcome } else { 'unknown' })
     $summary.registryRestore = [string]$journal.registryRestore
-    $summary.registryRestored = ([string]$journal.registryRestore) -in @('applied', 'not-needed')
-    if (-not $summary.registryRestored -and $journal.registryBackup) { $integrity += "game settings: $($journal.registryRestore)" }
-    $summary.transactionSucceeded = Test-LcTransactionSucceeded $ownership
+    $summary.registryRestored = ([string]$journal.registryRestore) -cin @('applied', 'not-needed')
+    $summary.registryVerification = $journal.registryVerification
+    if ($null -eq $ownership -or $ownership.Outcome -cne 'completed') {
+        if ($null -ne $ownership) { $problems += $ownership.Reason }
+        $summary.retained = [ordered]@{ journal = $script:LcJournal; transactionId = $journal.transactionId; leaseRunId = $journal.leaseRunId
+            leaseStatePath = $journal.leaseStatePath; sharedLock = (Get-LcSharedLockPath); privateLock = $script:LcLock
+            registryBackup = $journal.registryBackup; registryBackupSha256 = $journal.registryBackupSha256; phase = $journal.phase }
+    }
     $check = $journal.integrity
-    if ($null -eq $check) {
-        $summary.ownerIntegrity = 'not-verified'
-        $integrity += 'owner-file integrity was not verified because ownership is retained for -RecoverOnly'
-    } else {
+    if ($null -eq $check) { $summary.ownerIntegrity = 'not-verified' }
+    else {
         $summary.ownerIntegrity = $check.status
-        if ($check.status -eq 'unresolved') { $integrity += "owner-file integrity unresolved: $($check.reason)" }
-        else {
+        if ($check.Contains('ownerSavesUnchanged')) {
             $summary.ownerSavesUnchanged = $check.ownerSavesUnchanged
             $summary.ownerInstallUnchanged = $check.ownerInstallUnchanged
-            if (-not $check.ownerSavesUnchanged) { $summary.ownerSaveChanges = $check.ownerSaveChanges; $integrity += 'owner saves changed' }
-            if (-not $check.ownerInstallUnchanged) { $summary.ownerInstallChanges = $check.ownerInstallChanges; $integrity += 'owner installation changed' }
+            if (-not $check.ownerSavesUnchanged) { $summary.ownerSaveChanges = $check.ownerSaveChanges }
+            if (-not $check.ownerInstallUnchanged) { $summary.ownerInstallChanges = $check.ownerInstallChanges }
         }
     }
-    if (-not $summary.transactionSucceeded -and $integrity.Count -eq 0) { $integrity += 'the session transaction did not complete cleanly' }
-    if ($integrity.Count -and $summary.status -ne 'host-error') { $summary.status = 'integrity-failed' }
-    if ($integrity.Count) { $summary.integrityFailures = $integrity }
+    $verdict = Get-LcSessionVerdict @($summary.launches) $hostError $ownership
+    $summary.scenarioPassed = $verdict.ScenarioPassed
+    $summary.transactionSucceeded = $verdict.TransactionSucceeded
+    $summary.status = $verdict.Status
+    if ($problems.Count) { $summary.integrityFailures = $problems }
     if (Test-Path -LiteralPath $evidence) { Write-LcJson (Join-Path $evidence 'session-summary.json') $summary }
-    Write-Host "Session $sessionId : $($summary.status) $($integrity -join '; ')"
+    Write-Host "Session $sessionId : $($summary.status) (scenario $(if ($verdict.ScenarioPassed) { 'passed' } else { 'not passed' }); transaction $($summary.ownership), game settings $($summary.registryRestore), owner files $($summary.ownerIntegrity)) $($problems -join '; ')"
     Write-Host "Evidence: $evidence"
 }
-# Only a session whose launches all passed and whose transaction completed cleanly exits 0.
-if ($summary.status -ne 'PASS') { exit 1 }
+# Only a session whose launches all passed and whose transaction completed with verified restoration exits 0.
+if ($null -eq $verdict) { exit 1 }
+exit $verdict.ExitCode

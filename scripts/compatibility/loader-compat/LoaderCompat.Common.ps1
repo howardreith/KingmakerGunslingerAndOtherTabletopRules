@@ -11,7 +11,6 @@ $script:LcCopiesRoot = Join-Path $script:LcLabRoot 'game-copies'
 $script:LcEvidenceRoot = Join-Path $script:LcLabRoot 'runtime-evidence\loader-compat'
 $script:LcLock = Join-Path $script:LcCopiesRoot 'loader-compat.lock'
 $script:LcJournal = Join-Path $script:LcCopiesRoot 'loader-compat.journal.json'
-$script:LcRecoveryLock = Join-Path $script:LcCopiesRoot 'loader-compat.recovery.lock'
 $script:LcComponentCache = Join-Path $script:LcLabRoot 'private\umm-distributions\cache'
 $script:LcOwnerInstall = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker'
 $script:LcOwnerData = Join-Path $env:USERPROFILE 'AppData\LocalLow\Owlcat Games\Pathfinder Kingmaker'
@@ -69,10 +68,10 @@ function Get-LcCopyPaths([string]$CopyRoot) {
     }
 }
 
+# Refuses before anything changes: any Kingmaker process, any configured runtime or
+# game-copy lock, a pending journal (Assert-LcHostFree), then the Steam conditions.
 function Assert-LcPreflight {
-    if ((Get-LcGameProcesses).Count -gt 0) { throw 'Kingmaker is already running; refusing to take over another session.' }
-    foreach ($lock in $script:LcForeignLocks) { if (Test-Path -LiteralPath $lock) { throw "Another lab holds a runtime lock: $lock" } }
-    if (Test-Path -LiteralPath $script:LcJournal) { throw "An interrupted session journal exists ($script:LcJournal); run with -RecoverOnly first." }
+    Assert-LcHostFree
     $steam = (Get-ItemProperty -LiteralPath 'HKCU:\Software\Valve\Steam').SteamPath
     $cloudLog = Join-Path $steam 'logs\cloud_log.txt'
     $last = @(Select-String -LiteralPath $cloudLog -Pattern '\[AppID 640820\]' | Select-Object -Last 6 | ForEach-Object Line)
@@ -265,5 +264,5 @@ function Stop-LcOwnedProcess($Process, $Paths) {
     return 'stopped-after-timeout'
 }
 
-# The journaled session transaction (acquisition, safe-boundary completion, recovery).
+# The session transaction: new-session admission, verified completion, retention on failure.
 . (Join-Path $PSScriptRoot 'LoaderCompat.Transaction.ps1')
