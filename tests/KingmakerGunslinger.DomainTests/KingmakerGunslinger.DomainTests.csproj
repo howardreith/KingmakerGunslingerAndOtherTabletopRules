@@ -526,6 +526,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\BodyguardFeats\BodyguardAttackFrame.cs"><Link>BodyguardFeats\BodyguardAttackFrame.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BodyguardFeats\BodyguardAttemptCoordinator.cs"><Link>BodyguardFeats\BodyguardAttemptCoordinator.cs</Link></Compile>
     <Compile Include="UrbanBarbarianPolicyTests.cs" />
+    <Compile Include="ControlledRagePersistenceTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\UrbanBarbarian\ControlledRageAllocation.cs"><Link>UrbanBarbarian\ControlledRageAllocation.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\UrbanBarbarian\ControlledRageAllocationPolicy.cs"><Link>UrbanBarbarian\ControlledRageAllocationPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\UrbanBarbarian\ControlledRageIconPolicy.cs"><Link>UrbanBarbarian\ControlledRageIconPolicy.cs</Link></Compile>

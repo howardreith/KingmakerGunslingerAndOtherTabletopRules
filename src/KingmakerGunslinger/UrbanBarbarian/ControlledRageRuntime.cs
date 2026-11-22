@@ -159,10 +159,12 @@ namespace KingmakerGunslinger.UrbanBarbarian
             UnitPartControlledRageSelection part = owner.Ensure<
                 UnitPartControlledRageSelection>();
             part.Unlock(tier);
-            ControlledRageAllocation previous = part.SelectionFor(tier);
+            object previous = part.CaptureSnapshot();
             if (!part.TrySelect(tier, allocation, false)) return false;
             if (SynchronizeSelectionFacts(owner, part)) return true;
-            part.TrySelect(tier, previous, false);
+            // Restores the exact prior persisted state, including a tier that
+            // was blocked before this explicit selection (RISK-03).
+            part.RestoreSnapshot(previous);
             SynchronizeSelectionFacts(owner, part);
             return false;
         }
@@ -212,6 +214,9 @@ namespace KingmakerGunslinger.UrbanBarbarian
                 ControlledRageTier.Ordinary, ControlledRageTier.Greater,
                 ControlledRageTier.Mighty })
             {
+                // A blocked tier's selection facts are left as they are: the
+                // part retains its rejected input and grants nothing for it.
+                if (part.IsBlocked(tier)) continue;
                 ControlledRageAllocation selected = part.SelectionFor(tier);
                 foreach (ControlledRageAllocation allocation in
                     ControlledRageAllocationPolicy.Generate(tier))
