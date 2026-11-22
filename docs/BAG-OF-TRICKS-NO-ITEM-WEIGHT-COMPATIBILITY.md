@@ -133,10 +133,24 @@ diagnostics outside startup and were left as they are.
 - Harness: `tools/LoaderCompatHarness` at `c4e1259457`, test only.
 - Baseline: published `KingmakerGunslinger-0.0.193-spear-bootstrap-tooltip-repair.zip`.
 
-**Restoration and the disposable lab.** Every session completed with
-"transaction completed, game settings applied, owner files verified". That
-verdict covers the owner's installation, saves and registry; none of them was
-touched.
+**Restoration and the disposable lab.**
+
+- **What was verified:** the recorded sessions found the owner installation and
+  saves unchanged and completed registry restoration. The recorded Bag of
+  Tricks settings returned to the pristine settings bytes.
+- **What was not shown:** exact restoration to this mission's pre-session live
+  lab configuration. The runner leaves the disposable live loader/mod staging
+  in place and rebuilds it for the next session. No rollback was attempted
+  after the intervening peer sessions.
+- **Status:** exact lab restoration not demonstrated. The owner review proposes
+  this as an explicit scope exception for this change; it is not accepted yet.
+- **Cause:** the gap is in the loader-compat lab lifecycle, which predates this
+  PR. Intake captures the owner installation and saves. Staging replaces the
+  lab's loader and `Mods`. Completion verifies the protected owner state and
+  restores the registry, but does not restore the previous live lab staging.
+  `.lab-pristine` is captured once, not at the start of each session. This PR
+  does not change the loader or transaction scripts. The gap does not show a
+  defect in the compatibility fix.
 
 The lab copy itself works as follows:
 
@@ -162,9 +176,9 @@ Digests recorded by `botWeightSetting` in session `20261122T161435Z`:
 A peer session (`risk03`, owner-0.33.0 loader) used the same lab immediately
 before this mission's first session (`20261122T143026Z`) and after its round-0
 sessions (`20261122T152012Z`). The live staging therefore belongs to whichever
-session ran last. Restoring it to a pre-mission snapshot would overwrite a
-peer's work, and every session rebuilds it from the unchanged pristine source
-anyway. No lab file was edited by hand.
+session ran last. Restoring an obsolete pre-mission snapshot now would overwrite
+a peer's staging. It would not prove that this mission restored itself, so it
+was not done. No lab file was edited by hand.
 
 | Session (evidence under `runtime-evidence/loader-compat/`) | Candidate | Mods | Result | Time |
 | --- | --- | --- | --- | --- |
@@ -227,7 +241,7 @@ Unless a session is named, results are from `20261122T161435Z` on candidate
 | BW11 | PASS | Natively, with the setting on, launch 4 wrote `m_Weight=0` onto the owned spear during validation. Startup failed with `weight [owned-field]: expected=10 actual=0 donor=9; getter not read (runtime setting); fields only`. The stored fields are labelled as fields, and no live getter value is reported because none was read. Launch 5 added +1 ft to the owned spear's live reach, and startup failed with `attack-range [effective-getter]`. Domain tests `bag-of-tricks-no-item-weight.*` cover the policy: a stored 0 or 9 fails and prints no getter value; every non-weight predicate keeps its fatal getter check. |
 | BW12 | PASS | The native Longspear type is unchanged from its pre-product capture (`m_Weight` 9). Native comparison items (Standard Longspear, Standard Longsword) keep their stored and unpatched weights across on, off and absent, and their live weight follows Bag of Tricks (0 while on). No GUID, manifest row, released key or module semantics changed: development validation shows identities=7935, appended=0. |
 | BW13 | PASS | Override active before construction: launch 2. Override activated after construction: launch 6 off → on. Bag of Tricks setting metadata is never read by the product. Not varied: the UMM load order of Bag of Tricks relative to this mod (the patches are stateless postfixes evaluated per call). |
-| BW14 | PASS except independent review | Production compilation, focused selection, candidate identity and restoration are recorded below. Automated review round 1 (`changes_required`, 9 findings) was addressed. The corrected candidate has not had an independent review; that is the owner's review. |
+| BW14 | PASS except exact lab restoration (not demonstrated; scope exception pending owner acceptance) | Production compilation, focused selection and candidate identity are recorded below. Owner protection was verified: owner installation and saves unchanged, registry restoration completed. Exact restoration of the disposable lab to its pre-mission live configuration was not demonstrated (see Restoration above). Independent review: automated round 1, then owner review of `535cda75b2` (see Review history). |
 
 ## Review history
 
@@ -238,7 +252,7 @@ are PR #199 comments.
 
 | Finding | Blocking | Subject | Correction |
 | --- | --- | --- | --- |
-| R1-F1 | yes | Restoration of the disposable lab not shown | Settings digests recorded; restoration model documented (see Restoration above) |
+| R1-F1 | yes | Restoration of the disposable lab not shown | **Not resolved.** Owner protection and Bag of Tricks settings bytes verified; exact pre-mission lab restoration not demonstrated. Proposed scope exception, pending owner acceptance (see Restoration above) |
 | R1-F2 | yes | No real armor, type-inheriting weapon or legacy repair item instance | HillHideArmor, legacy Test Musket and Firearm Repair Kit ×3 added (BW04) |
 | R1-F3 | yes | Census expectation derived from the item under test | Stored weights checked against catalog, donor field or weapon type; counts split (BW03) |
 | R1-F4 | yes | Missing planned items did not fail the census | Missing/mistyped identities fail; synthetic missing identity demonstrated (BW03) |
@@ -248,8 +262,20 @@ are PR #199 comments.
 | R1-F8 | no | Startup check missed a contained publication failure | `kmgPublicationStatus`; forced Magic Circle failure demonstrated (BW02) |
 | R1-F9 | no | Matching tooltip exceptions read as matching text | Formatter exceptions fail the display verdict; self-test (BW04) |
 
-The automated round 2 on `4bc2da5266` was stopped before it returned. None of
-the corrections above has been independently reviewed.
+The automated round 2 on `4bc2da5266` was stopped before it returned.
+
+**Owner review of `535cda75b2`:** no production-code changes requested.
+
+- It judged the production fix sound and found R1-F2 through R1-F9 addressed.
+- R1-F5 is addressed with a qualification. The observed refresh is the
+  native carried-weight refresh plus native item-tooltip formatting through
+  `UIUtilityTexts.GetItemWeight`. Rendered tooltip text was not inspected.
+- It confirmed that production, test and harness code at the head match the
+  natively tested `c4e1259457`.
+- One P2 finding concerned this record: R1-F1 was presented as resolved. It is
+  corrected above, with exact lab restoration recorded as not demonstrated.
+- The owner review did not rerun the game or the gate. The native results
+  remain recorded developer results.
 
 ## Validation
 
@@ -283,7 +309,12 @@ the corrections above has been independently reviewed.
   alone, and none. About 40 of the reporter's other mods were absent.
 - The inventory refresh is observed through the values bound to the native view
   (the `PartyCapacity` field and the `StashEncumbrance.Update` call) and the
-  tooltip text function. No screenshot of the encumbrance bar was taken.
+  tooltip text function. Per-item text comes from
+  `UIUtilityTexts.GetItemWeight`; rendered tooltip text was not inspected, and
+  no screenshot of the encumbrance bar was taken.
+- Exact restoration of the disposable lab to its pre-mission live configuration
+  was not demonstrated (see Restoration above). It is a proposed scope exception,
+  pending owner acceptance.
 - The obsolete Overhaul Kit is covered by the census and its contract only. The
   legacy Firearm Repair Kit is also used as a real instance and survived save
   and reload.
