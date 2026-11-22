@@ -1,6 +1,6 @@
 {
   "name": "risk03-bf-persist",
-  "description": "S6 T4 / RISK-03 checkpoint A2 qualification on the corrected product, beside Call of the Wild only (the minimum provider that publishes Brown-Fur). Launch 1 loads the disposable fixture save and spawns, from the registered default player blueprint, a level-five CotW Arcanist with the Brown-Fur Powerful Change and Share Transmutation features and six targets. The Arcanist casts Bull's Strength on each target, and Cat's Grace on one, through UnitUseAbility with the score toggle on, so the product's committed cast path writes each enhanced modifier's record. At the save, after the product's own PreSave, the observer writes SYNTHETIC entries next to the real records on five targets: a misspelled-score copy beside a valid sibling, a conflicting duplicate, an exact duplicate, unsupported and unknown content, and an entry with no identity. The probe reads every target's members back from the written file and reruns the serializer matrix with the engine's DefaultJsonSettings. Launch 2, a fresh process, checks the native load order, the active and retained split, the restored modifiers and repeated reads. It then makes a real recast, a buff removal, and a forced refused write on a part that holds both active and retained data, then saves. Launch 3, a fresh process, checks that everything survived. A2 review corrections: SYNTHETIC entries are given as raw JSON text (repeated members, numbers beyond decimal, Int64 and double range, high-precision fractions, unsupported metadata and references) on a seventh target and the unsupported target. The expected active and retained texts are written to a manifest before the product sees them, the written file must contain each target's expected _records text exactly once, both fresh loads compare every target's entry texts ordinally against the manifest, every part's native PostLoad must complete, the serializer matrix has an explicit expected outcome per row, and the refused write must fire exactly once on the new Cat's Grace Dexterity record.",
+  "description": "S6 T4 / RISK-03 checkpoint A2 qualification on the corrected product, beside Call of the Wild only (the minimum provider that publishes Brown-Fur). Launch 1 loads the disposable fixture save and spawns, from the registered default player blueprint, a level-five CotW Arcanist with the Brown-Fur Powerful Change and Share Transmutation features and six targets. The Arcanist casts Bull's Strength on each target, and Cat's Grace on one, through UnitUseAbility with the score toggle on, so the product's committed cast path writes each enhanced modifier's record. At the save, after the product's own PreSave, the observer writes SYNTHETIC entries next to the real records on five targets: a misspelled-score copy beside a valid sibling, a conflicting duplicate, an exact duplicate, unsupported and unknown content, and an entry with no identity. The probe reads every target's members back from the written file and reruns the serializer matrix with the engine's DefaultJsonSettings. Launch 2, a fresh process, checks the native load order, the active and retained split, the restored modifiers and repeated reads. It then makes a real recast, a buff removal, and a forced refused write on a part that holds both active and retained data, then saves. Launch 3, a fresh process, checks that everything survived. A2 review corrections: SYNTHETIC entries are given as raw JSON text (repeated members, an exponent beyond decimal range, a high-precision fraction, a date-like string, unsupported metadata and references; numbers the engine's own reader cannot load are exercised in-process only) on a seventh target and the unsupported target. The expected active and retained texts are written to a manifest before the product sees them, the written file must contain each target's expected _records text exactly once, both fresh loads compare every target's entry texts ordinally against the manifest, every part's native PostLoad must complete, the serializer matrix runs through the engine's own DictionaryConverter with an explicit expected outcome per row (rows the engine reader cannot load are expected to fail there, before the owner), and the refused write must fire exactly once on the new Cat's Grace Dexterity record.",
   "ownerMods": [ "CallOfTheWild" ],
   "fixtureSaves": [ "KMCS_AFTER_NORMAL_012_MODONLY.zks" ],
   "launches": [
@@ -28,8 +28,7 @@
           "active=1;retained=2;newlyRejected=2;",
           "active=0;retained=2;newlyRejected=2;",
           "active=1;retained=1;newlyRejected=1;",
-          "active=1;retained=5;newlyRejected=5;",
-          "active=0;retained=1;newlyRejected=1;"
+          "active=2;retained=4;newlyRejected=4;"
         ],
         "absent": [ "[initialize.failed]" ]
       },
@@ -49,7 +48,7 @@
       "conditions": { "observeBrownFurPersistence": "true" },
       "expectLog": {
         "present": [ "[blueprints][initialize.complete]", "newlyRejected=0;" ],
-        "absent": [ "[initialize.failed]", "newlyRejected=1;", "newlyRejected=2;", "newlyRejected=5;" ]
+        "absent": [ "[initialize.failed]", "newlyRejected=1;", "newlyRejected=2;", "newlyRejected=4;" ]
       },
       "harness": {
         "save": "$written:bfq2",

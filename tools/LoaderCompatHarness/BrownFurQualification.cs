@@ -110,7 +110,7 @@ namespace KmgLoaderCompatHarness
                     Rebuff(Member(real("unsupported", "Strength"), "SchemaVersion", "2"), OtherBuff),
                     Rebuff(Member(real("unsupported", "Strength"), "AbilityScore", "99"), OtherBuff),
                     Rebuff(Extend(real("unsupported", "Strength"), "\"FutureField\":{\"nested\":[1,\"two\",true,null,1.5," +
-                        "1e100,0.1000000000000000055511151231257827,123456789012345678901234567890,1e400,\"2026-11-22T10:00:00+02:00\"]}"), OtherBuff),
+                        "1e100,0.1000000000000000055511151231257827,\"2026-11-22T10:00:00+02:00\"]}"), OtherBuff),
                     Rebuff(real("unsupported", "Strength").Replace("\"CarrierFamily\":\"AddStatBonus\"",
                         "\"CarrierFamily\":\"AddStatBonus\",\"CarrierFamily\":\"AddStatBonus\""), OtherBuff),
                     "{\"$id\":\"r\",\"SchemaVersion\":2,\"BuffGuid\":\"" + OtherBuff + "\",\"Link\":{\"$ref\":\"r\"}}" },
@@ -128,9 +128,16 @@ namespace KmgLoaderCompatHarness
             expect("siblings", new[] { dex }, new[] { str, injected["siblings"][2] });
             expect("conflict", new string[0], injected["conflict"]);
             expect("exact", new[] { injected["exact"][0] }, new[] { injected["exact"][1] });
-            expect("unsupported", new[] { u[0] }, u.Skip(1).ToArray());
+            // On the engine path the identical repeated member arrives collapsed: a valid record for another buff.
+            expect("unsupported", new[] { u[0], u[4] }, new[] { u[1], u[2], u[3], u[5] });
             expect("unattributable", new string[0], injected["unattributable"]);
-            expect("repeatedMember", new string[0], injected["repeatedMember"]);
+            // Documented engine limit (BLOCKED claim): the conflicting repeated member arrives collapsed to its last
+            // occurrence, a valid record with Increase 4.
+            expect("repeatedMember", injected["repeatedMember"], new string[0]);
+            // Every expected text is what the engine's own reader hands the owner for that injected text.
+            foreach (JProperty target in expected.Properties())
+                foreach (string side in new[] { "active", "retained" })
+                    target.Value[side] = new JArray(((JArray)target.Value[side]).Select(t => (object)EngineText((string)t)).ToArray());
             var manifest = new JObject
             {
                 ["fixture"] = "KMCS_AFTER_NORMAL_012_MODONLY.zks", ["units"] = units,
@@ -240,103 +247,147 @@ namespace KmgLoaderCompatHarness
             return count;
         }
 
-        // ---- corrected serializer matrix: explicit expected outcome for every row ----
+        // ---- corrected serializer matrix: the engine's own path, explicit expected outcome for every row ----
+
+        /// <summary>What the engine's file reader hands the owner for one JSON text: its JToken, written plainly.</summary>
+        private static string EngineText(string text) =>
+            JToken.ReadFrom(new JsonTextReader(new StringReader(text))).ToString(Formatting.None);
+
+        private static bool EngineThrows(string text)
+        {
+            try { JToken.ReadFrom(new JsonTextReader(new StringReader(text))); return false; }
+            catch (JsonReaderException) { return true; }
+        }
 
         private JObject QualifiedMatrix(string record)
         {
             matrixIdentity = JObject.Parse(record);
             string id = "{\"$id\":\"1235\"," + record.Substring(1);
             Func<string, string> other = r => Rebuff(r, OtherBuff);
-            var rows = new List<Tuple<string, string, string, int, int, string[]>>
+            string linked = "{\"$id\":\"r\",\"SchemaVersion\":2,\"BuffGuid\":\"" + OtherBuff + "\",\"Link\":{\"$ref\":\"r\"}}";
+            var rows = new List<MatrixRow>
             {
-                // name, raw _records value, expected deserialize, active, retained, texts that must appear verbatim in the rewrite
-                Row("valid-as-written", "[" + id + "]", 1, 0, record),
-                Row("valid-without-id", "[" + record + "]", 1, 0, record),
-                Row("unknown-member", "[" + Extend(record, "\"FutureField\":{\"nested\":[1,\"two\",true,null,1.5]}") + "]", 0, 1,
+                new MatrixRow("valid-as-written", "[" + id + "]", 1, 0, 2, null, record),
+                new MatrixRow("valid-without-id", "[" + record + "]", 1, 0, 2, null, record),
+                new MatrixRow("unknown-member", "[" + Extend(record, "\"FutureField\":{\"nested\":[1,\"two\",true,null,1.5]}") + "]", 0, 1, 0, null,
                     Extend(record, "\"FutureField\":{\"nested\":[1,\"two\",true,null,1.5]}")),
-                Row("schema-2", "[" + Member(record, "SchemaVersion", "2") + "]", 0, 1, Member(record, "SchemaVersion", "2")),
-                Row("ability-name-unknown", "[" + Member(record, "AbilityScore", "\"Strenght\"") + "]", 0, 1, Member(record, "AbilityScore", "\"Strenght\"")),
-                Row("ability-name-lowercase", "[" + Member(record, "AbilityScore", "\"strength\"") + "]", 0, 1, Member(record, "AbilityScore", "\"strength\"")),
-                Row("ability-number-undefined", "[" + Member(record, "AbilityScore", "99") + "]", 0, 1, Member(record, "AbilityScore", "99")),
-                Row("ability-number-defined", "[" + Member(record, "AbilityScore", "1") + "]", 0, 1, Member(record, "AbilityScore", "1")),
-                Row("increase-string", "[" + Member(record, "Increase", "\"four\"") + "]", 0, 1, Member(record, "Increase", "\"four\"")),
-                Row("ticks-float", "[" + Member(record, "EndTimeTicks", "1.5") + "]", 0, 1, Member(record, "EndTimeTicks", "1.5")),
-                Row("element-string", "[\"garbage\"]", 0, 1, "\"garbage\""),
-                Row("element-null", "[null]", 0, 1, "null"),
-                Row("container-object", "{\"unexpected\":true}", 0, 1, "{\"unexpected\":true}"),
-                Row("duplicate-exact", "[" + record + "," + record + "]", 1, 1, record),
-                Row("duplicate-conflicting", "[" + record + "," + Member(record, "Increase", "4") + "]", 0, 2, record, Member(record, "Increase", "4")),
-                Row("raw-exponent-1e100", "[" + record + "," + other(Extend(record, "\"FutureField\":1e100")) + "]", 1, 1, record, other(Extend(record, "\"FutureField\":1e100"))),
-                Row("raw-high-precision", "[" + other(Extend(record, "\"FutureField\":0.1000000000000000055511151231257827")) + "]", 0, 1,
+                new MatrixRow("schema-2", "[" + Member(record, "SchemaVersion", "2") + "]", 0, 1, 0, null, Member(record, "SchemaVersion", "2")),
+                new MatrixRow("ability-name-unknown", "[" + Member(record, "AbilityScore", "\"Strenght\"") + "]", 0, 1, 0, null, Member(record, "AbilityScore", "\"Strenght\"")),
+                new MatrixRow("ability-name-lowercase", "[" + Member(record, "AbilityScore", "\"strength\"") + "]", 0, 1, 0, null, Member(record, "AbilityScore", "\"strength\"")),
+                new MatrixRow("ability-number-undefined", "[" + Member(record, "AbilityScore", "99") + "]", 0, 1, 0, null, Member(record, "AbilityScore", "99")),
+                new MatrixRow("ability-number-defined", "[" + Member(record, "AbilityScore", "1") + "]", 0, 1, 0, null, Member(record, "AbilityScore", "1")),
+                new MatrixRow("increase-string", "[" + Member(record, "Increase", "\"four\"") + "]", 0, 1, 0, null, Member(record, "Increase", "\"four\"")),
+                new MatrixRow("ticks-float", "[" + Member(record, "EndTimeTicks", "1.5") + "]", 0, 1, 0, null, Member(record, "EndTimeTicks", "1.5")),
+                new MatrixRow("element-string", "[\"garbage\"]", 0, 1, 0, null, "\"garbage\""),
+                new MatrixRow("element-null", "[null]", 0, 1, 0, null, "null"),
+                new MatrixRow("container-object", "{\"unexpected\":true}", 0, 1, 0, null, "{\"unexpected\":true}"),
+                new MatrixRow("duplicate-exact", "[" + record + "," + record + "]", 1, 1, 2, null, record),
+                new MatrixRow("duplicate-conflicting", "[" + record + "," + Member(record, "Increase", "4") + "]", 0, 2, 0, null, record, Member(record, "Increase", "4")),
+                new MatrixRow("raw-exponent-1e100", "[" + record + "," + other(Extend(record, "\"FutureField\":1e100")) + "]", 1, 1, 2, null,
+                    record, other(Extend(record, "\"FutureField\":1e100"))),
+                new MatrixRow("raw-high-precision", "[" + other(Extend(record, "\"FutureField\":0.1000000000000000055511151231257827")) + "]", 0, 1, 0, null,
                     other(Extend(record, "\"FutureField\":0.1000000000000000055511151231257827"))),
-                Row("raw-int64-overflow-nested", "[" + other(Extend(record, "\"FutureField\":123456789012345678901234567890")) + "]", 0, 1,
+                new MatrixRow("raw-date-string-nested", "[" + other(Extend(record, "\"FutureField\":\"2026-11-22T10:00:00+02:00\"")) + "]", 0, 1, 0, null,
+                    other(Extend(record, "\"FutureField\":\"2026-11-22T10:00:00+02:00\""))),
+                new MatrixRow("raw-int64-overflow-nested", "[" + other(Extend(record, "\"FutureField\":123456789012345678901234567890")) + "]", 0, 1, 0, null,
                     other(Extend(record, "\"FutureField\":123456789012345678901234567890"))),
-                Row("raw-double-overflow-nested", "[" + other(Extend(record, "\"FutureField\":1e400")) + "]", 0, 1, other(Extend(record, "\"FutureField\":1e400"))),
-                Row("raw-repeated-conflicting", "[" + record.Replace("\"Increase\":2,", "\"Increase\":2,\"Increase\":4,") + "]", 0, 1,
-                    record.Replace("\"Increase\":2,", "\"Increase\":2,\"Increase\":4,")),
-                Row("raw-repeated-identical", "[" + record.Replace("\"Increase\":2,", "\"Increase\":2,\"Increase\":2,") + "]", 0, 1,
+                new MatrixRow("raw-double-overflow-nested", "[" + other(Extend(record, "\"FutureField\":1e400")) + "]", 0, 1, 0, null,
+                    other(Extend(record, "\"FutureField\":1e400"))),
+                new MatrixRow("raw-repeated-conflicting", "[" + record.Replace("\"Increase\":2,", "\"Increase\":2,\"Increase\":4,") + "]", 1, 0, 4,
+                    "engine collapses repeated members (last wins) before the owner; BLOCKED", record.Replace("\"Increase\":2,", "\"Increase\":2,\"Increase\":4,")),
+                new MatrixRow("raw-repeated-identical", "[" + record.Replace("\"Increase\":2,", "\"Increase\":2,\"Increase\":2,") + "]", 1, 0, 2,
+                    "engine collapses repeated members before the owner; the repetition is not retained; BLOCKED",
                     record.Replace("\"Increase\":2,", "\"Increase\":2,\"Increase\":2,")),
-                Row("raw-metadata-reference", "[" + record + ",{\"$id\":\"r\",\"SchemaVersion\":2,\"BuffGuid\":\"" + OtherBuff + "\",\"Link\":{\"$ref\":\"r\"}}]", 1, 1,
-                    record, "{\"$id\":\"r\",\"SchemaVersion\":2,\"BuffGuid\":\"" + OtherBuff + "\",\"Link\":{\"$ref\":\"r\"}}"),
-                Row("scalar-date-string", "\"2026-11-22T10:00:00+02:00\"", 0, 1, "\"2026-11-22T10:00:00+02:00\""),
-                Row("scalar-exponent", "1e100", 0, 1, "1e100"),
-                // Documented limit: the engine reader throws on this member value before any member converter runs.
-                Tuple.Create("scalar-int64-overflow", "123456789012345678901234567890", "throws", -1, -1, new string[0])
+                new MatrixRow("raw-metadata-reference", "[" + record + "," + linked + "]", 1, 1, 2, null, record, linked),
+                new MatrixRow("scalar-date-string", "\"2026-11-22T10:00:00+02:00\"", 0, 1, 0, null, "\"2026-11-22T10:00:00+02:00\""),
+                new MatrixRow("scalar-exponent", "1e100", 0, 1, 0, null, "1e100"),
+                new MatrixRow("scalar-int64-overflow", "123456789012345678901234567890", 0, 1, 0, null, "123456789012345678901234567890")
             };
             var matrix = new JObject();
-            foreach (var row in rows)
+            foreach (MatrixRow row in rows)
             {
-                JObject observed = DeserializeText("{\"_records\":" + row.Item2 + "}");
-                observed["expected"] = new JObject { ["deserialize"] = row.Item3, ["active"] = row.Item4, ["retained"] = row.Item5 };
-                matrix[row.Item1] = observed;
-                string outcome = (string)observed["deserialize"];
-                if (row.Item3 == "throws")
+                string parts = "[{\"Key\":\"" + BrownFurObserver.PartType.AssemblyQualifiedName + "\",\"Value\":{\"$type\":\"" +
+                    BrownFurObserver.PartType.FullName + ", " + BrownFurObserver.PartType.Assembly.GetName().Name + "\",\"_records\":" + row.Value + "}}]";
+                JObject observed = DeserializeThroughEngine(parts);
+                // The expectation follows the engine alone: where its own reader cannot read the text, no owner code
+                // runs and the documented outcome is that failure.
+                bool engineThrows = EngineThrows(parts);
+                observed["expected"] = new JObject
                 {
-                    if (!outcome.StartsWith("threw", StringComparison.Ordinal)) problems.Add("matrix " + row.Item1 + ": the documented engine limit no longer throws: " + outcome);
+                    ["deserialize"] = engineThrows ? "threw (engine JArray.Load, before the owner)" : "ok",
+                    ["active"] = row.Active, ["retained"] = row.Retained, ["increase"] = row.Increase, ["limitation"] = row.Limitation
+                };
+                matrix[row.Name] = observed;
+                string outcome = (string)observed["deserialize"];
+                if (engineThrows)
+                {
+                    if (!outcome.StartsWith("threw", StringComparison.Ordinal)) problems.Add("matrix " + row.Name + ": the engine-limited row did not fail as the engine does: " + outcome);
                     continue;
                 }
-                if (outcome != "ok") { problems.Add("matrix " + row.Item1 + ": " + outcome); continue; }
-                if ((int?)observed["active"] != row.Item4 || (int?)observed["retained"] != row.Item5)
-                    problems.Add("matrix " + row.Item1 + ": active/retained " + observed["active"] + "/" + observed["retained"] + ", expected " + row.Item4 + "/" + row.Item5);
-                if ((int?)observed["increase"] != (row.Item4 == 0 ? 0 : 2))
-                    problems.Add("matrix " + row.Item1 + ": restored increase " + observed["increase"]);
+                if (outcome != "ok") { problems.Add("matrix " + row.Name + ": " + outcome); continue; }
+                if ((int?)observed["active"] != row.Active || (int?)observed["retained"] != row.Retained)
+                    problems.Add("matrix " + row.Name + ": active/retained " + observed["active"] + "/" + observed["retained"] + ", expected " + row.Active + "/" + row.Retained);
+                if ((int?)observed["increase"] != row.Increase)
+                    problems.Add("matrix " + row.Name + ": restored increase " + observed["increase"] + ", expected " + row.Increase);
                 string rewritten = (string)observed["normalizedRewrite"];
-                foreach (string text in row.Item6)
-                    if (rewritten == null || !rewritten.Contains(text)) problems.Add("matrix " + row.Item1 + ": the rewrite does not contain " + text);
+                foreach (string text in row.Preserved)
+                {
+                    // Active records are written in their released form; retained entries as the engine handed them over.
+                    string want =
+                        text == record ? record : EngineText(text);
+                    if (rewritten == null || !rewritten.Contains(want)) problems.Add("matrix " + row.Name + ": the rewrite does not contain " + want);
+                }
             }
             return matrix;
         }
 
-        private static Tuple<string, string, string, int, int, string[]> Row(string name, string value, int active, int retained, params string[] preserved) =>
-            Tuple.Create(name, value, "ok", active, retained, preserved);
+        private sealed class MatrixRow
+        {
+            internal MatrixRow(string name, string value, int active, int retained, int increase, string limitation, params string[] preserved)
+            {
+                Name = name; Value = value; Active = active; Retained = retained; Increase = increase; Limitation = limitation; Preserved = preserved;
+            }
+            internal string Name, Value, Limitation;
+            internal int Active, Retained, Increase;
+            internal string[] Preserved;
+        }
 
         /// <summary>
-        /// Raw document text into the product's part type with the engine's DefaultJsonSettings; then the owner's reads,
-        /// a normalization (the part's own PreSave path) and a rewrite by the same serializer.
+        /// Raw parts-dictionary text through the engine's own DictionaryConverter instance (from DefaultJsonSettings), with
+        /// a serializer from DefaultJsonSettings and a plain JsonTextReader, exactly as UnitPartsManager.m_Parts is read
+        /// from a save; then the owner's reads, its normalization (the PreSave path) and a rewrite of the part.
         /// </summary>
-        private JObject DeserializeText(string document)
+        private JObject DeserializeThroughEngine(string parts)
         {
-            var row = new JObject { ["input"] = document };
-            JsonSerializer serializer = JsonSerializer.Create(Kingmaker.EntitySystem.Persistence.JsonUtility.DefaultJsonSettings.DefaultSettings);
-            object part;
+            var row = new JObject { ["input"] = parts };
+            JsonSerializerSettings settings = Kingmaker.EntitySystem.Persistence.JsonUtility.DefaultJsonSettings.DefaultSettings;
+            JsonSerializer serializer = JsonSerializer.Create(settings);
+            JsonConverter dictionaryConverter = settings.Converters.FirstOrDefault(c => c.GetType().Name == "DictionaryConverter");
+            FieldInfo partsField = typeof(Kingmaker.UnitLogic.UnitPartsManager).GetField("m_Parts", Any);
+            if (dictionaryConverter == null || partsField == null) { problems.Add("the engine's DictionaryConverter or UnitPartsManager.m_Parts was not found"); return row; }
+            row["dictionaryType"] = partsField.FieldType.FullName;
+            object part = null;
             try
             {
-                using (var reader = new JsonTextReader(new StringReader(document)))
-                    part = serializer.Deserialize(reader, BrownFurObserver.PartType);
+                using (var reader = new JsonTextReader(new StringReader(parts)))
+                {
+                    reader.Read();
+                    var dictionary = (IDictionary)dictionaryConverter.ReadJson(reader, partsField.FieldType, null, serializer);
+                    foreach (object value in dictionary.Values) part = value;
+                }
             }
             catch (Exception exception)
             {
                 row["deserialize"] = "threw " + exception.GetType().FullName + ": " + (exception.Message.Length > 300 ? exception.Message.Substring(0, 300) : exception.Message);
                 return row;
             }
-            row["deserialize"] = part == null ? "null" : "ok";
+            row["deserialize"] = part == null ? "dropped by the engine (value threw)" : "ok";
             if (part == null) return row;
             try
             {
                 row["active"] = (int)BrownFurObserver.PartType.GetProperty("Count", Any).GetValue(part, null);
                 row["retained"] = (int)BrownFurObserver.PartType.GetProperty("RetainedCount", Any).GetValue(part, null);
-                row["increase"] = ProbeIncrease(part, document);
-                // The owner's own normalization, as PreSave performs it, then the rewrite.
+                row["increase"] = ProbeIncrease(part, parts);
                 MethodInfo read = BrownFurObserver.PartType.GetMethod("Read", Any), write = BrownFurObserver.PartType.GetMethod("Write", Any);
                 write.Invoke(part, new[] { read.Invoke(part, null) });
                 var text = new StringWriter(CultureInfo.InvariantCulture);
@@ -347,7 +398,7 @@ namespace KmgLoaderCompatHarness
             {
                 Exception inner = exception is TargetInvocationException && exception.InnerException != null ? exception.InnerException : exception;
                 row["ownerRead"] = "threw " + inner.GetType().FullName + ": " + inner.Message;
-                problems.Add("matrix owner read threw for " + document.Substring(0, Math.Min(120, document.Length)) + ": " + inner.Message);
+                problems.Add("matrix owner read threw: " + inner.Message);
             }
             return row;
         }
@@ -428,7 +479,8 @@ namespace KmgLoaderCompatHarness
                 .FirstOrDefault(t => t.Contains("\"BuffGuid\":\"" + BullsStrengthBuff + "\""));
             if (recast == null) problems.Add("siblings: no active Strength record after the recast");
             else ((JArray)final["siblings"]["active"]).Add(recast);
-            final["unsupported"]["active"] = new JArray();
+            final["unsupported"]["active"] = new JArray(((JArray)final["unsupported"]["active"])
+                .Where(t => !((string)t).Contains("\"BuffGuid\":\"" + BullsStrengthBuff + "\"")).ToArray());
             ExpectContent(units, final, "mutated");
             manifest["expectedFinal"] = final;
             File.WriteAllText(Path.Combine(profileDir, ExpectedFile), manifest.ToString(Formatting.Indented));
@@ -542,7 +594,7 @@ namespace KmgLoaderCompatHarness
             ExpectModifier(units["exact"], stats, "exact", StatType.Strength, BullsStrength, 6);
             ExpectModifier(units["unsupported"], stats, "unsupported", StatType.Strength, BullsStrength, 6);
             ExpectModifier(units["unattributable"], stats, "unattributable", StatType.Strength, BullsStrength, 4);
-            ExpectModifier(units["repeatedMember"], stats, "repeatedMember", StatType.Strength, BullsStrength, 4);
+            ExpectModifier(units["repeatedMember"], stats, "repeatedMember.limitation", StatType.Strength, BullsStrength, 8);
             result["stats." + phase] = stats;
         }
 
@@ -557,7 +609,7 @@ namespace KmgLoaderCompatHarness
             ExpectModifier(units["exact"], stats, "exact.dexterity", StatType.Dexterity, CatsGrace, 4);
             ExpectModifier(units["unsupported"], stats, "unsupported", StatType.Strength, BullsStrength, 0);
             ExpectModifier(units["unattributable"], stats, "unattributable", StatType.Strength, BullsStrength, 4);
-            ExpectModifier(units["repeatedMember"], stats, "repeatedMember", StatType.Strength, BullsStrength, 4);
+            ExpectModifier(units["repeatedMember"], stats, "repeatedMember.limitation", StatType.Strength, BullsStrength, 8);
             result["stats." + phase] = stats;
         }
 
