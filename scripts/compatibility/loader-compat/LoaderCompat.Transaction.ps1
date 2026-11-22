@@ -10,16 +10,19 @@ Set-StrictMode -Version Latest
 # complete. Every journal update replaces the file atomically, only while it
 # still names this transaction. Identities are journaled before the claims they
 # name exist. The registry backup is bound to a digest at intake, a snapshot is
-# journaled before each import, and the host is re-checked immediately before
-# every import. Completion and -RecoverOnly share Complete-LcTransaction; an
-# inconclusive registry state keeps the journal, the locks and a
-# RecoveryRequired lease until it is restored or the owner resolves it
-# explicitly (-RegistryResolution Import|KeepCurrent).
+# journaled before the first import attempt and retained until the settings are
+# settled, the backup's verified bytes are held for comparison and import, and
+# the host is re-checked immediately before every import. Completion and
+# -RecoverOnly share Complete-LcTransaction; an inconclusive registry state keeps
+# the journal, the locks and a RecoveryRequired lease until it is restored or the
+# owner resolves that exact transaction explicitly
+# (-ResolveTransaction <id> -RegistryResolution Import|KeepCurrent).
 # ---------------------------------------------------------------------------
 
 # Fixture-only hooks. In every live run these hold the real operations or $null.
 $script:LcInterruptAfter = $null          # boundary at which to model process death
 $script:LcRecoveryPauseHook = $null       # runs once after recovery's first journal read
+$script:LcRecoverySnapshotHook = $null    # runs once after the journal snapshot read under the recovery guard
 $script:LcSavesManifest = { Get-LcOwnerSavesManifest }
 $script:LcInstallManifest = { Get-LcOwnerInstallManifest }
 # Exports the live game-settings key to a file: returns 'exported', or 'absent' when the key does not exist;
@@ -135,20 +138,42 @@ function Read-LcJournalFile { return Get-Content -LiteralPath $script:LcJournal 
 
 function Get-LcJournalTransactionId {
     try { $raw = Read-LcJournalFile } catch { return '<unreadable>' }
-    if ($null -ne $raw -and $raw.PSObject.Properties['transactionId']) { return [string]$raw.transactionId }
+    if ($null -ne $raw -and $raw.PSObject.Properties['transactionId'] -and $raw.transactionId) { return [string]$raw.transactionId }
     return '<legacy>'
 }
 
-# A stable identity for any journal: its transaction id, or the digest of an older journal's bytes.
-function Get-LcJournalIdentity {
-    $id = Get-LcJournalTransactionId
-    if ($id -ceq '<legacy>' -or $id -ceq '<unreadable>') { return 'file-sha256:' + (Get-LcSha256 $script:LcJournal) }
-    return $id
+# One read of the journal: its identity (the transaction id, or the digest of an
+# older journal's bytes), the parsed record and the bytes' digest all come from
+# the same bytes, so the identity checked is the identity of the record acted on.
+# Returns $null when no journal exists.
+function Read-LcJournalSnapshot {
+    try { $bytes = [IO.File]::ReadAllBytes($script:LcJournal) }
+    catch [IO.FileNotFoundException] { return $null }
+    catch [IO.DirectoryNotFoundException] { return $null }
+    $digest = Get-LcBytesSha256 $bytes
+    $raw = $null
+    try { $raw = (Get-LcTextFromBytes $bytes) | ConvertFrom-Json } catch { $raw = $null }
+    $identity = if ($null -ne $raw -and $raw.PSObject.Properties['transactionId'] -and $raw.transactionId) { [string]$raw.transactionId } else { 'file-sha256:' + $digest }
+    return [pscustomobject]@{ Identity = $identity; Raw = $raw; Sha256 = $digest }
 }
 
+# The journal on disk is this transaction's: the same transaction id, or - for an
+# older journal not yet rewritten in schema 4 - exactly the bytes it was converted from.
 function Test-LcJournalOwned($Journal) {
     $current = Get-LcJournalTransactionId
-    return $current -ceq [string]$Journal.transactionId -or ($current -ceq '<legacy>' -and $Journal.Contains('convertedFrom'))
+    if ($current -ceq [string]$Journal.transactionId) { return $true }
+    if ($current -ceq '<legacy>' -and $Journal.Contains('sourceSha256') -and $Journal.sourceSha256) {
+        return (Get-LcSha256 $script:LcJournal) -ceq [string]$Journal.sourceSha256
+    }
+    return $false
+}
+
+# The owner's registry decision, normalized the way the runner's ValidateSet
+# accepts it (case-insensitively) so every accepted spelling has one meaning.
+function ConvertTo-LcResolution([string]$Value) {
+    if (-not $Value) { return '' }
+    foreach ($name in @('Import', 'KeepCurrent')) { if ([string]::Equals($Value, $name, [StringComparison]::OrdinalIgnoreCase)) { return $name } }
+    throw "Unknown registry resolution '$Value' (use Import or KeepCurrent); nothing was changed."
 }
 
 # Every update writes a complete temporary journal and then replaces the file
@@ -288,11 +313,21 @@ function Test-LcOwnerIntegrity($Journal) {
 # (continuation lines joined in order), values ordered by name within their key,
 # keys in ordinal order. Two exports compare equal only if every key path, value
 # name, type and ordered data agree.
-function Get-LcRegistryCanonical([string]$Path) {
+function Get-LcTextFromBytes([byte[]]$Bytes) {
+    $reader = New-Object IO.StreamReader((New-Object IO.MemoryStream(, $Bytes)), (New-Object Text.UTF8Encoding($false)), $true)
+    try { return $reader.ReadToEnd() } finally { $reader.Dispose() }
+}
+
+function Get-LcRegistryCanonical([string]$Path) { return Get-LcRegistryCanonicalText (Get-LcTextFromBytes ([IO.File]::ReadAllBytes($Path))) }
+
+# Ordinal equality of two canonical exports (never linguistic: distinct UTF-16 data must differ).
+function Test-LcRegistryEqual([string]$Left, [string]$Right) { return [string]::Equals($Left, $Right, [StringComparison]::Ordinal) }
+
+function Get-LcRegistryCanonicalText([string]$Text) {
     $sections = [Collections.Generic.SortedDictionary[string, Collections.Generic.List[string]]]::new([StringComparer]::Ordinal)
     $header = [Collections.Generic.List[string]]::new()
     $key = $null; $pending = $null
-    foreach ($raw in [IO.File]::ReadAllLines($Path)) {
+    foreach ($raw in ($Text -split "`r?`n")) {
         $line = $raw.TrimEnd()
         if ($null -ne $pending) {
             $pending += "`n" + $line.Trim()
@@ -315,15 +350,39 @@ function Get-LcRegistryCanonical([string]$Path) {
     $out.AddRange($header)
     foreach ($entry in $sections.GetEnumerator()) {
         $out.Add('[' + $entry.Key + ']')
-        $out.AddRange([string[]]@($entry.Value | Sort-Object -CaseSensitive))
+        $values = $entry.Value.ToArray()
+        [Array]::Sort($values, [StringComparer]::Ordinal)
+        $out.AddRange([string[]]$values)
     }
     return ($out -join "`n")
 }
 
-function Test-LcRegistryBackupIntact($Journal) {
+function Get-LcBytesSha256([byte[]]$Bytes) {
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try { return (-join ($sha.ComputeHash($Bytes) | ForEach-Object { $_.ToString('x2') })) } finally { $sha.Dispose() }
+}
+
+$script:LcBackupVerifyHook = $null   # fixture-only: runs during the restore-source verification
+
+# The restore source, held stable: the backup's bytes are read once and checked
+# against the intake digest (when one exists), written to a private verified copy,
+# and that copy is opened with a read handle that denies writes and deletion. The
+# comparison uses those bytes and the import uses that copy, so neither can see
+# bytes other than the ones verified. Returns $null when the bytes fail their digest.
+function Open-LcVerifiedBackup($Journal) {
+    $bytes = [IO.File]::ReadAllBytes($Journal.registryBackup)
+    if ($null -ne $script:LcBackupVerifyHook) { & $script:LcBackupVerifyHook }
     $digest = Get-LcValue $Journal 'registryBackupSha256'
-    return $digest -and $Journal.registryBackup -and (Test-Path -LiteralPath $Journal.registryBackup -PathType Leaf) -and
-        (Get-LcSha256 $Journal.registryBackup) -ceq $digest
+    $actual = Get-LcBytesSha256 $bytes
+    if ($digest -and $actual -cne $digest) { return $null }
+    $copy = Join-Path (Get-LcTransactionDir $Journal) ('registry-backup-verified-' + [Guid]::NewGuid().ToString('N') + '.reg')
+    [IO.File]::WriteAllBytes($copy, $bytes)
+    $handle = [IO.File]::Open($copy, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read)
+    $held = New-Object byte[] $handle.Length
+    $offset = 0
+    while ($offset -lt $held.Length) { $read = $handle.Read($held, $offset, $held.Length - $offset); if ($read -le 0) { break }; $offset += $read }
+    if ((Get-LcBytesSha256 $held) -cne $actual) { $handle.Dispose(); return $null }
+    return [pscustomobject]@{ Path = $copy; Handle = $handle; Canonical = (Get-LcRegistryCanonicalText (Get-LcTextFromBytes $bytes)); Sha256 = $actual }
 }
 
 # After an interruption during restoration, the live settings are compared with
@@ -331,15 +390,17 @@ function Test-LcRegistryBackupIntact($Journal) {
 # before the import (not applied). A missing key means the delete ran and the
 # import did not (not applied; nothing newer can be lost). An unreadable key is
 # 'unreadable'; anything else 'unresolved'.
-function Resolve-LcInterruptedRestore($Journal) {
+function Resolve-LcInterruptedRestore($Journal, $Verified) {
     $probe = Join-Path (Get-LcTransactionDir $Journal) ('registry-reconcile-' + [Guid]::NewGuid().ToString('N') + '.reg')
     try { $status = & $script:LcRegistryExport $probe } catch { return "unreadable: $($_.Exception.Message)" }
     if ($status -ceq 'absent') { return 'not-applied' }
     $current = Get-LcRegistryCanonical $probe
-    if ($current -ceq (Get-LcRegistryCanonical $Journal.registryBackup)) { return 'applied' }
+    if (Test-LcRegistryEqual $current $Verified.Canonical) { return 'applied' }
     $pre = $Journal.preRestore
-    if ($null -ne $pre -and (Get-LcValue $pre 'state') -ceq 'exported' -and (Test-Path -LiteralPath $pre.path) -and
-        (Get-LcSha256 $pre.path) -ceq $pre.sha256 -and $current -ceq (Get-LcRegistryCanonical $pre.path)) { return 'not-applied' }
+    if ($null -ne $pre -and (Get-LcValue $pre 'state') -ceq 'exported' -and (Test-Path -LiteralPath $pre.path)) {
+        $preBytes = [IO.File]::ReadAllBytes($pre.path)
+        if ((Get-LcBytesSha256 $preBytes) -ceq $pre.sha256 -and (Test-LcRegistryEqual $current (Get-LcRegistryCanonicalText (Get-LcTextFromBytes $preBytes)))) { return 'not-applied' }
+    }
     return 'unresolved: the live game settings match neither the verified session backup nor the snapshot taken just before restoration'
 }
 
@@ -369,11 +430,15 @@ function Test-LcTransactionSucceeded($Result) {
 
 function Get-LcTransactionExitCode($Result) { if (Test-LcTransactionSucceeded $Result) { return 0 } else { return 1 } }
 
-$script:LcResolutionHint = 'Re-run Invoke-LoaderCompatSession.ps1 -RecoverOnly with -RegistryResolution Import (import the session backup) or KeepCurrent (keep the current settings) once the owner has decided.'
+# The owner's decision is bound to this exact transaction.
+function Get-LcResolutionHint($Journal) {
+    return "To decide, run Invoke-LoaderCompatSession.ps1 -RecoverOnly -ResolveTransaction $($Journal.transactionId) -RegistryResolution Import (import the verified session backup) or KeepCurrent (keep the current settings)."
+}
 
 # The registry step. Returns $null when the game settings are settled, or a
 # deferred result that keeps the journal, the locks and a RecoveryRequired lease.
 function Invoke-LcRegistryStep($Journal, $Lease, [scriptblock]$Restore, [string]$Resolution) {
+    $Resolution = ConvertTo-LcResolution $Resolution
     if ($Journal.registryRestore -in @('applied', 'not-needed', 'owner-kept-current')) { return $null }
     if (-not $Journal.registryBackup) {
         $Journal.registryRestore = 'not-needed'; $Journal.phase = 'restored'; Save-LcJournal $Journal; Step-LcBoundary 'restored'
@@ -381,47 +446,48 @@ function Invoke-LcRegistryStep($Journal, $Lease, [scriptblock]$Restore, [string]
     }
     $settle = { param($Value) $Journal.registryRestore = $Value; $Journal.phase = 'restored'; Save-LcJournal $Journal; Step-LcBoundary 'restored' }
     if ($Resolution -ceq 'KeepCurrent') { & $settle 'owner-kept-current'; return $null }
+    $hint = Get-LcResolutionHint $Journal
     $digest = Get-LcValue $Journal 'registryBackupSha256'
-    $importNow = $false
-    if (-not (Test-LcRegistryBackupIntact $Journal)) {
-        if ($digest) { return Set-LcDeferred $Journal $Lease "The registry backup no longer matches the digest recorded at intake; it was not compared or imported. $script:LcResolutionHint (only KeepCurrent applies to a changed backup)" }
-        if ($Resolution -cne 'Import' -or -not (Test-Path -LiteralPath $Journal.registryBackup -PathType Leaf)) {
-            return Set-LcDeferred $Journal $Lease "This older journal records no digest for its registry backup and no restore phase; the backup is neither compared nor imported without the owner's decision. $script:LcResolutionHint"
-        }
-        $importNow = $true
-    } elseif ($Journal.registryRestore -ceq 'restoring') {
-        $decision = Resolve-LcInterruptedRestore $Journal
-        if ($decision -ceq 'applied') { & $settle 'applied'; return $null }
-        if ($decision -like 'unreadable*') { return Set-LcDeferred $Journal $Lease "The live game settings could not be read ($decision); nothing was imported and ownership is retained for another -RecoverOnly." }
-        if ($decision -like 'unresolved*') {
-            if ($Resolution -cne 'Import') { return Set-LcDeferred $Journal $Lease "$decision. Nothing was imported. $script:LcResolutionHint" }
-        }
-        $importNow = $true
-    } else {
-        $pre = Join-Path (Get-LcTransactionDir $Journal) ('registry-before-restore-' + [Guid]::NewGuid().ToString('N') + '.reg')
-        try { $status = & $script:LcRegistryExport $pre } catch { return Set-LcDeferred $Journal $Lease "The live game settings could not be read before restoration ($($_.Exception.Message)); nothing was imported." }
-        $Journal.preRestore = [ordered]@{ path = $pre; state = $status; sha256 = $(if ($status -ceq 'exported') { Get-LcSha256 $pre } else { $null }) }
-        $importNow = $true
+    if (-not $digest -and $Resolution -cne 'Import') {
+        return Set-LcDeferred $Journal $Lease "This journal records no digest for its registry backup (written by an earlier runner); the backup is neither compared nor imported without the owner's decision. $hint"
     }
-    if ($importNow) {
-        $from = $Journal.registryRestore
-        $Journal.registryRestore = 'restoring'; $Journal.phase = 'restoring'; Save-LcJournal $Journal
-        Step-LcBoundary 'restoring'
-        # Immediately before the destructive delete-and-import: the host must still be free.
+    if (-not (Test-Path -LiteralPath $Journal.registryBackup -PathType Leaf)) {
+        return Set-LcDeferred $Journal $Lease "The registry backup is missing ($($Journal.registryBackup)); nothing was imported. $hint"
+    }
+    $verified = Open-LcVerifiedBackup $Journal
+    if ($null -eq $verified) {
+        return Set-LcDeferred $Journal $Lease "The registry backup no longer matches the digest recorded at intake; it was neither compared nor imported. Only KeepCurrent can settle a changed backup. $hint"
+    }
+    try {
+        if ($digest -and $Journal.registryRestore -ceq 'restoring') {
+            $decision = Resolve-LcInterruptedRestore $Journal $verified
+            if ($decision -ceq 'applied') { & $settle 'applied'; return $null }
+            if ($decision -like 'unreadable*') { return Set-LcDeferred $Journal $Lease "The live game settings could not be read ($decision); nothing was imported and ownership is retained for another -RecoverOnly." }
+            if ($decision -like 'unresolved*' -and $Resolution -cne 'Import') { return Set-LcDeferred $Journal $Lease "$decision. Nothing was imported. $hint" }
+        } elseif ($digest) {
+            # First import attempt: snapshot the live settings. From here the journal stays 'restoring' with this
+            # snapshot retained, so a withheld or interrupted import is later reconciled against it, never re-snapshotted.
+            $pre = Join-Path (Get-LcTransactionDir $Journal) ('registry-before-restore-' + [Guid]::NewGuid().ToString('N') + '.reg')
+            try { $status = & $script:LcRegistryExport $pre } catch { return Set-LcDeferred $Journal $Lease "The live game settings could not be read before restoration ($($_.Exception.Message)); nothing was imported." }
+            $Journal.preRestore = [ordered]@{ path = $pre; state = $status; sha256 = $(if ($status -ceq 'exported') { Get-LcSha256 $pre } else { $null }) }
+            $Journal.registryRestore = 'restoring'; $Journal.phase = 'restoring'; Save-LcJournal $Journal
+            Step-LcBoundary 'restoring'
+        }
+        if ($Journal.registryRestore -cne 'restoring') { $Journal.registryRestore = 'restoring'; $Journal.phase = 'restoring'; Save-LcJournal $Journal }
+        # The last host check follows every slow read and immediately precedes the destructive delete-and-import.
         $conflicts = Get-LcHostConflicts $Journal.leaseRunId
         if ($conflicts.Count -gt 0) {
-            $Journal.registryRestore = $(if ($from -ceq 'pending') { 'pending' } else { 'restoring' })
-            return Set-LcDeferred $Journal $Lease "The import was withheld because the host became busy ($($conflicts -join '; ')); game settings were not changed and ownership is retained."
+            return Set-LcDeferred $Journal $Lease "The import was withheld because the host became busy ($($conflicts -join '; ')); game settings were not changed, the pre-restore snapshot is retained and ownership is kept."
         }
-        if ($digest -and -not (Test-LcRegistryBackupIntact $Journal)) {
-            return Set-LcDeferred $Journal $Lease 'The registry backup changed before the import; nothing was imported.'
-        }
-        try { & $Restore $Journal.registryBackup }
-        catch { return Set-LcDeferred $Journal $Lease "Game-settings restoration failed: $($_.Exception.Message). Recovery reconciles it against the backup and the pre-restore snapshot." }
+        try { & $Restore $verified.Path }
+        catch { return Set-LcDeferred $Journal $Lease "Game-settings restoration failed: $($_.Exception.Message). Recovery reconciles it against the verified backup and the pre-restore snapshot." }
         Step-LcBoundary 'import-applied'
         & $settle 'applied'
+        return $null
+    } finally {
+        $verified.Handle.Dispose()
+        Remove-Item -LiteralPath $verified.Path -Force -ErrorAction SilentlyContinue
     }
-    return $null
 }
 
 function Complete-LcTransaction($Journal, $Lease, [scriptblock]$Restore, [int]$WaitSeconds, [string]$Resolution = '') {
@@ -519,6 +585,17 @@ function Convert-LcLegacyJournal($Raw) {
     if ($schema -eq 3) {
         $journal = ConvertTo-LcOrdered $Raw
         $journal['convertedFrom'] = 'schema-3'; $journal['registryBackupSha256'] = $null
+        # The schema-3 runner could mark a transaction completed (and even release
+        # its locks) with an inconclusive restore ('unresolved: ...'). Only a settled
+        # outcome is honoured; anything else stays outstanding for the owner.
+        $registry = [string]$journal['registryRestore']
+        if ($registry -cnotin @('applied', 'not-needed')) {
+            $journal['convertedRegistryRestore'] = $registry
+            if ($registry -cne 'pending') { $journal['registryRestore'] = 'restoring' }
+            if ($journal['phase'] -in @('restored', 'verified', 'lease-completed', 'shared-released', 'private-released')) {
+                $journal['phase'] = 'recovery-required'; $journal['integrity'] = $null
+            }
+        }
         return $journal
     }
     $journal = [ordered]@{ schemaVersion = 4; transactionId = [Guid]::NewGuid().ToString('N'); convertedFrom = 'pre-schema-3'
@@ -566,77 +643,109 @@ function New-LcRecoveryResult([string]$Message, [bool]$Succeeded, $Result) {
     return [pscustomobject]@{ Message = $Message; Succeeded = $Succeeded; Result = $Result }
 }
 
-# -RecoverOnly. The journal identity read first must still be the journal found
-# under the recovery guard (a newer session is left for its own recovery). Then
-# the original owner must have exited, the host must be free, and the shared lock
-# - re-taken under the recorded identity if missing, or taken afresh for an
-# unleased older journal after that identity is journaled - must be held through
-# this caller's exclusive handle, with the journal still the same transaction,
-# before anything is written. The owner-file comparison is refreshed for any
-# transaction not yet committed. The command's verdict is the recorded
-# transaction verdict, cleanup-only completions included.
-function Invoke-LcRecovery([scriptblock]$Restore, [string]$RegistryResolution = '') {
-    if (-not (Test-Path -LiteralPath $script:LcJournal)) { return New-LcRecoveryResult 'No interrupted session journal.' $true $null }
-    $observed = Get-LcJournalIdentity
+# -RecoverOnly. The journal identity read first must still be the identity of the
+# single journal read under the recovery guard, and that same read is the record
+# acted on (a newer session is left for its own recovery). An owner decision is
+# honoured only for the transaction it names. Then the original owner must have
+# exited, the host must be free, and the shared lock - re-taken under the
+# journaled identity if missing, or under a fresh identity journaled first for an
+# unleased older journal - must be held through this caller's exclusive handle
+# with a durable lease record, the journal still the same transaction, before any
+# registry work. The owner-file comparison is refreshed for any transaction not
+# yet committed. The command's verdict is the recorded transaction verdict,
+# cleanup-only completions and completions by another caller included.
+function Invoke-LcRecovery([scriptblock]$Restore, [string]$RegistryResolution = '', [string]$ResolveTransaction = '') {
+    $RegistryResolution = ConvertTo-LcResolution $RegistryResolution
+    if ($ResolveTransaction -and -not $RegistryResolution) { throw '-ResolveTransaction names the transaction an owner decision applies to and needs -RegistryResolution Import or KeepCurrent; nothing was changed.' }
+    if ($RegistryResolution -and -not $ResolveTransaction) {
+        throw "-RegistryResolution $RegistryResolution must name the interrupted transaction it decides (-ResolveTransaction, as printed with the deferral); nothing was changed."
+    }
+    $first = Read-LcJournalSnapshot
+    if ($null -eq $first) {
+        if ($RegistryResolution) { return New-LcRecoveryResult "No interrupted session journal: transaction $ResolveTransaction is not awaiting a decision and nothing was changed." $false $null }
+        return New-LcRecoveryResult 'No interrupted session journal.' $true $null
+    }
+    $observed = $first.Identity
     if ($null -ne $script:LcRecoveryPauseHook) { $hook = $script:LcRecoveryPauseHook; $script:LcRecoveryPauseHook = $null; & $hook }
     $guard = Enter-LcRecoveryGuard
     $stream = $null
     try {
-        if (-not (Test-Path -LiteralPath $script:LcJournal)) {
-            return New-LcRecoveryResult "The interrupted session ($observed) was already recovered by another caller; nothing was changed." $true $null
+        # One read under the guard: the identity compared and the record acted on come from the same bytes.
+        $snapshot = Read-LcJournalSnapshot
+        if ($null -eq $snapshot) { return Get-LcObservedVerdict $observed $first.Raw }
+        if ($snapshot.Identity -cne $observed) {
+            throw "The session journal now belongs to a different transaction ($($snapshot.Identity)) than the one this recovery read ($observed); nothing was changed. Run -RecoverOnly again for that session."
         }
-        $current = Get-LcJournalIdentity
-        if ($current -cne $observed) {
-            throw "The session journal now belongs to a different transaction ($current) than the one this recovery read ($observed); nothing was changed. Run -RecoverOnly again for that session."
+        if ($null -eq $snapshot.Raw) { throw "The session journal cannot be parsed ($observed); nothing was changed." }
+        if ($RegistryResolution -and $snapshot.Identity -cne $ResolveTransaction) {
+            throw "The owner's decision names transaction $ResolveTransaction, but the interrupted session journal is transaction $($snapshot.Identity); nothing was changed."
         }
-        $raw = Read-LcJournalFile
-        $journal = if ($raw.PSObject.Properties['schemaVersion'] -and [int]$raw.schemaVersion -eq 4) { ConvertTo-LcOrdered $raw } else { Convert-LcLegacyJournal $raw }
+        if ($null -ne $script:LcRecoverySnapshotHook) { $hook = $script:LcRecoverySnapshotHook; $script:LcRecoverySnapshotHook = $null; & $hook }
+        $raw = $snapshot.Raw
+        $isCurrent = $raw.PSObject.Properties['schemaVersion'] -and [int]$raw.schemaVersion -eq 4
+        $journal = if ($isCurrent) { ConvertTo-LcOrdered $raw } else { Convert-LcLegacyJournal $raw }
+        if (-not $isCurrent) { $journal['sourceSha256'] = $snapshot.Sha256 }
         if (Test-LcOwnerAlive $journal) { throw "The session owner (pid $($journal.ownerProcessId)) is still alive; nothing was changed." }
         $conflicts = Get-LcHostConflicts $journal.leaseRunId
         if ($conflicts.Count -gt 0) { throw "Recovery withheld: $($conflicts -join '; '). Nothing was changed." }
         $lockPath = Get-LcSharedLockPath
         $lease = $null
-        if (-not $journal.leaseRunId) {
-            # Unleased older journal: journal the recovery's lease identity first, then take the shared lock under it.
-            $journal.leaseRunId = New-LcLeaseRunId; $journal.sharedLock = $false
-            Save-LcJournal $journal
-            Step-LcBoundary 'recovery-lease-intended'
-            Acquire-LcSharedLock $journal.leaseRunId
-            Step-LcBoundary 'recovery-lock-acquired'
-            $journal.sharedLock = $true; Save-LcJournal $journal
-            $stream = [IO.File]::Open($lockPath, [IO.FileMode]::Open, [IO.FileAccess]::ReadWrite, [IO.FileShare]::Read)
-            $lease = [pscustomobject]@{ RunId = $journal.leaseRunId; LockPath = $lockPath; Stream = $stream; State = $null }
-        } elseif ($journal.phase -notin @('shared-released', 'private-released')) {
+        if ($journal.phase -eq 'lease-completed' -and -not (Test-Path -LiteralPath $lockPath)) { $journal.phase = 'shared-released' }
+        if ($journal.phase -notin @('shared-released', 'private-released')) {
+            # Every recovery that still has work holds this session's shared lock through its own handle and a
+            # durable lease record before it acts. The lease identity is journaled first (its intent); an
+            # acquisition interrupted after that is completed under the same identity on the next attempt.
+            if (-not $journal.leaseRunId) {
+                $journal.leaseRunId = New-LcLeaseRunId; $journal.sharedLock = $false
+                $journal.leaseStatePath = Join-Path (Join-Path $script:LcStateRoot $journal.leaseRunId) 'runtime-lease.json'
+                Save-LcJournal $journal
+                Step-LcBoundary 'recovery-lease-intended'
+            }
             if (-not (Test-Path -LiteralPath $lockPath)) {
-                if ($journal.phase -eq 'lease-completed') { $journal.phase = 'shared-released' }
-                elseif ($journal.sharedLock) { Acquire-LcSharedLock $journal.leaseRunId }
+                if (-not (Test-LcJournalOwned $journal)) { throw 'The session journal changed while recovery took ownership; nothing was changed.' }
+                Acquire-LcSharedLock $journal.leaseRunId
+                Step-LcBoundary 'recovery-lock-acquired'
             }
-            if ($journal.phase -ne 'shared-released' -and (Test-Path -LiteralPath $lockPath)) {
-                try { $stream = [IO.File]::Open($lockPath, [IO.FileMode]::Open, [IO.FileAccess]::ReadWrite, [IO.FileShare]::Read) }
-                catch [IO.IOException] { throw "Another caller holds this session's recovery; nothing was changed." }
-                if ((Get-Content -LiteralPath $lockPath -Raw).Trim() -cne $journal.leaseRunId) { throw 'The shared lock is not held by this session; nothing was changed.' }
-                $state = if ($journal.leaseStatePath -and (Test-Path -LiteralPath $journal.leaseStatePath)) { Read-KmgCompatibilityJson $journal.leaseStatePath } else { $null }
-                if ($null -ne $state) {
-                    if ([string]$state.runId -cne $journal.leaseRunId -or [string]$state.purpose -cne ('loader-compat ' + $journal.sessionId)) {
-                        throw 'The recorded lease does not belong to this session; nothing was changed.'
-                    }
-                    if ($state.status -ceq 'Completed' -and $journal.phase -ne 'lease-completed') {
-                        # The lease was completed only after restoration and verification: cleanup only, with the lease's verdict.
-                        $journal.phase = 'lease-completed'
-                        if ($journal.registryRestore -in @('pending', 'restoring')) { $journal.registryRestore = $(if ($state.PSObject.Properties['registryRestore']) { [string]$state.registryRestore } else { 'applied' }) }
-                        $journal.integrity = $(if ($state.PSObject.Properties['integrity']) { $state.integrity } else { [ordered]@{ status = 'unavailable'; reason = 'the completed lease records no owner-file comparison' } })
-                        $state = $null
-                    }
+            try { $stream = [IO.File]::Open($lockPath, [IO.FileMode]::Open, [IO.FileAccess]::ReadWrite, [IO.FileShare]::Read) }
+            catch [IO.IOException] { throw "Another caller holds this session's recovery; nothing was changed." }
+            if ((Get-Content -LiteralPath $lockPath -Raw).Trim() -cne $journal.leaseRunId) { throw 'The shared lock is not held by this session; nothing was changed.' }
+            if (-not $journal.sharedLock -or -not $journal.leaseStatePath) {
+                $journal.sharedLock = $true
+                if (-not $journal.leaseStatePath) { $journal.leaseStatePath = Join-Path (Join-Path $script:LcStateRoot $journal.leaseRunId) 'runtime-lease.json' }
+                Save-LcJournal $journal
+            }
+            $state = $null; $publish = $false
+            if (Test-Path -LiteralPath $journal.leaseStatePath) {
+                $state = Read-KmgCompatibilityJson $journal.leaseStatePath
+                if ([string]$state.runId -cne $journal.leaseRunId -or [string]$state.purpose -cne ('loader-compat ' + $journal.sessionId)) {
+                    throw 'The recorded lease does not belong to this session; nothing was changed.'
                 }
-                $lease = [pscustomobject]@{ RunId = $journal.leaseRunId; LockPath = $lockPath; Stream = $stream; ProcessId = $PID
-                    StatePath = $journal.leaseStatePath; StateSha256 = $(if ($null -ne $state) { Get-KmgCompatibilitySha256 $journal.leaseStatePath } else { $null })
-                    Compatibility = $false; State = $state }
+                if ($state.status -ceq 'Completed' -and $journal.phase -ne 'lease-completed' -and $journal.registryRestore -in @('applied', 'not-needed', 'owner-kept-current')) {
+                    # Completed only after the settings were settled and the files compared: cleanup only, with the lease's verdict.
+                    $journal.phase = 'lease-completed'
+                    $journal.integrity = $(if ($state.PSObject.Properties['integrity']) { $state.integrity } else { [ordered]@{ status = 'unavailable'; reason = 'the completed lease records no owner-file comparison' } })
+                    $state = $null
+                }
+            } elseif ($journal.phase -ne 'lease-completed') {
+                # No durable lease record (interrupted before it was written, or an older journal): this recovery publishes one.
+                [void][IO.Directory]::CreateDirectory((Split-Path -Parent $journal.leaseStatePath))
+                $state = [ordered]@{ schemaVersion = 1; runId = $journal.leaseRunId; purpose = ('loader-compat ' + $journal.sessionId); processId = $PID
+                    processStartedUtc = (Get-Process -Id $PID).StartTime.ToUniversalTime().ToString('o'); status = 'Active'; recoveryRequired = $false
+                    reason = 'Recovery of an interrupted loader-compat session'; settings = $null; transactionId = $journal.transactionId }
+                $publish = $true
             }
+            $lease = [pscustomobject]@{ RunId = $journal.leaseRunId; LockPath = $lockPath; Stream = $stream; ProcessId = $PID
+                StatePath = $journal.leaseStatePath; StateSha256 = $(if ($null -ne $state -and -not $publish) { Get-KmgCompatibilitySha256 $journal.leaseStatePath } else { $null })
+                Compatibility = $false; State = $state }
+            if ($publish) { & $script:LcLeaseStateWriter $lease; Step-LcBoundary 'recovery-lease-written' }
         }
         # Under full ownership the journal must still be this transaction before anything is written.
         if (-not (Test-LcJournalOwned $journal)) { throw 'The session journal changed while recovery took ownership; nothing was changed.' }
-        Remove-LcJournalTemps
         $cleanupOnly = $journal.phase -in @('lease-completed', 'shared-released', 'private-released')
+        if (-not $cleanupOnly -and ($null -eq $lease -or $null -eq $lease.Stream -or $null -eq $lease.State)) {
+            throw 'Recovery does not hold this session''s shared lock and lease record; nothing was changed.'
+        }
+        Remove-LcJournalTemps
         # A transaction not yet committed is verified afresh: files may have changed while it was down.
         if (-not $cleanupOnly) { $journal.integrity = $null }
         $result = Complete-LcTransaction $journal $lease $Restore 0 $RegistryResolution
@@ -649,9 +758,28 @@ function Invoke-LcRecovery([scriptblock]$Restore, [string]$RegistryResolution = 
     }
 }
 
+# A caller whose observed journal was completed by another caller while it waited
+# reports that transaction's durable verdict from its lease record, or failure
+# when no such verdict can be read for the transaction it observed.
+function Get-LcObservedVerdict([string]$Observed, $Raw) {
+    $prefix = "The interrupted session ($Observed) was already recovered by another caller; nothing was changed by this caller"
+    $runId = [string](Get-LcValue $Raw 'leaseRunId'); $path = [string](Get-LcValue $Raw 'leaseStatePath')
+    if (-not $runId -or -not $path -or -not (Test-Path -LiteralPath $path -PathType Leaf)) {
+        return New-LcRecoveryResult "$prefix. Its verdict cannot be verified: the observed journal names no readable lease record." $false $null
+    }
+    try { $state = Read-KmgCompatibilityJson $path } catch { return New-LcRecoveryResult "$prefix. Its verdict cannot be verified: the lease record is unreadable ($($_.Exception.Message))." $false $null }
+    $stateTx = [string](Get-LcValue $state 'transactionId'); $rawTx = [string](Get-LcValue $Raw 'transactionId')
+    if ([string]$state.runId -cne $runId -or ($stateTx -and $rawTx -and $stateTx -cne $rawTx) -or [string]$state.status -cne 'Completed') {
+        return New-LcRecoveryResult "$prefix. Its verdict cannot be verified: the lease record does not show this transaction completed (status $($state.status))." $false $null
+    }
+    $result = [pscustomobject]@{ Outcome = 'completed'; Reason = $null; Registry = [string](Get-LcValue $state 'registryRestore'); Integrity = (Get-LcValue $state 'integrity') }
+    $ok = Test-LcTransactionSucceeded $result
+    return New-LcRecoveryResult "$prefix. Recorded verdict: game settings $($result.Registry); owner files $(if ($null -ne $result.Integrity) { Get-LcValue $result.Integrity 'status' } else { 'not recorded' })." $ok $result
+}
+
 # The -RecoverOnly command: its exit code is the recovery verdict (refusals included).
-function Invoke-LcRecoverOnlyCommand([scriptblock]$Restore, [string]$RegistryResolution = '') {
-    try { $recovery = Invoke-LcRecovery $Restore $RegistryResolution }
+function Invoke-LcRecoverOnlyCommand([scriptblock]$Restore, [string]$RegistryResolution = '', [string]$ResolveTransaction = '') {
+    try { $recovery = Invoke-LcRecovery $Restore $RegistryResolution $ResolveTransaction }
     catch { Write-Host "Recovery refused: $($_.Exception.Message)"; return 1 }
     Write-Host $recovery.Message
     if ($recovery.Succeeded) { return 0 } else { return 1 }

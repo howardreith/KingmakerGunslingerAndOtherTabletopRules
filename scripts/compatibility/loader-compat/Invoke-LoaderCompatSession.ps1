@@ -38,8 +38,11 @@ param(
     # Runs the offline session-guard checks (Test-LoaderCompatSafety.ps1) and exits.
     [switch]$SafetyTests,
     # With -RecoverOnly: the owner's explicit decision for game settings recovery cannot settle safely
-    # (Import the session backup, or KeepCurrent settings).
-    [ValidateSet('', 'Import', 'KeepCurrent')][string]$RegistryResolution = ''
+    # (Import the session backup, or KeepCurrent settings). Accepted case-insensitively and normalized.
+    [ValidateSet('', 'Import', 'KeepCurrent')][string]$RegistryResolution = '',
+    # With -RegistryResolution: the interrupted transaction the decision is for, as printed with the deferral.
+    # The decision is refused unless the pending journal is that transaction.
+    [string]$ResolveTransaction = ''
 )
 
 . (Join-Path $PSScriptRoot 'LoaderCompat.Common.ps1')
@@ -133,13 +136,14 @@ if ($Report) {
 if ($SafetyTests) {
     # Offline fixture checks of the session guards, including shared ownership, per-launch host checks and
     # restoration only at a safe boundary. No game, loader, registry or owner file is touched.
-    & (Join-Path $PSScriptRoot 'Test-LoaderCompatSafety.ps1')
+    try { & (Join-Path $PSScriptRoot 'Test-LoaderCompatSafety.ps1') }
+    catch { Write-Host "Safety checks aborted: $($_.Exception.Message)`n$($_.ScriptStackTrace)"; exit 1 }
     return
 }
 
 if ($RecoverOnly) {
     # Exit 0 only for a clean recovered transaction; refusals, deferrals and failed verdicts exit 1.
-    exit (Invoke-LcRecoverOnlyCommand { param($Path) Restore-LcRegistry $Path } $RegistryResolution)
+    exit (Invoke-LcRecoverOnlyCommand { param($Path) Restore-LcRegistry $Path } $RegistryResolution $ResolveTransaction)
 }
 
 foreach ($required in @('SessionFile', 'LoaderProfile', 'CandidateZip', 'HarnessDir')) {

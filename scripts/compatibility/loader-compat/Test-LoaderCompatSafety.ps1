@@ -170,9 +170,9 @@ try {
         Assert-That ($refusal -like '*recovery-lock-acquired*' -and $converted.schemaVersion -eq 4 -and $converted.leaseRunId -and
             (Get-Content -LiteralPath $compatLock -Raw).Trim() -ceq $converted.leaseRunId) 'legacy-recovery-lock-identified-by-journal'
         $recovery = Invoke-LcRecovery $restore
-        Assert-That (-not $recovery.Succeeded -and $recovery.Result.Outcome -eq 'recovery-required' -and $recovery.Message -like '*older journal records no digest*' -and
+        Assert-That (-not $recovery.Succeeded -and $recovery.Result.Outcome -eq 'recovery-required' -and $recovery.Message -like '*records no digest*' -and
             (Get-Content -LiteralPath $compatLock -Raw).Trim() -ceq $converted.leaseRunId) 'legacy-lock-recognized-as-own-and-retained'
-        $recovery = Invoke-LcRecovery $restore 'KeepCurrent'
+        $recovery = Invoke-LcRecovery $restore 'KeepCurrent' $converted.transactionId
         Assert-That ($recovery.Succeeded -eq $false -and $recovery.Result.Outcome -eq 'completed' -and $recovery.Result.Registry -eq 'owner-kept-current' -and (& $clean)) 'legacy-recovered-after-owner-resolution'
         # A schema-2 journal beside its own partially acquired lease, and beside a foreign one.
         $orphanRun = New-LcLeaseRunId
@@ -244,7 +244,44 @@ try {
         $global:LcTestFirst = $null
         $script:LcRecoveryPauseHook = { $global:LcTestFirst = Invoke-LcRecovery $restore }
         $second = Invoke-LcRecovery $restore
-        Assert-That ($global:LcTestFirst.Succeeded -and $second.Message -like '*already recovered by another caller*' -and $global:LcTestRestores -eq $restoresBefore + 1 -and (& $clean)) 'paused-recovery-one-restore-total'
+        Assert-That ($global:LcTestFirst.Succeeded -and $second.Succeeded -and $second.Message -like '*already recovered by another caller*Recorded verdict*applied*verified*' -and
+            $global:LcTestRestores -eq $restoresBefore + 1 -and (& $clean)) 'paused-recovery-one-restore-total'
+        # R9-F3: the same pause with owner files changed while down - both callers exit nonzero, one cleanup, one import.
+        $txP3 = New-FixtureTransaction 'fixture-paused-changed'
+        Stop-FixtureRunner $txP3
+        $restoresBefore = $global:LcTestRestores
+        $global:LcTestSaves = { @('saves\a.zks|10|aa', 'saves\b.zks|20|changed-while-waiting') }
+        $global:LcTestFirstCode = $null
+        $script:LcRecoveryPauseHook = { $global:LcTestFirstCode = Invoke-LcRecoverOnlyCommand $restore }
+        $secondCode = Invoke-LcRecoverOnlyCommand $restore
+        $global:LcTestSaves = $defaultSaves
+        Assert-That ($global:LcTestFirstCode -eq 1 -and $secondCode -eq 1 -and $global:LcTestRestores -eq $restoresBefore + 1 -and (& $clean) -and
+            (Get-FixtureJson $txP3.Scope.Lease.StatePath).integrity.status -ceq 'changed') 'paused-recovery-failed-verdict-both-exit-1'
+        # A waiting caller whose observed journal names no lease record cannot verify the verdict: nonzero.
+        New-LegacyJournal 'fixture-paused-unleased'
+        $script:LcRecoveryPauseHook = { Remove-Item -LiteralPath $script:LcJournal, $script:LcLock -Force }
+        $unverified = Invoke-LcRecovery $restore
+        Assert-That (-not $unverified.Succeeded -and $unverified.Message -like '*verdict cannot be verified*') 'paused-recovery-unverifiable-verdict-fails'
+
+        # --- R8-F1: the journal acted on is the single snapshot read under the guard. A finishes normally and B
+        # starts and is interrupted right after that read: the caller leaves B's journal, locks and settings alone.
+        $txSa = New-FixtureTransaction 'fixture-snapshot-a'
+        Set-FixtureOwnerGone
+        $global:LcTestSb = $null
+        $script:LcRecoverySnapshotHook = {
+            [void](Complete-LcSessionOwnership $txSa.Journal $txSa.Scope $restore 0)
+            $global:LcTestSb = New-FixtureTransaction 'fixture-snapshot-b'
+            [void](Invoke-FixtureInterrupted 'restoring' { Complete-LcSessionOwnership $global:LcTestSb.Journal $global:LcTestSb.Scope $restore 0 })
+            Stop-FixtureRunner $global:LcTestSb
+            $global:LcTestBRegistry = $global:LcTestRegistry; $global:LcTestBRestores = $global:LcTestRestores
+            $global:LcTestBJournal = Get-Content -LiteralPath $script:LcJournal -Raw
+        }
+        $refusal = Get-Refusal { Invoke-LcRecovery $restore }
+        $script:LcRecoverySnapshotHook = $null
+        Assert-That ($null -ne $refusal -and $refusal -like '*nothing was changed*' -and (Get-Content -LiteralPath $script:LcJournal -Raw) -ceq $global:LcTestBJournal -and
+            (Get-Content -LiteralPath $compatLock -Raw).Trim() -ceq $global:LcTestSb.Scope.Lease.RunId -and (Test-LcPrivateLockOwned 'fixture-snapshot-b') -and
+            $global:LcTestRegistry -ceq $global:LcTestBRegistry -and $global:LcTestRestores -eq $global:LcTestBRestores) 'snapshot-a-caller-leaves-b-untouched'
+        Assert-That ((Invoke-LcRecovery $restore).Succeeded -and $global:LcTestRestores -eq $global:LcTestBRestores + 1 -and (& $clean)) 'snapshot-b-recovers-on-its-own-invocation'
 
         # --- R8-F1: a stale journal beside a foreign shared-lock holder.
         $txF = New-FixtureTransaction 'fixture-foreign-shared'
@@ -266,7 +303,7 @@ try {
         $global:LcTestRegistry = $later
         $recovery = Invoke-LcRecovery $restore
         Assert-That (-not $recovery.Succeeded -and $global:LcTestRestores -eq $restoresBefore -and $global:LcTestRegistry -ceq $later) 'legacy-later-settings-preserved'
-        $recovery = Invoke-LcRecovery $restore 'KeepCurrent'
+        $recovery = Invoke-LcRecovery $restore 'KeepCurrent' (Get-FixtureJson $script:LcJournal).transactionId
         Assert-That ($recovery.Result.Outcome -eq 'completed' -and $recovery.Result.Registry -eq 'owner-kept-current' -and $global:LcTestRestores -eq $restoresBefore -and
             $global:LcTestRegistry -ceq $later -and (& $clean)) 'legacy-owner-keeps-current-settings'
 
@@ -279,6 +316,29 @@ try {
         Assert-That ((Get-LcRegistryCanonical $regA) -cne (Get-LcRegistryCanonical $regB)) 'reordered-multiline-data-unequal'
         [IO.File]::WriteAllText($regB, (New-RegText 'owner' '1' '2' "01,02,03,\`r`n  04,05,06").Replace("`r`n`r`n", "`r`n"))
         Assert-That ((Get-LcRegistryCanonical $regA) -ceq (Get-LcRegistryCanonical $regB)) 'same-settings-equal'
+        # Ordinal: two UTF-16 spellings of the same visible text (U+00E9 vs U+0065 U+0301) are different data.
+        $composed = 'caf' + [char]0x00E9; $decomposed = 'cafe' + [char]0x0301
+        [IO.File]::WriteAllText($regA, (New-RegText $composed '1' '2' "01,02,03,\`r`n  04,05,06"))
+        [IO.File]::WriteAllText($regB, (New-RegText $decomposed '1' '2' "01,02,03,\`r`n  04,05,06"))
+        Assert-That (-not (Test-LcRegistryEqual (Get-LcRegistryCanonical $regA) (Get-LcRegistryCanonical $regB))) 'unicode-spellings-unequal-ordinally'
+        [IO.File]::WriteAllText($regB, (New-RegText $composed '1' '2' "01,02,03,\`r`n  04,05,06"), [Text.Encoding]::Unicode)
+        Assert-That (Test-LcRegistryEqual (Get-LcRegistryCanonical $regA) (Get-LcRegistryCanonical $regB)) 'utf16-export-equals-same-data'
+        # In recovery: live data in the other spelling matches neither recorded state, so it is preserved as unresolved.
+        $backupE = Join-Path $fixture 'settings-composed.reg'
+        $backupEText = New-RegText $composed '1' '2' "01,02,03,\`r`n  04,05,06"
+        [IO.File]::WriteAllText($backupE, $backupEText)
+        $txUc = New-FixtureTransaction 'fixture-unicode-spelling' -Bare
+        [void](Save-LcIntake $txUc.Journal); Set-LcRegistryBackup $txUc.Journal $backupE
+        $restoresBefore = $global:LcTestRestores
+        [void](Invoke-FixtureInterrupted 'restoring' { Complete-LcSessionOwnership $txUc.Journal $txUc.Scope $restore 0 })
+        $decomposedText = New-RegText $decomposed '1' '2' "01,02,03,\`r`n  04,05,06"
+        $global:LcTestRegistry = $decomposedText
+        Stop-FixtureRunner $txUc
+        $recovery = Invoke-LcRecovery $restore
+        Assert-That (-not $recovery.Succeeded -and $recovery.Message -like '*unresolved*' -and $global:LcTestRestores -eq $restoresBefore -and
+            [string]::Equals($global:LcTestRegistry, $decomposedText, [StringComparison]::Ordinal)) 'unicode-other-spelling-preserved-unresolved'
+        [void](Invoke-LcRecovery $restore 'KeepCurrent' $txUc.Journal.transactionId)
+        Assert-That ([string]::Equals($global:LcTestRegistry, $decomposedText, [StringComparison]::Ordinal) -and (& $clean)) 'unicode-other-spelling-kept-by-owner'
         $txSw = New-FixtureTransaction 'fixture-swapped'
         $restoresBefore = $global:LcTestRestores
         [void](Invoke-FixtureInterrupted 'import-applied' { Complete-LcSessionOwnership $txSw.Journal $txSw.Scope $restore 0 })
@@ -290,7 +350,7 @@ try {
             $global:LcTestRestores -eq $restoresBefore + 1 -and $global:LcTestRegistry -ceq $swapped) 'swapped-current-state-preserved-and-unresolved'
         Assert-That ((Test-Path -LiteralPath $script:LcJournal) -and (Get-Content -LiteralPath $compatLock -Raw).Trim() -ceq $txSw.Scope.Lease.RunId -and
             (Get-FixtureJson $txSw.Scope.Lease.StatePath).status -ceq 'RecoveryRequired') 'unresolved-retains-journal-lock-and-lease'
-        $recovery = Invoke-LcRecovery $restore 'Import'
+        $recovery = Invoke-LcRecovery $restore 'Import' $txSw.Journal.transactionId
         Assert-That ($recovery.Succeeded -and $global:LcTestRestores -eq $restoresBefore + 2 -and $global:LcTestRegistry -ceq $backupText -and (& $clean)) 'owner-import-resolution-restores'
 
         # --- R10-F2: an unreadable registry keeps ownership; a later recovery settles the same transaction.
@@ -330,7 +390,8 @@ try {
         $global:LcTestExportHook = { $global:LcTestGames = @([pscustomobject]@{ Id = 6262 }) }
         $outcome = Complete-LcSessionOwnership $txPe.Journal $txPe.Scope $restore 0
         Assert-That ($outcome.Outcome -eq 'recovery-required' -and $outcome.Reason -like '*import was withheld*pid 6262*' -and $global:LcTestRestores -eq $restoresBefore -and
-            (Get-FixtureJson $script:LcJournal).registryRestore -ceq 'pending' -and (Test-Path -LiteralPath $compatLock) -and (Test-Path -LiteralPath $script:LcLock)) 'peer-during-snapshot-withholds-import'
+            (Get-FixtureJson $script:LcJournal).registryRestore -ceq 'restoring' -and (Get-FixtureJson $script:LcJournal).preRestore.state -ceq 'exported' -and
+            (Test-Path -LiteralPath $compatLock) -and (Test-Path -LiteralPath $script:LcLock)) 'peer-during-snapshot-withholds-import-keeps-snapshot'
         $global:LcTestGames = @(); Set-FixtureOwnerGone
         $recovery = Invoke-LcRecovery $restore
         Assert-That (-not $recovery.Succeeded -and $recovery.Message -like '*import was withheld*' -and $global:LcTestRestores -eq $restoresBefore -and (Test-Path -LiteralPath $script:LcJournal)) 'peer-during-recovery-snapshot-withholds-import'
@@ -346,6 +407,37 @@ try {
             (Get-FixtureJson $script:LcJournal).registryRestore -ceq 'restoring' -and (Test-Path -LiteralPath $compatLock)) 'peer-during-reconcile-withholds-import'
         $global:LcTestGames = @(); $global:LcTestExportHook = $null
         Assert-That ((Invoke-LcRecovery $restore).Succeeded -and $global:LcTestRestores -eq $restoresBefore + 1 -and (& $clean)) 'reconcile-import-after-peer-left'
+        # R11-F2: the peer changes the settings before it leaves - recovery reconciles against the retained
+        # snapshot, preserves the peer's settings and keeps ownership until the owner decides.
+        $txPc = New-FixtureTransaction 'fixture-peer-changes-settings'
+        $restoresBefore = $global:LcTestRestores
+        $global:LcTestExportHook = { $global:LcTestGames = @([pscustomobject]@{ Id = 6464 }) }
+        $outcome = Complete-LcSessionOwnership $txPc.Journal $txPc.Scope $restore 0
+        $global:LcTestExportHook = $null
+        $peerText = New-RegText 'peer-changed' '7' '8' "01,02,03,\`r`n  04,05,06"
+        $global:LcTestRegistry = $peerText; $global:LcTestGames = @(); Set-FixtureOwnerGone
+        $recovery = Invoke-LcRecovery $restore
+        Assert-That ($outcome.Outcome -eq 'recovery-required' -and -not $recovery.Succeeded -and $recovery.Message -like '*unresolved*' -and $global:LcTestRestores -eq $restoresBefore -and
+            $global:LcTestRegistry -ceq $peerText -and (Get-Content -LiteralPath $compatLock -Raw).Trim() -ceq $txPc.Scope.Lease.RunId -and
+            (Get-FixtureJson $txPc.Scope.Lease.StatePath).status -ceq 'RecoveryRequired') 'peer-change-during-deferral-preserved-with-ownership'
+        [void](Invoke-LcRecovery $restore 'KeepCurrent' $txPc.Journal.transactionId)
+        Assert-That ($global:LcTestRegistry -ceq $peerText -and $global:LcTestRestores -eq $restoresBefore -and (& $clean)) 'peer-change-kept-by-owner'
+        # R10-F3: a peer appearing during the restore-source verification (the last slow read) withholds the import.
+        $txVh = New-FixtureTransaction 'fixture-peer-during-backup-read'
+        $restoresBefore = $global:LcTestRestores
+        $script:LcBackupVerifyHook = { $global:LcTestGames = @([pscustomobject]@{ Id = 6565 }) }
+        $outcome = Complete-LcSessionOwnership $txVh.Journal $txVh.Scope $restore 0
+        $script:LcBackupVerifyHook = $null
+        Assert-That ($outcome.Outcome -eq 'recovery-required' -and $outcome.Reason -like '*import was withheld*pid 6565*' -and $global:LcTestRestores -eq $restoresBefore -and
+            $global:LcTestRegistry -ceq $sessionText -and (Get-Content -LiteralPath $compatLock -Raw).Trim() -ceq $txVh.Scope.Lease.RunId -and (Test-Path -LiteralPath $script:LcLock)) 'peer-during-backup-read-withholds-import'
+        $global:LcTestGames = @(); Set-FixtureOwnerGone
+        $script:LcBackupVerifyHook = { $global:LcTestGames = @([pscustomobject]@{ Id = 6566 }) }
+        $recovery = Invoke-LcRecovery $restore
+        $script:LcBackupVerifyHook = $null
+        Assert-That (-not $recovery.Succeeded -and $recovery.Message -like '*import was withheld*pid 6566*' -and $global:LcTestRestores -eq $restoresBefore -and
+            (Test-Path -LiteralPath $compatLock)) 'peer-during-recovery-backup-read-withholds-import'
+        $global:LcTestGames = @()
+        Assert-That ((Invoke-LcRecovery $restore).Succeeded -and $global:LcTestRestores -eq $restoresBefore + 1 -and $global:LcTestRegistry -ceq $backupText -and (& $clean)) 'import-after-backup-read-peer-left'
 
         # --- R10-F4: a verified but uncommitted transaction is verified afresh on recovery.
         $txVf = New-FixtureTransaction 'fixture-stale-verified'
@@ -365,10 +457,32 @@ try {
         Assert-That ($outcome.Outcome -eq 'recovery-required' -and $outcome.Reason -like '*no longer matches the digest*' -and $global:LcTestRestores -eq $restoresBefore -and
             $global:LcTestRegistry -ceq $sessionText) 'changed-backup-refused-in-completion'
         Set-FixtureOwnerGone
-        $recovery = Invoke-LcRecovery $restore 'Import'
+        $recovery = Invoke-LcRecovery $restore 'Import' $txBk.Journal.transactionId
         Assert-That (-not $recovery.Succeeded -and $recovery.Message -like '*no longer matches the digest*' -and $global:LcTestRestores -eq $restoresBefore -and $global:LcTestRegistry -ceq $sessionText) 'changed-backup-refused-in-recovery'
         [IO.File]::WriteAllText($backup, $backupText)
         Assert-That ((Invoke-LcRecovery $restore).Succeeded -and $global:LcTestRestores -eq $restoresBefore + 1 -and $global:LcTestRegistry -ceq $backupText -and (& $clean)) 'verified-backup-imported-once'
+        # The backup replaced with the live (unrestored) settings while recovery exports them for reconciliation:
+        # the comparison uses the bytes verified at the start, so nothing is certified applied, and only those
+        # original bytes are imported.
+        $txRp = New-FixtureTransaction 'fixture-backup-replaced-during-export'
+        $restoresBefore = $global:LcTestRestores
+        [void](Invoke-FixtureInterrupted 'restoring' { Complete-LcSessionOwnership $txRp.Journal $txRp.Scope $restore 0 })
+        Stop-FixtureRunner $txRp
+        $global:LcTestExportHook = { [IO.File]::WriteAllText($backup, $global:LcTestRegistry) }
+        $recovery = Invoke-LcRecovery $restore
+        $global:LcTestExportHook = $null
+        $replacedWith = [IO.File]::ReadAllText($backup)
+        [IO.File]::WriteAllText($backup, $backupText)
+        Assert-That ($replacedWith -ceq $sessionText -and $recovery.Succeeded -and $global:LcTestRestores -eq $restoresBefore + 1 -and $global:LcTestRegistry -ceq $backupText -and
+            (& $clean)) 'backup-replaced-during-export-not-certified-original-imported'
+        # The backup replaced during the restore-source verification itself: the held bytes are the verified ones.
+        $txRv = New-FixtureTransaction 'fixture-backup-replaced-during-verification'
+        $restoresBefore = $global:LcTestRestores
+        $script:LcBackupVerifyHook = { [IO.File]::WriteAllText($backup, (New-RegText 'swapped-in' '5' '5' "05,05,05,\`r`n  05,05,05")) }
+        $outcome = Complete-LcSessionOwnership $txRv.Journal $txRv.Scope $restore 0
+        $script:LcBackupVerifyHook = $null
+        [IO.File]::WriteAllText($backup, $backupText)
+        Assert-That ((Test-LcTransactionSucceeded $outcome) -and $global:LcTestRestores -eq $restoresBefore + 1 -and $global:LcTestRegistry -ceq $backupText -and (& $clean)) 'backup-replaced-during-verification-original-imported'
 
         # --- R8-F4 / R9-F3: a round-7 journal whose lease is Completed: cleanup only, with unavailable integrity reported.
         $txL = New-FixtureTransaction 'fixture-round7-completed'
@@ -382,6 +496,93 @@ try {
         $recovery = Invoke-LcRecovery $restore
         Assert-That (-not $recovery.Succeeded -and $recovery.Message -like '*cleanup only*' -and $recovery.Result.Integrity.status -eq 'unavailable' -and
             $global:LcTestRestores -eq $restoresBefore + 1 -and (& $clean)) 'round7-completed-cleanup-only-integrity-unavailable'
+
+        # --- R11-F1: every accepted spelling of KeepCurrent keeps the live settings on a pending transaction.
+        Assert-That ((ConvertTo-LcResolution 'keepcurrent') -ceq 'KeepCurrent' -and (ConvertTo-LcResolution 'IMPORT') -ceq 'Import' -and
+            (ConvertTo-LcResolution '') -ceq '' -and (Get-Refusal { ConvertTo-LcResolution 'keep' }) -like 'Unknown registry resolution*') 'resolution-normalized-case-insensitively'
+        foreach ($spelling in @('keepcurrent', 'kEEPcURRENT')) {
+            $txKc = New-FixtureTransaction ('fixture-keepcurrent-' + $spelling)
+            Stop-FixtureRunner $txKc
+            $restoresBefore = $global:LcTestRestores
+            $recovery = Invoke-LcRecovery $restore $spelling $txKc.Journal.transactionId
+            Assert-That ($recovery.Succeeded -and $recovery.Result.Registry -eq 'owner-kept-current' -and $global:LcTestRestores -eq $restoresBefore -and
+                $global:LcTestRegistry -ceq $sessionText -and (& $clean)) "keepcurrent-spelling-$spelling-no-import"
+        }
+
+        # --- R11-F3: an owner decision is bound to the transaction that asked for it.
+        $txRa = New-FixtureTransaction 'fixture-resolve-a'
+        [void](Invoke-FixtureInterrupted 'import-applied' { Complete-LcSessionOwnership $txRa.Journal $txRa.Scope $restore 0 })
+        $global:LcTestRegistry = New-RegText 'neither-a' '3' '3' "01,02,03,\`r`n  04,05,06"
+        Stop-FixtureRunner $txRa
+        $recovery = Invoke-LcRecovery $restore
+        Assert-That ($recovery.Message -like "*-ResolveTransaction $($txRa.Journal.transactionId) -RegistryResolution Import*") 'deferral-names-its-transaction'
+        Assert-That ((Get-Refusal { Invoke-LcRecovery $restore 'Import' }) -like '*must name the interrupted transaction*nothing was changed*' -and
+            (Get-Refusal { Invoke-LcRecovery $restore '' $txRa.Journal.transactionId }) -like '*needs -RegistryResolution*') 'unbound-resolution-refused'
+        [void](Invoke-LcRecovery $restore 'KeepCurrent' $txRa.Journal.transactionId)
+        $txRb = New-FixtureTransaction 'fixture-resolve-b'
+        [void](Invoke-FixtureInterrupted 'import-applied' { Complete-LcSessionOwnership $txRb.Journal $txRb.Scope $restore 0 })
+        $bText = New-RegText 'neither-b' '4' '4' "01,02,03,\`r`n  04,05,06"
+        $global:LcTestRegistry = $bText
+        Stop-FixtureRunner $txRb
+        [void](Invoke-LcRecovery $restore)
+        $restoresBefore = $global:LcTestRestores
+        $bJournal = Get-Content -LiteralPath $script:LcJournal -Raw
+        $refusal = Get-Refusal { Invoke-LcRecovery $restore 'Import' $txRa.Journal.transactionId }
+        Assert-That ($refusal -like "*names transaction $($txRa.Journal.transactionId)*nothing was changed*" -and $global:LcTestRegistry -ceq $bText -and
+            $global:LcTestRestores -eq $restoresBefore -and (Get-Content -LiteralPath $script:LcJournal -Raw) -ceq $bJournal -and
+            (Get-Content -LiteralPath $compatLock -Raw).Trim() -ceq $txRb.Scope.Lease.RunId) 'stale-resolution-refused-for-other-transaction'
+        [void](Invoke-LcRecovery $restore 'KeepCurrent' $txRb.Journal.transactionId)
+        Assert-That ($global:LcTestRegistry -ceq $bText -and (& $clean)) 'second-transaction-settled-by-its-own-decision'
+        $noJournal = Invoke-LcRecovery $restore 'Import' $txRb.Journal.transactionId
+        Assert-That (-not $noJournal.Succeeded -and $noJournal.Message -like '*not awaiting a decision*') 'resolution-without-pending-journal-reports-not-applied'
+
+        # --- R8-F2: a legacy recovery interrupted after journaling its lease identity, before the lock exists.
+        New-LegacyJournal 'fixture-legacy-intent'
+        $refusal = Invoke-FixtureInterrupted 'recovery-lease-intended' { Invoke-LcRecovery $restore }
+        $intent = Get-FixtureJson $script:LcJournal
+        Assert-That ($refusal -like '*recovery-lease-intended*' -and $intent.leaseRunId -and -not $intent.sharedLock -and -not (Test-Path -LiteralPath $compatLock)) 'legacy-lease-intent-journaled-before-lock'
+        $recovery = Invoke-LcRecovery $restore
+        $leaseNow = Get-FixtureJson $intent.leaseStatePath
+        Assert-That (-not $recovery.Succeeded -and $recovery.Result.Outcome -eq 'recovery-required' -and (Get-Content -LiteralPath $compatLock -Raw).Trim() -ceq $intent.leaseRunId -and
+            $leaseNow.runId -ceq $intent.leaseRunId -and $leaseNow.status -ceq 'RecoveryRequired' -and $leaseNow.recoveryRequired -and
+            (Get-FixtureJson $script:LcJournal).sharedLock) 'legacy-intent-retry-acquires-lock-and-keeps-recovery-lease'
+        $global:LcTestCompetitor = $null
+        # (The fixture restore is reached through a global: inside the registry step, $restore names the caller's parameter.)
+        $global:LcTestBaseRestore = $restore
+        $competingRestore = { param($Path) try { [void](Enter-LcRuntimeOwnership 'fixture-competitor'); $global:LcTestCompetitor = 'acquired' } catch { $global:LcTestCompetitor = $_.Exception.Message }; & $global:LcTestBaseRestore $Path }
+        $restoresBefore = $global:LcTestRestores
+        $recovery = Invoke-LcRecovery $competingRestore 'Import' $intent.transactionId
+        Assert-That ($global:LcTestCompetitor -like '*lock already exists*' -and $recovery.Result.Registry -eq 'applied' -and $global:LcTestRestores -eq $restoresBefore + 1 -and
+            $global:LcTestRegistry -ceq $backupText -and (& $clean)) 'legacy-intent-import-under-held-shared-lock'
+        # A legacy recovery interrupted after taking the lock, before its lease record existed: it was published first.
+        $refusal = Invoke-FixtureInterrupted 'recovery-lease-written' { New-LegacyJournal 'fixture-legacy-lease-write'; Invoke-LcRecovery $restore }
+        $written = Get-FixtureJson $script:LcJournal
+        Assert-That ($refusal -like '*recovery-lease-written*' -and (Get-FixtureJson $written.leaseStatePath).status -ceq 'Active' -and
+            (Get-Content -LiteralPath $compatLock -Raw).Trim() -ceq $written.leaseRunId) 'recovery-lease-record-published-before-work'
+        Assert-That ($null -eq (Get-Refusal { [void](Invoke-LcRecovery $restore 'KeepCurrent' (Get-LcValue $written 'transactionId')) }) -and (& $clean)) 'recovery-lease-record-retry-settled'
+
+        # --- R10-F2: a schema-3 journal marked lease-completed with an unresolved restore, its locks still held.
+        $tx3 = New-FixtureTransaction 'fixture-schema3-unresolved'
+        $tx3.Scope.Lease.Stream.Dispose()
+        $j3 = [ordered]@{}
+        foreach ($key in $tx3.Journal.Keys) { if ($key -cne 'registryBackupSha256') { $j3[$key] = $tx3.Journal[$key] } }
+        $j3.schemaVersion = 3; $j3.phase = 'lease-completed'; $j3.registryRestore = 'unresolved: the game settings match neither the session backup nor the snapshot taken just before restoration'
+        $j3.ownerProcessStartedUtc = '2000-01-01T00:00:00.0000000Z'; $j3.integrity = [ordered]@{ status = 'verified' }
+        Write-LcJson $script:LcJournal $j3
+        $state3 = Get-FixtureJson $tx3.Scope.Lease.StatePath
+        $state3.status = 'Completed'; $state3 | Add-Member -NotePropertyName registryRestore -NotePropertyValue $j3.registryRestore -Force
+        [IO.File]::WriteAllText($tx3.Scope.Lease.StatePath, ($state3 | ConvertTo-Json -Depth 16), (New-Object Text.UTF8Encoding($false)))
+        $later3 = New-RegText 'schema3-later' '6' '6' "01,02,03,\`r`n  04,05,06"
+        $global:LcTestRegistry = $later3
+        $restoresBefore = $global:LcTestRestores
+        $recovery = Invoke-LcRecovery $restore
+        Assert-That (-not $recovery.Succeeded -and $recovery.Result.Outcome -eq 'recovery-required' -and (Get-FixtureJson $script:LcJournal).transactionId -ceq $tx3.Journal.transactionId -and
+            (Get-Content -LiteralPath $compatLock -Raw).Trim() -ceq $tx3.Scope.Lease.RunId -and (Test-LcPrivateLockOwned 'fixture-schema3-unresolved') -and
+            (Get-FixtureJson $tx3.Scope.Lease.StatePath).status -ceq 'RecoveryRequired' -and $global:LcTestRestores -eq $restoresBefore -and
+            $global:LcTestRegistry -ceq $later3) 'schema3-unresolved-completed-journal-retained'
+        $recovery = Invoke-LcRecovery $restore 'Import' $tx3.Journal.transactionId
+        Assert-That ($recovery.Succeeded -and $recovery.Result.Registry -eq 'applied' -and $global:LcTestRestores -eq $restoresBefore + 1 -and $global:LcTestRegistry -ceq $backupText -and
+            (& $clean)) 'schema3-unresolved-settled-by-owner-for-same-transaction'
 
         # --- completion interrupted at each later boundary resumes without a second restore.
         foreach ($boundary in @('restored', 'verified', 'lease-completed', 'shared-released', 'private-released')) {
@@ -459,18 +660,18 @@ exit (Invoke-LcRecoverOnlyCommand { param(`$Path) throw 'not used by these cases
         Assert-That (& $clean) 'all-fixture-transactions-released'
     }
     finally {
-        $script:LcInterruptAfter = $null; $script:LcRecoveryPauseHook = $null
+        $script:LcInterruptAfter = $null; $script:LcRecoveryPauseHook = $null; $script:LcRecoverySnapshotHook = $null; $script:LcBackupVerifyHook = $null
         $script:LcStateRoot = $saved.State; $script:LcForeignLocks = $saved.Foreign; $script:LcJournal = $saved.Journal
         $script:LcLock = $saved.Lock; $script:LcRecoveryLock = $saved.Guard; $script:LcGameProcessQuery = $saved.Query
         $script:LcSavesManifest = $saved.Saves; $script:LcInstallManifest = $saved.Install
         $script:LcRegistryExport = $saved.Export; $script:LcLeaseStateWriter = $saved.Writer
-        Remove-Variable -Name LcTestGames, LcTestRestores, LcTestSaves, LcTestInstall, LcTestCompetitor, LcTestRegistry, LcTestFirst, LcTestB, LcTestBRegistry, LcTestBRestores, LcTestExportFailures, LcTestExportHook -Scope Global -ErrorAction SilentlyContinue
+        Remove-Variable -Name LcTestGames, LcTestRestores, LcTestSaves, LcTestInstall, LcTestCompetitor, LcTestRegistry, LcTestFirst, LcTestB, LcTestBRegistry, LcTestBRestores, LcTestExportFailures, LcTestExportHook, LcTestFirstCode, LcTestSb, LcTestBJournal, LcTestBaseRestore -Scope Global -ErrorAction SilentlyContinue
     }
 }
 finally {
     $script:LcCopiesRoot = $savedRoot
     if (Test-Path -LiteralPath $fixture) { Remove-Item -LiteralPath $fixture -Recurse -Force }
 }
-if ($checks -lt 99) { throw "Loader-compatibility safety checks did not run ($checks)." }
+if ($checks -lt 129) { throw "Loader-compatibility safety checks did not run ($checks)." }
 if ($failures.Count) { throw "Loader-compatibility safety checks failed: $($failures -join ', ')" }
 Write-Host "Loader-compatibility safety checks: PASS=$checks FAIL=0. Offline fixtures only."

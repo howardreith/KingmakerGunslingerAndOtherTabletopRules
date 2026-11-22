@@ -18,7 +18,7 @@ namespace KingmakerGunslinger.DomainTests
             "damage-type", "critical-edge", "critical-modifier", "fighter-group",
             "two-handed", "light", "monk", "natural", "unarmed",
             "attack-stat-override", "weight", "movement-enchantment",
-            "subcategory-policy"
+            "subcategory-policy", "subcategory-list"
         };
 
         private static SpearProfileObservation Healthy(string predicate)
@@ -141,9 +141,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal("<none>", text(new SubCategory[0]), "An empty list must be visible.");
             Assertions.Equal("<null>", text(null), "A null list must be visible.");
             SpearProfileVerdict verdict = ElvenBranchedSpearProfilePolicy.Evaluate(
-                HealthyProfile().Concat(new[] { new SpearProfileObservation("subcategory-list", intended,
+                With(new SpearProfileObservation("subcategory-list", intended,
                     intended, "<not-applicable>", intended, withSimple,
-                    "Melee,TwoHanded,Metal,Simple", new[] { "other.mod" }, "read") }));
+                    "Melee,TwoHanded,Metal,Simple", new[] { "other.mod" }, "read")));
             Assertions.False(verdict.IsValid, "An extra returned Simple entry passed validation.");
             Assertions.True(verdict.DescribeFailure().Contains("subcategory-list [effective-getter]") &&
                 verdict.DescribeFailure().Contains("actual=" + withSimple) &&
@@ -188,7 +188,7 @@ namespace KingmakerGunslinger.DomainTests
             SpearProfileVerdict verdict = ElvenBranchedSpearProfilePolicy.Evaluate(
                 HealthyProfile());
             Assertions.True(verdict.IsValid && verdict.Findings.Length == 0 &&
-                verdict.CheckedCount == 17, "A healthy profile produced findings.");
+                verdict.CheckedCount == 18, "A healthy profile produced findings.");
             Assertions.Equal(string.Empty, verdict.DescribeFailure(),
                 "A healthy profile described a failure.");
         }
@@ -206,7 +206,7 @@ namespace KingmakerGunslinger.DomainTests
             string message = verdict.DescribeFailure();
             Assertions.False(verdict.IsValid, "An owned-field mismatch passed.");
             Assertions.True(message.StartsWith(
-                "Elven Branched Spear type profile is invalid: 2 of 17 checks failed.",
+                "Elven Branched Spear type profile is invalid: 2 of 18 checks failed.",
                 StringComparison.Ordinal), "Failure summary is wrong: " + message);
             foreach (string token in new[] {
                 "attack-range [owned-field]: expected=10ft actual=15ft donor=15ft",
@@ -269,7 +269,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(2, verdict.Findings.Length,
                 "A throwing getter and a second invalid predicate were not both reported.");
             Assertions.True(message.StartsWith(
-                "Elven Branched Spear type profile is invalid: 2 of 17 checks failed.",
+                "Elven Branched Spear type profile is invalid: 2 of 18 checks failed.",
                 StringComparison.Ordinal) &&
                 message.Contains("light [effective-getter]: expected=false actual=false donor=false; getter expected=false actual=<throws InvalidOperationException: boom> donor=false; getterPatches=other.mod") &&
                 message.Contains("fighter-group [owned-field]"),
@@ -320,7 +320,7 @@ namespace KingmakerGunslinger.DomainTests
                 null, "field");
             string message = ElvenBranchedSpearProfilePolicy.Evaluate(
                 With(enchantment, subcategories)).DescribeFailure();
-            Assertions.True(message.Contains("2 of 17 checks failed.") &&
+            Assertions.True(message.Contains("2 of 18 checks failed.") &&
                 message.Contains("movement-enchantment [owned-field]: expected=KMG_ElvenBranchedSpear_MovementOpportunityAccuracy actual=<none>") &&
                 message.Contains("subcategory-policy [owned-field]") &&
                 message.Contains("getterPatches=field"),
