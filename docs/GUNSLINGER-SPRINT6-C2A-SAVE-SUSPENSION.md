@@ -1,6 +1,9 @@
 # Sprint 6 checkpoint C2a (VER-02 F1): a permitted save keeps an ongoing summon hold
 
-Status: **C2a R1 returned for manual review** (2026-11-22). **VER-02 is not closed.** Nothing is merged or released.
+Status: **C2a R1 accepted by manual review (2026-11-22) for its demonstrated development scope**, at head `4729014dba`
+(product `044355c2a9`, package `47ec71d0…06fe`, DLL `3746ff5a…a6b2`). No further C2a repair or native cycle is requested.
+Section 9 records the acceptance and the last classification corrections. **VER-02 is not closed.** Nothing is merged or
+released.
 
 - The first C2a review accepted:
   - the ordinary G1 route;
@@ -329,11 +332,14 @@ observer's order:
   off during disposal with the owner still turned on, so the release decision used the genuine-end branch. The
   owner-off-plus-unload-state branch (an area-state holder turned off by `UnloadAreaCoroutine`) did **not** occur on
   this route; it remains source-inferred.
-- **After the load** (asserted):
-  - both loaded holders had no hold buff, initiator part or record, and no unit carried held state;
-  - fresh G1 and G2 holds had their own unload state false, and native admission allowed saving;
-  - a native save (clock unchanged) turned both fresh holds off with owner off and unload state false, and **kept**
-    both relationships, with exact records unchanged.
+- **After the load.** The gates and captures are classified in section 9.
+  - Both loaded holders were found (**observed**; the harness skips a missing holder) and had no hold buff, initiator
+    part or record. No unit carried held state. These residual checks are **asserted**.
+  - Fresh G1 and G2 holds had their own unload state false (**asserted**). Native admission allowed saving
+    (**captured**, not asserted).
+  - A native save completed with the clock unchanged (**asserted**), and **kept** both relationships with exact records
+    unchanged (**asserted**). At least two hold turn-offs occurred, none with unload state true (**asserted**). Owner off
+    at those turn-offs is **captured**, not asserted.
 
   Stale unload state did not control the later save.
 - **Written save** `Manual_1_ver02c2ar1.zks` (SHA-256 `a3847464…fc70`): complete G1 relationship (initiator part,
@@ -356,13 +362,24 @@ observer's order:
 
 **Asserted** (fail the run):
 
-- R1 lifecycle: removal outcomes; cadence `RoundNumber`, next-tick and identity equality; after-load ordering presence
-  (unload begin, turn-off/deactivate during unload, loaded reset), fresh-hold unload state, and post-load
-  preservation.
+- R1 lifecycle: removal outcomes; cadence `RoundNumber`, next-tick and identity equality.
+- After the load:
+  - `Game.HandleAreaBeginUnloading` and `Game.OnAreaLoaded` observed;
+  - each named hold observed `OnAreaBeginUnloading` before arrival, and was turned off or deactivated during the unload;
+  - no named hold was suspended at unload without its unload state;
+  - residual-state checks on the loaded holders that were found, and on all units;
+  - fresh-hold unload state false;
+  - post-load save completion, clock and preservation.
 - R1 save checks: as listed in 8.2.
 
-**Captured observations:** callback sequences and counts, the owner and unload state at each callback, maintain
-results, and buff lists.
+**Captured observations:**
+
+- callback sequences and counts, the owner and unload state at each callback, maintain results, and buff lists;
+- the detailed arrival/reset sequence in the 8.1 table, including the `ResetLoadedGrapples` callback and its position
+  (the reset itself is asserted only through the residual-state checks);
+- the post-load `IsSaveAllowed()` value;
+- owner-off at the post-load save's turn-offs;
+- the presence of both loaded holders.
 
 **Source inferences:**
 
@@ -387,3 +404,24 @@ results, and buff lists.
 - G1 variant owners;
 - the Xill, Giant Scorpion and Giant Crab configurations;
 - F2/F3 accepted residue.
+
+## 9. Review decision (2026-11-22)
+
+**C2a R1 is accepted** for its demonstrated development scope, at head `4729014dba` (product `044355c2a9`, package
+`47ec71d05b64c263ba5bad9e04c331944f7d95b33cc43f01a2f7c6022ff806fe`, DLL
+`3746ff5ac7cbadd2b37258a9a886ce2488ae9dd3fef286f60e4de36d0e9ba6b2`).
+
+- **Classification corrections** (this records-only commit; no rebuild or rerun):
+  - The loaded holders' presence was observed; the harness skips a missing holder and checks residual state on those it
+    finds.
+  - The post-load `IsSaveAllowed()` value and owner-off at the post-load save were captured, not asserted.
+  - The detailed arrival/reset sequence, including `ResetLoadedGrapples`, was captured, not fully required.
+  - The observed values and the sequence table are unchanged.
+- The obsolete comment above `SummonGrappleLinkRecord.Encode()` is corrected. Comment only; the qualified product
+  remains `044355c2a9`.
+- **Limits retained:**
+  - The owner-off plus unload-state release branch was not exercised.
+  - A release attributable solely to `OnFactDeactivate` was not observed.
+  - The interruption contract and the pre-exit autosave ordering remain source inferences.
+  - G5 remains open and fixture-blocked.
+  - The two untraced candidate failures (`220852Z`, `222433Z`) remain FAIL with unknown cause.

@@ -32,9 +32,10 @@ namespace KingmakerGunslinger.Summoning
         /// <summary>
         /// One line of text per link, so the records stay plain data: target
         /// id, limb kind, limb index, the weapon blueprint's name, engulfed,
-        /// repaired. Kingmaker writes a unit part on these summons by type
-        /// without its contents, so this text is not carried across a save;
-        /// the encoding keeps the store simple and inspectable, not durable.
+        /// repaired. The list is a serialized field, so a save can carry these
+        /// lines together with the rest of a complete relationship; by the
+        /// accepted policy the load safeguard deliberately resets them (and the
+        /// relationship) on load rather than rebuilding anything from them.
         /// </summary>
         internal string Encode()
         {
