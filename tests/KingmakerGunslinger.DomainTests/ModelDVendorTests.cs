@@ -254,7 +254,9 @@ namespace KingmakerGunslinger.DomainTests
             AssertHash(Source("Blueprints/GunsmithingSupplyBlueprints.cs"), "9cb1f57472ae9929034f7d6c65b06c1a77b78ea6c26fc1794c9edb9087f9104d", "Blueprints/GunsmithingSupplyBlueprints.cs");
             AssertHash(Source("Blueprints/GunsmithingCraftingBlueprints.cs"), "8bf13115aca5c9fb064dc79be6861b57348e42b43b2ef87508f9f5ea5278c650", "Blueprints/GunsmithingCraftingBlueprints.cs");
             AssertHash(Source("Blueprints/EasternWeaponBlueprints.cs"), "44365a93be563a4541f18abda4e7889ea4a68e305cee332a58aab75ca24ea50e", "Blueprints/EasternWeaponBlueprints.cs");
-            AssertHash(Source("Blueprints/ElvenBranchedSpearBlueprints.cs"), "bc2199650c429230a14d270ada62aa2e10f26a9c934dc42cd763af99497a19d9", "Blueprints/ElvenBranchedSpearBlueprints.cs");
+            // Owner-authorized refresh (2026-11-22, v0.0.193 release): PR #195 deliberately configures the owned
+            // spear's profile explicitly and validates its effective values in this file.
+            AssertHash(Source("Blueprints/ElvenBranchedSpearBlueprints.cs"), "e37bcc481afba97fb147c04fdeb52d4da5e8aeac974db47812d91a8a9baa92e8", "Blueprints/ElvenBranchedSpearBlueprints.cs");
         }
         private static void AssertHash(string source, string expected, string path)
         {
