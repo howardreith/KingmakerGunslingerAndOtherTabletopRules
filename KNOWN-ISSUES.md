@@ -1,5 +1,17 @@
 # Known issues and conservative adaptations
 
+- Malformed Brown-Fur Powerful Change records in a save (S6 T4 / RISK-03, checkpoint A2). On branch
+  `codex/s6-risk03-brown-fur-persistence` (not merged, not released), such a save loads.
+  - Every valid record keeps restoring its exact increase.
+  - A malformed, duplicate-conflicting, unsupported or ambiguous record restores no increase. The spell's base effect
+    is kept: Bull's Strength gives +4 instead of +6 until it is cast again with Powerful Change.
+  - The record's content stays in the save, and the log warns when a character's condition is first read after a load
+    and again when it changes.
+  - In the published v0.0.193, from the decompiled engine and a native characterization: some of these forms throw out
+    of the engine's serializer before the mod runs, failing the area load or dropping the party's cross-scene state.
+    Others throw in the mod's save and load callbacks. The whole-file outcome was not executed.
+  - No ordinary build has been shown to write such records.
+  - Details: `docs/GUNSLINGER-SPRINT6-A2-BROWN-FUR-PERSISTENCE.md`.
 - Malformed Controlled Rage data in a save (S6 T4 / RISK-03, checkpoint A1). On branch
   `codex/s6-risk03-controlled-rage-persistence` (not merged, not released), such a save loads. Every unambiguous tier
   keeps its allocation. A tier whose saved entry is invalid or conflicting grants no Controlled Rage bonus until the
