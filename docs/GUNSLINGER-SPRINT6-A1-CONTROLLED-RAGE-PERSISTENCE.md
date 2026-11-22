@@ -1,8 +1,9 @@
 # Sprint 6 checkpoint A1: Controlled Rage persistence (RISK-03, first owner)
 
-Status: **implemented and natively qualified for the stated scope; returned for manual review** (2026-11-22). Nothing
-is merged or released. RISK-03 stays **partial**: Brown-Fur, its second owner, is checkpoint A2 and is not changed
-here. The draft PR is not accepted until Howie/ChatGPT review it.
+Status: **review corrections implemented and natively qualified for the stated scope; returned for a second manual
+review** (2026-11-22). The first review found two defects; section 10 records the corrections and their evidence.
+Nothing is merged or released. RISK-03 stays **partial**: Brown-Fur, its second owner, is checkpoint A2 and is not
+changed here. The draft PR is not accepted until Howie/ChatGPT review it.
 
 Also in this checkpoint: the bounded REP-05/REP-06 historical-input intake (section 8). Both are BLOCKED on missing
 inputs.
@@ -20,7 +21,10 @@ write such data; every released state restores exactly as before (section 4).
 - Now the save loads, and every tier whose meaning is unambiguous keeps its exact allocation.
 - A tier whose saved entry is invalid or conflicting is **blocked**. Raging grants no Controlled Rage bonus for it, and
   no default is made up. Choosing an allocation with that tier's selector replaces the block.
-- The rejected text is kept, unchanged, in the save. The log gets one warning per affected character per load.
+- The rejected text is kept, unchanged, in the save. The log warns when a character's condition is first read after a
+  load and again whenever the condition changes; unchanged repeated reads are silent (section 4, Diagnostic).
+- A save that has kept rejected text but has no current allocation does not get a new default. The ordinary tier, and
+  every tier the kept text mentions, stay blocked until the player chooses (section 10.1).
 
 ## 2. Engine contracts (Kingmaker 2.1.7b `Assembly-CSharp`, decompiled)
 
@@ -30,15 +34,19 @@ write such data; every released state restores exactly as before (section 4).
 - `Fact.TurnOn` catches each component's `OnTurnOn` exception and logs it, so tier controllers failed per load, with an
   error each time.
 - `DefaultJsonSettings`: `OptInContractResolver`, `TypeNameHandling.Auto`, `PreserveReferencesHandling.Objects`, and
-  `MissingMemberHandling` at Newtonsoft's default (Ignore). A `string` member therefore deserializes any payload
-  unchanged: there is **no typed-deserialization boundary for Controlled Rage**. Older product versions ignore the new
-  `_rejectedStates` member.
+  `MissingMemberHandling` at Newtonsoft's default (Ignore). Demonstrated natively: a JSON string value of arbitrary
+  content in `_state` (malformed, duplicate, unknown-tier and JSON-looking text) reaches `PostLoad` unchanged, and so do
+  the strings of `_rejectedStates`. Non-string JSON shapes in these members (an object, array or number) were not
+  written or tested, so their deserialization behavior is not established. There is no typed-deserialization boundary
+  for the string content itself. Older product versions ignore the new `_rejectedStates` member on read (section 7,
+  Downgrade).
 
 ## 3. Released representation
 
 `UnitPartControlledRageSelection._state` (string) uses the grammar `tier:STR,DEX,CON` joined by `;`, ordered by tier,
 with tier 4 always present. Urban Barbarian first shipped in **v0.0.95**, together with this part (`96e7a4ca74`). The
-format is unchanged since then: `git diff v0.0.95 HEAD` is empty for `ControlledRageSelectionState.cs` and
+format is unchanged up to this branch's base: `git diff v0.0.95 dfc182aee7` (the pre-A1 master revision, which
+contains v0.0.193 `527f7e2fba`) is empty for `ControlledRageSelectionState.cs` and
 `UnitPartControlledRageSelection.cs`. **No separate legacy `_state` schema was released**, so no migration format was
 invented. The only other inputs the released strict reader accepted were unordered tiers and leading zeros. Both are
 covered.
@@ -55,16 +63,19 @@ The pre-part path "selection facts but no part" in `ResolveSelection` and the le
 | 4 | Duplicates | Identical duplicates have one meaning and stay active. **Conflicting groups are blocked**; no first/last/larger record is chosen |
 | 5 | Unsupported or future data | An entry with an integer key other than 4/6/8 is retained, grants nothing and leaves the known tiers alone. Content not attributable to any tier (no `k:` key, empty entry, empty or whitespace string) blocks **every** tier. A state without an ordinary claim blocks ordinary, because the released writer always records it |
 | 6 | Valid siblings beside invalid entries | Kept, with exact meaning. A legitimately absent tier beside a blocked one still gets its normal first-unlock default |
-| 7 | Repeated reads, callbacks, mutations and saves | Idempotent: the retained list is the same instance when nothing changes; one diagnostic per distinct condition per part instance |
-| 8 | Failed write | Both fields are computed before either is assigned. `TrySelect` restores the exact prior snapshot when fact synchronization fails |
+| 7 | Repeated reads, callbacks, mutations and saves | Idempotent: the retained list is the same instance when nothing changes. The diagnostic is deduplicated against the last condition signature (section 4, Diagnostic) |
+| 8 | Failed write | Both fields are computed before either is assigned. A failed explicit selection restores the exact pre-call persisted values and leaves every marker as it was (staged synchronization, section 10.2) |
+| 9 | Null current state beside retained history | Not fresh absence: the ordinary tier and every tier a retained payload claims or taints stay blocked unless the current state holds them; retained text is never replayed (section 10.1) |
 
-**Absent vs malformed.** Legitimate absence means a null `_state` with nothing retained. It keeps the released
-ordinary STR +4 default. Every non-null string is classified.
+**Absent vs malformed.** Legitimate absence means a null `_state` with no retained payload. It keeps the released
+ordinary STR +4 default. Every non-null string is classified. A null `_state` beside any retained payload is an
+already-used part whose current allocation data is missing (section 10.1).
 
 **Persisted form:**
 
-- `_state` keeps its released name and type and holds the active tiers in the released grammar. It is null only when
-  every tier is blocked.
+- `_state` keeps its released name and type and holds the active tiers in the released grammar. It is null when no
+  tier is active. That does not mean every tier is blocked: after the migration of `4:bad`, for example, only the
+  ordinary tier is blocked and Greater and Mighty remain legitimately absent.
 - The new optional `[JsonProperty] List<string> _rejectedStates` holds each rejected input verbatim.
   - An entry is appended once (ordinal comparison) and never edited or removed.
   - Blocking is re-derived from it on every read, minus the tiers that are active in `_state`.
@@ -73,7 +84,7 @@ ordinary STR +4 default. Every non-null string is classified.
   grammar. Keeping rejected entries inside it would re-trigger rejection on every load, and would mix the player's new
   choice with conflicting raw entries.
 
-**Explicit selection over a blocked tier.** This is a reviewable choice, not owner policy. The selector of a blocked
+**Explicit selection over a blocked tier.** Endorsed by the first review (2026-11-22); it is not replaced by any automatic default or arbitrary choice among conflicting entries. The selector of a blocked
 current tier stays available, and choosing an allocation is a strictly validated new gameplay write. It replaces the
 block, and the rejected input stays retained. The alternative is a tier blocked permanently, with no recovery path for
 the player.
@@ -85,8 +96,14 @@ the player.
 - how many payloads are retained;
 - for a newly rejected input: its length, a SHA-256 prefix and a 96-character printable preview.
 
-**Fact synchronization** now adds the selected fact before it removes the tier's other facts. A failed add then leaves
-that tier's facts as they were (`f4e5de5f92`). It skips blocked tiers.
+Each part instance remembers only the last condition signature it reported (blocked tiers and retained-payload count).
+Unchanged repeated reads are silent. A transition to a different signature warns again; for example a recovery, the
+restore after a failed selection, or a new rejection. Each load creates new instances, which report on their first read.
+It is therefore not one warning per character per load, nor once per distinct condition over an instance's life. The
+native evidence shows the transitions (section 10.4).
+
+**Fact synchronization.** `f4e5de5f92` added the selected fact before removing the tier's other facts, per tier. That
+was incomplete across tiers (review finding 2). It is now staged over all tiers (section 10.2). It skips blocked tiers.
 
 ## 5. Commits on `codex/s6-risk03-controlled-rage-persistence` (base master `dfc182aee7`)
 
@@ -97,7 +114,10 @@ that tier's facts as they were (`f4e5de5f92`). It skips blocked tiers.
 | `11197b3d81` | harness, observer and session | `ControlledRageObserver`, `kmgControlledRage`, session `risk03-crage-persist` |
 | `c7483ddca5` | session | conditions moved to launch level |
 | `6eed8d7fed` | harness | post-save injection check fixed; product values restored once the save completes |
-| (this commit) | records | this document, register rows, known issue |
+| `1a06ae206f` | records | this document, register rows, known issue (first review head) |
+| `f9c2440651` | product source and domain tests | review repairs 1 and 2; new domain test; lifecycle test renamed (**corrected product-build commit**) |
+| `f935b0446b` | harness and session | null-state recovery and failed-selection rollback cases |
+| (this commit) | records | section 10 and corrections in this document, register row, known issue |
 
 The `bd9da01b9f` commit message says a blocked tier's selection facts "are left untouched". That holds for
 `SynchronizeSelectionFacts` only; see §7.2.
@@ -121,7 +141,8 @@ the part's `PostLoad` and `PreSave` perform:
   `Parse` on every accepted input. Every rejected input is kept verbatim and reloads identically.
 - `urban-barbarian.persistence-malformed-siblings`: a table of 16 cases (malformed, conflicting and identical
   duplicates, unknown tier, unattributable, empty). Blocked tiers refuse unlock; an absent sibling still unlocks.
-- `urban-barbarian.persistence-retained-lifecycle`:
+- `urban-barbarian.persistence-retained-lifecycle` (method renamed to `RetainedInputSurvivesOperationsAndResaves` in
+  `f9c2440651`; its body never executed a failed write):
   - repeated callbacks;
   - first unlock and a valid selection;
   - refusals while raging and for the wrong tier;
@@ -151,8 +172,12 @@ are covered only natively.
   -LoaderProfile owner-0.33.0 -CandidateZip <package above> -HarnessDir artifacts/loader-compat-harness-risk03`.
 - Environment: game 2.1.7b copy; UMM 0.33.0 (owner profile); the product alone beside the test-only harness; every
   module on.
-- Fixture: `KMCS_AFTER_NORMAL_012_MODONLY.zks`, disposable, copied into the session profile. Its party is the main
-  character only, in the prologue throne room.
+- Fixture: `KMCS_AFTER_NORMAL_012_MODONLY.zks`, disposable, copied into the session profile from
+  `C:/Dev/KingmakerSkipCinematicLab/fixtures` (SHA-256 `0be64b3f58a0e0bea1b4951f0f6d145e27fd72e6da566acbf5b0b4aff8eda249`,
+  769,309 bytes). The runner's receipts do not record it, so it was hashed afterwards. Its party is the main character
+  only, in the prologue throne room. After each session the profile's copy reads `45ae50a4…` (original PASS) or
+  `6ec251d1…` (corrected session), 769,308 bytes: the game rewrites it during the create launch. Resulting saves and
+  receipts are listed in section 10.4.
 
 | Session | Harness DLL | Launches | Verdict | Restoration | Duration |
 |---|---|---|---|---|---|
@@ -229,23 +254,37 @@ Both failed sessions are retained as failures. Every launch loaded the candidate
 2. **Selection facts of blocked tiers do not survive the reload.** Observed: the conflicting duplicate's `4:0,4,0` fact
    and the malformed sibling's `6:4,2,0` fact were present at creation and absent after the reload. Every unblocked
    tier's fact was present.
-   - Product source has one remover: the tier controller's `OnTurnOff`, through `RemoveTier` and `ClearTierFacts`.
-     Resynchronization then skips blocked tiers.
-   - Which engine step turns the controllers off and on again between the save and the reload snapshot is **not
-     attributed**.
+   - **Narrowed after the first review, by reading the written saves (offline, no launch).** In the four saves of the
+     two PASS sessions (`Manual_1`/`Manual_2` of `20261122T082442Z` and `20261122T143026Z`), no selection-marker GUID
+     occurs, except twice in the corrected session's `Manual_2`: rollbackLater's Greater `4,2,0` marker. That unit's
+     Greater controller fact (`GreaterDefault`) had been removed before the save. The tier selectors and the
+     `GreaterDefault` feature are present in every save. So a marker whose tier controller is on the unit is not in the
+     written file. After a reload, synchronization rebuilds markers for unblocked tiers only, so a blocked tier's marker
+     is absent.
+   - Product source has one marker remover outside synchronization: the tier controller's `OnTurnOff`, through
+     `RemoveTier` and `ClearTierFacts`. The engine step behind the save-time absence is **not attributed**.
    - These facts are hidden markers with no components, so nothing is granted or lost mechanically. The retained raw
      input in the part is the recoverable record.
-   - Consequence: the forced failed write compared an empty fact set with an empty one. The add-before-remove change
-     is **source-reviewed only**; it was not demonstrated natively against a present fact.
+   - Consequence: the original forced failed write compared an empty fact set with an empty one, and it fails before
+     a later tier is attempted. Its evidence is kept as it was. It is **not** coverage of the review's rollback cases;
+     those are covered by the corrected session (section 10.4).
 3. **Other limits.**
    - The synthetic corruption is test-only and labelled. No ordinary shipped state has been shown to produce
      malformed Controlled Rage data.
    - Level-up through the real level-up UI was not used. Features were granted directly, and that grant runs the
      production tier controllers.
    - Mighty tier was not natively exercised. It is covered by the domain tests.
-   - The explicit-selection-over-a-block behavior is a design choice awaiting review (§4).
-   - Downgrade: an older product version ignores `_rejectedStates`. On a migrated save whose ordinary tier is blocked,
-     the old strict reader would throw as before. Not executed.
+   - The explicit-selection-over-a-block behavior was endorsed by the first review (§4).
+   - Downgrade, **inferred from the v0.0.193 source and not executed**. The old reader (`dfc182aee7`
+     `UnitPartControlledRageSelection.Read`) treats a null or whitespace `_state` as fresh and creates the ordinary
+     STR +4 default. It ignores `_rejectedStates`. A non-empty `_state` goes to the strict `Parse`, which throws when
+     the ordinary tier is missing or an entry is malformed. A migrated save would therefore behave under the old
+     version as follows:
+     - a null `_state` gets a new STR +4 allocation;
+     - a `_state` such as `6:2,2,2` (ordinary blocked beside an active Greater) throws in the unguarded callbacks;
+     - a `_state` with the ordinary tier present loads normally.
+     The old writer does not write the unknown `_rejectedStates` member, so the kept text would be lost on its next
+     save (also inferred).
 4. **Deferred by policy:** complete suite, repository wrapper, release packaging, mod-stack profiles and the human
    installation.
 
@@ -299,3 +338,215 @@ With the game's settings (§2):
 
 A2 must establish both boundaries natively before choosing between a per-record raw envelope and a narrow compatible
 reader.
+
+## 10. First review corrections (2026-11-22)
+
+The review of head `1a06ae206f` endorsed the explicit-recovery interaction: a deliberate, strictly validated selection
+through the current tier's selector clears that tier's block and keeps the rejected text. It found two defects, and
+seven record statements to correct. Corrected product commit `f9c2440651`; harness `f935b0446b`.
+
+### 10.1 Repair 1: null current state beside retained history
+
+**Defect.** `Restore(null, retained)` treated the part as fresh whenever the retained payloads tainted no tier. The
+review's inputs, all reproduced before the repair (10.3):
+
+- A: `_rejectedStates = ["4:0,4,0;4:0,4,0"]` restored as a new `4:4,0,0`;
+- B: `["4:0,4,0;10:4,4,2"]`, the same;
+- C: `["4:0,4,0;6:bad"]` blocked Greater only, and the next ordinary `Unlock` created `4:4,0,0`.
+
+**Rule now.** A retained payload means the part was already used.
+
+- With any retained payload, these tiers are blocked unless the current state holds them:
+  - the ordinary tier;
+  - every known tier that a payload claims (any `k:` entry with k in {4, 6, 8});
+  - every tier a payload taints.
+
+  This holds whether `_state` is null or not.
+- Retained text only blocks; it is never replayed as an allocation.
+- With no retained payload, a null `_state` is fresh absence and keeps the first-unlock default.
+- A tier that no payload mentions stays legitimately absent. For example, `4:bad` migrates to a null `_state` and
+  `["4:bad"]`, and Greater and Mighty still get their defaults on unlock.
+
+Released and migrated states read exactly as before, because in every flow the product itself produces, a claimed tier
+is already active or tainted. The lifecycle and fuzz reload tests pass unchanged. Explicit recovery is unchanged.
+
+**Player-visible consequence.** On such a save, the character's Controlled Rage grants nothing for the blocked tiers and
+no STR +4 appears. Choosing an allocation with the tier's selector restores that tier, and later saves keep the choice.
+
+### 10.2 Repair 2: complete rollback of a failed explicit selection
+
+**Defect.** `TrySelect` restored the unit-part snapshot after synchronization failed, then synchronized again from the
+restored part. That second pass skips blocked tiers. The review's scenario:
+
+1. The ordinary tier is current and blocked.
+2. A valid Greater selection is saved, but its marker is absent (after `RemoveTier`).
+3. The ordinary addition succeeds, then the Greater addition fails.
+4. The part rolls back and ordinary is blocked again, so the second pass skips it.
+
+The new ordinary marker stayed in place and the previous one stayed removed. The markers are inert hidden facts, so
+this was an incomplete failed-selection transaction. It was not a demonstrated wrong rage bonus or a lost rejected
+payload.
+
+**Repair.**
+
+- `SynchronizeSelectionFacts` is staged.
+  - It first adds every missing selected marker for the unblocked tiers.
+  - Only when all additions succeed does it remove stale markers.
+  - A failed addition removes exactly the instances this call added and returns false, so no marker of any tier
+    changes. (`UnitHelper.RemoveFact(UnitDescriptor, Fact)` removes the given instance; decompiled 2.1.7b.)
+- `TrySelect` captures the part snapshot before its `Unlock`. On any failure it restores the snapshot and does not
+  synchronize again.
+- `ResolveSelection` and `UnlockTier` get the same all-or-nothing marker behavior. Their success paths are unchanged.
+
+### 10.3 Focused regressions
+
+| Command | Head | Selected | Result | Duration |
+|---|---|---|---|---|
+| `scripts/Invoke-KmgGate.ps1 -Filter 'urban-barbarian.persistence'`, new test, product unrepaired | worktree of `1a06ae206f` | 5 of 3,168 | **FAIL**, 1 failure (intended reproduction) | about 4 s |
+| `scripts/Invoke-KmgGate.ps1 -Filter 'urban-barbarian'`, both repairs | worktree before `f9c2440651` (product identical except one comment) | 15 of 3,168 | PASS, 0 failures | about 23 s |
+| `Build-Local.ps1` selected tests | `f9c2440651` | 15 of 3,168 | PASS | part of the build |
+
+The reproduction named each failing input:
+
+- A, B and the fully claimed history `4:0,4,0;6:2,2,2;8:2,2,4` each restored as a new allocation `4:4,0,0`;
+- for C, the ordinary unlock created `4:4,0,0`.
+
+The new test is `urban-barbarian.persistence-null-state-beside-history`. It drives the production `Restore`,
+`Serialize` and `MergeRetained` cycle:
+
+- **Four read/unlock/write cycles per case.** Each cycle checks that:
+  - no tier is active and the ordinary unlock is refused;
+  - the blocked tiers are exactly as expected, and each refuses a default;
+  - `_state` stays null;
+  - the retained list stays the same instance, with unchanged content.
+- **Explicit recovery, tier by tier.** Each recovery is checked over three more cycles with ordinary unlocks, and the
+  retained text stays unchanged.
+- **Controls.**
+  - Fresh null, with no list and with an empty list, gets the default `4:4,0,0`.
+  - The `4:bad` migration blocks only ordinary; Greater and Mighty keep their defaults over three cycles.
+- **Reporting.** Every case runs before the test reports, so one failure message names each failing input.
+
+Repair 2 has no domain test, because the domain tests cannot load `Assembly-CSharp`. Its evidence is native (10.4).
+
+### 10.4 Corrected candidate and native session
+
+**Candidate.** Built once at detached `f9c2440651`, with the section 6.2 command.
+
+- **First attempt: BLOCKED, not FAIL.** It stopped after 181 s. `Test-Sprint32DevelopmentPersistence.ps1` refuses to run
+  while any Kingmaker process exists, and a peer session's agreed live launch started during the build. Its residue is
+  kept as `f9c244065147.failed-20261122T1422596321330Z-0a8364a1`.
+- **Rebuild: PASS in 426 s**, in a no-Kingmaker window.
+  - Strict standalone UMM package validation passed; 15 of 3,168 selected tests passed.
+  - Package `KingmakerGunslinger-0.0.193-development-risk03-controlled-rage-persistence-f9c244065147.zip`, SHA-256
+    `6bc93163924c57fdfeccd9a880ce7ff8b90e7724b0ae7a4b3486271fbaa8118e`.
+  - DLL SHA-256 `e7afabe491ad2b5ac58c81a658bc73f20773256247321be3cf5405c29ce3ad96`.
+- **Harness DLL** `cfab28c86cccba7f1046f7795e04ff396b5ade3ab79b8e7eae80d3fb58324610`, from the `f935b0446b` sources,
+  built with `Build-LoaderCompatHarness.ps1` into `artifacts/loader-compat-harness-risk03-r1`.
+- No deployment to the human installation.
+
+**Session `20261122T143026Z-owner-0.33.0-risk03-crage-persist`: PASS.** Create 78 s, reload-mutate 76 s, final 73 s;
+242 s total.
+
+- Same runner, profile and fixture as section 6.3; the session git is `f935b0446b`. It ran in an agreed no-Kingmaker
+  window.
+- Lease `runtime-20261122T143027Z-1922c8da14d048f4837a1ffd09140cbf`, completed. Transaction
+  `63f45d0660944a28bf2fe898135226e2`.
+- Registry readback verified (`25f28ffd…7514`, equal to the backup).
+- Owner saves (95) and the install are unchanged. No host conflict.
+
+**Identities.** Raw saves and logs stay machine-local and are not committed.
+
+| Item | Session `20261122T082442Z` (original PASS) | Session `20261122T143026Z` (corrected) |
+|---|---|---|
+| Source fixture | `0be64b3f…a249` (769,309 bytes) | same |
+| `Manual_1_risk03cr1.zks` | `2c2fa8b820de4518c9f043082227f60fc69377e2256a0153c8c2c01250248e6f` (790,619 bytes) | `5d6ae663daf351663d6633820894fd0d834c2406223843bee357221e8db6263a` (488,389 bytes) |
+| `Manual_2_risk03cr2.zks` | `a4a56b3fd1a06d282067d442b81a6c2e733cc75077085211cff6996859197560` (799,869 bytes) | `b1347487f95c645bec0ec6b11656068b9853a9b44f3c78ec5b3e72f56c56d025` (522,472 bytes) |
+| `session-summary.json` | `47227f2c29c9d89cf1e3ddb99dba6af82a051b3f87ce5011baf65a8b7db05761` | `1761e768590b5950b192694b87ad595ae243dea16027f500340e715e89226008` |
+| Evidence root | `runtime-evidence/loader-compat/20261122T082442Z-owner-0.33.0-risk03-crage-persist` | `runtime-evidence/loader-compat/20261122T143026Z-owner-0.33.0-risk03-crage-persist` |
+
+**Preserved checks.** Every original case ran again on the corrected bytes, with the same expectations, and passed:
+valid state, the four synthetic save injections, migration, rage, repeated reads, mutations, the original forced
+failed write and the final reload. The original forced failed write now also records its `AddFact` attempts: exactly
+one, `4:2,2,0 forced`.
+
+**Repair 1, natively.** Three disposable units were built through the real grant and allocation ability (ordinary
+`0,4,0`). After the product's `PreSave`, the observer wrote **SYNTHETIC** `_state = null` with
+`_rejectedStates = [A | B | C]`.
+
+- **Fresh process, native `PostLoad`:** 3 of 3 completed. Each read null and its payload, and wrote null and the
+  identical payload.
+- **After load:**
+  - blocked tiers were A `4`, B `4`, C `4,6`;
+  - no allocation and no marker, and raging granted nothing;
+  - three rounds of `ResolveSelection` and `UnlockTier` changed nothing;
+  - the log held `activeTiers=none;blockedTiers=4;…;newlyRejected=none` and `…blockedTiers=4,6;…`.
+- **Explicit recovery** through the ordinary allocation abilities (`Success`): A `4:2,2,0`, B `4:0,2,2`, C `4:0,0,4`.
+  Each kept its retained payload verbatim.
+- **C's later Greater grant.** C then received Greater Rage, and Greater stayed blocked:
+  - `_state` stayed `4:0,0,4`, with no Greater marker and one selector;
+  - raging at Greater granted nothing;
+  - the Greater ability then recovered `4:0,0,4;6:2,2,2`.
+- **Final fresh process.** `PostLoad` read and wrote exactly these values, and the payloads were unchanged. Markers
+  were rebuilt for the active tiers. Rage:
+  - A: STR +2, DEX +2;
+  - B: DEX +2, CON +2;
+  - C: +2 to each, at Greater.
+
+**Repair 2, natively.**
+
+- **Setup.** In the reload process, a **SYNTHETIC** in-memory `_state` blocked the ordinary tier while the
+  gameplay-created ordinary marker `4:0,4,0` was present. The setup is in-process because a blocked tier's marker
+  cannot survive a reload (section 7.2).
+- **Forced failure.** `UnitHelper.AddFact` was patched to return null for one named marker, and every `AddFact` call
+  while armed was recorded. `ControlledRageRuntime.TrySelect` was then called.
+
+| Case | Setup | Recorded `AddFact` attempts | Returned | Persisted values, before = after | Selections, blocked, markers, selectors, before = after | Rage, before / after |
+|---|---|---|---|---|---|---|
+| present marker (`rollbackPresent`) | `_state` `4:0,4,0;4:4,0,0;4:0,4,0`; ordinary blocked; marker `4:0,4,0` present; select `2,2,0` | `4:2,2,0 forced` | false | null + `["4:0,4,0;4:4,0,0;4:0,4,0"]` | blocked `4`; markers `[4:0,4,0]`; 1 selector | nothing / nothing |
+| later tier (`rollbackLater`) | Greater Rage removed (`RemoveTier` cleared the Greater marker and kept `6:4,2,0`); `_state` `4:0,4,0;4:4,0,0;6:4,2,0`; ordinary current and blocked; marker `4:0,4,0` present; select `2,2,0` | `4:2,2,0 added`, `6:4,2,0 forced` | false | `6:4,2,0` + `["4:0,4,0;4:4,0,0;6:4,2,0"]` | Greater `4,2,0`; blocked `4`; markers `[4:0,4,0]`; 1 selector | nothing / nothing |
+
+- **The injection fired as intended.** In both cases the forced failure fired once, at the intended marker. In the
+  later-tier case the ordinary addition succeeded first, so the staged rollback did real work. Raging afterwards
+  changed nothing.
+- **Then a plain explicit selection** succeeded through the allocation ability. Each kept the synthetic text as its
+  retained payload:
+  - present marker: `4:2,2,0`, markers `[4:2,2,0]`;
+  - later tier: `4:2,2,0;6:4,2,0`, markers `[4:2,2,0, 6:4,2,0]`.
+- **Final fresh process.** `PostLoad` read and wrote those values; rage was STR +2 / DEX +2.
+- **Pre-repair behavior is inferred only.** From the source, the unrepaired product would have left `[4:2,2,0]` in the
+  later-tier case. No build of the unrepaired source ran these new cases.
+
+**Diagnostics (reload log).** Deduplication behaves as section 4 describes:
+
+- `…blockedTiers=4;…;newlyRejected=none` appeared four times: A and B at load, and the restored state after two failed
+  selections;
+- `…newlyRejected=length=23,` appeared once for each rollback unit;
+- the four original `once` needles appeared once each;
+- in the final launch, `newlyRejected=length=` appeared zero times and `newlyRejected=none` nine times.
+
+**Exceptions.** No engine-logged exception named Urban Barbarian code.
+
+- Each launch has the native `BugReportCanvas.OnEnable` NullReferenceException.
+- The final launch also logged a native `GraphicsSettingsController.SetResolution` ArgumentOutOfRangeException while
+  the main menu's settings initialized, before any save loaded. It has no product frame and did not occur in the
+  earlier sessions. It is recorded, not attributed.
+
+### 10.5 What the corrected checks establish, and limits
+
+- **Established** under the real serializer, native callbacks and fresh processes:
+  - null current state beside retained history (A, B, C) does not become an allocation through `PostLoad`, reads,
+    unlocks, raging, a later Greater grant, or resaves;
+  - explicit recovery works per tier and persists;
+  - a failed explicit selection leaves the persisted values, blocked tiers, selections, markers, selectors and rage
+    unchanged, both with a present prior marker and after a later tier's failure;
+  - every original case still passes on the corrected bytes.
+- **Not established.**
+  - Mighty was not exercised natively.
+  - The corruption and the in-memory blocking are synthetic.
+  - No pre-repair candidate ran the new native cases.
+  - Downgrade stays inferred (section 7).
+  - The save-time marker absence is unattributed (section 7.2).
+- **Retained, unchanged.** The two earlier FAIL sessions and the original PASS keep their identities. The original PASS
+  ran `f373e027…`, not the corrected DLL.
+- **Deferred by policy.** Complete suite, release packaging, mod-stack profiles, whole-roster persistence and the human
+  installation.

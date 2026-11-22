@@ -3,8 +3,11 @@
 - Malformed Controlled Rage data in a save (S6 T4 / RISK-03, checkpoint A1). On branch
   `codex/s6-risk03-controlled-rage-persistence` (not merged, not released), such a save loads. Every unambiguous tier
   keeps its allocation. A tier whose saved entry is invalid or conflicting grants no Controlled Rage bonus until the
-  player chooses an allocation with that tier's selector. The rejected text stays in the save, and the log carries one
-  warning per affected character per load. From source, in the published v0.0.193 that data throws in the save and load callbacks (not executed on the published bytes).
+  player chooses an allocation with that tier's selector. If the save keeps rejected text but no current allocation,
+  no new STR +4 default is made up: the ordinary tier, and any tier the kept text mentions, wait for the player's
+  choice. The rejected text stays in the save. The log warns when a character's condition is first read after a load
+  and again when it changes. From source, in the published v0.0.193 that data throws in the save and load callbacks
+  (not executed on the published bytes).
   No ordinary build has been shown to write it. Brown-Fur's persisted modifiers (the other half of RISK-03) are not yet
   addressed. Details: `docs/GUNSLINGER-SPRINT6-A1-CONTROLLED-RAGE-PERSISTENCE.md`.
 - Buffs built without `FxOnStart` and `FxOnRemove` links. Kingmaker's buff activation dereferences `FxOnStart` after
