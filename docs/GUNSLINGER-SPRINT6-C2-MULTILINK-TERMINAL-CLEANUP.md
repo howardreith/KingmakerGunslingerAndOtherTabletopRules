@@ -1,7 +1,10 @@
 # Sprint 6 checkpoint C2 (VER-02): Giant Flytrap multi-link terminal cleanup
 
-Status: **C2 qualified natively on the unchanged baseline, with no gameplay change; returned for manual review**
-(2026-11-22). **VER-02 is not closed.** Nothing is merged or released.
+Status: **C2 accepted by manual review (2026-11-22) for the executed Giant Flytrap/common multi-link terminal subset
+at development scope**, at head `a5baf9cd99` (base `350062e1ea`; product `4e11e6c25c` unchanged, package
+`2608e9f5…374b`, DLL `d813f62c…2cc4`; final native session `20261122T205434Z-owner-0.33.0-ver02-c2-multilink-terminals`).
+**VER-02 is not closed.** Section 9 records the review's corrections; where it corrects an earlier section, section 9
+governs. Nothing is merged or released.
 
 - Branch `codex/s6-ver02-c2-multilink-cleanup` is stacked on C1's acceptance-records head `350062e1ea`
   (`codex/s6-ver02-grapple-terminal-cleanup`, draft PR #204), which is stacked on #203, #200 and #198. The stack is not
@@ -62,7 +65,8 @@ Source: `Summoning/ExpandedSummoningSpecialCombatComponents.cs` and `Summoning/S
 ## 2. Representative, targets and setup
 
 - **Holder:** the published Giant Flytrap, summoned through the product's own execution ability
-  (`CastExpandedSummoningVariant`, the engine's `UnitUseAbility`). It is the only shipped multi-link holder.
+  (`CastExpandedSummoningVariant`, the engine's `UnitUseAbility`). It is one of four published consumers of the
+  shared multi-hold implementation (corrected census in section 9).
 - **Targets:** Expanded Summoning **horses** (Large), summoned the same way. Eligibility was read from the product's
   own rules at every establishment:
   - `IsGrabSizeAllowed` was true (Large is not larger than Huge);
@@ -84,8 +88,9 @@ Source: `Summoning/ExpandedSummoningSpecialCombatComponents.cs` and `Summoning/S
   - every target has no CantMove, CantAct or Entangled;
   - the grab size is allowed and the engulf size is not.
 - **Native callback witness.** A read-only Harmony postfix counts calls to `SummonMultiHoldComponent.OnNewRound`,
-  `SummonHeldComponent.OnNewRound`, `SummonMultiHoldComponent.OnTurnOff` and `BuffCollection.Tick`. Waits are bounded
-  by **game time** (`TimeController.GameTime`), not by wall time.
+  `SummonHeldComponent.OnNewRound`, `SummonMultiHoldComponent.OnTurnOff` and `BuffCollection.Tick`. Each wait has a
+  wall-clock deadline and a minimum of game time (`TimeController.GameTime`); see section 9 for which gates were
+  enforced.
 - **Reload save.** The probe itself saves (`SaveManager.CreateNewSave` + `Game.SaveGame`) while paused, immediately
   after capturing the state. The game clock was unchanged across the save.
 
@@ -178,7 +183,8 @@ are recorded only.
 
 ## 4. Findings
 
-**F1: a save ends active holds in the live session (demonstrated; engine boundary plus product owner; not repaired).**
+**F1: a save ended active holds in the live session in the constructed fixture (demonstrated there; ordinary
+reachability unqualified, see section 9; not repaired).**
 
 - Mechanism:
   - `SaveManager.SaveRoutine` (decompiled 2.1.7b) calls `LoadedAreaState.TurnOff()` and `CrossSceneState.TurnOff()`
@@ -187,10 +193,13 @@ are recorded only.
     hold and releases every link; `SummonHoldComponent.OnTurnOff` (G1) releases its single link.
 - Observed in C2: during the save one multi-hold `OnTurnOff` ran, both live targets were freed, and the hold buff came
   back on with no links and removed itself a round later.
-- This also explains the C1 save inspection (C record, section 8): the target side and record were gone, and the
-  holder's native initiator part stayed.
+- The same mechanism is the source-inferred explanation of the C1 save inspection (C record, section 8): the target
+  side and record were gone and the holder's native initiator part stayed. That is consistent with C2, not
+  retroactively observed in C1.
 - Consequences:
-  - A real save can never contain a full active hold, so the load reset only ever meets holder-side residue.
+  - In the constructed fixtures, the inspected C1 and C2 saves contained only holder-side residue, so their reloads
+    did not test a complete serialized relationship. Whether any real save can contain a fuller relationship is not
+    established; an empty serialized `_links` list does not prove the engine cannot serialize populated records.
   - A player who saves while a summon holds a target loses that hold.
   - The engine refuses saves in combat (`SaveManager.IsSaveAllowed`), so this needs an out-of-combat hold; autosaves on
     area exit happen at the leave boundary as well.
@@ -233,7 +242,7 @@ judged a defect.
 - Targets `KMG_C2_ReloadTarget0` = `51fa10d0-a5a8-4069-b7ce-26935d63bf27` and `KMG_C2_ReloadTarget1` =
   `ef080e11-a235-4ac6-a077-10e146169da6`: no held-state buff, no `EntangledBuff`, no grapple parts, no conditions.
 - **What entered the save:** the holder's multi-hold buff only, consistent with F1. Launch 2's reset removed that buff.
-  The load reset of a full active multi-link hold is therefore inapplicable through a real save.
+  This reload therefore did not test a complete serialized multi-link relationship (section 9).
 
 ## 6. G5 fixture intake and transition probe
 
@@ -303,7 +312,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/compatibility/lo
 **VER-02: open.**
 
 - C1 is accepted for the tested crocodile/common single-link subset.
-- C2 qualifies the G2 multi-link terminals listed in section 3, for the Giant Flytrap with Large targets, with no
+- C2 (accepted) covers the G2 multi-link terminals listed in section 3, for the Giant Flytrap with Large targets, with no
   gameplay change.
 
 Remaining, separately identified:
@@ -316,4 +325,60 @@ Remaining, separately identified:
 5. **G2 cases not exercised** (section 3): break-free success, maintain failure, out-of-reach release, turn-based
    mode, a dispelled held state, three or four links.
 
-**Owner decisions requested:** F1 (a save ends live holds) and, if wanted, F2/F3 (eager dropping of ended records).
+**Owner decisions (section 9):** a permitted save should preserve an ongoing hold, and reachability is under
+investigation in C2a. F2 and F3 are accepted bounded residue.
+
+## 9. Review decision and corrections (2026-11-22)
+
+**Decision.** C2 is accepted for the executed Giant Flytrap/common multi-link terminal subset at development scope.
+VER-02 stays open.
+
+**Corrected G2 census.** Four published units configure the shared multi-hold implementation
+(`ExpandedSummoningSpecialBuilder.ConfigureGrabber` with `MaxHeld > 1`, hold `MultiHold`, held state `MultiHeld`):
+
+| Unit | Grab limbs / max held | Extra owner on top of the shared handler |
+|---|---|---|
+| Giant Flytrap | primary + 3 additional / 4 | engulf (`SwallowedBuff`, Medium or smaller) |
+| Xill | 4 additional claws / 4 | bite paralysis (a separate effect) |
+| Giant Scorpion | primary + 1 additional / 2 | none on the hold (the sting never grabs) |
+| Giant Crab | primary + 1 additional / 2 | **live constrict** (`LiveCrabConstrict`, 1d4 + Strength per maintained pincer) |
+
+- C2 exercised the shared handlers (`SummonMultiHoldComponent`, `SummonHeldComponent`, multi-link `ReleaseLink`, the
+  record store, the load reset) through the Flytrap only.
+- The Xill, Scorpion and Crab configurations, their limb layouts, and the Crab's live constrict rider are untested.
+  No all-species campaign is planned.
+
+**F1, corrected.**
+
+- What was demonstrated: native save-time release in the **constructed** Flytrap fixture (player-faction summoned
+  targets, out of combat, the probe's own save).
+- Ordinary gameplay reachability of a permitted save with an active hold is **unqualified**.
+- The C1 explanation is inferred from source and consistent with C2, not retroactively observed.
+- Removed: the claim that real saves can never contain full active holds. The inspected C1 and C2 saves contained
+  holder residue; their reloads did not test a complete serialized relationship. An empty serialized `_links` list is
+  not proof that populated records cannot serialize.
+- Intended behavior (owner, 2026-11-22): a permitted save should preserve an ongoing hold in the running session, and a
+  later load keeps ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD. Checkpoint C2a investigates ordinary reachability.
+
+**F2: accepted limitation.** The surviving holder's raw record for the observed target-death path is an independently
+accepted, bounded residue. Live occupancy and limb reuse were correct, and `Put` replaced the record.
+
+**F3: accepted limitation.** Dead-holder residue, as in C1. Normal disposal was not followed: the direct-release
+control removed the records first.
+
+**F4: timing.** Release at the targets' next round callback is observed RTWP timing. It is not immediate release, and
+it does not qualify turn-based mode.
+
+**Timing and gates, corrected.**
+
+- Every wait had a wall-clock deadline plus a minimum game-time interval and a completion condition.
+- The reload gate enforced:
+  - at least 12 s of game time;
+  - at least one native buff-collection tick per unit;
+  - no damage to the targets;
+  - a clean endpoint state.
+- **Captured observations, not gates:** 40 s of game time, 1281 ticks per unit, and zero hold/held round callbacks.
+
+**G5.** It stays blocked. The fixture search is complete and is not repeated. A later qualification must witness the
+leave callback itself, and must distinguish any pre-exit save (`AutoSaveMode.BeforeExit`) from leave cleanup and from
+the arrival reset.

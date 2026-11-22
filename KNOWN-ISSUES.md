@@ -1,15 +1,17 @@
 # Known issues and conservative adaptations
 
-- Saving while an Expanded Summoning creature holds a target ends the hold (S6 VER-02, checkpoint C2 finding; open,
-  owner decision pending; no change made).
-  - Saving is only possible out of combat. When a summon holds a target at that moment, the save releases the hold in
-    the running game: the target is freed and the hold does not resume. The saved file never contains the active hold.
+- Saving while an Expanded Summoning creature holds a target can end the hold (S6 VER-02, checkpoint C2 finding;
+  open; under investigation in checkpoint C2a; no change made).
+  - In a constructed test (a Giant Flytrap holding allied summoned horses, out of combat), the game's own save
+    released the hold in the running game: the targets were freed and the hold did not resume.
   - Cause: the engine's save routine turns every effect off before writing and back on afterwards, and the summon hold
     effects treat being turned off as the end of the hold.
-  - How this was established: observed natively for the Giant Flytrap on the accepted development candidate
-    `4e11e6c25c`, and consistent with checkpoint C1's single-link save. That the published versions behave the same is
+  - Not yet established: whether ordinary play can reach a permitted save while a hold is active. The engine refuses
+    saves in combat.
+  - How this was established: observed natively on the accepted development candidate `4e11e6c25c`. Checkpoint C1's
+    single-link save is consistent with it (inferred from source). That the published versions behave the same is
     inferred from their identical source; it was not run on released bytes. Details:
-    `docs/GUNSLINGER-SPRINT6-C2-MULTILINK-TERMINAL-CLEANUP.md`, section 4.
+    `docs/GUNSLINGER-SPRINT6-C2-MULTILINK-TERMINAL-CLEANUP.md`, sections 4 and 9.
 - Brown-Fur Powerful Change increase lost after loading when the caster companion was dismissed (S6 T3 / RISK-02,
   checkpoint B, accepted by manual review for its demonstrated development scope; not merged, not released).
   - The scenario: a custom Brown-Fur companion casts a Powerful Change spell on someone and is then dismissed while
