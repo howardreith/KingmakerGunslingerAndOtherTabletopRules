@@ -65,7 +65,7 @@ if ($Report) {
         Write-Host "READ-ONLY REPORT $summaryPath sha256=$(Get-LcSha256 $summaryPath)"
         $head = [ordered]@{}
         foreach ($name in @('sessionId', 'session', 'loaderProfile', 'candidateZip', 'candidateZipSha256', 'git', 'candidateVersion', 'status',
-                'ownerSaveFiles', 'registryRestored', 'ownerSavesUnchanged', 'ownerInstallUnchanged', 'ownerIntegrity', 'ownership', 'runtimeLease',
+                'ownerSaveFiles', 'registryRestored', 'registryRestore', 'transactionSucceeded', 'ownerSavesUnchanged', 'ownerInstallUnchanged', 'ownerIntegrity', 'ownership', 'runtimeLease',
                 'failure', 'integrityFailures', 'stagedMods')) {
             $head[$name] = Get-LcReportValue $summaryData $name
         }
@@ -77,7 +77,7 @@ if ($Report) {
             $sharedLock = Join-Path $script:LcStateRoot 'compatibility.lock'
             $head['runtimeLeaseNow'] = [ordered]@{ status = (Get-LcReportValue $leaseState 'status'); recoveryRequired = (Get-LcReportValue $leaseState 'recoveryRequired')
                 purpose = (Get-LcReportValue $leaseState 'purpose'); reason = (Get-LcReportValue $leaseState 'reason')
-                integrity = (Get-LcReportValue $leaseState 'integrity')
+                integrity = (Get-LcReportValue $leaseState 'integrity'); registryRestore = (Get-LcReportValue $leaseState 'registryRestore')
                 sharedLockHeldBy = $(if (Test-Path -LiteralPath $sharedLock) { (Get-Content -LiteralPath $sharedLock -Raw).Trim() } else { '<free>' }) }
         }
         Write-Host ($head | ConvertTo-Json -Depth 6 -Compress)
@@ -135,7 +135,10 @@ if ($SafetyTests) {
 }
 
 if ($RecoverOnly) {
-    Write-Host (Invoke-LcRecovery { param($Path) Restore-LcRegistry $Path })
+    # A refused recovery throws (failing exit); a deferred, unresolved or changed outcome exits 1 after its cleanup.
+    $recovery = Invoke-LcRecovery { param($Path) Restore-LcRegistry $Path }
+    Write-Host $recovery.Message
+    if (-not $recovery.Succeeded) { exit 1 }
     return
 }
 
@@ -359,12 +362,16 @@ finally {
     # At a safe boundary only (no Kingmaker process, no sibling or foreign lock): restore game settings once,
     # compare the owner's files with the intake while still owning the host, then complete and release. Otherwise
     # the journal, both locks and a RecoveryRequired lease are kept for -RecoverOnly.
+    $ownership = $null
     try {
         $ownership = Complete-LcSessionOwnership $journal $scope { param($Path) Restore-LcRegistry $Path }
         $summary.ownership = $ownership.Outcome
-        if ($ownership.Outcome -ne 'restored') { $integrity += $ownership.Reason }
+        if ($ownership.Outcome -ne 'completed') { $integrity += $ownership.Reason }
     } catch { $summary.ownership = 'teardown-interrupted'; $integrity += "ownership completion failed (journal kept for -RecoverOnly): $($_.Exception.Message)" }
-    $summary.registryRestored = [bool]$journal.registryRestored
+    $summary.registryRestore = [string]$journal.registryRestore
+    $summary.registryRestored = ([string]$journal.registryRestore) -in @('applied', 'not-needed')
+    if (-not $summary.registryRestored -and $journal.registryBackup) { $integrity += "game settings: $($journal.registryRestore)" }
+    $summary.transactionSucceeded = Test-LcTransactionSucceeded $ownership
     $check = $journal.integrity
     if ($null -eq $check) {
         $summary.ownerIntegrity = 'not-verified'
@@ -379,8 +386,12 @@ finally {
             if (-not $check.ownerInstallUnchanged) { $summary.ownerInstallChanges = $check.ownerInstallChanges; $integrity += 'owner installation changed' }
         }
     }
-    if ($integrity.Count) { $summary.status = 'integrity-failed'; $summary.integrityFailures = $integrity }
+    if (-not $summary.transactionSucceeded -and $integrity.Count -eq 0) { $integrity += 'the session transaction did not complete cleanly' }
+    if ($integrity.Count -and $summary.status -ne 'host-error') { $summary.status = 'integrity-failed' }
+    if ($integrity.Count) { $summary.integrityFailures = $integrity }
     if (Test-Path -LiteralPath $evidence) { Write-LcJson (Join-Path $evidence 'session-summary.json') $summary }
     Write-Host "Session $sessionId : $($summary.status) $($integrity -join '; ')"
     Write-Host "Evidence: $evidence"
 }
+# Only a session whose launches all passed and whose transaction completed cleanly exits 0.
+if ($summary.status -ne 'PASS') { exit 1 }
