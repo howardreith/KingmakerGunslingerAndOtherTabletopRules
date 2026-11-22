@@ -1,7 +1,11 @@
 # Known issues and conservative adaptations
 
-- Saving while an Expanded Summoning creature holds a target can end the hold (S6 VER-02, checkpoint C2 finding;
-  open; under investigation in checkpoint C2a; no change made).
+- Saving while an Expanded Summoning creature holds a target ended the hold (S6 VER-02 F1; repaired on branch
+  `codex/s6-ver02-c2a-save-suspension`, checkpoint C2a, returned for review; not merged, not released).
+  - Reached in ordinary play: a summon's own attack grabs an enemy, a party caster Dominates it, combat ends, and the
+    game permits saving. On the unchanged candidate, the save then freed the target. With the repair, three saves in a
+    row kept the hold, and a later load still resets holds safely. Details:
+    `docs/GUNSLINGER-SPRINT6-C2A-SAVE-SUSPENSION.md`.
   - In a constructed test (a Giant Flytrap holding allied summoned horses, out of combat), the game's own save
     released the hold in the running game: the targets were freed and the hold did not resume.
   - Cause: the engine's save routine turns every effect off before writing and back on afterwards, and the summon hold
