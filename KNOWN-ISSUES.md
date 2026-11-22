@@ -1,21 +1,18 @@
 # Known issues and conservative adaptations
 
 - Saving while an Expanded Summoning creature holds a target ended the hold (S6 VER-02 F1; repaired on branch
-  `codex/s6-ver02-c2a-save-suspension`, checkpoint C2a, returned for review; not merged, not released).
-  - Reached in ordinary play: a summon's own attack grabs an enemy, a party caster Dominates it, combat ends, and the
-    game permits saving. On the unchanged candidate, the save then freed the target. With the repair, three saves in a
-    row kept the hold, and a later load still resets holds safely. Details:
-    `docs/GUNSLINGER-SPRINT6-C2A-SAVE-SUSPENSION.md`.
-  - In a constructed test (a Giant Flytrap holding allied summoned horses, out of combat), the game's own save
-    released the hold in the running game: the targets were freed and the hold did not resume.
+  `codex/s6-ver02-c2a-save-suspension`, checkpoint C2a R1, returned for review; not merged, not released).
+  - Reached in ordinary play with a single-link holder: a crocodile's own attack grabs an enemy, a party caster
+    Dominates it, combat ends, and the game permits saving. On the unchanged development candidate `4e11e6c25c`, the
+    save then freed the target in the running game.
+  - The same save-time release was shown for a multi-link holder (the Giant Flytrap) in a constructed test. Its
+    ordinary-play route was not separately driven.
   - Cause: the engine's save routine turns every effect off before writing and back on afterwards, and the summon hold
-    effects treat being turned off as the end of the hold.
-  - Not yet established: whether ordinary play can reach a permitted save while a hold is active. The engine refuses
-    saves in combat.
-  - How this was established: observed natively on the accepted development candidate `4e11e6c25c`. Checkpoint C1's
-    single-link save is consistent with it (inferred from source). That the published versions behave the same is
-    inferred from their identical source; it was not run on released bytes. Details:
-    `docs/GUNSLINGER-SPRINT6-C2-MULTILINK-TERMINAL-CLEANUP.md`, sections 4 and 9.
+    effects treated being turned off as the end of the hold.
+  - With the repair, saves keep the hold in the running game. A later load still resets active holds by design; no
+    hold is rebuilt.
+  - That the published versions behave the same is inferred from their identical source; it was not run on released
+    bytes. Details: `docs/GUNSLINGER-SPRINT6-C2A-SAVE-SUSPENSION.md`.
 - Brown-Fur Powerful Change increase lost after loading when the caster companion was dismissed (S6 T3 / RISK-02,
   checkpoint B, accepted by manual review for its demonstrated development scope; not merged, not released).
   - The scenario: a custom Brown-Fur companion casts a Powerful Change spell on someone and is then dismissed while

@@ -1,8 +1,14 @@
 # Sprint 6 checkpoint C2a (VER-02 F1): a permitted save keeps an ongoing summon hold
 
-Status: **F1 reached through an ordinary gameplay route on the unchanged candidate, repaired at the two implicated hold
-owners, and qualified natively; returned for manual review** (2026-11-22). **VER-02 is not closed.** Nothing is merged
-or released.
+Status: **C2a R1 returned for manual review** (2026-11-22). **VER-02 is not closed.** Nothing is merged or released.
+
+- The first C2a review accepted:
+  - the ordinary G1 route;
+  - the baseline save-time release;
+  - immediate save preservation on candidate `21f46b2009` for G1 and constructed G2;
+  - the complete written relationships and their intentional reset.
+- C2a stayed pending on two points: the lifetime of the new unload state, and active-carrier removal. Section 8 (R1)
+  answers both with product change `044355c2a9`, and **section 8 governs** where it differs from sections 2–6.
 
 - Branch `codex/s6-ver02-c2a-save-suspension` is stacked on C2's acceptance-records head `fbb773db04`
   (`codex/s6-ver02-c2-multilink-cleanup`, draft PR #205), then #204, #203, #200 and #198. The stack is not rebased;
@@ -86,8 +92,10 @@ hold from `OnTurnOff`.
   - `OnAreaDidLoad` and `OnAreaLoadingComplete` clear it.
 - **Unchanged:** release paths (`Release`, `ReleaseLink`), maintain, limb records, the held side
   (`SummonHeldComponent`), the load reset (`ResetLoadedGrapples`), the leave sweep, and G3/G4 owners.
-- **No** persistence or reconstruction of holds, no save interception, no broad turn-off suppression, no save format
-  change.
+- No new save schema, persisted field or restoration feature was added, and holds are not reconstructed on load.
+  Existing fields (the native grapple parts, the hold and held-state buffs, and the limb-record list) can now contain a
+  complete relationship in a written save, because a save no longer releases it. There is no save interception and no
+  broad turn-off suppression.
 
 **Lifecycle rationale.**
 
@@ -98,7 +106,8 @@ hold from `OnTurnOff`.
 - **Pre-exit autosave** (`AutoSaveMode.BeforeExit`): it runs before `UnloadAreaCoroutine`, so it now preserves, and the
   unload then releases (inferred, unexecuted).
 - **Flag failure mode:** if an unload never reaches `OnAreaDidLoad`/`OnAreaLoadingComplete`, the flag stays set, and a
-  save then releases as before. It degrades to the previous behavior and leaves no stuck state (source reasoning; not
+  save then releases as before. (Corrected in section 8: this global latch could remain set and affect later saves; it
+  was replaced in R1. The earlier "no stuck state" wording was unsupported.) (Source reasoning; not
   failure-injected). The flag is area-unload scoped, not save scoped.
 - **Leads reviewed:** `LillendFascination32` gates on `Owner.IsTurnedOn` plus `OnFactDeactivate`, which also suspends
   across area unloads; that was rejected here to keep area semantics. `ElementalBloodRuntime` has an empty
@@ -204,3 +213,177 @@ release traces).
   owners (Impale, live constrict and riders, swallow promotion); G5.
 
 **VER-02: open.** C2a repairs and qualifies F1 for the implicated G1 and G2 hold owners within the scope above.
+
+## 8. R1: unload-state lifetime, active-carrier removal and native cadence (2026-11-22)
+
+**Starting point.**
+
+- Reviewed head `f897d14dd5`, base `fbb773db04`.
+- Tested product `21f46b2009` (package `f4a3b1fc…b846`, DLL `c717efac…1ab2`).
+
+**Verified engine contract** (decompiled 2.1.7b):
+
+- Unload entries all raise `ISceneHandler.OnAreaBeginUnloading` through `Game.HandleAreaBeginUnloading`:
+  - `SceneLoader.UnloadAreaCoroutine`;
+  - the same-area `Game.LoadArea` branch;
+  - `Game.ReloadAreaMechanic`.
+- Each continues to `Game.OnAreaLoaded`, which raises `OnAreaDidLoad`; `ReloadAreaMechanic` raises it in its
+  completion callback.
+- `LoadingProcess` runs every step in a try/catch. On any exception it clears the queue and throws
+  `LoadGameException`, and `Runner.ReportException` calls `Game.ResetToMainMenu` (the smoke-test mode only stops).
+- So an interrupted unload or load does not resume savable play. Play resumes only through a fresh load, which
+  deserializes new facts.
+- Fact components start listening to events on `Fact.TurnOn` and stop on `TurnOff`.
+- These are source facts. No interrupted lifecycle was injected natively.
+
+**Repair** (product `044355c2a9`):
+
+- The process-global `SummonHoldSuspension.AreaUnloading` latch, and the area safeguard's scene hooks, are removed.
+- Each hold buff's own component (`SummonHoldComponent`, `SummonMultiHoldComponent`) now implements `ISceneHandler`:
+  - it sets its own non-serialized `m_AreaUnloading` in `OnAreaBeginUnloading`;
+  - it clears it in its own `OnTurnOn` (which runs after every save's `TurnOn`) and in `OnAreaDidLoad`.
+- `OnTurnOff` uses that instance's state.
+- **Why it cannot improperly affect later saves:**
+  - the state belongs to one buff instance and is never serialized;
+  - a new relationship gets a new instance, which starts false;
+  - the old instances are disposed with the unloaded area or the old game.
+  - Even in a hypothetical path that set it without clearing it, it would affect at most that one hold's next
+    suspension, after which the save's `TurnOn` clears it. By the contract above, no such path resumes savable play.
+- The comments are corrected as well:
+  - the link store and load-reset comments describe the intentional reset, not a serializer inability;
+  - the multi-hold class comment lists its four consumers and the save exception.
+- **Focused gate:** `-Filter 'grapple;c2a-hold;expanded-summoning.sprint4'`. Production compilation 16.4 s; 10 of
+  3178 tests passed, 0 failures.
+- **Candidate** (built once from a detached `044355c2a9`, 23:01:58Z onward):
+  - package `KingmakerGunslinger-0.0.193-development-ver02-c2a-r1-unload-state-044355c2a98b.zip`, SHA-256
+    `47ec71d05b64c263ba5bad9e04c331944f7d95b33cc43f01a2f7c6022ff806fe`;
+  - DLL `3746ff5ac7cbadd2b37258a9a886ce2488ae9dd3fef286f60e4de36d0e9ba6b2`.
+
+**Harness** `d9201475…b543` (`artifacts/loader-compat-harness-ver02-c2a-r1`):
+
+- `HoldLifecycleProbes.cs` is a process-wide read-only observer, installed by the launch condition
+  `observeHoldLifecycle` and kept across a same-process load. It records, in order:
+  - `Game.HandleAreaBeginUnloading` and `Game.OnAreaLoaded`;
+  - each hold buff's `OnAreaBeginUnloading`, `OnAreaDidLoad`, `OnTurnOn`, `OnTurnOff` and `OnFactDeactivate`, with the
+    owner's `IsTurnedOn` and the instance's own `m_AreaUnloading` at that moment;
+  - `MaintainLink` results, `Release`/`ReleaseLink`, and `ResetLoadedGrapples`.
+- The R1 probe `kmgHoldLifecycle` has three modes: `removal`, `cadence` and `afterLoad`.
+- The C2a save probes now also assert: the exact G1 records and ownership before and after each save, an unchanged
+  clock during paused saves, and the unrelated-effect control.
+
+### 8.1 Lifecycle session `20261122T231045Z-owner-0.33.0-ver02-c2a-r1-lifecycle` (PASS, 105 s, R1 candidate)
+
+**Active-carrier removal** (asserted). The cleanup path and timing are from the observer.
+
+- **G1** (crocodile, holder alive). `BuffCollection.RemoveFact` on the holder's actual hold-buff instance ran, in order:
+  1. `OnTurnOff` (owner on, unload state false);
+  2. `SummonHoldComponent.Release(target)`, which dropped the record and the target part;
+  3. `OnFactDeactivate`, a no-op.
+
+  Within one game second the native controller removed the orphaned initiator part, so CantAct/CantMove and the
+  records were gone. The target's grapple part, grappled buff and grapple conditions were gone. The holder stayed
+  alive, the target's unrelated Bull's Strength was kept, and the independent control pair was intact.
+- **G2** (Flytrap, two links). `RemoveFact` on the multi-hold buff ran `OnTurnOff` (owner on), then
+  `ReleaseLink(target 0)` and `ReleaseLink(target 1)`, then `OnFactDeactivate`. Both links ended in the same frame:
+  held states and records gone, no live answer. The holder stayed alive; the unrelated effect and the control pair were
+  kept.
+- **Disposal attribution**, from the G1 accelerated expiry: `OnTurnOff` with the owner on, then `Release`, then
+  `OnFactDeactivate`.
+- **Observed in every genuine case:** the release came from `OnTurnOff` with the owner on. `OnFactDeactivate` was
+  delivered afterwards and released nothing further. A release from `OnFactDeactivate` alone (owner off at disposal)
+  was **not** observed.
+
+**Native cadence** (asserted; native `Buff.RoundNumber`, `NextTickTime` and `TickTime` read by reflection, distinct
+from the observer's callback counts).
+
+- Before the saves, both aged holds were at `RoundNumber` 1:
+  - G1 hold buff next tick `432458660000`;
+  - G2 multi-hold buff next tick `432459300000`;
+  - tick time 6 s for both.
+- **Two paused native saves.** For each:
+  - unchanged game clock;
+  - unchanged buff instance, `RoundNumber`, next tick, tick time, and caster and saved-caster ids;
+  - exact raw records, limb occupancy, held-buff state and target damage unchanged;
+  - the unrelated effect kept;
+  - observed callbacks: `OnTurnOff` (owner off, unload state false) then `OnTurnOn`, with no release.
+- **Next scheduled round:** `RoundNumber` 2, and each next tick moved to exactly the pre-save schedule plus 6 s
+  (`432518660000`, `432519300000`). Neither restarted nor duplicated. Traced maintains: G1 death-roll (hold kept);
+  G2 maintained ×2. Both holds intact.
+
+**Same-process unload and load.** The harness `saveGame` (label `ver02c2ar1`) was followed by `loadLastSave`. The
+observer's order:
+
+| Seq | Event |
+|---|---|
+| 37–40 | The harness save: each hold `OnTurnOff` (owner off, unload state false; kept), then `OnTurnOn` |
+| 41 | `Game.HandleAreaBeginUnloading` |
+| 42–43 | `OnAreaBeginUnloading` on both live hold instances (their unload state becomes true) |
+| 44–45 | G1 old instance: `OnTurnOff` (owner on, unload state true; the holder's grapple parts were already gone), then `OnFactDeactivate`. No product release was needed |
+| 46–49 | G2 old instance: `OnTurnOff` (owner on, unload state true), then `ReleaseLink` ×2, then `OnFactDeactivate` |
+| 50–51 | The loaded instances: `OnTurnOn` (unload state false) |
+| 52 | `Game.OnAreaLoaded` |
+| 53–54 | `OnAreaDidLoad` on the loaded instances. The loaded G1 relationship was complete: initiator target set, and the target part named the holder |
+| 56 | `ResetLoadedGrapples`, then `Release`/`ReleaseLink`, then hold `OnTurnOff` (owner on), then `OnFactDeactivate` for both. **Intentional reset** |
+
+- **Scope of what was exercised.** Both holders are summons kept in cross-scene state. The old instances were turned
+  off during disposal with the owner still turned on, so the release decision used the genuine-end branch. The
+  owner-off-plus-unload-state branch (an area-state holder turned off by `UnloadAreaCoroutine`) did **not** occur on
+  this route; it remains source-inferred.
+- **After the load** (asserted):
+  - both loaded holders had no hold buff, initiator part or record, and no unit carried held state;
+  - fresh G1 and G2 holds had their own unload state false, and native admission allowed saving;
+  - a native save (clock unchanged) turned both fresh holds off with owner off and unload state false, and **kept**
+    both relationships, with exact records unchanged.
+
+  Stale unload state did not control the later save.
+- **Written save** `Manual_1_ver02c2ar1.zks` (SHA-256 `a3847464…fc70`): complete G1 relationship (initiator part,
+  hold buff, populated record) and G2 records for both links.
+
+### 8.2 Affected save checks on the R1 candidate (harness `d9201475…b543`)
+
+- **`20261122T231327Z` G1 ordinary route, PASS 2 of 2 (110 s, 87 s).**
+  - Three saves; each asserted an unchanged clock, exact records and ownership, the hold kept, no damage, and the
+    unrelated control kept. One suspension turn-off per save.
+  - Next rounds: death-roll ×3, hold kept.
+  - The holder's death released the target through the native controller.
+  - The written save (`8bc4e7d6…e8e2`) held a complete relationship, and the fresh-process reload reset it.
+- **`20261122T231658Z` G2 constructed, PASS 2 of 2 (105 s, 114 s).**
+  - Three saves with an asserted unchanged clock, the unrelated effect kept, and exact links.
+  - Round, sibling terminal and expiry as before.
+  - The written save (`408ddb7e…8582`) held both records, and the reload reset them.
+
+### 8.3 Current status, assertions versus observations
+
+**Asserted** (fail the run):
+
+- R1 lifecycle: removal outcomes; cadence `RoundNumber`, next-tick and identity equality; after-load ordering presence
+  (unload begin, turn-off/deactivate during unload, loaded reset), fresh-hold unload state, and post-load
+  preservation.
+- R1 save checks: as listed in 8.2.
+
+**Captured observations:** callback sequences and counts, the owner and unload state at each callback, maintain
+results, and buff lists.
+
+**Source inferences:**
+
+- the interrupted-lifecycle contract;
+- the area-state holder's owner-off unload branch;
+- pre-exit autosave ordering;
+- G2's ordinary reachability.
+
+**Earlier sections keep their original scope:**
+
+- `221344Z`/`221729Z` (candidate `21f46b2009`) asserted the save-time items listed there.
+- The "round counts unchanged" in the G2 save case were **observer callback counts**, not native `Buff.RoundNumber`.
+- Native round state was first asserted in R1.
+- The untraced candidate releases `220852Z` and `222433Z` remain **FAIL, cause not established**. A natural-1 maintain
+  is a plausible mechanism, not their established cause.
+
+**Unchanged and still tracked separately:**
+
+- VER-02 open;
+- G5 real party-leave hook and pre-exit autosave (blocked);
+- G3 and G4;
+- G1 variant owners;
+- the Xill, Giant Scorpion and Giant Crab configurations;
+- F2/F3 accepted residue.
