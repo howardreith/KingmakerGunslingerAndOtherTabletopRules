@@ -12,7 +12,7 @@
       "conditions": { "observeControlledRagePersistence": "true" },
       "expectLog": {
         "present": [ "[blueprints][initialize.complete]" ],
-        "absent": [ "[initialize.failed]", "controlled-rage.persistence.retained" ]
+        "absent": [ "[initialize.failed]" ]
       },
       "harness": {
         "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",

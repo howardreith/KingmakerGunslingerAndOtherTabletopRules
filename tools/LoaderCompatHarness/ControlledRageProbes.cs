@@ -326,11 +326,25 @@ namespace KmgLoaderCompatHarness
             foreach (object step in Save()) yield return step;
             JArray calls = ControlledRageObserver.CallsSince(callIndex);
             result["saveCalls"] = calls;
+            // The game writes the file over several frames after PreSave, so the injected raw values were live in
+            // memory meanwhile and a product read may already have contained them (its bounded warning). Give the
+            // product's own values back now rather than at step end.
+            var restored = new JObject();
+            foreach (KeyValuePair<object, Tuple<string, JToken>> pair in productWritten)
+            {
+                ControlledRageObserver.StateField.SetValue(pair.Key, pair.Value.Item1);
+                ControlledRageObserver.RejectedField?.SetValue(pair.Key, null);
+                ControlledRageObserver.Injections.Remove(pair.Key);
+                restored[((UnitPart)pair.Key).Owner.Unit.UniqueId] = ControlledRageObserver.State(pair.Key);
+            }
+            productWritten.Clear();
+            injectedParts.Clear();
+            result["restoredAfterSave"] = restored;
             foreach (KeyValuePair<string, JToken> pair in injections)
             {
                 string owner = cases[pair.Key].UniqueId;
                 if (!calls.OfType<JObject>().Any(c => (string)c["kind"] == "PreSave" && (string)c["owner"] == owner && (bool)c["completed"] &&
-                        (string)c["syntheticInjection"] == (string)pair.Value))
+                        (string)c["syntheticInjection"] == (string)pair.Value["synthetic"]))
                     problems.Add(pair.Key + ": the save's PreSave did not complete with the synthetic injection");
             }
             if (!calls.OfType<JObject>().Any(c => (string)c["owner"] == main.UniqueId && (bool)c["completed"] && (string)c["stateAfter"] == "4:0,0,4;6:2,4,0"))
