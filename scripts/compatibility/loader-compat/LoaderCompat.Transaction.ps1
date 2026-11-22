@@ -13,7 +13,13 @@ Set-StrictMode -Version Latest
 # intake, the owner-file intake and the current phase. Every claim is written to
 # a private file and published with an atomic no-overwrite rename.
 #
-# Completion, at a safe boundary only: hold a verified copy of the backup (one
+# Any host conflict the session observes - a foreign Kingmaker process, a foreign
+# lab lock or a lost claim, at a launch or at completion - is recorded in the
+# journal (hostConflict) and is itself a retain decision: a peer that has exited
+# has stopped writing, but that does not make its changes safe to overwrite, so
+# the session never restores automatically after seeing one.
+#
+# Completion, with no conflict ever observed: hold a verified copy of the backup (one
 # read, checked against the intake digest, written to a private copy kept open
 # with a handle that denies writes and deletion), re-check the host immediately
 # before the registry delete-and-import, import that copy, read the key back and
@@ -120,10 +126,13 @@ function Get-LcHostConflicts([string]$LeaseRunId) {
     return , $conflicts.ToArray()
 }
 
-function Wait-LcSafeBoundary([string]$LeaseRunId, [int]$WaitSeconds) {
-    $deadline = (Get-Date).AddSeconds($WaitSeconds)
-    while ((Get-LcHostConflicts $LeaseRunId).Count -gt 0 -and (Get-Date) -lt $deadline) { Start-Sleep -Seconds 1 }
-    return , (Get-LcHostConflicts $LeaseRunId)
+# Records the first host conflict this session observes, in memory and (when the
+# journal is still this session's) durably. Once recorded, the session is retained
+# at completion and never restores automatically, even after the peer has gone.
+function Register-LcHostConflict($Journal, [string[]]$Conflicts, [string]$Where) {
+    if ($null -ne $Journal.hostConflict) { return }
+    $Journal.hostConflict = [ordered]@{ observedUtc = [DateTime]::UtcNow.ToString('o'); at = $Where; conflicts = @($Conflicts) }
+    try { Save-LcJournal $Journal } catch { }
 }
 
 # This session still owns its journal, its shared lock and its game-copy lock.
@@ -140,10 +149,10 @@ function Get-LcClaimProblems($Journal) {
 # (so nothing can launch that completion could not restore).
 function Assert-LcLaunchAvailable($Lease, $Journal) {
     $conflicts = Get-LcHostConflicts $(if ($null -ne $Lease) { $Lease.RunId } else { $null })
-    if ($conflicts.Count -gt 0) { throw "Launch withheld: $($conflicts -join '; ')." }
+    if ($conflicts.Count -gt 0) { Register-LcHostConflict $Journal $conflicts 'launch'; throw "Launch withheld: $($conflicts -join '; ')." }
     Assert-KmgRuntimeLease $Lease
     $problems = Get-LcClaimProblems $Journal
-    if ($problems.Count -gt 0) { throw "Launch withheld: $($problems -join '; ')." }
+    if ($problems.Count -gt 0) { Register-LcHostConflict $Journal $problems 'launch'; throw "Launch withheld: $($problems -join '; ')." }
     if (-not $Journal.registryBackup -or -not $Journal.registryBackupSha256) { throw 'Launch withheld: no registry backup bound to an intake digest has been recorded.' }
 }
 
@@ -191,7 +200,7 @@ function Enter-LcSessionTransaction([string]$SessionId) {
         phase = 'acquiring'; ownerProcessId = $PID; ownerProcessStartedUtc = (Get-Process -Id $PID).StartTime.ToUniversalTime().ToString('o')
         leaseRunId = $runId; leaseStatePath = (Join-Path $leaseDir 'runtime-lease.json'); sharedLock = $false; privateLock = $false
         registryBackup = $null; registryBackupSha256 = $null; registryRestore = 'pending'; registryVerification = $null
-        intake = $null; integrity = $null; reason = $null }
+        hostConflict = $null; intake = $null; integrity = $null; reason = $null }
     Publish-LcClaim $script:LcJournal (ConvertTo-LcJournalText $journal) "A session journal already exists ($script:LcJournal); nothing was acquired. $script:LcManualRecovery"
     $stream = $null; $lease = $null
     try {
@@ -393,6 +402,7 @@ function Invoke-LcRegistryRestore($Journal, [scriptblock]$Restore) {
         $hostConflicts = Get-LcHostConflicts $Journal.leaseRunId; $claimProblems = Get-LcClaimProblems $Journal
         $problems = @($hostConflicts) + @($claimProblems)
         if ($problems.Count -gt 0) {
+            Register-LcHostConflict $Journal $problems 'restore'
             $Journal.registryRestore = 'withheld'; Save-LcJournal $Journal
             return "Game-settings restoration was withheld ($($problems -join '; ')); the key was not changed."
         }
@@ -441,14 +451,20 @@ function Set-LcRetained($Journal, $Lease, [string]$Reason) {
     return (New-LcResult 'retained' $text $Journal)
 }
 
-# Normal completion, at a safe boundary only: verified restoration, verified owner
-# files, then the lease is completed and this session's claims released. Every
-# failure, including an unexpected error, retains the session.
-function Complete-LcTransaction($Journal, $Lease, [scriptblock]$Restore, [int]$WaitSeconds) {
+# Normal completion, only for a session that never observed a host conflict:
+# verified restoration, verified owner files, then the lease is completed and this
+# session's claims released. A conflict observed earlier, or present now, retains
+# the session at once - completion never waits for a peer to leave and then
+# imports. Every failure, including an unexpected error, retains the session.
+function Complete-LcTransaction($Journal, $Lease, [scriptblock]$Restore) {
     try {
-        $conflicts = Wait-LcSafeBoundary $Journal.leaseRunId $WaitSeconds
+        if ($null -ne $Journal.hostConflict) {
+            return Set-LcRetained $Journal $Lease "A host conflict was observed during this session at $($Journal.hostConflict.at) ($(@($Journal.hostConflict.conflicts) -join '; ')); game settings were not restored, because a peer may have changed them."
+        }
+        $conflicts = Get-LcHostConflicts $Journal.leaseRunId
         if ($conflicts.Count -gt 0) {
-            return Set-LcRetained $Journal $Lease "Not at a safe boundary ($($conflicts -join '; ')); game settings were not restored."
+            Register-LcHostConflict $Journal $conflicts 'completion'
+            return Set-LcRetained $Journal $Lease "Not at a safe boundary ($($conflicts -join '; ')); game settings were not restored, because a peer may have changed them."
         }
         $failure = Invoke-LcRegistryRestore $Journal $Restore
         if ($null -ne $failure) { return Set-LcRetained $Journal $Lease $failure }
@@ -461,7 +477,10 @@ function Complete-LcTransaction($Journal, $Lease, [scriptblock]$Restore, [int]$W
         # Ownership is released only while the host is still free and every claim is still this session's.
         $hostConflicts = Get-LcHostConflicts $Journal.leaseRunId; $claimProblems = Get-LcClaimProblems $Journal
         $late = @($hostConflicts) + @($claimProblems)
-        if ($late.Count -gt 0) { return Set-LcRetained $Journal $Lease "The host or the session's claims changed after verification ($($late -join '; '))." }
+        if ($late.Count -gt 0) {
+            Register-LcHostConflict $Journal $late 'release'
+            return Set-LcRetained $Journal $Lease "The host or the session's claims changed after verification ($($late -join '; '))."
+        }
         if ($null -ne $Lease -and $null -ne $Lease.State) {
             $Lease.State['integrity'] = $Journal.integrity
             $Lease.State['registryRestore'] = $Journal.registryRestore
@@ -482,9 +501,9 @@ function Complete-LcTransaction($Journal, $Lease, [scriptblock]$Restore, [int]$W
 }
 
 # The live runner's finalizer.
-function Complete-LcSessionOwnership($Journal, $Scope, [scriptblock]$Restore, [int]$WaitSeconds = 60) {
+function Complete-LcSessionOwnership($Journal, $Scope, [scriptblock]$Restore) {
     $lease = if ($null -ne $Scope) { $Scope.Lease } else { $null }
-    return Complete-LcTransaction $Journal $lease $Restore $WaitSeconds
+    return Complete-LcTransaction $Journal $lease $Restore
 }
 
 # Clean only when the transaction completed, the game settings were restored and

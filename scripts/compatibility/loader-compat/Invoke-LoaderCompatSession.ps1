@@ -20,7 +20,10 @@ completion:
 - it refuses any copy outside the lab's game-copies root and stops only a
   process it started from the copy;
 - it holds the lab's shared runtime lease and its own game-copy lock for the
-  whole session and re-checks the host before every launch;
+  whole session and re-checks the host before every launch; a foreign game, a
+  foreign lab lock or a lost claim observed at any point is remembered, and
+  that session is retained without any automatic restoration, even if the peer
+  has exited by completion;
 - it hashes the owner's saves and loader/mod files at intake, backs up the
   game's registry settings bound to a digest, and at completion imports a held,
   verified copy of that backup, reads the key back and compares it exactly,
@@ -79,7 +82,7 @@ if ($Report) {
         $head = [ordered]@{}
         foreach ($name in @('sessionId', 'session', 'loaderProfile', 'candidateZip', 'candidateZipSha256', 'git', 'candidateVersion', 'status',
                 'ownerSaveFiles', 'registryRestored', 'registryRestore', 'registryVerification', 'transactionSucceeded', 'scenarioPassed', 'ownerSavesUnchanged',
-                'ownerInstallUnchanged', 'ownerIntegrity', 'ownership', 'transactionId', 'runtimeLease', 'retained', 'failure', 'integrityFailures', 'stagedMods')) {
+                'ownerInstallUnchanged', 'ownerIntegrity', 'ownership', 'transactionId', 'runtimeLease', 'hostConflict', 'retained', 'failure', 'integrityFailures', 'stagedMods')) {
             $head[$name] = Get-LcReportValue $summaryData $name
         }
         # The session's shared runtime lease as it stands now: its journal status and whether the shared lock is free.
@@ -376,6 +379,7 @@ finally {
     $summary.registryRestore = [string]$journal.registryRestore
     $summary.registryRestored = ([string]$journal.registryRestore) -cin @('applied', 'not-needed')
     $summary.registryVerification = $journal.registryVerification
+    $summary.hostConflict = $journal.hostConflict
     if ($null -eq $ownership -or $ownership.Outcome -cne 'completed') {
         if ($null -ne $ownership) { $problems += $ownership.Reason }
         $summary.retained = [ordered]@{ journal = $script:LcJournal; transactionId = $journal.transactionId; leaseRunId = $journal.leaseRunId

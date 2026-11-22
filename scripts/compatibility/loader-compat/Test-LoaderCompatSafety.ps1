@@ -61,7 +61,12 @@ try {
         $script:LcJournal = Join-Path $copies 'loader-compat.journal.json'
         $script:LcLock = Join-Path $copies 'loader-compat.lock'
         $global:LcTestGames = @()
-        $script:LcGameProcessQuery = { @($global:LcTestGames) }
+        # A transient peer: present for the next N process queries, then gone.
+        $global:LcTestTransientPeer = 0
+        $script:LcGameProcessQuery = {
+            if ($global:LcTestTransientPeer -gt 0) { $global:LcTestTransientPeer--; return @([pscustomobject]@{ Id = 9090 }) }
+            @($global:LcTestGames)
+        }
         $defaultSaves = { @('saves\a.zks|10|aa', 'saves\b.zks|20|bb') }
         $global:LcTestSaves = $defaultSaves
         $global:LcTestInstall = { @('install\winhttp.dll|5|cc') }
@@ -208,7 +213,7 @@ try {
         # --- normal completion: verified restoration, verified owner files, then release
         Assert-That ($null -eq (Get-Refusal { Assert-LcLaunchAvailable $txWin.Scope.Lease $txWin.Journal })) 'launch-admitted-for-owned-session'
         $restoresBefore = $global:LcTestRestores; $exportsBefore = $global:LcTestExports
-        $result = Complete-LcSessionOwnership $txWin.Journal $txWin.Scope $restore 0
+        $result = Complete-LcSessionOwnership $txWin.Journal $txWin.Scope $restore
         $leaseState = Get-FixtureJson $txWin.Scope.Lease.StatePath
         Assert-That ((Test-LcTransactionSucceeded $result) -and $result.Registry -ceq 'applied' -and $result.RegistryVerification.status -ceq 'verified' -and
             $global:LcTestRestores -eq $restoresBefore + 1 -and $global:LcTestExports -eq $exportsBefore + 1 -and $global:LcTestRegistry -ceq $backupText -and (& $clean)) 'normal-completion-verified-and-released'
@@ -218,7 +223,7 @@ try {
         Assert-That ((Test-Path -LiteralPath $backup) -and @(Get-ChildItem -LiteralPath $leaseDir -Filter 'registry-backup-verified-*').Count -eq 0 -and
             -not $txWin.Scope.Lease.Stream.CanRead) 'normal-completion-keeps-backup-and-drops-verified-copy'
         $txNext = New-FixtureTransaction 'fixture-next'
-        Assert-That ((Test-LcTransactionSucceeded (Complete-LcSessionOwnership $txNext.Journal $txNext.Scope $restore 0)) -and (& $clean)) 'next-session-after-normal-completion'
+        Assert-That ((Test-LcTransactionSucceeded (Complete-LcSessionOwnership $txNext.Journal $txNext.Scope $restore)) -and (& $clean)) 'next-session-after-normal-completion'
 
         # --- conflicts before a later launch and immediately before restoration
         $txSb = New-FixtureTransaction 'fixture-sibling'
@@ -228,17 +233,55 @@ try {
         $global:LcTestGames = @()
         [IO.File]::WriteAllText($peerLock, 'sibling')
         Assert-That ((Get-Refusal { Assert-LcLaunchAvailable $txSb.Scope.Lease $txSb.Journal }) -like 'Launch withheld: another lab holds a runtime lock*runtime.lock*') 'later-launch-withheld-for-sibling-lock'
+        # The completion below must show retention for a conflict still present at completion, so this case clears the
+        # launch-time records it just made (the persisted launch-conflict path has its own cases).
+        $txSb.Journal.hostConflict = $null; Save-LcJournal $txSb.Journal
         $restoresBefore = $global:LcTestRestores
-        $result = Complete-LcSessionOwnership $txSb.Journal $txSb.Scope $restore 0
+        $result = Complete-LcSessionOwnership $txSb.Journal $txSb.Scope $restore
         Assert-That ($result.Outcome -ceq 'retained' -and $result.Reason -like '*Not at a safe boundary*runtime.lock*' -and $global:LcTestRestores -eq $restoresBefore -and
             $global:LcTestRegistry -ceq $sessionText -and (Test-Retained $txSb) -and (Get-Content -LiteralPath $peerLock -Raw) -ceq 'sibling' -and
             -not (Test-LcTransactionSucceeded $result)) 'sibling-lock-at-completion-retains-without-restore'
         Assert-That (Test-LaterSessionRefused) 'retained-boundary-refused-by-later-session'
         Remove-Item -LiteralPath $peerLock -Force; Clear-FixtureRetained
+        # A later launch observes a peer; the peer changes the settings and has exited before completion. The observed
+        # conflict persists: no import, the peer's value is preserved, the session is retained and the verdict fails.
+        $txGone = New-FixtureTransaction 'fixture-peer-gone-before-completion'
+        $launchesGone = @([pscustomobject]@{ verdict = 'PASS' })
+        $global:LcTestGames = @([pscustomobject]@{ Id = 8080 })
+        $withheldGone = Get-Refusal { Assert-LcLaunchAvailable $txGone.Scope.Lease $txGone.Journal }
+        $launchesGone += [pscustomobject]@{ verdict = 'withheld' }
+        $peerChanged = New-RegText 'peer-changed-then-exited' '7' '8' $hex
+        $global:LcTestRegistry = $peerChanged; $global:LcTestGames = @()
+        $restoresBefore = $global:LcTestRestores
+        $result = Complete-LcSessionOwnership $txGone.Journal $txGone.Scope $restore
+        Assert-That ($withheldGone -like 'Launch withheld: Kingmaker is running (pid 8080)*' -and $result.Outcome -ceq 'retained' -and
+            $result.Reason -like '*host conflict was observed during this session at launch*pid 8080*' -and $global:LcTestRestores -eq $restoresBefore -and
+            $global:LcTestRegistry -ceq $peerChanged -and (Test-Retained $txGone) -and (Get-FixtureJson $script:LcJournal).hostConflict.at -ceq 'launch' -and
+            (Get-LcSessionVerdict $launchesGone $false $result).ExitCode -eq 1 -and
+            (Get-LcSessionVerdict @([pscustomobject]@{ verdict = 'PASS' }) $false $result).ExitCode -eq 1) 'peer-seen-at-launch-gone-by-completion-retained-no-import'
+        Assert-That (Test-LaterSessionRefused) 'peer-seen-at-launch-refused-by-later-session'
+        Clear-FixtureRetained
+        # Completion is the first to observe a peer, which disappears straight afterwards: retained at once, never
+        # waited out and imported; all launches passed, yet the verdict fails.
+        $txFirst = New-FixtureTransaction 'fixture-peer-first-seen-at-completion'
+        $peerChanged = New-RegText 'peer-at-completion' '6' '6' $hex
+        $global:LcTestRegistry = $peerChanged
+        $global:LcTestTransientPeer = 1
+        $restoresBefore = $global:LcTestRestores
+        $result = Complete-LcSessionOwnership $txFirst.Journal $txFirst.Scope $restore
+        $peerGoneAfter = $global:LcTestTransientPeer -eq 0 -and (Get-LcHostConflicts $txFirst.Journal.leaseRunId).Count -eq 0
+        Assert-That ($peerGoneAfter -and $result.Outcome -ceq 'retained' -and $result.Reason -like '*Not at a safe boundary*pid 9090*' -and
+            $global:LcTestRestores -eq $restoresBefore -and $global:LcTestRegistry -ceq $peerChanged -and (Test-Retained $txFirst) -and
+            (Get-FixtureJson $script:LcJournal).hostConflict.at -ceq 'completion' -and
+            (Get-LcSessionVerdict @([pscustomobject]@{ verdict = 'PASS' }, [pscustomobject]@{ verdict = 'PASS' }) $false $result).ExitCode -eq 1) 'peer-first-seen-at-completion-then-gone-retained-no-import'
+        # The retained session stays retained after the peer has gone: a second completion attempt still imports nothing.
+        $again = Complete-LcSessionOwnership $txFirst.Journal $txFirst.Scope $restore
+        Assert-That ($again.Outcome -ceq 'retained' -and $global:LcTestRestores -eq $restoresBefore -and $global:LcTestRegistry -ceq $peerChanged) 'conflict-decision-persists-after-peer-left'
+        Clear-FixtureRetained
         $txPv = New-FixtureTransaction 'fixture-peer-before-restore'
         $restoresBefore = $global:LcTestRestores
         $script:LcBackupVerifyHook = { $global:LcTestGames = @([pscustomobject]@{ Id = 6565 }) }
-        $result = Complete-LcSessionOwnership $txPv.Journal $txPv.Scope $restore 0
+        $result = Complete-LcSessionOwnership $txPv.Journal $txPv.Scope $restore
         $script:LcBackupVerifyHook = $null
         Assert-That ($result.Outcome -ceq 'retained' -and $result.Reason -like '*withheld*pid 6565*' -and $result.Registry -ceq 'withheld' -and $global:LcTestRestores -eq $restoresBefore -and
             $global:LcTestRegistry -ceq $sessionText -and (Test-Retained $txPv)) 'peer-immediately-before-restore-withholds-and-retains'
@@ -246,7 +289,7 @@ try {
         $txFc = New-FixtureTransaction 'fixture-foreign-claim-before-restore'
         $restoresBefore = $global:LcTestRestores
         $script:LcBackupVerifyHook = { [IO.File]::WriteAllText($script:LcLock, "session=another-session`npid=1`nstartedUtc=2000-01-01T00:00:00Z`n") }
-        $result = Complete-LcSessionOwnership $txFc.Journal $txFc.Scope $restore 0
+        $result = Complete-LcSessionOwnership $txFc.Journal $txFc.Scope $restore
         $script:LcBackupVerifyHook = $null
         Assert-That ($result.Outcome -ceq 'retained' -and $result.Reason -like '*withheld*game-copy lock no longer names this session*' -and $global:LcTestRestores -eq $restoresBefore -and
             (Get-Content -LiteralPath $script:LcLock -Raw) -like 'session=another-session*' -and (Get-Content -LiteralPath $compatLock -Raw).Trim() -ceq $txFc.Scope.Lease.RunId) 'foreign-claim-before-restore-withholds-and-keeps-it'
@@ -254,11 +297,11 @@ try {
         $txLl = New-FixtureTransaction 'fixture-lease-lost'
         $txLl.Scope.Lease.Stream.Dispose()
         Assert-That ((Get-Refusal { Assert-LcLaunchAvailable $txLl.Scope.Lease $txLl.Journal }) -like '*lease is missing, foreign, closed*') 'launch-withheld-after-lease-handle-lost'
-        Assert-That ((Test-LcTransactionSucceeded (Complete-LcSessionOwnership $txLl.Journal $txLl.Scope $restore 0)) -and (& $clean)) 'lease-handle-loss-still-completes-with-verified-restore'
+        Assert-That ((Test-LcTransactionSucceeded (Complete-LcSessionOwnership $txLl.Journal $txLl.Scope $restore)) -and (& $clean)) 'lease-handle-loss-still-completes-with-verified-restore'
         $txNb = New-FixtureTransaction 'fixture-no-backup' -NoBackup
         Assert-That ((Get-Refusal { Assert-LcLaunchAvailable $txNb.Scope.Lease $txNb.Journal }) -like '*no registry backup bound to an intake digest*') 'launch-withheld-without-digest-bound-backup'
         $restoresBefore = $global:LcTestRestores
-        $result = Complete-LcSessionOwnership $txNb.Journal $txNb.Scope $restore 0
+        $result = Complete-LcSessionOwnership $txNb.Journal $txNb.Scope $restore
         Assert-That ((Test-LcTransactionSucceeded $result) -and $result.Registry -ceq 'not-needed' -and $global:LcTestRestores -eq $restoresBefore -and (& $clean)) 'unlaunched-session-without-backup-completes-not-needed'
 
         # --- missing, changed, unreadable or digestless backup: retained, nothing imported
@@ -272,7 +315,7 @@ try {
             $tx = New-FixtureTransaction ('fixture-backup-' + $case.Name)
             & $case.Setup $tx
             $restoresBefore = $global:LcTestRestores
-            try { $result = Complete-LcSessionOwnership $tx.Journal $tx.Scope $restore 0 }
+            try { $result = Complete-LcSessionOwnership $tx.Journal $tx.Scope $restore }
             finally { if ($null -ne (Get-Variable -Name LcTestHold -Scope Global -ErrorAction SilentlyContinue) -and $null -ne $global:LcTestHold) { $global:LcTestHold.Dispose(); $global:LcTestHold = $null } }
             $journalNow = Get-FixtureJson $script:LcJournal
             Assert-That ($result.Outcome -ceq 'retained' -and $result.Registry -ceq 'refused' -and $result.Reason -like $case.Expect -and $global:LcTestRestores -eq $restoresBefore -and
@@ -284,7 +327,7 @@ try {
         # The backup replaced after its single verified read: the verified bytes are imported and compared.
         $txRv = New-FixtureTransaction 'fixture-backup-replaced-during-verification'
         $script:LcBackupVerifyHook = { [IO.File]::WriteAllText($backup, (New-RegText 'swapped-in' '5' '5' $hex)) }
-        $result = Complete-LcSessionOwnership $txRv.Journal $txRv.Scope $restore 0
+        $result = Complete-LcSessionOwnership $txRv.Journal $txRv.Scope $restore
         $script:LcBackupVerifyHook = $null
         [IO.File]::WriteAllText($backup, $backupText)
         Assert-That ((Test-LcTransactionSucceeded $result) -and $global:LcTestRegistry -ceq $backupText -and (& $clean)) 'backup-replaced-during-verification-verified-bytes-used'
@@ -297,7 +340,7 @@ try {
             try { [IO.File]::WriteAllText($Path, 'overwritten'); $global:LcTestCopyWrite = 'written' } catch { $global:LcTestCopyWrite = 'denied' }
             & $global:LcTestBaseRestore $Path
         }
-        $result = Complete-LcSessionOwnership $txRi.Journal $txRi.Scope $replacingRestore 0
+        $result = Complete-LcSessionOwnership $txRi.Journal $txRi.Scope $replacingRestore
         [IO.File]::WriteAllText($backup, $backupText)
         Assert-That ($global:LcTestCopyWrite -ceq 'denied' -and (Test-LcTransactionSucceeded $result) -and $global:LcTestRegistry -ceq $backupText -and (& $clean)) 'verified-copy-held-against-writes-during-import'
 
@@ -322,7 +365,7 @@ try {
             if ($case.ContainsKey('Backup')) { [IO.File]::WriteAllText($backup, $case.Backup) }
             $tx = New-FixtureTransaction ('fixture-' + $case.Name)
             $restoresBefore = $global:LcTestRestores
-            $result = Complete-LcSessionOwnership $tx.Journal $tx.Scope $case.Restore 0
+            $result = Complete-LcSessionOwnership $tx.Journal $tx.Scope $case.Restore
             $verificationOk = -not $case.ContainsKey('Verification') -or ($result.RegistryVerification.status -ceq $case.Verification -and
                 ($case.Verification -cne 'mismatch' -or (Test-Path -LiteralPath $result.RegistryVerification.path)))
             Assert-That ($result.Outcome -ceq 'retained' -and $result.Registry -ceq $case.Registry -and $result.Reason -like $case.Expect -and $verificationOk -and
@@ -334,36 +377,36 @@ try {
         # --- owner-file verification before release
         $txOc = New-FixtureTransaction 'fixture-owner-changed'
         $global:LcTestSaves = { @('saves\a.zks|10|aa', 'saves\b.zks|21|changed-during-session') }
-        $result = Complete-LcSessionOwnership $txOc.Journal $txOc.Scope $restore 0
+        $result = Complete-LcSessionOwnership $txOc.Journal $txOc.Scope $restore
         Assert-That ($result.Outcome -ceq 'retained' -and $result.Registry -ceq 'applied' -and $result.Integrity.status -ceq 'changed' -and $result.Reason -like '*not verified unchanged (changed*' -and
             (Test-Retained $txOc)) 'changed-owner-files-retained-after-verified-restore'
         Clear-FixtureRetained
         $txIt = New-FixtureTransaction 'fixture-intake-tampered'
         [IO.File]::AppendAllText($txIt.Journal.intake.savesPath, "saves\injected.zks|1|zz`r`n")
-        $result = Complete-LcSessionOwnership $txIt.Journal $txIt.Scope $restore 0
+        $result = Complete-LcSessionOwnership $txIt.Journal $txIt.Scope $restore
         Assert-That ($result.Outcome -ceq 'retained' -and $result.Integrity.status -ceq 'unresolved' -and $result.Reason -like '*intake manifest changed*' -and (Test-Retained $txIt)) 'changed-intake-unresolved-retained'
         Clear-FixtureRetained
         $txCa = New-FixtureTransaction 'fixture-competitor-during-verification'
         $global:LcTestCompetitor = $null
         $global:LcTestSaves = { try { [void](Enter-LcRuntimeOwnership 'fixture-competitor'); $global:LcTestCompetitor = 'acquired' } catch { $global:LcTestCompetitor = $_.Exception.Message }; & $defaultSaves }
-        $result = Complete-LcSessionOwnership $txCa.Journal $txCa.Scope $restore 0
+        $result = Complete-LcSessionOwnership $txCa.Journal $txCa.Scope $restore
         $global:LcTestSaves = $defaultSaves
         Assert-That ($global:LcTestCompetitor -like '*lock already exists*' -and (Test-LcTransactionSucceeded $result) -and (& $clean)) 'competing-acquisition-refused-during-verification'
         $txHb = New-FixtureTransaction 'fixture-host-busy-after-verification'
         $global:LcTestSaves = { $global:LcTestGames = @([pscustomobject]@{ Id = 5151 }); & $defaultSaves }
-        $result = Complete-LcSessionOwnership $txHb.Journal $txHb.Scope $restore 0
+        $result = Complete-LcSessionOwnership $txHb.Journal $txHb.Scope $restore
         Assert-That ($result.Outcome -ceq 'retained' -and $result.Registry -ceq 'applied' -and $result.Reason -like '*changed after verification*pid 5151*' -and (Test-Retained $txHb)) 'host-busy-after-verification-retained'
         Clear-FixtureRetained
         $txFr = New-FixtureTransaction 'fixture-foreign-claim-before-release'
         $global:LcTestSaves = { [IO.File]::WriteAllText($script:LcLock, "session=another-session`npid=1`nstartedUtc=2000-01-01T00:00:00Z`n"); & $defaultSaves }
-        $result = Complete-LcSessionOwnership $txFr.Journal $txFr.Scope $restore 0
+        $result = Complete-LcSessionOwnership $txFr.Journal $txFr.Scope $restore
         Assert-That ($result.Outcome -ceq 'retained' -and $result.Reason -like '*game-copy lock no longer names this session*' -and
             (Get-Content -LiteralPath $script:LcLock -Raw) -like 'session=another-session*' -and (Get-Content -LiteralPath $compatLock -Raw).Trim() -ceq $txFr.Scope.Lease.RunId -and
             (Test-Path -LiteralPath $script:LcJournal)) 'foreign-claim-before-release-retained-and-kept'
         Clear-FixtureRetained
         $txUe = New-FixtureTransaction 'fixture-unexpected-completion-error'
         $script:LcLeaseStateWriter = { param($Lease) throw 'lease record write failed (fixture)' }
-        $result = Complete-LcSessionOwnership $txUe.Journal $txUe.Scope $restore 0
+        $result = Complete-LcSessionOwnership $txUe.Journal $txUe.Scope $restore
         $script:LcLeaseStateWriter = $saved.Writer
         Assert-That ($result.Outcome -ceq 'retained' -and $result.Reason -like '*Completion stopped unexpectedly: lease record write failed*' -and
             (Get-FixtureJson $script:LcJournal).phase -ceq 'retained' -and (Get-Content -LiteralPath $compatLock -Raw).Trim() -ceq $txUe.Scope.Lease.RunId -and
@@ -390,7 +433,7 @@ try {
         # A UTF-16 backup (as reg.exe writes it) read back as the same data verifies end to end.
         [IO.File]::WriteAllText($backup, $backupText, [Text.Encoding]::Unicode)
         $txU16 = New-FixtureTransaction 'fixture-utf16-backup'
-        $result = Complete-LcSessionOwnership $txU16.Journal $txU16.Scope $restore 0
+        $result = Complete-LcSessionOwnership $txU16.Journal $txU16.Scope $restore
         [IO.File]::WriteAllText($backup, $backupText)
         Assert-That ((Test-LcTransactionSucceeded $result) -and $result.RegistryVerification.status -ceq 'verified' -and (& $clean)) 'utf16-backup-restores-and-verifies'
 
@@ -420,7 +463,7 @@ try {
         $script:LcLock = $saved.Lock; $script:LcGameProcessQuery = $saved.Query
         $script:LcSavesManifest = $saved.Saves; $script:LcInstallManifest = $saved.Install
         $script:LcRegistryExport = $saved.Export; $script:LcLeaseStateWriter = $saved.Writer
-        Remove-Variable -Name LcTestGames, LcTestRestores, LcTestExports, LcTestExportFailures, LcTestSaves, LcTestInstall, LcTestCompetitor, LcTestRegistry,
+        Remove-Variable -Name LcTestGames, LcTestTransientPeer, LcTestRestores, LcTestExports, LcTestExportFailures, LcTestSaves, LcTestInstall, LcTestCompetitor, LcTestRegistry,
             LcTestBaseRestore, LcTestRaceLease, LcTestCopyWrite, LcTestHold -Scope Global -ErrorAction SilentlyContinue
     }
 }
@@ -436,7 +479,8 @@ $requiredCoverage = @(
     'preexisting-game-copy-lock-refused-without-mutation', 'preexisting-pending-journal-refused-without-mutation', 'preexisting-older-journal-refused-without-mutation',
     'preexisting-legacy-journal-refused-without-mutation', 'preexisting-unreadable-journal-refused-without-mutation', 'preflight-pending-journal-refused',
     'later-launch-withheld-for-game-process', 'later-launch-withheld-for-sibling-lock', 'sibling-lock-at-completion-retains-without-restore',
-    'peer-immediately-before-restore-withholds-and-retains',
+    'peer-immediately-before-restore-withholds-and-retains', 'peer-seen-at-launch-gone-by-completion-retained-no-import',
+    'peer-first-seen-at-completion-then-gone-retained-no-import', 'conflict-decision-persists-after-peer-left',
     'backup-missing-retained-no-import', 'backup-changed-retained-no-import', 'backup-unreadable-retained-no-import', 'backup-digestless-retained-no-import',
     'backup-replaced-during-verification-verified-bytes-used', 'verified-copy-held-against-writes-during-import',
     'import-throws-retained', 'import-fails-after-delete-retained', 'readback-mismatch-retained', 'readback-unicode-spelling-retained',
