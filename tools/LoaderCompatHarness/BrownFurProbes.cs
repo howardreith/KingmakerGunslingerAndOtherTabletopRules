@@ -154,7 +154,10 @@ namespace KmgLoaderCompatHarness
             PropertyInfo raw = entry.GetType().GetProperty("Raw", Any);
             var token = raw == null ? null : raw.GetValue(entry, null) as JToken;
             JObject members = Reflect(entry);
-            if (token != null) members["$raw"] = token.DeepClone();
+            // A rejected entry's raw text goes in as a string: it may hold numbers (1e400, beyond Int64) that the
+            // runner's own JSON reader cannot parse.
+            if (token is JRaw) members["$text"] = Convert.ToString(((JRaw)token).Value, CultureInfo.InvariantCulture);
+            else if (token != null) members["$raw"] = token.DeepClone();
             return members;
         }
 

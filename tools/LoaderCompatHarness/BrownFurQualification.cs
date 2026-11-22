@@ -358,13 +358,13 @@ namespace KmgLoaderCompatHarness
             Type probeType = product.GetType("KingmakerGunslinger.BrownFur.BrownFurPersistedModifierProbe", true);
             object probe = Activator.CreateInstance(probeType, true);
             Action<string, object> set = (name, value) => probeType.GetProperty(name, Any).SetValue(probe, value, null);
-            set("BuffGuid", matrixIdentity["BuffGuid"]);
-            set("SpellGuid", matrixIdentity["SpellGuid"]);
-            set("CasterId", matrixIdentity["CasterId"]);
+            set("BuffGuid", (string)matrixIdentity["BuffGuid"]);
+            set("SpellGuid", (string)matrixIdentity["SpellGuid"]);
+            set("CasterId", (string)matrixIdentity["CasterId"]);
             set("AbilityScore", Enum.Parse(product.GetType("KingmakerGunslinger.BrownFur.BrownFurAbilityScore", true), (string)matrixIdentity["AbilityScore"]));
             set("OriginalValue", (int)(long)matrixIdentity["OriginalValue"]);
-            set("OriginalDescriptor", matrixIdentity["OriginalDescriptor"]);
-            set("CarrierFamily", matrixIdentity["CarrierFamily"]);
+            set("OriginalDescriptor", (string)matrixIdentity["OriginalDescriptor"]);
+            set("CarrierFamily", (string)matrixIdentity["CarrierFamily"]);
             set("EndTimeTicks", (long)matrixIdentity["EndTimeTicks"]);
             return (int)BrownFurObserver.PartType.GetMethod("ResolveIncrease", Any).Invoke(part, new[] { probe });
         }
