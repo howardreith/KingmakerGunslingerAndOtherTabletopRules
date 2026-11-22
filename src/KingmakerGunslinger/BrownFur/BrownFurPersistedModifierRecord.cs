@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.BrownFur
 {
@@ -22,6 +23,34 @@ namespace KingmakerGunslinger.BrownFur
         [JsonProperty] public long EndTimeTicks { get; set; }
 
         public BrownFurPersistedModifierRecord() { }
+
+        // RISK-03 (A2): set only by BrownFurPersistedModifierJson. Raw is the
+        // entry's persisted JSON (without the engine's "$id"), written back
+        // unchanged; a record created by gameplay has none. Rejection is null
+        // for a strictly valid record and names the reason otherwise; a
+        // rejected entry never reaches the policy below.
+        internal JToken Raw { get; set; }
+        internal string Rejection { get; private set; }
+        internal bool IsValid { get { return Rejection == null; } }
+        private string[] _identity;
+
+        /// <summary>Buff, spell, caster, ability score and carrier as stated; null where unusable.</summary>
+        internal string[] Identity
+        {
+            get
+            {
+                return _identity ?? (IsValid ?
+                    BrownFurPersistedModifierJson.Identity(this) :
+                    BrownFurPersistedModifierJson.Unreadable());
+            }
+        }
+
+        internal static BrownFurPersistedModifierRecord Rejected(JToken raw,
+            string reason, string[] identity)
+        {
+            return new BrownFurPersistedModifierRecord {
+                Raw = raw, Rejection = reason, _identity = identity };
+        }
 
         internal BrownFurPersistedModifierRecord(string buffGuid,
             string spellGuid, string casterId,
@@ -78,6 +107,7 @@ namespace KingmakerGunslinger.BrownFur
                 throw new InvalidOperationException(
                     "The Powerful Change persistence record has no caster identity.");
             if (record.AbilityScore == BrownFurAbilityScore.None ||
+                !Enum.IsDefined(typeof(BrownFurAbilityScore), record.AbilityScore) ||
                 (record.Increase != 2 && record.Increase != 4) ||
                 record.OriginalValue <= 0 ||
                 string.IsNullOrWhiteSpace(record.OriginalDescriptor) ||

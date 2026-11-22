@@ -922,6 +922,8 @@
     <Compile Include="BrownFur\BrownFurModifierAdjustmentPolicy.cs" />
     <Compile Include="BrownFur\BrownFurModifierAdjustmentTracker.cs" />
     <Compile Include="BrownFur\BrownFurPersistedModifierRecord.cs" />
+    <Compile Include="BrownFur\BrownFurPersistedModifierJson.cs" />
+    <Compile Include="BrownFur\BrownFurPersistedModifierStore.cs" />
     <Compile Include="BrownFur\UnitPartBrownFurModifierPersistence.cs" />
     <Compile Include="BrownFur\BrownFurModifierAdjustmentRuntime.cs" />
     <Compile Include="BrownFur\BrownFurModifierAdjustmentPatch.cs" />

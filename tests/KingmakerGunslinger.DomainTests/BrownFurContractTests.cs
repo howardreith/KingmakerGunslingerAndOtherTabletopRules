@@ -777,8 +777,8 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] {
                 "UnitPart", "JsonProperty", "Remember", "ResolveIncrease",
                 "ResolveOrdinaryRecast", "Forget", "PreSave", "PostLoad",
-                "EnsureValid",
-                "duplicate logical modifiers" })
+                "BrownFurPersistedModifierListConverter", "_rejectedRecords",
+                "BrownFurPersistedModifierStore.Normalize" })
                 Assertions.True(persistedModifierPart.Contains(token),
                     "Powerful Change target-owned persistence lacks guard: " +
                     token);
