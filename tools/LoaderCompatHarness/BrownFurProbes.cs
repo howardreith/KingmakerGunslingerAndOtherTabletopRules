@@ -567,6 +567,9 @@ namespace KmgLoaderCompatHarness
             // Both resolved books are rested and know the spell, as in the product's BrownFurNativeCastScenario.
             Spellbook preparation = Book(caster, "MemorizationSpellbook");
             caster.Commands.InterruptAll(true);
+            // Touch spells: stand within reach, since the synchronous drive cannot walk the caster there.
+            caster.Position = target.Position + new Vector3(0.6f, 0f, 0f);
+            row["distance"] = Vector3.Distance(caster.Position, target.Position);
             foreach (Spellbook book in new[] { casting, preparation })
             {
                 if (book == null) continue;
