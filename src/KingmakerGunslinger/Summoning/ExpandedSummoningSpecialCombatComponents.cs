@@ -645,9 +645,9 @@ namespace KingmakerGunslinger.Summoning
     // The link store used to live here as a table keyed by buff instances,
     // which the maintain could lose within a session. It is now the unit part
     // in SummonGrappleLinkState.cs, which owns the establishing limb and the
-    // mouth occupancy for the life of each hold. It is session-scoped: the
-    // owner accepted on 2026-09-26 that an active grapple resets safely on a
-    // reload, because the engine carries none across a save.
+    // mouth occupancy for the life of each hold. By the owner's accepted
+    // policy (2026-09-26) an active grapple resets safely on a reload; a save
+    // keeps it in the running game, and the load safeguard releases it.
 
     /// <summary>
     /// The damage of an attack, as the game computes it: the weapon entity's
@@ -1650,8 +1650,25 @@ namespace KingmakerGunslinger.Summoning
     /// establishing limb's weapon damage or swallows when applicable.</summary>
     [Serializable]
     public sealed class SummonHoldComponent : BuffLogic, ITickEachRound,
-        IInitiatorRulebookHandler<RuleCalculateCMB>
+        IInitiatorRulebookHandler<RuleCalculateCMB>, ISceneHandler
     {
+        // S6 C2a R1 (VER-02 F1): this hold's own view of an area unload. The
+        // engine raises OnAreaBeginUnloading to this turned-on buff before an
+        // unload turns units off; a save never raises it. It is not
+        // serialized, belongs to this buff instance only, and clears when the
+        // buff turns back on (after every save) or the area finishes loading.
+        private bool m_AreaUnloading;
+
+        public void OnAreaBeginUnloading() { m_AreaUnloading = true; }
+
+        public void OnAreaDidLoad() { m_AreaUnloading = false; }
+
+        public override void OnTurnOn()
+        {
+            base.OnTurnOn();
+            m_AreaUnloading = false;
+        }
+
         /// <summary>
         /// The held-round number this hold last resolved a rider on. A round
         /// processed twice would otherwise crush and knock prone twice, so the
@@ -1802,7 +1819,8 @@ namespace KingmakerGunslinger.Summoning
             base.OnTurnOff();
             // S6 C2a: the engine's save suspension turns the owner off first and
             // back on after writing; that is not the end of the hold.
-            if (!SummonHoldSuspension.ShouldRelease(Owner)) return;
+            if (!ExpandedSummoningSpecialProfiles.ShouldReleaseHoldOnTurnOff(
+                    Owner == null || Owner.IsTurnedOn, m_AreaUnloading)) return;
             ReleaseHeld();
         }
 
@@ -1989,22 +2007,41 @@ namespace KingmakerGunslinger.Summoning
     }
 
     /// <summary>
-    /// The holder's side of the multi-link hold (the Giant Flytrap: one held
-    /// target per bite, four at most). One instance of this buff stands on the
-    /// holder while it holds anyone; the links themselves are the held-state
-    /// buffs on the targets, each naming this holder as its caster, so they
-    /// save, load and count on their own. Each new round every link gets its
-    /// own maintain check (+5 on the +4): success deals the establishing
-    /// bite's damage, or - when the link began the round held and the target
-    /// is Medium or smaller - engulfs it instead; failure releases that link
-    /// alone; a target out of the bite's reach is released. When the last
-    /// link ends the buff removes itself; when the buff turns off for any
-    /// reason every link is released.
+    /// The holder's side of the shared multi-link hold, used by every grabber
+    /// configured with more than one held target: the Giant Flytrap (one per
+    /// bite, four, with engulf), the Xill (four claws), the Giant Scorpion and
+    /// the Giant Crab (one per claw/pincer, two; the crab adds live
+    /// constrict). One instance of this buff stands on the holder while it
+    /// holds anyone; the links themselves are the held-state buffs on the
+    /// targets, each naming this holder as its caster. Each new round every
+    /// link gets its own maintain check (+5 on the +4): success deals the
+    /// establishing limb's damage, or - for an engulfing holder, when the link
+    /// began the round held and the target is small enough - engulfs it
+    /// instead; failure releases that link alone; a target out of reach is
+    /// released. When the last link ends the buff removes itself. When the
+    /// buff genuinely turns off or is removed, every link is released; the
+    /// one exception is the engine's temporary save suspension (S6 C2a),
+    /// which keeps the links.
     /// </summary>
     [Serializable]
     public sealed class SummonMultiHoldComponent : BuffLogic, ITickEachRound,
-        IInitiatorRulebookHandler<RuleCalculateCMB>
+        IInitiatorRulebookHandler<RuleCalculateCMB>, ISceneHandler
     {
+        // S6 C2a R1 (VER-02 F1): this hold's own view of an area unload (see
+        // SummonHoldComponent). Not serialized; per buff instance; clears on
+        // turn-on and when the area finishes loading.
+        private bool m_AreaUnloading;
+
+        public void OnAreaBeginUnloading() { m_AreaUnloading = true; }
+
+        public void OnAreaDidLoad() { m_AreaUnloading = false; }
+
+        public override void OnTurnOn()
+        {
+            base.OnTurnOn();
+            m_AreaUnloading = false;
+        }
+
         public void OnNewRound()
         {
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
@@ -2053,7 +2090,8 @@ namespace KingmakerGunslinger.Summoning
             base.OnTurnOff();
             // S6 C2a: the engine's save suspension turns the owner off first and
             // back on after writing; that is not the end of the links.
-            if (!SummonHoldSuspension.ShouldRelease(Owner)) return;
+            if (!ExpandedSummoningSpecialProfiles.ShouldReleaseHoldOnTurnOff(
+                    Owner == null || Owner.IsTurnedOn, m_AreaUnloading)) return;
             ReleaseAllLinks();
         }
 
@@ -2207,15 +2245,8 @@ namespace KingmakerGunslinger.Summoning
     /// inert while the module is off.
     /// </summary>
     internal sealed class SummonGrappleAreaSafeguard : IPartyLeaveAreaHandler,
-        IAreaLoadingStagesHandler, ISceneHandler, IGlobalSubscriber
+        IAreaLoadingStagesHandler, IGlobalSubscriber
     {
-        // S6 C2a: an area unload raises OnAreaBeginUnloading before it turns
-        // the area's units off; a save does not. The flag lets the hold owners
-        // keep their release at unload while a save's suspension keeps holds.
-        public void OnAreaBeginUnloading() { SummonHoldSuspension.AreaUnloading = true; }
-
-        public void OnAreaDidLoad() { SummonHoldSuspension.AreaUnloading = false; }
-
         private static SummonGrappleAreaSafeguard _instance;
 
         internal static void Attach()
@@ -2233,16 +2264,16 @@ namespace KingmakerGunslinger.Summoning
 
         public void OnAreaLoadingComplete()
         {
-            SummonHoldSuspension.AreaUnloading = false;
             if (Game.Instance != null && Game.Instance.State != null &&
                 Game.Instance.State.Units != null)
                 ResetLoadedGrapples(Game.Instance.State.Units.All);
             Sweep(false);
         }
 
-        // Native parts and their state buffs can survive deserialization even
-        // though the session link is not reconstructible. Reset every KMG-owned
-        // relationship, including nonparty summons/prey, at the load boundary.
+        // A save can contain a complete relationship (native parts, their state
+        // buffs and the limb records). By policy none is reconstructed: reset
+        // every KMG-owned relationship, including nonparty summons/prey, at
+        // the load boundary.
         //
         // This is the whole of OwnerAcceptedEngineLimitation:
         // ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD, as the owner accepted it
@@ -2388,24 +2419,6 @@ namespace KingmakerGunslinger.Summoning
             return unit != null && unit.Blueprint != null &&
                 unit.Blueprint.name.StartsWith("KMG_Summoning_Unit_",
                     StringComparison.Ordinal);
-        }
-    }
-
-    /// <summary>
-    /// S6 C2a (VER-02 F1): tells the hold owners' OnTurnOff a genuine end from
-    /// the engine's save suspension. SaveManager.SaveRoutine turns the loaded
-    /// area and cross-scene units off (UnitDescriptor.IsTurnedOn becomes false
-    /// before its facts turn off), writes, and turns them back on. An area
-    /// unload raises OnAreaBeginUnloading first, and keeps its release.
-    /// </summary>
-    internal static class SummonHoldSuspension
-    {
-        internal static bool AreaUnloading;
-
-        internal static bool ShouldRelease(UnitDescriptor owner)
-        {
-            return ExpandedSummoningSpecialProfiles.ShouldReleaseHoldOnTurnOff(
-                owner == null || owner.IsTurnedOn, AreaUnloading);
         }
     }
 

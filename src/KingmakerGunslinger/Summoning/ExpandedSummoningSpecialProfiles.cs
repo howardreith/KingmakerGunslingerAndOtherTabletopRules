@@ -627,9 +627,9 @@ namespace KingmakerGunslinger.Summoning
         /// A fact turning off while its owner stays turned on is a genuine end
         /// (removal, the death purge, expiry). The engine's save routine turns
         /// whole units off before serializing and back on afterwards; that
-        /// suspension keeps the hold. An area unload also turns units off, and
-        /// keeps its established release at that point (the leave/unload
-        /// semantics are unchanged). Disposal is released separately.
+        /// suspension keeps the hold. An area unload (which the hold buff
+        /// itself observed through OnAreaBeginUnloading) keeps its established
+        /// release at that point. Disposal is released separately.
         /// </summary>
         internal static bool ShouldReleaseHoldOnTurnOff(bool ownerTurnedOn,
             bool areaUnloading)
