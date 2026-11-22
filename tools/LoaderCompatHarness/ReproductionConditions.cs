@@ -104,7 +104,15 @@ namespace KmgLoaderCompatHarness
             };
             foreach (string name in conditions.Keys)
             {
-                if (!known.Contains(name) && !SpearRepairConditions.Known.Contains(name)) throw new InvalidOperationException("unknown harness condition " + name);
+                if (!known.Contains(name) && !SpearRepairConditions.Known.Contains(name) && name != ControlledRageObserver.Condition)
+                    throw new InvalidOperationException("unknown harness condition " + name);
+            }
+
+            if (Enabled(conditions, ControlledRageObserver.Condition))
+            {
+                // Installed after every mod's Load (HarnessMain.OnUpdate), when the product type is resolvable.
+                ControlledRageObserver.Request();
+                applied[ControlledRageObserver.Condition] = "record UnitPartControlledRageSelection PreSave/PostLoad and Urban Barbarian exceptions";
             }
 
             SpearRepairConditions.Apply(harmony, conditions, applied);

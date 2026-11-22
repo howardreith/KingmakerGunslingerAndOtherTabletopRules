@@ -477,6 +477,18 @@ namespace KmgLoaderCompatHarness
                     return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
                 }
 
+                case "kmgControlledRage":
+                {
+                    // S6 T4 / RISK-03: "match" is create, reload or final; invariants.saveLabel names the save create
+                    // writes. Needs condition observeControlledRagePersistence on the launch.
+                    string identity = StepIdentity(step);
+                    if (!probes.IsActive) probes.Begin(identity, new ControlledRageProbe(request.ProfileDir, step.Match, step.Invariants));
+                    ProbeOutcome outcome = probes.Poll(identity);
+                    if (outcome == null) return StepStatus.Running;
+                    RecordProbe(outcome);
+                    return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
+                }
+
                 case "kmgGritUiCensus":
                 {
                     // "match" is the grit resource guid; "type" lists the abilities that must carry the shared grit
