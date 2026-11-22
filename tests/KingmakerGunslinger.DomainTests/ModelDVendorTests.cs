@@ -248,15 +248,18 @@ namespace KingmakerGunslinger.DomainTests
         {
             // Owner-authorized refresh (2026-11-20, v0.0.192 release): RISK-01 / S4 T5
             // (0c0a211e62) deliberately added the legacy Advanced Revolver containment to this file.
-            AssertHash(Source("Blueprints/ProductionFirearmBlueprints.cs"), "7308f208f7741e177e3607af0bd16c8f2f468b1567ca141fc719782505992f78", "Blueprints/ProductionFirearmBlueprints.cs");
-            AssertHash(Source("Blueprints/MagicFirearmBlueprints.cs"), "ab7ddafea87e3959999221de716fcca61b5cd2ddc8e93c6699efcc3bc78a5478", "Blueprints/MagicFirearmBlueprints.cs");
-            AssertHash(Source("Blueprints/BasicAmmunitionBlueprints.cs"), "e636c43de97830372af4f99defbd30fd5770f1effeadaf64f2bd83c1c59fc49e", "Blueprints/BasicAmmunitionBlueprints.cs");
+            // Owner-authorized refresh (2026-11-22, v0.0.194 release): PR #199 deliberately reads authored
+            // (stored) item weight instead of the Bag of Tricks-patched Weight getters in this file and in the
+            // MagicFirearm, BasicAmmunition, EasternWeapon and ElvenBranchedSpear pins below.
+            AssertHash(Source("Blueprints/ProductionFirearmBlueprints.cs"), "5e361f221c85ca32ce378ed005416f873965d981f09bf407763ccb3d8438190f", "Blueprints/ProductionFirearmBlueprints.cs");
+            AssertHash(Source("Blueprints/MagicFirearmBlueprints.cs"), "6f0a071ea6493ef513f1b9d07eec46c06f30c3734818d8b4f4a89da8be7c7a8c", "Blueprints/MagicFirearmBlueprints.cs");
+            AssertHash(Source("Blueprints/BasicAmmunitionBlueprints.cs"), "4c7a7041d5e00ac65b7177fdb27da053070c58ad1cf2135862076c06cb8af988", "Blueprints/BasicAmmunitionBlueprints.cs");
             AssertHash(Source("Blueprints/GunsmithingSupplyBlueprints.cs"), "9cb1f57472ae9929034f7d6c65b06c1a77b78ea6c26fc1794c9edb9087f9104d", "Blueprints/GunsmithingSupplyBlueprints.cs");
             AssertHash(Source("Blueprints/GunsmithingCraftingBlueprints.cs"), "8bf13115aca5c9fb064dc79be6861b57348e42b43b2ef87508f9f5ea5278c650", "Blueprints/GunsmithingCraftingBlueprints.cs");
-            AssertHash(Source("Blueprints/EasternWeaponBlueprints.cs"), "44365a93be563a4541f18abda4e7889ea4a68e305cee332a58aab75ca24ea50e", "Blueprints/EasternWeaponBlueprints.cs");
+            AssertHash(Source("Blueprints/EasternWeaponBlueprints.cs"), "a6cf5565751e29febeede852b9eb088516facc9b517b514dc87ca878faa4f5cf", "Blueprints/EasternWeaponBlueprints.cs");
             // Owner-authorized refresh (2026-11-22, v0.0.193 release): PR #195 deliberately configures the owned
             // spear's profile explicitly and validates its effective values in this file.
-            AssertHash(Source("Blueprints/ElvenBranchedSpearBlueprints.cs"), "e37bcc481afba97fb147c04fdeb52d4da5e8aeac974db47812d91a8a9baa92e8", "Blueprints/ElvenBranchedSpearBlueprints.cs");
+            AssertHash(Source("Blueprints/ElvenBranchedSpearBlueprints.cs"), "c0e344828d3c240a558fafaf6e9ce02f05b0616ed06d04e6b7b215b8096fad71", "Blueprints/ElvenBranchedSpearBlueprints.cs");
         }
         private static void AssertHash(string source, string expected, string path)
         {
