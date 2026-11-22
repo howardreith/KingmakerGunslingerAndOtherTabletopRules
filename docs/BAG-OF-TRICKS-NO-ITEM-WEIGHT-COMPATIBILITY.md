@@ -4,6 +4,12 @@ Mission: [planning/BAG-OF-TRICKS-NO-ITEM-WEIGHT-MISSION.md](../planning/BAG-OF-T
 branch `codex/bag-of-tricks-no-item-weight`, draft PR #199. Development work only:
 no merge, tag, release, version change or installation into the owner's game.
 
+Workflow: the mission started under the automated agent-review controller. One
+automated review round ran (see Review history). On 2026-11-22 the owner moved
+development to the standard in-thread workflow, with owner review in place of
+the automated reviewer. The automated round 2 was stopped before it produced a
+result, and the enrollment was cancelled.
+
 ## Player-visible result
 
 - **No Item Weight on (at startup, or switched on later):** Tabletop Rules Expansion
@@ -221,10 +227,35 @@ Unless a session is named, results are from `20261122T161435Z` on candidate
 | BW11 | PASS | Natively, with the setting on, launch 4 wrote `m_Weight=0` onto the owned spear during validation. Startup failed with `weight [owned-field]: expected=10 actual=0 donor=9; getter not read (runtime setting); fields only`. The stored fields are labelled as fields, and no live getter value is reported because none was read. Launch 5 added +1 ft to the owned spear's live reach, and startup failed with `attack-range [effective-getter]`. Domain tests `bag-of-tricks-no-item-weight.*` cover the policy: a stored 0 or 9 fails and prints no getter value; every non-weight predicate keeps its fatal getter check. |
 | BW12 | PASS | The native Longspear type is unchanged from its pre-product capture (`m_Weight` 9). Native comparison items (Standard Longspear, Standard Longsword) keep their stored and unpatched weights across on, off and absent, and their live weight follows Bag of Tricks (0 while on). No GUID, manifest row, released key or module semantics changed: development validation shows identities=7935, appended=0. |
 | BW13 | PASS | Override active before construction: launch 2. Override activated after construction: launch 6 off → on. Bag of Tricks setting metadata is never read by the product. Not varied: the UMM load order of Bag of Tricks relative to this mod (the patches are stateless postfixes evaluated per call). |
-| BW14 | see Validation | Production compilation, focused selection, candidate identity and restoration are recorded below. Independent review is the controller's next step. |
+| BW14 | PASS except independent review | Production compilation, focused selection, candidate identity and restoration are recorded below. Automated review round 1 (`changes_required`, 9 findings) was addressed. The corrected candidate has not had an independent review; that is the owner's review. |
+
+## Review history
+
+Automated round 1 (Codex gpt-6.2-astra, max) reviewed candidate `914e827d69`
+and returned `changes_required`. Corrections are in `c4e1259457`,
+`35662110d7` and `4bc2da5266`. The full review and the developer dispositions
+are PR #199 comments.
+
+| Finding | Blocking | Subject | Correction |
+| --- | --- | --- | --- |
+| R1-F1 | yes | Restoration of the disposable lab not shown | Settings digests recorded; restoration model documented (see Restoration above) |
+| R1-F2 | yes | No real armor, type-inheriting weapon or legacy repair item instance | HillHideArmor, legacy Test Musket and Firearm Repair Kit ×3 added (BW04) |
+| R1-F3 | yes | Census expectation derived from the item under test | Stored weights checked against catalog, donor field or weapon type; counts split (BW03) |
+| R1-F4 | yes | Missing planned items did not fail the census | Missing/mistyped identities fail; synthetic missing identity demonstrated (BW03) |
+| R1-F5 | yes | Inventory refresh after a live toggle not observed | `kmgInventoryWeightView` with the inventory open (BW05) |
+| R1-F6 | yes | Spear diagnostic printed stored fields as getter values | Field-only observation prints `getter not read` (BW11) |
+| R1-F7 | no | Persistence probe compared totals, not per-entry tuples | Multiset of per-entry tuples; self-test (BW07) |
+| R1-F8 | no | Startup check missed a contained publication failure | `kmgPublicationStatus`; forced Magic Circle failure demonstrated (BW02) |
+| R1-F9 | no | Matching tooltip exceptions read as matching text | Formatter exceptions fail the display verdict; self-test (BW04) |
+
+The automated round 2 on `4bc2da5266` was stopped before it returned. None of
+the corrections above has been independently reviewed.
 
 ## Validation
 
+- **Focused gate, in-thread rerun on `4bc2da5266`:** `Invoke-KmgGate.ps1
+  -Filter 'bag-of-tricks-no-item-weight,elven-branched-spear.bootstrap-repair'`
+  compiled production and ran 18 of 3,166 tests, 0 failures.
 - **Focused gate, controller receipt:** `verify --gate focused -- -Filter
   bag-of-tricks-no-item-weight` on the committed head compiles production and
   runs the 3 `bag-of-tricks-no-item-weight.*` cases. The controller refuses a
