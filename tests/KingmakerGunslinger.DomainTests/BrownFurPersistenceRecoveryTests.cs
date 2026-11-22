@@ -403,6 +403,162 @@ namespace KingmakerGunslinger.DomainTests
             }
         }
 
+        // ---- A2 review: raw JSON text at the input boundary ----
+        // Every input below is a raw string fed to the production converter through a JsonTextReader with the engine
+        // reader's defaults (dates parsed, floats as double). Expected text is the same string; nothing is materialized
+        // through JObject on either side of a preservation assertion.
+
+        private const string R =
+            "{\"SchemaVersion\":1,\"BuffGuid\":\"b175001b42b1a02479881b72fe132116\"," +
+            "\"SpellGuid\":\"4c3d08935262b6544ae97599b3a9556d\",\"CasterId\":\"e9d20d9d-7ba5-4f71-a47c-d893e7505806\"," +
+            "\"AbilityScore\":\"Strength\",\"Increase\":2,\"OriginalValue\":4,\"OriginalDescriptor\":\"Enhancement\"," +
+            "\"CarrierFamily\":\"AddStatBonus\",\"EndTimeTicks\":438309050000}";
+
+        private static string Extend(string record, string members)
+        {
+            return record.Substring(0, record.Length - 1) + "," + members + "}";
+        }
+
+        private static string Rebuff(string record)
+        {
+            return record.Replace("b175001b42b1a02479881b72fe132116", OtherBuffGuid);
+        }
+
+        private const string OtherBuffGuid = "0123456789abcdef0123456789abcdef";
+
+        private static string RawDocument(params string[] records)
+        {
+            return "{\"_records\":[" + string.Join(",", records) + "]}";
+        }
+
+        private static string[] RetainedTexts(BrownFurPersistedModifierState state)
+        {
+            return state.Retained == null ? new string[0] :
+                state.Retained.Select(BrownFurPersistedModifierJson.Text).ToArray();
+        }
+
+        private static string[] ActiveTexts(BrownFurPersistedModifierState state)
+        {
+            return state.Active.Select(BrownFurPersistedModifierJson.Text).ToArray();
+        }
+
+        /// <summary>Loads raw text, normalizes, then saves and reloads three times; returns each cycle's state.</summary>
+        private static List<BrownFurPersistedModifierState> Cycles(string json)
+        {
+            var states = new List<BrownFurPersistedModifierState>();
+            Part part = Load(json);
+            for (int cycle = 0; cycle < 4; cycle++)
+            {
+                BrownFurPersistedModifierState state = part.Read();
+                states.Add(state);
+                part.Write(state);
+                part = Load(Save(part));
+            }
+            return states;
+        }
+
+        internal static void NumbersKeepTheirTextAndNeverThrow()
+        {
+            string[] futures = {
+                "\"FutureField\":1e100",
+                "\"FutureField\":0.1000000000000000055511151231257827",
+                "\"FutureField\":123456789012345678901234567890",
+                "\"FutureField\":1e400",
+                "\"FutureField\":-1.5E-10",
+                "\"FutureField\":{\"nested\":[1,\"two\",true,null,1.5,1e100,\"2026-11-22T10:00:00+02:00\"]}" };
+            foreach (string future in futures)
+            {
+                string unsupported = Rebuff(Extend(R, future));
+                string json = RawDocument(R, unsupported);
+                List<BrownFurPersistedModifierState> states;
+                try { states = Cycles(json); }
+                catch (Exception exception)
+                {
+                    throw new InvalidOperationException("Raw numeric input threw instead of being retained: " +
+                        future + " -> " + exception.GetType().Name + ": " + exception.Message);
+                }
+                foreach (BrownFurPersistedModifierState state in states)
+                {
+                    Assertions.True(ActiveTexts(state).SequenceEqual(new[] { R }),
+                        "The valid sibling was not kept exactly beside " + future + ": " + string.Join(" | ", ActiveTexts(state)));
+                    Assertions.True(RetainedTexts(state).SequenceEqual(new[] { unsupported }),
+                        "Retained numeric text changed for " + future + ": " + string.Join(" | ", RetainedTexts(state)));
+                }
+                Part reloaded = Load(json);
+                reloaded.Write(reloaded.Read());
+                Assertions.True(Save(reloaded).Contains(unsupported),
+                    "The saved text does not contain the retained entry verbatim: " + future);
+            }
+
+            // Content already in _rejectedRecords stays verbatim and inactive.
+            string retainedOnly = "{\"_records\":[],\"_rejectedRecords\":[" + Extend(R, "\"FutureField\":1e100") + "," +
+                Extend(R, "\"FutureField\":0.1000000000000000055511151231257827") + "]}";
+            foreach (BrownFurPersistedModifierState state in Cycles(retainedOnly))
+                Assertions.True(state.Active.Count == 0 && RetainedTexts(state).SequenceEqual(new[] {
+                    Extend(R, "\"FutureField\":1e100"), Extend(R, "\"FutureField\":0.1000000000000000055511151231257827") }),
+                    "Retained-member numeric text changed or became active: " + string.Join(" | ", RetainedTexts(state)));
+        }
+
+        internal static void RepeatedMembersAreRetainedWithEveryOccurrence()
+        {
+            string conflicting = R.Replace("\"Increase\":2,", "\"Increase\":2,\"Increase\":4,");
+            string identical = R.Replace("\"Increase\":2,", "\"Increase\":2,\"Increase\":2,");
+            string sibling = Rebuff(R);
+            foreach (string repeated in new[] { conflicting, identical })
+            {
+                foreach (BrownFurPersistedModifierState state in Cycles(RawDocument(repeated, sibling)))
+                {
+                    Assertions.True(ActiveTexts(state).SequenceEqual(new[] { sibling }),
+                        "A record with repeated members became active, or the unrelated sibling was lost: " +
+                        string.Join(" | ", ActiveTexts(state)));
+                    Assertions.True(RetainedTexts(state).SequenceEqual(new[] { repeated }),
+                        "The repeated members were not retained with every occurrence: " + string.Join(" | ", RetainedTexts(state)));
+                }
+                BrownFurPersistedModifierState first = Load(RawDocument(repeated, sibling)).Read();
+                Assertions.True(first.NewlyRejected.Count == 1 && first.NewlyRejected[0].Key == "repeated-member",
+                    "A repeated member was not rejected as such.");
+                BrownFurPersistedModifierRecord original = Load(Document(WrittenRecord())).Read().Active[0];
+                Assertions.Equal(0, BrownFurPersistedModifierPolicy.ResolveIncrease(first.Active, Probe(original)),
+                    "A record with repeated members restored an increase.");
+            }
+            // The repeated record still states its identity, so it withholds a valid record of the same modifier.
+            BrownFurPersistedModifierState ambiguous = Load(RawDocument(R, conflicting)).Read();
+            Assertions.True(ambiguous.Active.Count == 0 && ambiguous.RetainedCount == 2,
+                "A valid record stayed active beside a repeated-member record of the same modifier.");
+        }
+
+        internal static void UnsupportedMetadataAndScalarMembersArePreserved()
+        {
+            string linked = "{\"$id\":\"r\",\"SchemaVersion\":2,\"BuffGuid\":\"" + OtherBuffGuid + "\",\"Link\":{\"$ref\":\"r\"}}";
+            foreach (BrownFurPersistedModifierState state in Cycles(RawDocument(R, linked)))
+                Assertions.True(ActiveTexts(state).SequenceEqual(new[] { R }) &&
+                    RetainedTexts(state).SequenceEqual(new[] { linked }),
+                    "Unsupported metadata or reference text changed: " + string.Join(" | ", RetainedTexts(state)));
+
+            // The released record's own "$id" is the one proven-current normalization.
+            string withId = "{\"$id\":\"1235\"," + R.Substring(1);
+            BrownFurPersistedModifierState released = Load(RawDocument(withId)).Read();
+            Assertions.True(ActiveTexts(released).SequenceEqual(new[] { R }),
+                "The released record's $id was not the only change: " + string.Join(" | ", ActiveTexts(released)));
+
+            // Scalar member values the reader converts before the member converter runs.
+            foreach (string scalar in new[] { "\"2026-11-22T10:00:00+02:00\"", "1e100", "0.1000000000000000055511151231257827", "true", "\"text\"" })
+                foreach (BrownFurPersistedModifierState state in Cycles("{\"_records\":" + scalar + "}"))
+                    Assertions.True(state.Active.Count == 0 && RetainedTexts(state).SequenceEqual(new[] { scalar }),
+                        "A scalar records member was not retained verbatim: " + scalar + " -> " + string.Join(" | ", RetainedTexts(state)));
+
+            // Known limit: an integer beyond Int64 as the member's own value fails in the engine reader before any
+            // member converter runs (Newtonsoft 8 ParseNumber); it cannot be contained at this member.
+            Assertions.True(ThrowsJson(() => Load("{\"_records\":123456789012345678901234567890}")),
+                "The documented Int64 overflow limit at the member's own value changed.");
+        }
+
+        private static bool ThrowsJson(Action action)
+        {
+            try { action(); return false; }
+            catch (JsonReaderException) { return true; }
+        }
+
         private static bool ThrowsAny(Action action)
         {
             try { action(); return false; }

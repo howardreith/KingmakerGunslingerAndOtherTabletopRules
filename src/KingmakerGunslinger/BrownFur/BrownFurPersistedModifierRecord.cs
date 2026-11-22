@@ -24,11 +24,13 @@ namespace KingmakerGunslinger.BrownFur
 
         public BrownFurPersistedModifierRecord() { }
 
-        // RISK-03 (A2): set only by BrownFurPersistedModifierJson. Raw is the
-        // entry's persisted JSON (without the engine's "$id"), written back
-        // unchanged; a record created by gameplay has none. Rejection is null
-        // for a strictly valid record and names the reason otherwise; a
-        // rejected entry never reaches the policy below.
+        // RISK-03 (A2): set only by BrownFurPersistedModifierJson. For a
+        // rejected entry Raw is its full captured JSON text (a JRaw: every
+        // member occurrence, metadata, and each number's source text), written
+        // back unchanged. For a valid released record it is the record's
+        // members without the engine's "$id". A record created by gameplay has
+        // none. Rejection is null for a strictly valid record and names the
+        // reason otherwise; a rejected entry never reaches the policy below.
         internal JToken Raw { get; set; }
         internal string Rejection { get; private set; }
         internal bool IsValid { get { return Rejection == null; } }

@@ -99,7 +99,7 @@ namespace KingmakerGunslinger.BrownFur
                     continue;
                 }
                 BrownFurPersistedModifierRecord entry = records[index] ??
-                    BrownFurPersistedModifierJson.Read(null);
+                    BrownFurPersistedModifierJson.NullEntry();
                 moved.Add(new KeyValuePair<string, BrownFurPersistedModifierRecord>(
                     reasons[index], entry));
                 kept.Add(entry);
