@@ -1,6 +1,9 @@
 # Sprint 6 checkpoint A2: Brown-Fur Powerful Change persistence (RISK-03, second owner)
 
-Status: **implemented and natively qualified for the stated scope; returned for manual review** (2026-11-22).
+Status: **corrected after the first A2 review; natively qualified for the stated scope, with two claims BLOCKED at the
+engine boundary; returned for manual review** (2026-11-22). Section 9 records the review corrections, the engine path
+that unit parts actually take, and which claims are enforced, observed, inferred or unexecuted. Where section 9
+corrects an earlier section, section 9 governs.
 
 - Nothing is merged or released.
 - A1 (Controlled Rage) was accepted by the second manual review for its development scope. Its record is
@@ -20,13 +23,15 @@ build has been shown to write such records. A released record reads and restores
 
 **Before (characterized natively, section 3).** One bad record could break far more than its own modifier.
 
-- Some forms make the engine's own serializer throw: an unknown ability-score name, text where a number belongs, an
-  element that is not an object, or a member that is not an array. The engine settings have no error handler, so the
-  exception leaves the whole file.
-  - For an area file, `AreaDataStash.UnstashAreaState` lets it escape, and the area load fails.
-  - For `party.json`, `ThreadedGameLoader` logs it and drops the party's cross-scene state.
-
-  This is read from decompiled 2.1.7b. These whole-file outcomes were not executed with a broken save.
+- Some forms make the typed record reader throw: an unknown ability-score name, text where a number belongs, an
+  element that is not an object, or a member that is not an array.
+- **Corrected (section 9.1).** For unit parts in a save, that exception does not leave the whole file. Unit parts are
+  read by the engine's `DictionaryConverter`, which catches each part value's exception, logs it, and skips that part.
+  So the whole Brown-Fur part, every valid record on it included, is silently dropped at load. This is read from
+  decompiled 2.1.7b and was not executed on the old code.
+- An earlier version of this record said the exception escaped `AreaDataStash` or `ThreadedGameLoader` and failed the
+  whole file. That was wrong for unit parts. Only a failure inside the engine's own `JArray.Load` of the parts array
+  escapes; an integer beyond Int64 is one, observed natively in session `20261122T165726Z`.
 - Other forms deserialize, but the owner's whole-list validation then throws in its unguarded `PreSave` or `PostLoad`:
   schema 2, a missing member, a null element, exact or conflicting duplicates. A throw in `PostLoad` stops that unit's
   remaining parts, and a throw in `PreSave` aborts the save. It also throws in every read: the Harmony callers swallow
@@ -39,7 +44,8 @@ build has been shown to write such records. A released record reads and restores
 - The save loads.
 - Every valid record whose meaning is established keeps restoring its exact increase.
 - A rejected or ambiguous entry restores nothing; the spell's own base modifier is untouched.
-- The rejected entry stays in the save with its JSON content, through later casts, buff removal or expiry, and saves.
+- The rejected entry stays in the save with the content the engine hands the owner (section 9.2), through later
+  casts, buff removal (an explicit `Buff.Remove`; timer-driven expiry was not exercised) and saves.
 - A new Powerful Change cast of the same spell creates current state again.
 - The log warns when a unit's condition is first read after a load and again when it changes.
 
@@ -127,7 +133,7 @@ recorded every row, not that the rows are acceptable.
 | 7 | Unsupported or unknown content: schema ≠ 1, undefined or unknown score, unknown member | Retained with every member, value and token type. Restores nothing |
 | 8 | Valid siblings beside rejected entries | A valid record stays active unless a rejected entry in the same list could refer to it: each identity field the rejected entry states in a usable form (buff, spell, caster, score, carrier) equals the record's. An entry that states no usable identity (for example `"garbage"`) withholds every valid record in that list. Unrelated siblings stay active |
 | 9 | Repeated reads, callbacks and saves | Idempotent. Normalization returns the same list instances when nothing changes, and retained entries are never re-examined or reactivated |
-| 10 | New committed cast; ordinary recast; removal or expiry | `Remember` replaces only the active record of the same logical modifier. `Forget` removes only active records. Retained entries are untouched, and history never withholds a later cast |
+| 10 | New committed cast; ordinary recast; removal (`Buff.Remove`) | `Remember` replaces only the active record of the same logical modifier. `Forget` removes only active records. Retained entries are untouched, and history never withholds a later cast |
 | 11 | Refused or failed write | `Remember` validates strictly before anything changes, and the store computes both lists before the part assigns either. A refused write leaves the active and retained state unchanged. New writes also refuse undefined scores |
 
 **Persisted form.**
@@ -139,9 +145,14 @@ recorded every row, not that the rows are acceptable.
   is covered by a domain test, not by running an old build.
 - New optional `_rejectedRecords` (same converter) holds retained entries. It is null when there are none, and older
   versions ignore it.
-- **Round-trip guarantee:** lossless JSON content, not byte identity. The converter reads with dates kept as strings and
-  numbers kept as decimals, and writes the same tokens back. Only the engine's top-level `$id` is dropped, because
-  nothing refers to a record and the engine renumbers every save.
+- **Round-trip guarantee.** This replaces the earlier "lossless JSON content" claim, which was too broad; see section 9.2.
+  - On the save path the guarantee is "what the engine hands the owner". Every token the engine's `JArray.Load`
+    produced for the member is kept and written back.
+  - Repeated members, number text beyond long/double and date-string text are lost in the engine before the owner.
+  - Exact source text (repeated members, number digits, date strings) is kept only when the converter reads the
+    file's own reader directly, which unit parts in a save never do.
+  - Rejected entries keep their metadata and references. Only an accepted released record drops the engine's
+    top-level `$id`.
 
 **Diagnostic.** `[brown-fur][powerful-change.persistence.retained]` gives the unit, the active, retained and newly
 rejected counts, and up to four newly rejected entries (reason, length, SHA-256 prefix, 96-character printable
@@ -271,7 +282,8 @@ Observed (all native):
    | unattributable | real STR, SYNTHETIC `"garbage"` | 0 / 2 | STR +4 |
 
 4. **Repeated reads.** Three rounds of `Count` and `RetainedCount` on every part changed nothing.
-5. **Recast, removal and expiry with retained entries present.**
+5. **Recast and removal with retained entries present.** Removal is an explicit `Buff.Remove`; timer-driven expiry was
+   not exercised.
    - **Recast.** On `siblings`, a new real Bull's Strength cast (`Success`) produced STR +6. The part went to 2 active
      (DEX and the new STR) and the same 2 retained entries, unchanged.
    - **Removal.** On `unsupported`, removing the Bull's Strength buff forgot its active record (0 active) and removed
@@ -316,7 +328,8 @@ Observed (all native):
 - **Not established.**
   - A party member's load path. Characterization and qualification used units in the area state; the
     `party.json`/`ThreadedGameLoader` path was not executed.
-  - The whole-file consequences of the old code are read from decompiled code, not executed with a broken save.
+  - The old code's dropped-part outcome (`DictionaryConverter` skips the part) is read from decompiled code. It was
+    not executed with a broken save on the old build.
   - Downgrade is inferred, not executed. The released reader accepts the active records A2 writes (domain test), and
     it ignores `_rejectedRecords` and drops it on its next save.
   - Wisdom, Intelligence, Charisma, Constitution, other carrier families, and the CotW shared-spell routes were not
@@ -330,7 +343,213 @@ Observed (all native):
 
 ## 8. Proposed disposition
 
-- **Brown-Fur's part of RISK-03:** implemented and natively qualified for the stated scope, and ready for review. If the
-  review accepts it, RISK-03 can be proposed for closure for both owners at development scope, with the limits in
-  section 7.
+- **Brown-Fur's part of RISK-03:** corrected and natively qualified for everything that reaches the owner on the engine
+  path, and ready for review. Two claims stay **BLOCKED** at the engine boundary (section 9.4):
+  - repeated record members;
+  - number and date text beyond what the engine's reader keeps, including an integer beyond Int64 that fails the area
+    load before the owner.
+
+  RISK-03 should stay **partial** until the review decides whether those engine-level limits are accepted as
+  documented or require the engine-level proposal.
 - **A1:** accepted. **RISK-02:** open, checkpoint B. **REP-05/REP-06:** BLOCKED on inputs.
+
+## 9. First A2 review corrections (2026-11-22)
+
+Reviewed head `bd02bc563d`. Kept as reviewed: only the released writer's form activates; exact duplicates collapse to
+one active copy; conflicting groups stay inactive; a rejected entry may withhold a record it could refer to; retained
+history is never replayed; a new committed cast establishes current state. The findings were at the JSON input
+boundary and in what the native PASS enforced.
+
+Commits of this pass:
+
+| Commit | Kind |
+|---|---|
+| `fce9f078f3` | product: token-by-token capture (`BrownFurJsonCapture`) and raw-input tests |
+| `caad210696` | product: keep engine-materialized dates as dates; engine dictionary-path test (**corrected product-build commit**) |
+| `53855ead31`, `26840e6267`, `ece40823e7`, `8bf2b0425c`, `6430cb10ea` | harness and session |
+| (this commit) | records |
+
+### 9.1 The engine path unit parts actually take (native finding)
+
+Session `20261122T165726Z` hung in `LoadingSave` (840 s timeout). It loaded a save holding a SYNTHETIC integer beyond
+Int64 inside a retained entry. The player log shows the stack:
+
+`JsonTextReader.ParseNumber` → `JArray.Load` → `Kingmaker…DictionaryConverter.ReadJson` → … →
+`AreaDataStash.DeserializeAreaJson` → `LoadGameException`
+
+The path was `…Descriptor.m_Parts.m_Parts[1].Value._records[3].FutureField.nested[7]`. The decompiled
+`DictionaryConverter.ReadJson` confirms how `UnitPartsManager.m_Parts` is read:
+
+- It runs `JArray.Load(reader)` on the file reader, at the engine reader's settings (`DateParseHandling.DateTime`,
+  `FloatParseHandling.Double`). A Newtonsoft 8 `JObject` keeps the last of repeated members.
+- It then calls `item["Value"].ToObject(type, serializer)` for each part, inside a per-entry try/catch. An exception
+  there is logged and the part is skipped.
+
+Consequences:
+
+- The member converter reads a `JTokenReader`, not the file's reader, for every unit part in a save. Earlier evidence
+  is unaffected: the characterization matrix and the first A2 matrix deserialized the part type directly, which is
+  not the save path, and their observations stay valid as what they were.
+- The old code's "throws" rows did not fail the whole file. The engine dropped the whole Brown-Fur part (sections 1
+  and 7 are corrected).
+- What the owner can receive is what `JArray.Load` produced:
+  - repeated members already collapsed, last wins;
+  - integers within Int64 as longs, every other number as a double;
+  - date-like strings as dates.
+- An integer beyond Int64 fails `JArray.Load`, and so the area load, before any owner code. So does `1e400` on the
+  installed runtime (the matrix row below).
+
+### 9.2 Repairs and the precise guarantee
+
+- **Numbers (finding 3).**
+  - The converter no longer uses `FloatParseHandling.Decimal`, so `1e100` cannot throw in the owner.
+  - When it reads a `JsonTextReader` directly, every number keeps its source text, taken from the reader's character
+    buffer. That covers Newtonsoft 8's own failure for integers beyond Int64 and out-of-range doubles, which is resumed
+    after the number, guarded by the reader's post-value state and the JSON number grammar.
+  - On the save path (`JTokenReader`), numbers are the engine's long or double and are written back as such: `1e100`
+    becomes `1E+100`, and `0.1000000000000000055511151231257827` becomes `0.1`.
+  - **Guarantee:** on the save path, no owner-introduced numeric change. Digits beyond double are lost in the engine
+    before the owner.
+- **Repeated members (finding 4).**
+  - From a direct `JsonTextReader`, a record that repeats any member, whether identical or conflicting, is rejected as
+    `repeated-member` and kept with every occurrence. A field with conflicting occurrences is unusable for matching.
+  - On the save path the engine collapses repeated members before the owner, so they cannot be detected there.
+    **BLOCKED** (9.4).
+- **Metadata (finding 5).** Rejected entries keep their full content, `$id` and `$ref` included. Only an accepted
+  released record drops the engine's top-level `$id`. The engine never interprets content inside this member, so
+  preserving it instantiates nothing.
+- **Scalar member (finding 5).**
+  - From a direct reader, a date-like string as the member's own value is recovered from the reader's most recent
+    string, and a number from its character buffer.
+  - On the save path the engine has already made it a date, and it is kept as the engine's date value, written as the
+    engine writes dates. Native observation: `"2026-11-22T10:00:00+02:00"` came back as
+    `"2026-11-22T03:00:00-05:00"`, the same instant in the host's local offset.
+  - **Repair:** previously a date from the token reader was turned into a culture-formatted string.
+  - An integer beyond Int64 as the member's own value fails in the engine; that is the documented limit.
+
+### 9.3 Focused regressions
+
+- **Reproduction first** (raw strings into the production converter through a `JsonTextReader` at the engine reader's
+  defaults). Before the repair, on the worktree of `bd02bc563d`, `brown-fur.persistence-raw-*` gave **3 of 3 FAIL**:
+  - `"FutureField":1e100` threw `JsonReaderException: Input string '1e100' is not a valid decimal`;
+  - a record with `"Increase":2,"Increase":4` became active with 4;
+  - the `$id` anchor was dropped beside a nested `$ref`.
+- **Now:** `scripts/Invoke-KmgGate.ps1 -Filter 'brown-fur'` gives **100 of 3,177 PASS**, with production compilation.
+  `Build-Local` reran the 100 at `caad210696`. New cases:
+  - `brown-fur.persistence-raw-numbers`:
+    - each of `1e100`, `0.1000000000000000055511151231257827`, `123456789012345678901234567890`, `1e400`, `-1.5E-10`
+      and a nested mix keeps its exact text over four save/reload cycles;
+    - the valid sibling stays exact;
+    - the saved text contains the entry verbatim;
+    - content already in `_rejectedRecords` stays verbatim and inactive.
+  - `brown-fur.persistence-raw-repeated-members`: conflicting and identical repeats are retained with every
+    occurrence, grant nothing, keep the unrelated sibling active, and withhold a valid record of the same modifier.
+  - `brown-fur.persistence-raw-metadata-scalars`:
+    - `$id`/`$ref` are preserved;
+    - a released `$id` is the only normalization;
+    - scalar members (a date string, `1e100`, a high-precision fraction, `true`, text) are retained verbatim;
+    - the Int64 limit at the member's own value is asserted.
+  - `brown-fur.persistence-engine-dictionary-path`:
+    - reproduces the engine's two calls (`JArray.Load`, `ToObject`);
+    - retained content equals what the engine handed over across three cycles;
+    - the two engine limits are asserted (collapse, last wins; Int64 failure).
+  - Preservation assertions compare strings: the raw input, or the engine's own materialization of it. Neither side
+    goes through the product.
+
+### 9.4 Corrected candidate and native qualification
+
+- **Candidate**, built once per product state:
+  - `fce9f078f3`: package `8e968fc4…3e18`, DLL `dc2a6f92…1db1db`, 665 s. Used by the three sessions that exposed the
+    engine path.
+  - `caad210696` (**current**): 557 s; strict standalone UMM package validation passed; 100 of 3,177 selected tests
+    passed. Package `KingmakerGunslinger-0.0.193-development-risk03-brown-fur-persistence-caad21069689.zip`, SHA-256
+    `59739a7fd6c71fccdd764ffbe7a0e4d891de4585252b699d6daa0ab1bb700956`. DLL
+    `b651c69bfb531fe6157519f843601f723085d45b56567fe2de8ba8741a5687b8`.
+- **Sessions:** profile owner-0.33.0 plus Call of the Wild only, fixture `KMCS_AFTER_NORMAL_012_MODONLY.zks`
+  (`0be64b3f…a249`). In every session the transaction completed, the registry readback was verified, owner saves and
+  the installation were unchanged, and there was no host conflict.
+
+| Session | Product DLL | Harness DLL (commit) | Result |
+|---|---|---|---|
+| `20261122T164332Z` | `dc2a6f92…` | `6987ca39…` (`53855ead31`) | **FAIL** before the save: the harness built its manifest with `JObject.FromObject`, which the engine's global DictionaryConverter writes as an array |
+| `20261122T165415Z` | `dc2a6f92…` | `277dbc9c…` (`26840e6267`) | **host-error** after create: the harness result embedded a raw `1e400` that the runner's PowerShell JSON reader rejects. Create's own checks recorded every file text present once and every matrix split as expected |
+| `20261122T165726Z` | `dc2a6f92…` | `77380ca9…` (`ece40823e7`) | **FAIL**, the native finding of 9.1: the fresh process could not load the save (Int64 overflow in the engine's `JArray.Load`) |
+| `20261122T173115Z` | `b651c69b…` | `134a5a8b…` (`8bf2b0425c`) | **FAIL**: the harness expectation had the collapsed identical-repeat record active. The product correctly withheld it, because the schema-2 entry states the same identity |
+| `20261122T173603Z-owner-0.33.0-risk03-bf-persist` | `b651c69b…` | `2881e83f653ecc8884fdfb66e6d98f098998fae1e5c445c999d5e3d1cc77a77e` (`6430cb10ea`) | **PASS** 3 of 3 (create 120 s, reload-mutate 108 s, final 105 s) |
+
+**Accepted session.**
+
+- Lease `runtime-20261122T173603Z-d7dfa61508574af68db22beff084ef49`, completed. Transaction
+  `9b19473a2f9f4341926b2433eaf45892`.
+- `Manual_1_bfq1.zks` `b6249127c14c6c1fdbd5a34ee00f19a7d9af0d561815ffa15ad774917348bd39`.
+- `Manual_2_bfq2.zks` `020b7b813a5944da1530a0a7b2baed8e742f3c9c04a28408fd1fe891b527235c`.
+- `session-summary.json` `b99451b1f9ef4b56d6876bf7cf1e4bb8ca9774805a23c2822655bd205795df8a`.
+- The first A2 PASS (`20261122T154318Z`, DLL `2e4933f4…`) and its two FAIL sessions keep their identities. They are
+  not evidence for the corrected bytes.
+
+**Enforced by the automated PASS (a failure here fails the session).**
+
+1. **Seven targets with real committed Powerful Change casts.** Each cast made exactly one +6 Enhancement modifier.
+2. **SYNTHETIC raw-text entries on six targets.**
+   - Before the save, the expected active and retained texts of every target were written to a profile manifest,
+     bound to the unit ids and the fixture.
+   - The product's own reading of each injected text had to reproduce it exactly.
+   - The written save had to contain each target's exact expected `"_records":[…]` text exactly once, and it did for
+     all seven. So the file held `1e100`, `0.1000000000000000055511151231257827`, the date-like string, both
+     repeated-member occurrences and the `$id`/`$ref` text.
+3. **Native callbacks.** On every part, in both fresh processes, exactly one native `PostLoad` was observed and
+   completed. The first consumer was recorded; it was `PostLoad` on all seven, with no `ResolveIncrease` before it.
+   The owner reads lazily and totally, so correctness does not depend on that order.
+4. **Content comparisons.** At the first fresh load and at the final fresh load, every target's active and retained
+   texts were compared ordinally with the manifest's expectation: the engine-materialized texts, split by the reviewed
+   policy. The final expectation is derived from the reviewed mutations.
+5. **Modifiers.**
+   - valid +6;
+   - siblings: STR +4 with the base kept (withheld), DEX +6;
+   - conflict +4; exact +6, not +8; unsupported +6; unattributable +4;
+   - after the recast, siblings STR +6;
+   - after removal, unsupported has no modifier;
+   - after the refused write, exact DEX +4 and STR still +6;
+   - **repeatedMember +8, asserted as the documented limitation.**
+6. **Refused write.** It fired exactly once, and the refused record was the new Cat's Grace Dexterity record from this
+   caster. The part's active and retained state and the Strength modifier were unchanged.
+7. **Serializer matrix, 26 rows, through the engine's own `DictionaryConverter` instance.**
+   - Each row's expectation follows the engine: a row whose text the engine's own reader cannot read is expected to
+     fail there, before the owner. Those rows are the nested Int64 overflow, nested `1e400`, and the scalar Int64
+     overflow. Every other row loaded with its expected active/retained split and restored increase, and its expected
+     text appears in the normalized rewrite.
+   - The two repeated-member rows assert the limitation (collapsed; increase 4 and 2).
+8. **Log needles.** Reload `newlyRejected` counts per part (2, 2, 1, 5, 2). The final log has no new rejection.
+
+**Observed and inspected, not separately enforced.**
+
+- The engine's date conversion to the host offset.
+- The engine scanned the public converter into its global converters.
+- Each launch has only the native `BugReportCanvas.OnEnable` NullReferenceException.
+
+**Inferred from source.**
+
+- The old build drops the whole part on unconvertible records (decompiled `DictionaryConverter`).
+- Downgrade behavior.
+- On the save path, the old converter's `Decimal` setting never applied, because token values were already parsed.
+
+**BLOCKED at the engine boundary, with a proposal.**
+
+- **Repeated members** and **number/date text beyond what the engine's reader keeps** cannot be handled in the owner,
+  because the engine materializes the parts array before any owner code.
+- **Integer beyond Int64** (and `1e400`) inside any unit part fails the area load in the engine. That is no worse than
+  before A2, and A2 never writes such numbers from save-path input.
+- **Concrete proposal (not implemented).** Add a Harmony prefix on `DictionaryConverter.ReadJson`, active only when the
+  target type is `UnitPartsManager.m_Parts`:
+  - it would load the array with the same last-wins and number semantics for every other part;
+  - for the Brown-Fur entry only, it would attach `BrownFurJsonCapture`'s raw capture to the `_records` tokens as a
+    `JToken` annotation, which the member converter would read;
+  - an unrepresentable number would be kept as text inside the Brown-Fur entry instead of failing the area.
+
+  This touches the loading of every unit's parts. It is a decision for review, not an owner-local change.
+
+  A lighter alternative: newly written records carry an owner digest of their members, so a later external edit,
+  including a collapsed repeat, is detected. That would change the released form, so it is also a decision.
+
+**Unexecuted.** Party-member loading, downgrade, other spells and carriers, timer-driven expiry, and the old build
+against a broken save.

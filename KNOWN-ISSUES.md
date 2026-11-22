@@ -7,9 +7,15 @@
     is kept: Bull's Strength gives +4 instead of +6 until it is cast again with Powerful Change.
   - The record's content stays in the save, and the log warns when a character's condition is first read after a load
     and again when it changes.
-  - In the published v0.0.193, from the decompiled engine and a native characterization: some of these forms throw out
-    of the engine's serializer before the mod runs, failing the area load or dropping the party's cross-scene state.
-    Others throw in the mod's save and load callbacks. The whole-file outcome was not executed.
+  - In the published v0.0.193 (from the decompiled engine, not executed): unit parts are read by the engine's
+    `DictionaryConverter`, which skips a part whose value fails to convert. So an unconvertible record silently drops
+    the whole Brown-Fur part, every valid increase on it included. Other forms throw in the mod's save and load
+    callbacks.
+  - Still not handled, because the engine changes the data before the mod sees it:
+    - a record that repeats a member is read as its last occurrence, and a conflicting repeated `Increase` can grant
+      that increase;
+    - numbers and date-like strings arrive as the engine's own values;
+    - an integer beyond Int64 inside any unit part fails the area load in the engine.
   - No ordinary build has been shown to write such records.
   - Details: `docs/GUNSLINGER-SPRINT6-A2-BROWN-FUR-PERSISTENCE.md`.
 - Malformed Controlled Rage data in a save (S6 T4 / RISK-03, checkpoint A1). On branch
