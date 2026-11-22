@@ -500,6 +500,17 @@ namespace KmgLoaderCompatHarness
                     return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
                 }
 
+                case "kmgMultiLink":
+                {
+                    // S6 checkpoint C2 / VER-02: "match" is multilink or multilinkReload (see MultiLinkProbes.cs).
+                    string identity = StepIdentity(step);
+                    if (!probes.IsActive) probes.Begin(identity, new MultiLinkProbe(step.Match));
+                    ProbeOutcome outcome = probes.Poll(identity);
+                    if (outcome == null) return StepStatus.Running;
+                    RecordProbe(outcome);
+                    return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
+                }
+
                 case "kmgControlledRage":
                 {
                     // S6 T4 / RISK-03: "match" is create, reload or final; invariants.saveLabel names the save create
