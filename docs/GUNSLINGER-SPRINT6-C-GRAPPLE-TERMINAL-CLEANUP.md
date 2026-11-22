@@ -295,3 +295,10 @@ spell's `AbilityTargetHasFact` requires `SubtypeExtraplanar`, which the crocodil
 - `195339Z`: PASS, harness `911bdcf5…6eb6ca`.
 - `200003Z`: launches 1–2 PASS, launch 3 refused (scripted exit); harness `33530ca8…f4bd72`.
 - `200515Z`: PASS, harness `33530ca8…f4bd72`.
+
+## 9. Later checkpoints
+
+- **C2 (G2 Giant Flytrap multi-link):** `docs/GUNSLINGER-SPRINT6-C2-MULTILINK-TERMINAL-CLEANUP.md`.
+- C2's finding F1 explains section 8's save inspection: the engine's save routine turns facts off before serializing.
+  `SummonHoldComponent.OnTurnOff` therefore released the target side and the record, and the holder's native
+  initiator part stayed.

@@ -1,5 +1,15 @@
 # Known issues and conservative adaptations
 
+- Saving while an Expanded Summoning creature holds a target ends the hold (S6 VER-02, checkpoint C2 finding; open,
+  owner decision pending; no change made).
+  - Saving is only possible out of combat. When a summon holds a target at that moment, the save releases the hold in
+    the running game: the target is freed and the hold does not resume. The saved file never contains the active hold.
+  - Cause: the engine's save routine turns every effect off before writing and back on afterwards, and the summon hold
+    effects treat being turned off as the end of the hold.
+  - How this was established: observed natively for the Giant Flytrap on the accepted development candidate
+    `4e11e6c25c`, and consistent with checkpoint C1's single-link save. That the published versions behave the same is
+    inferred from their identical source; it was not run on released bytes. Details:
+    `docs/GUNSLINGER-SPRINT6-C2-MULTILINK-TERMINAL-CLEANUP.md`, section 4.
 - Brown-Fur Powerful Change increase lost after loading when the caster companion was dismissed (S6 T3 / RISK-02,
   checkpoint B, accepted by manual review for its demonstrated development scope; not merged, not released).
   - The scenario: a custom Brown-Fur companion casts a Powerful Change spell on someone and is then dismissed while
