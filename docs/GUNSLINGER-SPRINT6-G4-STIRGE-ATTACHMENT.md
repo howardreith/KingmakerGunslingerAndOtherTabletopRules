@@ -1,7 +1,9 @@
 # Sprint 6 checkpoint G4 (VER-02): retained Stirge attachment lifecycle and the shared Remove Stirge action
 
-Status: **qualified natively on the accepted C3a product with no product change; returned for manual review**
-(2026-11-23). VER-02 stays open. Nothing is merged, released or republished.
+Status: **G4 accepted by manual review (2026-11-23)** for its demonstrated retained-Stirge development scope, at head
+`6cf8934591` (base `631a66e5cf`; product `9e902dfa80` unchanged). Section 7 records the decision and the corrected
+claims; where it corrects an earlier section, section 7 governs. The Stirge stays withdrawn. VER-02 stays open. Nothing
+is merged, released or republished.
 
 - Branch `codex/s6-ver02-g4-stirge-attachment` is stacked on the C3c/G3 acceptance-records head `631a66e5cf`
   (`codex/s6-ver02-c3c-flytrap-multi-engulf`, draft PR #209). The stack is not rebased.
@@ -93,7 +95,8 @@ not repeated here.
 - Captured path: `Detach(A)` → `OnTurnOff` (owner on) → `ReleaseRemoveAction(P)`, which kept the action
   (`hasAction: true`, because B still names P).
 - Source inference: the caller was `FollowAttached` from the view's `LateUpdate`. It is the only caller that detaches
-  on a dead owner without a preceding round tick. Without the Stirge visual, `OnNewRound` would detach within a round.
+  on a dead owner without a preceding round tick. (Withdrawn: an earlier sentence here claimed that without the Stirge
+  visual `OnNewRound` would detach within a round. `OnNewRound` does not check owner death; see section 7.)
 
 **Last-owner termination (P's Remove Stirge against B).** P's own ability ran through the native command
 (`UnitUseAbility.CreateCastCommand` → `UnitCommands.Run`) and ability execution. Release after 1.82 s of game time
@@ -140,8 +143,8 @@ not repeated here.
   - F alive and attached to T after one drain round (meal 1; T Constitution damage 1);
   - the synthetic orphan unit holds one Remove Stirge fact;
   - native admission allowed.
-- **Save, asserted:** full completion (callback received, no commit, no loading in progress) and an unchanged paused
-  clock.
+- **Save, asserted:** full completion (callback received, no commit, no loading in progress). The unchanged paused
+  clock is **captured** (recorded, not gated).
 - **Captured during the save:** `OnTurnOff` of F's hold with **owner off** cleared the target, and
   `ReleaseRemoveAction(T)` removed T's action, both **before serialization**. This is the legacy save-time detachment.
 - **Running process after the save (captured):**
@@ -153,7 +156,8 @@ not repeated here.
   - F has no constraints;
   - T has no action;
   - over 13.0 s: no drain, nothing recreated;
-  - T's Constitution damage kept, and its unrelated effect kept.
+  - T's Constitution damage not healed and its unrelated effect kept, measured from the post-save baseline. That the
+    damage was unchanged **across** the save is captured, not gated.
 - **Disposition:** the ≤ 1-round targetless hold on the Stirge after a save is existing legacy behavior. It is
   self-clearing and is not a stuck state, so it was not repaired.
 
@@ -176,7 +180,10 @@ holds **no orphan action**. The only orphan action in the input is the labelled 
   - at load and after 13.0 s: F names no target and has no hold buff or constraints;
   - T has no action; the **synthetic orphan fact is gone**;
   - no drain, nothing recreated;
-  - T's unrelated effect and Constitution damage kept (1 at load, the saved value).
+  - T's unrelated effect kept, and no healing or drain measured from the **at-load** baseline.
+- **Captured / manual:** T's Constitution damage was 1 at load, matching the value before the save and the written
+  file. Preservation across save/load is captured and manual-inspection evidence; the gate's baseline is the loaded
+  value.
 - **Captured native load-hook path** (all with loading in progress): `Game.OnAreaLoaded` → `ResetLoadedGrapples` →
   `Detach(F)` (hold removed) → `ReleaseRemoveAction` over the units, removing the synthetic fact (`hadAction: true` →
   `false`) → `SweepStirge` returning 1.
@@ -193,8 +200,9 @@ holds **no orphan action**. The only orphan action in the input is the labelled 
 
 ## 4. Persistent consequences versus attachment residue
 
-- **Constitution damage** already inflicted (P: 1; T: 1) stayed after each release and after the load. Cleanup did not
-  heal it (asserted at removal, after quiet, and at reload).
+- **Constitution damage** already inflicted (P: 1; T: 1) stayed after each release. Cleanup did not heal it (asserted
+  at removal and after quiet; after the save and at reload asserted from post-boundary baselines). Preservation across
+  the save/load boundary itself is captured/manual evidence (section 7).
 - **Filth fever:** no victim contracted it in these runs (a 10% exposure per victim per Stirge). Its preservation
   through cleanup was therefore not exercised. The once-per-victim disease record on the Stirge is serialized rule
   state, not attachment residue.
@@ -207,7 +215,8 @@ holds **no orphan action**. The only orphan action in the input is the labelled 
 - **Captured:** callback paths, release timings, the save-time detachment, the targetless hold after a save, attack
   counts, the in-memory counter at load.
 - **Manual saved-file inspection:** section 3.4.
-- **Source inferences:** the `FollowAttached` caller; release by `OnNewRound` when no Stirge visual is present.
+- **Source inferences:** the `FollowAttached` caller. (The earlier "release by `OnNewRound` when no Stirge visual is
+  present" is withdrawn for owner death; section 7.)
 - **Historical:** the attack, drain, meal and disease mechanics (released runtime assertions).
 - **Defects:** none demonstrated. No product change, build or broad suite.
 - **Limits:**
@@ -215,7 +224,7 @@ holds **no orphan action**. The only orphan action in the input is the labelled 
   - filth fever preservation is unexercised;
   - translocation is unexercised;
   - the `HandlePartyLeaveArea` sweep remains with G5 (fixture-blocked);
-  - release by `OnNewRound` with no Stirge visual is source-inferred;
+  - owner death and other terminals without the Stirge visual are unqualified (section 7);
   - removal by the CMB branch (as opposed to Mobility) is historical only.
 
 ## 6. Recommendation
@@ -234,3 +243,25 @@ Giant Crab configurations.
 
 **Restoration:** both sessions' transactions completed with game settings applied and owner files verified. No peer
 session or Kingmaker process was present when checked before the runs.
+
+## 7. Review decision and corrected claims (2026-11-23)
+
+**G4 is accepted for its demonstrated retained-Stirge development scope** on product `9e902dfa80`. The Stirge stays
+withdrawn (CUT-01). G3 and G4 acceptance do not qualify G5, turn-based timing or the other retained limitations.
+
+**Corrections:**
+
+- **No-visual cleanup (withdrawn guarantee).** The earlier statement that, without the Stirge visual, `OnNewRound`
+  would release an owner-death attachment within a round is **withdrawn**. By source: `FollowAttached` (driven by
+  `StirgeVisualTouch.LateUpdate`) handles owner death; `OnNewRound` directly handles only a missing summon marker and a
+  null or dead target. Owner death and any other no-visual terminal behavior stay **unqualified** unless a further
+  engine contract is established (for example, that a dead owner's buffs stop ticking or are removed).
+- **Paused save clock:** captured, not asserted.
+- **Constitution across save/load:** preservation across the boundary is captured and manual saved-file evidence. The
+  gates establish only the subsequent no-healing/no-drain behavior, from their post-save and at-load baselines.
+- **Delays retained as legacy behavior within the tested RTWP scope:** the 6.01 s release after expiry (the hold's
+  next-round missing-marker guard) and the 6.0 s targetless hold after a save (the next-round null-target guard).
+- **Kept:** the separate harness identities (`af6a2d27…55ca1` for save/reload, `545865cf…d018` for the lifecycle
+  rerun) and the original failed lifecycle launch (`033015Z` launch 1, oracle defect).
+
+This is a records-only update, with no product build or native rerun.
