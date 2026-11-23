@@ -4,6 +4,7 @@ using System.Linq;
 using Harmony12;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
 using Kingmaker.UnitLogic;
@@ -158,12 +159,16 @@ namespace KingmakerGunslinger.UrbanBarbarian
                 IsUrbanRageActive(owner)) return false;
             UnitPartControlledRageSelection part = owner.Ensure<
                 UnitPartControlledRageSelection>();
+            object previous = part.CaptureSnapshot();
             part.Unlock(tier);
-            ControlledRageAllocation previous = part.SelectionFor(tier);
-            if (!part.TrySelect(tier, allocation, false)) return false;
-            if (SynchronizeSelectionFacts(owner, part)) return true;
-            part.TrySelect(tier, previous, false);
-            SynchronizeSelectionFacts(owner, part);
+            if (part.TrySelect(tier, allocation, false) &&
+                SynchronizeSelectionFacts(owner, part)) return true;
+            // A failed selection is one transaction: the staged marker
+            // synchronization has already left every marker as it was before
+            // the call, and this restores the exact prior persisted values,
+            // including a tier that was blocked before this explicit selection
+            // (RISK-03). Nothing is re-synchronized from the restored part.
+            part.RestoreSnapshot(previous);
             return false;
         }
 
@@ -205,24 +210,42 @@ namespace KingmakerGunslinger.UrbanBarbarian
             SynchronizeSelector(owner, fallback);
         }
 
+        // Staged: every missing selected marker is added first; only when all
+        // additions succeed are stale markers removed. A failed addition
+        // removes exactly the marker instances this call added and returns
+        // false, so the pre-call marker set is unchanged on every tier.
         private static bool SynchronizeSelectionFacts(UnitDescriptor owner,
             UnitPartControlledRageSelection part)
         {
+            var kept = new Dictionary<ControlledRageTier, ControlledRageAllocation>();
+            var added = new List<Fact>();
             foreach (ControlledRageTier tier in new[] {
                 ControlledRageTier.Ordinary, ControlledRageTier.Greater,
                 ControlledRageTier.Mighty })
             {
+                // A blocked tier's selection facts are left as they are: the
+                // part retains its rejected input and grants nothing for it.
+                if (part.IsBlocked(tier)) continue;
                 ControlledRageAllocation selected = part.SelectionFor(tier);
+                kept.Add(tier, selected);
+                if (selected == null || owner.HasFact(_factsByAllocation[selected]))
+                    continue;
+                Fact fact = owner.AddFact(_factsByAllocation[selected]);
+                if (fact == null)
+                {
+                    for (int index = added.Count - 1; index >= 0; index--)
+                        owner.RemoveFact(added[index]);
+                    return false;
+                }
+                added.Add(fact);
+            }
+            foreach (KeyValuePair<ControlledRageTier, ControlledRageAllocation>
+                    tier in kept)
                 foreach (ControlledRageAllocation allocation in
-                    ControlledRageAllocationPolicy.Generate(tier))
-                    if (!Equals(allocation, selected) &&
+                    ControlledRageAllocationPolicy.Generate(tier.Key))
+                    if (!Equals(allocation, tier.Value) &&
                         owner.HasFact(_factsByAllocation[allocation]))
                         owner.RemoveFact(_factsByAllocation[allocation]);
-                if (selected != null &&
-                    !owner.HasFact(_factsByAllocation[selected]) &&
-                    owner.AddFact(_factsByAllocation[selected]) == null)
-                    return false;
-            }
             return true;
         }
 

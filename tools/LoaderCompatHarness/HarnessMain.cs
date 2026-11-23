@@ -83,6 +83,13 @@ namespace KmgLoaderCompatHarness
                     catch (Exception exception) { evidence.Event("toggleHookUnavailable", exception.Message); }
                     try { PanelText.Install(harmony); }
                     catch (Exception exception) { evidence.Event("panelTextHookUnavailable", exception.Message); }
+                    // Requested launches only; a failure here is recorded and the probe that needs it then fails.
+                    try
+                    {
+                        JToken observer = ControlledRageObserver.Install(harmony);
+                        if (observer != null) evidence.Event("controlledRageObserverInstalled", observer.ToString(Formatting.None));
+                    }
+                    catch (Exception exception) { evidence.Event("controlledRageObserverUnavailable", exception.ToString()); }
                 }
 
                 runner?.Tick();

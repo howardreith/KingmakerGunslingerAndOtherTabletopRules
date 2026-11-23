@@ -1,0 +1,74 @@
+{
+  "name": "risk03-crage-persist",
+  "description": "S6 T4 / RISK-03 checkpoint A1: Controlled Rage persistence across real native PreSave/PostLoad and fresh processes. The product runs alone beside the harness, with every module on. Launch 1 loads the disposable fixture save. It builds valid state on the main character and on four disposable units spawned from the registered default player blueprint: the real Controlled Rage and Greater grants (the production tier controllers' first-unlock defaults), then allocations chosen through the real allocation abilities via UnitUseAbility. It checks the pre-save state and rage grants. It then arms SYNTHETIC raw _state values on the four disposable units only (a malformed Greater entry beside a valid ordinary one; a conflicting ordinary duplicate; an unattributable future-format payload; an identical duplicate with an unknown tier beside valid tiers). The observer writes them after the product's own PreSave, so the save file holds them, and the probe saves. Launch 2, a fresh process on that save, requires that each part's native PostLoad completed and migrated exactly as specified. It checks restored selections, blocked tiers, verbatim retained input, rage grants and idempotent repeated reads. It then makes ordinary mutations: allocation abilities, an explicit choice for a blocked tier and a later Greater grant on an all-blocked unit. It runs a forced failed write (UnitHelper.AddFact returns null for one selection fact) and saves. Launch 3, a fresh process on the second save, requires that every mutation and retained payload survived the next native PreSave and PostLoad. No engine-logged exception may name Urban Barbarian code. The product's bounded diagnostic must appear exactly once for each newly rejected input. A1 review repairs: launch 1 also builds five more disposable units through the same gameplay paths. Three receive a SYNTHETIC null _state beside one retained history entry (review inputs A \"4:0,4,0;4:0,4,0\", B \"4:0,4,0;10:4,4,2\", C \"4:0,4,0;6:bad\"). Launch 2 requires that they stay blocked, with no allocation, through the native PostLoad, ordinary reads, unlocks and raging. It recovers them only through explicit allocation abilities; C also keeps Greater blocked through a later Greater grant until Greater's own explicit choice. The other two units cover failed-selection rollback. In the reload process a SYNTHETIC in-memory _state blocks the ordinary tier while its gameplay-created marker is present. UnitHelper.AddFact is forced to fail once: either for the replacement ordinary marker, or, after Greater Rage is removed, for the later Greater tier's missing marker after the ordinary addition succeeded. Each AddFact attempt is recorded, and persisted values, blocked tiers, markers, selectors and rage are compared before and after; a successful explicit selection follows. Launch 3 requires that all of these survived the next native PreSave and PostLoad.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "create",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": { "observeControlledRagePersistence": "true" },
+      "expectLog": {
+        "present": [ "[blueprints][initialize.complete]" ],
+        "absent": [ "[initialize.failed]" ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "kmgModules", "label": "all-on", "match": "" },
+          { "op": "kmgInitialization", "label": "create", "expect": "completed" },
+          { "op": "kmgControlledRage", "label": "create", "match": "create", "invariants": { "saveLabel": "risk03cr1" }, "timeoutSeconds": 300 }
+        ]
+      }
+    },
+    {
+      "label": "reload-mutate",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": { "observeControlledRagePersistence": "true" },
+      "expectLog": {
+        "absent": [ "[initialize.failed]" ],
+        "present": [
+          "[blueprints][initialize.complete]",
+          "activeTiers=none;blockedTiers=4;retainedPayloads=1;newlyRejected=none",
+          "activeTiers=none;blockedTiers=4,6;retainedPayloads=1;newlyRejected=none",
+          "activeTiers=none;blockedTiers=4;retainedPayloads=1;newlyRejected=length=23,",
+          "activeTiers=6;blockedTiers=4;retainedPayloads=1;newlyRejected=length=23,"
+        ],
+        "once": [
+          "activeTiers=4;blockedTiers=6;retainedPayloads=1;newlyRejected=length=15,",
+          "activeTiers=none;blockedTiers=4;retainedPayloads=1;newlyRejected=length=15,",
+          "activeTiers=none;blockedTiers=4,6,8;retainedPayloads=1;newlyRejected=length=34,",
+          "activeTiers=4,6;blockedTiers=none;retainedPayloads=1;newlyRejected=length=32,"
+        ]
+      },
+      "harness": {
+        "save": "$written:risk03cr1",
+        "steps": [
+          { "op": "expectLoadedFrom", "match": "risk03cr1" },
+          { "op": "kmgModules", "label": "all-on", "match": "" },
+          { "op": "kmgControlledRage", "label": "reload", "match": "reload", "timeoutSeconds": 300 },
+          { "op": "saveGame", "label": "risk03cr2", "timeoutSeconds": 120 }
+        ]
+      }
+    },
+    {
+      "label": "final",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": { "observeControlledRagePersistence": "true" },
+      "expectLog": {
+        "present": [ "[blueprints][initialize.complete]", "retainedPayloads=1;newlyRejected=none" ],
+        "absent": [ "[initialize.failed]", "newlyRejected=length=" ]
+      },
+      "harness": {
+        "save": "$written:risk03cr2",
+        "steps": [
+          { "op": "expectLoadedFrom", "match": "risk03cr2" },
+          { "op": "kmgModules", "label": "all-on", "match": "" },
+          { "op": "kmgControlledRage", "label": "final", "match": "final", "timeoutSeconds": 300 }
+        ]
+      }
+    }
+  ]
+}
