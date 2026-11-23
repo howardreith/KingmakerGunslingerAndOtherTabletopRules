@@ -391,7 +391,7 @@
 - Oleg's cold iron branched spears (withdrawn in v0.0.183). Shared vendor stock
   persists only item types and counts, so a stocked original and a copy sold back to
   Oleg cannot be told apart. Under the owner policy of 2026-11-23 (Sprint 6 D1,
-  LIM-01, development candidate `634a6efdd3`), the withdrawn rows are no longer
+  LIM-01, development candidate `634a6efdd3`; not merged or released), the withdrawn rows are no longer
   stocked on fresh tables, and any cold iron spear already in Oleg's saved stock is
   kept rather than subtracted. Some authored stock can therefore remain buyable in an
   older save. On the accepted product before D1 the engine's update removed such a copy, a
@@ -527,7 +527,7 @@
   are unchanged. The roster report now shows 1,208 admitted, 9 withheld, 0 missing and 15 approved out of scope
   against the unchanged 1,232 ideal; the original ideal is not fully published.
 - Dire Narlmarches and Pitax regional weapon stock (withdrawn in v0.0.185). Same policy as Oleg's spears
-  (Sprint 6 D1, LIM-01): fresh tables carry no authored branched spear or Eastern rows, and every copy already
+  (Sprint 6 D1, LIM-01; not merged or released): fresh tables carry no authored branched spear or Eastern rows, and every copy already
   in a saved stock (original or sold back, which the save cannot distinguish) is kept. A purchased copy is never
   replenished. A save with no persisted known-item history also keeps its copies. Player inventory is never touched.
 - Thornstep (retired from acquisition in v0.0.183). In its former Riverine Rise
