@@ -1,0 +1,48 @@
+{
+  "name": "ver02-g1r-native-lethal",
+  "description": "S6 VER-02 G1-R correction (review of PR #212): five selected lethal-terminal damage owners qualified under native life-update timing, on the accepted C3a product. Contract: the synchronous maintain/rider may finish while native life state is pending; once the engine establishes death the exact relationship cleans up through the normal native/product lifecycle within 10 frames / 1.0 s of native Dead, with no later damaging round, no recreated hold, no loss of unrelated ownership and no stuck holder; rider work between the threshold crossing and native death is captured as retained behavior. A Snake weapon-lethal; B Snake constrict-lethal after surviving the weapon damage; C Salamander constrict-lethal likewise; D Crocodile later-round death roll; E Barbed Devil later-round Impale. Targets: disposable native hostile NPCs with their own faction and death policy (no Ferocity, regeneration, dying allowance, immortality or Cheat Death, verified per unit); ordinary RTWP combat. Disclosed: target HP base 100000 then Damage = HP - margin before the decisive round (1 for A/D/E; establishing weapon maximum + 1 for B/C), target escape stats -100, no XP on death, brains off (main character and pre-existing living area NPCs: IsBrainActive only, restored at teardown), holder BAB 100, summon deadlines 600 s, placement within 10.5 m, two same-owner controls per case.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "nativeLethal",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgBarbedCrab",
+            "label": "nativeLethal",
+            "match": "lethal",
+            "timeoutSeconds": 900
+          }
+        ]
+      }
+    }
+  ]
+}

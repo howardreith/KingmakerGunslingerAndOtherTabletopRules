@@ -1,0 +1,48 @@
+{
+  "name": "ver02-g1r-diag-a",
+  "description": "S6 VER-02 G1-R diagnostic: case A only, with read-only observers of the target Damage setter (stack on decrease) and the native UnitLifeController tick, to identify why the first lethal threshold crossing does not produce native death.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "diagA",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgBarbedCrab",
+            "label": "diagA",
+            "match": "lethal:A",
+            "timeoutSeconds": 900
+          }
+        ]
+      }
+    }
+  ]
+}
