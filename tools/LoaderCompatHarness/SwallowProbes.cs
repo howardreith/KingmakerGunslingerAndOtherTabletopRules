@@ -103,7 +103,7 @@ namespace KmgLoaderCompatHarness
             try
             {
                 IEnumerable<object> body = mode == "victims" ? Victims() : mode == "holders" ? Holders() : mode == "save" ? Save() : mode == "reload" ? Reload() :
-                    mode == "reach" ? Reach() : null;
+                    mode == "reach" ? Reach() : mode == "activeExpiry" ? ActiveExpiry() : mode == "saveCadence" ? SaveCadence() : null;
                 if (body == null) { problems.Add("unknown mode " + mode); yield break; }
                 foreach (object step in body) yield return step;
             }
@@ -627,6 +627,204 @@ namespace KmgLoaderCompatHarness
             ExpectSwallowed(w, 0, "save.after");
             ExpectSwallowed(f, 0, "save.after");
             ExpectHeld(f, 1, "save.after.sibling");
+        }
+
+        // ---------------------------------------------------------------- C3a R1: active engulf expiry
+
+        /// <summary>
+        /// A mixed Flytrap relationship (a living victim engulfed through the real maintain path and a living
+        /// engulf-ineligible held sibling) expires through the native deadline/tick path while both are active.
+        /// </summary>
+        private IEnumerable<object> ActiveExpiry()
+        {
+            var cases = new JObject();
+            result["cases"] = cases;
+            Rel control = null;
+            foreach (object step in EstablishControl(x => control = x)) yield return step;
+            if (control == null) yield break;
+            Rel f = null;
+            foreach (object step in Establish("activeExpiry", "giant-flytrap", trapSpot, new[] { "medium", "horse" }, x => f = x)) yield return step;
+            if (f == null) yield break;
+            Buff unrelatedVictim = AddUnrelated(f.Targets[0]);
+            Buff unrelatedSibling = AddUnrelated(f.Targets[1]);
+            foreach (object step in AwaitPromotion(f, new[] { 0 }, "activeExpiry")) yield return step;
+            if (!promotionOk) yield break;
+            Game.Instance.IsPaused = true;
+            yield return null;
+            int before = problems.Count;
+            ExpectSwallowed(f, 0, "activeExpiry.precondition");
+            ExpectHeld(f, 1, "activeExpiry.precondition.sibling");
+            ExpectHeld(control, 0, "activeExpiry.precondition.control");
+            if ((bool)T(State(f), 0)["dead"] || (bool)T(State(f), 1)["dead"]) problems.Add("activeExpiry: a victim is not alive before the expiry");
+            var row = new JObject { ["before"] = State(f), ["control"] = State(control) };
+            cases["activeEngulfExpiry"] = row;
+            if (problems.Count > before) yield break;
+            int seq = LastSeq;
+            Buff marker = f.Holder.Descriptor.Buffs.Enumerable.First(b => ReferenceEquals(b.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff));
+            typeof(Buff).GetProperty("EndTime", Any).SetValue(marker, Game.Instance.TimeController.GameTime - TimeSpan.FromMilliseconds(1), null);
+            f.Holder.Descriptor.Buffs.UpdateNextEvent();
+            f.Holder.Descriptor.Buffs.Tick();
+            row["markerAttachedAfterTick"] = f.Holder.Descriptor.Buffs.RawFacts.Contains(marker);
+            foreach (object step in SettleGameTime(1.0, 25f, () => f.Holder.Destroyed && !IsSwallowed(f, 0) && !IsHeld(f, 1))) yield return step;
+            row["after"] = State(f);
+            row["callbacks"] = Events(seq, e => true);
+            if (!f.Holder.Destroyed) problems.Add("activeEngulfExpiry: the holder was not destroyed");
+            ExpectFreed(f, 0, "activeEngulfExpiry.engulfed");
+            ExpectFreed(f, 1, "activeEngulfExpiry.held");
+            foreach (object step in ExpectQuiet(f, new[] { 0, 1 }, "activeEngulfExpiry", row)) yield return step;
+            if (unrelatedVictim == null || !f.Targets[0].Descriptor.Buffs.RawFacts.Contains(unrelatedVictim)) problems.Add("activeEngulfExpiry: the engulfed victim's unrelated effect was not kept");
+            if (unrelatedSibling == null || !f.Targets[1].Descriptor.Buffs.RawFacts.Contains(unrelatedSibling)) problems.Add("activeEngulfExpiry: the sibling's unrelated effect was not kept");
+            ExpectHeld(control, 0, "activeEngulfExpiry.control");
+            cases["controlFinal"] = State(control);
+        }
+
+        // ---------------------------------------------------------------- C3a R1: payload cadence through a save, then two real terminals
+
+        private static readonly PropertyInfo BuffNextTick = typeof(Buff).GetProperty("NextTickTime", Any);
+        private static readonly PropertyInfo BuffTickTime = typeof(Buff).GetProperty("TickTime", Any);
+
+        private Buff PayloadOf(Rel r, int i) => r.SwallowedBuff == null ? null :
+            r.Targets[i].Descriptor.Buffs.RawFacts.OfType<Buff>().FirstOrDefault(b => ReferenceEquals(b.Blueprint, r.SwallowedBuff));
+
+        private JObject PayloadRound(Rel r, int i)
+        {
+            Buff p = PayloadOf(r, i);
+            if (p == null) return null;
+            return new JObject
+            {
+                ["instance"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(p), ["roundNumber"] = p.RoundNumber,
+                ["nextTickTicks"] = ((TimeSpan)BuffNextTick.GetValue(p, null)).Ticks, ["tickTimeTicks"] = ((TimeSpan)BuffTickTime.GetValue(p, null)).Ticks,
+                ["caster"] = p.Context?.MaybeCaster?.UniqueId, ["active"] = p.Active, ["damage"] = r.Targets[i].Descriptor.Damage
+            };
+        }
+
+        private IEnumerable<object> SaveCadence()
+        {
+            var cases = new JObject();
+            result["cases"] = cases;
+            Rel control = null;
+            foreach (object step in EstablishControl(x => control = x)) yield return step;
+            if (control == null) yield break;
+            Buff controlUnrelated = control.Targets[0].Descriptor.Buffs.RawFacts.OfType<Buff>().FirstOrDefault(b => b.Blueprint.AssetGuid == UnrelatedBuffGuid);
+            Rel w = null, f = null;
+            foreach (object step in Establish("cadenceWorm", "purple-worm", wormSpot, new[] { "medium" }, x => w = x)) yield return step;
+            foreach (object step in Establish("cadenceTrap", "giant-flytrap", trapSpot, new[] { "medium", "horse" }, x => f = x)) yield return step;
+            if (w == null || f == null) yield break;
+            foreach (object step in AwaitPromotion(w, new[] { 0 }, "cadenceWorm")) yield return step;
+            if (!promotionOk) yield break;
+            foreach (object step in AwaitPromotion(f, new[] { 0 }, "cadenceTrap")) yield return step;
+            if (!promotionOk) yield break;
+            // Age each payload through at least one real periodic round.
+            foreach (object step in SettleGameTime(1.0, 30f, () => PayloadOf(w, 0)?.RoundNumber >= 1 && PayloadOf(f, 0)?.RoundNumber >= 1)) yield return step;
+            Game.Instance.IsPaused = true;
+            yield return null;
+            JObject pw = PayloadRound(w, 0), pf = PayloadRound(f, 0);
+            JObject sw = State(w), sf = State(f);
+            var row = new JObject { ["wormPayload"] = pw, ["trapPayload"] = pf, ["worm"] = sw, ["trap"] = sf, ["control"] = State(control),
+                ["gameSeconds"] = Game.Instance.TimeController.GameTime.TotalSeconds };
+            cases["beforeSave"] = row;
+            int before = problems.Count;
+            if (pw == null || (int)pw["roundNumber"] < 1 || pf == null || (int)pf["roundNumber"] < 1) problems.Add("cadence: a payload did not age through a real round: " + row.ToString(Formatting.None));
+            if (pw != null && (long)pw["tickTimeTicks"] >= TimeSpan.MaxValue.Ticks) problems.Add("cadence: the worm payload has no native round schedule");
+            if (pf != null && (long)pf["tickTimeTicks"] >= TimeSpan.MaxValue.Ticks) problems.Add("cadence: the flytrap payload has no native round schedule");
+            ExpectSwallowed(w, 0, "cadence.beforeSave"); ExpectSwallowed(f, 0, "cadence.beforeSave"); ExpectHeld(f, 1, "cadence.beforeSave.sibling");
+            bool allowed = Game.Instance.SaveManager.IsSaveAllowed();
+            row["saveAllowed"] = allowed;
+            if (!allowed) problems.Add("cadence: native save admission refused");
+            if (problems.Count > before) yield break;
+
+            int seq = LastSeq;
+            TimeSpan clock = Game.Instance.TimeController.GameTime;
+            bool saved = false;
+            Game.Instance.SaveGame(Game.Instance.SaveManager.CreateNewSave("ver02c3ar1"), () => saved = true);
+            float until = Time.realtimeSinceStartup + 120f;
+            while ((!saved || Game.Instance.SaveManager.CommitInProgress || LoadingProcess.Instance.IsLoadingInProcess) && Time.realtimeSinceStartup < until)
+                yield return null;
+            bool finished = saved && !Game.Instance.SaveManager.CommitInProgress && !LoadingProcess.Instance.IsLoadingInProcess;
+            JObject pw2 = PayloadRound(w, 0), pf2 = PayloadRound(f, 0);
+            var after = new JObject { ["callbackReceived"] = saved, ["commitInProgress"] = Game.Instance.SaveManager.CommitInProgress,
+                ["loadingInProgress"] = LoadingProcess.Instance.IsLoadingInProcess, ["gameClockUnchanged"] = Game.Instance.TimeController.GameTime == clock,
+                ["wormPayload"] = pw2, ["trapPayload"] = pf2, ["worm"] = State(w), ["trap"] = State(f), ["callbacks"] = Events(seq, e => true) };
+            cases["afterSave"] = after;
+            if (!finished) { problems.Add("cadence: the save did not finish (callback " + saved + ", commit " + Game.Instance.SaveManager.CommitInProgress + ", loading " + LoadingProcess.Instance.IsLoadingInProcess + ")"); yield break; }
+            if (Game.Instance.TimeController.GameTime != clock) problems.Add("cadence: the paused save changed the game clock");
+            foreach (var pair in new[] { new { b = pw, a = pw2, n = "worm" }, new { b = pf, a = pf2, n = "flytrap" } })
+            {
+                if (pair.a == null) { problems.Add("cadence: the " + pair.n + " payload is gone after the save"); continue; }
+                foreach (string key in new[] { "instance", "roundNumber", "nextTickTicks", "tickTimeTicks", "caster", "damage" })
+                    if (!JToken.DeepEquals(pair.b[key], pair.a[key])) problems.Add("cadence: the save changed the " + pair.n + " payload " + key + " (" + pair.b[key] + " -> " + pair.a[key] + ")");
+            }
+            if (!JToken.DeepEquals(sw["raw.links"], ((JObject)after["worm"])["raw.links"]) || !JToken.DeepEquals(sf["raw.links"], ((JObject)after["trap"])["raw.links"])) problems.Add("cadence: the save changed raw records");
+            if (!JToken.DeepEquals(sw["occupancy"], ((JObject)after["worm"])["occupancy"]) || !JToken.DeepEquals(sf["occupancy"], ((JObject)after["trap"])["occupancy"])) problems.Add("cadence: the save changed mouth occupancy");
+            ExpectSwallowed(w, 0, "cadence.afterSave"); ExpectSwallowed(f, 0, "cadence.afterSave"); ExpectHeld(f, 1, "cadence.afterSave.sibling");
+            if (controlUnrelated == null || !control.Targets[0].Descriptor.Buffs.RawFacts.Contains(controlUnrelated)) problems.Add("cadence: the control's unrelated effect was not kept through the save");
+            if (problems.Count > before) yield break;
+
+            // The same running game resumes: the next genuine payload round, on the pre-save schedule.
+            long target = Math.Max((long)pw["nextTickTicks"], (long)pf["nextTickTicks"]) + TimeSpan.FromSeconds(0.5).Ticks;
+            int seqRound = LastSeq;
+            foreach (object step in SettleGameTime(0.0, 30f, () => Game.Instance.TimeController.GameTime.Ticks >= target)) yield return step;
+            JObject pw3 = PayloadRound(w, 0), pf3 = PayloadRound(f, 0);
+            JArray outcomes = Events(seqRound, e => (string)e["what"] == "MaintainLink" || ((string)e["what"]).StartsWith("native.", StringComparison.Ordinal) || ((string)e["what"]).StartsWith("SummonHoldComponent.", StringComparison.Ordinal));
+            var next = new JObject { ["wormPayload"] = pw3, ["trapPayload"] = pf3, ["worm"] = State(w), ["trap"] = State(f), ["outcomes"] = outcomes };
+            cases["nextPayloadRound"] = next;
+            foreach (var pair in new[] { new { b = pw, a = pw3, r = w, n = "worm" }, new { b = pf, a = pf3, r = f, n = "flytrap" } })
+            {
+                bool escaped = outcomes.OfType<JObject>().Any(e => (string)e["what"] == "native.SpitOut" && (string)e["owner"] == pair.r.Holder.UniqueId && e["all"].Type == JTokenType.Boolean && !(bool)e["all"]);
+                if (pair.a == null)
+                {
+                    if (escaped) { next[pair.n + "LegitimateEscape"] = true; continue; }
+                    problems.Add("cadence: the " + pair.n + " payload disappeared after the save without a traced escape");
+                    continue;
+                }
+                if ((int)pair.a["roundNumber"] != (int)pair.b["roundNumber"] + 1) problems.Add("cadence: the " + pair.n + " payload RoundNumber " + pair.a["roundNumber"] + ", expected " + ((int)pair.b["roundNumber"] + 1));
+                if ((long)pair.a["nextTickTicks"] != (long)pair.b["nextTickTicks"] + (long)pair.b["tickTimeTicks"]) problems.Add("cadence: the " + pair.n + " payload next tick is not the pre-save schedule plus one interval");
+                if ((int)pair.a["instance"] != (int)pair.b["instance"]) problems.Add("cadence: the " + pair.n + " payload instance changed (restart)");
+                if ((int)pair.a["damage"] <= (int)pair.b["damage"]) problems.Add("cadence: the " + pair.n + " payload dealt no damage in its next round");
+            }
+            // The held sibling: a legitimate maintain release is recorded; an untraced disappearance fails.
+            if (!IsHeld(f, 1))
+            {
+                bool traced = outcomes.OfType<JObject>().Any(e => ((string)e["what"] == "MaintainLink" && ((string)e["result"] ?? "").StartsWith("released", StringComparison.Ordinal)) ||
+                    ((string)e["what"] == "SummonHoldComponent.ReleaseLink" && (string)e["target"] == f.Targets[1].UniqueId));
+                next["siblingReleasedLegitimately"] = traced;
+                if (!traced) problems.Add("cadence: the held sibling disappeared after the save without a traced release");
+            }
+            ExpectHeld(control, 0, "cadence.nextRound.control");
+            if (problems.Count > before) yield break;
+
+            // Two real terminals on the post-save worm: remove its combat-traits carrier (holder alive), then expire it natively.
+            var terminals = new JObject();
+            cases["wormTerminals"] = terminals;
+            Buff traits = TraitsOf(w.Holder);
+            terminals["carrier"] = traits == null ? null : traits.Blueprint.name;
+            if (traits == null) { problems.Add("terminals: the worm has no swallow carrier"); yield break; }
+            seq = LastSeq;
+            w.Holder.Descriptor.Buffs.RemoveFact(traits);
+            terminals["first.immediately"] = State(w);
+            terminals["first.carrierGone"] = TraitsOf(w.Holder) == null;
+            terminals["first.holderAlive"] = !w.Holder.Descriptor.State.IsDead && !w.Holder.Destroyed;
+            terminals["first.callbacks"] = Events(seq, e => true);
+            if (!(bool)terminals["first.carrierGone"]) problems.Add("terminals: the carrier removal did not occur");
+            if (!(bool)terminals["first.holderAlive"]) problems.Add("terminals: the holder did not stay alive through the carrier removal");
+            ExpectFreed(w, 0, "terminals.carrierRemoval");
+            int victimDamage = w.Targets[0].Descriptor.Damage;
+            seq = LastSeq;
+            Buff marker = w.Holder.Descriptor.Buffs.Enumerable.FirstOrDefault(b => ReferenceEquals(b.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff));
+            terminals["second.markerPresent"] = marker != null;
+            if (marker == null) { problems.Add("terminals: the living worm has no summon buff to expire"); yield break; }
+            typeof(Buff).GetProperty("EndTime", Any).SetValue(marker, Game.Instance.TimeController.GameTime - TimeSpan.FromMilliseconds(1), null);
+            w.Holder.Descriptor.Buffs.UpdateNextEvent();
+            w.Holder.Descriptor.Buffs.Tick();
+            foreach (object step in SettleGameTime(1.0, 25f, () => w.Holder.Destroyed)) yield return step;
+            terminals["second.holderDestroyed"] = w.Holder.Destroyed;
+            terminals["second.callbacks"] = Events(seq, e => true);
+            if (!w.Holder.Destroyed) problems.Add("terminals: the worm's native expiry did not destroy it");
+            foreach (object step in ExpectQuiet(w, new[] { 0 }, "terminals.afterExpiry", terminals)) yield return step;
+            if (w.Targets[0].Descriptor.Damage != victimDamage) problems.Add("terminals: the freed worm victim took damage after the second terminal");
+            ExpectHeld(control, 0, "terminals.control");
+            if (controlUnrelated == null || !control.Targets[0].Descriptor.Buffs.RawFacts.Contains(controlUnrelated)) problems.Add("terminals: the control's unrelated effect was not kept");
+            cases["controlFinal"] = State(control);
         }
 
         // ---------------------------------------------------------------- reach (ordinary route)

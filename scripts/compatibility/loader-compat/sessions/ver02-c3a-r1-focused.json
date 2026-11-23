@@ -1,0 +1,86 @@
+{
+  "name": "ver02-c3a-r1-focused",
+  "description": "S6 checkpoint C3a R1 / VER-02 G3, focused: (1) active engulf expiry - a mixed Giant Flytrap relationship (a living Medium victim engulfed through the real maintain path and a living Large horse held) expires through the native deadline/tick path with both active, with a crocodile control pair and unrelated effects; (2) payload cadence through a permitted save - a Purple Worm swallow and the mixed Flytrap engulf, each payload aged through a real round, through a native save (admission, completion, paused-state preservation including native payload RoundNumber/next tick/interval/instance/damage, exact records and occupancy, clock), then the next genuine payload round on the pre-save schedule; then two real terminals on the post-save worm: combat-traits carrier removal with the holder alive, then native expiry. Disclosed setup as in C3a.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "active-expiry",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgSwallow",
+            "label": "active-expiry",
+            "match": "activeExpiry",
+            "timeoutSeconds": 540
+          }
+        ]
+      }
+    },
+    {
+      "label": "save-cadence",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgSwallow",
+            "label": "save-cadence",
+            "match": "saveCadence",
+            "timeoutSeconds": 540
+          }
+        ]
+      }
+    }
+  ]
+}

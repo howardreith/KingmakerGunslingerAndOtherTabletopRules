@@ -2227,9 +2227,11 @@ namespace KingmakerGunslinger.Summoning
         public void HandleUnitDeath(UnitEntityData unit)
         {
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
-            // Existing worm/flytrap graphs keep their qualified native paths.
-            // Native swallow only watches the source's death, so exact
-            // creature-owned payloads opt in to victim-boundary cleanup.
+            // The native swallow part does not release a unit merely because
+            // that unit dies inside (it frees on the swallower's own death and
+            // on a successful break-free). All four published swallowers (S6
+            // C3a: Purple Worm, Giant Flytrap, Dire Crocodile, Tyrannosaurus)
+            // opt in to this exact, owner-checked victim-boundary cleanup.
             if (!ReleaseOnVictimDeath || owner == null || unit == null ||
                 unit.Descriptor == null || OwningBlueprint == null ||
                 OwnedSwallowedBuff == null ||

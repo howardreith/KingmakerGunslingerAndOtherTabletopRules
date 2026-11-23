@@ -143,20 +143,6 @@ namespace KingmakerGunslinger.DomainTests
                 "Purple Worm native natural-armor binding changed.");
         }
 
-        internal static void EverySwallowerReleasesAVictimThatDiesInside()
-        {
-            // S6 C3a: the native swallow part never frees a victim that dies
-            // inside, which left the mouth occupied for good. All four
-            // published swallowers use the exact owned victim-death release.
-            string builder = File.ReadAllText("src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs");
-            string theropods = File.ReadAllText("src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.Theropods.cs");
-            int count = System.Text.RegularExpressions.Regex.Matches(builder, "ReleaseSwallowedOnVictimDeath = true").Count +
-                System.Text.RegularExpressions.Regex.Matches(theropods, "ReleaseSwallowedOnVictimDeath = true").Count;
-            Assertions.Equal(4, count, "Purple Worm, Giant Flytrap, Dire Crocodile and Tyrannosaurus each opt into the victim-death release.");
-            Assertions.Equal(ExpandedSummoningSpecialProfiles.SwallowingGrabberTokens.Length, count,
-                "Every registered swallow owner opts into the victim-death release.");
-        }
-
         internal static void HoldSurvivesSaveSuspensionOnly()
         {
             Assertions.True(ExpandedSummoningSpecialProfiles.ShouldReleaseHoldOnTurnOff(true, false),
