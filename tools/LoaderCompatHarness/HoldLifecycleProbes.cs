@@ -80,6 +80,19 @@ namespace KmgLoaderCompatHarness
             Patch(harmony, stirgeHold.GetMethod("ReleaseRemoveAction", Any), nameof(StirgeReleaseActionPrefix), nameof(StirgeReleaseActionPostfix), patched);
             Patch(harmony, product.GetType("KingmakerGunslinger.Summoning.ContextActionRemoveStirge", true).GetMethod("RunAction"), nameof(StirgeRemoveActionPrefix), nameof(StirgeRemoveActionPostfix), patched);
             Patch(harmony, product.GetType("KingmakerGunslinger.Summoning.SummonGrappleAreaSafeguard", true).GetMethod("SweepStirge", Any), null, nameof(StirgeSweepPostfix), patched);
+            // G1/G2 (Barbed Devil Impale, Giant Crab): the deferred exact-owner cleanup, its scheduled callback, and the
+            // per-link constrict rider (read-only).
+            MethodInfo schedule = holdType.GetMethod("ScheduleReleasedImpaleOwnerCleanup", Any);
+            Patch(harmony, schedule, nameof(ImpaleSchedulePrefix), null, patched);
+            MethodInfo callback = holdType.GetNestedTypes(Any).SelectMany(t => t.GetMethods(Any))
+                .Single(m => m.Name.Contains("ScheduleReleasedImpaleOwnerCleanup") && m.GetParameters().Length == 0);
+            Patch(harmony, callback, nameof(ImpaleCallbackPrefix), nameof(ImpaleCallbackPostfix), patched);
+            grabType = product.GetType("KingmakerGunslinger.Summoning.SummonGrabComponent", true);
+            linksType = product.GetType("KingmakerGunslinger.Summoning.SummonGrappleLinks", true);
+            limbsType = product.GetType("KingmakerGunslinger.Summoning.SummonLimbs", true);
+            Patch(harmony, grabType.GetMethod("DealConstrict", Any), nameof(ConstrictPrefix), nameof(ConstrictPostfix), patched);
+            Patch(harmony, multiType.GetMethod("OnNewRound"), nameof(MultiRoundPrefix), nameof(MultiRoundPostfix), patched);
+            Patch(harmony, product.GetType("KingmakerGunslinger.Summoning.SummonHeldComponent", true).GetMethod("OnNewRound"), nameof(HeldRoundPrefix), nameof(HeldRoundPostfix), patched);
             Patch(harmony, typeof(Game).GetMethod("HandleAreaBeginUnloading", Any), nameof(GameUnloadPrefix), null, patched);
             Patch(harmony, typeof(Game).GetMethod("OnAreaLoaded", Any), nameof(GameLoadedPrefix), nameof(GameLoadedPostfix), patched);
             installed = true;
@@ -101,6 +114,7 @@ namespace KmgLoaderCompatHarness
             detail["what"] = what;
             detail["gameSeconds"] = Game.Instance == null || Game.Instance.TimeController == null ? 0 : Game.Instance.TimeController.GameTime.TotalSeconds;
             detail["loading"] = LoadingProcess.Instance != null && LoadingProcess.Instance.IsLoadingInProcess;
+            detail["frame"] = Time.frameCount;
             Events.Add(detail);
         }
 
@@ -142,9 +156,63 @@ namespace KmgLoaderCompatHarness
         private static void MaintainPostfix(UnitEntityData owner, UnitEntityData target, string __result)
         { Add("MaintainLink", new JObject { ["owner"] = owner?.UniqueId, ["target"] = target?.UniqueId, ["result"] = __result }); }
         private static void ReleasePostfix(UnitEntityData owner, UnitEntityData target)
-        { Add("SummonHoldComponent.Release", new JObject { ["owner"] = owner?.UniqueId, ["target"] = target?.UniqueId }); }
+        { Add("SummonHoldComponent.Release", Pair(owner, target)); }
         private static void ReleaseLinkPostfix(UnitEntityData owner, UnitEntityData target)
-        { Add("SummonHoldComponent.ReleaseLink", new JObject { ["owner"] = owner?.UniqueId, ["target"] = target?.UniqueId }); }
+        { Add("SummonHoldComponent.ReleaseLink", Pair(owner, target)); }
+
+        /// <summary>The native single-link parts of a holder/target pair, read at the moment of the call (G1/G2).</summary>
+        internal static JObject Pair(UnitEntityData owner, UnitEntityData target)
+        {
+            UnitPartGrappleInitiator initiator = owner == null || owner.Descriptor == null ? null : owner.Get<UnitPartGrappleInitiator>();
+            UnitPartGrappleTarget held = target == null || target.Descriptor == null ? null : target.Get<UnitPartGrappleTarget>();
+            return new JObject
+            {
+                ["owner"] = owner?.UniqueId, ["target"] = target?.UniqueId,
+                ["ownerInitiatorPart"] = initiator != null, ["ownerInitiatorTarget"] = initiator?.Target.Value?.UniqueId,
+                ["ownerHoldBuffs"] = owner == null || owner.Descriptor == null ? 0 : owner.Descriptor.Buffs.RawFacts.OfType<Buff>().Count(b => b.Blueprint != null &&
+                    b.Blueprint.ComponentsArray != null && b.Blueprint.ComponentsArray.Any(c => c.GetType() == holdType || c.GetType() == multiType)),
+                ["targetPart"] = held != null, ["targetPartInitiator"] = held?.Initiator.Value?.UniqueId,
+                ["distance"] = owner == null || target == null ? (double?)null : Vector3.Distance(owner.Position, target.Position),
+                ["targetConscious"] = target != null && target.Descriptor != null && target.Descriptor.State.IsConscious,
+                ["reachPrimary"] = owner != null && target != null && owner.Body != null && owner.Body.PrimaryHand != null &&
+                    Kingmaker.Controllers.Combat.UnitEngagementExtension.IsReach(owner, target, owner.Body.PrimaryHand)
+            };
+        }
+
+        private static void MultiRoundPrefix(object __instance) { Add("multiHold.OnNewRound.begin", new JObject { ["owner"] = OwnerOf(__instance)?.Unit?.UniqueId }); }
+        private static void MultiRoundPostfix(object __instance) { Add("multiHold.OnNewRound.end", new JObject { ["owner"] = OwnerOf(__instance)?.Unit?.UniqueId }); }
+        private static void HeldRoundPrefix(object __instance) { Add("held.OnNewRound.begin", new JObject { ["unit"] = OwnerOf(__instance)?.Unit?.UniqueId }); }
+        private static void HeldRoundPostfix(object __instance) { Add("held.OnNewRound.end", new JObject { ["unit"] = OwnerOf(__instance)?.Unit?.UniqueId }); }
+
+        // ---- G1/G2 Barbed Devil Impale cleanup and Giant Crab constrict (read-only)
+        private static Type grabType, linksType, limbsType;
+
+        private static void ImpaleSchedulePrefix(UnitEntityData owner, UnitEntityData target) { Add("impaleCleanup.schedule", Pair(owner, target)); }
+
+        private static UnitEntityData ClosureUnit(object closure, string field) => closure.GetType().GetField(field, Any)?.GetValue(closure) as UnitEntityData;
+        private static void ImpaleCallbackPrefix(object __instance) { Add("impaleCleanup.callback.begin", Pair(ClosureUnit(__instance, "owner"), ClosureUnit(__instance, "target"))); }
+        private static void ImpaleCallbackPostfix(object __instance) { Add("impaleCleanup.callback.end", Pair(ClosureUnit(__instance, "owner"), ClosureUnit(__instance, "target"))); }
+
+        internal static string LimbOf(UnitEntityData owner, ItemEntityWeapon weapon)
+        {
+            if (owner == null || weapon == null) return null;
+            var args = new object[] { owner, weapon, -1 };
+            object kind = limbsType.GetMethod("Classify", Any).Invoke(null, args);
+            return (int)kind + "|" + (int)args[2];
+        }
+
+        private static void ConstrictPrefix(UnitEntityData owner, UnitEntityData target, out int __state)
+        { __state = target == null || target.Descriptor == null ? -1 : target.Descriptor.Damage; }
+
+        private static void ConstrictPostfix(object __instance, UnitEntityData owner, UnitEntityData target, int __state)
+        {
+            var weapon = linksType.GetMethod("EstablishingWeapon", Any).Invoke(null, new object[] { owner, target }) as ItemEntityWeapon;
+            int after = target == null || target.Descriptor == null ? -1 : target.Descriptor.Damage;
+            Add("DealConstrict", new JObject { ["owner"] = owner?.UniqueId, ["target"] = target?.UniqueId, ["limb"] = LimbOf(owner, weapon),
+                ["constrictDice"] = __instance == null ? 0 : (int)grabType.GetField("ConstrictDiceCount").GetValue(__instance),
+                ["weapon"] = weapon?.Blueprint?.name, ["damageBefore"] = __state, ["damageAfter"] = after, ["delta"] = after - __state,
+                ["targetDead"] = target != null && target.Descriptor != null && target.Descriptor.State.IsDead });
+        }
         private static void ResetPrefix() { Add("ResetLoadedGrapples", new JObject()); }
 
         private static JArray Swallowed(UnitEntityData owner)
