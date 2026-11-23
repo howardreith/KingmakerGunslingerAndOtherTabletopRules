@@ -95,6 +95,7 @@ namespace KmgLoaderCompatHarness
             return ProbeCleanup.RunAll(new[]
             {
                 new KeyValuePair<string, Action>("rule trace", Unsubscribe),
+                new KeyValuePair<string, Action>("main character brain", RestoreMainBrain),
                 new KeyValuePair<string, Action>("awake registrations", () => { foreach (UnitEntityData u in awakeAdded) Game.Instance.State.AwakeUnits.Remove(u); awakeAdded.Clear(); }),
                 new KeyValuePair<string, Action>("disposable units", () => { foreach (UnitEntityData u in created.Where(u => u != null && !u.Destroyed).ToArray()) u.Destroy(); created.Clear(); })
             });
@@ -287,6 +288,7 @@ namespace KmgLoaderCompatHarness
                 if (Vector3.Distance(origin, candidate) < 3f || Vector3.Distance(origin, candidate) > 10.5f) continue;
                 if (spots.Any(s => Vector3.Distance(s, candidate) < 5.5f)) continue;
                 spots.Add(candidate);
+                attemptSpots?.Add(candidate);
                 ((JArray)(result["spots"] ?? (result["spots"] = new JArray()))).Add(candidate.ToString());
                 return candidate;
             }
@@ -325,6 +327,7 @@ namespace KmgLoaderCompatHarness
             UnitEntityData unit = units.Length == 1 ? units[0] : null;
             if (unit == null) return null;
             created.Add(unit);
+            attemptUnits?.Add(unit);
             rules.Tracked.Add(unit);
             runner.GetMethod("RemoveExpandedSummoningAppearanceBuffs", Any).Invoke(null, new object[] { unit });
             runner.GetMethod("SetExpandedSummoningBrainActive", Any).Invoke(null, new object[] { unit, false });
@@ -334,6 +337,9 @@ namespace KmgLoaderCompatHarness
             SetDeadline(unit, TimeSpan.FromSeconds(600));
             return unit;
         }
+
+        /// <summary>G1-R substitutes a native hostile target; every other mode uses SpawnTarget.</summary>
+        private Func<Vector3, UnitEntityData> targetFactory;
 
         private UnitEntityData SpawnTarget(Vector3 at)
         {
@@ -543,7 +549,7 @@ namespace KmgLoaderCompatHarness
         private IEnumerable<object> EstablishSingle(string key, string name, Action<Link1> done)
         {
             Vector3 spot = NextSpot();
-            UnitEntityData t = SpawnTarget(spot);
+            UnitEntityData t = (targetFactory ?? SpawnTarget)(spot);
             UnitEntityData h = t == null ? null : Summon(key, Around(spot, 90f, 1.0f));
             if (h == null) { problems.Add(name + ": units not created"); yield break; }
             yield return null;

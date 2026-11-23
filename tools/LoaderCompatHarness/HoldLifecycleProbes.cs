@@ -92,9 +92,15 @@ namespace KmgLoaderCompatHarness
             limbsType = product.GetType("KingmakerGunslinger.Summoning.SummonLimbs", true);
             Patch(harmony, grabType.GetMethod("DealConstrict", Any), nameof(ConstrictPrefix), nameof(ConstrictPostfix), patched);
             Patch(harmony, multiType.GetMethod("OnNewRound"), nameof(MultiRoundPrefix), nameof(MultiRoundPostfix), patched);
-            // G1-R diagnostics: writes to a watched unit's Damage, and the native life controller's tick on it (read-only).
+            // G1-R: a watched unit's Damage decreases, its native life-state transitions (with final-death status) and
+            // native out-of-combat recovery (read-only; watched units only, so nothing is logged per tick otherwise).
             Patch(harmony, typeof(UnitDescriptor).GetProperty("Damage").GetSetMethod(true), nameof(DamageSetPrefix), null, patched);
-            Patch(harmony, typeof(Kingmaker.Controllers.Units.UnitLifeController).GetMethod("TickOnUnit", Any), nameof(LifeTickPrefix), nameof(LifeTickPostfix), patched);
+            Patch(harmony, typeof(Kingmaker.Controllers.Units.UnitLifeController).GetMethod("SetLifeState", Any), nameof(LifeSetPrefix), nameof(LifeSetPostfix), patched);
+            Patch(harmony, typeof(Kingmaker.Controllers.Units.UnitReturnToConsciousController).GetMethod("MakeUnitConscious", Any), nameof(RecoveryPrefix), null, patched);
+            // G1-R: who removes a native grapple part (read-only; parts are removed rarely).
+            Patch(harmony, typeof(UnitPartGrappleInitiator).GetMethod("OnRemove", BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly), nameof(InitiatorRemovePrefix), null, patched);
+            MethodInfo targetRemove = typeof(UnitPartGrappleTarget).GetMethod("OnRemove", BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+            if (targetRemove != null) Patch(harmony, targetRemove, nameof(TargetRemovePrefix), null, patched);
             Patch(harmony, product.GetType("KingmakerGunslinger.Summoning.SummonGrappleDamage", true).GetMethod("DealWeaponDamage", Any), nameof(WeaponDamagePrefix), nameof(WeaponDamagePostfix), patched);
             Patch(harmony, grabType.GetMethod("DealDeathRoll", Any), nameof(DeathRollPrefix), nameof(DeathRollPostfix), patched);
             Patch(harmony, grabType.GetMethod("DealImpale", Any), nameof(ImpalePrefix), nameof(ImpalePostfix), patched);
@@ -114,9 +120,12 @@ namespace KmgLoaderCompatHarness
             patched.Add(method.DeclaringType.Name + "." + method.Name);
         }
 
+        /// <summary>Events refused at the cap; any nonzero value makes a qualifying window unusable.</summary>
+        internal static int Dropped;
+
         internal static void Add(string what, JObject detail)
         {
-            if (Events.Count >= 6000) return;
+            if (Events.Count >= 6000) { Dropped++; return; }
             detail["seq"] = ++sequence;
             detail["what"] = what;
             detail["gameSeconds"] = Game.Instance == null || Game.Instance.TimeController == null ? 0 : Game.Instance.TimeController.GameTime.TotalSeconds;
@@ -220,21 +229,34 @@ namespace KmgLoaderCompatHarness
             }
             Add("diag.damageSet", row);
         }
-        private static void LifeTickPrefix(UnitEntityData unit, out string __state)
-        {
-            __state = unit?.Descriptor?.State.LifeState.ToString();
-            if (unit?.Descriptor == null || !WatchedDamage.Contains(unit.Descriptor)) return;
-            if (unit.Descriptor.Damage < (int)unit.Descriptor.Stats.HitPoints) return;
-            Add("diag.lifeTick.begin", new JObject { ["unit"] = unit.UniqueId, ["damage"] = unit.Descriptor.Damage, ["hp"] = (int)unit.Descriptor.Stats.HitPoints,
-                ["con"] = (int)unit.Descriptor.Stats.Constitution, ["lifeState"] = __state, ["allowDying"] = (bool)unit.Descriptor.State.AllowDyingCondition,
-                ["regenerate"] = (bool)unit.Descriptor.State.IsRegenerate, ["markedForDeath"] = unit.Descriptor.State.MarkedForDeath });
-        }
-        private static void LifeTickPostfix(UnitEntityData unit, string __state)
+        private static void LifeSetPrefix(UnitEntityData unit, out string __state)
+        { __state = unit?.Descriptor?.State.LifeState.ToString(); }
+        private static void LifeSetPostfix(UnitEntityData unit, string __state)
         {
             if (unit?.Descriptor == null || !WatchedDamage.Contains(unit.Descriptor)) return;
             string now = unit.Descriptor.State.LifeState.ToString();
-            if (now == __state && unit.Descriptor.Damage < (int)unit.Descriptor.Stats.HitPoints) return;
-            Add("diag.lifeTick.end", new JObject { ["unit"] = unit.UniqueId, ["damage"] = unit.Descriptor.Damage, ["lifeState"] = now, ["was"] = __state });
+            if (now == __state) return;
+            Add("life.set", new JObject { ["unit"] = unit.UniqueId, ["from"] = __state, ["to"] = now, ["finallyDead"] = unit.Descriptor.State.IsFinallyDead,
+                ["damage"] = unit.Descriptor.Damage, ["hp"] = (int)unit.Descriptor.Stats.HitPoints });
+        }
+        private static string ShortStack()
+        {
+            string s = new System.Diagnostics.StackTrace(2, false).ToString();
+            return s.Length > 900 ? s.Substring(0, 900) : s;
+        }
+        private static void InitiatorRemovePrefix(UnitPartGrappleInitiator __instance)
+        {
+            Add("part.initiator.remove", new JObject { ["owner"] = __instance.Owner?.Unit?.UniqueId, ["target"] = __instance.Target.Value?.UniqueId,
+                ["targetConscious"] = __instance.Target.Value != null && __instance.Target.Value.Descriptor.State.IsConscious, ["stack"] = ShortStack() });
+        }
+        private static void TargetRemovePrefix(UnitPartGrappleTarget __instance)
+        {
+            Add("part.target.remove", new JObject { ["owner"] = __instance.Initiator.Value?.UniqueId, ["target"] = __instance.Owner?.Unit?.UniqueId, ["stack"] = ShortStack() });
+        }
+        private static void RecoveryPrefix(UnitEntityData unit)
+        {
+            if (unit?.Descriptor == null || !WatchedDamage.Contains(unit.Descriptor)) return;
+            Add("life.recovery", new JObject { ["unit"] = unit.UniqueId, ["lifeState"] = unit.Descriptor.State.LifeState.ToString(), ["damage"] = unit.Descriptor.Damage });
         }
 
         private static void MultiRoundPrefix(object __instance) { Add("multiHold.OnNewRound.begin", new JObject { ["owner"] = OwnerOf(__instance)?.Unit?.UniqueId }); }
