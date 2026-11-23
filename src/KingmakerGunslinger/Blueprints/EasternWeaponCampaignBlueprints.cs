@@ -25,8 +25,8 @@ namespace KingmakerGunslinger.Blueprints
             // Owner acquisition decision (2026-11-12): the Dire Narlmarches
             // village and Pitax traders stock no authored Eastern weapons. Both
             // exact targets stay here with empty desired stock so publication
-            // removes any project-owned fixed row; native SharedVendorTables
-            // known-item reconciliation then decrements already generated stock.
+            // removes any project-owned fixed row. Already materialized copies
+            // are preserved as ambiguous (LIM-01, RetiredVendorHistoryPatch).
             new EasternVendorSpec("f072a8f6889b5f345b7f4e7c74cb3e4c",
                 "DireNarlmarchesVillageVendorTable", new EasternWeaponGenericKind[0],
                 new EasternWeaponNamedKind[0], false,
