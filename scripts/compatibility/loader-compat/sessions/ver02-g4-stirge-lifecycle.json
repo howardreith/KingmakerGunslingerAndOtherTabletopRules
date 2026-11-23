@@ -1,0 +1,48 @@
+{
+  "name": "ver02-g4-stirge-lifecycle",
+  "description": "S6 checkpoint G4 / VER-02, launch 1 only of ver02-g4-stirge-attachment (two Stirges on one prey: first-owner death, last-owner removal through the prey's Remove Stirge ability; active summon expiry; prey death). Same disclosed setup.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "lifecycle",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgStirge",
+            "label": "lifecycle",
+            "match": "lifecycle",
+            "timeoutSeconds": 560
+          }
+        ]
+      }
+    }
+  ]
+}
