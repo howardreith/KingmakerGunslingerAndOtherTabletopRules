@@ -237,10 +237,13 @@ from RISK-01).
 
 ## Sprint 6 (started 2026-11-22; manual review workflow)
 
-**Current state (2026-11-23): Sprint 6 disposition returned for review** (`docs/GUNSLINGER-SPRINT6-DISPOSITION.md`).
+**Current state (2026-11-23): Sprint 6 disposition accepted; merged and released in v0.0.195** (`docs/GUNSLINGER-SPRINT6-DISPOSITION.md`).
+The owner accepted the disposition and authorized the merge and release. PRs #198 to #216 merged bottom-up (PR #216
+as `ee4df4e442`); stable v0.0.195 published from release commit `ef0e1fe15d` (PR #217). The per-row "draft PR … not
+merged or released" wording in the Sprint 6 table records the review-time state.
 Sprint 6's supported development implementation is complete for the accepted scopes. Historical incidents and the
 explicitly retained qualification gaps remain unresolved as listed there. The evidence does not imply global
-qualification or release.
+qualification; the release followed the owner's authorization and makes no qualification claim.
 
 - REP-05 and REP-06: BLOCKED on their original inputs.
 - RISK-02, RISK-03 (both owners), LIM-01, LIM-02 (retention policies and current-build marker diagnostic) and LIM-03

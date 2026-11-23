@@ -2,7 +2,43 @@
 
 ## 0.0.195 publication authorization
 
-**Authorized; not yet published.**
+**Published (completed).** Stable
+[v0.0.195](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.195)
+is Latest and not a prerelease. The tag peels to the release commit `ef0e1fe15d` (PR #217), which was `origin/master`
+when the publisher ran.
+
+- **Gate.** The publisher's complete suite passed 3,188/3,188 with 0 failures, and the release195 validator passed.
+- **Builds.** Two deterministic exact-reference builds against the pinned UMM 0.31.1 loader references:
+  - package SHA-256 `456d504ddde0ad3d0bb41a7dc141848a99feeee83d9665db9eeadcd95c359444`;
+  - DLL SHA-256 `3ef052ea441af368381b1cea7d2ee7acaa813000986de8644430ff63ee1d6a6b`.
+- **Reference bundle.** `artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references`,
+  as for v0.0.194.
+- **Public download test.** A fresh download of the three assets matched `SHA256SUMS.txt`, and the manifest names
+  the release commit `ef0e1fe15d59fc6f04ef4956337690f14de3c528` with two deterministic builds. The package has one
+  `KingmakerGunslinger` root (458 files); its `Info.json` reads 0.0.195 with `ManagerVersion` 0.31.1 and `Id`
+  `KingmakerGunslinger`, beside the DLL hash above.
+- **Native check on the published bytes.** The downloaded public package ran in the disposable loader-compat game
+  copy on Unity Mod Manager owner profile **0.33.0** through master's runner, with the harness built from the merged
+  master (`04c9d1d44ecd54c29f488eef0e0d60ca14a628f9e62a77b7277c25e12033cfa`). The game loaded the DLL above
+  (`KingmakerGunslinger 0.0.195`) in every launch. Both sessions passed, each with the registry readback matching the
+  verified backup (`verified`), owner files unchanged (95 saves, installation unchanged), no host conflict, the lease
+  completed and every lock released:
+  - `20261123T224258Z-owner-0.33.0-d1-lim01-protected` (summary `a2b5cdd9…2162`, product alone): **PASS 3/3**, 260 s
+    (seed 86 s, reconcile 75 s, fresh reload 74 s). The LIM-01 retired rows and the ambiguous materialized copies
+    behave as on the D1 candidate.
+  - `20261123T224748Z-owner-0.33.0-risk02-bf-restore` (summary `8cc20339…a317`, with Call of the Wild 1.14.4c-2.1):
+    **PASS 3/3**, 312 s (create 91 s, reload 102 s, final 102 s). The dismissed caster's Powerful Change keeps its
+    exact increase through a fresh load, and removal forgets the record, through the A2 Brown-Fur persistence code.
+
+  These two sessions also exercise the combined product (Sprint 6 with v0.0.194's Bag of Tricks change), which no
+  development candidate contained. The other Sprint 6 sessions (A1, A2, C1 to G1-R, D2, D3) ran on their own
+  development candidates and were not repeated on the published bytes. A no-Kingmaker window was agreed with the two
+  active peer sessions and released afterwards.
+- **Timing.** The publisher run took 1,046 s.
+- **Installation.** The installed mod was not touched; the publisher performed no deployment.
+- **Merges.** PRs #198 to #216 merged bottom-up (PR #216 as `ee4df4e442`); release PR #217 as `ef0e1fe15d`.
+
+Originally authorized as follows.
 
 On 2026-11-23, after the Sprint 6 disposition review of PR #216, Howie wrote: "This is accepted. Please merge this and
 all other sprint 6 PRs and cut a new release once they are all merged." The 16 stacked Sprint 6 pull requests #198 to

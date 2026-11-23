@@ -2,7 +2,7 @@
 
 - A creature that died inside a summoned Purple Worm or Giant Flytrap stayed "swallowed" and kept that mouth shut
   (S6 VER-02 G3, D1; the repair is accepted for the demonstrated Purple Worm/Giant Flytrap scope on branch
-  `codex/s6-ver02-c3a-swallow-engulf`; not merged, not released).
+  `codex/s6-ver02-c3a-swallow-engulf`; released in v0.0.195).
   - After the death, the worm's single mouth or the flytrap's mouth refused repeated bites at a new foe within the
     observed window.
   - The game's own swallow logic does not free a creature merely because it dies inside.
@@ -18,7 +18,7 @@
   - Details: `docs/GUNSLINGER-SPRINT6-C3A-SWALLOW-ENGULF.md`.
 - Saving while an Expanded Summoning creature holds a target ended the hold (S6 VER-02 F1; repaired on branch
   `codex/s6-ver02-c2a-save-suspension`; checkpoint C2a R1 accepted by manual review for its demonstrated development
-  scope; not merged, not released).
+  scope; released in v0.0.195).
   - Reached in ordinary play with a single-link holder: a crocodile's own attack grabs an enemy, a party caster
     Dominates it, combat ends, and the game permits saving. On the unchanged development candidate `4e11e6c25c`, the
     save then freed the target in the running game.
@@ -31,7 +31,7 @@
   - That the published versions behave the same is inferred from their identical source; it was not run on released
     bytes. Details: `docs/GUNSLINGER-SPRINT6-C2A-SAVE-SUSPENSION.md`.
 - Brown-Fur Powerful Change increase lost after loading when the caster companion was dismissed (S6 T3 / RISK-02,
-  checkpoint B, accepted by manual review for its demonstrated development scope; not merged, not released).
+  checkpoint B, accepted by manual review for its demonstrated development scope; released in v0.0.195).
   - The scenario: a custom Brown-Fur companion casts a Powerful Change spell on someone and is then dismissed while
     the spell lasts.
   - Before the repair: after the next load the spell came back at its base value (Bull's Strength +4 instead of +6),
@@ -41,7 +41,7 @@
   - Repaired on branch `codex/s6-risk02-powerful-change-restoration`: the increase is kept through a fresh load, and
     removal forgets the record. Details: `docs/GUNSLINGER-SPRINT6-B-POWERFUL-CHANGE-RESTORATION.md`.
 - Malformed Brown-Fur Powerful Change records in a save (S6 T4 / RISK-03, checkpoint A2, accepted by manual review for
-  its development scope; not merged, not released). On branch `codex/s6-risk03-brown-fur-persistence`, a record that
+  its development scope; released in v0.0.195). Since that release (branch `codex/s6-risk03-brown-fur-persistence`), a record that
   reaches the mod no longer makes the engine skip the Brown-Fur part.
   - A valid record whose identity no rejected entry could share keeps restoring its exact increase. A valid record that
     a rejected entry in the same save could refer to is withheld (ambiguity policy).
@@ -62,7 +62,7 @@
   - No ordinary build has been shown to write such records.
   - Details: `docs/GUNSLINGER-SPRINT6-A2-BROWN-FUR-PERSISTENCE.md`.
 - Malformed Controlled Rage data in a save (S6 T4 / RISK-03, checkpoint A1). On branch
-  `codex/s6-risk03-controlled-rage-persistence` (not merged, not released), such a save loads. Every unambiguous tier
+  `codex/s6-risk03-controlled-rage-persistence` (released in v0.0.195), such a save loads. Every unambiguous tier
   keeps its allocation. A tier whose saved entry is invalid or conflicting grants no Controlled Rage bonus until the
   player chooses an allocation with that tier's selector. If the save keeps rejected text but no current allocation,
   no new STR +4 default is made up: the ordinary tier, and any tier the kept text mentions, wait for the player's
@@ -391,7 +391,7 @@
 - Oleg's cold iron branched spears (withdrawn in v0.0.183). Shared vendor stock
   persists only item types and counts, so a stocked original and a copy sold back to
   Oleg cannot be told apart. Under the owner policy of 2026-11-23 (Sprint 6 D1,
-  LIM-01, development candidate `634a6efdd3`; not merged or released), the withdrawn rows are no longer
+  LIM-01, development candidate `634a6efdd3`; released in v0.0.195), the withdrawn rows are no longer
   stocked on fresh tables, and any cold iron spear already in Oleg's saved stock is
   kept rather than subtracted. Some authored stock can therefore remain buyable in an
   older save. On the accepted product before D1 the engine's update removed such a copy, a
@@ -527,7 +527,7 @@
   are unchanged. The roster report now shows 1,208 admitted, 9 withheld, 0 missing and 15 approved out of scope
   against the unchanged 1,232 ideal; the original ideal is not fully published.
 - Dire Narlmarches and Pitax regional weapon stock (withdrawn in v0.0.185). Same policy as Oleg's spears
-  (Sprint 6 D1, LIM-01; not merged or released): fresh tables carry no authored branched spear or Eastern rows, and every copy already
+  (Sprint 6 D1, LIM-01; released in v0.0.195): fresh tables carry no authored branched spear or Eastern rows, and every copy already
   in a saved stock (original or sold back, which the save cannot distinguish) is kept. A purchased copy is never
   replenished. A save with no persisted known-item history also keeps its copies. Player inventory is never touched.
 - Thornstep (retired from acquisition in v0.0.183). In its former Riverine Rise
