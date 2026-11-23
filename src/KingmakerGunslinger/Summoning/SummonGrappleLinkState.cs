@@ -32,9 +32,10 @@ namespace KingmakerGunslinger.Summoning
         /// <summary>
         /// One line of text per link, so the records stay plain data: target
         /// id, limb kind, limb index, the weapon blueprint's name, engulfed,
-        /// repaired. Kingmaker writes a unit part on these summons by type
-        /// without its contents, so this text is not carried across a save;
-        /// the encoding keeps the store simple and inspectable, not durable.
+        /// repaired. The list is a serialized field, so a save can carry these
+        /// lines together with the rest of a complete relationship; by the
+        /// accepted policy the load safeguard deliberately resets them (and the
+        /// relationship) on load rather than rebuilding anything from them.
         /// </summary>
         internal string Encode()
         {
@@ -81,12 +82,14 @@ namespace KingmakerGunslinger.Summoning
     /// has engulfed a target may not attack another one, and that has to
     /// outlive the engulf, which ends the held state.
     ///
-    /// The store is session-scoped, which the owner accepted on 2026-09-26
-    /// (OwnerAcceptedEngineLimitation:
-    /// ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD). Native grapple/swallow
-    /// parts and their buffs can deserialize even though this session's exact
-    /// limb records do not. The area-load safeguard explicitly releases those
-    /// owned relationships; no active grapple is reconstructed across a load.
+    /// Active holds are reset on load by policy, which the owner accepted on
+    /// 2026-09-26 (OwnerAcceptedEngineLimitation:
+    /// ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD). The records, the native
+    /// grapple/swallow parts and their buffs can all be written into a save
+    /// (populated records were observed in written saves in S6 C2a), and a
+    /// save keeps an ongoing hold in the running game. On load the area-load
+    /// safeguard deliberately releases every owned relationship and clears the
+    /// records; no active grapple is reconstructed across a load.
     ///
     /// Reading filters the records against the game's own state without
     /// writing: a link whose target is gone, freed, spat out or no longer held
@@ -95,9 +98,9 @@ namespace KingmakerGunslinger.Summoning
     /// precisely the mouth they should without a hook in each path. Records
     /// leave the store through the release paths, which know the link has
     /// ended, or when their limb takes a new victim, so a read taken while the
-    /// game is still wiring up a fresh hold cannot empty the store. A reload
-    /// is not such a moment: records come back empty and the load safeguard
-    /// reconciles any native parts/buffs that did deserialize.
+    /// game is still wiring up a fresh hold cannot empty the store. On a
+    /// reload the load safeguard releases whatever relationship was saved and
+    /// clears the records explicitly.
     /// </summary>
     public sealed class UnitPartSummonGrappleLinks : UnitPart
     {
@@ -154,8 +157,8 @@ namespace KingmakerGunslinger.Summoning
     /// The link store: which limb of a summon established the hold on each
     /// target, and which mouths are occupied, for as long as the game holds
     /// them. Every read reconciles the records against the game's own state
-    /// first, so a stale link never answers a question. Records do not survive
-    /// a reload; the load safeguard releases the native owned state separately.
+    /// first, so a stale link never answers a question. On a reload the load
+    /// safeguard releases the saved relationship and clears these records.
     /// </summary>
     internal static class SummonGrappleLinks
     {
@@ -207,8 +210,8 @@ namespace KingmakerGunslinger.Summoning
         /// <summary>
         /// The weapon entity of the limb that established the hold on this
         /// target, read from the holder's body as it stands, or null when this
-        /// summon holds no such link. A reloaded game has no session record;
-        /// its native owned relationship is reconciled by the load safeguard.
+        /// summon holds no such link. After a reload the load safeguard has
+        /// already released the saved relationship and cleared its record.
         /// </summary>
         internal static ItemEntityWeapon EstablishingWeapon(UnitEntityData holder,
             UnitEntityData target)

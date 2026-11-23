@@ -623,6 +623,19 @@ namespace KingmakerGunslinger.Summoning
         { return targetOwned && maintainSuccess; }
 
         /// <summary>
+        /// S6 C2a (VER-02 F1): whether a hold buff turning off ends its hold.
+        /// A fact turning off while its owner stays turned on is a genuine end
+        /// (removal, the death purge, expiry). The engine's save routine turns
+        /// whole units off before serializing and back on afterwards; that
+        /// suspension keeps the hold. An area unload (which the hold buff
+        /// itself observed through OnAreaBeginUnloading) keeps its established
+        /// release at that point. Disposal is released separately.
+        /// </summary>
+        internal static bool ShouldReleaseHoldOnTurnOff(bool ownerTurnedOn,
+            bool areaUnloading)
+        { return ownerTurnedOn || areaUnloading; }
+
+        /// <summary>
         /// A combat maneuver check is an attack roll (Core Rulebook, Combat
         /// Maneuvers): a natural 1 always fails and a natural 20 always
         /// succeeds. The engine's own maneuver rule decides by the sum alone,

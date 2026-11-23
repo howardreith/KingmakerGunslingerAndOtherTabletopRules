@@ -35,7 +35,8 @@ on the holder (`TargetId|Limb|AdditionalIndex|Weapon|Engulfed|Repaired`).
 - Every read goes through `Reconcile`, which **filters** records against live native state without deleting them. A
   stale raw record therefore answers nothing but can stay in the list. This is why C inspects raw records separately.
 
-**G1, single-link native grapple** (every `SummonGrabComponent` with `MaxHeldTargets = 1`). Qualified in C1.
+**G1, single-link native grapple** (every `SummonGrabComponent` with `MaxHeldTargets = 1`). C1 (accepted) covers only
+the tested crocodile/common single-link terminal subset; it does not qualify every G1 variant (section 8).
 
 - Established by `SummonGrabComponent.OnEventDidTrigger(RuleAttackWithWeapon)` → `TryGrab`.
 - Owners:
@@ -53,7 +54,8 @@ on the holder (`TargetId|Limb|AdditionalIndex|Weapon|Engulfed|Repaired`).
   Devil's Impale scheduled cleanup (`ScheduleReleasedImpaleOwnerCleanup`), the live constrict and rider profiles
   (constrictor snake, salamander, Lillend, crocodilian death roll), and the swallow promotion from a hold.
 
-**G2, multi-link hold** (Giant Flytrap, `MaxHeldTargets > 1`). No native grapple parts.
+**G2, multi-link hold** (`MaxHeldTargets > 1`; four published consumers: Giant Flytrap, Xill, Giant Scorpion and
+Giant Crab, the last with live constrict; see the C2 record, section 9). No native grapple parts.
 
 - Owners: one hold buff on the holder (`SummonMultiHoldComponent`) and one held-state buff per target, whose context
   caster is the holder (`SummonHeldComponent`).

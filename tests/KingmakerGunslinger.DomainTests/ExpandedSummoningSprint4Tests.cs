@@ -143,6 +143,18 @@ namespace KingmakerGunslinger.DomainTests
                 "Purple Worm native natural-armor binding changed.");
         }
 
+        internal static void HoldSurvivesSaveSuspensionOnly()
+        {
+            Assertions.True(ExpandedSummoningSpecialProfiles.ShouldReleaseHoldOnTurnOff(true, false),
+                "A hold buff turning off while its owner stays on is a genuine end.");
+            Assertions.True(ExpandedSummoningSpecialProfiles.ShouldReleaseHoldOnTurnOff(true, true),
+                "A genuine end during an area unload still releases.");
+            Assertions.False(ExpandedSummoningSpecialProfiles.ShouldReleaseHoldOnTurnOff(false, false),
+                "The engine's save suspension (owner turned off, no area unload) keeps the hold.");
+            Assertions.True(ExpandedSummoningSpecialProfiles.ShouldReleaseHoldOnTurnOff(false, true),
+                "An area unload keeps its established release.");
+        }
+
         internal static void GrappleLifecycleIsBounded()
         {
             ExpandedSummoningSpecialProfiles.Validate();
