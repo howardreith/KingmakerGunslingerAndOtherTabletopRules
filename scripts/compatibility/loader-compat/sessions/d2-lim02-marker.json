@@ -1,0 +1,81 @@
+{
+  "name": "d2-lim02-marker",
+  "description": "S6 D2 / LIM-02 Bebelith marker DIAGNOSTIC CONTROL (not a pre-fix cold load; no admitted pre-v0.0.182 save carries the marker). The mark launch summons a real Bebelith, gives an armored disposable character the retired KMG.Summoning.Special.Bebelith.DismantledArmor buff exactly as v0.0.181 applied it (the Bebelith combat-traits context, null duration), runs native RuleCalculateAC without and with the marker, lets the Bebelith expire natively (deadline moved to now, disclosed), and saves. A fresh process loads that save and repeats the AC calculation. Predeclared: AC with the marker equals AC without; the marker component runs and adds no modifier; armor is unchanged; the marker remains exactly once and deserializes with its component.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "mark",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {},
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgLegacyMarker",
+            "label": "mark",
+            "match": "mark",
+            "timeoutSeconds": 300
+          }
+        ]
+      }
+    },
+    {
+      "label": "reload",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {},
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "$written:d2mark",
+        "steps": [
+          {
+            "op": "expectLoadedFrom",
+            "match": "d2mark"
+          },
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgLegacyMarker",
+            "label": "reload",
+            "match": "reload",
+            "timeoutSeconds": 300
+          }
+        ]
+      }
+    }
+  ]
+}
