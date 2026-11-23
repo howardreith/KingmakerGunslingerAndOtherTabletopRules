@@ -1,7 +1,9 @@
 # Sprint 6 VER-02 checkpoint G1/G2: Barbed Devil Impale cleanup and Giant Crab two-pincer holds
 
-Status: **qualified natively on the accepted C3a product with no product change; returned for manual review**
-(2026-11-23), with a proposed G1/G2 disposition (section 7). VER-02 stays open. Nothing is merged or released.
+Status: **accepted by manual review (2026-11-23)** for its demonstrated Barbed Devil and two-pincer Giant Crab
+development scope, at head `6ec543dffd` (base `69da3d490e`; product `9e902dfa80` unchanged), with the existing
+limitations retained. Section 10 records the decision and the corrected claims; where it corrects an earlier section,
+section 10 governs. VER-02 stays open. Nothing is merged or released.
 
 - Branch `codex/s6-ver02-g1g2-barbed-crab` is stacked on the G4 acceptance-records head `69da3d490e`
   (`codex/s6-ver02-g4-stirge-attachment`, draft PR #210). The stack is not rebased.
@@ -56,10 +58,11 @@ sting never grabs; its poison is a separate effect).
     the terminal (deadline moved to now, native `UpdateNextEvent`/`Tick`);
   - appear buffs removed; brains off; units woken; navmesh placement; pauses for observation;
   - **failed maintain only:** the target's AdditionalCMD base 0 → 1000 until the release (the Sprint 35 pattern; the
-    natural d20 is kept, so a natural 20 would still succeed), restored immediately (asserted);
-  - **Dismissal only:** the native Dismissal fact granted to the main character if absent (it was), cast parameters
-    CL 40 / spell level 4, and the Barbed Devil's Will base −100, natural rolls kept. The cast was legally refused
-    before any of this mattered (section 3.4);
+    natural d20 is kept, so a natural 20 would still succeed), then restored (restoration **captured** as
+    `cmdRestored`, not gated);
+  - **Dismissal only:** the native Dismissal fact was granted to the main character (it was absent) and its cast
+    parameters were overridden to CL 40 / spell level 4. Targeting was rejected **before** the planned Will −100
+    assignment, so the Barbed Devil's Will was never changed and no cast was issued (section 3.5);
   - pairs placed within 10.5 m of the summoner and at least 5.5 m apart (session 3; see section 5).
 - **Controls:** two fresh independent same-owner controls (Barbed or Crab) per terminal, each with an unrelated Bull's
   Strength. A terminal needs at least one control intact; a control that ends must end by an exactly attributed
@@ -106,7 +109,8 @@ Two fresh Barbed controls. Target AdditionalCMD raised to 1000 (disclosed); the 
     at its end the owner had no initiator part, no hold buff, and the target no grappled part;
   - afterwards: target no part and no grappled buff; holder no initiator part, no hold buff, no raw or live record,
     `HeldCount` 0, both claws unoccupied, no CantAct/CantMove;
-  - the target's AdditionalCMD restored; its unrelated effect kept; the controls' witness rule held.
+  - the target's unrelated effect kept; the controls' witness rule held.
+- **Captured:** the target's AdditionalCMD restored (`cmdRestored: true`; recorded, not a failing check).
 - **Captured path:** at the `ReleaseLink` call the target part was already gone while the owner **still had** its
   initiator part and hold buff (the retention the deferred cleanup exists for); the callback found that state and
   removed it.
@@ -119,8 +123,9 @@ Two fresh Barbed controls. Target AdditionalCMD raised to 1000 (disclosed); the 
 ### 3.4 Reacquisition
 
 - A real primary-claw attack on a fresh adjacent living target held at the first attack. **Asserted:** the full 3.1
-  contract, then again after 61 engine frames and ≥ 2 s of game time, with no `ReleaseLink` or cleanup callback for
-  the new pair. The old initiator, hold and occupancy did not prevent the grab.
+  contract, then again after an explicitly gated minimum of 30 engine frames (61 observed), with no `ReleaseLink` or
+  cleanup callback for the new pair. The old initiator, hold and occupancy did not prevent the grab.
+- **Game time:** the wait requested ≥ 2 s, but the elapsed game time was **not captured** and is not a postcondition.
 - **Captured:** the observer records a `DealConstrict` call from `TryGrab` with 0 dice and no damage. The Barbed Devil
   has no constrict; it is a no-op.
 
@@ -129,7 +134,9 @@ Two fresh Barbed controls. Target AdditionalCMD raised to 1000 (disclosed); the 
 - **Dismissal (native `95f7cdce…`), not PASS:** `AbilityData.CanTarget` is false for the summoned Barbed Devil. The
   extraplanar checker passes (`AbilityTargetHasFact` = true, `SubtypeExtraplanar`); the rejection is the ability's
   targeting: `CanTargetEnemies` true, `CanTargetFriends` **false**, and the main character is an **ally** of its own
-  summon. No targeting override, faction change or forced success was used, and no cast was issued.
+  summon. The rejection applies to the caster's own allied summon. The fact grant and the CL 40 / spell level 4
+  override had been applied; the Will change had not. No targeting override, faction change or forced success was
+  used, and no cast was issued. **Successful native Dismissal remains unexecuted.**
 - **Fallback: native summon expiry**, with the hold asserted active immediately before. **Release 1.82 s** of game time
   later (holder destroyed). **Asserted:** the target's owned state clear; no relationship recreated; over 13.03 s no
   damage to the target and no pair activity; its unrelated effect kept; controls: one intact, the other ended by an
@@ -147,7 +154,7 @@ Two fresh Barbed controls. Target AdditionalCMD raised to 1000 (disclosed); the 
 
 ### 4.2 Per-link maintain and constrict
 
-- **Asserted (first round):** link A `maintained:3;limb=Claw1d4` and constrict on `1|-1` (+4); link B
+- **Asserted (the first observed round after establishment):** link A `maintained:3;limb=Claw1d4` and constrict on `1|-1` (+4); link B
   `maintained:6;limb=Claw1d4` and constrict on `2|0` (+6); no `substituted` limb; no Crab damage or constrict on any
   unit that is not a live link.
 
@@ -182,8 +189,9 @@ Two fresh Crab controls.
 
 ### 5.1 Save (launch 3 PASS, 85 s)
 
-- **Setup, asserted:** an active Barbed hold after one Impale round (`dealt=23`) and a two-link Crab after one
-  maintain/constrict round per pincer; all three windows ordinary-held.
+- **Pre-save state, enforced:** the complete active relationships (the full Barbed and two-link Crab contracts,
+  asserted immediately before the save) plus a preceding Barbed Impale (`dealt=23`). **Captured:** the Crab's
+  preceding maintain/constrict round per pincer (`maintained:5`, `maintained:4`) and the windows' held classification.
 - **Native admission:** allowed. **Save, asserted:** callback received, no commit or loading in progress (finished).
   The unchanged paused clock is **captured**.
 - **Asserted unchanged across the save** (one snapshot before, one after, compared exactly):
@@ -196,9 +204,10 @@ Two fresh Crab controls.
   `OnTurnOff` with the owner off and no area unload, then `OnTurnOn` (the C2a policy).
 - **Captured:** the native condition buff `EntangledBuff` on the Crab targets moved after Bull's Strength in buff order
   (re-applied by the owner off/on cycle). See the session 1 failure (section 6).
-- **Normal continuation, asserted:** in the first round after the save each link had exactly **one** decisive
-  maintain, all held: Barbed `impale:…dealt=27` with exactly one Impale damage; each Crab link `maintained:3` with
-  exactly one constrict; no release.
+- **Normal continuation, gate:** in the first round after the save, exactly one decisive maintain per pair; exactly
+  one rider (Impale damage or constrict) for a pair that stays held; an exactly attributed ordinary failed maintain is
+  permitted (classified, not premature). **Captured outcome of the qualifying run:** all three stayed held — Barbed
+  `impale:…dealt=27` with one Impale damage, each Crab link `maintained:3` with one constrict.
 
 ### 5.2 Written file (manual read-only inspection)
 
@@ -233,7 +242,7 @@ profile. It contains **complete active relationships**:
 | Session | Harness | Launch | Cause and disposition |
 |---|---|---|---|
 | `20261123T142611Z` (7 m 32 s) | `d6fb0bc6…` | barbed PASS 145 s | Dismissal rejected; the reason was not yet recorded (added for session 2) |
-| | | crab **FAIL** 109 s | A control ended during the final quiet with an **unattributed** release; the harness had not captured the round callbacks to attribute it. **Harness observation gap.** |
+| | | crab **FAIL** 109 s | A control ended during the final quiet with an **unattributed** release. The run did not capture the data needed to attribute it, so its cause is **unknown**; session 2's summon-follow attribution is not applied to it. |
 | | | save **FAIL** 88 s | **Oracle defect:** the snapshot compared buff-name lists in order; the only difference was the native `EntangledBuff` moving after Bull's Strength (re-applied by the save's owner off/on). Every owned instance, clock and record matched. Corrected to compare sets and capture order. |
 | | | reload PASS 82 s | — |
 | `20261123T143658Z` (6 m 30 s) | `2ac26f41…` | barbed PASS 106 s, save PASS 85 s, reload PASS 87 s | — |
@@ -247,39 +256,35 @@ profile. It contains **complete active relationships**:
 
 ## 7. Proposed G1/G2 disposition
 
-Execution classes: **D** = direct execution on the accepted product `9e902dfa80`; **S** = inspected shared
-implementation; **H** = historical evidence on a named earlier build; **L** = retained limitation; **F** = concrete
-distinct follow-up.
+Execution classes:
+
+- **D** = direct execution on the accepted product `9e902dfa80`;
+- **E** = earlier accepted execution on a named earlier candidate;
+- **S** = inspected shared implementation (equivalence by source, not execution);
+- **H** = historical evidence on a named release build, or a historical pointer;
+- **L** = retained limitation;
+- **F** = concrete distinct follow-up.
 
 | Mechanism | Evidence | Disposition |
 |---|---|---|
-| Common single-link cleanup (native parts, `SummonHoldComponent`, holder/target death, expiry, save suspension, load reset) | **D** C1 (crocodile), C2a R1, C3b; this checkpoint (Barbed failed maintain, expiry, save, load) | Accepted scope; residue F3 stays accepted |
-| Common multi-link cleanup (`SummonMultiHoldComponent`, `SummonHeldComponent`, multi `ReleaseLink`, record store, load reset) | **D** C2 (Flytrap), C2a R1, C3c; this checkpoint (Crab target death, reuse, expiry, save, load) | Accepted scope; residue F2 stays accepted (re-observed 4.3) |
-| Impale: feature carrier, exclusive rider, deferred exact-owner cleanup | **D** this checkpoint (3.1–3.5, 5.1–5.3); **H** Sprint 35 runtime phase (release 0.0.173) | Qualified for the executed RTWP scope. **L:** the stale-callback race is source analysis only; the Impale-kills-target branch (`DealImpale` → `ReleaseLink`) is unexecuted |
-| Crab per-link constrict (establishing pincer, per target) | **D** this checkpoint (4.1–4.5, 5.1); **H** Sprint 21 profile review (0.0.150) and the product's Cleanup2 creature-command constrict observation (its build not re-identified here) | Qualified for two links on the executed RTWP scope |
-| Xill configuration (4 additional claws, 4 links, no hold rider; paralysis separate) | **S** same multi handlers, limb classification by additional index (executed for additional index 0, `2|0`, here and in C2; higher indices are configuration only); **H** Sprint 19 (0.0.148) | No distinct follow-up. **L:** three or four simultaneous links unexecuted (C2 limit) |
+| Common single-link cleanup (native parts, `SummonHoldComponent`, holder/target death, expiry, save suspension, load reset) | **E** C1 (crocodile) on `4e11e6c25c`; **E** C2a R1 on `044355c2a9`; **D** C3b and this checkpoint (Barbed failed maintain, expiry, save, load) | Accepted scope; residue F3 stays accepted |
+| Common multi-link cleanup (`SummonMultiHoldComponent`, `SummonHeldComponent`, multi `ReleaseLink`, record store, load reset) | **E** C2 (Flytrap) on `4e11e6c25c`; **E** C2a R1 on `044355c2a9`; **D** C3c and this checkpoint (Crab target death, reuse, expiry, save, load) | Accepted scope; residue F2 stays accepted (re-observed 4.3) |
+| Impale: feature carrier, exclusive rider, deferred exact-owner cleanup | **D** this checkpoint (3.1–3.5, 5.1–5.3); **H** Sprint 35 runtime phase (release 0.0.173) | Accepted for the executed RTWP scope. **L:** the stale-callback race is source analysis only; the Impale-kills-target branch (`DealImpale` → `ReleaseLink`) is not established by the reviewed VER-02 evidence |
+| Crab per-link constrict (establishing pincer, per target) | **D** this checkpoint, in the selected observed rounds (4.1–4.5, 5.1); **H** Sprint 21 profile review (0.0.150); the product's Cleanup2 creature-command constrict observation is a **historical pointer only** (build unidentified) | Accepted for two links in the executed RTWP rounds |
+| Xill configuration (4 additional claws, 4 links, no hold rider; paralysis separate) | **S** same multi handlers; limb classification by additional index (additional index 0, `2|0`, executed here (**D**) and in C2 (**E**); higher indices are configuration only); **H** Sprint 19 (0.0.148) | No distinct follow-up. **L:** three or four simultaneous links unexecuted |
 | Giant Scorpion configuration (primary + 1 claw, 2 links, sting excluded by limb count; poison separate) | **S** the same two-limb shape as the Crab without a rider; **H** Sprint 20 (0.0.149) | No distinct follow-up; sting exclusion is a grab-eligibility check (historical) |
-| Crocodilian death roll (non-lethal) | **D** captured in C3a R1 `012518Z` and C3b `015820Z` (`death-roll:` results) on this product | Executed incidentally; no separate checkpoint |
-| Crocodilian death roll **lethal** branch (`DealDeathRoll` → target dead → `ReleaseLink(…, true)`, `targetDied=True`) | **S** only; never observed in VER-02 evidence | **F** (below) |
-| Constrictor Snake / Lillend live constrict (`DealConstrict` post-damage `ReleaseLink`; `MaintainLink` live-constrict weapon-damage death branch) | **S**; **H** Snake 0.0.146, Lillend 0.0.169; no VER-02 execution | **F** (below) |
-| Salamander live constrict (`SalamanderConstrictDamage` + post-damage `ReleaseLink`) | **S**; **H** 0.0.146 | **F** (below) |
-| Save under the session policy, and the load reset | **D** C2a R1 (single/multi), C3a–C3c, G4, this checkpoint (complete serialized single + two-link relationships, reset at load) | Accepted scope; D2 ordinary-play reachability stays unresolved |
+| Crocodilian death roll (non-lethal) | **D** captured in C3a R1 `012518Z` and C3b `015820Z` (`death-roll:` results); also captured in C2a sessions on `044355c2a9` (**E**) | Executed incidentally; no separate checkpoint |
+| Crocodilian death roll **lethal** branch (`DealDeathRoll` → target dead → `ReleaseLink(…, true)`, `targetDied=True`) | **S** only; not established by the reviewed VER-02 evidence | **F** (G1-R) |
+| Constrictor Snake / Lillend live constrict (`MaintainLink` live-constrict weapon-damage death return; `DealConstrict` physical post-damage `ReleaseLink`) | **S**; **H** Snake 0.0.146, Lillend 0.0.169; not established by the reviewed VER-02 evidence | **F** (G1-R; Lillend stays inspected-shared) |
+| Salamander live constrict (`SalamanderConstrictDamage` + post-damage `ReleaseLink`) | **S**; **H** 0.0.146 | **F** (G1-R) |
+| Save under the session policy, and the load reset | **E** C2a R1 on `044355c2a9` (single/multi); **D** C3a R1–C3c, G4 and this checkpoint (complete serialized single + two-link relationships, reset at load) | Accepted scope; D2 ordinary-play reachability stays unresolved |
 | Independent effects (Barbed fear, Xill paralysis, Scorpion poison) | **D** Barbed fear observed surviving release and load, not treated as residue; **S** paralysis and poison are separate owners | Kept separate from hold residue |
 | Turn-based timing, G5 leave/unload | — | **L** (cross-cutting; G5 blocked on the admitted real-transition fixture) |
 
 **What remains after this checkpoint, and why.** Impale and the Crab do **not** qualify every G1 rider. Each live
-rider has its own **post-damage release branch** that runs inside the rider when the rider's own damage kills the held
-target. That is a different path from an external target death, which C1, C2 and this checkpoint qualified. No run has
-executed it for any rider. Proposed follow-up **G1-R (lethal rider release)**, bounded and one launch:
-
-1. a Constrictor Snake whose live constrict kills its held target (the `DealConstrict` release; Lillend shares that
-   block behind its own gate and stays inspected-shared);
-2. a Salamander whose constrict kills its held target (its separate damage owner);
-3. a crocodile whose death roll kills its held target (`targetDied=True`).
-
-Each would assert release from inside the rider, no further rider, and a clean surviving holder. The Impale lethal
-branch could ride along as a fourth row, or stay a limit. No other G1/G2 checkpoint is proposed. Turn-based timing and
-G5 stay cross-cutting limits.
+rider has its own **post-damage release branch** that runs when the rider's own damage kills the held target. That is
+a different path from an external target death (qualified in C1, C2 and this checkpoint), and it is not established by
+the reviewed VER-02 evidence for any rider. The follow-up **G1-R (lethal rider release)** covers it.
 
 ## 8. Commands and durations
 
@@ -312,3 +317,30 @@ G5 stay cross-cutting limits.
 
 **VER-02 stays open** for: the proposed G1-R lethal-rider follow-up; G5 (fixture-blocked); turn-based timing; and the
 retained per-mechanism limits.
+
+## 10. Review decision and corrected claims (2026-11-23)
+
+**Accepted** for the demonstrated Barbed Devil and two-pincer Giant Crab development scope on product `9e902dfa80`,
+with every existing limitation retained. Every session, verdict, harness identity and evidence classification above is
+kept. Records only: no product build and no native rerun.
+
+**Corrections (applied in place above):**
+
+1. **CMD restoration** is captured (`cmdRestored`), not asserted.
+2. **Reacquisition** gates an explicit minimum of 30 engine frames (61 observed). The ≥ 2 s game-time wait was only
+   the helper's request; the elapsed game time was not captured.
+3. **Dismissal setup:** the fact grant and the CL 40 / spell level 4 override were applied; targeting was rejected
+   before the Will −100 assignment, which never happened. The rejection applies to the caster's own allied summon.
+   Successful native Dismissal remains unexecuted.
+4. **Save setup:** the enforced pre-save state is the complete active relationships plus a preceding Barbed Impale.
+   The Crab's preceding maintain/constrict rounds are captured.
+5. **Post-save gate:** exactly one decisive maintain per pair, exactly one rider when held, and an exactly attributed
+   ordinary failed maintain permitted. All three remaining held is the qualifying run's captured outcome.
+6. **Candidate identities:** C1 and C2 executed on `4e11e6c25c` and C2a R1 on `044355c2a9`, not on `9e902dfa80`. The
+   disposition table separates earlier accepted execution (**E**), current-product execution (**D**) and inspected
+   equivalence (**S**).
+7. **Cleanup2** is a historical pointer only (build unidentified); it is not strengthened.
+8. **Session 1's lost Crab control** stays **unattributed**. Its cause is unknown and is not labelled a harness defect;
+   the later summon-follow explanation is not borrowed.
+9. **Scope of round claims:** per-link maintain/constrict claims cover the selected observed and asserted rounds only.
+   "No run has executed" is replaced by "not established by the reviewed VER-02 evidence".
