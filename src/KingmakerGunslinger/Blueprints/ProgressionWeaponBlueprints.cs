@@ -188,7 +188,12 @@ namespace KingmakerGunslinger.Blueprints
                 item.Cost != spec.Cost ? "price" :
                 !ReferenceEquals(MagicFirearmBlueprints.ReadWeaponType(item),
                     entry.FamilyWeaponType) ? "family-weapon-type" :
-                !item.Weight.Equals(entry.CanonicalPlusOne.Weight) ? "weight" :
+                // Authored against authored (the canonical +1 item's own stored
+                // weight is validated against its family catalog); effective
+                // getters may both read zero under a global weight override.
+                !AuthoredItemWeight.Stored(item).Equals(
+                    AuthoredItemWeight.Stored(entry.CanonicalPlusOne)) ||
+                    !(AuthoredItemWeight.Stored(item) > 0f) ? "weight" :
                 item.IsActuallyStackable ? "stackable" :
                 item.DamageType == null || item.DamageType.Physical.Material != 0
                     ? "special-material" :

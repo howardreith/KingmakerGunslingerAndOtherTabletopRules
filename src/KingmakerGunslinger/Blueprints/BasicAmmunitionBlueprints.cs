@@ -130,9 +130,9 @@ namespace KingmakerGunslinger.Blueprints
                     blackPowder.Cost,
                     leadBall.Cost,
                     paperCartridge.Cost,
-                    blackPowder.Weight,
-                    leadBall.Weight,
-                    paperCartridge.Weight));
+                    AuthoredItemWeight.Stored(blackPowder),
+                    AuthoredItemWeight.Stored(leadBall),
+                    AuthoredItemWeight.Stored(paperCartridge)));
             return result;
         }
 
@@ -280,7 +280,9 @@ namespace KingmakerGunslinger.Blueprints
 
             if (!item.IsActuallyStackable ||
                 item.Cost != cost ||
-                !item.Weight.Equals(weight))
+                // Authored weight (a zero-weight Paper Cartridge stays zero);
+                // the effective getter may read zero under a global override.
+                !AuthoredItemWeight.StoredEquals(item, weight))
             {
                 throw new InvalidOperationException(
                     "A basic-ammunition item has incorrect stack, cost, or weight settings.");

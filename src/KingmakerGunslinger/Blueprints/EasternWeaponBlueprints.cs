@@ -488,7 +488,9 @@ namespace KingmakerGunslinger.Blueprints
                 type.IsLight !=
                     (definition.Handedness == CustomWeaponHandedness.Light) ||
                 type.IsNatural || type.AttackRange.Value != 2 ||
-                !type.Weight.Equals((float)definition.WeightPounds) ||
+                // Authored weight: the effective getter may read zero under a
+                // deliberate global weight override (AuthoredItemWeight).
+                !AuthoredItemWeight.StoredEquals(type, (float)definition.WeightPounds) ||
                 type.Enchantments == null || type.Enchantments.Count() != 1 ||
                 type.Enchantments.Single() == null || !string.Equals(
                     type.Enchantments.Single().name,
@@ -642,7 +644,7 @@ namespace KingmakerGunslinger.Blueprints
                 (DamageTypeDescription)_damageType.GetValue(item);
             int expectedEnchantments = enhancement >= 1 || masterwork ? 1 : 0;
             if (item.Cost != cost ||
-                !item.Weight.Equals((float)definition.WeightPounds) ||
+                !AuthoredItemWeight.StoredEquals(item, (float)definition.WeightPounds) ||
                 item.IsActuallyStackable ||
                 item.IsMasterwork != (masterwork && enhancement == 0) ||
                 (bool)_overrideDamageType.GetValue(item) != coldIron ||
@@ -696,7 +698,7 @@ namespace KingmakerGunslinger.Blueprints
             DamageTypeDescription damage =
                 (DamageTypeDescription)_damageType.GetValue(item);
             if (item.Cost != spec.FinalCost ||
-                !item.Weight.Equals((float)definition.WeightPounds) ||
+                !AuthoredItemWeight.StoredEquals(item, (float)definition.WeightPounds) ||
                 item.IsActuallyStackable ||
                 (bool)_overrideDamageType.GetValue(item) != spec.ColdIron ||
                 damage == null || damage.Type != DamageType.Physical ||

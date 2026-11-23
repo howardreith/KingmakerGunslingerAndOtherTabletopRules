@@ -104,7 +104,8 @@ namespace KmgLoaderCompatHarness
             };
             foreach (string name in conditions.Keys)
             {
-                if (!known.Contains(name) && !SpearRepairConditions.Known.Contains(name) && name != ControlledRageObserver.Condition)
+                if (!known.Contains(name) && !SpearRepairConditions.Known.Contains(name) && !WeightConditions.Known.Contains(name) &&
+                    name != ControlledRageObserver.Condition)
                     throw new InvalidOperationException("unknown harness condition " + name);
             }
 
@@ -116,6 +117,7 @@ namespace KmgLoaderCompatHarness
             }
 
             SpearRepairConditions.Apply(harmony, conditions, applied);
+            WeightConditions.Apply(harmony, conditions, applied);
 
             if (Enabled(conditions, UnassignedTextResolvesBlank))
             {
