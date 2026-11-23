@@ -42,7 +42,7 @@ The pre-fix packages exist, but nothing was built from them:
 
 Producing a historical fixture was **not admitted and not attempted**. That is the fixture-admission boundary of the current isolated workflow, not a new owner-approval requirement:
 
-- No guard was identified that needs owner action. The loader-compat runner hashes the candidate package and refuses pre-existing state (a running game, locks, a pending journal); it has no version gate on the candidate.
+- No guard was identified that needs owner action. The loader-compat runner hashes the candidate package and refuses pre-existing state (a running game, locks, a pending journal). No fixed minimum or current-product-version restriction on the candidate was identified. (Corrected at the D3 review: the runner does write the staged candidate's own `Info.json` version into the product's guarded request, and the in-process DLL identity is verified; those still apply to any candidate.)
 - Untested: whether the current harness probes, which reflect into current product internals, would operate against a historical package.
 - The v0.0.181 packages **cannot** reproduce the Griffon duplicate: the explicit grant was removed before v0.0.180. A v0.0.161–v0.0.179 package would be needed; its local availability was not checked.
 

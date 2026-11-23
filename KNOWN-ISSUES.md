@@ -535,7 +535,8 @@
   a claimed-and-returned copy, deposits and the container's other loot are kept. A
   Thornstep the engine added to a container generated before the placement existed is
   also never held, so it is removed too. At most the recorded count is removed; an extra
-  never-held copy beyond it stays. Observed natively in Sprint 6 D3 on an induced route
+  never-held copy beyond it is not removed by this path once the history row is retired.
+  Accepted (Sprint 6 D3) as intentional behavior, observed natively on an induced route
   (dropped-loot bags given the exact former-source reference, constructed inputs, load,
   repeat and fresh reload); no real Riverine Rise container or organic old save was loaded.
 - With Call of the Wild's "metamagic for spontaneous spell conversion" setting
