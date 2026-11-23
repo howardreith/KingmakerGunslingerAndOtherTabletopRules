@@ -1,7 +1,8 @@
 # Sprint 6 checkpoint C3a (VER-02, G3): Purple Worm and Giant Flytrap swallow/engulf lifecycle
 
-Status: **C3a R1 returned for manual review** (2026-11-23). **C3a is not complete coverage of G3.** VER-02 stays open.
-Nothing is merged or released.
+Status: **C3a R1 accepted by manual review (2026-11-23) for its demonstrated development scope**, at head `4d7aa6ec1f`
+(product `9e902dfa80`, package `704cb0b4…79c9`, DLL `431f13da…5676`). Section 8 records the decision. **C3a is not
+complete coverage of G3.** VER-02 stays open. Nothing is merged or released.
 
 - **Accepted by the first C3a review:**
   - the D1 victim-death repair, for the demonstrated Purple Worm/Giant Flytrap scope;
@@ -405,3 +406,27 @@ released Worm).
 
 **Restoration.** The R1 session's transactions completed with game settings applied and owner files verified. No peer
 session or Kingmaker process was present before the run.
+
+## 8. Review decision (2026-11-23)
+
+**C3a R1 is accepted** for its demonstrated development scope. No further C3a qualification cycle is requested.
+
+**Accepted scope:**
+
+- D1 victim-death release and mouth reuse for the Purple Worm and Giant Flytrap.
+- D2's constructed-fixture reproduction and immediate preservation.
+- Native payload scheduling and continued damage through a permitted save.
+- Complete serialized relationships, and the fresh-load reset qualified in section 5.
+- Active Flytrap engulf expiry with a held sibling.
+- Worm carrier removal followed by an actual expiry as a second terminal.
+
+**Qualifications kept:**
+
+- The Worm's R1 expiry happened after carrier removal had already released its victim. It is **not** an active-swallow
+  Worm expiry.
+- The original failures, the original candidate identities and the narrowed historical classifications (sections 2
+  and 7.4) stand.
+- Ordinary D2 reachability remains unresolved.
+- VER-02 remains open.
+
+This is a records-only update, with no product build or native rerun.
