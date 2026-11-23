@@ -477,6 +477,18 @@ namespace KmgLoaderCompatHarness
                     return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
                 }
 
+                case "kmgBrownFur":
+                {
+                    // S6 T4 / RISK-03 (A2): "match" names the mode; invariants.saveLabel names the save it writes.
+                    // Needs condition observeBrownFurPersistence on the launch.
+                    string identity = StepIdentity(step);
+                    if (!probes.IsActive) probes.Begin(identity, new BrownFurProbe(request.ProfileDir, step.Match, step.Invariants));
+                    ProbeOutcome outcome = probes.Poll(identity);
+                    if (outcome == null) return StepStatus.Running;
+                    RecordProbe(outcome);
+                    return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
+                }
+
                 case "kmgControlledRage":
                 {
                     // S6 T4 / RISK-03: "match" is create, reload or final; invariants.saveLabel names the save create

@@ -90,6 +90,12 @@ namespace KmgLoaderCompatHarness
                         if (observer != null) evidence.Event("controlledRageObserverInstalled", observer.ToString(Formatting.None));
                     }
                     catch (Exception exception) { evidence.Event("controlledRageObserverUnavailable", exception.ToString()); }
+                    try
+                    {
+                        JToken observer = BrownFurObserver.Install(harmony);
+                        if (observer != null) evidence.Event("brownFurObserverInstalled", observer.ToString(Formatting.None));
+                    }
+                    catch (Exception exception) { evidence.Event("brownFurObserverUnavailable", exception.ToString()); }
                 }
 
                 runner?.Tick();
