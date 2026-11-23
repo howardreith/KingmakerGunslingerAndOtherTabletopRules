@@ -2226,14 +2226,21 @@ namespace KingmakerGunslinger.Blueprints
                     MaxHeld = ExpandedSummoningSpecialProfiles.GiantFlytrapBiteCount,
                     Hold = multiHold, Grappled = multiHeld, Swallowed = engulfed,
                     SwallowAbsolute = true,
-                    SwallowMaxSize = (Size)ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfMaxSize });
+                    SwallowMaxSize = (Size)ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfMaxSize,
+                    // S6 C3a: the native swallow part only watches its owner's
+                    // death, so a victim dying inside kept its mouth shut for
+                    // good. Use the exact owned victim-death release.
+                    ReleaseSwallowedOnVictimDeath = true });
             ConfigureGrabber(library, bySymbol, PurpleWormUnitSymbol,
                 PurpleWormCombatTraitsSymbol, "PurpleWorm",
                 "Purple Worm Grab and Swallow Whole",
                 "A bite hit lets the worm attempt to grab a foe no larger than itself; a foe up to Huge that it begins its turn holding is swallowed whole on a successful grapple check, taking the bite's damage.",
                 new GrabSpec { Primary = true, Hold = hold, Grappled = grappled,
                     Swallowed = swallowed,
-                    SwallowDelta = ExpandedSummoningSpecialProfiles.PurpleWormSwallowSizeDelta });
+                    SwallowDelta = ExpandedSummoningSpecialProfiles.PurpleWormSwallowSizeDelta,
+                    // S6 C3a: as for the Giant Flytrap, a victim dying inside
+                    // is released through the exact owned victim-death path.
+                    ReleaseSwallowedOnVictimDeath = true });
             // Sprint 6: the existing grabbers the charter names, on the same
             // lifecycle; the mound-specific native grab graph stays unused.
             ConfigureGrabber(library, bySymbol, MonitorLizardUnitSymbol,
